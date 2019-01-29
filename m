@@ -1,152 +1,48 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Tue, 29 Jan 2019 14:44:19 -0500
-Message-ID: <20190129194418.GG3176@redhat.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [RFC PATCH 1/5] pci/p2p: add a function to test peer to peer
+ capability
+Date: Tue, 29 Jan 2019 20:44:26 +0100
+Message-ID: <20190129194426.GB32069@kroah.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
- <20190129174728.6430-4-jglisse@redhat.com>
- <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com>
- <c2c02af7-1d6f-e54f-c7fb-99c5b7776014@deltatee.com>
+ <20190129174728.6430-2-jglisse@redhat.com>
+ <f66ba584-9c4a-f6cd-c647-9b32a93be807@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <c2c02af7-1d6f-e54f-c7fb-99c5b7776014@deltatee.com>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <f66ba584-9c4a-f6cd-c647-9b32a93be807@deltatee.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Logan Gunthorpe <logang@deltatee.com>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
+Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, linux-pci@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, linux-mm@kvack.org, jglisse@redhat.com, Jason Gunthorpe <jgg@mellanox.com>, Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 12:24:04PM -0700, Logan Gunthorpe wrote:
-> 
-> 
-> On 2019-01-29 12:11 p.m., Jerome Glisse wrote:
-> > On Tue, Jan 29, 2019 at 11:36:29AM -0700, Logan Gunthorpe wrote:
-> >>
-> >>
-> >> On 2019-01-29 10:47 a.m., jglisse@redhat.com wrote:
-> >>
-> >>> +	/*
-> >>> +	 * Optional for device driver that want to allow peer to peer (p2p)
-> >>> +	 * mapping of their vma (which can be back by some device memory) to
-> >>> +	 * another device.
-> >>> +	 *
-> >>> +	 * Note that the exporting device driver might not have map anything
-> >>> +	 * inside the vma for the CPU but might still want to allow a peer
-> >>> +	 * device to access the range of memory corresponding to a range in
-> >>> +	 * that vma.
-> >>> +	 *
-> >>> +	 * FOR PREDICTABILITY IF DRIVER SUCCESSFULY MAP A RANGE ONCE FOR A
-> >>> +	 * DEVICE THEN FURTHER MAPPING OF THE SAME IF THE VMA IS STILL VALID
-> >>> +	 * SHOULD ALSO BE SUCCESSFUL. Following this rule allow the importing
-> >>> +	 * device to map once during setup and report any failure at that time
-> >>> +	 * to the userspace. Further mapping of the same range might happen
-> >>> +	 * after mmu notifier invalidation over the range. The exporting device
-> >>> +	 * can use this to move things around (defrag BAR space for instance)
-> >>> +	 * or do other similar task.
-> >>> +	 *
-> >>> +	 * IMPORTER MUST OBEY mmu_notifier NOTIFICATION AND CALL p2p_unmap()
-> >>> +	 * WHEN A NOTIFIER IS CALL FOR THE RANGE ! THIS CAN HAPPEN AT ANY
-> >>> +	 * POINT IN TIME WITH NO LOCK HELD.
-> >>> +	 *
-> >>> +	 * In below function, the device argument is the importing device,
-> >>> +	 * the exporting device is the device to which the vma belongs.
-> >>> +	 */
-> >>> +	long (*p2p_map)(struct vm_area_struct *vma,
-> >>> +			struct device *device,
-> >>> +			unsigned long start,
-> >>> +			unsigned long end,
-> >>> +			dma_addr_t *pa,
-> >>> +			bool write);
-> >>> +	long (*p2p_unmap)(struct vm_area_struct *vma,
-> >>> +			  struct device *device,
-> >>> +			  unsigned long start,
-> >>> +			  unsigned long end,
-> >>> +			  dma_addr_t *pa);
-> >>
-> >> I don't understand why we need new p2p_[un]map function pointers for
-> >> this. In subsequent patches, they never appear to be set anywhere and
-> >> are only called by the HMM code. I'd have expected it to be called by
-> >> some core VMA code and set by HMM as that's what vm_operations_struct is
-> >> for.
-> >>
-> >> But the code as all very confusing, hard to follow and seems to be
-> >> missing significant chunks. So I'm not really sure what is going on.
-> > 
-> > It is set by device driver when userspace do mmap(fd) where fd comes
-> > from open("/dev/somedevicefile"). So it is set by device driver. HMM
-> > has nothing to do with this. It must be set by device driver mmap
-> > call back (mmap callback of struct file_operations). For this patch
-> > you can completely ignore all the HMM patches. Maybe posting this as
-> > 2 separate patchset would make it clearer.
-> > 
-> > For instance see [1] for how a non HMM driver can export its memory
-> > by just setting those callback. Note that a proper implementation of
-> > this should also include some kind of driver policy on what to allow
-> > to map and what to not allow ... All this is driver specific in any
-> > way.
-> 
-> I'd suggest [1] should be a part of the patchset so we can actually see
-> a user of the stuff you're adding.
-
-I did not wanted to clutter patchset with device driver specific usage
-of this. As the API can be reason about in abstract way.
-
-> 
-> But it still doesn't explain everything as without the HMM code nothing
-> calls the new vm_ops. And there's still no callers for the p2p_test
-> functions you added. And I still don't understand why we need the new
-> vm_ops or who calls them and when. Why can't drivers use the existing
-> 'fault' vm_op and call a new helper function to map p2p when appropriate
-> or a different helper function to map a large range in its mmap
-> operation? Just like regular mmap code...
-
-HMM code is just one user, if you have a driver that use HMM mirror
-then your driver get support for this for free. If you do not want to
-use HMM then you can directly call this in your driver.
-
-The flow is, device driver want to setup some mapping for a range of
-virtual address [va_start, va_end]:
-    1 - Lookup vma for the range
-    2 - If vma is regular vma (not an mmap of a file) then use GUP
-        If vma is a mmap of a file and they are p2p_map call back
-        then call p2p_map()
-    3 - Use either the result of GUP or p2p_map() to program the
-        device
-
-The p2p test function is use by device driver implementing the call
-back for instance see:
-
-https://cgit.freedesktop.org/~glisse/linux/commit/?h=hmm-p2p&id=401a567696eafb1d4faf7054ab0d7c3a16a5ef06
-
-The vm_fault callback is not suited because here we are mapping to
-another device so this will need special handling, someone must have
-both device struct pointer in end and someone must be allow to make
-decission on what to allow and what not to allow.
-
-Moreover exporting driver like GPU driver might have complex policy
-in place for which they will only allow export of some memory to a
-peer device but not other.
-
-In the end it means that it easier and simpler to add new call back
-specificaly for that, so the intention is clear to both the caller
-and the callee. The exporting device can then do the proper check
-using the core helper (ie checking that the device can actually peer
-to each other) and if that works it can then decide wether or not
-it wants to allow this other device to access its memory or if it
-prefer to use main memory for this.
-
-To add this to the fault callback we would need to define a bunch
-of new flags, setup fake page table so that we can populate pte and
-then have the importing device re-interpret everything specialy
-because it comes from another device. It would look ugly and it
-would need to modify bunch of core mm code.
-
-Note that this callback solution also allow an exporting device to
-allow peer access while CPU can not access the memory ie the pte
-entry for the range are pte_none.
-
-Cheers,
-Jérôme
+T24gVHVlLCBKYW4gMjksIDIwMTkgYXQgMTE6MjQ6MDlBTSAtMDcwMCwgTG9nYW4gR3VudGhvcnBl
+IHdyb3RlOgo+IAo+IAo+IE9uIDIwMTktMDEtMjkgMTA6NDcgYS5tLiwgamdsaXNzZUByZWRoYXQu
+Y29tIHdyb3RlOgo+ID4gK2Jvb2wgcGNpX3Rlc3RfcDJwKHN0cnVjdCBkZXZpY2UgKmRldkEsIHN0
+cnVjdCBkZXZpY2UgKmRldkIpCj4gPiArewo+ID4gKwlzdHJ1Y3QgcGNpX2RldiAqcGNpQSwgKnBj
+aUI7Cj4gPiArCWJvb2wgcmV0Owo+ID4gKwlpbnQgdG1wOwo+ID4gKwo+ID4gKwkvKgo+ID4gKwkg
+KiBGb3Igbm93IHdlIG9ubHkgc3VwcG9ydCBQQ0lFIHBlZXIgdG8gcGVlciBidXQgb3RoZXIgaW50
+ZXItY29ubmVjdAo+ID4gKwkgKiBjYW4gYmUgYWRkZWQuCj4gPiArCSAqLwo+ID4gKwlwY2lBID0g
+ZmluZF9wYXJlbnRfcGNpX2RldihkZXZBKTsKPiA+ICsJcGNpQiA9IGZpbmRfcGFyZW50X3BjaV9k
+ZXYoZGV2Qik7Cj4gPiArCWlmIChwY2lBID09IE5VTEwgfHwgcGNpQiA9PSBOVUxMKSB7Cj4gPiAr
+CQlyZXQgPSBmYWxzZTsKPiA+ICsJCWdvdG8gb3V0Owo+ID4gKwl9Cj4gPiArCj4gPiArCXRtcCA9
+IHVwc3RyZWFtX2JyaWRnZV9kaXN0YW5jZShwY2lBLCBwY2lCLCBOVUxMKTsKPiA+ICsJcmV0ID0g
+dG1wIDwgMCA/IGZhbHNlIDogdHJ1ZTsKPiA+ICsKPiA+ICtvdXQ6Cj4gPiArCXBjaV9kZXZfcHV0
+KHBjaUIpOwo+ID4gKwlwY2lfZGV2X3B1dChwY2lBKTsKPiA+ICsJcmV0dXJuIGZhbHNlOwo+ID4g
+K30KPiA+ICtFWFBPUlRfU1lNQk9MX0dQTChwY2lfdGVzdF9wMnApOwo+IAo+IFRoaXMgZnVuY3Rp
+b24gb25seSBldmVyIHJldHVybnMgZmFsc2UuLi4uCgpJIGd1ZXNzIGl0IHdhcyBuZXZyIGFjdHVh
+bGx5IHRlc3RlZCA6KAoKSSBmZWVsIHJlYWxseSB3b3JyaWVkIGFib3V0IHBhc3NpbmcgcmFuZG9t
+ICdzdHJ1Y3QgZGV2aWNlJyBwb2ludGVycyBpbnRvCnRoZSBQQ0kgbGF5ZXIuICBBcmUgd2UgX3N1
+cmVfIGl0IGNhbiBoYW5kbGUgdGhpcyBwcm9wZXJseT8KCnRoYW5rcywKCmdyZWcgay1oCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWls
+aW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZy
+ZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
