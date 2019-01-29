@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 5/5] virtio-blk: Consider virtio_max_dma_size() for maximum segment size
-Date: Tue, 29 Jan 2019 09:43:42 +0100
-Message-ID: <20190129084342.26030-6-joro@8bytes.org>
+Subject: [PATCH 1/5] swiotlb: Introduce swiotlb_max_mapping_size()
+Date: Tue, 29 Jan 2019 09:43:38 +0100
+Message-ID: <20190129084342.26030-2-joro@8bytes.org>
 References: <20190129084342.26030-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190129084342.26030-1-joro@8bytes.org>
@@ -12,48 +12,52 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Segments can't be larger than the maximum DMA mapping size
-supported on the platform. Take that into account when
-setting the maximum segment size for a block device.
+The function returns the maximum size that can be remapped
+by the SWIOTLB implementation. This function will be later
+exposed to users through the DMA-API.
 
 Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/block/virtio_blk.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ include/linux/swiotlb.h | 5 +++++
+ kernel/dma/swiotlb.c    | 5 +++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index b16a887bbd02..4bc083b7c9b5 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -723,7 +723,7 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	struct request_queue *q;
- 	int err, index;
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 7c007ed7505f..1c22d96e1742 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -62,6 +62,7 @@ extern void swiotlb_tbl_sync_single(struct device *hwdev,
  
--	u32 v, blk_size, sg_elems, opt_io_size;
-+	u32 v, blk_size, max_size, sg_elems, opt_io_size;
- 	u16 min_io_size;
- 	u8 physical_block_exp, alignment_offset;
+ extern int
+ swiotlb_dma_supported(struct device *hwdev, u64 mask);
++size_t swiotlb_max_mapping_size(struct device *dev);
  
-@@ -826,14 +826,16 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	/* No real sector limit. */
- 	blk_queue_max_hw_sectors(q, -1U);
+ #ifdef CONFIG_SWIOTLB
+ extern enum swiotlb_force swiotlb_force;
+@@ -95,6 +96,10 @@ static inline unsigned int swiotlb_max_segment(void)
+ {
+ 	return 0;
+ }
++static inline size_t swiotlb_max_mapping_size(struct device *dev)
++{
++	return SIZE_MAX;
++}
+ #endif /* CONFIG_SWIOTLB */
  
-+	max_size = virtio_max_dma_size(vdev);
+ extern void swiotlb_print_info(void);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 1fb6fd68b9c7..9cb21259cb0b 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -662,3 +662,8 @@ swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ {
+ 	return __phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
+ }
 +
- 	/* Host can optionally specify maximum segment size and number of
- 	 * segments. */
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_SIZE_MAX,
- 				   struct virtio_blk_config, size_max, &v);
- 	if (!err)
--		blk_queue_max_segment_size(q, v);
--	else
--		blk_queue_max_segment_size(q, -1U);
-+		max_size = min(max_size, v);
-+
-+	blk_queue_max_segment_size(q, max_size);
- 
- 	/* Host can optionally specify the block size of the device */
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
++size_t swiotlb_max_mapping_size(struct device *dev)
++{
++	return ((size_t)1 << IO_TLB_SHIFT) * IO_TLB_SEGSIZE;
++}
 -- 
 2.17.1
