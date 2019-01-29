@@ -1,104 +1,88 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Date: Tue, 29 Jan 2019 14:02:36 -0500
-Message-ID: <20190129134750-mutt-send-email-mst@kernel.org>
-References: <87zhrj8kcp.fsf@morokweng.localdomain>
- <87womn8inf.fsf@morokweng.localdomain>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Tue, 29 Jan 2019 14:11:23 -0500
+Message-ID: <20190129191120.GE3176@redhat.com>
+References: <20190129174728.6430-1-jglisse@redhat.com>
+ <20190129174728.6430-4-jglisse@redhat.com>
+ <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87womn8inf.fsf@morokweng.localdomain>
+In-Reply-To: <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 03:42:44PM -0200, Thiago Jung Bauermann wrote:
+On Tue, Jan 29, 2019 at 11:36:29AM -0700, Logan Gunthorpe wrote:
 > 
-> Fixing address of powerpc mailing list.
 > 
-> Thiago Jung Bauermann <bauerman@linux.ibm.com> writes:
+> On 2019-01-29 10:47 a.m., jglisse@redhat.com wrote:
 > 
-> > Hello,
-> >
-> > With Christoph's rework of the DMA API that recently landed, the patch
-> > below is the only change needed in virtio to make it work in a POWER
-> > secure guest under the ultravisor.
-> >
-> > The other change we need (making sure the device's dma_map_ops is NULL
-> > so that the dma-direct/swiotlb code is used) can be made in
-> > powerpc-specific code.
-> >
-> > Of course, I also have patches (soon to be posted as RFC) which hook up
-> > <linux/mem_encrypt.h> to the powerpc secure guest support code.
-> >
-> > What do you think?
-> >
-> > From d0629a36a75c678b4a72b853f8f7f8c17eedd6b3 Mon Sep 17 00:00:00 2001
-> > From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-> > Date: Thu, 24 Jan 2019 22:08:02 -0200
-> > Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-> >
-> > The host can't access the guest memory when it's encrypted, so using
-> > regular memory pages for the ring isn't an option. Go through the DMA API.
-> >
-> > Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-
-Well I think this will come back to bite us (witness xen which is now
-reworking precisely this path - but at least they aren't to blame, xen
-came before ACCESS_PLATFORM).
-
-I also still think the right thing would have been to set
-ACCESS_PLATFORM for all systems where device can't access all memory.
-
-But I also think I don't have the energy to argue about power secure
-guest anymore.  So be it for power secure guest since the involved
-engineers disagree with me.  Hey I've been wrong in the past ;).
-
-But the name "sev_active" makes me scared because at least AMD guys who
-were doing the sensible thing and setting ACCESS_PLATFORM (unless I'm
-wrong? I reemember distinctly that's so) will likely be affected too.
-We don't want that.
-
-So let's find a way to make sure it's just power secure guest for now
-pls.
-
-I also think we should add a dma_api near features under virtio_device
-such that these hacks can move off data path.
-
-By the way could you please respond about virtio-iommu and
-why there's no support for ACCESS_PLATFORM on power?
-
-I have Cc'd you on these discussions.
-
-
-Thanks!
-
-
-> > ---
-> >  drivers/virtio/virtio_ring.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index cd7e755484e3..321a27075380 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -259,8 +259,11 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
-> >  	 * not work without an even larger kludge.  Instead, enable
-> >  	 * the DMA API if we're a Xen guest, which at least allows
-> >  	 * all of the sensible Xen configurations to work correctly.
+> > +	/*
+> > +	 * Optional for device driver that want to allow peer to peer (p2p)
+> > +	 * mapping of their vma (which can be back by some device memory) to
+> > +	 * another device.
 > > +	 *
-> > +	 * Also, if guest memory is encrypted the host can't access
-> > +	 * it directly. In this case, we'll need to use the DMA API.
-> >  	 */
-> > -	if (xen_domain())
-> > +	if (xen_domain() || sev_active())
-> >  		return true;
-> >
-> >  	return false;
+> > +	 * Note that the exporting device driver might not have map anything
+> > +	 * inside the vma for the CPU but might still want to allow a peer
+> > +	 * device to access the range of memory corresponding to a range in
+> > +	 * that vma.
+> > +	 *
+> > +	 * FOR PREDICTABILITY IF DRIVER SUCCESSFULY MAP A RANGE ONCE FOR A
+> > +	 * DEVICE THEN FURTHER MAPPING OF THE SAME IF THE VMA IS STILL VALID
+> > +	 * SHOULD ALSO BE SUCCESSFUL. Following this rule allow the importing
+> > +	 * device to map once during setup and report any failure at that time
+> > +	 * to the userspace. Further mapping of the same range might happen
+> > +	 * after mmu notifier invalidation over the range. The exporting device
+> > +	 * can use this to move things around (defrag BAR space for instance)
+> > +	 * or do other similar task.
+> > +	 *
+> > +	 * IMPORTER MUST OBEY mmu_notifier NOTIFICATION AND CALL p2p_unmap()
+> > +	 * WHEN A NOTIFIER IS CALL FOR THE RANGE ! THIS CAN HAPPEN AT ANY
+> > +	 * POINT IN TIME WITH NO LOCK HELD.
+> > +	 *
+> > +	 * In below function, the device argument is the importing device,
+> > +	 * the exporting device is the device to which the vma belongs.
+> > +	 */
+> > +	long (*p2p_map)(struct vm_area_struct *vma,
+> > +			struct device *device,
+> > +			unsigned long start,
+> > +			unsigned long end,
+> > +			dma_addr_t *pa,
+> > +			bool write);
+> > +	long (*p2p_unmap)(struct vm_area_struct *vma,
+> > +			  struct device *device,
+> > +			  unsigned long start,
+> > +			  unsigned long end,
+> > +			  dma_addr_t *pa);
 > 
+> I don't understand why we need new p2p_[un]map function pointers for
+> this. In subsequent patches, they never appear to be set anywhere and
+> are only called by the HMM code. I'd have expected it to be called by
+> some core VMA code and set by HMM as that's what vm_operations_struct is
+> for.
 > 
-> -- 
-> Thiago Jung Bauermann
-> IBM Linux Technology Center
+> But the code as all very confusing, hard to follow and seems to be
+> missing significant chunks. So I'm not really sure what is going on.
+
+It is set by device driver when userspace do mmap(fd) where fd comes
+from open("/dev/somedevicefile"). So it is set by device driver. HMM
+has nothing to do with this. It must be set by device driver mmap
+call back (mmap callback of struct file_operations). For this patch
+you can completely ignore all the HMM patches. Maybe posting this as
+2 separate patchset would make it clearer.
+
+For instance see [1] for how a non HMM driver can export its memory
+by just setting those callback. Note that a proper implementation of
+this should also include some kind of driver policy on what to allow
+to map and what to not allow ... All this is driver specific in any
+way.
+
+Cheers,
+Jérôme
+
+[1] https://cgit.freedesktop.org/~glisse/linux/commit/?h=wip-p2p-showcase&id=964214dcd4df96f296e2214042e8cfce135ae3d4
