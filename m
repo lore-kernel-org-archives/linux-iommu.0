@@ -1,38 +1,58 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Tue, 29 Jan 2019 17:34:15 +0100
-Message-ID: <20190129163415.GA14529@lst.de>
-References: <20190119140452.GA25198@lst.de> <bfe4adcc-01c1-7b46-f40a-8e020ff77f58@xenosoft.de> <8434e281-eb85-51d9-106f-f4faa559e89c@xenosoft.de> <4d8d4854-dac9-a78e-77e5-0455e8ca56c4@xenosoft.de> <1dec2fbe-f654-dac7-392a-93a5d20e3602@xenosoft.de> <20190128070422.GA2772@lst.de> <20190128162256.GA11737@lst.de> <D64B1ED5-46F9-43CF-9B21-FABB2807289B@xenosoft.de> <6f2d6bc9-696b-2cb1-8a4e-df3da2bd6c0a@xenosoft.de> <20190129161411.GA14022@lst.de>
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Tue, 29 Jan 2019 15:08:12 -0200
+Message-ID: <87zhrj8kcp.fsf@morokweng.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190129161411.GA14022@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: virtualization@lists.linux-foundation.org
+Cc: linuxppc-devel@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 05:14:11PM +0100, Christoph Hellwig wrote:
-> On Tue, Jan 29, 2019 at 04:03:32PM +0100, Christian Zigotzky wrote:
-> > Hi Christoph,
-> >
-> > I compiled kernels for the X5000 and X1000 from your new branch 
-> > 'powerpc-dma.6-debug.2' today. The kernels boot and the P.A. Semi Ethernet 
-> > works!
-> 
-> Thanks for testing!  I'll prepare a new series that adds the other
-> patches on top of this one.
 
-And that was easier than I thought - we just had a few patches left
-in powerpc-dma.6, so I've rebased that branch on top of
-powerpc-dma.6-debug.2:
+Hello,
 
-    git://git.infradead.org/users/hch/misc.git powerpc-dma.6
+With Christoph's rework of the DMA API that recently landed, the patch
+below is the only change needed in virtio to make it work in a POWER
+secure guest under the ultravisor.
 
-Gitweb:
+The other change we need (making sure the device's dma_map_ops is NULL
+so that the dma-direct/swiotlb code is used) can be made in
+powerpc-specific code.
 
-    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+Of course, I also have patches (soon to be posted as RFC) which hook up
+<linux/mem_encrypt.h> to the powerpc secure guest support code.
 
-I hope the other patches are simple enough, so just testing the full
-branch checkout should be fine for now.
+What do you think?
+
+>From d0629a36a75c678b4a72b853f8f7f8c17eedd6b3 Mon Sep 17 00:00:00 2001
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Date: Thu, 24 Jan 2019 22:08:02 -0200
+Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+
+The host can't access the guest memory when it's encrypted, so using
+regular memory pages for the ring isn't an option. Go through the DMA API.
+
+Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+---
+ drivers/virtio/virtio_ring.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index cd7e755484e3..321a27075380 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -259,8 +259,11 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
+ 	 * not work without an even larger kludge.  Instead, enable
+ 	 * the DMA API if we're a Xen guest, which at least allows
+ 	 * all of the sensible Xen configurations to work correctly.
++	 *
++	 * Also, if guest memory is encrypted the host can't access
++	 * it directly. In this case, we'll need to use the DMA API.
+ 	 */
+-	if (xen_domain())
++	if (xen_domain() || sev_active())
+ 		return true;
+
+ 	return false;
