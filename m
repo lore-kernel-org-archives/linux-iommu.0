@@ -1,125 +1,44 @@
-From: Jerome Glisse <jglisse@redhat.com>
+From: Jason Gunthorpe <jgg-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
-Date: Wed, 30 Jan 2019 17:30:27 -0500
-Message-ID: <20190130223027.GH5061@redhat.com>
-References: <bdf03cd5-f5b1-4b78-a40e-b24024ca8c9f@deltatee.com>
- <20190130185652.GB17080@mellanox.com>
- <20190130192234.GD5061@redhat.com>
- <20190130193759.GE17080@mellanox.com>
- <db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
- <20190130201114.GB17915@mellanox.com>
- <20190130204332.GF5061@redhat.com>
- <20190130204954.GI17080@mellanox.com>
- <20190130214525.GG5061@redhat.com>
- <20190130215600.GM17080@mellanox.com>
+Date: Wed, 30 Jan 2019 22:33:04 +0000
+Message-ID: <20190130223258.GB25486@mellanox.com>
+References: <20190130185652.GB17080@mellanox.com>
+	<20190130192234.GD5061@redhat.com>
+	<20190130193759.GE17080@mellanox.com>
+	<db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
+	<20190130201114.GB17915@mellanox.com>
+	<20190130204332.GF5061@redhat.com>
+	<20190130204954.GI17080@mellanox.com>
+	<20190130214525.GG5061@redhat.com>
+	<20190130215600.GM17080@mellanox.com>
+	<20190130223027.GH5061@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190130215600.GM17080@mellanox.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jason Gunthorpe <jgg@mellanox.com>
-Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Logan Gunthorpe <logang@deltatee.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190130223027.GH5061-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+Content-ID: <A88F47E4F9E812418578E798DF4B84C0-wNKe6lTLrGecE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "Rafael J . Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Felix Kuehling <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christian Koenig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBKYW4gMzAsIDIwMTkgYXQgMDk6NTY6MDdQTSArMDAwMCwgSmFzb24gR3VudGhvcnBl
-IHdyb3RlOgo+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0IDA0OjQ1OjI1UE0gLTA1MDAsIEplcm9t
-ZSBHbGlzc2Ugd3JvdGU6Cj4gPiBPbiBXZWQsIEphbiAzMCwgMjAxOSBhdCAwODo1MDowMFBNICsw
-MDAwLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6Cj4gPiA+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0
-IDAzOjQzOjMyUE0gLTA1MDAsIEplcm9tZSBHbGlzc2Ugd3JvdGU6Cj4gPiA+ID4gT24gV2VkLCBK
-YW4gMzAsIDIwMTkgYXQgMDg6MTE6MTlQTSArMDAwMCwgSmFzb24gR3VudGhvcnBlIHdyb3RlOgo+
-ID4gPiA+ID4gT24gV2VkLCBKYW4gMzAsIDIwMTkgYXQgMDE6MDA6MDJQTSAtMDcwMCwgTG9nYW4g
-R3VudGhvcnBlIHdyb3RlOgo+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IFdlIG5ldmVyIGNoYW5nZWQg
-U0dMcy4gV2Ugc3RpbGwgdXNlIHRoZW0gdG8gcGFzcyBwMnBkbWEgcGFnZXMsIG9ubHkgd2UKPiA+
-ID4gPiA+ID4gbmVlZCB0byBiZSBhIGJpdCBjYXJlZnVsIHdoZXJlIHdlIHNlbmQgdGhlIGVudGly
-ZSBTR0wuIEkgc2VlIG5vIHJlYXNvbgo+ID4gPiA+ID4gPiB3aHkgd2UgY2FuJ3QgY29udGludWUg
-dG8gYmUgY2FyZWZ1bCBvbmNlIHRoZWlyIGluIHVzZXJzcGFjZSBpZiB0aGVyZSdzCj4gPiA+ID4g
-PiA+IHNvbWV0aGluZyBpbiBHVVAgdG8gZGVueSB0aGVtLgo+ID4gPiA+ID4gPiAKPiA+ID4gPiA+
-ID4gSXQgd291bGQgYmUgbmljZSB0byBoYXZlIGhldGVyb2dlbmVvdXMgU0dMcyBhbmQgaXQgaXMg
-c29tZXRoaW5nIHdlCj4gPiA+ID4gPiA+IHNob3VsZCB3b3JrIHRvd2FyZCBidXQgaW4gcHJhY3Rp
-Y2UgdGhleSBhcmVuJ3QgcmVhbGx5IG5lY2Vzc2FyeSBhdCB0aGUKPiA+ID4gPiA+ID4gbW9tZW50
-Lgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBSRE1BIGdlbmVyYWxseSBjYW5ub3QgY29wZSB3ZWxsIHdp
-dGggYW4gQVBJIHRoYXQgcmVxdWlyZXMgaG9tb2dlbmVvdXMKPiA+ID4gPiA+IFNHTHMuLiBVc2Vy
-IHNwYWNlIGNhbiBjb25zdHJ1Y3QgY29tcGxleCBNUnMgKHBhcnRpY3VsYXJseSB3aXRoIHRoZQo+
-ID4gPiA+ID4gcHJvcG9zZWQgU0dMIE1SIGZsb3cpIGFuZCB3ZSBtdXN0IG1hcnNoYWwgdGhhdCBp
-bnRvIGEgc2luZ2xlIFNHTCBvcgo+ID4gPiA+ID4gdGhlIGRyaXZlcnMgZmFsbCBhcGFydC4KPiA+
-ID4gPiA+IAo+ID4gPiA+ID4gSmVyb21lIGV4cGxhaW5lZCB0aGF0IEdQVSBpcyB3b3JzZSwgYSBz
-aW5nbGUgVk1BIG1heSBoYXZlIGEgcmFuZG9tIG1peAo+ID4gPiA+ID4gb2YgQ1BVIG9yIGRldmlj
-ZSBwYWdlcy4uCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFRoaXMgaXMgYSBwcmV0dHkgYmlnIGJsb2Nr
-ZXIgdGhhdCB3b3VsZCBoYXZlIHRvIHNvbWVob3cgYmUgZml4ZWQuCj4gPiA+ID4gCj4gPiA+ID4g
-Tm90ZSB0aGF0IEhNTSB0YWtlcyBjYXJlIG9mIHRoYXQgUkRNQSBPRFAgd2l0aCBteSBPRFAgdG8g
-SE1NIHBhdGNoLAo+ID4gPiA+IHNvIHdoYXQgeW91IGdldCBmb3IgYW4gT0RQIHVtZW0gaXMganVz
-dCBhIGxpc3Qgb2YgZG1hIGFkZHJlc3MgeW91Cj4gPiA+ID4gY2FuIHByb2dyYW0geW91ciBkZXZp
-Y2UgdG8uIFRoZSBhaW0gaXMgdG8gYXZvaWQgdGhlIGRyaXZlciB0byBjYXJlCj4gPiA+ID4gYWJv
-dXQgdGhhdC4gVGhlIGFjY2VzcyBwb2xpY3kgd2hlbiB0aGUgVU1FTSBvYmplY3QgaXMgY3JlYXRl
-ZCBieQo+ID4gPiA+IHVzZXJzcGFjZSB0aHJvdWdoIHZlcmJzIEFQSSBzaG91bGQgaG93ZXZlciBh
-c2NlcnRhaW4gdGhhdCBmb3IgbW1hcAo+ID4gPiA+IG9mIGRldmljZSBmaWxlIGl0IGlzIG9ubHkg
-Y3JlYXRpbmcgYSBVTUVNIHRoYXQgaXMgZnVsbHkgY292ZXJlZCBieQo+ID4gPiA+IG9uZSBhbmQg
-b25seSBvbmUgdm1hLiBHUFUgZGV2aWNlIGRyaXZlciB3aWxsIGhhdmUgb25lIHZtYSBwZXIgbG9n
-aWNhbAo+ID4gPiA+IEdQVSBvYmplY3QuIEkgZXhwZWN0IG90aGVyIGtpbmQgb2YgZGV2aWNlIGRv
-IHRoYXQgc2FtZSBzbyB0aGF0IHRoZXkKPiA+ID4gPiBjYW4gbWF0Y2ggYSB2bWEgdG8gYSB1bmlx
-dWUgb2JqZWN0IGluIHRoZWlyIGRyaXZlci4KPiA+ID4gCj4gPiA+IEEgb25lIFZNQSBydWxlIGlz
-IG5vdCByZWFsbHkgd29ya2FibGUuCj4gPiA+IAo+ID4gPiBXaXRoIE9EUCBWTUEgYm91bmRhcmll
-cyBjYW4gbW92ZSBhcm91bmQgYWNyb3NzIHRoZSBsaWZldGltZSBvZiB0aGUgTVIKPiA+ID4gYW5k
-IHdlIGhhdmUgbm8gb2J2aW91cyB3YXkgdG8gZmFpbCBhbnl0aGluZyBpZiB1c2VycGFjZSBwdXRz
-IGEgVk1BCj4gPiA+IGJvdW5kYXJ5IGluIHRoZSBtaWRkbGUgb2YgYW4gZXhpc3RpbmcgT0RQIE1S
-IGFkZHJlc3MgcmFuZ2UuCj4gPiAKPiA+IFRoaXMgaXMgdHJ1ZSBvbmx5IGZvciB2bWEgdGhhdCBh
-cmUgbm90IG1tYXAgb2YgYSBkZXZpY2UgZmlsZS4gVGhpcyBpcwo+ID4gd2hhdCBpIHdhcyB0cnlp
-bmcgdG8gZ2V0IGFjY3Jvc3MuIEFuIG1tYXAgb2YgYSBmaWxlIGlzIG5ldmVyIG1lcmdlCj4gPiBz
-byBpdCBjYW4gb25seSBnZXQgc3BsaXQvYnV0Y2hlciBieSBtdW5tYXAvbXJlbWFwIGJ1dCB3aGVu
-IHRoYXQgaGFwcGVuCj4gPiB5b3UgYWxzbyBuZWVkIHRvIHJlZmxlY3QgdGhlIHZpcnR1YWwgYWRk
-cmVzcyBzcGFjZSBjaGFuZ2UgdG8gdGhlCj4gPiBkZXZpY2UgaWUgYW55IGFjY2VzcyB0byBhIG5v
-dyBpbnZhbGlkIHJhbmdlIG11c3QgdHJpZ2dlciBlcnJvci4KPiAKPiBXaHkgaXMgaXQgaW52YWxp
-ZD8gVGhlIGFkZHJlc3MgcmFuZ2Ugc3RpbGwgaGFzIHZhbGlkIHByb2Nlc3MgbWVtb3J5PwoKSWYg
-eW91IGRvIG11bm1hcChBLCBzaXplKSB0aGVuIGFsbCBhZGRyZXNzIGluIHRoZSByYW5nZSBbQSwg
-QStzaXplXQphcmUgaW52YWxpZC4gVGhpcyBpcyB3aGF0IGkgYW0gcmVmZXJpbmcgdG9vIGhlcmUu
-IFNhbWUgZm9yIG1yZW1hcC4KCj4gCj4gV2hhdCBpcyB0aGUgcHJvYmxlbSBpbiB0aGUgSE1NIG1p
-cnJvciB0aGF0IGl0IG5lZWRzIHRoaXMgcmVzdHJpY3Rpb24/CgpObyByZXN0cmljdGlvbiBhdCBh
-bGwgaGVyZS4gSSB0aGluayBpIGp1c3Qgd2Fzbid0IHVuZGVyc3Rvb2QuCgo+IFRoZXJlIGlzIGFs
-c28gdGhlIHNpdHVhdGlvbiB3aGVyZSB3ZSBjcmVhdGUgYW4gT0RQIE1SIHRoYXQgc3BhbnMgMCAt
-Pgo+IFU2NF9NQVggaW4gdGhlIHByb2Nlc3MgYWRkcmVzcyBzcGFjZS4gSW4gdGhpcyBjYXNlIHRo
-ZXJlIGFyZSBsb3RzIG9mCj4gZGlmZmVyZW50IFZNQXMgaXQgY292ZXJzIGFuZCB3ZSBleHBlY3Qg
-aXQgdG8gZnVsbHkgdHJhY2sgYWxsIGNoYW5nZXMKPiB0byBhbGwgVk1Bcy4KClllcyBhbmQgdGhh
-dCB3b3JrcyBob3dldmVyIGFueSBtZW1vcnkgYWNjZXNzIGFib3ZlIFRBU0tfU0laRSB3aWxsCnJl
-dHVybiAtRUZBVUxUIGFzIHRoaXMgaXMga2VybmVsIGFkZHJlc3Mgc3BhY2Ugc28geW91IGNhbiBv
-bmx5IGFjY2Vzcwphbnl0aGluZyB0aGF0IGlzIGEgdmFsaWQgcHJvY2VzcyB2aXJ0dWFsIGFkZHJl
-c3MuCgo+IAo+IFNvIHdlIGhhdmUgdG8gc3BpbiB1cCBkZWRpY2F0ZWQgdW1lbV9vZHBzIHRoYXQg
-Y2FyZWZ1bGx5IHNwYW4gc2luZ2xlCj4gVk1BcywgYW5kIHNvbWVob3cgdHJhY2sgY2hhbmdlcyB0
-byBWTUEgPwoKTm8geW91IGRvIG5vdC4KCj4gCj4gbWx4NSBvZHAgZG9lcyBzb21lIG9mIHRoaXMg
-YWxyZWFkeS4uIEJ1dCB5aWtlcywgdGhpcyBuZWVkcyBzb21lIHByZXR0eQo+IGNhcmVmdWwgdGVz
-dGluZyBpbiBhbGwgdGhlc2Ugc2l0dWF0aW9ucy4KClNvcnJ5IGlmIGkgY29uZnVzZWQgeW91IGV2
-ZW4gbW9yZSB0aGFuIHRoZSBmaXJzdCB0aW1lLiBFdmVyeXRoaW5nIHdvcmtzCnlvdSBoYXZlIG5v
-dGhpbmcgdG8gd29ycnkgYWJvdXQgOikKCj4gCj4gPiA+IEkgdGhpbmsgdGhlIEhNTSBtaXJyb3Ig
-QVBJIHJlYWxseSBuZWVkcyB0byBkZWFsIHdpdGggdGhpcyBmb3IgdGhlCj4gPiA+IGRyaXZlciBz
-b21laG93Lgo+ID4gCj4gPiBZZXMgdGhlIEhNTSBkb2VzIGRlYWwgd2l0aCB0aGlzIGZvciB5b3Us
-IHlvdSBkbyBub3QgaGF2ZSB0byB3b3JyeSBhYm91dAo+ID4gaXQuIFNvcnJ5IGlmIHRoYXQgd2Fz
-IG5vdCBjbGVhci4gSSBqdXN0IHdhbnRlZCB0byBzdHJlc3MgdGhhdCB2bWEgdGhhdAo+ID4gYXJl
-IG1tYXAgb2YgYSBmaWxlIGRvIG5vdCBiZWhhdmUgbGlrZSBvdGhlciB2bWEgaGVuY2Ugd2hlbiB5
-b3UgY3JlYXRlCj4gPiB0aGUgVU1FTSB5b3UgY2FuIGNoZWNrIGZvciB0aG9zZSBpZiB5b3UgZmVl
-bCB0aGUgbmVlZC4KPiAKPiBXaGF0IHByb3BlcnRpZXMgZG8gd2UgZ2V0IGZyb20gSE1NIG1pcnJv
-cj8gV2lsbCBpdCB0ZWxsIHVzIHdoZW4gdG8KPiBjcmVhdGUgbW9yZSB1bWVtcyB0byBjb3ZlciBW
-TUEgc2VhbXMgb3Igd2lsbCBpdCBqdXN0IGNhdXNlIHVuZGVzaXJlZAo+IG5vLW1hcHBlZCBmYWls
-dXJlcyBpbiBzb21lIGNhc2VzPwoKWW91IGRvIG5vdCBnZXQgYW55dGhpbmcgZnJvbSBITU0gbWly
-cm9yLCBpIG1pZ2h0IGFkZCBhIGZsYWcgc28gdGhhdApITU0gY2FuIHJlcG9ydCB0aGlzIHNwZWNp
-YWwgY29uZGl0aW9uIGlmIGRyaXZlciB3YW50cyB0byBrbm93LiBJZgp5b3Ugd2FudCB0byBrbm93
-IHlvdSBoYXZlIHRvIGxvb2sgYXQgdGhlIHZtYSBieSB5b3Vyc2VsZi4gR1BVIGRyaXZlcgp3aWxs
-IGRlZmluaXRseSB3YW50IHRvIGtub3cgd2hlbSBpbXBvcnRpbmcgc28gaSBtaWdodCBhZGQgYSBm
-bGFnIHNvCnRoYXQgdGhleSBkbyBub3QgaGF2ZSB0byBsb29rdXAgdGhlIHZtYSB0aGVtc2VsZiB0
-byBrbm93LgoKQWdhaW4gaWYgeW91IGRvIG5vdCBjYXJlIHRoZW4ganVzdCBpZ25vcmUgZXZlcnl0
-aGluZyBoZXJlLCBpdCBpcwpoYW5kbGVkIGJ5IEhNTSBhbmQgeW91IGRvIG5vdCBoYXZlIHRvIHdv
-cnJ5IG9uZSBiaXQuIElmIGl0IHdvcmtlZAp3aXRoIEdVUCBpdCB3aWxsIHdvcmsgd2l0aCBITU0g
-YW5kIHdpdGggdGhvc2UgcDJwIHBhdGNoZXMgaWYgaXQKd2lsbCBldmVuIHdvcmtzIGFnYWluc3Qg
-dm1hIHRoYXQgYXJlIG1tYXAgb2YgYSBmaWxlIGFuZCB0aGF0IHNldAp0aGUgcDJwX21hcCBmdW5j
-dGlvbi4KCkNoZWVycywKSsOpcsO0bWUKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGlu
-Zm8vZHJpLWRldmVsCg==
+On Wed, Jan 30, 2019 at 05:30:27PM -0500, Jerome Glisse wrote:
+
+> > What is the problem in the HMM mirror that it needs this restriction?
+> 
+> No restriction at all here. I think i just wasn't understood.
+
+Are you are talking about from the exporting side - where the thing
+creating the VMA can really only put one distinct object into it?
+
+Jason
