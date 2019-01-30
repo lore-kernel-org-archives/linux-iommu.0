@@ -1,71 +1,77 @@
-From: Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Wed, 30 Jan 2019 20:44:20 +0000
-Message-ID: <20190130204414.GH17080@mellanox.com>
-References: <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205827.GM10108@mellanox.com> <20190130080208.GC29665@lst.de>
- <20190130174424.GA17080@mellanox.com>
- <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
- <20190130191946.GD17080@mellanox.com>
- <3793c115-2451-1479-29a9-04bed2831e4b@deltatee.com>
+From: Jason Gunthorpe <jgg-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
+Date: Wed, 30 Jan 2019 20:50:00 +0000
+Message-ID: <20190130204954.GI17080@mellanox.com>
+References: <20190129234752.GR3176@redhat.com>
+	<655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
+	<20190130041841.GB30598@mellanox.com>
+	<bdf03cd5-f5b1-4b78-a40e-b24024ca8c9f@deltatee.com>
+	<20190130185652.GB17080@mellanox.com>
+	<20190130192234.GD5061@redhat.com>
+	<20190130193759.GE17080@mellanox.com>
+	<db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
+	<20190130201114.GB17915@mellanox.com>
+	<20190130204332.GF5061@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3793c115-2451-1479-29a9-04bed2831e4b@deltatee.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190130204332.GF5061-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
-Content-ID: <5DDBA0D21FE94042ACFF73FC449CFD7D@eurprd05.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: Christoph Hellwig <hch@lst.de>, Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-ID: <5026D2D732A5D3409D2B6B23F246B7D1-wNKe6lTLrGecE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "Rafael J . Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Felix Kuehling <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christian Koenig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 12:48:33PM -0700, Logan Gunthorpe wrote:
->=20
->=20
-> On 2019-01-30 12:19 p.m., Jason Gunthorpe wrote:
-> > On Wed, Jan 30, 2019 at 11:13:11AM -0700, Logan Gunthorpe wrote:
-> >>
-> >>
-> >> On 2019-01-30 10:44 a.m., Jason Gunthorpe wrote:
-> >>> I don't see why a special case with a VMA is really that different.
-> >>
-> >> Well one *really* big difference is the VMA changes necessarily expose
-> >> specialized new functionality to userspace which has to be supported
-> >> forever and may be difficult to change.=20
-> >=20
-> > The only user change here is that more things will succeed when
-> > creating RDMA MRs (and vice versa to GPU). I don't think this
-> > restricts the kernel implementation at all, unless we intend to
-> > remove P2P entirely..
->=20
-> Well for MRs I'd expect you are using struct pages to track the memory
-> some how....=20
+On Wed, Jan 30, 2019 at 03:43:32PM -0500, Jerome Glisse wrote:
+> On Wed, Jan 30, 2019 at 08:11:19PM +0000, Jason Gunthorpe wrote:
+> > On Wed, Jan 30, 2019 at 01:00:02PM -0700, Logan Gunthorpe wrote:
+> > 
+> > > We never changed SGLs. We still use them to pass p2pdma pages, only we
+> > > need to be a bit careful where we send the entire SGL. I see no reason
+> > > why we can't continue to be careful once their in userspace if there's
+> > > something in GUP to deny them.
+> > > 
+> > > It would be nice to have heterogeneous SGLs and it is something we
+> > > should work toward but in practice they aren't really necessary at the
+> > > moment.
+> > 
+> > RDMA generally cannot cope well with an API that requires homogeneous
+> > SGLs.. User space can construct complex MRs (particularly with the
+> > proposed SGL MR flow) and we must marshal that into a single SGL or
+> > the drivers fall apart.
+> > 
+> > Jerome explained that GPU is worse, a single VMA may have a random mix
+> > of CPU or device pages..
+> > 
+> > This is a pretty big blocker that would have to somehow be fixed.
+> 
+> Note that HMM takes care of that RDMA ODP with my ODP to HMM patch,
+> so what you get for an ODP umem is just a list of dma address you
+> can program your device to. The aim is to avoid the driver to care
+> about that. The access policy when the UMEM object is created by
+> userspace through verbs API should however ascertain that for mmap
+> of device file it is only creating a UMEM that is fully covered by
+> one and only one vma. GPU device driver will have one vma per logical
+> GPU object. I expect other kind of device do that same so that they
+> can match a vma to a unique object in their driver.
 
-Not really, for MRs most drivers care about DMA addresses only. The
-only reason struct page ever gets involved is because it is part of
-the GUP, SGL and dma_map family of APIs.
+A one VMA rule is not really workable.
 
-> VMAs that aren't backed by pages and use this special interface must
-> therefore be creating new special interfaces that can call
-> p2p_[un]map...
+With ODP VMA boundaries can move around across the lifetime of the MR
+and we have no obvious way to fail anything if userpace puts a VMA
+boundary in the middle of an existing ODP MR address range.
 
-Well, those are kernel internal interfaces, so they can be changed
-
-No matter what we do, code that wants to DMA to user BAR pages must
-take *some kind* of special care - either it needs to use a special
-GUP and SGL flow, or a mixed GUP, SGL and p2p_map flow.=20
-
-I don't really see why one is better than the other at this point, or
-why doing one means we can't do the other some day later. They are
-fairly similar.
-
-O_DIRECT seems to be the justification for struct page, but nobody is
-signing up to make O_DIRECT have the required special GUP/SGL/P2P flow
-that would be needed to *actually* make that work - so it really isn't
-a justification today.
+I think the HMM mirror API really needs to deal with this for the
+driver somehow.
 
 Jason
