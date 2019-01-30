@@ -1,78 +1,71 @@
-From: Jerome Glisse <jglisse@redhat.com>
+From: Jason Gunthorpe <jgg@mellanox.com>
 Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
  vma
-Date: Wed, 30 Jan 2019 15:43:32 -0500
-Message-ID: <20190130204332.GF5061@redhat.com>
-References: <deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
- <20190129234752.GR3176@redhat.com>
- <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
- <20190130041841.GB30598@mellanox.com>
- <bdf03cd5-f5b1-4b78-a40e-b24024ca8c9f@deltatee.com>
- <20190130185652.GB17080@mellanox.com>
- <20190130192234.GD5061@redhat.com>
- <20190130193759.GE17080@mellanox.com>
- <db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
- <20190130201114.GB17915@mellanox.com>
+Date: Wed, 30 Jan 2019 20:44:20 +0000
+Message-ID: <20190130204414.GH17080@mellanox.com>
+References: <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
+ <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
+ <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
+ <20190129205827.GM10108@mellanox.com> <20190130080208.GC29665@lst.de>
+ <20190130174424.GA17080@mellanox.com>
+ <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
+ <20190130191946.GD17080@mellanox.com>
+ <3793c115-2451-1479-29a9-04bed2831e4b@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190130201114.GB17915@mellanox.com>
+In-Reply-To: <3793c115-2451-1479-29a9-04bed2831e4b@deltatee.com>
+Content-Language: en-US
+Content-ID: <5DDBA0D21FE94042ACFF73FC449CFD7D@eurprd05.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jason Gunthorpe <jgg@mellanox.com>
-Cc: Logan Gunthorpe <logang@deltatee.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Christoph Hellwig <hch@lst.de>, Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 08:11:19PM +0000, Jason Gunthorpe wrote:
-> On Wed, Jan 30, 2019 at 01:00:02PM -0700, Logan Gunthorpe wrote:
-> 
-> > We never changed SGLs. We still use them to pass p2pdma pages, only we
-> > need to be a bit careful where we send the entire SGL. I see no reason
-> > why we can't continue to be careful once their in userspace if there's
-> > something in GUP to deny them.
-> > 
-> > It would be nice to have heterogeneous SGLs and it is something we
-> > should work toward but in practice they aren't really necessary at the
-> > moment.
-> 
-> RDMA generally cannot cope well with an API that requires homogeneous
-> SGLs.. User space can construct complex MRs (particularly with the
-> proposed SGL MR flow) and we must marshal that into a single SGL or
-> the drivers fall apart.
-> 
-> Jerome explained that GPU is worse, a single VMA may have a random mix
-> of CPU or device pages..
-> 
-> This is a pretty big blocker that would have to somehow be fixed.
+On Wed, Jan 30, 2019 at 12:48:33PM -0700, Logan Gunthorpe wrote:
+>=20
+>=20
+> On 2019-01-30 12:19 p.m., Jason Gunthorpe wrote:
+> > On Wed, Jan 30, 2019 at 11:13:11AM -0700, Logan Gunthorpe wrote:
+> >>
+> >>
+> >> On 2019-01-30 10:44 a.m., Jason Gunthorpe wrote:
+> >>> I don't see why a special case with a VMA is really that different.
+> >>
+> >> Well one *really* big difference is the VMA changes necessarily expose
+> >> specialized new functionality to userspace which has to be supported
+> >> forever and may be difficult to change.=20
+> >=20
+> > The only user change here is that more things will succeed when
+> > creating RDMA MRs (and vice versa to GPU). I don't think this
+> > restricts the kernel implementation at all, unless we intend to
+> > remove P2P entirely..
+>=20
+> Well for MRs I'd expect you are using struct pages to track the memory
+> some how....=20
 
-Note that HMM takes care of that RDMA ODP with my ODP to HMM patch,
-so what you get for an ODP umem is just a list of dma address you
-can program your device to. The aim is to avoid the driver to care
-about that. The access policy when the UMEM object is created by
-userspace through verbs API should however ascertain that for mmap
-of device file it is only creating a UMEM that is fully covered by
-one and only one vma. GPU device driver will have one vma per logical
-GPU object. I expect other kind of device do that same so that they
-can match a vma to a unique object in their driver.
+Not really, for MRs most drivers care about DMA addresses only. The
+only reason struct page ever gets involved is because it is part of
+the GUP, SGL and dma_map family of APIs.
 
-> 
-> > That doesn't even necessarily need to be the case. For HMM, I
-> > understand, struct pages may not point to any accessible memory and the
-> > memory that backs it (or not) may change over the life time of it. So
-> > they don't have to be strictly tied to BARs addresses. p2pdma pages are
-> > strictly tied to BAR addresses though.
-> 
-> No idea, but at least for this case I don't think we need magic HMM
-> pages to make simple VMA ops p2p_map/umap work..
+> VMAs that aren't backed by pages and use this special interface must
+> therefore be creating new special interfaces that can call
+> p2p_[un]map...
 
-Yes, you do not need page for simple driver, if we start creating struct
-page for all PCIE BAR we are gonna waste a lot of memory and resources
-for no good reason. I doubt all of the PCIE BAR of a device enabling p2p
-will ever be map as p2p. So simple driver do not need struct page, GPU
-driver that do not use HMM (all GPU that are more than 2 years old) do
-not need struct page. Struct page is a burden here more than anything
-else. I have not seen one good thing the struct page gives you.
+Well, those are kernel internal interfaces, so they can be changed
 
-Cheers,
-Jérôme
+No matter what we do, code that wants to DMA to user BAR pages must
+take *some kind* of special care - either it needs to use a special
+GUP and SGL flow, or a mixed GUP, SGL and p2p_map flow.=20
+
+I don't really see why one is better than the other at this point, or
+why doing one means we can't do the other some day later. They are
+fairly similar.
+
+O_DIRECT seems to be the justification for struct page, but nobody is
+signing up to make O_DIRECT have the required special GUP/SGL/P2P flow
+that would be needed to *actually* make that work - so it really isn't
+a justification today.
+
+Jason
