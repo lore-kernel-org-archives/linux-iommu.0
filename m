@@ -1,49 +1,40 @@
-From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-Subject: Re: [PATCH 0/5 v5] Fix virtio-blk issue with SWIOTLB
-Date: Wed, 30 Jan 2019 18:11:48 +0000
-Message-ID: <616969d8-c03a-5d24-8112-11dd1f60dd9b@amd.com>
-References: <20190130164007.26497-1-joro@8bytes.org>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Wed, 30 Jan 2019 11:13:11 -0700
+Message-ID: <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
+References: <20190129174728.6430-1-jglisse@redhat.com>
+ <20190129174728.6430-4-jglisse@redhat.com>
+ <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
+ <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
+ <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
+ <20190129205827.GM10108@mellanox.com> <20190130080208.GC29665@lst.de>
+ <20190130174424.GA17080@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190130164007.26497-1-joro@8bytes.org>
+In-Reply-To: <20190130174424.GA17080@mellanox.com>
 Content-Language: en-US
-Content-ID: <BA468A5C6C008B43B282A2B28B182289@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "jfehlig@suse.com" <jfehlig@suse.com>, "Grimm, Jon" <Jon.Grimm@amd.com>, "Singh, Brijesh" <brijesh.singh@amd.com>, "jroedel@suse.de" <jroedel@suse.de>
+To: Jason Gunthorpe <jgg@mellanox.com>, Christoph Hellwig <hch@lst.de>
+Cc: Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMS8zMC8xOSAxMDo0MCBBTSwgSm9lcmcgUm9lZGVsIHdyb3RlOg0KPiBIaSwNCj4gDQo+IGhl
-cmUgaXMgdGhlIG5leHQgdmVyc2lvbiBvZiB0aGlzIHBhdGNoLXNldC4gUHJldmlvdXMNCj4gdmVy
-c2lvbnMgY2FuIGJlIGZvdW5kIGhlcmU6DQo+IA0KPiAJVjE6IGh0dHBzOi8vbG9yZS5rZXJuZWwu
-b3JnL2xrbWwvMjAxOTAxMTAxMzQ0MzMuMTU2NzItMS1qb3JvQDhieXRlcy5vcmcvDQo+IA0KPiAJ
-VjI6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAxOTAxMTUxMzIyNTcuNjQyNi0xLWpv
-cm9AOGJ5dGVzLm9yZy8NCj4gDQo+IAlWMzogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8y
-MDE5MDEyMzE2MzA0OS4yNDg2My0xLWpvcm9AOGJ5dGVzLm9yZy8NCj4gDQo+IAlWNDogaHR0cHM6
-Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDE5MDEyOTA4NDM0Mi4yNjAzMC0xLWpvcm9AOGJ5dGVz
-Lm9yZy8NCj4gDQo+IFRoZSBwcm9ibGVtIHNvbHZlZCBoZXJlIGlzIGEgbGltaXRhdGlvbiBvZiB0
-aGUgU1dJT1RMQiBpbXBsZW1lbnRhdGlvbiwNCj4gd2hpY2ggZG9lcyBub3Qgc3VwcG9ydCBhbGxv
-Y2F0aW9ucyBsYXJnZXIgdGhhbiAyNTZrYi4gIFdoZW4gdGhlDQo+IHZpcnRpby1ibGsgZHJpdmVy
-IHRyaWVzIHRvIHJlYWQvd3JpdGUgYSBibG9jayBsYXJnZXIgdGhhbiB0aGF0LCB0aGUNCj4gYWxs
-b2NhdGlvbiBvZiB0aGUgZG1hLWhhbmRsZSBmYWlscyBhbmQgYW4gSU8gZXJyb3IgaXMgcmVwb3J0
-ZWQuDQo+IA0KPiBDaGFuZ2VzIHRvIHY0IGFyZToNCj4gDQo+IAktIEFkZGVkIFJldmlld2VkLWJ5
-IHRhZ3MgZnJvbSBDaHJpc3RvcGgNCj4gDQo+IAktIEFkZGVkIG1pc3NpbmcgRVhQT1JUX1NZTUJP
-TChfR1BMKSBsaW5lcw0KPiANCj4gUGxlYXNlIHJldmlldy4NCg0KTG9va3MgZ29vZC4gQm9vdGVk
-IGFuZCB0ZXN0ZWQgdXNpbmcgYW4gU0VWIGd1ZXN0IHdpdGhvdXQgYW55IGlzc3Vlcy4NCg0KVGVz
-dGVkLWJ5OiBUb20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNreUBhbWQuY29tPg0KDQpUaGFua3Ms
-DQpUb20NCg0KPiANCj4gVGhhbmtzLA0KPiANCj4gCUpvZXJnDQo+IEpvZXJnIFJvZWRlbCAoNSk6
-DQo+ICAgc3dpb3RsYjogSW50cm9kdWNlIHN3aW90bGJfbWF4X21hcHBpbmdfc2l6ZSgpDQo+ICAg
-c3dpb3RsYjogQWRkIGlzX3N3aW90bGJfYWN0aXZlKCkgZnVuY3Rpb24NCj4gICBkbWE6IEludHJv
-ZHVjZSBkbWFfbWF4X21hcHBpbmdfc2l6ZSgpDQo+ICAgdmlydGlvOiBJbnRyb2R1Y2UgdmlydGlv
-X21heF9kbWFfc2l6ZSgpDQo+ICAgdmlydGlvLWJsazogQ29uc2lkZXIgdmlydGlvX21heF9kbWFf
-c2l6ZSgpIGZvciBtYXhpbXVtIHNlZ21lbnQgc2l6ZQ0KPiANCj4gIERvY3VtZW50YXRpb24vRE1B
-LUFQSS50eHQgICAgfCAgOCArKysrKysrKw0KPiAgZHJpdmVycy9ibG9jay92aXJ0aW9fYmxrLmMg
-ICB8IDEwICsrKysrKy0tLS0NCj4gIGRyaXZlcnMvdmlydGlvL3ZpcnRpb19yaW5nLmMgfCAxMSAr
-KysrKysrKysrKw0KPiAgaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oICB8IDE2ICsrKysrKysr
-KysrKysrKysNCj4gIGluY2x1ZGUvbGludXgvc3dpb3RsYi5oICAgICAgfCAxMSArKysrKysrKysr
-Kw0KPiAgaW5jbHVkZS9saW51eC92aXJ0aW8uaCAgICAgICB8ICAyICsrDQo+ICBrZXJuZWwvZG1h
-L2RpcmVjdC5jICAgICAgICAgIHwgMTIgKysrKysrKysrKysrDQo+ICBrZXJuZWwvZG1hL3N3aW90
-bGIuYyAgICAgICAgIHwgMTQgKysrKysrKysrKysrKysNCj4gIDggZmlsZXMgY2hhbmdlZCwgODAg
-aW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo=
+
+
+On 2019-01-30 10:44 a.m., Jason Gunthorpe wrote:
+> I don't see why a special case with a VMA is really that different.
+
+Well one *really* big difference is the VMA changes necessarily expose
+specialized new functionality to userspace which has to be supported
+forever and may be difficult to change. The p2pdma code is largely
+in-kernel and we can rework and change the interfaces all we want as we
+improve our struct page infrastructure.
+
+I'd also argue that p2pdma isn't nearly as specialized as this VMA thing
+and can be used pretty generically to do other things. Though, the other
+ideas we've talked about doing are pretty far off and may have other
+challenges.
+
+Logan
