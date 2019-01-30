@@ -1,65 +1,27 @@
-From: Peter Xu <peterx@redhat.com>
-Subject: [PATCH 2/2] iommu/amd: Remove clear_flush_young notifier
-Date: Wed, 30 Jan 2019 13:57:58 +0800
-Message-ID: <20190130055758.3994-3-peterx@redhat.com>
-References: <20190130055758.3994-1-peterx@redhat.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is
+ encrypted
+Date: Wed, 30 Jan 2019 08:44:27 +0100
+Message-ID: <20190130074427.GA29516@lst.de>
+References: <87zhrj8kcp.fsf@morokweng.localdomain> <87womn8inf.fsf@morokweng.localdomain> <20190129134750-mutt-send-email-mst@kernel.org> <6c68f7f7-1b28-6eba-9b8b-2c32efac9701@redhat.com> <20190129213137-mutt-send-email-mst@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190130055758.3994-1-peterx@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <20190129213137-mutt-send-email-mst@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: joro@8bytes.org, Jason Wang <jasowang@redhat.com>, peterx@redhat.com, Jerome Glisse <jglisse@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-AMD IOMMU driver is using the clear_flush_young() to do cache flushing
-but that's actually already covered by invalidate_range().  Remove the
-extra notifier and the chunks.
+On Tue, Jan 29, 2019 at 09:36:08PM -0500, Michael S. Tsirkin wrote:
+> This has been discussed ad nauseum. virtio is all about compatibility.
+> Losing a couple of lines of code isn't worth breaking working setups.
+> People that want "just use DMA API no tricks" now have the option.
+> Setting a flag in a feature bit map is literally a single line
+> of code in the hypervisor. So stop pushing for breaking working
+> legacy setups and just fix it in the right place.
 
-Signed-off-by: Peter Xu <peterx@redhat.com>
----
- drivers/iommu/amd_iommu_v2.c | 24 ------------------------
- 1 file changed, 24 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 23dae9348ace..5d7ef750e4a0 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -370,29 +370,6 @@ static struct pasid_state *mn_to_state(struct mmu_notifier *mn)
- 	return container_of(mn, struct pasid_state, mn);
- }
- 
--static void __mn_flush_page(struct mmu_notifier *mn,
--			    unsigned long address)
--{
--	struct pasid_state *pasid_state;
--	struct device_state *dev_state;
--
--	pasid_state = mn_to_state(mn);
--	dev_state   = pasid_state->device_state;
--
--	amd_iommu_flush_page(dev_state->domain, pasid_state->pasid, address);
--}
--
--static int mn_clear_flush_young(struct mmu_notifier *mn,
--				struct mm_struct *mm,
--				unsigned long start,
--				unsigned long end)
--{
--	for (; start < end; start += PAGE_SIZE)
--		__mn_flush_page(mn, start);
--
--	return 0;
--}
--
- static void mn_invalidate_range(struct mmu_notifier *mn,
- 				struct mm_struct *mm,
- 				unsigned long start, unsigned long end)
-@@ -430,7 +407,6 @@ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 
- static const struct mmu_notifier_ops iommu_mn = {
- 	.release		= mn_release,
--	.clear_flush_young      = mn_clear_flush_young,
- 	.invalidate_range       = mn_invalidate_range,
- };
- 
--- 
-2.17.1
+I agree with the legacy aspect.  What I am missing is an extremely
+strong wording that says you SHOULD always set this flag for new
+hosts, including an explanation why.
