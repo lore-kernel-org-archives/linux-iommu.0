@@ -1,41 +1,25 @@
-From: Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Wed, 30 Jan 2019 19:19:52 +0000
-Message-ID: <20190130191946.GD17080@mellanox.com>
-References: <20190129174728.6430-1-jglisse@redhat.com>
- <20190129174728.6430-4-jglisse@redhat.com>
- <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205827.GM10108@mellanox.com> <20190130080208.GC29665@lst.de>
- <20190130174424.GA17080@mellanox.com>
- <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
+From: Evan Green <evgreen@chromium.org>
+Subject: Re: [PATCH v5 18/20] iommu/mediatek: Fix VLD_PA_RANGE register backup
+ when suspend
+Date: Wed, 30 Jan 2019 11:11:59 -0800
+Message-ID: <CAE=gft4xwk02tM9cgnLCZDpZgX3z9w8fjXfJxJ7HtzdOaCN7=g@mail.gmail.com>
+References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com> <1546314952-15990-19-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
-Content-Language: en-US
-Content-ID: <2608ADBADE66244CAF93015265B4523A@eurprd05.prod.outlook.com>
+In-Reply-To: <1546314952-15990-19-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: Christoph Hellwig <hch@lst.de>, Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 11:13:11AM -0700, Logan Gunthorpe wrote:
->=20
->=20
-> On 2019-01-30 10:44 a.m., Jason Gunthorpe wrote:
-> > I don't see why a special case with a VMA is really that different.
->=20
-> Well one *really* big difference is the VMA changes necessarily expose
-> specialized new functionality to userspace which has to be supported
-> forever and may be difficult to change.=20
+On Mon, Dec 31, 2018 at 8:00 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> The register VLD_PA_RNG(0x118) was forgot to backup while adding 4GB
+> mode support for mt2712. this patch add it.
+>
+> Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
+> for 4GB mode")
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-The only user change here is that more things will succeed when
-creating RDMA MRs (and vice versa to GPU). I don't think this
-restricts the kernel implementation at all, unless we intend to
-remove P2P entirely..
-
-Jason
+Reviewed-by: Evan Green <evgreen@chromium.org>
