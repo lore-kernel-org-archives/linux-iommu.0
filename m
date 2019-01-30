@@ -1,57 +1,49 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Wed, 30 Jan 2019 13:05:41 -0500
-Message-ID: <20190130180541.GA5061@redhat.com>
-References: <20190129174728.6430-4-jglisse@redhat.com>
- <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com>
- <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205827.GM10108@mellanox.com>
- <20190130080208.GC29665@lst.de>
- <4e0637ba-0d7c-66a5-d3de-bc1e7dc7c0ef@amd.com>
- <20190130155543.GC3177@redhat.com>
- <20190130172653.GA6707@lst.de>
+From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Subject: Re: [PATCH 0/5 v5] Fix virtio-blk issue with SWIOTLB
+Date: Wed, 30 Jan 2019 18:11:48 +0000
+Message-ID: <616969d8-c03a-5d24-8112-11dd1f60dd9b@amd.com>
+References: <20190130164007.26497-1-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190130172653.GA6707@lst.de>
+In-Reply-To: <20190130164007.26497-1-joro@8bytes.org>
+Content-Language: en-US
+Content-ID: <BA468A5C6C008B43B282A2B28B182289@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: "Koenig, Christian" <Christian.Koenig@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, Logan Gunthorpe <logang@deltatee.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, "Kuehling, Felix" <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Joerg Roedel <joro@8bytes.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "jfehlig@suse.com" <jfehlig@suse.com>, "Grimm, Jon" <Jon.Grimm@amd.com>, "Singh, Brijesh" <brijesh.singh@amd.com>, "jroedel@suse.de" <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 06:26:53PM +0100, Christoph Hellwig wrote:
-> On Wed, Jan 30, 2019 at 10:55:43AM -0500, Jerome Glisse wrote:
-> > Even outside GPU driver, device driver like RDMA just want to share their
-> > doorbell to other device and they do not want to see those doorbell page
-> > use in direct I/O or anything similar AFAICT.
-> 
-> At least Mellanox HCA support and inline data feature where you
-> can copy data directly into the BAR.  For something like a usrspace
-> NVMe target it might be very useful to do direct I/O straight into
-> the BAR for that.
-
-And what i am proposing is not exclusive of that. If exporting device
-wants to have struct page for its BAR than it can do so. What i do not
-want is imposing that burden on everyone as many devices do not want
-or do not care for that. Moreover having struct page and allowing that
-struct page to trickle know in obscure corner of the kernel means that
-exporter that want that will also have the burden to check that what
-they are doing does not end up in something terribly bad.
-
-While i would like a one API fits all i do not think that we can sanely
-do that for P2P. They are too much differences between how different
-devices expose and manage their BAR to make any such attempt reasonably
-sane.
-
-Maybe thing will evolve oragnicaly, but for now i do not see a way out
-side the API i am proposing (again this is not exclusive of the struct
-page API that is upstream both can co-exist and a device can use both
-or just one).
-
-Cheers,
-Jérôme
+T24gMS8zMC8xOSAxMDo0MCBBTSwgSm9lcmcgUm9lZGVsIHdyb3RlOg0KPiBIaSwNCj4gDQo+IGhl
+cmUgaXMgdGhlIG5leHQgdmVyc2lvbiBvZiB0aGlzIHBhdGNoLXNldC4gUHJldmlvdXMNCj4gdmVy
+c2lvbnMgY2FuIGJlIGZvdW5kIGhlcmU6DQo+IA0KPiAJVjE6IGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xrbWwvMjAxOTAxMTAxMzQ0MzMuMTU2NzItMS1qb3JvQDhieXRlcy5vcmcvDQo+IA0KPiAJ
+VjI6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAxOTAxMTUxMzIyNTcuNjQyNi0xLWpv
+cm9AOGJ5dGVzLm9yZy8NCj4gDQo+IAlWMzogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8y
+MDE5MDEyMzE2MzA0OS4yNDg2My0xLWpvcm9AOGJ5dGVzLm9yZy8NCj4gDQo+IAlWNDogaHR0cHM6
+Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDE5MDEyOTA4NDM0Mi4yNjAzMC0xLWpvcm9AOGJ5dGVz
+Lm9yZy8NCj4gDQo+IFRoZSBwcm9ibGVtIHNvbHZlZCBoZXJlIGlzIGEgbGltaXRhdGlvbiBvZiB0
+aGUgU1dJT1RMQiBpbXBsZW1lbnRhdGlvbiwNCj4gd2hpY2ggZG9lcyBub3Qgc3VwcG9ydCBhbGxv
+Y2F0aW9ucyBsYXJnZXIgdGhhbiAyNTZrYi4gIFdoZW4gdGhlDQo+IHZpcnRpby1ibGsgZHJpdmVy
+IHRyaWVzIHRvIHJlYWQvd3JpdGUgYSBibG9jayBsYXJnZXIgdGhhbiB0aGF0LCB0aGUNCj4gYWxs
+b2NhdGlvbiBvZiB0aGUgZG1hLWhhbmRsZSBmYWlscyBhbmQgYW4gSU8gZXJyb3IgaXMgcmVwb3J0
+ZWQuDQo+IA0KPiBDaGFuZ2VzIHRvIHY0IGFyZToNCj4gDQo+IAktIEFkZGVkIFJldmlld2VkLWJ5
+IHRhZ3MgZnJvbSBDaHJpc3RvcGgNCj4gDQo+IAktIEFkZGVkIG1pc3NpbmcgRVhQT1JUX1NZTUJP
+TChfR1BMKSBsaW5lcw0KPiANCj4gUGxlYXNlIHJldmlldy4NCg0KTG9va3MgZ29vZC4gQm9vdGVk
+IGFuZCB0ZXN0ZWQgdXNpbmcgYW4gU0VWIGd1ZXN0IHdpdGhvdXQgYW55IGlzc3Vlcy4NCg0KVGVz
+dGVkLWJ5OiBUb20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNreUBhbWQuY29tPg0KDQpUaGFua3Ms
+DQpUb20NCg0KPiANCj4gVGhhbmtzLA0KPiANCj4gCUpvZXJnDQo+IEpvZXJnIFJvZWRlbCAoNSk6
+DQo+ICAgc3dpb3RsYjogSW50cm9kdWNlIHN3aW90bGJfbWF4X21hcHBpbmdfc2l6ZSgpDQo+ICAg
+c3dpb3RsYjogQWRkIGlzX3N3aW90bGJfYWN0aXZlKCkgZnVuY3Rpb24NCj4gICBkbWE6IEludHJv
+ZHVjZSBkbWFfbWF4X21hcHBpbmdfc2l6ZSgpDQo+ICAgdmlydGlvOiBJbnRyb2R1Y2UgdmlydGlv
+X21heF9kbWFfc2l6ZSgpDQo+ICAgdmlydGlvLWJsazogQ29uc2lkZXIgdmlydGlvX21heF9kbWFf
+c2l6ZSgpIGZvciBtYXhpbXVtIHNlZ21lbnQgc2l6ZQ0KPiANCj4gIERvY3VtZW50YXRpb24vRE1B
+LUFQSS50eHQgICAgfCAgOCArKysrKysrKw0KPiAgZHJpdmVycy9ibG9jay92aXJ0aW9fYmxrLmMg
+ICB8IDEwICsrKysrKy0tLS0NCj4gIGRyaXZlcnMvdmlydGlvL3ZpcnRpb19yaW5nLmMgfCAxMSAr
+KysrKysrKysrKw0KPiAgaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oICB8IDE2ICsrKysrKysr
+KysrKysrKysNCj4gIGluY2x1ZGUvbGludXgvc3dpb3RsYi5oICAgICAgfCAxMSArKysrKysrKysr
+Kw0KPiAgaW5jbHVkZS9saW51eC92aXJ0aW8uaCAgICAgICB8ICAyICsrDQo+ICBrZXJuZWwvZG1h
+L2RpcmVjdC5jICAgICAgICAgIHwgMTIgKysrKysrKysrKysrDQo+ICBrZXJuZWwvZG1hL3N3aW90
+bGIuYyAgICAgICAgIHwgMTQgKysrKysrKysrKysrKysNCj4gIDggZmlsZXMgY2hhbmdlZCwgODAg
+aW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo=
