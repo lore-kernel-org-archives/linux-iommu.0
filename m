@@ -1,58 +1,69 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 0/5 v5] Fix virtio-blk issue with SWIOTLB
-Date: Wed, 30 Jan 2019 17:40:02 +0100
-Message-ID: <20190130164007.26497-1-joro@8bytes.org>
+Subject: [PATCH 4/5] virtio: Introduce virtio_max_dma_size()
+Date: Wed, 30 Jan 2019 17:40:06 +0100
+Message-ID: <20190130164007.26497-5-joro@8bytes.org>
+References: <20190130164007.26497-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190130164007.26497-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
 Cc: Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, joro@8bytes.org, jroedel@suse.de, Thomas.Lendacky@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel@suse.de>
 
-here is the next version of this patch-set. Previous
-versions can be found here:
+This function returns the maximum segment size for a single
+dma transaction of a virtio device. The possible limit comes
+from the SWIOTLB implementation in the Linux kernel, that
+has an upper limit of (currently) 256kb of contiguous
+memory it can map. Other DMA-API implementations might also
+have limits.
 
-	V1: https://lore.kernel.org/lkml/20190110134433.15672-1-joro@8bytes.org/
+Use the new dma_max_mapping_size() function to determine the
+maximum mapping size when DMA-API is in use for virtio.
 
-	V2: https://lore.kernel.org/lkml/20190115132257.6426-1-joro@8bytes.org/
-
-	V3: https://lore.kernel.org/lkml/20190123163049.24863-1-joro@8bytes.org/
-
-	V4: https://lore.kernel.org/lkml/20190129084342.26030-1-joro@8bytes.org/
-
-The problem solved here is a limitation of the SWIOTLB implementation,
-which does not support allocations larger than 256kb.  When the
-virtio-blk driver tries to read/write a block larger than that, the
-allocation of the dma-handle fails and an IO error is reported.
-
-Changes to v4 are:
-
-	- Added Reviewed-by tags from Christoph
-
-	- Added missing EXPORT_SYMBOL(_GPL) lines
-
-Please review.
-
-Thanks,
-
-	Joerg
-Joerg Roedel (5):
-  swiotlb: Introduce swiotlb_max_mapping_size()
-  swiotlb: Add is_swiotlb_active() function
-  dma: Introduce dma_max_mapping_size()
-  virtio: Introduce virtio_max_dma_size()
-  virtio-blk: Consider virtio_max_dma_size() for maximum segment size
-
- Documentation/DMA-API.txt    |  8 ++++++++
- drivers/block/virtio_blk.c   | 10 ++++++----
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
  drivers/virtio/virtio_ring.c | 11 +++++++++++
- include/linux/dma-mapping.h  | 16 ++++++++++++++++
- include/linux/swiotlb.h      | 11 +++++++++++
  include/linux/virtio.h       |  2 ++
- kernel/dma/direct.c          | 12 ++++++++++++
- kernel/dma/swiotlb.c         | 14 ++++++++++++++
- 8 files changed, 80 insertions(+), 4 deletions(-)
+ 2 files changed, 13 insertions(+)
 
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index cd7e755484e3..8a31c6862b2b 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -266,6 +266,17 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
+ 	return false;
+ }
+ 
++size_t virtio_max_dma_size(struct virtio_device *vdev)
++{
++	size_t max_segment_size = SIZE_MAX;
++
++	if (vring_use_dma_api(vdev))
++		max_segment_size = dma_max_mapping_size(&vdev->dev);
++
++	return max_segment_size;
++}
++EXPORT_SYMBOL_GPL(virtio_max_dma_size);
++
+ static void *vring_alloc_queue(struct virtio_device *vdev, size_t size,
+ 			      dma_addr_t *dma_handle, gfp_t flag)
+ {
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index fa1b5da2804e..673fe3ef3607 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -157,6 +157,8 @@ int virtio_device_freeze(struct virtio_device *dev);
+ int virtio_device_restore(struct virtio_device *dev);
+ #endif
+ 
++size_t virtio_max_dma_size(struct virtio_device *vdev);
++
+ #define virtio_device_for_each_vq(vdev, vq) \
+ 	list_for_each_entry(vq, &vdev->vqs, list)
+ 
 -- 
 2.17.1
