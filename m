@@ -1,51 +1,94 @@
-From: Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Wed, 30 Jan 2019 19:06:57 +0000
-Message-ID: <20190130190651.GC17080@mellanox.com>
-References: <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205749.GN3176@redhat.com>
- <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
- <20190129215028.GQ3176@redhat.com>
- <deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
- <20190129234752.GR3176@redhat.com>
- <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
- <20190130041841.GB30598@mellanox.com> <20190130080006.GB29665@lst.de>
+From: Evan Green <evgreen@chromium.org>
+Subject: Re: [PATCH v5 16/20] memory: mtk-smi: Add bus_sel for mt8183
+Date: Wed, 30 Jan 2019 11:07:13 -0800
+Message-ID: <CAE=gft4q3oj+oQ=Vo-kGD7OYTO0_WMf8t4SLa_H7SCH8G2VFOw@mail.gmail.com>
+References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com> <1546314952-15990-17-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190130080006.GB29665@lst.de>
-Content-Language: en-US
-Content-ID: <D5475048F79FD84A8C1E7231DA08336B@eurprd05.prod.outlook.com>
+In-Reply-To: <1546314952-15990-17-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Logan Gunthorpe <logang@deltatee.com>, Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 09:00:06AM +0100, Christoph Hellwig wrote:
-> On Wed, Jan 30, 2019 at 04:18:48AM +0000, Jason Gunthorpe wrote:
-> > Every attempt to give BAR memory to struct page has run into major
-> > trouble, IMHO, so I like that this approach avoids that.
->=20
-> Way less problems than not having struct page for doing anything
-> non-trivial.  If you map the BAR to userspace with remap_pfn_range
-> and friends the mapping is indeed very simple.  But any operation
-> that expects a page structure, which is at least everything using
-> get_user_pages won't work.
+On Mon, Dec 31, 2018 at 7:59 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> There are 2 mmu cells in a M4U HW. we could adjust some larbs entering
+> mmu0 or mmu1 to balance the bandwidth via the smi-common register
+> SMI_BUS_SEL(0x220)(Each larb occupy 2 bits).
+>
+> In mt8183, For better performance, we switch larb1/2/5/7 to enter
+> mmu1 while the others still keep enter mmu0.
+>
+> In mt8173 and mt2712, we don't get the performance issue,
+> Keep its default value(0x0), that means all the larbs enter mmu0.
+>
+> Note: smi gen1(mt2701/mt7623) don't have this bus_sel.
+>
+> CC: Matthias Brugger <matthias.bgg@gmail.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/memory/mtk-smi.c | 22 ++++++++++++++++++++--
+>  1 file changed, 20 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 9790801..08cf40d 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -49,6 +49,12 @@
+>  #define SMI_LARB_NONSEC_CON(id)        (0x380 + ((id) * 4))
+>  #define F_MMU_EN               BIT(0)
+>
+> +/* SMI COMMON */
+> +#define SMI_BUS_SEL                    0x220
+> +#define SMI_BUS_LARB_SHIFT(larbid)     ((larbid) << 1)
+> +/* All are MMU0 defaultly. Only specialize mmu1 here. */
+> +#define F_MMU1_LARB(larbid)            (0x1 << SMI_BUS_LARB_SHIFT(larbid))
+> +
+>  enum mtk_smi_gen {
+>         MTK_SMI_GEN1,
+>         MTK_SMI_GEN2
+> @@ -57,6 +63,7 @@ enum mtk_smi_gen {
+>  struct mtk_smi_common_plat {
+>         enum mtk_smi_gen gen;
+>         bool             has_gals;
+> +       u32              bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
+>  };
+>
+>  struct mtk_smi_larb_gen {
+> @@ -72,8 +79,8 @@ struct mtk_smi {
+>         struct clk                      *clk_apb, *clk_smi;
+>         struct clk                      *clk_gals0, *clk_gals1;
+>         struct clk                      *clk_async; /*only needed by mt2701*/
+> -       void __iomem                    *smi_ao_base;
+> -
+> +       void __iomem                    *smi_ao_base; /* only for gen1 */
+> +       void __iomem                    *base;        /* only for gen2 */
+>         const struct mtk_smi_common_plat *plat;
+>  };
+>
+> @@ -410,6 +417,8 @@ static int __maybe_unused mtk_smi_larb_suspend(struct device *dev)
+>  static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
+>         .gen      = MTK_SMI_GEN2,
+>         .has_gals = true,
+> +       .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(5) |
+> +                   F_MMU1_LARB(7),
+>  };
+>
+>  static const struct of_device_id mtk_smi_common_of_ids[] = {
+> @@ -482,6 +491,11 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>                 ret = clk_prepare_enable(common->clk_async);
+>                 if (ret)
+>                         return ret;
+> +       } else {
+> +               res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +               common->base = devm_ioremap_resource(dev, res);
+> +               if (IS_ERR(common->base))
+> +                       return PTR_ERR(common->base);
 
-GUP doesn't work anyhow today, and won't work with BAR struct pages in
-the forseeable future (Logan has sent attempts on this before).
-
-So nothing seems lost..
-
-> So you can't do direct I/O to your remapped BAR, you can't create MRs
-> on it, etc, etc.
-
-Jerome made the HMM mirror API use this flow, so afer his patch to
-switch the ODP MR to use HMM, and to switch GPU drivers, it will work
-for those cases. Which is more than the zero cases than we have today
-:)
-
-Jason
+So you split base and smi_ao_base because they're completely different
+register regions, or because ->base is no longer "always on"? It's
+tempting to recombine them because they appear to be mutually
+exclusive, but if they're truly different register regions then I
+understand.
