@@ -1,91 +1,96 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH 2/2] iommu/amd: Remove clear_flush_young notifier
-Date: Wed, 30 Jan 2019 12:27:40 +0000
-Message-ID: <69af2b6f-bfc1-a4b9-675a-6fc93a7efef2@arm.com>
-References: <20190130055758.3994-1-peterx@redhat.com>
- <20190130055758.3994-3-peterx@redhat.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.0-rc4
+Date: Wed, 30 Jan 2019 16:06:23 +0100
+Message-ID: <20190130150619.p36c4rzds3lhl4xp@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="aadaewmv5to66yg7"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190130055758.3994-3-peterx@redhat.com>
-Content-Language: en-US
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Xu <peterx@redhat.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Jerome Glisse <jglisse@redhat.com>, Jason Wang <jasowang@redhat.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Peter,
 
-On 30/01/2019 05:57, Peter Xu wrote:
-> AMD IOMMU driver is using the clear_flush_young() to do cache flushing
-> but that's actually already covered by invalidate_range().  Remove the
-> extra notifier and the chunks.
+--aadaewmv5to66yg7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Aren't uses of clear_flush_young() and invalidate_range() orthogonal? If
-I understood correctly, when doing reclaim the kernel clears the young
-bit from the PTE. This requires flushing secondary TLBs (ATCs), so that
-new accesses from devices will go through the IOMMU, set the young bit
-again and the kernel can accurately track page use. I didn't see
-invalidate_range() being called by rmap or vmscan in this case, but
-might just be missing it.
+Hi Linus,
 
-Two MMU notifiers are used for the young bit, clear_flush_young() and
-clear_young(). I believe the former should invalidate ATCs so that DMA
-accesses participate in PTE aging. Otherwise the kernel can't know that
-the device is still using entries marked 'old'. The latter,
-clear_young() is exempted from invalidating the secondary TLBs by
-mmu_notifier.h and the IOMMU driver doesn't need to implement it.
+The following changes since commit e8e683ae9a736407a20135df7809090a446db707:
+
+  iommu/of: Fix probe-deferral (2019-01-11 12:28:24 +0100)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.0-rc4
+
+for you to fetch changes up to 9825bd94e3a2baae1f4874767ae3a7d4c049720e:
+
+  iommu/amd: Fix IOMMU page flush when detach device from a domain (2019-01-24 15:24:49 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.0-rc4
+
+A few more fixes this time:
+
+	- Two patches to fix the error path of the map_sg implementation
+	  of the AMD IOMMU driver.
+
+	- Also a missing IOTLB flush is fixed in the AMD IOMMU driver.
+
+	- Memory leak fix for the Intel IOMMU driver.
+
+	- Fix a regression in the Mediatek IOMMU driver which caused
+	  device initialization to fail (seen as broken HDMI output).
+
+----------------------------------------------------------------
+Gerald Schaefer (1):
+      iommu/vt-d: Fix memory leak in intel_iommu_put_resv_regions()
+
+Jerry Snitselaar (2):
+      iommu/amd: Call free_iova_fast with pfn in map_sg
+      iommu/amd: Unmap all mapped pages in error path of map_sg
+
+Joerg Roedel (1):
+      iommu/mediatek: Use correct fwspec in mtk_iommu_add_device()
+
+Suravee Suthikulpanit (1):
+      iommu/amd: Fix IOMMU page flush when detach device from a domain
+
+ drivers/iommu/amd_iommu.c    | 19 +++++++++++++------
+ drivers/iommu/intel-iommu.c  |  2 +-
+ drivers/iommu/mtk_iommu_v1.c |  4 ++++
+ 3 files changed, 18 insertions(+), 7 deletions(-)
+
+Please pull.
 
 Thanks,
-Jean
 
-> 
-> Signed-off-by: Peter Xu <peterx@redhat.com>
-> ---
->  drivers/iommu/amd_iommu_v2.c | 24 ------------------------
->  1 file changed, 24 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-> index 23dae9348ace..5d7ef750e4a0 100644
-> --- a/drivers/iommu/amd_iommu_v2.c
-> +++ b/drivers/iommu/amd_iommu_v2.c
-> @@ -370,29 +370,6 @@ static struct pasid_state *mn_to_state(struct mmu_notifier *mn)
->  	return container_of(mn, struct pasid_state, mn);
->  }
->  
-> -static void __mn_flush_page(struct mmu_notifier *mn,
-> -			    unsigned long address)
-> -{
-> -	struct pasid_state *pasid_state;
-> -	struct device_state *dev_state;
-> -
-> -	pasid_state = mn_to_state(mn);
-> -	dev_state   = pasid_state->device_state;
-> -
-> -	amd_iommu_flush_page(dev_state->domain, pasid_state->pasid, address);
-> -}
-> -
-> -static int mn_clear_flush_young(struct mmu_notifier *mn,
-> -				struct mm_struct *mm,
-> -				unsigned long start,
-> -				unsigned long end)
-> -{
-> -	for (; start < end; start += PAGE_SIZE)
-> -		__mn_flush_page(mn, start);
-> -
-> -	return 0;
-> -}
-> -
->  static void mn_invalidate_range(struct mmu_notifier *mn,
->  				struct mm_struct *mm,
->  				unsigned long start, unsigned long end)
-> @@ -430,7 +407,6 @@ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
->  
->  static const struct mmu_notifier_ops iommu_mn = {
->  	.release		= mn_release,
-> -	.clear_flush_young      = mn_clear_flush_young,
->  	.invalidate_range       = mn_invalidate_range,
->  };
->  
-> 
+	Joerg
+
+--aadaewmv5to66yg7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJcUb1rAAoJECvwRC2XARrjlPAP/3h/QtSqtYk2Wa85tdNjbuoM
+qAjZWJ+gEDP3g4VHpGvcZ50/0yQwQT1IBC7Nc3OgU5zm8WXOjxDkaPlQho5wNxux
+sk/BwwUGYRT9P5z0W5xpygv49qqK3M+OxHIkyqO/on32O7NfkVn1aUhwKPeU1st/
+PNo1qGokccUS4JharyPGw993TyDkzenAW+Mqs7Js9Btf1/Fb2dFam6/jQ1ptEHLs
+XDG8kbQBUQ7TvmbiTg+GT4e5ZCuvMtGDCsLrvO4CTXWsE4T7WRnrjxBC6pQte0h1
+HywjqrRC3OEuzPjknEW4fcpkwDLj0FaVftngiYI+HRyGzZhD5nffarY7ecRExbfK
+Qzhc6pcwg+R5yjxsU9ihd18JQQUHzAjMk6Lh9ieTr9u1eexkIstDl5QFyB+XQHul
+530ITnnLLMrLO2XZQMJBiSpQAxMDA0jtU52jTNLhp19LsPwrEngLtLEjI1UpbO/v
+aonfq9B1wwlDJuN2iwUwWOMlJXC8UptyC6pZPtPCKxaBiCFVI/0WQmq05U3q9Np5
+nLnBlefONSEuUyrOs6WopBYbUxzmMt41PFewRklh+Sz0k+So3N3VG5scXfdQGacO
+2woCYkne1OibZQ+LPvH6R/NnrTUaWafcXT2uW0nvK92zq7wXb52GzJwoAT1wfmzM
+v/16ovbf4lUgxwfJdqs+
+=/kNy
+-----END PGP SIGNATURE-----
+
+--aadaewmv5to66yg7--
