@@ -1,131 +1,151 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Tue, 29 Jan 2019 21:48:52 -0500
-Message-ID: <20190130024851.GB10462@redhat.com>
-References: <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com>
- <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205749.GN3176@redhat.com>
- <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
- <20190129215028.GQ3176@redhat.com>
- <deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
- <20190129234752.GR3176@redhat.com>
- <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
+From: Jason Wang <jasowang@redhat.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Wed, 30 Jan 2019 11:05:42 +0800
+Message-ID: <94ab8910-594e-a056-c799-5536d8ae2b0e@redhat.com>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+ <87womn8inf.fsf@morokweng.localdomain>
+ <20190129134750-mutt-send-email-mst@kernel.org>
+ <6c68f7f7-1b28-6eba-9b8b-2c32efac9701@redhat.com>
+ <20190129213137-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
+In-Reply-To: <20190129213137-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: Jason Gunthorpe <jgg@mellanox.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 06:17:43PM -0700, Logan Gunthorpe wrote:
-> 
-> 
-> On 2019-01-29 4:47 p.m., Jerome Glisse wrote:
-> > The whole point is to allow to use device memory for range of virtual
-> > address of a process when it does make sense to use device memory for
-> > that range. So they are multiple cases where it does make sense:
-> > [1] - Only the device is accessing the range and they are no CPU access
-> >       For instance the program is executing/running a big function on
-> >       the GPU and they are not concurrent CPU access, this is very
-> >       common in all the existing GPGPU code. In fact AFAICT It is the
-> >       most common pattern. So here you can use HMM private or public
-> >       memory.
-> > [2] - Both device and CPU access a common range of virtul address
-> >       concurrently. In that case if you are on a platform with cache
-> >       coherent inter-connect like OpenCAPI or CCIX then you can use
-> >       HMM public device memory and have both access the same memory.
-> >       You can not use HMM private memory.
-> > 
-> > So far on x86 we only have PCIE and thus so far on x86 we only have
-> > private HMM device memory that is not accessible by the CPU in any
-> > way.
-> 
-> I feel like you're just moving the rug out from under us... Before you
-> said ignore HMM and I was asking about the use case that wasn't using
-> HMM and how it works without HMM. In response, you just give me *way*
-> too much information describing HMM. And still, as best as I can see,
-> managing DMA mappings (which is different from the userspace mappings)
-> for GPU P2P should be handled by HMM and the userspace mappings should
-> *just* link VMAs to HMM pages using the standard infrastructure we
-> already have.
 
-For HMM P2P mapping we need to call into the driver to know if driver
-wants to fallback to main memory (running out of BAR addresses) or if
-it can allow a peer device to directly access its memory. We also need
-the call to exporting device driver as only the exporting device driver
-can map the HMM page pfn to some physical BAR address (which would be
-allocated by driver for GPU).
+On 2019/1/30 上午10:36, Michael S. Tsirkin wrote:
+> On Wed, Jan 30, 2019 at 10:24:01AM +0800, Jason Wang wrote:
+>> On 2019/1/30 上午3:02, Michael S. Tsirkin wrote:
+>>> On Tue, Jan 29, 2019 at 03:42:44PM -0200, Thiago Jung Bauermann wrote:
+>>>> Fixing address of powerpc mailing list.
+>>>>
+>>>> Thiago Jung Bauermann <bauerman@linux.ibm.com> writes:
+>>>>
+>>>>> Hello,
+>>>>>
+>>>>> With Christoph's rework of the DMA API that recently landed, the patch
+>>>>> below is the only change needed in virtio to make it work in a POWER
+>>>>> secure guest under the ultravisor.
+>>>>>
+>>>>> The other change we need (making sure the device's dma_map_ops is NULL
+>>>>> so that the dma-direct/swiotlb code is used) can be made in
+>>>>> powerpc-specific code.
+>>>>>
+>>>>> Of course, I also have patches (soon to be posted as RFC) which hook up
+>>>>> <linux/mem_encrypt.h> to the powerpc secure guest support code.
+>>>>>
+>>>>> What do you think?
+>>>>>
+>>>>>   From d0629a36a75c678b4a72b853f8f7f8c17eedd6b3 Mon Sep 17 00:00:00 2001
+>>>>> From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>>>>> Date: Thu, 24 Jan 2019 22:08:02 -0200
+>>>>> Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+>>>>>
+>>>>> The host can't access the guest memory when it's encrypted, so using
+>>>>> regular memory pages for the ring isn't an option. Go through the DMA API.
+>>>>>
+>>>>> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>>> Well I think this will come back to bite us (witness xen which is now
+>>> reworking precisely this path - but at least they aren't to blame, xen
+>>> came before ACCESS_PLATFORM).
+>>>
+>>> I also still think the right thing would have been to set
+>>> ACCESS_PLATFORM for all systems where device can't access all memory.
+>>>
+>>> But I also think I don't have the energy to argue about power secure
+>>> guest anymore.  So be it for power secure guest since the involved
+>>> engineers disagree with me.  Hey I've been wrong in the past ;).
+>>>
+>>> But the name "sev_active" makes me scared because at least AMD guys who
+>>> were doing the sensible thing and setting ACCESS_PLATFORM (unless I'm
+>>> wrong? I reemember distinctly that's so) will likely be affected too.
+>>> We don't want that.
+>>>
+>>> So let's find a way to make sure it's just power secure guest for now
+>>> pls.
+>>>
+>>> I also think we should add a dma_api near features under virtio_device
+>>> such that these hacks can move off data path.
+>>
+>> Anyway the current Xen code is conflict with spec which said:
+>>
+>> "If this feature bit is set to 0, then the device has same access to memory
+>> addresses supplied to it as the driver has. In particular, the device will
+>> always use physical addresses matching addresses used by the driver
+>> (typically meaning physical addresses used by the CPU) and not translated
+>> further, and can access any address supplied to it by the driver. When
+>> clear, this overrides any platform-specific description of whether device
+>> access is limited or translated in any way, e.g. whether an IOMMU may be
+>> present. "
+>>
+>> I wonder how much value that the above description can give us. It's kind of
+>> odd that the behavior of "when the feature is not negotiated" is described
+>> in the spec.
+> Hmm what's odd about it? We need to describe the behaviour is all cases.
 
-I wanted to make sure the HMM case was understood too, sorry if it
-caused confusion with the non HMM case which i describe below.
+
+Well, try to limit the behavior of 'legacy' driver is tricky or even 
+impossible. Xen is an exact example for this.
 
 
-> >> And what struct pages are actually going to be backing these VMAs if
-> >> it's not using HMM?
-> > 
-> > When you have some range of virtual address migrated to HMM private
-> > memory then the CPU pte are special swap entry and they behave just
-> > as if the memory was swapped to disk. So CPU access to those will
-> > fault and trigger a migration back to main memory.
-> 
-> This isn't answering my question at all... I specifically asked what is
-> backing the VMA when we are *not* using HMM.
+>
+>> Personally I think we can remove the above and then we can
+>> switch to use DMA API unconditionally in guest driver. It may have single
+>> digit regression probably, we can try to overcome it.
+>>
+>> Thanks
+> This has been discussed ad nauseum. virtio is all about compatibility.
+> Losing a couple of lines of code isn't worth breaking working setups.
+> People that want "just use DMA API no tricks" now have the option.
+> Setting a flag in a feature bit map is literally a single line
+> of code in the hypervisor. So stop pushing for breaking working
+> legacy setups and just fix it in the right place.
 
-So when you are not using HMM ie existing GPU object without HMM then
-like i said you do not have any valid pte most of the time inside the
-CPU page table ie the GPU driver only populate the pte with valid
-entry when they are CPU page fault and it clear those as soon as the
-corresponding object is use by the GPU. In fact some driver also unmap
-it agressively from the BAR making the memory totaly un-accessible to
-anything but the GPU.
 
-GPU driver do not like CPU mapping, they are quite aggressive about
-clearing them. Then everything i said about having userspace deciding
-which object can be share, and, with who, do apply here. So for GPU you
-do want to give control to GPU driver and you do not want to require valid
-CPU pte for the vma so that the exporting driver can return valid
-address to the importing peer device only.
+I may miss soemthing, which kind of legacy setup is broken? Do you mean 
+using virtio without IOMMU_PLATFORM on platform with IOMMU? We actually 
+unbreak this setup.
 
-Also exporting device driver might decide to fallback to main memory
-(running out of BAR addresses for instance). So again here we want to
-go through the exporting device driver so that it can take the right
-action.
+Thanks
 
-So the expected pattern (for GPU driver) is:
-    - no valid pte for the special vma (mmap of device file)
-    - importing device call p2p_map() for the vma if it succeed the
-      first time then we expect it will succeed for the same vma and
-      range next time we call it.
-    - exporting driver can either return physical address to page
-      into its BAR space that point to the correct device memory or
-      fallback to main memory
 
-Then at any point in time:
-    - if GPU driver want to move the object around (for whatever
-      reasons) it calls zap_vma_ptes() the fact that there is no
-      valid CPU pte does not matter it will call mmu notifier and thus
-      any importing device driver will invalidate its mapping
-    - importing device driver that lost the mapping due to mmu
-      notification can re-map by re-calling p2p_map() (it should
-      check that the vma is still valid ...) and guideline is for
-      the exporting device driver to succeed and return valid
-      address to the new memory use for the object
-
-This allow device driver like GPU to keep control. The expected
-pattern is still the p2p mapping to stay undisrupted for their
-whole lifetime. Invalidation should only be triggered if GPU driver
-do need to move things around.
-
-All the above is for the no HMM case ie mmap of a device file so
-for any existing open source GPU device driver that do not support
-HMM.
-
-Cheers,
-J�r�me
+>
+>>> By the way could you please respond about virtio-iommu and
+>>> why there's no support for ACCESS_PLATFORM on power?
+>>>
+>>> I have Cc'd you on these discussions.
+>>>
+>>>
+>>> Thanks!
+>>>
+>>>
+>>>>> ---
+>>>>>    drivers/virtio/virtio_ring.c | 5 ++++-
+>>>>>    1 file changed, 4 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+>>>>> index cd7e755484e3..321a27075380 100644
+>>>>> --- a/drivers/virtio/virtio_ring.c
+>>>>> +++ b/drivers/virtio/virtio_ring.c
+>>>>> @@ -259,8 +259,11 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
+>>>>>    	 * not work without an even larger kludge.  Instead, enable
+>>>>>    	 * the DMA API if we're a Xen guest, which at least allows
+>>>>>    	 * all of the sensible Xen configurations to work correctly.
+>>>>> +	 *
+>>>>> +	 * Also, if guest memory is encrypted the host can't access
+>>>>> +	 * it directly. In this case, we'll need to use the DMA API.
+>>>>>    	 */
+>>>>> -	if (xen_domain())
+>>>>> +	if (xen_domain() || sev_active())
+>>>>>    		return true;
+>>>>>
+>>>>>    	return false;
+>>>> -- 
+>>>> Thiago Jung Bauermann
+>>>> IBM Linux Technology Center
