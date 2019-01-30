@@ -1,36 +1,32 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Wed, 30 Jan 2019 09:02:08 +0100
-Message-ID: <20190130080208.GC29665@lst.de>
-References: <20190129174728.6430-1-jglisse@redhat.com> <20190129174728.6430-4-jglisse@redhat.com> <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com> <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com> <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com> <20190129205827.GM10108@mellanox.com>
+Subject: Re: [PATCH 05/11] mmc: s3cmci: handle highmem pages
+Date: Wed, 30 Jan 2019 09:04:23 +0100
+Message-ID: <20190130080423.GA29937@lst.de>
+References: <20190114095804.27978-1-hch@lst.de> <20190114095804.27978-6-hch@lst.de> <CAPDyKFpcHv7KwuVpWcKjxj--n4YOFADWD5WzOCJ6Dca_JjqnAw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190129205827.GM10108@mellanox.com>
+In-Reply-To: <CAPDyKFpcHv7KwuVpWcKjxj--n4YOFADWD5WzOCJ6Dca_JjqnAw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jason Gunthorpe <jgg@mellanox.com>
-Cc: Logan Gunthorpe <logang@deltatee.com>, Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Christoph Hellwig <hch@lst.de>, Russell King <linux@armlinux.org.uk>, Nicolas Pitre <nico@fluxnic.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 08:58:35PM +0000, Jason Gunthorpe wrote:
-> On Tue, Jan 29, 2019 at 01:39:49PM -0700, Logan Gunthorpe wrote:
+On Wed, Jan 30, 2019 at 08:57:47AM +0100, Ulf Hansson wrote:
+> On Mon, 14 Jan 2019 at 10:58, Christoph Hellwig <hch@lst.de> wrote:
+> >
+> > Instead of setting up a kernel pointer to track the current PIO address,
+> > track the offset in the current page, and do an atomic kmap for the page
+> > while doing the actual PIO operations.
+> >
+> > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > 
-> > implement the mapping. And I don't think we should have 'special' vma's
-> > for this (though we may need something to ensure we don't get mapping
-> > requests mixed with different types of pages...).
+> Nitpick: This one have some trailing whitespace errors, which git
+> complains about when I apply it.
 > 
-> I think Jerome explained the point here is to have a 'special vma'
-> rather than a 'special struct page' as, really, we don't need a
-> struct page at all to make this work.
-> 
-> If I recall your earlier attempts at adding struct page for BAR
-> memory, it ran aground on issues related to O_DIRECT/sgls, etc, etc.
+> No need to re-spin due to this, I can fix it  up.
 
-Struct page is what makes O_DIRECT work, using sgls or biovecs, etc on
-it work.  Without struct page none of the above can work at all.  That
-is why we use struct page for backing BARs in the existing P2P code.
-Not that I'm a particular fan of creating struct page for this device
-memory, but without major invasive surgery to large parts of the kernel
-it is the only way to make it work.
+I'll need to respin to limit the segment size to a page anyway, so I
+will take this into account as well for v2.
