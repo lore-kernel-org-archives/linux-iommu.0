@@ -1,81 +1,81 @@
-From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+From: Jerome Glisse <jglisse@redhat.com>
 Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
-Date: Wed, 30 Jan 2019 15:52:13 -0700
-Message-ID: <07baf401-4d63-b830-57e1-5836a5149a0c@deltatee.com>
-References: <20190129215028.GQ3176@redhat.com>
-	<deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
-	<20190129234752.GR3176@redhat.com>
-	<655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
-	<20190130041841.GB30598@mellanox.com> <20190130080006.GB29665@lst.de>
-	<20190130190651.GC17080@mellanox.com>
-	<840256f8-0714-5d7d-e5f5-c96aec5c2c05@deltatee.com>
-	<20190130195900.GG17080@mellanox.com>
-	<35bad6d5-c06b-f2a3-08e6-2ed0197c8691@deltatee.com>
-	<20190130215019.GL17080@mellanox.com>
+Date: Wed, 30 Jan 2019 17:58:50 -0500
+Message-ID: <20190130225849.GJ5061@redhat.com>
+References: <db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
+ <20190130201114.GB17915@mellanox.com>
+ <20190130204332.GF5061@redhat.com>
+ <20190130204954.GI17080@mellanox.com>
+ <20190130214525.GG5061@redhat.com>
+ <20190130215600.GM17080@mellanox.com>
+ <20190130223027.GH5061@redhat.com>
+ <20190130223258.GB25486@mellanox.com>
+ <20190130224705.GI5061@redhat.com>
+ <20190130225148.GC25486@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190130215019.GL17080-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jason Gunthorpe <jgg-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "Rafael J . Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Felix Kuehling <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Christian Koenig <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20190130225148.GC25486@mellanox.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jason Gunthorpe <jgg@mellanox.com>
+Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Logan Gunthorpe <logang@deltatee.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019-01-30 2:50 p.m., Jason Gunthorpe wrote:
-> On Wed, Jan 30, 2019 at 02:01:35PM -0700, Logan Gunthorpe wrote:
-> 
->> And I feel the GUP->SGL->DMA flow should still be what we are aiming
->> for. Even if we need a special GUP for special pages, and a special DMA
->> map; and the SGL still has to be homogenous....
-> 
-> *shrug* so what if the special GUP called a VMA op instead of
-> traversing the VMA PTEs today? Why does it really matter? It could
-> easily change to a struct page flow tomorrow..
-
-Well it's so that it's composable. We want the SGL->DMA side to work for
-APIs from kernel space and not have to run a completely different flow
-for kernel drivers than from userspace memory.
-
-For GUP to do a special VMA traversal it would now need to return
-something besides struct pages which means no SGL and it means a
-completely different DMA mapping call.
-> Would you feel better if this also came along with a:
-> 
->   struct dma_sg_table *sgl_dma_map_user(struct device *dma_device, 
->              void __user *prt, size_t len)
-
-That seems like a nice API. But certainly the implementation would need
-to use existing dma_map or pci_p2pdma_map calls, or whatever as part of
-it...
-
-,
-> flow which returns a *DMA MAPPED* sgl that does not have struct page
-> pointers as another interface?
-> 
-> We can certainly call an API like this from RDMA for non-ODP MRs.
-> 
-> Eliminating the page pointers also eliminates the __iomem
-> problem. However this sgl object is not copyable or accessible from
-> the CPU, so the caller must be sure it doesn't need CPU access when
-> using this API. 
-
-We actually stopped caring about the __iomem problem. We are working
-under the assumption that pages returned by devm_memremap_pages() can be
-accessed as normal RAM and does not need the __iomem designation. The
-main problem now is that code paths need to know to use pci_p2pdma_map
-or not. And in theory this could be pushed into regular dma_map
-implementations but we'd have to get it into all of them which is a pain.
-
-Logan
+T24gV2VkLCBKYW4gMzAsIDIwMTkgYXQgMTA6NTE6NTVQTSArMDAwMCwgSmFzb24gR3VudGhvcnBl
+IHdyb3RlOgo+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0IDA1OjQ3OjA1UE0gLTA1MDAsIEplcm9t
+ZSBHbGlzc2Ugd3JvdGU6Cj4gPiBPbiBXZWQsIEphbiAzMCwgMjAxOSBhdCAxMDozMzowNFBNICsw
+MDAwLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6Cj4gPiA+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0
+IDA1OjMwOjI3UE0gLTA1MDAsIEplcm9tZSBHbGlzc2Ugd3JvdGU6Cj4gPiA+IAo+ID4gPiA+ID4g
+V2hhdCBpcyB0aGUgcHJvYmxlbSBpbiB0aGUgSE1NIG1pcnJvciB0aGF0IGl0IG5lZWRzIHRoaXMg
+cmVzdHJpY3Rpb24/Cj4gPiA+ID4gCj4gPiA+ID4gTm8gcmVzdHJpY3Rpb24gYXQgYWxsIGhlcmUu
+IEkgdGhpbmsgaSBqdXN0IHdhc24ndCB1bmRlcnN0b29kLgo+ID4gPiAKPiA+ID4gQXJlIHlvdSBh
+cmUgdGFsa2luZyBhYm91dCBmcm9tIHRoZSBleHBvcnRpbmcgc2lkZSAtIHdoZXJlIHRoZSB0aGlu
+Zwo+ID4gPiBjcmVhdGluZyB0aGUgVk1BIGNhbiByZWFsbHkgb25seSBwdXQgb25lIGRpc3RpbmN0
+IG9iamVjdCBpbnRvIGl0Pwo+ID4gCj4gPiBUaGUgbWVzc2FnZSBpIHdhcyB0cnlpbmcgdG8gZ2V0
+IGFjY3Jvc3MgaXMgdGhhdCBITU0gbWlycm9yIHdpbGwKPiA+IGFsd2F5cyBzdWNjZWVkIGZvciBl
+dmVyeXRoaW5nKiBleGNlcHQgZm9yIHNwZWNpYWwgdm1hIGllIG1tYXAgb2YKPiA+IGRldmljZSBm
+aWxlLiBGb3IgdGhvc2UgaXQgY2FuIG9ubHkgc3VjY2VlZCBpZiBhIHAycF9tYXAoKSBjYWxsCj4g
+PiBzdWNjZWVkLgo+ID4gCj4gPiBTbyBhbnkgdXNlciBvZiBITU0gbWlycm9yIG1pZ2h0IHRvIGtu
+b3cgd2h5IHRoZSBtaXJyb3JpbmcgZmFpbCBpZQo+ID4gd2FzIGl0IGJlY2F1c2Ugc29tZXRoaW5n
+IGV4Y2VwdGlvbmFsIGlzIGhhcHBlbmluZyA/IE9yIGlzIGl0IGJlY2F1c2UKPiA+IGkgd2FzIHRy
+eWluZyB0byBtYXAgYSBzcGVjaWFsIHZtYSB3aGljaCBjYW4gYmUgZm9yYmlkZW4uCj4gPiAKPiA+
+IEhlbmNlIHdoeSBpIGFzc3VtZSB0aGF0IHlvdSBtaWdodCB3YW50IHRvIGtub3cgYWJvdXQgc3Vj
+aCBwMnBfbWFwCj4gPiBmYWlsdXJlIGF0IHRoZSB0aW1lIHlvdSBjcmVhdGUgdGhlIHVtZW0gb2Rw
+IG9iamVjdCBhcyBpdCBtaWdodCBiZQo+ID4gc29tZSBmYWlsdXJlIHlvdSBtaWdodCB3YW50IHRv
+IHJlcG9ydCBkaWZmZXJlbnRseSBhbmQgaGFuZGxlCj4gPiBkaWZmZXJlbnRseS4gSWYgeW91IGRv
+IG5vdCBjYXJlIGFib3V0IGRpZmZlcmVudGlhdGluZyBPT00gb3IKPiA+IGV4Y2VwdGlvbmFsIGZh
+aWx1cmUgZnJvbSBwMnBfbWFwIGZhaWx1cmUgdGhhbiB5b3UgaGF2ZSBub3RoaW5nIHRvCj4gPiB3
+b3JyeSBhYm91dCB5b3Ugd2lsbCBnZXQgdGhlIHNhbWUgZXJyb3IgZnJvbSBITU0gZm9yIGJvdGgu
+Cj4gCj4gSSB0aGluayBteSBob3BlIGhlcmUgd2FzIHRoYXQgd2UgY291bGQgaGF2ZSBzb21lIGtp
+bmQgb2YgJ3RyaWFsJwo+IGludGVyZmFjZSB3aGVyZSB2ZXJ5IGVhcnkgdXNlcnMgY2FuIGNhbGwK
+PiAnaG1tX21pcnJvcl9pc19tYXliZV9zdXBwb3J0ZWQoZGV2LCB1c2VyX3B0ciwgbGVuKScgYW5k
+IGdldCBhIGZhaWx1cmUKPiBpbmRpY2F0aW9uLgo+IAo+IFdlIHByb2JhYmx5IHdvdWxkbid0IGNh
+bGwgdGhpcyBvbiB0aGUgZnVsbCBhZGRyZXNzIHNwYWNlIHRob3VnaAoKWWVzIHdlIGNhbiBkbyBz
+cGVjaWFsIHdyYXBwZXIgYXJvdW5kIHRoZSBnZW5lcmFsIGNhc2UgdGhhdCBhbGxvdwpjYWxsZXIg
+dG8gZGlmZmVyZW50aWF0ZSBmYWlsdXJlLiBTbyBhdCBjcmVhdGlvbiB5b3UgY2FsbCB0aGUKc3Bl
+Y2lhbCBmbGF2b3IgYW5kIGdldCBwcm9wZXIgZGlzdGluY3Rpb24gYmV0d2VlbiBlcnJvci4gQWZ0
+ZXJ3YXJkCmR1cmluZyBub3JtYWwgb3BlcmF0aW9uIGFueSBmYWlsdXJlIGlzIGp1c3QgdHJlYXRl
+ZCBpbiBhIHNhbWUgd2F5Cm5vIG1hdHRlciB3aGF0IGlzIHRoZSByZWFzb25zIChtdW5tYXAsIG1y
+ZW1hcCwgbXByb3RlY3QsIC4uLikuCgoKPiBCZXlvbmQgdGhhdCBpdCBpcyBqdXN0IGluZXZpdGFi
+bGUgdGhlcmUgY2FuIGJlIHByb2JsZW1zIGZhdWx0aW5nIGlmCj4gdGhlIG1lbW9yeSBtYXAgaXMg
+bWVzc2VkIHdpdGggYWZ0ZXIgTVIgaXMgY3JlYXRlZC4KPiAKPiBBbmQgaGVyZSBhZ2FpbiwgSSBk
+b24ndCB3YW50IHRvIHdvcnJ5IGFib3V0IGFueSBwYXJ0aWN1bGFyIFZNQQo+IGJvdW5kYXJpZXMu
+LgoKWW91IGRvIG5vdCBoYXZlIHRvIHdvcnJ5IGFib3V0IGJvdW5kYXJpZXMgSE1NIHdpbGwgcmV0
+dXJuIC1FRkFVTFQKaWYgdGhlcmUgaXMgbm8gdmFsaWQgdm1hIGJlaGluZCB0aGUgYWRkcmVzcyB5
+b3UgYXJlIHRyeWluZyB0byBtYXAKKG9yIGlmIHRoZSB2bWEgcHJvdCBkb2VzIG5vdCBhbGxvdyB5
+b3UgdG8gYWNjZXNzIGl0KS4gU28gdGhlbiB5b3UKY2FuIGhhbmRsZSB0aGF0IGZhaWx1cmUganVz
+dCBsaWtlIHlvdSBkbyBub3cgYW5kIGFzIG15IE9EUCBITU0KcGF0Y2ggcHJlc2VydmUuCgpDaGVl
+cnMsCkrDqXLDtG1lCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9y
+ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZl
+bAo=
