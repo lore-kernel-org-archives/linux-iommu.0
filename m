@@ -1,122 +1,69 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
-Date: Tue, 29 Jan 2019 19:08:06 -0500
-Message-ID: <20190130000805.GS3176@redhat.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Tue, 29 Jan 2019 18:17:43 -0700
+Message-ID: <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
  <20190129174728.6430-4-jglisse@redhat.com>
  <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com>
- <20190129193250.GK10108@mellanox.com>
- <20190129195055.GH3176@redhat.com>
- <20190129202429.GL10108@mellanox.com>
- <20190129204359.GM3176@redhat.com>
- <20190129224016.GD4713@mellanox.com>
+ <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
+ <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
+ <20190129205749.GN3176@redhat.com>
+ <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
+ <20190129215028.GQ3176@redhat.com>
+ <deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
+ <20190129234752.GR3176@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190129224016.GD4713@mellanox.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jason Gunthorpe <jgg@mellanox.com>
-Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Logan Gunthorpe <logang@deltatee.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190129234752.GR3176@redhat.com>
+Content-Language: en-CA
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Glisse <jglisse@redhat.com>
+Cc: Jason Gunthorpe <jgg@mellanox.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBKYW4gMjksIDIwMTkgYXQgMTE6MDI6MjVQTSArMDAwMCwgSmFzb24gR3VudGhvcnBl
-IHdyb3RlOgo+IE9uIFR1ZSwgSmFuIDI5LCAyMDE5IGF0IDAzOjQ0OjAwUE0gLTA1MDAsIEplcm9t
-ZSBHbGlzc2Ugd3JvdGU6Cj4gCj4gPiA+IEJ1dCB0aGlzIEFQSSBkb2Vzbid0IHNlZW0gdG8gb2Zm
-ZXIgYW55IGNvbnRyb2wgLSBJIHRob3VnaHQgdGhhdAo+ID4gPiBjb250cm9sIHdhcyBhbGwgY29t
-aW5nIGZyb20gdGhlIG1tL2htbSBub3RpZmllcnMgdHJpZ2dlcmluZyBwMnBfdW5tYXBzPwo+ID4g
-Cj4gPiBUaGUgY29udHJvbCBpcyB3aXRoaW4gdGhlIGRyaXZlciBpbXBsZW1lbnRhdGlvbiBvZiB0
-aG9zZSBjYWxsYmFja3MuIAo+IAo+IFNlZW1zIGxpa2Ugd2hhdCB5b3UgbWVhbiBieSBjb250cm9s
-IGlzICd0aGUgZXhwb3J0ZXIgZ2V0cyB0byBjaG9vc2UKPiB0aGUgcGh5c2ljYWwgYWRkcmVzcyBh
-dCB0aGUgaW5zdGFudCBvZiBtYXAnIC0gd2hpY2ggc2VlbXMgcmVhc29uYWJsZQo+IGZvciBHUFUu
-Cj4gCj4gCj4gPiB3aWxsIG9ubHkgYWxsb3cgcDJwIG1hcCB0byBzdWNjZWVkIGZvciBvYmplY3Rz
-IHRoYXQgaGF2ZSBiZWVuIHRhZ2dlZCBieSB0aGUKPiA+IHVzZXJzcGFjZSBpbiBzb21lIHdheSBp
-ZSB0aGUgdXNlcnNwYWNlIGFwcGxpY2F0aW9uIGlzIGluIGNvbnRyb2wgb2Ygd2hhdAo+ID4gY2Fu
-IGJlIG1hcCB0byBwZWVyIGRldmljZS4KPiAKPiBJIHdvdWxkIGhhdmUgdGhvdWdodCB0aGlzIG1l
-YW5zIHRoZSBWTUEgZm9yIHRoZSBvYmplY3QgaXMgY3JlYXRlZAo+IHdpdGhvdXQgdGhlIG1hcC91
-bm1hcCBvcHM/IE9yIGFyZSBHUFUgb2JqZWN0cyBhbmQgVk1BcyB1bnJlbGF0ZWQ/CgpHUFUgb2Jq
-ZWN0IGFuZCBWTUEgYXJlIHVucmVsYXRlZCBpbiBhbGwgb3BlbiBzb3VyY2UgR1BVIGRyaXZlciBp
-IGFtCnNvbWV3aGF0IGZhbWlsaWFyIHdpdGggKEFNRCwgSW50ZWwsIE5WaWRpYSkuIFlvdSBjYW4g
-Y3JlYXRlIGEgR1BVCm9iamVjdCBhbmQgbmV2ZXIgbWFwIGl0IChhbmQgdGh1cyBuZXZlciBoYXZl
-IGl0IGFzc29jaWF0ZWQgd2l0aCBhCnZtYSkgYW5kIGluIGZhY3QgdGhpcyBpcyB2ZXJ5IGNvbW1v
-bi4gRm9yIGdyYXBoaWMgeW91IHVzdWFseSBvbmx5CmhhdmUgaGFuZCBmdWxsIG9mIHRoZSBodW5k
-cmVkcyBvZiBHUFUgb2JqZWN0IHlvdXIgYXBwbGljYXRpb24gaGF2ZQptYXBwZWQuCgpUaGUgY29u
-dHJvbCBmb3IgcGVlciB0byBwZWVyIGNhbiBhbHNvIGJlIGEgbXV0YWJsZSBwcm9wZXJ0aWVzIG9m
-IHRoZQpvYmplY3QgaWUgdXNlcnNwYWNlIGRvIGlvY3RsIG9uIHRoZSBHUFUgZHJpdmVyIHdoaWNo
-IGNyZWF0ZSBhbiBvYmplY3Q7ClNvbWUgdGltZXMgYWZ0ZXIgdGhlIG9iamVjdCBpcyBjcmVhdGVk
-IHRoZSB1c2Vyc3BhY2UgZG8gb3RoZXJzIGlvY3RsCnRvIGFsbG93IHRvIGV4cG9ydCB0aGUgb2Jq
-ZWN0IHRvIGFub3RoZXIgc3BlY2lmaWMgZGV2aWNlIGFnYWluIHRoaXMKcmVzdWx0IGluIGlvY3Rs
-IHRvIHRoZSBkZXZpY2UgZHJpdmVyLCB0aG9zZSBpb2N0bCBzZXQgZmxhZ3MgYW5kCnVwZGF0ZSBH
-UFUgb2JqZWN0IGtlcm5lbCBzdHJ1Y3R1cmUgd2l0aCBhbGwgdGhlIGluZm8uCgpJbiB0aGUgbWVh
-bnRpbWUgeW91IGhhdmUgbm8gY29udHJvbCBvbiB3aGVuIG90aGVyIGRyaXZlciBtaWdodCBjYWxs
-CnRoZSB2bWEgcDJwIGNhbGwgYmFja3MuIFNvIHlvdSBtdXN0IGhhdmUgcmVnaXN0ZXIgdGhlIHZt
-YSB3aXRoCnZtX29wZXJhdGlvbnMgdGhhdCBpbmNsdWRlIHRoZSBwMnBfbWFwIGFuZCBwMnBfdW5t
-YXAuIFRob3NlIGRyaXZlcgpmdW5jdGlvbiB3aWxsIGNoZWNrIHRoZSBvYmplY3Qga2VybmVsIHN0
-cnVjdHVyZSBlYWNoIHRpbWUgdGhleSBnZXQKY2FsbCBhbmQgYWN0IGFjY29yZGluZ2x5LgoKCgo+
-ID4gRm9yIG1vdmluZyB0aGluZ3MgYXJvdW5kIGFmdGVyIGEgc3VjY2Vzc2Z1bCBwMnBfbWFwIHll
-cyB0aGUgZXhwb3J0aW5nCj4gPiBkZXZpY2UgaGF2ZSB0byBjYWxsIGZvciBpbnN0YW5jZSB6YXBf
-dm1hX3B0ZXMoKSBvciBzb21ldGhpbmcKPiA+IHNpbWlsYXIuCj4gCj4gT2theSwgZ3JlYXQsIFJE
-TUEgbmVlZHMgdGhpcyBmbG93IGZvciBob3RwbHVnIC0gd2UgemFwIHRoZSBWTUEncyB3aGVuCj4g
-dW5wbHVnZ2luZyB0aGUgUENJIGRldmljZSBhbmQgd2UgY2FuIGRlbGF5IHRoZSBQQ0kgdW5wbHVn
-IGNvbXBsZXRpb24KPiB1bnRpbCBhbGwgdGhlIHAycF91bm1hcHMgYXJlIGNhbGxlZC4uLgo+IAo+
-IEJ1dCBpbiB0aGlzIGNhc2UgYSBmdXR1cmUgcDJwX21hcCB3aWxsIGhhdmUgdG8gZmFpbCBhcyB0
-aGUgQkFSIG5vCj4gbG9uZ2VyIGV4aXN0cy4gSG93IHRvIGhhbmRsZSB0aGlzPwoKU28gdGhlIGNv
-bW1lbnQgYWJvdmUgdGhlIGNhbGxiYWNrIChpIHNob3VsZCB3cml0ZSBtb3JlIHRob3JvdWdoIGd1
-aWRlbGluZQphbmQgZG9jdW1lbnRhdGlvbikgc3RhdGUgdGhhdCBleHBvcnQgc2hvdWxkLyhtdXN0
-PykgYmUgcHJlZGljdGFibGUgaWUKaWYgYW4gaW1wb3J0ZXIgZGV2aWNlIGNhbGxzIHAycF9tYXAo
-KSBvbmNlIG9uIGEgdm1hIGFuZCBpdCBkb2VzIHN1Y2NlZWQKdGhlbiBpZiB0aGUgc2FtZSBkZXZp
-Y2UgY2FsbHMgYWdhaW4gcDJwX21hcCgpIG9uIHRoZSBzYW1lIHZtYSBhbmQgaWYgdGhlCnZtYSBp
-cyBzdGlsbCB2YWxpZCAoaWUgbm8gdW5tYXAgb3IgZG9lcyBub3QgY29ycmVzcG9uZCB0byBhIGRp
-ZmZlcmVudApvYmplY3QgLi4uKSB0aGVuIHRoZSBwMnBfbWFwKCkgc2hvdWxkLyhtdXN0Pykgc3Vj
-Y2VlZC4KClRoZSBpZGVhIGlzIHRoYXQgdGhlIGltcG9ydGVyIHdvdWxkIGRvIGEgZmlyc3QgY2Fs
-bCB0byBwMnBfbWFwKCkgd2hlbiBpdApzZXR1cCBpdHMgb3duIG9iamVjdCwgcmVwb3J0IGZhaWx1
-cmUgdG8gdXNlcnNwYWNlIGlmIHRoYXQgZmFpbHMuIElmIGl0CmRvZXMgc3VjY2VlZCB0aGVuIHdl
-IHNob3VsZCBuZXZlciBoYXZlIGFuIGlzc3VlIG5leHQgdGltZSB3ZSBjYWxsIHAycF9tYXAoKQoo
-YWZ0ZXIgbWFwcGluZyBiZWluZyBpbnZhbGlkYXRlZCBieSBtbXUgbm90aWZpZXIgZm9yIGluc3Rh
-bmNlKS4gU28gaXQgd2lsbApzdWNjZWVkIGp1c3QgbGlrZSB0aGUgZmlyc3QgY2FsbCAoYWdhaW4g
-YXNzdW1pbmcgdGhlIHZtYSBpcyBzdGlsbCB2YWxpZCkuCgpJZGVhIGlzIHRoYXQgd2UgY2FuIG9u
-bHkgYXNrIGV4cG9ydGVyIHRvIGJlIHByZWRpY3RhYmxlIGFuZCBzdGlsbCBhbGxvdwp0aGVtIHRv
-IGZhaWwgaWYgdGhpbmdzIGFyZSByZWFsbHkgZ29pbmcgYmFkLgoKCj4gPiA+IEkgd291bGQgdGhp
-bmsgdGhhdCB0aGUgaW1wb3J0aW5nIGRyaXZlciBjYW4gYXNzdW1lIHRoZSBCQVIgcGFnZSBpcwo+
-ID4gPiBrZXB0IGFsaXZlIHVudGlsIGl0IGNhbGxzIHVubWFwIChwcmVzdW1hYmx5IHRyaWdnZXJl
-ZCBieSBub3RpZmllcnMpPwo+ID4gPiAKPiA+ID4gaWUgdGhlIGV4cG9ydGluZyBkcml2ZXIgc2Vl
-cyB0aGUgQkFSIHBhZ2UgYXMgcGlubmVkIHVudGlsIHVubWFwLgo+ID4gCj4gPiBUaGUgaW50ZW50
-aW9uIHdpdGggdGhpcyBwYXRjaHNldCBpcyB0aGF0IGl0IGlzIG5vdCBwaW4gaWUgdGhlIGltcG9y
-dGVyCj4gPiBkZXZpY2UgX211c3RfIGFiaWRlIGJ5IGFsbCBtbXUgbm90aWZpZXIgaW52YWxpZGF0
-aW9ucyBhbmQgdGhleSBjYW4KPiA+IGhhcHBlbiBhdCBhbnl0aW1lLiBUaGUgaW1wb3J0aW5nIGRl
-dmljZSBjYW4gaG93ZXZlciByZS1wMnBfbWFwIHRoZQo+ID4gc2FtZSByYW5nZSBhZnRlciBhbiBp
-bnZhbGlkYXRpb24uCj4gPgo+ID4gSSB3b3VsZCBsaWtlIHRvIHJlc3RyaWN0IHRoaXMgdG8gaW1w
-b3J0ZXIgdGhhdCBjYW4gaW52YWxpZGF0ZSBmb3IKPiA+IG5vdyBiZWNhdXNlIGkgYmVsaWV2ZSBh
-bGwgdGhlIGZpcnN0IGRldmljZSB0byB1c2UgY2FuIHN1cHBvcnQgdGhlCj4gPiBpbnZhbGlkYXRp
-b24uCj4gCj4gVGhpcyBzZWVtcyByZWFzb25hYmxlIChhbmQgc29ydCBvZiBzYXlzIGltcG9ydGVy
-cyBub3QgZ2V0dGluZyB0aGlzCj4gZnJvbSBITU0gbmVlZCBjYXJlZnVsIGNoZWNraW5nKSwgd2Fz
-IHRoaXMgaW4gdGhlIGNvbW1lbnQgYWJvdmUgdGhlCj4gb3BzPwoKSSB0aGluayBpIHB1dCBpdCBp
-biB0aGUgY29tbWVudCBhYm92ZSB0aGUgb3BzIGJ1dCBpbiBhbnkgY2FzZXMgaSBzaG91bGQKd3Jp
-dGUgc29tZXRoaW5nIGluIGRvY3VtZW50YXRpb24gd2l0aCBleGFtcGxlIGFuZCB0aG9yb3VnaCBn
-dWlkZWxpbmUuCk5vdGUgdGhhdCB0aGVyZSB3b24ndCBiZSBhbnkgbW11IG5vdGlmaWVyIHRvIG1t
-YXAgb2YgYSBkZXZpY2UgZmlsZQp1bmxlc3MgdGhlIGRldmljZSBkcml2ZXIgY2FsbHMgZm9yIGl0
-IG9yIHRoZXJlIGlzIGEgc3lzY2FsbCBsaWtlIG11bm1hcApvciBtcmVtYXAgb3IgbXByb3RlY3Qg
-d2VsbCBhbnkgc3lzY2FsbCB0aGF0IHdvcmsgb24gdm1hLgoKU28gYXNzdW1pbmcgdGhlIGFwcGxp
-Y2F0aW9uIGlzIG5vIGRvaW5nIHNvbWV0aGluZyBzdHVwaWQsIG5vciB0aGUKZHJpdmVyLiBUaGVu
-IHRoZSByZXN1bHQgb2YgcDJwX21hcCBjYW4gc3RheSB2YWxpZCB1bnRpbCB0aGUgaW1wb3J0ZXIK
-aXMgZG9uZSBhbmQgY2FsbCBwMnBfdW5tYXAgb2YgaXRzIG93biBmcmVlIHdpbGwuIFRoaXMgaXMg
-d2hhdCBpIGRvCmV4cGVjdCBmb3IgdGhpcy4gQnV0IGZvciBHUFUgaSB3b3VsZCBzdGlsbCBsaWtl
-IHRvIGFsbG93IEdQVSBkcml2ZXIKdG8gZXZpY3QgKGFuZCB0aHVzIGludmFsaWRhdGUgaW1wb3J0
-ZXIgbWFwcGluZykgdG8gbWFpbiBtZW1vcnkgb3IKZGVmcmFnbWVudCB0aGVpciBCQVIgYWRkcmVz
-cyBzcGFjZSBpZiB0aGUgR1BVIGRyaXZlciBmZWVscyBhIHByZXNzaW5nCm5lZWQgdG8gZG8gc28u
-CgpJZiB3ZSBldmVyIHdhbnQgdG8gc3VwcG9ydCBmdWxsIHBpbiB0aGVuIHdlIG1pZ2h0IGhhdmUg
-dG8gYWRkIGEKZmxhZyBzbyB0aGF0IEdQVSBkcml2ZXIgY2FuIHJlZnVzZSBhbiBpbXBvcnRlciB0
-aGF0IHdhbnRzIHRoaW5ncwpwaW4gZm9yZXZlci4KCkNoZWVycywKSsOpcsO0bWUKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
-bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+
+
+On 2019-01-29 4:47 p.m., Jerome Glisse wrote:
+> The whole point is to allow to use device memory for range of virtual
+> address of a process when it does make sense to use device memory for
+> that range. So they are multiple cases where it does make sense:
+> [1] - Only the device is accessing the range and they are no CPU access
+>       For instance the program is executing/running a big function on
+>       the GPU and they are not concurrent CPU access, this is very
+>       common in all the existing GPGPU code. In fact AFAICT It is the
+>       most common pattern. So here you can use HMM private or public
+>       memory.
+> [2] - Both device and CPU access a common range of virtul address
+>       concurrently. In that case if you are on a platform with cache
+>       coherent inter-connect like OpenCAPI or CCIX then you can use
+>       HMM public device memory and have both access the same memory.
+>       You can not use HMM private memory.
+> 
+> So far on x86 we only have PCIE and thus so far on x86 we only have
+> private HMM device memory that is not accessible by the CPU in any
+> way.
+
+I feel like you're just moving the rug out from under us... Before you
+said ignore HMM and I was asking about the use case that wasn't using
+HMM and how it works without HMM. In response, you just give me *way*
+too much information describing HMM. And still, as best as I can see,
+managing DMA mappings (which is different from the userspace mappings)
+for GPU P2P should be handled by HMM and the userspace mappings should
+*just* link VMAs to HMM pages using the standard infrastructure we
+already have.
+
+>> And what struct pages are actually going to be backing these VMAs if
+>> it's not using HMM?
+> 
+> When you have some range of virtual address migrated to HMM private
+> memory then the CPU pte are special swap entry and they behave just
+> as if the memory was swapped to disk. So CPU access to those will
+> fault and trigger a migration back to main memory.
+
+This isn't answering my question at all... I specifically asked what is
+backing the VMA when we are *not* using HMM.
+
+Logan
