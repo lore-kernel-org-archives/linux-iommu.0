@@ -1,27 +1,25 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is
- encrypted
-Date: Wed, 30 Jan 2019 08:44:27 +0100
-Message-ID: <20190130074427.GA29516@lst.de>
-References: <87zhrj8kcp.fsf@morokweng.localdomain> <87womn8inf.fsf@morokweng.localdomain> <20190129134750-mutt-send-email-mst@kernel.org> <6c68f7f7-1b28-6eba-9b8b-2c32efac9701@redhat.com> <20190129213137-mutt-send-email-mst@kernel.org>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Wed, 30 Jan 2019 08:52:56 +0100
+Message-ID: <20190130075256.GA29665@lst.de>
+References: <20190129174728.6430-1-jglisse@redhat.com> <20190129174728.6430-4-jglisse@redhat.com> <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com> <20190129191120.GE3176@redhat.com> <c2c02af7-1d6f-e54f-c7fb-99c5b7776014@deltatee.com> <20190129194418.GG3176@redhat.com> <b3264844-2c04-6c34-f1e7-6b3bf9849a75@deltatee.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190129213137-mutt-send-email-mst@kernel.org>
+In-Reply-To: <b3264844-2c04-6c34-f1e7-6b3bf9849a75@deltatee.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 09:36:08PM -0500, Michael S. Tsirkin wrote:
-> This has been discussed ad nauseum. virtio is all about compatibility.
-> Losing a couple of lines of code isn't worth breaking working setups.
-> People that want "just use DMA API no tricks" now have the option.
-> Setting a flag in a feature bit map is literally a single line
-> of code in the hypervisor. So stop pushing for breaking working
-> legacy setups and just fix it in the right place.
+On Tue, Jan 29, 2019 at 01:43:02PM -0700, Logan Gunthorpe wrote:
+> It's hard to reason about an interface when you can't see what all the
+> layers want to do with it. Most maintainers (I'd hope) would certainly
+> never merge code that has no callers, and for much the same reason, I'd
+> rather not review patches that don't have real use case examples.
 
-I agree with the legacy aspect.  What I am missing is an extremely
-strong wording that says you SHOULD always set this flag for new
-hosts, including an explanation why.
+Yes, we should never review, nevermind merge code without users.
+We had one example recently where this was not followed, which was HMM
+and that turned out to be a desaster.
