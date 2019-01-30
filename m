@@ -1,69 +1,85 @@
-From: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v5 12/20] memory: mtk-smi: Add gals support
-Date: Wed, 30 Jan 2019 10:30:55 -0800
-Message-ID: <CAE=gft5BS=yDQV48V1a=n8U1YyAQuQ+vxg1bFy1HFJXmvXE_gw@mail.gmail.com>
-References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
- <1546314952-15990-13-git-send-email-yong.wu@mediatek.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Wed, 30 Jan 2019 13:50:27 -0500
+Message-ID: <20190130185027.GC5061@redhat.com>
+References: <20190129174728.6430-1-jglisse@redhat.com>
+ <20190129174728.6430-4-jglisse@redhat.com>
+ <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
+ <20190129191120.GE3176@redhat.com>
+ <20190129193250.GK10108@mellanox.com>
+ <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
+ <20190129205827.GM10108@mellanox.com>
+ <20190130080208.GC29665@lst.de>
+ <20190130174424.GA17080@mellanox.com>
+ <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <1546314952-15990-13-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Jason Gunthorpe <jgg@mellanox.com>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 31, 2018 at 7:58 PM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
->
-> In some SoCs like mt8183, SMI add GALS(Global Async Local Sync) module
-> which can help synchronize for the modules in different clock frequency.
-> It can be seen as a "asynchronous fifo". This is a example diagram:
->
->             M4U
->              |
->          ----------
->          |        |
->      gals0-rx   gals1-rx
->          |        |
->          |        |
->      gals0-tx   gals1-tx
->          |        |
->         ------------
->          SMI Common
->         ------------
->              |
->   +-----+--------+-----+- ...
->   |     |        |     |
->   |  gals-rx  gals-rx  |
->   |     |        |     |
->   |     |        |     |
->   |  gals-tx  gals-tx  |
->   |     |        |     |
-> larb1 larb2   larb3  larb4
->
-> GALS only help transfer the command/data while it doesn't have the
-> configuring register, thus it has the special "smi" clock and doesn't
-> have the "apb" clock. From the diagram above, we add "gals0" and
-> "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
->
-> This patch adds gals clock supporting in the SMI. Note that some larbs
-> may still don't have the "gals" clock like larb1 and larb4 above.
->
-> This is also a preparing patch for mt8183 which has GALS.
->
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+On Wed, Jan 30, 2019 at 11:13:11AM -0700, Logan Gunthorpe wrote:
+> 
+> 
+> On 2019-01-30 10:44 a.m., Jason Gunthorpe wrote:
+> > I don't see why a special case with a VMA is really that different.
+> 
+> Well one *really* big difference is the VMA changes necessarily expose
+> specialized new functionality to userspace which has to be supported
+> forever and may be difficult to change. The p2pdma code is largely
+> in-kernel and we can rework and change the interfaces all we want as we
+> improve our struct page infrastructure.
 
-So really from a software perspective the gals are just a couple of
-extra clocks that need to be turned on for certain larbs. Seems fine
-to me.
+I do not see how VMA changes are any different than using struct page
+in respect to userspace exposure. Those vma callback do not need to be
+set by everyone, in fact expectation is that only handful of driver
+will set those.
 
-Reviewed-by: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+How can we do p2p between RDMA and GPU for instance, without exposure
+to userspace ? At some point you need to tell userspace hey this kernel
+does allow you to do that :)
+
+RDMA works on vma, and GPU driver can easily setup vma for an object
+hence why vma sounds like a logical place. In fact vma (mmap of a device
+file) is very common device driver pattern.
+
+In the model i am proposing the exporting device is in control of
+policy ie wether to allow or not the peer to peer mapping. So each
+device driver can define proper device specific API to enable and
+expose that feature to userspace.
+
+If they do, the only thing we have to preserve is the end result for
+the user. The userspace does not care one bit if we achieve this in
+the kernel with a set of new callback within the vm_operations struct
+or in some other way. Only the end result matter.
+
+So question is do we want to allow RDMA to access GPU driver object ?
+I believe we do, they are people using non upstream solution with open
+source driver to do just that, so it is a testimony that they are
+users for this. More use case have been propose too.
+
+> 
+> I'd also argue that p2pdma isn't nearly as specialized as this VMA thing
+> and can be used pretty generically to do other things. Though, the other
+> ideas we've talked about doing are pretty far off and may have other
+> challenges.
+
+I believe p2p is highly specialize on non cache-coherent inter-connect
+platform like x86 with PCIE. So i do not think that using struct page
+for this is a good idea, it is not warranted/needed, and it can only be
+problematic if some random kernel code get holds of those struct page
+without understanding it is not regular memory.
+
+I believe the vma callback are the simplest solution with the minimum
+burden for the device driver and for the kernel. If they are any better
+solution that emerge there is nothing that would block us to remove
+this to replace it with the other solution.
+
+Cheers,
+Jérôme
