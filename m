@@ -1,30 +1,37 @@
 From: Evan Green <evgreen@chromium.org>
-Subject: Re: [PATCH v5 03/20] memory: mtk-smi: Use a general config_port interface
-Date: Wed, 30 Jan 2019 10:27:52 -0800
-Message-ID: <CAE=gft6AouN2DDzgF6d4f52n+mqiOyeeKg1=Og+=YxQsMoBnLw@mail.gmail.com>
-References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com> <1546314952-15990-4-git-send-email-yong.wu@mediatek.com>
+Subject: Re: [PATCH v5 04/20] memory: mtk-smi: Use a struct for the platform
+ data for smi-common
+Date: Wed, 30 Jan 2019 10:28:04 -0800
+Message-ID: <CAE=gft5hkfwhKoxH0vZo54MqkF85-f7eKxY-DxkR29CBuBMJCw@mail.gmail.com>
+References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
+ <1546314952-15990-5-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1546314952-15990-4-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1546314952-15990-5-git-send-email-yong.wu@mediatek.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Yong Wu <yong.wu@mediatek.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+Cc: youlin.pei@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Arnd Bergmann <arnd@arndb.de>, srv_heupstream@mediatek.com, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, LKML <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, Dec 31, 2018 at 7:57 PM Yong Wu <yong.wu@mediatek.com> wrote:
 >
-> The config_port of mt2712 and mt8183 are the same. Use a general
-> config_port interface instead.
+> Use a struct as the platform special data instead of the enumeration.
 >
-> In addition, in mt2712, larb8 and larb9 are the bdpsys larbs which
-> are not the normal larb, their register space are different from the
-> normal one. thus, we can not call the general config_port. In mt8183,
-> IPU0/1 and CCU connect with smi-common directly, they also are not
-> the normal larb. Hence, we add a "larb_direct_to_common_mask" for these
-> larbs which connect to smi-commmon directly.
+> Also there is a minor change that moving the position of
+> "enum mtk_smi_gen" definition, this is because we expect define
+> "struct mtk_smi_common_plat" before it is referred.
 >
-> This is also a preparing patch for adding mt8183 SMI support.
+> This is a preparing patch for mt8183.
 >
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
