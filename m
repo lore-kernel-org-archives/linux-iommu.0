@@ -1,96 +1,82 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.0-rc4
-Date: Wed, 30 Jan 2019 16:06:23 +0100
-Message-ID: <20190130150619.p36c4rzds3lhl4xp@8bytes.org>
+From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Subject: Re: [PATCH 3/5] dma: Introduce dma_max_mapping_size()
+Date: Wed, 30 Jan 2019 15:09:33 +0000
+Message-ID: <b1d5f903-e1c4-de50-7957-35597cc93a1e@amd.com>
+References: <20190129084342.26030-1-joro@8bytes.org>
+ <20190129084342.26030-4-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="aadaewmv5to66yg7"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20190129084342.26030-4-joro@8bytes.org>
+Content-Language: en-US
+Content-ID: <EA2108D0538EC9438671C91F8C3DF4C0@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Joerg Roedel <joro@8bytes.org>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "jfehlig@suse.com" <jfehlig@suse.com>, "Grimm, Jon" <Jon.Grimm@amd.com>, "Singh, Brijesh" <brijesh.singh@amd.com>, "jroedel@suse.de" <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-
---aadaewmv5to66yg7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit e8e683ae9a736407a20135df7809090a446db707:
-
-  iommu/of: Fix probe-deferral (2019-01-11 12:28:24 +0100)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.0-rc4
-
-for you to fetch changes up to 9825bd94e3a2baae1f4874767ae3a7d4c049720e:
-
-  iommu/amd: Fix IOMMU page flush when detach device from a domain (2019-01-24 15:24:49 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.0-rc4
-
-A few more fixes this time:
-
-	- Two patches to fix the error path of the map_sg implementation
-	  of the AMD IOMMU driver.
-
-	- Also a missing IOTLB flush is fixed in the AMD IOMMU driver.
-
-	- Memory leak fix for the Intel IOMMU driver.
-
-	- Fix a regression in the Mediatek IOMMU driver which caused
-	  device initialization to fail (seen as broken HDMI output).
-
-----------------------------------------------------------------
-Gerald Schaefer (1):
-      iommu/vt-d: Fix memory leak in intel_iommu_put_resv_regions()
-
-Jerry Snitselaar (2):
-      iommu/amd: Call free_iova_fast with pfn in map_sg
-      iommu/amd: Unmap all mapped pages in error path of map_sg
-
-Joerg Roedel (1):
-      iommu/mediatek: Use correct fwspec in mtk_iommu_add_device()
-
-Suravee Suthikulpanit (1):
-      iommu/amd: Fix IOMMU page flush when detach device from a domain
-
- drivers/iommu/amd_iommu.c    | 19 +++++++++++++------
- drivers/iommu/intel-iommu.c  |  2 +-
- drivers/iommu/mtk_iommu_v1.c |  4 ++++
- 3 files changed, 18 insertions(+), 7 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---aadaewmv5to66yg7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJcUb1rAAoJECvwRC2XARrjlPAP/3h/QtSqtYk2Wa85tdNjbuoM
-qAjZWJ+gEDP3g4VHpGvcZ50/0yQwQT1IBC7Nc3OgU5zm8WXOjxDkaPlQho5wNxux
-sk/BwwUGYRT9P5z0W5xpygv49qqK3M+OxHIkyqO/on32O7NfkVn1aUhwKPeU1st/
-PNo1qGokccUS4JharyPGw993TyDkzenAW+Mqs7Js9Btf1/Fb2dFam6/jQ1ptEHLs
-XDG8kbQBUQ7TvmbiTg+GT4e5ZCuvMtGDCsLrvO4CTXWsE4T7WRnrjxBC6pQte0h1
-HywjqrRC3OEuzPjknEW4fcpkwDLj0FaVftngiYI+HRyGzZhD5nffarY7ecRExbfK
-Qzhc6pcwg+R5yjxsU9ihd18JQQUHzAjMk6Lh9ieTr9u1eexkIstDl5QFyB+XQHul
-530ITnnLLMrLO2XZQMJBiSpQAxMDA0jtU52jTNLhp19LsPwrEngLtLEjI1UpbO/v
-aonfq9B1wwlDJuN2iwUwWOMlJXC8UptyC6pZPtPCKxaBiCFVI/0WQmq05U3q9Np5
-nLnBlefONSEuUyrOs6WopBYbUxzmMt41PFewRklh+Sz0k+So3N3VG5scXfdQGacO
-2woCYkne1OibZQ+LPvH6R/NnrTUaWafcXT2uW0nvK92zq7wXb52GzJwoAT1wfmzM
-v/16ovbf4lUgxwfJdqs+
-=/kNy
------END PGP SIGNATURE-----
-
---aadaewmv5to66yg7--
+T24gMS8yOS8xOSAyOjQzIEFNLCBKb2VyZyBSb2VkZWwgd3JvdGU6DQo+IEZyb206IEpvZXJnIFJv
+ZWRlbCA8anJvZWRlbEBzdXNlLmRlPg0KPiANCj4gVGhlIGZ1bmN0aW9uIHJldHVybnMgdGhlIG1h
+eGltdW0gc2l6ZSB0aGF0IGNhbiBiZSBtYXBwZWQNCj4gdXNpbmcgRE1BLUFQSSBmdW5jdGlvbnMu
+IFRoZSBwYXRjaCBhbHNvIGFkZHMgdGhlDQo+IGltcGxlbWVudGF0aW9uIGZvciBkaXJlY3QgRE1B
+IGFuZCBhIG5ldyBkbWFfbWFwX29wcyBwb2ludGVyDQo+IHNvIHRoYXQgb3RoZXIgaW1wbGVtZW50
+YXRpb25zIGNhbiBleHBvc2UgdGhlaXIgbGltaXQuDQo+IA0KPiBSZXZpZXdlZC1ieTogS29ucmFk
+IFJ6ZXN6dXRlayBXaWxrIDxrb25yYWQud2lsa0BvcmFjbGUuY29tPg0KPiBTaWduZWQtb2ZmLWJ5
+OiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4NCj4gLS0tDQo+ICBEb2N1bWVudGF0aW9u
+L0RNQS1BUEkudHh0ICAgfCAgOCArKysrKysrKw0KPiAgaW5jbHVkZS9saW51eC9kbWEtbWFwcGlu
+Zy5oIHwgMTYgKysrKysrKysrKysrKysrKw0KPiAga2VybmVsL2RtYS9kaXJlY3QuYyAgICAgICAg
+IHwgMTEgKysrKysrKysrKysNCj4gIDMgZmlsZXMgY2hhbmdlZCwgMzUgaW5zZXJ0aW9ucygrKQ0K
+PiANCj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vRE1BLUFQSS50eHQgYi9Eb2N1bWVudGF0
+aW9uL0RNQS1BUEkudHh0DQo+IGluZGV4IGUxMzNjY2Q2MDIyOC4uYWNmZTNkMGY3OGQxIDEwMDY0
+NA0KPiAtLS0gYS9Eb2N1bWVudGF0aW9uL0RNQS1BUEkudHh0DQo+ICsrKyBiL0RvY3VtZW50YXRp
+b24vRE1BLUFQSS50eHQNCj4gQEAgLTE5NSw2ICsxOTUsMTQgQEAgUmVxdWVzdGluZyB0aGUgcmVx
+dWlyZWQgbWFzayBkb2VzIG5vdCBhbHRlciB0aGUgY3VycmVudCBtYXNrLiAgSWYgeW91DQo+ICB3
+aXNoIHRvIHRha2UgYWR2YW50YWdlIG9mIGl0LCB5b3Ugc2hvdWxkIGlzc3VlIGEgZG1hX3NldF9t
+YXNrKCkNCj4gIGNhbGwgdG8gc2V0IHRoZSBtYXNrIHRvIHRoZSB2YWx1ZSByZXR1cm5lZC4NCj4g
+IA0KPiArOjoNCj4gKw0KPiArCXNpemVfdA0KPiArCWRtYV9kaXJlY3RfbWF4X21hcHBpbmdfc2l6
+ZShzdHJ1Y3QgZGV2aWNlICpkZXYpOw0KPiArDQo+ICtSZXR1cm5zIHRoZSBtYXhpbXVtIHNpemUg
+b2YgYSBtYXBwaW5nIGZvciB0aGUgZGV2aWNlLiBUaGUgc2l6ZSBwYXJhbWV0ZXINCj4gK29mIHRo
+ZSBtYXBwaW5nIGZ1bmN0aW9ucyBsaWtlIGRtYV9tYXBfc2luZ2xlKCksIGRtYV9tYXBfcGFnZSgp
+IGFuZA0KPiArb3RoZXJzIHNob3VsZCBub3QgYmUgbGFyZ2VyIHRoYW4gdGhlIHJldHVybmVkIHZh
+bHVlLg0KPiAgDQo+ICBQYXJ0IElkIC0gU3RyZWFtaW5nIERNQSBtYXBwaW5ncw0KPiAgLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgv
+ZG1hLW1hcHBpbmcuaCBiL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaA0KPiBpbmRleCBmNmRl
+ZDk5MmMxODMuLmEzY2E4YTcxYTcwNCAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9kbWEt
+bWFwcGluZy5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaA0KPiBAQCAtMTMw
+LDYgKzEzMCw3IEBAIHN0cnVjdCBkbWFfbWFwX29wcyB7DQo+ICAJCQllbnVtIGRtYV9kYXRhX2Rp
+cmVjdGlvbiBkaXJlY3Rpb24pOw0KPiAgCWludCAoKmRtYV9zdXBwb3J0ZWQpKHN0cnVjdCBkZXZp
+Y2UgKmRldiwgdTY0IG1hc2spOw0KPiAgCXU2NCAoKmdldF9yZXF1aXJlZF9tYXNrKShzdHJ1Y3Qg
+ZGV2aWNlICpkZXYpOw0KPiArCXNpemVfdCAoKm1heF9tYXBwaW5nX3NpemUpKHN0cnVjdCBkZXZp
+Y2UgKmRldik7DQo+ICB9Ow0KPiAgDQo+ICAjZGVmaW5lIERNQV9NQVBQSU5HX0VSUk9SCQkofihk
+bWFfYWRkcl90KTApDQo+IEBAIC0yNTcsNiArMjU4LDggQEAgc3RhdGljIGlubGluZSB2b2lkIGRt
+YV9kaXJlY3Rfc3luY19zZ19mb3JfY3B1KHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gIH0NCj4gICNl
+bmRpZg0KPiAgDQo+ICtzaXplX3QgZG1hX2RpcmVjdF9tYXhfbWFwcGluZ19zaXplKHN0cnVjdCBk
+ZXZpY2UgKmRldik7DQo+ICsNCj4gICNpZmRlZiBDT05GSUdfSEFTX0RNQQ0KPiAgI2luY2x1ZGUg
+PGFzbS9kbWEtbWFwcGluZy5oPg0KPiAgDQo+IEBAIC00NDAsNiArNDQzLDE5IEBAIHN0YXRpYyBp
+bmxpbmUgaW50IGRtYV9tYXBwaW5nX2Vycm9yKHN0cnVjdCBkZXZpY2UgKmRldiwgZG1hX2FkZHJf
+dCBkbWFfYWRkcikNCj4gIAlyZXR1cm4gMDsNCj4gIH0NCj4gIA0KPiArc3RhdGljIGlubGluZSBz
+aXplX3QgZG1hX21heF9tYXBwaW5nX3NpemUoc3RydWN0IGRldmljZSAqZGV2KQ0KPiArew0KPiAr
+CWNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqb3BzID0gZ2V0X2RtYV9vcHMoZGV2KTsNCj4gKwlz
+aXplX3Qgc2l6ZSA9IFNJWkVfTUFYOw0KPiArDQo+ICsJaWYgKGRtYV9pc19kaXJlY3Qob3BzKSkN
+Cj4gKwkJc2l6ZSA9IGRtYV9kaXJlY3RfbWF4X21hcHBpbmdfc2l6ZShkZXYpOw0KPiArCWVsc2Ug
+aWYgKG9wcyAmJiBvcHMtPm1heF9tYXBwaW5nX3NpemUpDQo+ICsJCXNpemUgPSBvcHMtPm1heF9t
+YXBwaW5nX3NpemUoZGV2KTsNCj4gKw0KPiArCXJldHVybiBzaXplOw0KPiArfQ0KPiArDQo+ICB2
+b2lkICpkbWFfYWxsb2NfYXR0cnMoc3RydWN0IGRldmljZSAqZGV2LCBzaXplX3Qgc2l6ZSwgZG1h
+X2FkZHJfdCAqZG1hX2hhbmRsZSwNCj4gIAkJZ2ZwX3QgZmxhZywgdW5zaWduZWQgbG9uZyBhdHRy
+cyk7DQo+ICB2b2lkIGRtYV9mcmVlX2F0dHJzKHN0cnVjdCBkZXZpY2UgKmRldiwgc2l6ZV90IHNp
+emUsIHZvaWQgKmNwdV9hZGRyLA0KPiBkaWZmIC0tZ2l0IGEva2VybmVsL2RtYS9kaXJlY3QuYyBi
+L2tlcm5lbC9kbWEvZGlyZWN0LmMNCj4gaW5kZXggMzU1ZDE2YWNlZTZkLi42MzEwYWQwMWY5MTUg
+MTAwNjQ0DQo+IC0tLSBhL2tlcm5lbC9kbWEvZGlyZWN0LmMNCj4gKysrIGIva2VybmVsL2RtYS9k
+aXJlY3QuYw0KPiBAQCAtMzgwLDMgKzM4MCwxNCBAQCBpbnQgZG1hX2RpcmVjdF9zdXBwb3J0ZWQo
+c3RydWN0IGRldmljZSAqZGV2LCB1NjQgbWFzaykNCj4gIAkgKi8NCj4gIAlyZXR1cm4gbWFzayA+
+PSBfX3BoeXNfdG9fZG1hKGRldiwgbWluX21hc2spOw0KPiAgfQ0KPiArDQo+ICtzaXplX3QgZG1h
+X2RpcmVjdF9tYXhfbWFwcGluZ19zaXplKHN0cnVjdCBkZXZpY2UgKmRldikNCj4gK3sNCj4gKwlz
+aXplX3Qgc2l6ZSA9IFNJWkVfTUFYOw0KPiArDQo+ICsJLyogSWYgU1dJT1RMQiBpcyBhY3RpdmUs
+IHVzZSBpdHMgbWF4aW11bSBtYXBwaW5nIHNpemUgKi8NCj4gKwlpZiAoaXNfc3dpb3RsYl9hY3Rp
+dmUoKSkNCj4gKwkJc2l6ZSA9IHN3aW90bGJfbWF4X21hcHBpbmdfc2l6ZShkZXYpOw0KPiArDQo+
+ICsJcmV0dXJuIHNpemU7DQo+ICt9DQoNCldoZW4gSSBidWlsZCB3aXRoIHRoZXNlIHBhdGNoZXMg
+YW5kIHdpdGggdGhlIHZpcnRpbyBkZXZpY2VzIGFzIG1vZHVsZXMgSQ0KZ2V0IGEgYnVpbGQgZmFp
+bHVyZS4gTG9va3MgbGlrZSB0aGlzIG5lZWRzIGFuIEVYUE9SVF9TWU1CT0woKSAoSSdtDQphc3N1
+bWluZyBFWFBPUlRfU1lNQk9MIGZvciBETUEgZnVuY3Rpb25zIGFuZCBub3QgRVhQT1JUX1NZTUJP
+TF9HUEw/KS4NCg0KVGhhbmtzLA0KVG9tDQoNCj4gDQo=
