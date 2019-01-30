@@ -1,69 +1,127 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Tue, 29 Jan 2019 18:17:43 -0700
-Message-ID: <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
-References: <20190129174728.6430-1-jglisse@redhat.com>
- <20190129174728.6430-4-jglisse@redhat.com>
- <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205749.GN3176@redhat.com>
- <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
- <20190129215028.GQ3176@redhat.com>
- <deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
- <20190129234752.GR3176@redhat.com>
+From: Jason Wang <jasowang@redhat.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Wed, 30 Jan 2019 10:24:01 +0800
+Message-ID: <6c68f7f7-1b28-6eba-9b8b-2c32efac9701@redhat.com>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+ <87womn8inf.fsf@morokweng.localdomain>
+ <20190129134750-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190129234752.GR3176@redhat.com>
-Content-Language: en-CA
+In-Reply-To: <20190129134750-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: Jason Gunthorpe <jgg@mellanox.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
+On 2019/1/30 上午3:02, Michael S. Tsirkin wrote:
+> On Tue, Jan 29, 2019 at 03:42:44PM -0200, Thiago Jung Bauermann wrote:
+>> Fixing address of powerpc mailing list.
+>>
+>> Thiago Jung Bauermann <bauerman@linux.ibm.com> writes:
+>>
+>>> Hello,
+>>>
+>>> With Christoph's rework of the DMA API that recently landed, the patch
+>>> below is the only change needed in virtio to make it work in a POWER
+>>> secure guest under the ultravisor.
+>>>
+>>> The other change we need (making sure the device's dma_map_ops is NULL
+>>> so that the dma-direct/swiotlb code is used) can be made in
+>>> powerpc-specific code.
+>>>
+>>> Of course, I also have patches (soon to be posted as RFC) which hook up
+>>> <linux/mem_encrypt.h> to the powerpc secure guest support code.
+>>>
+>>> What do you think?
+>>>
+>>>  From d0629a36a75c678b4a72b853f8f7f8c17eedd6b3 Mon Sep 17 00:00:00 2001
+>>> From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>>> Date: Thu, 24 Jan 2019 22:08:02 -0200
+>>> Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+>>>
+>>> The host can't access the guest memory when it's encrypted, so using
+>>> regular memory pages for the ring isn't an option. Go through the DMA API.
+>>>
+>>> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> Well I think this will come back to bite us (witness xen which is now
+> reworking precisely this path - but at least they aren't to blame, xen
+> came before ACCESS_PLATFORM).
+>
+> I also still think the right thing would have been to set
+> ACCESS_PLATFORM for all systems where device can't access all memory.
+>
+> But I also think I don't have the energy to argue about power secure
+> guest anymore.  So be it for power secure guest since the involved
+> engineers disagree with me.  Hey I've been wrong in the past ;).
+>
+> But the name "sev_active" makes me scared because at least AMD guys who
+> were doing the sensible thing and setting ACCESS_PLATFORM (unless I'm
+> wrong? I reemember distinctly that's so) will likely be affected too.
+> We don't want that.
+>
+> So let's find a way to make sure it's just power secure guest for now
+> pls.
+>
+> I also think we should add a dma_api near features under virtio_device
+> such that these hacks can move off data path.
 
-On 2019-01-29 4:47 p.m., Jerome Glisse wrote:
-> The whole point is to allow to use device memory for range of virtual
-> address of a process when it does make sense to use device memory for
-> that range. So they are multiple cases where it does make sense:
-> [1] - Only the device is accessing the range and they are no CPU access
->       For instance the program is executing/running a big function on
->       the GPU and they are not concurrent CPU access, this is very
->       common in all the existing GPGPU code. In fact AFAICT It is the
->       most common pattern. So here you can use HMM private or public
->       memory.
-> [2] - Both device and CPU access a common range of virtul address
->       concurrently. In that case if you are on a platform with cache
->       coherent inter-connect like OpenCAPI or CCIX then you can use
->       HMM public device memory and have both access the same memory.
->       You can not use HMM private memory.
-> 
-> So far on x86 we only have PCIE and thus so far on x86 we only have
-> private HMM device memory that is not accessible by the CPU in any
-> way.
 
-I feel like you're just moving the rug out from under us... Before you
-said ignore HMM and I was asking about the use case that wasn't using
-HMM and how it works without HMM. In response, you just give me *way*
-too much information describing HMM. And still, as best as I can see,
-managing DMA mappings (which is different from the userspace mappings)
-for GPU P2P should be handled by HMM and the userspace mappings should
-*just* link VMAs to HMM pages using the standard infrastructure we
-already have.
+Anyway the current Xen code is conflict with spec which said:
 
->> And what struct pages are actually going to be backing these VMAs if
->> it's not using HMM?
-> 
-> When you have some range of virtual address migrated to HMM private
-> memory then the CPU pte are special swap entry and they behave just
-> as if the memory was swapped to disk. So CPU access to those will
-> fault and trigger a migration back to main memory.
+"If this feature bit is set to 0, then the device has same access to 
+memory addresses supplied to it as the driver has. In particular, the 
+device will always use physical addresses matching addresses used by the 
+driver (typically meaning physical addresses used by the CPU) and not 
+translated further, and can access any address supplied to it by the 
+driver. When clear, this overrides any platform-specific description of 
+whether device access is limited or translated in any way, e.g. whether 
+an IOMMU may be present. "
 
-This isn't answering my question at all... I specifically asked what is
-backing the VMA when we are *not* using HMM.
+I wonder how much value that the above description can give us. It's 
+kind of odd that the behavior of "when the feature is not negotiated" is 
+described in the spec. Personally I think we can remove the above and 
+then we can switch to use DMA API unconditionally in guest driver. It 
+may have single digit regression probably, we can try to overcome it.
 
-Logan
+Thanks
+
+
+>
+> By the way could you please respond about virtio-iommu and
+> why there's no support for ACCESS_PLATFORM on power?
+>
+> I have Cc'd you on these discussions.
+>
+>
+> Thanks!
+>
+>
+>>> ---
+>>>   drivers/virtio/virtio_ring.c | 5 ++++-
+>>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+>>> index cd7e755484e3..321a27075380 100644
+>>> --- a/drivers/virtio/virtio_ring.c
+>>> +++ b/drivers/virtio/virtio_ring.c
+>>> @@ -259,8 +259,11 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
+>>>   	 * not work without an even larger kludge.  Instead, enable
+>>>   	 * the DMA API if we're a Xen guest, which at least allows
+>>>   	 * all of the sensible Xen configurations to work correctly.
+>>> +	 *
+>>> +	 * Also, if guest memory is encrypted the host can't access
+>>> +	 * it directly. In this case, we'll need to use the DMA API.
+>>>   	 */
+>>> -	if (xen_domain())
+>>> +	if (xen_domain() || sev_active())
+>>>   		return true;
+>>>
+>>>   	return false;
+>>
+>> -- 
+>> Thiago Jung Bauermann
+>> IBM Linux Technology Center
