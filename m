@@ -1,59 +1,75 @@
-From: Jerome Glisse <jglisse@redhat.com>
+From: Jason Gunthorpe <jgg-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
-Date: Wed, 30 Jan 2019 17:47:05 -0500
-Message-ID: <20190130224705.GI5061@redhat.com>
-References: <20190130192234.GD5061@redhat.com>
- <20190130193759.GE17080@mellanox.com>
- <db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
- <20190130201114.GB17915@mellanox.com>
- <20190130204332.GF5061@redhat.com>
- <20190130204954.GI17080@mellanox.com>
- <20190130214525.GG5061@redhat.com>
- <20190130215600.GM17080@mellanox.com>
- <20190130223027.GH5061@redhat.com>
- <20190130223258.GB25486@mellanox.com>
+Date: Wed, 30 Jan 2019 22:51:55 +0000
+Message-ID: <20190130225148.GC25486@mellanox.com>
+References: <20190130193759.GE17080@mellanox.com>
+	<db873687-ff80-4758-0b9f-973f27db5335@deltatee.com>
+	<20190130201114.GB17915@mellanox.com>
+	<20190130204332.GF5061@redhat.com>
+	<20190130204954.GI17080@mellanox.com>
+	<20190130214525.GG5061@redhat.com>
+	<20190130215600.GM17080@mellanox.com>
+	<20190130223027.GH5061@redhat.com>
+	<20190130223258.GB25486@mellanox.com>
+	<20190130224705.GI5061@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190130223258.GB25486@mellanox.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jason Gunthorpe <jgg@mellanox.com>
-Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Logan Gunthorpe <logang@deltatee.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190130224705.GI5061-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+Content-ID: <35A69DD96A70BF4186715D7C3E6F4417-wNKe6lTLrGecE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, "Rafael J . Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Felix Kuehling <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christian Koenig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBKYW4gMzAsIDIwMTkgYXQgMTA6MzM6MDRQTSArMDAwMCwgSmFzb24gR3VudGhvcnBl
-IHdyb3RlOgo+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0IDA1OjMwOjI3UE0gLTA1MDAsIEplcm9t
-ZSBHbGlzc2Ugd3JvdGU6Cj4gCj4gPiA+IFdoYXQgaXMgdGhlIHByb2JsZW0gaW4gdGhlIEhNTSBt
-aXJyb3IgdGhhdCBpdCBuZWVkcyB0aGlzIHJlc3RyaWN0aW9uPwo+ID4gCj4gPiBObyByZXN0cmlj
-dGlvbiBhdCBhbGwgaGVyZS4gSSB0aGluayBpIGp1c3Qgd2Fzbid0IHVuZGVyc3Rvb2QuCj4gCj4g
-QXJlIHlvdSBhcmUgdGFsa2luZyBhYm91dCBmcm9tIHRoZSBleHBvcnRpbmcgc2lkZSAtIHdoZXJl
-IHRoZSB0aGluZwo+IGNyZWF0aW5nIHRoZSBWTUEgY2FuIHJlYWxseSBvbmx5IHB1dCBvbmUgZGlz
-dGluY3Qgb2JqZWN0IGludG8gaXQ/CgpUaGUgbWVzc2FnZSBpIHdhcyB0cnlpbmcgdG8gZ2V0IGFj
-Y3Jvc3MgaXMgdGhhdCBITU0gbWlycm9yIHdpbGwKYWx3YXlzIHN1Y2NlZWQgZm9yIGV2ZXJ5dGhp
-bmcqIGV4Y2VwdCBmb3Igc3BlY2lhbCB2bWEgaWUgbW1hcCBvZgpkZXZpY2UgZmlsZS4gRm9yIHRo
-b3NlIGl0IGNhbiBvbmx5IHN1Y2NlZWQgaWYgYSBwMnBfbWFwKCkgY2FsbApzdWNjZWVkLgoKU28g
-YW55IHVzZXIgb2YgSE1NIG1pcnJvciBtaWdodCB0byBrbm93IHdoeSB0aGUgbWlycm9yaW5nIGZh
-aWwgaWUKd2FzIGl0IGJlY2F1c2Ugc29tZXRoaW5nIGV4Y2VwdGlvbmFsIGlzIGhhcHBlbmluZyA/
-IE9yIGlzIGl0IGJlY2F1c2UKaSB3YXMgdHJ5aW5nIHRvIG1hcCBhIHNwZWNpYWwgdm1hIHdoaWNo
-IGNhbiBiZSBmb3JiaWRlbi4KCkhlbmNlIHdoeSBpIGFzc3VtZSB0aGF0IHlvdSBtaWdodCB3YW50
-IHRvIGtub3cgYWJvdXQgc3VjaCBwMnBfbWFwCmZhaWx1cmUgYXQgdGhlIHRpbWUgeW91IGNyZWF0
-ZSB0aGUgdW1lbSBvZHAgb2JqZWN0IGFzIGl0IG1pZ2h0IGJlCnNvbWUgZmFpbHVyZSB5b3UgbWln
-aHQgd2FudCB0byByZXBvcnQgZGlmZmVyZW50bHkgYW5kIGhhbmRsZQpkaWZmZXJlbnRseS4gSWYg
-eW91IGRvIG5vdCBjYXJlIGFib3V0IGRpZmZlcmVudGlhdGluZyBPT00gb3IKZXhjZXB0aW9uYWwg
-ZmFpbHVyZSBmcm9tIHAycF9tYXAgZmFpbHVyZSB0aGFuIHlvdSBoYXZlIG5vdGhpbmcgdG8Kd29y
-cnkgYWJvdXQgeW91IHdpbGwgZ2V0IHRoZSBzYW1lIGVycm9yIGZyb20gSE1NIGZvciBib3RoLgoK
-Q2hlZXJzLApKw6lyw7RtZQoKKiBFdmVyeXRoaW5nIGV4Y2VwdCB3aGVuIHRoZXkgYXJlIGV4Y2Vw
-dGlvbmFsIGNvbmRpdGlvbiBsaWtlIE9PTSBvcgogIHBvaXNvbm91cyBtZW1vcnkuCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5n
-IGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVk
-ZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+On Wed, Jan 30, 2019 at 05:47:05PM -0500, Jerome Glisse wrote:
+> On Wed, Jan 30, 2019 at 10:33:04PM +0000, Jason Gunthorpe wrote:
+> > On Wed, Jan 30, 2019 at 05:30:27PM -0500, Jerome Glisse wrote:
+> > 
+> > > > What is the problem in the HMM mirror that it needs this restriction?
+> > > 
+> > > No restriction at all here. I think i just wasn't understood.
+> > 
+> > Are you are talking about from the exporting side - where the thing
+> > creating the VMA can really only put one distinct object into it?
+> 
+> The message i was trying to get accross is that HMM mirror will
+> always succeed for everything* except for special vma ie mmap of
+> device file. For those it can only succeed if a p2p_map() call
+> succeed.
+> 
+> So any user of HMM mirror might to know why the mirroring fail ie
+> was it because something exceptional is happening ? Or is it because
+> i was trying to map a special vma which can be forbiden.
+> 
+> Hence why i assume that you might want to know about such p2p_map
+> failure at the time you create the umem odp object as it might be
+> some failure you might want to report differently and handle
+> differently. If you do not care about differentiating OOM or
+> exceptional failure from p2p_map failure than you have nothing to
+> worry about you will get the same error from HMM for both.
+
+I think my hope here was that we could have some kind of 'trial'
+interface where very eary users can call
+'hmm_mirror_is_maybe_supported(dev, user_ptr, len)' and get a failure
+indication.
+
+We probably wouldn't call this on the full address space though
+
+Beyond that it is just inevitable there can be problems faulting if
+the memory map is messed with after MR is created.
+
+And here again, I don't want to worry about any particular VMA
+boundaries..
+
+Jason
