@@ -1,70 +1,29 @@
-From: Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH 2/2] iommu/amd: Remove clear_flush_young notifier
-Date: Thu, 31 Jan 2019 15:59:41 +0800
-Message-ID: <20190131075941.GB25119@xz-x1>
-References: <20190130055758.3994-1-peterx@redhat.com>
- <20190130055758.3994-3-peterx@redhat.com>
- <69af2b6f-bfc1-a4b9-675a-6fc93a7efef2@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Thu, 31 Jan 2019 09:02:03 +0100
+Message-ID: <20190131080203.GA26495@lst.de>
+References: <20190129174728.6430-4-jglisse@redhat.com> <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com> <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com> <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com> <20190129205827.GM10108@mellanox.com> <20190130080208.GC29665@lst.de> <20190130174424.GA17080@mellanox.com> <bcbdfae6-cfc6-c34f-4ff2-7bb9a08f38af@deltatee.com> <20190130185027.GC5061@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <69af2b6f-bfc1-a4b9-675a-6fc93a7efef2@arm.com>
+In-Reply-To: <20190130185027.GC5061@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jerome Glisse <jglisse@redhat.com>, Jason Wang <jasowang@redhat.com>
+To: Jerome Glisse <jglisse@redhat.com>
+Cc: Logan Gunthorpe <logang@deltatee.com>, Jason Gunthorpe <jgg@mellanox.com>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 12:27:40PM +0000, Jean-Philippe Brucker wrote:
-> Hi Peter,
-
-Hi, Jean,
-
+On Wed, Jan 30, 2019 at 01:50:27PM -0500, Jerome Glisse wrote:
+> I do not see how VMA changes are any different than using struct page
+> in respect to userspace exposure. Those vma callback do not need to be
+> set by everyone, in fact expectation is that only handful of driver
+> will set those.
 > 
-> On 30/01/2019 05:57, Peter Xu wrote:
-> > AMD IOMMU driver is using the clear_flush_young() to do cache flushing
-> > but that's actually already covered by invalidate_range().  Remove the
-> > extra notifier and the chunks.
-> 
-> Aren't uses of clear_flush_young() and invalidate_range() orthogonal? If
-> I understood correctly, when doing reclaim the kernel clears the young
-> bit from the PTE. This requires flushing secondary TLBs (ATCs), so that
-> new accesses from devices will go through the IOMMU, set the young bit
-> again and the kernel can accurately track page use. I didn't see
-> invalidate_range() being called by rmap or vmscan in this case, but
-> might just be missing it.
-> 
-> Two MMU notifiers are used for the young bit, clear_flush_young() and
-> clear_young(). I believe the former should invalidate ATCs so that DMA
-> accesses participate in PTE aging. Otherwise the kernel can't know that
-> the device is still using entries marked 'old'. The latter,
-> clear_young() is exempted from invalidating the secondary TLBs by
-> mmu_notifier.h and the IOMMU driver doesn't need to implement it.
+> How can we do p2p between RDMA and GPU for instance, without exposure
+> to userspace ? At some point you need to tell userspace hey this kernel
+> does allow you to do that :)
 
-Yes I agree most of your analysis, but IMHO the problem is that the
-AMD IOMMU is not really participating in the PTE aging after all.
-Please have a look at mn_clear_flush_young() below at [1] - it's
-always returning zero, no matter whether the page has been accessed by
-device or not.  A real user of it could be someone like KVM (please
-see kvm_mmu_notifier_clear_flush_young) where we'll try to lookup the
-shadow PTEs and do test-and-clear on that, then return the result to
-the core mm.  That's why I think currently the AMD driver was only
-trying to use that as a way to do an extra flush however IMHO it's
-redundant.
-
-Thanks,
-
-> > -static int mn_clear_flush_young(struct mmu_notifier *mn,
-> > -				struct mm_struct *mm,
-> > -				unsigned long start,
-> > -				unsigned long end)
-> > -{
-> > -	for (; start < end; start += PAGE_SIZE)
-> > -		__mn_flush_page(mn, start);
-> > -
-> > -	return 0;
-
-[1]
-
--- 
-Peter Xu
+To do RDMA on a memory region you need struct page backіng to start
+with..
