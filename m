@@ -1,42 +1,94 @@
-From: Tianyu Lan <lantianyu1986@gmail.com>
-Subject: Re: [PATCH 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
-Date: Thu, 31 Jan 2019 20:08:02 +0800
-Message-ID: <CAOLK0pwve6spShSBt_jBwECJWTtTtHYRz+yLi4vz18GnznMw1g@mail.gmail.com>
-References: <1548929853-25877-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1548929853-25877-3-git-send-email-Tianyu.Lan@microsoft.com> <20190131115944.GB19969@kroah.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 2/2] iommu/amd: Remove clear_flush_young notifier
+Date: Thu, 31 Jan 2019 12:25:40 +0000
+Message-ID: <926c28c2-66a0-8068-f7bc-2d8f9ce9f0ad@arm.com>
+References: <20190130055758.3994-1-peterx@redhat.com>
+ <20190130055758.3994-3-peterx@redhat.com>
+ <69af2b6f-bfc1-a4b9-675a-6fc93a7efef2@arm.com> <20190131075941.GB25119@xz-x1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190131115944.GB19969@kroah.com>
+In-Reply-To: <20190131075941.GB25119@xz-x1>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>, Joerg Roedel <joro@8bytes.org>, mchehab+samsung@kernel.org, davem@davemloft.net, akpm@linux-foundation.org, nicolas.ferre@microchip.com, Arnd Bergmann <arnd@arndb.de>, "linux-kernel@vger kernel org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, michael.h.kelley@microsoft.com, kys@microsoft.com, vkuznets@redhat.com, Alex Williamson <alex.williamson@redhat.com>
+To: Peter Xu <peterx@redhat.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 31, 2019 at 7:59 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Jan 31, 2019 at 06:17:32PM +0800, lantianyu1986@gmail.com wrote:
-> > --- /dev/null
-> > +++ b/drivers/iommu/hyperv-iommu.c
-> > @@ -0,0 +1,189 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#define pr_fmt(fmt)     "HYPERV-IR: " fmt
->
-> Minor nit, you never do any pr_*() calls, so this isn't needed, right?
+On 31/01/2019 07:59, Peter Xu wrote:
+> On Wed, Jan 30, 2019 at 12:27:40PM +0000, Jean-Philippe Brucker wrote:
+>> Hi Peter,
+> 
+> Hi, Jean,
+> 
+>>
+>> On 30/01/2019 05:57, Peter Xu wrote:
+>>> AMD IOMMU driver is using the clear_flush_young() to do cache flushing
+>>> but that's actually already covered by invalidate_range().  Remove the
+>>> extra notifier and the chunks.
+>>
+>> Aren't uses of clear_flush_young() and invalidate_range() orthogonal? If
+>> I understood correctly, when doing reclaim the kernel clears the young
+>> bit from the PTE. This requires flushing secondary TLBs (ATCs), so that
+>> new accesses from devices will go through the IOMMU, set the young bit
+>> again and the kernel can accurately track page use. I didn't see
+>> invalidate_range() being called by rmap or vmscan in this case, but
+>> might just be missing it.
+>>
+>> Two MMU notifiers are used for the young bit, clear_flush_young() and
+>> clear_young(). I believe the former should invalidate ATCs so that DMA
+>> accesses participate in PTE aging. Otherwise the kernel can't know that
+>> the device is still using entries marked 'old'. The latter,
+>> clear_young() is exempted from invalidating the secondary TLBs by
+>> mmu_notifier.h and the IOMMU driver doesn't need to implement it.
+> 
+> Yes I agree most of your analysis, but IMHO the problem is that the
+> AMD IOMMU is not really participating in the PTE aging after all.
+> Please have a look at mn_clear_flush_young() below at [1] - it's
+> always returning zero, no matter whether the page has been accessed by
+> device or not.  A real user of it could be someone like KVM (please
+> see kvm_mmu_notifier_clear_flush_young) where we'll try to lookup the
+> shadow PTEs and do test-and-clear on that, then return the result to
+> the core mm.  That's why I think currently the AMD driver was only
+> trying to use that as a way to do an extra flush however IMHO it's
+> redundant.
 
-Yes, you are right. I will remove it. Sorry. I used pr_info() during
-development stage and removed
-them before sending patch out. Thanks.
+Yes, in IOMMU drivers clear_flush_young() doesn't do the clear, only the
+flush, since the level-1 page table is shared with the CPU. But removing
+the flush gets you in the following situation:
 
->
-> > +static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
-> > +struct irq_domain *ioapic_ir_domain;
->
-> Global?  Why?
+  (1) Devices wants to access $addr, sends ATS query, the IOMMU sets PTE
+young and the entry is cached in the ATC.
 
-It should be "static" here.
+  (2) The CPU does ptep_clear_flush_young_notify(), clears young,
+notices that the page is being used.
 
--- 
-Best regards
-Tianyu Lan
+  (3) Device accesses $addr again. Given that we didn't invalidate the
+ATC in (2) it accesses the page directly, without going through the IOMMU.
+
+  (4) CPU does ptep_clear_flush_young_notify() again, the PTE doesn't
+have the young bit, which means the page isn't being used and can be
+reclaimed.
+
+That's not accurate since the page is being used by the device. At step
+(2) we should invalidate the ATC, so that (3) fetches the PTE again and
+marks it young.
+
+I can agree that the clear_flush_young() notifier is too brutal for this
+purpose, since we send spurious ATC invalidation even when the PTE
+wasn't young (and ATC inv is expensive). There should be another MMU
+notifier "flush_young()" that is called by
+ptep_clear_flush_young_notify() only when the page was actually young.
+But for the moment it's the best we have to avoid the situation above.
+
+I don't know enough about mm to understand exactly how the
+page_referenced() information is used, but I believe the problem is only
+about accuracy and not correctness. So applying this patch might not
+break anything (after all, intel-svm.c never implemented the notifier)
+but I think I'll keep the notifier in my SVA rework [1].
+
+Thanks,
+Jean
+
+[1] https://www.spinics.net/lists/iommu/msg30081.html
