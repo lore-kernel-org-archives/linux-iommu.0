@@ -1,112 +1,72 @@
-From: Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Wed, 30 Jan 2019 23:30:27 +0000
-Message-ID: <20190130233021.GD25486@mellanox.com>
-References: <20190129234752.GR3176@redhat.com>
- <655a335c-ab91-d1fc-1ed3-b5f0d37c6226@deltatee.com>
- <20190130041841.GB30598@mellanox.com> <20190130080006.GB29665@lst.de>
- <20190130190651.GC17080@mellanox.com>
- <840256f8-0714-5d7d-e5f5-c96aec5c2c05@deltatee.com>
- <20190130195900.GG17080@mellanox.com>
- <35bad6d5-c06b-f2a3-08e6-2ed0197c8691@deltatee.com>
- <20190130215019.GL17080@mellanox.com>
- <07baf401-4d63-b830-57e1-5836a5149a0c@deltatee.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: [PATCHv2 0/9] Use vm_insert_range and vm_insert_range_buggy
+Date: Thu, 31 Jan 2019 08:36:31 +0530
+Message-ID: <20190131030631.GA1868@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <07baf401-4d63-b830-57e1-5836a5149a0c@deltatee.com>
-Content-Language: en-US
-Content-ID: <95781CBA468AA44CA09FE9E7B761A943@eurprd05.prod.outlook.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: Christoph Hellwig <hch@lst.de>, Jerome Glisse <jglisse@redhat.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com, sfr@canb.auug.org.au, rppt@linux.vnet.ibm.com, peterz@infradead.org, linux@armlinux.org.uk, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, keescook@chromium.org, m.szyprowski@samsung.com, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, heiko@sntech.de, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 03:52:13PM -0700, Logan Gunthorpe wrote:
->=20
->=20
-> On 2019-01-30 2:50 p.m., Jason Gunthorpe wrote:
-> > On Wed, Jan 30, 2019 at 02:01:35PM -0700, Logan Gunthorpe wrote:
-> >=20
-> >> And I feel the GUP->SGL->DMA flow should still be what we are aiming
-> >> for. Even if we need a special GUP for special pages, and a special DM=
-A
-> >> map; and the SGL still has to be homogenous....
-> >=20
-> > *shrug* so what if the special GUP called a VMA op instead of
-> > traversing the VMA PTEs today? Why does it really matter? It could
-> > easily change to a struct page flow tomorrow..
->=20
-> Well it's so that it's composable. We want the SGL->DMA side to work for
-> APIs from kernel space and not have to run a completely different flow
-> for kernel drivers than from userspace memory.
+Previouly drivers have their own way of mapping range of
+kernel pages/memory into user vma and this was done by
+invoking vm_insert_page() within a loop.
 
-If we want to have these DMA-only SGLs anyhow, then the kernel flow
-can use them too.
+As this pattern is common across different drivers, it can
+be generalized by creating new functions and use it across
+the drivers.
 
-In the kernel it easier because the 'exporter' already knows it is
-working with BAR memory, so it can just do something like this:
+vm_insert_range() is the API which could be used to mapped
+kernel memory/pages in drivers which has considered vm_pgoff
 
-struct dma_sg_table *sgl_dma_map_pci_bar(struct pci_device *from,
-                                         struct device *to,
-                                         unsigned long bar_ptr,
-                                         size_t length)
+vm_insert_range_buggy() is the API which could be used to map
+range of kernel memory/pages in drivers which has not considered
+vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
 
-And then it falls down the same DMA-SGL-only kind of flow that would
-exist to support the user side. ie it is the kernel version of the API
-I described below.
+We _could_ then at a later "fix" these drivers which are using
+vm_insert_range_buggy() to behave according to the normal vm_pgoff
+offsetting simply by removing the _buggy suffix on the function
+name and if that causes regressions, it gives us an easy way to revert.
 
-> For GUP to do a special VMA traversal it would now need to return
-> something besides struct pages which means no SGL and it means a
-> completely different DMA mapping call.
+v1 -> v2:
+	Few Reviewed-by.
 
-GUP cannot support BAR memory because it must only return CPU memory -
-I think too many callers make this assumption for it to be possible to
-change it.. (see below)
+        Updated the change log in [8/9]
 
-A new-GUP can return DMA addresses - so it doesn't have this problem.
+	In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
+	to select a buffer, not as a in-buffer offset by design
+	and it always want to mmap a whole buffer from its beginning.
+	Added additional changes after discussing with Marek and
+	vm_insert_range could be used instead of vm_insert_range_buggy.
 
-> > Would you feel better if this also came along with a:
-> >=20
-> >   struct dma_sg_table *sgl_dma_map_user(struct device *dma_device,=20
-> >              void __user *prt, size_t len)
->=20
-> That seems like a nice API. But certainly the implementation would need
-> to use existing dma_map or pci_p2pdma_map calls, or whatever as part of
-> it...
+Souptick Joarder (9):
+  mm: Introduce new vm_insert_range and vm_insert_range_buggy API
+  arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
+  drivers/firewire/core-iso.c: Convert to use vm_insert_range_buggy
+  drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
+  drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
+  iommu/dma-iommu.c: Convert to use vm_insert_range
+  videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range
+  xen/gntdev.c: Convert to use vm_insert_range
+  xen/privcmd-buf.c: Convert to use vm_insert_range_buggy
 
-I wonder how Jerome worked the translation, I haven't looked yet..
+ arch/arm/mm/dma-mapping.c                          | 22 ++----
+ drivers/firewire/core-iso.c                        | 15 +---
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
+ drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
+ drivers/iommu/dma-iommu.c                          | 12 +---
+ drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
+ .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
+ drivers/xen/gntdev.c                               | 16 ++---
+ drivers/xen/privcmd-buf.c                          |  8 +--
+ include/linux/mm.h                                 |  4 ++
+ mm/memory.c                                        | 81 ++++++++++++++++++++++
+ mm/nommu.c                                         | 14 ++++
+ 13 files changed, 136 insertions(+), 106 deletions(-)
 
-> We actually stopped caring about the __iomem problem. We are working
-> under the assumption that pages returned by devm_memremap_pages() can be
-> accessed as normal RAM and does not need the __iomem designation.
-
-As far as CPU mapped uncached BAR memory goes, this is broadly not
-true.
-
-s390x for instance requires dedicated CPU instructions to access BAR
-memory.
-
-x86 will fault if you attempt to use a SSE algorithm on uncached BAR
-memory. The kernel has many SSE accelerated algorithsm so you can
-never pass these special p2p SGL's through to them either. (think
-parity or encryption transformations through the block stack)
-
-Many platforms have limitations on alignment and access size for BAR
-memory - you can't just blindly call memcpy and expect it to work.
-(TPM is actually struggling with this now, confusingly different
-versions of memcpy are giving different results on some x86 io memory)
-
-Other platforms might fault or corrupt if an unaligned access is
-attempted to BAR memory.
-
-In short - I don't see a way to avoid knowing about __iomem in the
-sgl. There are too many real use cases that require this knowledge,
-and too many places that touch the SGL pages with the CPU.
-
-I think we must have 'DMA only' SGLs and code paths that are known
-DMA-only clean to make it work properly with BAR memory.
-
-Jason
+-- 
+1.9.1
