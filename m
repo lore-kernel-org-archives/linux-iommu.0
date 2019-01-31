@@ -1,67 +1,52 @@
-From: Tianyu Lan <lantianyu1986@gmail.com>
-Subject: Re: [PATCH 1/3] x86/Hyper-V: Set x2apic destination mode to physical
- when x2apic is available
-Date: Thu, 31 Jan 2019 20:02:51 +0800
-Message-ID: <CAOLK0py-5AmLwEtLveFAKnM_=hnjsCL18vdAk0n6_NPPyB20bA@mail.gmail.com>
-References: <1548929853-25877-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1548929853-25877-2-git-send-email-Tianyu.Lan@microsoft.com>
- <20190131115756.GA19969@kroah.com>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCHv2 1/9] mm: Introduce new vm_insert_range and
+ vm_insert_range_buggy API
+Date: Thu, 31 Jan 2019 13:06:49 +0100
+Message-ID: <1701923.z6LKAITQJA@phil>
+References: <20190131030812.GA2174@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <20190131115756.GA19969@kroah.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: sashal@kernel.org, sthemmin@microsoft.com, akpm@linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, davem@davemloft.net, devel@linuxdriverproject.org, Joerg Roedel <joro@8bytes.org>, the arch/x86 maintainers <x86@kernel.org>, "linux-kernel@vger kernel org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, nicolas.ferre@microchip.com, michael.h.kelley@microsoft.com, vkuznets@redhat.com, Alex Williamson <alex.williamson@redhat.com>, Ingo Molnar <mingo@redhat.com>, bp@alien8.de, "H. Peter Anvin" <hpa@zytor.com>, mchehab+samsung@kernel.org, Lan Tianyu <Tianyu.Lan@microsoft.com>, Thomas Gleixner <tglx@linutronix.de>, haiyangz@microsoft.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190131030812.GA2174@jordon-HP-15-Notebook-PC>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Souptick Joarder <jrdr.linux@gmail.com>
+Cc: mhocko@suse.com, peterz@infradead.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux1394-devel@lists.sourceforge.net, m.szyprowski@samsung.com, sfr@canb.auug.org.au, oleksandr_andrushchenko@epam.com, linux@armlinux.org.uk, willy@infradead.org, airlied@linux.ie, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, treding@nvidia.com, linux-media@vger.kernel.org, keescook@chromium.org, pawel@osciak.com, riel@surriel.com, iommu@lists.linux-foundation.org, rppt@linux.vnet.ibm.com, boris.ostrovsky@oracle.com, mchehab@kernel.org, iamjoonsoo.kim@lge.com, vbabka@suse.cz, jgross@suse.com, xen-devel@lists.xen.org, kyungmin.park@samsung.com, stefanr@s5r6.in-berlin.de, akpm@linux-foundation.org, robin.murphy@arm.com, kirill.shutemov@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Greg:
-             Thanks for your review.
-
-On Thu, Jan 31, 2019 at 7:57 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Jan 31, 2019 at 06:17:31PM +0800, lantianyu1986@gmail.com wrote:
-> > From: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> >
-> > Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
-> > set x2apic destination mode to physcial mode when x2apic is available
-> > and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
-> > 8-bit APIC id.
-> >
-> > Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> > ---
-> >  arch/x86/kernel/cpu/mshyperv.c | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> >
-> > diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-> > index e81a2db..9d62f33 100644
-> > --- a/arch/x86/kernel/cpu/mshyperv.c
-> > +++ b/arch/x86/kernel/cpu/mshyperv.c
-> > @@ -36,6 +36,8 @@
-> >  struct ms_hyperv_info ms_hyperv;
-> >  EXPORT_SYMBOL_GPL(ms_hyperv);
-> >
-> > +extern int x2apic_phys;
->
-> Shouldn't this be in a .h file somewhere instead?
-
-You are right. I should use <asm/apic.h> here. Thanks.
-
-> thanks,
->
-> greg k-h
-
-
-
--- 
-Best regards
-Tianyu Lan
+QW0gRG9ubmVyc3RhZywgMzEuIEphbnVhciAyMDE5LCAwNDowODoxMiBDRVQgc2NocmllYiBTb3Vw
+dGljayBKb2FyZGVyOgo+IFByZXZpb3VseSBkcml2ZXJzIGhhdmUgdGhlaXIgb3duIHdheSBvZiBt
+YXBwaW5nIHJhbmdlIG9mCj4ga2VybmVsIHBhZ2VzL21lbW9yeSBpbnRvIHVzZXIgdm1hIGFuZCB0
+aGlzIHdhcyBkb25lIGJ5Cj4gaW52b2tpbmcgdm1faW5zZXJ0X3BhZ2UoKSB3aXRoaW4gYSBsb29w
+Lgo+IAo+IEFzIHRoaXMgcGF0dGVybiBpcyBjb21tb24gYWNyb3NzIGRpZmZlcmVudCBkcml2ZXJz
+LCBpdCBjYW4KPiBiZSBnZW5lcmFsaXplZCBieSBjcmVhdGluZyBuZXcgZnVuY3Rpb25zIGFuZCB1
+c2UgaXQgYWNyb3NzCj4gdGhlIGRyaXZlcnMuCj4gCj4gdm1faW5zZXJ0X3JhbmdlKCkgaXMgdGhl
+IEFQSSB3aGljaCBjb3VsZCBiZSB1c2VkIHRvIG1hcHBlZAo+IGtlcm5lbCBtZW1vcnkvcGFnZXMg
+aW4gZHJpdmVycyB3aGljaCBoYXMgY29uc2lkZXJlZCB2bV9wZ29mZgo+IAo+IHZtX2luc2VydF9y
+YW5nZV9idWdneSgpIGlzIHRoZSBBUEkgd2hpY2ggY291bGQgYmUgdXNlZCB0byBtYXAKPiByYW5n
+ZSBvZiBrZXJuZWwgbWVtb3J5L3BhZ2VzIGluIGRyaXZlcnMgd2hpY2ggaGFzIG5vdCBjb25zaWRl
+cmVkCj4gdm1fcGdvZmYuIHZtX3Bnb2ZmIGlzIHBhc3NlZCBkZWZhdWx0IGFzIDAgZm9yIHRob3Nl
+IGRyaXZlcnMuCj4gCj4gV2UgX2NvdWxkXyB0aGVuIGF0IGEgbGF0ZXIgImZpeCIgdGhlc2UgZHJp
+dmVycyB3aGljaCBhcmUgdXNpbmcKPiB2bV9pbnNlcnRfcmFuZ2VfYnVnZ3koKSB0byBiZWhhdmUg
+YWNjb3JkaW5nIHRvIHRoZSBub3JtYWwgdm1fcGdvZmYKPiBvZmZzZXR0aW5nIHNpbXBseSBieSBy
+ZW1vdmluZyB0aGUgX2J1Z2d5IHN1ZmZpeCBvbiB0aGUgZnVuY3Rpb24KPiBuYW1lIGFuZCBpZiB0
+aGF0IGNhdXNlcyByZWdyZXNzaW9ucywgaXQgZ2l2ZXMgdXMgYW4gZWFzeSB3YXkgdG8gcmV2ZXJ0
+Lgo+IAo+IFNpZ25lZC1vZmYtYnk6IFNvdXB0aWNrIEpvYXJkZXIgPGpyZHIubGludXhAZ21haWwu
+Y29tPgo+IFN1Z2dlc3RlZC1ieTogUnVzc2VsbCBLaW5nIDxsaW51eEBhcm1saW51eC5vcmcudWs+
+Cj4gU3VnZ2VzdGVkLWJ5OiBNYXR0aGV3IFdpbGNveCA8d2lsbHlAaW5mcmFkZWFkLm9yZz4KCmht
+bSwgSSdtIG1pc3NpbmcgYSBjaGFuZ2Vsb2cgaGVyZSBiZXR3ZWVuIHYxIGFuZCB2Mi4KTmV2ZXJ0
+aGVsZXNzIEkgbWFuYWdlZCB0byB0ZXN0IHYxIG9uIFJvY2tjaGlwIGhhcmR3YXJlCmFuZCBkaXNw
+bGF5IGlzIHN0aWxsIHdvcmtpbmcsIGluY2x1ZGluZyB0YWxraW5nIHRvIExpbWEgdmlhIHByaW1l
+LgoKU28gaWYgdGhlcmUgYXJlbid0IGFueSBiaWcgY2hhbmdlcyBmb3IgdjIsIG9uIFJvY2tjaGlw
+ClRlc3RlZC1ieTogSGVpa28gU3R1ZWJuZXIgPGhlaWtvQHNudGVjaC5kZT4KCkhlaWtvCgoKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1h
+aWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
