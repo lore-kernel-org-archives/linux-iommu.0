@@ -1,119 +1,65 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] dma: Uninline dma_max_mapping_size()
-Date: Thu, 31 Jan 2019 14:01:27 +0100
-Message-ID: <20190131130127.GP32526@8bytes.org>
-References: <20190130164007.26497-1-joro@8bytes.org>
- <20190130164007.26497-4-joro@8bytes.org>
- <20190131104129.GA9241@lst.de>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as non-strict
+Date: Thu, 31 Jan 2019 21:52:11 +0800
+Message-ID: <20190131135211.6732-1-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190131104129.GA9241@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de, Thomas.Lendacky@amd.com
+To: John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 31, 2019 at 11:41:29AM +0100, Christoph Hellwig wrote:
-> Sorry for not noticing last time, but since 5.0 we keep all non-fast
-> path DMA mapping interfaces out of line, so this should move to
-> kernel/dma/mapping.c.
+Currently, many peripherals are faster than before. For example, the top
+speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
+when iommu page-table mapping enabled, it's hard to reach the top speed
+in strict mode, because of frequently map and unmap operations. In order
+to keep abreast of the times, I think it's better to set non-strict as
+default.
 
-Okay, attached patch does that. It applies on-top of this patch-set.
+Below it's our iperf performance data of 25Gb netcard:
+strict mode: 18-20 Gb/s
+non-strict mode: 23.5 Gb/s
 
-Michael, feel free to either apply this on-top of the patch-set or merge
-the diff into patch 3, whatever you prefer.
-
->From 2bb95d2136280c79de9553852ee3370f6d42d7b3 Mon Sep 17 00:00:00 2001
-From: Joerg Roedel <jroedel@suse.de>
-Date: Thu, 31 Jan 2019 13:55:27 +0100
-Subject: [PATCH] dma: Uninline dma_max_mapping_size()
-
-The function is not performance sensitive and doesn't need
-to be inlined at every call-site. Move it out of the header
-into the appropriate C source file.
-
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- include/linux/dma-mapping.h | 18 +++++-------------
- kernel/dma/direct.c         |  1 -
- kernel/dma/mapping.c        | 14 ++++++++++++++
- 3 files changed, 19 insertions(+), 14 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt | 4 ++--
+ drivers/iommu/iommu.c                           | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index a3ca8a71a704..5b21f14802e1 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -443,19 +443,6 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
- 	return 0;
- }
- 
--static inline size_t dma_max_mapping_size(struct device *dev)
--{
--	const struct dma_map_ops *ops = get_dma_ops(dev);
--	size_t size = SIZE_MAX;
--
--	if (dma_is_direct(ops))
--		size = dma_direct_max_mapping_size(dev);
--	else if (ops && ops->max_mapping_size)
--		size = ops->max_mapping_size(dev);
--
--	return size;
--}
--
- void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t flag, unsigned long attrs);
- void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
-@@ -476,6 +463,7 @@ int dma_supported(struct device *dev, u64 mask);
- int dma_set_mask(struct device *dev, u64 mask);
- int dma_set_coherent_mask(struct device *dev, u64 mask);
- u64 dma_get_required_mask(struct device *dev);
-+size_t dma_max_mapping_size(struct device *dev);
- #else /* CONFIG_HAS_DMA */
- static inline dma_addr_t dma_map_page_attrs(struct device *dev,
- 		struct page *page, size_t offset, size_t size,
-@@ -577,6 +565,10 @@ static inline u64 dma_get_required_mask(struct device *dev)
- {
- 	return 0;
- }
-+static inline size_t dma_max_mapping_size(struct device *dev)
-+{
-+	return 0;
-+}
- #endif /* CONFIG_HAS_DMA */
- 
- static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 81ca8170b928..6310ad01f915 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -391,4 +391,3 @@ size_t dma_direct_max_mapping_size(struct device *dev)
- 
- 	return size;
- }
--EXPORT_SYMBOL(dma_direct_max_mapping_size);
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index a11006b6d8e8..5753008ab286 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -357,3 +357,17 @@ void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 		ops->cache_sync(dev, vaddr, size, dir);
- }
- EXPORT_SYMBOL(dma_cache_sync);
-+
-+size_t dma_max_mapping_size(struct device *dev)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	size_t size = SIZE_MAX;
-+
-+	if (dma_is_direct(ops))
-+		size = dma_direct_max_mapping_size(dev);
-+	else if (ops && ops->max_mapping_size)
-+		size = ops->max_mapping_size(dev);
-+
-+	return size;
-+}
-+EXPORT_SYMBOL_GPL(dma_max_mapping_size);
--- 
-2.16.4
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index b799bcf..667221f 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1779,13 +1779,13 @@
+
+ 	iommu.strict=	[ARM64] Configure TLB invalidation behaviour
+ 			Format: { "0" | "1" }
+-			0 - Lazy mode.
++			0 - Lazy mode (default).
+ 			  Request that DMA unmap operations use deferred
+ 			  invalidation of hardware TLBs, for increased
+ 			  throughput at the cost of reduced device isolation.
+ 			  Will fall back to strict mode if not supported by
+ 			  the relevant IOMMU driver.
+-			1 - Strict mode (default).
++			1 - Strict mode.
+ 			  DMA unmap operations invalidate IOMMU hardware TLBs
+ 			  synchronously.
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3ed4db3..10e0b49 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -43,7 +43,7 @@
+ #else
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
+-static bool iommu_dma_strict __read_mostly = true;
++static bool iommu_dma_strict __read_mostly;
+
+ struct iommu_callback_data {
+ 	const struct iommu_ops *ops;
+--
+1.8.3
