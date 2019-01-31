@@ -1,266 +1,158 @@
-From: Evan Green <evgreen@chromium.org>
-Subject: Re: [PATCH v6 06/20] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB Mode
-Date: Thu, 31 Jan 2019 11:23:16 -0800
-Message-ID: <CAE=gft6ai_ff5e2=XL=pU5AxwOYeSb05PUkfEt9Bn7Ek+fZRyg@mail.gmail.com>
-References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
- <1546314952-15990-7-git-send-email-yong.wu@mediatek.com> <CAE=gft5bga+pM_7syKMnnma78xYN0HT4LaPPEftJ9DNqFf=zWw@mail.gmail.com>
- <1548917937.3292.15.camel@mhfsdcap03>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
+ vma
+Date: Thu, 31 Jan 2019 14:35:14 -0500
+Message-ID: <20190131193513.GC16593@redhat.com>
+References: <20190130041841.GB30598@mellanox.com>
+ <20190130080006.GB29665@lst.de>
+ <20190130190651.GC17080@mellanox.com>
+ <840256f8-0714-5d7d-e5f5-c96aec5c2c05@deltatee.com>
+ <20190130195900.GG17080@mellanox.com>
+ <35bad6d5-c06b-f2a3-08e6-2ed0197c8691@deltatee.com>
+ <20190130215019.GL17080@mellanox.com>
+ <07baf401-4d63-b830-57e1-5836a5149a0c@deltatee.com>
+ <20190131081355.GC26495@lst.de>
+ <20190131190202.GC7548@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548917937.3292.15.camel@mhfsdcap03>
+Content-Disposition: inline
+In-Reply-To: <20190131190202.GC7548@mellanox.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+To: Jason Gunthorpe <jgg@mellanox.com>
+Cc: Christoph Hellwig <hch@lst.de>, Logan Gunthorpe <logang@deltatee.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 30, 2019 at 10:59 PM Yong Wu <yong.wu@mediatek.com> wrote:
->
-> On Wed, 2019-01-30 at 10:28 -0800, Evan Green wrote:
-> > On Mon, Dec 31, 2018 at 7:57 PM Yong Wu <yong.wu@mediatek.com> wrote:
-> > >
-> > > MediaTek extend the arm v7s descriptor to support the dram over 4GB.
-> > >
-> > > In the mt2712 and mt8173, it's called "4GB mode", the physical address
-> > > is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
-> > > is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
-> > > bit32 is always enabled. thus, in the M4U, we always enable the bit9
-> > > for all PTEs which means to enable bit32 of physical address.
-> >
-> > I got a little lost here. I get that you're trying to explain why you
-> > always used to set bit32 of the physical address. But I don't totally
-> > get the part about physical addresses being from 0x4000_0000 -
-> > 0x1_3fff_ffff, but also from 0x1_0000_0000-0x1_ffff_ffff. Are you
-> > saying that the physical addresses from the iommu's perspective were
-> > always >0x1_0000_0000?
->
-> Yes. From the IOMMU's perspective, the Physical address is from
-> 0x1_0000_0000 to 0x1_ffff_ffff.
->
-> > But then from whose perspective is it 0x4000_0000? ...
->
-> I guess from SW point view. it is from 0x4000_0000 to 0x1_3fff_ffff.
->
-> If 4GB mode is enabled, the memory property in dts like this:
->
->         memory@40000000 {
->                 device_type = "memory";
->                 reg = <0 0x40000000 0x00000001 0x00000000>;
->         };
->
-> > oh, or you're saying there was some sort of remapping
-> > facility that moved the physical addresses around?
-> >
-> > >
-> > > but in mt8183, M4U support the dram from 0x4000_0000 to 0x3_ffff_ffff
-> > > which isn't remaped. We extend the PTEs: the bit9 represent bit32 of
-> > > PA and the bit4 represent bit33 of PA. Meanwhile the iova still is
-> > > 32bits.
-> > >
-> > > In order to unify code, in the "4GB mode", we add the bit32 for the
-> > > physical address manually in our driver.
-> > >
-> > > Correspondingly, Adding bit32 and bit33 for the PA in the iova_to_phys
-> > > has to been moved into v7s.
-> > >
-> > > Regarding whether the pagetable address could be over 4GB, the mt8183
-> > > support it while the previous mt8173 don't. thus keep it as is.
-> > >
-> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> > > ---
-> > >  drivers/iommu/io-pgtable-arm-v7s.c | 31 ++++++++++++++++++++++++-------
-> > >  drivers/iommu/io-pgtable.h         |  7 +++----
-> > >  drivers/iommu/mtk_iommu.c          | 14 ++++++++------
-> > >  drivers/iommu/mtk_iommu.h          |  1 +
-> > >  4 files changed, 36 insertions(+), 17 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> > > index 11d8505..8803a35 100644
-> > > --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> > > +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> > > @@ -124,7 +124,9 @@
-> > >  #define ARM_V7S_TEX_MASK               0x7
-> > >  #define ARM_V7S_ATTR_TEX(val)          (((val) & ARM_V7S_TEX_MASK) << ARM_V7S_TEX_SHIFT)
-> > >
-> > > -#define ARM_V7S_ATTR_MTK_4GB           BIT(9) /* MTK extend it for 4GB mode */
-> > > +/* MediaTek extend the two bits below for over 4GB mode */
-> > > +#define ARM_V7S_ATTR_MTK_PA_BIT32      BIT(9)
-> > > +#define ARM_V7S_ATTR_MTK_PA_BIT33      BIT(4)
-> >
-> > If other vendors start doing stuff like this we'll need a more generic
-> > way to handle this... but I guess until we see a pattern this is okay.
-> >
-> > >
-> > >  /* *well, except for TEX on level 2 large pages, of course :( */
-> > >  #define ARM_V7S_CONT_PAGE_TEX_SHIFT    6
-> > > @@ -183,13 +185,22 @@ static dma_addr_t __arm_v7s_dma_addr(void *pages)
-> > >  static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
-> > >                                     struct io_pgtable_cfg *cfg)
-> > >  {
-> > > -       return paddr & ARM_V7S_LVL_MASK(lvl);
-> > > +       arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
-> > > +
-> > > +       if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
-> > > +               if (paddr & BIT_ULL(32))
-> > > +                       pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
-> > > +               if (paddr & BIT_ULL(33))
-> > > +                       pte |= ARM_V7S_ATTR_MTK_PA_BIT33;
-> > > +       }
-> > > +       return pte;
-> > >  }
-> > >
-> > >  static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
-> > >                                   struct io_pgtable_cfg *cfg)
-> > >  {
-> > >         arm_v7s_iopte mask;
-> > > +       phys_addr_t paddr;
-> > >
-> > >         if (ARM_V7S_PTE_IS_TABLE(pte, lvl))
-> > >                 mask = ARM_V7S_TABLE_MASK;
-> > > @@ -198,7 +209,14 @@ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
-> > >         else
-> > >                 mask = ARM_V7S_LVL_MASK(lvl);
-> > >
-> > > -       return pte & mask;
-> > > +       paddr = pte & mask;
-> > > +       if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
-> > > +               if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
-> > > +                       paddr |= BIT_ULL(32);
-> > > +               if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
-> > > +                       paddr |= BIT_ULL(33);
-> > > +       }
-> > > +       return paddr;
-> > >  }
-> > >
-> > >  static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
-> > > @@ -315,9 +333,6 @@ static arm_v7s_iopte arm_v7s_prot_to_pte(int prot, int lvl,
-> > >         if (lvl == 1 && (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS))
-> > >                 pte |= ARM_V7S_ATTR_NS_SECTION;
-> > >
-> > > -       if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)
-> > > -               pte |= ARM_V7S_ATTR_MTK_4GB;
-> > > -
-> >
-> > So despite getting lost in the details, I guess the reason it's okay
-> > that this goes from unconditional to conditional on bit32 is that
-> > before, with the older chips, all physical addresses were above 4GB,
-> > so we'll always see PA's above 4GB?
-> >
-> > >         return pte;
-> > >  }
-> > >
-> > > @@ -504,7 +519,9 @@ static int arm_v7s_map(struct io_pgtable_ops *ops, unsigned long iova,
-> > >         if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
-> > >                 return 0;
-> > >
-> > > -       if (WARN_ON(upper_32_bits(iova) || upper_32_bits(paddr)))
-> > > +       if (WARN_ON(upper_32_bits(iova)) ||
-> > > +           WARN_ON(upper_32_bits(paddr) &&
-> > > +                   !(iop->cfg.quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)))
-> > >                 return -ERANGE;
-> > >
-> > >         ret = __arm_v7s_map(data, iova, paddr, size, prot, 1, data->pgd);
-> > > diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> > > index 47d5ae5..69db115 100644
-> > > --- a/drivers/iommu/io-pgtable.h
-> > > +++ b/drivers/iommu/io-pgtable.h
-> > > @@ -62,10 +62,9 @@ struct io_pgtable_cfg {
-> > >          *      (unmapped) entries but the hardware might do so anyway, perform
-> > >          *      TLB maintenance when mapping as well as when unmapping.
-> > >          *
-> > > -        * IO_PGTABLE_QUIRK_ARM_MTK_4GB: (ARM v7s format) Set bit 9 in all
-> > > -        *      PTEs, for Mediatek IOMMUs which treat it as a 33rd address bit
-> > > -        *      when the SoC is in "4GB mode" and they can only access the high
-> > > -        *      remap of DRAM (0x1_00000000 to 0x1_ffffffff).
-> > > +        * IO_PGTABLE_QUIRK_ARM_MTK_4GB: (ARM v7s format) MediaTek IOMMUs extend
-> > > +        *      to support up to 34 bits PA where the bit32 and bit33 are
-> > > +        *      encoded in the bit9 and bit4 of the PTE respectively.
-> > >          *
-> > >          * IO_PGTABLE_QUIRK_NO_DMA: Guarantees that the tables will only ever
-> > >          *      be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
-> > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > > index 189d1b5..ae1aa5a 100644
-> > > --- a/drivers/iommu/mtk_iommu.c
-> > > +++ b/drivers/iommu/mtk_iommu.c
-> > > @@ -367,12 +367,16 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
-> > >                          phys_addr_t paddr, size_t size, int prot)
-> > >  {
-> > >         struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-> > > +       struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
-> > >         unsigned long flags;
-> > >         int ret;
-> > >
-> > > +       /* The "4GB mode" M4U physically can not use the lower remap of Dram. */
-> > > +       if (data->plat_data->has_4gb_mode && data->enable_4GB)
-> > > +               paddr |= BIT_ULL(32);
-> > > +
-> >
-> > Ok here's where I get lost. How is this okay? Is the same physical RAM
-> > accessible at multiple locations in the physical address space? Won't
-> > this map an iova to a different pa than the one requested?
->
-> In 4GB mode, HW will remap 0x4000_0000-0x1_3fff_ffff to 0x1_0000_0000-
-> 0x1_ffff_ffff. M4U help multimedia HW access dram, thus from M4U point
-> of view, the dram always is 0x1_0000_0000 to 0x1_ffff_ffff.
->
-> The detailed mapping relationship is like this:
->
-> 0x4000_0000  -0xffff_ffff   map to 0x1_4000_0000 - 0x1_ffff_ffff.
-> 0x1_0000_0000-0x1_3fff_ffff map to 0x1_0000_0000 - 0x1_3fff_ffff.
->
-> Thus, we can only add bit32 for the PA in the 4GB mode.
+On Thu, Jan 31, 2019 at 07:02:15PM +0000, Jason Gunthorpe wrote:
+> On Thu, Jan 31, 2019 at 09:13:55AM +0100, Christoph Hellwig wrote:
+> > On Wed, Jan 30, 2019 at 03:52:13PM -0700, Logan Gunthorpe wrote:
+> > > > *shrug* so what if the special GUP called a VMA op instead of
+> > > > traversing the VMA PTEs today? Why does it really matter? It could
+> > > > easily change to a struct page flow tomorrow..
+> > > 
+> > > Well it's so that it's composable. We want the SGL->DMA side to work for
+> > > APIs from kernel space and not have to run a completely different flow
+> > > for kernel drivers than from userspace memory.
+> > 
+> > Yes, I think that is the important point.
+> > 
+> > All the other struct page discussion is not about anyone of us wanting
+> > struct page - heck it is a pain to deal with, but then again it is
+> > there for a reason.
+> > 
+> > In the typical GUP flows we have three uses of a struct page:
+> > 
+> >  (1) to carry a physical address.  This is mostly through
+> >      struct scatterlist and struct bio_vec.  We could just store
+> >      a magic PFN-like value that encodes the physical address
+> >      and allow looking up a page if it exists, and we had at least
+> >      two attempts at it.  In some way I think that would actually
+> >      make the interfaces cleaner, but Linus has NACKed it in the
+> >      past, so we'll have to convince him first that this is the
+> >      way forward
+> 
+> Something like this (and more) has always been the roadblock with
+> trying to mix BAR memory into SGL. I think it is such a big problem as
+> to be unsolvable in one step.. 
+> 
+> Struct page doesn't even really help anything beyond dma_map as we
+> still can't pretend that __iomem is normal memory for general SGL
+> users.
+> 
+> >  (2) to keep a reference to the memory so that it doesn't go away
+> >      under us due to swapping, process exit, unmapping, etc.
+> >      No idea how we want to solve this, but I guess you have
+> >      some smart ideas?
+> 
+> Jerome, how does this work anyhow? Did you do something to make the
+> VMA lifetime match the p2p_map/unmap? Or can we get into a situation
+> were the VMA is destroyed and the importing driver can't call the
+> unmap anymore?
+> 
+> I know in the case of notifiers the VMA liftime should be strictly
+> longer than the map/unmap - but does this mean we can never support
+> non-notifier users via this scheme?
 
-Ok, I think I get it now. This thread really helped:
-https://patchwork.kernel.org/patch/8402211/
+So in this version the requirement is that the importer also have a mmu
+notifier registered and that's what all GPU driver do already. Any
+driver that map some range of vma to a device should register itself as
+a mmu notifier listener to do something when vma goes away. I posted a
+patchset a while ago to allow listener to differentiate when the vma is
+going away from other type of invalidation [1]
 
-So from what I understand basically the same DRAM exists in two places:
-0000_0000 - ffff_ffff, and is also available in
-1_0000_0000 - 1_ffff_ffff
+With that in place you can easily handle the pin case. Driver really
+need to do something when the vma goes away with GUP or not. As the
+device is then writing/reading to/from something that does not match
+anything in the process address space.
 
-...except that the peripherals are located in 0000_0000 - 3ffff_ffff,
-so that first GB of RAM is not visible at the lower address. I'm
-gathering this was in fact the motivation for 4GB mode. The important
-part is that address 4000_0000 == 1_4000_0000.
+So user that want pin would register notifier, call p2p_map with pin
+flag and ignore all notifier callback except the unmap one when the
+unmap one happens they have the vma and they should call p2p_unmap
+from their invalidate callback and update their device to either some
+dummy memory or program it in a way that the userspace application
+will notice.
 
-Then there was also some quirk of the IOMMU where it refused to access
-addresses below 4GB. But those same addresses are accessible by ORing
-in bit 32, so you just always do that and you're good to go.
+This can all be handled by some helper so that driver do not have to
+write more than 5 lines of code and function to update their device
+mapping to something of their choosing.
 
-Ok so now I can use that to understand this refactoring:
-* You used to always return an address above 4GB in
-mtk_iommu_iova_to_phys. I don't fully get how that worked, since it
-seems like you'd start returning PAs to the rest of the system that
-were outside of the range 4000_0000 - 1_3fff_ffff, but okay, you're no
-longer doing that there, so I won't worry about it.
-* Now, if you're in the 4GB mode, you just slam the bit in the PTE in
-mtk_iommu_map, which seems like the right thing to do.
-* The general functions in io-pgtable-arm-v7s.c now carefully reflect
-bits 32 & 33 in the PTE, since the new IOMMUs don't have the weird
-restriction of staying above 4GB, and there's not this weird 4GB
-aliasing mode going on (which I think would be a clearer name for this
-feature: has_4gb_alias).
 
->
-> >
-> > Also, you could have rolled the has_4gb_mode check into whether or not
-> > you set enable_4GB. Then you're doing the check for has_4gb_mode once,
-> > rather than on every map call.
->
-> "has_4gb_mode" means this SoC support 4GB mode.
-> "enable_4GB" means whether the current dram size is 4GB.
+> 
+> >  (3) to make the PTEs dirty after writing to them.  Again no sure
+> >      what our preferred interface here would be
+> 
+> This need doesn't really apply to BAR memory..
+> 
+> > If we solve all of the above problems I'd be more than happy to
+> > go with a non-struct page based interface for BAR P2P.  But we'll
+> > have to solve these issues in a generic way first.
+> 
+> I still think the right direction is to build on what Logan has done -
+> realize that he created a DMA-only SGL - make that a formal type of
+> the kernel and provide the right set of APIs to work with this type,
+> without being forced to expose struct page.
+> 
+> Basically invert the API flow - the DMA map would be done close to
+> GUP, not buried in the driver. This absolutely doesn't work for every
+> flow we have, but it does enable the ones that people seem to care
+> about when talking about P2P.
 
-Right. But your use of the variable as well as it's name suggest that
-it really means "is 4GB aliasing mode on", not "does the system have
->=4GB of RAM". You could reduce the map function to one conditional if
-you treated the variable that way. Then the only things that would
-need to change would be:
-* Add an extra conditional in probe that would only set enable_4GB if
-has_4gb_mode is set.
-* in mtk_iommu_domain_finalize, you could just always set the MTK
-quirk, since if you have <4GB of RAM, those bits will never get set in
-the PTEs anyway.
-* I suspect mtk_iommu_hw_init would continue to work as-is, since
-everything that has vld_pa_rng also has has_4gb_mode.
+This does not work for GPU really i do not want to have to rewrite GPU
+driver for this. Struct page is a burden and it does not bring anything
+to the table. I rather provide an all in one stop for driver to use
+this without having to worry between regular vma and special vma.
 
--Evan
+Note that in this patchset i reuse chunk of Logan works and intention is
+to also allow PCI struct page to work too. But they should not be the
+only mechanisms.
+
+> 
+> To get to where we are today we'd need a few new IB APIs, and some
+> nvme change to work with DMA-only SGL's and so forth, but that doesn't
+> seem so bad. The API also seems much more safe and understandable than
+> todays version that is trying to hope that the SGL is never touched by
+> the CPU.
+> 
+> It also does present a path to solve some cases of the O_DIRECT
+> problems if the block stack can develop some way to know if an IO will
+> go down a DMA-only IO path or not... This seems less challenging that
+> auditing every SGL user for iomem safety??
+
+So what is this O_DIRECT thing that keep coming again and again here :)
+What is the use case ? Note that bio will always have valid struct page
+of regular memory as using PCIE BAR for filesystem is crazy (you do not
+have atomic or cache coherence and many CPU instruction have _undefined_
+effect so what ever the userspace would do might do nothing.
+
+Now if you want to use BAR address as destination or source of directIO
+then let just update the directIO code to handle this. There is no need
+to go hack every single place in the kernel that might deal with struct
+page or sgl. Just update the place that need to understand this. We can
+even update directIO to work on weird platform. The change to directIO
+will be small, couple hundred line of code at best.
+
+Cheers,
+Jérôme
+
+[1] https://lore.kernel.org/linux-fsdevel/20190123222315.1122-1-jglisse@redhat.com/T/#m69e8f589240e18acbf196a1c8aa1d6fc97bd3565
