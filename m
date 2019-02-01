@@ -1,59 +1,27 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 13/18] fotg210-udc: pass struct device to DMA API functions
-Date: Fri,  1 Feb 2019 09:47:56 +0100
-Message-ID: <20190201084801.10983-14-hch@lst.de>
-References: <20190201084801.10983-1-hch@lst.de>
+Subject: Re: [PATCH] dma: debug: no need to check return value of
+ debugfs_create functions
+Date: Fri, 1 Feb 2019 10:04:02 +0100
+Message-ID: <20190201090402.GA16244@lst.de>
+References: <20190122152151.16139-39-gregkh@linuxfoundation.org> <2b974ef1-4336-8187-cbc5-ba2a14691837@arm.com> <20190122184847.GA32627@kroah.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190201084801.10983-1-hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20190122184847.GA32627@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: iommu@lists.linux-foundation.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, Corentin Labbe <clabbe@baylibre.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The DMA API generally relies on a struct device to work properly, and
-only barely works without one for legacy reasons.  Pass the easily
-available struct device from the platform_device to remedy this.
+On Tue, Jan 22, 2019 at 07:48:47PM +0100, Greg Kroah-Hartman wrote:
+> > Does this actually need to be at file scope, or could it be punted to a
+> > local in dma_debug_fs_init() while we're here?
+> 
+> It can be moved to the function scope if you want me to, I was trying to
+> do the least needed here :)
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/usb/gadget/udc/fotg210-udc.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+I've folded the scope move in when applying the patch to the
+dma-mapping for-next tree.
 
-diff --git a/drivers/usb/gadget/udc/fotg210-udc.c b/drivers/usb/gadget/udc/fotg210-udc.c
-index fe9cf415f2f1..cec49294bac6 100644
---- a/drivers/usb/gadget/udc/fotg210-udc.c
-+++ b/drivers/usb/gadget/udc/fotg210-udc.c
-@@ -326,6 +326,7 @@ static void fotg210_wait_dma_done(struct fotg210_ep *ep)
- static void fotg210_start_dma(struct fotg210_ep *ep,
- 			struct fotg210_request *req)
- {
-+	struct device *dev = &ep->fotg210->gadget.dev;
- 	dma_addr_t d;
- 	u8 *buffer;
- 	u32 length;
-@@ -348,10 +349,10 @@ static void fotg210_start_dma(struct fotg210_ep *ep,
- 			length = req->req.length;
- 	}
- 
--	d = dma_map_single(NULL, buffer, length,
-+	d = dma_map_single(dev, buffer, length,
- 			ep->dir_in ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
- 
--	if (dma_mapping_error(NULL, d)) {
-+	if (dma_mapping_error(dev, d)) {
- 		pr_err("dma_mapping_error\n");
- 		return;
- 	}
-@@ -366,7 +367,7 @@ static void fotg210_start_dma(struct fotg210_ep *ep,
- 	/* update actual transfer length */
- 	req->req.actual += length;
- 
--	dma_unmap_single(NULL, d, length, DMA_TO_DEVICE);
-+	dma_unmap_single(dev, d, length, DMA_TO_DEVICE);
- }
- 
- static void fotg210_ep0_queue(struct fotg210_ep *ep,
--- 
-2.20.1
+Thanks!
