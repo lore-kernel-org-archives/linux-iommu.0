@@ -1,67 +1,96 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 10/18] smc911x: pass struct device to DMA API functions
-Date: Fri, 1 Feb 2019 14:14:34 +0000
-Message-ID: <a8653acc-e0db-69a1-a8d3-2190f3767ce3@arm.com>
-References: <20190201084801.10983-1-hch@lst.de>
- <20190201084801.10983-11-hch@lst.de>
+Subject: Re: [PATCH 01/19] dma-mapping: add a Kconfig symbol to indicated
+ arch_dma_prep_coherent presence
+Date: Fri, 1 Feb 2019 14:22:46 +0000
+Message-ID: <b3883403-f9b5-34ec-ff5d-9f2ddc9bf8e6@arm.com>
+References: <20190114094159.27326-1-hch@lst.de>
+ <20190114094159.27326-2-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190201084801.10983-11-hch@lst.de>
+In-Reply-To: <20190114094159.27326-2-hch@lst.de>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Cc: iommu@lists.linux-foundation.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/02/2019 08:47, Christoph Hellwig wrote:
-> The DMA API generally relies on a struct device to work properly, and
-> only barely works without one for legacy reasons.  Pass the easily
-> available struct device from the platform_device to remedy this.
-
-Hmm, as far as I'm aware these are PIO chips with external DMA 
-handshaking, rather than actual DMA masters...
-
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   drivers/net/ethernet/smsc/smc911x.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+On 14/01/2019 09:41, Christoph Hellwig wrote:
+> Add a Kconfig symbol that indicates an architecture provides a
+> arch_dma_prep_coherent implementation, and provide a stub otherwise.
 > 
-> diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
-> index 8355dfbb8ec3..b550e624500d 100644
-> --- a/drivers/net/ethernet/smsc/smc911x.c
-> +++ b/drivers/net/ethernet/smsc/smc911x.c
-> @@ -1188,7 +1188,7 @@ smc911x_tx_dma_irq(void *data)
->   
->   	DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev, "TX DMA irq handler\n");
->   	BUG_ON(skb == NULL);
-> -	dma_unmap_single(NULL, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
-> +	dma_unmap_single(lp->dev, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
+> This will allow the generic dma-iommu code to it while still allowing
+> to be built for cache coherent architectures.
 
-..so while the wrong device is still better than no device at all, this 
-probably wants lp->txdma->device->dev.
-
->   	netif_trans_update(dev);
->   	dev_kfree_skb_irq(skb);
->   	lp->current_tx_skb = NULL;
-> @@ -1219,7 +1219,7 @@ smc911x_rx_dma_irq(void *data)
->   
->   	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
->   	DBG(SMC_DEBUG_RX | SMC_DEBUG_DMA, dev, "RX DMA irq handler\n");
-> -	dma_unmap_single(NULL, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
-> +	dma_unmap_single(lp->dev, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
-
-And equivalently for rxdma here. However, given that this all seems only 
-relevant to antique ARCH_PXA platforms which are presumably managing to 
-work as-is, it's probably not worth tinkering too much. I'd just stick a 
-note in the commit message that we're still only making these 
-self-consistent with the existing dma_map_single() calls rather than 
-necessarily correct.
+I've been pondering this for a while now, and I still can't really come 
+up with a case where arch_dma_prep_coherent() would need to behave 
+differently from arch_sync_dma_for_device(..., DMA_BIDIRECTIONAL). I 
+wonder if we could just save ourselves this little bit of complexity by 
+using that instead...
 
 Robin.
 
->   	BUG_ON(skb == NULL);
->   	lp->current_rx_skb = NULL;
->   	PRINT_PKT(skb->data, skb->len);
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   arch/arm64/Kconfig              | 1 +
+>   arch/csky/Kconfig               | 1 +
+>   include/linux/dma-noncoherent.h | 6 ++++++
+>   kernel/dma/Kconfig              | 3 +++
+>   4 files changed, 11 insertions(+)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index a4168d366127..ae3f581a9bcc 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -13,6 +13,7 @@ config ARM64
+>   	select ARCH_HAS_DEVMEM_IS_ALLOWED
+>   	select ARCH_HAS_DMA_COHERENT_TO_PFN
+>   	select ARCH_HAS_DMA_MMAP_PGPROT
+> +	select ARCH_HAS_DMA_PREP_COHERENT
+>   	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
+>   	select ARCH_HAS_ELF_RANDOMIZE
+>   	select ARCH_HAS_FAST_MULTIPLIER
+> diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
+> index 398113c845f5..8b84d4362ff6 100644
+> --- a/arch/csky/Kconfig
+> +++ b/arch/csky/Kconfig
+> @@ -1,5 +1,6 @@
+>   config CSKY
+>   	def_bool y
+> +	select ARCH_HAS_DMA_PREP_COHERENT
+>   	select ARCH_HAS_SYNC_DMA_FOR_CPU
+>   	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+>   	select ARCH_USE_BUILTIN_BSWAP
+> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+> index 69b36ed31a99..9741767e400f 100644
+> --- a/include/linux/dma-noncoherent.h
+> +++ b/include/linux/dma-noncoherent.h
+> @@ -72,6 +72,12 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
+>   }
+>   #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
+>   
+> +#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
+>   void arch_dma_prep_coherent(struct page *page, size_t size);
+> +#else
+> +static inline void arch_dma_prep_coherent(struct page *page, size_t size)
+> +{
+> +}
+> +#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
+>   
+>   #endif /* _LINUX_DMA_NONCOHERENT_H */
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index ca88b867e7fe..541128a32c5d 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -29,6 +29,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+>   config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+>   	bool
+>   
+> +config ARCH_HAS_DMA_PREP_COHERENT
+> +	bool
+> +
+>   config ARCH_HAS_DMA_COHERENT_TO_PFN
+>   	bool
+>   
 > 
