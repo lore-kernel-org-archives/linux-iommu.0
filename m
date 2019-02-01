@@ -1,52 +1,143 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH 0/9] Support using MSI interrupts in ntb_transport
-Date: Thu, 31 Jan 2019 16:52:10 -0700
-Message-ID: <59a4f188-0d37-bf40-baf6-80b4fa46df52@deltatee.com>
-References: <20190131185656.17972-1-logang@deltatee.com>
- <345197a6-89e6-c0de-5f7b-a646b5f396c9@intel.com>
- <bafe9db4-6d5b-0453-d7e7-e49e9293dd01@deltatee.com>
- <ea7b7c3c-8ed5-51ec-022a-7d28a5afce82@intel.com>
- <29f7e3fe-5354-6156-1243-7248ffb2249f@deltatee.com>
- <7e3eed52-8e3a-c472-392a-5dc5689290ae@intel.com>
- <5f8b1616-a005-7658-978f-16466fcc3886@deltatee.com>
- <d46ce09c-d493-3d63-a854-b68a09345a75@intel.com>
+From: Peter Xu <peterx@redhat.com>
+Subject: Re: [PATCH 2/2] iommu/amd: Remove clear_flush_young notifier
+Date: Fri, 1 Feb 2019 11:51:21 +0800
+Message-ID: <20190201035121.GF25119@xz-x1>
+References: <20190130055758.3994-1-peterx@redhat.com>
+ <20190130055758.3994-3-peterx@redhat.com>
+ <69af2b6f-bfc1-a4b9-675a-6fc93a7efef2@arm.com>
+ <20190131075941.GB25119@xz-x1>
+ <926c28c2-66a0-8068-f7bc-2d8f9ce9f0ad@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d46ce09c-d493-3d63-a854-b68a09345a75@intel.com>
-Content-Language: en-CA
+Content-Disposition: inline
+In-Reply-To: <926c28c2-66a0-8068-f7bc-2d8f9ce9f0ad@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dave Jiang <dave.jiang@intel.com>, linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Allen Hubbe <allenbh@gmail.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019-01-31 4:48 p.m., Dave Jiang wrote:
+On Thu, Jan 31, 2019 at 12:25:40PM +0000, Jean-Philippe Brucker wrote:
+> On 31/01/2019 07:59, Peter Xu wrote:
+> > On Wed, Jan 30, 2019 at 12:27:40PM +0000, Jean-Philippe Brucker wrote:
+> >> Hi Peter,
+> > 
+> > Hi, Jean,
+> > 
+> >>
+> >> On 30/01/2019 05:57, Peter Xu wrote:
+> >>> AMD IOMMU driver is using the clear_flush_young() to do cache flushing
+> >>> but that's actually already covered by invalidate_range().  Remove the
+> >>> extra notifier and the chunks.
+> >>
+> >> Aren't uses of clear_flush_young() and invalidate_range() orthogonal? If
+> >> I understood correctly, when doing reclaim the kernel clears the young
+> >> bit from the PTE. This requires flushing secondary TLBs (ATCs), so that
+> >> new accesses from devices will go through the IOMMU, set the young bit
+> >> again and the kernel can accurately track page use. I didn't see
+> >> invalidate_range() being called by rmap or vmscan in this case, but
+> >> might just be missing it.
+> >>
+> >> Two MMU notifiers are used for the young bit, clear_flush_young() and
+> >> clear_young(). I believe the former should invalidate ATCs so that DMA
+> >> accesses participate in PTE aging. Otherwise the kernel can't know that
+> >> the device is still using entries marked 'old'. The latter,
+> >> clear_young() is exempted from invalidating the secondary TLBs by
+> >> mmu_notifier.h and the IOMMU driver doesn't need to implement it.
+> > 
+> > Yes I agree most of your analysis, but IMHO the problem is that the
+> > AMD IOMMU is not really participating in the PTE aging after all.
+> > Please have a look at mn_clear_flush_young() below at [1] - it's
+> > always returning zero, no matter whether the page has been accessed by
+> > device or not.  A real user of it could be someone like KVM (please
+> > see kvm_mmu_notifier_clear_flush_young) where we'll try to lookup the
+> > shadow PTEs and do test-and-clear on that, then return the result to
+> > the core mm.  That's why I think currently the AMD driver was only
+> > trying to use that as a way to do an extra flush however IMHO it's
+> > redundant.
 > 
-> On 1/31/2019 4:41 PM, Logan Gunthorpe wrote:
->>
->> On 2019-01-31 3:46 p.m., Dave Jiang wrote:
->>> I believe irqbalance writes to the file /proc/irq/N/smp_affinity. So
->>> maybe take a look at the code that starts from there and see if it would
->>> have any impact on your stuff.
->> Ok, well on my system I can write to the smp_affinity all day and the
->> MSI interrupts still work fine.
+> Yes, in IOMMU drivers clear_flush_young() doesn't do the clear, only the
+> flush, since the level-1 page table is shared with the CPU. But removing
+> the flush gets you in the following situation:
 > 
-> Maybe your code is ok then. If the stats show up in /proc/interrupts 
-> then you can see it moving to different cores.
+>   (1) Devices wants to access $addr, sends ATS query, the IOMMU sets PTE
+> young and the entry is cached in the ATC.
+> 
+>   (2) The CPU does ptep_clear_flush_young_notify(), clears young,
+> notices that the page is being used.
+> 
+>   (3) Device accesses $addr again. Given that we didn't invalidate the
+> ATC in (2) it accesses the page directly, without going through the IOMMU.
+> 
+>   (4) CPU does ptep_clear_flush_young_notify() again, the PTE doesn't
+> have the young bit, which means the page isn't being used and can be
+> reclaimed.
+> 
+> That's not accurate since the page is being used by the device. At step
+> (2) we should invalidate the ATC, so that (3) fetches the PTE again and
+> marks it young.
+> 
+> I can agree that the clear_flush_young() notifier is too brutal for this
+> purpose, since we send spurious ATC invalidation even when the PTE
+> wasn't young (and ATC inv is expensive). There should be another MMU
+> notifier "flush_young()" that is called by
+> ptep_clear_flush_young_notify() only when the page was actually young.
+> But for the moment it's the best we have to avoid the situation above.
+> 
+> I don't know enough about mm to understand exactly how the
+> page_referenced() information is used, but I believe the problem is only
+> about accuracy and not correctness. So applying this patch might not
+> break anything (after all, intel-svm.c never implemented the notifier)
+> but I think I'll keep the notifier in my SVA rework [1].
 
-Yes, I did check that the stats change CPU in proc interrupts.
+I see your point.  I'm not an expert of mm either, but I'd say AFAIU
+this happens in CPU TLB too.  Please have a look at
+ptep_clear_flush_young():
 
-> Yeah I'm not sure what to do about it either as I'm not super familiar 
-> with that area either. Just making note of what I encountered. And you 
-> are right, the updated info has to go over NTB for the other side to 
-> write to the updated place. So there's a lot of latency involved.
+int ptep_clear_flush_young(struct vm_area_struct *vma,
+			   unsigned long address, pte_t *ptep)
+{
+	/*
+	 * On x86 CPUs, clearing the accessed bit without a TLB flush
+	 * doesn't cause data corruption. [ It could cause incorrect
+	 * page aging and the (mistaken) reclaim of hot pages, but the
+	 * chance of that should be relatively low. ]
+	 *
+	 * So as a performance optimization don't flush the TLB when
+	 * clearing the accessed bit, it will eventually be flushed by
+	 * a context switch or a VM operation anyway. [ In the rare
+	 * event of it not getting flushed for a long time the delay
+	 * shouldn't really matter because there's no real memory
+	 * pressure for swapout to react to. ]
+	 */
+	return ptep_test_and_clear_young(vma, address, ptep);
+}
 
-Ok, well I'll implement the callback anyway for v2. Better safe than
-sorry. We can operate on the assumption that someone thought of the race
-condition and if we ever see reports of lost interrupts we'll know where
-to look.
+So maybe it is a tradeoff between performance and accuracy.  IMHO the
+IOMMU cache flushing might affect the performance even more than CPU
+TLB flushing if the invalidation command takes a long time to run
+(e.g., amd_iommu_flush_page is far slower than a TLB flush
+instruction, locks to take, queue commands, explicit wait for the
+invalidation to happen, etc.) so it can potentially even drag down the
+mm young bit access as a whole not to mention the future cache misses
+from the device side.
 
-Logan
+Even if you really want to make the young bit accurate for the SVA
+work, IMHO you may still want to implement the lightweight version of
+clear_young() too otherwise it might be inaccurate again in idle page
+tracking.
+
+Another thing to mention is that disregarding the discussion about
+young bit - IMO you should probably don't need the change_pte() which
+I'm more confident with.
+
+Thanks,
+
+> 
+> Thanks,
+> Jean
+> 
+> [1] https://www.spinics.net/lists/iommu/msg30081.html
+
+-- 
+Peter Xu
