@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 14/18] da8xx-fb: pass struct device to DMA API functions
-Date: Fri,  1 Feb 2019 09:47:57 +0100
-Message-ID: <20190201084801.10983-15-hch@lst.de>
+Subject: [PATCH 13/18] fotg210-udc: pass struct device to DMA API functions
+Date: Fri,  1 Feb 2019 09:47:56 +0100
+Message-ID: <20190201084801.10983-14-hch@lst.de>
 References: <20190201084801.10983-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -18,57 +18,42 @@ available struct device from the platform_device to remedy this.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/video/fbdev/da8xx-fb.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/usb/gadget/udc/fotg210-udc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/video/fbdev/da8xx-fb.c b/drivers/video/fbdev/da8xx-fb.c
-index 43f2a4816860..ec62274b914b 100644
---- a/drivers/video/fbdev/da8xx-fb.c
-+++ b/drivers/video/fbdev/da8xx-fb.c
-@@ -1097,9 +1097,9 @@ static int fb_remove(struct platform_device *dev)
+diff --git a/drivers/usb/gadget/udc/fotg210-udc.c b/drivers/usb/gadget/udc/fotg210-udc.c
+index fe9cf415f2f1..cec49294bac6 100644
+--- a/drivers/usb/gadget/udc/fotg210-udc.c
++++ b/drivers/usb/gadget/udc/fotg210-udc.c
+@@ -326,6 +326,7 @@ static void fotg210_wait_dma_done(struct fotg210_ep *ep)
+ static void fotg210_start_dma(struct fotg210_ep *ep,
+ 			struct fotg210_request *req)
+ {
++	struct device *dev = &ep->fotg210->gadget.dev;
+ 	dma_addr_t d;
+ 	u8 *buffer;
+ 	u32 length;
+@@ -348,10 +349,10 @@ static void fotg210_start_dma(struct fotg210_ep *ep,
+ 			length = req->req.length;
+ 	}
  
- 		unregister_framebuffer(info);
- 		fb_dealloc_cmap(&info->cmap);
--		dma_free_coherent(NULL, PALETTE_SIZE, par->v_palette_base,
-+		dma_free_coherent(par->dev, PALETTE_SIZE, par->v_palette_base,
- 				  par->p_palette_base);
--		dma_free_coherent(NULL, par->vram_size, par->vram_virt,
-+		dma_free_coherent(par->dev, par->vram_size, par->vram_virt,
- 				  par->vram_phys);
- 		pm_runtime_put_sync(&dev->dev);
- 		pm_runtime_disable(&dev->dev);
-@@ -1425,7 +1425,7 @@ static int fb_probe(struct platform_device *device)
- 	par->vram_size = roundup(par->vram_size/8, ulcm);
- 	par->vram_size = par->vram_size * LCD_NUM_BUFFERS;
+-	d = dma_map_single(NULL, buffer, length,
++	d = dma_map_single(dev, buffer, length,
+ 			ep->dir_in ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
  
--	par->vram_virt = dma_alloc_coherent(NULL,
-+	par->vram_virt = dma_alloc_coherent(par->dev,
- 					    par->vram_size,
- 					    &par->vram_phys,
- 					    GFP_KERNEL | GFP_DMA);
-@@ -1446,7 +1446,7 @@ static int fb_probe(struct platform_device *device)
- 		da8xx_fb_fix.line_length - 1;
+-	if (dma_mapping_error(NULL, d)) {
++	if (dma_mapping_error(dev, d)) {
+ 		pr_err("dma_mapping_error\n");
+ 		return;
+ 	}
+@@ -366,7 +367,7 @@ static void fotg210_start_dma(struct fotg210_ep *ep,
+ 	/* update actual transfer length */
+ 	req->req.actual += length;
  
- 	/* allocate palette buffer */
--	par->v_palette_base = dma_alloc_coherent(NULL, PALETTE_SIZE,
-+	par->v_palette_base = dma_alloc_coherent(par->dev, PALETTE_SIZE,
- 						 &par->p_palette_base,
- 						 GFP_KERNEL | GFP_DMA);
- 	if (!par->v_palette_base) {
-@@ -1532,11 +1532,12 @@ static int fb_probe(struct platform_device *device)
- 	fb_dealloc_cmap(&da8xx_fb_info->cmap);
+-	dma_unmap_single(NULL, d, length, DMA_TO_DEVICE);
++	dma_unmap_single(dev, d, length, DMA_TO_DEVICE);
+ }
  
- err_release_pl_mem:
--	dma_free_coherent(NULL, PALETTE_SIZE, par->v_palette_base,
-+	dma_free_coherent(par->dev, PALETTE_SIZE, par->v_palette_base,
- 			  par->p_palette_base);
- 
- err_release_fb_mem:
--	dma_free_coherent(NULL, par->vram_size, par->vram_virt, par->vram_phys);
-+	dma_free_coherent(par->dev, par->vram_size, par->vram_virt,
-+		          par->vram_phys);
- 
- err_release_fb:
- 	framebuffer_release(da8xx_fb_info);
+ static void fotg210_ep0_queue(struct fotg210_ep *ep,
 -- 
 2.20.1
