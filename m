@@ -1,35 +1,21 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] swiotlb: Return error from swiotlb_init_with_tbl()
-Date: Fri, 1 Feb 2019 09:12:08 +0100
-Message-ID: <20190201081208.GB15512@lst.de>
-References: <20190131162424.10477-1-joro@8bytes.org>
+Subject: don't pass a NULL struct device to DMA API functions
+Date: Fri,  1 Feb 2019 09:47:43 +0100
+Message-ID: <20190201084801.10983-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190131162424.10477-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Mike Rapoport <rppt@linux.vnet.ibm.com>
+To: John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 31, 2019 at 05:24:24PM +0100, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
-> 
-> The only reason why swiotlb_init_with_tbl() can fail is an
-> allocation failure in the memblock_alloc() function. But
-> this function just calls panic() in case it can't fulfill
-> the request and never returns an error, therefore
-> swiotlb_init_with_tbl() also never actually returns an
-> error.
+We still have a few drivers which pass a NULL struct device pointer
+to DMA API functions, which generally is a bad idea as the API
+implementations rely on the device not only for ops selection, but
+also the dma mask and various other attributes.
 
-Please use up all 72 characters per line available in the commit log
-format.
-
-> -	io_tlb_list = memblock_alloc(
-> +	io_tlb_list = memblock_alloc_nopanic(
->  				PAGE_ALIGN(io_tlb_nslabs * sizeof(int)),
->  				PAGE_SIZE);
-
-Mike just killed the _nopanic versions and made the normal ones not
-panic.
+This series contains all easy conversions to pass a struct device,
+besides that there also is some arch code that needs separate handling,
+a driver that should not use the DMA API at all, and one that is
+a complete basket case to be deal with separately.
