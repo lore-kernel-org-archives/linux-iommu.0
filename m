@@ -1,38 +1,47 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 12/18] fotg210-udc: remove a bogus dma_sync_single_for_device call
-Date: Fri,  1 Feb 2019 09:47:55 +0100
-Message-ID: <20190201084801.10983-13-hch@lst.de>
+Subject: [PATCH 10/18] smc911x: pass struct device to DMA API functions
+Date: Fri,  1 Feb 2019 09:47:53 +0100
+Message-ID: <20190201084801.10983-11-hch@lst.de>
 References: <20190201084801.10983-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190201084801.10983-1-hch@lst.de>
-Sender: netdev-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
 Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-dma_map_single already transfers ownership to the device.
+The DMA API generally relies on a struct device to work properly, and
+only barely works without one for legacy reasons.  Pass the easily
+available struct device from the platform_device to remedy this.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/usb/gadget/udc/fotg210-udc.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/smsc/smc911x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/fotg210-udc.c b/drivers/usb/gadget/udc/fotg210-udc.c
-index bc6abaea907d..fe9cf415f2f1 100644
---- a/drivers/usb/gadget/udc/fotg210-udc.c
-+++ b/drivers/usb/gadget/udc/fotg210-udc.c
-@@ -356,10 +356,6 @@ static void fotg210_start_dma(struct fotg210_ep *ep,
- 		return;
- 	}
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index 8355dfbb8ec3..b550e624500d 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -1188,7 +1188,7 @@ smc911x_tx_dma_irq(void *data)
  
--	dma_sync_single_for_device(NULL, d, length,
--				   ep->dir_in ? DMA_TO_DEVICE :
--					DMA_FROM_DEVICE);
--
- 	fotg210_enable_dma(ep, d, length);
+ 	DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev, "TX DMA irq handler\n");
+ 	BUG_ON(skb == NULL);
+-	dma_unmap_single(NULL, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
++	dma_unmap_single(lp->dev, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
+ 	netif_trans_update(dev);
+ 	dev_kfree_skb_irq(skb);
+ 	lp->current_tx_skb = NULL;
+@@ -1219,7 +1219,7 @@ smc911x_rx_dma_irq(void *data)
  
- 	/* check if dma is done */
+ 	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
+ 	DBG(SMC_DEBUG_RX | SMC_DEBUG_DMA, dev, "RX DMA irq handler\n");
+-	dma_unmap_single(NULL, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
++	dma_unmap_single(lp->dev, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
+ 	BUG_ON(skb == NULL);
+ 	lp->current_rx_skb = NULL;
+ 	PRINT_PKT(skb->data, skb->len);
 -- 
 2.20.1
