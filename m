@@ -1,40 +1,53 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: fix a layering violation in videobuf2 and improve
- dma_map_resource v2
-Date: Fri, 1 Feb 2019 08:05:21 +0100
-Message-ID: <774dc557-b690-203f-898f-38755b099068@samsung.com>
-References: <CGME20190118113751epcas2p2d7d678dcf247806a119316aabb4dde21@epcas2p2.samsung.com>
-        <20190118113727.3270-1-hch@lst.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH 1/3] x86/Hyper-V: Set x2apic destination mode to physical
+ when x2apic is available
+Date: Fri, 1 Feb 2019 10:06:55 +0300
+Message-ID: <20190201070655.GA14343@kadam>
+References: <1548929853-25877-1-git-send-email-Tianyu.Lan@microsoft.com>
+ <1548929853-25877-2-git-send-email-Tianyu.Lan@microsoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190118113727.3270-1-hch@lst.de>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Pawel Osciak <pawel@osciak.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>
-Cc: Russell King <linux@armlinux.org.uk>, Mauro Carvalho Chehab <mchehab@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Disposition: inline
+In-Reply-To: <1548929853-25877-2-git-send-email-Tianyu.Lan@microsoft.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: lantianyu1986@gmail.com
+Cc: nicolas.ferre@microchip.com, hpa@zytor.com, mchehab+samsung@kernel.org, sashal@kernel.org, sthemmin@microsoft.com, joro@8bytes.org, x86@kernel.org, michael.h.kelley@microsoft.com, mingo@redhat.com, Lan Tianyu <Tianyu.Lan@microsoft.com>, arnd@arndb.de, haiyangz@microsoft.com, alex.williamson@redhat.com, bp@alien8.de, tglx@linutronix.de, vkuznets@redhat.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, devel@linuxdriverproject.org, akpm@linux-foundation.org, davem@davemloft.net
 List-Id: iommu@lists.linux-foundation.org
 
-Hi All,
-
-On 2019-01-18 12:37, Christoph Hellwig wrote:
-> Hi all,
+On Thu, Jan 31, 2019 at 06:17:31PM +0800, lantianyu1986@gmail.com wrote:
 >
-> this series fixes a rather gross layering violation in videobuf2, which
-> pokes into arm DMA mapping internals to get a DMA address for memory that
-> does not have a page structure, and to do so fixes up the dma_map_resource
-> implementation to not provide a somewhat dangerous default and improve
-> the error handling.
 >
-> Changes since v1:
->  - don't apply bus offsets in dma_direct_map_resource
 
-Works fine on older Exynos based boards with IOMMU and CMA disabled.
+This comment needs to be indented one tab or it looks like we're outside
+the funciton.
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> +/*
+> + * Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
+> + * set x2apic destination mode to physcial mode when x2apic is available
+> + * and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs
+> + * have 8-bit APIC id.
+> + */
+> +# if IS_ENABLED(CONFIG_HYPERV_IOMMU)
+> +	if (x2apic_supported())
+> +		x2apic_phys = 1;
+> +# endif
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+The IS_ENABLED() macro is really magical.  You could write this like so:
+
+	if (IS_ENABLED(CONFIG_HYPERV_IOMMU) && x2apic_supported())
+		x2apic_phys = 1;
+
+It works the same and is slightly more pleasant to look at.
+
+regards,
+dan carpenter
