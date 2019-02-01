@@ -1,34 +1,31 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/9] iommu/vt-d: Allow interrupts from the entire bus for
- aliased devices
-Date: Fri, 1 Feb 2019 17:44:01 +0100
-Message-ID: <20190201164401.GT32526@8bytes.org>
-References: <20190131185656.17972-1-logang@deltatee.com>
- <20190131185656.17972-2-logang@deltatee.com>
+Subject: Re: [PATCH] swiotlb: Return error from swiotlb_init_with_tbl()
+Date: Fri, 1 Feb 2019 17:50:29 +0100
+Message-ID: <20190201165029.GU32526@8bytes.org>
+References: <20190131162424.10477-1-joro@8bytes.org>
+ <20190201081208.GB15512@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190131185656.17972-2-logang@deltatee.com>
+In-Reply-To: <20190201081208.GB15512@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, David Woodhouse <dwmw2@infradead.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Mike Rapoport <rppt@linux.vnet.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 31, 2019 at 11:56:48AM -0700, Logan Gunthorpe wrote:
-> @@ -394,6 +402,10 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
->  		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
->  			     PCI_DEVID(PCI_BUS_NUM(data.alias),
->  				       dev->bus->number));
-> +	else if (data.count >= 2 && data.busmatch_count == data.count)
-> +		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
-> +			     PCI_DEVID(dev->bus->number,
-> +				       dev->bus->number));
+On Fri, Feb 01, 2019 at 09:12:08AM +0100, Christoph Hellwig wrote:
+> On Thu, Jan 31, 2019 at 05:24:24PM +0100, Joerg Roedel wrote:
+> > -	io_tlb_list = memblock_alloc(
+> > +	io_tlb_list = memblock_alloc_nopanic(
+> >  				PAGE_ALIGN(io_tlb_nslabs * sizeof(int)),
+> >  				PAGE_SIZE);
+> 
+> Mike just killed the _nopanic versions and made the normal ones not
+> panic.
 
-The dev->bus->number argument for the devfn parameter of PCI_DEVID is
-not needed, right?
-
-Also, this requires at least a comment to document that special case.
+This sounds like a change to break quite a couple of places in the
+kernel. But okay, it just makes this hunk obsolete.
 
 
 	Joerg
