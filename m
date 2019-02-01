@@ -1,25 +1,24 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 03/18] net: caif: pass struct device to DMA API
- functions
-Date: Fri, 1 Feb 2019 17:10:45 +0100
-Message-ID: <20190201161045.GF6532@lst.de>
-References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-4-hch@lst.de> <1cafba51-b652-5457-0dd7-77d64264c85e@arm.com>
+Subject: Re: [PATCH 10/18] smc911x: pass struct device to DMA API functions
+Date: Fri, 1 Feb 2019 17:11:16 +0100
+Message-ID: <20190201161116.GG6532@lst.de>
+References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-11-hch@lst.de> <a8653acc-e0db-69a1-a8d3-2190f3767ce3@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1cafba51-b652-5457-0dd7-77d64264c85e@arm.com>
+In-Reply-To: <a8653acc-e0db-69a1-a8d3-2190f3767ce3@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 01, 2019 at 01:53:09PM +0000, Robin Murphy wrote:
->>   #define LOW_WATER_MARK   100
->>   #define HIGH_WATER_MARK  (LOW_WATER_MARK*5)
->>   -#ifdef CONFIG_UML
->> +#ifdef CONFIG_HAS_DMA
->
-> #ifndef, surely?
+On Fri, Feb 01, 2019 at 02:14:34PM +0000, Robin Murphy wrote:
+> And equivalently for rxdma here. However, given that this all seems only 
+> relevant to antique ARCH_PXA platforms which are presumably managing to 
+> work as-is, it's probably not worth tinkering too much. I'd just stick a 
+> note in the commit message that we're still only making these 
+> self-consistent with the existing dma_map_single() calls rather than 
+> necessarily correct.
 
-Indeed.
+Sounds good.
