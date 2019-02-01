@@ -1,45 +1,34 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
-Date: Fri, 1 Feb 2019 17:34:43 +0100
-Message-ID: <20190201163443.GS32526@8bytes.org>
-References: <1548929853-25877-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1548929853-25877-3-git-send-email-Tianyu.Lan@microsoft.com>
+Subject: Re: [PATCH 1/9] iommu/vt-d: Allow interrupts from the entire bus for
+ aliased devices
+Date: Fri, 1 Feb 2019 17:44:01 +0100
+Message-ID: <20190201164401.GT32526@8bytes.org>
+References: <20190131185656.17972-1-logang@deltatee.com>
+ <20190131185656.17972-2-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1548929853-25877-3-git-send-email-Tianyu.Lan@microsoft.com>
+In-Reply-To: <20190131185656.17972-2-logang@deltatee.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lantianyu1986@gmail.com
-Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>, mchehab+samsung@kernel.org, davem@davemloft.net, gregkh@linuxfoundation.org, akpm@linux-foundation.org, nicolas.ferre@microchip.com, arnd@arndb.de, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, michael.h.kelley@microsoft.com, kys@microsoft.com, vkuznets@redhat.com, alex.williamson@redhat.com
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Thu, Jan 31, 2019 at 11:56:48AM -0700, Logan Gunthorpe wrote:
+> @@ -394,6 +402,10 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+>  		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
+>  			     PCI_DEVID(PCI_BUS_NUM(data.alias),
+>  				       dev->bus->number));
+> +	else if (data.count >= 2 && data.busmatch_count == data.count)
+> +		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
+> +			     PCI_DEVID(dev->bus->number,
+> +				       dev->bus->number));
 
-On Thu, Jan 31, 2019 at 06:17:32PM +0800, lantianyu1986@gmail.com wrote:
-> +config HYPERV_IOMMU
-> +	bool "Hyper-V stub IOMMU support"
+The dev->bus->number argument for the devfn parameter of PCI_DEVID is
+not needed, right?
 
-This is not a real IOMMU driver, it only implements IRQ remapping
-capabilities. Please change the name to reflect that, e.g. to
-"Hyper-V IRQ Remapping Support" or something like that.
-
-> +static int __init hyperv_prepare_irq_remapping(void)
-> +{
-> +	struct fwnode_handle *fn;
-> +	u32 apic_id;
-> +	int i;
-> +
-> +	if (x86_hyper_type != X86_HYPER_MS_HYPERV ||
-> +	    !x2apic_supported())
-> +		return -ENODEV;
-> +
-> +	fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
-> +	if (!fn)
-> +		return -EFAULT;
-
-Why does this return -EFAULT? I guess there is no fault happening in
-irq_domain_alloc_named_id_fwnode()...
+Also, this requires at least a comment to document that special case.
 
 
 	Joerg
