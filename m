@@ -1,54 +1,50 @@
-From: Felipe Balbi <balbi@kernel.org>
-Subject: Re: [PATCH 13/18] fotg210-udc: pass struct device to DMA API functions
-Date: Fri, 01 Feb 2019 15:20:35 +0200
-Message-ID: <87a7jfodb0.fsf@linux.intel.com>
-References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-14-hch@lst.de>
+From: <Nicolas.Ferre@microchip.com>
+Subject: Re: [PATCH 05/18] macb_main: pass struct device to DMA API functions
+Date: Fri, 1 Feb 2019 13:34:30 +0000
+Message-ID: <e23bc61b-0c62-486b-ee85-fcfd8d86fdcf@microchip.com>
+References: <20190201084801.10983-1-hch@lst.de>
+ <20190201084801.10983-6-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190201084801.10983-14-hch@lst.de>
+In-Reply-To: <20190201084801.10983-6-hch@lst.de>
+Content-Language: en-US
+Content-ID: <7DC9437E6C81014BBE5FC3185E3DE5FC@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+To: hch@lst.de, john@phrozen.org, vkoul@kernel.org, dmitry.tarnyagin@lockless.no, sudipm.mukherjee@gmail.com, balbi@kernel.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
 Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-Christoph Hellwig <hch@lst.de> writes:
-
-> The DMA API generally relies on a struct device to work properly, and
-> only barely works without one for legacy reasons.  Pass the easily
-> available struct device from the platform_device to remedy this.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-In case you're taking the entire series:
-
-Acked-by: Felipe Balbi <felipe.balbi@linux.intel.com>
-
-=2D-=20
-balbi
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAlxUR6MACgkQzL64meEa
-mQZcdw/+IrXhj2e5ZoNBjEAFCIYS3Ad0nXXzb9LocZ8HVA2Ill1N+x0u9dTCQj2A
-d08tzuiwdLv0QP2YIpl9AVm+bmb0Fknee+ENoqjKhjbArhv1M2QY2XTdV3QZT1IN
-CDY3zD0IN4mHHg+4rYyOHVXLu/vX2Yoh8vL9LFHJevlUcgPE0HPiwBsP0cNocYxv
-5u+mdcIgNG5M352Yau0cZ+q5QKi0kycwKWdZsJL3X0cqAK8iS1IMwWGd1/hf6KnB
-UrCRw/+NbCrv0SapHXrw+wJN3l/F/5HMTdh19pqq5yO1pRJOu2fcsv+/CKgyzYkT
-lRsvuN0FUHj/7sMBK3f8BnKU0hQhyejVKQr0rbZ60rQfO/Dram9SVRFk97B/81xM
-iwcMQhBD5Aw1gryOuoQx26knqH59lIjq0G7tf0j8xsQJZy2WqXJSrx6nBJRXsCzn
-8qqdOKpK4uCkOrLCe+7yuYHaIicput48fxOjdtgnSFpKqlRNXEnMXYKGFrYmodFu
-KVRdLd/muq/dGAfKgLwzCYVlHNvcsAs+Q2vpJ4IQuG9AYG5RDr9z3X4oQbFJccUd
-YM7+vhctcxYzE+WqO96dq+mVcGl8hyidqRgpZ6BNDl34FO3W3ZrZNFQvwEkz0cfX
-RfAUjYGlYlkDLcCpu3WrzurP1ByBfL8HfMMpqW/of9Z+nOb9rLQ=
-=fqaM
------END PGP SIGNATURE-----
---=-=-=--
+T24gMDEvMDIvMjAxOSBhdCAwOTo0NywgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6DQo+IFRoZSBE
+TUEgQVBJIGdlbmVyYWxseSByZWxpZXMgb24gYSBzdHJ1Y3QgZGV2aWNlIHRvIHdvcmsgcHJvcGVy
+bHksIGFuZA0KPiBvbmx5IGJhcmVseSB3b3JrcyB3aXRob3V0IG9uZSBmb3IgbGVnYWN5IHJlYXNv
+bnMuICBQYXNzIHRoZSBlYXNpbHkNCj4gYXZhaWxhYmxlIHN0cnVjdCBkZXZpY2UgZnJvbSB0aGUg
+cGxhdGZvcm1fZGV2aWNlIHRvIHJlbWVkeSB0aGlzLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQ2hy
+aXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+DQoNCkFja2VkLWJ5OiBOaWNvbGFzIEZlcnJlIDxu
+aWNvbGFzLmZlcnJlQG1pY3JvY2hpcC5jb20+DQoNCj4gLS0tDQo+ICAgZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvY2FkZW5jZS9tYWNiX21haW4uYyB8IDggKysrKy0tLS0NCj4gICAxIGZpbGUgY2hhbmdl
+ZCwgNCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhl
+cm5ldC9jYWRlbmNlL21hY2JfbWFpbi5jDQo+IGluZGV4IDJiMjg4MjYxNWU4Yi4uNjFhMjc5NjNm
+MWQxIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2JfbWFp
+bi5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMNCj4g
+QEAgLTM2NzMsOSArMzY3Myw5IEBAIHN0YXRpYyBuZXRkZXZfdHhfdCBhdDkxZXRoZXJfc3RhcnRf
+eG1pdChzdHJ1Y3Qgc2tfYnVmZiAqc2tiLA0KPiAgIAkJLyogU3RvcmUgcGFja2V0IGluZm9ybWF0
+aW9uICh0byBmcmVlIHdoZW4gVHggY29tcGxldGVkKSAqLw0KPiAgIAkJbHAtPnNrYiA9IHNrYjsN
+Cj4gICAJCWxwLT5za2JfbGVuZ3RoID0gc2tiLT5sZW47DQo+IC0JCWxwLT5za2JfcGh5c2FkZHIg
+PSBkbWFfbWFwX3NpbmdsZShOVUxMLCBza2ItPmRhdGEsIHNrYi0+bGVuLA0KPiAtCQkJCQkJCURN
+QV9UT19ERVZJQ0UpOw0KPiAtCQlpZiAoZG1hX21hcHBpbmdfZXJyb3IoTlVMTCwgbHAtPnNrYl9w
+aHlzYWRkcikpIHsNCj4gKwkJbHAtPnNrYl9waHlzYWRkciA9IGRtYV9tYXBfc2luZ2xlKCZscC0+
+cGRldi0+ZGV2LCBza2ItPmRhdGEsDQo+ICsJCQkJCQkgIHNrYi0+bGVuLCBETUFfVE9fREVWSUNF
+KTsNCj4gKwkJaWYgKGRtYV9tYXBwaW5nX2Vycm9yKCZscC0+cGRldi0+ZGV2LCBscC0+c2tiX3Bo
+eXNhZGRyKSkgew0KPiAgIAkJCWRldl9rZnJlZV9za2JfYW55KHNrYik7DQo+ICAgCQkJZGV2LT5z
+dGF0cy50eF9kcm9wcGVkKys7DQo+ICAgCQkJbmV0ZGV2X2VycihkZXYsICIlczogRE1BIG1hcHBp
+bmcgZXJyb3JcbiIsIF9fZnVuY19fKTsNCj4gQEAgLTM3NjUsNyArMzc2NSw3IEBAIHN0YXRpYyBp
+cnFyZXR1cm5fdCBhdDkxZXRoZXJfaW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRldl9pZCkNCj4g
+ICAJCWlmIChscC0+c2tiKSB7DQo+ICAgCQkJZGV2X2tmcmVlX3NrYl9pcnEobHAtPnNrYik7DQo+
+ICAgCQkJbHAtPnNrYiA9IE5VTEw7DQo+IC0JCQlkbWFfdW5tYXBfc2luZ2xlKE5VTEwsIGxwLT5z
+a2JfcGh5c2FkZHIsDQo+ICsJCQlkbWFfdW5tYXBfc2luZ2xlKCZscC0+cGRldi0+ZGV2LCBscC0+
+c2tiX3BoeXNhZGRyLA0KPiAgIAkJCQkJIGxwLT5za2JfbGVuZ3RoLCBETUFfVE9fREVWSUNFKTsN
+Cj4gICAJCQlkZXYtPnN0YXRzLnR4X3BhY2tldHMrKzsNCj4gICAJCQlkZXYtPnN0YXRzLnR4X2J5
+dGVzICs9IGxwLT5za2JfbGVuZ3RoOw0KPiANCg0KDQotLSANCk5pY29sYXMgRmVycmUNCg==
