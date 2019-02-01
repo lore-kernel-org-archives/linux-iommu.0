@@ -1,52 +1,53 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 16/18] pxa3xx-gcu: pass struct device to dma_mmap_coherent
-Date: Fri,  1 Feb 2019 09:47:59 +0100
-Message-ID: <20190201084801.10983-17-hch@lst.de>
+Subject: [PATCH 18/18] ALSA: pass struct device to DMA API functions
+Date: Fri,  1 Feb 2019 09:48:01 +0100
+Message-ID: <20190201084801.10983-19-hch@lst.de>
 References: <20190201084801.10983-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <netdev-owner@vger.kernel.org>
 In-Reply-To: <20190201084801.10983-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: netdev-owner@vger.kernel.org
 To: John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
 Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Just like we do for all other DMA operations.
+The DMA API generally relies on a struct device to work properly, and
+only barely works without one for legacy reasons.  Pass the easily
+available struct device from the platform_device to remedy this.
+
+Also use GFP_KERNEL instead of GFP_USER as the gfp_t for the memory
+allocation, as we should treat this allocation as a normal kernel one.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/mips/sgio2audio.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 69cfb337c857..047a2fa4b87e 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -96,6 +96,7 @@ struct pxa3xx_gcu_batch {
- };
+diff --git a/sound/mips/sgio2audio.c b/sound/mips/sgio2audio.c
+index 3ec9391a4736..53a4ee01c522 100644
+--- a/sound/mips/sgio2audio.c
++++ b/sound/mips/sgio2audio.c
+@@ -805,7 +805,7 @@ static int snd_sgio2audio_free(struct snd_sgio2audio *chip)
+ 		free_irq(snd_sgio2_isr_table[i].irq,
+ 			 &chip->channel[snd_sgio2_isr_table[i].idx]);
  
- struct pxa3xx_gcu_priv {
-+	struct device		 *dev;
- 	void __iomem		 *mmio_base;
- 	struct clk		 *clk;
- 	struct pxa3xx_gcu_shared *shared;
-@@ -493,7 +494,7 @@ pxa3xx_gcu_mmap(struct file *file, struct vm_area_struct *vma)
- 		if (size != SHARED_SIZE)
- 			return -EINVAL;
+-	dma_free_coherent(NULL, MACEISA_RINGBUFFERS_SIZE,
++	dma_free_coherent(chip->card->dev, MACEISA_RINGBUFFERS_SIZE,
+ 			  chip->ring_base, chip->ring_base_dma);
  
--		return dma_mmap_coherent(NULL, vma,
-+		return dma_mmap_coherent(priv->dev, vma,
- 			priv->shared, priv->shared_phys, size);
+ 	/* release card data */
+@@ -843,8 +843,9 @@ static int snd_sgio2audio_create(struct snd_card *card,
  
- 	case SHARED_SIZE >> PAGE_SHIFT:
-@@ -670,6 +671,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
+ 	chip->card = card;
  
- 	platform_set_drvdata(pdev, priv);
- 	priv->resource_mem = r;
-+	priv->dev = dev;
- 	pxa3xx_gcu_reset(priv);
- 	pxa3xx_gcu_init_debug_timer(priv);
- 
+-	chip->ring_base = dma_alloc_coherent(NULL, MACEISA_RINGBUFFERS_SIZE,
+-					     &chip->ring_base_dma, GFP_USER);
++	chip->ring_base = dma_alloc_coherent(card->dev,
++					     MACEISA_RINGBUFFERS_SIZE,
++					     &chip->ring_base_dma, GFP_KERNEL);
+ 	if (chip->ring_base == NULL) {
+ 		printk(KERN_ERR
+ 		       "sgio2audio: could not allocate ring buffers\n");
 -- 
 2.20.1
