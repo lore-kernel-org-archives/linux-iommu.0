@@ -1,34 +1,28 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: don't pass a NULL struct device to DMA API
- functions
-Date: Fri, 1 Feb 2019 17:09:57 +0100
-Message-ID: <20190201160957.GD6532@lst.de>
-References: <20190201084801.10983-1-hch@lst.de> <s5ho97v8x9j.wl-tiwai@suse.de>
+Subject: Re: [PATCH 12/18] fotg210-udc: remove a bogus
+ dma_sync_single_for_device call
+Date: Fri, 1 Feb 2019 17:10:26 +0100
+Message-ID: <20190201161026.GE6532@lst.de>
+References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-13-hch@lst.de> <87d0obodci.fsf@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <s5ho97v8x9j.wl-tiwai@suse.de>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
- <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Errors-To: alsa-devel-bounces@alsa-project.org
-Sender: alsa-devel-bounces@alsa-project.org
-To: Takashi Iwai <tiwai@suse.de>
-Cc: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, Felipe Balbi <balbi@kernel.org>, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, Nicolas Ferre <nicolas.ferre@microchip.com>, iommu@lists.linux-foundation.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Vinod Koul <vkoul@kernel.org>, netdev@vger.kernel.org, John Crispin <john@phrozen.org>, dmaengine@vger.kernel.org, linux-mips@vger.kernel.org, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <87d0obodci.fsf@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Felipe Balbi <balbi@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 01, 2019 at 02:16:08PM +0100, Takashi Iwai wrote:
-> Actually there are a bunch of ISA sound drivers that still call
-> allocators with NULL device.
+On Fri, Feb 01, 2019 at 03:19:41PM +0200, Felipe Balbi wrote:
+> Christoph Hellwig <hch@lst.de> writes:
 > 
-> The patch below should address it, although it's only compile-tested.
+> > dma_map_single already transfers ownership to the device.
+> >
+> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> 
+> Do you want me to take the USB bits or will you take the entire series?
+> In case you're taking the entire series:
 
-Oh, I missed these "indirect" calls.  This looks good to me:
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+If you want to take the USB feel free.  I just want most of this in
+this merge window if possible.
