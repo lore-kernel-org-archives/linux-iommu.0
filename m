@@ -1,28 +1,21 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: fix a layering violation in videobuf2 and improve
- dma_map_resource v2
-Date: Fri, 1 Feb 2019 10:07:55 +0100
-Message-ID: <20190201090755.GA16464@lst.de>
-References: <CGME20190118113751epcas2p2d7d678dcf247806a119316aabb4dde21@epcas2p2.samsung.com> <20190118113727.3270-1-hch@lst.de> <774dc557-b690-203f-898f-38755b099068@samsung.com>
+Subject: Re: [PATCH v2] dma-debug: add dumping facility via debugfs
+Date: Fri, 1 Feb 2019 10:08:26 +0100
+Message-ID: <20190201090826.GA16494@lst.de>
+References: <1547819058-3552-1-git-send-email-clabbe@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <774dc557-b690-203f-898f-38755b099068@samsung.com>
+In-Reply-To: <1547819058-3552-1-git-send-email-clabbe@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Christoph Hellwig <hch@lst.de>, Pawel Osciak <pawel@osciak.com>, Kyungmin Park <kyungmin.park@samsung.com>, Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Russell King <linux@armlinux.org.uk>, Mauro Carvalho Chehab <mchehab@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Corentin Labbe <clabbe@baylibre.com>
+Cc: corbet@lwn.net, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 01, 2019 at 08:05:21AM +0100, Marek Szyprowski wrote:
-> Works fine on older Exynos based boards with IOMMU and CMA disabled.
-> 
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Thanks!
 
-Thanks.  I've merged the ѕeries into the dma-mapping tree, and I've
-also made a stable branch available at:
+I had to adjust the patch a bit for the debugfs cleanups form Greg
+that I applied before, can you check the result here:
 
-    git://git.infradead.org/users/hch/dma-mapping.git videobuf-map-resource
-
-in case it needs to be pulled into the media tree.
+    http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/0a3b192c26da198fce38e1ee242a34f558670246
