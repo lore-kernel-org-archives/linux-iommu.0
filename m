@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 15/18] gbefb: switch to managed version of the DMA allocator
-Date: Fri,  1 Feb 2019 09:47:58 +0100
-Message-ID: <20190201084801.10983-16-hch@lst.de>
+Subject: [PATCH 16/18] pxa3xx-gcu: pass struct device to dma_mmap_coherent
+Date: Fri,  1 Feb 2019 09:47:59 +0100
+Message-ID: <20190201084801.10983-17-hch@lst.de>
 References: <20190201084801.10983-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,78 +12,41 @@ To: John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarny
 Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-gbefb uses managed resources, so it should do the same for DMA
-allocations.
+Just like we do for all other DMA operations.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/video/fbdev/gbefb.c | 24 ++++++++----------------
- 1 file changed, 8 insertions(+), 16 deletions(-)
+ drivers/video/fbdev/pxa3xx-gcu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/gbefb.c b/drivers/video/fbdev/gbefb.c
-index 1a242b1338e9..3fcb33232ba3 100644
---- a/drivers/video/fbdev/gbefb.c
-+++ b/drivers/video/fbdev/gbefb.c
-@@ -1162,9 +1162,9 @@ static int gbefb_probe(struct platform_device *p_dev)
- 	}
- 	gbe_revision = gbe->ctrlstat & 15;
+diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
+index 69cfb337c857..047a2fa4b87e 100644
+--- a/drivers/video/fbdev/pxa3xx-gcu.c
++++ b/drivers/video/fbdev/pxa3xx-gcu.c
+@@ -96,6 +96,7 @@ struct pxa3xx_gcu_batch {
+ };
  
--	gbe_tiles.cpu =
--		dma_alloc_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
--				   &gbe_tiles.dma, GFP_KERNEL);
-+	gbe_tiles.cpu = dmam_alloc_coherent(&p_dev->dev,
-+				GBE_TLB_SIZE * sizeof(uint16_t),
-+				&gbe_tiles.dma, GFP_KERNEL);
- 	if (!gbe_tiles.cpu) {
- 		printk(KERN_ERR "gbefb: couldn't allocate tiles table\n");
- 		ret = -ENOMEM;
-@@ -1178,19 +1178,20 @@ static int gbefb_probe(struct platform_device *p_dev)
- 		if (!gbe_mem) {
- 			printk(KERN_ERR "gbefb: couldn't map framebuffer\n");
- 			ret = -ENOMEM;
--			goto out_tiles_free;
-+			goto out_release_mem_region;
- 		}
+ struct pxa3xx_gcu_priv {
++	struct device		 *dev;
+ 	void __iomem		 *mmio_base;
+ 	struct clk		 *clk;
+ 	struct pxa3xx_gcu_shared *shared;
+@@ -493,7 +494,7 @@ pxa3xx_gcu_mmap(struct file *file, struct vm_area_struct *vma)
+ 		if (size != SHARED_SIZE)
+ 			return -EINVAL;
  
- 		gbe_dma_addr = 0;
- 	} else {
- 		/* try to allocate memory with the classical allocator
- 		 * this has high chance to fail on low memory machines */
--		gbe_mem = dma_alloc_wc(NULL, gbe_mem_size, &gbe_dma_addr,
--				       GFP_KERNEL);
-+		gbe_mem = dmam_alloc_attrs(&p_dev->dev, gbe_mem_size,
-+				&gbe_dma_addr, GFP_KERNEL,
-+				DMA_ATTR_WRITE_COMBINE);
- 		if (!gbe_mem) {
- 			printk(KERN_ERR "gbefb: couldn't allocate framebuffer memory\n");
- 			ret = -ENOMEM;
--			goto out_tiles_free;
-+			goto out_release_mem_region;
- 		}
+-		return dma_mmap_coherent(NULL, vma,
++		return dma_mmap_coherent(priv->dev, vma,
+ 			priv->shared, priv->shared_phys, size);
  
- 		gbe_mem_phys = (unsigned long) gbe_dma_addr;
-@@ -1237,11 +1238,6 @@ static int gbefb_probe(struct platform_device *p_dev)
+ 	case SHARED_SIZE >> PAGE_SHIFT:
+@@ -670,6 +671,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
  
- out_gbe_unmap:
- 	arch_phys_wc_del(par->wc_cookie);
--	if (gbe_dma_addr)
--		dma_free_wc(NULL, gbe_mem_size, gbe_mem, gbe_mem_phys);
--out_tiles_free:
--	dma_free_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
--			  (void *)gbe_tiles.cpu, gbe_tiles.dma);
- out_release_mem_region:
- 	release_mem_region(GBE_BASE, sizeof(struct sgi_gbe));
- out_release_framebuffer:
-@@ -1258,10 +1254,6 @@ static int gbefb_remove(struct platform_device* p_dev)
- 	unregister_framebuffer(info);
- 	gbe_turn_off();
- 	arch_phys_wc_del(par->wc_cookie);
--	if (gbe_dma_addr)
--		dma_free_wc(NULL, gbe_mem_size, gbe_mem, gbe_mem_phys);
--	dma_free_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
--			  (void *)gbe_tiles.cpu, gbe_tiles.dma);
- 	release_mem_region(GBE_BASE, sizeof(struct sgi_gbe));
- 	gbefb_remove_sysfs(&p_dev->dev);
- 	framebuffer_release(info);
+ 	platform_set_drvdata(pdev, priv);
+ 	priv->resource_mem = r;
++	priv->dev = dev;
+ 	pxa3xx_gcu_reset(priv);
+ 	pxa3xx_gcu_init_debug_timer(priv);
+ 
 -- 
 2.20.1
