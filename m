@@ -1,121 +1,20 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 04/19] dma-iommu: remove the flush_page callback
-Date: Fri, 1 Feb 2019 15:28:24 +0000
-Message-ID: <591d0c09-6361-fa28-06e5-faa98e60bcee@arm.com>
-References: <20190114094159.27326-1-hch@lst.de>
- <20190114094159.27326-5-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [alsa-devel] [PATCH 17/18] ALSA: hal2: pass struct device to
+ DMA API functions
+Date: Fri, 1 Feb 2019 17:09:06 +0100
+Message-ID: <20190201160906.GC6532@lst.de>
+References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-18-hch@lst.de> <s5hr2cr8xf6.wl-tiwai@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190114094159.27326-5-hch@lst.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <s5hr2cr8xf6.wl-tiwai@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Takashi Iwai <tiwai@suse.de>
+Cc: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/01/2019 09:41, Christoph Hellwig wrote:
-> We now have a arch_dma_prep_coherent architecture hook that is used
-> for the generic DMA remap allocator, and we should use the same
-> interface for the dma-iommu code.
+On Fri, Feb 01, 2019 at 02:12:45PM +0100, Takashi Iwai wrote:
+> Shall I take this one through sound git tree or all through yours?
 
-Agreed - I'd definitely ack a version of this change which didn't depend 
-on patch #3 ;)
-
-Robin.
-
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/arm64/mm/dma-mapping.c |  8 +-------
->   drivers/iommu/dma-iommu.c   | 14 ++++----------
->   include/linux/dma-iommu.h   |  3 +--
->   3 files changed, 6 insertions(+), 19 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index fb0908456a1f..75fe7273a1e4 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -104,12 +104,6 @@ arch_initcall(arm64_dma_init);
->   #include <linux/platform_device.h>
->   #include <linux/amba/bus.h>
->   
-> -/* Thankfully, all cache ops are by VA so we can ignore phys here */
-> -static void flush_page(struct device *dev, const void *virt, phys_addr_t phys)
-> -{
-> -	__dma_flush_area(virt, PAGE_SIZE);
-> -}
-> -
->   static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->   				 dma_addr_t *handle, gfp_t gfp,
->   				 unsigned long attrs)
-> @@ -186,7 +180,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->   		struct page **pages;
->   
->   		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
-> -					handle, flush_page);
-> +					handle);
->   		if (!pages)
->   			return NULL;
->   
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 4f5546a103d8..d6a437385b26 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -22,6 +22,7 @@
->   #include <linux/acpi_iort.h>
->   #include <linux/device.h>
->   #include <linux/dma-iommu.h>
-> +#include <linux/dma-noncoherent.h>
->   #include <linux/gfp.h>
->   #include <linux/huge_mm.h>
->   #include <linux/iommu.h>
-> @@ -533,8 +534,6 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
->    * @attrs: DMA attributes for this allocation
->    * @prot: IOMMU mapping flags
->    * @handle: Out argument for allocated DMA handle
-> - * @flush_page: Arch callback which must ensure PAGE_SIZE bytes from the
-> - *		given VA/PA are visible to the given non-coherent device.
->    *
->    * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
->    * but an IOMMU which supports smaller pages might not map the whole thing.
-> @@ -543,8 +542,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
->    *	   or NULL on failure.
->    */
->   struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-> -		unsigned long attrs, int prot, dma_addr_t *handle,
-> -		void (*flush_page)(struct device *, const void *, phys_addr_t))
-> +		unsigned long attrs, int prot, dma_addr_t *handle)
->   {
->   	struct iommu_domain *domain = iommu_get_dma_domain(dev);
->   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> @@ -580,12 +578,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->   	for (i = 0; i < count; i++) {
->   		phys_addr_t phys = page_to_phys(pages[i]);
->   
-> -		if (!(prot & IOMMU_CACHE)) {
-> -			void *vaddr = kmap_atomic(pages[i]);
-> -
-> -			flush_page(dev, vaddr, phys);
-> -			kunmap_atomic(vaddr);
-> -		}
-> +		if (!(prot & IOMMU_CACHE))
-> +			arch_dma_prep_coherent(pages[i], PAGE_SIZE);
->   
->   		if (iommu_map(domain, iova + mapped, phys, PAGE_SIZE, prot))
->   			goto out_unmap;
-> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> index 65aa888c2768..59e606f78626 100644
-> --- a/include/linux/dma-iommu.h
-> +++ b/include/linux/dma-iommu.h
-> @@ -43,8 +43,7 @@ int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
->    * the arch code to take care of attributes and cache maintenance
->    */
->   struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-> -		unsigned long attrs, int prot, dma_addr_t *handle,
-> -		void (*flush_page)(struct device *, const void *, phys_addr_t));
-> +		unsigned long attrs, int prot, dma_addr_t *handle);
->   void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
->   		dma_addr_t *handle);
->   
-> 
+Feel free to merge the sound bits through your tree!
