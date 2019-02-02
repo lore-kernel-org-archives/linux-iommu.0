@@ -1,332 +1,170 @@
-From: Tianyu Lan <lantianyu1986@gmail.com>
-Subject: Re: [PATCH 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
-Date: Sat, 2 Feb 2019 14:20:55 +0800
-Message-ID: <CAOLK0pz7XH7UtWmdNBazsJi5v9ARH5D2mUMFNhqqoGnbEuEBhw@mail.gmail.com>
-References: <1548929853-25877-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1548929853-25877-3-git-send-email-Tianyu.Lan@microsoft.com> <aa7d9f2a-fe80-b825-efe4-cfd9a0c9501d@arm.com>
+From: Peter Xu <peterx@redhat.com>
+Subject: Re: [PATCH 2/2] iommu/amd: Remove clear_flush_young notifier
+Date: Sat, 2 Feb 2019 15:08:08 +0800
+Message-ID: <20190202070808.GB1011@xz-x1>
+References: <20190130055758.3994-1-peterx@redhat.com>
+ <20190130055758.3994-3-peterx@redhat.com>
+ <69af2b6f-bfc1-a4b9-675a-6fc93a7efef2@arm.com>
+ <20190131075941.GB25119@xz-x1>
+ <926c28c2-66a0-8068-f7bc-2d8f9ce9f0ad@arm.com>
+ <20190201035121.GF25119@xz-x1>
+ <21af01ee-39b7-4b30-479b-3c97b4d2867a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <aa7d9f2a-fe80-b825-efe4-cfd9a0c9501d@arm.com>
+Content-Disposition: inline
+In-Reply-To: <21af01ee-39b7-4b30-479b-3c97b4d2867a@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Lan Tianyu <Tianyu.Lan@microsoft.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, nicolas.ferre@microchip.com, "linux-kernel@vger kernel org" <linux-kernel@vger.kernel.org>, michael.h.kelley@microsoft.com, Vitaly Kuznetsov <vkuznets@redhat.com>, iommu@lists.linux-foundation.org, mchehab+samsung@kernel.org, akpm@linux-foundation.org, kys@microsoft.com, davem@davemloft.net
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Jerome Glisse <jglisse@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jason Wang <jasowang@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin:
-           Thanks for your review.
+On Fri, Feb 01, 2019 at 11:46:00AM +0000, Jean-Philippe Brucker wrote:
+> On 01/02/2019 03:51, Peter Xu wrote:
+> > On Thu, Jan 31, 2019 at 12:25:40PM +0000, Jean-Philippe Brucker wrote:
+> >> On 31/01/2019 07:59, Peter Xu wrote:
+> >>> On Wed, Jan 30, 2019 at 12:27:40PM +0000, Jean-Philippe Brucker wrote:
+> >>>> Hi Peter,
+> >>>
+> >>> Hi, Jean,
+> >>>
+> >>>>
+> >>>> On 30/01/2019 05:57, Peter Xu wrote:
+> >>>>> AMD IOMMU driver is using the clear_flush_young() to do cache flushing
+> >>>>> but that's actually already covered by invalidate_range().  Remove the
+> >>>>> extra notifier and the chunks.
+> >>>>
+> >>>> Aren't uses of clear_flush_young() and invalidate_range() orthogonal? If
+> >>>> I understood correctly, when doing reclaim the kernel clears the young
+> >>>> bit from the PTE. This requires flushing secondary TLBs (ATCs), so that
+> >>>> new accesses from devices will go through the IOMMU, set the young bit
+> >>>> again and the kernel can accurately track page use. I didn't see
+> >>>> invalidate_range() being called by rmap or vmscan in this case, but
+> >>>> might just be missing it.
+> >>>>
+> >>>> Two MMU notifiers are used for the young bit, clear_flush_young() and
+> >>>> clear_young(). I believe the former should invalidate ATCs so that DMA
+> >>>> accesses participate in PTE aging. Otherwise the kernel can't know that
+> >>>> the device is still using entries marked 'old'. The latter,
+> >>>> clear_young() is exempted from invalidating the secondary TLBs by
+> >>>> mmu_notifier.h and the IOMMU driver doesn't need to implement it.
+> >>>
+> >>> Yes I agree most of your analysis, but IMHO the problem is that the
+> >>> AMD IOMMU is not really participating in the PTE aging after all.
+> >>> Please have a look at mn_clear_flush_young() below at [1] - it's
+> >>> always returning zero, no matter whether the page has been accessed by
+> >>> device or not.  A real user of it could be someone like KVM (please
+> >>> see kvm_mmu_notifier_clear_flush_young) where we'll try to lookup the
+> >>> shadow PTEs and do test-and-clear on that, then return the result to
+> >>> the core mm.  That's why I think currently the AMD driver was only
+> >>> trying to use that as a way to do an extra flush however IMHO it's
+> >>> redundant.
+> >>
+> >> Yes, in IOMMU drivers clear_flush_young() doesn't do the clear, only the
+> >> flush, since the level-1 page table is shared with the CPU. But removing
+> >> the flush gets you in the following situation:
+> >>
+> >>   (1) Devices wants to access $addr, sends ATS query, the IOMMU sets PTE
+> >> young and the entry is cached in the ATC.
+> >>
+> >>   (2) The CPU does ptep_clear_flush_young_notify(), clears young,
+> >> notices that the page is being used.
+> >>
+> >>   (3) Device accesses $addr again. Given that we didn't invalidate the
+> >> ATC in (2) it accesses the page directly, without going through the IOMMU.
+> >>
+> >>   (4) CPU does ptep_clear_flush_young_notify() again, the PTE doesn't
+> >> have the young bit, which means the page isn't being used and can be
+> >> reclaimed.
+> >>
+> >> That's not accurate since the page is being used by the device. At step
+> >> (2) we should invalidate the ATC, so that (3) fetches the PTE again and
+> >> marks it young.
+> >>
+> >> I can agree that the clear_flush_young() notifier is too brutal for this
+> >> purpose, since we send spurious ATC invalidation even when the PTE
+> >> wasn't young (and ATC inv is expensive). There should be another MMU
+> >> notifier "flush_young()" that is called by
+> >> ptep_clear_flush_young_notify() only when the page was actually young.
+> >> But for the moment it's the best we have to avoid the situation above.
+> >>
+> >> I don't know enough about mm to understand exactly how the
+> >> page_referenced() information is used, but I believe the problem is only
+> >> about accuracy and not correctness. So applying this patch might not
+> >> break anything (after all, intel-svm.c never implemented the notifier)
+> >> but I think I'll keep the notifier in my SVA rework [1].
+> > 
+> > I see your point.  I'm not an expert of mm either, but I'd say AFAIU
+> > this happens in CPU TLB too.  Please have a look at
+> > ptep_clear_flush_young():
+> > 
+> > int ptep_clear_flush_young(struct vm_area_struct *vma,
+> > 			   unsigned long address, pte_t *ptep)
+> > {
+> > 	/*
+> > 	 * On x86 CPUs, clearing the accessed bit without a TLB flush
+> > 	 * doesn't cause data corruption. [ It could cause incorrect
+> > 	 * page aging and the (mistaken) reclaim of hot pages, but the
+> > 	 * chance of that should be relatively low. ]
+> > 	 *
+> > 	 * So as a performance optimization don't flush the TLB when
+> > 	 * clearing the accessed bit, it will eventually be flushed by
+> > 	 * a context switch or a VM operation anyway. [ In the rare
+> > 	 * event of it not getting flushed for a long time the delay
+> > 	 * shouldn't really matter because there's no real memory
+> > 	 * pressure for swapout to react to. ]
+> > 	 */
+> > 	return ptep_test_and_clear_young(vma, address, ptep);
+> > }
+> 
+> Aha I see. The arm64 version of ptep_clear_flush_young() does invalidate
+> the TLB if the PTE was young (perhaps because we don't invalidate the
+> TLB on context switch). For SVA I would have liked to simply invalidate
+> the ATC whenever the CPU invalidates its TLB, but that falls apart if
+> archs are doing different things...
+> 
+> > So maybe it is a tradeoff between performance and accuracy.  IMHO the
+> > IOMMU cache flushing might affect the performance even more than CPU
+> > TLB flushing if the invalidation command takes a long time to run
+> > (e.g., amd_iommu_flush_page is far slower than a TLB flush
+> > instruction, locks to take, queue commands, explicit wait for the
+> > invalidation to happen, etc.) so it can potentially even drag down the
+> > mm young bit access as a whole not to mention the future cache misses
+> > from the device side.
+> > 
+> > Even if you really want to make the young bit accurate for the SVA
+> > work, IMHO you may still want to implement the lightweight version of
+> > clear_young() too otherwise it might be inaccurate again in idle page
+> > tracking.
+> 
+> Yes there is another conversation about this on the new idle_pages
+> proposal [1], which would never send any ATC invalidation. I'm not sure
+> what we should do about it - making clear_young() flush the IOTLB seems
+> way too expensive there as well, we'll probably want something more
+> selective.
+> 
+> > Another thing to mention is that disregarding the discussion about
+> > young bit - IMO you should probably don't need the change_pte() which
+> > I'm more confident with.
+> 
+> I haven't dug too much into change_pte() yet, but I'll keep that in
+> mind, thanks!
 
-On Sat, Feb 2, 2019 at 1:00 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 31/01/2019 10:17, lantianyu1986@gmail.com wrote:
-> > From: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> >
-> > On the bare metal, enabling X2APIC mode requires interrupt remapping
-> > function which helps to deliver irq to cpu with 32-bit APIC ID.
-> > Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
-> > MSI protocol already supports to deliver interrupt to the CPU whose
-> > virtual processor index is more than 255. IO-APIC interrupt still has
-> > 8-bit APIC ID limitation.
-> >
-> > This patch is to add Hyper-V stub IOMMU driver in order to enable
-> > X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2APIC
-> > interrupt remapping capability when X2APIC mode is available. Otherwise,
-> > it creates a Hyper-V irq domain to limit IO-APIC interrupts' affinity
-> > and make sure cpus assigned with IO-APIC interrupt have 8-bit APIC ID.
->
-> AFAICS this is a Hyper-V IOAPIC driver which neither implements nor even
-> touches the IOMMU API, so having it in drivers/iommu rather than, say,
-> drivers/irqchip seems a bit of a stretch to me :/
->
-> Maybe this could be a good push to clean up and properly factor out the
-> x86 IRQ remapping stuff, possibly to live somewhere closer to other IRQ
-> layer code? I appreciate it's a bit muddied by the major x86 vendors
-> both keeping their DMA virtualisation and IRQ virtualisation
-> architectures together under one umbrella "IOMMU" spec, but IIRC the
-> fact that intel-iommu supports building for !IOMMU_API already causes us
-> a bit of grief.
->
-> Of course, I'm coming from a particular not-entirely-objective viewpoint
-> where DMA remapping (SMMU) code in drivers/iommu, IRQ remapping (ITS)
-> code in drivers/irqchip, and the relevant ACPI table handling (IORT) in
-> drivers/acpi is the norm, but even though that largely falls out of a
-> less-tightly-coupled system architecture it does seem perfectly logical
-> either way.
+Glad to have the discussion with you!  Note that besides the one that
+was attached along with the same series, there's another patch to
+remove the last (besides KVM) change_pte() usage here in Power:
 
-I think the different between arm and x86 about interrupt remapping is
-that interrupt remapping
-function is provided by IOMMU on x86 while it's provided by GIC or
-other component on ARM.
-As part of IOMMU on x86, the irq remapping code should be in the IOMMU
-driver. if some thing
-wrong, please correct me. Thanks.
+  https://lkml.org/lkml/2019/1/31/259
 
+Andrea has a longer reply there which might be far better than my
+commit messages.  Please feel free to have a look too.
 
->
-> Robin.
->
-> (who has admittedly been drinking the Cambridge water for many years now...)
->
-> > Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> > ---
-> >   drivers/iommu/Kconfig         |   7 ++
-> >   drivers/iommu/Makefile        |   1 +
-> >   drivers/iommu/hyperv-iommu.c  | 189 ++++++++++++++++++++++++++++++++++++++++++
-> >   drivers/iommu/irq_remapping.c |   3 +
-> >   drivers/iommu/irq_remapping.h |   1 +
-> >   5 files changed, 201 insertions(+)
-> >   create mode 100644 drivers/iommu/hyperv-iommu.c
-> >
-> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > index 45d7021..5c397c0 100644
-> > --- a/drivers/iommu/Kconfig
-> > +++ b/drivers/iommu/Kconfig
-> > @@ -437,4 +437,11 @@ config QCOM_IOMMU
-> >       help
-> >         Support for IOMMU on certain Qualcomm SoCs.
-> >
-> > +config HYPERV_IOMMU
-> > +     bool "Hyper-V stub IOMMU support"
-> > +     depends on HYPERV
-> > +     help
-> > +         Hyper-V stub IOMMU driver provides capability to run
-> > +         Linux guest with X2APIC mode enabled.
-> > +
-> >   endif # IOMMU_SUPPORT
-> > diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> > index a158a68..8c71a15 100644
-> > --- a/drivers/iommu/Makefile
-> > +++ b/drivers/iommu/Makefile
-> > @@ -32,3 +32,4 @@ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
-> >   obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
-> >   obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
-> >   obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
-> > +obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
-> > diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-> > new file mode 100644
-> > index 0000000..a64b747
-> > --- /dev/null
-> > +++ b/drivers/iommu/hyperv-iommu.c
-> > @@ -0,0 +1,189 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#define pr_fmt(fmt)     "HYPERV-IR: " fmt
-> > +
-> > +#include <linux/types.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/irq.h>
-> > +#include <linux/iommu.h>
-> > +#include <linux/module.h>
-> > +
-> > +#include <asm/hw_irq.h>
-> > +#include <asm/io_apic.h>
-> > +#include <asm/irq_remapping.h>
-> > +#include <asm/hypervisor.h>
-> > +
-> > +#include "irq_remapping.h"
-> > +
-> > +/*
-> > + * According IO-APIC spec, IO APIC has a 24-entry Interrupt
-> > + * Redirection Table.
-> > + */
-> > +#define IOAPIC_REMAPPING_ENTRY 24
-> > +
-> > +static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
-> > +struct irq_domain *ioapic_ir_domain;
-> > +
-> > +static int hyperv_ir_set_affinity(struct irq_data *data,
-> > +             const struct cpumask *mask, bool force)
-> > +{
-> > +     struct irq_data *parent = data->parent_data;
-> > +     struct irq_cfg *cfg = irqd_cfg(data);
-> > +     struct IO_APIC_route_entry *entry;
-> > +     cpumask_t cpumask;
-> > +     int ret;
-> > +
-> > +     cpumask_andnot(&cpumask, mask, &ioapic_max_cpumask);
-> > +
-> > +     /* Return error If new irq affinity is out of ioapic_max_cpumask. */
-> > +     if (!cpumask_empty(&cpumask))
-> > +             return -EINVAL;
-> > +
-> > +     ret = parent->chip->irq_set_affinity(parent, mask, force);
-> > +     if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
-> > +             return ret;
-> > +
-> > +     entry = data->chip_data;
-> > +     entry->dest = cfg->dest_apicid;
-> > +     entry->vector = cfg->vector;
-> > +     send_cleanup_vector(cfg);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static struct irq_chip hyperv_ir_chip = {
-> > +     .name                   = "HYPERV-IR",
-> > +     .irq_ack                = apic_ack_irq,
-> > +     .irq_set_affinity       = hyperv_ir_set_affinity,
-> > +};
-> > +
-> > +static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
-> > +                                  unsigned int virq, unsigned int nr_irqs,
-> > +                                  void *arg)
-> > +{
-> > +     struct irq_alloc_info *info = arg;
-> > +     struct IO_APIC_route_entry *entry;
-> > +     struct irq_data *irq_data;
-> > +     struct irq_desc *desc;
-> > +     struct irq_cfg *cfg;
-> > +     int ret = 0;
-> > +
-> > +     if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
-> > +             return -EINVAL;
-> > +
-> > +     ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, arg);
-> > +     if (ret < 0)
-> > +             goto fail;
-> > +
-> > +     irq_data = irq_domain_get_irq_data(domain, virq);
-> > +     cfg = irqd_cfg(irq_data);
-> > +     if (!irq_data || !cfg) {
-> > +             ret = -EINVAL;
-> > +             goto fail;
-> > +     }
-> > +
-> > +     irq_data->chip = &hyperv_ir_chip;
-> > +
-> > +     /*
-> > +      * Save IOAPIC entry pointer here in order to set vector and
-> > +      * and dest_apicid in the hyperv_irq_remappng_activate()
-> > +      * and hyperv_ir_set_affinity(). IOAPIC driver ignores
-> > +      * cfg->dest_apicid and cfg->vector when irq remapping
-> > +      * mode is enabled. Detail see ioapic_configure_entry().
-> > +      */
-> > +     irq_data->chip_data = entry = info->ioapic_entry;
-> > +
-> > +     /*
-> > +      * Hypver-V IO APIC irq affinity should be in the scope of
-> > +      * ioapic_max_cpumask because no irq remapping support.
-> > +      */
-> > +     desc = irq_data_to_desc(irq_data);
-> > +     cpumask_and(desc->irq_common_data.affinity,
-> > +                     desc->irq_common_data.affinity,
-> > +                     &ioapic_max_cpumask);
-> > +
-> > + fail:
-> > +     return ret;
-> > +}
-> > +
-> > +static void hyperv_irq_remapping_free(struct irq_domain *domain,
-> > +                              unsigned int virq, unsigned int nr_irqs)
-> > +{
-> > +     irq_domain_free_irqs_common(domain, virq, nr_irqs);
-> > +}
-> > +
-> > +static int hyperv_irq_remappng_activate(struct irq_domain *domain,
-> > +                       struct irq_data *irq_data, bool reserve)
-> > +{
-> > +     struct irq_cfg *cfg = irqd_cfg(irq_data);
-> > +     struct IO_APIC_route_entry *entry = irq_data->chip_data;
-> > +
-> > +     entry->dest = cfg->dest_apicid;
-> > +     entry->vector = cfg->vector;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static struct irq_domain_ops hyperv_ir_domain_ops = {
-> > +     .alloc = hyperv_irq_remapping_alloc,
-> > +     .free = hyperv_irq_remapping_free,
-> > +     .activate = hyperv_irq_remappng_activate,
-> > +};
-> > +
-> > +static int __init hyperv_prepare_irq_remapping(void)
-> > +{
-> > +     struct fwnode_handle *fn;
-> > +     u32 apic_id;
-> > +     int i;
-> > +
-> > +     if (x86_hyper_type != X86_HYPER_MS_HYPERV ||
-> > +         !x2apic_supported())
-> > +             return -ENODEV;
-> > +
-> > +     fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
-> > +     if (!fn)
-> > +             return -EFAULT;
-> > +
-> > +     ioapic_ir_domain =
-> > +             irq_domain_create_hierarchy(arch_get_ir_parent_domain(),
-> > +                             0, IOAPIC_REMAPPING_ENTRY, fn,
-> > +                             &hyperv_ir_domain_ops, NULL);
-> > +
-> > +     irq_domain_free_fwnode(fn);
-> > +
-> > +     /*
-> > +      * Hyper-V doesn't provide irq remapping function for
-> > +      * IO-APIC and so IO-APIC only accepts 8-bit APIC ID.
-> > +      * Prepare max cpu affinity for IOAPIC irqs. Scan cpu 0-255
-> > +      * and set cpu into ioapic_max_cpumask if its APIC ID is less
-> > +      * than 255.
-> > +      */
-> > +     for (i = 0; i < 256; i++) {
-> > +             apic_id = cpu_physical_id(i);
-> > +             if (apic_id > 255)
-> > +                     continue;
-> > +
-> > +             cpumask_set_cpu(i, &ioapic_max_cpumask);
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int __init hyperv_enable_irq_remapping(void)
-> > +{
-> > +     return IRQ_REMAP_X2APIC_MODE;
-> > +}
-> > +
-> > +static struct irq_domain *hyperv_get_ir_irq_domain(struct irq_alloc_info *info)
-> > +{
-> > +     if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC)
-> > +             return ioapic_ir_domain;
-> > +     else
-> > +             return NULL;
-> > +}
-> > +
-> > +struct irq_remap_ops hyperv_irq_remap_ops = {
-> > +     .prepare                = hyperv_prepare_irq_remapping,
-> > +     .enable                 = hyperv_enable_irq_remapping,
-> > +     .get_ir_irq_domain      = hyperv_get_ir_irq_domain,
-> > +};
-> > diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-> > index b94ebd4..81cf290 100644
-> > --- a/drivers/iommu/irq_remapping.c
-> > +++ b/drivers/iommu/irq_remapping.c
-> > @@ -103,6 +103,9 @@ int __init irq_remapping_prepare(void)
-> >       else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
-> >                amd_iommu_irq_ops.prepare() == 0)
-> >               remap_ops = &amd_iommu_irq_ops;
-> > +     else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
-> > +              hyperv_irq_remap_ops.prepare() == 0)
-> > +             remap_ops = &hyperv_irq_remap_ops;
-> >       else
-> >               return -ENOSYS;
-> >
-> > diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
-> > index 0afef6e..f8609e9 100644
-> > --- a/drivers/iommu/irq_remapping.h
-> > +++ b/drivers/iommu/irq_remapping.h
-> > @@ -64,6 +64,7 @@ struct irq_remap_ops {
-> >
-> >   extern struct irq_remap_ops intel_irq_remap_ops;
-> >   extern struct irq_remap_ops amd_iommu_irq_ops;
-> > +extern struct irq_remap_ops hyperv_irq_remap_ops;
-> >
-> >   #else  /* CONFIG_IRQ_REMAP */
-> >
-> >
+Thanks,
 
-
+> 
+> Jean
+> 
+> [1] https://patchwork.kernel.org/cover/10743133/#22446425
 
 -- 
-Best regards
-Tianyu Lan
+Peter Xu
