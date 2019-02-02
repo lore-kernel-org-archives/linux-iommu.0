@@ -1,29 +1,39 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] swiotlb: Return error from swiotlb_init_with_tbl()
-Date: Sat, 2 Feb 2019 18:06:08 +0100
-Message-ID: <20190202170608.GA2801@lst.de>
-References: <20190131162424.10477-1-joro@8bytes.org> <20190201081208.GB15512@lst.de> <20190201165029.GU32526@8bytes.org> <20190201165610.GA7484@lst.de> <20190201165901.GV32526@8bytes.org>
+Subject: Re: [PATCH 02/18] dmaengine: imx-sdma: pass struct device to DMA
+ API functions
+Date: Sat, 2 Feb 2019 18:21:21 +0100
+Message-ID: <20190202172121.GA3739@lst.de>
+References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-3-hch@lst.de> <20190202101121.GE4296@vkoul-mobl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190201165901.GV32526@8bytes.org>
+In-Reply-To: <20190202101121.GE4296@vkoul-mobl>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Christoph Hellwig <hch@lst.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Mike Rapoport <rppt@linux.vnet.ibm.com>
+To: Vinod Koul <vkoul@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 01, 2019 at 05:59:01PM +0100, Joerg Roedel wrote:
-> > > This sounds like a change to break quite a couple of places in the
-> > > kernel. But okay, it just makes this hunk obsolete.
-> > 
-> > He also added either explicit panic calls or error handling (panic
-> > in case of swiotlb):
-> > 
-> > https://patchwork.kernel.org/patch/10766115/
+On Sat, Feb 02, 2019 at 03:41:21PM +0530, Vinod Koul wrote:
+> On 01-02-19, 09:47, Christoph Hellwig wrote:
+> > The DMA API generally relies on a struct device to work properly, and
+> > only barely works without one for legacy reasons.  Pass the easily
+> > available struct device from the platform_device to remedy this.
 > 
-> I see, are these patches queued somewhere? My patch needs to be based on
-> his changes.
+> This looks good to me but fails to apply. Can you please base it on
+> dmaengine-next or linux-next please and resend
 
-I think akpm queued them up in -mm.  At least I got some mails claiming
-patches from the series have been applied.
+commit ceaf52265148d3a5ca24237fd1c709caa5f46184
+Author: Andy Duan <fugang.duan@nxp.com>
+Date:   Fri Jan 11 14:29:49 2019 +0000
+
+    dmaengine: imx-sdma: pass ->dev to dma_alloc_coherent() API
+
+in linux-next actually is equivalent to this patch, so we can drop
+this one.
+
+> 
+> Thanks
+> -- 
+> ~Vinod
+---end quoted text---
