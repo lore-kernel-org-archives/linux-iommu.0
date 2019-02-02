@@ -1,227 +1,332 @@
-From: Tianyu Lan <lantianyu1986-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Tianyu Lan <lantianyu1986@gmail.com>
 Subject: Re: [PATCH 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
-Date: Sat, 2 Feb 2019 14:02:06 +0800
-Message-ID: <CAOLK0py2EChX7AsZkFNH2kDu1U3BKT5qQ68boGRCzd5kiC2hQQ@mail.gmail.com>
+Date: Sat, 2 Feb 2019 14:20:55 +0800
+Message-ID: <CAOLK0pz7XH7UtWmdNBazsJi5v9ARH5D2mUMFNhqqoGnbEuEBhw@mail.gmail.com>
 References: <1548929853-25877-1-git-send-email-Tianyu.Lan@microsoft.com>
-	<1548929853-25877-3-git-send-email-Tianyu.Lan@microsoft.com>
-	<20190201145130.GW3973@sasha-vm>
+ <1548929853-25877-3-git-send-email-Tianyu.Lan@microsoft.com> <aa7d9f2a-fe80-b825-efe4-cfd9a0c9501d@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190201145130.GW3973@sasha-vm>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Lan Tianyu <Tianyu.Lan-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org, "linux-kernel@vger kernel org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, michael.h.kelley-0li6OtcxBFHby3iVrkZq2A@public.gmane.org, Vitaly Kuznetsov <vkuznets-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, kys-0li6OtcxBFHby3iVrkZq2A@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <aa7d9f2a-fe80-b825-efe4-cfd9a0c9501d@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Lan Tianyu <Tianyu.Lan@microsoft.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, nicolas.ferre@microchip.com, "linux-kernel@vger kernel org" <linux-kernel@vger.kernel.org>, michael.h.kelley@microsoft.com, Vitaly Kuznetsov <vkuznets@redhat.com>, iommu@lists.linux-foundation.org, mchehab+samsung@kernel.org, akpm@linux-foundation.org, kys@microsoft.com, davem@davemloft.net
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgU2FzaGE6CiAgICAgICAgICAgICBUaGFua3MgZm9yIHlvdXIgcmV2aWV3LgoKT24gRnJpLCBG
-ZWIgMSwgMjAxOSBhdCAxMDo1MSBQTSBTYXNoYSBMZXZpbiA8c2FzaGFsQGtlcm5lbC5vcmc+IHdy
-b3RlOgo+Cj4gSGkgVGlhbnl1LAo+Cj4gRmV3IGNvbW1lbnRzIGJlbG93Lgo+Cj4gT24gVGh1LCBK
-YW4gMzEsIDIwMTkgYXQgMDY6MTc6MzJQTSArMDgwMCwgbGFudGlhbnl1MTk4NkBnbWFpbC5jb20g
-d3JvdGU6Cj4gPkZyb206IExhbiBUaWFueXUgPFRpYW55dS5MYW5AbWljcm9zb2Z0LmNvbT4KPiA+
-Cj4gPk9uIHRoZSBiYXJlIG1ldGFsLCBlbmFibGluZyBYMkFQSUMgbW9kZSByZXF1aXJlcyBpbnRl
-cnJ1cHQgcmVtYXBwaW5nCj4gPmZ1bmN0aW9uIHdoaWNoIGhlbHBzIHRvIGRlbGl2ZXIgaXJxIHRv
-IGNwdSB3aXRoIDMyLWJpdCBBUElDIElELgo+ID5IeXBlci1WIGRvZXNuJ3QgcHJvdmlkZSBpbnRl
-cnJ1cHQgcmVtYXBwaW5nIGZ1bmN0aW9uIHNvIGZhciBhbmQgSHlwZXItVgo+ID5NU0kgcHJvdG9j
-b2wgYWxyZWFkeSBzdXBwb3J0cyB0byBkZWxpdmVyIGludGVycnVwdCB0byB0aGUgQ1BVIHdob3Nl
-Cj4gPnZpcnR1YWwgcHJvY2Vzc29yIGluZGV4IGlzIG1vcmUgdGhhbiAyNTUuIElPLUFQSUMgaW50
-ZXJydXB0IHN0aWxsIGhhcwo+ID44LWJpdCBBUElDIElEIGxpbWl0YXRpb24uCj4gPgo+ID5UaGlz
-IHBhdGNoIGlzIHRvIGFkZCBIeXBlci1WIHN0dWIgSU9NTVUgZHJpdmVyIGluIG9yZGVyIHRvIGVu
-YWJsZQo+ID5YMkFQSUMgbW9kZSBzdWNjZXNzZnVsbHkgaW4gSHlwZXItViBMaW51eCBndWVzdC4g
-VGhlIGRyaXZlciByZXR1cm5zIFgyQVBJQwo+ID5pbnRlcnJ1cHQgcmVtYXBwaW5nIGNhcGFiaWxp
-dHkgd2hlbiBYMkFQSUMgbW9kZSBpcyBhdmFpbGFibGUuIE90aGVyd2lzZSwKPiA+aXQgY3JlYXRl
-cyBhIEh5cGVyLVYgaXJxIGRvbWFpbiB0byBsaW1pdCBJTy1BUElDIGludGVycnVwdHMnIGFmZmlu
-aXR5Cj4gPmFuZCBtYWtlIHN1cmUgY3B1cyBhc3NpZ25lZCB3aXRoIElPLUFQSUMgaW50ZXJydXB0
-IGhhdmUgOC1iaXQgQVBJQyBJRC4KPiA+Cj4gPlNpZ25lZC1vZmYtYnk6IExhbiBUaWFueXUgPFRp
-YW55dS5MYW5AbWljcm9zb2Z0LmNvbT4KPiA+LS0tCj4gPiBkcml2ZXJzL2lvbW11L0tjb25maWcg
-ICAgICAgICB8ICAgNyArKwo+ID4gZHJpdmVycy9pb21tdS9NYWtlZmlsZSAgICAgICAgfCAgIDEg
-Kwo+ID4gZHJpdmVycy9pb21tdS9oeXBlcnYtaW9tbXUuYyAgfCAxODkgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gPiBkcml2ZXJzL2lvbW11L2lycV9yZW1hcHBp
-bmcuYyB8ICAgMyArCj4gPiBkcml2ZXJzL2lvbW11L2lycV9yZW1hcHBpbmcuaCB8ICAgMSArCj4g
-PiA1IGZpbGVzIGNoYW5nZWQsIDIwMSBpbnNlcnRpb25zKCspCj4gPiBjcmVhdGUgbW9kZSAxMDA2
-NDQgZHJpdmVycy9pb21tdS9oeXBlcnYtaW9tbXUuYwo+ID4KPiA+ZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvS2NvbmZpZyBiL2RyaXZlcnMvaW9tbXUvS2NvbmZpZwo+ID5pbmRleCA0NWQ3MDIx
-Li41YzM5N2MwIDEwMDY0NAo+ID4tLS0gYS9kcml2ZXJzL2lvbW11L0tjb25maWcKPiA+KysrIGIv
-ZHJpdmVycy9pb21tdS9LY29uZmlnCj4gPkBAIC00MzcsNCArNDM3LDExIEBAIGNvbmZpZyBRQ09N
-X0lPTU1VCj4gPiAgICAgICBoZWxwCj4gPiAgICAgICAgIFN1cHBvcnQgZm9yIElPTU1VIG9uIGNl
-cnRhaW4gUXVhbGNvbW0gU29Dcy4KPiA+Cj4gPitjb25maWcgSFlQRVJWX0lPTU1VCj4gPisgICAg
-ICBib29sICJIeXBlci1WIHN0dWIgSU9NTVUgc3VwcG9ydCIKPiA+KyAgICAgIGRlcGVuZHMgb24g
-SFlQRVJWCj4KPiAgICAgICAgIHNlbGVjdCBJT01NVV9BUEkgPwoKWWVz44CCIHdpbGwgIHVwZGF0
-ZS4KCj4KPiA+KyAgICAgIGhlbHAKPiA+KyAgICAgICAgICBIeXBlci1WIHN0dWIgSU9NTVUgZHJp
-dmVyIHByb3ZpZGVzIGNhcGFiaWxpdHkgdG8gcnVuCj4gPisgICAgICAgICAgTGludXggZ3Vlc3Qg
-d2l0aCBYMkFQSUMgbW9kZSBlbmFibGVkLgo+ID4rCj4gPiBlbmRpZiAjIElPTU1VX1NVUFBPUlQK
-PiA+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUgYi9kcml2ZXJzL2lvbW11L01h
-a2VmaWxlCj4gPmluZGV4IGExNThhNjguLjhjNzFhMTUgMTAwNjQ0Cj4gPi0tLSBhL2RyaXZlcnMv
-aW9tbXUvTWFrZWZpbGUKPiA+KysrIGIvZHJpdmVycy9pb21tdS9NYWtlZmlsZQo+ID5AQCAtMzIs
-MyArMzIsNCBAQCBvYmotJChDT05GSUdfRVhZTk9TX0lPTU1VKSArPSBleHlub3MtaW9tbXUubwo+
-ID4gb2JqLSQoQ09ORklHX0ZTTF9QQU1VKSArPSBmc2xfcGFtdS5vIGZzbF9wYW11X2RvbWFpbi5v
-Cj4gPiBvYmotJChDT05GSUdfUzM5MF9JT01NVSkgKz0gczM5MC1pb21tdS5vCj4gPiBvYmotJChD
-T05GSUdfUUNPTV9JT01NVSkgKz0gcWNvbV9pb21tdS5vCj4gPitvYmotJChDT05GSUdfSFlQRVJW
-X0lPTU1VKSArPSBoeXBlcnYtaW9tbXUubwo+ID5kaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9o
-eXBlcnYtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaHlwZXJ2LWlvbW11LmMKPiA+bmV3IGZpbGUg
-bW9kZSAxMDA2NDQKPiA+aW5kZXggMDAwMDAwMC4uYTY0Yjc0Nwo+ID4tLS0gL2Rldi9udWxsCj4g
-PisrKyBiL2RyaXZlcnMvaW9tbXUvaHlwZXJ2LWlvbW11LmMKPiA+QEAgLTAsMCArMSwxODkgQEAK
-PiA+Ky8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCj4gPisKPiA+KyNkZWZpbmUg
-cHJfZm10KGZtdCkgICAgICJIWVBFUlYtSVI6ICIgZm10Cj4gPisKPiA+KyNpbmNsdWRlIDxsaW51
-eC90eXBlcy5oPgo+ID4rI2luY2x1ZGUgPGxpbnV4L2ludGVycnVwdC5oPgo+ID4rI2luY2x1ZGUg
-PGxpbnV4L2lycS5oPgo+ID4rI2luY2x1ZGUgPGxpbnV4L2lvbW11Lmg+Cj4gPisjaW5jbHVkZSA8
-bGludXgvbW9kdWxlLmg+Cj4gPisKPiA+KyNpbmNsdWRlIDxhc20vaHdfaXJxLmg+Cj4gPisjaW5j
-bHVkZSA8YXNtL2lvX2FwaWMuaD4KPiA+KyNpbmNsdWRlIDxhc20vaXJxX3JlbWFwcGluZy5oPgo+
-ID4rI2luY2x1ZGUgPGFzbS9oeXBlcnZpc29yLmg+Cj4gPisKPiA+KyNpbmNsdWRlICJpcnFfcmVt
-YXBwaW5nLmgiCj4gPisKPiA+Ky8qCj4gPisgKiBBY2NvcmRpbmcgSU8tQVBJQyBzcGVjLCBJTyBB
-UElDIGhhcyBhIDI0LWVudHJ5IEludGVycnVwdAo+ID4rICogUmVkaXJlY3Rpb24gVGFibGUuCj4K
-PiBDYW4gdGhlIHNwZWMgYmUgbGlua2VkIHNvbWV3aGVyZT8gSW4gdGhlIGNvbW1pdCBtZXNzYWdl
-LCBvciBoZXJlPwoKU3VyZS4gV2lsbCB1cGRhdGUuCgo+Cj4gPisgKi8KPiA+KyNkZWZpbmUgSU9B
-UElDX1JFTUFQUElOR19FTlRSWSAyNAo+ID4rCj4gPitzdGF0aWMgY3B1bWFza190IGlvYXBpY19t
-YXhfY3B1bWFzayA9IHsgQ1BVX0JJVFNfTk9ORSB9Owo+ID4rc3RydWN0IGlycV9kb21haW4gKmlv
-YXBpY19pcl9kb21haW47Cj4gPisKPiA+K3N0YXRpYyBpbnQgaHlwZXJ2X2lyX3NldF9hZmZpbml0
-eShzdHJ1Y3QgaXJxX2RhdGEgKmRhdGEsCj4gPisgICAgICAgICAgICAgIGNvbnN0IHN0cnVjdCBj
-cHVtYXNrICptYXNrLCBib29sIGZvcmNlKQo+ID4rewo+ID4rICAgICAgc3RydWN0IGlycV9kYXRh
-ICpwYXJlbnQgPSBkYXRhLT5wYXJlbnRfZGF0YTsKPiA+KyAgICAgIHN0cnVjdCBpcnFfY2ZnICpj
-ZmcgPSBpcnFkX2NmZyhkYXRhKTsKPiA+KyAgICAgIHN0cnVjdCBJT19BUElDX3JvdXRlX2VudHJ5
-ICplbnRyeTsKPiA+KyAgICAgIGNwdW1hc2tfdCBjcHVtYXNrOwo+ID4rICAgICAgaW50IHJldDsK
-PiA+Kwo+ID4rICAgICAgY3B1bWFza19hbmRub3QoJmNwdW1hc2ssIG1hc2ssICZpb2FwaWNfbWF4
-X2NwdW1hc2spOwo+ID4rCj4gPisgICAgICAvKiBSZXR1cm4gZXJyb3IgSWYgbmV3IGlycSBhZmZp
-bml0eSBpcyBvdXQgb2YgaW9hcGljX21heF9jcHVtYXNrLiAqLwo+ID4rICAgICAgaWYgKCFjcHVt
-YXNrX2VtcHR5KCZjcHVtYXNrKSkKPiA+KyAgICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7Cj4g
-PisKPiA+KyAgICAgIHJldCA9IHBhcmVudC0+Y2hpcC0+aXJxX3NldF9hZmZpbml0eShwYXJlbnQs
-IG1hc2ssIGZvcmNlKTsKPiA+KyAgICAgIGlmIChyZXQgPCAwIHx8IHJldCA9PSBJUlFfU0VUX01B
-U0tfT0tfRE9ORSkKPiA+KyAgICAgICAgICAgICAgcmV0dXJuIHJldDsKPiA+Kwo+ID4rICAgICAg
-ZW50cnkgPSBkYXRhLT5jaGlwX2RhdGE7Cj4gPisgICAgICBlbnRyeS0+ZGVzdCA9IGNmZy0+ZGVz
-dF9hcGljaWQ7Cj4gPisgICAgICBlbnRyeS0+dmVjdG9yID0gY2ZnLT52ZWN0b3I7Cj4gPisgICAg
-ICBzZW5kX2NsZWFudXBfdmVjdG9yKGNmZyk7Cj4gPisKPiA+KyAgICAgIHJldHVybiAwOwo+ID4r
-fQo+ID4rCj4gPitzdGF0aWMgc3RydWN0IGlycV9jaGlwIGh5cGVydl9pcl9jaGlwID0gewo+ID4r
-ICAgICAgLm5hbWUgICAgICAgICAgICAgICAgICAgPSAiSFlQRVJWLUlSIiwKPiA+KyAgICAgIC5p
-cnFfYWNrICAgICAgICAgICAgICAgID0gYXBpY19hY2tfaXJxLAo+ID4rICAgICAgLmlycV9zZXRf
-YWZmaW5pdHkgICAgICAgPSBoeXBlcnZfaXJfc2V0X2FmZmluaXR5LAo+ID4rfTsKPiA+Kwo+ID4r
-c3RhdGljIGludCBoeXBlcnZfaXJxX3JlbWFwcGluZ19hbGxvYyhzdHJ1Y3QgaXJxX2RvbWFpbiAq
-ZG9tYWluLAo+ID4rICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBp
-bnQgdmlycSwgdW5zaWduZWQgaW50IG5yX2lycXMsCj4gPisgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHZvaWQgKmFyZykKPiA+K3sKPiA+KyAgICAgIHN0cnVjdCBpcnFfYWxsb2Nf
-aW5mbyAqaW5mbyA9IGFyZzsKPiA+KyAgICAgIHN0cnVjdCBJT19BUElDX3JvdXRlX2VudHJ5ICpl
-bnRyeTsKPgo+IFdoYXQncyB0aGUgcm9sZSBvZiB0aGlzIHZhcmlhYmxlPyBXZSBzZXQgaXQsIG9u
-Y2UsIGxhdGVyIG9uIGluIHRoZQo+IGZ1bmN0aW9uIGJ1dCB0aGF0J3MgYWxsPwo+CgpUaGlzIG9u
-ZSBzaG91bGQgYmUgcmVtb3ZlZC4KCj4gPisgICAgICBzdHJ1Y3QgaXJxX2RhdGEgKmlycV9kYXRh
-Owo+ID4rICAgICAgc3RydWN0IGlycV9kZXNjICpkZXNjOwo+ID4rICAgICAgc3RydWN0IGlycV9j
-ZmcgKmNmZzsKPiA+KyAgICAgIGludCByZXQgPSAwOwo+ID4rCj4gPisgICAgICBpZiAoIWluZm8g
-fHwgaW5mby0+dHlwZSAhPSBYODZfSVJRX0FMTE9DX1RZUEVfSU9BUElDIHx8IG5yX2lycXMgPiAx
-KQo+ID4rICAgICAgICAgICAgICByZXR1cm4gLUVJTlZBTDsKPiA+Kwo+ID4rICAgICAgcmV0ID0g
-aXJxX2RvbWFpbl9hbGxvY19pcnFzX3BhcmVudChkb21haW4sIHZpcnEsIG5yX2lycXMsIGFyZyk7
-Cj4gPisgICAgICBpZiAocmV0IDwgMCkKPiA+KyAgICAgICAgICAgICAgZ290byBmYWlsOwo+ID4r
-Cj4gPisgICAgICBpcnFfZGF0YSA9IGlycV9kb21haW5fZ2V0X2lycV9kYXRhKGRvbWFpbiwgdmly
-cSk7Cj4gPisgICAgICBjZmcgPSBpcnFkX2NmZyhpcnFfZGF0YSk7Cj4KPiBJcyB0aGlzIGFjdHVh
-bGx5IGJlaW5nIHVzZWQgYW55d2hlcmUsIG9yIGRvIHdlIG9ubHkgbmVlZCBpdCBmb3IgdGhlCj4g
-Y2hlY2sgYmVsb3c/IEl0J3Mgbm90IGNsZWFyIGZyb20gdGhlIGNvZGUgd2h5IHdlJ3JlIGNhbGxp
-bmcgaXJxZF9jZmcoKQo+IGFuZCBpZ25vcmluZyB0aGUgcmVzdWx0LgoKU29ycnkuIGlycWRfY2Zn
-KCkgc2hvdWxkIG5vdCBiZSBuZWVkZWQgaGVyZS4KCj4KPiA+KyAgICAgIGlmICghaXJxX2RhdGEg
-fHwgIWNmZykgewo+Cj4gWW91IGp1c3QgZGVyZWZlcmVuY2VkIGlycV9kYXRhIGluIHRoZSBsaW5l
-IGFib3ZlIHRoaXMgb25lLCBpdCdzIGEgYml0Cj4gbGF0ZSB0byBjaGVjayB0aGF0IGl0J3Mgbm90
-IE5VTEwuCj4KCk9LLiBXaWxsIHVwZGF0ZS4KCj4gPisgICAgICAgICAgICAgIHJldCA9IC1FSU5W
-QUw7Cj4gPisgICAgICAgICAgICAgIGdvdG8gZmFpbDsKPiA+KyAgICAgIH0KPiA+Kwo+ID4rICAg
-ICAgaXJxX2RhdGEtPmNoaXAgPSAmaHlwZXJ2X2lyX2NoaXA7Cj4gPisKPiA+KyAgICAgIC8qCj4g
-PisgICAgICAgKiBTYXZlIElPQVBJQyBlbnRyeSBwb2ludGVyIGhlcmUgaW4gb3JkZXIgdG8gc2V0
-IHZlY3RvciBhbmQKPiA+KyAgICAgICAqIGFuZCBkZXN0X2FwaWNpZCBpbiB0aGUgaHlwZXJ2X2ly
-cV9yZW1hcHBuZ19hY3RpdmF0ZSgpCj4gPisgICAgICAgKiBhbmQgaHlwZXJ2X2lyX3NldF9hZmZp
-bml0eSgpLiBJT0FQSUMgZHJpdmVyIGlnbm9yZXMKPiA+KyAgICAgICAqIGNmZy0+ZGVzdF9hcGlj
-aWQgYW5kIGNmZy0+dmVjdG9yIHdoZW4gaXJxIHJlbWFwcGluZwo+ID4rICAgICAgICogbW9kZSBp
-cyBlbmFibGVkLiBEZXRhaWwgc2VlIGlvYXBpY19jb25maWd1cmVfZW50cnkoKS4KPiA+KyAgICAg
-ICAqLwo+ID4rICAgICAgaXJxX2RhdGEtPmNoaXBfZGF0YSA9IGVudHJ5ID0gaW5mby0+aW9hcGlj
-X2VudHJ5Owo+ID4rCj4gPisgICAgICAvKgo+ID4rICAgICAgICogSHlwdmVyLVYgSU8gQVBJQyBp
-cnEgYWZmaW5pdHkgc2hvdWxkIGJlIGluIHRoZSBzY29wZSBvZgo+ID4rICAgICAgICogaW9hcGlj
-X21heF9jcHVtYXNrIGJlY2F1c2Ugbm8gaXJxIHJlbWFwcGluZyBzdXBwb3J0Lgo+ID4rICAgICAg
-ICovCj4gPisgICAgICBkZXNjID0gaXJxX2RhdGFfdG9fZGVzYyhpcnFfZGF0YSk7Cj4gPisgICAg
-ICBjcHVtYXNrX2FuZChkZXNjLT5pcnFfY29tbW9uX2RhdGEuYWZmaW5pdHksCj4gPisgICAgICAg
-ICAgICAgICAgICAgICAgZGVzYy0+aXJxX2NvbW1vbl9kYXRhLmFmZmluaXR5LAo+ID4rICAgICAg
-ICAgICAgICAgICAgICAgICZpb2FwaWNfbWF4X2NwdW1hc2spOwo+ID4rCj4gPisgZmFpbDoKPiA+
-KyAgICAgIHJldHVybiByZXQ7Cj4KPiBUaGlzIG9uZSBkb2Vzbid0IGFjdHVhbGx5IGZyZWUgYW55
-dGhpbmc/CgppcnFfZG9tYWluX2ZyZWVfaXJxc19jb21tb24oKSBzaG91bGQgYmUgY2FsbGVkIGhl
-cmUuIFRoYW5rcy4KCj4KPiA+K30KPiA+Kwo+ID4rc3RhdGljIHZvaWQgaHlwZXJ2X2lycV9yZW1h
-cHBpbmdfZnJlZShzdHJ1Y3QgaXJxX2RvbWFpbiAqZG9tYWluLAo+ID4rICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHVuc2lnbmVkIGludCB2aXJxLCB1bnNpZ25lZCBpbnQgbnJfaXJxcykK
-PiA+K3sKPiA+KyAgICAgIGlycV9kb21haW5fZnJlZV9pcnFzX2NvbW1vbihkb21haW4sIHZpcnEs
-IG5yX2lycXMpOwo+ID4rfQo+ID4rCj4gPitzdGF0aWMgaW50IGh5cGVydl9pcnFfcmVtYXBwbmdf
-YWN0aXZhdGUoc3RydWN0IGlycV9kb21haW4gKmRvbWFpbiwKPiA+KyAgICAgICAgICAgICAgICAg
-ICAgICAgIHN0cnVjdCBpcnFfZGF0YSAqaXJxX2RhdGEsIGJvb2wgcmVzZXJ2ZSkKPiA+K3sKPiA+
-KyAgICAgIHN0cnVjdCBpcnFfY2ZnICpjZmcgPSBpcnFkX2NmZyhpcnFfZGF0YSk7Cj4gPisgICAg
-ICBzdHJ1Y3QgSU9fQVBJQ19yb3V0ZV9lbnRyeSAqZW50cnkgPSBpcnFfZGF0YS0+Y2hpcF9kYXRh
-Owo+ID4rCj4gPisgICAgICBlbnRyeS0+ZGVzdCA9IGNmZy0+ZGVzdF9hcGljaWQ7Cj4gPisgICAg
-ICBlbnRyeS0+dmVjdG9yID0gY2ZnLT52ZWN0b3I7Cj4gPisKPiA+KyAgICAgIHJldHVybiAwOwo+
-ID4rfQo+ID4rCj4gPitzdGF0aWMgc3RydWN0IGlycV9kb21haW5fb3BzIGh5cGVydl9pcl9kb21h
-aW5fb3BzID0gewo+ID4rICAgICAgLmFsbG9jID0gaHlwZXJ2X2lycV9yZW1hcHBpbmdfYWxsb2Ms
-Cj4gPisgICAgICAuZnJlZSA9IGh5cGVydl9pcnFfcmVtYXBwaW5nX2ZyZWUsCj4gPisgICAgICAu
-YWN0aXZhdGUgPSBoeXBlcnZfaXJxX3JlbWFwcG5nX2FjdGl2YXRlLAo+ID4rfTsKPiA+Kwo+ID4r
-c3RhdGljIGludCBfX2luaXQgaHlwZXJ2X3ByZXBhcmVfaXJxX3JlbWFwcGluZyh2b2lkKQo+ID4r
-ewo+ID4rICAgICAgc3RydWN0IGZ3bm9kZV9oYW5kbGUgKmZuOwo+ID4rICAgICAgdTMyIGFwaWNf
-aWQ7Cj4gPisgICAgICBpbnQgaTsKPiA+Kwo+ID4rICAgICAgaWYgKHg4Nl9oeXBlcl90eXBlICE9
-IFg4Nl9IWVBFUl9NU19IWVBFUlYgfHwKPiA+KyAgICAgICAgICAheDJhcGljX3N1cHBvcnRlZCgp
-KQo+ID4rICAgICAgICAgICAgICByZXR1cm4gLUVOT0RFVjsKPiA+Kwo+ID4rICAgICAgZm4gPSBp
-cnFfZG9tYWluX2FsbG9jX25hbWVkX2lkX2Z3bm9kZSgiSFlQRVJWLUlSIiwgMCk7Cj4gPisgICAg
-ICBpZiAoIWZuKQo+ID4rICAgICAgICAgICAgICByZXR1cm4gLUVGQVVMVDsKPgo+IFdoeSBFRkFV
-TFQ/IFRoZSBvbmx5IHJlYXNvbiBpcnFfZG9tYWluX2FsbG9jX25hbWVkX2lkX2Z3bm9kZSgpIG1p
-Z2h0Cj4gZmFpbCBpcyBydW5uaW5nIG91dCBvZiBtZW1vcnkuCgpFTk9NRU0gc2hvdWxkIGJlIG1v
-cmUgYWNjdXJhdGUuCgo+Cj4gPisKPiA+KyAgICAgIGlvYXBpY19pcl9kb21haW4gPQo+ID4rICAg
-ICAgICAgICAgICBpcnFfZG9tYWluX2NyZWF0ZV9oaWVyYXJjaHkoYXJjaF9nZXRfaXJfcGFyZW50
-X2RvbWFpbigpLAo+ID4rICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMCwgSU9BUElDX1JF
-TUFQUElOR19FTlRSWSwgZm4sCj4gPisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAmaHlw
-ZXJ2X2lyX2RvbWFpbl9vcHMsIE5VTEwpOwo+ID4rCj4gPisgICAgICBpcnFfZG9tYWluX2ZyZWVf
-Zndub2RlKGZuKTsKPiA+Kwo+ID4rICAgICAgLyoKPiA+KyAgICAgICAqIEh5cGVyLVYgZG9lc24n
-dCBwcm92aWRlIGlycSByZW1hcHBpbmcgZnVuY3Rpb24gZm9yCj4gPisgICAgICAgKiBJTy1BUElD
-IGFuZCBzbyBJTy1BUElDIG9ubHkgYWNjZXB0cyA4LWJpdCBBUElDIElELgo+ID4rICAgICAgICog
-UHJlcGFyZSBtYXggY3B1IGFmZmluaXR5IGZvciBJT0FQSUMgaXJxcy4gU2NhbiBjcHUgMC0yNTUK
-PiA+KyAgICAgICAqIGFuZCBzZXQgY3B1IGludG8gaW9hcGljX21heF9jcHVtYXNrIGlmIGl0cyBB
-UElDIElEIGlzIGxlc3MKPiA+KyAgICAgICAqIHRoYW4gMjU1Lgo+Cj4gT2ZmLWJ5LW9uZSBoZXJl
-OiBpdCdsbCBzZXQgdGhlIENQVSBpbiB0aGUgYWZmaW5pdHkgbWFzayBpZiBpdCdzIGxlc3MKPiB0
-aGFuIDI1Niwgbm90IDI1NS4KClllcy4gd2lsbCB1cGRhdGUuCgo+Cj4gPisgICAgICAgKi8KPiA+
-KyAgICAgIGZvciAoaSA9IDA7IGkgPCAyNTY7IGkrKykgewo+ID4rICAgICAgICAgICAgICBhcGlj
-X2lkID0gY3B1X3BoeXNpY2FsX2lkKGkpOwo+ID4rICAgICAgICAgICAgICBpZiAoYXBpY19pZCA+
-IDI1NSkKPiA+KyAgICAgICAgICAgICAgICAgICAgICBjb250aW51ZTsKPiA+Kwo+ID4rICAgICAg
-ICAgICAgICBjcHVtYXNrX3NldF9jcHUoaSwgJmlvYXBpY19tYXhfY3B1bWFzayk7Cj4gPisgICAg
-ICB9Cj4KPiBJJ20gY3VyaW91cyBoZXJlOiBhc3N1bWluZyB3ZSBoYXZlIGEgbGFyZ2UgYW1vdW50
-IG9mIENQVXMsIHdoYXQKPiBndWFyYW50ZWUgZG8gd2UgaGF2ZSB0aGF0IHRoaXMgbWFzayB3aWxs
-IGhhdmUgYW55dGhpbmcgc2V0PyBXaGF0IGhhcHBlbnMKPiBpZiBpdCByZW1haW5zIGVtcHR5PwoK
-VGhlIEFQSUMgaWQgb2YgQlNQIGlzIGFsd2F5cyAwLiBUaGUgQ1BVJ3MgQVBJQyBJRCBjb21lcyBm
-cm9tIEFDUEkgTUFEVCB0YWJsZS4KVGhlIEFQSUMgSUQgaW4gdGhlIEFDUEkgTUFEVCB0YWJsZSB3
-aWxsIGJlIG1vbm90b25lIGluY3JlYXNpbmcgZnJvbSBIeXBlci1WCnRlYW0uCgo+Cj4gPisKPiA+
-KyAgICAgIHJldHVybiAwOwo+ID4rfQo+ID4rCj4gPitzdGF0aWMgaW50IF9faW5pdCBoeXBlcnZf
-ZW5hYmxlX2lycV9yZW1hcHBpbmcodm9pZCkKPiA+K3sKPiA+KyAgICAgIHJldHVybiBJUlFfUkVN
-QVBfWDJBUElDX01PREU7Cj4gPit9Cj4gPisKPiA+K3N0YXRpYyBzdHJ1Y3QgaXJxX2RvbWFpbiAq
-aHlwZXJ2X2dldF9pcl9pcnFfZG9tYWluKHN0cnVjdCBpcnFfYWxsb2NfaW5mbyAqaW5mbykKPiA+
-K3sKPiA+KyAgICAgIGlmIChpbmZvLT50eXBlID09IFg4Nl9JUlFfQUxMT0NfVFlQRV9JT0FQSUMp
-Cj4gPisgICAgICAgICAgICAgIHJldHVybiBpb2FwaWNfaXJfZG9tYWluOwo+ID4rICAgICAgZWxz
-ZQo+ID4rICAgICAgICAgICAgICByZXR1cm4gTlVMTDsKPiA+K30KPiA+Kwo+ID4rc3RydWN0IGly
-cV9yZW1hcF9vcHMgaHlwZXJ2X2lycV9yZW1hcF9vcHMgPSB7Cj4gPisgICAgICAucHJlcGFyZSAg
-ICAgICAgICAgICAgICA9IGh5cGVydl9wcmVwYXJlX2lycV9yZW1hcHBpbmcsCj4gPisgICAgICAu
-ZW5hYmxlICAgICAgICAgICAgICAgICA9IGh5cGVydl9lbmFibGVfaXJxX3JlbWFwcGluZywKPiA+
-KyAgICAgIC5nZXRfaXJfaXJxX2RvbWFpbiAgICAgID0gaHlwZXJ2X2dldF9pcl9pcnFfZG9tYWlu
-LAo+ID4rfTsKPiA+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaXJxX3JlbWFwcGluZy5jIGIv
-ZHJpdmVycy9pb21tdS9pcnFfcmVtYXBwaW5nLmMKPiA+aW5kZXggYjk0ZWJkNC4uODFjZjI5MCAx
-MDA2NDQKPiA+LS0tIGEvZHJpdmVycy9pb21tdS9pcnFfcmVtYXBwaW5nLmMKPiA+KysrIGIvZHJp
-dmVycy9pb21tdS9pcnFfcmVtYXBwaW5nLmMKPiA+QEAgLTEwMyw2ICsxMDMsOSBAQCBpbnQgX19p
-bml0IGlycV9yZW1hcHBpbmdfcHJlcGFyZSh2b2lkKQo+ID4gICAgICAgZWxzZSBpZiAoSVNfRU5B
-QkxFRChDT05GSUdfQU1EX0lPTU1VKSAmJgo+ID4gICAgICAgICAgICAgICAgYW1kX2lvbW11X2ly
-cV9vcHMucHJlcGFyZSgpID09IDApCj4gPiAgICAgICAgICAgICAgIHJlbWFwX29wcyA9ICZhbWRf
-aW9tbXVfaXJxX29wczsKPiA+KyAgICAgIGVsc2UgaWYgKElTX0VOQUJMRUQoQ09ORklHX0hZUEVS
-Vl9JT01NVSkgJiYKPiA+KyAgICAgICAgICAgICAgIGh5cGVydl9pcnFfcmVtYXBfb3BzLnByZXBh
-cmUoKSA9PSAwKQo+ID4rICAgICAgICAgICAgICByZW1hcF9vcHMgPSAmaHlwZXJ2X2lycV9yZW1h
-cF9vcHM7Cj4gPiAgICAgICBlbHNlCj4gPiAgICAgICAgICAgICAgIHJldHVybiAtRU5PU1lTOwo+
-ID4KPiA+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaXJxX3JlbWFwcGluZy5oIGIvZHJpdmVy
-cy9pb21tdS9pcnFfcmVtYXBwaW5nLmgKPiA+aW5kZXggMGFmZWY2ZS4uZjg2MDllOSAxMDA2NDQK
-PiA+LS0tIGEvZHJpdmVycy9pb21tdS9pcnFfcmVtYXBwaW5nLmgKPiA+KysrIGIvZHJpdmVycy9p
-b21tdS9pcnFfcmVtYXBwaW5nLmgKPiA+QEAgLTY0LDYgKzY0LDcgQEAgc3RydWN0IGlycV9yZW1h
-cF9vcHMgewo+ID4KPiA+IGV4dGVybiBzdHJ1Y3QgaXJxX3JlbWFwX29wcyBpbnRlbF9pcnFfcmVt
-YXBfb3BzOwo+ID4gZXh0ZXJuIHN0cnVjdCBpcnFfcmVtYXBfb3BzIGFtZF9pb21tdV9pcnFfb3Bz
-Owo+ID4rZXh0ZXJuIHN0cnVjdCBpcnFfcmVtYXBfb3BzIGh5cGVydl9pcnFfcmVtYXBfb3BzOwo+
-ID4KPiA+ICNlbHNlICAvKiBDT05GSUdfSVJRX1JFTUFQICovCj4gPgo+ID4tLQo+ID4yLjcuNAo+
-ID4KCgoKLS0gCkJlc3QgcmVnYXJkcwpUaWFueXUgTGFuCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Robin:
+           Thanks for your review.
+
+On Sat, Feb 2, 2019 at 1:00 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 31/01/2019 10:17, lantianyu1986@gmail.com wrote:
+> > From: Lan Tianyu <Tianyu.Lan@microsoft.com>
+> >
+> > On the bare metal, enabling X2APIC mode requires interrupt remapping
+> > function which helps to deliver irq to cpu with 32-bit APIC ID.
+> > Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
+> > MSI protocol already supports to deliver interrupt to the CPU whose
+> > virtual processor index is more than 255. IO-APIC interrupt still has
+> > 8-bit APIC ID limitation.
+> >
+> > This patch is to add Hyper-V stub IOMMU driver in order to enable
+> > X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2APIC
+> > interrupt remapping capability when X2APIC mode is available. Otherwise,
+> > it creates a Hyper-V irq domain to limit IO-APIC interrupts' affinity
+> > and make sure cpus assigned with IO-APIC interrupt have 8-bit APIC ID.
+>
+> AFAICS this is a Hyper-V IOAPIC driver which neither implements nor even
+> touches the IOMMU API, so having it in drivers/iommu rather than, say,
+> drivers/irqchip seems a bit of a stretch to me :/
+>
+> Maybe this could be a good push to clean up and properly factor out the
+> x86 IRQ remapping stuff, possibly to live somewhere closer to other IRQ
+> layer code? I appreciate it's a bit muddied by the major x86 vendors
+> both keeping their DMA virtualisation and IRQ virtualisation
+> architectures together under one umbrella "IOMMU" spec, but IIRC the
+> fact that intel-iommu supports building for !IOMMU_API already causes us
+> a bit of grief.
+>
+> Of course, I'm coming from a particular not-entirely-objective viewpoint
+> where DMA remapping (SMMU) code in drivers/iommu, IRQ remapping (ITS)
+> code in drivers/irqchip, and the relevant ACPI table handling (IORT) in
+> drivers/acpi is the norm, but even though that largely falls out of a
+> less-tightly-coupled system architecture it does seem perfectly logical
+> either way.
+
+I think the different between arm and x86 about interrupt remapping is
+that interrupt remapping
+function is provided by IOMMU on x86 while it's provided by GIC or
+other component on ARM.
+As part of IOMMU on x86, the irq remapping code should be in the IOMMU
+driver. if some thing
+wrong, please correct me. Thanks.
+
+
+>
+> Robin.
+>
+> (who has admittedly been drinking the Cambridge water for many years now...)
+>
+> > Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
+> > ---
+> >   drivers/iommu/Kconfig         |   7 ++
+> >   drivers/iommu/Makefile        |   1 +
+> >   drivers/iommu/hyperv-iommu.c  | 189 ++++++++++++++++++++++++++++++++++++++++++
+> >   drivers/iommu/irq_remapping.c |   3 +
+> >   drivers/iommu/irq_remapping.h |   1 +
+> >   5 files changed, 201 insertions(+)
+> >   create mode 100644 drivers/iommu/hyperv-iommu.c
+> >
+> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > index 45d7021..5c397c0 100644
+> > --- a/drivers/iommu/Kconfig
+> > +++ b/drivers/iommu/Kconfig
+> > @@ -437,4 +437,11 @@ config QCOM_IOMMU
+> >       help
+> >         Support for IOMMU on certain Qualcomm SoCs.
+> >
+> > +config HYPERV_IOMMU
+> > +     bool "Hyper-V stub IOMMU support"
+> > +     depends on HYPERV
+> > +     help
+> > +         Hyper-V stub IOMMU driver provides capability to run
+> > +         Linux guest with X2APIC mode enabled.
+> > +
+> >   endif # IOMMU_SUPPORT
+> > diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> > index a158a68..8c71a15 100644
+> > --- a/drivers/iommu/Makefile
+> > +++ b/drivers/iommu/Makefile
+> > @@ -32,3 +32,4 @@ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+> >   obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+> >   obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+> >   obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+> > +obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+> > diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> > new file mode 100644
+> > index 0000000..a64b747
+> > --- /dev/null
+> > +++ b/drivers/iommu/hyperv-iommu.c
+> > @@ -0,0 +1,189 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#define pr_fmt(fmt)     "HYPERV-IR: " fmt
+> > +
+> > +#include <linux/types.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/irq.h>
+> > +#include <linux/iommu.h>
+> > +#include <linux/module.h>
+> > +
+> > +#include <asm/hw_irq.h>
+> > +#include <asm/io_apic.h>
+> > +#include <asm/irq_remapping.h>
+> > +#include <asm/hypervisor.h>
+> > +
+> > +#include "irq_remapping.h"
+> > +
+> > +/*
+> > + * According IO-APIC spec, IO APIC has a 24-entry Interrupt
+> > + * Redirection Table.
+> > + */
+> > +#define IOAPIC_REMAPPING_ENTRY 24
+> > +
+> > +static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
+> > +struct irq_domain *ioapic_ir_domain;
+> > +
+> > +static int hyperv_ir_set_affinity(struct irq_data *data,
+> > +             const struct cpumask *mask, bool force)
+> > +{
+> > +     struct irq_data *parent = data->parent_data;
+> > +     struct irq_cfg *cfg = irqd_cfg(data);
+> > +     struct IO_APIC_route_entry *entry;
+> > +     cpumask_t cpumask;
+> > +     int ret;
+> > +
+> > +     cpumask_andnot(&cpumask, mask, &ioapic_max_cpumask);
+> > +
+> > +     /* Return error If new irq affinity is out of ioapic_max_cpumask. */
+> > +     if (!cpumask_empty(&cpumask))
+> > +             return -EINVAL;
+> > +
+> > +     ret = parent->chip->irq_set_affinity(parent, mask, force);
+> > +     if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
+> > +             return ret;
+> > +
+> > +     entry = data->chip_data;
+> > +     entry->dest = cfg->dest_apicid;
+> > +     entry->vector = cfg->vector;
+> > +     send_cleanup_vector(cfg);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static struct irq_chip hyperv_ir_chip = {
+> > +     .name                   = "HYPERV-IR",
+> > +     .irq_ack                = apic_ack_irq,
+> > +     .irq_set_affinity       = hyperv_ir_set_affinity,
+> > +};
+> > +
+> > +static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
+> > +                                  unsigned int virq, unsigned int nr_irqs,
+> > +                                  void *arg)
+> > +{
+> > +     struct irq_alloc_info *info = arg;
+> > +     struct IO_APIC_route_entry *entry;
+> > +     struct irq_data *irq_data;
+> > +     struct irq_desc *desc;
+> > +     struct irq_cfg *cfg;
+> > +     int ret = 0;
+> > +
+> > +     if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
+> > +             return -EINVAL;
+> > +
+> > +     ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, arg);
+> > +     if (ret < 0)
+> > +             goto fail;
+> > +
+> > +     irq_data = irq_domain_get_irq_data(domain, virq);
+> > +     cfg = irqd_cfg(irq_data);
+> > +     if (!irq_data || !cfg) {
+> > +             ret = -EINVAL;
+> > +             goto fail;
+> > +     }
+> > +
+> > +     irq_data->chip = &hyperv_ir_chip;
+> > +
+> > +     /*
+> > +      * Save IOAPIC entry pointer here in order to set vector and
+> > +      * and dest_apicid in the hyperv_irq_remappng_activate()
+> > +      * and hyperv_ir_set_affinity(). IOAPIC driver ignores
+> > +      * cfg->dest_apicid and cfg->vector when irq remapping
+> > +      * mode is enabled. Detail see ioapic_configure_entry().
+> > +      */
+> > +     irq_data->chip_data = entry = info->ioapic_entry;
+> > +
+> > +     /*
+> > +      * Hypver-V IO APIC irq affinity should be in the scope of
+> > +      * ioapic_max_cpumask because no irq remapping support.
+> > +      */
+> > +     desc = irq_data_to_desc(irq_data);
+> > +     cpumask_and(desc->irq_common_data.affinity,
+> > +                     desc->irq_common_data.affinity,
+> > +                     &ioapic_max_cpumask);
+> > +
+> > + fail:
+> > +     return ret;
+> > +}
+> > +
+> > +static void hyperv_irq_remapping_free(struct irq_domain *domain,
+> > +                              unsigned int virq, unsigned int nr_irqs)
+> > +{
+> > +     irq_domain_free_irqs_common(domain, virq, nr_irqs);
+> > +}
+> > +
+> > +static int hyperv_irq_remappng_activate(struct irq_domain *domain,
+> > +                       struct irq_data *irq_data, bool reserve)
+> > +{
+> > +     struct irq_cfg *cfg = irqd_cfg(irq_data);
+> > +     struct IO_APIC_route_entry *entry = irq_data->chip_data;
+> > +
+> > +     entry->dest = cfg->dest_apicid;
+> > +     entry->vector = cfg->vector;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static struct irq_domain_ops hyperv_ir_domain_ops = {
+> > +     .alloc = hyperv_irq_remapping_alloc,
+> > +     .free = hyperv_irq_remapping_free,
+> > +     .activate = hyperv_irq_remappng_activate,
+> > +};
+> > +
+> > +static int __init hyperv_prepare_irq_remapping(void)
+> > +{
+> > +     struct fwnode_handle *fn;
+> > +     u32 apic_id;
+> > +     int i;
+> > +
+> > +     if (x86_hyper_type != X86_HYPER_MS_HYPERV ||
+> > +         !x2apic_supported())
+> > +             return -ENODEV;
+> > +
+> > +     fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
+> > +     if (!fn)
+> > +             return -EFAULT;
+> > +
+> > +     ioapic_ir_domain =
+> > +             irq_domain_create_hierarchy(arch_get_ir_parent_domain(),
+> > +                             0, IOAPIC_REMAPPING_ENTRY, fn,
+> > +                             &hyperv_ir_domain_ops, NULL);
+> > +
+> > +     irq_domain_free_fwnode(fn);
+> > +
+> > +     /*
+> > +      * Hyper-V doesn't provide irq remapping function for
+> > +      * IO-APIC and so IO-APIC only accepts 8-bit APIC ID.
+> > +      * Prepare max cpu affinity for IOAPIC irqs. Scan cpu 0-255
+> > +      * and set cpu into ioapic_max_cpumask if its APIC ID is less
+> > +      * than 255.
+> > +      */
+> > +     for (i = 0; i < 256; i++) {
+> > +             apic_id = cpu_physical_id(i);
+> > +             if (apic_id > 255)
+> > +                     continue;
+> > +
+> > +             cpumask_set_cpu(i, &ioapic_max_cpumask);
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int __init hyperv_enable_irq_remapping(void)
+> > +{
+> > +     return IRQ_REMAP_X2APIC_MODE;
+> > +}
+> > +
+> > +static struct irq_domain *hyperv_get_ir_irq_domain(struct irq_alloc_info *info)
+> > +{
+> > +     if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC)
+> > +             return ioapic_ir_domain;
+> > +     else
+> > +             return NULL;
+> > +}
+> > +
+> > +struct irq_remap_ops hyperv_irq_remap_ops = {
+> > +     .prepare                = hyperv_prepare_irq_remapping,
+> > +     .enable                 = hyperv_enable_irq_remapping,
+> > +     .get_ir_irq_domain      = hyperv_get_ir_irq_domain,
+> > +};
+> > diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+> > index b94ebd4..81cf290 100644
+> > --- a/drivers/iommu/irq_remapping.c
+> > +++ b/drivers/iommu/irq_remapping.c
+> > @@ -103,6 +103,9 @@ int __init irq_remapping_prepare(void)
+> >       else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
+> >                amd_iommu_irq_ops.prepare() == 0)
+> >               remap_ops = &amd_iommu_irq_ops;
+> > +     else if (IS_ENABLED(CONFIG_HYPERV_IOMMU) &&
+> > +              hyperv_irq_remap_ops.prepare() == 0)
+> > +             remap_ops = &hyperv_irq_remap_ops;
+> >       else
+> >               return -ENOSYS;
+> >
+> > diff --git a/drivers/iommu/irq_remapping.h b/drivers/iommu/irq_remapping.h
+> > index 0afef6e..f8609e9 100644
+> > --- a/drivers/iommu/irq_remapping.h
+> > +++ b/drivers/iommu/irq_remapping.h
+> > @@ -64,6 +64,7 @@ struct irq_remap_ops {
+> >
+> >   extern struct irq_remap_ops intel_irq_remap_ops;
+> >   extern struct irq_remap_ops amd_iommu_irq_ops;
+> > +extern struct irq_remap_ops hyperv_irq_remap_ops;
+> >
+> >   #else  /* CONFIG_IRQ_REMAP */
+> >
+> >
+
+
+
+-- 
+Best regards
+Tianyu Lan
