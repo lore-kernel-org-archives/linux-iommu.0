@@ -1,70 +1,121 @@
 From: Michael Kelley <mikelley@microsoft.com>
-Subject: RE: [PATCH V2 1/3] x86/Hyper-V: Set x2apic destination mode to
- physical when x2apic is available
-Date: Sun, 3 Feb 2019 21:26:11 +0000
-Message-ID: <DM5PR2101MB091820B372812576837724CED76C0@DM5PR2101MB0918.namprd21.prod.outlook.com>
+Subject: RE: [PATCH V2 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
+Date: Sun, 3 Feb 2019 21:50:05 +0000
+Message-ID: <DM5PR2101MB0918E63F306E9226A801BF55D76C0@DM5PR2101MB0918.namprd21.prod.outlook.com>
 References: <1549113287-5606-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1549113287-5606-2-git-send-email-Tianyu.Lan@microsoft.com>
+ <1549113287-5606-3-git-send-email-Tianyu.Lan@microsoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1549113287-5606-2-git-send-email-Tianyu.Lan@microsoft.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1549113287-5606-3-git-send-email-Tianyu.Lan@microsoft.com>
 Content-Language: en-US
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: "lantianyu1986@gmail.com" <lantianyu1986@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "sashal@kernel.org" <sashal@kernel.org>, Stephen Hemminger <sthemmin@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, "x86@kernel.org" <x86@kernel.org>, "mingo@redhat.com" <mingo@redhat.com>, "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>, "arnd@arndb.de" <arnd@arndb.de>, Haiyang Zhang <haiyangz@microsoft.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "bp@alien8.de" <bp@alien8.de>, "tglx@linutronix.de" <tglx@linutronix.de>, vkuznets <vkuznets@redhat.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, devel
+Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, KY Srinivasan <kys@microsoft.com>, vkuznets <vkuznets@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "sashal@kernel.org" <sashal@kernel.org>, "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: lantianyu1986@gmail.com <lantianyu1986@gmail.com>  Sent: Saturday, February 2, 2019 5:15 AM
-> 
-> Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
-> set x2apic destination mode to physcial mode when x2apic is available
-> and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
-> 8-bit APIC id.
-> 
-> Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v1:
->        - Remove redundant extern for x2apic_phys
-> ---
->  arch/x86/kernel/cpu/mshyperv.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-> index e81a2db..4bd6d90 100644
-> --- a/arch/x86/kernel/cpu/mshyperv.c
-> +++ b/arch/x86/kernel/cpu/mshyperv.c
-> @@ -328,6 +328,16 @@ static void __init ms_hyperv_init_platform(void)
->  # ifdef CONFIG_SMP
->  	smp_ops.smp_prepare_boot_cpu = hv_smp_prepare_boot_cpu;
->  # endif
-> +
-> +/*
-> + * Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
-> + * set x2apic destination mode to physcial mode when x2apic is available
-> + * and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs
-> + * have 8-bit APIC id.
-> + */
-
-Per comment from Dan Carpenter on v1 of this patch, the above comment
-block should be indented one tab to line up with the "if" statement below.
-
-Michael
-
-> +	if (IS_ENABLED(CONFIG_HYPERV_IOMMU) && x2apic_supported())
-> +		x2apic_phys = 1;
-> +
->  #endif
->  }
-> 
-> --
-> 2.7.4
+RnJvbTogbGFudGlhbnl1MTk4NkBnbWFpbC5jb20gPGxhbnRpYW55dTE5ODZAZ21haWwuY29tPiBT
+ZW50OiBTYXR1cmRheSwgRmVicnVhcnkgMiwgMjAxOSA1OjE1IEFNDQo+IA0KPiArLyoNCj4gKyAq
+IEFjY29yZGluZyA4MjA5M0FBIElPLUFQSUMgc3BlYyAsIElPIEFQSUMgaGFzIGEgMjQtZW50cnkg
+SW50ZXJydXB0DQo+ICsgKiBSZWRpcmVjdGlvbiBUYWJsZS4NCj4gKyAqLw0KPiArI2RlZmluZSBJ
+T0FQSUNfUkVNQVBQSU5HX0VOVFJZIDI0DQoNClRoZSBvdGhlciB1bnN0YXRlZCBhc3N1bXB0aW9u
+IGhlcmUgaXMgdGhhdCBIeXBlci12IGd1ZXN0IFZNcw0KaGF2ZSBvbmx5IGEgc2luZ2xlIElPQVBJ
+QywgcmVnYXJkbGVzcyBvZiB0aGUgc2l6ZSBvZiB0aGUgVk0uDQpQZXJoYXBzIHRoYXQgc2hvdWxk
+IGJlIHN0YXRlZCBpbiB0aGUgY29tbWVudCBleHBsYWluaW5nIHdoeQ0KdGhlcmUgYXJlIDI0IGVu
+dHJpZXM/DQoNCj4gKw0KPiArc3RhdGljIGNwdW1hc2tfdCBpb2FwaWNfbWF4X2NwdW1hc2sgPSB7
+IENQVV9CSVRTX05PTkUgfTsNCj4gK3N0YXRpYyBzdHJ1Y3QgaXJxX2RvbWFpbiAqaW9hcGljX2ly
+X2RvbWFpbjsNCj4gKw0KPiArc3RhdGljIGludCBoeXBlcnZfaXJfc2V0X2FmZmluaXR5KHN0cnVj
+dCBpcnFfZGF0YSAqZGF0YSwNCj4gKwkJY29uc3Qgc3RydWN0IGNwdW1hc2sgKm1hc2ssIGJvb2wg
+Zm9yY2UpDQo+ICt7DQo+ICsJc3RydWN0IGlycV9kYXRhICpwYXJlbnQgPSBkYXRhLT5wYXJlbnRf
+ZGF0YTsNCj4gKwlzdHJ1Y3QgaXJxX2NmZyAqY2ZnID0gaXJxZF9jZmcoZGF0YSk7DQo+ICsJc3Ry
+dWN0IElPX0FQSUNfcm91dGVfZW50cnkgKmVudHJ5Ow0KPiArCWNwdW1hc2tfdCBjcHVtYXNrOw0K
+PiArCWludCByZXQ7DQo+ICsNCj4gKwljcHVtYXNrX2FuZG5vdCgmY3B1bWFzaywgbWFzaywgJmlv
+YXBpY19tYXhfY3B1bWFzayk7DQo+ICsNCj4gKwkvKiBSZXR1cm4gZXJyb3IgSWYgbmV3IGlycSBh
+ZmZpbml0eSBpcyBvdXQgb2YgaW9hcGljX21heF9jcHVtYXNrLiAqLw0KPiArCWlmICghY3B1bWFz
+a19lbXB0eSgmY3B1bWFzaykpDQo+ICsJCXJldHVybiAtRUlOVkFMOw0KDQpUaGUgYWJvdmUgdHdv
+IGNwdW1hc2sgZnVuY3Rpb25zIGNhbiBiZSBjb21iaW5lZCBpbiBhIHNpbmdsZQ0KY2FsbCB0byBj
+cHVtYXNrX3N1YnNldCgpLiAgVGhpcyBoYXMgdGhlIG5pY2UgcHJvcGVydHkgdGhhdCBkZXRlcm1p
+bmluZw0Kd2hldGhlciB0aGUgY3B1cyBpbiAibWFzayIgYXJlIGEgc3Vic2V0IG9mIHRoZSBjcHVz
+IGluICJpb2FwaWNfbWF4X2NwdW1hc2siDQppcyBleGFjdGx5IHdoYXQgdGhpcyBjb2RlIGlzIHRy
+eWluZyB0byBkby4gOi0pICBBbmQgaXQgZ2V0cyByaWQgb2YgdGhlIGxvY2FsDQpjcHVtYXNrIHZh
+cmlhYmxlIGFuZCB0aGUgYXNzb2NpYXRlZCBjb21waWxlciB3YXJuaW5ncyBhYm91dCBzdGFjayBm
+cmFtZQ0Kc2l6ZS4NCg0KPiArDQo+ICsJcmV0ID0gcGFyZW50LT5jaGlwLT5pcnFfc2V0X2FmZmlu
+aXR5KHBhcmVudCwgbWFzaywgZm9yY2UpOw0KPiArCWlmIChyZXQgPCAwIHx8IHJldCA9PSBJUlFf
+U0VUX01BU0tfT0tfRE9ORSkNCj4gKwkJcmV0dXJuIHJldDsNCj4gKw0KPiArCWVudHJ5ID0gZGF0
+YS0+Y2hpcF9kYXRhOw0KPiArCWVudHJ5LT5kZXN0ID0gY2ZnLT5kZXN0X2FwaWNpZDsNCj4gKwll
+bnRyeS0+dmVjdG9yID0gY2ZnLT52ZWN0b3I7DQo+ICsJc2VuZF9jbGVhbnVwX3ZlY3RvcihjZmcp
+Ow0KPiArDQo+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgaXJxX2No
+aXAgaHlwZXJ2X2lyX2NoaXAgPSB7DQo+ICsJLm5hbWUJCQk9ICJIWVBFUlYtSVIiLA0KPiArCS5p
+cnFfYWNrCQk9IGFwaWNfYWNrX2lycSwNCj4gKwkuaXJxX3NldF9hZmZpbml0eQk9IGh5cGVydl9p
+cl9zZXRfYWZmaW5pdHksDQo+ICt9Ow0KPiArDQo+ICtzdGF0aWMgaW50IGh5cGVydl9pcnFfcmVt
+YXBwaW5nX2FsbG9jKHN0cnVjdCBpcnFfZG9tYWluICpkb21haW4sDQo+ICsJCQkJICAgICB1bnNp
+Z25lZCBpbnQgdmlycSwgdW5zaWduZWQgaW50IG5yX2lycXMsDQo+ICsJCQkJICAgICB2b2lkICph
+cmcpDQo+ICt7DQo+ICsJc3RydWN0IGlycV9hbGxvY19pbmZvICppbmZvID0gYXJnOw0KPiArCXN0
+cnVjdCBpcnFfZGF0YSAqaXJxX2RhdGE7DQo+ICsJc3RydWN0IGlycV9kZXNjICpkZXNjOw0KPiAr
+CWludCByZXQgPSAwOw0KPiArDQo+ICsJaWYgKCFpbmZvIHx8IGluZm8tPnR5cGUgIT0gWDg2X0lS
+UV9BTExPQ19UWVBFX0lPQVBJQyB8fCBucl9pcnFzID4gMSkNCj4gKwkJcmV0dXJuIC1FSU5WQUw7
+DQo+ICsNCj4gKwlyZXQgPSBpcnFfZG9tYWluX2FsbG9jX2lycXNfcGFyZW50KGRvbWFpbiwgdmly
+cSwgbnJfaXJxcywgYXJnKTsNCj4gKwlpZiAocmV0IDwgMCkNCj4gKwkJcmV0dXJuIHJldDsNCj4g
+Kw0KPiArCWlycV9kYXRhID0gaXJxX2RvbWFpbl9nZXRfaXJxX2RhdGEoZG9tYWluLCB2aXJxKTsN
+Cj4gKwlpZiAoIWlycV9kYXRhKSB7DQo+ICsJCWlycV9kb21haW5fZnJlZV9pcnFzX2NvbW1vbihk
+b21haW4sIHZpcnEsIG5yX2lycXMpOw0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKwl9DQo+ICsN
+Cj4gKwlpcnFfZGF0YS0+Y2hpcCA9ICZoeXBlcnZfaXJfY2hpcDsNCj4gKw0KPiArCS8qDQo+ICsJ
+ICogSU9BUElDIGVudHJ5IHBvaW50ZXIgaXMgc2F2ZWQgaW4gY2hpcF9kYXRhIHRvIGFsbG93DQo+
+ICsJICogaHlwZXJ2X2lycV9yZW1hcHBuZ19hY3RpdmF0ZSgpL2h5cGVydl9pcl9zZXRfYWZmaW5p
+dHkoKSB0byBzZXQNCj4gKwkgKiB2ZWN0b3IgYW5kIGRlc3RfYXBpY2lkLiBjZmctPnZlY3RvciBh
+bmQgY2ZnLT5kZXN0X2FwaWNpZCBhcmUNCj4gKwkgKiBpZ25vcnJlZCB3aGVuIElSUSByZW1hcHBp
+bmcgaXMgZW5hYmxlZC4gU2VlIGlvYXBpY19jb25maWd1cmVfZW50cnkoKS4NCiANClNwZWxsaW5n
+OiAiaWdub3JlZCIuDQoNCkkgc2F3IFZpdGFseSBwcmV2aW91cyBjb21tZW50cywgYW5kIEkgc3Rp
+bGwgZG9uJ3QgdW5kZXJzdGFuZCB0aGlzIGNvbW1lbnQuIDotKA0KSXMgSVJRIHJlbWFwcGluZyBj
+b25zaWRlcmVkIHRvIGJlIGVuYWJsZWQgYnkgdGhpcyBJT01NVSBkcml2ZXIsIHN1Y2ggdGhhdA0K
+Y2ZnLT52ZWN0b3IgYW5kIGNmZy0+ZGVzdF9hcGljaWQgYXJlIGlnbm9yZWQ/ICBPciBpcyB0aGUg
+IndoZW4gSVJRIHJlbWFwcGluZw0KaXMgZW5hYmxlZCIgYSBzdGF0ZW1lbnQgYWJvdXQgc29tZSBm
+dXR1cmUgZW5oYW5jZW1lbnQ/DQoNCj4gKwkgKi8NCj4gKwlpcnFfZGF0YS0+Y2hpcF9kYXRhID0g
+aW5mby0+aW9hcGljX2VudHJ5Ow0KPiArDQo+ICsJLyoNCj4gKwkgKiBIeXB2ZXItViBJTyBBUElD
+IGlycSBhZmZpbml0eSBzaG91bGQgYmUgaW4gdGhlIHNjb3BlIG9mDQo+ICsJICogaW9hcGljX21h
+eF9jcHVtYXNrIGJlY2F1c2Ugbm8gaXJxIHJlbWFwcGluZyBzdXBwb3J0Lg0KPiArCSAqLw0KPiAr
+CWRlc2MgPSBpcnFfZGF0YV90b19kZXNjKGlycV9kYXRhKTsNCj4gKwljcHVtYXNrX2FuZChkZXNj
+LT5pcnFfY29tbW9uX2RhdGEuYWZmaW5pdHksDQo+ICsJCQlkZXNjLT5pcnFfY29tbW9uX2RhdGEu
+YWZmaW5pdHksDQo+ICsJCQkmaW9hcGljX21heF9jcHVtYXNrKTsNCj4gKw0KPiArCXJldHVybiAw
+Ow0KPiArfQ0KPiArDQo+ICtzdGF0aWMgdm9pZCBoeXBlcnZfaXJxX3JlbWFwcGluZ19mcmVlKHN0
+cnVjdCBpcnFfZG9tYWluICpkb21haW4sDQo+ICsJCQkJIHVuc2lnbmVkIGludCB2aXJxLCB1bnNp
+Z25lZCBpbnQgbnJfaXJxcykNCj4gK3sNCj4gKwlpcnFfZG9tYWluX2ZyZWVfaXJxc19jb21tb24o
+ZG9tYWluLCB2aXJxLCBucl9pcnFzKTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGludCBoeXBlcnZf
+aXJxX3JlbWFwcG5nX2FjdGl2YXRlKHN0cnVjdCBpcnFfZG9tYWluICpkb21haW4sDQo+ICsJCQkg
+IHN0cnVjdCBpcnFfZGF0YSAqaXJxX2RhdGEsIGJvb2wgcmVzZXJ2ZSkNCj4gK3sNCj4gKwlzdHJ1
+Y3QgaXJxX2NmZyAqY2ZnID0gaXJxZF9jZmcoaXJxX2RhdGEpOw0KPiArCXN0cnVjdCBJT19BUElD
+X3JvdXRlX2VudHJ5ICplbnRyeSA9IGlycV9kYXRhLT5jaGlwX2RhdGE7DQo+ICsNCj4gKwllbnRy
+eS0+ZGVzdCA9IGNmZy0+ZGVzdF9hcGljaWQ7DQo+ICsJZW50cnktPnZlY3RvciA9IGNmZy0+dmVj
+dG9yOw0KPiArDQo+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgaXJx
+X2RvbWFpbl9vcHMgaHlwZXJ2X2lyX2RvbWFpbl9vcHMgPSB7DQo+ICsJLmFsbG9jID0gaHlwZXJ2
+X2lycV9yZW1hcHBpbmdfYWxsb2MsDQo+ICsJLmZyZWUgPSBoeXBlcnZfaXJxX3JlbWFwcGluZ19m
+cmVlLA0KPiArCS5hY3RpdmF0ZSA9IGh5cGVydl9pcnFfcmVtYXBwbmdfYWN0aXZhdGUsDQo+ICt9
+Ow0KPiArDQo+ICtzdGF0aWMgaW50IF9faW5pdCBoeXBlcnZfcHJlcGFyZV9pcnFfcmVtYXBwaW5n
+KHZvaWQpDQo+ICt7DQo+ICsJc3RydWN0IGZ3bm9kZV9oYW5kbGUgKmZuOw0KPiArCXUzMiBhcGlj
+X2lkOw0KPiArCWludCBpOw0KPiArDQo+ICsJaWYgKHg4Nl9oeXBlcl90eXBlICE9IFg4Nl9IWVBF
+Ul9NU19IWVBFUlYgfHwNCg0KVGhlIGZ1bmN0aW9uIGh5cGVydmlzb3JfaXNfdHlwZSgpIGV4aXN0
+cyBmb3IgZG9pbmcgdGhlIGFib3ZlIHRlc3QuDQpTZWUgaW5jbHVkZS9hc20vaHlwZXJ2aXNvci5o
+DQoNCj4gKwkgICAgIXgyYXBpY19zdXBwb3J0ZWQoKSkNCj4gKwkJcmV0dXJuIC1FTk9ERVY7DQo+
+ICsNCj4gKwlmbiA9IGlycV9kb21haW5fYWxsb2NfbmFtZWRfaWRfZndub2RlKCJIWVBFUlYtSVIi
+LCAwKTsNCj4gKwlpZiAoIWZuKQ0KPiArCQlyZXR1cm4gLUVOT01FTTsNCj4gKw0KPiArCWlvYXBp
+Y19pcl9kb21haW4gPQ0KPiArCQlpcnFfZG9tYWluX2NyZWF0ZV9oaWVyYXJjaHkoYXJjaF9nZXRf
+aXJfcGFyZW50X2RvbWFpbigpLA0KPiArCQkJCTAsIElPQVBJQ19SRU1BUFBJTkdfRU5UUlksIGZu
+LA0KPiArCQkJCSZoeXBlcnZfaXJfZG9tYWluX29wcywgTlVMTCk7DQo+ICsNCj4gKwlpcnFfZG9t
+YWluX2ZyZWVfZndub2RlKGZuKTsNCj4gKw0KPiArCS8qDQo+ICsJICogSHlwZXItViBkb2Vzbid0
+IHByb3ZpZGUgaXJxIHJlbWFwcGluZyBmdW5jdGlvbiBmb3INCj4gKwkgKiBJTy1BUElDIGFuZCBz
+byBJTy1BUElDIG9ubHkgYWNjZXB0cyA4LWJpdCBBUElDIElELg0KPiArCSAqIENwdSdzIEFQSUMg
+SUQgaXMgcmVhZCBmcm9tIEFDUEkgTUFEVCB0YWJsZSBhbmQgQVBJQyBJRHMNCj4gKwkgKiBpbiB0
+aGUgTUFEVCB0YWJsZSBvbiBIeXBlci12IGFyZSBzb3J0ZWQgbW9ub3RvbmljIGluY3JlYXNpbmds
+eS4NCj4gKwkgKiBBUElDIElEIHJlZmxlY3RzIGNwdSB0b3BvbG9neS4gVGhlcmUgbWF5YmUgc29t
+ZSBBUElDIElEDQo+ICsJICogZ2FwcyB3aGVuIGNwdSBudW1iZXIgaW4gYSBzb2NrZXQgaXMgbm90
+IHBvd2VyIG9mIHR3by4gUHJlcGFyZQ0KPiArCSAqIG1heCBjcHUgYWZmaW5pdHkgZm9yIElPQVBJ
+QyBpcnFzLiBTY2FuIGNwdSAwLTI1NSBhbmQgc2V0IGNwdQ0KPiArCSAqIGludG8gaW9hcGljX21h
+eF9jcHVtYXNrIGlmIGl0cyBBUElDIElEIGlzIGxlc3MgdGhhbiAyNTYuDQo+ICsJICovDQo+ICsJ
+Zm9yIChpID0gMDsgaSA8IDI1NjsgaSsrKSB7DQo+ICsJCWFwaWNfaWQgPSBjcHVfcGh5c2ljYWxf
+aWQoaSk7DQo+ICsJCWlmIChhcGljX2lkID4gMjU1KQ0KPiArCQkJY29udGludWU7DQo+ICsNCj4g
+KwkJY3B1bWFza19zZXRfY3B1KGksICZpb2FwaWNfbWF4X2NwdW1hc2spOw0KPiArCX0NCg0KVGhl
+IGFib3ZlIGZvciBsb29wIHdvdWxkIGJlIG1vcmUgY29tcGFjdCBhczoNCg0KCWZvciAoaT0wOyBp
+IDwyNTY7IGkrKykNCgkJaWYgKGNwdV9waHlzaWNhbF9pZChpKSAgPCAyNTYpDQoJCQljcHVtYXNr
+X3NldF9jcHUoaSwgJmlvYXBpY19tYXhfY3B1bWFzayk7DQoNCj4gKw0KPiArCXJldHVybiAwOw0K
+PiArfQ0KPiArDQo=
