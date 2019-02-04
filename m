@@ -1,63 +1,153 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Mon, 4 Feb 2019 13:38:52 +0100
-Message-ID: <20190204123852.GA10428@lst.de>
-References: <6f2d6bc9-696b-2cb1-8a4e-df3da2bd6c0a@xenosoft.de>
- <20190129161411.GA14022@lst.de> <20190129163415.GA14529@lst.de>
- <F4AB3D9A-97EC-45D7-9061-A750D0934C3C@xenosoft.de>
- <96762cd2-65fc-bce5-8c5b-c03bc3baf0a1@xenosoft.de>
- <20190201080456.GA15456@lst.de>
- <9632DCDF-B9D9-416C-95FC-006B6005E2EC@xenosoft.de>
- <594beaae-9681-03de-9f42-191cc7d2f8e3@xenosoft.de>
- <20190204075616.GA5408@lst.de>
- <ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de>
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Mon, 04 Feb 2019 16:14:20 -0200
+Message-ID: <877eefxvyb.fsf@morokweng.localdomain>
+References: <87zhrj8kcp.fsf@morokweng.localdomain> <87womn8inf.fsf@morokweng.localdomain> <20190129134750-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Disposition: inline
-In-Reply-To: <ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Christian Zigotzky <chzigotzky@xenosoft.de>, Olof Johansson <olof@lixom.net>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <20190129134750-mutt-send-email-mst@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 04, 2019 at 01:13:54PM +0100, Christian Zigotzky wrote:
->>> Results: The X1000 and X5000 boot but unfortunately the P.A. Semi Ethernet
->>> doesn't work.
->> Are there any interesting messages in the boot log?  Can you send me
->> the dmesg?
+
+Hello Michael,
+
+Michael S. Tsirkin <mst@redhat.com> writes:
+
+> On Tue, Jan 29, 2019 at 03:42:44PM -0200, Thiago Jung Bauermann wrote:
 >>
-> Here you are: http://www.xenosoft.de/dmesg_X1000_with_DMA_updates.txt
+>> Fixing address of powerpc mailing list.
+>>
+>> Thiago Jung Bauermann <bauerman@linux.ibm.com> writes:
+>>
+>> > Hello,
+>> >
+>> > With Christoph's rework of the DMA API that recently landed, the patch
+>> > below is the only change needed in virtio to make it work in a POWER
+>> > secure guest under the ultravisor.
+>> >
+>> > The other change we need (making sure the device's dma_map_ops is NULL
+>> > so that the dma-direct/swiotlb code is used) can be made in
+>> > powerpc-specific code.
+>> >
+>> > Of course, I also have patches (soon to be posted as RFC) which hook up
+>> > <linux/mem_encrypt.h> to the powerpc secure guest support code.
+>> >
+>> > What do you think?
+>> >
+>> > From d0629a36a75c678b4a72b853f8f7f8c17eedd6b3 Mon Sep 17 00:00:00 2001
+>> > From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>> > Date: Thu, 24 Jan 2019 22:08:02 -0200
+>> > Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+>> >
+>> > The host can't access the guest memory when it's encrypted, so using
+>> > regular memory pages for the ring isn't an option. Go through the DMA API.
+>> >
+>> > Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>
+> Well I think this will come back to bite us (witness xen which is now
+> reworking precisely this path - but at least they aren't to blame, xen
+> came before ACCESS_PLATFORM).
+>
+> I also still think the right thing would have been to set
+> ACCESS_PLATFORM for all systems where device can't access all memory.
 
-It seems like the pasemi driver fails to set a DMA mask, but seems
-otherwise 64-bit DMA capable.  The old PPC code didn't verify the
-dma mask during the map operations, but the x86-derived generic
-code does.
+I understand. The problem with that approach for us is that because we
+don't know which guests will become secure guests and which will remain
+regular guests, QEMU would need to offer ACCESS_PLATFORM to all guests.
 
-This patch just sets the DMA mask.
+And the problem with that is that for QEMU on POWER, having
+ACCESS_PLATFORM turned off means that it can bypass the IOMMU for the
+device (which makes sense considering that the name of the flag was
+IOMMU_PLATFORM). And we need that for regular guests to avoid
+performance degradation.
 
-Olof: does this look ok?  The DMA device seems to not directly
-bound by the net driver, but not really used by anything else in tree
-either..
+So while ACCESS_PLATFORM solves our problems for secure guests, we can't
+turn it on by default because we can't affect legacy systems. Doing so
+would penalize existing systems that can access all memory. They would
+all have to unnecessarily go through address translations, and take a
+performance hit.
 
-diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
-index d21041554507..d98bd447c536 100644
---- a/drivers/net/ethernet/pasemi/pasemi_mac.c
-+++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
-@@ -1716,6 +1716,7 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		err = -ENODEV;
- 		goto out;
- 	}
-+	dma_set_mask(&mac->dma_pdev->dev, DMA_BIT_MASK(32));
- 
- 	mac->iob_pdev = pci_get_device(PCI_VENDOR_ID_PASEMI, 0xa001, NULL);
- 	if (!mac->iob_pdev) {
+The semantics of ACCESS_PLATFORM assume that the hypervisor/QEMU knows
+in advance - right when the VM is instantiated - that it will not have
+access to all guest memory. Unfortunately that assumption is subtly
+broken on our secure-platform. The hypervisor/QEMU realizes that the
+platform is going secure only *after the VM is instantiated*. It's the
+kernel running in the VM that determines that it wants to switch the
+platform to secure-mode.
+
+Another way of looking at this issue which also explains our reluctance
+is that the only difference between a secure guest and a regular guest
+(at least regarding virtio) is that the former uses swiotlb while the
+latter doens't. And from the device's point of view they're
+indistinguishable. It can't tell one guest that is using swiotlb from
+one that isn't. And that implies that secure guest vs regular guest
+isn't a virtio interface issue, it's "guest internal affairs". So
+there's no reason to reflect that in the feature flags.
+
+That said, we still would like to arrive at a proper design for this
+rather than add yet another hack if we can avoid it. So here's another
+proposal: considering that the dma-direct code (in kernel/dma/direct.c)
+automatically uses swiotlb when necessary (thanks to Christoph's recent
+DMA work), would it be ok to replace virtio's own direct-memory code
+that is used in the !ACCESS_PLATFORM case with the dma-direct code? That
+way we'll get swiotlb even with !ACCESS_PLATFORM, and virtio will get a
+code cleanup (replace open-coded stuff with calls to existing
+infrastructure).
+
+> But I also think I don't have the energy to argue about power secure
+> guest anymore.  So be it for power secure guest since the involved
+> engineers disagree with me.  Hey I've been wrong in the past ;).
+
+Yeah, it's been a difficult discussion. Thanks for still engaging!
+I honestly thought that this patch was a good solution (if the guest has
+encrypted memory it means that the DMA API needs to be used), but I can
+see where you are coming from. As I said, we'd like to arrive at a good
+solution if possible.
+
+> But the name "sev_active" makes me scared because at least AMD guys who
+> were doing the sensible thing and setting ACCESS_PLATFORM
+
+My understanding is, AMD guest-platform knows in advance that their
+guest will run in secure mode and hence sets the flag at the time of VM
+instantiation. Unfortunately we dont have that luxury on our platforms.
+
+> (unless I'm
+> wrong? I reemember distinctly that's so) will likely be affected too.
+> We don't want that.
+>
+> So let's find a way to make sure it's just power secure guest for now
+> pls.
+
+Yes, my understanding is that they turn ACCESS_PLATFORM on. And because
+of that, IIUC this patch wouldn't affect them because in their platform
+vring_use_dma_api() returns true earlier in the
+"if !virtio_has_iommu_quirk(vdev)" condition.
+
+> I also think we should add a dma_api near features under virtio_device
+> such that these hacks can move off data path.
+
+Sorry, I don't understand this.
+
+> By the way could you please respond about virtio-iommu and
+> why there's no support for ACCESS_PLATFORM on power?
+
+There is support for ACCESS_PLATFORM on POWER. We don't enable it
+because it causes a performance hit.
+
+> I have Cc'd you on these discussions.
+
+I'm having a look at the spec and the patches, but to be honest I'm not
+the best powerpc guy for this. I'll see if I can get others to have a
+look.
+
+> Thanks!
+
+Thanks as well!
+
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
