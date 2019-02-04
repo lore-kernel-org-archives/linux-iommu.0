@@ -1,65 +1,42 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] ARM: dma-mapping: Clear DMA ops on teardown
-Date: Mon, 4 Feb 2019 12:48:14 +0100
-Message-ID: <a2013d45-69d4-5c24-f833-a27e5ac20cb8@samsung.com>
-References: <CGME20190121145305epcas4p1df032b4c2c44d5f291eb2bedde9de40d@epcas4p1.samsung.com>
-        <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Mon, 4 Feb 2019 13:13:54 +0100
+Message-ID: <ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de>
+References: <20190128162256.GA11737@lst.de>
+ <D64B1ED5-46F9-43CF-9B21-FABB2807289B@xenosoft.de>
+ <6f2d6bc9-696b-2cb1-8a4e-df3da2bd6c0a@xenosoft.de>
+ <20190129161411.GA14022@lst.de> <20190129163415.GA14529@lst.de>
+ <F4AB3D9A-97EC-45D7-9061-A750D0934C3C@xenosoft.de>
+ <96762cd2-65fc-bce5-8c5b-c03bc3baf0a1@xenosoft.de>
+ <20190201080456.GA15456@lst.de>
+ <9632DCDF-B9D9-416C-95FC-006B6005E2EC@xenosoft.de>
+ <594beaae-9681-03de-9f42-191cc7d2f8e3@xenosoft.de>
+ <20190204075616.GA5408@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
-Content-Language: en-US
+In-Reply-To: <20190204075616.GA5408@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: hch@lst.de, treding@nvidia.com, rmk+kernel@armlinux.org.uk, bskeggs@redhat.com, tjakobi@math.uni-bielefeld.de, b.zolnierkie@samsung.com
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On 04 February 2019 at 08:56AM, Christoph Hellwig wrote:
+> On Sun, Feb 03, 2019 at 05:49:02PM +0100, Christian Zigotzky wrote:
+>> OK, next step: b50f42f0fe12965ead395c76bcb6a14f00cdf65b (powerpc/dma: use
+>> the dma_direct mapping routines)
+>>
+>> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+>>
+>> git checkout b50f42f0fe12965ead395c76bcb6a14f00cdf65b
+>>
+>> Results: The X1000 and X5000 boot but unfortunately the P.A. Semi Ethernet
+>> doesn't work.
+> Are there any interesting messages in the boot log?  Can you send me
+> the dmesg?
+>
+Here you are: http://www.xenosoft.de/dmesg_X1000_with_DMA_updates.txt
 
-On 2019-01-21 15:52, Robin Murphy wrote:
-> Installing the appropriate non-IOMMU DMA ops in arm_iommu_detch_device()
-> serves the case where IOMMU-aware drivers choose to control their own
-> mapping but still make DMA API calls, however it also affects the case
-> when the arch code itself tears down the mapping upon driver unbinding,
-> where the ops now get left in place and can inhibit arch_setup_dma_ops()
-> on subsequent re-probe attempts.
->
-> Fix the latter case by making sure that arch_teardown_dma_ops() cleans
-> up whenever the ops were automatically installed by its counterpart.
->
-> Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()"
-> Tested-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->
-> Sorry for the delay - there was a giant email infrastructure cock-up just
-> at the point I wanted to go back through my archive and double-check the
-> discussion around the original commit...
-
-No problem, could you also upload it to rmk's patch tracking system?
-IMHO rmk's tree will be the best place to handle this fix.
-
-> Robin.
->
->  arch/arm/mm/dma-mapping.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index f1e2922e447c..1e3e08a1c456 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2390,4 +2390,6 @@ void arch_teardown_dma_ops(struct device *dev)
->  		return;
->  
->  	arm_teardown_iommu_dma_ops(dev);
-> +	/* Let arch_setup_dma_ops() start again from scratch upon re-probe */
-> +	set_dma_ops(dev, NULL);
->  }
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+-- Christian
