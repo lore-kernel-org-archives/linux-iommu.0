@@ -1,39 +1,71 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: Allow io-pgtable to be used outside of
-	drivers/iommu/
-Date: Tue, 5 Feb 2019 11:20:30 -0600
-Message-ID: <CAL_JsqLYC6OStkM+bcwhM5cA3fBcXQCiL_pVUE=sPoLrPHoVvQ@mail.gmail.com>
-References: <20190205163731.17864-1-robh@kernel.org>
-	<20190205165528.GA20157@infradead.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] dma-direct: Export dma_direct_alloc() and
+ dma_direct_free()
+Date: Tue, 5 Feb 2019 18:56:11 +0100
+Message-ID: <20190205175611.GA7052@ulmo>
+References: <20190205110602.27717-1-thierry.reding@gmail.com>
+ <20190205161036.GA782@lst.de>
+ <20190205162057.GA29974@ulmo>
+ <20190205163837.GA1222@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190205165528.GA20157-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190205163837.GA1222@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 5, 2019 at 10:55 AM Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> On Tue, Feb 05, 2019 at 10:37:31AM -0600, Rob Herring wrote:
-> > Move io-pgtable.h to include/linux/ and export alloc_io_pgtable_ops
-> > and free_io_pgtable_ops. This enables drivers outside drivers/iommu/ to
-> > use the ARM page table library. Specifically, some ARM Mali GPUs use the
-> > ARM page table formats.
->
-> Maybe rename it to arm-io-pgtable.h to make the usage a little more
-> clear?
 
-I should drop the first 'ARM' in the commit message.
+--yrj/dFKFPuw6o+aM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Rob
+On Tue, Feb 05, 2019 at 05:38:37PM +0100, Christoph Hellwig wrote:
+> On Tue, Feb 05, 2019 at 05:20:57PM +0100, Thierry Reding wrote:
+> > The problem is that if I use dma_alloc_coherent(), then the memory will
+> > already be mapped via the SMMU at that point and then the driver, not
+> > knowing that memory has already been mapped, will attempt to map an IOVA
+> > which will cause an SMMU fault when the host1x tries to access the
+> > memory.
+> >=20
+> > I didn't find an equivalent to arm_iommu_detach_device() for non-ARM,
+> > but then stumbled across this and thought it was rather convenient for
+> > these cases. If there's a better way to deal with this situation, I'd be
+> > happy to do so.
+>=20
+> So you basically do a dma_direct_alloc + iommu_map?  Can you send me
+> a pointer to your code?  Maybe we need to add a proper IOMMU-layer
+> API for that.
+
+Sure, here you go:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/d=
+rivers/gpu/host1x/cdma.c#n106
+
+Thierry
+
+--yrj/dFKFPuw6o+aM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxZzjgACgkQ3SOs138+
+s6FcGg/9HDPe6r1j5PFKvrj6Ft7aPgTrOaDE/rYoMyc2mPL3KOzkUQJh9yg7Wa9K
+p5VL1XUtuSgIXUAXnFeAAocWUa5Tmq1GPCXbbWeRi87XWVFjuKq+xCGz1AZBhgaS
+EwrWRLyGqE9fZXM3iBCFyRGzNSxGiAA80TuxJCq8VmfOe6+fa0TrN3c06olPdBc3
+zdARlmjL2rr0vOXG9SFz/zuK4xJ86aup3Q1H8oBFtTXM4zbmejVzxelZRkJ+Ck3U
+NNCwArBojOT7DfA03QPElZZwXmwegBERMXD2Zjeb5c/c2Mhy0/tNtW9Qvd6jBDpZ
+sIP9KLgL3s1PoP+fapM3V4FVf4+KSxbLe1h1GiXbkQQiD35n6b9Q+Ka5CicEBTYv
+aGqQoZSHr9uNFXzDzv2cZ8KBj0lk3MvEXIB+ZQUXSyL1lLmLSMuWbpoG/9B7krfj
+71CSEZO1qiP1Ya8tMbjgjOW0HjlOF/Z15mkkSizAH3YIyYnqNCWTluUADyZf/xxm
+YSoOMJ2yHwUzuxO1J0pWu4kv98F+KiV8VlUwk736Ykq2oBoFzVTCQt+rBPDG8+ak
+vYchQ+dOGZ+JuEiXht8ejZsTXPZEHDvo4ycudPSE3NTeEtBF0qa/1qROUQAaI8bN
+Kn41hiTmlbzeyQ5tbrMO+t4ar9dlCn1NGue45ZS2pjXJh96c82o=
+=eUMp
+-----END PGP SIGNATURE-----
+
+--yrj/dFKFPuw6o+aM--
