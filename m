@@ -1,22 +1,55 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] dma-direct: Export dma_direct_alloc() and
- dma_direct_free()
-Date: Tue, 5 Feb 2019 19:02:18 +0100
-Message-ID: <20190205180218.GB2882@lst.de>
-References: <20190205110602.27717-1-thierry.reding@gmail.com> <20190205161036.GA782@lst.de> <20190205162057.GA29974@ulmo> <20190205163837.GA1222@lst.de> <20190205175611.GA7052@ulmo>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 1/9] iommu/vt-d: Allow interrupts from the entire bus
+ for aliased devices
+Date: Tue, 5 Feb 2019 11:19:39 -0800
+Message-ID: <20190205111939.6f91739e@jacob-builder>
+References: <20190131185656.17972-1-logang@deltatee.com>
+        <20190131185656.17972-2-logang@deltatee.com>
+        <20190201164401.GT32526@8bytes.org>
+        <398e6a0a-9cbd-c218-e20e-ed91f74a653d@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190205175611.GA7052@ulmo>
+In-Reply-To: <398e6a0a-9cbd-c218-e20e-ed91f74a653d@deltatee.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-ntb@googlegroups.com, David Woodhouse <dwmw2@infradead.org>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2019 at 06:56:11PM +0100, Thierry Reding wrote:
-> Sure, here you go:
-> 
-> 	https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/gpu/host1x/cdma.c#n106
+On Fri, 1 Feb 2019 10:27:29 -0700
+Logan Gunthorpe <logang@deltatee.com> wrote:
 
-Yes, I think we I can come up with a nicer helper for that.
+> On 2019-02-01 9:44 a.m., Joerg Roedel wrote:
+> > On Thu, Jan 31, 2019 at 11:56:48AM -0700, Logan Gunthorpe wrote:  
+> >> @@ -394,6 +402,10 @@ static int set_msi_sid(struct irte *irte,
+> >> struct pci_dev *dev) set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
+> >>  			     PCI_DEVID(PCI_BUS_NUM(data.alias),
+> >>  				       dev->bus->number));
+I guess devfn can be removed also. but that is separate cleanup.
+ 
+> >> +	else if (data.count >= 2 && data.busmatch_count ==
+> >> data.count)
+> >> +		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
+> >> +			     PCI_DEVID(dev->bus->number,
+> >> +				       dev->bus->number));  
+> > 
+> > The dev->bus->number argument for the devfn parameter of PCI_DEVID
+> > is not needed, right?  
+> 
+> Oh, yes. I think you are right.
+> 
+> > Also, this requires at least a comment to document that special
+> > case.  
+> 
+> I'll add a comment for v2.
+> 
+> Thanks for the review!
+> 
+> Logan
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+[Jacob Pan]
