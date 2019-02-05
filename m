@@ -1,31 +1,33 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] dma-direct: Export dma_direct_alloc() and
- dma_direct_free()
-Date: Tue, 5 Feb 2019 17:38:37 +0100
-Message-ID: <20190205163837.GA1222@lst.de>
-References: <20190205110602.27717-1-thierry.reding@gmail.com> <20190205161036.GA782@lst.de> <20190205162057.GA29974@ulmo>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH] iommu: Allow io-pgtable to be used outside of
+ drivers/iommu/
+Date: Tue, 5 Feb 2019 08:55:28 -0800
+Message-ID: <20190205165528.GA20157@infradead.org>
+References: <20190205163731.17864-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20190205162057.GA29974@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20190205163731.17864-1-robh@kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2019 at 05:20:57PM +0100, Thierry Reding wrote:
-> The problem is that if I use dma_alloc_coherent(), then the memory will
-> already be mapped via the SMMU at that point and then the driver, not
-> knowing that memory has already been mapped, will attempt to map an IOVA
-> which will cause an SMMU fault when the host1x tries to access the
-> memory.
-> 
-> I didn't find an equivalent to arm_iommu_detach_device() for non-ARM,
-> but then stumbled across this and thought it was rather convenient for
-> these cases. If there's a better way to deal with this situation, I'd be
-> happy to do so.
+On Tue, Feb 05, 2019 at 10:37:31AM -0600, Rob Herring wrote:
+> Move io-pgtable.h to include/linux/ and export alloc_io_pgtable_ops
+> and free_io_pgtable_ops. This enables drivers outside drivers/iommu/ to
+> use the ARM page table library. Specifically, some ARM Mali GPUs use the
+> ARM page table formats.
 
-So you basically do a dma_direct_alloc + iommu_map?  Can you send me
-a pointer to your code?  Maybe we need to add a proper IOMMU-layer
-API for that.
+Maybe rename it to arm-io-pgtable.h to make the usage a little more
+clear? 
