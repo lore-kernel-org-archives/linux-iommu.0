@@ -1,58 +1,81 @@
-From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Date: Tue, 5 Feb 2019 11:13:39 -0500
-Message-ID: <20190205111128-mutt-send-email-mst@kernel.org>
-References: <87zhrj8kcp.fsf@morokweng.localdomain>
-	<87womn8inf.fsf@morokweng.localdomain>
-	<20190129134750-mutt-send-email-mst@kernel.org>
-	<6c68f7f7-1b28-6eba-9b8b-2c32efac9701@redhat.com>
-	<20190129213137-mutt-send-email-mst@kernel.org>
-	<20190130074427.GA29516@lst.de>
-	<875ztzxvw2.fsf@morokweng.localdomain>
-	<20190204152416-mutt-send-email-mst@kernel.org>
-	<20190205072407.GA4311@lst.de>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] dma-direct: Export dma_direct_alloc() and
+ dma_direct_free()
+Date: Tue, 5 Feb 2019 17:20:57 +0100
+Message-ID: <20190205162057.GA29974@ulmo>
+References: <20190205110602.27717-1-thierry.reding@gmail.com>
+ <20190205161036.GA782@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="OgqxwSJOaUobr8KG"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190205072407.GA4311-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Ram Pai <linuxram-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+In-Reply-To: <20190205161036.GA782@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2019 at 08:24:07AM +0100, Christoph Hellwig wrote:
-> On Mon, Feb 04, 2019 at 04:38:21PM -0500, Michael S. Tsirkin wrote:
-> > It was designed to make, when set, as many guests as we can work
-> > correctly, and it seems to be successful in doing exactly that.
-> > 
-> > Unfortunately there could be legacy guests that do work correctly but
-> > become slow. Whether trying to somehow work around that
-> > can paint us into a corner where things again don't
-> > work for some people is a question worth discussing.
-> 
-> The other problem is that some qemu machines just throw passthrough
-> devices and virtio devices on the same virtual PCI(e) bus, and have a
-> common IOMMU setup for the whole bus / root port / domain.  I think
-> this is completely bogus, but unfortunately it is out in the field.
-> 
-> Given that power is one of these examples I suspect that is what
-> Thiago referes to.  But in this case the answer can't be that we
-> pile on hack ontop of another, but instead introduce a new qemu
-> machine that separates these clearly, and make that mandatory for
-> the secure guest support.
 
-That could we one approach, assuming one exists that guests
-already support.
+--OgqxwSJOaUobr8KG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-MST
+On Tue, Feb 05, 2019 at 05:10:36PM +0100, Christoph Hellwig wrote:
+> On Tue, Feb 05, 2019 at 12:06:02PM +0100, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > Drivers that are built as modules may want to use these functions, so
+> > make them available like the rest of the functions.
+> >=20
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+>=20
+> How do they want to use these functions?  The proper way is to
+> call dma_alloc_coherent / dma_alloc_free and let the DMA API
+> handle the rest.
+
+This is again for the host1x driver and Tegra DRM where we had a similar
+situation a little while ago where we needed to explicitly detach from a
+DMA/IOMMU mapping.
+
+I ran into a similar situation on Tegra186 (which has an ARM SMMU). The
+host1x driver needs to allocate memory for a push buffer that commands
+are written to. This push buffer is mapped translated through the SMMU
+using direct IOMMU API usage. We use the same domain to also map command
+buffers that userspace can pass in.
+
+The problem is that if I use dma_alloc_coherent(), then the memory will
+already be mapped via the SMMU at that point and then the driver, not
+knowing that memory has already been mapped, will attempt to map an IOVA
+which will cause an SMMU fault when the host1x tries to access the
+memory.
+
+I didn't find an equivalent to arm_iommu_detach_device() for non-ARM,
+but then stumbled across this and thought it was rather convenient for
+these cases. If there's a better way to deal with this situation, I'd be
+happy to do so.
+
+Thierry
+
+--OgqxwSJOaUobr8KG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxZt+YACgkQ3SOs138+
+s6FSlxAAlC10Qh1f+7ePw23JTUxc7z8UWOPkt36ZuuJ0PMKin0QFFGx/x5atfSH9
+N1c0nzH6bTi5RcdQ7qjkFkJrYnXfHnZaBmQqp2agsNI2F0X431Be3byeAxD+Pr9M
+v8vVImN5LV2NUXtrgJaDhOdFg/yBOV7HoNWoiFA7GBxaKjVquQrZ1AxbWfvgEw/G
+piPrkNh2oWl0dwK2PIvXD7BUTR9i4u+a2lOqozdfo8rOoIGfsOsSnkI9biDFi7zH
+J5F8x1Q1KbK/VqT73dzPPOLa9w5WR9NddPaqc/BtFQGNevpNbnF0UM6oIsYWAysn
+RU1Dj8XLApzINvFGP+lYY7HOW+fai6ckvkIXwPDUYxsgcnFts9cjrnqYEqZJceo7
+N0cuiExgaqgRREJrvQ3kv2u9+dCKgQulqpNa7G9++T+6w0dhP76Eur5akH8UMYxd
+BQSJEl5G/T0E3KZ2Hq/Jn47/A4iTb/QaP7mM8ewM60NT493Md4gMR27hvbezbeIl
+neaH+eTcbvyjxe4lbf+0TBqWK0FzkZh4tUwurZ/NPOMVD0z+KgJo2ZFsxh84pr2f
+mbmrC3zSNSA4Ls7EFaX4oOwUfsS/WVRaTz9w4eNo4V7i7hXKYhWbPJvrVIaCmK8c
+o//eHmWRyMN2XTpJx/rzJ918TEr6eeZo9XZGymFj04Al+R8LvV8=
+=72tt
+-----END PGP SIGNATURE-----
+
+--OgqxwSJOaUobr8KG--
