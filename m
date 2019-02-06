@@ -1,45 +1,36 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH] iommu: Allow io-pgtable to be used outside of
- drivers/iommu/
-Date: Tue, 5 Feb 2019 22:55:41 -0800
-Message-ID: <20190206065541.GA860@infradead.org>
-References: <20190205163731.17864-1-robh@kernel.org>
- <20190205165528.GA20157@infradead.org>
- <a6002b86-e18a-dd97-6dad-ab69e994678d@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] dma-direct: Export dma_direct_alloc() and
+ dma_direct_free()
+Date: Wed, 6 Feb 2019 07:57:50 +0100
+Message-ID: <20190206065749.GA23392@lst.de>
+References: <20190205110602.27717-1-thierry.reding@gmail.com> <20190205161036.GA782@lst.de> <20190205162057.GA29974@ulmo> <20190205163837.GA1222@lst.de> <20190205175611.GA7052@ulmo> <20190205180218.GB2882@lst.de> <20190205222912.GC1372@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <a6002b86-e18a-dd97-6dad-ab69e994678d@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190205222912.GC1372@mithrandir>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2019 at 05:12:29PM +0000, Robin Murphy wrote:
-> On 05/02/2019 16:55, Christoph Hellwig wrote:
-> > On Tue, Feb 05, 2019 at 10:37:31AM -0600, Rob Herring wrote:
-> > > Move io-pgtable.h to include/linux/ and export alloc_io_pgtable_ops
-> > > and free_io_pgtable_ops. This enables drivers outside drivers/iommu/ to
-> > > use the ARM page table library. Specifically, some ARM Mali GPUs use the
-> > > ARM page table formats.
+On Tue, Feb 05, 2019 at 11:29:12PM +0100, Thierry Reding wrote:
+> > > 	https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/gpu/host1x/cdma.c#n106
 > > 
-> > Maybe rename it to arm-io-pgtable.h to make the usage a little more
-> > clear?
+> > Yes, I think we I can come up with a nicer helper for that.
 > 
-> It's not Arm-specific, though - the whole point of io-pgtable is to be an
-> architecture-agnostic library of IOMMU pagetable code. It just happens that
-> the only formats implemented so far are the Arm ones that already have more
-> than one in-tree user each.
+> One thing I could also try is to remove direct IOMMU API usage at least
+> from the host1x driver. I think this might work nowadays.
+> 
+> For Tegra DRM we still need direct IOMMU API usage because we need to be
+> able to map into an IOMMU domain without knowing the struct device *
+> that we're mapping for (it could be needed by any of up to four display
+> controllers). For host1x we always only have one struct device *, so the
+> DMA mapping API should be good enough.
 
-Oh, ok.  I always thought of it as an ARM thing, but then I missed the
-intention behind it.
+If you can convert it to plain DMA API usage, please do.
+
+I did look into an IOMMU API memory allocator, and while we can do it
+easily for coherent devices, we need some arch hooks for non-coherent
+device support.  With a pending series from me we have those for arm64,
+but 32-bit arm support will require a lot more work first.
