@@ -1,14 +1,14 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 16/19] dma-iommu: don't depend on CONFIG_DMA_DIRECT_REMAP
-Date: Wed, 6 Feb 2019 11:55:49 +0000
-Message-ID: <4698cdca-0e5b-c82f-bb80-3ba0f986c544@arm.com>
+Subject: Re: [PATCH 17/19] dma-iommu: switch copyright boilerplace to SPDX
+Date: Wed, 6 Feb 2019 11:57:44 +0000
+Message-ID: <de98a953-954e-cefc-4a0d-91cdedcc16e6@arm.com>
 References: <20190114094159.27326-1-hch@lst.de>
- <20190114094159.27326-17-hch@lst.de>
+ <20190114094159.27326-18-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190114094159.27326-17-hch@lst.de>
+In-Reply-To: <20190114094159.27326-18-hch@lst.de>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
@@ -16,122 +16,64 @@ Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, W
 List-Id: iommu@lists.linux-foundation.org
 
 On 14/01/2019 09:41, Christoph Hellwig wrote:
-> For entirely dma coherent architectures there is no good reason to ever
-> remap dma coherent allocation.
-
-Yes there is, namely assembling large buffers without the need for 
-massive CMA areas and compaction overhead under memory fragmentation. 
-That has always been a distinct concern from the DMA_DIRECT_REMAP cases; 
-they've just been able to share a fair few code paths.
-
->  Move all the remap and pool code under
-> CONFIG_DMA_DIRECT_REMAP ifdefs, and drop the Kconfig dependency.
-
-As far as I'm concerned that splits things the wrong way. Logically, 
-iommu_dma_alloc() should always have done its own vmap() instead of just 
-returning the bare pages array, but that was tricky to resolve with the 
-design of having the caller handle everything to do with coherency 
-(forcing the caller to unpick that mapping just to remap it yet again in 
-the noncoherent case didn't seem sensible).
-
-Robin.
-
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+
 > ---
->   drivers/iommu/Kconfig     |  1 -
->   drivers/iommu/dma-iommu.c | 10 ++++++++++
->   2 files changed, 10 insertions(+), 1 deletion(-)
+>   drivers/iommu/dma-iommu.c | 13 +------------
+>   include/linux/dma-iommu.h | 13 +------------
+>   2 files changed, 2 insertions(+), 24 deletions(-)
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 8b13fb7d0263..d9a25715650e 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -94,7 +94,6 @@ config IOMMU_DMA
->   	select IOMMU_API
->   	select IOMMU_IOVA
->   	select NEED_SG_DMA_LENGTH
-> -	depends on DMA_DIRECT_REMAP
->   
->   config FSL_PAMU
->   	bool "Freescale IOMMU support"
 > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index fd25c995bde4..e27909771d55 100644
+> index e27909771d55..1b76121df94e 100644
 > --- a/drivers/iommu/dma-iommu.c
 > +++ b/drivers/iommu/dma-iommu.c
-> @@ -502,6 +502,7 @@ static void *iommu_dma_alloc_contiguous(struct device *dev, size_t size,
->   	return page_address(page);
->   }
+> @@ -1,3 +1,4 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>   /*
+>    * A fairly generic DMA-API to IOMMU-API glue layer.
+>    *
+> @@ -5,18 +6,6 @@
+>    *
+>    * based in part on arch/arm/mm/dma-mapping.c:
+>    * Copyright (C) 2000-2004 Russell King
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>    */
 >   
-> +#ifdef CONFIG_DMA_DIRECT_REMAP
->   static void __iommu_dma_free_pages(struct page **pages, int count)
->   {
->   	while (count--)
-> @@ -775,6 +776,7 @@ static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
->   				gfp, attrs);
->   	return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
->   }
-> +#endif /* CONFIG_DMA_DIRECT_REMAP */
->   
->   static void iommu_dma_sync_single_for_cpu(struct device *dev,
->   		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
-> @@ -1057,6 +1059,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
->   	 */
->   	gfp |= __GFP_ZERO;
->   
-> +#ifdef CONFIG_DMA_DIRECT_REMAP
->   	if (!dev_is_dma_coherent(dev))
->   		return iommu_dma_alloc_noncoherent(dev, size, dma_handle, gfp,
->   				attrs);
-> @@ -1064,6 +1067,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
->   	if (gfpflags_allow_blocking(gfp) &&
->   	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
->   		return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
-> +#endif
->   
->   	return iommu_dma_alloc_contiguous(dev, size, dma_handle, gfp, attrs);
->   }
-> @@ -1083,6 +1087,7 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
->   	 *
->   	 * Hence how dodgy the below logic looks...
->   	 */
-> +#ifdef CONFIG_DMA_DIRECT_REMAP
->   	if (dma_in_atomic_pool(cpu_addr, PAGE_ALIGN(size))) {
->   		iommu_dma_free_pool(dev, size, cpu_addr, dma_handle);
->   		return;
-> @@ -1096,6 +1101,7 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
->   		page = vmalloc_to_page(cpu_addr);
->   		dma_common_free_remap(cpu_addr, PAGE_ALIGN(size), VM_USERMAP);
->   	} else
-> +#endif
->   		page = virt_to_page(cpu_addr);
->   
->   	iommu_dma_free_contiguous(dev, size, page, dma_handle);
-> @@ -1119,11 +1125,13 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->   	if (off >= count || user_count > count - off)
->   		return -ENXIO;
->   
-> +#ifdef CONFIG_DMA_DIRECT_REMAP
->   	if (is_vmalloc_addr(cpu_addr)) {
->   		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
->   			return iommu_dma_mmap_remap(cpu_addr, size, vma);
->   		pfn = vmalloc_to_pfn(cpu_addr);
->   	} else
-> +#endif
->   		pfn = page_to_pfn(virt_to_page(cpu_addr));
->   
->   	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
-> @@ -1137,11 +1145,13 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
->   	struct page *page;
->   	int ret;
->   
-> +#ifdef CONFIG_DMA_DIRECT_REMAP
->   	if (is_vmalloc_addr(cpu_addr)) {
->   		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
->   			return iommu_dma_get_sgtable_remap(sgt, cpu_addr, size);
->   		page = vmalloc_to_page(cpu_addr);
->   	} else
-> +#endif
->   		page = virt_to_page(cpu_addr);
->   
->   	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+>   #include <linux/acpi_iort.h>
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 5277aa8782bf..bfe9f19b1171 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -1,17 +1,6 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>   /*
+>    * Copyright (C) 2014-2015 ARM Ltd.
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>    */
+>   #ifndef __DMA_IOMMU_H
+>   #define __DMA_IOMMU_H
 > 
