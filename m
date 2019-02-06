@@ -1,36 +1,61 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] dma-direct: Export dma_direct_alloc() and
- dma_direct_free()
-Date: Wed, 6 Feb 2019 07:57:50 +0100
-Message-ID: <20190206065749.GA23392@lst.de>
-References: <20190205110602.27717-1-thierry.reding@gmail.com> <20190205161036.GA782@lst.de> <20190205162057.GA29974@ulmo> <20190205163837.GA1222@lst.de> <20190205175611.GA7052@ulmo> <20190205180218.GB2882@lst.de> <20190205222912.GC1372@mithrandir>
+Subject: Re: [PATCH v2] dma-direct: do not allocate a single page from CMA
+ area
+Date: Wed, 6 Feb 2019 08:07:26 +0100
+Message-ID: <20190206070726.GE23392@lst.de>
+References: <20190115215140.1545-1-nicoleotsuka@gmail.com> <20190204082307.GA5916@lst.de> <20190205230514.GA21515@Asurada-Nvidia.nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190205222912.GC1372@mithrandir>
+In-Reply-To: <20190205230514.GA21515@Asurada-Nvidia.nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>, m.szyprowski@samsung.com, robin.murphy@arm.com, vdumpa@nvidia.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2019 at 11:29:12PM +0100, Thierry Reding wrote:
-> > > 	https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/gpu/host1x/cdma.c#n106
-> > 
-> > Yes, I think we I can come up with a nicer helper for that.
+On Tue, Feb 05, 2019 at 03:05:30PM -0800, Nicolin Chen wrote:
+> > And my other concern is that this skips allocating from the per-device
+> > pool, which drivers might rely on.
 > 
-> One thing I could also try is to remove direct IOMMU API usage at least
-> from the host1x driver. I think this might work nowadays.
+> Actually Robin had the same concern at v1 and suggested that we could
+> always use DMA_ATTR_FORCE_CONTIGUOUS to enforce into per-device pool.
+
+That is both against the documented behavior of DMA_ATTR_FORCE_CONTIGUOUS
+and doesn't help existing drivers that specify their CMA area in DT.
+
+> > To be honest I'm not sure there is
+> > much of a point in the per-device CMA pool vs the traditional per-device
+> > coherent pool, but I'd rather change that behavior in a clearly documented
+> > commit with intentions rather as a side effect from a random optimization.
 > 
-> For Tegra DRM we still need direct IOMMU API usage because we need to be
-> able to map into an IOMMU domain without knowing the struct device *
-> that we're mapping for (it could be needed by any of up to four display
-> controllers). For host1x we always only have one struct device *, so the
-> DMA mapping API should be good enough.
+> Hmm..sorry, I don't really follow this suggestion. Is it possible for
+> you to make it clear that what should I do for the change?
 
-If you can convert it to plain DMA API usage, please do.
+Something like this (plus proper comments):
 
-I did look into an IOMMU API memory allocator, and while we can do it
-easily for coherent devices, we need some arch hooks for non-coherent
-device support.  With a pending series from me we have those for arm64,
-but 32-bit arm support will require a lot more work first.
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index b2a87905846d..789d734f0f77 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -192,10 +192,19 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+ 				       unsigned int align, bool no_warn)
+ {
++	struct cma *cma;
++
+ 	if (align > CONFIG_CMA_ALIGNMENT)
+ 		align = CONFIG_CMA_ALIGNMENT;
+ 
+-	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
++	if (dev && dev->cma_area)
++		cma = dev->cma_area;
++	else if (count > PAGE_SIZE)
++		cma = dma_contiguous_default_area;
++	else
++		return NULL;
++
++	return cma_alloc(cma, count, align, no_warn);
+ }
+ 
+ /**
