@@ -1,64 +1,56 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Wed, 6 Feb 2019 14:45:34 +0100
-Message-ID: <b1c0161f-4211-03af-022d-0db7237516e9@xenosoft.de>
-References: <6f2d6bc9-696b-2cb1-8a4e-df3da2bd6c0a@xenosoft.de>
- <20190129161411.GA14022@lst.de> <20190129163415.GA14529@lst.de>
- <F4AB3D9A-97EC-45D7-9061-A750D0934C3C@xenosoft.de>
- <96762cd2-65fc-bce5-8c5b-c03bc3baf0a1@xenosoft.de>
- <20190201080456.GA15456@lst.de>
- <9632DCDF-B9D9-416C-95FC-006B6005E2EC@xenosoft.de>
- <594beaae-9681-03de-9f42-191cc7d2f8e3@xenosoft.de>
- <20190204075616.GA5408@lst.de>
- <ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de>
- <20190204123852.GA10428@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 02/19] dma-iommu: cleanup dma-iommu.h
+Date: Wed, 6 Feb 2019 15:08:26 +0000
+Message-ID: <5bf081c2-2b8c-d3d1-c93e-468c8f3cef67@arm.com>
+References: <20190114094159.27326-1-hch@lst.de>
+ <20190114094159.27326-3-hch@lst.de>
+ <3f78b779-4360-1204-e942-39a8a81759c7@arm.com> <20190201161305.GI6532@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190204123852.GA10428@lst.de>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Olof Johansson <olof@lixom.net>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190201161305.GI6532@lst.de>
+Content-Language: en-GB
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04 February 2019 at 01:38PM, Christoph Hellwig wrote:
->
-> It seems like the pasemi driver fails to set a DMA mask, but seems
-> otherwise 64-bit DMA capable.  The old PPC code didn't verify the
-> dma mask during the map operations, but the x86-derived generic
-> code does.
->
-> This patch just sets the DMA mask.
->
-> Olof: does this look ok?  The DMA device seems to not directly
-> bound by the net driver, but not really used by anything else in tree
-> either..
->
-> diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
-> index d21041554507..d98bd447c536 100644
-> --- a/drivers/net/ethernet/pasemi/pasemi_mac.c
-> +++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
-> @@ -1716,6 +1716,7 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   		err = -ENODEV;
->   		goto out;
->   	}
-> +	dma_set_mask(&mac->dma_pdev->dev, DMA_BIT_MASK(32));
->   
->   	mac->iob_pdev = pci_get_device(PCI_VENDOR_ID_PASEMI, 0xa001, NULL);
->   	if (!mac->iob_pdev) {
->
-Hello Christoph,
+On 01/02/2019 16:13, Christoph Hellwig wrote:
+> On Fri, Feb 01, 2019 at 02:47:17PM +0000, Robin Murphy wrote:
+>> On 14/01/2019 09:41, Christoph Hellwig wrote:
+>>> No need for a __KERNEL__ guard outside uapi, make sure we pull in the
+>>> includes unconditionally so users can rely on it, and add a missing
+>>> comment describing the #else cpp statement.  Last but not least include
+>>> <linux/errno.h> instead of the asm version, which is frowned upon.
+>>
+>> I think the __KERNEL__ and asm/errno.h slip-ups are things I cargo-culted
+>> from the arch code as a fresh-faced noob yet to learn the finer details, so
+>> ack for those parts. The forward-declarations, though, were a deliberate
+>> effort to minimise header dependencies and compilation bloat for includers
+>> who absolutely wouldn't care, and specifically to try to avoid setting
+>> transitive include expectations since they always seem to end up breaking
+>> someone's config somewhere down the line. Admittedly this little backwater
+>> is hardly comparable to the likes of the sched.h business, but I'm still
+>> somewhat on the fence about that change :/
+> 
+> As far as I can tell almost all users of linux/dma-iommu.h require
+> CONFIG_DMA_IOMMU to be enabled anyway..
 
-I patched the source code from the Git 'powerpc-dma.6' with your patch 
-today. Unfortunately the P.A. Semi Ethernet doesn't work with the 
-patched Git kernel.
+Other than dma-iommu.c itself, none of them *require* it - only 
+arch/arm64 selects it (the one from MTK_IOMMU is just bogus), and a lot 
+of the drivers also build for at least one other architecture (and/or 
+arm64 with !IOMMU_API).
 
-After that I tried it with the patch applied over the working setup 
-again (powerpc/dma: use the dma_direct mapping routines). Unfortunately 
-after compiling
-and booting, the P.A. Semi Ethernet doesn't work either.
+Either way, I have no vehement objection to the change, I just don't see 
+any positive value in it.
 
-Cheers,
-Christian
+Robin.
