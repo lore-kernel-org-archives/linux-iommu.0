@@ -1,47 +1,70 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 03/19] dma-iommu: don't use a scatterlist in
- iommu_dma_alloc
-Date: Wed, 6 Feb 2019 15:28:28 +0000
-Message-ID: <f59852aa-394c-3165-f7c0-fa6cdcea059f@arm.com>
-References: <20190114094159.27326-1-hch@lst.de>
- <20190114094159.27326-4-hch@lst.de>
- <5145b2f7-6fc8-6ed9-4cf2-9b7e1d33b0fe@arm.com> <20190201161638.GJ6532@lst.de>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: Re: [PATCH v2] dma-direct: do not allocate a single page from CMA
+ area
+Date: Wed, 6 Feb 2019 18:28:49 -0800
+Message-ID: <20190207022848.GA5581@Asurada-Nvidia.nvidia.com>
+References: <20190115215140.1545-1-nicoleotsuka@gmail.com>
+ <20190204082307.GA5916@lst.de>
+ <20190205230514.GA21515@Asurada-Nvidia.nvidia.com>
+ <20190206070726.GE23392@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190201161638.GJ6532@lst.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190206070726.GE23392@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, vdumpa@nvidia.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/02/2019 16:16, Christoph Hellwig wrote:
-> On Fri, Feb 01, 2019 at 03:24:45PM +0000, Robin Murphy wrote:
->> On 14/01/2019 09:41, Christoph Hellwig wrote:
->>> Directly iterating over the pages makes the code a bit simpler and
->>> prepares for the following changes.
->>
->> It also defeats the whole purpose of __iommu_dma_alloc_pages(), so I'm not
->> really buying the simplification angle - you've *seen* that code, right? ;)
+Hi Christoph,
+
+On Wed, Feb 06, 2019 at 08:07:26AM +0100, Christoph Hellwig wrote:
+> On Tue, Feb 05, 2019 at 03:05:30PM -0800, Nicolin Chen wrote:
+> > > And my other concern is that this skips allocating from the per-device
+> > > pool, which drivers might rely on.
+> > 
+> > Actually Robin had the same concern at v1 and suggested that we could
+> > always use DMA_ATTR_FORCE_CONTIGUOUS to enforce into per-device pool.
 > 
-> How does it defeat the purpose of __iommu_dma_alloc_pages?
+> That is both against the documented behavior of DMA_ATTR_FORCE_CONTIGUOUS
+> and doesn't help existing drivers that specify their CMA area in DT.
 
-Because if iommu_map() only gets called at PAGE_SIZE granularity, then 
-the IOMMU PTEs will be created at PAGE_SIZE (or smaller) granularity, so 
-any effort to get higher-order allocations matching larger IOMMU block 
-sizes is wasted, and we may as well have just done this:
+OK. I will drop it.
 
-	for (i = 0; i < count; i++) {
-		struct page *page = alloc_page(gfp);
-		...
-		iommu_map(..., page_to_phys(page), PAGE_SIZE, ...);
-	}
+> > > To be honest I'm not sure there is
+> > > much of a point in the per-device CMA pool vs the traditional per-device
+> > > coherent pool, but I'd rather change that behavior in a clearly documented
+> > > commit with intentions rather as a side effect from a random optimization.
+> > 
+> > Hmm..sorry, I don't really follow this suggestion. Is it possible for
+> > you to make it clear that what should I do for the change?
+> 
+> Something like this (plus proper comments):
+> 
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index b2a87905846d..789d734f0f77 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -192,10 +192,19 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+>  struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+>  				       unsigned int align, bool no_warn)
+>  {
+> +	struct cma *cma;
+> +
+>  	if (align > CONFIG_CMA_ALIGNMENT)
+>  		align = CONFIG_CMA_ALIGNMENT;
+>  
+> -	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
+> +	if (dev && dev->cma_area)
+> +		cma = dev->cma_area;
+> +	else if (count > PAGE_SIZE)
+> +		cma = dma_contiguous_default_area;
+> +	else
+> +		return NULL;
 
-Really, it's a shame we have to split huge pages for the CPU remap, 
-since in the common case the CPU MMU will have a matching block size, 
-but IIRC there was something in vmap() or thereabouts that explicitly 
-chokes on them.
+So we will keep allocating single pages in dev->cma_area if it's
+present, in order to address your previous concern?
 
-Robin.
+Thanks
+Nicolin
