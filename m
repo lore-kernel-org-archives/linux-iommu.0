@@ -1,46 +1,64 @@
-From: lantianyu1986@gmail.com
-Subject: [PATCH V3 0/3] x86/Hyper-V/IOMMU: Add Hyper-V IOMMU driver to support x2apic mode
-Date: Thu,  7 Feb 2019 23:33:46 +0800
-Message-ID: <1549553629-8414-1-git-send-email-Tianyu.Lan@microsoft.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>, arnd@arndb.de, bp@alien8.de, davem@davemloft.net, devel@linuxdriverproject.org, gregkh@linuxfoundation.org, haiyangz@microsoft.com, hpa@zytor.com, iommu@lists.linux-foundation.org, joro@8bytes.org, kys@microsoft.com, linux-kernel@vger.kernel.org, mchehab+samsung@kernel.org, mingo@redhat.com, nicolas.ferre@microchip.com, sashal@kernel.org, sthemmin@microsoft.com, tglx@linutronix.de, x86@kernel.org, michael.h.kelley@microsoft.com, vkuznets@redhat.com, alex.williamson@redhat.com, dan.carpenter@oracle.com
+From: lantianyu1986-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Subject: [PATCH V3 1/3] x86/Hyper-V: Set x2apic destination mode to physical
+	when x2apic is available
+Date: Thu,  7 Feb 2019 23:33:47 +0800
+Message-ID: <1549553629-8414-2-git-send-email-Tianyu.Lan@microsoft.com>
+References: <1549553629-8414-1-git-send-email-Tianyu.Lan@microsoft.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1549553629-8414-1-git-send-email-Tianyu.Lan-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kys-0li6OtcxBFHby3iVrkZq2A@public.gmane.org, sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sthemmin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, michael.h.kelley-0li6OtcxBFHby3iVrkZq2A@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Lan Tianyu <Tianyu.Lan-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, haiyangz-0li6OtcxBFHby3iVrkZq2A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devel-tBiZLqfeLfOHmIFyCCdPziST3g8Odh+X@public.gmane.org, vkuznets-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lan Tianyu <Tianyu.Lan@microsoft.com>
+From: Lan Tianyu <Tianyu.Lan-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>
 
-On the bare metal, enabling X2APIC mode requires interrupt remapping
-function which helps to deliver irq to cpu with 32-bit APIC ID.
-Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
-MSI protocol already supports to deliver interrupt to the CPU whose
-virtual processor index is more than 255. IO-APIC interrupt still has
-8-bit APIC ID limitation.
+Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
+set x2apic destination mode to physcial mode when x2apic is available
+and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
+8-bit APIC id.
 
-This patchset is to add Hyper-V stub IOMMU driver in order to enable
-X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2APIC
-interrupt remapping capability when X2APIC mode is available. X2APIC
-destination mode is set to physical by PATCH 1 when X2APIC is available.
-Hyper-V IOMMU driver will scan cpu 0~255 and set cpu into IO-APIC MAX cpu
-affinity cpumask if its APIC ID is 8-bit. Driver creates a Hyper-V irq domain
-to limit IO-APIC interrupts' affinity and make sure cpus assigned with IO-APIC
-interrupt are in the scope of IO-APIC MAX cpu affinity.
+Signed-off-by: Lan Tianyu <Tianyu.Lan-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>
+---
+Change since v2:
+       - Fix compile error due to x2apic_phys
+       - Fix comment indent
+Change since v1:
+       - Remove redundant extern for x2apic_phys
+---
+ arch/x86/kernel/cpu/mshyperv.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Lan Tianyu (3):
-  x86/Hyper-V: Set x2apic destination mode to physical when x2apic is   
-     available
-  HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
-  MAINTAINERS: Add Hyper-V IOMMU driver into Hyper-V CORE AND DRIVERS
-    scope
-
- MAINTAINERS                    |   1 +
- arch/x86/kernel/cpu/mshyperv.c |  10 +++
- drivers/iommu/Kconfig          |   8 ++
- drivers/iommu/Makefile         |   1 +
- drivers/iommu/hyperv-iommu.c   | 194 +++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/irq_remapping.c  |   3 +
- drivers/iommu/irq_remapping.h  |   1 +
- 7 files changed, 218 insertions(+)
- create mode 100644 drivers/iommu/hyperv-iommu.c
-
+diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+index e81a2db..0c29e4e 100644
+--- a/arch/x86/kernel/cpu/mshyperv.c
++++ b/arch/x86/kernel/cpu/mshyperv.c
+@@ -328,6 +328,16 @@ static void __init ms_hyperv_init_platform(void)
+ # ifdef CONFIG_SMP
+ 	smp_ops.smp_prepare_boot_cpu = hv_smp_prepare_boot_cpu;
+ # endif
++
++	/*
++	 * Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
++	 * set x2apic destination mode to physcial mode when x2apic is available
++	 * and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs
++	 * have 8-bit APIC id.
++	 */
++	if (IS_ENABLED(CONFIG_X86_X2APIC) && x2apic_supported())
++		x2apic_phys = 1;
++
+ #endif
+ }
+ 
 -- 
 2.7.4
