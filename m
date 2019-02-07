@@ -1,68 +1,46 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v7 2/5] swiotlb: Add is_swiotlb_active() function
-Date: Thu,  7 Feb 2019 12:59:14 +0100
-Message-ID: <20190207115917.20535-3-joro@8bytes.org>
-References: <20190207115917.20535-1-joro@8bytes.org>
+From: lantianyu1986@gmail.com
+Subject: [PATCH V3 0/3] x86/Hyper-V/IOMMU: Add Hyper-V IOMMU driver to support x2apic mode
+Date: Thu,  7 Feb 2019 23:33:46 +0800
+Message-ID: <1549553629-8414-1-git-send-email-Tianyu.Lan@microsoft.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190207115917.20535-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, joro@8bytes.org, jroedel@suse.de, Thomas.Lendacky@amd.com
+Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>, arnd@arndb.de, bp@alien8.de, davem@davemloft.net, devel@linuxdriverproject.org, gregkh@linuxfoundation.org, haiyangz@microsoft.com, hpa@zytor.com, iommu@lists.linux-foundation.org, joro@8bytes.org, kys@microsoft.com, linux-kernel@vger.kernel.org, mchehab+samsung@kernel.org, mingo@redhat.com, nicolas.ferre@microchip.com, sashal@kernel.org, sthemmin@microsoft.com, tglx@linutronix.de, x86@kernel.org, michael.h.kelley@microsoft.com, vkuznets@redhat.com, alex.williamson@redhat.com, dan.carpenter@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Lan Tianyu <Tianyu.Lan@microsoft.com>
 
-This function will be used from dma_direct code to determine
-the maximum segment size of a dma mapping.
+On the bare metal, enabling X2APIC mode requires interrupt remapping
+function which helps to deliver irq to cpu with 32-bit APIC ID.
+Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
+MSI protocol already supports to deliver interrupt to the CPU whose
+virtual processor index is more than 255. IO-APIC interrupt still has
+8-bit APIC ID limitation.
 
-Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- include/linux/swiotlb.h | 6 ++++++
- kernel/dma/swiotlb.c    | 9 +++++++++
- 2 files changed, 15 insertions(+)
+This patchset is to add Hyper-V stub IOMMU driver in order to enable
+X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2APIC
+interrupt remapping capability when X2APIC mode is available. X2APIC
+destination mode is set to physical by PATCH 1 when X2APIC is available.
+Hyper-V IOMMU driver will scan cpu 0~255 and set cpu into IO-APIC MAX cpu
+affinity cpumask if its APIC ID is 8-bit. Driver creates a Hyper-V irq domain
+to limit IO-APIC interrupts' affinity and make sure cpus assigned with IO-APIC
+interrupt are in the scope of IO-APIC MAX cpu affinity.
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index d3980aeed4a0..29bc3a203283 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -77,6 +77,7 @@ bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
- void __init swiotlb_exit(void);
- unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
-+bool is_swiotlb_active(void);
- #else
- #define swiotlb_force SWIOTLB_NO_FORCE
- static inline bool is_swiotlb_buffer(phys_addr_t paddr)
-@@ -100,6 +101,11 @@ static inline size_t swiotlb_max_mapping_size(struct device *dev)
- {
- 	return SIZE_MAX;
- }
-+
-+static inline bool is_swiotlb_active(void)
-+{
-+	return false;
-+}
- #endif /* CONFIG_SWIOTLB */
- 
- extern void swiotlb_print_info(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 9cb21259cb0b..c873f9cc2146 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -667,3 +667,12 @@ size_t swiotlb_max_mapping_size(struct device *dev)
- {
- 	return ((size_t)1 << IO_TLB_SHIFT) * IO_TLB_SEGSIZE;
- }
-+
-+bool is_swiotlb_active(void)
-+{
-+	/*
-+	 * When SWIOTLB is initialized, even if io_tlb_start points to physical
-+	 * address zero, io_tlb_end surely doesn't.
-+	 */
-+	return io_tlb_end != 0;
-+}
+Lan Tianyu (3):
+  x86/Hyper-V: Set x2apic destination mode to physical when x2apic is   
+     available
+  HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
+  MAINTAINERS: Add Hyper-V IOMMU driver into Hyper-V CORE AND DRIVERS
+    scope
+
+ MAINTAINERS                    |   1 +
+ arch/x86/kernel/cpu/mshyperv.c |  10 +++
+ drivers/iommu/Kconfig          |   8 ++
+ drivers/iommu/Makefile         |   1 +
+ drivers/iommu/hyperv-iommu.c   | 194 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/irq_remapping.c  |   3 +
+ drivers/iommu/irq_remapping.h  |   1 +
+ 7 files changed, 218 insertions(+)
+ create mode 100644 drivers/iommu/hyperv-iommu.c
+
 -- 
-2.17.1
+2.7.4
