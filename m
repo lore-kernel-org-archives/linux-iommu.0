@@ -1,154 +1,49 @@
-From: sathyanarayanan kuppuswamy
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [PATCH v1 1/2] PCI: ATS: Add function to check ATS page aligned
- request status.
-Date: Thu, 7 Feb 2019 12:39:00 -0800
-Message-ID: <f6f85182-da40-f404-ebc0-fef650d753cb@linux.intel.com>
-References: <cover.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <91bfae8b1d4b424219e3ce3c1fc03559c73f1ae7.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <20190207200747.GK7268@google.com>
-Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: [PATCH v1 1/1] iommu/vt-d: Enable PRI only if the device enables
+ PASID.
+Date: Thu, 7 Feb 2019 13:09:36 -0800
+Message-ID: <20190207210936.GH103220@otc-nc-03>
+References: <142748f6a00153f9926fe2a9dc30cf3cd89164cd.1549408090.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <0faf4f6a5bbd8cbee84aa78c40ab15216c2b8f0e.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190207200747.GK7268@google.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <0faf4f6a5bbd8cbee84aa78c40ab15216c2b8f0e.camel@infradead.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: joro@8bytes.org, dwmw2@infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Keith Busch <keith.busch@intel.com>
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: sathyanarayanan.kuppuswamy@linux.intel.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Feb 07, 2019 at 08:08:06PM +0000, David Woodhouse wrote:
+> On Thu, 2019-02-07 at 10:44 -0800, sathyanarayanan.kuppuswamy@linux.intel.com wrote:
+> > From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> > 
+> > Intel IOMMU Page Request Services (PRS) only works with devices which
+> > supports/uses PASID. So enable PRI only if the device also enables
+> > PASID support. For more details, Please check the implementation of PRQ
+> > handler(prq_event_thread()) in intel-svm driver.
+> > 
+> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Ashok Raj <ashok.raj@intel.com>
+> > Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> 
+> Hm, that shouldn't be true. PRI and PASID support are orthogonal.
+> 
+> If we get a PRI request without PASID, we should currently report it as
+> non-serviced which is the right thing to do. We can hook this up to KVM
+> etc. to actually allow paging of guests with devices attached, *if* the
+> devices attached to those guests support PRI.
+> 
+> Nothing fundamentally stops us using PRI without PASID support.
 
-On 2/7/19 12:07 PM, Bjorn Helgaas wrote:
-> Hi Kuppuswamy,
->
-> Previous changes to ats.c used subject lines starting with just
-> "PCI:".
->
-> I think it does make sense to include "ATS", but please do it in
-> the way we do it for other PCI features, e.g.,
->
->    PCI/ATS: Add pci_ats_page_aligned() interface
-Got it. I will follow PCI/ATS format.
->
-> On Thu, Feb 07, 2019 at 10:41:13AM -0800, sathyanarayanan.kuppuswamy@linux.intel.com wrote:
->> From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
->>
->> Add a new function to return the status of ATS page aligned request
->> bit in ATS capability register. This function will be used by
->> drivers like IOMMU, if it is required to enforce page-aligned
->> requests in ATS.
-> "return the Page Aligned Request bit in the ATS Capability Register"
->
-> This is just to make the terminology match the PCIe spec exactly so
-> it's easier to look up.
-Will fix it in next version.
->
->> Cc: Ashok Raj <ashok.raj@intel.com>
->> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Cc: Keith Busch <keith.busch@intel.com>
->> Suggested-by: Ashok Raj <ashok.raj@intel.com>
->> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
->> ---
->>   drivers/pci/ats.c             | 22 ++++++++++++++++++++++
->>   include/linux/pci.h           |  2 ++
->>   include/uapi/linux/pci_regs.h |  1 +
->>   3 files changed, 25 insertions(+)
->>
->> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
->> index 5b78f3b1b918..7d14b9a1981e 100644
->> --- a/drivers/pci/ats.c
->> +++ b/drivers/pci/ats.c
->> @@ -142,6 +142,28 @@ int pci_ats_queue_depth(struct pci_dev *dev)
->>   }
->>   EXPORT_SYMBOL_GPL(pci_ats_queue_depth);
->>   
->> +/**
->> + * pci_ats_page_aligned - Return ATS page aligned request bit status.
-> Capitalize name of bit as above.
-Agreed.
->
->> + * @pdev: the PCI device
->> + *
->> + * Returns  value > 0 if address is aligned or 0 otherwise.
-> s/  / /
->
-> "if Untranslated Addresses generated by the device are always
-> aligned or ..."
->
->> + *
->> + * As per PCI spec, If page aligned request bit is set, it indicates
->> + * the untranslated address is always aligned to a 4096 byte boundary.
-> "Per PCIe r4.0, sec 10.5.1.2, if the Page Aligned Request bit,
-> Untranslated Addresses generated by the device are always aligned to a
-> 4096 byte boundary."
->
->> + */
->> +int pci_ats_page_aligned(struct pci_dev *pdev)
->> +{
->> +	u16 cap;
->> +
->> +	if (!pdev->ats_cap)
->> +		return 0;
->> +
->> +	pci_read_config_word(pdev, pdev->ats_cap + PCI_ATS_CAP, &cap);
->> +
->> +	return PCI_ATS_CAP_PAGE_ALIGNED(cap);
->> +}
->> +EXPORT_SYMBOL_GPL(pci_ats_page_aligned);
->> +
->>   #ifdef CONFIG_PCI_PRI
->>   /**
->>    * pci_enable_pri - Enable PRI capability
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 65f1d8c2f082..9724a8c0496b 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -1524,11 +1524,13 @@ void pci_ats_init(struct pci_dev *dev);
->>   int pci_enable_ats(struct pci_dev *dev, int ps);
->>   void pci_disable_ats(struct pci_dev *dev);
->>   int pci_ats_queue_depth(struct pci_dev *dev);
->> +int pci_ats_page_aligned(struct pci_dev *dev);
->>   #else
->>   static inline void pci_ats_init(struct pci_dev *d) { }
->>   static inline int pci_enable_ats(struct pci_dev *d, int ps) { return -ENODEV; }
->>   static inline void pci_disable_ats(struct pci_dev *d) { }
->>   static inline int pci_ats_queue_depth(struct pci_dev *d) { return -ENODEV; }
->> +static inline int pci_ats_page_aligned(struct pci_dev *dev) { return 0; }
->>   #endif
->>   
->>   #ifdef CONFIG_PCIE_PTM
->> diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
->> index e1e9888c85e6..d42a759867b8 100644
->> --- a/include/uapi/linux/pci_regs.h
->> +++ b/include/uapi/linux/pci_regs.h
->> @@ -866,6 +866,7 @@
->>   #define PCI_ATS_CAP		0x04	/* ATS Capability Register */
->>   #define  PCI_ATS_CAP_QDEP(x)	((x) & 0x1f)	/* Invalidate Queue Depth */
->>   #define  PCI_ATS_MAX_QDEP	32	/* Max Invalidate Queue Depth */
->> +#define  PCI_ATS_CAP_PAGE_ALIGNED(x)	0x0020 /* Page Aligned Request */
-> This is wrong because it *always* returns "true", regardless of the
-> value of the ATS Capability register.
->
-> I would prefer this:
->
->    #define  PCI_ATS_CAP_PAGE_ALIGNED   0x0020
-Good catch. it looks like I messed it when I did some cleanup. Sorry 
-about it. Initially it was (x & 0x0020).
->
-> and then test it like this:
->
->    if (cap & PCI_ATS_CAP_PAGE_ALIGNED)
->      return 1;
->    return 0;
-Ok.
->>   #define PCI_ATS_CTRL		0x06	/* ATS Control Register */
->>   #define  PCI_ATS_CTRL_ENABLE	0x8000	/* ATS Enable */
->>   #define  PCI_ATS_CTRL_STU(x)	((x) & 0x1f)	/* Smallest Translation Unit */
->> -- 
->> 2.20.1
->>
--- 
-Sathyanarayanan Kuppuswamy
-Linux kernel developer
+You are right.. they are completely orthogonal. We just don't have
+a way to handle the page-requests for request without PASID's.
+
+There are some of the vIOMMU work to pass the PRI to who owns
+the device, and we can certainly relax it then. This is just to reflect
+what support exists today. FWIW, even the native driver maybe be able
+to resolve this if supported.
+
+> 
+> 
