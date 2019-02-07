@@ -1,48 +1,45 @@
 From: sathyanarayanan kuppuswamy
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [PATCH v1 1/1] iommu/vt-d: Enable PRI only if the device enables
- PASID.
-Date: Thu, 7 Feb 2019 13:30:24 -0800
-Message-ID: <cdb6fb16-157e-059e-44ee-515fb4aca9af@linux.intel.com>
-References: <142748f6a00153f9926fe2a9dc30cf3cd89164cd.1549408090.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <0faf4f6a5bbd8cbee84aa78c40ab15216c2b8f0e.camel@infradead.org>
- <20190207210936.GH103220@otc-nc-03>
- <9393b9b2c15564ee84b627a73fb34bd17ebe4a7f.camel@infradead.org>
+Subject: Re: [PATCH v1 1/2] PCI: ATS: Add function to check ATS page aligned
+ request status.
+Date: Thu, 7 Feb 2019 14:16:13 -0800
+Message-ID: <a5a29eee-2e33-ba0c-67a6-69983fd0796d@linux.intel.com>
+References: <cover.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <91bfae8b1d4b424219e3ce3c1fc03559c73f1ae7.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <5d55e369-355f-b710-0594-03465aa985da@kernel.org>
 Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9393b9b2c15564ee84b627a73fb34bd17ebe4a7f.camel@infradead.org>
+In-Reply-To: <5d55e369-355f-b710-0594-03465aa985da@kernel.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>
-Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Sinan Kaya <okaya@kernel.org>, bhelgaas@google.com, joro@8bytes.org, dwmw2@infradead.org
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Keith Busch <keith.busch@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
-On 2/7/19 1:15 PM, David Woodhouse wrote:
-> On Thu, 2019-02-07 at 13:09 -0800, Raj, Ashok wrote:
->> You are right.. they are completely orthogonal. We just don't have
->> a way to handle the page-requests for request without PASID's.
->>
->> There are some of the vIOMMU work to pass the PRI to who owns
->> the device, and we can certainly relax it then. This is just to reflect
->> what support exists today. FWIW, even the native driver maybe be able
->> to resolve this if supported.
-> As things stand, if a device makes a PRI request without a PASID, it'll
-> get told that we didn't manage to bring the page in for it. Which is
-> true.
+On 2/7/19 12:38 PM, Sinan Kaya wrote:
 >
-> What's the actual problem being fixed by this patch?
-Since the request is going to fail any way why go through the process of 
-enabling it ? Once the functionality (PRI without PASID) is supported, 
-then they can revert this patch. Just we are trying to expose whats 
-currently supported clearly.
-> Yes, we're going
-> to want to hook up a way to pass the PRI to the right place... but why
-> add *another* thing that's just going to have to be fixed, by reverting
-> this patch?
+> On 2/7/2019 1:41 PM, sathyanarayanan.kuppuswamy@linux.intel.com wrote:
+>> + * As per PCI spec, If page aligned request bit is set, it indicates
+>> + * the untranslated address is always aligned to a 4096 byte boundary.
+>> + */
+>> +int pci_ats_page_aligned(struct pci_dev *pdev)
+>> +{
+>> +    u16 cap;
+>> +
+>> +    if (!pdev->ats_cap)
+>> +        return 0;
+>> +
+>> +    pci_read_config_word(pdev, pdev->ats_cap + PCI_ATS_CAP, &cap);
+>
+> If I remember this right, aligned request is only supported on ATS v1.1
+> but not supported on v1.0.
+Its added in v1.1.
+>
+> Can you please check the spec?
 >
 -- 
 Sathyanarayanan Kuppuswamy
