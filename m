@@ -1,45 +1,42 @@
 From: sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v1 2/2] iommu/vt-d: Enable ATS only if the device uses page aligned address.
-Date: Thu,  7 Feb 2019 10:41:14 -0800
-Message-ID: <66e8ae706125432395dc2d6881411d2aced565ca.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v1 1/1] iommu/vt-d: Enable PRI only if the device enables PASID.
+Date: Thu,  7 Feb 2019 10:44:19 -0800
+Message-ID: <142748f6a00153f9926fe2a9dc30cf3cd89164cd.1549408090.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: bhelgaas@google.com, joro@8bytes.org, dwmw2@infradead.org
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Keith Busch <keith.busch@intel.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+To: joro@8bytes.org, dwmw2@infradead.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-As per Intel vt-d specification, Rev 3.0 (section 7.5.1.1, title "Page
-Request Descriptor"), Intel IOMMU page request descriptor only uses
-bits[63:12] of the page address. Hence Intel IOMMU driver would only
-permit devices that advertise they would only send page aligned requests
-to participate in ATS service.
+Intel IOMMU Page Request Services (PRS) only works with devices which
+supports/uses PASID. So enable PRI only if the device also enables
+PASID support. For more details, Please check the implementation of PRQ
+handler(prq_event_thread()) in intel-svm driver.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Keith Busch <keith.busch@intel.com>
-Suggested-by: Ashok Raj <ashok.raj@intel.com>
+Cc: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/intel-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1457f931218e..6a0b5270cd2e 100644
+index 1457f931218e..ef1a646e0993 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1406,6 +1406,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+@@ -1402,7 +1402,8 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 	if (info->pasid_supported && !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+ 		info->pasid_enabled = 1;
+ 
+-	if (info->pri_supported && !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
++	if (info->pri_supported && info->pasid_enabled &&
++	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
  		info->pri_enabled = 1;
  #endif
  	if (!pdev->untrusted && info->ats_supported &&
-+	    pci_ats_page_aligned(pdev) &&
- 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
- 		domain_update_iotlb(info->domain);
 -- 
 2.20.1
