@@ -1,28 +1,47 @@
-From: Tom Murphy <murphyt7@tcd.ie>
-Subject: [PATCH] fix flush_tlb_all typo
-Date: Fri,  8 Feb 2019 14:20:44 +0000
-Message-ID: <20190208142044.27732-1-murphyt7@tcd.ie>
+From: Olaf Hering <olaf@aepfle.de>
+Subject: Re: [PATCH V3 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
+Date: Fri, 8 Feb 2019 15:51:59 +0100
+Message-ID: <20190208145159.GA17854@aepfle.de>
+References: <1549553629-8414-1-git-send-email-Tianyu.Lan@microsoft.com>
+ <1549553629-8414-3-git-send-email-Tianyu.Lan@microsoft.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="TB36FDmn/VVEgNH/"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1549553629-8414-3-git-send-email-Tianyu.Lan@microsoft.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Tom Murphy <murphyt7@tcd.ie>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: lantianyu1986@gmail.com
+Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, michael.h.kelley@microsoft.com, kys@microsoft.com, vkuznets@redhat.com, alex.williamson@redhat.com, sashal@kernel.org, dan.carpenter@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
----
- include/linux/iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a1d28f42cb77..bb4bf1269e5d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -167,7 +167,7 @@ struct iommu_resv_region {
-  * @detach_dev: detach device from an iommu domain
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @unmap: unmap a physically contiguous memory region from an iommu domain
-- * @flush_tlb_all: Synchronously flush all hardware TLBs for this domain
-+ * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
-  * @tlb_range_add: Add a given iova range to the flush queue for this domain
-  * @tlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-  *            queue
--- 
-2.17.1
+--TB36FDmn/VVEgNH/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+
+On Thu, Feb 07, lantianyu1986@gmail.com wrote:
+
+> +++ b/drivers/iommu/Kconfig
+> +config HYPERV_IOMMU
+> +	bool "Hyper-V x2APIC IRQ Handling"
+> +	depends on HYPERV
+> +	select IOMMU_API
+> +	help
+
+
+Consider adding 'default HYPERV' like some other drivers already do it.
+
+Olaf
+
+--TB36FDmn/VVEgNH/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EARECAB0WIQSkRyP6Rn//f03pRUBdQqD6ppg2fgUCXF2XjAAKCRBdQqD6ppg2
+fmGcAJ9YHvrop3zssh0S9nzhUQtTdp2DvQCfeSlpubU2Zx7jnb8G+URfPb4FQDg=
+=ilV3
+-----END PGP SIGNATURE-----
+
+--TB36FDmn/VVEgNH/--
