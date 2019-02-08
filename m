@@ -1,28 +1,41 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] remove unused end_pfn
-Date: Fri, 8 Feb 2019 17:23:57 +0100
-Message-ID: <20190208162357.GX32526@8bytes.org>
-References: <2017datesandletters@somehostname>
- <20190208140439.26738-1-murphyt7@tcd.ie>
+Subject: Re: [PATCH/RFC] driver core: Postpone DMA tear-down until after
+ devres release
+Date: Fri, 8 Feb 2019 17:40:19 +0100
+Message-ID: <20190208164019.GY32526@8bytes.org>
+References: <20190207193653.18221-1-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190208140439.26738-1-murphyt7@tcd.ie>
+In-Reply-To: <20190207193653.18221-1-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Murphy <murphyt7@tcd.ie>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, "Rafael J . Wysocki" <rafael@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 08, 2019 at 02:04:38PM +0000, Tom Murphy wrote:
-> This variable is useless.
-> 
-> ---
->  drivers/iommu/dma-iommu.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+Hi Geert,
 
-A similar change is already in the iommu tree[1].
+On Thu, Feb 07, 2019 at 08:36:53PM +0100, Geert Uytterhoeven wrote:
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index 8ac10af17c0043a3..d62487d024559620 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -968,9 +968,9 @@ static void __device_release_driver(struct device *dev, struct device *parent)
+>  			drv->remove(dev);
+>  
+>  		device_links_driver_cleanup(dev);
+> -		arch_teardown_dma_ops(dev);
+>  
+>  		devres_release_all(dev);
+> +		arch_teardown_dma_ops(dev);
+>  		dev->driver = NULL;
+>  		dev_set_drvdata(dev, NULL);
+>  		if (dev->pm_domain && dev->pm_domain->dismiss)
+
+Thanks for the fix! Should it also be tagged for stable and get a Fixes
+tag? I know it only triggers with a fix in v5.0-rc, but still...
+
+Regards,
 
 	Joerg
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/commit/?h=core
