@@ -1,34 +1,77 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH V3 1/3] x86/Hyper-V: Set x2apic destination mode to
- physical when x2apic is available
-Date: Sun, 10 Feb 2019 22:48:51 +0100 (CET)
-Message-ID: <alpine.DEB.2.21.1902102247100.8784@nanos.tec.linutronix.de>
-References: <1549553629-8414-1-git-send-email-Tianyu.Lan@microsoft.com> <1549553629-8414-2-git-send-email-Tianyu.Lan@microsoft.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v1 4/7] iommu/vt-d: Remove unnecessary local variable
+ initializations
+Date: Mon, 11 Feb 2019 09:55:24 +0800
+Message-ID: <63ae370c-2239-62c5-2378-98916608acc4@linux.intel.com>
+References: <154966319813.132359.14641436497228395449.stgit@bhelgaas-glaptop.roam.corp.google.com>
+ <154966356809.132359.5318207850182898116.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1549553629-8414-2-git-send-email-Tianyu.Lan@microsoft.com>
+In-Reply-To: <154966356809.132359.5318207850182898116.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: lantianyu1986@gmail.com
-Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>, kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com, sashal@kernel.org, mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org, joro@8bytes.org, mchehab+samsung@kernel.org, davem@davemloft.net, gregkh@linuxfoundation.org, nicolas.ferre@microchip.com, arnd@arndb.de, linux-kernel@vger.kernel.org, devel@linuxdriverproject.org, iommu@lists.linux-foundation.org, michael.h.kelley@microsoft.com, vkuznets@redhat.com, alex.williamson@redhat.com, dan.carpenter@oracle.com
+To: Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 7 Feb 2019, lantianyu1986@gmail.com wrote:
+Hi,
 
-> From: Lan Tianyu <Tianyu.Lan@microsoft.com>
+On 2/9/19 6:06 AM, Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
 > 
-> Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
-> set x2apic destination mode to physcial mode when x2apic is available
-> and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
-> 8-bit APIC id.
+> A local variable initialization is a hint that the variable will be used in
+> an unusual way.  If the initialization is unnecessary, that hint becomes a
+> distraction.
+> 
+> Remove unnecessary initializations.  No functional change intended.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>   drivers/iommu/intel-iommu.c |   27 +++++++++++++--------------
+>   1 file changed, 13 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 81077803880f..2acd08c82cdc 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -865,7 +865,7 @@ static void free_context_table(struct intel_iommu *iommu)
+>   static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+>   				      unsigned long pfn, int *target_level)
+>   {
+> -	struct dma_pte *parent, *pte = NULL;
+> +	struct dma_pte *parent, *pte;
+>   	int level = agaw_to_level(domain->agaw);
+>   	int offset;
+>   
+> @@ -922,7 +922,7 @@ static struct dma_pte *dma_pfn_level_pte(struct dmar_domain *domain,
+>   					 unsigned long pfn,
+>   					 int level, int *large_page)
+>   {
+> -	struct dma_pte *parent, *pte = NULL;
+> +	struct dma_pte *parent, *pte;
+>   	int total = agaw_to_level(domain->agaw);
+>   	int offset;
+>   
+> @@ -954,7 +954,7 @@ static void dma_pte_clear_range(struct dmar_domain *domain,
+>   				unsigned long start_pfn,
+>   				unsigned long last_pfn)
+>   {
+> -	unsigned int large_page = 1;
+> +	unsigned int large_page;
+>   	struct dma_pte *first_pte, *pte;
+>   
+>   	BUG_ON(!domain_pfn_supported(domain, start_pfn));
+> @@ -1132,7 +1132,7 @@ static struct page *domain_unmap(struct dmar_domain *domain,
+>   				 unsigned long start_pfn,
+>   				 unsigned long last_pfn)
+>   {
+> -	struct page *freelist = NULL;
+> +	struct page *freelist;
 
-This looks good now. Can that be applied independent of the IOMMU stuff or
-should this go together. If the latter:
+I am afraid this change might cause problem. "freelist" might go through
+dma_pte_clear_level() without any touches.
 
-   Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-
-If not, I just queue if for 5.1. Let me know,
-
-Thanks,
-
-	tglx
+Best regards,
+Lu Baolu
