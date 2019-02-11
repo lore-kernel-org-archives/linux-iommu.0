@@ -1,116 +1,26 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 1/8] net: caif: pass struct device to DMA API functions
-Date: Mon, 11 Feb 2019 14:19:57 +0100
-Message-ID: <20190211132004.29143-2-hch@lst.de>
-References: <20190211132004.29143-1-hch@lst.de>
+Subject: net: don't pass a NULL struct device to DMA API functions v2
+Date: Mon, 11 Feb 2019 14:19:56 +0100
+Message-ID: <20190211132004.29143-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20190211132004.29143-1-hch@lst.de>
-Sender: netdev-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The DMA API generally relies on a struct device to work properly, and
-only barely works without one for legacy reasons.  Pass the easily
-available struct device from the platform_device to remedy this.
+We still have a few drivers which pass a NULL struct device pointer
+to DMA API functions, which generally is a bad idea as the API
+implementations rely on the device not only for ops selection, but
+also the dma mask and various other attributes.
 
-Also use the proper Kconfig symbol to check for DMA API availability.
+This series contains all easy conversions to pass a struct device,
+besides that there also is some arch code that needs separate handling,
+a driver that should not use the DMA API at all, and one that is
+a complete basket case to be deal with separately.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/net/caif/caif_spi.c | 30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/caif/caif_spi.c b/drivers/net/caif/caif_spi.c
-index d28a1398c091..7608bc3e00df 100644
---- a/drivers/net/caif/caif_spi.c
-+++ b/drivers/net/caif/caif_spi.c
-@@ -73,35 +73,37 @@ MODULE_PARM_DESC(spi_down_tail_align, "SPI downlink tail alignment.");
- #define LOW_WATER_MARK   100
- #define HIGH_WATER_MARK  (LOW_WATER_MARK*5)
- 
--#ifdef CONFIG_UML
-+#ifndef CONFIG_HAS_DMA
- 
- /*
-  * We sometimes use UML for debugging, but it cannot handle
-  * dma_alloc_coherent so we have to wrap it.
-  */
--static inline void *dma_alloc(dma_addr_t *daddr)
-+static inline void *dma_alloc(struct cfspi *cfspi, dma_addr_t *daddr)
- {
- 	return kmalloc(SPI_DMA_BUF_LEN, GFP_KERNEL);
- }
- 
--static inline void dma_free(void *cpu_addr, dma_addr_t handle)
-+static inline void dma_free(struct cfspi *cfspi, void *cpu_addr,
-+		dma_addr_t handle)
- {
- 	kfree(cpu_addr);
- }
- 
- #else
- 
--static inline void *dma_alloc(dma_addr_t *daddr)
-+static inline void *dma_alloc(struct cfspi *cfspi, dma_addr_t *daddr)
- {
--	return dma_alloc_coherent(NULL, SPI_DMA_BUF_LEN, daddr,
-+	return dma_alloc_coherent(&cfspi->pdev->dev, SPI_DMA_BUF_LEN, daddr,
- 				GFP_KERNEL);
- }
- 
--static inline void dma_free(void *cpu_addr, dma_addr_t handle)
-+static inline void dma_free(struct cfspi *cfspi, void *cpu_addr,
-+		dma_addr_t handle)
- {
--	dma_free_coherent(NULL, SPI_DMA_BUF_LEN, cpu_addr, handle);
-+	dma_free_coherent(&cfspi->pdev->dev, SPI_DMA_BUF_LEN, cpu_addr, handle);
- }
--#endif	/* CONFIG_UML */
-+#endif	/* CONFIG_HAS_DMA */
- 
- #ifdef CONFIG_DEBUG_FS
- 
-@@ -610,13 +612,13 @@ static int cfspi_init(struct net_device *dev)
- 	}
- 
- 	/* Allocate DMA buffers. */
--	cfspi->xfer.va_tx[0] = dma_alloc(&cfspi->xfer.pa_tx[0]);
-+	cfspi->xfer.va_tx[0] = dma_alloc(cfspi, &cfspi->xfer.pa_tx[0]);
- 	if (!cfspi->xfer.va_tx[0]) {
- 		res = -ENODEV;
- 		goto err_dma_alloc_tx_0;
- 	}
- 
--	cfspi->xfer.va_rx = dma_alloc(&cfspi->xfer.pa_rx);
-+	cfspi->xfer.va_rx = dma_alloc(cfspi, &cfspi->xfer.pa_rx);
- 
- 	if (!cfspi->xfer.va_rx) {
- 		res = -ENODEV;
-@@ -665,9 +667,9 @@ static int cfspi_init(struct net_device *dev)
- 	return 0;
- 
-  err_create_wq:
--	dma_free(cfspi->xfer.va_rx, cfspi->xfer.pa_rx);
-+	dma_free(cfspi, cfspi->xfer.va_rx, cfspi->xfer.pa_rx);
-  err_dma_alloc_rx:
--	dma_free(cfspi->xfer.va_tx[0], cfspi->xfer.pa_tx[0]);
-+	dma_free(cfspi, cfspi->xfer.va_tx[0], cfspi->xfer.pa_tx[0]);
-  err_dma_alloc_tx_0:
- 	return res;
- }
-@@ -683,8 +685,8 @@ static void cfspi_uninit(struct net_device *dev)
- 
- 	cfspi->ndev = NULL;
- 	/* Free DMA buffers. */
--	dma_free(cfspi->xfer.va_rx, cfspi->xfer.pa_rx);
--	dma_free(cfspi->xfer.va_tx[0], cfspi->xfer.pa_tx[0]);
-+	dma_free(cfspi, cfspi->xfer.va_rx, cfspi->xfer.pa_rx);
-+	dma_free(cfspi, cfspi->xfer.va_tx[0], cfspi->xfer.pa_tx[0]);
- 	set_bit(SPI_TERMINATE, &cfspi->state);
- 	wake_up_interruptible(&cfspi->wait);
- 	destroy_workqueue(cfspi->wq);
--- 
-2.20.1
+Changes since v1:
+ - fix an inverted ifdef in CAIF
+ - update the smc911x changelog
+ - split the series, this only contains the networking patches
