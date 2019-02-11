@@ -1,123 +1,49 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2] dma-mapping: Move debug configuration options to kernel/dma
-Date: Mon, 11 Feb 2019 18:12:30 +0200
-Message-ID: <20190211161230.85281-1-andriy.shevchenko@linux.intel.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 16/19] dma-iommu: don't depend on
+ CONFIG_DMA_DIRECT_REMAP
+Date: Mon, 11 Feb 2019 17:39:36 +0100
+Message-ID: <20190211163936.GA29978@lst.de>
+References: <20190114094159.27326-1-hch@lst.de> <20190114094159.27326-17-hch@lst.de> <4698cdca-0e5b-c82f-bb80-3ba0f986c544@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <4698cdca-0e5b-c82f-bb80-3ba0f986c544@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is a follow up to the commit cf65a0f6f6ff
+On Wed, Feb 06, 2019 at 11:55:49AM +0000, Robin Murphy wrote:
+> On 14/01/2019 09:41, Christoph Hellwig wrote:
+>> For entirely dma coherent architectures there is no good reason to ever
+>> remap dma coherent allocation.
+>
+> Yes there is, namely assembling large buffers without the need for massive 
+> CMA areas and compaction overhead under memory fragmentation. That has 
+> always been a distinct concern from the DMA_DIRECT_REMAP cases; they've 
+> just been able to share a fair few code paths.
 
-  ("dma-mapping: move all DMA mapping code to kernel/dma")
+Well, I guess I need to reword this - there is no _requirement_ to
+remap.  And x86 has been happy to not remap so far and I see absolutely
+no reason to force anyone to remap.
 
-which moved source code of DMA API to kernel/dma folder. Since there is
-no file left in the lib that require DMA API debugging options move the
-latter to kernel/dma as well.
+>>  Move all the remap and pool code under
+>> CONFIG_DMA_DIRECT_REMAP ifdefs, and drop the Kconfig dependency.
+>
+> As far as I'm concerned that splits things the wrong way. Logically, 
+> iommu_dma_alloc() should always have done its own vmap() instead of just 
+> returning the bare pages array, but that was tricky to resolve with the 
+> design of having the caller handle everything to do with coherency (forcing 
+> the caller to unpick that mapping just to remap it yet again in the 
+> noncoherent case didn't seem sensible).
 
-Cc: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+I don't parse this.  In the old code base before this series
+iommu_dma_alloc is a relatively low-level helper allocating and mapping
+pages.  And that one should have done the remapping, and in fact does
+so since ("dma-iommu: refactor page array remap helpers").  It just
+happens that the function is now called iommu_dma_alloc_remap.
 
-v2: Move to kernel/dma/Kconfig directly
-
- kernel/dma/Kconfig | 36 ++++++++++++++++++++++++++++++++++++
- lib/Kconfig.debug  | 36 ------------------------------------
- 2 files changed, 36 insertions(+), 36 deletions(-)
-
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index ca88b867e7fe..61cebea36d89 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -53,3 +53,39 @@ config DMA_REMAP
- config DMA_DIRECT_REMAP
- 	bool
- 	select DMA_REMAP
-+
-+config DMA_API_DEBUG
-+	bool "Enable debugging of DMA-API usage"
-+	select NEED_DMA_MAP_STATE
-+	help
-+	  Enable this option to debug the use of the DMA API by device drivers.
-+	  With this option you will be able to detect common bugs in device
-+	  drivers like double-freeing of DMA mappings or freeing mappings that
-+	  were never allocated.
-+
-+	  This also attempts to catch cases where a page owned by DMA is
-+	  accessed by the cpu in a way that could cause data corruption.  For
-+	  example, this enables cow_user_page() to check that the source page is
-+	  not undergoing DMA.
-+
-+	  This option causes a performance degradation.  Use only if you want to
-+	  debug device drivers and dma interactions.
-+
-+	  If unsure, say N.
-+
-+config DMA_API_DEBUG_SG
-+	bool "Debug DMA scatter-gather usage"
-+	default y
-+	depends on DMA_API_DEBUG
-+	help
-+	  Perform extra checking that callers of dma_map_sg() have respected the
-+	  appropriate segment length/boundary limits for the given device when
-+	  preparing DMA scatterlists.
-+
-+	  This is particularly likely to have been overlooked in cases where the
-+	  dma_map_sg() API is used for general bulk mapping of pages rather than
-+	  preparing literal scatter-gather descriptors, where there is a risk of
-+	  unexpected behaviour from DMA API implementations if the scatterlist
-+	  is technically out-of-spec.
-+
-+	  If unsure, say N.
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index d4df5b24d75e..ef5d7c08e5b9 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1655,42 +1655,6 @@ config PROVIDE_OHCI1394_DMA_INIT
- 
- 	  See Documentation/debugging-via-ohci1394.txt for more information.
- 
--config DMA_API_DEBUG
--	bool "Enable debugging of DMA-API usage"
--	select NEED_DMA_MAP_STATE
--	help
--	  Enable this option to debug the use of the DMA API by device drivers.
--	  With this option you will be able to detect common bugs in device
--	  drivers like double-freeing of DMA mappings or freeing mappings that
--	  were never allocated.
--
--	  This also attempts to catch cases where a page owned by DMA is
--	  accessed by the cpu in a way that could cause data corruption.  For
--	  example, this enables cow_user_page() to check that the source page is
--	  not undergoing DMA.
--
--	  This option causes a performance degradation.  Use only if you want to
--	  debug device drivers and dma interactions.
--
--	  If unsure, say N.
--
--config DMA_API_DEBUG_SG
--	bool "Debug DMA scatter-gather usage"
--	default y
--	depends on DMA_API_DEBUG
--	help
--	  Perform extra checking that callers of dma_map_sg() have respected the
--	  appropriate segment length/boundary limits for the given device when
--	  preparing DMA scatterlists.
--
--	  This is particularly likely to have been overlooked in cases where the
--	  dma_map_sg() API is used for general bulk mapping of pages rather than
--	  preparing literal scatter-gather descriptors, where there is a risk of
--	  unexpected behaviour from DMA API implementations if the scatterlist
--	  is technically out-of-spec.
--
--	  If unsure, say N.
--
- menuconfig RUNTIME_TESTING_MENU
- 	bool "Runtime Testing"
- 	def_bool y
--- 
-2.20.1
+The new iommu_dma_alloc is the high level entry point that handles
+every possible case of different allocations, including those where
+we do not have a virtual mapping.
