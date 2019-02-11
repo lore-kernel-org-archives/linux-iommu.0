@@ -1,29 +1,52 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Mon, 11 Feb 2019 08:38:04 +0100
-Message-ID: <20190211073804.GA15841@lst.de>
-References: <20190204075616.GA5408@lst.de> <ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de> <20190204123852.GA10428@lst.de> <b1c0161f-4211-03af-022d-0db7237516e9@xenosoft.de> <20190206151505.GA31065@lst.de> <20190206151655.GA31172@lst.de> <61EC67B1-12EF-42B6-B69B-B59F9E4FC474@xenosoft.de> <7c1f208b-6909-3b0a-f9f9-38ff1ac3d617@xenosoft.de> <20190208091818.GA23491@lst.de> <4e7137db-e600-0d20-6fb2-6d0f9739aca3@xenosoft.de>
+From: Tianyu Lan <lantianyu1986@gmail.com>
+Subject: Re: [PATCH V3 1/3] x86/Hyper-V: Set x2apic destination mode to
+ physical when x2apic is available
+Date: Mon, 11 Feb 2019 16:05:23 +0800
+Message-ID: <CAOLK0pwdQGeyKYYkUbZtizR5+ydf-KAp1=+z3s+LfMnjhS1Enw@mail.gmail.com>
+References: <1549553629-8414-1-git-send-email-Tianyu.Lan@microsoft.com>
+ <1549553629-8414-2-git-send-email-Tianyu.Lan@microsoft.com>
+ <alpine.DEB.2.21.1902102247100.8784@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4e7137db-e600-0d20-6fb2-6d0f9739aca3@xenosoft.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <alpine.DEB.2.21.1902102247100.8784@nanos.tec.linutronix.de>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: "linux-kernel@vger kernel org" <linux-kernel@vger.kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, mchehab+samsung@kernel.org, Sasha Levin <sashal@kernel.org>, sthemmin@microsoft.com, Joerg Roedel <joro@8bytes.org>, the arch/x86 maintainers <x86@kernel.org>, michael.h.kelley@microsoft.com, Ingo Molnar <mingo@redhat.com>, Dan Carpenter <dan.carpenter@oracle.com>, Lan Tianyu <Tianyu.Lan@microsoft.com>, Arnd Bergmann <arnd@arndb.de>, haiyangz@microsoft.com, Alex Williamson <alex.williamson@redhat.com>, bp@alien8.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, nicolas.ferre@microchip.com, iommu@lists.linux-foundation.org, devel@linuxdriverproject.org, Vitaly Kuznetsov <vkuznets@redhat.com>, davem@davemloft.net
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Feb 10, 2019 at 01:00:20PM +0100, Christian Zigotzky wrote:
-> I tested the whole series today. The kernels boot and the P.A. Semi 
-> Ethernet works! :-) Thanks a lot!
+Hi Thomas:
+          Thanks for your review.
+
+On Mon, Feb 11, 2019 at 5:48 AM Thomas Gleixner <tglx@linutronix.de> wrote:
 >
-> I also tested it in a virtual e5500 QEMU machine today. Unfortunately the 
-> kernel crashes.
+> On Thu, 7 Feb 2019, lantianyu1986@gmail.com wrote:
+>
+> > From: Lan Tianyu <Tianyu.Lan@microsoft.com>
+> >
+> > Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
+> > set x2apic destination mode to physcial mode when x2apic is available
+> > and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
+> > 8-bit APIC id.
+>
+> This looks good now. Can that be applied independent of the IOMMU stuff or
+> should this go together. If the latter:
+>
+>    Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+>
+> If not, I just queue if for 5.1. Let me know,
+>
 
-This looks like a patch I fixed in mainline a while ago, but which
-the powerpc tree didn't have yet.
-
-I've cherry picked this commit
-("swiotlb: clear io_tlb_start and io_tlb_end in swiotlb_exit")
-
-and added it to the powerpc-dma.6 tree, please retry with that one.
+This patch can be applied independently. Thanks.
+-- 
+Best regards
+Tianyu Lan
