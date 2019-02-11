@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 6/8] moxart_ether: pass struct device to DMA API functions
-Date: Mon, 11 Feb 2019 14:20:02 +0100
-Message-ID: <20190211132004.29143-7-hch@lst.de>
+Subject: [PATCH 2/8] au1000_eth: pass struct device to DMA API functions
+Date: Mon, 11 Feb 2019 14:19:58 +0100
+Message-ID: <20190211132004.29143-3-hch@lst.de>
 References: <20190211132004.29143-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -18,67 +18,39 @@ available struct device from the platform_device to remedy this.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/net/ethernet/moxa/moxart_ether.c | 11 +++++++----
- drivers/net/ethernet/moxa/moxart_ether.h |  1 +
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/amd/au1000_eth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
-index b34055ac476f..00dec0ffb11b 100644
---- a/drivers/net/ethernet/moxa/moxart_ether.c
-+++ b/drivers/net/ethernet/moxa/moxart_ether.c
-@@ -81,11 +81,13 @@ static void moxart_mac_free_memory(struct net_device *ndev)
- 				 priv->rx_buf_size, DMA_FROM_DEVICE);
+diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
+index e833d1b3fe18..e5073aeea06a 100644
+--- a/drivers/net/ethernet/amd/au1000_eth.c
++++ b/drivers/net/ethernet/amd/au1000_eth.c
+@@ -1167,7 +1167,7 @@ static int au1000_probe(struct platform_device *pdev)
+ 	/* Allocate the data buffers
+ 	 * Snooping works fine with eth on all au1xxx
+ 	 */
+-	aup->vaddr = (u32)dma_alloc_attrs(NULL, MAX_BUF_SIZE *
++	aup->vaddr = (u32)dma_alloc_attrs(&pdev->dev, MAX_BUF_SIZE *
+ 					  (NUM_TX_BUFFS + NUM_RX_BUFFS),
+ 					  &aup->dma_addr, 0,
+ 					  DMA_ATTR_NON_CONSISTENT);
+@@ -1349,7 +1349,7 @@ static int au1000_probe(struct platform_device *pdev)
+ err_remap2:
+ 	iounmap(aup->mac);
+ err_remap1:
+-	dma_free_attrs(NULL, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+ 			(void *)aup->vaddr, aup->dma_addr,
+ 			DMA_ATTR_NON_CONSISTENT);
+ err_vaddr:
+@@ -1383,7 +1383,7 @@ static int au1000_remove(struct platform_device *pdev)
+ 		if (aup->tx_db_inuse[i])
+ 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
  
- 	if (priv->tx_desc_base)
--		dma_free_coherent(NULL, TX_REG_DESC_SIZE * TX_DESC_NUM,
-+		dma_free_coherent(&priv->pdev->dev,
-+				  TX_REG_DESC_SIZE * TX_DESC_NUM,
- 				  priv->tx_desc_base, priv->tx_base);
+-	dma_free_attrs(NULL, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+ 			(void *)aup->vaddr, aup->dma_addr,
+ 			DMA_ATTR_NON_CONSISTENT);
  
- 	if (priv->rx_desc_base)
--		dma_free_coherent(NULL, RX_REG_DESC_SIZE * RX_DESC_NUM,
-+		dma_free_coherent(&priv->pdev->dev,
-+				  RX_REG_DESC_SIZE * RX_DESC_NUM,
- 				  priv->rx_desc_base, priv->rx_base);
- 
- 	kfree(priv->tx_buf_base);
-@@ -476,6 +478,7 @@ static int moxart_mac_probe(struct platform_device *pdev)
- 
- 	priv = netdev_priv(ndev);
- 	priv->ndev = ndev;
-+	priv->pdev = pdev;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	ndev->base_addr = res->start;
-@@ -491,7 +494,7 @@ static int moxart_mac_probe(struct platform_device *pdev)
- 	priv->tx_buf_size = TX_BUF_SIZE;
- 	priv->rx_buf_size = RX_BUF_SIZE;
- 
--	priv->tx_desc_base = dma_alloc_coherent(NULL, TX_REG_DESC_SIZE *
-+	priv->tx_desc_base = dma_alloc_coherent(&pdev->dev, TX_REG_DESC_SIZE *
- 						TX_DESC_NUM, &priv->tx_base,
- 						GFP_DMA | GFP_KERNEL);
- 	if (!priv->tx_desc_base) {
-@@ -499,7 +502,7 @@ static int moxart_mac_probe(struct platform_device *pdev)
- 		goto init_fail;
- 	}
- 
--	priv->rx_desc_base = dma_alloc_coherent(NULL, RX_REG_DESC_SIZE *
-+	priv->rx_desc_base = dma_alloc_coherent(&pdev->dev, RX_REG_DESC_SIZE *
- 						RX_DESC_NUM, &priv->rx_base,
- 						GFP_DMA | GFP_KERNEL);
- 	if (!priv->rx_desc_base) {
-diff --git a/drivers/net/ethernet/moxa/moxart_ether.h b/drivers/net/ethernet/moxa/moxart_ether.h
-index bee608b547d1..bf4c3029cd0c 100644
---- a/drivers/net/ethernet/moxa/moxart_ether.h
-+++ b/drivers/net/ethernet/moxa/moxart_ether.h
-@@ -292,6 +292,7 @@
- #define LINK_STATUS		0x4
- 
- struct moxart_mac_priv_t {
-+	struct platform_device *pdev;
- 	void __iomem *base;
- 	unsigned int reg_maccr;
- 	unsigned int reg_imr;
 -- 
 2.20.1
