@@ -1,7 +1,7 @@
 From: sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v2 1/2] PCI/ATS: Add pci_prg_resp_pasid_required() interface.
-Date: Mon, 11 Feb 2019 13:50:31 -0800
-Message-ID: <e7dddc4f4092764bb5762e8b46c847278a8923ac.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v2 2/2] iommu/vt-d: Enable PASID only if device expects PASID in PRG Response.
+Date: Mon, 11 Feb 2019 13:50:32 -0800
+Message-ID: <787d13ae22ae07c708b06180241f4f2b71031f84.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <cover.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,22 +14,15 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-Return the PRG Response PASID Required bit in the Page Request
-Status Register.
-
-As per PCIe spec r4.0, sec 10.5.2.3, if this bit is Set then the device
-expects a PASID TLP Prefix on PRG Response Messages when the
-corresponding Page Requests had a PASID TLP Prefix. If Clear, the device
-does not expect PASID TLP Prefixes on any PRG Response Message, and the
-device behavior is undefined if this bit is Clear and the device
-receives a PRG Response Message with a PASID TLP Prefix. Also the device
-behavior is undefined in the this bit is Set and the device receives a
-PRG Response Message with no PASID TLP Prefix when the corresponding
-Page Requests had a PASID TLP Prefix.
-
-This function will be used by drivers like IOMMU, if it is required to
-check the status of the PRG Response PASID Required bit before enabling
-the PASID support of the device.
+In Intel IOMMU, if the Page Request Queue (PRQ) is full, it will
+automatically respond to the device with a success message as a keep
+alive. And when sending the success message, IOMMU will include PASID in
+the Response Message when the Page Request has a PASID in Request
+Message and It does not check against the PRG Response PASID requirement
+of the device before sending the response. Also, If the device receives the
+PRG response with PASID when its not expecting it then the device behavior
+is undefined. So enable PASID support only if device expects PASID in PRG
+response message.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -37,87 +30,22 @@ Cc: Keith Busch <keith.busch@intel.com>
 Suggested-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- drivers/pci/ats.c             | 31 +++++++++++++++++++++++++++++++
- include/linux/pci-ats.h       |  5 +++++
- include/uapi/linux/pci_regs.h |  1 +
- 3 files changed, 37 insertions(+)
+ drivers/iommu/intel-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 5b78f3b1b918..f843cd846dff 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -368,6 +368,37 @@ int pci_pasid_features(struct pci_dev *pdev)
- }
- EXPORT_SYMBOL_GPL(pci_pasid_features);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 1457f931218e..af2e4a011787 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1399,7 +1399,8 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 	   undefined. So always enable PASID support on devices which
+ 	   have it, even if we can't yet know if we're ever going to
+ 	   use it. */
+-	if (info->pasid_supported && !pci_enable_pasid(pdev, info->pasid_supported & ~1))
++	if (info->pasid_supported && pci_prg_resp_pasid_required(pdev) &&
++	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+ 		info->pasid_enabled = 1;
  
-+/**
-+ * pci_prg_resp_pasid_required - Return PRG Response PASID Required bit
-+ *				 status.
-+ * @pdev: PCI device structure
-+ *
-+ * Returns 1 if PASID is required in PRG Response message, 0 otherwise.
-+ *
-+ * Even though the PRG response PASID status is read from PRI status
-+ * register, since this API will mainly be used by PASID users, this
-+ * function is defined within #ifdef CONFIG_PCI_PASID instead of
-+ * CONFIG_PCI_PRI.
-+ *
-+ */
-+int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-+{
-+	u16 status;
-+	int pos;
-+
-+	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-+	if (!pos)
-+		return 0;
-+
-+	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-+
-+	if (status & PCI_PRI_STATUS_PASID)
-+		return 1;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pci_prg_resp_pasid_required);
-+
- #define PASID_NUMBER_SHIFT	8
- #define PASID_NUMBER_MASK	(0x1f << PASID_NUMBER_SHIFT)
- /**
-diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-index 7c4b8e27268c..facfd6a18fe1 100644
---- a/include/linux/pci-ats.h
-+++ b/include/linux/pci-ats.h
-@@ -40,6 +40,7 @@ void pci_disable_pasid(struct pci_dev *pdev);
- void pci_restore_pasid_state(struct pci_dev *pdev);
- int pci_pasid_features(struct pci_dev *pdev);
- int pci_max_pasids(struct pci_dev *pdev);
-+int pci_prg_resp_pasid_required(struct pci_dev *pdev);
- 
- #else  /* CONFIG_PCI_PASID */
- 
-@@ -66,6 +67,10 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
- 	return -EINVAL;
- }
- 
-+static int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-+{
-+	return 0;
-+}
- #endif /* CONFIG_PCI_PASID */
- 
- 
-diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-index e1e9888c85e6..898be572b010 100644
---- a/include/uapi/linux/pci_regs.h
-+++ b/include/uapi/linux/pci_regs.h
-@@ -880,6 +880,7 @@
- #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
- #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
- #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
-+#define  PCI_PRI_STATUS_PASID	0x8000	/* PRG Response PASID Required */
- #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
- #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
- #define PCI_EXT_CAP_PRI_SIZEOF	16
+ 	if (info->pri_supported && !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
 -- 
 2.20.1
