@@ -1,37 +1,32 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 03/19] dma-iommu: don't use a scatterlist in
- iommu_dma_alloc
-Date: Mon, 11 Feb 2019 17:00:49 +0100
-Message-ID: <20190211160049.GB27745@lst.de>
-References: <20190114094159.27326-1-hch@lst.de> <20190114094159.27326-4-hch@lst.de> <5145b2f7-6fc8-6ed9-4cf2-9b7e1d33b0fe@arm.com> <20190201161638.GJ6532@lst.de> <f59852aa-394c-3165-f7c0-fa6cdcea059f@arm.com>
+Subject: Re: [PATCH 06/19] dma-iommu: fix and refactor iommu_dma_mmap
+Date: Mon, 11 Feb 2019 17:03:25 +0100
+Message-ID: <20190211160325.GC27745@lst.de>
+References: <20190114094159.27326-1-hch@lst.de> <20190114094159.27326-7-hch@lst.de> <7c2b6aaa-3a19-a411-1d40-0c787205b0fc@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <f59852aa-394c-3165-f7c0-fa6cdcea059f@arm.com>
+In-Reply-To: <7c2b6aaa-3a19-a411-1d40-0c787205b0fc@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 06, 2019 at 03:28:28PM +0000, Robin Murphy wrote:
-> Because if iommu_map() only gets called at PAGE_SIZE granularity, then the 
-> IOMMU PTEs will be created at PAGE_SIZE (or smaller) granularity, so any 
-> effort to get higher-order allocations matching larger IOMMU block sizes is 
-> wasted, and we may as well have just done this:
+On Tue, Feb 05, 2019 at 03:02:23PM +0000, Robin Murphy wrote:
+> On 14/01/2019 09:41, Christoph Hellwig wrote:
+>> The current iommu_dma_mmap code does not properly handle memory from the
+>> page allocator that hasn't been remapped, which can happen in the rare
+>> case of allocations for a coherent device that aren't allowed to block.
+>>
+>> Fix this by replacing iommu_dma_mmap with a slightly tweaked copy of
+>> dma_common_mmap with special handling for the remapped array of
+>> pages allocated from __iommu_dma_alloc.
 >
-> 	for (i = 0; i < count; i++) {
-> 		struct page *page = alloc_page(gfp);
-> 		...
-> 		iommu_map(..., page_to_phys(page), PAGE_SIZE, ...);
-> 	}
+> If there's an actual bugfix here, can we make that before all of the other 
+> code movement? If it's at all related to other reports of weird mmap 
+> behaviour it might warrant backporting, and either way I'm finding it 
+> needlessly tough to follow what's going on in this patch :(
 
-True.  I've dropped this patch.
-
-> Really, it's a shame we have to split huge pages for the CPU remap, since 
-> in the common case the CPU MMU will have a matching block size, but IIRC 
-> there was something in vmap() or thereabouts that explicitly chokes on 
-> them.
-
-That just needs a volunteer to fix the implementation, as there is no
-fundamental reason not to remap large pages.
+The bug fix is to handle non-vmalloc pages.  I'll see if I can do
+a smaller and more bandaid-y fix first.
