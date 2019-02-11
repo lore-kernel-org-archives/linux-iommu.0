@@ -1,41 +1,28 @@
-From: Sinan Kaya <Okaya@kernel.org>
-Subject: Re: [PATCH v1 1/2] PCI: ATS: Add function to check ATS page aligned
- request status.
-Date: Mon, 11 Feb 2019 15:35:13 -0500
-Message-ID: <a2fcfb40-cc07-87fa-dc52-72c979d9900b@kernel.org>
-References: <cover.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <91bfae8b1d4b424219e3ce3c1fc03559c73f1ae7.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <5d55e369-355f-b710-0594-03465aa985da@kernel.org>
- <a5a29eee-2e33-ba0c-67a6-69983fd0796d@linux.intel.com>
- <32ec3293-28ea-8f0f-f801-0370b4cf0453@kernel.org>
- <351a1a1d-2517-5021-e7cd-99d700e17f4c@linux.intel.com>
- <815f2621-fc28-bff4-c300-cce7514cfe71@kernel.org>
- <20190211191549.GA12090@otc-nc-03>
+From: sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: [PATCH v2 0/2] Add page alignment check in Intel IOMMU.
+Date: Mon, 11 Feb 2019 13:43:13 -0800
+Message-ID: <cover.1548726944.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190211191549.GA12090@otc-nc-03>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Cc: sathyanarayanan.kuppuswamy@linux.intel.com, bhelgaas@google.com, joro@8bytes.org, dwmw2@infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Keith Busch <keith.busch@intel.com>
+To: bhelgaas@google.com, joro@8bytes.org, dwmw2@infradead.org
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, ashok.raj@intel.com, jacob.jun.pan@intel.com, keith.busch@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 2/11/2019 2:15 PM, Raj, Ashok wrote:
-> It seems rather odd we have to check for ATS version.
-> 
-> I always assumed unspecified bits (Reserved) must be 0. We only check
-> this if ATS is enabled, and this particular bit wasn't given away for another
-> feature.
-> 
-> Is it really required to check for ATS version before consuming this?
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-Reading again, it looks like version check is not necessary since it
-is implied by the presence of this bit per this paragraph.
+As per Intel vt-d specification, Rev 3.0 (section 7.5.1.1, title "Page Request Descriptor"), Intel IOMMU Page Request Descriptor only provides bits[63:12] of the page address. Hence its required to enforce that the device will only send page request with page-aligned address. So, this patch set adds support to verify whether the device uses page aligned address before enabling the ATS service in Intel IOMMU driver.
 
-Page Aligned Request – If Set, indicates the Untranslated Address is 
-always aligned to a 4096 byte boundary.  Setting this bit is 
-recommended.  This bit permits software to distinguish between 
-implementations compatible with earlier version of this specification 
-that permitted a requester to supply anything in bits [11:2].
+Kuppuswamy Sathyanarayanan (2):
+  PCI: ATS: Add function to check ATS page alignment status.
+  iommu/vt-d: Enable ATS only if the device uses page aligned address.
+
+ drivers/iommu/intel-iommu.c   |  1 +
+ drivers/pci/ats.c             | 24 ++++++++++++++++++++++++
+ include/linux/pci.h           |  2 ++
+ include/uapi/linux/pci_regs.h |  1 +
+ 4 files changed, 28 insertions(+)
+
+-- 
+2.20.1
