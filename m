@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 01/12] mfd/sm501: depend on HAS_DMA
-Date: Mon, 11 Feb 2019 14:35:43 +0100
-Message-ID: <20190211133554.30055-2-hch@lst.de>
+Subject: [PATCH 02/12] device.h: dma_mem is only needed for HAVE_GENERIC_DMA_COHERENT
+Date: Mon, 11 Feb 2019 14:35:44 +0100
+Message-ID: <20190211133554.30055-3-hch@lst.de>
 References: <20190211133554.30055-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,29 +12,27 @@ To: iommu@lists.linux-foundation.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, x86@kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the sm501 mfd driver can be compiled without any dependencies,
-but through the use of dma_declare_coherent it really depends on
-having DMA and iomem support.  Normally we don't explicitly require DMA
-support as we have stubs for it if on UML, but in this case the driver
-selects support for dma_declare_coherent and thus also requires
-memmap support.  Guard this by an explicit dependency.
+No need to carry an unused field around.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/mfd/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/device.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index f461460a2aeb..f15f6489803d 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1066,6 +1066,7 @@ config MFD_SI476X_CORE
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 6cb4640b6160..be544400acdd 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -1017,8 +1017,10 @@ struct device {
  
- config MFD_SM501
- 	tristate "Silicon Motion SM501"
-+	depends on HAS_DMA
- 	 ---help---
- 	  This is the core driver for the Silicon Motion SM501 multimedia
- 	  companion chip. This device is a multifunction device which may
+ 	struct list_head	dma_pools;	/* dma pools (if dma'ble) */
+ 
++#ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+ 	struct dma_coherent_mem	*dma_mem; /* internal for coherent mem
+ 					     override */
++#endif
+ #ifdef CONFIG_DMA_CMA
+ 	struct cma *cma_area;		/* contiguous memory area for dma
+ 					   allocations */
 -- 
 2.20.1
