@@ -1,132 +1,237 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 04/12] of: select OF_RESERVED_MEM automatically
-Date: Mon, 11 Feb 2019 14:35:46 +0100
-Message-ID: <20190211133554.30055-5-hch@lst.de>
+Subject: [PATCH 11/12] dma-mapping: handle per-device coherent memory mmap in common code
+Date: Mon, 11 Feb 2019 14:35:53 +0100
+Message-ID: <20190211133554.30055-12-hch@lst.de>
 References: <20190211133554.30055-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190211133554.30055-1-hch@lst.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: linux-xtensa@linux-xtensa.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, x86@kernel.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, x86@kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The OF_RESERVED_MEM can be used if we have either CMA or the generic
-declare coherent code built and we support the early flattened DT.
-
-So don't bother making it a user visible options that is selected
-by most configs that fit the above category, but just select it when
-the requirements are met.
+We handle allocation and freeing in common code, so we should handle
+mmap the same way.  Also all users of per-device coherent memory are
+exclusive, that is if we can't allocate from the per-device pool we
+can't use the system memory either.  Unfold the current
+dma_mmap_from_dev_coherent implementation and always use the
+per-device pool if it exists.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arc/Kconfig     | 1 -
- arch/arm/Kconfig     | 1 -
- arch/arm64/Kconfig   | 1 -
- arch/csky/Kconfig    | 1 -
- arch/powerpc/Kconfig | 1 -
- arch/xtensa/Kconfig  | 1 -
- drivers/of/Kconfig   | 5 ++---
- 7 files changed, 2 insertions(+), 9 deletions(-)
+ arch/arm/mm/dma-mapping-nommu.c |  7 ++--
+ arch/arm/mm/dma-mapping.c       |  3 --
+ arch/arm64/mm/dma-mapping.c     |  3 --
+ include/linux/dma-mapping.h     | 11 ++-----
+ kernel/dma/coherent.c           | 58 ++++++++-------------------------
+ kernel/dma/internal.h           |  2 ++
+ kernel/dma/mapping.c            |  8 ++---
+ 7 files changed, 24 insertions(+), 68 deletions(-)
 
-diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-index 376366a7db81..4103f23b6cea 100644
---- a/arch/arc/Kconfig
-+++ b/arch/arc/Kconfig
-@@ -44,7 +44,6 @@ config ARC
- 	select MODULES_USE_ELF_RELA
- 	select OF
- 	select OF_EARLY_FLATTREE
--	select OF_RESERVED_MEM
- 	select PCI_SYSCALL if PCI
- 	select PERF_USE_VMALLOC if ARC_CACHE_VIPT_ALIASING
+diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
+index c72f024f1e82..4eeb7e5d9c07 100644
+--- a/arch/arm/mm/dma-mapping-nommu.c
++++ b/arch/arm/mm/dma-mapping-nommu.c
+@@ -80,11 +80,8 @@ static int arm_nommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
+ 			      unsigned long attrs)
+ {
+-	int ret;
+-
+-	if (dma_mmap_from_global_coherent(vma, cpu_addr, size, &ret))
+-		return ret;
+-
++	if (!(attrs & DMA_ATTR_NON_CONSISTENT))
++		return dma_mmap_from_global_coherent(vma, cpu_addr, size);
+ 	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
+ }
  
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 664e918e2624..9395f138301a 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -101,7 +101,6 @@ config ARM
- 	select MODULES_USE_ELF_REL
- 	select NEED_DMA_MAP_STATE
- 	select OF_EARLY_FLATTREE if OF
--	select OF_RESERVED_MEM if OF
- 	select OLD_SIGACTION
- 	select OLD_SIGSUSPEND3
- 	select PCI_SYSCALL if PCI
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a4168d366127..1d22e969bdcb 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -163,7 +163,6 @@ config ARM64
- 	select NEED_SG_DMA_LENGTH
- 	select OF
- 	select OF_EARLY_FLATTREE
--	select OF_RESERVED_MEM
- 	select PCI_DOMAINS_GENERIC if PCI
- 	select PCI_ECAM if (ACPI && PCI)
- 	select PCI_SYSCALL if PCI
-diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-index 398113c845f5..0a9595afe9be 100644
---- a/arch/csky/Kconfig
-+++ b/arch/csky/Kconfig
-@@ -42,7 +42,6 @@ config CSKY
- 	select MODULES_USE_ELF_RELA if MODULES
- 	select OF
- 	select OF_EARLY_FLATTREE
--	select OF_RESERVED_MEM
- 	select PERF_USE_VMALLOC if CPU_CK610
- 	select RTC_LIB
- 	select TIMER_OF
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 2890d36eb531..5cc4eea362c6 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -233,7 +233,6 @@ config PPC
- 	select NEED_SG_DMA_LENGTH
- 	select OF
- 	select OF_EARLY_FLATTREE
--	select OF_RESERVED_MEM
- 	select OLD_SIGACTION			if PPC32
- 	select OLD_SIGSUSPEND
- 	select PCI_DOMAINS			if PCI
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 20a0756f27ef..e242a405151e 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -447,7 +447,6 @@ config USE_OF
- 	bool "Flattened Device Tree support"
- 	select OF
- 	select OF_EARLY_FLATTREE
--	select OF_RESERVED_MEM
- 	help
- 	  Include support for flattened device tree machine descriptions.
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 3c8534904209..e2993e5a7166 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -830,9 +830,6 @@ static int __arm_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	unsigned long pfn = dma_to_pfn(dev, dma_addr);
+ 	unsigned long off = vma->vm_pgoff;
  
-diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
-index ad3fcad4d75b..3607fd2810e4 100644
---- a/drivers/of/Kconfig
-+++ b/drivers/of/Kconfig
-@@ -81,10 +81,9 @@ config OF_MDIO
- 	  OpenFirmware MDIO bus (Ethernet PHY) accessors
+-	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+-		return ret;
+-
+ 	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
+ 		ret = remap_pfn_range(vma, vma->vm_start,
+ 				      pfn + off,
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 78c0a72f822c..a55be91c1d1a 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -246,9 +246,6 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
  
- config OF_RESERVED_MEM
--	depends on OF_EARLY_FLATTREE
- 	bool
--	help
--	  Helpers to allow for reservation of memory regions
-+	depends on OF_EARLY_FLATTREE
-+	default y if HAVE_GENERIC_DMA_COHERENT || DMA_CMA
+ 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
  
- config OF_RESOLVE
- 	bool
+-	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+-		return ret;
+-
+ 	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+ 		/*
+ 		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 018e37a0870e..ae6fe66f97b7 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -158,17 +158,12 @@ static inline int is_device_dma_capable(struct device *dev)
+  * These three functions are only for dma allocator.
+  * Don't use them in device drivers.
+  */
+-int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_struct *vma,
+-			    void *cpu_addr, size_t size, int *ret);
+-
+ void *dma_alloc_from_global_coherent(size_t size, dma_addr_t *dma_handle);
+ void dma_release_from_global_coherent(size_t size, void *vaddr);
+ int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *cpu_addr,
+-				  size_t size, int *ret);
++				  size_t size);
+ 
+ #else
+-#define dma_mmap_from_dev_coherent(dev, vma, vaddr, order, ret) (0)
+-
+ static inline void *dma_alloc_from_global_coherent(size_t size,
+ 						   dma_addr_t *dma_handle)
+ {
+@@ -177,12 +172,10 @@ static inline void *dma_alloc_from_global_coherent(size_t size,
+ 
+ static inline void dma_release_from_global_coherent(size_t size, void *vaddr)
+ {
+-	return 0;
+ }
+ 
+ static inline int dma_mmap_from_global_coherent(struct vm_area_struct *vma,
+-						void *cpu_addr, size_t size,
+-						int *ret)
++						void *cpu_addr, size_t size)
+ {
+ 	return 0;
+ }
+diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+index d1da1048e470..d7a27008f228 100644
+--- a/kernel/dma/coherent.c
++++ b/kernel/dma/coherent.c
+@@ -197,60 +197,30 @@ void dma_release_from_global_coherent(size_t size, void *vaddr)
+ 	__dma_release_from_coherent(dma_coherent_default_memory, size, vaddr);
+ }
+ 
+-static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
+-		struct vm_area_struct *vma, void *vaddr, size_t size, int *ret)
++int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
++		struct vm_area_struct *vma, void *vaddr, size_t size)
+ {
+-	if (mem && vaddr >= mem->virt_base && vaddr + size <=
+-		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
+-		unsigned long off = vma->vm_pgoff;
+-		int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
+-		int user_count = vma_pages(vma);
+-		int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-
+-		*ret = -ENXIO;
+-		if (off < count && user_count <= count - off) {
+-			unsigned long pfn = mem->pfn_base + start + off;
+-			*ret = remap_pfn_range(vma, vma->vm_start, pfn,
+-					       user_count << PAGE_SHIFT,
+-					       vma->vm_page_prot);
+-		}
+-		return 1;
+-	}
+-	return 0;
+-}
++	unsigned long off = vma->vm_pgoff;
++	int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
++	int user_count = vma_pages(vma);
++	int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 
+-/**
+- * dma_mmap_from_dev_coherent() - mmap memory from the device coherent pool
+- * @dev:	device from which the memory was allocated
+- * @vma:	vm_area for the userspace memory
+- * @vaddr:	cpu address returned by dma_alloc_from_dev_coherent
+- * @size:	size of the memory buffer allocated
+- * @ret:	result from remap_pfn_range()
+- *
+- * This checks whether the memory was allocated from the per-device
+- * coherent memory pool and if so, maps that memory to the provided vma.
+- *
+- * Returns 1 if @vaddr belongs to the device coherent pool and the caller
+- * should return @ret, or 0 if they should proceed with mapping memory from
+- * generic areas.
+- */
+-int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_struct *vma,
+-			   void *vaddr, size_t size, int *ret)
+-{
+-	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
+-
+-	return __dma_mmap_from_coherent(mem, vma, vaddr, size, ret);
++	if (WARN_ON_ONCE(!dma_in_coherent_range(mem, size, vaddr)))
++		return -ENXIO;
++	if (off >= count || user_count > count - off)
++		return -ENXIO;
++	return remap_pfn_range(vma, vma->vm_start, mem->pfn_base + start + off,
++			user_count << PAGE_SHIFT, vma->vm_page_prot);
+ }
+-EXPORT_SYMBOL(dma_mmap_from_dev_coherent);
+ 
+ int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *vaddr,
+-				   size_t size, int *ret)
++				   size_t size)
+ {
+ 	if (!dma_coherent_default_memory)
+ 		return 0;
+ 
+ 	return __dma_mmap_from_coherent(dma_coherent_default_memory, vma,
+-					vaddr, size, ret);
++					vaddr, size);
+ }
+ 
+ /*
+diff --git a/kernel/dma/internal.h b/kernel/dma/internal.h
+index 48a0a71487b1..651a0991777f 100644
+--- a/kernel/dma/internal.h
++++ b/kernel/dma/internal.h
+@@ -15,5 +15,7 @@ void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem, size_t size,
+ 		dma_addr_t *dma_handle);
+ void __dma_release_from_coherent(struct dma_coherent_mem *mem, size_t size,
+ 		void *vaddr);
++int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
++		struct vm_area_struct *vma, void *vaddr, size_t size);
+ 
+ #endif /* _DMA_INTERNAL_H */
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index d3c4363b2143..5f28dc8f9bf4 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -158,13 +158,9 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	unsigned long off = vma->vm_pgoff;
+ 	unsigned long pfn;
+-	int ret = -ENXIO;
+ 
+ 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
+ 
+-	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+-		return ret;
+-
+ 	if (off >= count || user_count > count - off)
+ 		return -ENXIO;
+ 
+@@ -201,6 +197,10 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+ 		unsigned long attrs)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
++	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
++
++	if (mem)
++		return __dma_mmap_from_coherent(mem, vma, cpu_addr, size);
+ 
+ 	if (!dma_is_direct(ops) && ops->mmap)
+ 		return ops->mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
 -- 
 2.20.1
