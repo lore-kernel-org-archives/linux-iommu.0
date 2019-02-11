@@ -1,25 +1,37 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 02/19] dma-iommu: cleanup dma-iommu.h
-Date: Mon, 11 Feb 2019 16:59:38 +0100
-Message-ID: <20190211155938.GA27745@lst.de>
-References: <20190114094159.27326-1-hch@lst.de> <20190114094159.27326-3-hch@lst.de> <3f78b779-4360-1204-e942-39a8a81759c7@arm.com> <20190201161305.GI6532@lst.de> <5bf081c2-2b8c-d3d1-c93e-468c8f3cef67@arm.com>
+Subject: Re: [PATCH 03/19] dma-iommu: don't use a scatterlist in
+ iommu_dma_alloc
+Date: Mon, 11 Feb 2019 17:00:49 +0100
+Message-ID: <20190211160049.GB27745@lst.de>
+References: <20190114094159.27326-1-hch@lst.de> <20190114094159.27326-4-hch@lst.de> <5145b2f7-6fc8-6ed9-4cf2-9b7e1d33b0fe@arm.com> <20190201161638.GJ6532@lst.de> <f59852aa-394c-3165-f7c0-fa6cdcea059f@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5bf081c2-2b8c-d3d1-c93e-468c8f3cef67@arm.com>
+In-Reply-To: <f59852aa-394c-3165-f7c0-fa6cdcea059f@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 06, 2019 at 03:08:26PM +0000, Robin Murphy wrote:
-> Other than dma-iommu.c itself, none of them *require* it - only arch/arm64 
-> selects it (the one from MTK_IOMMU is just bogus), and a lot of the drivers 
-> also build for at least one other architecture (and/or arm64 with 
-> !IOMMU_API).
+On Wed, Feb 06, 2019 at 03:28:28PM +0000, Robin Murphy wrote:
+> Because if iommu_map() only gets called at PAGE_SIZE granularity, then the 
+> IOMMU PTEs will be created at PAGE_SIZE (or smaller) granularity, so any 
+> effort to get higher-order allocations matching larger IOMMU block sizes is 
+> wasted, and we may as well have just done this:
 >
-> Either way, I have no vehement objection to the change, I just don't see 
-> any positive value in it.
+> 	for (i = 0; i < count; i++) {
+> 		struct page *page = alloc_page(gfp);
+> 		...
+> 		iommu_map(..., page_to_phys(page), PAGE_SIZE, ...);
+> 	}
 
-I've moved the idef back down below the includes.
+True.  I've dropped this patch.
+
+> Really, it's a shame we have to split huge pages for the CPU remap, since 
+> in the common case the CPU MMU will have a matching block size, but IIRC 
+> there was something in vmap() or thereabouts that explicitly chokes on 
+> them.
+
+That just needs a volunteer to fix the implementation, as there is no
+fundamental reason not to remap large pages.
