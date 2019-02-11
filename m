@@ -1,24 +1,89 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: fbdev: don't pass a NULL struct device to DMA API functions v2
-Date: Mon, 11 Feb 2019 14:28:33 +0100
-Message-ID: <20190211132836.29594-1-hch@lst.de>
+Subject: [PATCH 2/3] gbefb: switch to managed version of the DMA allocator
+Date: Mon, 11 Feb 2019 14:28:35 +0100
+Message-ID: <20190211132836.29594-3-hch@lst.de>
+References: <20190211132836.29594-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190211132836.29594-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 Cc: dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-We still have a few drivers which pass a NULL struct device pointer
-to DMA API functions, which generally is a bad idea as the API
-implementations rely on the device not only for ops selection, but
-also the dma mask and various other attributes.
+gbefb uses managed resources, so it should do the same for DMA
+allocations.
 
-This series contains all easy conversions to pass a struct device,
-besides that there also is some arch code that needs separate handling,
-a driver that should not use the DMA API at all, and one that is
-a complete basket case to be deal with separately.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/video/fbdev/gbefb.c | 24 ++++++++----------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
-Changes since v1:
- - split the series, this only contains the fbdev patches
+diff --git a/drivers/video/fbdev/gbefb.c b/drivers/video/fbdev/gbefb.c
+index 1a242b1338e9..3fcb33232ba3 100644
+--- a/drivers/video/fbdev/gbefb.c
++++ b/drivers/video/fbdev/gbefb.c
+@@ -1162,9 +1162,9 @@ static int gbefb_probe(struct platform_device *p_dev)
+ 	}
+ 	gbe_revision = gbe->ctrlstat & 15;
+ 
+-	gbe_tiles.cpu =
+-		dma_alloc_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
+-				   &gbe_tiles.dma, GFP_KERNEL);
++	gbe_tiles.cpu = dmam_alloc_coherent(&p_dev->dev,
++				GBE_TLB_SIZE * sizeof(uint16_t),
++				&gbe_tiles.dma, GFP_KERNEL);
+ 	if (!gbe_tiles.cpu) {
+ 		printk(KERN_ERR "gbefb: couldn't allocate tiles table\n");
+ 		ret = -ENOMEM;
+@@ -1178,19 +1178,20 @@ static int gbefb_probe(struct platform_device *p_dev)
+ 		if (!gbe_mem) {
+ 			printk(KERN_ERR "gbefb: couldn't map framebuffer\n");
+ 			ret = -ENOMEM;
+-			goto out_tiles_free;
++			goto out_release_mem_region;
+ 		}
+ 
+ 		gbe_dma_addr = 0;
+ 	} else {
+ 		/* try to allocate memory with the classical allocator
+ 		 * this has high chance to fail on low memory machines */
+-		gbe_mem = dma_alloc_wc(NULL, gbe_mem_size, &gbe_dma_addr,
+-				       GFP_KERNEL);
++		gbe_mem = dmam_alloc_attrs(&p_dev->dev, gbe_mem_size,
++				&gbe_dma_addr, GFP_KERNEL,
++				DMA_ATTR_WRITE_COMBINE);
+ 		if (!gbe_mem) {
+ 			printk(KERN_ERR "gbefb: couldn't allocate framebuffer memory\n");
+ 			ret = -ENOMEM;
+-			goto out_tiles_free;
++			goto out_release_mem_region;
+ 		}
+ 
+ 		gbe_mem_phys = (unsigned long) gbe_dma_addr;
+@@ -1237,11 +1238,6 @@ static int gbefb_probe(struct platform_device *p_dev)
+ 
+ out_gbe_unmap:
+ 	arch_phys_wc_del(par->wc_cookie);
+-	if (gbe_dma_addr)
+-		dma_free_wc(NULL, gbe_mem_size, gbe_mem, gbe_mem_phys);
+-out_tiles_free:
+-	dma_free_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
+-			  (void *)gbe_tiles.cpu, gbe_tiles.dma);
+ out_release_mem_region:
+ 	release_mem_region(GBE_BASE, sizeof(struct sgi_gbe));
+ out_release_framebuffer:
+@@ -1258,10 +1254,6 @@ static int gbefb_remove(struct platform_device* p_dev)
+ 	unregister_framebuffer(info);
+ 	gbe_turn_off();
+ 	arch_phys_wc_del(par->wc_cookie);
+-	if (gbe_dma_addr)
+-		dma_free_wc(NULL, gbe_mem_size, gbe_mem, gbe_mem_phys);
+-	dma_free_coherent(NULL, GBE_TLB_SIZE * sizeof(uint16_t),
+-			  (void *)gbe_tiles.cpu, gbe_tiles.dma);
+ 	release_mem_region(GBE_BASE, sizeof(struct sgi_gbe));
+ 	gbefb_remove_sysfs(&p_dev->dev);
+ 	framebuffer_release(info);
+-- 
+2.20.1
