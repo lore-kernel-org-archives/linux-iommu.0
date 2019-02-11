@@ -1,31 +1,41 @@
-From: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: What is the meaning of PASID_MIN?
-Date: Mon, 11 Feb 2019 11:28:04 -0800
-Message-ID: <20190211192804.GI12668@bombadil.infradead.org>
+From: Sinan Kaya <Okaya@kernel.org>
+Subject: Re: [PATCH v1 1/2] PCI: ATS: Add function to check ATS page aligned
+ request status.
+Date: Mon, 11 Feb 2019 15:35:13 -0500
+Message-ID: <a2fcfb40-cc07-87fa-dc52-72c979d9900b@kernel.org>
+References: <cover.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <91bfae8b1d4b424219e3ce3c1fc03559c73f1ae7.1549478584.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <5d55e369-355f-b710-0594-03465aa985da@kernel.org>
+ <a5a29eee-2e33-ba0c-67a6-69983fd0796d@linux.intel.com>
+ <32ec3293-28ea-8f0f-f801-0370b4cf0453@kernel.org>
+ <351a1a1d-2517-5021-e7cd-99d700e17f4c@linux.intel.com>
+ <815f2621-fc28-bff4-c300-cce7514cfe71@kernel.org>
+ <20190211191549.GA12090@otc-nc-03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190211191549.GA12090@otc-nc-03>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Raj, Ashok" <ashok.raj@intel.com>
+Cc: sathyanarayanan.kuppuswamy@linux.intel.com, bhelgaas@google.com, joro@8bytes.org, dwmw2@infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Keith Busch <keith.busch@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On 2/11/2019 2:15 PM, Raj, Ashok wrote:
+> It seems rather odd we have to check for ATS version.
+> 
+> I always assumed unspecified bits (Reserved) must be 0. We only check
+> this if ATS is enabled, and this particular bit wasn't given away for another
+> feature.
+> 
+> Is it really required to check for ATS version before consuming this?
 
-I'm looking at commit 562831747f6299abd481b5b00bd4fa19d5c8a259
-which fails to adequately explain why we can't use PASID 0.  Commit
-af39507305fb83a5d3c475c2851f4d59545d8a18 also doesn't explain why PASID
-0 is no longer usable for the intel-svm driver.
+Reading again, it looks like version check is not necessary since it
+is implied by the presence of this bit per this paragraph.
 
-There are a load of simplifications that could be made to this, but I
-don't know which ones to suggest without a clear understanding of the
-problem you're actually trying to solve.
+Page Aligned Request – If Set, indicates the Untranslated Address is 
+always aligned to a 4096 byte boundary.  Setting this bit is 
+recommended.  This bit permits software to distinguish between 
+implementations compatible with earlier version of this specification 
+that permitted a requester to supply anything in bits [11:2].
