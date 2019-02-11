@@ -1,91 +1,99 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v1 4/7] iommu/vt-d: Remove unnecessary local variable
- initializations
-Date: Mon, 11 Feb 2019 11:38:43 +0800
-Message-ID: <886e860a-f620-7b12-2611-228adcfa82c8@linux.intel.com>
-References: <154966319813.132359.14641436497228395449.stgit@bhelgaas-glaptop.roam.corp.google.com>
- <154966356809.132359.5318207850182898116.stgit@bhelgaas-glaptop.roam.corp.google.com>
- <63ae370c-2239-62c5-2378-98916608acc4@linux.intel.com>
- <CABhMZUUKe0b9RkscDX6WR0tpQmhW_nFoYKHTvthpKwZ4vMirOA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABhMZUUKe0b9RkscDX6WR0tpQmhW_nFoYKHTvthpKwZ4vMirOA@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: bjorn@helgaas.com
-Cc: baolu.lu@linux.intel.com, Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Christian Zigotzky <chzigotzky-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Mon, 11 Feb 2019 08:16:18 +0100
+Message-ID: <0042290A-2939-4EBA-A638-D404FA2055ED@xenosoft.de>
+References: <9632DCDF-B9D9-416C-95FC-006B6005E2EC@xenosoft.de>
+	<594beaae-9681-03de-9f42-191cc7d2f8e3@xenosoft.de>
+	<20190204075616.GA5408@lst.de>
+	<ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de>
+	<20190204123852.GA10428@lst.de>
+	<b1c0161f-4211-03af-022d-0db7237516e9@xenosoft.de>
+	<20190206151505.GA31065@lst.de> <20190206151655.GA31172@lst.de>
+	<61EC67B1-12EF-42B6-B69B-B59F9E4FC474@xenosoft.de>
+	<7c1f208b-6909-3b0a-f9f9-38ff1ac3d617@xenosoft.de>
+	<20190208091818.GA23491@lst.de>
+	<4e7137db-e600-0d20-6fb2-6d0f9739aca3@xenosoft.de>
+Mime-Version: 1.0 (1.0)
+Content-Type: multipart/mixed; boundary="===============2735983543759085288=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <4e7137db-e600-0d20-6fb2-6d0f9739aca3-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Darren Stevens <darren-YHtdit1eIT3easaKlIn9Lw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Julian Margetson <runaway-zqC88Q5qmK4@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
 
-On 2/11/19 11:33 AM, Bjorn Helgaas wrote:
-> On Sun, Feb 10, 2019 at 8:00 PM Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>
->> Hi,
->>
->> On 2/9/19 6:06 AM, Bjorn Helgaas wrote:
->>> From: Bjorn Helgaas <bhelgaas@google.com>
->>>
->>> A local variable initialization is a hint that the variable will be used in
->>> an unusual way.  If the initialization is unnecessary, that hint becomes a
->>> distraction.
->>>
->>> Remove unnecessary initializations.  No functional change intended.
->>>
->>> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
->>> ---
->>>    drivers/iommu/intel-iommu.c |   27 +++++++++++++--------------
->>>    1 file changed, 13 insertions(+), 14 deletions(-)
->>>
->>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>> index 81077803880f..2acd08c82cdc 100644
->>> --- a/drivers/iommu/intel-iommu.c
->>> +++ b/drivers/iommu/intel-iommu.c
->>> @@ -865,7 +865,7 @@ static void free_context_table(struct intel_iommu *iommu)
->>>    static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
->>>                                      unsigned long pfn, int *target_level)
->>>    {
->>> -     struct dma_pte *parent, *pte = NULL;
->>> +     struct dma_pte *parent, *pte;
->>>        int level = agaw_to_level(domain->agaw);
->>>        int offset;
->>>
->>> @@ -922,7 +922,7 @@ static struct dma_pte *dma_pfn_level_pte(struct dmar_domain *domain,
->>>                                         unsigned long pfn,
->>>                                         int level, int *large_page)
->>>    {
->>> -     struct dma_pte *parent, *pte = NULL;
->>> +     struct dma_pte *parent, *pte;
->>>        int total = agaw_to_level(domain->agaw);
->>>        int offset;
->>>
->>> @@ -954,7 +954,7 @@ static void dma_pte_clear_range(struct dmar_domain *domain,
->>>                                unsigned long start_pfn,
->>>                                unsigned long last_pfn)
->>>    {
->>> -     unsigned int large_page = 1;
->>> +     unsigned int large_page;
->>>        struct dma_pte *first_pte, *pte;
->>>
->>>        BUG_ON(!domain_pfn_supported(domain, start_pfn));
->>> @@ -1132,7 +1132,7 @@ static struct page *domain_unmap(struct dmar_domain *domain,
->>>                                 unsigned long start_pfn,
->>>                                 unsigned long last_pfn)
->>>    {
->>> -     struct page *freelist = NULL;
->>> +     struct page *freelist;
->>
->> I am afraid this change might cause problem. "freelist" might go through
->> dma_pte_clear_level() without any touches.
-> 
-> Thanks for your review!  Can you clarify your concern?  "freelist"
-> isn't passed into dma_pte_clear_level().  Here's the existing code
+--===============2735983543759085288==
+Content-Type: multipart/alternative;
+	boundary=Apple-Mail-AB54F82F-011B-4A2E-BF51-3599C977EE35
+Content-Transfer-Encoding: 7bit
 
-Oh!
 
-Yes, you are right. I confused it with another function. Sorry about it.
+--Apple-Mail-AB54F82F-011B-4A2E-BF51-3599C977EE35
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Lu Baolu
+Hi Christoph,
+
+Mario successfully tested a kernel from your Git [1] on his T2080rdb today.
+
+Link to the log:=20
+https://gitlab.com/oshw-powerpc-notebook/T2080customizations/blob/master/ker=
+nel/dma_fix/kernel_dma_fix_log.txt
+
+He wrote:
+
+Please, note that all of the above kernel runs just fine with the T2080rdb, h=
+owever did not had the time to test extensively (tested: login into MATE gra=
+phical desktop environment, used ArctiFox for opening couple of websites, th=
+en played Neverball).
+
+=E2=80=94=E2=80=94
+
+Cheers,
+Christian
+
+[1] http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-=
+dma.6=
+
+--Apple-Mail-AB54F82F-011B-4A2E-BF51-3599C977EE35
+Content-Type: text/html;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=3D=
+utf-8"></head><body dir=3D"auto">Hi Christoph,<div><br></div><div>Mario succ=
+essfully tested a kernel from your Git [1] on his T2080rdb today.</div><div>=
+<br></div><div>Link to the log:&nbsp;</div><div><a href=3D"https://gitlab.co=
+m/oshw-powerpc-notebook/T2080customizations/blob/master/kernel/dma_fix/kerne=
+l_dma_fix_log.txt">https://gitlab.com/oshw-powerpc-notebook/T2080customizati=
+ons/blob/master/kernel/dma_fix/kernel_dma_fix_log.txt</a></div><div><br></di=
+v><div>He wrote:</div><div><br></div><div>Please, note that all of the above=
+ kernel runs just fine with the T2080rdb, however did not had the time to te=
+st extensively (tested: login into MATE graphical desktop environment, used A=
+rctiFox for opening couple of websites, then played Neverball).</div><div><b=
+r></div><div>=E2=80=94=E2=80=94</div><div><br></div><div>Cheers,</div><div>C=
+hristian</div><div><br></div><div>[1]&nbsp;<a href=3D"http://git.infradead.o=
+rg/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6">http://git.infradea=
+d.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6</a></div></body><=
+/html>=
+
+--Apple-Mail-AB54F82F-011B-4A2E-BF51-3599C977EE35--
+
+--===============2735983543759085288==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2735983543759085288==--
