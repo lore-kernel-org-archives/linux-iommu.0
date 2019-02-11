@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 8/8] smc911x: pass struct device to DMA API functions
-Date: Mon, 11 Feb 2019 14:20:04 +0100
-Message-ID: <20190211132004.29143-9-hch@lst.de>
+Subject: [PATCH 4/8] lantiq_etop: pass struct device to DMA API functions
+Date: Mon, 11 Feb 2019 14:20:00 +0100
+Message-ID: <20190211132004.29143-5-hch@lst.de>
 References: <20190211132004.29143-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -16,37 +16,40 @@ The DMA API generally relies on a struct device to work properly, and
 only barely works without one for legacy reasons.  Pass the easily
 available struct device from the platform_device to remedy this.
 
-Note that smc911x apparently is a PIO chip with an external DMA
-handshake, and we probably use the wrong device here.  But at least
-it matches the mapping side, which apparently works or at least
-worked in the not too distant past.
+Note this driver seems to lack dma_unmap_* calls entirely, but fixing
+that is left for another time.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/net/ethernet/smsc/smc911x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/lantiq_etop.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
-index 8355dfbb8ec3..b550e624500d 100644
---- a/drivers/net/ethernet/smsc/smc911x.c
-+++ b/drivers/net/ethernet/smsc/smc911x.c
-@@ -1188,7 +1188,7 @@ smc911x_tx_dma_irq(void *data)
- 
- 	DBG(SMC_DEBUG_TX | SMC_DEBUG_DMA, dev, "TX DMA irq handler\n");
- 	BUG_ON(skb == NULL);
--	dma_unmap_single(NULL, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
-+	dma_unmap_single(lp->dev, tx_dmabuf, tx_dmalen, DMA_TO_DEVICE);
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index 32ac9045cdae..f9bb890733b5 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -112,10 +112,12 @@ struct ltq_etop_priv {
+ static int
+ ltq_etop_alloc_skb(struct ltq_etop_chan *ch)
+ {
++	struct ltq_etop_priv *priv = netdev_priv(ch->netdev);
++
+ 	ch->skb[ch->dma.desc] = netdev_alloc_skb(ch->netdev, MAX_DMA_DATA_LEN);
+ 	if (!ch->skb[ch->dma.desc])
+ 		return -ENOMEM;
+-	ch->dma.desc_base[ch->dma.desc].addr = dma_map_single(NULL,
++	ch->dma.desc_base[ch->dma.desc].addr = dma_map_single(&priv->pdev->dev,
+ 		ch->skb[ch->dma.desc]->data, MAX_DMA_DATA_LEN,
+ 		DMA_FROM_DEVICE);
+ 	ch->dma.desc_base[ch->dma.desc].addr =
+@@ -487,7 +489,7 @@ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
  	netif_trans_update(dev);
- 	dev_kfree_skb_irq(skb);
- 	lp->current_tx_skb = NULL;
-@@ -1219,7 +1219,7 @@ smc911x_rx_dma_irq(void *data)
  
- 	DBG(SMC_DEBUG_FUNC, dev, "--> %s\n", __func__);
- 	DBG(SMC_DEBUG_RX | SMC_DEBUG_DMA, dev, "RX DMA irq handler\n");
--	dma_unmap_single(NULL, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
-+	dma_unmap_single(lp->dev, rx_dmabuf, rx_dmalen, DMA_FROM_DEVICE);
- 	BUG_ON(skb == NULL);
- 	lp->current_rx_skb = NULL;
- 	PRINT_PKT(skb->data, skb->len);
+ 	spin_lock_irqsave(&priv->lock, flags);
+-	desc->addr = ((unsigned int) dma_map_single(NULL, skb->data, len,
++	desc->addr = ((unsigned int) dma_map_single(&priv->pdev->dev, skb->data, len,
+ 						DMA_TO_DEVICE)) - byte_offset;
+ 	wmb();
+ 	desc->ctl = LTQ_DMA_OWN | LTQ_DMA_SOP | LTQ_DMA_EOP |
 -- 
 2.20.1
