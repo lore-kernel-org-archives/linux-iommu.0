@@ -1,45 +1,42 @@
-From: "joro@8bytes.org" <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: fix device reference leaks
-Date: Mon, 11 Feb 2019 11:24:15 +0100
-Message-ID: <20190211102414.GZ32526@8bytes.org>
-References: <HK0PR02MB3634F6AE1FAE6B86EF82B291B26C0@HK0PR02MB3634.apcprd02.prod.outlook.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu: Allow io-pgtable to be used outside of
+ drivers/iommu/
+Date: Mon, 11 Feb 2019 11:27:35 +0100
+Message-ID: <20190211102735.GA32526@8bytes.org>
+References: <20190205163731.17864-1-robh@kernel.org>
+ <20190205165528.GA20157@infradead.org>
+ <CAL_JsqLYC6OStkM+bcwhM5cA3fBcXQCiL_pVUE=sPoLrPHoVvQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <HK0PR02MB3634F6AE1FAE6B86EF82B291B26C0@HK0PR02MB3634.apcprd02.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: wen yang <yellowriver2010@hotmail.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <damm+renesas@opensource.se>
+In-Reply-To: <CAL_JsqLYC6OStkM+bcwhM5cA3fBcXQCiL_pVUE=sPoLrPHoVvQ@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Christoph Hellwig <hch@infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Adding a few more people to Cc.
+On Tue, Feb 05, 2019 at 11:20:30AM -0600, Rob Herring wrote:
+> On Tue, Feb 5, 2019 at 10:55 AM Christoph Hellwig <hch@infradead.org> wrote:
+> >
+> > On Tue, Feb 05, 2019 at 10:37:31AM -0600, Rob Herring wrote:
+> > > Move io-pgtable.h to include/linux/ and export alloc_io_pgtable_ops
+> > > and free_io_pgtable_ops. This enables drivers outside drivers/iommu/ to
+> > > use the ARM page table library. Specifically, some ARM Mali GPUs use the
+> > > ARM page table formats.
+> >
+> > Maybe rename it to arm-io-pgtable.h to make the usage a little more
+> > clear?
+> 
+> I should drop the first 'ARM' in the commit message.
 
-On Sun, Feb 03, 2019 at 10:27:09AM +0000, wen yang wrote:
-> Make sure to drop the reference to the device taken by
-> of_find_device_by_node() on driver unbind.
-> 
-> Signed-off-by: Wen Yang <yellowriver2010@hotmail.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 7a4529c..cebf56d 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -756,6 +756,9 @@ static int ipmmu_init_platform_device(struct device *dev,
->  
->  	fwspec->iommu_priv = platform_get_drvdata(ipmmu_pdev);
->  
-> +	if (!fwspec->iommu_priv)
-> +		put_device(&ipmmu_pdev->dev);
-> +
->  	return 0;
->  }
->  
-> -- 
-> 2.7.4
+Dropped and applied, thanks.
