@@ -1,32 +1,37 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 06/19] dma-iommu: fix and refactor iommu_dma_mmap
-Date: Mon, 11 Feb 2019 17:03:25 +0100
-Message-ID: <20190211160325.GC27745@lst.de>
-References: <20190114094159.27326-1-hch@lst.de> <20190114094159.27326-7-hch@lst.de> <7c2b6aaa-3a19-a411-1d40-0c787205b0fc@arm.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1] dma-mapping: Move debug configuration options to
+ kernel/dma
+Date: Mon, 11 Feb 2019 18:08:30 +0200
+Message-ID: <20190211160830.GF9224@smile.fi.intel.com>
+References: <20190211155409.41465-1-andriy.shevchenko@linux.intel.com>
+ <20190211155450.GA27697@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <7c2b6aaa-3a19-a411-1d40-0c787205b0fc@arm.com>
+In-Reply-To: <20190211155450.GA27697@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 05, 2019 at 03:02:23PM +0000, Robin Murphy wrote:
-> On 14/01/2019 09:41, Christoph Hellwig wrote:
->> The current iommu_dma_mmap code does not properly handle memory from the
->> page allocator that hasn't been remapped, which can happen in the rare
->> case of allocations for a coherent device that aren't allowed to block.
->>
->> Fix this by replacing iommu_dma_mmap with a slightly tweaked copy of
->> dma_common_mmap with special handling for the remapped array of
->> pages allocated from __iommu_dma_alloc.
->
-> If there's an actual bugfix here, can we make that before all of the other 
-> code movement? If it's at all related to other reports of weird mmap 
-> behaviour it might warrant backporting, and either way I'm finding it 
-> needlessly tough to follow what's going on in this patch :(
+On Mon, Feb 11, 2019 at 04:54:50PM +0100, Christoph Hellwig wrote:
+> On Mon, Feb 11, 2019 at 05:54:09PM +0200, Andy Shevchenko wrote:
+> > This is a follow up to the commit cf65a0f6f6ff
+> > 
+> >   ("dma-mapping: move all DMA mapping code to kernel/dma")
+> > 
+> > which moved source code of DMA API to kernel/dma folder. Since there is
+> > no file left in the lib that require DMA API debugging options move the
+> > latter to kernel/dma as well.
+> 
+> Can we do this without the separate Kconfig.debug file?
 
-The bug fix is to handle non-vmalloc pages.  I'll see if I can do
-a smaller and more bandaid-y fix first.
+Sure.
+
+> 
+> Otherwise this looks good to me.
+
+-- 
+With Best Regards,
+Andy Shevchenko
