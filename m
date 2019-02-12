@@ -1,23 +1,26 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 01/18] MIPS: lantiq: pass struct device to DMA API
- functions
-Date: Tue, 12 Feb 2019 08:45:49 +0100
-Message-ID: <20190212074549.GA15997@lst.de>
-References: <20190201084801.10983-1-hch@lst.de> <20190201084801.10983-2-hch@lst.de> <20190207232912.wfgejc5c6d6lk5so@pburton-laptop>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 02/12] device.h: dma_mem is only needed for
+ HAVE_GENERIC_DMA_COHERENT
+Date: Tue, 12 Feb 2019 08:49:06 +0100
+Message-ID: <20190212074906.GA5924@kroah.com>
+References: <20190211133554.30055-1-hch@lst.de>
+ <20190211133554.30055-3-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190207232912.wfgejc5c6d6lk5so@pburton-laptop>
+In-Reply-To: <20190211133554.30055-3-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Burton <paul.burton@mips.com>
-Cc: Christoph Hellwig <hch@lst.de>, John Crispin <john@phrozen.org>, Vinod Koul <vkoul@kernel.org>, Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>, Nicolas Ferre <nicolas.ferre@microchip.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Felipe Balbi <balbi@kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Lee Jones <lee.jones@linaro.org>, x86@kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 07, 2019 at 11:29:14PM +0000, Paul Burton wrote:
-> Would you like this to go through the MIPS tree or elsewhere? If the
-> latter:
+On Mon, Feb 11, 2019 at 02:35:44PM +0100, Christoph Hellwig wrote:
+> No need to carry an unused field around.
 > 
->     Acked-by: Paul Burton <paul.burton@mips.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/linux/device.h | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Please pick it up through the mips tree!
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
