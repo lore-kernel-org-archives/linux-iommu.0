@@ -1,29 +1,47 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 07/12] dma-mapping: move CONFIG_DMA_CMA to
- kernel/dma/Kconfig
-Date: Tue, 12 Feb 2019 08:50:46 +0100
-Message-ID: <20190212075046.GD5924@kroah.com>
-References: <20190211133554.30055-1-hch@lst.de>
- <20190211133554.30055-8-hch@lst.de>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Tue, 12 Feb 2019 13:42:56 +0100
+Message-ID: <820bfeb1-30c0-3d5a-54a2-c4f9a8c15b0e@xenosoft.de>
+References: <20190204075616.GA5408@lst.de>
+ <ffbf56ae-c259-47b5-9deb-7fb21fead254@xenosoft.de>
+ <20190204123852.GA10428@lst.de>
+ <b1c0161f-4211-03af-022d-0db7237516e9@xenosoft.de>
+ <20190206151505.GA31065@lst.de> <20190206151655.GA31172@lst.de>
+ <61EC67B1-12EF-42B6-B69B-B59F9E4FC474@xenosoft.de>
+ <7c1f208b-6909-3b0a-f9f9-38ff1ac3d617@xenosoft.de>
+ <20190208091818.GA23491@lst.de>
+ <4e7137db-e600-0d20-6fb2-6d0f9739aca3@xenosoft.de>
+ <20190211073804.GA15841@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190211133554.30055-8-hch@lst.de>
+In-Reply-To: <20190211073804.GA15841@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Lee Jones <lee.jones@linaro.org>, x86@kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 11, 2019 at 02:35:49PM +0100, Christoph Hellwig wrote:
-> This is where all the related code already lives.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/base/Kconfig | 77 --------------------------------------------
->  kernel/dma/Kconfig   | 77 ++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 77 insertions(+), 77 deletions(-)
+On 11 February 2019 at 08:38AM, Christoph Hellwig wrote:
+> On Sun, Feb 10, 2019 at 01:00:20PM +0100, Christian Zigotzky wrote:
+>> I tested the whole series today. The kernels boot and the P.A. Semi
+>> Ethernet works! :-) Thanks a lot!
+>>
+>> I also tested it in a virtual e5500 QEMU machine today. Unfortunately the
+>> kernel crashes.
+> This looks like a patch I fixed in mainline a while ago, but which
+> the powerpc tree didn't have yet.
+>
+> I've cherry picked this commit
+> ("swiotlb: clear io_tlb_start and io_tlb_end in swiotlb_exit")
+>
+> and added it to the powerpc-dma.6 tree, please retry with that one.
+>
+Hello Christoph,
 
-Much nicer, thanks!
+Have you added it to the powerpc-dma.6 tree yet? The last commit was 4 
+days ago.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thanks,
+Christian
