@@ -1,17 +1,35 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Tue, 12 Feb 2019 20:52:52 +0100
-Message-ID: <20190212195252.GA29370@lst.de>
-References: <20190206151655.GA31172@lst.de> <61EC67B1-12EF-42B6-B69B-B59F9E4FC474@xenosoft.de> <7c1f208b-6909-3b0a-f9f9-38ff1ac3d617@xenosoft.de> <20190208091818.GA23491@lst.de> <4e7137db-e600-0d20-6fb2-6d0f9739aca3@xenosoft.de> <20190211073804.GA15841@lst.de> <820bfeb1-30c0-3d5a-54a2-c4f9a8c15b0e@xenosoft.de> <20190212152543.GA24061@lst.de> <47bff9d1-7001-4d92-4ad1-e24215b56555@xenosoft.de> <f57e6d8f-d43f-e9f8-b092-e43f5019f86f@xenosoft.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 04/12] of: select OF_RESERVED_MEM automatically
+Date: Tue, 12 Feb 2019 14:11:25 -0600
+Message-ID: <CAL_JsqJFGhTa+izRTeUxjtbyOek-zynZofOJGDK+xZbD4r5H0Q@mail.gmail.com>
+References: <20190211133554.30055-1-hch@lst.de> <20190211133554.30055-5-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <f57e6d8f-d43f-e9f8-b092-e43f5019f86f@xenosoft.de>
+In-Reply-To: <20190211133554.30055-5-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Linux IOMMU <iommu@lists.linux-foundation.org>, linux-xtensa@linux-xtensa.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, SH-Linux <linux-sh@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, x86@kernel.org, linux-mips@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, arcml <linux-snps-arc@lists.infradead.org>, Lee Jones <lee.jones@linaro.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Great!  I owe you a night worth of beers at a conference or if
-you come anywhere near Innsbruck!
+On Mon, Feb 11, 2019 at 7:37 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> The OF_RESERVED_MEM can be used if we have either CMA or the generic
+> declare coherent code built and we support the early flattened DT.
+>
+> So don't bother making it a user visible options that is selected
+> by most configs that fit the above category, but just select it when
+> the requirements are met.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/arc/Kconfig     | 1 -
+>  arch/arm/Kconfig     | 1 -
+>  arch/arm64/Kconfig   | 1 -
+>  arch/csky/Kconfig    | 1 -
+>  arch/powerpc/Kconfig | 1 -
+>  arch/xtensa/Kconfig  | 1 -
+>  drivers/of/Kconfig   | 5 ++---
+>  7 files changed, 2 insertions(+), 9 deletions(-)
+
+Reviewed-by: Rob Herring <robh@kernel.org>
