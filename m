@@ -1,79 +1,79 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: What is the meaning of PASID_MIN?
-Date: Tue, 12 Feb 2019 11:13:28 +0800
-Message-ID: <fa7475c2-f64f-04d5-1e15-42d0cb1401d0@linux.intel.com>
-References: <20190211192804.GI12668@bombadil.infradead.org>
-	<0d86f3e8-60ec-5433-8602-487c8dc1ed83@linux.intel.com>
-	<20190212030232.GI1011@xz-x1>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 01/14] scatterlist: add sg_kmap_atomic / sg_kunmap_atomic
+ helpers
+Date: Tue, 12 Feb 2019 08:25:15 +0100
+Message-ID: <20190212072528.13167-2-hch@lst.de>
+References: <20190212072528.13167-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190212030232.GI1011@xz-x1>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190212072528.13167-1-hch@lst.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Nicolas Pitre <nico@fluxnic.net>, linux-mmc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Ben Dooks <ben-linux@fluff.org>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
+This avoids bug prone open coding of the sg offset handling and
+also helps to document the limitations of mapping scatterlist
+entries.
 
-On 2/12/19 11:02 AM, Peter Xu wrote:
-> On Tue, Feb 12, 2019 at 10:44:23AM +0800, Lu Baolu wrote:
->> Hi,
->>
->> On 2/12/19 3:28 AM, Matthew Wilcox wrote:
->>>
->>> I'm looking at commit 562831747f6299abd481b5b00bd4fa19d5c8a259
->>> which fails to adequately explain why we can't use PASID 0.  Commit
->>> af39507305fb83a5d3c475c2851f4d59545d8a18 also doesn't explain why PASID
->>> 0 is no longer usable for the intel-svm driver.
->>
->> Sorry that we didn't make it clear.
->>
->>>
->>> There are a load of simplifications that could be made to this, but I
->>> don't know which ones to suggest without a clear understanding of the
->>> problem you're actually trying to solve.
->>>
->>
->> PASID 0 has been reserved by Intel IOMMU driver for RID_PASID purpose.
->>
->> VT-d scalable mode treats all address translation as PASID granularity.
->> For DMA requests-with-PASID, the PASID value in the DMA request will be
->> used. For DMA requests-without-PASID, VT-d will use a static PASID value
->> specified in the RID_PASID field of the context entry. PASID 0 has been
->> reserved for this usage for all devices.
->>
->> (Please refer to 9.4 of the spec 3.0 for more details.)
-> 
-> Hi, Baolu,
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/linux/scatterlist.h | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-Hi Peter,
-
-> 
-> I have a similar confusion.
-> 
-> If PASID==0 is reserved for requests-without-PASID, then does it mean
-> that for each scalable mode context entry the RID_PASID field will
-> always be zero?
-
-Yes.
-
->  Or say, since we already have the per-context-entry
-> RID_PASID field which seems to be configurable, why we still need to
-> reserve the PASID==0?
-
-We decided to set RID_PASID always to 0. This will make things simple
-especially for virtual IOMMU case. It will also be compatible with other
-arch's which reserves PASID 0 for legacy translation.
-
-Best regards,
-Lu Baolu
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index b96f0d0b5b8f..524cd8448a48 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_SCATTERLIST_H
+ #define _LINUX_SCATTERLIST_H
+ 
++#include <linux/highmem.h>
+ #include <linux/string.h>
+ #include <linux/types.h>
+ #include <linux/bug.h>
+@@ -239,6 +240,31 @@ static inline void *sg_virt(struct scatterlist *sg)
+ 	return page_address(sg_page(sg)) + sg->offset;
+ }
+ 
++/**
++ * sg_kmap_atomic - map a S/G list entry to a kernel address
++ * @sg:		scatterlist entry
++ *
++ * Return a kernel address for scatterlist entry by kmapping it.  Note that
++ * this function must only be called on scatterlist entries that do not span
++ * multiple pages.
++ */
++static inline void *sg_kmap_atomic(struct scatterlist *sg)
++{
++	if (WARN_ON_ONCE(sg->offset + sg->length > PAGE_SIZE))
++		return NULL;
++	return kmap_atomic(sg_page(sg)) + sg->offset;
++}
++
++/**
++ * sg_kunmap_atomic - unmap a S/G list entry to a kernel address
++ * @sg:		scatterlist entry
++ * @ptr:	address returned from sg_kmap_atomic
++ */
++static inline void sg_kunmap_atomic(struct scatterlist *sg, void *ptr)
++{
++	kunmap_atomic(ptr - sg->offset);
++}
++
+ /**
+  * sg_init_marker - Initialize markers in sg table
+  * @sgl:	   The SG table
+-- 
+2.20.1
