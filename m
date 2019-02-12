@@ -1,39 +1,58 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Tue, 12 Feb 2019 16:25:45 +0100
-Message-ID: <20190212152543.GA24061@lst.de>
-References: <20190204123852.GA10428@lst.de> <b1c0161f-4211-03af-022d-0db7237516e9@xenosoft.de> <20190206151505.GA31065@lst.de> <20190206151655.GA31172@lst.de> <61EC67B1-12EF-42B6-B69B-B59F9E4FC474@xenosoft.de> <7c1f208b-6909-3b0a-f9f9-38ff1ac3d617@xenosoft.de> <20190208091818.GA23491@lst.de> <4e7137db-e600-0d20-6fb2-6d0f9739aca3@xenosoft.de> <20190211073804.GA15841@lst.de> <820bfeb1-30c0-3d5a-54a2-c4f9a8c15b0e@xenosoft.de>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: fix device reference leaks
+Date: Tue, 12 Feb 2019 18:47:22 +0200
+Message-ID: <20190212164722.GT6279@pendragon.ideasonboard.com>
+References: <HK0PR02MB3634F6AE1FAE6B86EF82B291B26C0@HK0PR02MB3634.apcprd02.prod.outlook.com>
+ <20190211102414.GZ32526@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <820bfeb1-30c0-3d5a-54a2-c4f9a8c15b0e@xenosoft.de>
+In-Reply-To: <20190211102414.GZ32526@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: "joro@8bytes.org" <joro@8bytes.org>
+Cc: wen yang <yellowriver2010@hotmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <damm+renesas@opensource.se>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 12, 2019 at 01:42:56PM +0100, Christian Zigotzky wrote:
-> On 11 February 2019 at 08:38AM, Christoph Hellwig wrote:
->> On Sun, Feb 10, 2019 at 01:00:20PM +0100, Christian Zigotzky wrote:
->>> I tested the whole series today. The kernels boot and the P.A. Semi
->>> Ethernet works! :-) Thanks a lot!
->>>
->>> I also tested it in a virtual e5500 QEMU machine today. Unfortunately the
->>> kernel crashes.
->> This looks like a patch I fixed in mainline a while ago, but which
->> the powerpc tree didn't have yet.
->>
->> I've cherry picked this commit
->> ("swiotlb: clear io_tlb_start and io_tlb_end in swiotlb_exit")
->>
->> and added it to the powerpc-dma.6 tree, please retry with that one.
->>
-> Hello Christoph,
->
-> Have you added it to the powerpc-dma.6 tree yet? The last commit was 4 days 
-> ago.
+Hello,
 
-I added it, but forgot to push it out.  It is there now, sorry:
+Wen, thank you for the patch.
 
-http://git.infradead.org/users/hch/misc.git/commitdiff/2cf0745b7420af4a3e871d5a970a45662dfae69c
+On Mon, Feb 11, 2019 at 11:24:15AM +0100, joro@8bytes.org wrote:
+> Adding a few more people to Cc.
+> 
+> On Sun, Feb 03, 2019 at 10:27:09AM +0000, wen yang wrote:
+> > Make sure to drop the reference to the device taken by
+> > of_find_device_by_node() on driver unbind.
+> > 
+> > Signed-off-by: Wen Yang <yellowriver2010@hotmail.com>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: iommu@lists.linux-foundation.org
+> > Cc: linux-kernel@vger.kernel.org
+> > ---
+> >  drivers/iommu/ipmmu-vmsa.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index 7a4529c..cebf56d 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -756,6 +756,9 @@ static int ipmmu_init_platform_device(struct device *dev,
+> >  
+> >  	fwspec->iommu_priv = platform_get_drvdata(ipmmu_pdev);
+> >  
+> > +	if (!fwspec->iommu_priv)
+> > +		put_device(&ipmmu_pdev->dev);
+> > +
+
+This doesn't seem to match the patch's subject, and doesn't seem to fix
+the problem.
+
+> >  	return 0;
+> >  }
+> >  
+
+-- 
+Regards,
+
+Laurent Pinchart
