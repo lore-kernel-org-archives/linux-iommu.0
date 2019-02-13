@@ -1,123 +1,201 @@
-From: Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: Re: [PATCH v2 1/2] PCI: iproc: Add CRS check in config read
-Date: Wed, 13 Feb 2019 09:27:20 +0530
-Message-ID: <CABe79T7prLa-hPWOfESPYabA_HNvdcc52ztkNJfyLoLv+w7i0A@mail.gmail.com>
-References: <1549342622-9929-1-git-send-email-srinath.mannam@broadcom.com>
- <1549342622-9929-2-git-send-email-srinath.mannam@broadcom.com> <20190212181208.GA918@e107981-ln.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v6 0/9] vfio/mdev: IOMMU aware mediated device
+Date: Wed, 13 Feb 2019 12:02:52 +0800
+Message-ID: <20190213040301.23021-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190212181208.GA918@e107981-ln.cambridge.arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lorenzo,
+Hi,
 
-Thanks for review, please see my comments below inline.
+The Mediate Device is a framework for fine-grained physical device
+sharing across the isolated domains. Currently the mdev framework
+is designed to be independent of the platform IOMMU support. As the
+result, the DMA isolation relies on the mdev parent device in a
+vendor specific way.
 
-On Tue, Feb 12, 2019 at 11:42 PM Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
->
-> On Tue, Feb 05, 2019 at 10:27:00AM +0530, Srinath Mannam wrote:
-> > In the current implementation, config read output data 0xffff0001 is
-> > assumed as CRS completion. But sometimes 0xffff0001 can be a valid data.
-> >
-> > IPROC PCIe host controller has a register to show config read request
-> > status flags like SC, UR, CRS and CA. So that extra check is added to
-> > confirm the CRS using status flags before reissue config read.
-> >
-> > Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> > Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-> > ---
-> >  drivers/pci/controller/pcie-iproc.c | 23 +++++++++++++++++++++--
-> >  1 file changed, 21 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-> > index c20fd6b..b882255 100644
-> > --- a/drivers/pci/controller/pcie-iproc.c
-> > +++ b/drivers/pci/controller/pcie-iproc.c
-> > @@ -60,6 +60,10 @@
-> >  #define APB_ERR_EN_SHIFT             0
-> >  #define APB_ERR_EN                   BIT(APB_ERR_EN_SHIFT)
-> >
-> > +#define CFG_RD_SUCCESS                       0
-> > +#define CFG_RD_UR                    1
-> > +#define CFG_RD_CRS                   2
-> > +#define CFG_RD_CA                    3
-> >  #define CFG_RETRY_STATUS             0xffff0001
-> >  #define CFG_RETRY_STATUS_TIMEOUT_US  500000 /* 500 milliseconds */
-> >
-> > @@ -289,6 +293,9 @@ enum iproc_pcie_reg {
-> >       IPROC_PCIE_IARR4,
-> >       IPROC_PCIE_IMAP4,
-> >
-> > +     /* config read status */
-> > +     IPROC_PCIE_CFG_RD_STATUS,
-> > +
-> >       /* link status */
-> >       IPROC_PCIE_LINK_STATUS,
-> >
-> > @@ -350,6 +357,7 @@ static const u16 iproc_pcie_reg_paxb_v2[] = {
-> >       [IPROC_PCIE_IMAP3]              = 0xe08,
-> >       [IPROC_PCIE_IARR4]              = 0xe68,
-> >       [IPROC_PCIE_IMAP4]              = 0xe70,
-> > +     [IPROC_PCIE_CFG_RD_STATUS]      = 0xee0,
->
-> So, with the *current* code, on controllers that does not support this
-> register you won't be able to get any HW whose config space register
-> value reads 0xffff0001 to work, is that correct ?
->
-Yes, this feature(register) is available only in "iProc PCIe PAXB v2"
-controller for other controllers it will not applicable.
+There are several cases where a mediated device could be protected
+and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
+[1] introduces a new translation mode called 'scalable mode', which
+enables PASID-granular translations. The vt-d scalable mode is the
+key ingredient for Scalable I/O Virtualization [2] [3] which allows
+sharing a device in minimal possible granularity (ADI - Assignable
+Device Interface).
 
-Regards,
-Srinath.
-> Lorenzo
->
-> >       [IPROC_PCIE_LINK_STATUS]        = 0xf0c,
-> >       [IPROC_PCIE_APB_ERR_EN]         = 0xf40,
-> >  };
-> > @@ -474,10 +482,12 @@ static void __iomem *iproc_pcie_map_ep_cfg_reg(struct iproc_pcie *pcie,
-> >       return (pcie->base + offset);
-> >  }
-> >
-> > -static unsigned int iproc_pcie_cfg_retry(void __iomem *cfg_data_p)
-> > +static unsigned int iproc_pcie_cfg_retry(struct iproc_pcie *pcie,
-> > +                                      void __iomem *cfg_data_p)
-> >  {
-> >       int timeout = CFG_RETRY_STATUS_TIMEOUT_US;
-> >       unsigned int data;
-> > +     u32 status;
-> >
-> >       /*
-> >        * As per PCIe spec r3.1, sec 2.3.2, CRS Software Visibility only
-> > @@ -498,6 +508,15 @@ static unsigned int iproc_pcie_cfg_retry(void __iomem *cfg_data_p)
-> >        */
-> >       data = readl(cfg_data_p);
-> >       while (data == CFG_RETRY_STATUS && timeout--) {
-> > +             /*
-> > +              * CRS state is set in CFG_RD status register
-> > +              * This will handle the case where CFG_RETRY_STATUS is
-> > +              * valid config data.
-> > +              */
-> > +             status = iproc_pcie_read_reg(pcie, IPROC_PCIE_CFG_RD_STATUS);
-> > +             if (status != CFG_RD_CRS)
-> > +                     return data;
-> > +
-> >               udelay(1);
-> >               data = readl(cfg_data_p);
-> >       }
-> > @@ -576,7 +595,7 @@ static int iproc_pcie_config_read(struct pci_bus *bus, unsigned int devfn,
-> >       if (!cfg_data_p)
-> >               return PCIBIOS_DEVICE_NOT_FOUND;
-> >
-> > -     data = iproc_pcie_cfg_retry(cfg_data_p);
-> > +     data = iproc_pcie_cfg_retry(pcie, cfg_data_p);
-> >
-> >       *val = data;
-> >       if (size <= 2)
-> > --
-> > 2.7.4
-> >
+A mediated device backed by an ADI could be protected and isolated
+by the IOMMU since 1) the parent device supports tagging an unique
+PASID to all DMA traffic out of the mediated device; and 2) the DMA
+translation unit (IOMMU) supports the PASID granular translation.
+We can apply IOMMU protection and isolation to this kind of devices
+just as what we are doing with an assignable PCI device.
+
+In order to distinguish the IOMMU-capable mediated devices from those
+which still need to rely on parent devices, this patch set adds one
+new member in struct mdev_device.
+
+* iommu_device
+  - This, if set, indicates that the mediated device could
+    be fully isolated and protected by IOMMU via attaching
+    an iommu domain to this device. If empty, it indicates
+    using vendor defined isolation.
+
+Below helpers are added to set and get above iommu device in mdev core
+implementation.
+
+* mdev_set/get_iommu_device(dev, iommu_device)
+  - Set or get the iommu device which represents this mdev
+    in IOMMU's device scope. Drivers don't need to set the
+    iommu device if it uses vendor defined isolation.
+
+The mdev parent device driver could opt-in that the mdev could be
+fully isolated and protected by the IOMMU when the mdev is being
+created by invoking mdev_set_iommu_device() in its @create().
+
+In the vfio_iommu_type1_attach_group(), a domain allocated through
+iommu_domain_alloc() will be attached to the mdev iommu device if
+an iommu device has been set. Otherwise, the dummy external domain
+will be used and all the DMA isolation and protection are routed to
+parent driver as the result.
+
+On IOMMU side, a basic requirement is allowing to attach multiple
+domains to a PCI device if the device advertises the capability
+and the IOMMU hardware supports finer granularity translations than
+the normal PCI Source ID based translation.
+
+As the result, a PCI device could work in two modes: normal mode
+and auxiliary mode. In the normal mode, a pci device could be
+isolated in the Source ID granularity; the pci device itself could
+be assigned to a user application by attaching a single domain
+to it. In the auxiliary mode, a pci device could be isolated in
+finer granularity, hence subsets of the device could be assigned
+to different user level application by attaching a different domain
+to each subset.
+
+Below APIs are introduced in iommu generic layer for aux-domain
+purpose:
+
+* iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)
+  - Check whether both IOMMU and device support IOMMU aux
+    domain feature. Below aux-domain specific interfaces
+    are available only after this returns true.
+
+* iommu_dev_enable/disable_feature(dev, IOMMU_DEV_FEAT_AUX)
+  - Enable/disable device specific aux-domain feature.
+
+* iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX)
+  - Check whether the aux domain specific feature enabled or
+    not.
+
+* iommu_aux_attach_device(domain, dev)
+  - Attaches @domain to @dev in the auxiliary mode. Multiple
+    domains could be attached to a single device in the
+    auxiliary mode with each domain representing an isolated
+    address space for an assignable subset of the device.
+
+* iommu_aux_detach_device(domain, dev)
+  - Detach @domain which has been attached to @dev in the
+    auxiliary mode.
+
+* iommu_aux_get_pasid(domain, dev)
+  - Return ID used for finer-granularity DMA translation.
+    For the Intel Scalable IOV usage model, this will be
+    a PASID. The device which supports Scalable IOV needs
+    to write this ID to the device register so that DMA
+    requests could be tagged with a right PASID prefix.
+
+In order for the ease of discussion, sometimes we call "a domain in
+auxiliary mode' or simply 'an auxiliary domain' when a domain is
+attached to a device for finer granularity translations. But we need
+to keep in mind that this doesn't mean there is a differnt domain
+type. A same domain could be bound to a device for Source ID based
+translation, and bound to another device for finer granularity
+translation at the same time.
+
+This patch series extends both IOMMU and vfio components to support
+mdev device passing through when it could be isolated and protected
+by the IOMMU units. The first part of this series (PATCH 1/09~6/09)
+adds the interfaces and implementation of the multiple domains per
+device. The second part (PATCH 7/09~9/09) adds the iommu device
+attribute to each mdev, determines isolation type according to the
+existence of an iommu device when attaching group in vfio type1 iommu
+module, and attaches the domain to iommu aware mediated devices.
+
+References:
+[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+
+Best regards,
+Lu Baolu
+
+Change log:
+  v5->v6:
+  - Add a new API iommu_dev_feature_enabled() to check whether
+    an IOMMU specific feature is enabled.
+  - Rework the vt-d specific per device feature ops according
+    to Joerg's comments. [https://lkml.org/lkml/2019/1/11/302].
+  - PATCH 2/9 is added to move intel_iommu_enable_pasid() out
+    of the scope of CONFIG_INTEL_IOMMU_SVM without functional
+    changes.
+  - All patches are rebased on top of vt-d branch of Joerg's
+    iommu tree.
+
+  v4->v5:
+  - The iommu APIs have been updated with Joerg's proposal posted
+    here https://www.spinics.net/lists/iommu/msg31874.html.
+  - Some typos in commit message and comments have been fixed.
+  - PATCH 3/8 was split from 4/8 to ease code review.
+  - mdev->domain was removed and could bring back when there's a
+    real consumer.
+  - Other code review comments I received during v4 review period
+    except the EXPORT_SYMBOL vs. EXPORT_SYMBOL_GPL in PATCH 6/8.
+  - Rebase all patches to 5.0-rc1.
+
+  v3->v4:
+  - Use aux domain specific interfaces for domain attach and detach.
+  - Rebase all patches to 4.20-rc1.
+
+  v2->v3:
+  - Remove domain type enum and use a pointer on mdev_device instead.
+  - Add a generic interface for getting/setting per device iommu
+    attributions. And use it for query aux domain capability, enable
+    aux domain and disable aux domain purpose.
+  - Reuse iommu_domain_get_attr() to retrieve the id in a aux domain.
+  - We discussed the impact of the default domain implementation
+    on reusing iommu_at(de)tach_device() interfaces. We agreed
+    that reusing iommu_at(de)tach_device() interfaces is the right
+    direction and we could tweak the code to remove the impact.
+    https://www.spinics.net/lists/kvm/msg175285.html  
+  - Removed the RFC tag since no objections received.
+  - This patch has been submitted separately.
+    https://www.spinics.net/lists/kvm/msg173936.html
+
+  v1->v2:
+  - Rewrite the patches with the concept of auxiliary domains.
+
+Lu Baolu (9):
+  iommu: Add APIs for multiple domains per device
+  iommu/vt-d: Move enable pasid out of CONFIG_INTEL_IOMMU_SVM
+  iommu/vt-d: Add per-device IOMMU feature ops entries
+  iommu/vt-d: Move common code out of iommu_attch_device()
+  iommu/vt-d: Aux-domain specific domain attach/detach
+  iommu/vt-d: Return ID associated with an auxiliary domain
+  vfio/mdev: Add iommu related member in mdev_device
+  vfio/type1: Add domain at(de)taching group helpers
+  vfio/type1: Handle different mdev isolation type
+
+ drivers/iommu/intel-iommu.c      | 399 ++++++++++++++++++++++++++++---
+ drivers/iommu/intel-svm.c        |  19 +-
+ drivers/iommu/iommu.c            |  91 +++++++
+ drivers/vfio/mdev/mdev_core.c    |  18 ++
+ drivers/vfio/mdev/mdev_private.h |   1 +
+ drivers/vfio/vfio_iommu_type1.c  | 132 ++++++++--
+ include/linux/intel-iommu.h      |  13 +-
+ include/linux/iommu.h            |  70 ++++++
+ include/linux/mdev.h             |  14 ++
+ 9 files changed, 704 insertions(+), 53 deletions(-)
+
+-- 
+2.17.1
