@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 26/32] swiotlb: remove swiotlb_dma_supported
-Date: Wed, 13 Feb 2019 08:01:27 +0100
-Message-ID: <20190213070133.11259-27-hch@lst.de>
+Subject: [PATCH 23/32] powerpc/dma: remove dma_nommu_mmap_coherent
+Date: Wed, 13 Feb 2019 08:01:24 +0100
+Message-ID: <20190213070133.11259-24-hch@lst.de>
 References: <20190213070133.11259-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,64 +12,153 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@sa
 Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christian Zigotzky <chzigotzky@xenosoft.de>
 List-Id: iommu@lists.linux-foundation.org
 
-The only user left is powerpc, but even there the generic dma-direct
-version works just as well, given that we guarantee that the swiotlb
-buffer must always be addressable.
+The coherent cache version of this function already is functionally
+identicall to the default version, and by defining the
+arch_dma_coherent_to_pfn hook the same is ture for the noncoherent
+version as well.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Tested-by: Christian Zigotzky <chzigotzky@xenosoft.de>
 ---
- arch/powerpc/kernel/dma-swiotlb.c |  2 +-
- include/linux/swiotlb.h           |  3 ---
- kernel/dma/swiotlb.c              | 12 ------------
- 3 files changed, 1 insertion(+), 16 deletions(-)
+ arch/powerpc/include/asm/dma-mapping.h |  4 ----
+ arch/powerpc/kernel/dma-iommu.c        |  1 -
+ arch/powerpc/kernel/dma-swiotlb.c      |  1 -
+ arch/powerpc/kernel/dma.c              | 19 -------------------
+ arch/powerpc/mm/dma-noncoherent.c      |  7 +++++--
+ arch/powerpc/platforms/Kconfig.cputype |  1 +
+ arch/powerpc/platforms/pseries/vio.c   |  1 -
+ 7 files changed, 6 insertions(+), 28 deletions(-)
 
+diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
+index 16d45518d9bb..f19c486e7b3f 100644
+--- a/arch/powerpc/include/asm/dma-mapping.h
++++ b/arch/powerpc/include/asm/dma-mapping.h
+@@ -25,10 +25,6 @@ extern void *__dma_nommu_alloc_coherent(struct device *dev, size_t size,
+ extern void __dma_nommu_free_coherent(struct device *dev, size_t size,
+ 				       void *vaddr, dma_addr_t dma_handle,
+ 				       unsigned long attrs);
+-extern int dma_nommu_mmap_coherent(struct device *dev,
+-				    struct vm_area_struct *vma,
+-				    void *cpu_addr, dma_addr_t handle,
+-				    size_t size, unsigned long attrs);
+ int dma_nommu_map_sg(struct device *dev, struct scatterlist *sgl,
+ 		int nents, enum dma_data_direction direction,
+ 		unsigned long attrs);
+diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
+index 5a0b5e863b08..ed8b60829a90 100644
+--- a/arch/powerpc/kernel/dma-iommu.c
++++ b/arch/powerpc/kernel/dma-iommu.c
+@@ -167,7 +167,6 @@ u64 dma_iommu_get_required_mask(struct device *dev)
+ const struct dma_map_ops dma_iommu_ops = {
+ 	.alloc			= dma_iommu_alloc_coherent,
+ 	.free			= dma_iommu_free_coherent,
+-	.mmap			= dma_nommu_mmap_coherent,
+ 	.map_sg			= dma_iommu_map_sg,
+ 	.unmap_sg		= dma_iommu_unmap_sg,
+ 	.dma_supported		= dma_iommu_dma_supported,
 diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
-index d5950a0cb758..6d2677b2daa6 100644
+index 0e21c318300e..d5950a0cb758 100644
 --- a/arch/powerpc/kernel/dma-swiotlb.c
 +++ b/arch/powerpc/kernel/dma-swiotlb.c
-@@ -36,7 +36,7 @@ const struct dma_map_ops powerpc_swiotlb_dma_ops = {
+@@ -34,7 +34,6 @@ unsigned int ppc_swiotlb_enable;
+ const struct dma_map_ops powerpc_swiotlb_dma_ops = {
+ 	.alloc = __dma_nommu_alloc_coherent,
  	.free = __dma_nommu_free_coherent,
+-	.mmap = dma_nommu_mmap_coherent,
  	.map_sg = dma_direct_map_sg,
  	.unmap_sg = dma_direct_unmap_sg,
--	.dma_supported = swiotlb_dma_supported,
-+	.dma_supported = dma_direct_supported,
- 	.map_page = dma_direct_map_page,
- 	.unmap_page = dma_direct_unmap_page,
- 	.sync_single_for_cpu = dma_direct_sync_single_for_cpu,
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 7c007ed7505f..54254388899e 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -60,9 +60,6 @@ extern void swiotlb_tbl_sync_single(struct device *hwdev,
- 				    size_t size, enum dma_data_direction dir,
- 				    enum dma_sync_target target);
- 
--extern int
--swiotlb_dma_supported(struct device *hwdev, u64 mask);
--
- #ifdef CONFIG_SWIOTLB
- extern enum swiotlb_force swiotlb_force;
- extern phys_addr_t io_tlb_start, io_tlb_end;
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index d6361776dc5c..cbf3498a46f9 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -648,15 +648,3 @@ bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
- 
- 	return true;
+ 	.dma_supported = swiotlb_dma_supported,
+diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
+index 10fa4e18b4e9..841c43355a7e 100644
+--- a/arch/powerpc/kernel/dma.c
++++ b/arch/powerpc/kernel/dma.c
+@@ -114,24 +114,6 @@ void __dma_nommu_free_coherent(struct device *dev, size_t size,
  }
--
--/*
-- * Return whether the given device DMA address mask can be supported
-- * properly.  For example, if your device can only drive the low 24-bits
-- * during bus mastering, then you would pass 0x00ffffff as the mask to
-- * this function.
-- */
--int
--swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ #endif /* !CONFIG_NOT_COHERENT_CACHE */
+ 
+-int dma_nommu_mmap_coherent(struct device *dev, struct vm_area_struct *vma,
+-			     void *cpu_addr, dma_addr_t handle, size_t size,
+-			     unsigned long attrs)
 -{
--	return __phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
+-	unsigned long pfn;
+-
+-#ifdef CONFIG_NOT_COHERENT_CACHE
+-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+-	pfn = __dma_get_coherent_pfn((unsigned long)cpu_addr);
+-#else
+-	pfn = page_to_pfn(virt_to_page(cpu_addr));
+-#endif
+-	return remap_pfn_range(vma, vma->vm_start,
+-			       pfn + vma->vm_pgoff,
+-			       vma->vm_end - vma->vm_start,
+-			       vma->vm_page_prot);
 -}
+-
+ int dma_nommu_map_sg(struct device *dev, struct scatterlist *sgl,
+ 		int nents, enum dma_data_direction direction,
+ 		unsigned long attrs)
+@@ -218,7 +200,6 @@ static inline void dma_nommu_sync_single(struct device *dev,
+ const struct dma_map_ops dma_nommu_ops = {
+ 	.alloc				= __dma_nommu_alloc_coherent,
+ 	.free				= __dma_nommu_free_coherent,
+-	.mmap				= dma_nommu_mmap_coherent,
+ 	.map_sg				= dma_nommu_map_sg,
+ 	.unmap_sg			= dma_nommu_unmap_sg,
+ 	.dma_supported			= dma_nommu_dma_supported,
+diff --git a/arch/powerpc/mm/dma-noncoherent.c b/arch/powerpc/mm/dma-noncoherent.c
+index e955539686a4..ee95da19c82d 100644
+--- a/arch/powerpc/mm/dma-noncoherent.c
++++ b/arch/powerpc/mm/dma-noncoherent.c
+@@ -30,6 +30,7 @@
+ #include <linux/types.h>
+ #include <linux/highmem.h>
+ #include <linux/dma-direct.h>
++#include <linux/dma-noncoherent.h>
+ #include <linux/export.h>
+ 
+ #include <asm/tlbflush.h>
+@@ -400,14 +401,16 @@ EXPORT_SYMBOL(__dma_sync_page);
+ 
+ /*
+  * Return the PFN for a given cpu virtual address returned by
+- * __dma_nommu_alloc_coherent. This is used by dma_mmap_coherent()
++ * __dma_nommu_alloc_coherent.
+  */
+-unsigned long __dma_get_coherent_pfn(unsigned long cpu_addr)
++long arch_dma_coherent_to_pfn(struct device *dev, void *vaddr,
++		dma_addr_t dma_addr)
+ {
+ 	/* This should always be populated, so we don't test every
+ 	 * level. If that fails, we'll have a nice crash which
+ 	 * will be as good as a BUG_ON()
+ 	 */
++	unsigned long cpu_addr = (unsigned long)vaddr;
+ 	pgd_t *pgd = pgd_offset_k(cpu_addr);
+ 	pud_t *pud = pud_offset(pgd, cpu_addr);
+ 	pmd_t *pmd = pmd_offset(pud, cpu_addr);
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index 7c544607ba32..dea50355f6e8 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -408,6 +408,7 @@ config NOT_COHERENT_CACHE
+ 	bool
+ 	depends on 4xx || PPC_8xx || E200 || PPC_MPC512x || \
+ 		GAMECUBE_COMMON || AMIGAONE
++	select ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	default n if PPC_47x
+ 	default y
+ 
+diff --git a/arch/powerpc/platforms/pseries/vio.c b/arch/powerpc/platforms/pseries/vio.c
+index 7870bf99168c..b7dc8bd41fd0 100644
+--- a/arch/powerpc/platforms/pseries/vio.c
++++ b/arch/powerpc/platforms/pseries/vio.c
+@@ -603,7 +603,6 @@ static void vio_dma_iommu_unmap_sg(struct device *dev,
+ static const struct dma_map_ops vio_dma_mapping_ops = {
+ 	.alloc             = vio_dma_iommu_alloc_coherent,
+ 	.free              = vio_dma_iommu_free_coherent,
+-	.mmap		   = dma_nommu_mmap_coherent,
+ 	.map_sg            = vio_dma_iommu_map_sg,
+ 	.unmap_sg          = vio_dma_iommu_unmap_sg,
+ 	.map_page          = vio_dma_iommu_map_page,
 -- 
 2.20.1
