@@ -1,46 +1,116 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
- tables
-Date: Wed, 13 Feb 2019 18:12:34 +0100
-Message-ID: <789fb2e6-0d80-b6de-adf3-57180a50ec3e@suse.cz>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
- <20190111102155.in5rctq5krs4ewfi@8bytes.org>
- <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: [PATCH v2 07/12] NTB: Introduce functions to calculate multi-port resource index
+Date: Wed, 13 Feb 2019 10:54:49 -0700
+Message-ID: <20190213175454.7506-8-logang@deltatee.com>
+References: <20190213175454.7506-1-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Nicolas Boichat <drinkcat@chromium.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190213175454.7506-1-logang@deltatee.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, Logan Gunthorpe <logang@deltatee.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 1/22/19 11:51 PM, Nicolas Boichat wrote:
-> Hi Andrew,
-> 
-> On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
->>
->> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
->> > Does anyone have any further comment on this series? If not, which
->> > maintainer is going to pick this up? I assume Andrew Morton?
->>
->> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
->> this should go through mm.
-> 
-> Gentle ping on this series, it seems like it's better if it goes
-> through your tree.
-> 
-> Series still applies cleanly on linux-next, but I'm happy to resend if
-> that helps.
+When using multi-ports each port uses resources (dbs, msgs, mws, etc)
+on every other port. Creating a mapping for these resources such that
+each port has a corresponding resource on every other port is a bit
+tricky.
 
-Ping, Andrew?
+Introduce the ntb_peer_resource_idx() function for this purpose.
+It returns the peer resource number that will correspond with the
+local peer index on the remote peer.
 
-> Thanks!
-> 
->> Regards,
->>
->>         Joerg
-> 
+Also, introduce ntb_peer_highest_mw_idx() which will use
+ntb_peer_resource_idx() but return the MW index starting with the
+highest index and working down.
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: Jon Mason <jdmason@kudzu.us>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Allen Hubbe <allenbh@gmail.com>
+---
+ include/linux/ntb.h | 70 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+
+diff --git a/include/linux/ntb.h b/include/linux/ntb.h
+index 181d16601dd9..f5c69d853489 100644
+--- a/include/linux/ntb.h
++++ b/include/linux/ntb.h
+@@ -1502,4 +1502,74 @@ static inline int ntb_peer_msg_write(struct ntb_dev *ntb, int pidx, int midx,
+ 	return ntb->ops->peer_msg_write(ntb, pidx, midx, msg);
+ }
+ 
++/**
++ * ntb_peer_resource_idx() - get a resource index for a given peer idx
++ * @ntb:	NTB device context.
++ * @pidx:	Peer port index.
++ *
++ * When constructing a graph of peers, each remote peer must use a different
++ * resource index (mw, doorbell, etc) to communicate with each other
++ * peer.
++ *
++ * In a two peer system, this function should always return 0 such that
++ * resource 0 points to the remote peer on both ports.
++ *
++ * In a 5 peer system, this function will return the following matrix
++ *
++ * pidx \ port    0    1    2    3    4
++ * 0              0    0    1    2    3
++ * 1              0    1    2    3    4
++ * 2              0    1    2    3    4
++ * 3              0    1    2    3    4
++ *
++ * For example, if this function is used to program peer's memory
++ * windows, port 0 will program MW 0 on all it's peers to point to itself.
++ * port 1 will program MW 0 in port 0 to point to itself and MW 1 on all
++ * other ports. etc.
++ *
++ * For the legacy two host case, ntb_port_number() and ntb_peer_port_number()
++ * both return zero and therefore this function will always return zero.
++ * So MW 0 on each host would be programmed to point to the other host.
++ *
++ * Return: the resource index to use for that peer.
++ */
++static inline int ntb_peer_resource_idx(struct ntb_dev *ntb, int pidx)
++{
++	int local_port, peer_port;
++
++	if (pidx >= ntb_peer_port_count(ntb))
++		return -EINVAL;
++
++	local_port = ntb_port_number(ntb);
++	peer_port = ntb_peer_port_number(ntb, pidx);
++
++	if (peer_port < local_port)
++		return local_port - 1;
++	else
++		return local_port;
++}
++
++/**
++ * ntb_peer_highest_mw_idx() - get a memory window index for a given peer idx
++ *	using the highest index memory windows first
++ *
++ * @ntb:	NTB device context.
++ * @pidx:	Peer port index.
++ *
++ * Like ntb_peer_resource_idx(), except it returns indexes starting with
++ * last memory window index.
++ *
++ * Return: the resource index to use for that peer.
++ */
++static inline int ntb_peer_highest_mw_idx(struct ntb_dev *ntb, int pidx)
++{
++	int ret;
++
++	ret = ntb_peer_resource_idx(ntb, pidx);
++	if (ret < 0)
++		return ret;
++
++	return ntb_mw_count(ntb, pidx) - ret - 1;
++}
++
+ #endif
+-- 
+2.19.0
