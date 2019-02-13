@@ -1,40 +1,44 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 06/12] dma-mapping: improve selection of
- dma_declare_coherent availability
-Date: Wed, 13 Feb 2019 19:24:35 +0100
-Message-ID: <20190213182435.GA19906@lst.de>
-References: <20190211133554.30055-1-hch@lst.de> <20190211133554.30055-7-hch@lst.de> <CAL_JsqL+LiJTF5kZz2hXGbQcH+D4U0jAQE376VSUVMQmdg=XFA@mail.gmail.com>
+Subject: implement generic dma_map_ops for IOMMUs v2
+Date: Wed, 13 Feb 2019 19:28:31 +0100
+Message-ID: <20190213182900.16707-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqL+LiJTF5kZz2hXGbQcH+D4U0jAQE376VSUVMQmdg=XFA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Linux IOMMU <iommu@lists.linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lee Jones <lee.jones@linaro.org>, x86@kernel.org, arcml <linux-snps-arc@lists.infradead.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-mips@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-riscv@lists.infradead.org, SH-Linux <linux-sh@vger.kernel.org>, linux-xtensa@linux-xtensa.org, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 12, 2019 at 02:40:23PM -0600, Rob Herring wrote:
-> > diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
-> > index 3607fd2810e4..f8c66a9472a4 100644
-> > --- a/drivers/of/Kconfig
-> > +++ b/drivers/of/Kconfig
-> > @@ -43,6 +43,7 @@ config OF_FLATTREE
-> >
-> >  config OF_EARLY_FLATTREE
-> >         bool
-> > +       select DMA_DECLARE_COHERENT
-> 
-> Is selecting DMA_DECLARE_COHERENT okay on UML? We run the unittests with UML.
+Hi Robin,
 
-No, that will fail with undefined references to memunmap.
+please take a look at this series, which implements a completely generic
+set of dma_map_ops for IOMMU drivers.  This is done by taking the
+existing arm64 code, moving it to drivers/iommu and then massaging it
+so that it can also work for architectures with DMA remapping.  This
+should help future ports to support IOMMUs more easily, and also allow
+to remove various custom IOMMU dma_map_ops implementations, like Tom
+was planning to for the AMD one.
 
-I gues this needs to be
+A git tree is also available at:
 
-	select DMA_DECLARE_COHERENT if HAS_DMA
+    git://git.infradead.org/users/hch/misc.git dma-iommu-ops.2
 
-> Maybe we should just get rid of OF_RESERVED_MEM. If we support booting
-> from DT, then it should always be enabled anyways.
+Gitweb:
 
-Fine with me.  Do you want me to respin the series to just remove
-it?
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops.2
+
+Changes since v1:
+ - only include other headers in dma-iommu.h if CONFIG_DMA_IOMMU is enabled
+ - keep using a scatterlist in iommu_dma_alloc
+ - split out mmap/sgtable fixes and move them early in the series
+ - updated a few commit logs
