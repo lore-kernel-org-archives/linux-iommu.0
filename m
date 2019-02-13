@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 10/21] dma-iommu: move __iommu_dma_map
-Date: Wed, 13 Feb 2019 19:29:09 +0100
-Message-ID: <20190213182920.16764-11-hch@lst.de>
+Subject: [PATCH 08/21] dma-iommu: refactor iommu_dma_mmap
+Date: Wed, 13 Feb 2019 19:29:07 +0100
+Message-ID: <20190213182920.16764-9-hch@lst.de>
 References: <20190213182920.16764-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,77 +12,110 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Moving this function up to its unmap counterpart helps to keep related
-code together for the following changes.
+Move the vm_area handling into __iommu_dma_mmap, which is renamed
+to iommu_dma_mmap_remap.
+
+Inline __iommu_dma_mmap_pfn into the main function to simplify the code
+flow a bit.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 46 +++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+ drivers/iommu/dma-iommu.c | 50 ++++++++++++++-------------------------
+ 1 file changed, 18 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7ea9b2fac74b..2b446178fb8d 100644
+index c320c52cdac4..ed2ef8409806 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -436,6 +436,29 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
- 	iommu_dma_free_iova(cookie, dma_addr, size);
+@@ -598,23 +598,27 @@ static struct page **__iommu_dma_alloc(struct device *dev, size_t size,
  }
  
-+static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
-+		size_t size, int prot, struct iommu_domain *domain)
-+{
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	size_t iova_off = 0;
-+	dma_addr_t iova;
-+
-+	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
-+		iova_off = iova_offset(&cookie->iovad, phys);
-+		size = iova_align(&cookie->iovad, size + iova_off);
-+	}
-+
-+	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
-+	if (!iova)
-+		return DMA_MAPPING_ERROR;
-+
-+	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
-+		iommu_dma_free_iova(cookie, iova, size);
-+		return DMA_MAPPING_ERROR;
-+	}
-+	return iova + iova_off;
-+}
-+
- static void __iommu_dma_free_pages(struct page **pages, int count)
+ /**
+- * __iommu_dma_mmap - Map a buffer into provided user VMA
+- * @pages: Array representing buffer from __iommu_dma_alloc()
++ * iommu_dma_mmap_remap - Map a remapped page array into provided user VMA
++ * @cpu_addr: virtual address of the memory to be remapped
+  * @size: Size of buffer in bytes
+  * @vma: VMA describing requested userspace mapping
+  *
+- * Maps the pages of the buffer in @pages into @vma. The caller is responsible
++ * Maps the pages pointed to by @cpu_addr into @vma. The caller is responsible
+  * for verifying the correct size and protection of @vma beforehand.
+  */
+-static int __iommu_dma_mmap(struct page **pages, size_t size,
++static int iommu_dma_mmap_remap(void *cpu_addr, size_t size,
+ 		struct vm_area_struct *vma)
  {
- 	while (count--)
-@@ -690,29 +713,6 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
- 		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
++	struct vm_struct *area = find_vm_area(cpu_addr);
+ 	unsigned long uaddr = vma->vm_start;
+ 	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	int ret = -ENXIO;
+ 
++	if (WARN_ON(!area || !area->pages))
++		return -ENXIO;
++
+ 	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+-		ret = vm_insert_page(vma, uaddr, pages[i]);
++		ret = vm_insert_page(vma, uaddr, area->pages[i]);
+ 		if (ret)
+ 			break;
+ 		uaddr += PAGE_SIZE;
+@@ -1053,21 +1057,13 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 	}
  }
  
--static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
--		size_t size, int prot, struct iommu_domain *domain)
+-static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
+-			      unsigned long pfn, size_t size)
 -{
--	struct iommu_dma_cookie *cookie = domain->iova_cookie;
--	size_t iova_off = 0;
--	dma_addr_t iova;
--
--	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
--		iova_off = iova_offset(&cookie->iovad, phys);
--		size = iova_align(&cookie->iovad, size + iova_off);
--	}
--
--	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
--	if (!iova)
--		return DMA_MAPPING_ERROR;
--
--	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
--		iommu_dma_free_iova(cookie, iova, size);
--		return DMA_MAPPING_ERROR;
--	}
--	return iova + iova_off;
+-	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
+-			       vma->vm_end - vma->vm_start,
+-			       vma->vm_page_prot);
 -}
 -
- static dma_addr_t __iommu_dma_map_page(struct device *dev, struct page *page,
- 		unsigned long offset, size_t size, int prot)
+ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+ 		unsigned long attrs)
  {
+ 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	unsigned long off = vma->vm_pgoff;
+-	struct vm_struct *area;
++	unsigned long pfn;
+ 	int ret;
+ 
+ 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
+@@ -1078,25 +1074,15 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
+ 		return -ENXIO;
+ 
+-	if (!is_vmalloc_addr(cpu_addr)) {
+-		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+-		return __iommu_dma_mmap_pfn(vma, pfn, size);
+-	}
++	if (is_vmalloc_addr(cpu_addr)) {
++		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
++			return iommu_dma_mmap_remap(cpu_addr, size, vma);
++		pfn = vmalloc_to_pfn(cpu_addr);
++	} else
++		pfn = page_to_pfn(virt_to_page(cpu_addr));
+ 
+-	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+-		/*
+-		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+-		 * hence in the vmalloc space.
+-		 */
+-		unsigned long pfn = vmalloc_to_pfn(cpu_addr);
+-		return __iommu_dma_mmap_pfn(vma, pfn, size);
+-	}
+-
+-	area = find_vm_area(cpu_addr);
+-	if (WARN_ON(!area || !area->pages))
+-		return -ENXIO;
+-
+-	return __iommu_dma_mmap(area->pages, size, vma);
++	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
++			vma_pages(vma) << PAGE_SHIFT, vma->vm_page_prot);
+ }
+ 
+ static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
 -- 
 2.20.1
