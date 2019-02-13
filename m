@@ -1,104 +1,45 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v2 01/12] iommu/vt-d: Implement dma_[un]map_resource()
-Date: Wed, 13 Feb 2019 10:57:25 -0700
-Message-ID: <5de68173-5673-f834-c2aa-ec8cffc6702a@deltatee.com>
-References: <20190213175454.7506-1-logang@deltatee.com>
- <20190213175454.7506-2-logang@deltatee.com>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: [PATCH v2 2/2] iommu/vt-d: Enable PASID only if device expects
+ PASID  in PRG Response.
+Date: Wed, 13 Feb 2019 10:10:46 -0800
+Message-ID: <20190213181046.GA16999@araj-mobl1.jf.intel.com>
+References: <cover.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <787d13ae22ae07c708b06180241f4f2b71031f84.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19C93AD90@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190213175454.7506-2-logang@deltatee.com>
-Content-Language: en-CA
+Content-Disposition: inline
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19C93AD90@SHSMSX104.ccr.corp.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, David Woodhouse <dwmw2@infradead.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "joro@8bytes.org" <joro@8bytes.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Busch, Keith" <keith.busch@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Oops, sorry. Please ignore the first two patches in this series. They
-have already been merged independently.
+On Wed, Feb 13, 2019 at 12:26:33AM -0800, Tian, Kevin wrote:
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> > index 1457f931218e..af2e4a011787 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -1399,7 +1399,8 @@ static void iommu_enable_dev_iotlb(struct
+> > device_domain_info *info)
+> >  	   undefined. So always enable PASID support on devices which
+> >  	   have it, even if we can't yet know if we're ever going to
+> >  	   use it. */
+> > -	if (info->pasid_supported && !pci_enable_pasid(pdev, info-
+> > >pasid_supported & ~1))
+> > +	if (info->pasid_supported && pci_prg_resp_pasid_required(pdev)
+> > &&
+> > +	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+> >  		info->pasid_enabled = 1;
+> 
+> Above logic looks problematic. As Dave commented in another thread,
+> PRI and PASID are orthogonal capabilities. Especially with introduction
+> of VT-d scalable mode, PASID will be used alone even w/o PRI...
+> 
+> Why not doing the check when PRI is actually enabled? At that point
+> you can fail the request if above condition is false. 
+> 
 
-Logan
-
-
-
-On 2019-02-13 10:54 a.m., Logan Gunthorpe wrote:
-> Currently the Intel IOMMU uses the default dma_[un]map_resource()
-> implementations does nothing and simply returns the physical address
-> unmodified.
-> 
-> However, this doesn't create the IOVA entries necessary for addresses
-> mapped this way to work when the IOMMU is enabled. Thus, when the
-> IOMMU is enabled, drivers relying on dma_map_resource() will trigger
-> DMAR errors. We see this when running ntb_transport with the IOMMU
-> enabled, DMA, and switchtec hardware.
-> 
-> The implementation for intel_map_resource() is nearly identical to
-> intel_map_page(), we just have to re-create __intel_map_single().
-> dma_unmap_resource() uses intel_unmap_page() directly as the
-> functions are identical.
-> 
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> Cc: David Woodhouse <dwmw2@infradead.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> ---
->  drivers/iommu/intel-iommu.c | 23 ++++++++++++++++-------
->  1 file changed, 16 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 78188bf7e90d..ad737e16575b 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3649,11 +3649,9 @@ static int iommu_no_mapping(struct device *dev)
->  	return 0;
->  }
->  
-> -static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
-> -				   unsigned long offset, size_t size, int dir,
-> -				   u64 dma_mask)
-> +static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
-> +				     size_t size, int dir, u64 dma_mask)
->  {
-> -	phys_addr_t paddr = page_to_phys(page) + offset;
->  	struct dmar_domain *domain;
->  	phys_addr_t start_paddr;
->  	unsigned long iova_pfn;
-> @@ -3715,7 +3713,15 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
->  				 enum dma_data_direction dir,
->  				 unsigned long attrs)
->  {
-> -	return __intel_map_page(dev, page, offset, size, dir, *dev->dma_mask);
-> +	return __intel_map_single(dev, page_to_phys(page) + offset, size,
-> +				  dir, *dev->dma_mask);
-> +}
-> +
-> +static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
-> +				     size_t size, enum dma_data_direction dir,
-> +				     unsigned long attrs)
-> +{
-> +	return __intel_map_single(dev, phys_addr, size, dir, *dev->dma_mask);
->  }
->  
->  static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
-> @@ -3806,8 +3812,9 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
->  		return NULL;
->  	memset(page_address(page), 0, size);
->  
-> -	*dma_handle = __intel_map_page(dev, page, 0, size, DMA_BIDIRECTIONAL,
-> -				       dev->coherent_dma_mask);
-> +	*dma_handle = __intel_map_single(dev, page_to_phys(page), size,
-> +					 DMA_BIDIRECTIONAL,
-> +					 dev->coherent_dma_mask);
->  	if (*dma_handle != DMA_MAPPING_ERROR)
->  		return page_address(page);
->  	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
-> @@ -3924,6 +3931,8 @@ static const struct dma_map_ops intel_dma_ops = {
->  	.unmap_sg = intel_unmap_sg,
->  	.map_page = intel_map_page,
->  	.unmap_page = intel_unmap_page,
-> +	.map_resource = intel_map_resource,
-> +	.unmap_resource = intel_unmap_page,
->  	.dma_supported = dma_direct_supported,
->  };
->  
-> 
+That makes sense. 
