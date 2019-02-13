@@ -1,7 +1,7 @@
 From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v2 04/12] iommu/vt-d: Allow interrupts from the entire bus for aliased devices
-Date: Wed, 13 Feb 2019 10:54:46 -0700
-Message-ID: <20190213175454.7506-5-logang@deltatee.com>
+Subject: [PATCH v2 03/12] iommu/vt-d: Add helper to set an IRTE to verify only the bus number
+Date: Wed, 13 Feb 2019 10:54:45 -0700
+Message-ID: <20190213175454.7506-4-logang@deltatee.com>
 References: <20190213175454.7506-1-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,72 +12,66 @@ To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.ker
 Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When a device has multiple aliases that all are from the same bus,
-we program the IRTE to accept requests from any matching device on the
-bus.
+The current code uses set_irte_sid() with SVT_VERIFY_BUS and PCI_DEVID
+to set the SID value. However, this is very confusing because, with
+SVT_VERIFY_BUS, the SID value is not a PCI devfn address, but the start
+and end bus numbers to match against.
 
-This is so NTB devices which can have requests from multiple bus-devfns
-can pass MSI interrupts through across the bridge.
+According to the Intel Virtualization Technology for Directed I/O
+Architecture Specification, Rev. 3.0, page 9-36:
+
+  The most significant 8-bits of the SID field contains the Startbus#,
+  and the least significant 8-bits of the SID field contains the Endbus#.
+  Interrupt requests that reference this IRTE must have a requester-id
+  whose bus# (most significant 8-bits of requester-id) has a value equal
+  to or within the Startbus# to Endbus# range.
+
+So to make this more clear, introduce a new set_irte_verify_bus() that
+explicitly takes a start bus and end bus so that we can stop abusing
+the PCI_DEVID macro.
+
+This helper function will be called a second time in an subsequent patch.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 Cc: David Woodhouse <dwmw2@infradead.org>
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/intel_irq_remapping.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/iommu/intel_irq_remapping.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 5a55bef8e379..2d74641b7f7b 100644
+index 24d45b07f425..5a55bef8e379 100644
 --- a/drivers/iommu/intel_irq_remapping.c
 +++ b/drivers/iommu/intel_irq_remapping.c
-@@ -368,6 +368,8 @@ static int set_hpet_sid(struct irte *irte, u8 id)
- struct set_msi_sid_data {
- 	struct pci_dev *pdev;
- 	u16 alias;
-+	int count;
-+	int busmatch_count;
- };
- 
- static int set_msi_sid_cb(struct pci_dev *pdev, u16 alias, void *opaque)
-@@ -376,6 +378,10 @@ static int set_msi_sid_cb(struct pci_dev *pdev, u16 alias, void *opaque)
- 
- 	data->pdev = pdev;
- 	data->alias = alias;
-+	data->count++;
-+
-+	if (PCI_BUS_NUM(alias) == pdev->bus->number)
-+		data->busmatch_count++;
- 
- 	return 0;
+@@ -294,6 +294,18 @@ static void set_irte_sid(struct irte *irte, unsigned int svt,
+ 	irte->sid = sid;
  }
-@@ -387,6 +393,8 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 	if (!irte || !dev)
- 		return -1;
  
-+	data.count = 0;
-+	data.busmatch_count = 0;
- 	pci_for_each_dma_alias(dev, set_msi_sid_cb, &data);
- 
- 	/*
-@@ -395,6 +403,11 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 	 * device is the case of a PCIe-to-PCI bridge, where the alias is for
- 	 * the subordinate bus.  In this case we can only verify the bus.
- 	 *
-+	 * If there are multiple aliases, all with the same bus number,
-+	 * then all we can do is verify the bus. This is typical in NTB
-+	 * hardware which use proxy IDs where the device will generate traffic
-+	 * from multiple devfn numbers on the same bus.
-+	 *
- 	 * If the alias device is on a different bus than our source device
- 	 * then we have a topology based alias, use it.
- 	 *
-@@ -405,6 +418,8 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
++/*
++ * Set an IRTE to match only the bus number. Interrupt requests that reference
++ * this IRTE must have a requester-id whose bus number is between or equal
++ * to the start_bus and end_bus arguments.
++ */
++static void set_irte_verify_bus(struct irte *irte, unsigned int start_bus,
++				unsigned int end_bus)
++{
++	set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
++		     (start_bus << 8) | end_bus);
++}
++
+ static int set_ioapic_sid(struct irte *irte, int apic)
+ {
+ 	int i;
+@@ -391,9 +403,8 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+ 	 * original device.
+ 	 */
  	if (PCI_BUS_NUM(data.alias) != data.pdev->bus->number)
- 		set_irte_verify_bus(irte, PCI_BUS_NUM(data.alias),
- 				    dev->bus->number);
-+	else if (data.count >= 2 && data.busmatch_count == data.count)
-+		set_irte_verify_bus(irte, dev->bus->number, dev->bus->number);
+-		set_irte_sid(irte, SVT_VERIFY_BUS, SQ_ALL_16,
+-			     PCI_DEVID(PCI_BUS_NUM(data.alias),
+-				       dev->bus->number));
++		set_irte_verify_bus(irte, PCI_BUS_NUM(data.alias),
++				    dev->bus->number);
  	else if (data.pdev->bus->number != dev->bus->number)
  		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, data.alias);
  	else
