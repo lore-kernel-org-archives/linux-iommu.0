@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 25/32] powerpc/dma: remove dma_nommu_dma_supported
-Date: Wed, 13 Feb 2019 08:01:26 +0100
-Message-ID: <20190213070133.11259-26-hch@lst.de>
+Subject: [PATCH 21/32] dma-mapping, powerpc: simplify the arch dma_set_mask override
+Date: Wed, 13 Feb 2019 08:01:22 +0100
+Message-ID: <20190213070133.11259-22-hch@lst.de>
 References: <20190213070133.11259-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,84 +12,184 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@sa
 Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christian Zigotzky <chzigotzky@xenosoft.de>
 List-Id: iommu@lists.linux-foundation.org
 
-This function is largely identical to the generic version used
-everywhere else.  Replace it with the generic version.
+Instead of letting the architecture supply all of dma_set_mask just
+give it an additional hook selected by Kconfig.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Tested-by: Christian Zigotzky <chzigotzky@xenosoft.de>
 ---
- arch/powerpc/include/asm/dma-mapping.h |  1 -
- arch/powerpc/kernel/dma-iommu.c        |  2 +-
- arch/powerpc/kernel/dma.c              | 25 +------------------------
- 3 files changed, 2 insertions(+), 26 deletions(-)
+ arch/powerpc/Kconfig                   |  1 +
+ arch/powerpc/include/asm/dma-mapping.h |  2 --
+ arch/powerpc/include/asm/machdep.h     |  2 +-
+ arch/powerpc/kernel/Makefile           |  1 +
+ arch/powerpc/kernel/dma-mask.c         | 12 ++++++++++++
+ arch/powerpc/kernel/dma.c              | 12 ------------
+ arch/powerpc/sysdev/fsl_pci.c          |  8 +-------
+ kernel/dma/Kconfig                     |  3 +++
+ kernel/dma/mapping.c                   |  9 +++++++--
+ 9 files changed, 26 insertions(+), 24 deletions(-)
+ create mode 100644 arch/powerpc/kernel/dma-mask.c
 
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 8a4ae675c9ba..8af6a7d93148 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -883,6 +883,7 @@ config FSL_SOC
+ 
+ config FSL_PCI
+  	bool
++	select ARCH_HAS_DMA_SET_MASK
+ 	select PPC_INDIRECT_PCI
+ 	select PCI_QUIRKS
+ 
 diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
-index af9a32d4fcf8..cdf70aaeafeb 100644
+index dc7f7bcdf65d..16d45518d9bb 100644
 --- a/arch/powerpc/include/asm/dma-mapping.h
 +++ b/arch/powerpc/include/asm/dma-mapping.h
-@@ -31,7 +31,6 @@ int dma_nommu_map_sg(struct device *dev, struct scatterlist *sgl,
- dma_addr_t dma_nommu_map_page(struct device *dev, struct page *page,
- 		unsigned long offset, size_t size,
- 		enum dma_data_direction dir, unsigned long attrs);
--int dma_nommu_dma_supported(struct device *dev, u64 mask);
- 
- #ifdef CONFIG_NOT_COHERENT_CACHE
- /*
-diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
-index 4377b69a9d42..67fbfaa4e3b2 100644
---- a/arch/powerpc/kernel/dma-iommu.c
-+++ b/arch/powerpc/kernel/dma-iommu.c
-@@ -21,7 +21,7 @@
- static inline bool dma_iommu_alloc_bypass(struct device *dev)
- {
- 	return dev->archdata.iommu_bypass && !iommu_fixed_is_weak &&
--		dma_nommu_dma_supported(dev, dev->coherent_dma_mask);
-+		dma_direct_supported(dev, dev->coherent_dma_mask);
+@@ -110,7 +110,5 @@ static inline void set_dma_offset(struct device *dev, dma_addr_t off)
+ 		dev->archdata.dma_offset = off;
  }
  
- static inline bool dma_iommu_map_bypass(struct device *dev,
+-#define HAVE_ARCH_DMA_SET_MASK 1
+-
+ #endif /* __KERNEL__ */
+ #endif	/* _ASM_DMA_MAPPING_H */
+diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
+index 7b70dcbce1b9..2f0ca6560e47 100644
+--- a/arch/powerpc/include/asm/machdep.h
++++ b/arch/powerpc/include/asm/machdep.h
+@@ -47,7 +47,7 @@ struct machdep_calls {
+ #endif
+ #endif /* CONFIG_PPC64 */
+ 
+-	int		(*dma_set_mask)(struct device *dev, u64 dma_mask);
++	void		(*dma_set_mask)(struct device *dev, u64 dma_mask);
+ 
+ 	int		(*probe)(void);
+ 	void		(*setup_arch)(void); /* Optional, may be NULL */
+diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+index cb7f0bb9ee71..9bb12cd642ef 100644
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -105,6 +105,7 @@ obj-$(CONFIG_UPROBES)		+= uprobes.o
+ obj-$(CONFIG_PPC_UDBG_16550)	+= legacy_serial.o udbg_16550.o
+ obj-$(CONFIG_STACKTRACE)	+= stacktrace.o
+ obj-$(CONFIG_SWIOTLB)		+= dma-swiotlb.o
++obj-$(CONFIG_ARCH_HAS_DMA_SET_MASK) += dma-mask.o
+ 
+ pci64-$(CONFIG_PPC64)		+= pci_dn.o pci-hotplug.o isa-bridge.o
+ obj-$(CONFIG_PCI)		+= pci_$(BITS).o $(pci64-y) \
+diff --git a/arch/powerpc/kernel/dma-mask.c b/arch/powerpc/kernel/dma-mask.c
+new file mode 100644
+index 000000000000..ffbbbc432612
+--- /dev/null
++++ b/arch/powerpc/kernel/dma-mask.c
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/dma-mapping.h>
++#include <linux/export.h>
++#include <asm/machdep.h>
++
++void arch_dma_set_mask(struct device *dev, u64 dma_mask)
++{
++	if (ppc_md.dma_set_mask)
++		ppc_md.dma_set_mask(dev, dma_mask);
++}
++EXPORT_SYMBOL(arch_dma_set_mask);
 diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-index 46afc66cc271..a3546a82f6d7 100644
+index 1e191eb3f0ec..e422ca65d1cf 100644
 --- a/arch/powerpc/kernel/dma.c
 +++ b/arch/powerpc/kernel/dma.c
-@@ -39,29 +39,6 @@ static u64 __maybe_unused get_pfn_limit(struct device *dev)
- 	return pfn;
+@@ -234,18 +234,6 @@ const struct dma_map_ops dma_nommu_ops = {
+ };
+ EXPORT_SYMBOL(dma_nommu_ops);
+ 
+-int dma_set_mask(struct device *dev, u64 dma_mask)
+-{
+-	if (ppc_md.dma_set_mask)
+-		return ppc_md.dma_set_mask(dev, dma_mask);
+-
+-	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
+-		return -EIO;
+-	*dev->dma_mask = dma_mask;
+-	return 0;
+-}
+-EXPORT_SYMBOL(dma_set_mask);
+-
+ static int __init dma_init(void)
+ {
+ #ifdef CONFIG_IBMVIO
+diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
+index b710cee023a2..0c6510f340cb 100644
+--- a/arch/powerpc/sysdev/fsl_pci.c
++++ b/arch/powerpc/sysdev/fsl_pci.c
+@@ -133,11 +133,8 @@ static void setup_swiotlb_ops(struct pci_controller *hose)
+ static inline void setup_swiotlb_ops(struct pci_controller *hose) {}
+ #endif
+ 
+-static int fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
++static void fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
+ {
+-	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
+-		return -EIO;
+-
+ 	/*
+ 	 * Fix up PCI devices that are able to DMA to the large inbound
+ 	 * mapping that allows addressing any RAM address from across PCI.
+@@ -147,9 +144,6 @@ static int fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
+ 		set_dma_ops(dev, &dma_nommu_ops);
+ 		set_dma_offset(dev, pci64_dma_offset);
+ 	}
+-
+-	*dev->dma_mask = dma_mask;
+-	return 0;
  }
  
--int dma_nommu_dma_supported(struct device *dev, u64 mask)
--{
--#ifdef CONFIG_PPC64
--	u64 limit = phys_to_dma(dev, (memblock_end_of_DRAM() - 1));
--
--	/* Limit fits in the mask, we are good */
--	if (mask >= limit)
--		return 1;
--
--#ifdef CONFIG_FSL_SOC
--	/*
--	 * Freescale gets another chance via ZONE_DMA, however
--	 * that will have to be refined if/when they support iommus
--	 */
--	return 1;
+ static int setup_one_atmu(struct ccsr_pci __iomem *pci,
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index ca88b867e7fe..0711d18645de 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -16,6 +16,9 @@ config ARCH_DMA_ADDR_T_64BIT
+ config ARCH_HAS_DMA_COHERENCE_H
+ 	bool
+ 
++config ARCH_HAS_DMA_SET_MASK
++	bool
++
+ config HAVE_GENERIC_DMA_COHERENT
+ 	bool
+ 
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 40c0af744692..ef2aba503467 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -316,18 +316,23 @@ int dma_supported(struct device *dev, u64 mask)
+ }
+ EXPORT_SYMBOL(dma_supported);
+ 
+-#ifndef HAVE_ARCH_DMA_SET_MASK
++#ifdef CONFIG_ARCH_HAS_DMA_SET_MASK
++void arch_dma_set_mask(struct device *dev, u64 mask);
++#else
++#define arch_dma_set_mask(dev, mask)	do { } while (0)
++#endif
++
+ int dma_set_mask(struct device *dev, u64 mask)
+ {
+ 	if (!dev->dma_mask || !dma_supported(dev, mask))
+ 		return -EIO;
+ 
++	arch_dma_set_mask(dev, mask);
+ 	dma_check_mask(dev, mask);
+ 	*dev->dma_mask = mask;
+ 	return 0;
+ }
+ EXPORT_SYMBOL(dma_set_mask);
 -#endif
--	/* Sorry ... */
--	return 0;
--#else
--	return 1;
--#endif
--}
--
- #ifndef CONFIG_NOT_COHERENT_CACHE
- void *__dma_nommu_alloc_coherent(struct device *dev, size_t size,
- 				  dma_addr_t *dma_handle, gfp_t flag,
-@@ -190,7 +167,7 @@ const struct dma_map_ops dma_nommu_ops = {
- 	.free				= __dma_nommu_free_coherent,
- 	.map_sg				= dma_nommu_map_sg,
- 	.unmap_sg			= dma_nommu_unmap_sg,
--	.dma_supported			= dma_nommu_dma_supported,
-+	.dma_supported			= dma_direct_supported,
- 	.map_page			= dma_nommu_map_page,
- 	.unmap_page			= dma_nommu_unmap_page,
- 	.get_required_mask		= dma_direct_get_required_mask,
+ 
+ #ifndef CONFIG_ARCH_HAS_DMA_SET_COHERENT_MASK
+ int dma_set_coherent_mask(struct device *dev, u64 mask)
 -- 
 2.20.1
