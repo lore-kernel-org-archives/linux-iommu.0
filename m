@@ -1,113 +1,104 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v6 9/9] vfio/type1: Handle different mdev isolation type
-Date: Wed, 13 Feb 2019 12:03:01 +0800
-Message-ID: <20190213040301.23021-10-baolu.lu@linux.intel.com>
-References: <20190213040301.23021-1-baolu.lu@linux.intel.com>
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: Re: [PATCH v2 2/2] PCI: iproc: Add PCIe 32bit outbound memory configuration
+Date: Wed, 13 Feb 2019 10:21:55 +0530
+Message-ID: <CABe79T6L5mCc5zoyRUD-bPk7UdxOv_Yz3vyUNYg=Edw-u2mGzQ@mail.gmail.com>
+References: <1549342622-9929-1-git-send-email-srinath.mannam@broadcom.com>
+ <1549342622-9929-3-git-send-email-srinath.mannam@broadcom.com> <20190212183739.GB918@e107981-ln.cambridge.arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190213040301.23021-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20190212183739.GB918@e107981-ln.cambridge.arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Abhishek Shah <abhishek.shah@broadcom.com>, Ray Jui <ray.jui@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds the support to determine the isolation type
-of a mediated device group by checking whether it has
-an iommu device. If an iommu device exists, an iommu
-domain will be allocated and then attached to the iommu
-device. Otherwise, keep the same behavior as it is.
+Hi Lorenzo,
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/vfio/vfio_iommu_type1.c | 48 ++++++++++++++++++++++++++++-----
- 1 file changed, 41 insertions(+), 7 deletions(-)
+Thanks for review, please see my comments below inline.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index ccc4165474aa..f1392c582a3c 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1368,13 +1368,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
- 		iommu_detach_group(domain->domain, group->iommu_group);
- }
- 
-+static bool vfio_bus_is_mdev(struct bus_type *bus)
-+{
-+	struct bus_type *mdev_bus;
-+	bool ret = false;
-+
-+	mdev_bus = symbol_get(mdev_bus_type);
-+	if (mdev_bus) {
-+		ret = (bus == mdev_bus);
-+		symbol_put(mdev_bus_type);
-+	}
-+
-+	return ret;
-+}
-+
-+static int vfio_mdev_iommu_device(struct device *dev, void *data)
-+{
-+	struct device **old = data, *new;
-+
-+	new = vfio_mdev_get_iommu_device(dev);
-+	if (!new || (*old && *old != new))
-+		return -EINVAL;
-+
-+	*old = new;
-+
-+	return 0;
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
- {
- 	struct vfio_iommu *iommu = iommu_data;
- 	struct vfio_group *group;
- 	struct vfio_domain *domain, *d;
--	struct bus_type *bus = NULL, *mdev_bus;
-+	struct bus_type *bus = NULL;
- 	int ret;
- 	bool resv_msi, msi_remap;
- 	phys_addr_t resv_msi_base;
-@@ -1409,23 +1436,30 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_free;
- 
--	mdev_bus = symbol_get(mdev_bus_type);
-+	if (vfio_bus_is_mdev(bus)) {
-+		struct device *iommu_device = NULL;
- 
--	if (mdev_bus) {
--		if ((bus == mdev_bus) && !iommu_present(bus)) {
--			symbol_put(mdev_bus_type);
-+		group->mdev_group = true;
-+
-+		/* Determine the isolation type */
-+		ret = iommu_group_for_each_dev(iommu_group, &iommu_device,
-+					       vfio_mdev_iommu_device);
-+		if (ret || !iommu_device) {
- 			if (!iommu->external_domain) {
- 				INIT_LIST_HEAD(&domain->group_list);
- 				iommu->external_domain = domain;
--			} else
-+			} else {
- 				kfree(domain);
-+			}
- 
- 			list_add(&group->next,
- 				 &iommu->external_domain->group_list);
- 			mutex_unlock(&iommu->lock);
-+
- 			return 0;
- 		}
--		symbol_put(mdev_bus_type);
-+
-+		bus = iommu_device->bus;
- 	}
- 
- 	domain->domain = iommu_domain_alloc(bus);
--- 
-2.17.1
+On Wed, Feb 13, 2019 at 12:07 AM Lorenzo Pieralisi
+<lorenzo.pieralisi@arm.com> wrote:
+>
+> On Tue, Feb 05, 2019 at 10:27:01AM +0530, Srinath Mannam wrote:
+> > Add configuration to support IPROC PCIe host controller outbound memory
+> > window mapping with SOC address range inside 4GB boundary, which is 32 bit
+> > AXI address.
+>
+> I do not understand what this means, explain it to me and rewrite the
+> commit log accordingly.
+>
+This is about "I/O regions" addressing given through ranges DT property.
+In the current driver "I/O regions" address mapping to corresponding
+PCI memory address in controller outbound registers
+is supports above 32-bit address.
+> What does this solve ? Why do we need this patch or rephrased, what
+> is missing in the current driver ?
+With this patch, If ranges DT property has below 32-bit I/O regions
+address then it will be added in the outbound mapping.
+This will help to access I/O region from CPU in 32-bit.
+I will update commit log and send next patch set.
+Ex:
+1. ranges DT property for current driver is,
+    ranges = <0x83000000 0x0 0x40000000 0x4 0x00000000 0 0x40000000>;
+    I/O region address is 0x400000000
+2. ranges DT property with this patch,
+    ranges = <0x83000000 0x0 0x42000000 0x0 0x42000000 0 0x2000000>;
+    I/O region address is 0x42000000
+
+Regards,
+Srinath.
+>
+> > Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> > Signed-off-by: Abhishek Shah <abhishek.shah@broadcom.com>
+> > Signed-off-by: Ray Jui <ray.jui@broadcom.com>
+> > Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> > Reviewed-by: Vikram Prakash <vikram.prakash@broadcom.com>
+>
+> Review tags should be given on public mailing lists, these ones seem
+> to come from non-public review cycles in which case you must drop
+> them.
+>
+> >  drivers/pci/controller/pcie-iproc.c | 21 +++++++++++++++++++--
+> >  1 file changed, 19 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
+> > index b882255..080f142 100644
+> > --- a/drivers/pci/controller/pcie-iproc.c
+> > +++ b/drivers/pci/controller/pcie-iproc.c
+> > @@ -955,8 +955,25 @@ static int iproc_pcie_setup_ob(struct iproc_pcie *pcie, u64 axi_addr,
+> >                       resource_size_t window_size =
+> >                               ob_map->window_sizes[size_idx] * SZ_1M;
+> >
+> > -                     if (size < window_size)
+> > -                             continue;
+> > +                     /*
+> > +                      * Keep iterating until we reach the last window and
+> > +                      * with the minimal window size at index zero. In this
+> > +                      * case, we take a compromise by mapping it using the
+> > +                      * minimum window size that can be supported
+>
+> See above, I do not understand clearly what this means.
+>
+> Lorenzo
+>
+> > +                      */
+> > +                     if (size < window_size) {
+> > +                             if (size_idx > 0 || window_idx > 0)
+> > +                                     continue;
+> > +
+> > +                             /*
+> > +                              * For the corner case of reaching the minimal
+> > +                              * window size that can be supported on the
+> > +                              * last window
+> > +                              */
+> > +                             axi_addr = ALIGN_DOWN(axi_addr, window_size);
+> > +                             pci_addr = ALIGN_DOWN(pci_addr, window_size);
+> > +                             size = window_size;
+> > +                     }
+> >
+> >                       if (!IS_ALIGNED(axi_addr, window_size) ||
+> >                           !IS_ALIGNED(pci_addr, window_size)) {
+> > --
+> > 2.7.4
+> >
