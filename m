@@ -1,7 +1,7 @@
 From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v2 11/12] NTB: Add ntb_msi_test support to ntb_test
-Date: Wed, 13 Feb 2019 10:54:53 -0700
-Message-ID: <20190213175454.7506-12-logang@deltatee.com>
+Subject: [PATCH v2 04/12] iommu/vt-d: Allow interrupts from the entire bus for aliased devices
+Date: Wed, 13 Feb 2019 10:54:46 -0700
+Message-ID: <20190213175454.7506-5-logang@deltatee.com>
 References: <20190213175454.7506-1-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,114 +9,77 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190213175454.7506-1-logang@deltatee.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, Logan Gunthorpe <logang@deltatee.com>
+Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When the ntb_msi_test module is available, the test code will trigger
-each of the interrupts and ensure the corresponding occurrences files
-gets incremented.
+When a device has multiple aliases that all are from the same bus,
+we program the IRTE to accept requests from any matching device on the
+bus.
+
+This is so NTB devices which can have requests from multiple bus-devfns
+can pass MSI interrupts through across the bridge.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Jon Mason <jdmason@kudzu.us>
-Cc: Dave Jiang <dave.jiang@intel.com>
-Cc: Allen Hubbe <allenbh@gmail.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- tools/testing/selftests/ntb/ntb_test.sh | 54 ++++++++++++++++++++++++-
- 1 file changed, 52 insertions(+), 2 deletions(-)
+ drivers/iommu/intel_irq_remapping.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/tools/testing/selftests/ntb/ntb_test.sh b/tools/testing/selftests/ntb/ntb_test.sh
-index 17ca36403d04..1a10b8f67727 100755
---- a/tools/testing/selftests/ntb/ntb_test.sh
-+++ b/tools/testing/selftests/ntb/ntb_test.sh
-@@ -87,10 +87,10 @@ set -e
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 5a55bef8e379..2d74641b7f7b 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -368,6 +368,8 @@ static int set_hpet_sid(struct irte *irte, u8 id)
+ struct set_msi_sid_data {
+ 	struct pci_dev *pdev;
+ 	u16 alias;
++	int count;
++	int busmatch_count;
+ };
  
- function _modprobe()
- {
--	modprobe "$@"
-+	modprobe "$@" || return 1
+ static int set_msi_sid_cb(struct pci_dev *pdev, u16 alias, void *opaque)
+@@ -376,6 +378,10 @@ static int set_msi_sid_cb(struct pci_dev *pdev, u16 alias, void *opaque)
  
- 	if [[ "$REMOTE_HOST" != "" ]]; then
--		ssh "$REMOTE_HOST" modprobe "$@"
-+		ssh "$REMOTE_HOST" modprobe "$@" || return 1
- 	fi
+ 	data->pdev = pdev;
+ 	data->alias = alias;
++	data->count++;
++
++	if (PCI_BUS_NUM(alias) == pdev->bus->number)
++		data->busmatch_count++;
+ 
+ 	return 0;
  }
+@@ -387,6 +393,8 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+ 	if (!irte || !dev)
+ 		return -1;
  
-@@ -451,6 +451,30 @@ function pingpong_test()
- 	echo "  Passed"
- }
++	data.count = 0;
++	data.busmatch_count = 0;
+ 	pci_for_each_dma_alias(dev, set_msi_sid_cb, &data);
  
-+function msi_test()
-+{
-+	LOC=$1
-+	REM=$2
-+
-+	write_file 1 $LOC/ready
-+
-+	echo "Running MSI interrupt tests on: $(subdirname $LOC) / $(subdirname $REM)"
-+
-+	CNT=$(read_file "$LOC/count")
-+	for ((i = 0; i < $CNT; i++)); do
-+		START=$(read_file $REM/../irq${i}_occurrences)
-+		write_file $i $LOC/trigger
-+		END=$(read_file $REM/../irq${i}_occurrences)
-+
-+		if [[ $(($END - $START)) != 1 ]]; then
-+			echo "MSI did not trigger the interrupt on the remote side!" >&2
-+			exit 1
-+		fi
-+	done
-+
-+	echo "  Passed"
-+}
-+
- function perf_test()
- {
- 	USE_DMA=$1
-@@ -529,6 +553,29 @@ function ntb_pingpong_tests()
- 	_modprobe -r ntb_pingpong
- }
- 
-+function ntb_msi_tests()
-+{
-+	LOCAL_MSI="$DEBUGFS/ntb_msi_test/$LOCAL_DEV"
-+	REMOTE_MSI="$REMOTE_HOST:$DEBUGFS/ntb_msi_test/$REMOTE_DEV"
-+
-+	echo "Starting ntb_msi_test tests..."
-+
-+	if ! _modprobe ntb_msi_test 2> /dev/null; then
-+		echo "  Not doing MSI tests seeing the module is not available."
-+		return
-+	fi
-+
-+	port_test $LOCAL_MSI $REMOTE_MSI
-+
-+	LOCAL_PEER="$LOCAL_MSI/peer$LOCAL_PIDX"
-+	REMOTE_PEER="$REMOTE_MSI/peer$REMOTE_PIDX"
-+
-+	msi_test $LOCAL_PEER $REMOTE_PEER
-+	msi_test $REMOTE_PEER $LOCAL_PEER
-+
-+	_modprobe -r ntb_msi_test
-+}
-+
- function ntb_perf_tests()
- {
- 	LOCAL_PERF="$DEBUGFS/ntb_perf/$LOCAL_DEV"
-@@ -550,6 +597,7 @@ function cleanup()
- 	_modprobe -r ntb_perf 2> /dev/null
- 	_modprobe -r ntb_pingpong 2> /dev/null
- 	_modprobe -r ntb_transport 2> /dev/null
-+	_modprobe -r ntb_msi_test 2> /dev/null
- 	set -e
- }
- 
-@@ -586,5 +634,7 @@ ntb_tool_tests
- echo
- ntb_pingpong_tests
- echo
-+ntb_msi_tests
-+echo
- ntb_perf_tests
- echo
+ 	/*
+@@ -395,6 +403,11 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+ 	 * device is the case of a PCIe-to-PCI bridge, where the alias is for
+ 	 * the subordinate bus.  In this case we can only verify the bus.
+ 	 *
++	 * If there are multiple aliases, all with the same bus number,
++	 * then all we can do is verify the bus. This is typical in NTB
++	 * hardware which use proxy IDs where the device will generate traffic
++	 * from multiple devfn numbers on the same bus.
++	 *
+ 	 * If the alias device is on a different bus than our source device
+ 	 * then we have a topology based alias, use it.
+ 	 *
+@@ -405,6 +418,8 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+ 	if (PCI_BUS_NUM(data.alias) != data.pdev->bus->number)
+ 		set_irte_verify_bus(irte, PCI_BUS_NUM(data.alias),
+ 				    dev->bus->number);
++	else if (data.count >= 2 && data.busmatch_count == data.count)
++		set_irte_verify_bus(irte, dev->bus->number, dev->bus->number);
+ 	else if (data.pdev->bus->number != dev->bus->number)
+ 		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, data.alias);
+ 	else
 -- 
 2.19.0
