@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 02/32] dma-direct: we might need GFP_DMA for 32-bit dma masks
-Date: Wed, 13 Feb 2019 08:01:03 +0100
-Message-ID: <20190213070133.11259-3-hch@lst.de>
+Subject: [PATCH 01/32] net: pasemi: set a 64-bit DMA mask on the DMA device
+Date: Wed, 13 Feb 2019 08:01:02 +0100
+Message-ID: <20190213070133.11259-2-hch@lst.de>
 References: <20190213070133.11259-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,29 +12,30 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@sa
 Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christian Zigotzky <chzigotzky@xenosoft.de>
 List-Id: iommu@lists.linux-foundation.org
 
-If there is no ZONE_DMA32 we might need GFP_DMA to be able to
-allocate memory that satisfies a 32-bit DMA mask.
+The pasemi driver never set a DMA mask, and given that the powerpc
+DMA mapping routines never check it this worked ok so far.  But the
+generic dma-direct code which I plan to switch on for powerpc checks
+the DMA mask and fails unsupported mapping requests, so we need to
+make sure the proper 64-bit mask is set.
 
 Reported-by: Christian Zigotzky <chzigotzky@xenosoft.de>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Tested-by: Christian Zigotzky <chzigotzky@xenosoft.de>
 ---
- kernel/dma/direct.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/pasemi/pasemi_mac.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 355d16acee6d..d5bb51cf27c6 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -132,8 +132,7 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 			goto again;
- 		}
+diff --git a/drivers/net/ethernet/pasemi/pasemi_mac.c b/drivers/net/ethernet/pasemi/pasemi_mac.c
+index d21041554507..a5bf46310f60 100644
+--- a/drivers/net/ethernet/pasemi/pasemi_mac.c
++++ b/drivers/net/ethernet/pasemi/pasemi_mac.c
+@@ -1716,6 +1716,7 @@ pasemi_mac_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		err = -ENODEV;
+ 		goto out;
+ 	}
++	dma_set_mask(&mac->dma_pdev->dev, DMA_BIT_MASK(64));
  
--		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
--		    phys_mask < DMA_BIT_MASK(32) && !(gfp & GFP_DMA)) {
-+		if (IS_ENABLED(CONFIG_ZONE_DMA) && !(gfp & GFP_DMA)) {
- 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
- 			goto again;
- 		}
+ 	mac->iob_pdev = pci_get_device(PCI_VENDOR_ID_PASEMI, 0xa001, NULL);
+ 	if (!mac->iob_pdev) {
 -- 
 2.20.1
