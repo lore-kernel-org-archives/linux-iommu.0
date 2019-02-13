@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 04/21] dma-iommu: cleanup dma-iommu.h
-Date: Wed, 13 Feb 2019 19:29:03 +0100
-Message-ID: <20190213182920.16764-5-hch@lst.de>
+Subject: [PATCH 09/21] dma-iommu: refactor iommu_dma_get_sgtable
+Date: Wed, 13 Feb 2019 19:29:08 +0100
+Message-ID: <20190213182920.16764-10-hch@lst.de>
 References: <20190213182920.16764-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,50 +12,93 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-No need for a __KERNEL__ guard outside uapi and add a missing comment
-describing the #else cpp statement.  Last but not least include
-<linux/errno.h> instead of the asm version, which is frowned upon.
+Move the vm_area handling into a new iommu_dma_get_sgtable_remap helper.
+
+Inline __iommu_dma_get_sgtable_page into the main function to simplify
+the code flow a bit.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/dma-iommu.h | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/dma-iommu.c | 54 +++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 30 deletions(-)
 
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index e760dc5d1fa8..3e206f4ee173 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -16,14 +16,14 @@
- #ifndef __DMA_IOMMU_H
- #define __DMA_IOMMU_H
- 
--#ifdef __KERNEL__
-+#include <linux/errno.h>
- #include <linux/types.h>
--#include <asm/errno.h>
- 
- #ifdef CONFIG_IOMMU_DMA
- #include <linux/dma-mapping.h>
- #include <linux/iommu.h>
- #include <linux/msi.h>
-+#include <linux/types.h>
- 
- int iommu_dma_init(void);
- 
-@@ -74,7 +74,7 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
- 
--#else
-+#else /* CONFIG_IOMMU_DMA */
- 
- struct iommu_domain;
- struct msi_msg;
-@@ -108,5 +108,4 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ed2ef8409806..7ea9b2fac74b 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -626,6 +626,18 @@ static int iommu_dma_mmap_remap(void *cpu_addr, size_t size,
+ 	return ret;
  }
  
- #endif	/* CONFIG_IOMMU_DMA */
--#endif	/* __KERNEL__ */
- #endif	/* __DMA_IOMMU_H */
++static int iommu_dma_get_sgtable_remap(struct sg_table *sgt, void *cpu_addr,
++		size_t size)
++{
++	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	struct vm_struct *area = find_vm_area(cpu_addr);
++
++	if (WARN_ON(!area || !area->pages))
++		return -ENXIO;
++	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
++			GFP_KERNEL);
++}
++
+ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+ 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+ {
+@@ -1085,42 +1097,24 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 			vma_pages(vma) << PAGE_SHIFT, vma->vm_page_prot);
+ }
+ 
+-static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
+-		size_t size)
+-{
+-	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+-
+-	if (!ret)
+-		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+-	return ret;
+-}
+-
+ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+ 		unsigned long attrs)
+ {
+-	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	struct vm_struct *area = find_vm_area(cpu_addr);
+-
+-	if (!is_vmalloc_addr(cpu_addr)) {
+-		struct page *page = virt_to_page(cpu_addr);
+-		return __iommu_dma_get_sgtable_page(sgt, page, size);
+-	}
+-
+-	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+-		/*
+-		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+-		 * hence in the vmalloc space.
+-		 */
+-		struct page *page = vmalloc_to_page(cpu_addr);
+-		return __iommu_dma_get_sgtable_page(sgt, page, size);
+-	}
++	struct page *page;
++	int ret;
+ 
+-	if (WARN_ON(!area || !area->pages))
+-		return -ENXIO;
++	if (is_vmalloc_addr(cpu_addr)) {
++		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
++			return iommu_dma_get_sgtable_remap(sgt, cpu_addr, size);
++		page = vmalloc_to_page(cpu_addr);
++	} else
++		page = virt_to_page(cpu_addr);
+ 
+-	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
+-					 GFP_KERNEL);
++	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
++	if (!ret)
++		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
++	return ret;
+ }
+ 
+ static const struct dma_map_ops iommu_dma_ops = {
 -- 
 2.20.1
