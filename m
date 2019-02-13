@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 12/32] powerpc/powernv: remove pnv_npu_dma_set_mask
-Date: Wed, 13 Feb 2019 08:01:13 +0100
-Message-ID: <20190213070133.11259-13-hch@lst.de>
+Subject: [PATCH 15/32] powerpc/pci: remove the dma_set_mask pci_controller ops methods
+Date: Wed, 13 Feb 2019 08:01:16 +0100
+Message-ID: <20190213070133.11259-16-hch@lst.de>
 References: <20190213070133.11259-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,40 +12,44 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@sa
 Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-These devices are not PCIe devices and do not have associated dma map
-ops, so this is just dead code.
+Unused now.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/powerpc/platforms/powernv/pci-ioda.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ arch/powerpc/include/asm/pci-bridge.h | 2 --
+ arch/powerpc/kernel/dma.c             | 7 -------
+ 2 files changed, 9 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
-index d9060a0f4c8e..23ffbc71589a 100644
---- a/arch/powerpc/platforms/powernv/pci-ioda.c
-+++ b/arch/powerpc/platforms/powernv/pci-ioda.c
-@@ -3646,14 +3646,6 @@ static const struct pci_controller_ops pnv_pci_ioda_controller_ops = {
- 	.shutdown		= pnv_pci_ioda_shutdown,
+diff --git a/arch/powerpc/include/asm/pci-bridge.h b/arch/powerpc/include/asm/pci-bridge.h
+index 236a7460b6ec..98e8b46aff97 100644
+--- a/arch/powerpc/include/asm/pci-bridge.h
++++ b/arch/powerpc/include/asm/pci-bridge.h
+@@ -45,8 +45,6 @@ struct pci_controller_ops {
+ 	void		(*teardown_msi_irqs)(struct pci_dev *pdev);
+ #endif
+ 
+-	int             (*dma_set_mask)(struct pci_dev *pdev, u64 dma_mask);
+-
+ 	void		(*shutdown)(struct pci_controller *hose);
  };
  
--static int pnv_npu_dma_set_mask(struct pci_dev *npdev, u64 dma_mask)
--{
--	dev_err_once(&npdev->dev,
--			"%s operation unsupported for NVLink devices\n",
--			__func__);
--	return -EPERM;
--}
+diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
+index 0d52107b90f0..5eca02315b2e 100644
+--- a/arch/powerpc/kernel/dma.c
++++ b/arch/powerpc/kernel/dma.c
+@@ -304,13 +304,6 @@ int dma_set_mask(struct device *dev, u64 dma_mask)
+ 	if (ppc_md.dma_set_mask)
+ 		return ppc_md.dma_set_mask(dev, dma_mask);
+ 
+-	if (dev_is_pci(dev)) {
+-		struct pci_dev *pdev = to_pci_dev(dev);
+-		struct pci_controller *phb = pci_bus_to_host(pdev->bus);
+-		if (phb->controller_ops.dma_set_mask)
+-			return phb->controller_ops.dma_set_mask(pdev, dma_mask);
+-	}
 -
- static const struct pci_controller_ops pnv_npu_ioda_controller_ops = {
- 	.dma_dev_setup		= pnv_pci_dma_dev_setup,
- 	.setup_msi_irqs		= pnv_setup_msi_irqs,
-@@ -3661,7 +3653,6 @@ static const struct pci_controller_ops pnv_npu_ioda_controller_ops = {
- 	.enable_device_hook	= pnv_pci_enable_device_hook,
- 	.window_alignment	= pnv_pci_window_alignment,
- 	.reset_secondary_bus	= pnv_pci_reset_secondary_bus,
--	.dma_set_mask		= pnv_npu_dma_set_mask,
- 	.shutdown		= pnv_pci_ioda_shutdown,
- 	.disable_device		= pnv_npu_disable_device,
- };
+ 	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
+ 		return -EIO;
+ 	*dev->dma_mask = dma_mask;
 -- 
 2.20.1
