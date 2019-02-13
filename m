@@ -1,94 +1,118 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 03/21] dma-mapping: add a Kconfig symbol to indicated
- arch_dma_prep_coherent presence
-Date: Wed, 13 Feb 2019 19:29:02 +0100
-Message-ID: <20190213182920.16764-4-hch@lst.de>
+Subject: [PATCH 18/21] dma-iommu: don't depend on CONFIG_DMA_DIRECT_REMAP
+Date: Wed, 13 Feb 2019 19:29:17 +0100
+Message-ID: <20190213182920.16764-19-hch@lst.de>
 References: <20190213182920.16764-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190213182920.16764-1-hch@lst.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a Kconfig symbol that indicates an architecture provides a
-arch_dma_prep_coherent implementation, and provide a stub otherwise.
-
-This will allow the generic dma-iommu code to it while still allowing
-to be built for cache coherent architectures.
+For entirely dma coherent architectures there is no requirement to ever
+remap dma coherent allocation.  Move all the remap and pool code under
+CONFIG_DMA_DIRECT_REMAP ifdefs, and drop the Kconfig dependency.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm64/Kconfig              | 1 +
- arch/csky/Kconfig               | 1 +
- include/linux/dma-noncoherent.h | 6 ++++++
- kernel/dma/Kconfig              | 3 +++
- 4 files changed, 11 insertions(+)
+ drivers/iommu/Kconfig     |  1 -
+ drivers/iommu/dma-iommu.c | 10 ++++++++++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 87ec7be25e97..52175007ffb7 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -13,6 +13,7 @@ config ARM64
- 	select ARCH_HAS_DEVMEM_IS_ALLOWED
- 	select ARCH_HAS_DMA_COHERENT_TO_PFN
- 	select ARCH_HAS_DMA_MMAP_PGPROT
-+	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
- 	select ARCH_HAS_ELF_RANDOMIZE
- 	select ARCH_HAS_FAST_MULTIPLIER
-diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-index 398113c845f5..8b84d4362ff6 100644
---- a/arch/csky/Kconfig
-+++ b/arch/csky/Kconfig
-@@ -1,5 +1,6 @@
- config CSKY
- 	def_bool y
-+	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_USE_BUILTIN_BSWAP
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index 69b36ed31a99..9741767e400f 100644
---- a/include/linux/dma-noncoherent.h
-+++ b/include/linux/dma-noncoherent.h
-@@ -72,6 +72,12 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 8b13fb7d0263..d9a25715650e 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -94,7 +94,6 @@ config IOMMU_DMA
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+ 	select NEED_SG_DMA_LENGTH
+-	depends on DMA_DIRECT_REMAP
+ 
+ config FSL_PAMU
+ 	bool "Freescale IOMMU support"
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 5f3c70c65d50..35a5c219b82e 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -501,6 +501,7 @@ static void *iommu_dma_alloc_contiguous(struct device *dev, size_t size,
+ 	return page_address(page);
  }
- #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
  
-+#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
- void arch_dma_prep_coherent(struct page *page, size_t size);
-+#else
-+static inline void arch_dma_prep_coherent(struct page *page, size_t size)
-+{
-+}
-+#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
++#ifdef CONFIG_DMA_DIRECT_REMAP
+ static void __iommu_dma_free_pages(struct page **pages, int count)
+ {
+ 	while (count--)
+@@ -783,6 +784,7 @@ static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
+ 				gfp, attrs);
+ 	return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
+ }
++#endif /* CONFIG_DMA_DIRECT_REMAP */
  
- #endif /* _LINUX_DMA_NONCOHERENT_H */
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index bde9179c6ed7..c3b2a5ae2dd4 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -35,6 +35,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
- config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
- 	bool
+ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+ 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+@@ -1065,6 +1067,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	 */
+ 	gfp |= __GFP_ZERO;
  
-+config ARCH_HAS_DMA_PREP_COHERENT
-+	bool
-+
- config ARCH_HAS_DMA_COHERENT_TO_PFN
- 	bool
++#ifdef CONFIG_DMA_DIRECT_REMAP
+ 	if (!dev_is_dma_coherent(dev))
+ 		return iommu_dma_alloc_noncoherent(dev, size, dma_handle, gfp,
+ 				attrs);
+@@ -1072,6 +1075,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	if (gfpflags_allow_blocking(gfp) &&
+ 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+ 		return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
++#endif
  
+ 	return iommu_dma_alloc_contiguous(dev, size, dma_handle, gfp, attrs);
+ }
+@@ -1091,6 +1095,7 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 	 *
+ 	 * Hence how dodgy the below logic looks...
+ 	 */
++#ifdef CONFIG_DMA_DIRECT_REMAP
+ 	if (dma_in_atomic_pool(cpu_addr, PAGE_ALIGN(size))) {
+ 		iommu_dma_free_pool(dev, size, cpu_addr, dma_handle);
+ 		return;
+@@ -1104,6 +1109,7 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 		page = vmalloc_to_page(cpu_addr);
+ 		dma_common_free_remap(cpu_addr, PAGE_ALIGN(size), VM_USERMAP);
+ 	} else
++#endif
+ 		page = virt_to_page(cpu_addr);
+ 
+ 	iommu_dma_free_contiguous(dev, size, page, dma_handle);
+@@ -1126,11 +1132,13 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
+ 		return -ENXIO;
+ 
++#ifdef CONFIG_DMA_DIRECT_REMAP
+ 	if (is_vmalloc_addr(cpu_addr)) {
+ 		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+ 			return iommu_dma_mmap_remap(cpu_addr, size, vma);
+ 		pfn = vmalloc_to_pfn(cpu_addr);
+ 	} else
++#endif
+ 		pfn = page_to_pfn(virt_to_page(cpu_addr));
+ 
+ 	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
+@@ -1144,11 +1152,13 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	struct page *page;
+ 	int ret;
+ 
++#ifdef CONFIG_DMA_DIRECT_REMAP
+ 	if (is_vmalloc_addr(cpu_addr)) {
+ 		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+ 			return iommu_dma_get_sgtable_remap(sgt, cpu_addr, size);
+ 		page = vmalloc_to_page(cpu_addr);
+ 	} else
++#endif
+ 		page = virt_to_page(cpu_addr);
+ 
+ 	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
 -- 
 2.20.1
