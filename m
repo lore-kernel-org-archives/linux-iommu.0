@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 07/32] powerpc/cell: move dma direct window setup out of dma_configure
-Date: Wed, 13 Feb 2019 08:01:08 +0100
-Message-ID: <20190213070133.11259-8-hch@lst.de>
+Subject: [PATCH 14/32] powerpc/dma: stop overriding dma_get_required_mask
+Date: Wed, 13 Feb 2019 08:01:15 +0100
+Message-ID: <20190213070133.11259-15-hch@lst.de>
 References: <20190213070133.11259-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,81 +9,133 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190213070133.11259-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Olof Johansson <olof@lixom.net>
-Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christian Zigotzky <chzigotzky@xenosoft.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Configure the dma settings at device setup time, and stop playing games
-with get_pci_dma_ops.  This prepares for using the common dma_configure
-code later on.
-
-Includes fixes from Michael Ellerman.
+The ppc_md and pci_controller_ops methods are unused now and can be
+removed.  The dma_nommu implementation is generic to the generic one
+except for using max_pfn instead of calling into the memblock API,
+and all other dma_map_ops instances implement a method of their own.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Tested-by: Christian Zigotzky <chzigotzky@xenosoft.de>
 ---
- arch/powerpc/platforms/cell/iommu.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ arch/powerpc/include/asm/device.h      |  2 --
+ arch/powerpc/include/asm/dma-mapping.h |  2 --
+ arch/powerpc/include/asm/machdep.h     |  2 --
+ arch/powerpc/include/asm/pci-bridge.h  |  1 -
+ arch/powerpc/kernel/dma.c              | 29 --------------------------
+ kernel/dma/mapping.c                   |  2 --
+ 6 files changed, 38 deletions(-)
 
-diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
-index af2a3c15e0ec..4c609c0db5af 100644
---- a/arch/powerpc/platforms/cell/iommu.c
-+++ b/arch/powerpc/platforms/cell/iommu.c
-@@ -656,14 +656,21 @@ static const struct dma_map_ops dma_iommu_fixed_ops = {
- 	.unmap_page     = dma_fixed_unmap_page,
+diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
+index 1aa53318b4bc..3814e1c2d4bc 100644
+--- a/arch/powerpc/include/asm/device.h
++++ b/arch/powerpc/include/asm/device.h
+@@ -59,6 +59,4 @@ struct pdev_archdata {
+ 	u64 dma_mask;
  };
  
-+static u64 cell_iommu_get_fixed_address(struct device *dev);
-+
- static void cell_dma_dev_setup(struct device *dev)
- {
--	if (get_pci_dma_ops() == &dma_iommu_ops)
-+	if (get_pci_dma_ops() == &dma_iommu_ops) {
-+		u64 addr = cell_iommu_get_fixed_address(dev);
-+
-+		if (addr != OF_BAD_ADDR)
-+			set_dma_offset(dev, addr + dma_iommu_fixed_base);
- 		set_iommu_table_base(dev, cell_get_iommu_table(dev));
--	else if (get_pci_dma_ops() == &dma_nommu_ops)
-+	} else if (get_pci_dma_ops() == &dma_nommu_ops) {
- 		set_dma_offset(dev, cell_dma_nommu_offset);
--	else
-+	} else {
- 		BUG();
-+	}
+-#define ARCH_HAS_DMA_GET_REQUIRED_MASK
+-
+ #endif /* _ASM_POWERPC_DEVICE_H */
+diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
+index 1d80174db8a4..dc7f7bcdf65d 100644
+--- a/arch/powerpc/include/asm/dma-mapping.h
++++ b/arch/powerpc/include/asm/dma-mapping.h
+@@ -112,7 +112,5 @@ static inline void set_dma_offset(struct device *dev, dma_addr_t off)
+ 
+ #define HAVE_ARCH_DMA_SET_MASK 1
+ 
+-extern u64 __dma_get_required_mask(struct device *dev);
+-
+ #endif /* __KERNEL__ */
+ #endif	/* _ASM_DMA_MAPPING_H */
+diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
+index 8311869005fa..7b70dcbce1b9 100644
+--- a/arch/powerpc/include/asm/machdep.h
++++ b/arch/powerpc/include/asm/machdep.h
+@@ -47,9 +47,7 @@ struct machdep_calls {
+ #endif
+ #endif /* CONFIG_PPC64 */
+ 
+-	/* Platform set_dma_mask and dma_get_required_mask overrides */
+ 	int		(*dma_set_mask)(struct device *dev, u64 dma_mask);
+-	u64		(*dma_get_required_mask)(struct device *dev);
+ 
+ 	int		(*probe)(void);
+ 	void		(*setup_arch)(void); /* Optional, may be NULL */
+diff --git a/arch/powerpc/include/asm/pci-bridge.h b/arch/powerpc/include/asm/pci-bridge.h
+index d7492dca6599..236a7460b6ec 100644
+--- a/arch/powerpc/include/asm/pci-bridge.h
++++ b/arch/powerpc/include/asm/pci-bridge.h
+@@ -46,7 +46,6 @@ struct pci_controller_ops {
+ #endif
+ 
+ 	int             (*dma_set_mask)(struct pci_dev *pdev, u64 dma_mask);
+-	u64		(*dma_get_required_mask)(struct pci_dev *pdev);
+ 
+ 	void		(*shutdown)(struct pci_controller *hose);
+ };
+diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
+index e5db4d3f8bea..0d52107b90f0 100644
+--- a/arch/powerpc/kernel/dma.c
++++ b/arch/powerpc/kernel/dma.c
+@@ -318,35 +318,6 @@ int dma_set_mask(struct device *dev, u64 dma_mask)
  }
+ EXPORT_SYMBOL(dma_set_mask);
  
- static void cell_pci_dma_dev_setup(struct pci_dev *dev)
-@@ -894,7 +901,11 @@ static u64 cell_iommu_get_fixed_address(struct device *dev)
- 	const u32 *ranges = NULL;
- 	int i, len, best, naddr, nsize, pna, range_size;
- 
-+	/* We can be called for platform devices that have no of_node */
- 	np = of_node_get(dev->of_node);
-+	if (!np)
-+		goto out;
-+
- 	while (1) {
- 		naddr = of_n_addr_cells(np);
- 		nsize = of_n_size_cells(np);
-@@ -949,19 +960,14 @@ static int dma_suported_and_switch(struct device *dev, u64 dma_mask)
+-u64 __dma_get_required_mask(struct device *dev)
+-{
+-	const struct dma_map_ops *dma_ops = get_dma_ops(dev);
+-
+-	if (unlikely(dma_ops == NULL))
+-		return 0;
+-
+-	if (dma_ops->get_required_mask)
+-		return dma_ops->get_required_mask(dev);
+-
+-	return DMA_BIT_MASK(8 * sizeof(dma_addr_t));
+-}
+-
+-u64 dma_get_required_mask(struct device *dev)
+-{
+-	if (ppc_md.dma_get_required_mask)
+-		return ppc_md.dma_get_required_mask(dev);
+-
+-	if (dev_is_pci(dev)) {
+-		struct pci_dev *pdev = to_pci_dev(dev);
+-		struct pci_controller *phb = pci_bus_to_host(pdev->bus);
+-		if (phb->controller_ops.dma_get_required_mask)
+-			return phb->controller_ops.dma_get_required_mask(pdev);
+-	}
+-
+-	return __dma_get_required_mask(dev);
+-}
+-EXPORT_SYMBOL_GPL(dma_get_required_mask);
+-
+ static int __init dma_init(void)
  {
- 	if (dma_mask == DMA_BIT_MASK(64) &&
- 	    cell_iommu_get_fixed_address(dev) != OF_BAD_ADDR) {
--		u64 addr = cell_iommu_get_fixed_address(dev) +
--			dma_iommu_fixed_base;
- 		dev_dbg(dev, "iommu: 64-bit OK, using fixed ops\n");
--		dev_dbg(dev, "iommu: fixed addr = %llx\n", addr);
- 		set_dma_ops(dev, &dma_iommu_fixed_ops);
--		set_dma_offset(dev, addr);
- 		return 1;
- 	}
+ #ifdef CONFIG_IBMVIO
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index a11006b6d8e8..40c0af744692 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -207,7 +207,6 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+ }
+ EXPORT_SYMBOL(dma_mmap_attrs);
  
- 	if (dma_iommu_dma_supported(dev, dma_mask)) {
- 		dev_dbg(dev, "iommu: not 64-bit, using default ops\n");
--		set_dma_ops(dev, get_pci_dma_ops());
--		cell_dma_dev_setup(dev);
-+		set_dma_ops(dev, &dma_iommu_ops);
- 		return 1;
- 	}
+-#ifndef ARCH_HAS_DMA_GET_REQUIRED_MASK
+ static u64 dma_default_get_required_mask(struct device *dev)
+ {
+ 	u32 low_totalram = ((max_pfn - 1) << PAGE_SHIFT);
+@@ -238,7 +237,6 @@ u64 dma_get_required_mask(struct device *dev)
+ 	return dma_default_get_required_mask(dev);
+ }
+ EXPORT_SYMBOL_GPL(dma_get_required_mask);
+-#endif
  
+ #ifndef arch_dma_alloc_attrs
+ #define arch_dma_alloc_attrs(dev)	(true)
 -- 
 2.20.1
