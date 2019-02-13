@@ -1,7 +1,8 @@
 From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: [PATCH v3 0/9] mm: Use vm_map_pages() and vm_map_pages_zero() API
-Date: Wed, 13 Feb 2019 19:30:35 +0530
-Message-ID: <20190213140035.GA21935@jordon-HP-15-Notebook-PC>
+Subject: [PATCH v3 1/9] mm: Introduce new vm_map_pages() and
+ vm_map_pages_zero() API
+Date: Wed, 13 Feb 2019 19:32:14 +0530
+Message-ID: <20190213140214.GA21954@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -19,8 +20,8 @@ As this pattern is common across different drivers, it can
 be generalized by creating new functions and use it across
 the drivers.
 
-vm_map_pages() is the API which could be used to map
-kernel memory/pages in drivers which has considered vm_pgoff.
+vm_map_pages() is the API which could be used to mapped
+kernel memory/pages in drivers which has considered vm_pgoff
 
 vm_map_pages_zero() is the API which could be used to map
 range of kernel memory/pages in drivers which has not considered
@@ -31,58 +32,151 @@ vm_map_pages_zero() to behave according to the normal vm_pgoff
 offsetting simply by removing the _zero suffix on the function
 name and if that causes regressions, it gives us an easy way to revert.
 
-Tested on Rockchip hardware and display is working fine, including talking
+Tested on Rockchip hardware and display is working, including talking
 to Lima via prime.
 
-v1 -> v2:
-        Few Reviewed-by.
+Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+Suggested-by: Russell King <linux@armlinux.org.uk>
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+---
+ include/linux/mm.h |  4 +++
+ mm/memory.c        | 81 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ mm/nommu.c         | 14 ++++++++++
+ 3 files changed, 99 insertions(+)
 
-        Updated the change log in [8/9]
-
-        In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
-        to select a buffer, not as a in-buffer offset by design
-        and it always want to mmap a whole buffer from its beginning.
-        Added additional changes after discussing with Marek and
-        vm_map_pages() could be used instead of vm_map_pages_zero().
-
-v2 -> v3:
-        Corrected the documentation as per review comment.
-
-        As suggested in v2, renaming the interfaces to -
-        *vm_insert_range() -> vm_map_pages()* and
-        *vm_insert_range_buggy() -> vm_map_pages_zero()*.
-        As the interface is renamed, modified the code accordingly,
-        updated the change logs and modified the subject lines to use the
-        new interfaces. There is no other change apart from renaming and
-        using the new interface.
-
-	Patch[1/9] & [4/9], Tested on Rockchip hardware.
-
-Souptick Joarder (9):
-  mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
-  arm: mm: dma-mapping: Convert to use vm_map_pages()
-  drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
-  drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
-  drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
-  iommu/dma-iommu.c: Convert to use vm_map_pages()
-  videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
-  xen/gntdev.c: Convert to use vm_map_pages()
-  xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
-
- arch/arm/mm/dma-mapping.c                          | 22 ++----
- drivers/firewire/core-iso.c                        | 15 +---
- drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
- drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
- drivers/iommu/dma-iommu.c                          | 12 +---
- drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
- .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
- drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
- drivers/xen/gntdev.c                               | 16 ++---
- drivers/xen/privcmd-buf.c                          |  8 +--
- include/linux/mm.h                                 |  4 ++
- mm/memory.c                                        | 81 ++++++++++++++++++++++
- mm/nommu.c                                         | 14 ++++
- 13 files changed, 136 insertions(+), 106 deletions(-)
-
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 80bb640..e0aaa73 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2565,6 +2565,10 @@ unsigned long change_prot_numa(struct vm_area_struct *vma,
+ int remap_pfn_range(struct vm_area_struct *, unsigned long addr,
+ 			unsigned long pfn, unsigned long size, pgprot_t);
+ int vm_insert_page(struct vm_area_struct *, unsigned long addr, struct page *);
++int vm_map_pages(struct vm_area_struct *vma, struct page **pages,
++				unsigned long num);
++int vm_map_pages_zero(struct vm_area_struct *vma, struct page **pages,
++				unsigned long num);
+ vm_fault_t vmf_insert_pfn(struct vm_area_struct *vma, unsigned long addr,
+ 			unsigned long pfn);
+ vm_fault_t vmf_insert_pfn_prot(struct vm_area_struct *vma, unsigned long addr,
+diff --git a/mm/memory.c b/mm/memory.c
+index e11ca9d..cad3e27 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -1520,6 +1520,87 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+ }
+ EXPORT_SYMBOL(vm_insert_page);
+ 
++/*
++ * __vm_map_pages - maps range of kernel pages into user vma
++ * @vma: user vma to map to
++ * @pages: pointer to array of source kernel pages
++ * @num: number of pages in page array
++ * @offset: user's requested vm_pgoff
++ *
++ * This allows drivers to map range of kernel pages into a user vma.
++ *
++ * Return: 0 on success and error code otherwise.
++ */
++static int __vm_map_pages(struct vm_area_struct *vma, struct page **pages,
++				unsigned long num, unsigned long offset)
++{
++	unsigned long count = vma_pages(vma);
++	unsigned long uaddr = vma->vm_start;
++	int ret, i;
++
++	/* Fail if the user requested offset is beyond the end of the object */
++	if (offset > num)
++		return -ENXIO;
++
++	/* Fail if the user requested size exceeds available object size */
++	if (count > num - offset)
++		return -ENXIO;
++
++	for (i = 0; i < count; i++) {
++		ret = vm_insert_page(vma, uaddr, pages[offset + i]);
++		if (ret < 0)
++			return ret;
++		uaddr += PAGE_SIZE;
++	}
++
++	return 0;
++}
++
++/**
++ * vm_map_pages - maps range of kernel pages starts with non zero offset
++ * @vma: user vma to map to
++ * @pages: pointer to array of source kernel pages
++ * @num: number of pages in page array
++ *
++ * Maps an object consisting of @num pages, catering for the user's
++ * requested vm_pgoff
++ *
++ * If we fail to insert any page into the vma, the function will return
++ * immediately leaving any previously inserted pages present.  Callers
++ * from the mmap handler may immediately return the error as their caller
++ * will destroy the vma, removing any successfully inserted pages. Other
++ * callers should make their own arrangements for calling unmap_region().
++ *
++ * Context: Process context. Called by mmap handlers.
++ * Return: 0 on success and error code otherwise.
++ */
++int vm_map_pages(struct vm_area_struct *vma, struct page **pages,
++				unsigned long num)
++{
++	return __vm_map_pages(vma, pages, num, vma->vm_pgoff);
++}
++EXPORT_SYMBOL(vm_map_pages);
++
++/**
++ * vm_map_pages_zero - map range of kernel pages starts with zero offset
++ * @vma: user vma to map to
++ * @pages: pointer to array of source kernel pages
++ * @num: number of pages in page array
++ *
++ * Similar to vm_map_pages(), except that it explicitly sets the offset
++ * to 0. This function is intended for the drivers that did not consider
++ * vm_pgoff.
++ *
++ * Context: Process context. Called by mmap handlers.
++ * Return: 0 on success and error code otherwise.
++ */
++int vm_map_pages_zero(struct vm_area_struct *vma, struct page **pages,
++				unsigned long num)
++{
++	return __vm_map_pages(vma, pages, num, 0);
++}
++EXPORT_SYMBOL(vm_map_pages_zero);
++
+ static vm_fault_t insert_pfn(struct vm_area_struct *vma, unsigned long addr,
+ 			pfn_t pfn, pgprot_t prot, bool mkwrite)
+ {
+diff --git a/mm/nommu.c b/mm/nommu.c
+index 749276b..b492fd1 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -473,6 +473,20 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+ }
+ EXPORT_SYMBOL(vm_insert_page);
+ 
++int vm_map_pages(struct vm_area_struct *vma, struct page **pages,
++			unsigned long num)
++{
++	return -EINVAL;
++}
++EXPORT_SYMBOL(vm_map_pages);
++
++int vm_map_pages_zero(struct vm_area_struct *vma, struct page **pages,
++				unsigned long num)
++{
++	return -EINVAL;
++}
++EXPORT_SYMBOL(vm_map_pages_zero);
++
+ /*
+  *  sys_brk() for the most part doesn't need the global kernel
+  *  lock, except when an application is doing something nasty
 -- 
 1.9.1
