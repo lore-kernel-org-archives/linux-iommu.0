@@ -1,54 +1,87 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 01/12] mfd/sm501: depend on HAS_DMA
-Date: Wed, 13 Feb 2019 07:29:31 +0000
-Message-ID: <20190213072931.GD1863@dell>
-References: <20190211133554.30055-1-hch@lst.de>
- <20190211133554.30055-2-hch@lst.de>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [PATCH v2 2/2] iommu/vt-d: Enable PASID only if device expects
+ PASID  in PRG Response.
+Date: Wed, 13 Feb 2019 08:26:33 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19C93AD90@SHSMSX104.ccr.corp.intel.com>
+References: <cover.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+ <787d13ae22ae07c708b06180241f4f2b71031f84.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190211133554.30055-2-hch@lst.de>
+In-Reply-To: <787d13ae22ae07c708b06180241f4f2b71031f84.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, x86@kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+To: "sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "joro@8bytes.org" <joro@8bytes.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Busch, Keith" <keith.busch@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 11 Feb 2019, Christoph Hellwig wrote:
-
-> Currently the sm501 mfd driver can be compiled without any dependencies,
-> but through the use of dma_declare_coherent it really depends on
-> having DMA and iomem support.  Normally we don't explicitly require DMA
-> support as we have stubs for it if on UML, but in this case the driver
-> selects support for dma_declare_coherent and thus also requires
-> memmap support.  Guard this by an explicit dependency.
+> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
+> bounces@lists.linux-foundation.org] On Behalf Of
+> sathyanarayanan.kuppuswamy@linux.intel.com
+> Sent: Tuesday, February 12, 2019 5:51 AM
+> To: bhelgaas@google.com; joro@8bytes.org; dwmw2@infradead.org
+> Cc: Raj, Ashok <ashok.raj@intel.com>; linux-pci@vger.kernel.org; linux-
+> kernel@vger.kernel.org; Busch, Keith <keith.busch@intel.com>;
+> iommu@lists.linux-foundation.org; Pan, Jacob jun
+> <jacob.jun.pan@intel.com>
+> Subject: [PATCH v2 2/2] iommu/vt-d: Enable PASID only if device expects
+> PASID in PRG Response.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> From: Kuppuswamy Sathyanarayanan
+> <sathyanarayanan.kuppuswamy@linux.intel.com>
+> 
+> In Intel IOMMU, if the Page Request Queue (PRQ) is full, it will
+> automatically respond to the device with a success message as a keep
+> alive. And when sending the success message, IOMMU will include PASID in
+> the Response Message when the Page Request has a PASID in Request
+> Message and It does not check against the PRG Response PASID
+> requirement
+> of the device before sending the response. Also, If the device receives the
+> PRG response with PASID when its not expecting it then the device behavior
+> is undefined. So enable PASID support only if device expects PASID in PRG
+> response message.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Keith Busch <keith.busch@intel.com>
+> Suggested-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan
+> <sathyanarayanan.kuppuswamy@linux.intel.com>
 > ---
->  drivers/mfd/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iommu/intel-iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index f461460a2aeb..f15f6489803d 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -1066,6 +1066,7 @@ config MFD_SI476X_CORE
->  
->  config MFD_SM501
->  	tristate "Silicon Motion SM501"
-> +	depends on HAS_DMA
->  	 ---help---
->  	  This is the core driver for the Silicon Motion SM501 multimedia
->  	  companion chip. This device is a multifunction device which may
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 1457f931218e..af2e4a011787 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1399,7 +1399,8 @@ static void iommu_enable_dev_iotlb(struct
+> device_domain_info *info)
+>  	   undefined. So always enable PASID support on devices which
+>  	   have it, even if we can't yet know if we're ever going to
+>  	   use it. */
+> -	if (info->pasid_supported && !pci_enable_pasid(pdev, info-
+> >pasid_supported & ~1))
+> +	if (info->pasid_supported && pci_prg_resp_pasid_required(pdev)
+> &&
+> +	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+>  		info->pasid_enabled = 1;
 
-I would normally have taken this, but I fear it will conflict with
-[PATCH 06/12].  For that reason, just take my:
+Above logic looks problematic. As Dave commented in another thread,
+PRI and PASID are orthogonal capabilities. Especially with introduction
+of VT-d scalable mode, PASID will be used alone even w/o PRI...
 
-  Acked-by: Lee Jones <lee.jones@linaro.org>
+Why not doing the check when PRI is actually enabled? At that point
+you can fail the request if above condition is false. 
 
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> 
+>  	if (info->pri_supported && !pci_reset_pri(pdev)
+> && !pci_enable_pri(pdev, 32))
+> --
+> 2.20.1
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
