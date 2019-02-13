@@ -1,87 +1,376 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH v2 2/2] iommu/vt-d: Enable PASID only if device expects
- PASID  in PRG Response.
-Date: Wed, 13 Feb 2019 08:26:33 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19C93AD90@SHSMSX104.ccr.corp.intel.com>
-References: <cover.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <787d13ae22ae07c708b06180241f4f2b71031f84.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v6 1/9] iommu: Add APIs for multiple domains per device
+Date: Wed, 13 Feb 2019 11:55:31 +0000
+Message-ID: <1735d302-8fab-68b5-d016-01731546fd36@arm.com>
+References: <20190213040301.23021-1-baolu.lu@linux.intel.com>
+ <20190213040301.23021-2-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <787d13ae22ae07c708b06180241f4f2b71031f84.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20190213040301.23021-2-baolu.lu@linux.intel.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "joro@8bytes.org" <joro@8bytes.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Busch, Keith" <keith.busch@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "ashok.raj@intel.com" <ashok.raj@intel.com>, "sanjay.k.kumar@intel.com" <sanjay.k.kumar@intel.com>, "jacob.jun.pan@intel.com" <jacob.jun.pan@intel.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "yi.y.sun@intel.com" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, "tiwei.bie@intel.com" <tiwei.bie@intel.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> bounces@lists.linux-foundation.org] On Behalf Of
-> sathyanarayanan.kuppuswamy@linux.intel.com
-> Sent: Tuesday, February 12, 2019 5:51 AM
-> To: bhelgaas@google.com; joro@8bytes.org; dwmw2@infradead.org
-> Cc: Raj, Ashok <ashok.raj@intel.com>; linux-pci@vger.kernel.org; linux-
-> kernel@vger.kernel.org; Busch, Keith <keith.busch@intel.com>;
-> iommu@lists.linux-foundation.org; Pan, Jacob jun
-> <jacob.jun.pan@intel.com>
-> Subject: [PATCH v2 2/2] iommu/vt-d: Enable PASID only if device expects
-> PASID in PRG Response.
+Hi,
+
+I have a few boring nits and one question below
+
+On 13/02/2019 04:02, Lu Baolu wrote:
+> Sharing a physical PCI device in a finer-granularity way
+> is becoming a consensus in the industry. IOMMU vendors
+> are also engaging efforts to support such sharing as well
+> as possible. Among the efforts, the capability of support
+> finer-granularity DMA isolation is a common requirement
+> due to the security consideration. With finer-granularity
+> DMA isolation, all DMA requests out of or to a subset of
+> a physical PCI device can be protected by the IOMMU.
+
+That last sentence seems strange, how about "With finer-granularity DMA
+isolation, subsets of a PCI function can be isolated from each others by
+the IOMMU."
+
+> As a
+> result, there is a request in software to attach multiple
+> domains to a physical PCI device. One example of such use
+> model is the Intel Scalable IOV [1] [2]. The Intel vt-d
+> 3.0 spec [3] introduces the scalable mode which enables
+> PASID granularity DMA isolation.
 > 
-> From: Kuppuswamy Sathyanarayanan
-> <sathyanarayanan.kuppuswamy@linux.intel.com>
+> This adds the APIs to support multiple domains per device.
+> In order to ease the discussions, we call it 'a domain in
+> auxiliary mode' or simply 'auxiliary domain' when multiple
+> domains are attached to a physical device.
 > 
-> In Intel IOMMU, if the Page Request Queue (PRQ) is full, it will
-> automatically respond to the device with a success message as a keep
-> alive. And when sending the success message, IOMMU will include PASID in
-> the Response Message when the Page Request has a PASID in Request
-> Message and It does not check against the PRG Response PASID
-> requirement
-> of the device before sending the response. Also, If the device receives the
-> PRG response with PASID when its not expecting it then the device behavior
-> is undefined. So enable PASID support only if device expects PASID in PRG
-> response message.
+> The APIs include:
+> 
+> * iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)
+>   - Check whether both IOMMU and device support IOMMU aux
+>     domain feature. Below aux-domain specific interfaces
+>     are available only after this returns true.
+
+s/after/if/ since calling has_feature() shouldn't be a prerequisite to
+using the aux-domain interface (unlike calling enable_feature()).
+
+> 
+> * iommu_dev_enable/disable_feature(dev, IOMMU_DEV_FEAT_AUX)
+>   - Enable/disable device specific aux-domain feature.
+> 
+> * iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX)
+>   - Check whether the aux domain specific feature enabled or
+>     not.
+
+"is enabled"
+
+> 
+> * iommu_aux_attach_device(domain, dev)
+>   - Attaches @domain to @dev in the auxiliary mode. Multiple
+>     domains could be attached to a single device in the
+>     auxiliary mode with each domain representing an isolated
+>     address space for an assignable subset of the device.
+> 
+> * iommu_aux_detach_device(domain, dev)
+>   - Detach @domain which has been attached to @dev in the
+>     auxiliary mode.
+> 
+> * iommu_aux_get_pasid(domain, dev)
+>   - Return ID used for finer-granularity DMA translation.
+>     For the Intel Scalable IOV usage model, this will be
+>     a PASID. The device which supports Scalable IOV needs
+>     to write this ID to the device register so that DMA
+>     requests could be tagged with a right PASID prefix.
+> 
+> This has been updated with the latest proposal from Joerg
+> posted here [5].
+> 
+> Many people involved in discussions of this design.
+> 
+> Kevin Tian <kevin.tian@intel.com>
+> Liu Yi L <yi.l.liu@intel.com>
+> Ashok Raj <ashok.raj@intel.com>
+> Sanjay Kumar <sanjay.k.kumar@intel.com>
+> Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Alex Williamson <alex.williamson@redhat.com>
+> Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Joerg Roedel <joro@8bytes.org>
+> 
+> and some discussions can be found here [4] [5].
+> 
+> [1]
+> https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+> [2] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+> [3]
+> https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+> [4] https://lkml.org/lkml/2018/7/26/4
+> [5] https://www.spinics.net/lists/iommu/msg31874.html
 > 
 > Cc: Ashok Raj <ashok.raj@intel.com>
 > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Keith Busch <keith.busch@intel.com>
-> Suggested-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan
-> <sathyanarayanan.kuppuswamy@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Suggested-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Suggested-by: Joerg Roedel <jroedel@suse.de>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/intel-iommu.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/iommu/iommu.c | 91 +++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h | 70 +++++++++++++++++++++++++++++++++
+>  2 files changed, 161 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 1457f931218e..af2e4a011787 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1399,7 +1399,8 @@ static void iommu_enable_dev_iotlb(struct
-> device_domain_info *info)
->  	   undefined. So always enable PASID support on devices which
->  	   have it, even if we can't yet know if we're ever going to
->  	   use it. */
-> -	if (info->pasid_supported && !pci_enable_pasid(pdev, info-
-> >pasid_supported & ~1))
-> +	if (info->pasid_supported && pci_prg_resp_pasid_required(pdev)
-> &&
-> +	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
->  		info->pasid_enabled = 1;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3ed4db334341..d0b323e8357f 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2033,3 +2033,94 @@ int iommu_fwspec_add_ids(struct device *dev, u32
+> *ids, int num_ids)
+>          return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+> +
+> +/*
+> + * Per device IOMMU features.
+> + */
+> +bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features
+> feat)
+> +{
+> +       const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +       if (ops && ops->dev_has_feat)
+> +               return ops->dev_has_feat(dev, feat);
+> +
+> +       return false;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_dev_has_feature);
+> +
+> +int iommu_dev_enable_feature(struct device *dev, enum
+> iommu_dev_features feat)
+> +{
+> +       const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +       if (ops && ops->dev_enable_feat)
+> +               return ops->dev_enable_feat(dev, feat);
+> +
+> +       return -ENODEV;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_dev_enable_feature);
+> +
+> +int iommu_dev_disable_feature(struct device *dev, enum
+> iommu_dev_features feat)
+> +{
+> +       const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +       if (ops && ops->dev_disable_feat)
+> +               return ops->dev_disable_feat(dev, feat);
+> +
+> +       return -ENODEV;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
+> +
+> +bool iommu_dev_feature_enabled(struct device *dev, enum
+> iommu_dev_features feat)
+> +{
+> +       const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +       if (ops && ops->dev_feat_enabled)
+> +               return ops->dev_feat_enabled(dev, feat);
+> +
+> +       return false;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_dev_feature_enabled);
+> +
+> +/*
+> + * Aux-domain specific attach/detach.
+> + *
+> + * Only works if iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX) returns
+> true.
 
-Above logic looks problematic. As Dave commented in another thread,
-PRI and PASID are orthogonal capabilities. Especially with introduction
-of VT-d scalable mode, PASID will be used alone even w/o PRI...
+Rather "Only works if iommu_dev_feature_enabled(dev, AUX) returns true"?
 
-Why not doing the check when PRI is actually enabled? At that point
-you can fail the request if above condition is false. 
+> + * Also, as long as domains are attached to a device through this
+> interface,
+> + * any tries to call iommu_attach_device() should fail
+> (iommu_detach_device()
+> + * can't fail, so we fail on the tryint to re-attach). This should make
 
+"when trying to re-attach"
+
+> us safe
+> + * against a device being attached to a guest as a whole while there
+> are still
+> + * pasid users on it (aux and sva).
+
+A related question: is calling iommu_dev_disable_feat(dev, AUX) enough
+to detach all auxiliary domains? I guess device drivers will always need
+to tidy contexts up one by one, so maybe iommu_dev_disable_feat(dev,
+AUX) can return -EBUSY in this case? I think we need to specify this in
+a comment so device drivers know how to clean up.
+
+Thanks,
+Jean
+
+> + */
+> +int iommu_aux_attach_device(struct iommu_domain *domain, struct device
+> *dev)
+> +{
+> +       int ret = -ENODEV;
+> +
+> +       if (domain->ops->aux_attach_dev)
+> +               ret = domain->ops->aux_attach_dev(domain, dev);
+> +
+> +       if (!ret)
+> +               trace_attach_device_to_domain(dev);
+> +
+> +       return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_aux_attach_device);
+> +
+> +void iommu_aux_detach_device(struct iommu_domain *domain, struct device
+> *dev)
+> +{
+> +       if (domain->ops->aux_detach_dev) {
+> +               domain->ops->aux_detach_dev(domain, dev);
+> +               trace_detach_device_from_domain(dev);
+> +       }
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_aux_detach_device);
+> +
+> +int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+> +{
+> +       int ret = -ENODEV;
+> +
+> +       if (domain->ops->aux_get_pasid)
+> +               ret = domain->ops->aux_get_pasid(domain, dev);
+> +
+> +       return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index e90da6b6f3d1..831eb29b35c5 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -156,6 +156,11 @@ struct iommu_resv_region {
+>          enum iommu_resv_type    type;
+>  };
+>  
+> +/* Per device IOMMU features */
+> +enum iommu_dev_features {
+> +       IOMMU_DEV_FEAT_AUX,     /* Aux-domain feature */
+> +};
+> +
+>  #ifdef CONFIG_IOMMU_API
+>  
+>  /**
+> @@ -183,6 +188,11 @@ struct iommu_resv_region {
+>   * @domain_window_enable: Configure and enable a particular window for
+> a domain
+>   * @domain_window_disable: Disable a particular window for a domain
+>   * @of_xlate: add OF master IDs to iommu grouping
+> + * @dev_has/enable/disable_feat: per device entries to check/enable/disable
+> + *                               iommu specific features.
+> + * @dev_feat_enabled: check enabled feature
+> + * @aux_attach/detach_dev: aux-domain specific attach/detach entries.
+> + * @aux_get_pasid: get the pasid given an aux-domain
+>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+>   */
+>  struct iommu_ops {
+> @@ -226,6 +236,17 @@ struct iommu_ops {
+>          int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+>          bool (*is_attach_deferred)(struct iommu_domain *domain, struct
+> device *dev);
+>  
+> +       /* Per device IOMMU features */
+> +       bool (*dev_has_feat)(struct device *dev, enum iommu_dev_features f);
+> +       bool (*dev_feat_enabled)(struct device *dev, enum
+> iommu_dev_features f);
+> +       int (*dev_enable_feat)(struct device *dev, enum
+> iommu_dev_features f);
+> +       int (*dev_disable_feat)(struct device *dev, enum
+> iommu_dev_features f);
+> +
+> +       /* Aux-domain specific attach/detach entries */
+> +       int (*aux_attach_dev)(struct iommu_domain *domain, struct device
+> *dev);
+> +       void (*aux_detach_dev)(struct iommu_domain *domain, struct
+> device *dev);
+> +       int (*aux_get_pasid)(struct iommu_domain *domain, struct device
+> *dev);
+> +
+>          unsigned long pgsize_bitmap;
+>  };
+>  
+> @@ -412,6 +433,14 @@ static inline void dev_iommu_fwspec_set(struct
+> device *dev,
+>  int iommu_probe_device(struct device *dev);
+>  void iommu_release_device(struct device *dev);
+>  
+> +bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features f);
+> +int iommu_dev_enable_feature(struct device *dev, enum
+> iommu_dev_features f);
+> +int iommu_dev_disable_feature(struct device *dev, enum
+> iommu_dev_features f);
+> +bool iommu_dev_feature_enabled(struct device *dev, enum
+> iommu_dev_features f);
+> +int iommu_aux_attach_device(struct iommu_domain *domain, struct device
+> *dev);
+> +void iommu_aux_detach_device(struct iommu_domain *domain, struct device
+> *dev);
+> +int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
+> +
+>  #else /* CONFIG_IOMMU_API */
+>  
+>  struct iommu_ops {};
+> @@ -696,6 +725,47 @@ const struct iommu_ops
+> *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+>          return NULL;
+>  }
+>  
+> +static inline bool
+> +iommu_dev_has_feature(struct device *dev, enum iommu_dev_features feat)
+> +{
+> +       return false;
+> +}
+> +
+> +static inline bool
+> +iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features feat)
+> +{
+> +       return false;
+> +}
+> +
+> +static inline int
+> +iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+> +static inline int
+> +iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+> +static inline int
+> +iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+> +static inline void
+> +iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
+> +{
+> +}
+> +
+> +static inline int
+> +iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  #ifdef CONFIG_IOMMU_DEBUGFS
+> -- 
+> 2.17.1
 > 
->  	if (info->pri_supported && !pci_reset_pri(pdev)
-> && !pci_enable_pri(pdev, 32))
-> --
-> 2.20.1
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
