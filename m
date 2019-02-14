@@ -1,140 +1,34 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v2 1/2] PCI/ATS: Add pci_prg_resp_pasid_required()
- interface.
-Date: Wed, 13 Feb 2019 13:49:57 -0600
-Message-ID: <20190213194957.GK96272@google.com>
-References: <cover.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
- <e7dddc4f4092764bb5762e8b46c847278a8923ac.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+From: YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] swiotlb: drop pointless static qualifier in swiotlb_dma_supported()
+Date: Thu, 14 Feb 2019 01:41:47 +0000
+Message-ID: <20190214014147.108653-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e7dddc4f4092764bb5762e8b46c847278a8923ac.1549915780.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: sathyanarayanan.kuppuswamy@linux.intel.com
-Cc: joro@8bytes.org, dwmw2@infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, ashok.raj@intel.com, jacob.jun.pan@intel.com, keith.busch@intel.com, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: YueHaibing <yuehaibing@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 11, 2019 at 01:50:31PM -0800, sathyanarayanan.kuppuswamy@linux.intel.com wrote:
-> From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> 
-> Return the PRG Response PASID Required bit in the Page Request
-> Status Register.
-> 
-> As per PCIe spec r4.0, sec 10.5.2.3, if this bit is Set then the device
-> expects a PASID TLP Prefix on PRG Response Messages when the
-> corresponding Page Requests had a PASID TLP Prefix. If Clear, the device
-> does not expect PASID TLP Prefixes on any PRG Response Message, and the
-> device behavior is undefined if this bit is Clear and the device
-> receives a PRG Response Message with a PASID TLP Prefix. Also the device
-> behavior is undefined in the this bit is Set and the device receives a
-> PRG Response Message with no PASID TLP Prefix when the corresponding
-> Page Requests had a PASID TLP Prefix.
+There is no need to have the 'struct dentry *d_swiotlb_usage' variable
+static since new value always be assigned before use it.
 
-s/Set then the device/Set, the device/
-s/undefined if this bit is Clear and the device/undefined if the device/
-s/is undefined in the this/is undefined if this/
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ kernel/dma/swiotlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This function will be used by drivers like IOMMU, if it is required to
-> check the status of the PRG Response PASID Required bit before enabling
-> the PASID support of the device.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Keith Busch <keith.busch@intel.com>
-> Suggested-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-
-With typos (also below) addressed,
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-
-> ---
->  drivers/pci/ats.c             | 31 +++++++++++++++++++++++++++++++
->  include/linux/pci-ats.h       |  5 +++++
->  include/uapi/linux/pci_regs.h |  1 +
->  3 files changed, 37 insertions(+)
-> 
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index 5b78f3b1b918..f843cd846dff 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -368,6 +368,37 @@ int pci_pasid_features(struct pci_dev *pdev)
->  }
->  EXPORT_SYMBOL_GPL(pci_pasid_features);
->  
-> +/**
-> + * pci_prg_resp_pasid_required - Return PRG Response PASID Required bit
-> + *				 status.
-> + * @pdev: PCI device structure
-> + *
-> + * Returns 1 if PASID is required in PRG Response message, 0 otherwise.
-> + *
-> + * Even though the PRG response PASID status is read from PRI status
-> + * register, since this API will mainly be used by PASID users, this
-> + * function is defined within #ifdef CONFIG_PCI_PASID instead of
-> + * CONFIG_PCI_PRI.
-> + *
-
-Remove blank comment line.
-
-> + */
-> +int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-> +{
-> +	u16 status;
-> +	int pos;
-> +
-> +	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-> +	if (!pos)
-> +		return 0;
-> +
-> +	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-> +
-> +	if (status & PCI_PRI_STATUS_PASID)
-> +		return 1;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_prg_resp_pasid_required);
-> +
->  #define PASID_NUMBER_SHIFT	8
->  #define PASID_NUMBER_MASK	(0x1f << PASID_NUMBER_SHIFT)
->  /**
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index 7c4b8e27268c..facfd6a18fe1 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -40,6 +40,7 @@ void pci_disable_pasid(struct pci_dev *pdev);
->  void pci_restore_pasid_state(struct pci_dev *pdev);
->  int pci_pasid_features(struct pci_dev *pdev);
->  int pci_max_pasids(struct pci_dev *pdev);
-> +int pci_prg_resp_pasid_required(struct pci_dev *pdev);
->  
->  #else  /* CONFIG_PCI_PASID */
->  
-> @@ -66,6 +67,10 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
->  	return -EINVAL;
->  }
->  
-> +static int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-> +{
-> +	return 0;
-> +}
->  #endif /* CONFIG_PCI_PASID */
->  
->  
-> diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-> index e1e9888c85e6..898be572b010 100644
-> --- a/include/uapi/linux/pci_regs.h
-> +++ b/include/uapi/linux/pci_regs.h
-> @@ -880,6 +880,7 @@
->  #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
->  #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
->  #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
-> +#define  PCI_PRI_STATUS_PASID	0x8000	/* PRG Response PASID Required */
->  #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
->  #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
->  #define PCI_EXT_CAP_PRI_SIZEOF	16
-> -- 
-> 2.20.1
-> 
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index a7b53786db9f..02fa517c47d9 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -689,7 +689,7 @@ swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ 
+ static int __init swiotlb_create_debugfs(void)
+ {
+-	static struct dentry *d_swiotlb_usage;
++	struct dentry *d_swiotlb_usage;
+ 	struct dentry *ent;
+ 
+ 	d_swiotlb_usage = debugfs_create_dir("swiotlb", NULL);
