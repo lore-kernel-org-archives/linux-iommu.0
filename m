@@ -1,73 +1,94 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH] dma-contiguous: do not allocate a single page from CMA area
-Date: Fri, 15 Feb 2019 12:06:35 -0800
-Message-ID: <20190215200635.20733-1-nicoleotsuka@gmail.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Allow disabling bypass via kernel config
+Date: Fri, 15 Feb 2019 17:37:41 -0500
+Message-ID: <CAF6AEGsGc8g--3W_xpR8VUt778WR19v_HOemhd7Jv=f4QBqVgw@mail.gmail.com>
+References: <20190214204433.155715-1-dianders@chromium.org>
+ <4238ceb7-d286-9ef9-39b6-b2e0571f2981@arm.com> <CAD=FV=WeBD0bqxWPZcV1dz5Sdn47Ap=FZU3Y+YPbxsVCQEUcLQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAD=FV=WeBD0bqxWPZcV1dz5Sdn47Ap=FZU3Y+YPbxsVCQEUcLQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: robin.murphy@arm.com, m.szyprowski@samsung.com, hch@lst.de
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, LKML <linux-kernel@vger.kernel.org>, Evan Green <evgreen@chromium.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The addresses within a single page are always contiguous, so it's
-not so necessary to always allocate one single page from CMA area.
-Since the CMA area has a limited predefined size of space, it may
-run out of space in heavy use cases, where there might be quite a
-lot CMA pages being allocated for single pages.
+On Thu, Feb 14, 2019 at 7:40 PM Doug Anderson <dianders@chromium.org> wrote:
+>
+> Hi,
+>
+> On Thu, Feb 14, 2019 at 1:32 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> >
+> > Hi Doug,
+> >
+> > On 2019-02-14 8:44 pm, Douglas Anderson wrote:
+> > > Right now the only way to disable the iommu bypass for the ARM SMMU is
+> > > with the kernel command line parameter 'arm-smmu.disable_bypass'.
+> > >
+> > > In general kernel command line parameters make sense for things that
+> > > someone would like to tweak without rebuilding the kernel or for very
+> > > basic communication between the bootloader and the kernel, but are
+> > > awkward for other things.  Specifically:
+> > > * Human parsing of the kernel command line can be difficult since it's
+> > >    just a big runon space separated line of text.
+> > > * If every bit of the system was configured via the kernel command
+> > >    line the kernel command line would get very large and even more
+> > >    unwieldly.
+> > > * Typically there are not easy ways in build systems to adjust the
+> > >    kernel command line for config-like options.
+> > >
+> > > Let's introduce a new config option that allows us to disable the
+> > > iommu bypass without affecting the existing default nor the existing
+> > > ability to adjust the configuration via kernel command line.
+> >
+> > I say let's just flip the default - for a while now it's been one of
+> > those "oh yeah, we should probably do that" things that gets instantly
+> > forgotten again, so some 3rd-party demand is plenty to convince me :)
+> >
+> > There are few reasons to allow unmatched stream bypass, and even fewer
+> > good ones, so I'd be happy to shift the command-line burden over to the
+> > esoteric cases at this point, and consider the config option in future
+> > if anyone from that camp pops up and screams hard enough.
+>
+> Sure, I can submit that patch if we want.  I presume I'll get lots of
+> screaming but I'm used to that.  ;-)
+>
+> ...specifically I found that when I turned on "disably bypass" on my
+> board (sdm845-cheza, which is not yet upstream) that a bunch of things
+> that used to work broke.  That's a good thing because all the things
+> that broke need to be fixed properly (by adding the IOMMUs) but
+> presumably my board is not special in relying on the old insecure
+> behavior.
 
-However, there is also a concern that a device might care where a
-page comes from -- it might expect the page from CMA area and act
-differently if the page doesn't.
+So one niggly bit, beyond the drivers that aren't but should be using
+iommu, is the case where bootloader lights up the display.  We
+actually still have a lot of work to do for this (in that clk and
+genpd drivers need to be aware of handover, in addition to just
+iommu)..  But I'd rather not make a hard problem harder just yet.
 
-This patch tries to skip of one-page size allocations and returns
-NULL so as to let callers allocate normal pages unless the device
-has its own CMA area. This would save resources from the CMA area
-for more CMA allocations. And it'd also reduce CMA fragmentations
-resulted from trivial allocations.
+(it gets worse, afaict so far on the windows-arm laptops since in that
+case uefi/edk is actually taking the iommu out of bypass and things go
+badly when arm-smmu disables clks after probe..)
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- kernel/dma/contiguous.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+But I might recommend making the default a kconfig option for now, so
+in the distro kernel case, where display driver is a kernel module,
+you aren't making a hard problem harder.  For cases where bootloader
+isn't enabling display, things are much easier, and I think we could
+switch the default sooner.  But I fear for cases where bootloader is
+enabling display it is a much harder problem :-(
 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index b2a87905846d..09074bd04793 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -186,16 +186,32 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
-  *
-  * This function allocates memory buffer for specified device. It uses
-  * device specific contiguous memory area if available or the default
-- * global one. Requires architecture specific dev_get_cma_area() helper
-- * function.
-+ * global one.
-+ *
-+ * However, it skips one-page size of allocations from the global area.
-+ * As the addresses within one page are always contiguous, so there is
-+ * no need to waste CMA pages for that kind; it also helps reduce the
-+ * fragmentations in the CMA area. So a caller should be the rebounder
-+ * in such case to allocate a normal page upon NULL return value.
-+ *
-+ * Requires architecture specific dev_get_cma_area() helper function.
-  */
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
- 				       unsigned int align, bool no_warn)
- {
-+	struct cma *cma;
-+
- 	if (align > CONFIG_CMA_ALIGNMENT)
- 		align = CONFIG_CMA_ALIGNMENT;
- 
--	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
-+	if (dev && dev->cma_area)
-+		cma = dev->cma_area;
-+	else if (count > 1)
-+		cma = dma_contiguous_default_area;
-+	else
-+		return NULL;
-+
-+	return cma_alloc(cma, count, align, no_warn);
- }
- 
- /**
--- 
-2.17.1
+BR,
+-R
+
+
+>
+> I'm about to head on vacation for a week so I'm not sure I'll get to
+> re-post before then.  If not I'll post this sometime after I get back
+> unless someone beats me to it.
+>
+> -Doug
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
