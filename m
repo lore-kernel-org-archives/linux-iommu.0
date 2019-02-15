@@ -1,17 +1,17 @@
 From: John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>
 Subject: Re: ARM64 boot failure on espressobin with 5.0.0-rc6
 	(1f947a7a011fcceb14cb912f5481a53b18f1879a)
-Date: Fri, 15 Feb 2019 10:40:08 -0500
-Message-ID: <d0c7d027-5032-89ae-cb8d-b84b13d00912@bell.net>
+Date: Fri, 15 Feb 2019 11:05:43 -0500
+Message-ID: <8f4cd5ad-1a29-0910-de19-65cd5bc87e73@bell.net>
 References: <bd202e22-c23e-ddf1-ef33-e60896465a5a@bell.net>
 	<6d11c3cf-ce21-f1d6-df6f-8678f4159e3c@arm.com>
 	<20190214173642.GA2704@lst.de>
 	<fd389e6a-b10c-77fb-ac79-b15ffd805a7d@arm.com>
-	<5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc@bell.net>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1801150277735071468=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc-CzeTG9NwML0@public.gmane.org>
+In-Reply-To: <fd389e6a-b10c-77fb-ac79-b15ffd805a7d-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -26,69 +26,29 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig 
 Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is a multi-part message in MIME format.
---===============1801150277735071468==
-Content-Type: multipart/alternative;
- boundary="------------331E78D6089B999CBA9C9AC0"
-Content-Language: en-US
-
-This is a multi-part message in MIME format.
---------------331E78D6089B999CBA9C9AC0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-
-On 2019-02-15 10:22 a.m., John David Anglin wrote:
-> On 2019-02-14 12:58 p.m., Robin Murphy wrote:
->> Hmm, having felt brave enough to take a closer look, it might actually be as simple as this - Dave, are you able to give the diff below a spin?
-> Still crashes but in slightly different spot:
->
-I think I see what's wrong.
-
-Dave
-
--- 
-John David Anglin  dave.anglin-CzeTG9NwML0@public.gmane.org
-
-
---------------331E78D6089B999CBA9C9AC0
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: 8bit
-
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <div class="moz-cite-prefix">On 2019-02-15 10:22 a.m., John David
-      Anglin wrote:<br>
-    </div>
-    <blockquote type="cite"
-      cite="mid:5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc-CzeTG9NwML0@public.gmane.org">
-      <pre class="moz-quote-pre" wrap="">On 2019-02-14 12:58 p.m., Robin Murphy wrote:
-</pre>
-      <blockquote type="cite" style="color: #000000;">
-        <pre class="moz-quote-pre" wrap="">Hmm, having felt brave enough to take a closer look, it might actually be as simple as this - Dave, are you able to give the diff below a spin?
-</pre>
-      </blockquote>
-      <pre class="moz-quote-pre" wrap="">Still crashes but in slightly different spot:
-
-</pre>
-    </blockquote>
-    I think I see what's wrong.<br>
-    <br>
-    Dave<br>
-    <pre class="moz-signature" cols="144">-- 
-John David Anglin  <a class="moz-txt-link-abbreviated" href="mailto:dave.anglin-CzeTG9NwML0@public.gmane.org">dave.anglin-CzeTG9NwML0@public.gmane.org</a></pre>
-  </body>
-</html>
-
---------------331E78D6089B999CBA9C9AC0--
-
---===============1801150277735071468==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1801150277735071468==--
+T24gMjAxOS0wMi0xNCAxMjo1OCBwLm0uLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gSG1tLCBoYXZp
+bmcgZmVsdCBicmF2ZSBlbm91Z2ggdG8gdGFrZSBhIGNsb3NlciBsb29rLCBpdCBtaWdodCBhY3R1
+YWxseSBiZcKgYXPCoHNpbXBsZcKgYXPCoHRoaXPCoC3CoERhdmUswqBhcmXCoHlvdcKgYWJsZcKg
+dG/CoGdpdmXCoHRoZcKgZGlmZsKgYmVsb3fCoGHCoHNwaW4/Cj4gCj4gUm9iaW4uCj4gCj4gLS0t
+LS0+OC0tLS0tCj4gZGlmZsKgLS1naXTCoGEvZHJpdmVycy9kbWEvbXZfeG9yLmPCoGIvZHJpdmVy
+cy9kbWEvbXZfeG9yLmMKPiBpbmRleMKgN2Y1OTUzNTVmYjc5Li5mZTRhN2M3MWZlZGXCoDEwMDY0
+NAo+IC0tLcKgYS9kcml2ZXJzL2RtYS9tdl94b3IuYwo+ICsrK8KgYi9kcml2ZXJzL2RtYS9tdl94
+b3IuYwo+IEBAwqAtMTA1OSw2wqArMTA1OSw3wqBAQMKgbXZfeG9yX2NoYW5uZWxfYWRkKHN0cnVj
+dMKgbXZfeG9yX2RldmljZcKgKnhvcmRldiwKPiDCoMKgwqDCoMKgwqDCoMKgwqBtdl9jaGFuLT5v
+cF9pbl9kZXNjwqA9wqBYT1JfTU9ERV9JTl9ERVNDOwo+IAo+IMKgwqDCoMKgwqBkbWFfZGV2wqA9
+wqAmbXZfY2hhbi0+ZG1hZGV2Owo+ICvCoMKgwqDCoGRtYV9kZXYtPmRldsKgPcKgJnBkZXYtPmRl
+djsKPiDCoMKgwqDCoMKgbXZfY2hhbi0+eG9yZGV2wqA9wqB4b3JkZXY7Cj4gCj4gwqDCoMKgwqDC
+oC8qCj4gQEDCoC0xMDkxLDfCoCsxMDkyLDbCoEBAwqBtdl94b3JfY2hhbm5lbF9hZGQoc3RydWN0
+wqBtdl94b3JfZGV2aWNlwqAqeG9yZGV2LAo+IMKgwqDCoMKgwqBkbWFfZGV2LT5kZXZpY2VfZnJl
+ZV9jaGFuX3Jlc291cmNlc8KgPcKgbXZfeG9yX2ZyZWVfY2hhbl9yZXNvdXJjZXM7Cj4gwqDCoMKg
+wqDCoGRtYV9kZXYtPmRldmljZV90eF9zdGF0dXPCoD3CoG12X3hvcl9zdGF0dXM7Cj4gwqDCoMKg
+wqDCoGRtYV9kZXYtPmRldmljZV9pc3N1ZV9wZW5kaW5nwqA9wqBtdl94b3JfaXNzdWVfcGVuZGlu
+ZzsKPiAtwqDCoMKgwqBkbWFfZGV2LT5kZXbCoD3CoCZwZGV2LT5kZXY7Cj4gCj4gwqDCoMKgwqDC
+oC8qwqBzZXTCoHByZXDCoHJvdXRpbmVzwqBiYXNlZMKgb27CoGNhcGFiaWxpdHnCoCovCj4gwqDC
+oMKgwqDCoGlmwqAoZG1hX2hhc19jYXAoRE1BX0lOVEVSUlVQVCzCoGRtYV9kZXYtPmNhcF9tYXNr
+KSkKClRoZSBwYXRjaCBpcyBmaW5lIGFuZCBpdCBmaXhlcyB0aGUgYm9vdCBmYWlsdXJlLgoKSSBt
+aXNhcHBsaWVkIGl0IGluIHByZXZpb3VzIHRlc3QuCgpUaGFua3MsCkRhdmUKCi0tIApKb2huIERh
+dmlkIEFuZ2xpbiAgZGF2ZS5hbmdsaW5AYmVsbC5uZXQKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2lvbW11
