@@ -1,185 +1,129 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5/5] Documentation/DMA-API-HOWTO: update dma_mask sections
-Date: Fri, 15 Feb 2019 15:45:59 +0100
-Message-ID: <20190215144559.8777-6-hch@lst.de>
-References: <20190215144559.8777-1-hch@lst.de>
+From: John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>
+Subject: Re: ARM64 boot failure on espressobin with 5.0.0-rc6
+	(1f947a7a011fcceb14cb912f5481a53b18f1879a)
+Date: Fri, 15 Feb 2019 10:22:19 -0500
+Message-ID: <5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc@bell.net>
+References: <bd202e22-c23e-ddf1-ef33-e60896465a5a@bell.net>
+	<6d11c3cf-ce21-f1d6-df6f-8678f4159e3c@arm.com>
+	<20190214173642.GA2704@lst.de>
+	<fd389e6a-b10c-77fb-ac79-b15ffd805a7d@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190215144559.8777-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "David S. Miller" <davem@davemloft.net>, Helge Deller <deller@gmx.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, sparclinux@vger.kernel.org, linux-parisc@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <fd389e6a-b10c-77fb-ac79-b15ffd805a7d-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We don't require drivers to guess a DMA mask that might actually
-match the system capabilities any more, so fix up the documentation
-to clear this up.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- Documentation/DMA-API-HOWTO.txt | 121 +++++++++++---------------------
- 1 file changed, 41 insertions(+), 80 deletions(-)
-
-diff --git a/Documentation/DMA-API-HOWTO.txt b/Documentation/DMA-API-HOWTO.txt
-index f0cc3f772265..8e948fae34af 100644
---- a/Documentation/DMA-API-HOWTO.txt
-+++ b/Documentation/DMA-API-HOWTO.txt
-@@ -146,114 +146,75 @@ What about block I/O and networking buffers?  The block I/O and
- networking subsystems make sure that the buffers they use are valid
- for you to DMA from/to.
- 
--DMA addressing limitations
-+DMA addressing capabilities
- ==========================
- 
--Does your device have any DMA addressing limitations?  For example, is
--your device only capable of driving the low order 24-bits of address?
--If so, you need to inform the kernel of this fact.
-+By default, the kernel assumes that your device can address 32-bits of DMA
-+addressing.  For a 64-bit capable device, this needs to be increased, and for
-+a device with limitations, it needs to be decreased.
- 
--By default, the kernel assumes that your device can address the full
--32-bits.  For a 64-bit capable device, this needs to be increased.
--And for a device with limitations, as discussed in the previous
--paragraph, it needs to be decreased.
-+Special note about PCI: PCI-X specification requires PCI-X devices to support
-+64-bit addressing (DAC) for all transactions.  And at least one platform (SGI
-+SN2) requires 64-bit consistent allocations to operate correctly when the IO
-+bus is in PCI-X mode.
- 
--Special note about PCI: PCI-X specification requires PCI-X devices to
--support 64-bit addressing (DAC) for all transactions.  And at least
--one platform (SGI SN2) requires 64-bit consistent allocations to
--operate correctly when the IO bus is in PCI-X mode.
-+For correct operation, you must set the DMA mask to inform the kernel about
-+your devices DMA addressing capabilities.
- 
--For correct operation, you must interrogate the kernel in your device
--probe routine to see if the DMA controller on the machine can properly
--support the DMA addressing limitation your device has.  It is good
--style to do this even if your device holds the default setting,
--because this shows that you did think about these issues wrt. your
--device.
--
--The query is performed via a call to dma_set_mask_and_coherent()::
-+This is performed via a call to dma_set_mask_and_coherent()::
- 
- 	int dma_set_mask_and_coherent(struct device *dev, u64 mask);
- 
--which will query the mask for both streaming and coherent APIs together.
--If you have some special requirements, then the following two separate
--queries can be used instead:
-+which will set the mask for both streaming and coherent APIs together.  If you
-+have some special requirements, then the following two separate calls can be
-+used instead:
- 
--	The query for streaming mappings is performed via a call to
-+	The setup for streaming mappings is performed via a call to
- 	dma_set_mask()::
- 
- 		int dma_set_mask(struct device *dev, u64 mask);
- 
--	The query for consistent allocations is performed via a call
-+	The setup for consistent allocations is performed via a call
- 	to dma_set_coherent_mask()::
- 
- 		int dma_set_coherent_mask(struct device *dev, u64 mask);
- 
--Here, dev is a pointer to the device struct of your device, and mask
--is a bit mask describing which bits of an address your device
--supports.  It returns zero if your card can perform DMA properly on
--the machine given the address mask you provided.  In general, the
--device struct of your device is embedded in the bus-specific device
--struct of your device.  For example, &pdev->dev is a pointer to the
--device struct of a PCI device (pdev is a pointer to the PCI device
--struct of your device).
-+Here, dev is a pointer to the device struct of your device, and mask is a bit
-+mask describing which bits of an address your device supports.  Often the
-+device struct of your device is embedded in the bus-specific device struct of
-+your device.  For example, &pdev->dev is a pointer to the device struct of a
-+PCI device (pdev is a pointer to the PCI device struct of your device).
- 
--If it returns non-zero, your device cannot perform DMA properly on
--this platform, and attempting to do so will result in undefined
--behavior.  You must either use a different mask, or not use DMA.
-+These calls usually return zero to indicated your device can perform DMA
-+properly on the machine given the address mask you provided, but they might
-+return an error if the mask is too small to be supportable on the given
-+system.  If it returns non-zero, your device cannot perform DMA properly on
-+this platform, and attempting to do so will result in undefined behavior.
-+You must not use DMA on this device unless the dma_set_mask family of
-+functions has returned success.
- 
--This means that in the failure case, you have three options:
-+This means that in the failure case, you have two options:
- 
--1) Use another DMA mask, if possible (see below).
--2) Use some non-DMA mode for data transfer, if possible.
--3) Ignore this device and do not initialize it.
-+1) Use some non-DMA mode for data transfer, if possible.
-+2) Ignore this device and do not initialize it.
- 
--It is recommended that your driver print a kernel KERN_WARNING message
--when you end up performing either #2 or #3.  In this manner, if a user
--of your driver reports that performance is bad or that the device is not
--even detected, you can ask them for the kernel messages to find out
--exactly why.
-+It is recommended that your driver print a kernel KERN_WARNING message when
-+setting the DMA mask fails.  In this manner, if a user of your driver reports
-+that performance is bad or that the device is not even detected, you can ask
-+them for the kernel messages to find out exactly why.
- 
--The standard 32-bit addressing device would do something like this::
-+The standard 64-bit addressing device would do something like this::
- 
--	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32))) {
-+	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
- 		dev_warn(dev, "mydev: No suitable DMA available\n");
- 		goto ignore_this_device;
- 	}
- 
--Another common scenario is a 64-bit capable device.  The approach here
--is to try for 64-bit addressing, but back down to a 32-bit mask that
--should not fail.  The kernel may fail the 64-bit mask not because the
--platform is not capable of 64-bit addressing.  Rather, it may fail in
--this case simply because 32-bit addressing is done more efficiently
--than 64-bit addressing.  For example, Sparc64 PCI SAC addressing is
--more efficient than DAC addressing.
--
--Here is how you would handle a 64-bit capable device which can drive
--all 64-bits when accessing streaming DMA::
--
--	int using_dac;
-+If the device only supports 32-bit addressing for descriptors in the
-+coherent allocations, but supports full 64-bits fro streaming mappings
-+it would look like this:
- 
--	if (!dma_set_mask(dev, DMA_BIT_MASK(64))) {
--		using_dac = 1;
--	} else if (!dma_set_mask(dev, DMA_BIT_MASK(32))) {
--		using_dac = 0;
--	} else {
--		dev_warn(dev, "mydev: No suitable DMA available\n");
--		goto ignore_this_device;
--	}
--
--If a card is capable of using 64-bit consistent allocations as well,
--the case would look like this::
--
--	int using_dac, consistent_using_dac;
--
--	if (!dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
--		using_dac = 1;
--		consistent_using_dac = 1;
--	} else if (!dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32))) {
--		using_dac = 0;
--		consistent_using_dac = 0;
--	} else {
-+	if (dma_set_mask(dev, DMA_BIT_MASK(64))) {
- 		dev_warn(dev, "mydev: No suitable DMA available\n");
- 		goto ignore_this_device;
- 	}
--- 
-2.20.1
+T24gMjAxOS0wMi0xNCAxMjo1OCBwLm0uLCBSb2JpbiBNdXJwaHkgd3JvdGU6DQo+IEhtbSwgaGF2
+aW5nIGZlbHQgYnJhdmUgZW5vdWdoIHRvIHRha2UgYSBjbG9zZXIgbG9vaywgaXQgbWlnaHQgYWN0
+dWFsbHkgYmXCoGFzwqBzaW1wbGXCoGFzwqB0aGlzwqAtwqBEYXZlLMKgYXJlwqB5b3XCoGFibGXC
+oHRvwqBnaXZlwqB0aGXCoGRpZmbCoGJlbG93wqBhwqBzcGluPw0KU3RpbGwgY3Jhc2hlcyBidXQg
+aW4gc2xpZ2h0bHkgZGlmZmVyZW50IHNwb3Q6DQoNClvCoMKgwqAgMC4wMDAwMDBdIEJvb3Rpbmcg
+TGludXggb24gcGh5c2ljYWwgQ1BVIDB4MDAwMDAwMDAwMCBbMHg0MTBmZDAzNF0NClvCoMKgwqAg
+MC4wMDAwMDBdIExpbnV4IHZlcnNpb24gNS4wLjAtcmM2KyAocm9vdEBlc3ByZXNzb2JpbikgKGdj
+YyB2ZXJzaW9uIDYuMy4wIDIwMTcwNTE2IChEZWJpYW4gNi4zLjAtMTgrZGViOXUxKSkgIzEgU01Q
+IFBSRUVNUFQgV2VkIEZlYiAxMw0KMTY6MTc6NDYgRVNUIDIwMTkNClvCoMKgwqAgMC4wMDAwMDBd
+IE1hY2hpbmUgbW9kZWw6IEdsb2JhbHNjYWxlIE1hcnZlbGwgRVNQUkVTU09CaW4gQm9hcmQNClvC
+oMKgwqAgMC4wMDAwMDBdIGVhcmx5Y29uOiBhcjM3MDBfdWFydDAgYXQgTU1JTyAweDAwMDAwMDAw
+ZDAwMTIwMDAgKG9wdGlvbnMgJycpDQpbwqDCoMKgIDAuMDAwMDAwXSBwcmludGs6IGJvb3Rjb25z
+b2xlIFthcjM3MDBfdWFydDBdIGVuYWJsZWQNClvCoMKgwqAgMy4yMTAyNzZdIEludGVybmFsIGVy
+cm9yOiBPb3BzOiA5NjAwMDA0NSBbIzFdIFBSRUVNUFQgU01QDQpbwqDCoMKgIDMuMjE1OTMyXSBN
+b2R1bGVzIGxpbmtlZCBpbjoNClvCoMKgwqAgMy4yMTkwNzJdIENQVTogMSBQSUQ6IDEgQ29tbTog
+c3dhcHBlci8wIE5vdCB0YWludGVkIDUuMC4wLXJjNisgIzENClvCoMKgwqAgMy4yMjU1MTldIEhh
+cmR3YXJlIG5hbWU6IEdsb2JhbHNjYWxlIE1hcnZlbGwgRVNQUkVTU09CaW4gQm9hcmQgKERUKQ0K
+W8KgwqDCoCAzLjIzMjE1MV0gcHN0YXRlOiBhMDAwMDAwNSAoTnpDdiBkYWlmIC1QQU4gLVVBTykN
+ClvCoMKgwqAgMy4yMzcwOTBdIHBjIDogbXZfeG9yX2NoYW5uZWxfYWRkKzB4NGMvMHhiMjgNClvC
+oMKgwqAgMy4yNDE2NTBdIGxyIDogbXZfeG9yX3Byb2JlKzB4MjBjLzB4NGI4DQpbwqDCoMKgIDMu
+MjQ1NzY4XSBzcCA6IGZmZmZmZjgwMTAwMzNhYzANClvCoMKgwqAgMy4yNDkxNzNdIHgyOTogZmZm
+ZmZmODAxMDAzM2FjMCB4Mjg6IDAwMDAwMDAwMDAwMDAwMDANClvCoMKgwqAgMy4yNTQ2MzldIHgy
+NzogZmZmZmZmODAxMGU3NjA2OCB4MjY6IDAwMDAwMDAwMDAwMDAwMjkNClvCoMKgwqAgMy4yNjAx
+MDRdIHgyNTogMDAwMDAwMDAwMDAwMDAwMCB4MjQ6IDAwMDAwMDAwMDAwMDAwMDANClvCoMKgwqAg
+My4yNjU1NzBdIHgyMzogZmZmZmZmYzAzZmI0NzQwMCB4MjI6IGZmZmZmZjgwMTBlYWQwMDANClvC
+oMKgwqAgMy4yNzEwMzVdIHgyMTogZmZmZmZmYzAzZmI0NzQxMCB4MjA6IGZmZmZmZmMwM2JlYThk
+ODANClvCoMKgwqAgMy4yNzY1MDFdIHgxOTogZmZmZmZmYzAzZmI0NzQwMCB4MTg6IGZmZmZmZmZm
+ZmZmZmZmZmYNClvCoMKgwqAgMy4yODE5NjZdIHgxNzogMDAwMDAwMDAwMDAwMDAwYyB4MTY6IDAw
+MDAwMDAwMDAwMDAwMGENClvCoMKgwqAgMy4yODc0MzJdIHgxNTogZmZmZmZmODAxMGVhZDZjOCB4
+MTQ6IGZmZmZmZmMwM2JlYWEwMDMNClvCoMKgwqAgMy4yOTI4OThdIHgxMzogZmZmZmZmYzAzYmVh
+YTAwMiB4MTI6IDAwMDAwMDAwMDAwMDAwMzgNClvCoMKgwqAgMy4yOTgzNjNdIHgxMTogMDAwMDAw
+MDAwMDAwMWZmZiB4MTA6IDAwMDAwMDAwMDAwMDAwMDENClvCoMKgwqAgMy4zMDM4MjldIHg5IDog
+MDAwMDAwMDAwMDAwMDA0MCB4OCA6IGZmZmZmZjgwMTBlYzc5MjgNClvCoMKgwqAgMy4zMDkyOTRd
+IHg3IDogZmZmZmZmYzAzY2MwMDNiOCB4NiA6IDAwMDAwMDAwMDAwMDAwMDANClvCoMKgwqAgMy4z
+MTQ3NjBdIHg1IDogMDAwMDAwMDAwMDAwMDAwMCB4NCA6IDAwMDAwMDAwMDAwMDAwMjkNClvCoMKg
+wqAgMy4zMjAyMjZdIHgzIDogMDAwMDAwMDAwMDAwMDA4MyB4MiA6IDAwMDAwMDAwMDAwMDgwYzAN
+ClvCoMKgwqAgMy4zMjU2OTFdIHgxIDogMDAwMDAwMDAwMDAwMDAwMCB4MCA6IGZmZmZmZmMwM2Zi
+NDc0MTANClvCoMKgwqAgMy4zMzExNThdIFByb2Nlc3Mgc3dhcHBlci8wIChwaWQ6IDEsIHN0YWNr
+IGxpbWl0ID0gMHgoX19fX3B0cnZhbF9fX18pKQ0KW8KgwqDCoCAzLjMzODA1Nl0gQ2FsbCB0cmFj
+ZToNClvCoMKgwqAgMy4zNDA1NjldwqAgbXZfeG9yX2NoYW5uZWxfYWRkKzB4NGMvMHhiMjgNClvC
+oMKgwqAgMy4zNDQ3NzldwqAgbXZfeG9yX3Byb2JlKzB4MjBjLzB4NGI4DQpbwqDCoMKgIDMuMzQ4
+NTQ0XcKgIHBsYXRmb3JtX2Rydl9wcm9iZSsweDUwLzB4YjANClvCoMKgwqAgMy4zNTI2NjNdwqAg
+cmVhbGx5X3Byb2JlKzB4MWZjLzB4MmMwDQpbwqDCoMKgIDMuMzU2NDI3XcKgIGRyaXZlcl9wcm9i
+ZV9kZXZpY2UrMHg1OC8weDEwMA0KW8KgwqDCoCAzLjM2MDcyN13CoCBfX2RyaXZlcl9hdHRhY2gr
+MHhkOC8weGUwDQpbwqDCoMKgIDMuMzY0NTgwXcKgIGJ1c19mb3JfZWFjaF9kZXYrMHg2OC8weGM4
+DQpbwqDCoMKgIDMuMzY4NTIyXcKgIGRyaXZlcl9hdHRhY2grMHgyMC8weDI4DQpbwqDCoMKgIDMu
+MzcyMTk2XcKgIGJ1c19hZGRfZHJpdmVyKzB4MTA4LzB4MjI4DQpbwqDCoMKgIDMuMzc2MTM5XcKg
+IGRyaXZlcl9yZWdpc3RlcisweDYwLzB4MTEwDQpbwqDCoMKgIDMuMzgwMDgxXcKgIF9fcGxhdGZv
+cm1fZHJpdmVyX3JlZ2lzdGVyKzB4NDQvMHg1MA0KW8KgwqDCoCAzLjM4NDkyM13CoCBtdl94b3Jf
+ZHJpdmVyX2luaXQrMHgxOC8weDIwDQpbwqDCoMKgIDMuMzg5MDQzXcKgIGRvX29uZV9pbml0Y2Fs
+bCsweDU4LzB4MTcwDQpbwqDCoMKgIDMuMzkyOTg1XcKgIGtlcm5lbF9pbml0X2ZyZWVhYmxlKzB4
+MTkwLzB4MjM0DQpbwqDCoMKgIDMuMzk3NDY1XcKgIGtlcm5lbF9pbml0KzB4MTAvMHgxMDgNClvC
+oMKgwqAgMy40MDEwNDddwqAgcmV0X2Zyb21fZm9yaysweDEwLzB4MWMNClvCoMKgwqAgMy40MDQ3
+MjNdIENvZGU6IGY5MDA2N2E1IGQyODAwMDA1IDUyOTAxODAyIGFhMTUwM2UwIChmOTAwMzAzNSkN
+ClvCoMKgwqAgMy40MTEwMDRdIC0tLVsgZW5kIHRyYWNlIDY1YmU4MmE2MjcyNGUzMjggXS0tLQ0K
+W8KgwqDCoCAzLjQxNTgwNF0gS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IEF0dGVtcHRlZCB0
+byBraWxsIGluaXQhIGV4aXRjb2RlPTB4MDAwMDAwMGINClvCoMKgwqAgMy40MjM2MjZdIFNNUDog
+c3RvcHBpbmcgc2Vjb25kYXJ5IENQVXMNClvCoMKgwqAgMy40Mjc2NjFdIEtlcm5lbCBPZmZzZXQ6
+IGRpc2FibGVkDQpbwqDCoMKgIDMuNDMxMjQzXSBDUFUgZmVhdHVyZXM6IDB4MDAyLDIwMDAyMDBj
+DQpbwqDCoMKgIDMuNDM1MjcyXSBNZW1vcnkgTGltaXQ6IG5vbmUNClvCoMKgwqAgMy40Mzg0MTJd
+IC0tLVsgZW5kIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBBdHRlbXB0ZWQgdG8ga2lsbCBp
+bml0ISBleGl0Y29kZT0weDAwMDAwMDBiIF0tLS0NCg0KZmZmZmZmODAxMDYzMDQ0MCA8bXZfeG9y
+X2NoYW5uZWxfYWRkPjoNCmZmZmZmZjgwMTA2MzA0NDA6wqDCoMKgwqDCoMKgIGE5YjM3YmZkwqDC
+oMKgwqDCoMKgwqAgc3RwwqDCoMKgwqAgeDI5LCB4MzAsIFtzcCwgIy0yMDhdIQ0KZmZmZmZmODAx
+MDYzMDQ0NDrCoMKgwqDCoMKgwqAgOTEwMDAzZmTCoMKgwqDCoMKgwqDCoCBtb3bCoMKgwqDCoCB4
+MjksIHNwDQpmZmZmZmY4MDEwNjMwNDQ4OsKgwqDCoMKgwqDCoCBhOTAyNWJmNcKgwqDCoMKgwqDC
+oMKgIHN0cMKgwqDCoMKgIHgyMSwgeDIyLCBbc3AsICMzMl0NCmZmZmZmZjgwMTA2MzA0NGM6wqDC
+oMKgwqDCoMKgIGIwMDA0M2Y2wqDCoMKgwqDCoMKgwqAgYWRycMKgwqDCoCB4MjIsIGZmZmZmZjgw
+MTBlYWQwMDAgPGNyeXB0b19pbF90YWIrMHg5NDA+DQpmZmZmZmY4MDEwNjMwNDUwOsKgwqDCoMKg
+wqDCoCBhOTAzNjNmN8KgwqDCoMKgwqDCoMKgIHN0cMKgwqDCoMKgIHgyMywgeDI0LCBbc3AsICM0
+OF0NCmZmZmZmZjgwMTA2MzA0NTQ6wqDCoMKgwqDCoMKgIGFhMDEwM2Y3wqDCoMKgwqDCoMKgwqAg
+bW92wqDCoMKgwqAgeDIzLCB4MQ0KZmZmZmZmODAxMDYzMDQ1ODrCoMKgwqDCoMKgwqAgYTkwNDZi
+ZjnCoMKgwqDCoMKgwqDCoCBzdHDCoMKgwqDCoCB4MjUsIHgyNiwgW3NwLCAjNjRdDQpmZmZmZmY4
+MDEwNjMwNDVjOsKgwqDCoMKgwqDCoCBkMjgwMDAwMcKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKg
+IHgxLCAjMHgwwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAv
+LyAjMA0KZmZmZmZmODAxMDYzMDQ2MDrCoMKgwqDCoMKgwqAgYTkwMTUzZjPCoMKgwqDCoMKgwqDC
+oCBzdHDCoMKgwqDCoCB4MTksIHgyMCwgW3NwLCAjMTZdDQpmZmZmZmY4MDEwNjMwNDY0OsKgwqDC
+oMKgwqDCoCA5MTAwNDJmNcKgwqDCoMKgwqDCoMKgIGFkZMKgwqDCoMKgIHgyMSwgeDIzLCAjMHgx
+MA0KZmZmZmZmODAxMDYzMDQ2ODrCoMKgwqDCoMKgwqAgYTkwNTczZmLCoMKgwqDCoMKgwqDCoCBz
+dHDCoMKgwqDCoCB4MjcsIHgyOCwgW3NwLCAjODBdDQpmZmZmZmY4MDEwNjMwNDZjOsKgwqDCoMKg
+wqDCoCBhYTAwMDNmNMKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHgyMCwgeDANCmZmZmZmZjgw
+MTA2MzA0NzA6wqDCoMKgwqDCoMKgIDkxMWIyMmMwwqDCoMKgwqDCoMKgwqAgYWRkwqDCoMKgwqAg
+eDAsIHgyMiwgIzB4NmM4DQpmZmZmZmY4MDEwNjMwNDc0OsKgwqDCoMKgwqDCoCAyYTAyMDNmOcKg
+wqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHcyNSwgdzINCmZmZmZmZjgwMTA2MzA0Nzg6wqDCoMKg
+wqDCoMKgIGY5NDAwMDA1wqDCoMKgwqDCoMKgwqAgbGRywqDCoMKgwqAgeDUsIFt4MF0NCmZmZmZm
+ZjgwMTA2MzA0N2M6wqDCoMKgwqDCoMKgIGY5MDA2N2E1wqDCoMKgwqDCoMKgwqAgc3RywqDCoMKg
+wqAgeDUsIFt4MjksICMyMDBdDQpmZmZmZmY4MDEwNjMwNDgwOsKgwqDCoMKgwqDCoCBkMjgwMDAw
+NcKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHg1LCAjMHgwwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvLyAjMA0KZmZmZmZmODAxMDYzMDQ4NDrCoMKgwqDC
+oMKgwqAgNTI5MDE4MDLCoMKgwqDCoMKgwqDCoCBtb3bCoMKgwqDCoCB3MiwgIzB4ODBjMMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLy8gIzMyOTYwDQpmZmZmZmY4MDEw
+NjMwNDg4OsKgwqDCoMKgwqDCoCBhYTE1MDNlMMKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHgw
+LCB4MjENCmZmZmZmZjgwMTA2MzA0OGM6wqDCoMKgwqDCoMKgIGY5MDAzMDM1wqDCoMKgwqDCoMKg
+wqAgc3RywqDCoMKgwqAgeDIxLCBbeDEsICM5Nl0NCmZmZmZmZjgwMTA2MzA0OTA6wqDCoMKgwqDC
+oMKgIDcyYTAwYzAywqDCoMKgwqDCoMKgwqAgbW92a8KgwqDCoCB3MiwgIzB4NjAsIGxzbCAjMTYN
+CmZmZmZmZjgwMTA2MzA0OTQ6wqDCoMKgwqDCoMKgIGQyODA2YTAxwqDCoMKgwqDCoMKgwqAgbW92
+wqDCoMKgwqAgeDEsICMweDM1MMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoA0KLi4uDQoNCkRhdmUNCg0KLS0gDQpKb2huIERhdmlkIEFuZ2xpbiAgZGF2ZS5hbmdsaW5A
+YmVsbC5uZXQNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
