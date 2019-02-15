@@ -1,17 +1,17 @@
 From: John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>
 Subject: Re: ARM64 boot failure on espressobin with 5.0.0-rc6
 	(1f947a7a011fcceb14cb912f5481a53b18f1879a)
-Date: Fri, 15 Feb 2019 10:22:19 -0500
-Message-ID: <5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc@bell.net>
+Date: Fri, 15 Feb 2019 10:40:08 -0500
+Message-ID: <d0c7d027-5032-89ae-cb8d-b84b13d00912@bell.net>
 References: <bd202e22-c23e-ddf1-ef33-e60896465a5a@bell.net>
 	<6d11c3cf-ce21-f1d6-df6f-8678f4159e3c@arm.com>
 	<20190214173642.GA2704@lst.de>
 	<fd389e6a-b10c-77fb-ac79-b15ffd805a7d@arm.com>
+	<5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc@bell.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============1801150277735071468=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <fd389e6a-b10c-77fb-ac79-b15ffd805a7d-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc-CzeTG9NwML0@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -26,104 +26,69 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig 
 Cc: dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxOS0wMi0xNCAxMjo1OCBwLm0uLCBSb2JpbiBNdXJwaHkgd3JvdGU6DQo+IEhtbSwgaGF2
-aW5nIGZlbHQgYnJhdmUgZW5vdWdoIHRvIHRha2UgYSBjbG9zZXIgbG9vaywgaXQgbWlnaHQgYWN0
-dWFsbHkgYmXCoGFzwqBzaW1wbGXCoGFzwqB0aGlzwqAtwqBEYXZlLMKgYXJlwqB5b3XCoGFibGXC
-oHRvwqBnaXZlwqB0aGXCoGRpZmbCoGJlbG93wqBhwqBzcGluPw0KU3RpbGwgY3Jhc2hlcyBidXQg
-aW4gc2xpZ2h0bHkgZGlmZmVyZW50IHNwb3Q6DQoNClvCoMKgwqAgMC4wMDAwMDBdIEJvb3Rpbmcg
-TGludXggb24gcGh5c2ljYWwgQ1BVIDB4MDAwMDAwMDAwMCBbMHg0MTBmZDAzNF0NClvCoMKgwqAg
-MC4wMDAwMDBdIExpbnV4IHZlcnNpb24gNS4wLjAtcmM2KyAocm9vdEBlc3ByZXNzb2JpbikgKGdj
-YyB2ZXJzaW9uIDYuMy4wIDIwMTcwNTE2IChEZWJpYW4gNi4zLjAtMTgrZGViOXUxKSkgIzEgU01Q
-IFBSRUVNUFQgV2VkIEZlYiAxMw0KMTY6MTc6NDYgRVNUIDIwMTkNClvCoMKgwqAgMC4wMDAwMDBd
-IE1hY2hpbmUgbW9kZWw6IEdsb2JhbHNjYWxlIE1hcnZlbGwgRVNQUkVTU09CaW4gQm9hcmQNClvC
-oMKgwqAgMC4wMDAwMDBdIGVhcmx5Y29uOiBhcjM3MDBfdWFydDAgYXQgTU1JTyAweDAwMDAwMDAw
-ZDAwMTIwMDAgKG9wdGlvbnMgJycpDQpbwqDCoMKgIDAuMDAwMDAwXSBwcmludGs6IGJvb3Rjb25z
-b2xlIFthcjM3MDBfdWFydDBdIGVuYWJsZWQNClvCoMKgwqAgMy4yMTAyNzZdIEludGVybmFsIGVy
-cm9yOiBPb3BzOiA5NjAwMDA0NSBbIzFdIFBSRUVNUFQgU01QDQpbwqDCoMKgIDMuMjE1OTMyXSBN
-b2R1bGVzIGxpbmtlZCBpbjoNClvCoMKgwqAgMy4yMTkwNzJdIENQVTogMSBQSUQ6IDEgQ29tbTog
-c3dhcHBlci8wIE5vdCB0YWludGVkIDUuMC4wLXJjNisgIzENClvCoMKgwqAgMy4yMjU1MTldIEhh
-cmR3YXJlIG5hbWU6IEdsb2JhbHNjYWxlIE1hcnZlbGwgRVNQUkVTU09CaW4gQm9hcmQgKERUKQ0K
-W8KgwqDCoCAzLjIzMjE1MV0gcHN0YXRlOiBhMDAwMDAwNSAoTnpDdiBkYWlmIC1QQU4gLVVBTykN
-ClvCoMKgwqAgMy4yMzcwOTBdIHBjIDogbXZfeG9yX2NoYW5uZWxfYWRkKzB4NGMvMHhiMjgNClvC
-oMKgwqAgMy4yNDE2NTBdIGxyIDogbXZfeG9yX3Byb2JlKzB4MjBjLzB4NGI4DQpbwqDCoMKgIDMu
-MjQ1NzY4XSBzcCA6IGZmZmZmZjgwMTAwMzNhYzANClvCoMKgwqAgMy4yNDkxNzNdIHgyOTogZmZm
-ZmZmODAxMDAzM2FjMCB4Mjg6IDAwMDAwMDAwMDAwMDAwMDANClvCoMKgwqAgMy4yNTQ2MzldIHgy
-NzogZmZmZmZmODAxMGU3NjA2OCB4MjY6IDAwMDAwMDAwMDAwMDAwMjkNClvCoMKgwqAgMy4yNjAx
-MDRdIHgyNTogMDAwMDAwMDAwMDAwMDAwMCB4MjQ6IDAwMDAwMDAwMDAwMDAwMDANClvCoMKgwqAg
-My4yNjU1NzBdIHgyMzogZmZmZmZmYzAzZmI0NzQwMCB4MjI6IGZmZmZmZjgwMTBlYWQwMDANClvC
-oMKgwqAgMy4yNzEwMzVdIHgyMTogZmZmZmZmYzAzZmI0NzQxMCB4MjA6IGZmZmZmZmMwM2JlYThk
-ODANClvCoMKgwqAgMy4yNzY1MDFdIHgxOTogZmZmZmZmYzAzZmI0NzQwMCB4MTg6IGZmZmZmZmZm
-ZmZmZmZmZmYNClvCoMKgwqAgMy4yODE5NjZdIHgxNzogMDAwMDAwMDAwMDAwMDAwYyB4MTY6IDAw
-MDAwMDAwMDAwMDAwMGENClvCoMKgwqAgMy4yODc0MzJdIHgxNTogZmZmZmZmODAxMGVhZDZjOCB4
-MTQ6IGZmZmZmZmMwM2JlYWEwMDMNClvCoMKgwqAgMy4yOTI4OThdIHgxMzogZmZmZmZmYzAzYmVh
-YTAwMiB4MTI6IDAwMDAwMDAwMDAwMDAwMzgNClvCoMKgwqAgMy4yOTgzNjNdIHgxMTogMDAwMDAw
-MDAwMDAwMWZmZiB4MTA6IDAwMDAwMDAwMDAwMDAwMDENClvCoMKgwqAgMy4zMDM4MjldIHg5IDog
-MDAwMDAwMDAwMDAwMDA0MCB4OCA6IGZmZmZmZjgwMTBlYzc5MjgNClvCoMKgwqAgMy4zMDkyOTRd
-IHg3IDogZmZmZmZmYzAzY2MwMDNiOCB4NiA6IDAwMDAwMDAwMDAwMDAwMDANClvCoMKgwqAgMy4z
-MTQ3NjBdIHg1IDogMDAwMDAwMDAwMDAwMDAwMCB4NCA6IDAwMDAwMDAwMDAwMDAwMjkNClvCoMKg
-wqAgMy4zMjAyMjZdIHgzIDogMDAwMDAwMDAwMDAwMDA4MyB4MiA6IDAwMDAwMDAwMDAwMDgwYzAN
-ClvCoMKgwqAgMy4zMjU2OTFdIHgxIDogMDAwMDAwMDAwMDAwMDAwMCB4MCA6IGZmZmZmZmMwM2Zi
-NDc0MTANClvCoMKgwqAgMy4zMzExNThdIFByb2Nlc3Mgc3dhcHBlci8wIChwaWQ6IDEsIHN0YWNr
-IGxpbWl0ID0gMHgoX19fX3B0cnZhbF9fX18pKQ0KW8KgwqDCoCAzLjMzODA1Nl0gQ2FsbCB0cmFj
-ZToNClvCoMKgwqAgMy4zNDA1NjldwqAgbXZfeG9yX2NoYW5uZWxfYWRkKzB4NGMvMHhiMjgNClvC
-oMKgwqAgMy4zNDQ3NzldwqAgbXZfeG9yX3Byb2JlKzB4MjBjLzB4NGI4DQpbwqDCoMKgIDMuMzQ4
-NTQ0XcKgIHBsYXRmb3JtX2Rydl9wcm9iZSsweDUwLzB4YjANClvCoMKgwqAgMy4zNTI2NjNdwqAg
-cmVhbGx5X3Byb2JlKzB4MWZjLzB4MmMwDQpbwqDCoMKgIDMuMzU2NDI3XcKgIGRyaXZlcl9wcm9i
-ZV9kZXZpY2UrMHg1OC8weDEwMA0KW8KgwqDCoCAzLjM2MDcyN13CoCBfX2RyaXZlcl9hdHRhY2gr
-MHhkOC8weGUwDQpbwqDCoMKgIDMuMzY0NTgwXcKgIGJ1c19mb3JfZWFjaF9kZXYrMHg2OC8weGM4
-DQpbwqDCoMKgIDMuMzY4NTIyXcKgIGRyaXZlcl9hdHRhY2grMHgyMC8weDI4DQpbwqDCoMKgIDMu
-MzcyMTk2XcKgIGJ1c19hZGRfZHJpdmVyKzB4MTA4LzB4MjI4DQpbwqDCoMKgIDMuMzc2MTM5XcKg
-IGRyaXZlcl9yZWdpc3RlcisweDYwLzB4MTEwDQpbwqDCoMKgIDMuMzgwMDgxXcKgIF9fcGxhdGZv
-cm1fZHJpdmVyX3JlZ2lzdGVyKzB4NDQvMHg1MA0KW8KgwqDCoCAzLjM4NDkyM13CoCBtdl94b3Jf
-ZHJpdmVyX2luaXQrMHgxOC8weDIwDQpbwqDCoMKgIDMuMzg5MDQzXcKgIGRvX29uZV9pbml0Y2Fs
-bCsweDU4LzB4MTcwDQpbwqDCoMKgIDMuMzkyOTg1XcKgIGtlcm5lbF9pbml0X2ZyZWVhYmxlKzB4
-MTkwLzB4MjM0DQpbwqDCoMKgIDMuMzk3NDY1XcKgIGtlcm5lbF9pbml0KzB4MTAvMHgxMDgNClvC
-oMKgwqAgMy40MDEwNDddwqAgcmV0X2Zyb21fZm9yaysweDEwLzB4MWMNClvCoMKgwqAgMy40MDQ3
-MjNdIENvZGU6IGY5MDA2N2E1IGQyODAwMDA1IDUyOTAxODAyIGFhMTUwM2UwIChmOTAwMzAzNSkN
-ClvCoMKgwqAgMy40MTEwMDRdIC0tLVsgZW5kIHRyYWNlIDY1YmU4MmE2MjcyNGUzMjggXS0tLQ0K
-W8KgwqDCoCAzLjQxNTgwNF0gS2VybmVsIHBhbmljIC0gbm90IHN5bmNpbmc6IEF0dGVtcHRlZCB0
-byBraWxsIGluaXQhIGV4aXRjb2RlPTB4MDAwMDAwMGINClvCoMKgwqAgMy40MjM2MjZdIFNNUDog
-c3RvcHBpbmcgc2Vjb25kYXJ5IENQVXMNClvCoMKgwqAgMy40Mjc2NjFdIEtlcm5lbCBPZmZzZXQ6
-IGRpc2FibGVkDQpbwqDCoMKgIDMuNDMxMjQzXSBDUFUgZmVhdHVyZXM6IDB4MDAyLDIwMDAyMDBj
-DQpbwqDCoMKgIDMuNDM1MjcyXSBNZW1vcnkgTGltaXQ6IG5vbmUNClvCoMKgwqAgMy40Mzg0MTJd
-IC0tLVsgZW5kIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBBdHRlbXB0ZWQgdG8ga2lsbCBp
-bml0ISBleGl0Y29kZT0weDAwMDAwMDBiIF0tLS0NCg0KZmZmZmZmODAxMDYzMDQ0MCA8bXZfeG9y
-X2NoYW5uZWxfYWRkPjoNCmZmZmZmZjgwMTA2MzA0NDA6wqDCoMKgwqDCoMKgIGE5YjM3YmZkwqDC
-oMKgwqDCoMKgwqAgc3RwwqDCoMKgwqAgeDI5LCB4MzAsIFtzcCwgIy0yMDhdIQ0KZmZmZmZmODAx
-MDYzMDQ0NDrCoMKgwqDCoMKgwqAgOTEwMDAzZmTCoMKgwqDCoMKgwqDCoCBtb3bCoMKgwqDCoCB4
-MjksIHNwDQpmZmZmZmY4MDEwNjMwNDQ4OsKgwqDCoMKgwqDCoCBhOTAyNWJmNcKgwqDCoMKgwqDC
-oMKgIHN0cMKgwqDCoMKgIHgyMSwgeDIyLCBbc3AsICMzMl0NCmZmZmZmZjgwMTA2MzA0NGM6wqDC
-oMKgwqDCoMKgIGIwMDA0M2Y2wqDCoMKgwqDCoMKgwqAgYWRycMKgwqDCoCB4MjIsIGZmZmZmZjgw
-MTBlYWQwMDAgPGNyeXB0b19pbF90YWIrMHg5NDA+DQpmZmZmZmY4MDEwNjMwNDUwOsKgwqDCoMKg
-wqDCoCBhOTAzNjNmN8KgwqDCoMKgwqDCoMKgIHN0cMKgwqDCoMKgIHgyMywgeDI0LCBbc3AsICM0
-OF0NCmZmZmZmZjgwMTA2MzA0NTQ6wqDCoMKgwqDCoMKgIGFhMDEwM2Y3wqDCoMKgwqDCoMKgwqAg
-bW92wqDCoMKgwqAgeDIzLCB4MQ0KZmZmZmZmODAxMDYzMDQ1ODrCoMKgwqDCoMKgwqAgYTkwNDZi
-ZjnCoMKgwqDCoMKgwqDCoCBzdHDCoMKgwqDCoCB4MjUsIHgyNiwgW3NwLCAjNjRdDQpmZmZmZmY4
-MDEwNjMwNDVjOsKgwqDCoMKgwqDCoCBkMjgwMDAwMcKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKg
-IHgxLCAjMHgwwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAv
-LyAjMA0KZmZmZmZmODAxMDYzMDQ2MDrCoMKgwqDCoMKgwqAgYTkwMTUzZjPCoMKgwqDCoMKgwqDC
-oCBzdHDCoMKgwqDCoCB4MTksIHgyMCwgW3NwLCAjMTZdDQpmZmZmZmY4MDEwNjMwNDY0OsKgwqDC
-oMKgwqDCoCA5MTAwNDJmNcKgwqDCoMKgwqDCoMKgIGFkZMKgwqDCoMKgIHgyMSwgeDIzLCAjMHgx
-MA0KZmZmZmZmODAxMDYzMDQ2ODrCoMKgwqDCoMKgwqAgYTkwNTczZmLCoMKgwqDCoMKgwqDCoCBz
-dHDCoMKgwqDCoCB4MjcsIHgyOCwgW3NwLCAjODBdDQpmZmZmZmY4MDEwNjMwNDZjOsKgwqDCoMKg
-wqDCoCBhYTAwMDNmNMKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHgyMCwgeDANCmZmZmZmZjgw
-MTA2MzA0NzA6wqDCoMKgwqDCoMKgIDkxMWIyMmMwwqDCoMKgwqDCoMKgwqAgYWRkwqDCoMKgwqAg
-eDAsIHgyMiwgIzB4NmM4DQpmZmZmZmY4MDEwNjMwNDc0OsKgwqDCoMKgwqDCoCAyYTAyMDNmOcKg
-wqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHcyNSwgdzINCmZmZmZmZjgwMTA2MzA0Nzg6wqDCoMKg
-wqDCoMKgIGY5NDAwMDA1wqDCoMKgwqDCoMKgwqAgbGRywqDCoMKgwqAgeDUsIFt4MF0NCmZmZmZm
-ZjgwMTA2MzA0N2M6wqDCoMKgwqDCoMKgIGY5MDA2N2E1wqDCoMKgwqDCoMKgwqAgc3RywqDCoMKg
-wqAgeDUsIFt4MjksICMyMDBdDQpmZmZmZmY4MDEwNjMwNDgwOsKgwqDCoMKgwqDCoCBkMjgwMDAw
-NcKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHg1LCAjMHgwwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvLyAjMA0KZmZmZmZmODAxMDYzMDQ4NDrCoMKgwqDC
-oMKgwqAgNTI5MDE4MDLCoMKgwqDCoMKgwqDCoCBtb3bCoMKgwqDCoCB3MiwgIzB4ODBjMMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLy8gIzMyOTYwDQpmZmZmZmY4MDEw
-NjMwNDg4OsKgwqDCoMKgwqDCoCBhYTE1MDNlMMKgwqDCoMKgwqDCoMKgIG1vdsKgwqDCoMKgIHgw
-LCB4MjENCmZmZmZmZjgwMTA2MzA0OGM6wqDCoMKgwqDCoMKgIGY5MDAzMDM1wqDCoMKgwqDCoMKg
-wqAgc3RywqDCoMKgwqAgeDIxLCBbeDEsICM5Nl0NCmZmZmZmZjgwMTA2MzA0OTA6wqDCoMKgwqDC
-oMKgIDcyYTAwYzAywqDCoMKgwqDCoMKgwqAgbW92a8KgwqDCoCB3MiwgIzB4NjAsIGxzbCAjMTYN
-CmZmZmZmZjgwMTA2MzA0OTQ6wqDCoMKgwqDCoMKgIGQyODA2YTAxwqDCoMKgwqDCoMKgwqAgbW92
-wqDCoMKgwqAgeDEsICMweDM1MMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoA0KLi4uDQoNCkRhdmUNCg0KLS0gDQpKb2huIERhdmlkIEFuZ2xpbiAgZGF2ZS5hbmdsaW5A
-YmVsbC5uZXQNCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+This is a multi-part message in MIME format.
+--===============1801150277735071468==
+Content-Type: multipart/alternative;
+ boundary="------------331E78D6089B999CBA9C9AC0"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------331E78D6089B999CBA9C9AC0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+On 2019-02-15 10:22 a.m., John David Anglin wrote:
+> On 2019-02-14 12:58 p.m., Robin Murphy wrote:
+>> Hmm, having felt brave enough to take a closer look, it might actually be as simple as this - Dave, are you able to give the diff below a spin?
+> Still crashes but in slightly different spot:
+>
+I think I see what's wrong.
+
+Dave
+
+-- 
+John David Anglin  dave.anglin-CzeTG9NwML0@public.gmane.org
+
+
+--------------331E78D6089B999CBA9C9AC0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">On 2019-02-15 10:22 a.m., John David
+      Anglin wrote:<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:5ec6d5ed-7d5a-f313-fc31-17e61c16e9fc-CzeTG9NwML0@public.gmane.org">
+      <pre class="moz-quote-pre" wrap="">On 2019-02-14 12:58 p.m., Robin Murphy wrote:
+</pre>
+      <blockquote type="cite" style="color: #000000;">
+        <pre class="moz-quote-pre" wrap="">Hmm, having felt brave enough to take a closer look, it might actually be as simple as this - Dave, are you able to give the diff below a spin?
+</pre>
+      </blockquote>
+      <pre class="moz-quote-pre" wrap="">Still crashes but in slightly different spot:
+
+</pre>
+    </blockquote>
+    I think I see what's wrong.<br>
+    <br>
+    Dave<br>
+    <pre class="moz-signature" cols="144">-- 
+John David Anglin  <a class="moz-txt-link-abbreviated" href="mailto:dave.anglin-CzeTG9NwML0@public.gmane.org">dave.anglin-CzeTG9NwML0@public.gmane.org</a></pre>
+  </body>
+</html>
+
+--------------331E78D6089B999CBA9C9AC0--
+
+--===============1801150277735071468==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1801150277735071468==--
