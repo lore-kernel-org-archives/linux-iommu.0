@@ -1,77 +1,73 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 0/9] vfio/mdev: IOMMU aware mediated device
-Date: Fri, 15 Feb 2019 18:46:04 +0000
-Message-ID: <20e89cb0-b7ab-d0d7-8630-29ff512a4ef0@arm.com>
-References: <20190213040301.23021-1-baolu.lu@linux.intel.com>
-	<20190214131456.3db38cdb@w520.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190214131456.3db38cdb-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: [PATCH] dma-contiguous: do not allocate a single page from CMA area
+Date: Fri, 15 Feb 2019 12:06:35 -0800
+Message-ID: <20190215200635.20733-1-nicoleotsuka@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: robin.murphy@arm.com, m.szyprowski@samsung.com, hch@lst.de
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/02/2019 20:14, Alex Williamson wrote:
->> This patch series extends both IOMMU and vfio components to support
->> mdev device passing through when it could be isolated and protected
->> by the IOMMU units. The first part of this series (PATCH 1/09~6/09)
->> adds the interfaces and implementation of the multiple domains per
->> device. The second part (PATCH 7/09~9/09) adds the iommu device
->> attribute to each mdev, determines isolation type according to the
->> existence of an iommu device when attaching group in vfio type1 iommu
->> module, and attaches the domain to iommu aware mediated devices.
->> =
+The addresses within a single page are always contiguous, so it's
+not so necessary to always allocate one single page from CMA area.
+Since the CMA area has a limited predefined size of space, it may
+run out of space in heavy use cases, where there might be quite a
+lot CMA pages being allocated for single pages.
 
->> References:
->> [1] https://software.intel.com/en-us/download/intel-virtualization-techn=
-ology-for-directed-io-architecture-specification
->> [2] https://software.intel.com/en-us/download/intel-scalable-io-virtuali=
-zation-technical-specification
->> [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
->> =
+However, there is also a concern that a device might care where a
+page comes from -- it might expect the page from CMA area and act
+differently if the page doesn't.
 
->> Best regards,
->> Lu Baolu
->> =
+This patch tries to skip of one-page size allocations and returns
+NULL so as to let callers allocate normal pages unless the device
+has its own CMA area. This would save resources from the CMA area
+for more CMA allocations. And it'd also reduce CMA fragmentations
+resulted from trivial allocations.
 
->> Change log:
->>=A0=A0 v5->v6:
-> =
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+ kernel/dma/contiguous.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-> This looks pretty reasonable with Jean-Philippe's nit fixups.=A0 Where do
-> we go from here?=A0 I think we need an ack from Kirti since they have an
-> interest here.=A0 Presumably this looks ok to the ARM folks.
-
-Looks great from my point of view. I focused on patch 1 since I'm
-planning to reuse iommu_dev_features for SVA. I don't have time to test
-auxd and mdev on SMMUv3 at the moment but I had a better look and, if it
-helps, for patches 1 and 7-9:
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-
-That said, are you planning to add back the mdev_get_iommu_domain()
-function, in a separate patch? Because I think the parent driver still
-needs a way to retrieve the PASID for an mdev?
-
-Thanks,
-Jean
-
-> Do we have
-> any consumers of this code yet?=A0 Theoretically I think a vfio-pci-like
-> meta driver could be written as an mdev vendor driver with this support
-> (restricted to type1 iommu use cases).=A0 Thanks,
-> =
-
-> Alex
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index b2a87905846d..09074bd04793 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -186,16 +186,32 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+  *
+  * This function allocates memory buffer for specified device. It uses
+  * device specific contiguous memory area if available or the default
+- * global one. Requires architecture specific dev_get_cma_area() helper
+- * function.
++ * global one.
++ *
++ * However, it skips one-page size of allocations from the global area.
++ * As the addresses within one page are always contiguous, so there is
++ * no need to waste CMA pages for that kind; it also helps reduce the
++ * fragmentations in the CMA area. So a caller should be the rebounder
++ * in such case to allocate a normal page upon NULL return value.
++ *
++ * Requires architecture specific dev_get_cma_area() helper function.
+  */
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+ 				       unsigned int align, bool no_warn)
+ {
++	struct cma *cma;
++
+ 	if (align > CONFIG_CMA_ALIGNMENT)
+ 		align = CONFIG_CMA_ALIGNMENT;
+ 
+-	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
++	if (dev && dev->cma_area)
++		cma = dev->cma_area;
++	else if (count > 1)
++		cma = dma_contiguous_default_area;
++	else
++		return NULL;
++
++	return cma_alloc(cma, count, align, no_warn);
+ }
+ 
+ /**
+-- 
+2.17.1
