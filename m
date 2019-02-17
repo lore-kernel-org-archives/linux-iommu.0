@@ -1,60 +1,83 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH v6 18/22] iommu/mediatek: Fix VLD_PA_RNG register backup when suspend
-Date: Sun, 17 Feb 2019 17:04:56 +0800
-Message-ID: <1550394300-17420-19-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v6 19/22] iommu/mediatek: Add shutdown callback
+Date: Sun, 17 Feb 2019 17:04:57 +0800
+Message-ID: <1550394300-17420-20-git-send-email-yong.wu@mediatek.com>
 References: <1550394300-17420-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1550394300-17420-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, yingjoe.chen@mediatek.com, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, anan.sun@mediatek.com, Matthias Kaehlcke <mka@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1550394300-17420-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matthias Kaehlcke <mka-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, anan.sun-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The register VLD_PA_RNG(0x118) was forgot to backup while adding 4GB
-mode support for mt2712. this patch add it.
+This patch only improve the shutdown flow. The shutdown callback will
+mute the M4U HW when the system shutdown.
 
-Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
-for 4GB mode")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Evan Green <evgreen@chromium.org>
+Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 2 ++
- drivers/iommu/mtk_iommu.h | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/iommu/mtk_iommu.c    | 6 ++++++
+ drivers/iommu/mtk_iommu_v1.c | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 22c508b..b02854c 100644
+index b02854c..8742841 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -715,6 +715,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- 	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
- 	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
- 	reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
-+	reg->vld_pa_rng = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
- 	clk_disable_unprepare(data->bclk);
+@@ -702,6 +702,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
  	return 0;
  }
-@@ -739,6 +740,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- 	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
- 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
- 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
-+	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
- 	if (m4u_dom)
- 		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
- 		       base + REG_MMU_PT_BASE_ADDR);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index db12424..dedf05c 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -33,6 +33,7 @@ struct mtk_iommu_suspend_reg {
- 	u32				int_control0;
- 	u32				int_main_control;
- 	u32				ivrp_paddr;
-+	u32				vld_pa_rng;
- };
  
- enum mtk_iommu_plat {
++static void mtk_iommu_shutdown(struct platform_device *pdev)
++{
++	mtk_iommu_remove(pdev);
++}
++
+ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+@@ -783,6 +788,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+ 	.remove	= mtk_iommu_remove,
++	.shutdown = mtk_iommu_shutdown,
+ 	.driver	= {
+ 		.name = "mtk-iommu",
+ 		.of_match_table = of_match_ptr(mtk_iommu_of_ids),
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 4f15043..dd84eea 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -660,6 +660,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static void mtk_iommu_shutdown(struct platform_device *pdev)
++{
++	mtk_iommu_remove(pdev);
++}
++
+ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+@@ -697,6 +702,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+ 	.remove	= mtk_iommu_remove,
++	.shutdown = mtk_iommu_shutdown,
+ 	.driver	= {
+ 		.name = "mtk-iommu-v1",
+ 		.of_match_table = mtk_iommu_of_ids,
 -- 
 1.9.1
