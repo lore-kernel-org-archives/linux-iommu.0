@@ -1,83 +1,78 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v6 19/22] iommu/mediatek: Add shutdown callback
-Date: Sun, 17 Feb 2019 17:04:57 +0800
-Message-ID: <1550394300-17420-20-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH v6 20/22] iommu/mediatek: Rename enable_4GB to dram_is_4gb
+Date: Sun, 17 Feb 2019 17:04:58 +0800
+Message-ID: <1550394300-17420-21-git-send-email-yong.wu@mediatek.com>
 References: <1550394300-17420-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1550394300-17420-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matthias Kaehlcke <mka-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, anan.sun-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1550394300-17420-1-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, yingjoe.chen@mediatek.com, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, anan.sun@mediatek.com, Matthias Kaehlcke <mka@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch only improve the shutdown flow. The shutdown callback will
-mute the M4U HW when the system shutdown.
+This patch only rename the variable name from enable_4GB to
+dram_is_4gb for readable.
 
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c    | 6 ++++++
- drivers/iommu/mtk_iommu_v1.c | 6 ++++++
- 2 files changed, 12 insertions(+)
+ drivers/iommu/mtk_iommu.c | 10 +++++-----
+ drivers/iommu/mtk_iommu.h |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b02854c..8742841 100644
+index 8742841..0277396 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -702,6 +702,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	return 0;
- }
+@@ -382,7 +382,7 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	int ret;
  
-+static void mtk_iommu_shutdown(struct platform_device *pdev)
-+{
-+	mtk_iommu_remove(pdev);
-+}
-+
- static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-@@ -783,6 +788,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- static struct platform_driver mtk_iommu_driver = {
- 	.probe	= mtk_iommu_probe,
- 	.remove	= mtk_iommu_remove,
-+	.shutdown = mtk_iommu_shutdown,
- 	.driver	= {
- 		.name = "mtk-iommu",
- 		.of_match_table = of_match_ptr(mtk_iommu_of_ids),
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 4f15043..dd84eea 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -660,6 +660,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	return 0;
- }
+ 	/* The "4GB mode" M4U physically can not use the lower remap of Dram. */
+-	if (data->plat_data->has_4gb_mode && data->enable_4GB)
++	if (data->plat_data->has_4gb_mode && data->dram_is_4gb)
+ 		paddr |= BIT_ULL(32);
  
-+static void mtk_iommu_shutdown(struct platform_device *pdev)
-+{
-+	mtk_iommu_remove(pdev);
-+}
-+
- static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-@@ -697,6 +702,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- static struct platform_driver mtk_iommu_driver = {
- 	.probe	= mtk_iommu_probe,
- 	.remove	= mtk_iommu_remove,
-+	.shutdown = mtk_iommu_shutdown,
- 	.driver	= {
- 		.name = "mtk-iommu-v1",
- 		.of_match_table = mtk_iommu_of_ids,
+ 	spin_lock_irqsave(&dom->pgtlock, flags);
+@@ -554,13 +554,13 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
+ 
+ 	if (data->plat_data->m4u_plat == M4U_MT8173)
+-		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
++		regval = (data->protect_base >> 1) | (data->dram_is_4gb << 31);
+ 	else
+ 		regval = lower_32_bits(data->protect_base) |
+ 			 upper_32_bits(data->protect_base);
+ 	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
+ 
+-	if (data->enable_4GB && data->plat_data->has_vld_pa_rng) {
++	if (data->dram_is_4gb && data->plat_data->has_vld_pa_rng) {
+ 		/*
+ 		 * If 4GB mode is enabled, the validate PA range is from
+ 		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
+@@ -611,8 +611,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+ 
+-	/* Whether the current dram is over 4GB */
+-	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
++	/* Whether the current dram is 4GB. */
++	data->dram_is_4gb = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	data->base = devm_ioremap_resource(dev, res);
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index dedf05c..90e98a6 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -66,7 +66,7 @@ struct mtk_iommu_data {
+ 	struct mtk_iommu_domain		*m4u_dom;
+ 	struct iommu_group		*m4u_group;
+ 	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
+-	bool                            enable_4GB;
++	bool                            dram_is_4gb;
+ 	bool				tlb_flush_active;
+ 
+ 	struct iommu_device		iommu;
 -- 
 1.9.1
