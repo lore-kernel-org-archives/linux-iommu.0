@@ -1,7 +1,7 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v6 02/22] iommu/mediatek: Use a struct as the platform data
-Date: Sun, 17 Feb 2019 17:04:40 +0800
-Message-ID: <1550394300-17420-3-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v6 03/22] memory: mtk-smi: Use a general config_port interface
+Date: Sun, 17 Feb 2019 17:04:41 +0800
+Message-ID: <1550394300-17420-4-git-send-email-yong.wu@mediatek.com>
 References: <1550394300-17420-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,117 +21,66 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugge
 Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matthias Kaehlcke <mka-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, anan.sun-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use a struct as the platform special data instead of the enumeration.
-This is a prepare patch for adding mt8183 iommu support.
+The config_port of mt2712 and mt8183 are the same. Use a general
+config_port interface instead.
+
+In addition, in mt2712, larb8 and larb9 are the bdpsys larbs which
+are not the normal larb, their register space are different from the
+normal one. thus, we can not call the general config_port. In mt8183,
+IPU0/1 and CCU connect with smi-common directly, they also are not
+the normal larb. Hence, we add a "larb_direct_to_common_mask" for these
+larbs which connect to smi-commmon directly.
+
+This is also a preparing patch for adding mt8183 SMI support.
 
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Reviewed-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 24 ++++++++++++++++--------
- drivers/iommu/mtk_iommu.h |  6 +++++-
- 2 files changed, 21 insertions(+), 9 deletions(-)
+ drivers/memory/mtk-smi.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index de3e022..189d1b5 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -54,7 +54,7 @@
- #define REG_MMU_CTRL_REG			0x110
- #define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
- #define F_MMU_TF_PROTECT_SEL_SHIFT(data) \
--	((data)->m4u_plat == M4U_MT2712 ? 4 : 5)
-+	((data)->plat_data->m4u_plat == M4U_MT2712 ? 4 : 5)
- /* It's named by F_MMU_TF_PROT_SEL in mt2712. */
- #define F_MMU_TF_PROTECT_SEL(prot, data) \
- 	(((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
-@@ -520,7 +520,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	}
- 
- 	regval = F_MMU_TF_PROTECT_SEL(2, data);
--	if (data->m4u_plat == M4U_MT8173)
-+	if (data->plat_data->m4u_plat == M4U_MT8173)
- 		regval |= F_MMU_PREFETCH_RT_REPLACE_MOD;
- 	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
- 
-@@ -541,14 +541,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
- 	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
- 
--	if (data->m4u_plat == M4U_MT8173)
-+	if (data->plat_data->m4u_plat == M4U_MT8173)
- 		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
- 	else
- 		regval = lower_32_bits(data->protect_base) |
- 			 upper_32_bits(data->protect_base);
- 	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
- 
--	if (data->enable_4GB && data->m4u_plat != M4U_MT8173) {
-+	if (data->enable_4GB && data->plat_data->m4u_plat != M4U_MT8173) {
- 		/*
- 		 * If 4GB mode is enabled, the validate PA range is from
- 		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
-@@ -559,7 +559,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
- 
- 	/* It's MISC control register whose default value is ok except mt8173.*/
--	if (data->m4u_plat == M4U_MT8173)
-+	if (data->plat_data->m4u_plat == M4U_MT8173)
- 		writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
- 
- 	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
-@@ -592,7 +592,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (!data)
- 		return -ENOMEM;
- 	data->dev = dev;
--	data->m4u_plat = (enum mtk_iommu_plat)of_device_get_match_data(dev);
-+	data->plat_data = of_device_get_match_data(dev);
- 
- 	/* Protect memory. HW will access here while translation fault.*/
- 	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
-@@ -736,9 +736,17 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index 8f2d152..9fd6b3d 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -53,6 +53,7 @@ struct mtk_smi_larb_gen {
+ 	bool need_larbid;
+ 	int port_in_larb[MTK_LARB_NR_MAX + 1];
+ 	void (*config_port)(struct device *);
++	unsigned int larb_direct_to_common_mask;
  };
  
-+static const struct mtk_iommu_plat_data mt2712_data = {
-+	.m4u_plat     = M4U_MT2712,
-+};
-+
-+static const struct mtk_iommu_plat_data mt8173_data = {
-+	.m4u_plat     = M4U_MT8173,
-+};
-+
- static const struct of_device_id mtk_iommu_of_ids[] = {
--	{ .compatible = "mediatek,mt2712-m4u", .data = (void *)M4U_MT2712},
--	{ .compatible = "mediatek,mt8173-m4u", .data = (void *)M4U_MT8173},
-+	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
-+	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{}
+ struct mtk_smi {
+@@ -176,17 +177,13 @@ void mtk_smi_larb_put(struct device *larbdev)
+ 	return -ENODEV;
+ }
+ 
+-static void mtk_smi_larb_config_port_mt2712(struct device *dev)
++static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+ {
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+ 	u32 reg;
+ 	int i;
+ 
+-	/*
+-	 * larb 8/9 is the bdpsys larb, the iommu_en is enabled defaultly.
+-	 * Don't need to set it again.
+-	 */
+-	if (larb->larbid == 8 || larb->larbid == 9)
++	if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
+ 		return;
+ 
+ 	for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
+@@ -261,7 +258,8 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+ 
+ static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
+ 	.need_larbid = true,
+-	.config_port = mtk_smi_larb_config_port_mt2712,
++	.config_port                = mtk_smi_larb_config_port_gen2_general,
++	.larb_direct_to_common_mask = BIT(8) | BIT(9),      /* bdpsys */
  };
  
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 778498b..333a0ef 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -41,6 +41,10 @@ enum mtk_iommu_plat {
- 	M4U_MT8173,
- };
- 
-+struct mtk_iommu_plat_data {
-+	enum mtk_iommu_plat m4u_plat;
-+};
-+
- struct mtk_iommu_domain;
- 
- struct mtk_iommu_data {
-@@ -57,7 +61,7 @@ struct mtk_iommu_data {
- 	bool				tlb_flush_active;
- 
- 	struct iommu_device		iommu;
--	enum mtk_iommu_plat		m4u_plat;
-+	const struct mtk_iommu_plat_data *plat_data;
- 
- 	struct list_head		list;
- };
+ static const struct of_device_id mtk_smi_larb_of_ids[] = {
 -- 
 1.9.1
