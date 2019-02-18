@@ -1,22 +1,16 @@
-From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
-	consistent with kaslr
-Date: Mon, 18 Feb 2019 09:48:20 +0800
-Message-ID: <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
-References: <20190125140823.GC27998@zn.tnic>
-	<20190131075907.GB19091@dhcp-128-65.nay.redhat.com>
-	<20190131105732.GC6749@zn.tnic> <20190131222732.GA946@anatevka>
-	<20190131234740.GO6749@zn.tnic> <20190204223016.GB11986@anatevka>
-	<20190205081552.GG21801@zn.tnic>
-	<20190206120804.GC10062@dhcp-128-65.nay.redhat.com>
-	<20190211204816.GB21473@dhcp-128-65.nay.redhat.com>
-	<20190215102458.GD10433@zn.tnic>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] dma-contiguous: do not allocate a single page from CMA
+	area
+Date: Mon, 18 Feb 2019 14:51:54 +0100
+Message-ID: <5dc1865b-ab20-aa45-1d00-b8d95655226f@samsung.com>
+References: <CGME20190215200726epcas2p1f3da0044c08c5dae90eec3d73656c135@epcas2p1.samsung.com>
+	<20190215200635.20733-1-nicoleotsuka@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20190215102458.GD10433-Jj63ApZU6fQ@public.gmane.org>
+In-Reply-To: <20190215200635.20733-1-nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,36 +20,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jerry Hoemann <jerry.hoemann-ZPxbGqLxI0U@public.gmane.org>, Pingfan Liu <kernelfans-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/15/19 at 11:24am, Borislav Petkov wrote:
-> On Tue, Feb 12, 2019 at 04:48:16AM +0800, Dave Young wrote:
-> > Even we make it automatic in kernel, but we have to have some default
-> > value for swiotlb in case crashkernel can not find a free region under 4G.
-> > So this default value can not work for every use cases, people need 
-> > manually use crashkernel=,low and crashkernel=,high in case
-> > crashkernel=X does not work.
-> 
-> Why would the user need to find swiotlb range? The kernel has all the
-> information it requires at its finger tips in order to decide properly.
-> 
-> The user wants a crashkernel range, the kernel tries the low range =>
-> no workie, then it tries the next range => workie but needs to allocate
-> swiotlb range so that DMA can happen too. Doh, then the kernel does
-> allocate that too.
+Hi Nicolin,
 
-It is ideal if kernel can do it automatically, but I'm not sure if
-kernel can predict the swiotlb reserved size automatically.
+On 2019-02-15 21:06, Nicolin Chen wrote:
+> The addresses within a single page are always contiguous, so it's
+> not so necessary to always allocate one single page from CMA area.
+> Since the CMA area has a limited predefined size of space, it may
+> run out of space in heavy use cases, where there might be quite a
+> lot CMA pages being allocated for single pages.
+>
+> However, there is also a concern that a device might care where a
+> page comes from -- it might expect the page from CMA area and act
+> differently if the page doesn't.
+>
+> This patch tries to skip of one-page size allocations and returns
+> NULL so as to let callers allocate normal pages unless the device
+> has its own CMA area. This would save resources from the CMA area
+> for more CMA allocations. And it'd also reduce CMA fragmentations
+> resulted from trivial allocations.
+>
+> Signed-off-by: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Let's add more people to seek for comments. 
+Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-> 
-> Why would the user need to do anything here?!
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> Good mailing practices for 400: avoid top-posting and trim the reply.
+> ---
+>  kernel/dma/contiguous.c | 22 +++++++++++++++++++---
+>  1 file changed, 19 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index b2a87905846d..09074bd04793 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -186,16 +186,32 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+>   *
+>   * This function allocates memory buffer for specified device. It uses
+>   * device specific contiguous memory area if available or the default
+> - * global one. Requires architecture specific dev_get_cma_area() helper
+> - * function.
+> + * global one.
+> + *
+> + * However, it skips one-page size of allocations from the global area.
+> + * As the addresses within one page are always contiguous, so there is
+> + * no need to waste CMA pages for that kind; it also helps reduce the
+> + * fragmentations in the CMA area. So a caller should be the rebounder
+> + * in such case to allocate a normal page upon NULL return value.
+> + *
+> + * Requires architecture specific dev_get_cma_area() helper function.
+>   */
+>  struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+>  				       unsigned int align, bool no_warn)
+>  {
+> +	struct cma *cma;
+> +
+>  	if (align > CONFIG_CMA_ALIGNMENT)
+>  		align = CONFIG_CMA_ALIGNMENT;
+>  
+> -	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
+> +	if (dev && dev->cma_area)
+> +		cma = dev->cma_area;
+> +	else if (count > 1)
+> +		cma = dma_contiguous_default_area;
+> +	else
+> +		return NULL;
+> +
+> +	return cma_alloc(cma, count, align, no_warn);
+>  }
+>  
+>  /**
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
