@@ -1,195 +1,61 @@
-From: "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>
-Subject: Re: [PATCH 5/5] Documentation/DMA-API-HOWTO: update dma_mask sections
-Date: Mon, 18 Feb 2019 01:26:20 +0000
-Message-ID: <0c3d09d70e8245a2b9c87d1f71803258@HXTBJIDCEMVIW01.hxtcorp.net>
-References: <20190215144559.8777-1-hch@lst.de>
- <20190215144559.8777-6-hch@lst.de>
+From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
+	consistent with kaslr
+Date: Mon, 18 Feb 2019 09:48:20 +0800
+Message-ID: <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
+References: <20190125140823.GC27998@zn.tnic>
+	<20190131075907.GB19091@dhcp-128-65.nay.redhat.com>
+	<20190131105732.GC6749@zn.tnic> <20190131222732.GA946@anatevka>
+	<20190131234740.GO6749@zn.tnic> <20190204223016.GB11986@anatevka>
+	<20190205081552.GG21801@zn.tnic>
+	<20190206120804.GC10062@dhcp-128-65.nay.redhat.com>
+	<20190211204816.GB21473@dhcp-128-65.nay.redhat.com>
+	<20190215102458.GD10433@zn.tnic>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Helge Deller <deller@gmx.de>
-Cc: "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190215102458.GD10433-Jj63ApZU6fQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jerry Hoemann <jerry.hoemann-ZPxbGqLxI0U@public.gmane.org>, Pingfan Liu <kernelfans-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Christoph,
-
-On 2019/2/15 22:46, Christoph Hellwig wrote:
-> We don't require drivers to guess a DMA mask that might actually
-> match the system capabilities any more, so fix up the documentation
-> to clear this up.
+On 02/15/19 at 11:24am, Borislav Petkov wrote:
+> On Tue, Feb 12, 2019 at 04:48:16AM +0800, Dave Young wrote:
+> > Even we make it automatic in kernel, but we have to have some default
+> > value for swiotlb in case crashkernel can not find a free region under 4G.
+> > So this default value can not work for every use cases, people need 
+> > manually use crashkernel=,low and crashkernel=,high in case
+> > crashkernel=X does not work.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  Documentation/DMA-API-HOWTO.txt | 121 +++++++++++---------------------
->  1 file changed, 41 insertions(+), 80 deletions(-)
+> Why would the user need to find swiotlb range? The kernel has all the
+> information it requires at its finger tips in order to decide properly.
 > 
-> diff --git a/Documentation/DMA-API-HOWTO.txt b/Documentation/DMA-API-HOWTO.txt
-> index f0cc3f772265..8e948fae34af 100644
-> --- a/Documentation/DMA-API-HOWTO.txt
-> +++ b/Documentation/DMA-API-HOWTO.txt
-> @@ -146,114 +146,75 @@ What about block I/O and networking buffers?  The block I/O and
->  networking subsystems make sure that the buffers they use are valid
->  for you to DMA from/to.
->  
-> -DMA addressing limitations
-> +DMA addressing capabilities
->  ==========================
->  
-> -Does your device have any DMA addressing limitations?  For example, is
-> -your device only capable of driving the low order 24-bits of address?
-> -If so, you need to inform the kernel of this fact.
-> +By default, the kernel assumes that your device can address 32-bits of DMA
-> +addressing.  For a 64-bit capable device, this needs to be increased, and for
-> +a device with limitations, it needs to be decreased.
->  
-> -By default, the kernel assumes that your device can address the full
-> -32-bits.  For a 64-bit capable device, this needs to be increased.
-> -And for a device with limitations, as discussed in the previous
-> -paragraph, it needs to be decreased.
-> +Special note about PCI: PCI-X specification requires PCI-X devices to support
-> +64-bit addressing (DAC) for all transactions.  And at least one platform (SGI
-> +SN2) requires 64-bit consistent allocations to operate correctly when the IO
-> +bus is in PCI-X mode.
->  
-> -Special note about PCI: PCI-X specification requires PCI-X devices to
-> -support 64-bit addressing (DAC) for all transactions.  And at least
-> -one platform (SGI SN2) requires 64-bit consistent allocations to
-> -operate correctly when the IO bus is in PCI-X mode.
-> +For correct operation, you must set the DMA mask to inform the kernel about
-> +your devices DMA addressing capabilities.
->  
-> -For correct operation, you must interrogate the kernel in your device
-> -probe routine to see if the DMA controller on the machine can properly
-> -support the DMA addressing limitation your device has.  It is good
-> -style to do this even if your device holds the default setting,
-> -because this shows that you did think about these issues wrt. your
-> -device.
-> -
-> -The query is performed via a call to dma_set_mask_and_coherent()::
-> +This is performed via a call to dma_set_mask_and_coherent()::
->  
->  	int dma_set_mask_and_coherent(struct device *dev, u64 mask);
->  
-> -which will query the mask for both streaming and coherent APIs together.
-> -If you have some special requirements, then the following two separate
-> -queries can be used instead:
-> +which will set the mask for both streaming and coherent APIs together.  If you
-> +have some special requirements, then the following two separate calls can be
-> +used instead:
->  
-> -	The query for streaming mappings is performed via a call to
-> +	The setup for streaming mappings is performed via a call to
->  	dma_set_mask()::
->  
->  		int dma_set_mask(struct device *dev, u64 mask);
->  
-> -	The query for consistent allocations is performed via a call
-> +	The setup for consistent allocations is performed via a call
->  	to dma_set_coherent_mask()::
->  
->  		int dma_set_coherent_mask(struct device *dev, u64 mask);
->  
-> -Here, dev is a pointer to the device struct of your device, and mask
-> -is a bit mask describing which bits of an address your device
-> -supports.  It returns zero if your card can perform DMA properly on
-> -the machine given the address mask you provided.  In general, the
-> -device struct of your device is embedded in the bus-specific device
-> -struct of your device.  For example, &pdev->dev is a pointer to the
-> -device struct of a PCI device (pdev is a pointer to the PCI device
-> -struct of your device).
-> +Here, dev is a pointer to the device struct of your device, and mask is a bit
-> +mask describing which bits of an address your device supports.  Often the
-> +device struct of your device is embedded in the bus-specific device struct of
-> +your device.  For example, &pdev->dev is a pointer to the device struct of a
-> +PCI device (pdev is a pointer to the PCI device struct of your device).
->  
-> -If it returns non-zero, your device cannot perform DMA properly on
-> -this platform, and attempting to do so will result in undefined
-> -behavior.  You must either use a different mask, or not use DMA.
-> +These calls usually return zero to indicated your device can perform DMA
-> +properly on the machine given the address mask you provided, but they might
-> +return an error if the mask is too small to be supportable on the given
-> +system.  If it returns non-zero, your device cannot perform DMA properly on
-> +this platform, and attempting to do so will result in undefined behavior.
-> +You must not use DMA on this device unless the dma_set_mask family of
-> +functions has returned success.
->  
-> -This means that in the failure case, you have three options:
-> +This means that in the failure case, you have two options:
->  
-> -1) Use another DMA mask, if possible (see below).
-> -2) Use some non-DMA mode for data transfer, if possible.
-> -3) Ignore this device and do not initialize it.
-> +1) Use some non-DMA mode for data transfer, if possible.
-> +2) Ignore this device and do not initialize it.
->  
-> -It is recommended that your driver print a kernel KERN_WARNING message
-> -when you end up performing either #2 or #3.  In this manner, if a user
-> -of your driver reports that performance is bad or that the device is not
-> -even detected, you can ask them for the kernel messages to find out
-> -exactly why.
-> +It is recommended that your driver print a kernel KERN_WARNING message when
-> +setting the DMA mask fails.  In this manner, if a user of your driver reports
-> +that performance is bad or that the device is not even detected, you can ask
-> +them for the kernel messages to find out exactly why.
->  
-> -The standard 32-bit addressing device would do something like this::
-> +The standard 64-bit addressing device would do something like this::
->  
-> -	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32))) {
-> +	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
->  		dev_warn(dev, "mydev: No suitable DMA available\n");
->  		goto ignore_this_device;
->  	}
->  
-> -Another common scenario is a 64-bit capable device.  The approach here
-> -is to try for 64-bit addressing, but back down to a 32-bit mask that
-> -should not fail.  The kernel may fail the 64-bit mask not because the
-> -platform is not capable of 64-bit addressing.  Rather, it may fail in
-> -this case simply because 32-bit addressing is done more efficiently
-> -than 64-bit addressing.  For example, Sparc64 PCI SAC addressing is
-> -more efficient than DAC addressing.
-> -
-> -Here is how you would handle a 64-bit capable device which can drive
-> -all 64-bits when accessing streaming DMA::
-> -
-> -	int using_dac;
-> +If the device only supports 32-bit addressing for descriptors in the
-> +coherent allocations, but supports full 64-bits fro streaming mappings
-                                                   ^^^
-"for"
+> The user wants a crashkernel range, the kernel tries the low range =>
+> no workie, then it tries the next range => workie but needs to allocate
+> swiotlb range so that DMA can happen too. Doh, then the kernel does
+> allocate that too.
 
-Thanks.
-Shunyong.
+It is ideal if kernel can do it automatically, but I'm not sure if
+kernel can predict the swiotlb reserved size automatically.
 
-> +it would look like this:
->  
-> -	if (!dma_set_mask(dev, DMA_BIT_MASK(64))) {
-> -		using_dac = 1;
-> -	} else if (!dma_set_mask(dev, DMA_BIT_MASK(32))) {
-> -		using_dac = 0;
-> -	} else {
-> -		dev_warn(dev, "mydev: No suitable DMA available\n");
-> -		goto ignore_this_device;
-> -	}
-> -
-> -If a card is capable of using 64-bit consistent allocations as well,
-> -the case would look like this::
-> -
-> -	int using_dac, consistent_using_dac;
-> -
-> -	if (!dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
-> -		using_dac = 1;
-> -		consistent_using_dac = 1;
-> -	} else if (!dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32))) {
-> -		using_dac = 0;
-> -		consistent_using_dac = 0;
-> -	} else {
-> +	if (dma_set_mask(dev, DMA_BIT_MASK(64))) {
->  		dev_warn(dev, "mydev: No suitable DMA available\n");
->  		goto ignore_this_device;
->  	}
+Let's add more people to seek for comments. 
+
 > 
+> Why would the user need to do anything here?!
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> Good mailing practices for 400: avoid top-posting and trim the reply.
