@@ -1,86 +1,57 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 5/7] iommu/ipmmu-vmsa: Move num_utlbs to SoC-specific
- features
-Date: Wed, 20 Feb 2019 17:42:44 +0200
-Message-ID: <20190220154244.GJ3516@pendragon.ideasonboard.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 6/7] iommu/ipmmu-vmsa: Extract hardware context initialization
+Date: Wed, 20 Feb 2019 16:43:57 +0100
+Message-ID: <CAMuHMdUo+XtRiNY_nOW8ZgCGFVo3au1=0Q7L2nU29QcPYVkgNg@mail.gmail.com>
 References: <20190220150531.2462-1-geert+renesas@glider.be>
- <20190220150531.2462-6-geert+renesas@glider.be>
+ <20190220150531.2462-7-geert+renesas@glider.be> <20190220153533.GH3516@pendragon.ideasonboard.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190220150531.2462-6-geert+renesas@glider.be>
+In-Reply-To: <20190220153533.GH3516@pendragon.ideasonboard.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert,
+Hi Laurent,
 
-Thank you for the patch.
+On Wed, Feb 20, 2019 at 4:35 PM Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> On Wed, Feb 20, 2019 at 04:05:30PM +0100, Geert Uytterhoeven wrote:
+> > ipmmu_domain_init_context() takes care of (1) initializing the software
+> > domain, and (2) initializing the hardware context for the domain.
+> >
+> > Extract the code to initialize the hardware context into a new subroutine
+> > ipmmu_context_init(), to prepare for later reuse.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> >  drivers/iommu/ipmmu-vmsa.c | 91 ++++++++++++++++++++------------------
+> >  1 file changed, 48 insertions(+), 43 deletions(-)
+> >
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index 0a21e734466eb1bd..92a766dd8b459f0c 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -404,52 +404,10 @@ static void ipmmu_domain_free_context(struct ipmmu_vmsa_device *mmu,
+> >       spin_unlock_irqrestore(&mmu->lock, flags);
+> >  }
+> >
+> > -static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+> > +static void ipmmu_context_init(struct ipmmu_vmsa_domain *domain)
+>
+> ipmmu_context_init() vs. ipmmmu_domain_init_context() is confusing. You
+> could call this one ipmmu_domain_setup_context() maybe ?
 
-On Wed, Feb 20, 2019 at 04:05:29PM +0100, Geert Uytterhoeven wrote:
-> The maximum number of micro-TLBs per IPMMU instance is not fixed, but
-> depends on the SoC type.  Hence move it from struct ipmmu_vmsa_device to
-> struct ipmmu_features, and set up the correct value for both R-Car Gen2
-> and Gen3 SoCs.
-> 
-> Note that currently no code uses this value.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Thanks, that name was actually on my shortlist, and may make most sense.
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Gr{oetje,eeting}s,
 
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 4e3134a9a52f8d87..0a21e734466eb1bd 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -42,6 +42,7 @@ struct ipmmu_features {
->  	bool use_ns_alias_offset;
->  	bool has_cache_leaf_nodes;
->  	unsigned int number_of_contexts;
-> +	unsigned int num_utlbs;
->  	bool setup_imbuscr;
->  	bool twobit_imttbcr_sl0;
->  	bool reserved_context;
-> @@ -53,7 +54,6 @@ struct ipmmu_vmsa_device {
->  	struct iommu_device iommu;
->  	struct ipmmu_vmsa_device *root;
->  	const struct ipmmu_features *features;
-> -	unsigned int num_utlbs;
->  	unsigned int num_ctx;
->  	spinlock_t lock;			/* Protects ctx and domains[] */
->  	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-> @@ -972,6 +972,7 @@ static const struct ipmmu_features ipmmu_features_default = {
->  	.use_ns_alias_offset = true,
->  	.has_cache_leaf_nodes = false,
->  	.number_of_contexts = 1, /* software only tested with one context */
-> +	.num_utlbs = 32,
->  	.setup_imbuscr = true,
->  	.twobit_imttbcr_sl0 = false,
->  	.reserved_context = false,
-> @@ -981,6 +982,7 @@ static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
->  	.use_ns_alias_offset = false,
->  	.has_cache_leaf_nodes = true,
->  	.number_of_contexts = 8,
-> +	.num_utlbs = 48,
->  	.setup_imbuscr = false,
->  	.twobit_imttbcr_sl0 = true,
->  	.reserved_context = true,
-> @@ -1033,7 +1035,6 @@ static int ipmmu_probe(struct platform_device *pdev)
->  	}
->  
->  	mmu->dev = &pdev->dev;
-> -	mmu->num_utlbs = 48;
->  	spin_lock_init(&mmu->lock);
->  	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
->  	mmu->features = of_device_get_match_data(&pdev->dev);
+                        Geert
 
 -- 
-Regards,
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Laurent Pinchart
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
