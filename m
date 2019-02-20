@@ -1,14 +1,15 @@
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 1/7] iommu/ipmmu-vmsa: Link IOMMUs and devices in sysfs
-Date: Wed, 20 Feb 2019 17:25:05 +0200
-Message-ID: <20190220152505.GD3516@pendragon.ideasonboard.com>
+Subject: Re: [PATCH 2/7] iommu/ipmmu-vmsa: Call ipmmu_ctx_write_root()
+ instead of open coding
+Date: Wed, 20 Feb 2019 17:27:44 +0200
+Message-ID: <20190220152744.GE3516@pendragon.ideasonboard.com>
 References: <20190220150531.2462-1-geert+renesas@glider.be>
- <20190220150531.2462-2-geert+renesas@glider.be>
+ <20190220150531.2462-3-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190220150531.2462-2-geert+renesas@glider.be>
+In-Reply-To: <20190220150531.2462-3-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Geert Uytterhoeven <geert+renesas@glider.be>
 Cc: Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -18,71 +19,33 @@ Hi Geert,
 
 Thank you for the patch.
 
-On Wed, Feb 20, 2019 at 04:05:25PM +0100, Geert Uytterhoeven wrote:
-> As of commit 7af9a5fdb9e0ca33 ("iommu/ipmmu-vmsa: Use
-> iommu_device_sysfs_add()/remove()"), IOMMU devices show up under
-> /sys/class/iommus/, but their "devices" subdirectories are empty.
-> Likewise, devices tied to an IOMMU do not have an "iommu" backlink.
-> 
-> Make sure all links are created, on both arm32 and arm64.
+On Wed, Feb 20, 2019 at 04:05:26PM +0100, Geert Uytterhoeven wrote:
+> There is a helper to write to the root IPMMU instance's registers, so
+> let's use it.
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
 > ---
->  drivers/iommu/ipmmu-vmsa.c | 24 +++++++++++++++++-------
->  1 file changed, 17 insertions(+), 7 deletions(-)
+>  drivers/iommu/ipmmu-vmsa.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
 > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 9a380c10655e182d..9f2b781e20a0eba6 100644
+> index 9f2b781e20a0eba6..ac70cb967ff821c6 100644
 > --- a/drivers/iommu/ipmmu-vmsa.c
 > +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -885,27 +885,37 @@ static int ipmmu_init_arm_mapping(struct device *dev)
+> @@ -280,8 +280,7 @@ static void ipmmu_ctx_write_all(struct ipmmu_vmsa_domain *domain,
+>  		ipmmu_write(domain->mmu,
+>  			    domain->context_id * IM_CTX_SIZE + reg, data);
 >  
->  static int ipmmu_add_device(struct device *dev)
->  {
-> +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
->  	struct iommu_group *group;
-> +	int ret;
->  
->  	/*
->  	 * Only let through devices that have been verified in xlate()
->  	 */
-> -	if (!to_ipmmu(dev))
-> +	if (!mmu)
->  		return -ENODEV;
->  
-> -	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA))
-> -		return ipmmu_init_arm_mapping(dev);
-> +	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA)) {
-> +		ret = ipmmu_init_arm_mapping(dev);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		group = iommu_group_get_for_dev(dev);
-> +		if (IS_ERR(group))
-> +			return PTR_ERR(group);
->  
-> -	group = iommu_group_get_for_dev(dev);
-> -	if (IS_ERR(group))
-> -		return PTR_ERR(group);
-> +		iommu_group_put(group);
-> +	}
->  
-> -	iommu_group_put(group);
-> +	iommu_device_link(&mmu->iommu, dev);
->  	return 0;
+> -	ipmmu_write(domain->mmu->root,
+> -		    domain->context_id * IM_CTX_SIZE + reg, data);
+> +	ipmmu_ctx_write_root(domain, reg, data);
+
+This makes the code harder to read in my opinion, and I don't think it
+bring much optimization.
+
 >  }
 >  
->  static void ipmmu_remove_device(struct device *dev)
->  {
-> +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
-> +
-> +	iommu_device_unlink(&mmu->iommu, dev);
->  	arm_iommu_detach_device(dev);
->  	iommu_group_remove_device(dev);
->  }
+>  /* -----------------------------------------------------------------------------
 
 -- 
 Regards,
