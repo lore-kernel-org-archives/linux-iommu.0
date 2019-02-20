@@ -1,35 +1,71 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 3/3] iommu: Document iommu_ops.is_attach_deferred()
-Date: Wed, 20 Feb 2019 14:00:53 +0100
-Message-ID: <20190220130053.784-4-geert+renesas@glider.be>
-References: <20190220130053.784-1-geert+renesas@glider.be>
+Subject: [PATCH] iommu: Fix IOMMU debugfs fallout
+Date: Wed, 20 Feb 2019 14:05:05 +0100
+Message-ID: <20190220130505.1188-1-geert+renesas@glider.be>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190220130053.784-1-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>
-Cc: Dmitry Osipenko <digetx@gmail.com>, Baoquan He <bhe@redhat.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Gary R Hook <gary.hook@amd.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: iommu@lists.linux-foundation.org
 
-Add missing kerneldoc for iommu_ops.is_attach_deferred().
+A change made in the final version of IOMMU debugfs support replaced the
+public function iommu_debugfs_new_driver_dir() by the public dentry
+iommu_debugfs_dir in <linux/iommu.h>, but forgot to update both the
+implementation in iommu-debugfs.c, and the patch description.
 
-Fixes: e01d1913b0d08171 ("iommu: Add is_attach_deferred call-back to iommu-ops")
+Fix this by exporting iommu_debugfs_dir, and removing the reference to
+and implementation of iommu_debugfs_new_driver_dir().
+
+Fixes: bad614b24293ae46 ("iommu: Enable debugfs exposure of IOMMU driver internals")
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- include/linux/iommu.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/iommu-debugfs.c | 23 ++++-------------------
+ 1 file changed, 4 insertions(+), 19 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3ed5d372b090af54..ffbbc7e39ceeba3e 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -184,6 +184,8 @@ struct iommu_resv_region {
-  * @domain_window_enable: Configure and enable a particular window for a domain
-  * @domain_window_disable: Disable a particular window for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-+ * @is_attach_deferred: Check if domain attach should be deferred from iommu
-+ *                      driver init to device driver init (default no)
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
+diff --git a/drivers/iommu/iommu-debugfs.c b/drivers/iommu/iommu-debugfs.c
+index 3b1bf88fd1b0494a..f0354894209648fd 100644
+--- a/drivers/iommu/iommu-debugfs.c
++++ b/drivers/iommu/iommu-debugfs.c
+@@ -12,6 +12,7 @@
+ #include <linux/debugfs.h>
+ 
+ struct dentry *iommu_debugfs_dir;
++EXPORT_SYMBOL_GPL(iommu_debugfs_dir);
+ 
+ /**
+  * iommu_debugfs_setup - create the top-level iommu directory in debugfs
+@@ -23,9 +24,9 @@ struct dentry *iommu_debugfs_dir;
+  * Emit a strong warning at boot time to indicate that this feature is
+  * enabled.
+  *
+- * This function is called from iommu_init; drivers may then call
+- * iommu_debugfs_new_driver_dir() to instantiate a vendor-specific
+- * directory to be used to expose internal data.
++ * This function is called from iommu_init; drivers may then use
++ * iommu_debugfs_dir to instantiate a vendor-specific directory to be used
++ * to expose internal data.
   */
- struct iommu_ops {
+ void iommu_debugfs_setup(void)
+ {
+@@ -48,19 +49,3 @@ void iommu_debugfs_setup(void)
+ 		pr_warn("*************************************************************\n");
+ 	}
+ }
+-
+-/**
+- * iommu_debugfs_new_driver_dir - create a vendor directory under debugfs/iommu
+- * @vendor: name of the vendor-specific subdirectory to create
+- *
+- * This function is called by an IOMMU driver to create the top-level debugfs
+- * directory for that driver.
+- *
+- * Return: upon success, a pointer to the dentry for the new directory.
+- *         NULL in case of failure.
+- */
+-struct dentry *iommu_debugfs_new_driver_dir(const char *vendor)
+-{
+-	return debugfs_create_dir(vendor, iommu_debugfs_dir);
+-}
+-EXPORT_SYMBOL_GPL(iommu_debugfs_new_driver_dir);
 -- 
 2.17.1
