@@ -1,13 +1,14 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 6/7] iommu/ipmmu-vmsa: Extract hardware context initialization
-Date: Wed, 20 Feb 2019 16:43:57 +0100
-Message-ID: <CAMuHMdUo+XtRiNY_nOW8ZgCGFVo3au1=0Q7L2nU29QcPYVkgNg@mail.gmail.com>
+Subject: Re: [PATCH 7/7] iommu/ipmmu-vmsa: Add suspend/resume support
+Date: Wed, 20 Feb 2019 17:05:49 +0100
+Message-ID: <CAMuHMdW2KR=rbtgxbnhW94VCzehX821TMxoTZGKh8uQZMY80cA@mail.gmail.com>
 References: <20190220150531.2462-1-geert+renesas@glider.be>
- <20190220150531.2462-7-geert+renesas@glider.be> <20190220153533.GH3516@pendragon.ideasonboard.com>
+ <20190220150531.2462-8-geert+renesas@glider.be> <20190220154236.GI3516@pendragon.ideasonboard.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190220153533.GH3516@pendragon.ideasonboard.com>
+In-Reply-To: <20190220154236.GI3516@pendragon.ideasonboard.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
@@ -15,35 +16,134 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Laurent,
 
-On Wed, Feb 20, 2019 at 4:35 PM Laurent Pinchart
+On Wed, Feb 20, 2019 at 4:42 PM Laurent Pinchart
 <laurent.pinchart@ideasonboard.com> wrote:
-> On Wed, Feb 20, 2019 at 04:05:30PM +0100, Geert Uytterhoeven wrote:
-> > ipmmu_domain_init_context() takes care of (1) initializing the software
-> > domain, and (2) initializing the hardware context for the domain.
+> On Wed, Feb 20, 2019 at 04:05:31PM +0100, Geert Uytterhoeven wrote:
+> > During PSCI system suspend, R-Car Gen3 SoCs are powered down, and all
+> > IPMMU state is lost.  Hence after s2ram, devices wired behind an IPMMU,
+> > and configured to use it, will see their DMA operations hang.
 > >
-> > Extract the code to initialize the hardware context into a new subroutine
-> > ipmmu_context_init(), to prepare for later reuse.
+> > To fix this, restore all IPMMU contexts, and re-enable all active
+> > micro-TLBs during system resume.
+> >
+> > To avoid overhead on platforms not needing it, the resume code has a
+> > build time dependency on sleep and PSCI support, and a runtime
+> > dependency on PSCI.
 > >
 > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > > ---
-> >  drivers/iommu/ipmmu-vmsa.c | 91 ++++++++++++++++++++------------------
-> >  1 file changed, 48 insertions(+), 43 deletions(-)
-> >
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index 0a21e734466eb1bd..92a766dd8b459f0c 100644
+> > This patch takes a different approach than the BSP, which implements a
+> > bulk save/restore of all registers during system suspend/resume.
+>
+> I like this approach better too.
+
+Thanks ;-)
+
 > > --- a/drivers/iommu/ipmmu-vmsa.c
 > > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -404,52 +404,10 @@ static void ipmmu_domain_free_context(struct ipmmu_vmsa_device *mmu,
-> >       spin_unlock_irqrestore(&mmu->lock, flags);
+
+> > @@ -58,6 +62,7 @@ struct ipmmu_vmsa_device {
+> >       spinlock_t lock;                        /* Protects ctx and domains[] */
+> >       DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+> >       struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
+> > +     s8 utlb_ctx[IPMMU_UTLB_MAX];
+>
+> How about making this a bitmask instead to save memory ? I would also
+> rename it as utlb_ctx doesn't really carry the meaning of the field,
+> whose purpose is to store whether the µTLB is enabled or disabled.
+
+This field isn't just a binary flag, but stores the context used for the
+uTLB, so we can map from micro-TLB to context.
+Given there can be 8 contexts, plus the need to indicate unused contexts,
+that means 4 bits/micro-TLB.  So the overhead is just 24 bytes per IPMMU
+instance.
+
+I considered allocating the array dynamically (by having s8 utlb_ctx[]
+at the end of the structure), but didn't go that route, as the domains[]
+array already uses more memory.
+
+> > @@ -1158,10 +1166,52 @@ static int ipmmu_remove(struct platform_device *pdev)
+> >       return 0;
 > >  }
 > >
-> > -static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
-> > +static void ipmmu_context_init(struct ipmmu_vmsa_domain *domain)
+> > +#if defined(CONFIG_PM_SLEEP) && defined(CONFIG_ARM_PSCI_FW)
+> > +static int ipmmu_resume_noirq(struct device *dev)
+> > +{
+> > +     struct ipmmu_vmsa_device *mmu = dev_get_drvdata(dev);
+> > +     unsigned int i;
+> > +
+> > +     /* This is the best we can do to check for the presence of PSCI */
+> > +     if (!psci_ops.cpu_suspend)
+> > +             return 0;
 >
-> ipmmu_context_init() vs. ipmmmu_domain_init_context() is confusing. You
-> could call this one ipmmu_domain_setup_context() maybe ?
+> PSCI suspend disabling power to the SoC completely may be a common
+> behaviour on our development boards, but isn't mandated by the PSCI
+> specification if I'm not mistaken. Is there a way to instead detect that
+> power has been lost, perhaps by checking whether a register has been
+> reset to its default value ?
 
-Thanks, that name was actually on my shortlist, and may make most sense.
+The approach here is the same as in the clk and pinctrl drivers.
+
+I think we could check if the IMCTR registers for allocated domains in root
+IPMMUs are non-zero.  But that's about as expensive as doing the full
+restore, I think.  And it may have to be done for each and every IPMMU
+instance, or do you trust caching for this?
+
+> > +
+> > +     /* Reset root MMU and restore contexts */
+>
+> I think the rest of the code adds a period at the end of sentences in
+> comments.
+
+The balance seems to be just under 50% ;-)
+
+> > +     if (ipmmu_is_root(mmu)) {
+> > +             ipmmu_device_reset(mmu);
+> > +
+> > +             for (i = 0; i < mmu->num_ctx; i++) {
+> > +                     if (!mmu->domains[i])
+> > +                             continue;
+> > +
+> > +                     ipmmu_context_init(mmu->domains[i]);
+> > +             }
+> > +     }
+> > +
+> > +     /* Re-enable active micro-TLBs */
+> > +     for (i = 0; i < mmu->features->num_utlbs; i++) {
+> > +             if (mmu->utlb_ctx[i] == IPMMU_CTX_INVALID)
+> > +                     continue;
+> > +
+> > +             ipmmu_utlb_enable(mmu->root->domains[mmu->utlb_ctx[i]], i);
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct dev_pm_ops ipmmu_pm  = {
+> > +     SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, ipmmu_resume_noirq)
+> > +};
+> > +#define DEV_PM_OPS   &ipmmu_pm
+> > +#else
+> > +#define DEV_PM_OPS   NULL
+> > +#endif /* CONFIG_PM_SLEEP && CONFIG_ARM_PSCI_FW */
+> > +
+> >  static struct platform_driver ipmmu_driver = {
+> >       .driver = {
+> >               .name = "ipmmu-vmsa",
+> >               .of_match_table = of_match_ptr(ipmmu_of_ids),
+> > +             .pm = DEV_PM_OPS,
+>
+> I would have used conditional compilation here instead of using a
+> DEV_PM_OPS macro, as I think the macro decreases readability (and also
+> given how its generic name could later conflict with something else).
+
+You mean
+
+    #ifdef ...
+    .pm = &ipmmu_pm,
+    #endif
+
+and marking ipmmu_pm __maybe_unused__?
 
 Gr{oetje,eeting}s,
 
