@@ -1,124 +1,108 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 7/7] iommu/ipmmu-vmsa: Add suspend/resume support
-Date: Wed, 20 Feb 2019 20:47:06 +0100
-Message-ID: <CAMuHMdVjtFCbY-tu=3urnncEJB0H7Cn2WFhPgrDxnyQXdr+=HQ@mail.gmail.com>
-References: <20190220150531.2462-1-geert+renesas@glider.be>
- <20190220150531.2462-8-geert+renesas@glider.be> <20190220154236.GI3516@pendragon.ideasonboard.com>
- <CAMuHMdW2KR=rbtgxbnhW94VCzehX821TMxoTZGKh8uQZMY80cA@mail.gmail.com> <20190220161113.GK3516@pendragon.ideasonboard.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [PATCH v4 0/9] mm: Use vm_map_pages() and vm_map_pages_zero() API
+Date: Thu, 21 Feb 2019 08:11:02 +0530
+Message-ID: <CAFqt6zbchvoD-MdEF2T52eOPQ2x4gZ4G-72oZkW5f_RiT1nXpA@mail.gmail.com>
+References: <20190215024104.GA26331@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190220161113.GK3516@pendragon.ideasonboard.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190215024104.GA26331@jordon-HP-15-Notebook-PC>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Juergen Gross <jgross@suse.com>
+Cc: linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, xen-devel@lists.xen.org, Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, linux1394-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
-
-On Wed, Feb 20, 2019 at 5:11 PM Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> On Wed, Feb 20, 2019 at 05:05:49PM +0100, Geert Uytterhoeven wrote:
-> > On Wed, Feb 20, 2019 at 4:42 PM Laurent Pinchart wrote:
-> > > On Wed, Feb 20, 2019 at 04:05:31PM +0100, Geert Uytterhoeven wrote:
-> > >> During PSCI system suspend, R-Car Gen3 SoCs are powered down, and all
-> > >> IPMMU state is lost.  Hence after s2ram, devices wired behind an IPMMU,
-> > >> and configured to use it, will see their DMA operations hang.
-> > >>
-> > >> To fix this, restore all IPMMU contexts, and re-enable all active
-> > >> micro-TLBs during system resume.
-> > >>
-> > >> To avoid overhead on platforms not needing it, the resume code has a
-> > >> build time dependency on sleep and PSCI support, and a runtime
-> > >> dependency on PSCI.
-
-> > >> --- a/drivers/iommu/ipmmu-vmsa.c
-> > >> +++ b/drivers/iommu/ipmmu-vmsa.c
-
-> > >> @@ -1158,10 +1166,52 @@ static int ipmmu_remove(struct platform_device *pdev)
-> > >>       return 0;
-> > >>  }
-> > >>
-> > >> +#if defined(CONFIG_PM_SLEEP) && defined(CONFIG_ARM_PSCI_FW)
-> > >> +static int ipmmu_resume_noirq(struct device *dev)
-> > >> +{
-> > >> +     struct ipmmu_vmsa_device *mmu = dev_get_drvdata(dev);
-> > >> +     unsigned int i;
-> > >> +
-> > >> +     /* This is the best we can do to check for the presence of PSCI */
-> > >> +     if (!psci_ops.cpu_suspend)
-> > >> +             return 0;
-> > >
-> > > PSCI suspend disabling power to the SoC completely may be a common
-> > > behaviour on our development boards, but isn't mandated by the PSCI
-> > > specification if I'm not mistaken. Is there a way to instead detect that
-> > > power has been lost, perhaps by checking whether a register has been
-> > > reset to its default value ?
-> >
-> > The approach here is the same as in the clk and pinctrl drivers.
-> >
-> > I think we could check if the IMCTR registers for allocated domains in root
-> > IPMMUs are non-zero.  But that's about as expensive as doing the full
-> > restore, I think.
+On Fri, Feb 15, 2019 at 8:06 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
 >
-> Would reading just one register be more expensive that full
-> reconfiguration ? Or is there no single register that could serve this
-> purpose ?
+> Previouly drivers have their own way of mapping range of
+> kernel pages/memory into user vma and this was done by
+> invoking vm_insert_page() within a loop.
 >
-> > And it may have to be done for each and every IPMMU instance, or do
-> > you trust caching for this?
+> As this pattern is common across different drivers, it can
+> be generalized by creating new functions and use it across
+> the drivers.
 >
-> If we can find a single register I think that reading it for every IPMMU
-> instance wouldn't be an issue.
-
-Upon more thought, probably it can be done by reading the IMCTR
-for the first non-zero domain. Will look into it...
-
-> > >> +static const struct dev_pm_ops ipmmu_pm  = {
-> > >> +     SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, ipmmu_resume_noirq)
-> > >> +};
-> > >> +#define DEV_PM_OPS   &ipmmu_pm
-> > >> +#else
-> > >> +#define DEV_PM_OPS   NULL
-> > >> +#endif /* CONFIG_PM_SLEEP && CONFIG_ARM_PSCI_FW */
-> > >> +
-> > >>  static struct platform_driver ipmmu_driver = {
-> > >>       .driver = {
-> > >>               .name = "ipmmu-vmsa",
-> > >>               .of_match_table = of_match_ptr(ipmmu_of_ids),
-> > >> +             .pm = DEV_PM_OPS,
-> > >
-> > > I would have used conditional compilation here instead of using a
-> > > DEV_PM_OPS macro, as I think the macro decreases readability (and also
-> > > given how its generic name could later conflict with something else).
-> >
-> > You mean
-> >
-> >     #ifdef ...
-> >     .pm = &ipmmu_pm,
-> >     #endif
-> >
-> > and marking ipmmu_pm __maybe_unused__?
+> vm_map_pages() is the API which could be used to map
+> kernel memory/pages in drivers which has considered vm_pgoff.
 >
-> Yes. Up to you.
+> vm_map_pages_zero() is the API which could be used to map
+> range of kernel memory/pages in drivers which has not considered
+> vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
+>
+> We _could_ then at a later "fix" these drivers which are using
+> vm_map_pages_zero() to behave according to the normal vm_pgoff
+> offsetting simply by removing the _zero suffix on the function
+> name and if that causes regressions, it gives us an easy way to revert.
+>
+> Tested on Rockchip hardware and display is working fine, including talking
+> to Lima via prime.
+>
+> v1 -> v2:
+>         Few Reviewed-by.
+>
+>         Updated the change log in [8/9]
+>
+>         In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
+>         to select a buffer, not as a in-buffer offset by design
+>         and it always want to mmap a whole buffer from its beginning.
+>         Added additional changes after discussing with Marek and
+>         vm_map_pages() could be used instead of vm_map_pages_zero().
+>
+> v2 -> v3:
+>         Corrected the documentation as per review comment.
+>
+>         As suggested in v2, renaming the interfaces to -
+>         *vm_insert_range() -> vm_map_pages()* and
+>         *vm_insert_range_buggy() -> vm_map_pages_zero()*.
+>         As the interface is renamed, modified the code accordingly,
+>         updated the change logs and modified the subject lines to use the
+>         new interfaces. There is no other change apart from renaming and
+>         using the new interface.
+>
+>         Patch[1/9] & [4/9], Tested on Rockchip hardware.
+>
+> v3 -> v4:
+>         Fixed build warnings on patch [8/9] reported by kbuild test robot.
+>
+> Souptick Joarder (9):
+>   mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
+>   arm: mm: dma-mapping: Convert to use vm_map_pages()
+>   drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
+>   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
+>   drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
+>   iommu/dma-iommu.c: Convert to use vm_map_pages()
+>   videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
+>   xen/gntdev.c: Convert to use vm_map_pages()
+>   xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
 
-I'm not such a big fan of __maybe_unused. It's easy to add, and too
-easy to forget to remove it when it's no longer needed (casts have the
-same problem).
+If no further comment, is it fine to take these patches to -mm
+tree for regression ?
 
-Usually people just annotate the actual suspend/resume methods with
-__maybe_unused, which still leaves the (large) struct dev_pm_ops in
-memory.
-
-So I started preferring the DEV_PM_OPS approach...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>
+>  arch/arm/mm/dma-mapping.c                          | 22 ++----
+>  drivers/firewire/core-iso.c                        | 15 +---
+>  drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
+>  drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
+>  drivers/iommu/dma-iommu.c                          | 12 +---
+>  drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
+>  .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
+>  drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
+>  drivers/xen/gntdev.c                               | 11 ++-
+>  drivers/xen/privcmd-buf.c                          |  8 +--
+>  include/linux/mm.h                                 |  4 ++
+>  mm/memory.c                                        | 81 ++++++++++++++++++++++
+>  mm/nommu.c                                         | 14 ++++
+>  13 files changed, 134 insertions(+), 103 deletions(-)
+>
+> --
+> 1.9.1
+>
