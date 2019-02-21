@@ -1,63 +1,36 @@
-From: Gary R Hook <ghook@amd.com>
-Subject: Re: [PATCH] iommu: Fix IOMMU debugfs fallout
-Date: Thu, 21 Feb 2019 16:22:41 +0000
-Message-ID: <107726bd-fad4-7d76-e1b5-6d5ecfeb6a3e@amd.com>
-References: <20190220130505.1188-1-geert+renesas@glider.be>
+From: Michael Kelley <mikelley@microsoft.com>
+Subject: RE: [PATCH V4 1/3] x86/Hyper-V: Set x2apic destination mode to
+ physical when x2apic is available
+Date: Thu, 21 Feb 2019 17:00:53 +0000
+Message-ID: <DM5PR2101MB0918F78D1E8682FF545519F8D77E0@DM5PR2101MB0918.namprd21.prod.outlook.com>
+References: <1549894824-26623-1-git-send-email-Tianyu.Lan@microsoft.com>
+ <1549894824-26623-2-git-send-email-Tianyu.Lan@microsoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190220130505.1188-1-geert+renesas@glider.be>
+In-Reply-To: <1549894824-26623-2-git-send-email-Tianyu.Lan@microsoft.com>
 Content-Language: en-US
-Content-ID: <379F3A945D4C85419D119241B192D2A5@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>
-Cc: "Hook, Gary" <Gary.Hook@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: "lantianyu1986@gmail.com" <lantianyu1986@gmail.com>
+Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>, "sashal@kernel.org" <sashal@kernel.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devel@linuxdriverproject.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMi8yMC8xOSA3OjA1IEFNLCBHZWVydCBVeXR0ZXJob2V2ZW4gd3JvdGU6DQo+IEEgY2hhbmdl
-IG1hZGUgaW4gdGhlIGZpbmFsIHZlcnNpb24gb2YgSU9NTVUgZGVidWdmcyBzdXBwb3J0IHJlcGxh
-Y2VkIHRoZQ0KPiBwdWJsaWMgZnVuY3Rpb24gaW9tbXVfZGVidWdmc19uZXdfZHJpdmVyX2Rpcigp
-IGJ5IHRoZSBwdWJsaWMgZGVudHJ5DQo+IGlvbW11X2RlYnVnZnNfZGlyIGluIDxsaW51eC9pb21t
-dS5oPiwgYnV0IGZvcmdvdCB0byB1cGRhdGUgYm90aCB0aGUNCj4gaW1wbGVtZW50YXRpb24gaW4g
-aW9tbXUtZGVidWdmcy5jLCBhbmQgdGhlIHBhdGNoIGRlc2NyaXB0aW9uLg0KPiANCj4gRml4IHRo
-aXMgYnkgZXhwb3J0aW5nIGlvbW11X2RlYnVnZnNfZGlyLCBhbmQgcmVtb3ZpbmcgdGhlIHJlZmVy
-ZW5jZSB0bw0KPiBhbmQgaW1wbGVtZW50YXRpb24gb2YgaW9tbXVfZGVidWdmc19uZXdfZHJpdmVy
-X2RpcigpLg0KPiANCj4gRml4ZXM6IGJhZDYxNGIyNDI5M2FlNDYgKCJpb21tdTogRW5hYmxlIGRl
-YnVnZnMgZXhwb3N1cmUgb2YgSU9NTVUgZHJpdmVyIGludGVybmFscyIpDQo+IFNpZ25lZC1vZmYt
-Ynk6IEdlZXJ0IFV5dHRlcmhvZXZlbiA8Z2VlcnQrcmVuZXNhc0BnbGlkZXIuYmU+DQoNCkFja2Vk
-LWJ5OiBHYXJ5IFIgSG9vayA8Z2FyeS5ob29rQGFtZC5jb20+DQoNCj4gLS0tDQo+ICAgZHJpdmVy
-cy9pb21tdS9pb21tdS1kZWJ1Z2ZzLmMgfCAyMyArKysrLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAg
-IDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDE5IGRlbGV0aW9ucygtKQ0KPiANCj4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW9tbXUtZGVidWdmcy5jIGIvZHJpdmVycy9pb21t
-dS9pb21tdS1kZWJ1Z2ZzLmMNCj4gaW5kZXggM2IxYmY4OGZkMWIwNDk0YS4uZjAzNTQ4OTQyMDk2
-NDhmZCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS1kZWJ1Z2ZzLmMNCj4gKysr
-IGIvZHJpdmVycy9pb21tdS9pb21tdS1kZWJ1Z2ZzLmMNCj4gQEAgLTEyLDYgKzEyLDcgQEANCj4g
-ICAjaW5jbHVkZSA8bGludXgvZGVidWdmcy5oPg0KPiAgIA0KPiAgIHN0cnVjdCBkZW50cnkgKmlv
-bW11X2RlYnVnZnNfZGlyOw0KPiArRVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfZGVidWdmc19kaXIp
-Ow0KPiAgIA0KPiAgIC8qKg0KPiAgICAqIGlvbW11X2RlYnVnZnNfc2V0dXAgLSBjcmVhdGUgdGhl
-IHRvcC1sZXZlbCBpb21tdSBkaXJlY3RvcnkgaW4gZGVidWdmcw0KPiBAQCAtMjMsOSArMjQsOSBA
-QCBzdHJ1Y3QgZGVudHJ5ICppb21tdV9kZWJ1Z2ZzX2RpcjsNCj4gICAgKiBFbWl0IGEgc3Ryb25n
-IHdhcm5pbmcgYXQgYm9vdCB0aW1lIHRvIGluZGljYXRlIHRoYXQgdGhpcyBmZWF0dXJlIGlzDQo+
-ICAgICogZW5hYmxlZC4NCj4gICAgKg0KPiAtICogVGhpcyBmdW5jdGlvbiBpcyBjYWxsZWQgZnJv
-bSBpb21tdV9pbml0OyBkcml2ZXJzIG1heSB0aGVuIGNhbGwNCj4gLSAqIGlvbW11X2RlYnVnZnNf
-bmV3X2RyaXZlcl9kaXIoKSB0byBpbnN0YW50aWF0ZSBhIHZlbmRvci1zcGVjaWZpYw0KPiAtICog
-ZGlyZWN0b3J5IHRvIGJlIHVzZWQgdG8gZXhwb3NlIGludGVybmFsIGRhdGEuDQo+ICsgKiBUaGlz
-IGZ1bmN0aW9uIGlzIGNhbGxlZCBmcm9tIGlvbW11X2luaXQ7IGRyaXZlcnMgbWF5IHRoZW4gdXNl
-DQo+ICsgKiBpb21tdV9kZWJ1Z2ZzX2RpciB0byBpbnN0YW50aWF0ZSBhIHZlbmRvci1zcGVjaWZp
-YyBkaXJlY3RvcnkgdG8gYmUgdXNlZA0KPiArICogdG8gZXhwb3NlIGludGVybmFsIGRhdGEuDQo+
-ICAgICovDQo+ICAgdm9pZCBpb21tdV9kZWJ1Z2ZzX3NldHVwKHZvaWQpDQo+ICAgew0KPiBAQCAt
-NDgsMTkgKzQ5LDMgQEAgdm9pZCBpb21tdV9kZWJ1Z2ZzX3NldHVwKHZvaWQpDQo+ICAgCQlwcl93
-YXJuKCIqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqXG4iKTsNCj4gICAJfQ0KPiAgIH0NCj4gLQ0KPiAtLyoqDQo+IC0gKiBpb21tdV9k
-ZWJ1Z2ZzX25ld19kcml2ZXJfZGlyIC0gY3JlYXRlIGEgdmVuZG9yIGRpcmVjdG9yeSB1bmRlciBk
-ZWJ1Z2ZzL2lvbW11DQo+IC0gKiBAdmVuZG9yOiBuYW1lIG9mIHRoZSB2ZW5kb3Itc3BlY2lmaWMg
-c3ViZGlyZWN0b3J5IHRvIGNyZWF0ZQ0KPiAtICoNCj4gLSAqIFRoaXMgZnVuY3Rpb24gaXMgY2Fs
-bGVkIGJ5IGFuIElPTU1VIGRyaXZlciB0byBjcmVhdGUgdGhlIHRvcC1sZXZlbCBkZWJ1Z2ZzDQo+
-IC0gKiBkaXJlY3RvcnkgZm9yIHRoYXQgZHJpdmVyLg0KPiAtICoNCj4gLSAqIFJldHVybjogdXBv
-biBzdWNjZXNzLCBhIHBvaW50ZXIgdG8gdGhlIGRlbnRyeSBmb3IgdGhlIG5ldyBkaXJlY3Rvcnku
-DQo+IC0gKiAgICAgICAgIE5VTEwgaW4gY2FzZSBvZiBmYWlsdXJlLg0KPiAtICovDQo+IC1zdHJ1
-Y3QgZGVudHJ5ICppb21tdV9kZWJ1Z2ZzX25ld19kcml2ZXJfZGlyKGNvbnN0IGNoYXIgKnZlbmRv
-cikNCj4gLXsNCj4gLQlyZXR1cm4gZGVidWdmc19jcmVhdGVfZGlyKHZlbmRvciwgaW9tbXVfZGVi
-dWdmc19kaXIpOw0KPiAtfQ0KPiAtRVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfZGVidWdmc19uZXdf
-ZHJpdmVyX2Rpcik7DQo+IA0KDQo=
+From: lantianyu1986@gmail.com <lantianyu1986@gmail.com> Sent: Monday, Febru=
+ary 11, 2019 6:20 AM
+>=20
+> Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
+> set x2apic destination mode to physcial mode when x2apic is available
+> and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
+> 8-bit APIC id.
+>=20
+> Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v2:
+>        - Fix compile error due to x2apic_phys
+>        - Fix comment indent
+> Change since v1:
+>        - Remove redundant extern for x2apic_phys
+>=20
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
