@@ -1,36 +1,35 @@
-From: Michael Kelley <mikelley@microsoft.com>
-Subject: RE: [PATCH V4 1/3] x86/Hyper-V: Set x2apic destination mode to
- physical when x2apic is available
-Date: Thu, 21 Feb 2019 17:00:53 +0000
-Message-ID: <DM5PR2101MB0918F78D1E8682FF545519F8D77E0@DM5PR2101MB0918.namprd21.prod.outlook.com>
-References: <1549894824-26623-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1549894824-26623-2-git-send-email-Tianyu.Lan@microsoft.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
+ consistent with kaslr
+Date: Thu, 21 Feb 2019 18:13:21 +0100
+Message-ID: <20190221171321.GD12997@zn.tnic>
+References: <20190131222732.GA946@anatevka>
+ <20190131234740.GO6749@zn.tnic>
+ <20190204223016.GB11986@anatevka>
+ <20190205081552.GG21801@zn.tnic>
+ <20190206120804.GC10062@dhcp-128-65.nay.redhat.com>
+ <20190211204816.GB21473@dhcp-128-65.nay.redhat.com>
+ <20190215102458.GD10433@zn.tnic>
+ <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
+ <20190220083241.GA3447@zn.tnic>
+ <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1549894824-26623-2-git-send-email-Tianyu.Lan@microsoft.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "lantianyu1986@gmail.com" <lantianyu1986@gmail.com>
-Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>, "sashal@kernel.org" <sashal@kernel.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devel@linuxdriverproject.org
+To: Dave Young <dyoung@redhat.com>
+Cc: bhe@redhat.com, Jerry Hoemann <jerry.hoemann@hpe.com>, x86@kernel.org, Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, Pingfan Liu <kernelfans@gmail.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, yinghai@kernel.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-From: lantianyu1986@gmail.com <lantianyu1986@gmail.com> Sent: Monday, Febru=
-ary 11, 2019 6:20 AM
->=20
-> Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
-> set x2apic destination mode to physcial mode when x2apic is available
-> and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs have
-> 8-bit APIC id.
->=20
-> Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v2:
->        - Fix compile error due to x2apic_phys
->        - Fix comment indent
-> Change since v1:
->        - Remove redundant extern for x2apic_phys
->=20
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+On Wed, Feb 20, 2019 at 05:41:46PM +0800, Dave Young wrote:
+> Previously Joerg posted below patch, maybe he has some idea. Joerg?
+
+Isn't it clear from the commit message?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
