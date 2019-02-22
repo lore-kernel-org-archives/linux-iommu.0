@@ -1,78 +1,162 @@
-From: Thiago Jung Bauermann <bauerman-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
-Date: Thu, 21 Feb 2019 19:18:59 -0300
-Message-ID: <878sy8bx9o.fsf@morokweng.localdomain>
-References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
-	<20190123083435.x3svwqp472mdgglw@8bytes.org>
-	<a6315ab3-bffb-7470-365d-b26df6524bda@arm.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v6 0/9] vfio/mdev: IOMMU aware mediated device
+Date: Fri, 22 Feb 2019 08:56:00 +0800
+Message-ID: <ab4ba0ce-6d59-d4aa-a54e-80197d255c4a@linux.intel.com>
+References: <20190213040301.23021-1-baolu.lu@linux.intel.com>
+ <20190214131456.3db38cdb@w520.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <a6315ab3-bffb-7470-365d-b26df6524bda-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190214131456.3db38cdb@w520.home>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-CkhlbGxvIEplYW4tUGhpbGlwcGUsCgpKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlw
-cGUuYnJ1Y2tlckBhcm0uY29tPiB3cml0ZXM6Cj4gTWFrZXMgc2Vuc2UsIHRob3VnaCBJIHRoaW5r
-IG90aGVyIHZpcnRpbyBkZXZpY2VzIGhhdmUgYmVlbiBkZXZlbG9wZWQgYQo+IGxpdHRsZSBtb3Jl
-IG9yZ2FuaWNhbGx5OiBkZXZpY2UgYW5kIGRyaXZlciBjb2RlIGdvdCB1cHN0cmVhbWVkIGZpcnN0
-LAo+IGFuZCB0aGVuIHRoZSBzcGVjaWZpY2F0aW9uIGRlc2NyaWJpbmcgdGhlaXIgaW50ZXJmYWNl
-IGdvdCBtZXJnZWQgaW50bwo+IHRoZSBzdGFuZGFyZC4gRm9yIGV4YW1wbGUgSSBiZWxpZXZlIHRo
-YXQgY29kZSBmb3IgY3J5cHRvLCBpbnB1dCBhbmQgR1BVCj4gZGV2aWNlcyB3ZXJlIHVwc3RyZWFt
-ZWQgbG9uZyBiZWZvcmUgdGhlIHNwZWNpZmljYXRpb24gd2FzIG1lcmdlZC4gT25jZQo+IGFuIGlt
-cGxlbWVudGF0aW9uIGlzIHVwc3RyZWFtLCB0aGUgaW50ZXJmYWNlIGlzIGV4cGVjdGVkIHRvIGJl
-Cj4gYmFja3dhcmQtY29tcGF0aWJsZSAoYWxsIHN1YnNlcXVlbnQgY2hhbmdlcyBhcmUgaW50cm9k
-dWNlZCB1c2luZyBmZWF0dXJlCj4gYml0cykuCj4KPiBTbyBJJ3ZlIGJlZW4gd29ya2luZyB3aXRo
-IHRoaXMgcHJvY2VzcyBpbiBtaW5kLCBhbHNvIGRlc2NyaWJlZCBieSBKZW5zCj4gYXQgS1ZNIGZv
-cnVtIDIwMTcgWzNdOgo+ICgxKSBSZXNlcnZlIGEgZGV2aWNlIElELCBhbmQgZ2V0IHRoYXQgbWVy
-Z2VkIGludG8gdmlydGlvIChJRCAyMyBmb3IKPiB2aXJ0aW8taW9tbXUgd2FzIHJlc2VydmVkIGxh
-c3QgeWVhcikKPiAoMikgT3Blbi1zb3VyY2UgYW4gaW1wbGVtZW50YXRpb24gKHRoaXMgZHJpdmVy
-IGFuZCBFcmljJ3MgZGV2aWNlKQo+ICgzKSBGb3JtYWxpemUgYW5kIHVwc3RyZWFtIHRoZSBkZXZp
-Y2Ugc3BlY2lmaWNhdGlvbgo+Cj4gQnV0IEkgZ2V0IHRoYXQgc29tZSBvdmVybGFwIGJldHdlZW4g
-KDIpIGFuZCAoMykgd291bGQgaGF2ZSBiZWVuIGJldHRlci4KPiBTbyBmYXIgdGhlIHNwZWMgZG9j
-dW1lbnQgaGFzIGJlZW4gcmV2aWV3ZWQgbWFpbmx5IGZyb20gdGhlIElPTU1VIHBvaW50Cj4gb2Yg
-dmlldywgYW5kIG1pZ2h0IHJlcXVpcmUgbW9yZSBjaGFuZ2VzIHRvIGJlIGluIGxpbmUgd2l0aCB0
-aGUgb3RoZXIKPiB2aXJ0aW8gZGV2aWNlcyAtLSBob3BlZnVsbHkganVzdCB3b3JkaW5nIGNoYW5n
-ZXMuIEknbGwga2ljayBvZmYgc3RlcAo+ICgzKSwgYnV0IEkgdGhpbmsgdGhlIHZpcnRpbyBmb2xr
-cyBhcmUgYSBiaXQgYnVzeSB3aXRoIGZpbmFsaXppbmcgdGhlIDEuMQo+IHNwZWMgc28gSSBleHBl
-Y3QgaXQgdG8gdGFrZSBhIHdoaWxlLgoKSSByZWFkIHYwLjkgb2YgdGhlIHNwZWMgYW5kIGhhdmUg
-c29tZSBtaW5vciBjb21tZW50cywgaG9wZSB0aGlzIGlzIGEKZ29vZCBwbGFjZSB0byBzZW5kIHRo
-ZW06CgoxLiBJbiBzZWN0aW9uIDIuNi4yLCBvbmUgcmVhZHMKCiAgICBJZiB0aGUgVklSVElPX0lP
-TU1VX0ZfSU5QVVRfUkFOR0UgZmVhdHVyZSBpcyBvZmZlcmVkIGFuZCB0aGUgcmFuZ2UKICAgIGRl
-c2NyaWJlZCBieSBmaWVsZHMgdmlydF9zdGFydCBhbmQgdmlydF9lbmQgZG9lc27igJl0IGZpdCBp
-biB0aGUgcmFuZ2UKICAgIGRlc2NyaWJlZCBieSBpbnB1dF9yYW5nZSwgdGhlIGRldmljZSBNQVkg
-c2V0IHN0YXR1cyB0byBWSVJUSU9fLQogICAgSU9NTVVfU19SQU5HRSBhbmQgaWdub3JlIHRoZSBy
-ZXF1ZXN0LgoKU2hvdWxkbid0IGludCBzYXkgIklmIHRoZSBWSVJUSU9fSU9NTVVfRl9JTlBVVF9S
-QU5HRSBmZWF0dXJlIGlzCm5lZ290aWF0ZWQiIGluc3RlYWQ/CgoyLiBUaGVyZSdzIGEgdHlwbyBh
-dCB0aGUgZW5kIG9mIHNlY3Rpb24gMi42LjU6CgogICAgVGhlIFZJUlRJT19JT01NVV9NQVBfRl9N
-TUlPIGZsYWcgaXMgYSBtZW1vcnkgdHlwZSByYXRoZXIgdGhhbiBhCiAgICBwcm90ZWN0aW9uIGxh
-Zy4KCnMvbGFnL2ZsYWcvCgozLiBJbiBzZWN0aW9uIDMuMS4yLjEuMSwgdGhlIHZpb21tdSBjb21w
-YXRpYmxlIGZpZWxkIHNheXMgInZpcnRpbyxtbWlvIi4KU2hvdWxkbid0IGl0IHNheSAidmlydGlv
-LG1taW8taW9tbXUiIGluc3RlYWQsIHRvIGJlIGNvbnNpc3RlbnQgd2l0aAoidmlydGlvLHBjaS1p
-b21tdSI/Cgo0LiBUaGVyZSdzIGEgdHlwbyBpbiBzZWN0aW9uIDMuMzoKCiAgICBBIGhvc3QgYnJp
-ZGdlIG1heSBsaW1pdCB0aGUgaW5wdXQgYWRkcmVzcyBzcGFjZSDigJMgdHJhbnNhY3Rpb24KICAg
-IGFjY2Vzc2luZyBzb21lIGFkZHJlc3NlcyB3b27igJl0IHJlYWNoIHRoZSBwaHlzaWNhbCBJT01N
-VS4KCnMvdHJhbnNhY3Rpb24vdHJhbnNhY3Rpb25zLwoKSSBhbHNvIGhhdmUgb25lIGxhc3QgY29t
-bWVudCB3aGljaCB5b3UgbWF5IGZyZWVseSBpZ25vcmUsIGNvbnNpZGVyaW5nCml0J3MgY2xlYXJs
-eSBqdXN0IHBlcnNvbmFsIG9waW5pb24gYW5kIGFsc28gY29uc2lkZXJpbmcgdGhhdCB0aGUKc3Bl
-Y2lmaWNhdGlvbiBpcyBtYXR1cmUgYXQgdGhpcyBwb2ludDogaXQgc3BlY2lmaWVzIG1lbW9yeSBy
-YW5nZXMgYnkKc3BlY2lmeWluZyBzdGFydCBhbmQgZW5kIGFkZHJlc3Nlcy4gTXkgZXhwZXJpZW5j
-ZSBoYXMgYmVlbiB0aGF0IHRoaXMgaXMKZXJyb3IgcHJvbmUsIGxlYWRpbmcgdG8gY29uZnVzaW9u
-IGFuZCBidWdzIHJlZ2FyZGluZyB3aGV0aGVyIHRoZSBlbmQKYWRkcmVzcyBpcyBpbmNsdXNpdmUg
-b3IgZXhjbHVzaXZlLiBJIHRlbmQgdG8gcHJlZmVyIGV4cHJlc3NpbmcgbWVtb3J5CnJhbmdlcyBi
-eSBzcGVjaWZ5aW5nIGEgc3RhcnQgYWRkcmVzcyBhbmQgYSBsZW5ndGgsIHdoaWNoIGVsaW1pbmF0
-ZXMKYW1iaWd1aXR5LgoKLS0KVGhpYWdvIEp1bmcgQmF1ZXJtYW5uCklCTSBMaW51eCBUZWNobm9s
-b2d5IENlbnRlcgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+
+On 2/15/19 4:14 AM, Alex Williamson wrote:
+> On Wed, 13 Feb 2019 12:02:52 +0800
+> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> 
+>> Hi,
+>>
+>> The Mediate Device is a framework for fine-grained physical device
+>> sharing across the isolated domains. Currently the mdev framework
+>> is designed to be independent of the platform IOMMU support. As the
+>> result, the DMA isolation relies on the mdev parent device in a
+>> vendor specific way.
+>>
+>> There are several cases where a mediated device could be protected
+>> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
+>> [1] introduces a new translation mode called 'scalable mode', which
+>> enables PASID-granular translations. The vt-d scalable mode is the
+>> key ingredient for Scalable I/O Virtualization [2] [3] which allows
+>> sharing a device in minimal possible granularity (ADI - Assignable
+>> Device Interface).
+>>
+>> A mediated device backed by an ADI could be protected and isolated
+>> by the IOMMU since 1) the parent device supports tagging an unique
+>> PASID to all DMA traffic out of the mediated device; and 2) the DMA
+>> translation unit (IOMMU) supports the PASID granular translation.
+>> We can apply IOMMU protection and isolation to this kind of devices
+>> just as what we are doing with an assignable PCI device.
+>>
+>> In order to distinguish the IOMMU-capable mediated devices from those
+>> which still need to rely on parent devices, this patch set adds one
+>> new member in struct mdev_device.
+>>
+>> * iommu_device
+>>    - This, if set, indicates that the mediated device could
+>>      be fully isolated and protected by IOMMU via attaching
+>>      an iommu domain to this device. If empty, it indicates
+>>      using vendor defined isolation.
+>>
+>> Below helpers are added to set and get above iommu device in mdev core
+>> implementation.
+>>
+>> * mdev_set/get_iommu_device(dev, iommu_device)
+>>    - Set or get the iommu device which represents this mdev
+>>      in IOMMU's device scope. Drivers don't need to set the
+>>      iommu device if it uses vendor defined isolation.
+>>
+>> The mdev parent device driver could opt-in that the mdev could be
+>> fully isolated and protected by the IOMMU when the mdev is being
+>> created by invoking mdev_set_iommu_device() in its @create().
+>>
+>> In the vfio_iommu_type1_attach_group(), a domain allocated through
+>> iommu_domain_alloc() will be attached to the mdev iommu device if
+>> an iommu device has been set. Otherwise, the dummy external domain
+>> will be used and all the DMA isolation and protection are routed to
+>> parent driver as the result.
+>>
+>> On IOMMU side, a basic requirement is allowing to attach multiple
+>> domains to a PCI device if the device advertises the capability
+>> and the IOMMU hardware supports finer granularity translations than
+>> the normal PCI Source ID based translation.
+>>
+>> As the result, a PCI device could work in two modes: normal mode
+>> and auxiliary mode. In the normal mode, a pci device could be
+>> isolated in the Source ID granularity; the pci device itself could
+>> be assigned to a user application by attaching a single domain
+>> to it. In the auxiliary mode, a pci device could be isolated in
+>> finer granularity, hence subsets of the device could be assigned
+>> to different user level application by attaching a different domain
+>> to each subset.
+>>
+>> Below APIs are introduced in iommu generic layer for aux-domain
+>> purpose:
+>>
+>> * iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)
+>>    - Check whether both IOMMU and device support IOMMU aux
+>>      domain feature. Below aux-domain specific interfaces
+>>      are available only after this returns true.
+>>
+>> * iommu_dev_enable/disable_feature(dev, IOMMU_DEV_FEAT_AUX)
+>>    - Enable/disable device specific aux-domain feature.
+>>
+>> * iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX)
+>>    - Check whether the aux domain specific feature enabled or
+>>      not.
+>>
+>> * iommu_aux_attach_device(domain, dev)
+>>    - Attaches @domain to @dev in the auxiliary mode. Multiple
+>>      domains could be attached to a single device in the
+>>      auxiliary mode with each domain representing an isolated
+>>      address space for an assignable subset of the device.
+>>
+>> * iommu_aux_detach_device(domain, dev)
+>>    - Detach @domain which has been attached to @dev in the
+>>      auxiliary mode.
+>>
+>> * iommu_aux_get_pasid(domain, dev)
+>>    - Return ID used for finer-granularity DMA translation.
+>>      For the Intel Scalable IOV usage model, this will be
+>>      a PASID. The device which supports Scalable IOV needs
+>>      to write this ID to the device register so that DMA
+>>      requests could be tagged with a right PASID prefix.
+>>
+>> In order for the ease of discussion, sometimes we call "a domain in
+>> auxiliary mode' or simply 'an auxiliary domain' when a domain is
+>> attached to a device for finer granularity translations. But we need
+>> to keep in mind that this doesn't mean there is a differnt domain
+>> type. A same domain could be bound to a device for Source ID based
+>> translation, and bound to another device for finer granularity
+>> translation at the same time.
+>>
+>> This patch series extends both IOMMU and vfio components to support
+>> mdev device passing through when it could be isolated and protected
+>> by the IOMMU units. The first part of this series (PATCH 1/09~6/09)
+>> adds the interfaces and implementation of the multiple domains per
+>> device. The second part (PATCH 7/09~9/09) adds the iommu device
+>> attribute to each mdev, determines isolation type according to the
+>> existence of an iommu device when attaching group in vfio type1 iommu
+>> module, and attaches the domain to iommu aware mediated devices.
+>>
+>> References:
+>> [1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+>> [2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+>> [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+>>
+>> Best regards,
+>> Lu Baolu
+>>
+>> Change log:
+>>    v5->v6:
+> 
+> This looks pretty reasonable with Jean-Philippe's nit fixups.  Where do
+> we go from here?  I think we need an ack from Kirti since they have an
+> interest here.  Presumably this looks ok to the ARM folks.  Do we have
+> any consumers of this code yet?  Theoretically I think a vfio-pci-like
+> meta driver could be written as an mdev vendor driver with this support
+> (restricted to type1 iommu use cases).  Thanks,
+> 
+
+I saw Jean's device driver API for SVA which is based on the work in
+this patch series. Let me update this patch series with Jean's comments
+here so that people could always base on the latest code.
+
+Best regards,
+Lu Baolu
