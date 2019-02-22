@@ -1,110 +1,68 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v7 4/9] iommu/vt-d: Move common code out of iommu_attch_device()
-Date: Fri, 22 Feb 2019 10:19:22 +0800
-Message-ID: <20190222021927.13132-5-baolu.lu@linux.intel.com>
-References: <20190222021927.13132-1-baolu.lu@linux.intel.com>
+From: James Dong <xmdong@google.com>
+Subject: [PATCH] iommu/vt-d: Handle hotplug devices' default identity mapping setting
+Date: Fri, 22 Feb 2019 02:44:55 +0000
+Message-ID: <20190222024455.20802-1-xmdong@google.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190222021927.13132-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, James Dong <xmdong@google.com>, Jis Ben <jisben@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This part of code could be used by both normal and aux
-domain specific attach entries. Hence move them into a
-common function to avoid duplication.
+With specific Linux command line option such as "iommu=pt", some types
+of hotplug devices will be assigned to the static 1:1 iommu domain by
+default during kernel init.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+If such a hotplug device is rescanned after being removed, for example,
+with following sample commands:
+  echo 1 > /sys/bus/pci/devices/0000\:03\:00.1/remove
+  echo 1 > /sys/bus/pci/rescan
+, an iommu group for this hotplug device will be added without attaching
+it to the default static 1:1 domain. As a result, this device's I/O
+operation won't work.
+
+Keep hotplug devices with default static 1:1 iommu mapping in their default
+domain after such hotplug devices are rescanned.
+
+Signed-off-by: James Dong <xmdong@google.com>
+Reported-by: Jis Ben <jisben@google.com>
 ---
- drivers/iommu/intel-iommu.c | 60 ++++++++++++++++++++++---------------
- 1 file changed, 36 insertions(+), 24 deletions(-)
+ drivers/iommu/intel-iommu.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a7e2238f869a..3d83451a414d 100644
+index 78188bf7e90d..4b02949e58ca 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -5054,35 +5054,14 @@ static void intel_iommu_domain_free(struct iommu_domain *domain)
- 	domain_exit(to_dmar_domain(domain));
- }
- 
--static int intel_iommu_attach_device(struct iommu_domain *domain,
--				     struct device *dev)
-+static int prepare_domain_attach_device(struct iommu_domain *domain,
-+					struct device *dev)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+@@ -5230,6 +5230,7 @@ static int intel_iommu_add_device(struct device *dev)
  	struct intel_iommu *iommu;
- 	int addr_width;
+ 	struct iommu_group *group;
  	u8 bus, devfn;
++	int ret = 0;
  
--	if (device_is_rmrr_locked(dev)) {
--		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
--		return -EPERM;
--	}
--
--	/* normally dev is not mapped */
--	if (unlikely(domain_context_mapped(dev))) {
--		struct dmar_domain *old_domain;
--
--		old_domain = find_domain(dev);
--		if (old_domain) {
--			rcu_read_lock();
--			dmar_remove_one_dev_info(dev);
--			rcu_read_unlock();
--
--			if (!domain_type_is_vm_or_si(old_domain) &&
--			     list_empty(&old_domain->devices))
--				domain_exit(old_domain);
--		}
--	}
--
  	iommu = device_to_iommu(dev, &bus, &devfn);
  	if (!iommu)
- 		return -ENODEV;
-@@ -5115,7 +5094,40 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 		dmar_domain->agaw--;
- 	}
+@@ -5242,8 +5243,19 @@ static int intel_iommu_add_device(struct device *dev)
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
  
--	return domain_add_dev_info(dmar_domain, dev);
-+	return 0;
-+}
-+
-+static int intel_iommu_attach_device(struct iommu_domain *domain,
-+				     struct device *dev)
-+{
-+	int ret;
-+
-+	if (device_is_rmrr_locked(dev)) {
-+		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
-+		return -EPERM;
++	if (!iommu_group_default_domain(group) &&
++	    !find_domain(dev) && iommu_should_identity_map(dev, 0)) {
++		ret = domain_add_dev_info(si_domain, dev);
++		if (!ret)
++			pr_info("identity mapping for device %s\n",
++				dev_name(dev));
++		else
++			pr_info("identity mapping failed (%d) for device %s\n",
++				ret, dev_name(dev));
 +	}
 +
-+	/* normally dev is not mapped */
-+	if (unlikely(domain_context_mapped(dev))) {
-+		struct dmar_domain *old_domain;
-+
-+		old_domain = find_domain(dev);
-+		if (old_domain) {
-+			rcu_read_lock();
-+			dmar_remove_one_dev_info(dev);
-+			rcu_read_unlock();
-+
-+			if (!domain_type_is_vm_or_si(old_domain) &&
-+			    list_empty(&old_domain->devices))
-+				domain_exit(old_domain);
-+		}
-+	}
-+
-+	ret = prepare_domain_attach_device(domain, dev);
-+	if (ret)
-+		return ret;
-+
-+	return domain_add_dev_info(to_dmar_domain(domain), dev);
+ 	iommu_group_put(group);
+-	return 0;
++	return ret;
  }
  
- static void intel_iommu_detach_device(struct iommu_domain *domain,
+ static void intel_iommu_remove_device(struct device *dev)
 -- 
-2.17.1
+2.21.0.rc0.258.g878e2cd30e-goog
