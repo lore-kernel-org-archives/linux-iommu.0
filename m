@@ -1,61 +1,53 @@
-From: Michael Kelley <mikelley@microsoft.com>
-Subject: RE: [PATCH V5 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
-Date: Fri, 22 Feb 2019 15:58:44 +0000
-Message-ID: <DM5PR2101MB0918926EDE4D256EC16637A7D77F0@DM5PR2101MB0918.namprd21.prod.outlook.com>
-References: <1550837545-10760-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1550837545-10760-3-git-send-email-Tianyu.Lan@microsoft.com>
+From: Jis Ben <jisben@google.com>
+Subject: Re: [PATCH] iommu/vt-d: Handle hotplug devices' default identity
+ mapping setting
+Date: Fri, 22 Feb 2019 10:10:58 -0800
+Message-ID: <CADChb=mw2YUTJXZnFbeXhVThuuQgFofQybzmh=foC71UT=b1Qw@mail.gmail.com>
+References: <21c17b44-af9b-2f18-f109-ba4bb0635e61@linux.intel.com> <20190222082829.75567-1-xmdong@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1550837545-10760-3-git-send-email-Tianyu.Lan@microsoft.com>
-Content-Language: en-US
+In-Reply-To: <20190222082829.75567-1-xmdong@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, KY Srinivasan <kys@microsoft.com>, vkuznets <vkuznets@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "sashal@kernel.org" <sashal@kernel.org>, "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+To: James Dong <xmdong@google.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Tianyu.Lan@microsoft.com <Tianyu.Lan@microsoft.com> Sent: Friday, Feb=
-ruary 22, 2019 4:12 AM
->=20
-> On the bare metal, enabling X2APIC mode requires interrupt remapping
-> function which helps to deliver irq to cpu with 32-bit APIC ID.
-> Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
-> MSI protocol already supports to deliver interrupt to the CPU whose
-> virtual processor index is more than 255. IO-APIC interrupt still has
-> 8-bit APIC ID limitation.
->=20
-> This patch is to add Hyper-V stub IOMMU driver in order to enable
-> X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2API=
-C
-> interrupt remapping capability when X2APIC mode is available. Otherwise,
-> it creates a Hyper-V irq domain to limit IO-APIC interrupts' affinity
-> and make sure cpus assigned with IO-APIC interrupt have 8-bit APIC ID.
->=20
-> Define 24 IO-APIC remapping entries because Hyper-V only expose one
-> single IO-APIC and one IO-APIC has 24 pins according IO-APIC spec(
-> https://pdos.csail.mit.edu/6.828/2016/readings/ia32/ioapic.pdf).
->=20
-> Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v4:
->        - Fix the loop of scan cpu's APIC id
->=20
-> Change since v3:
->        - Make Hyper-V IOMMU as Hyper-V default driver
->        - Fix hypervisor_is_type() input parameter
->        - Check possible cpu numbers during scan 0~255 cpu's apic id.
->=20
-> Change since v2:
->        - Improve comment about why save IO-APIC entry in the irq chip dat=
-a.
->        - Some code improvement.
->        - Improve statement in the IOMMU Kconfig.
->=20
-> Change since v1:
->       - Remove unused pr_fmt
->       - Make ioapic_ir_domain as static variable
->       - Remove unused variables cfg and entry in the hyperv_irq_remapping=
-_alloc()
->       - Fix comments
+An NVMe device configured in static identity mapping should also cause
+this error when removed and rescanned. Essentially, a device that does
+a DMA when its driver inits, or one that you can force a DMA from.
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+-Jis
+
+
+On Fri, Feb 22, 2019 at 12:28 AM James Dong <xmdong@google.com> wrote:
+>
+> Baolu:
+>
+> The reproduction depends on devices. HW passthrough PCIe devices with default
+> identity map could have the issue. Make sure that messages like following came
+> out in dmesg and their mapping does not change after booting:
+>   [   10.167809] DMAR: Hardware identity mapping for device 0000:30:00.0
+>   [   10.167823] DMAR: Hardware identity mapping for device 0000:30:00.1
+>
+> Devices which make following true could also be used for the experiment:
+>   > static int iommu_should_identity_map(struct device *dev, int startup)
+>   > {
+>   >             if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+>   >                     return 1;
+>   >             if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
+>   >                     return 1;
+>
+> Once they are up, remove them first by following command:
+>   echo 1 > /sys/bus/pci/devices/0000\:03\:00.1/remove
+>
+> Then trigger the hotplug device rescanning:
+>   echo 1 > /sys/bus/pci/rescan
+>
+> To provide an example of specific devices on the market, I need to try out.
+> Or, if it is fine with you, forcing a PCIe NIC card to be default hardware
+> passthrough by changing the intel-iommu.c is another easy way to reproduce
+> this issue.
+>
+> Best Regards,
+> James
