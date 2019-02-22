@@ -1,109 +1,61 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v7 7/9] vfio/mdev: Add iommu related member in
- mdev_device
-Date: Fri, 22 Feb 2019 08:31:01 -0700
-Message-ID: <20190222083101.089ffadf@x1.home>
-References: <20190222021927.13132-1-baolu.lu@linux.intel.com>
-        <20190222021927.13132-8-baolu.lu@linux.intel.com>
-        <20190222143438.GA31016@infradead.org>
+From: Michael Kelley <mikelley@microsoft.com>
+Subject: RE: [PATCH V5 2/3] HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
+Date: Fri, 22 Feb 2019 15:58:44 +0000
+Message-ID: <DM5PR2101MB0918926EDE4D256EC16637A7D77F0@DM5PR2101MB0918.namprd21.prod.outlook.com>
+References: <1550837545-10760-1-git-send-email-Tianyu.Lan@microsoft.com>
+ <1550837545-10760-3-git-send-email-Tianyu.Lan@microsoft.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190222143438.GA31016@infradead.org>
+In-Reply-To: <1550837545-10760-3-git-send-email-Tianyu.Lan@microsoft.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
+Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, KY Srinivasan <kys@microsoft.com>, vkuznets <vkuznets@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "sashal@kernel.org" <sashal@kernel.org>, "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 22 Feb 2019 06:34:38 -0800
-Christoph Hellwig <hch@infradead.org> wrote:
+From: Tianyu.Lan@microsoft.com <Tianyu.Lan@microsoft.com> Sent: Friday, Feb=
+ruary 22, 2019 4:12 AM
+>=20
+> On the bare metal, enabling X2APIC mode requires interrupt remapping
+> function which helps to deliver irq to cpu with 32-bit APIC ID.
+> Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
+> MSI protocol already supports to deliver interrupt to the CPU whose
+> virtual processor index is more than 255. IO-APIC interrupt still has
+> 8-bit APIC ID limitation.
+>=20
+> This patch is to add Hyper-V stub IOMMU driver in order to enable
+> X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2API=
+C
+> interrupt remapping capability when X2APIC mode is available. Otherwise,
+> it creates a Hyper-V irq domain to limit IO-APIC interrupts' affinity
+> and make sure cpus assigned with IO-APIC interrupt have 8-bit APIC ID.
+>=20
+> Define 24 IO-APIC remapping entries because Hyper-V only expose one
+> single IO-APIC and one IO-APIC has 24 pins according IO-APIC spec(
+> https://pdos.csail.mit.edu/6.828/2016/readings/ia32/ioapic.pdf).
+>=20
+> Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v4:
+>        - Fix the loop of scan cpu's APIC id
+>=20
+> Change since v3:
+>        - Make Hyper-V IOMMU as Hyper-V default driver
+>        - Fix hypervisor_is_type() input parameter
+>        - Check possible cpu numbers during scan 0~255 cpu's apic id.
+>=20
+> Change since v2:
+>        - Improve comment about why save IO-APIC entry in the irq chip dat=
+a.
+>        - Some code improvement.
+>        - Improve statement in the IOMMU Kconfig.
+>=20
+> Change since v1:
+>       - Remove unused pr_fmt
+>       - Make ioapic_ir_domain as static variable
+>       - Remove unused variables cfg and entry in the hyperv_irq_remapping=
+_alloc()
+>       - Fix comments
 
-> On Fri, Feb 22, 2019 at 10:19:25AM +0800, Lu Baolu wrote:
-> > A parent device might create different types of mediated
-> > devices. For example, a mediated device could be created
-> > by the parent device with full isolation and protection
-> > provided by the IOMMU. One usage case could be found on
-> > Intel platforms where a mediated device is an assignable
-> > subset of a PCI, the DMA requests on behalf of it are all
-> > tagged with a PASID. Since IOMMU supports PASID-granular
-> > translations (scalable mode in VT-d 3.0), this mediated
-> > device could be individually protected and isolated by an
-> > IOMMU.
-> > 
-> > This patch adds a new member in the struct mdev_device to
-> > indicate that the mediated device represented by mdev could
-> > be isolated and protected by attaching a domain to a device
-> > represented by mdev->iommu_device. It also adds a helper to
-> > add or set the iommu device.
-> > 
-> > * mdev_device->iommu_device
-> >   - This, if set, indicates that the mediated device could
-> >     be fully isolated and protected by IOMMU via attaching
-> >     an iommu domain to this device. If empty, it indicates
-> >     using vendor defined isolation, hence bypass IOMMU.
-> > 
-> > * mdev_set/get_iommu_device(dev, iommu_device)
-> >   - Set or get the iommu device which represents this mdev
-> >     in IOMMU's device scope. Drivers don't need to set the
-> >     iommu device if it uses vendor defined isolation.
-> > 
-> > Cc: Ashok Raj <ashok.raj@intel.com>
-> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > Cc: Liu Yi L <yi.l.liu@intel.com>
-> > Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> > Suggested-by: Alex Williamson <alex.williamson@redhat.com>
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> > ---
-> >  drivers/vfio/mdev/mdev_core.c    | 18 ++++++++++++++++++
-> >  drivers/vfio/mdev/mdev_private.h |  1 +
-> >  include/linux/mdev.h             | 14 ++++++++++++++
-> >  3 files changed, 33 insertions(+)
-> > 
-> > diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
-> > index 0212f0ee8aea..9be58d392d2b 100644
-> > --- a/drivers/vfio/mdev/mdev_core.c
-> > +++ b/drivers/vfio/mdev/mdev_core.c
-> > @@ -390,6 +390,24 @@ int mdev_device_remove(struct device *dev, bool force_remove)
-> >  	return 0;
-> >  }
-> >  
-> > +int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
-> > +{
-> > +	struct mdev_device *mdev = to_mdev_device(dev);
-> > +
-> > +	mdev->iommu_device = iommu_device;
-> > +
-> > +	return 0;
-> > +}
-> > +EXPORT_SYMBOL(mdev_set_iommu_device);  
-> 
-> As said before, please make all new mdev/vfio exports EXPORT_SYMBOL_GPL
-> to fit the other exports in vfio.
-
-Well...
-
-$ grep EXPORT_SYMBOL drivers/vfio/mdev/*
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_parent_dev);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_get_drvdata);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_set_drvdata);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_dev);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_from_dev);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_uuid);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_register_device);
-drivers/vfio/mdev/mdev_core.c:EXPORT_SYMBOL(mdev_unregister_device);
-drivers/vfio/mdev/mdev_driver.c:EXPORT_SYMBOL_GPL(mdev_bus_type);
-drivers/vfio/mdev/mdev_driver.c:EXPORT_SYMBOL(mdev_register_driver);
-drivers/vfio/mdev/mdev_driver.c:EXPORT_SYMBOL(mdev_unregister_driver);
-
-For better or worse, the mdev interface does allow non-GPL vendor
-drivers.  This export seems consistent with that, it's a simple
-association allowing the vendor driver to define an IOMMU API backing
-device for an mdev device.  I don't think this association implies
-sufficient operational knowledge to require a GPL symbol and it's been
-requested for use by one of those non-GPL mdev vendor drivers,
-therefore I support this definition.  Thanks,
-
-Alex
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
