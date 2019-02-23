@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 12/65] iommu/amd: Unmap all mapped pages in error path of map_sg
-Date: Sat, 23 Feb 2019 16:05:47 -0500
-Message-ID: <20190223210640.200911-12-sashal@kernel.org>
-References: <20190223210640.200911-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 07/45] iommu/amd: Unmap all mapped pages in error path of map_sg
+Date: Sat, 23 Feb 2019 16:07:57 -0500
+Message-ID: <20190223210835.201708-7-sashal@kernel.org>
+References: <20190223210835.201708-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190223210640.200911-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190223210835.201708-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Jerry Snitselaar <jsnitsel@redhat.com>, Joerg Roedel <joro@8bytes.org>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
@@ -34,10 +34,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 5edc8e6f27114..6459f4f621314 100644
+index 2dc9a71cb54f8..b418a859577ff 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -2548,7 +2548,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+@@ -2553,7 +2553,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
  			bus_addr  = address + s->dma_address + (j << PAGE_SHIFT);
  			iommu_unmap_page(domain, bus_addr, PAGE_SIZE);
  
