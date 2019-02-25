@@ -1,48 +1,58 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Mon, 25 Feb 2019 08:23:39 +0800
-Message-ID: <CANMq1KCfhWdWtXP_PRd_LEEcWV8SQg=hOy4V7_grqtL873uUCg@mail.gmail.com>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
- <20190111102155.in5rctq5krs4ewfi@8bytes.org> <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
- <789fb2e6-0d80-b6de-adf3-57180a50ec3e@suse.cz>
+From: Dave Young <dyoung@redhat.com>
+Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
+ consistent with kaslr
+Date: Mon, 25 Feb 2019 09:53:46 +0800
+Message-ID: <20190225015346.GC1941@dhcp-128-65.nay.redhat.com>
+References: <20190211204816.GB21473@dhcp-128-65.nay.redhat.com>
+ <20190215102458.GD10433@zn.tnic>
+ <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
+ <20190220083241.GA3447@zn.tnic>
+ <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
+ <20190221171321.GD12997@zn.tnic>
+ <20190222021101.GA11654@dhcp-128-65.nay.redhat.com>
+ <20190222084241.GC8380@suse.de>
+ <20190222130026.GA30766@zn.tnic>
+ <CAFgQCTtYJOU=rdpzMaxXxRFAHGkOWYXFD+XiHSHMhGdRFmK+9Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <789fb2e6-0d80-b6de-adf3-57180a50ec3e@suse.cz>
+Content-Disposition: inline
+In-Reply-To: <CAFgQCTtYJOU=rdpzMaxXxRFAHGkOWYXFD+XiHSHMhGdRFmK+9Q@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediate>
+To: Pingfan Liu <kernelfans@gmail.com>
+Cc: Borislav Petkov <bp@alien8.de>, Joerg Roedel <jroedel@suse.de>, Baoquan He <bhe@redhat.com>, Jerry Hoemann <jerry.hoemann@hpe.com>, x86@kernel.org, Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, Yinghai Lu <yinghai@kernel.org>, vgoyal@redhat.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 14, 2019 at 1:12 AM Vlastimil Babka <vbabka@suse.cz> wrote:
->
-> On 1/22/19 11:51 PM, Nicolas Boichat wrote:
-> > Hi Andrew,
+On 02/24/19 at 09:25pm, Pingfan Liu wrote:
+> On Fri, Feb 22, 2019 at 9:00 PM Borislav Petkov <bp@alien8.de> wrote:
 > >
-> > On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
-> >>
-> >> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
-> >> > Does anyone have any further comment on this series? If not, which
-> >> > maintainer is going to pick this up? I assume Andrew Morton?
-> >>
-> >> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
-> >> this should go through mm.
+> > On Fri, Feb 22, 2019 at 09:42:41AM +0100, Joerg Roedel wrote:
+> > > The current default of 256MB was found by experiments on a bigger
+> > > number of machines, to create a reasonable default that is at least
+> > > likely to be sufficient of an average machine.
 > >
-> > Gentle ping on this series, it seems like it's better if it goes
-> > through your tree.
+> > Exactly, and this is what makes sense.
 > >
-> > Series still applies cleanly on linux-next, but I'm happy to resend if
-> > that helps.
->
-> Ping, Andrew?
+> > The code should try the requested reservation and if it fails, it should
+> > try high allocation with default swiotlb size because we need to reserve
+> > *some* range.
+> >
+> > If that reservation succeeds, we should say something along the lines of
+> >
+> > "... requested range failed, reserved <X> range instead."
+> >
+> Maybe I misunderstood you, but does "requested range failed" mean that
+> user specify the range? If yes, then it should be the duty of user as
+> you said later, not the duty of kernel"
 
-Another gentle ping, I still don't see these patches in mmot[ms]. Thanks.
+If you go with the changes in your current patch it is needed to say
+something like:
+"crashkernel: can not find free memory under 4G, reserve XM@.. instead" 
 
-> > Thanks!
-> >
-> >> Regards,
-> >>
-> >>         Joerg
-> >
->
+Also need to print the reserved low memory area in case ,high being used.
+
+But for 896M -> 4G, the 896M faulure is not necessary to show in dmesg,
+it is some in kernel logic.
+
+Thanks
+Dave
