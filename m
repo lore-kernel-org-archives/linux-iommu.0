@@ -1,75 +1,46 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Check identity map for hot-added devices
-Date: Mon, 25 Feb 2019 10:46:36 +0800
-Message-ID: <20190225024636.32418-1-baolu.lu@linux.intel.com>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: joro@8bytes.org, dwmw2@infradead.org
-Cc: ashok.raj@intel.com, jacob.jun.pan@linux.intel.com, jisben@google.com, xmdong@google.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>, stable@vger.kernel.org
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
+ consistent with kaslr
+Date: Mon, 25 Feb 2019 10:39:51 +0100
+Message-ID: <20190225093950.GB26145@zn.tnic>
+References: <20190211204816.GB21473@dhcp-128-65.nay.redhat.com>
+ <20190215102458.GD10433@zn.tnic>
+ <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
+ <20190220083241.GA3447@zn.tnic>
+ <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
+ <20190221171321.GD12997@zn.tnic>
+ <20190222021101.GA11654@dhcp-128-65.nay.redhat.com>
+ <20190222084241.GC8380@suse.de>
+ <20190222130026.GA30766@zn.tnic>
+ <CAFgQCTtYJOU=rdpzMaxXxRFAHGkOWYXFD+XiHSHMhGdRFmK+9Q@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAFgQCTtYJOU=rdpzMaxXxRFAHGkOWYXFD+XiHSHMhGdRFmK+9Q@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Pingfan Liu <kernelfans@gmail.com>
+Cc: Joerg Roedel <jroedel@suse.de>, Dave Young <dyoung@redhat.com>, Baoquan He <bhe@redhat.com>, Jerry Hoemann <jerry.hoemann@hpe.com>, x86@kernel.org, Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, Yinghai Lu <yinghai@kernel.org>, vgoyal@redhat.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-The Intel IOMMU driver will put devices into a static identity
-mapped domain during boot if the kernel parameter "iommu=pt" is
-used. That means the IOMMU hardware will translate a DMA address
-into the same memory address.
+On Sun, Feb 24, 2019 at 09:25:18PM +0800, Pingfan Liu wrote:
+> Maybe I misunderstood you, but does "requested range failed" mean that
+> user specify the range? If yes, then it should be the duty of user as
+> you said later, not the duty of kernel"
 
-Unfortunately, hot-added devices are not subject to this. That
-results in some devices not working properly after hot added. A
-quick way to reproduce this issue is to boot a system with
+No, it should say that it selected a different range only when the user
+didn't specify it. Which would mean that the user didn't care about the
+range - she/he only wanted to have *any* crashkernel range reserved.
+I.e., crashkernel=X invocation.
 
-    iommu=pt
+> We do not know the memory layout of a system, maybe a system with
+> memory less than 4GB. So it is better to try all the range of system
+> memory.
 
-and, remove then readd the pci device with
+Ok. If 4G fails, you set high and then try again.
 
-    echo 1 > /sys/bus/pci/devices/[pci_source_id]/remove
-    echo 1 > /sys/bus/pci/rescan
-
-You will find the identity mapped domain was replaced with a
-normal domain.
-
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>
-Cc: stable@vger.kernel.org
-Reported-by: Jis Ben <jisben@google.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Tested-by: James Dong <xmdong@google.com>
----
- drivers/iommu/intel-iommu.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index af23cfc2a05e..4f77657a9c25 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4564,16 +4564,19 @@ static int device_notifier(struct notifier_block *nb,
- 	if (iommu_dummy(dev))
- 		return 0;
- 
--	if (action != BUS_NOTIFY_REMOVED_DEVICE)
--		return 0;
--
--	domain = find_domain(dev);
--	if (!domain)
--		return 0;
-+	if (action == BUS_NOTIFY_REMOVED_DEVICE) {
-+		domain = find_domain(dev);
-+		if (!domain)
-+			return 0;
- 
--	dmar_remove_one_dev_info(dev);
--	if (!domain_type_is_vm_or_si(domain) && list_empty(&domain->devices))
--		domain_exit(domain);
-+		dmar_remove_one_dev_info(dev);
-+		if (!domain_type_is_vm_or_si(domain) &&
-+		    list_empty(&domain->devices))
-+			domain_exit(domain);
-+	} else if (action == BUS_NOTIFY_ADD_DEVICE) {
-+		if (iommu_should_identity_map(dev, 1))
-+			domain_add_dev_info(si_domain, dev);
-+	}
- 
- 	return 0;
- }
 -- 
-2.17.1
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
