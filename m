@@ -1,112 +1,94 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 19/22] vfio-pci: Register an iommu fault handler
-Date: Mon, 25 Feb 2019 18:30:45 +0100
-Message-ID: <6e33eab2-2afe-29e5-1c9a-3b8343cdc8ac@redhat.com>
-References: <20190218135504.25048-1-eric.auger@redhat.com>
- <20190218135504.25048-20-eric.auger@redhat.com>
- <20190225142209.GC23257@debian>
+From: Tomasz Nowicki <tnowicki-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
+Date: Mon, 25 Feb 2019 13:20:22 +0000
+Message-ID: <MN2PR18MB3053C27D1DD855315DCBF4CBD27A0@MN2PR18MB3053.namprd18.prod.outlook.com>
+References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190225142209.GC23257@debian>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Vincent_Stehl=c3=a9?= <vincent.stehle@arm.com>
-Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vincent,
+Hi Jean,
 
-On 2/25/19 3:22 PM, Vincent Stehlé wrote:
-> Hi Eric,
+On 15.01.2019 13:19, Jean-Philippe Brucker wrote:
+> Implement the virtio-iommu driver, following specification v0.9 [1].
 > 
-> On Mon, Feb 18, 2019 at 02:55:00PM +0100, Eric Auger wrote:
->> This patch registers a fault handler which records faults in
->> a circular buffer and then signals an eventfd. This buffer is
->> exposed within the fault region.
->>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->> ---
->>  drivers/vfio/pci/vfio_pci.c         | 49 +++++++++++++++++++++++++++++
->>  drivers/vfio/pci/vfio_pci_private.h |  1 +
->>  2 files changed, 50 insertions(+)
->>
->> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
->> index aaf63e5ca2b6..019c9fd380a5 100644
->> --- a/drivers/vfio/pci/vfio_pci.c
->> +++ b/drivers/vfio/pci/vfio_pci.c
-> (..)
->>  static int vfio_pci_init_fault_region(struct vfio_pci_device *vdev)
->>  {
->>  	struct vfio_region_fault_prod *header;
->> @@ -276,6 +317,13 @@ static int vfio_pci_init_fault_region(struct vfio_pci_device *vdev)
->>  	header = (struct vfio_region_fault_prod *)vdev->fault_pages;
->>  	header->version = -1;
->>  	header->offset = PAGE_SIZE;
->> +
->> +	ret = iommu_register_device_fault_handler(&vdev->pdev->dev,
->> +					vfio_pci_iommu_dev_fault_handler,
->> +					vdev);
->> +	if (ret)
->> +		goto out;
->> +
->>  	return 0;
->>  out:
->>  	kfree(vdev->fault_pages);
+> This is a simple rebase onto Linux v5.0-rc2. We now use the
+> dev_iommu_fwspec_get() helper introduced in v5.0 instead of accessing
+> dev->iommu_fwspec, but there aren't any functional change from v6 [2].
 > 
-> This patch calls iommu_register_device_fault_handler from
-> vfio_pci_init_fault_region, leading to the following call stack:
+> Our current goal for virtio-iommu is to get a paravirtual IOMMU working
+> on Arm, and enable device assignment to guest userspace. In this
+> use-case the mappings are static, and don't require optimal performance,
+> so this series tries to keep things simple. However there is plenty more
+> to do for features and optimizations, and having this base in v5.1 would
+> be good. Given that most of the changes are to drivers/iommu, I believe
+> the driver and future changes should go via the IOMMU tree.
 > 
-> iommu_register_device_fault_handler
-> vfio_pci_init_fault_region
-> vfio_pci_enable
-> vfio_pci_open
-> vfio_group_get_device_fd
+> You can find Linux driver and kvmtool device on v0.9.2 branches [3],
+> module and x86 support on virtio-iommu/devel. Also tested with Eric's
+> QEMU device [4]. Please note that the series depends on Robin's
+> probe-deferral fix [5], which will hopefully land in v5.0.
 > 
->> @@ -1420,6 +1468,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
->>  	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
->>  	kfree(vdev->region);
->>  	kfree(vdev->fault_pages);
->> +	iommu_unregister_device_fault_handler(&pdev->dev);
->>  	mutex_destroy(&vdev->ioeventfds_lock);
->>  	kfree(vdev);
+> [1] Virtio-iommu specification v0.9, sources and pdf
+>      git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+>      http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
 > 
-> And then this patch calls iommu_unregister_device_fault_handler from
-> vfio_pci_remove, and not from vfio_pci_release.
+> [2] [PATCH v6 0/7] Add virtio-iommu driver
+>      https://lists.linuxfoundation.org/pipermail/iommu/2018-December/032127.html
+> 
+> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.2
+>      git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9.2
+> 
+> [4] [RFC v9 00/17] VIRTIO-IOMMU device
+>      https://www.mail-archive.com/qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org/msg575578.html
+> 
+> [5] [PATCH] iommu/of: Fix probe-deferral
+>      https://www.spinics.net/lists/arm-kernel/msg698371.html
+> 
+> Jean-Philippe Brucker (7):
+>    dt-bindings: virtio-mmio: Add IOMMU description
+>    dt-bindings: virtio: Add virtio-pci-iommu node
+>    of: Allow the iommu-map property to omit untranslated devices
+>    PCI: OF: Initialize dev->fwnode appropriately
+>    iommu: Add virtio-iommu driver
+>    iommu/virtio: Add probe request
+>    iommu/virtio: Add event queue
+> 
+>   .../devicetree/bindings/virtio/iommu.txt      |   66 +
+>   .../devicetree/bindings/virtio/mmio.txt       |   30 +
+>   MAINTAINERS                                   |    7 +
+>   drivers/iommu/Kconfig                         |   11 +
+>   drivers/iommu/Makefile                        |    1 +
+>   drivers/iommu/virtio-iommu.c                  | 1158 +++++++++++++++++
+>   drivers/of/base.c                             |   10 +-
+>   drivers/pci/of.c                              |    7 +
+>   include/uapi/linux/virtio_ids.h               |    1 +
+>   include/uapi/linux/virtio_iommu.h             |  161 +++
+>   10 files changed, 1449 insertions(+), 3 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+>   create mode 100644 drivers/iommu/virtio-iommu.c
+>   create mode 100644 include/uapi/linux/virtio_iommu.h
+> 
 
-Yes you're fully right. Thank you for the time spent debugging the
-issue. this is a left-over from the previous version and indeed the
-unregistration should be called from the release ops.
+I have tested the whole series and Eric's QEMU patchset [4] for 
+virtio-net-pci and virtio-blk-pci devices and faced no issues on 
+ThunderX2. The multiqueue mode for both devices is working fine too so:
 
-By the way, I will package a qemu version for testing this week. Sorry
-for the delay.
+Tested-by: Tomasz Nowicki <tnowicki-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
 
-Thanks
-
-Eric
-> 
-> I think this means a device cannot be used twice in a row without unloading the
-> module.
-> 
-> Here is an example sequence:
-> 
-> 1. modprobe vfio-pci
-> 2. Userspace uses VFIO, calls ioctl(VFIO_GROUP_GET_DEVICE_FD)
->     2.1. iommu_register_device_fault_handler is called
-> 3. Userspace exits
->     3.1. vfio_pci_release is called,
->          but iommu_unregister_device_fault_handler is not called
-> 4. Userspace uses VFIO agin, calls ioctl(VFIO_GROUP_GET_DEVICE_FD) again
->     4.1. iommu_register_device_fault_handler is called again,
->          notices a fault handler is already there,
->          returns -EBUSY
-> 
-> Unloading the vfio-pci module will call vfio_pci_remove.
-> 
-> Maybe iommu_unregister_device_fault_handler should be called from
-> vfio_pci_release instead of vfio_pci_remove?
-> 
-> Best regards,
-> Vincent.
-> 
+Thanks,
+Tomasz
