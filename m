@@ -1,55 +1,60 @@
-From: Michael Kelley <mikelley@microsoft.com>
-Subject: RE: [PATCH V5 0/3] x86/Hyper-V/IOMMU: Add Hyper-V IOMMU driver to
- support x2apic mode
-Date: Mon, 25 Feb 2019 20:51:22 +0000
-Message-ID: <DM5PR2101MB0918EF12A3B75142EC54D754D77A0@DM5PR2101MB0918.namprd21.prod.outlook.com>
-References: <1550837545-10760-1-git-send-email-Tianyu.Lan@microsoft.com>
+From: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH 02/13] driver core: Remove the link if there is no driver
+ with AUTO flag
+Date: Mon, 25 Feb 2019 15:53:44 -0800
+Message-ID: <CAE=gft7mWs1jc+KQQcPuuhcmxpFRnRBTt35+uC3F20N6R554bQ@mail.gmail.com>
+References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
+ <1546318276-18993-3-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1550837545-10760-1-git-send-email-Tianyu.Lan@microsoft.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>
-Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>, "davem@davemloft.net" <davem@davemloft.net>, "devel@linuxdriverproject.org" <devel@linuxdriverproject.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Haiyang Zhang <haiyangz@microsoft.com>, "hpa@zytor.com" <hpa@zytor.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, KY Srinivasan <kys@microsoft.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "mingo@redhat.com" <mingo@redhat.com>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "sashal@kernel.org" <sashal@kernel.org>, Stephen Hemminger <sthemmin@microsoft.com>, tglx@linutronix.de
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1546318276-18993-3-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com> Sent: Friday, February 22, 2019=
- 4:12 AM
->=20
-> On the bare metal, enabling X2APIC mode requires interrupt remapping
-> function which helps to deliver irq to cpu with 32-bit APIC ID.
-> Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
-> MSI protocol already supports to deliver interrupt to the CPU whose
-> virtual processor index is more than 255. IO-APIC interrupt still has
-> 8-bit APIC ID limitation.
->=20
-> This patchset is to add Hyper-V stub IOMMU driver in order to enable
-> X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2API=
-C
-> interrupt remapping capability when X2APIC mode is available. X2APIC
-> destination mode is set to physical by PATCH 1 when X2APIC is available.
-> Hyper-V IOMMU driver will scan cpu 0~255 and set cpu into IO-APIC MAX cpu
-> affinity cpumask if its APIC ID is 8-bit. Driver creates a Hyper-V irq do=
-main
-> to limit IO-APIC interrupts' affinity and make sure cpus assigned with IO=
--APIC
-> interrupt are in the scope of IO-APIC MAX cpu affinity.
->=20
-> Lan Tianyu (3):
->   x86/Hyper-V: Set x2apic destination mode to physical when x2apic is
->      available
->   HYPERV/IOMMU: Add Hyper-V stub IOMMU driver
->   MAINTAINERS: Add Hyper-V IOMMU driver into Hyper-V CORE AND DRIVERS
->     scope
->=20
+On Mon, Dec 31, 2018 at 8:52 PM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+>
+> DL_FLAG_AUTOREMOVE_CONSUMER/SUPPLIER means "Remove the link
+> automatically on consumer/supplier driver unbind", that means we should
+> remove whole the device_link when there is no this driver no matter what
+> the ref_count of the link is.
+>
+> CC: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+> The ref_count of our device_link normally is over 1. When the consumer
+> device driver is removed, whole the device_link should be removed.
+> Thus, I add this patch.
+> ---
 
-Joerg -- What's your take on this patch set now that it has settled down?  =
-If
-you are good with it, from the Microsoft standpoint we're hoping that it
-can get into linux-next this week (given the extra week due to 5.0-rc8).
+I will admit to reading about device links for the first time while
+reviewing this patch, but I don't really get this. Why use a kref at
+all if we're just going to ignore its value? For instance, I see that
+if you call device_link_add() with the same supplier and consumer, it
+uses the kref to return the same link. That machinery is broken with
+your change. Although I don't see any uses of it, you might also
+expect a supplier or consumer could do a kref_get() on the link it got
+back from device_link_add(), and have a reasonable expectation that
+the link wouldn't be freed out from under it. This would also be
+broken.
 
-Thanks,
+Can you explain why your device_links normally have a reference count
+>1, and why those additional references can't be cleaned up in an
+orderly fashion?
 
-Michael Kelley
+(To be honest, I don't really understand the case for the AUTOREMOVE
+flags at all. Is there some case where the party that set up the link
+can't tear it down? Or is this a way to devm_ify the link, where devm
+itself doesn't work because the links themselves stall out that
+mechanism?)
