@@ -1,62 +1,49 @@
-From: Dave Young <dyoung@redhat.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
  consistent with kaslr
-Date: Mon, 25 Feb 2019 19:12:16 +0800
-Message-ID: <20190225111216.GA9276@dhcp-128-65.nay.redhat.com>
-References: <20190211204816.GB21473@dhcp-128-65.nay.redhat.com>
- <20190215102458.GD10433@zn.tnic>
+Date: Mon, 25 Feb 2019 12:30:03 +0100
+Message-ID: <20190225113003.GE26145@zn.tnic>
+References: <20190215102458.GD10433@zn.tnic>
  <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
  <20190220083241.GA3447@zn.tnic>
  <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
  <20190221171321.GD12997@zn.tnic>
  <20190222021101.GA11654@dhcp-128-65.nay.redhat.com>
- <20190222084241.GC8380@suse.de>
- <20190222130026.GA30766@zn.tnic>
+ <20190222084241.GC8380@suse.de> <20190222130026.GA30766@zn.tnic>
  <20190225110043.GA5884@suse.de>
+ <20190225111216.GA9276@dhcp-128-65.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190225110043.GA5884@suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <jroedel@suse.de>
-Cc: Borislav Petkov <bp@alien8.de>, bhe@redhat.com, Jerry Hoemann <jerry.hoemann@hpe.com>, x86@kernel.org, Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, Pingfan Liu <kernelfans@gmail.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, yinghai@kernel.org, vgoyal@redhat.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com
+In-Reply-To: <20190225111216.GA9276-0VdLhd/A9Pl+NNSt+8eSiB/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/kexec/>
+List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
+ <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jerry Hoemann <jerry.hoemann-ZPxbGqLxI0U@public.gmane.org>, Pingfan Liu <kernelfans-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/25/19 at 12:00pm, Joerg Roedel wrote:
-> On Fri, Feb 22, 2019 at 02:00:26PM +0100, Borislav Petkov wrote:
-> > On Fri, Feb 22, 2019 at 09:42:41AM +0100, Joerg Roedel wrote:
-> > > The current default of 256MB was found by experiments on a bigger
-> > > number of machines, to create a reasonable default that is at least
-> > > likely to be sufficient of an average machine.
-> > 
-> > Exactly, and this is what makes sense.
-> > 
-> > The code should try the requested reservation and if it fails, it should
-> > try high allocation with default swiotlb size because we need to reserve
-> > *some* range.
-> 
-> Right, makes sense. While at it, maybe it is time to move the default
-> allocation policy to 'high' again. The change was reverted six years ago
-> because it broke old kexec tools, but those are probably out-of-service
-> now. I think this change would make the whole crashdump allocation
-> process less fragile.
+On Mon, Feb 25, 2019 at 07:12:16PM +0800, Dave Young wrote:
+> If we move to high as default, it will allocate 160M high + 256M low. It
 
-One concern about this is for average cases, one do not need so much
-memory for kdump.  For example in RHEL we use crashkernel=auto to
-automatically reserve kdump kernel memory, and for x86 the reserved size
-is like below now:
-1G-64G:160M,64G-1T:256M,1T-:512M
+We won't move to high by default - we will *fall* back to high if the
+default allocation fails.
 
-That means for a machine with less than 64G memory we only allocate
-160M, it works for most machines in our lab.
+> To make the process less fragile maybe we can remove the 896M limitation
+> and only try <4G then go to high.
 
-If we move to high as default, it will allocate 160M high + 256M low. It
-is too much for people who is good with the default 160M.  Especially
-for virtual machine with less memory (but > 4G)
+Sure, the more robust for the user, the better.
 
-To make the process less fragile maybe we can remove the 896M limitation
-and only try <4G then go to high.
+-- 
+Regards/Gruss,
+    Boris.
 
-Thanks
-Dave
+Good mailing practices for 400: avoid top-posting and trim the reply.
