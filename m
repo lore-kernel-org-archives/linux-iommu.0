@@ -1,49 +1,48 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
- consistent with kaslr
-Date: Mon, 25 Feb 2019 12:30:03 +0100
-Message-ID: <20190225113003.GE26145@zn.tnic>
-References: <20190215102458.GD10433@zn.tnic>
- <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
- <20190220083241.GA3447@zn.tnic>
- <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
- <20190221171321.GD12997@zn.tnic>
- <20190222021101.GA11654@dhcp-128-65.nay.redhat.com>
- <20190222084241.GC8380@suse.de> <20190222130026.GA30766@zn.tnic>
- <20190225110043.GA5884@suse.de>
- <20190225111216.GA9276@dhcp-128-65.nay.redhat.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: remove block layer bounce buffering for MMC v2
+Date: Mon, 25 Feb 2019 14:54:13 +0100
+Message-ID: <CAPDyKFr6gDYttazFJJzyFm04qiy=9oQAeW9a-cFxHE1vP+DhLA@mail.gmail.com>
+References: <20190212072528.13167-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20190225111216.GA9276-0VdLhd/A9Pl+NNSt+8eSiB/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/kexec>,
- <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/kexec/>
-List-Post: <mailto:kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/kexec>,
- <mailto:kexec-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "kexec" <kexec-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: kexec-bounces+glkk-kexec=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jerry Hoemann <jerry.hoemann-ZPxbGqLxI0U@public.gmane.org>, Pingfan Liu <kernelfans-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, vgoyal-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190212072528.13167-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Russell King <linux@armlinux.org.uk>, Nicolas Pitre <nico@fluxnic.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 25, 2019 at 07:12:16PM +0800, Dave Young wrote:
-> If we move to high as default, it will allocate 160M high + 256M low. It
+On Tue, 12 Feb 2019 at 08:25, Christoph Hellwig <hch@lst.de> wrote:
+>
+> Hi everyone,
+>
+> this series converts the remaining MMC host drivers to properly kmap the
+> scatterlist entries it does PIO operations on, and then goes on to
+> remove the usage of block layer bounce buffering (which I plan to remove
+> eventually) from the MMC layer.
+>
+> As a bonus I've converted various drivers to the proper scatterlist
+> helpers so that at least in theory they are ready for chained
+> scatterlists.
+>
+> All the changes are compile tested only as I don't have any of the
+> hardware, so a careful review would be appreciated.
+>
+> Changes since v1:
+>  - fix a missing kunmap_atomic in mvsdio
+>  - fix a stray whitespace in s3cmci
+>  - add new sg_kmap_atomic and sg_kunmap_atomic helpers
+>  - set the DMA and block layer dma boundary
+>  - use pointer arithmetics to reduce the amount of changes in
+>    various drivers
+>
 
-We won't move to high by default - we will *fall* back to high if the
-default allocation fails.
+This looks good to me, however the lack of feedback/tests worries me a
+bit. So, unless you think it's a bad idea, I intend to apply this when
+v5.1 rc1 is out, which allows a lengthy test period in linux-next.
 
-> To make the process less fragile maybe we can remove the 896M limitation
-> and only try <4G then go to high.
+Make sense?
 
-Sure, the more robust for the user, the better.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+Kind regards
+Uffe
