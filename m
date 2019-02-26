@@ -1,51 +1,80 @@
-From: Hanjun Guo <guohanjun@huawei.com>
-Subject: Re: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as
- non-strict
-Date: Tue, 26 Feb 2019 20:36:14 +0800
-Message-ID: <dc06dfd0-0ab6-6f0b-64c6-2587a2a55798@huawei.com>
-References: <20190131135211.6732-1-thunder.leizhen@huawei.com>
- <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 1/1] iommu: Bind process address spaces to devices
+Date: Tue, 26 Feb 2019 12:49:15 +0000
+Message-ID: <559a7ef6-8591-3936-b208-3bbae555a15a@arm.com>
+References: <20190220142759.33308-1-jean-philippe.brucker@arm.com>
+ <20190220142759.33308-2-jean-philippe.brucker@arm.com>
+ <20190226111743.GK20740@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
+In-Reply-To: <20190226111743.GK20740@8bytes.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Zhen Lei <thunder.leizhen@huawei.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>, Linuxarm <linuxarm@huawei.com>, "Chengchuanning (Hisi-Turing)" <chengchuanning@hisilicon.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: kevin.tian@intel.com, alex.williamson@redhat.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, christian.koenig@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
-
-On 2019/1/31 22:55, Jean-Philippe Brucker wrote:
-> Hi,
+On 26/02/2019 11:17, Joerg Roedel wrote:
+> Hi Jean-Philippe,
 > 
-> On 31/01/2019 13:52, Zhen Lei wrote:
->> Currently, many peripherals are faster than before. For example, the top
->> speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
->> when iommu page-table mapping enabled, it's hard to reach the top speed
->> in strict mode, because of frequently map and unmap operations. In order
->> to keep abreast of the times, I think it's better to set non-strict as
->> default.
+> Thanks for the patch! I think this is getting close to be applied after
+> the next merge window.
 > 
-> Most users won't be aware of this relaxation and will have their system
-> vulnerable to e.g. thunderbolt hotplug. See for example 4.3 Deferred
-> Invalidation in
-> http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2018/MSC/MSC-2018-21.pdf
+> On Wed, Feb 20, 2019 at 02:27:59PM +0000, Jean-Philippe Brucker wrote:
+>> +int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
+>> +			  iommu_mm_exit_handler_t mm_exit, void *drvdata)
 > 
-> Why not keep the policy to secure by default, as we do for
-> iommu.passthrough? And maybe add something similar to
-> CONFIG_IOMMU_DEFAULT_PASSTRHOUGH? It's easy enough for experts to pass a
-> command-line argument or change the default config.
+> I think we are better of with introducing a sva-bind handle which can be
+> used to extend and further configure the binding done with this
+> function.
+> 
+> How about a 'struct iommu_sva' with an iommu-private definition that is
+> returned by this function:
+> 
+> 	struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+> 						struct mm_struct *mm);
+> 
+> and the corresponding unbind function:
+> 
+> 	int iommu_sva_unbind_device(struct iommu_sva* *handle);
+> 
+> (Btw, does this need to return and int? Can unbinding fail?).
 
-Sorry for the late reply, it was Chinese new year, and we had a long discussion
-internally, we are fine to add a Kconfig but not sure OS vendors will set it
-to default y.
+With the pasid-based interface, unbind would have failed if the mm had
+exited before the device driver called unbind (and with invalid
+parameters). But even then returning an error is only useful for debug,
+since callers usually can't handle or propagate release errors.
 
-OS vendors seems not happy to pass a command-line argument, to be honest,
-this is our motivation to enable non-strict as default. Hope OS vendors
-can see this email thread, and give some input here.
+> With that in place we can implement and extentable API base on the
+> handle:
+> 
+> 	int iommu_sva_get_pasid(struct iommu_sva *handle);
+> 	void iommu_sva_set_exit_handler(struct iommu_sva *handle,
+> 					iommu_mm_exit_handler_t mm_exit);
 
-Thanks
-Hanjun
+Ok sounds good. It doesn't look like this interface requires a lot of
+changes on my side (iommu_sva corresponds to the iommu_bond structure
+I've been using internally) but I might find problems while implementing it.
+
+> I think at least the AMD IOMMU driver needs more call-backs like a
+> handler that is invoked when a fault can not be resolved. And there
+> might be others in the future, putting them all in the parameter list of
+> the bind function doesn't scale well.
+
+Device drivers will also want to have some private data to easily
+identify the faulting or exiting context. How about:
+
+    struct iommu_sva_ops {
+        void (*mm_exit)(struct iommu_sva *handle, void *drvdata);
+    };
+    int iommu_sva_set_ops(struct iommu_sva *handle,
+                          const struct iommu_sva_ops *ops,
+                          void *drvdata);
+
+I now think that device driver should always call unbind() to release
+the iommu_sva handle, even if they got notified by mm_exit.
+
+Thanks,
+Jean
