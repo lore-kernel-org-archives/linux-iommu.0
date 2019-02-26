@@ -1,56 +1,70 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH] iommu: Add a quirk for ARM Mali midgard MMU
-Date: Tue, 26 Feb 2019 14:05:09 -0600
-Message-ID: <CAL_JsqJ857qSQTQ9WFCrPQxNsZ=6uB-PPwCY7cXmkcsP2NA=YQ@mail.gmail.com>
-References: <20190226181716.14556-1-robh@kernel.org>
- <efd64b34-a05e-1d34-c974-280e0da4807b@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <efd64b34-a05e-1d34-c974-280e0da4807b@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will.deacon@arm.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: [PATCH] Revert "dma-contiguous: do not allocate a single page from CMA area"
+Date: Tue, 26 Feb 2019 12:23:27 -0800
+Message-ID: <20190226202327.5349-1-nicoleotsuka@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, tony@atomide.com
+Cc: vdumpa@nvidia.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, tomi.valkeinen@ti.com, laurent.pinchart@ideasonboard.com, sre@kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, dri-devel@lists.freedesktop.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 26, 2019 at 1:25 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Hi Rob,
->
-> On 26/02/2019 18:17, Rob Herring wrote:
-> > ARM Mali midgard GPUs have a few differences from standard 64-bit
-> > stage 1 page tables.
-> >
-> > The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
-> >
-> > The access flags are not read-only and unprivileged, but read and write.
-> > This is similar to stage 2 entries, but the memory attributes field matches
-> > stage 1 being an index.
-> >
-> > The nG bit is also not set by the vendor driver, but that one doesn't
-> > seem to matter.
-> >
-> > Add a quirk to handle all of these differences.
->
->  From the look of these changes, this isn't a quirk but a distinct
-> format. AFAICS from the mali_kbase driver, this must be "LPAE mode"
-> rather than "AArch64 mode", so it seems unlikely that it really supports
-> the full VMSAv8 gamut of granules, address sizes, and page sizes that
-> this patch will happily let through.
+This reverts commit d222e42e88168fd67e6d131984b86477af1fc256.
 
-Right, but the page size bitmap and the in and out address sizes in
-the config struct should be enough to restrict those.
+The original change breaks omap dss:
+    omapdss_dispc 58001000.dispc:
+        dispc_errata_i734_wa_init: dma_alloc_writecombine failed
 
-What do you propose? Add another init function which hardcodes all
-those or add some checks of allowed settings?
+Let's revert it first and then find a safer solution instead.
 
-Rob
+Reported-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+Tony,
+	
+Would you please test and verify? Thanks!
+
+ kernel/dma/contiguous.c | 22 +++-------------------
+ 1 file changed, 3 insertions(+), 19 deletions(-)
+
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 09074bd04793..b2a87905846d 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -186,32 +186,16 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+  *
+  * This function allocates memory buffer for specified device. It uses
+  * device specific contiguous memory area if available or the default
+- * global one.
+- *
+- * However, it skips one-page size of allocations from the global area.
+- * As the addresses within one page are always contiguous, so there is
+- * no need to waste CMA pages for that kind; it also helps reduce the
+- * fragmentations in the CMA area. So a caller should be the rebounder
+- * in such case to allocate a normal page upon NULL return value.
+- *
+- * Requires architecture specific dev_get_cma_area() helper function.
++ * global one. Requires architecture specific dev_get_cma_area() helper
++ * function.
+  */
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+ 				       unsigned int align, bool no_warn)
+ {
+-	struct cma *cma;
+-
+ 	if (align > CONFIG_CMA_ALIGNMENT)
+ 		align = CONFIG_CMA_ALIGNMENT;
+ 
+-	if (dev && dev->cma_area)
+-		cma = dev->cma_area;
+-	else if (count > 1)
+-		cma = dma_contiguous_default_area;
+-	else
+-		return NULL;
+-
+-	return cma_alloc(cma, count, align, no_warn);
++	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
+ }
+ 
+ /**
+-- 
+2.17.1
