@@ -1,27 +1,37 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 0/2] Add page alignment check in Intel IOMMU.
-Date: Tue, 26 Feb 2019 11:08:25 +0100
-Message-ID: <20190226100825.GC20740@8bytes.org>
-References: <cover.1550602392.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: Re: [PATCH 0/3] iommu: Kerneldoc improvements
+Date: Tue, 26 Feb 2019 11:10:55 +0100
+Message-ID: <20190226101055.GD20740@8bytes.org>
+References: <20190220130053.784-1-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1550602392.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20190220130053.784-1-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
-To: sathyanarayanan.kuppuswamy@linux.intel.com
-Cc: bhelgaas@google.com, dwmw2@infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, ashok.raj@intel.com, jacob.jun.pan@intel.com, keith.busch@intel.com
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Dmitry Osipenko <digetx@gmail.com>, Baoquan He <bhe@redhat.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 19, 2019 at 11:06:08AM -0800, sathyanarayanan.kuppuswamy@linux.intel.com wrote:
-> Kuppuswamy Sathyanarayanan (2):
->   PCI/ATS: Add pci_ats_page_aligned() interface
->   iommu/vt-d: Enable ATS only if the device uses page aligned address.
-> 
->  drivers/iommu/intel-iommu.c   |  1 +
->  drivers/pci/ats.c             | 27 +++++++++++++++++++++++++++
->  include/linux/pci.h           |  2 ++
->  include/uapi/linux/pci_regs.h |  1 +
->  4 files changed, 31 insertions(+)
+Hi Geert,
 
-Applied, thanks.
+On Wed, Feb 20, 2019 at 02:00:50PM +0100, Geert Uytterhoeven wrote:
+> This series contains a fix for an incorrect kerneldoc parameter, and
+> adds the missing kerneldoc for two recently added IOMMU methods.
+> 
+> Thanks!
+> 
+> Geert Uytterhoeven (3):
+>   iommu: Fix kerneldoc for iommu_ops.flush_iotlb_all()
+>   iommu: Document iommu_ops.iotlb_sync_map()
+>   iommu: Document iommu_ops.is_attach_deferred()
+> 
+>  include/linux/iommu.h | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+
+Applied patches 2 and 3, I already have a change similar to patch 1 in
+the tree.
+
+Thanks,
+
+	Joerg
