@@ -1,56 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/1] iommu: Bind process address spaces to devices
-Date: Tue, 26 Feb 2019 12:17:43 +0100
-Message-ID: <20190226111743.GK20740@8bytes.org>
-References: <20190220142759.33308-1-jean-philippe.brucker@arm.com>
- <20190220142759.33308-2-jean-philippe.brucker@arm.com>
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: Re: MT76x2U crashes XHCI driver on AMD Ryzen system
+Date: Tue, 26 Feb 2019 12:24:08 +0100
+Message-ID: <20190226112407.GB2989@redhat.com>
+References: <1547404075.1582.0@smtp.gmail.com>
+ <CAJ0CqmU7k5i26g7dGPxNdts7Gm67W6qNsr4vYuW05ugsEF1ohw@mail.gmail.com>
+ <CAKxU2N-+CTaRdJMFVRdozJ5TTpN+_4thiDRBJBFq8gGtuRVYvA@mail.gmail.com>
+ <20190114091841.GA23045@localhost.localdomain>
+ <CAKxU2N8ioMszBCyQcH7CVhgBdW4aj7yZ+kYQe14DCV5OSAnxrg@mail.gmail.com>
+ <20190115090400.GA2267@localhost.localdomain>
+ <20190218143742.GA11872@redhat.com>
+ <20190226100535.GA20740@8bytes.org>
+ <20190226103450.GA2989@redhat.com>
+ <20190226104413.GH20740@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190220142759.33308-2-jean-philippe.brucker@arm.com>
+In-Reply-To: <20190226104413.GH20740@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, christian.koenig@amd.com, kevin.tian@intel.com, jacob.jun.pan@linux.intel.com, ashok.raj@intel.com, baolu.lu@linux.intel.com, alex.williamson@redhat.com
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, Rosen Penev <rosenp@gmail.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
+On Tue, Feb 26, 2019 at 11:44:13AM +0100, Joerg Roedel wrote:
+> On Tue, Feb 26, 2019 at 11:34:51AM +0100, Stanislaw Gruszka wrote:
+> > On Tue, Feb 26, 2019 at 11:05:36AM +0100, Joerg Roedel wrote:
+> > If sg->offset > PAGE_SIZE is fine then most likely we have problem with
+> > alignment.
+> 
+> The map_sg implementation in the AMD IOMMU driver uses sg_phys() which
+> handles the sg->page + sg->offset calculation fine.
+> 
+> > Note hat issue is with dma_map_sg(), switching to dma_map_single()
+> > by using urb->transfer_buffer instead of urb->sg make things work
+> > on AMD IOMMU.
+> 
+> On the other hand this points to a bug in the driver, I'll look further
+> if I can spot something there.
 
-Thanks for the patch! I think this is getting close to be applied after
-the next merge window.
+I think so too. And I have done some changes that avoid strange allocation
+scheme and use usb synchronous messages instead of allocating buffers
+with unaligned sizes. However things work ok on Intel IOMMU and 
+there is no documentation what are dma_map_sg() requirement versus
+dma_map_single() which works. I think there are some unwritten
+requirements and things can work on some platforms and fails on others
+(different IOMMUs, no-IOMMU on some ARCHes)  
 
-On Wed, Feb 20, 2019 at 02:27:59PM +0000, Jean-Philippe Brucker wrote:
-> +int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
-> +			  iommu_mm_exit_handler_t mm_exit, void *drvdata)
-
-I think we are better of with introducing a sva-bind handle which can be
-used to extend and further configure the binding done with this
-function.
-
-How about a 'struct iommu_sva' with an iommu-private definition that is
-returned by this function:
-
-	struct iommu_sva *iommu_sva_bind_device(struct device *dev,
-						struct mm_struct *mm);
-
-and the corresponding unbind function:
-
-	int iommu_sva_unbind_device(struct iommu_sva* *handle);
-
-(Btw, does this need to return and int? Can unbinding fail?).
-
-With that in place we can implement and extentable API base on the
-handle:
-
-	int iommu_sva_get_pasid(struct iommu_sva *handle);
-	void iommu_sva_set_exit_handler(struct iommu_sva *handle,
-					iommu_mm_exit_handler_t mm_exit);
-
-I think at least the AMD IOMMU driver needs more call-backs like a
-handler that is invoked when a fault can not be resolved. And there
-might be others in the future, putting them all in the parameter list of
-the bind function doesn't scale well.
-
-Regards,
-
-	Joerg
+Stanislaw
