@@ -1,42 +1,46 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH 0/5] iommu/arm-smmu-v3: make smmu can be enabled in kdump
- kernel
-Date: Wed, 27 Feb 2019 11:25:43 +0800
-Message-ID: <5C760337.2070504@huawei.com>
-References: <20190219075443.17732-1-thunder.leizhen@huawei.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH] Revert "dma-contiguous: do not allocate a single page
+ from CMA area"
+Date: Wed, 27 Feb 2019 09:46:08 +0100
+Message-ID: <CAJKOXPf_+dME_P9jy5=_LrjYEpgti4+CN0thkSXSvxwSGVH=Bw@mail.gmail.com>
+References: <20190226202327.5349-1-nicoleotsuka@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190219075443.17732-1-thunder.leizhen@huawei.com>
+In-Reply-To: <20190226202327.5349-1-nicoleotsuka@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Cc: hch@lst.de, Marek Szyprowski <m.szyprowski@samsung.com>, robin.murphy@arm.com, tony@atomide.com, vdumpa@nvidia.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, tomi.valkeinen@ti.com, laurent.pinchart@ideasonboard.com, sre@kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, dri-devel@lists.freedesktop.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will, Robin:
-   Do you have time to review these patches? Hope you can give me some opinions.
+On Tue, 26 Feb 2019 at 21:25, Nicolin Chen <nicoleotsuka@gmail.com> wrote:
+>
+> This reverts commit d222e42e88168fd67e6d131984b86477af1fc256.
+>
+> The original change breaks omap dss:
+>     omapdss_dispc 58001000.dispc:
+>         dispc_errata_i734_wa_init: dma_alloc_writecombine failed
+>
+> Let's revert it first and then find a safer solution instead.
+>
+> Reported-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+> ---
+> Tony,
+>
+> Would you please test and verify? Thanks!
+>
+>  kernel/dma/contiguous.c | 22 +++-------------------
+>  1 file changed, 3 insertions(+), 19 deletions(-)
 
+This fixes broken (since yesterday) linux-next on Exynos boards
+(ARMv7), errors like:
+dma-pl330: probe of 121a0000.pdma failed with error -12
+exynos-ehci 12110000.usb: can't setup: -12
+exynos-ehci 12110000.usb: USB bus 1 deregistered
+exynos-ehci 12110000.usb: Failed to add USB HCD
 
-On 2019/2/19 15:54, Zhen Lei wrote:
-> This patch series include two parts:
-> 1. Patch1-2 use dummy STE tables with "ste abort" hardware feature to abort unexpected
->    devices accessing. For more details, see the description in patch 2.
-> 2. If the "ste abort" feature is not support, force the unexpected devices in the
->    secondary kernel to use the memory maps which it used in the first kernel. For more
->    details, see patch 5.
-> 
-> 
-> Zhen Lei (5):
->   iommu/arm-smmu-v3: make sure the stale caching of L1STD are invalid
->   iommu/arm-smmu-v3: make smmu can be enabled in kdump kernel
->   iommu/arm-smmu-v3: add macro xxx_SIZE to replace xxx_DWORDS shift
->   iommu/arm-smmu-v3: move arm_smmu_get_step_for_sid() a little ahead
->   iommu/arm-smmu-v3: workaround for STE abort in kdump kernel
-> 
->  drivers/iommu/arm-smmu-v3.c | 243 +++++++++++++++++++++++++++++++++++---------
->  1 file changed, 194 insertions(+), 49 deletions(-)
-> 
+Tested-by: Krzysztof Kozlowski <krzk@kernel.org>
 
--- 
-Thanks!
-BestRegards
+Best regards,
+Krzysztof
