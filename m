@@ -1,45 +1,130 @@
-From: Michael Kelley <mikelley@microsoft.com>
-Subject: RE: [PATCH V6 2/3] IOMMU/Hyper-V: Add Hyper-V stub IOMMU driver
-Date: Wed, 27 Feb 2019 17:31:38 +0000
-Message-ID: <DM5PR2101MB0918BCF506C61269BE66B5BDD7740@DM5PR2101MB0918.namprd21.prod.outlook.com>
-References: <1551279245-25888-1-git-send-email-Tianyu.Lan@microsoft.com>
- <1551279245-25888-3-git-send-email-Tianyu.Lan@microsoft.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 04/13] iommu/mediatek: Add device_link between the
+ consumer and the larb devices
+Date: Wed, 27 Feb 2019 19:30:10 +0000
+Message-ID: <709d7d66-9610-eeb3-128e-e2156bcfb616@arm.com>
+References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
+ <1546318276-18993-5-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1551279245-25888-3-git-send-email-Tianyu.Lan@microsoft.com>
+In-Reply-To: <1546318276-18993-5-git-send-email-yong.wu@mediatek.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "lantianyu1986@gmail.com" <lantianyu1986@gmail.com>, "joro@8bytes.org" <joro@8bytes.org>, "mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>, "arnd@arndb.de" <arnd@arndb.de>, KY Srinivasan <kys@microsoft.com>, vkuznets <vkuznets@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "sashal@kernel.org" <sashal@kernel.org>, "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>
-Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>, arnd@arndb.de, srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: lantianyu1986@gmail.com <lantianyu1986@gmail.com> Sent: Wednesday, Fe=
-bruary 27, 2019 6:54 AM
->=20
-> On the bare metal, enabling X2APIC mode requires interrupt remapping
-> function which helps to deliver irq to cpu with 32-bit APIC ID.
-> Hyper-V doesn't provide interrupt remapping function so far and Hyper-V
-> MSI protocol already supports to deliver interrupt to the CPU whose
-> virtual processor index is more than 255. IO-APIC interrupt still has
-> 8-bit APIC ID limitation.
->=20
-> This patch is to add Hyper-V stub IOMMU driver in order to enable
-> X2APIC mode successfully in Hyper-V Linux guest. The driver returns X2API=
-C
-> interrupt remapping capability when X2APIC mode is available. Otherwise,
-> it creates a Hyper-V irq domain to limit IO-APIC interrupts' affinity
-> and make sure cpus assigned with IO-APIC interrupt have 8-bit APIC ID.
->=20
-> Define 24 IO-APIC remapping entries because Hyper-V only expose one
-> single IO-APIC and one IO-APIC has 24 pins according IO-APIC spec(
-> https://pdos.csail.mit.edu/6.828/2016/readings/ia32/ioapic.pdf).
->=20
-> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-> Signed-off-by: Lan Tianyu <Tianyu.Lan@microsoft.com>
+On 01/01/2019 04:51, Yong Wu wrote:
+> MediaTek IOMMU don't have its power-domain. all the consumer connect
+> with smi-larb, then connect with smi-common.
+> 
+>          M4U
+>           |
+>      smi-common
+>           |
+>    -------------
+>    |         |    ...
+>    |         |
+> larb1     larb2
+>    |         |
+> vdec       venc
+> 
+> When the consumer works, it should enable the smi-larb's power which
+> also need enable the smi-common's power firstly.
+> 
+> Thus, First of all, use the device link connect the consumer and the
+> smi-larbs. then add device link between the smi-larb and smi-common.
+> 
+> This patch adds device_link between the consumer and the larbs.
+> 
+> Suggested-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c    | 15 +++++++++++++--
+>   drivers/iommu/mtk_iommu_v1.c | 14 ++++++++++++--
+>   2 files changed, 25 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 202e41b..735ae8d 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -247,6 +247,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+>   	struct mtk_smi_larb_iommu    *larb_mmu;
+>   	unsigned int                 larbid, portid;
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct device_link *link;
+>   	int i;
+>   
+>   	for (i = 0; i < fwspec->num_ids; ++i) {
+> @@ -257,10 +258,20 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+>   		dev_dbg(dev, "%s iommu port: %d\n",
+>   			enable ? "enable" : "disable", portid);
+>   
+> -		if (enable)
+> +		if (enable) {
+>   			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+> -		else
+> +			/* Link the consumer with the larb device(supplier) */
+> +			link = device_link_add(dev, larb_mmu->dev,
+> +					       DL_FLAG_PM_RUNTIME |
+> +					       DL_FLAG_AUTOREMOVE_CONSUMER);
 
-Reconfirming my reviewed-by after the change to fix the
-compile error detected by the kbuild test robot.
+This looks technically wrong, since we get here from 
+mtk_iommu_attach_device(), and in theory a device could get attached to 
+any number of domains over its lifetime, so adding a link at this point 
+when there's no corresponding cleanup on detach is definitely 
+unbalanced. If you want this layer to manage the link on behalf of the 
+consumer, it would probably be better to do it at the point of 
+mtk_iommu_add_device(), and either track it for manual cleanup in 
+mtk_iommu_remove_device() or rely on AUTOREMOVE_SUPPLIER.
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Robin.
+
+> +			if (!link) {
+> +				dev_err(dev, "Unable to link %s\n",
+> +					dev_name(larb_mmu->dev));
+> +				return;
+> +			}
+> +		} else {
+>   			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+> +		}
+>   	}
+>   }
+>   
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index 9386aee..022bad9 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -201,6 +201,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+>   	struct mtk_smi_larb_iommu    *larb_mmu;
+>   	unsigned int                 larbid, portid;
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct device_link *link;
+>   	int i;
+>   
+>   	for (i = 0; i < fwspec->num_ids; ++i) {
+> @@ -211,10 +212,19 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+>   		dev_dbg(dev, "%s iommu port: %d\n",
+>   			enable ? "enable" : "disable", portid);
+>   
+> -		if (enable)
+> +		if (enable) {
+>   			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+> -		else
+> +			link = device_link_add(dev, larb_mmu->dev,
+> +					       DL_FLAG_PM_RUNTIME |
+> +					       DL_FLAG_AUTOREMOVE_CONSUMER);
+> +			if (!link) {
+> +				dev_err(dev, "Unable to link %s\n",
+> +					dev_name(larb_mmu->dev));
+> +				return;
+> +			}
+> +		} else {
+>   			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+> +		}
+>   	}
+>   }
+>   
+> 
