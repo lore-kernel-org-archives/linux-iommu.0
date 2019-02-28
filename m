@@ -1,60 +1,45 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/1] iommu: Bind process address spaces to devices
-Date: Thu, 28 Feb 2019 15:09:50 +0100
-Message-ID: <20190228140950.GD1594@8bytes.org>
-References: <20190220142759.33308-1-jean-philippe.brucker@arm.com>
- <20190220142759.33308-2-jean-philippe.brucker@arm.com>
- <20190226111743.GK20740@8bytes.org>
- <20190227134129.51ad42ac@jacob-builder>
+From: Yang Wei <albin_yang@163.com>
+Subject: [PATCH] iommu/mediatek: fix semicolon code style issue
+Date: Thu, 28 Feb 2019 22:45:01 +0800
+Message-ID: <1551365101-4397-1-git-send-email-albin_yang@163.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190227134129.51ad42ac@jacob-builder>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, christian.koenig@amd.com, kevin.tian@intel.com, ashok.raj@intel.com, baolu.lu@linux.intel.com, alex.williamson@redhat.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, albin_yang@163.com, yang.wei9@zte.com.cn, linux-mediatek@lists.infradead.org, matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
+From: Yang Wei <yang.wei9@zte.com.cn>
 
-On Wed, Feb 27, 2019 at 01:41:29PM -0800, Jacob Pan wrote:
-> On Tue, 26 Feb 2019 12:17:43 +0100
-> Joerg Roedel <joro@8bytes.org> wrote:
+Delete a superfluous semicolon in mtk_iommu_add_device().
 
-> Just trying to understand how to use this API.
-> So if we bind the same mm to two different devices, we should get two
-> different iommu_sva handle, right?
-> I think intel-svm still needs a flag argument for supervisor pasid etc.
-> Other than that, I think both interface should work for vt-d.
+Signed-off-by: Yang Wei <yang.wei9@zte.com.cn>
+---
+ drivers/iommu/mtk_iommu_v1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I second Jean's question here, is supervisor pasid still needed with
-scalable mode? What is the use-case and which mm_struct will be used for
-supervisor accesses?
-
-> Another question is that for nested SVA, we will need to bind guest mm.
-> Do you think we should try to reuse this or have it separate? I am
-> working on a separate API for now.
-
-I think a separate API makes more sense. It could be somehow fit into
-this as well, but having it separate is cleaner. And we already have
-separate API for aux-domains, so this would be just another extension of
-the IOMMU-API for using PASIDs.
-
-
-> > 	int iommu_sva_get_pasid(struct iommu_sva *handle);
-> If multiple bind to the same mm gets multiple handles, this API should
-> retrieve the same pasid for different handle?
-
-It can return the same handle if we store the pasid in the mm_struct,
-for example ...
-> Just curious why making the handle private instead of returning the
-> pasid value in the handle?
-
-... which is also the reason why I prefer the accessor function, it
-allows to have the pasid not in the iommu_sva handle, but to retrieve it
-from somewhere else (like the mm_struct).
-
-Regards,
-
-	Joerg
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 7e0df67..52b01e3 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -474,7 +474,7 @@ static int mtk_iommu_add_device(struct device *dev)
+ 		return err;
+ 	}
+ 
+-	return iommu_device_link(&data->iommu, dev);;
++	return iommu_device_link(&data->iommu, dev);
+ }
+ 
+ static void mtk_iommu_remove_device(struct device *dev)
+-- 
+2.7.4
