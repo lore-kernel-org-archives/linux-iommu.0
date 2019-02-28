@@ -1,33 +1,59 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: MT76x2U crashes XHCI driver on AMD Ryzen system
-Date: Thu, 28 Feb 2019 14:40:29 +0100
-Message-ID: <20190228134029.GC1594@8bytes.org>
-References: <CAKxU2N8ioMszBCyQcH7CVhgBdW4aj7yZ+kYQe14DCV5OSAnxrg@mail.gmail.com>
- <20190115090400.GA2267@localhost.localdomain>
- <20190218143742.GA11872@redhat.com>
- <20190226100535.GA20740@8bytes.org>
- <20190226103450.GA2989@redhat.com>
- <20190226104413.GH20740@8bytes.org>
- <20190226112407.GB2989@redhat.com>
- <20190228090411.GA24938@redhat.com>
- <20190228104223.GA2749@redhat.com>
- <20190228121948.GD6072@redhat.com>
+Subject: Re: [PATCH 1/1] iommu: Bind process address spaces to devices
+Date: Thu, 28 Feb 2019 15:09:50 +0100
+Message-ID: <20190228140950.GD1594@8bytes.org>
+References: <20190220142759.33308-1-jean-philippe.brucker@arm.com>
+ <20190220142759.33308-2-jean-philippe.brucker@arm.com>
+ <20190226111743.GK20740@8bytes.org>
+ <20190227134129.51ad42ac@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190228121948.GD6072@redhat.com>
+In-Reply-To: <20190227134129.51ad42ac@jacob-builder>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stanislaw Gruszka <sgruszka@redhat.com>
-Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, Rosen Penev <rosenp@gmail.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, christian.koenig@amd.com, kevin.tian@intel.com, ashok.raj@intel.com, baolu.lu@linux.intel.com, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 28, 2019 at 01:19:48PM +0100, Stanislaw Gruszka wrote:
-> Nevermind, the patch is wrong, s->dma_address is initalized in sg_num_pages().
+Hi Jacob,
 
-Yes, it is. In sg_num_pages() the offset into the IOMMU mapping is
-stored in s->dma_address, taking also the segment boundary mask into
-account. map_sg() later only adds the base-address to that.
+On Wed, Feb 27, 2019 at 01:41:29PM -0800, Jacob Pan wrote:
+> On Tue, 26 Feb 2019 12:17:43 +0100
+> Joerg Roedel <joro@8bytes.org> wrote:
+
+> Just trying to understand how to use this API.
+> So if we bind the same mm to two different devices, we should get two
+> different iommu_sva handle, right?
+> I think intel-svm still needs a flag argument for supervisor pasid etc.
+> Other than that, I think both interface should work for vt-d.
+
+I second Jean's question here, is supervisor pasid still needed with
+scalable mode? What is the use-case and which mm_struct will be used for
+supervisor accesses?
+
+> Another question is that for nested SVA, we will need to bind guest mm.
+> Do you think we should try to reuse this or have it separate? I am
+> working on a separate API for now.
+
+I think a separate API makes more sense. It could be somehow fit into
+this as well, but having it separate is cleaner. And we already have
+separate API for aux-domains, so this would be just another extension of
+the IOMMU-API for using PASIDs.
+
+
+> > 	int iommu_sva_get_pasid(struct iommu_sva *handle);
+> If multiple bind to the same mm gets multiple handles, this API should
+> retrieve the same pasid for different handle?
+
+It can return the same handle if we store the pasid in the mm_struct,
+for example ...
+> Just curious why making the handle private instead of returning the
+> pasid value in the handle?
+
+... which is also the reason why I prefer the accessor function, it
+allows to have the pasid not in the iommu_sva handle, but to retrieve it
+from somewhere else (like the mm_struct).
 
 Regards,
 
