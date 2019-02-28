@@ -1,52 +1,57 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH 1/1] iommu: Bind process address spaces to devices
-Date: Thu, 28 Feb 2019 01:10:55 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19C9687D8@SHSMSX104.ccr.corp.intel.com>
-References: <20190220142759.33308-1-jean-philippe.brucker@arm.com>
-        <20190220142759.33308-2-jean-philippe.brucker@arm.com>
-        <20190226111743.GK20740@8bytes.org> <20190227134129.51ad42ac@jacob-builder>
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: Re: MT76x2U crashes XHCI driver on AMD Ryzen system
+Date: Thu, 28 Feb 2019 10:04:12 +0100
+Message-ID: <20190228090411.GA24938@redhat.com>
+References: <CAJ0CqmU7k5i26g7dGPxNdts7Gm67W6qNsr4vYuW05ugsEF1ohw@mail.gmail.com>
+ <CAKxU2N-+CTaRdJMFVRdozJ5TTpN+_4thiDRBJBFq8gGtuRVYvA@mail.gmail.com>
+ <20190114091841.GA23045@localhost.localdomain>
+ <CAKxU2N8ioMszBCyQcH7CVhgBdW4aj7yZ+kYQe14DCV5OSAnxrg@mail.gmail.com>
+ <20190115090400.GA2267@localhost.localdomain>
+ <20190218143742.GA11872@redhat.com>
+ <20190226100535.GA20740@8bytes.org>
+ <20190226103450.GA2989@redhat.com>
+ <20190226104413.GH20740@8bytes.org>
+ <20190226112407.GB2989@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190227134129.51ad42ac@jacob-builder>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190226112407.GB2989@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "christian.koenig@amd.com" <christian.koenig@amd.com>, "Raj, Ashok" <ashok.raj@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, Rosen Penev <rosenp@gmail.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
-> Sent: Thursday, February 28, 2019 5:41 AM
+On Tue, Feb 26, 2019 at 12:24:08PM +0100, Stanislaw Gruszka wrote:
+> On Tue, Feb 26, 2019 at 11:44:13AM +0100, Joerg Roedel wrote:
+> > On Tue, Feb 26, 2019 at 11:34:51AM +0100, Stanislaw Gruszka wrote:
+> > > On Tue, Feb 26, 2019 at 11:05:36AM +0100, Joerg Roedel wrote:
+> > > If sg->offset > PAGE_SIZE is fine then most likely we have problem with
+> > > alignment.
+> > 
+> > The map_sg implementation in the AMD IOMMU driver uses sg_phys() which
+> > handles the sg->page + sg->offset calculation fine.
+> > 
+> > > Note hat issue is with dma_map_sg(), switching to dma_map_single()
+> > > by using urb->transfer_buffer instead of urb->sg make things work
+> > > on AMD IOMMU.
+> > 
+> > On the other hand this points to a bug in the driver, I'll look further
+> > if I can spot something there.
 > 
-> On Tue, 26 Feb 2019 12:17:43 +0100
-> Joerg Roedel <joro@8bytes.org> wrote:
-> 
-> >
-> > How about a 'struct iommu_sva' with an iommu-private definition that
-> > is returned by this function:
-> >
-> > 	struct iommu_sva *iommu_sva_bind_device(struct device *dev,
-> > 						struct mm_struct *mm);
-> >
-> Just trying to understand how to use this API.
-> So if we bind the same mm to two different devices, we should get two
-> different iommu_sva handle, right?
-> I think intel-svm still needs a flag argument for supervisor pasid etc.
-> Other than that, I think both interface should work for vt-d.
-> 
-> Another question is that for nested SVA, we will need to bind guest mm.
-> Do you think we should try to reuse this or have it separate? I am
-> working on a separate API for now.
-> 
+> I think so too. And I have done some changes that avoid strange allocation
+> scheme and use usb synchronous messages instead of allocating buffers
+> with unaligned sizes. However things work ok on Intel IOMMU and 
+> there is no documentation what are dma_map_sg() requirement versus
+> dma_map_single() which works. I think there are some unwritten
+> requirements and things can work on some platforms and fails on others
+> (different IOMMUs, no-IOMMU on some ARCHes)  
 
-It has to be different. Host doesn't know guest mm.
+For the record: we have another bug report with this issue:
+https://bugzilla.kernel.org/show_bug.cgi?id=202673
 
-Also note that from virtualization p.o.v we just focus on 'nested
-translation' in host side. The 1st level may point to guest CPU
-page table (SVA), or IOVA page table. In that manner, the API
-(as currently defined in your series) is purely about setting up
-nested translation on VFIO assigned device. 
+I provided there patch that change alignment for page_frag_alloc() and
+it did not fixed the problem. So this is not alignment issue.
+Now I think it could be page->refcount issue ...
 
-Thanks
-Kevin
+Stanislaw
