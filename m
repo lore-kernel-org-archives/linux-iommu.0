@@ -1,49 +1,43 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/4] iommu/vt-d: Disable ATS support on untrusted devices
-Date: Fri,  1 Mar 2019 11:23:10 +0800
-Message-ID: <20190301032313.9311-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 3/4] iommu/vt-d: Fix NULL pointer reference in intel_svm_bind_mm()
+Date: Fri,  1 Mar 2019 11:23:12 +0800
+Message-ID: <20190301032313.9311-4-baolu.lu@linux.intel.com>
 References: <20190301032313.9311-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190301032313.9311-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Commit fb58fdcd295b9 ("iommu/vt-d: Do not enable ATS for untrusted
-devices") disables ATS support on the devices which have been marked
-as untrusted. Unfortunately this is not enough to fix the DMA attack
-vulnerabiltiies because IOMMU driver allows translated requests as
-long as a device advertises the ATS capability. Hence a malicious
-peripheral device could use this to bypass IOMMU.
+Intel IOMMU could be turned off with intel_iommu=off. If Intel
+IOMMU is off,  the intel_iommu struct will not be initialized.
+When device drivers call intel_svm_bind_mm(), the NULL pointer
+reference will happen there.
 
-This disables the ATS support on untrusted devices by clearing the
-internal per-device ATS mark. As the result, IOMMU driver will block
-any translated requests from any device marked as untrusted.
+Add dmar_disabled check to avoid NULL pointer reference.
 
+Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Suggested-by: Ashok Raj <ashok.raj@intel.com>
-Fixes: fb58fdcd295b9 ("iommu/vt-d: Do not enable ATS for untrusted devices")
+Reported-by: Dave Jiang <dave.jiang@intel.com>
+Fixes: 2f26e0a9c9860 ("iommu/vt-d: Add basic SVM PASID support")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f8f6d46c60f4..abdd165a829c 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2484,7 +2484,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index c79540deaf00..3a4b09ae8561 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -234,7 +234,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 	int pasid_max;
+ 	int ret;
  
--		if (!pci_ats_disabled() &&
-+		if (!pdev->untrusted &&
-+		    !pci_ats_disabled() &&
- 		    ecap_dev_iotlb_support(iommu->ecap) &&
- 		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
- 		    dmar_find_matched_atsr_unit(pdev))
+-	if (!iommu)
++	if (!iommu || dmar_disabled)
+ 		return -EINVAL;
+ 
+ 	if (dev_is_pci(dev)) {
 -- 
 2.17.1
