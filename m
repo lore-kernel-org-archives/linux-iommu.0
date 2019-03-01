@@ -1,117 +1,95 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Allow disabling bypass via kernel config
-Date: Fri, 1 Mar 2019 11:21:03 -0800
-Message-ID: <CAD=FV=WPPhJEVV6SS3tqA6M6Z2XeuhXwFz18_-mqNoezUd+42w@mail.gmail.com>
-References: <20190214204433.155715-1-dianders@chromium.org>
- <4238ceb7-d286-9ef9-39b6-b2e0571f2981@arm.com> <CAD=FV=WeBD0bqxWPZcV1dz5Sdn47Ap=FZU3Y+YPbxsVCQEUcLQ@mail.gmail.com>
- <CAF6AEGsGc8g--3W_xpR8VUt778WR19v_HOemhd7Jv=f4QBqVgw@mail.gmail.com>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [RFC PATCH v1 00/15] drm/msm: Per-instance pagetable
+ support
+Date: Fri,  1 Mar 2019 12:38:22 -0700
+Message-ID: <1551469117-3404-1-git-send-email-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAF6AEGsGc8g--3W_xpR8VUt778WR19v_HOemhd7Jv=f4QBqVgw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Clark <robdclark@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, LKML <linux-kernel@vger.kernel.org>, Evan Green <evgreen@chromium.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jonathan Marek <jonathan-eSc4qw6YbEQ@public.gmane.org>, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mamta Shukla <mamtashukla555-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sharat Masetty <smasetty-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, dianders-uWgjrcJnOmJ4cg9Nei1l7Q@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, Sean Paul <sean-p7yTbzM4H96eqtR555YLDQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, hoegsberg-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Thomas Zimmermann <tzimmermann-l3A5Bk7waGM@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On Fri, Feb 15, 2019 at 2:37 PM Rob Clark <robdclark@gmail.com> wrote:
->
-> On Thu, Feb 14, 2019 at 7:40 PM Doug Anderson <dianders@chromium.org> wrote:
-> >
-> > Hi,
-> >
-> > On Thu, Feb 14, 2019 at 1:32 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> > >
-> > > Hi Doug,
-> > >
-> > > On 2019-02-14 8:44 pm, Douglas Anderson wrote:
-> > > > Right now the only way to disable the iommu bypass for the ARM SMMU is
-> > > > with the kernel command line parameter 'arm-smmu.disable_bypass'.
-> > > >
-> > > > In general kernel command line parameters make sense for things that
-> > > > someone would like to tweak without rebuilding the kernel or for very
-> > > > basic communication between the bootloader and the kernel, but are
-> > > > awkward for other things.  Specifically:
-> > > > * Human parsing of the kernel command line can be difficult since it's
-> > > >    just a big runon space separated line of text.
-> > > > * If every bit of the system was configured via the kernel command
-> > > >    line the kernel command line would get very large and even more
-> > > >    unwieldly.
-> > > > * Typically there are not easy ways in build systems to adjust the
-> > > >    kernel command line for config-like options.
-> > > >
-> > > > Let's introduce a new config option that allows us to disable the
-> > > > iommu bypass without affecting the existing default nor the existing
-> > > > ability to adjust the configuration via kernel command line.
-> > >
-> > > I say let's just flip the default - for a while now it's been one of
-> > > those "oh yeah, we should probably do that" things that gets instantly
-> > > forgotten again, so some 3rd-party demand is plenty to convince me :)
-> > >
-> > > There are few reasons to allow unmatched stream bypass, and even fewer
-> > > good ones, so I'd be happy to shift the command-line burden over to the
-> > > esoteric cases at this point, and consider the config option in future
-> > > if anyone from that camp pops up and screams hard enough.
-> >
-> > Sure, I can submit that patch if we want.  I presume I'll get lots of
-> > screaming but I'm used to that.  ;-)
-> >
-> > ...specifically I found that when I turned on "disably bypass" on my
-> > board (sdm845-cheza, which is not yet upstream) that a bunch of things
-> > that used to work broke.  That's a good thing because all the things
-> > that broke need to be fixed properly (by adding the IOMMUs) but
-> > presumably my board is not special in relying on the old insecure
-> > behavior.
->
-> So one niggly bit, beyond the drivers that aren't but should be using
-> iommu, is the case where bootloader lights up the display.  We
-> actually still have a lot of work to do for this (in that clk and
-> genpd drivers need to be aware of handover, in addition to just
-> iommu)..  But I'd rather not make a hard problem harder just yet.
->
-> (it gets worse, afaict so far on the windows-arm laptops since in that
-> case uefi/edk is actually taking the iommu out of bypass and things go
-> badly when arm-smmu disables clks after probe..)
->
-> But I might recommend making the default a kconfig option for now, so
-> in the distro kernel case, where display driver is a kernel module,
-> you aren't making a hard problem harder.  For cases where bootloader
-> isn't enabling display, things are much easier, and I think we could
-> switch the default sooner.  But I fear for cases where bootloader is
-> enabling display it is a much harder problem :-(
-
-OK, so after thinking about this and playing with it a bit, here's
-what I'm planning to do: I'm going to send out a v2 of my patch where
-I basically just flip it to "default y".
-
-Originally I was going to post a patch like Robin suggested that just
-changed the default in the code without introducing a KConfig option.
-Then I looked at all the things I needed to do on my own board to get
-things working again once the IOMMU disallowed bypass and I just
-couldn't bring myself to respond to everyone else I was about to break
-"now figure out how to add a new kernel command line option until you
-fix this more correctly".
-
-In my mind a change that by default breaks all these insecure people
-(effectively notifying them that they were insecure) but that allows
-them to get back to the old state quickly seems like a good first
-step.  In my commit message I'll mention that in a kernel version or
-two we should probably fully take out the KConfig option since people
-will have (presumably) had a chance to wean themselves off it.
-
-One last thought on all of this is the question about the whole
-"device tree as a stable ABI".  Presumably we're are supposed to make
-some attempt to be able to run old device trees and presumably those
-old device trees will break because the proper way to hook up the
-IOMMU is by specifying it in the device tree.  Thus we shouldn't be
-too quick to totally break all those old devices and we should make
-sure that there is some easy path if someone comes up with an old
-device tree that is "unfixable".  ;-)
-
-Robin: hopefully it's OK that I'm co-opting a bit of your wording and
-adding you as a "Suggested-by".  ;-)
-
--Doug
+VGhpcyBpcyB0aGUgbGF0ZXN0IGluY2FybmF0aW9uIG9mIHBlci1pbnN0YW5jZSBwYWdldGFibGUg
+c3VwcG9ydCBmb3IgdGhlIE1TTSBHUFUKZHJpdmVyLiBTb21lIG9mIHRoZXNlIGhhdmUgYmVlbiBz
+ZWVuIGJlZm9yZSwgbW9zdCByZWNlbnRseSBbMV0uCgpQZXItaW5zdGFuY2UgcGFnZXRhYmxlcyBh
+bGxvdyB0aGUgdGFyZ2V0IEdQVSBkcml2ZXIgdG8gY3JlYXRlIGFuZCBtYW5hZ2UKYW4gaW5kaXZp
+ZHVhbCBwYWdldGFibGUgZm9yIGVhY2ggZmlsZSBkZXNjcmlwdG9yIGluc3RhbmNlIGFuZCBzd2l0
+Y2gKYmV0d2VlbiB0aGVtIGFzeW5jaHJvbm91c2x5IHVzaW5nIHRoZSBHUFUgdG8gcmVwcm9ncmFt
+IHRoZSBwYWdldGFibGUKcmVnaXN0ZXJzIG9uIHRoZSBmbHkuCgpUaGlzIGlzIGFjY29tcGxpc2hl
+ZCBpbiB0aGlzIHNlcmllcyBieSB0YWtpbmcgYWR2YW50YWdlIG9mIHRoZSBtdWx0aXBsZQpJT01N
+VSBkb21haW4gQVBJIGZyb20gTHUgQmFvbHUgWzJdIGFuZCBhbGwgdGhlc2UgcGF0Y2hlcyBhcmUg
+YmFzZWQgb24gdGhhdApwYXRjaC4gVGhpcyBzZXJpZXMgaXMgc3BsaXQgaW50byB0aHJlZSBwYXJ0
+czoKClBhcnQgb25lIGFkZHMgc3VwcG9ydCBmb3Igc3BsaXQgcGFnZXRhYmxlcy4gVGhlc2UgYXJl
+IHRoZSBzYW1lIHBhdGNoZXMgZnJvbSB0aGUKcHJldmlvdXMgYXR0ZW1wdHMgWzFdLiBTcGxpdCBw
+YWdldGFibGVzIGFsbG93IHRoZSBoYXJkd2FyZSB0byBzd2l0Y2ggb3V0IHRoZQpsb3dlciBwYWdl
+dGFibGUgKFRUQlIwKSB3aXRob3V0IGFmZmVjdGluZyB0aGUgZ2xvYmFsIGFsbG9jYXRpb25zIGlu
+IHRoZSB1cHBlcgpvbmUgKFRUQlIxKS4KClBhcnQgMiBhZGRzIGF1eCBkb21haW4gc3VwcG9ydCBm
+b3IgYXJtLXNtbXUtdjIuIE5ldyBhdXggZG9tYWlucyBjcmVhdGUgYSBuZXcKcGFnZXRhYmxlIGJ1
+dCBkbyBub3QgdG91Y2ggdGhlIHVuZGVybHlpbmcgaGFyZHdhcmUuICBUaGUgdGFyZ2V0IGRyaXZl
+ciB1c2VzIHRoZQpuZXcgYXV4IGRvbWFpbiB0byBtYXAgYW5kIHVubWFwIG1lbW9yeSB0aHJvdWdo
+IHRoZSB1c3VhbCBtZWNoYW5pc21zLgoKVGhlIGZpbmFsIHBhcnQgaXMgdGhlIHN1cHBvcnQgaW4g
+dGhlIEdQVSBkcml2ZXIgdG8gZW5hYmxlIDY0IGJpdCBhZGRyZXNzaW5nIGZvcgphNXh4IGFuZCBh
+Nnh4LCBzZXQgdXAgdGhlIHN1cHBvcnQgZm9yIHNwbGl0IHBhZ2V0YWJsZXMsIGNyZWF0ZSBuZXcg
+cGVyLWluc3RhbmNlCnBhZ2V0YWJsZXMgZm9yIGEgbmV3IGluc3RhbmNlIGFuZCBzdWJtaXQgdGhl
+IEdQVSBjb21tYW5kIHRvIHN3aXRjaCB0aGUgcGFnZXRhYmxlCmF0IHRoZSBhcHByb3ByaWF0ZSB0
+aW1lLgoKVGhpcyBpcyBjb21waWxlIHRlc3RlZCBidXQgSSBoYXZlbid0IGRvbmUgbXVjaCB0YXJn
+ZXQgdGVzdGluZyBhcyBvZiB5ZXQuIEkKd2FudGVkIHRvIGdldCB0aGlzIG91dCBpbiB0aGUgd29y
+bGQgZm9yIGRlYmF0ZSB3aGlsZSB3ZSB3b3JrIG9uIGZpeGluZyB1cCB0aGUKbWlub3IgaXNzdWVz
+LiBJbiBwYXJ0aWN1bGFyLCBJIHdhbnQgdG8gbWFrZSBzdXJlIHRoYXQgdGhpcyBmaXRzIHdpdGgg
+dGhlCmN1cnJlbnQgdGhpbmtpbmcgYWJvdXQgaG93IGF1eCBkb21haW5zIHNob3VsZCBsb29rIGFu
+ZCBmZWVsLgoKWzFdIGh0dHBzOi8vcGF0Y2h3b3JrLmZyZWVkZXNrdG9wLm9yZy9zZXJpZXMvNDM0
+NDcvClsyXSBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNoLzEwODI1MDYxLwoKCkpv
+cmRhbiBDcm91c2UgKDE1KToKICBpb21tdTogQWRkIERPTUFJTl9BVFRSX1NQTElUX1RBQkxFUwog
+IGlvbW11L2FybS1zbW11OiBBZGQgc3BsaXQgcGFnZXRhYmxlIHN1cHBvcnQgZm9yIGFybS1zbW11
+LXYyCiAgaW9tbXUvaW8tcGd0YWJsZTogQWxsb3cgVExCIG9wZXJhdGlvbnMgdG8gYmUgb3B0aW9u
+YWwKICBpb21tdTogQWRkIERPTUFJTl9BVFRSX1BUQkFTRQogIGlvbW11L2FybS1zbW11OiBBZGQg
+YXV4aWxpYXJ5IGRvbWFpbiBzdXBwb3J0IGZvciBhcm0tc21tdXYyCiAgZHJtL21zbS9hZHJlbm86
+IEVuYWJsZSA2NCBiaXQgbW9kZSBieSBkZWZhdWx0IG9uIGE1eHggYW5kIGE2eHggdGFyZ2V0cwog
+IGRybS9tc206IFByaW50IGFsbCA2NCBiaXRzIG9mIHRoZSBmYXVsdGluZyBJT01NVSBhZGRyZXNz
+CiAgZHJtL21zbTogUGFzcyB0aGUgTU1VIGRvbWFpbiBpbmRleCBpbiBzdHJ1Y3QgbXNtX2ZpbGVf
+cHJpdmF0ZQogIGRybS9tc20vZ3B1OiBNb3ZlIGFkZHJlc3Mgc3BhY2Ugc2V0dXAgdG8gdGhlIEdQ
+VSB0YXJnZXRzCiAgZHJtL21zbTogQWRkIHN1cHBvcnQgZm9yIElPTU1VIGF1eGlsaWFyeSBkb21h
+aW5zCiAgZHJtL21zbTogQWRkIGEgaGVscGVyIGZ1bmN0aW9uIGZvciBhIHBlci1pbnN0YW5jZSBh
+ZGRyZXNzIHNwYWNlCiAgZHJtL21zbTogQWRkIHN1cHBvcnQgdG8gY3JlYXRlIHRhcmdldCBzcGVj
+aWZpYyBhZGRyZXNzIHNwYWNlcwogIGRybS9tc20vZ3B1OiBBZGQgdHRicjAgdG8gdGhlIG1lbXB0
+cnMKICBkcm0vbXNtL2E2eHg6IFN1cHBvcnQgcGVyLWluc3RhbmNlIHBhZ2V0YWJsZXMKICBkcm0v
+bXNtL2E1eHg6IFN1cHBvcnQgcGVyLWluc3RhbmNlIHBhZ2V0YWJsZXMKCiBkcml2ZXJzL2dwdS9k
+cm0vbXNtL2FkcmVuby9hMnh4X2dwdS5jICAgICB8ICAzNyArKy0tCiBkcml2ZXJzL2dwdS9kcm0v
+bXNtL2FkcmVuby9hM3h4X2dwdS5jICAgICB8ICA1MCArKysrLS0KIGRyaXZlcnMvZ3B1L2RybS9t
+c20vYWRyZW5vL2E0eHhfZ3B1LmMgICAgIHwgIDUxICsrKystLQogZHJpdmVycy9ncHUvZHJtL21z
+bS9hZHJlbm8vYTV4eF9ncHUuYyAgICAgfCAxNjMgKysrKysrKysrKysrKysrKystCiBkcml2ZXJz
+L2dwdS9kcm0vbXNtL2FkcmVuby9hNXh4X2dwdS5oICAgICB8ICAxOSArKwogZHJpdmVycy9ncHUv
+ZHJtL21zbS9hZHJlbm8vYTV4eF9wcmVlbXB0LmMgfCAgNzAgKysrKysrLS0KIGRyaXZlcnMvZ3B1
+L2RybS9tc20vYWRyZW5vL2E2eHhfZ3B1LmMgICAgIHwgMTY3ICsrKysrKysrKysrKysrKysrLQog
+ZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYTZ4eF9ncHUuaCAgICAgfCAgIDEgKwogZHJpdmVy
+cy9ncHUvZHJtL21zbS9hZHJlbm8vYWRyZW5vX2dwdS5jICAgfCAgIDcgLQogZHJpdmVycy9ncHUv
+ZHJtL21zbS9tc21fZHJ2LmMgICAgICAgICAgICAgfCAgMjUgKystCiBkcml2ZXJzL2dwdS9kcm0v
+bXNtL21zbV9kcnYuaCAgICAgICAgICAgICB8ICAgNSArCiBkcml2ZXJzL2dwdS9kcm0vbXNtL21z
+bV9nZW0uaCAgICAgICAgICAgICB8ICAgMiArCiBkcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9nZW1f
+c3VibWl0LmMgICAgICB8ICAxMyArLQogZHJpdmVycy9ncHUvZHJtL21zbS9tc21fZ2VtX3ZtYS5j
+ICAgICAgICAgfCAgNTMgKysrLS0tCiBkcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9ncHUuYyAgICAg
+ICAgICAgICB8ICA1OSArLS0tLS0tCiBkcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9ncHUuaCAgICAg
+ICAgICAgICB8ICAgMyArCiBkcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9pb21tdS5jICAgICAgICAg
+ICB8ICA5OSArKysrKysrKysrLQogZHJpdmVycy9ncHUvZHJtL21zbS9tc21fbW11LmggICAgICAg
+ICAgICAgfCAgIDQgKwogZHJpdmVycy9ncHUvZHJtL21zbS9tc21fcmluZ2J1ZmZlci5oICAgICAg
+fCAgIDEgKwogZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggICAgICAgICAgICAgfCAgMTgg
+KysKIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyAgICAgICAgICAgICAgICAgIHwgMjc4ICsrKysr
+KysrKysrKysrKysrKysrKysrKysrLS0tLQogZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5j
+ICAgICAgICAgICAgfCAgIDMgKy0KIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS5oICAgICAgICAg
+ICAgICAgIHwgIDEwICstCiBpbmNsdWRlL2xpbnV4L2lvbW11LmggICAgICAgICAgICAgICAgICAg
+ICB8ICAgMiArCiAyNCBmaWxlcyBjaGFuZ2VkLCA5NTIgaW5zZXJ0aW9ucygrKSwgMTg4IGRlbGV0
+aW9ucygtKQoKLS0gCjIuNy40CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVz
+a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9m
+cmVlZHJlbm8=
