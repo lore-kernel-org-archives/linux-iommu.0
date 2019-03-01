@@ -1,77 +1,101 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.0-rc8
-Date: Fri, 1 Mar 2019 17:57:05 +0100
-Message-ID: <20190301165700.GA20504@8bytes.org>
+From: Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH v2] iommu/arm-smmu: Break insecure users by disabling bypass by default
+Date: Fri,  1 Mar 2019 11:20:17 -0800
+Message-ID: <20190301192017.39770-1-dianders@chromium.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="7JfCtLOvnd9MIVvH"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: linux-arm-msm@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>, Rob Clark <robdclark@gmail.com>, evgreen@chromium.org, tfiga@chromium.org, Douglas Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
+If you're bisecting why your peripherals stopped working, it's
+probably this CL.  Specifically if you see this in your dmesg:
+  Unexpected global fault, this could be serious
+...then it's almost certainly this CL.
 
---7JfCtLOvnd9MIVvH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Running your IOMMU-enabled peripherals with the IOMMU in bypass mode
+is insecure and effectively disables the protection they provide.
+There are few reasons to allow unmatched stream bypass, and even fewer
+good ones.
 
-Hi Linus,
+This patch starts the transition over to make it much harder to run
+your system insecurely.  Expected steps:
 
-The following changes since commit 8950dcd83ae7d62bdc2a60507949acebd85399f2:
+1. By default disable bypass (so anyone insecure will notice) but make
+   it easy for someone to re-enable bypass with just a KConfig change.
+   That's this patch.
 
-  iommu/vt-d: Leave scalable mode default off (2019-01-30 17:23:58 +0100)
+2. After people have had a little time to come to grips with the fact
+   that they need to set their IOMMUs properly and have had time to
+   dig into how to do this, the KConfig will be eliminated and bypass
+   will simply be disabled.  Folks who are truly upset and still
+   haven't fixed their system can either figure out how to add
+   'arm-smmu.disable_bypass=n' to their command line or revert the
+   patch in their own private kernel.  Of course these folks will be
+   less secure.
 
-are available in the git repository at:
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v5.0-rc8
+Changes in v2:
+- Flipped default to 'yes' and changed comments a lot.
 
-for you to fetch changes up to cffaaf0c816238c45cd2d06913476c83eb50f682:
+ drivers/iommu/Kconfig    | 25 +++++++++++++++++++++++++
+ drivers/iommu/arm-smmu.c |  3 ++-
+ 2 files changed, 27 insertions(+), 1 deletion(-)
 
-  iommu/dmar: Fix buffer overflow during PCI bus notification (2019-02-26 11:24:37 +0100)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v5.0-rc8
-
-One important patch:
-
-	- Fix for a memory corruption issue in the Intel VT-d driver
-	  that triggers on hardware with deep PCI hierarchies
-
-----------------------------------------------------------------
-Julia Cartwright (1):
-      iommu/dmar: Fix buffer overflow during PCI bus notification
-
- drivers/iommu/dmar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---7JfCtLOvnd9MIVvH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJceWRcAAoJECvwRC2XARrjdWkP/RFj2oZydkJ+c+71O78WWkUt
-u1v+FAf++W0EYPLkpWPflZvN5NrBNtd8/NQqmkf9XURwD2ryoy56j8z4Rpjvmnf/
-+g+2ZpdRE/KLLc8NfKM2Hc3cA6pQLGoan2yP0C6aW+rzasnlTh/GTegMU2UG1xGU
-GoduF79OYMcreNHfL4iQfC0VmzSkfJtUr3yezcJAlKCYLNsgfOxCQPESxuriSDt4
-FwFygUZzqkYdCd5/sONBPenPqtTsgArElzeHzC3S+cgEgl0+BXjWFPkSjZ5trAm2
-UxtBkPiMXGcw+u4owwbrVkMBRdFafzXXqefDl2Nur/Etl6fzNdt25c+o2yeQSiqX
-WIViafMPBisg1ySLAuUrcdXb4HZc3KChtI5mqaSKIMJXnMAYBfAVqYrsGd8GVO2C
-Vn1UuspIn1ycfKNnHh8U4mSLcwpUa4TKNri+F2ta6YUliQqGHuuw3PdQa2x7Sj5y
-srhNqhf/fOZ2q1gaxTgFoXKiFuyTsURnGWIgjBZ7hA2m3Lb9GFrzCmPpyXChrDF0
-kp+rC3tjEp5ngzJXL72j2Vr7Om5N+/eSB2TdsLxity1AJ3ftn8ZEmxuiKXB+tn83
-2QClCDBWro/W0+rsok3pucMSwHv3pWb/fwzJt04Dmdrij8xromcjMXuWJQrJhlkY
-2rmi2Qjti1FTzEiwjXvg
-=s7Kd
------END PGP SIGNATURE-----
-
---7JfCtLOvnd9MIVvH--
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 1ca1fa107b21..a4210672804a 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -359,6 +359,31 @@ config ARM_SMMU
+ 	  Say Y here if your SoC includes an IOMMU device implementing
+ 	  the ARM SMMU architecture.
+ 
++config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
++	bool "Default to disabling bypass on ARM SMMU v1 and v2"
++	depends on ARM_SMMU
++	default y
++	help
++	  Say Y here to (by default) disable bypass streams such that
++	  incoming transactions from devices that are not attached to
++	  an iommu domain will report an abort back to the device and
++	  will not be allowed to pass through the SMMU.
++
++	  Any old kernels that existed before this KConfig was
++	  introduced would default to _allowing_ bypass (AKA the
++	  equivalent of NO for this config).  However the default for
++	  this option is YES because the old behavior is insecure.
++
++	  There are few reasons to allow unmatched stream bypass, and
++	  even fewer good ones.  If saying YES here breaks your board
++	  you should work on fixing your board.  This KConfig option
++	  is expected to be removed in the future and we'll simply
++	  hardcode the bypass disable in the code.
++
++	  NOTE: the kernel command line parameter
++	  'arm-smmu.disable_bypass' will continue to override this
++	  config.
++
+ config ARM_SMMU_V3
+ 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+ 	depends on ARM64
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 045d93884164..930c07635956 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -110,7 +110,8 @@ static int force_stage;
+ module_param(force_stage, int, S_IRUGO);
+ MODULE_PARM_DESC(force_stage,
+ 	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
+-static bool disable_bypass;
++static bool disable_bypass =
++	IS_ENABLED(CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT);
+ module_param(disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+ 	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+-- 
+2.21.0.352.gf09ad66450-goog
