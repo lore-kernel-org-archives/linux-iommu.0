@@ -1,31 +1,102 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 0/4] iommu/vt-d: Several fixes for 5.1
-Date: Fri, 1 Mar 2019 10:24:01 +0100
-Message-ID: <20190301092401.GA10516@8bytes.org>
-References: <20190301032313.9311-1-baolu.lu@linux.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as
+ non-strict
+Date: Fri, 1 Mar 2019 11:07:26 +0000
+Message-ID: <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
+References: <20190131135211.6732-1-thunder.leizhen@huawei.com>
+ <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
+ <dc06dfd0-0ab6-6f0b-64c6-2587a2a55798@huawei.com>
+ <5C78B89C.7040100@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190301032313.9311-1-baolu.lu@linux.intel.com>
+In-Reply-To: <5C78B89C.7040100@huawei.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, Linuxarm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 01, 2019 at 11:23:09AM +0800, Lu Baolu wrote:
-> Hi Joerg,
-> 
-> This includes several small fixes. All are stable kernel irrelated.
-> Please consider it for 5.1-rc1.
-> 
-> Best regards,
-> Lu Baolu
-> 
-> Lu Baolu (4):
->   iommu/vt-d: Disable ATS support on untrusted devices
->   iommu/vt-d: Set context field after value initialized
->   iommu/vt-d: Fix NULL pointer reference in intel_svm_bind_mm()
->   iommu/vt-d: Get domain ID before clear pasid entry
+Hi Leizhen,
 
-Applied, thanks.
+On 01/03/2019 04:44, Leizhen (ThunderTown) wrote:
+> 
+> 
+> On 2019/2/26 20:36, Hanjun Guo wrote:
+>> Hi Jean,
+>>
+>> On 2019/1/31 22:55, Jean-Philippe Brucker wrote:
+>>> Hi,
+>>>
+>>> On 31/01/2019 13:52, Zhen Lei wrote:
+>>>> Currently, many peripherals are faster than before. For example, the top
+>>>> speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
+>>>> when iommu page-table mapping enabled, it's hard to reach the top speed
+>>>> in strict mode, because of frequently map and unmap operations. In order
+>>>> to keep abreast of the times, I think it's better to set non-strict as
+>>>> default.
+>>>
+>>> Most users won't be aware of this relaxation and will have their system
+>>> vulnerable to e.g. thunderbolt hotplug. See for example 4.3 Deferred
+>>> Invalidation in
+>>> http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2018/MSC/MSC-2018-21.pdf
+> Hi Jean,
+> 
+>    In fact, we have discussed the vulnerable of deferred invalidation before upstream
+> the non-strict patches. The attacks maybe possible because of an untrusted device or
+> the mistake of the device driver. And we limited the VFIO to still use strict mode.
+>    As mentioned in the pdf, limit the freed memory with deferred invalidation only to
+> be reused by the device, can mitigate the vulnerability. But it's too hard to implement
+> it now.
+>    A compromise maybe we only apply non-strict to (1) dma_free_coherent, because the
+> memory is controlled by DMA common module, so we can make the memory to be freed after
+> the global invalidation in the timer handler. (2) And provide some new APIs related to
+> iommu_unmap_page/sg, these new APIs deferred invalidation. And the candiate device
+> drivers update the APIs if they want to improve performance. (3) Make sure that only
+> the trusted devices and trusted drivers can apply (1) and (2). For example, the driver
+> must be built into kernel Image.
+
+Do we have a notion of untrusted kernel drivers? A userspace driver
+(VFIO) is untrusted, ok. But a malicious driver loaded into the kernel
+address space would have much easier ways to corrupt the system than to
+exploit lazy mode...
+
+For (3), I agree that we should at least disallow lazy mode if
+pci_dev->untrusted is set. At the moment it means that we require the
+strictest IOMMU configuration for external-facing PCI ports, but it can
+be extended to blacklist other vulnerable devices or locations.
+
+If you do (3) then maybe we don't need (1) and (2), which require a
+tonne of work in the DMA and IOMMU layers (but would certainly be nice
+to see, since it would also help handle ATS invalidation timeouts)
+
+Thanks,
+Jean
+
+>    So that some high-end trusted devices use non-strict mode, and keep others still using
+> strict mode. The drivers who want to use non-strict mode, should change to use new APIs
+> by themselves.
+> 
+> 
+>>>
+>>> Why not keep the policy to secure by default, as we do for
+>>> iommu.passthrough? And maybe add something similar to
+>>> CONFIG_IOMMU_DEFAULT_PASSTRHOUGH? It's easy enough for experts to pass a
+>>> command-line argument or change the default config.
+>>
+>> Sorry for the late reply, it was Chinese new year, and we had a long discussion
+>> internally, we are fine to add a Kconfig but not sure OS vendors will set it
+>> to default y.
+>>
+>> OS vendors seems not happy to pass a command-line argument, to be honest,
+>> this is our motivation to enable non-strict as default. Hope OS vendors
+>> can see this email thread, and give some input here.
+>>
+>> Thanks
+>> Hanjun
+>>
+>>
+>> .
+>>
+> 
