@@ -1,54 +1,60 @@
-From: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH 1/1] iommu: Bind process address spaces to devices
-Date: Thu, 28 Feb 2019 14:04:49 -0800
-Message-ID: <20190228220449.GA12682@araj-mobl1.jf.intel.com>
-References: <20190220142759.33308-1-jean-philippe.brucker@arm.com>
- <20190220142759.33308-2-jean-philippe.brucker@arm.com>
- <20190226111743.GK20740@8bytes.org>
- <20190227134129.51ad42ac@jacob-builder>
- <20190228140950.GD1594@8bytes.org>
- <20190228131549.6c0e5fad@jacob-builder>
+From: Pingfan Liu <kernelfans@gmail.com>
+Subject: Re: [PATCHv7] x86/kdump: bugfix, make the behavior of crashkernel=X
+ consistent with kaslr
+Date: Fri, 1 Mar 2019 11:04:19 +0800
+Message-ID: <CAFgQCTvP-YDUEcHTgupr+ar+qeoj5rw1y8k+6kzrzHPzTqBkaw@mail.gmail.com>
+References: <20190215102458.GD10433@zn.tnic> <20190218014820.GA10711@dhcp-128-65.nay.redhat.com>
+ <20190220083241.GA3447@zn.tnic> <20190220094146.GA8597@dhcp-128-65.nay.redhat.com>
+ <20190221171321.GD12997@zn.tnic> <20190222021101.GA11654@dhcp-128-65.nay.redhat.com>
+ <20190222084241.GC8380@suse.de> <20190222130026.GA30766@zn.tnic>
+ <20190225110043.GA5884@suse.de> <20190225111216.GA9276@dhcp-128-65.nay.redhat.com>
+ <20190225113003.GE26145@zn.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190228131549.6c0e5fad@jacob-builder>
+In-Reply-To: <20190225113003.GE26145@zn.tnic>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, christian.koenig@amd.com, kevin.tian@intel.com, baolu.lu@linux.intel.com, alex.williamson@redhat.com, Ashok Raj <ashok.raj@intel.com>
+To: Borislav Petkov <bp@alien8.de>
+Cc: Dave Young <dyoung@redhat.com>, Joerg Roedel <jroedel@suse.de>, Baoquan He <bhe@redhat.com>, Jerry Hoemann <jerry.hoemann@hpe.com>, x86@kernel.org, Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, Yinghai Lu <yinghai@kernel.org>, vgoyal@redhat.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 28, 2019 at 01:15:49PM -0800, Jacob Pan wrote:
-> On Thu, 28 Feb 2019 15:09:50 +0100
-> Joerg Roedel <joro@8bytes.org> wrote:
-> 
-> > Hi Jacob,
-> > 
-> > On Wed, Feb 27, 2019 at 01:41:29PM -0800, Jacob Pan wrote:
-> > > On Tue, 26 Feb 2019 12:17:43 +0100
-> > > Joerg Roedel <joro@8bytes.org> wrote:  
-> > 
-> > > Just trying to understand how to use this API.
-> > > So if we bind the same mm to two different devices, we should get
-> > > two different iommu_sva handle, right?
-> > > I think intel-svm still needs a flag argument for supervisor pasid
-> > > etc. Other than that, I think both interface should work for vt-d.  
-> > 
-> > I second Jean's question here, is supervisor pasid still needed with
-> > scalable mode? What is the use-case and which mm_struct will be used
-> > for supervisor accesses?
-> > 
-> I will delegate this to Ashok.
+Hi Borislav,
 
-Supervisor PASID is still required for some kernel clients. Some of our
-IB folks had asked for it. Current implementation uses init_mm, but
-we know this is dangerous. Plus since the kernel has no support for
-mmu_notifiers for kernel memory we were not able to invalidate
-device tlb after memory was freed.
+Do you think the following patch is good at present?
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 81f9d23..9213073 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -460,7 +460,7 @@ static void __init
+memblock_x86_reserve_range_setup_data(void)
+ # define CRASH_ADDR_LOW_MAX    (512 << 20)
+ # define CRASH_ADDR_HIGH_MAX   (512 << 20)
+ #else
+-# define CRASH_ADDR_LOW_MAX    (896UL << 20)
++# define CRASH_ADDR_LOW_MAX    (1 << 32)
+ # define CRASH_ADDR_HIGH_MAX   MAXMEM
+ #endif
 
-Suppose we could just build regular page-tables much like how the map/unmap
-does today, but bind it with a Supervisor PASID. This way we don't open
-up the kimono to the device, but only open select portions on request.
+For documentation, I will send another patch to improve the description.
 
-we haven't spent enough time on it lately, but will focus once the core
-pieces are completed for the baseline support for Scalable mode.
+Thanks,
+Pingfan
+
+On Mon, Feb 25, 2019 at 7:30 PM Borislav Petkov <bp@alien8.de> wrote:
+>
+> On Mon, Feb 25, 2019 at 07:12:16PM +0800, Dave Young wrote:
+> > If we move to high as default, it will allocate 160M high + 256M low. It
+>
+> We won't move to high by default - we will *fall* back to high if the
+> default allocation fails.
+>
+> > To make the process less fragile maybe we can remove the 896M limitation
+> > and only try <4G then go to high.
+>
+> Sure, the more robust for the user, the better.
+>
+> --
+> Regards/Gruss,
+>     Boris.
+>
+> Good mailing practices for 400: avoid top-posting and trim the reply.
