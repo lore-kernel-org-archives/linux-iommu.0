@@ -1,102 +1,340 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as
- non-strict
-Date: Fri, 1 Mar 2019 11:07:26 +0000
-Message-ID: <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
-References: <20190131135211.6732-1-thunder.leizhen@huawei.com>
- <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
- <dc06dfd0-0ab6-6f0b-64c6-2587a2a55798@huawei.com>
- <5C78B89C.7040100@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu: io-pgtable: Add ARM Mali midgard MMU page table
+ format
+Date: Fri, 1 Mar 2019 16:28:08 +0000
+Message-ID: <e7a36bc9-e425-064b-ca12-3c655c8e5d4a@arm.com>
+References: <20190227232242.26910-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5C78B89C.7040100@huawei.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190227232242.26910-1-robh@kernel.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>, Linuxarm <linuxarm@huawei.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Leizhen,
-
-On 01/03/2019 04:44, Leizhen (ThunderTown) wrote:
+On 27/02/2019 23:22, Rob Herring wrote:
+> ARM Mali midgard GPU page tables are similar to standard 64-bit stage 1
+> page tables, but have a few differences. Add a new format type to
+> represent the format. The input address size is 48-bits and the output
+> address size is 40-bits (and possibly less?). Note that the later
+> bifrost GPUs follow the standard 64-bit stage 1 format.
 > 
+> The differences in the format compared to 64-bit stage 1 format are:
 > 
-> On 2019/2/26 20:36, Hanjun Guo wrote:
->> Hi Jean,
->>
->> On 2019/1/31 22:55, Jean-Philippe Brucker wrote:
->>> Hi,
->>>
->>> On 31/01/2019 13:52, Zhen Lei wrote:
->>>> Currently, many peripherals are faster than before. For example, the top
->>>> speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
->>>> when iommu page-table mapping enabled, it's hard to reach the top speed
->>>> in strict mode, because of frequently map and unmap operations. In order
->>>> to keep abreast of the times, I think it's better to set non-strict as
->>>> default.
->>>
->>> Most users won't be aware of this relaxation and will have their system
->>> vulnerable to e.g. thunderbolt hotplug. See for example 4.3 Deferred
->>> Invalidation in
->>> http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2018/MSC/MSC-2018-21.pdf
-> Hi Jean,
+> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
 > 
->    In fact, we have discussed the vulnerable of deferred invalidation before upstream
-> the non-strict patches. The attacks maybe possible because of an untrusted device or
-> the mistake of the device driver. And we limited the VFIO to still use strict mode.
->    As mentioned in the pdf, limit the freed memory with deferred invalidation only to
-> be reused by the device, can mitigate the vulnerability. But it's too hard to implement
-> it now.
->    A compromise maybe we only apply non-strict to (1) dma_free_coherent, because the
-> memory is controlled by DMA common module, so we can make the memory to be freed after
-> the global invalidation in the timer handler. (2) And provide some new APIs related to
-> iommu_unmap_page/sg, these new APIs deferred invalidation. And the candiate device
-> drivers update the APIs if they want to improve performance. (3) Make sure that only
-> the trusted devices and trusted drivers can apply (1) and (2). For example, the driver
-> must be built into kernel Image.
-
-Do we have a notion of untrusted kernel drivers? A userspace driver
-(VFIO) is untrusted, ok. But a malicious driver loaded into the kernel
-address space would have much easier ways to corrupt the system than to
-exploit lazy mode...
-
-For (3), I agree that we should at least disallow lazy mode if
-pci_dev->untrusted is set. At the moment it means that we require the
-strictest IOMMU configuration for external-facing PCI ports, but it can
-be extended to blacklist other vulnerable devices or locations.
-
-If you do (3) then maybe we don't need (1) and (2), which require a
-tonne of work in the DMA and IOMMU layers (but would certainly be nice
-to see, since it would also help handle ATS invalidation timeouts)
-
-Thanks,
-Jean
-
->    So that some high-end trusted devices use non-strict mode, and keep others still using
-> strict mode. The drivers who want to use non-strict mode, should change to use new APIs
-> by themselves.
+> The access flags are not read-only and unprivileged, but read and write.
+> This is similar to stage 2 entries, but the memory attributes field matches
+> stage 1 being an index.
 > 
+> The nG bit is not set by the vendor driver. This one didn't seem to matter,
+> but we'll keep it aligned to the vendor driver.
 > 
->>>
->>> Why not keep the policy to secure by default, as we do for
->>> iommu.passthrough? And maybe add something similar to
->>> CONFIG_IOMMU_DEFAULT_PASSTRHOUGH? It's easy enough for experts to pass a
->>> command-line argument or change the default config.
->>
->> Sorry for the late reply, it was Chinese new year, and we had a long discussion
->> internally, we are fine to add a Kconfig but not sure OS vendors will set it
->> to default y.
->>
->> OS vendors seems not happy to pass a command-line argument, to be honest,
->> this is our motivation to enable non-strict as default. Hope OS vendors
->> can see this email thread, and give some input here.
->>
->> Thanks
->> Hanjun
->>
->>
->> .
->>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Robin, Hopefully this is what you had in mind.
+
+Getting there, for sure :)
+
+>   drivers/iommu/io-pgtable-arm.c | 70 +++++++++++++++++++++++++++-------
+>   drivers/iommu/io-pgtable.c     |  1 +
+>   include/linux/io-pgtable.h     |  2 +
+>   3 files changed, 59 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index d3700ec15cbd..84beea1f47a7 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -180,11 +180,6 @@
+>   
+>   #define iopte_prot(pte)	((pte) & ARM_LPAE_PTE_ATTR_MASK)
+>   
+> -#define iopte_leaf(pte,l)					\
+> -	(l == (ARM_LPAE_MAX_LEVELS - 1) ?			\
+> -		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE) :	\
+> -		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK))
+> -
+>   struct arm_lpae_io_pgtable {
+>   	struct io_pgtable	iop;
+>   
+> @@ -198,6 +193,14 @@ struct arm_lpae_io_pgtable {
+>   
+>   typedef u64 arm_lpae_iopte;
+>   
+> +static inline bool iopte_leaf(arm_lpae_iopte pte, int l, enum io_pgtable_fmt fmt)
+> +{
+> +	if ((l == (ARM_LPAE_MAX_LEVELS - 1)) && (fmt != ARM_MALI_LPAE))
+> +		return iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE;
+> +
+> +	return iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK;
+> +}
+> +
+>   static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
+>   				     struct arm_lpae_io_pgtable *data)
+>   {
+> @@ -304,11 +307,14 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>   		pte |= ARM_LPAE_PTE_NS;
+>   
+>   	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
+> -		pte |= ARM_LPAE_PTE_TYPE_PAGE;
+> +		pte |= (data->iop.fmt == ARM_MALI_LPAE) ?
+> +			ARM_LPAE_PTE_TYPE_BLOCK : ARM_LPAE_PTE_TYPE_PAGE;
+
+Yuck at that ternary... Made worse by the previous hunk which proves you 
+already know the nice reasonable way to structure this logic ;)
+
+>   	else
+>   		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
+>   
+> -	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
+> +	if (data->iop.fmt != ARM_MALI_LPAE)
+> +		pte |= ARM_LPAE_PTE_AF;
+
+So ENTRY_ACCESS_BIT is something different from the VMSA access flag then?
+
+> +	pte |= ARM_LPAE_PTE_SH_IS;
+>   	pte |= paddr_to_iopte(paddr, data);
+>   
+>   	__arm_lpae_set_pte(ptep, pte, &data->iop.cfg);
+> @@ -321,7 +327,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>   {
+>   	arm_lpae_iopte pte = *ptep;
+>   
+> -	if (iopte_leaf(pte, lvl)) {
+> +	if (iopte_leaf(pte, lvl, data->iop.fmt)) {
+>   		/* We require an unmap first */
+>   		WARN_ON(!selftest_running);
+>   		return -EEXIST;
+> @@ -409,7 +415,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+>   		__arm_lpae_sync_pte(ptep, cfg);
+>   	}
+>   
+> -	if (pte && !iopte_leaf(pte, lvl)) {
+> +	if (pte && !iopte_leaf(pte, lvl, data->iop.fmt)) {
+>   		cptep = iopte_deref(pte, data);
+>   	} else if (pte) {
+>   		/* We require an unmap first */
+> @@ -426,7 +432,22 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>   {
+>   	arm_lpae_iopte pte;
+>   
+> -	if (data->iop.fmt == ARM_64_LPAE_S1 ||
+> +	if (data->iop.fmt == ARM_MALI_LPAE) {
+> +		pte = 0;
+> +
+> +		if (prot & IOMMU_WRITE)
+> +			pte |= ARM_LPAE_PTE_AP_RDONLY;
+
+This one in particular I will never be able to look at without 
+instinctively thinking "hang on, how did I ever let that bug slip 
+through?"...
+
+> +
+> +		if (prot & IOMMU_READ)
+> +			pte |= ARM_LPAE_PTE_AP_UNPRIV;
+
+...while this one only looks utterly insane. Can we please at least use 
+the stage 2 permission definitions for these so that they're actually 
+readable.
+
+> +
+> +		if (prot & IOMMU_MMIO)
+> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
+> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +		else if (prot & IOMMU_CACHE)
+> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +	} else if (data->iop.fmt == ARM_64_LPAE_S1 ||
+
+In fact, looking at it now, I think it only takes a little (untested) 
+refactor to split permissions vs. attributes to get the Mali version for 
+free:
+
+----->8-----
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 237cacd4a62b..3cbc08bb7acd 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -430,31 +430,33 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct 
+arm_lpae_io_pgtable *data,
+  	if (data->iop.fmt == ARM_64_LPAE_S1 ||
+  	    data->iop.fmt == ARM_32_LPAE_S1) {
+  		pte = ARM_LPAE_PTE_nG;
+-
+  		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+  			pte |= ARM_LPAE_PTE_AP_RDONLY;
+-
+  		if (!(prot & IOMMU_PRIV))
+  			pte |= ARM_LPAE_PTE_AP_UNPRIV;
+-
+-		if (prot & IOMMU_MMIO)
+-			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
+-				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+-		else if (prot & IOMMU_CACHE)
+-			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+-				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+  	} else {
+  		pte = ARM_LPAE_PTE_HAP_FAULT;
+  		if (prot & IOMMU_READ)
+  			pte |= ARM_LPAE_PTE_HAP_READ;
+  		if (prot & IOMMU_WRITE)
+  			pte |= ARM_LPAE_PTE_HAP_WRITE;
++	}
++
++	if (data->iop.fmt == ARM_64_LPAE_S2 ||
++	    data->iop.fmt == ARM_32_LPAE_S2) {
+  		if (prot & IOMMU_MMIO)
+  			pte |= ARM_LPAE_PTE_MEMATTR_DEV;
+  		else if (prot & IOMMU_CACHE)
+  			pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
+  		else
+  			pte |= ARM_LPAE_PTE_MEMATTR_NC;
++	} else {
++		if (prot & IOMMU_MMIO)
++			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++		else if (prot & IOMMU_CACHE)
++			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+  	}
+
+  	if (prot & IOMMU_NOEXEC)
+-----8<-----
+
+>   	    data->iop.fmt == ARM_32_LPAE_S1) {
+>   		pte = ARM_LPAE_PTE_nG;
+>   
+> @@ -511,7 +532,7 @@ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
+>   	while (ptep != end) {
+>   		arm_lpae_iopte pte = *ptep++;
+>   
+> -		if (!pte || iopte_leaf(pte, lvl))
+> +		if (!pte || iopte_leaf(pte, lvl, data->iop.fmt))
+>   			continue;
+>   
+>   		__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
+> @@ -602,7 +623,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>   	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
+>   		__arm_lpae_set_pte(ptep, 0, &iop->cfg);
+>   
+> -		if (!iopte_leaf(pte, lvl)) {
+> +		if (!iopte_leaf(pte, lvl, iop->fmt)) {
+>   			/* Also flush any partial walks */
+>   			io_pgtable_tlb_add_flush(iop, iova, size,
+>   						ARM_LPAE_GRANULE(data), false);
+> @@ -621,7 +642,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>   		}
+>   
+>   		return size;
+> -	} else if (iopte_leaf(pte, lvl)) {
+> +	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
+>   		/*
+>   		 * Insert a table at the next level to map the old region,
+>   		 * minus the part we want to unmap
+> @@ -669,7 +690,7 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>   			return 0;
+>   
+>   		/* Leaf entry? */
+> -		if (iopte_leaf(pte,lvl))
+> +		if (iopte_leaf(pte,lvl, data->iop.fmt))
+
+Super-nit: If you're touching this line anyway, would you mind adding 
+the currently-missing space as well?
+
+>   			goto found_translation;
+>   
+>   		/* Take it to the next level */
+> @@ -995,6 +1016,22 @@ arm_32_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+>   	return iop;
+>   }
+>   
+> +static struct io_pgtable *
+> +arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+> +{
+> +	struct io_pgtable *iop;
+> +
+> +	if (cfg->ias != 48 || cfg->oas > 40)
+> +		return NULL;
+> +
+> +	cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
+> +	iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+> +	if (iop)
+> +		cfg->arm_lpae_s1_cfg.tcr = 0;
+
+The general design intent is that we return ready-to-go register values 
+here (much like mmu_get_as_setup() in mali_kbase, it seems), so I think 
+it's worth adding an arm_mali_cfg to the io_pgtable_cfg union and 
+transforming the VMSA output into final transtab/transcfg/memattr format 
+at this point, rather then callers needing to care (e.g. some of those 
+AS_TRANSTAB_LPAE_* bits look reminiscent of the walk attributes we set 
+up for a VMSA TCR).
+
+Robin.
+
+> +
+> +	return iop;
+> +}
+> +
+>   struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
+>   	.alloc	= arm_64_lpae_alloc_pgtable_s1,
+>   	.free	= arm_lpae_free_pgtable,
+> @@ -1015,6 +1052,11 @@ struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
+>   	.free	= arm_lpae_free_pgtable,
+>   };
+>   
+> +struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
+> +	.alloc	= arm_mali_lpae_alloc_pgtable,
+> +	.free	= arm_lpae_free_pgtable,
+> +};
+> +
+>   #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
+>   
+>   static struct io_pgtable_cfg *cfg_cookie;
+> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+> index 93f2880be6c6..5227cfdbb65b 100644
+> --- a/drivers/iommu/io-pgtable.c
+> +++ b/drivers/iommu/io-pgtable.c
+> @@ -30,6 +30,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+>   	[ARM_32_LPAE_S2] = &io_pgtable_arm_32_lpae_s2_init_fns,
+>   	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
+>   	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
+> +	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
+>   #endif
+>   #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
+>   	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 47d5ae559329..5f0be2471651 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -12,6 +12,7 @@ enum io_pgtable_fmt {
+>   	ARM_64_LPAE_S1,
+>   	ARM_64_LPAE_S2,
+>   	ARM_V7S,
+> +	ARM_MALI_LPAE,
+>   	IO_PGTABLE_NUM_FMTS,
+>   };
+>   
+> @@ -209,5 +210,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
+>   extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
+>   extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
+>   extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
+> +extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
+>   
+>   #endif /* __IO_PGTABLE_H */
 > 
