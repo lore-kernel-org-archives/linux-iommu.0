@@ -1,129 +1,32 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as
- non-strict
-Date: Sat, 2 Mar 2019 14:12:49 +0800
-Message-ID: <5C7A1EE1.6020200@huawei.com>
-References: <20190131135211.6732-1-thunder.leizhen@huawei.com>
- <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
- <dc06dfd0-0ab6-6f0b-64c6-2587a2a55798@huawei.com>
- <5C78B89C.7040100@huawei.com> <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH 1/4] iommu/vt-d: Disable ATS support on untrusted devices
+Date: Sat, 2 Mar 2019 10:29:28 +0200
+Message-ID: <20190302082928.GX4511@lahna.fi.intel.com>
+References: <20190301032313.9311-1-baolu.lu@linux.intel.com>
+ <20190301032313.9311-2-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Hanjun Guo <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>, Linuxarm <linuxarm@huawei.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190301032313.9311-2-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, Mar 01, 2019 at 11:23:10AM +0800, Lu Baolu wrote:
+> Commit fb58fdcd295b9 ("iommu/vt-d: Do not enable ATS for untrusted
+> devices") disables ATS support on the devices which have been marked
+> as untrusted. Unfortunately this is not enough to fix the DMA attack
+> vulnerabiltiies because IOMMU driver allows translated requests as
+> long as a device advertises the ATS capability. Hence a malicious
+> peripheral device could use this to bypass IOMMU.
+> 
+> This disables the ATS support on untrusted devices by clearing the
+> internal per-device ATS mark. As the result, IOMMU driver will block
+> any translated requests from any device marked as untrusted.
+> 
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-
-On 2019/3/1 19:07, Jean-Philippe Brucker wrote:
-> Hi Leizhen,
-> 
-> On 01/03/2019 04:44, Leizhen (ThunderTown) wrote:
->>
->>
->> On 2019/2/26 20:36, Hanjun Guo wrote:
->>> Hi Jean,
->>>
->>> On 2019/1/31 22:55, Jean-Philippe Brucker wrote:
->>>> Hi,
->>>>
->>>> On 31/01/2019 13:52, Zhen Lei wrote:
->>>>> Currently, many peripherals are faster than before. For example, the top
->>>>> speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
->>>>> when iommu page-table mapping enabled, it's hard to reach the top speed
->>>>> in strict mode, because of frequently map and unmap operations. In order
->>>>> to keep abreast of the times, I think it's better to set non-strict as
->>>>> default.
->>>>
->>>> Most users won't be aware of this relaxation and will have their system
->>>> vulnerable to e.g. thunderbolt hotplug. See for example 4.3 Deferred
->>>> Invalidation in
->>>> http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2018/MSC/MSC-2018-21.pdf
->> Hi Jean,
->>
->>    In fact, we have discussed the vulnerable of deferred invalidation before upstream
->> the non-strict patches. The attacks maybe possible because of an untrusted device or
->> the mistake of the device driver. And we limited the VFIO to still use strict mode.
->>    As mentioned in the pdf, limit the freed memory with deferred invalidation only to
->> be reused by the device, can mitigate the vulnerability. But it's too hard to implement
->> it now.
->>    A compromise maybe we only apply non-strict to (1) dma_free_coherent, because the
->> memory is controlled by DMA common module, so we can make the memory to be freed after
->> the global invalidation in the timer handler. (2) And provide some new APIs related to
->> iommu_unmap_page/sg, these new APIs deferred invalidation. And the candiate device
->> drivers update the APIs if they want to improve performance. (3) Make sure that only
->> the trusted devices and trusted drivers can apply (1) and (2). For example, the driver
->> must be built into kernel Image.
-> 
-> Do we have a notion of untrusted kernel drivers? A userspace driver
-It seems impossible to have such driver. The modules insmod by root users should be
-guaranteed by themselves.
-
-> (VFIO) is untrusted, ok. But a malicious driver loaded into the kernel
-> address space would have much easier ways to corrupt the system than to
-> exploit lazy mode...
-Yes, so that we have no need to consider untrusted drivers.
-
-> 
-> For (3), I agree that we should at least disallow lazy mode if
-> pci_dev->untrusted is set. At the moment it means that we require the
-> strictest IOMMU configuration for external-facing PCI ports, but it can
-> be extended to blacklist other vulnerable devices or locations.
-I plan to add an attribute file for each device, espcially for hotplug devices. And
-let the root users to decide which mode should be used, strict or non-strict. Becasue
-they should known whether the hot-plug divice is trusted or not.
-
-> 
-> If you do (3) then maybe we don't need (1) and (2), which require a
-> tonne of work in the DMA and IOMMU layers (but would certainly be nice
-> to see, since it would also help handle ATS invalidation timeouts)
-> 
-> Thanks,
-> Jean
-> 
->>    So that some high-end trusted devices use non-strict mode, and keep others still using
->> strict mode. The drivers who want to use non-strict mode, should change to use new APIs
->> by themselves.
->>
->>
->>>>
->>>> Why not keep the policy to secure by default, as we do for
->>>> iommu.passthrough? And maybe add something similar to
->>>> CONFIG_IOMMU_DEFAULT_PASSTRHOUGH? It's easy enough for experts to pass a
->>>> command-line argument or change the default config.
->>>
->>> Sorry for the late reply, it was Chinese new year, and we had a long discussion
->>> internally, we are fine to add a Kconfig but not sure OS vendors will set it
->>> to default y.
->>>
->>> OS vendors seems not happy to pass a command-line argument, to be honest,
->>> this is our motivation to enable non-strict as default. Hope OS vendors
->>> can see this email thread, and give some input here.
->>>
->>> Thanks
->>> Hanjun
->>>
->>>
->>> .
->>>
->>
-> 
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
