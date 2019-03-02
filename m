@@ -1,178 +1,129 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH RFC/RFT] dma-contiguous: Get normal pages for single-page allocations
-Date: Fri,  1 Mar 2019 19:14:42 -0800
-Message-ID: <20190302031442.22767-1-nicoleotsuka@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de, robin.murphy@arm.com
-Cc: vdumpa@nvidia.com, catalin.marinas@arm.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as
+ non-strict
+Date: Sat, 2 Mar 2019 14:12:49 +0800
+Message-ID: <5C7A1EE1.6020200@huawei.com>
+References: <20190131135211.6732-1-thunder.leizhen@huawei.com>
+ <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
+ <dc06dfd0-0ab6-6f0b-64c6-2587a2a55798@huawei.com>
+ <5C78B89C.7040100@huawei.com> <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Hanjun Guo <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Yunsheng Lin <linyunsheng@huawei.com>, Linuxarm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The addresses within a single page are always contiguous, so it's
-not so necessary to always allocate one single page from CMA area.
-Since the CMA area has a limited predefined size of space, it may
-run out of space in heavy use cases, where there might be quite a
-lot CMA pages being allocated for single pages.
 
-However, there is also a concern that a device might care where a
-page comes from -- it might expect the page from CMA area and act
-differently if the page doesn't.
 
-This patch tries to get normal pages for single-page allocations
-unless the device has its own CMA area. This would save resources
-from the CMA area for more CMA allocations. And it'd also reduce
-CMA fragmentations resulted from trivial allocations.
+On 2019/3/1 19:07, Jean-Philippe Brucker wrote:
+> Hi Leizhen,
+> 
+> On 01/03/2019 04:44, Leizhen (ThunderTown) wrote:
+>>
+>>
+>> On 2019/2/26 20:36, Hanjun Guo wrote:
+>>> Hi Jean,
+>>>
+>>> On 2019/1/31 22:55, Jean-Philippe Brucker wrote:
+>>>> Hi,
+>>>>
+>>>> On 31/01/2019 13:52, Zhen Lei wrote:
+>>>>> Currently, many peripherals are faster than before. For example, the top
+>>>>> speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
+>>>>> when iommu page-table mapping enabled, it's hard to reach the top speed
+>>>>> in strict mode, because of frequently map and unmap operations. In order
+>>>>> to keep abreast of the times, I think it's better to set non-strict as
+>>>>> default.
+>>>>
+>>>> Most users won't be aware of this relaxation and will have their system
+>>>> vulnerable to e.g. thunderbolt hotplug. See for example 4.3 Deferred
+>>>> Invalidation in
+>>>> http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2018/MSC/MSC-2018-21.pdf
+>> Hi Jean,
+>>
+>>    In fact, we have discussed the vulnerable of deferred invalidation before upstream
+>> the non-strict patches. The attacks maybe possible because of an untrusted device or
+>> the mistake of the device driver. And we limited the VFIO to still use strict mode.
+>>    As mentioned in the pdf, limit the freed memory with deferred invalidation only to
+>> be reused by the device, can mitigate the vulnerability. But it's too hard to implement
+>> it now.
+>>    A compromise maybe we only apply non-strict to (1) dma_free_coherent, because the
+>> memory is controlled by DMA common module, so we can make the memory to be freed after
+>> the global invalidation in the timer handler. (2) And provide some new APIs related to
+>> iommu_unmap_page/sg, these new APIs deferred invalidation. And the candiate device
+>> drivers update the APIs if they want to improve performance. (3) Make sure that only
+>> the trusted devices and trusted drivers can apply (1) and (2). For example, the driver
+>> must be built into kernel Image.
+> 
+> Do we have a notion of untrusted kernel drivers? A userspace driver
+It seems impossible to have such driver. The modules insmod by root users should be
+guaranteed by themselves.
 
-Also, it updates the API and its callers so as to pass gfp flags.
+> (VFIO) is untrusted, ok. But a malicious driver loaded into the kernel
+> address space would have much easier ways to corrupt the system than to
+> exploit lazy mode...
+Yes, so that we have no need to consider untrusted drivers.
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- arch/arm/mm/dma-mapping.c      |  5 ++---
- arch/arm64/mm/dma-mapping.c    |  2 +-
- arch/xtensa/kernel/pci-dma.c   |  2 +-
- drivers/iommu/amd_iommu.c      |  2 +-
- drivers/iommu/intel-iommu.c    |  3 +--
- include/linux/dma-contiguous.h |  4 ++--
- kernel/dma/contiguous.c        | 23 +++++++++++++++++++----
- 7 files changed, 27 insertions(+), 14 deletions(-)
+> 
+> For (3), I agree that we should at least disallow lazy mode if
+> pci_dev->untrusted is set. At the moment it means that we require the
+> strictest IOMMU configuration for external-facing PCI ports, but it can
+> be extended to blacklist other vulnerable devices or locations.
+I plan to add an attribute file for each device, espcially for hotplug devices. And
+let the root users to decide which mode should be used, strict or non-strict. Becasue
+they should known whether the hot-plug divice is trusted or not.
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 8a90f298af96..c39fc2d97712 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -588,7 +588,7 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
- 	struct page *page;
- 	void *ptr = NULL;
- 
--	page = dma_alloc_from_contiguous(dev, count, order, gfp & __GFP_NOWARN);
-+	page = dma_alloc_from_contiguous(dev, count, order, gfp);
- 	if (!page)
- 		return NULL;
- 
-@@ -1293,8 +1293,7 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
- 		unsigned long order = get_order(size);
- 		struct page *page;
- 
--		page = dma_alloc_from_contiguous(dev, count, order,
--						 gfp & __GFP_NOWARN);
-+		page = dma_alloc_from_contiguous(dev, count, order, gfp);
- 		if (!page)
- 			goto error;
- 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 78c0a72f822c..660adedaab5d 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -159,7 +159,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 		struct page *page;
- 
- 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--					get_order(size), gfp & __GFP_NOWARN);
-+						 get_order(size), gfp);
- 		if (!page)
- 			return NULL;
- 
-diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
-index 9171bff76fc4..e15b893caadb 100644
---- a/arch/xtensa/kernel/pci-dma.c
-+++ b/arch/xtensa/kernel/pci-dma.c
-@@ -157,7 +157,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
- 
- 	if (gfpflags_allow_blocking(flag))
- 		page = dma_alloc_from_contiguous(dev, count, get_order(size),
--						 flag & __GFP_NOWARN);
-+						 flag);
- 
- 	if (!page)
- 		page = alloc_pages(flag | __GFP_ZERO, get_order(size));
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6b0760dafb3e..c54923a9e31f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2691,7 +2691,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
- 			return NULL;
- 
- 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--					get_order(size), flag & __GFP_NOWARN);
-+						 get_order(size), flag);
- 		if (!page)
- 			return NULL;
- 	}
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a0ef7c5e5dfe..cd3483d03f3b 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3789,8 +3789,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
- 	if (gfpflags_allow_blocking(flags)) {
- 		unsigned int count = size >> PAGE_SHIFT;
- 
--		page = dma_alloc_from_contiguous(dev, count, order,
--						 flags & __GFP_NOWARN);
-+		page = dma_alloc_from_contiguous(dev, count, order, flags);
- 		if (page && iommu_no_mapping(dev) &&
- 		    page_to_phys(page) + size > dev->coherent_dma_mask) {
- 			dma_release_from_contiguous(dev, page, count);
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index f247e8aa5e3d..b166e8a8740f 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -112,7 +112,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
- }
- 
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
--				       unsigned int order, bool no_warn);
-+				       unsigned int order, gfp_t gfp);
- bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 				 int count);
- 
-@@ -145,7 +145,7 @@ int dma_declare_contiguous(struct device *dev, phys_addr_t size,
- 
- static inline
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
--				       unsigned int order, bool no_warn)
-+				       unsigned int order, gfp_t gfp);
- {
- 	return NULL;
- }
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index b2a87905846d..11b6d6ef4fc9 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -186,16 +186,31 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
-  *
-  * This function allocates memory buffer for specified device. It uses
-  * device specific contiguous memory area if available or the default
-- * global one. Requires architecture specific dev_get_cma_area() helper
-- * function.
-+ * global one.
-+ *
-+ * However, it allocates normal pages for one-page size of allocations
-+ * instead of getting from CMA areas. As the addresses within a single
-+ * page are always contiguous, so there is no need to waste CMA pages
-+ * for that kind; it also helps reduce fragmentations in the CMA area.
-+ *
-+ * Requires architecture specific dev_get_cma_area() helper function.
-  */
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
--				       unsigned int align, bool no_warn)
-+				       unsigned int align, gfp_t gfp)
- {
-+	struct cma *cma;
-+
- 	if (align > CONFIG_CMA_ALIGNMENT)
- 		align = CONFIG_CMA_ALIGNMENT;
- 
--	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
-+	if (dev && dev->cma_area)
-+		cma = dev->cma_area;
-+	else if (count > 1)
-+		cma = dma_contiguous_default_area;
-+	else
-+		return alloc_pages(gfp, align);
-+
-+	return cma_alloc(cma, count, align, gfp & __GFP_NOWARN);
- }
- 
- /**
+> 
+> If you do (3) then maybe we don't need (1) and (2), which require a
+> tonne of work in the DMA and IOMMU layers (but would certainly be nice
+> to see, since it would also help handle ATS invalidation timeouts)
+> 
+> Thanks,
+> Jean
+> 
+>>    So that some high-end trusted devices use non-strict mode, and keep others still using
+>> strict mode. The drivers who want to use non-strict mode, should change to use new APIs
+>> by themselves.
+>>
+>>
+>>>>
+>>>> Why not keep the policy to secure by default, as we do for
+>>>> iommu.passthrough? And maybe add something similar to
+>>>> CONFIG_IOMMU_DEFAULT_PASSTRHOUGH? It's easy enough for experts to pass a
+>>>> command-line argument or change the default config.
+>>>
+>>> Sorry for the late reply, it was Chinese new year, and we had a long discussion
+>>> internally, we are fine to add a Kconfig but not sure OS vendors will set it
+>>> to default y.
+>>>
+>>> OS vendors seems not happy to pass a command-line argument, to be honest,
+>>> this is our motivation to enable non-strict as default. Hope OS vendors
+>>> can see this email thread, and give some input here.
+>>>
+>>> Thanks
+>>> Hanjun
+>>>
+>>>
+>>> .
+>>>
+>>
+> 
+> 
+> .
+> 
+
 -- 
-2.17.1
+Thanks!
+BestRegards
