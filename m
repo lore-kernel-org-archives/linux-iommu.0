@@ -1,158 +1,84 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH v1 05/15] iommu/arm-smmu: Add auxiliary domain support
- for arm-smmuv2
-Date: Mon, 4 Mar 2019 12:19:49 +0000
-Message-ID: <d0d0849f-56ab-94c6-f081-210f94353a2d@arm.com>
-References: <1551469117-3404-1-git-send-email-jcrouse@codeaurora.org>
- <1551469117-3404-6-git-send-email-jcrouse@codeaurora.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2] iommu: io-pgtable: Add ARM Mali midgard MMU page table
+ format
+Date: Mon, 4 Mar 2019 09:32:36 -0600
+Message-ID: <CAL_JsqJsfM1JM_7hhUboZx+zBo_tP8LUR8xTLZOQ0OWGdh=Q7A@mail.gmail.com>
+References: <20190227232242.26910-1-robh@kernel.org>
+ <e7a36bc9-e425-064b-ca12-3c655c8e5d4a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1551469117-3404-6-git-send-email-jcrouse@codeaurora.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jordan Crouse <jcrouse@codeaurora.org>, freedreno@lists.freedesktop.org
-Cc: linux-arm-msm@vger.kernel.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, dianders@chromimum.org, hoegsberg@google.com, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <e7a36bc9-e425-064b-ca12-3c655c8e5d4a@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will.deacon@arm.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jordan,
-
-On 01/03/2019 19:38, Jordan Crouse wrote:
-> Support the new auxiliary domain API for arm-smmuv2 to initialize and
-> support multiple pagetables for a SMMU device. Since the smmu-v2 hardware
-> doesn't have any built in support for switching the pagetable base it is
-> left as an exercise to the caller to actually use the pagetable; aux
-> domains in the IOMMU driver are only preoccupied with creating and managing
-> the pagetable memory.
-> 
-> Following is a pseudo code example of how a domain can be created
-> 
->  /* Check to see if aux domains are supported */
->  if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
-> 	 iommu = iommu_domain_alloc(...);
-> 
-> 	 if (iommu_aux_attach_device(domain, dev))
-> 		 return FAIL;
-> 
-> 	/* Save the base address of the pagetable for use by the driver
-> 	iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
->  }
-
-> After this 'domain' can be used like any other iommu domain to map and
-> unmap iova addresses in the pagetable. The driver/hardware can be used
-> to switch the pagetable according to its own specific implementation.
-> 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+On Fri, Mar 1, 2019 at 10:28 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 27/02/2019 23:22, Rob Herring wrote:
+> > ARM Mali midgard GPU page tables are similar to standard 64-bit stage 1
+> > page tables, but have a few differences. Add a new format type to
+> > represent the format. The input address size is 48-bits and the output
+> > address size is 40-bits (and possibly less?). Note that the later
+> > bifrost GPUs follow the standard 64-bit stage 1 format.
+> >
+> > The differences in the format compared to 64-bit stage 1 format are:
+> >
+> > The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
+> >
+> > The access flags are not read-only and unprivileged, but read and write.
+> > This is similar to stage 2 entries, but the memory attributes field matches
+> > stage 1 being an index.
+> >
+> > The nG bit is not set by the vendor driver. This one didn't seem to matter,
+> > but we'll keep it aligned to the vendor driver.
 
 [...]
-> +static bool arm_smmu_dev_has_feat(struct device *dev,
-> +		enum iommu_dev_features feat)
-> +{
-> +	/*
-> +	 * FIXME: Should we do some hardware checking here, like to be sure this
-> +	 * is a stage 1 and such?
-> +	 */
-> +
-> +	/* Always allow aux domains */
-> +	if (feat == IOMMU_DEV_FEAT_AUX)
-> +		return true;
 
-If possible, we should only return true when SMMU and GPU are able to
-coordinate and switch contexts. Can the feature be identified through ID
-reg or compatible string?
+> > +     cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
+> > +     iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+> > +     if (iop)
+> > +             cfg->arm_lpae_s1_cfg.tcr = 0;
+>
+> The general design intent is that we return ready-to-go register values
+> here (much like mmu_get_as_setup() in mali_kbase, it seems), so I think
+> it's worth adding an arm_mali_cfg to the io_pgtable_cfg union and
+> transforming the VMSA output into final transtab/transcfg/memattr format
+> at this point, rather then callers needing to care (e.g. some of those
+> AS_TRANSTAB_LPAE_* bits look reminiscent of the walk attributes we set
+> up for a VMSA TCR).
 
-If we plug a PCIe card with PASID behind a SMMUv2 'classic', and its
-driver attempts to enable AUXD support, then this should return false.
+I agree with returning ready-to-go values, but I'm not so sure the
+bits are the same. Bits 0-1 are enable/mode bits which are pretty
+specific to mali. Bit 2 is 'read inner' for whatever that means.
+Perhaps it is read allocate cacheability, but that's a bit different
+than RGN bits. Bit 4 is 'share outer'. Maybe it's the same as SH0 if
+bit 3 is included, but I have no evidence of that. So I don't think
+there's really anything to transform. We just set the bits needed. So
+here's what I have in mind:
 
-> +
-> +	return false;
-> +}
-> +
-> +/* FIXME: Add stubs for dev_enable_feat and dev_disable_feat? */
+iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+if (iop) {
+  u64 mair, ttbr;
 
-Ideally yes. Although SMMUv2 support for aux domains will likely only be
-used by the MSM driver, using the same model in all IOMMU drivers would
-ease moving things to common code later.
+  /* Copy values as union fields overlap */
+  mair = cfg->arm_lpae_s1_cfg.mair[0];
+  ttbr = cfg->arm_lpae_s1_cfg.ttbr[0];
 
-> +
-> +/* Set up a new aux domain and create a new pagetable with the same
-> + * characteristics as the master
-> + */
-> +static int arm_smmu_aux_attach_dev(struct iommu_domain *domain,
-> +		struct device *dev)
-> +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +
-> +	smmu_domain->is_aux = true;
+  cfg->arm_mali_lpae_cfg.mair = mair;
+  cfg->arm_mali_lpae_cfg.ttbr = ttbr;
+  cfg->arm_mali_lpae_cfg.ttbr |= ARM_MALI_LPAE_TTBR_READ_INNER |
+    ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
+}
 
-The API allows to attach the same domain to one device using
-aux_attach_dev() and another using attach_dev(). For SMMUv3 we'll reject
-this, since normal and aux domain are different things (one has PASID
-tables, the other doesn't). Is this supported by SMMUv2? Otherwise some
-sanity-check here might be necessary
-
-> +
-> +	/* No power is needed because aux domain doesn't touch the hardware */
-> +	return arm_smmu_init_domain_context(domain, smmu);
-> +}
-> +
->  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  {
->  	int ret;
-> @@ -1342,6 +1414,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  		return -ENXIO;
->  	}
->  
-> +	/* FIXME: Reject unmanged domains since those should be aux? */
-
-No, unmanaged domains are also used by VFIO and a couple other drivers
-that want to setup IOMMU mappings themselves.
-
-Thanks,
-Jean
-
-> +
->  	/*
->  	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
->  	 * domains between of_xlate() and add_device() - we have no way to cope
-> @@ -1388,7 +1462,13 @@ arm_smmu_get_pgtbl_ops(struct iommu_domain *domain, unsigned long iova)
->  {
->  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> -	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-> +	struct arm_smmu_cb *cb;
-> +
-> +	/* quick escape for domains that don't have split pagetables enabled */
-> +	if (!smmu_domain->pgtbl_ops[1])
-> +		return smmu_domain->pgtbl_ops[0];
-> +
-> +	cb = &smmu_domain->smmu->cbs[cfg->cbndx];
->  
->  	if (iova & cb->split_table_mask)
->  		return smmu_domain->pgtbl_ops[1];
-> @@ -1700,6 +1780,11 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
->  				!!(smmu_domain->attributes &
->  				   (1 << DOMAIN_ATTR_SPLIT_TABLES));
->  			return 0;
-> +		case DOMAIN_ATTR_PTBASE:
-> +			if (!smmu_domain->is_aux)
-> +				return -ENODEV;
-> +			*((u64 *)data) = smmu_domain->ttbr0;
-> +			return 0;
->  		default:
->  			return -ENODEV;
->  		}
-> @@ -1810,7 +1895,9 @@ static struct iommu_ops arm_smmu_ops = {
->  	.capable		= arm_smmu_capable,
->  	.domain_alloc		= arm_smmu_domain_alloc,
->  	.domain_free		= arm_smmu_domain_free,
-> +	.dev_has_feat		= arm_smmu_dev_has_feat,
->  	.attach_dev		= arm_smmu_attach_dev,
-> +	.aux_attach_dev		= arm_smmu_aux_attach_dev,
->  	.map			= arm_smmu_map,
->  	.unmap			= arm_smmu_unmap,
->  	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-> 
+Rob
