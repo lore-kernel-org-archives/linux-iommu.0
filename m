@@ -1,61 +1,158 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/2][RFC] kernel/dma: Support platform-specific default
-	CMA sizes
-Date: Mon, 4 Mar 2019 12:01:29 +0000
-Message-ID: <fe3f4ae9-6a51-0b50-09e9-6c7f52e530d3@arm.com>
-References: <20190304115255.2088-1-tzimmermann@suse.de>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH v1 05/15] iommu/arm-smmu: Add auxiliary domain support
+ for arm-smmuv2
+Date: Mon, 4 Mar 2019 12:19:49 +0000
+Message-ID: <d0d0849f-56ab-94c6-f081-210f94353a2d@arm.com>
+References: <1551469117-3404-1-git-send-email-jcrouse@codeaurora.org>
+ <1551469117-3404-6-git-send-email-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190304115255.2088-1-tzimmermann-l3A5Bk7waGM@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Zimmermann <tzimmermann-l3A5Bk7waGM@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: ptesarik-AlSwsSmVLrQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1551469117-3404-6-git-send-email-jcrouse@codeaurora.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jordan Crouse <jcrouse@codeaurora.org>, freedreno@lists.freedesktop.org
+Cc: linux-arm-msm@vger.kernel.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, dianders@chromimum.org, hoegsberg@google.com, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thomas,
+Hi Jordan,
 
-On 04/03/2019 11:52, Thomas Zimmermann wrote:
-> This is an RFC patch set that adds support for configuring a default CMA
-> size, depending on the platform.
+On 01/03/2019 19:38, Jordan Crouse wrote:
+> Support the new auxiliary domain API for arm-smmuv2 to initialize and
+> support multiple pagetables for a SMMU device. Since the smmu-v2 hardware
+> doesn't have any built in support for switching the pagetable base it is
+> left as an exercise to the caller to actually use the pagetable; aux
+> domains in the IOMMU driver are only preoccupied with creating and managing
+> the pagetable memory.
 > 
-> At SUSE, our ARM installer image runs on a variety of platforms. One of
-> these, the Raspberry Pi 3, requires CMA to be allocated on order to provide
-> graphics output. Currently this can be done with the kernel's cma command-
-> line parameter, or with a compile-time setting. The cma parameter requires
-> user intervention during boot. Using a compile-time constant affects all
-> platforms. So both options are undesireable.
+> Following is a pseudo code example of how a domain can be created
 > 
-> This patch set adds a data structure and look-up code to select a default
-> CMA size, depending on the device's model name. The kernel's cma parameter
-> or a compile-time setting take precedence of the per-device default.
-
-Is there some issue with specifying a board-specific default CMA region 
-via the existing DT binding[1]? I assume there are no ACPI concerns in 
-this particular case.
-
-Robin.
-
-[1] Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-
-> For the Raspberry Pi 3, the CMA allocator now reserves 64 MiB (out of
-> 1 GiB) by default. We found that this is enough memory to run a graphics
-> installer or a simple desktop environment under X11.
+>  /* Check to see if aux domains are supported */
+>  if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
+> 	 iommu = iommu_domain_alloc(...);
 > 
-> Thomas Zimmermann (2):
->    kernel/dma: Support device-specific CMA defaults
->    kernel/dma: Default to 64 MiB of contiguous memory on Raspberry Pi 3
+> 	 if (iommu_aux_attach_device(domain, dev))
+> 		 return FAIL;
 > 
->   kernel/dma/contiguous.c | 62 +++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 62 insertions(+)
+> 	/* Save the base address of the pagetable for use by the driver
+> 	iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
+>  }
+
+> After this 'domain' can be used like any other iommu domain to map and
+> unmap iova addresses in the pagetable. The driver/hardware can be used
+> to switch the pagetable according to its own specific implementation.
+> 
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+
+[...]
+> +static bool arm_smmu_dev_has_feat(struct device *dev,
+> +		enum iommu_dev_features feat)
+> +{
+> +	/*
+> +	 * FIXME: Should we do some hardware checking here, like to be sure this
+> +	 * is a stage 1 and such?
+> +	 */
+> +
+> +	/* Always allow aux domains */
+> +	if (feat == IOMMU_DEV_FEAT_AUX)
+> +		return true;
+
+If possible, we should only return true when SMMU and GPU are able to
+coordinate and switch contexts. Can the feature be identified through ID
+reg or compatible string?
+
+If we plug a PCIe card with PASID behind a SMMUv2 'classic', and its
+driver attempts to enable AUXD support, then this should return false.
+
+> +
+> +	return false;
+> +}
+> +
+> +/* FIXME: Add stubs for dev_enable_feat and dev_disable_feat? */
+
+Ideally yes. Although SMMUv2 support for aux domains will likely only be
+used by the MSM driver, using the same model in all IOMMU drivers would
+ease moving things to common code later.
+
+> +
+> +/* Set up a new aux domain and create a new pagetable with the same
+> + * characteristics as the master
+> + */
+> +static int arm_smmu_aux_attach_dev(struct iommu_domain *domain,
+> +		struct device *dev)
+> +{
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +
+> +	smmu_domain->is_aux = true;
+
+The API allows to attach the same domain to one device using
+aux_attach_dev() and another using attach_dev(). For SMMUv3 we'll reject
+this, since normal and aux domain are different things (one has PASID
+tables, the other doesn't). Is this supported by SMMUv2? Otherwise some
+sanity-check here might be necessary
+
+> +
+> +	/* No power is needed because aux domain doesn't touch the hardware */
+> +	return arm_smmu_init_domain_context(domain, smmu);
+> +}
+> +
+>  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  {
+>  	int ret;
+> @@ -1342,6 +1414,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  		return -ENXIO;
+>  	}
+>  
+> +	/* FIXME: Reject unmanged domains since those should be aux? */
+
+No, unmanaged domains are also used by VFIO and a couple other drivers
+that want to setup IOMMU mappings themselves.
+
+Thanks,
+Jean
+
+> +
+>  	/*
+>  	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
+>  	 * domains between of_xlate() and add_device() - we have no way to cope
+> @@ -1388,7 +1462,13 @@ arm_smmu_get_pgtbl_ops(struct iommu_domain *domain, unsigned long iova)
+>  {
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> -	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
+> +	struct arm_smmu_cb *cb;
+> +
+> +	/* quick escape for domains that don't have split pagetables enabled */
+> +	if (!smmu_domain->pgtbl_ops[1])
+> +		return smmu_domain->pgtbl_ops[0];
+> +
+> +	cb = &smmu_domain->smmu->cbs[cfg->cbndx];
+>  
+>  	if (iova & cb->split_table_mask)
+>  		return smmu_domain->pgtbl_ops[1];
+> @@ -1700,6 +1780,11 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  				!!(smmu_domain->attributes &
+>  				   (1 << DOMAIN_ATTR_SPLIT_TABLES));
+>  			return 0;
+> +		case DOMAIN_ATTR_PTBASE:
+> +			if (!smmu_domain->is_aux)
+> +				return -ENODEV;
+> +			*((u64 *)data) = smmu_domain->ttbr0;
+> +			return 0;
+>  		default:
+>  			return -ENODEV;
+>  		}
+> @@ -1810,7 +1895,9 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.capable		= arm_smmu_capable,
+>  	.domain_alloc		= arm_smmu_domain_alloc,
+>  	.domain_free		= arm_smmu_domain_free,
+> +	.dev_has_feat		= arm_smmu_dev_has_feat,
+>  	.attach_dev		= arm_smmu_attach_dev,
+> +	.aux_attach_dev		= arm_smmu_aux_attach_dev,
+>  	.map			= arm_smmu_map,
+>  	.unmap			= arm_smmu_unmap,
+>  	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
 > 
