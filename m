@@ -1,57 +1,63 @@
-From: Rosen Penev <rosenp@gmail.com>
-Subject: Re: MT76x2U crashes XHCI driver on AMD Ryzen system
-Date: Sun, 3 Mar 2019 23:20:45 -0800
-Message-ID: <CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw@mail.gmail.com>
-References: <20190115090400.GA2267@localhost.localdomain> <20190218143742.GA11872@redhat.com>
- <20190226100535.GA20740@8bytes.org> <20190226103450.GA2989@redhat.com>
- <20190226104413.GH20740@8bytes.org> <20190226112407.GB2989@redhat.com>
- <20190228090411.GA24938@redhat.com> <20190228104223.GA2749@redhat.com>
- <20190228121948.GD6072@redhat.com> <20190228134029.GC1594@8bytes.org> <20190304071037.GA2787@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v1] iommu/vt-d: Switch to bitmap_zalloc()
+Date: Mon,  4 Mar 2019 11:07:37 +0200
+Message-ID: <20190304090737.48332-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190304071037.GA2787@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stanislaw Gruszka <sgruszka@redhat.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Mar 3, 2019 at 11:10 PM Stanislaw Gruszka <sgruszka@redhat.com> wrote:
->
-> On Thu, Feb 28, 2019 at 02:40:29PM +0100, Joerg Roedel wrote:
-> > On Thu, Feb 28, 2019 at 01:19:48PM +0100, Stanislaw Gruszka wrote:
-> > > Nevermind, the patch is wrong, s->dma_address is initalized in sg_num_pages().
-> >
-> > Yes, it is. In sg_num_pages() the offset into the IOMMU mapping is
-> > stored in s->dma_address, taking also the segment boundary mask into
-> > account. map_sg() later only adds the base-address to that.
->
-> I have some more info about the issues in
-> https://bugzilla.kernel.org/show_bug.cgi?id=202673
->
-> We have some bugs in mt76. Apparently we should not use
-> page_frag_alloc() with size bigger than PAGE_SIZE as page_frag_alloc()
-> can fallback to single page allocation. And also we should not make
-> sizes unaligned as pointed in commit:
-> 3bed3cc4156e ("net: Do not allocate page fragments that are not skb aligned"
-As a small and totally unrelated note, page_frag_alloc is only used in
-mt76 and the nvme driver ;)
->
-> However after fixing that mt76usb still did not work. To make things
-> work we had to change rx frag size from 2048 to PAGE_SIZE and change
-> virt_to_head_page() to virt_to_page() when setting SG's.
->
-> I think I understand why first change was needed. If we do 2 separate
-> dma maps of 2 different buffers in single page i.e (PAGE + off=0
-> and PAGE + off=2048) it causes problem. So either map_sg() return
-> error which mt76usb does not handle correctly or there is issue
-> in AMD IOMMU because two dma maps use the same page.
->
-> But I don't understand why the second change was needed. Without
-> it we have issue with incorrect page->_refcount . It is somehow
-> related with AMD IOMMU, because on different platforms we do not
-> have such problems.
->
-> Joerg, could you look at this ? Thanks.
->
-> Stanislaw
+Switch to bitmap_zalloc() to show clearly what we are allocating.
+Besides that it returns pointer of bitmap type instead of opaque void *.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/intel_irq_remapping.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 2d74641b7f7b..634d8f059019 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -548,8 +548,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
+ 		goto out_free_table;
+ 	}
+ 
+-	bitmap = kcalloc(BITS_TO_LONGS(INTR_REMAP_TABLE_ENTRIES),
+-			 sizeof(long), GFP_ATOMIC);
++	bitmap = bitmap_zalloc(INTR_REMAP_TABLE_ENTRIES, GFP_ATOMIC);
+ 	if (bitmap == NULL) {
+ 		pr_err("IR%d: failed to allocate bitmap\n", iommu->seq_id);
+ 		goto out_free_pages;
+@@ -616,7 +615,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
+ 	return 0;
+ 
+ out_free_bitmap:
+-	kfree(bitmap);
++	bitmap_free(bitmap);
+ out_free_pages:
+ 	__free_pages(pages, INTR_REMAP_PAGE_ORDER);
+ out_free_table:
+@@ -640,7 +639,7 @@ static void intel_teardown_irq_remapping(struct intel_iommu *iommu)
+ 		}
+ 		free_pages((unsigned long)iommu->ir_table->base,
+ 			   INTR_REMAP_PAGE_ORDER);
+-		kfree(iommu->ir_table->bitmap);
++		bitmap_free(iommu->ir_table->bitmap);
+ 		kfree(iommu->ir_table);
+ 		iommu->ir_table = NULL;
+ 	}
+-- 
+2.20.1
