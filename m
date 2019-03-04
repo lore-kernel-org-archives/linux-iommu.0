@@ -1,132 +1,96 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH RFC 1/1] iommu: set the default iommu-dma mode as
- non-strict
-Date: Mon, 4 Mar 2019 15:52:36 +0000
-Message-ID: <7ed7da40-adbe-09b2-5124-baf62558987d@arm.com>
-References: <20190131135211.6732-1-thunder.leizhen@huawei.com>
- <94b9b0c9-1a24-63ba-5abe-5f6d79fed415@arm.com>
- <dc06dfd0-0ab6-6f0b-64c6-2587a2a55798@huawei.com>
- <5C78B89C.7040100@huawei.com> <e567cf93-4e34-e15e-9d98-5834bc63e234@arm.com>
- <5C7A1EE1.6020200@huawei.com>
+Subject: Re: [PATCH v2] iommu: io-pgtable: Add ARM Mali midgard MMU page table
+ format
+Date: Mon, 4 Mar 2019 17:31:18 +0000
+Message-ID: <a35c5c6d-b9fe-35f1-5be9-323a97d4755d@arm.com>
+References: <20190227232242.26910-1-robh@kernel.org>
+ <e7a36bc9-e425-064b-ca12-3c655c8e5d4a@arm.com>
+ <CAL_JsqJsfM1JM_7hhUboZx+zBo_tP8LUR8xTLZOQ0OWGdh=Q7A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5C7A1EE1.6020200@huawei.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAL_JsqJsfM1JM_7hhUboZx+zBo_tP8LUR8xTLZOQ0OWGdh=Q7A@mail.gmail.com>
 Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Hanjun Guo <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>, Linuxarm <linuxarm@huawei.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will.deacon@arm.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/03/2019 06:12, Leizhen (ThunderTown) wrote:
-> 
-> 
-> On 2019/3/1 19:07, Jean-Philippe Brucker wrote:
->> Hi Leizhen,
+On 04/03/2019 15:32, Rob Herring wrote:
+> On Fri, Mar 1, 2019 at 10:28 AM Robin Murphy <robin.murphy@arm.com> wrote:
 >>
->> On 01/03/2019 04:44, Leizhen (ThunderTown) wrote:
+>> On 27/02/2019 23:22, Rob Herring wrote:
+>>> ARM Mali midgard GPU page tables are similar to standard 64-bit stage 1
+>>> page tables, but have a few differences. Add a new format type to
+>>> represent the format. The input address size is 48-bits and the output
+>>> address size is 40-bits (and possibly less?). Note that the later
+>>> bifrost GPUs follow the standard 64-bit stage 1 format.
 >>>
+>>> The differences in the format compared to 64-bit stage 1 format are:
 >>>
->>> On 2019/2/26 20:36, Hanjun Guo wrote:
->>>> Hi Jean,
->>>>
->>>> On 2019/1/31 22:55, Jean-Philippe Brucker wrote:
->>>>> Hi,
->>>>>
->>>>> On 31/01/2019 13:52, Zhen Lei wrote:
->>>>>> Currently, many peripherals are faster than before. For example, the top
->>>>>> speed of the older netcard is 10Gb/s, and now it's more than 25Gb/s. But
->>>>>> when iommu page-table mapping enabled, it's hard to reach the top speed
->>>>>> in strict mode, because of frequently map and unmap operations. In order
->>>>>> to keep abreast of the times, I think it's better to set non-strict as
->>>>>> default.
->>>>>
->>>>> Most users won't be aware of this relaxation and will have their system
->>>>> vulnerable to e.g. thunderbolt hotplug. See for example 4.3 Deferred
->>>>> Invalidation in
->>>>> http://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2018/MSC/MSC-2018-21.pdf
->>> Hi Jean,
+>>> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
 >>>
->>>     In fact, we have discussed the vulnerable of deferred invalidation before upstream
->>> the non-strict patches. The attacks maybe possible because of an untrusted device or
->>> the mistake of the device driver. And we limited the VFIO to still use strict mode.
->>>     As mentioned in the pdf, limit the freed memory with deferred invalidation only to
->>> be reused by the device, can mitigate the vulnerability. But it's too hard to implement
->>> it now.
->>>     A compromise maybe we only apply non-strict to (1) dma_free_coherent, because the
->>> memory is controlled by DMA common module, so we can make the memory to be freed after
->>> the global invalidation in the timer handler. (2) And provide some new APIs related to
->>> iommu_unmap_page/sg, these new APIs deferred invalidation. And the candiate device
->>> drivers update the APIs if they want to improve performance. (3) Make sure that only
->>> the trusted devices and trusted drivers can apply (1) and (2). For example, the driver
->>> must be built into kernel Image.
->>
->> Do we have a notion of untrusted kernel drivers? A userspace driver
-> It seems impossible to have such driver. The modules insmod by root users should be
-> guaranteed by themselves.
+>>> The access flags are not read-only and unprivileged, but read and write.
+>>> This is similar to stage 2 entries, but the memory attributes field matches
+>>> stage 1 being an index.
+>>>
+>>> The nG bit is not set by the vendor driver. This one didn't seem to matter,
+>>> but we'll keep it aligned to the vendor driver.
 > 
->> (VFIO) is untrusted, ok. But a malicious driver loaded into the kernel
->> address space would have much easier ways to corrupt the system than to
->> exploit lazy mode...
-> Yes, so that we have no need to consider untrusted drivers.
+> [...]
 > 
+>>> +     cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
+>>> +     iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+>>> +     if (iop)
+>>> +             cfg->arm_lpae_s1_cfg.tcr = 0;
 >>
->> For (3), I agree that we should at least disallow lazy mode if
->> pci_dev->untrusted is set. At the moment it means that we require the
->> strictest IOMMU configuration for external-facing PCI ports, but it can
->> be extended to blacklist other vulnerable devices or locations.
-> I plan to add an attribute file for each device, espcially for hotplug devices. And
-> let the root users to decide which mode should be used, strict or non-strict. Becasue
-> they should known whether the hot-plug divice is trusted or not.
+>> The general design intent is that we return ready-to-go register values
+>> here (much like mmu_get_as_setup() in mali_kbase, it seems), so I think
+>> it's worth adding an arm_mali_cfg to the io_pgtable_cfg union and
+>> transforming the VMSA output into final transtab/transcfg/memattr format
+>> at this point, rather then callers needing to care (e.g. some of those
+>> AS_TRANSTAB_LPAE_* bits look reminiscent of the walk attributes we set
+>> up for a VMSA TCR).
+> 
+> I agree with returning ready-to-go values, but I'm not so sure the
+> bits are the same. Bits 0-1 are enable/mode bits which are pretty
+> specific to mali. Bit 2 is 'read inner' for whatever that means.
+> Perhaps it is read allocate cacheability, but that's a bit different
+> than RGN bits. Bit 4 is 'share outer'. Maybe it's the same as SH0 if
+> bit 3 is included, but I have no evidence of that. So I don't think
+> there's really anything to transform. We just set the bits needed. So
+> here's what I have in mind:
 
-Aside from the problem that without massive implementation changes 
-strict/non-strict is at best a per-domain property, not a per-device 
-one, I can't see this being particularly practical - surely the whole 
-point of a malicious endpoint is that it's going to pretend to be some 
-common device for which a 'trusted' kernel driver already exists? If 
-you've chosen to trust *any* external device, I think you may as well 
-have just set non-strict globally anyway. The effort involved in trying 
-to implement super-fine-grained control seems hard to justify.
+Right, my Friday-afternoon wording perhaps wasn't the best - by 
+"transform" I didn't mean to imply trying to reinterpret the default 
+settings we configure for a VMSA TCR, merely applying some 
+similarly-appropriate defaults to make a Mali TRANSTAB out of the VMSA TTBR.
+
+> iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+> if (iop) {
+>    u64 mair, ttbr;
+> 
+>    /* Copy values as union fields overlap */
+>    mair = cfg->arm_lpae_s1_cfg.mair[0];
+>    ttbr = cfg->arm_lpae_s1_cfg.ttbr[0];
+> 
+>    cfg->arm_mali_lpae_cfg.mair = mair;
+>    cfg->arm_mali_lpae_cfg.ttbr = ttbr;
+>    cfg->arm_mali_lpae_cfg.ttbr |= ARM_MALI_LPAE_TTBR_READ_INNER |
+>      ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
+> }
+
+...pretty much exactly like that (although I'd still prefer to use the 
+Mali register names for clarity, and presumably you'll still explicitly 
+initialise TRANSCFG too in the real patch).
 
 Robin.
-
->>
->> If you do (3) then maybe we don't need (1) and (2), which require a
->> tonne of work in the DMA and IOMMU layers (but would certainly be nice
->> to see, since it would also help handle ATS invalidation timeouts)
->>
->> Thanks,
->> Jean
->>
->>>     So that some high-end trusted devices use non-strict mode, and keep others still using
->>> strict mode. The drivers who want to use non-strict mode, should change to use new APIs
->>> by themselves.
->>>
->>>
->>>>>
->>>>> Why not keep the policy to secure by default, as we do for
->>>>> iommu.passthrough? And maybe add something similar to
->>>>> CONFIG_IOMMU_DEFAULT_PASSTRHOUGH? It's easy enough for experts to pass a
->>>>> command-line argument or change the default config.
->>>>
->>>> Sorry for the late reply, it was Chinese new year, and we had a long discussion
->>>> internally, we are fine to add a Kconfig but not sure OS vendors will set it
->>>> to default y.
->>>>
->>>> OS vendors seems not happy to pass a command-line argument, to be honest,
->>>> this is our motivation to enable non-strict as default. Hope OS vendors
->>>> can see this email thread, and give some input here.
->>>>
->>>> Thanks
->>>> Hanjun
->>>>
->>>>
->>>> .
->>>>
->>>
->>
->>
->> .
->>
-> 
