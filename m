@@ -1,8 +1,8 @@
 From: James Sewart <jamessewart@arista.com>
-Subject: [PATCH 1/4] iommu: Move iommu_group_create_direct_mappings to after
- device_attach
-Date: Mon, 4 Mar 2019 15:45:07 +0000
-Message-ID: <17CE1B8C-9E81-4954-8D23-5B2F20A3104F@arista.com>
+Subject: [PATCH 2/4] iommu/vt-d: Implement apply_resv_region for reserving
+ IOVA ranges
+Date: Mon, 4 Mar 2019 15:46:02 +0000
+Message-ID: <2C75F46E-78FE-45E9-9E7D-280B3138EA13@arista.com>
 References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
 Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
 Content-Type: text/plain;
@@ -15,39 +15,48 @@ To: iommu@lists.linux-foundation.org
 Cc: Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-If an IOMMU driver requires to know which IOMMU a domain is associated
-to initialise a domain then it will do so in device_attach, before which
-it is not safe to call iommu_ops.
+Used by iommu.c before creating identity mappings for reserved ranges to
+ensure dma-map-ops won't ever remap these addresses.
 
 Signed-off-by: James Sewart <jamessewart@arista.com>
 ---
- drivers/iommu/iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-iommu.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3ed4db334341..1c6ffbb2d20e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -652,8 +652,6 @@ int iommu_group_add_device(struct iommu_group =
-*group, struct device *dev)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 78188bf7e90d..8e0a4e2ff77f 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5299,6 +5299,19 @@ static void intel_iommu_put_resv_regions(struct =
+device *dev,
+ 	}
+ }
 =20
- 	dev->iommu_group =3D group;
-=20
--	iommu_group_create_direct_mappings(group, dev);
--
- 	mutex_lock(&group->mutex);
- 	list_add_tail(&device->list, &group->devices);
- 	if (group->domain)
-@@ -662,6 +660,8 @@ int iommu_group_add_device(struct iommu_group =
-*group, struct device *dev)
- 	if (ret)
- 		goto err_put_group;
-=20
-+	iommu_group_create_direct_mappings(group, dev);
++static void intel_iommu_apply_resv_region(struct device *dev,
++		struct iommu_domain *domain,
++		struct iommu_resv_region *region)
++{
++	struct dmar_domain *dmar_domain =3D to_dmar_domain(domain);
++	unsigned long start, end;
 +
- 	/* Notify any listeners about change to group. */
- 	blocking_notifier_call_chain(&group->notifier,
- 				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, =
-dev);
++	start =3D IOVA_PFN(region->start);
++	end   =3D IOVA_PFN(region->start + region->length - 1);
++
++	WARN_ON_ONCE(reserve_iova(&dmar_domain->iovad, start, end) =3D=3D =
+NULL);
++}
++
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct =
+intel_svm_dev *sdev)
+ {
+@@ -5392,6 +5405,7 @@ const struct iommu_ops intel_iommu_ops =3D {
+ 	.remove_device		=3D intel_iommu_remove_device,
+ 	.get_resv_regions	=3D intel_iommu_get_resv_regions,
+ 	.put_resv_regions	=3D intel_iommu_put_resv_regions,
++	.apply_resv_region	=3D intel_iommu_apply_resv_region,
+ 	.device_group		=3D pci_device_group,
+ 	.pgsize_bitmap		=3D INTEL_IOMMU_PGSIZES,
+ };
 --=20
 2.17.1
