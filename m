@@ -1,11 +1,15 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v1] iommu/vt-d: Switch to bitmap_zalloc()
-Date: Mon,  4 Mar 2019 11:07:37 +0200
-Message-ID: <20190304090737.48332-1-andriy.shevchenko@linux.intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/2][RFC] kernel/dma: Support platform-specific default
+	CMA sizes
+Date: Mon, 4 Mar 2019 12:01:29 +0000
+Message-ID: <fe3f4ae9-6a51-0b50-09e9-6c7f52e530d3@arm.com>
+References: <20190304115255.2088-1-tzimmermann@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190304115255.2088-1-tzimmermann-l3A5Bk7waGM@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,49 +19,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Thomas Zimmermann <tzimmermann-l3A5Bk7waGM@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: ptesarik-AlSwsSmVLrQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Switch to bitmap_zalloc() to show clearly what we are allocating.
-Besides that it returns pointer of bitmap type instead of opaque void *.
+Hi Thomas,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/iommu/intel_irq_remapping.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+On 04/03/2019 11:52, Thomas Zimmermann wrote:
+> This is an RFC patch set that adds support for configuring a default CMA
+> size, depending on the platform.
+> 
+> At SUSE, our ARM installer image runs on a variety of platforms. One of
+> these, the Raspberry Pi 3, requires CMA to be allocated on order to provide
+> graphics output. Currently this can be done with the kernel's cma command-
+> line parameter, or with a compile-time setting. The cma parameter requires
+> user intervention during boot. Using a compile-time constant affects all
+> platforms. So both options are undesireable.
+> 
+> This patch set adds a data structure and look-up code to select a default
+> CMA size, depending on the device's model name. The kernel's cma parameter
+> or a compile-time setting take precedence of the per-device default.
 
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 2d74641b7f7b..634d8f059019 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -548,8 +548,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- 		goto out_free_table;
- 	}
- 
--	bitmap = kcalloc(BITS_TO_LONGS(INTR_REMAP_TABLE_ENTRIES),
--			 sizeof(long), GFP_ATOMIC);
-+	bitmap = bitmap_zalloc(INTR_REMAP_TABLE_ENTRIES, GFP_ATOMIC);
- 	if (bitmap == NULL) {
- 		pr_err("IR%d: failed to allocate bitmap\n", iommu->seq_id);
- 		goto out_free_pages;
-@@ -616,7 +615,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- 	return 0;
- 
- out_free_bitmap:
--	kfree(bitmap);
-+	bitmap_free(bitmap);
- out_free_pages:
- 	__free_pages(pages, INTR_REMAP_PAGE_ORDER);
- out_free_table:
-@@ -640,7 +639,7 @@ static void intel_teardown_irq_remapping(struct intel_iommu *iommu)
- 		}
- 		free_pages((unsigned long)iommu->ir_table->base,
- 			   INTR_REMAP_PAGE_ORDER);
--		kfree(iommu->ir_table->bitmap);
-+		bitmap_free(iommu->ir_table->bitmap);
- 		kfree(iommu->ir_table);
- 		iommu->ir_table = NULL;
- 	}
--- 
-2.20.1
+Is there some issue with specifying a board-specific default CMA region 
+via the existing DT binding[1]? I assume there are no ACPI concerns in 
+this particular case.
+
+Robin.
+
+[1] Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+
+> For the Raspberry Pi 3, the CMA allocator now reserves 64 MiB (out of
+> 1 GiB) by default. We found that this is enough memory to run a graphics
+> installer or a simple desktop environment under X11.
+> 
+> Thomas Zimmermann (2):
+>    kernel/dma: Support device-specific CMA defaults
+>    kernel/dma: Default to 64 MiB of contiguous memory on Raspberry Pi 3
+> 
+>   kernel/dma/contiguous.c | 62 +++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 62 insertions(+)
+> 
