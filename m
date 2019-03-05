@@ -1,183 +1,70 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH v2 RFC/RFT] dma-contiguous: Get normal pages for single-page allocations
-Date: Tue,  5 Mar 2019 10:32:02 -0800
-Message-ID: <20190305183202.16216-1-nicoleotsuka@gmail.com>
+From: Evan Green <evgreen@chromium.org>
+Subject: Re: [PATCH 03/13] iommu/mediatek: Add probe_defer for smi-larb
+Date: Tue, 5 Mar 2019 11:02:50 -0800
+Message-ID: <CAE=gft51UT7Hy4Tbbg3WS72FHB-41rWstQHD+otMZcM2qLVX7Q@mail.gmail.com>
+References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
+ <1546318276-18993-4-git-send-email-yong.wu@mediatek.com> <CAE=gft4aJxXbrecehAhgYL0TANxdwukmdQtpiLgNkzCDAUO6Cg@mail.gmail.com>
+ <1551278034.17917.52.camel@mhfsdcap03>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1551278034.17917.52.camel@mhfsdcap03>
 Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de, robin.murphy@arm.com
-Cc: vdumpa@nvidia.com, catalin.marinas@arm.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Arnd Bergmann <arnd@arndb.de>, srv_heupstream@mediatek.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, LKML <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-The addresses within a single page are always contiguous, so it's
-not so necessary to always allocate one single page from CMA area.
-Since the CMA area has a limited predefined size of space, it may
-run out of space in heavy use cases, where there might be quite a
-lot CMA pages being allocated for single pages.
+On Wed, Feb 27, 2019 at 6:34 AM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> On Mon, 2019-02-25 at 15:54 -0800, Evan Green wrote:
+> > On Mon, Dec 31, 2018 at 8:52 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> > >
+> > > The iommu consumer should use device_link to connect with the
+> > > smi-larb(supplier). then the smi-larb should run before the iommu
+> > > consumer. Here we delay the iommu driver until the smi driver is
+> > > ready, then all the iommu consumer always is after the smi driver.
+> > >
+> > > When there is no this patch, if some consumer drivers run before
+> > > smi-larb, the supplier link_status is DL_DEV_NO_DRIVER(0) in the
+> > > device_link_add, then device_links_driver_bound will use WARN_ON
+> > > to complain that the link_status of supplier is not right.
+> > >
+> >
+> > I don't quite have enough knowledge of device links to figure out if
+> > this is a) the right fix, b) a deficiency in the device_links code, or
+> > c) neither.
+>
+> I can not say more about the device link, But from the MTK iommu point
+> of view, it looks a right fix. As the comment above, we should make sure
+> the probe sequence, SMI-larb should be before MTK IOMMU which need be
+> before iommu-consumer. this patch help SMI-larb always is before
+> MTK_IOMMU.
+>
+> Then if there is no this patchset, what the MTK_IOMMU will happen?.
+>
+> The MTK_IOMMU is subsys_initcall, all the consume only need after the
+> MTK_IOMMU and don't need wait for SMI-larb driver. If some consume run
+> before SMI-larb driver, It also is OK while it don't call
+> mtk_smi_larb_get in this probe.(Of course it will abort if it call this
+> while smi-driver don't probe at that time). the consumer and smi-larb
+> normally are module_init, we can not guarantee the the sequence. it is a
+> potential issue.
+>
+> Some consume know it should wait for SMI-larb like [1], but It don't
+> work.
+>
+> [1]
+> https://elixir.bootlin.com/linux/v5.0-rc1/source/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c#L145
 
-However, there is also a concern that a device might care where a
-page comes from -- it might expect the page from CMA area and act
-differently if the page doesn't.
+Ok, I think I get it now. The device_links that get created are
+enforcing a probe order dependency, but in cases where this driver
+probes before those device links are even created, then this extra
+check defers so that the probe order stays correct. Then the
+device_links were correct to WARN because they're basically saying,
+"hey, you asked us to enforce a particular dependency, but I can
+already see probe is happening in an order that violates that
+dependency".
 
-This patch tries to get normal pages for single-page allocations
-unless the device has its own CMA area. This would save resources
-from the CMA area for more CMA allocations. And it'd also reduce
-CMA fragmentations resulted from trivial allocations.
+Is that right?
 
-Also, it updates the API and its callers so as to pass gfp flags.
-
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
-Changelog
-v1->v2:
- * Removed one ';' in header file that caused build errors when
-   CONFIG_DMA_CMA=N.
-
- arch/arm/mm/dma-mapping.c      |  5 ++---
- arch/arm64/mm/dma-mapping.c    |  2 +-
- arch/xtensa/kernel/pci-dma.c   |  2 +-
- drivers/iommu/amd_iommu.c      |  2 +-
- drivers/iommu/intel-iommu.c    |  3 +--
- include/linux/dma-contiguous.h |  4 ++--
- kernel/dma/contiguous.c        | 23 +++++++++++++++++++----
- 7 files changed, 27 insertions(+), 14 deletions(-)
-
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 8a90f298af96..c39fc2d97712 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -588,7 +588,7 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
- 	struct page *page;
- 	void *ptr = NULL;
- 
--	page = dma_alloc_from_contiguous(dev, count, order, gfp & __GFP_NOWARN);
-+	page = dma_alloc_from_contiguous(dev, count, order, gfp);
- 	if (!page)
- 		return NULL;
- 
-@@ -1293,8 +1293,7 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
- 		unsigned long order = get_order(size);
- 		struct page *page;
- 
--		page = dma_alloc_from_contiguous(dev, count, order,
--						 gfp & __GFP_NOWARN);
-+		page = dma_alloc_from_contiguous(dev, count, order, gfp);
- 		if (!page)
- 			goto error;
- 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 78c0a72f822c..660adedaab5d 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -159,7 +159,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 		struct page *page;
- 
- 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--					get_order(size), gfp & __GFP_NOWARN);
-+						 get_order(size), gfp);
- 		if (!page)
- 			return NULL;
- 
-diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
-index 9171bff76fc4..e15b893caadb 100644
---- a/arch/xtensa/kernel/pci-dma.c
-+++ b/arch/xtensa/kernel/pci-dma.c
-@@ -157,7 +157,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
- 
- 	if (gfpflags_allow_blocking(flag))
- 		page = dma_alloc_from_contiguous(dev, count, get_order(size),
--						 flag & __GFP_NOWARN);
-+						 flag);
- 
- 	if (!page)
- 		page = alloc_pages(flag | __GFP_ZERO, get_order(size));
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6b0760dafb3e..c54923a9e31f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2691,7 +2691,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
- 			return NULL;
- 
- 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--					get_order(size), flag & __GFP_NOWARN);
-+						 get_order(size), flag);
- 		if (!page)
- 			return NULL;
- 	}
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 87274b54febd..6b5cf7313db6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3791,8 +3791,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
- 	if (gfpflags_allow_blocking(flags)) {
- 		unsigned int count = size >> PAGE_SHIFT;
- 
--		page = dma_alloc_from_contiguous(dev, count, order,
--						 flags & __GFP_NOWARN);
-+		page = dma_alloc_from_contiguous(dev, count, order, flags);
- 		if (page && iommu_no_mapping(dev) &&
- 		    page_to_phys(page) + size > dev->coherent_dma_mask) {
- 			dma_release_from_contiguous(dev, page, count);
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index f247e8aa5e3d..10ea106b720f 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -112,7 +112,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
- }
- 
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
--				       unsigned int order, bool no_warn);
-+				       unsigned int order, gfp_t gfp);
- bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 				 int count);
- 
-@@ -145,7 +145,7 @@ int dma_declare_contiguous(struct device *dev, phys_addr_t size,
- 
- static inline
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
--				       unsigned int order, bool no_warn)
-+				       unsigned int order, gfp_t gfp)
- {
- 	return NULL;
- }
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index b2a87905846d..11b6d6ef4fc9 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -186,16 +186,31 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
-  *
-  * This function allocates memory buffer for specified device. It uses
-  * device specific contiguous memory area if available or the default
-- * global one. Requires architecture specific dev_get_cma_area() helper
-- * function.
-+ * global one.
-+ *
-+ * However, it allocates normal pages for one-page size of allocations
-+ * instead of getting from CMA areas. As the addresses within a single
-+ * page are always contiguous, so there is no need to waste CMA pages
-+ * for that kind; it also helps reduce fragmentations in the CMA area.
-+ *
-+ * Requires architecture specific dev_get_cma_area() helper function.
-  */
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
--				       unsigned int align, bool no_warn)
-+				       unsigned int align, gfp_t gfp)
- {
-+	struct cma *cma;
-+
- 	if (align > CONFIG_CMA_ALIGNMENT)
- 		align = CONFIG_CMA_ALIGNMENT;
- 
--	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
-+	if (dev && dev->cma_area)
-+		cma = dev->cma_area;
-+	else if (count > 1)
-+		cma = dma_contiguous_default_area;
-+	else
-+		return alloc_pages(gfp, align);
-+
-+	return cma_alloc(cma, count, align, gfp & __GFP_NOWARN);
- }
- 
- /**
--- 
-2.17.1
+-Evan
