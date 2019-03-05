@@ -1,214 +1,149 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v4 05/22] iommu: Introduce cache_invalidate API
-Date: Tue, 5 Mar 2019 15:28:17 +0000
-Message-ID: <0762b4da-aff0-4e9f-f257-e2ab294bf235@arm.com>
-References: <20190218135504.25048-1-eric.auger@redhat.com>
- <20190218135504.25048-6-eric.auger@redhat.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu: io-pgtable: Add ARM Mali midgard MMU page table
+ format
+Date: Tue, 5 Mar 2019 16:04:35 +0000
+Message-ID: <fa52078c-5399-19be-5fb6-d6c05bd9990d@arm.com>
+References: <20190227232242.26910-1-robh@kernel.org>
+ <e7a36bc9-e425-064b-ca12-3c655c8e5d4a@arm.com>
+ <CAL_JsqJsfM1JM_7hhUboZx+zBo_tP8LUR8xTLZOQ0OWGdh=Q7A@mail.gmail.com>
+ <a35c5c6d-b9fe-35f1-5be9-323a97d4755d@arm.com>
+ <CAL_Jsq+YM=YJEN2Gfq8fa146kGJDAWVhvo4W0w55ZTHatd5hsQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190218135504.25048-6-eric.auger@redhat.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, will.deacon@arm.com, robin.murphy@arm.com
-Cc: marc.zyngier@arm.com, peter.maydell@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com, christoffer.dall@arm.com
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAL_Jsq+YM=YJEN2Gfq8fa146kGJDAWVhvo4W0w55ZTHatd5hsQ@mail.gmail.com>
+Content-Language: en-GB
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Rob Herring <robh@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will.deacon@arm.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/02/2019 13:54, Eric Auger wrote:
-> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+On 04/03/2019 18:48, Rob Herring wrote:
+> On Mon, Mar 4, 2019 at 11:31 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 04/03/2019 15:32, Rob Herring wrote:
+>>> On Fri, Mar 1, 2019 at 10:28 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>>>
+>>>> On 27/02/2019 23:22, Rob Herring wrote:
+>>>>> ARM Mali midgard GPU page tables are similar to standard 64-bit stage 1
+>>>>> page tables, but have a few differences. Add a new format type to
+>>>>> represent the format. The input address size is 48-bits and the output
+>>>>> address size is 40-bits (and possibly less?). Note that the later
+>>>>> bifrost GPUs follow the standard 64-bit stage 1 format.
+>>>>>
+>>>>> The differences in the format compared to 64-bit stage 1 format are:
+>>>>>
+>>>>> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
+>>>>>
+>>>>> The access flags are not read-only and unprivileged, but read and write.
+>>>>> This is similar to stage 2 entries, but the memory attributes field matches
+>>>>> stage 1 being an index.
+>>>>>
+>>>>> The nG bit is not set by the vendor driver. This one didn't seem to matter,
+>>>>> but we'll keep it aligned to the vendor driver.
+>>>
+>>> [...]
+>>>
+>>>>> +     cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
+>>>>> +     iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+>>>>> +     if (iop)
+>>>>> +             cfg->arm_lpae_s1_cfg.tcr = 0;
+>>>>
+>>>> The general design intent is that we return ready-to-go register values
+>>>> here (much like mmu_get_as_setup() in mali_kbase, it seems), so I think
+>>>> it's worth adding an arm_mali_cfg to the io_pgtable_cfg union and
+>>>> transforming the VMSA output into final transtab/transcfg/memattr format
+>>>> at this point, rather then callers needing to care (e.g. some of those
+>>>> AS_TRANSTAB_LPAE_* bits look reminiscent of the walk attributes we set
+>>>> up for a VMSA TCR).
+>>>
+>>> I agree with returning ready-to-go values, but I'm not so sure the
+>>> bits are the same. Bits 0-1 are enable/mode bits which are pretty
+>>> specific to mali. Bit 2 is 'read inner' for whatever that means.
+>>> Perhaps it is read allocate cacheability, but that's a bit different
+>>> than RGN bits. Bit 4 is 'share outer'. Maybe it's the same as SH0 if
+>>> bit 3 is included, but I have no evidence of that. So I don't think
+>>> there's really anything to transform. We just set the bits needed. So
+>>> here's what I have in mind:
+>>
+>> Right, my Friday-afternoon wording perhaps wasn't the best - by
+>> "transform" I didn't mean to imply trying to reinterpret the default
+>> settings we configure for a VMSA TCR, merely applying some
+>> similarly-appropriate defaults to make a Mali TRANSTAB out of the VMSA TTBR.
+>>
+>>> iop = arm_64_lpae_alloc_pgtable_s1(cfg, cookie);
+>>> if (iop) {
+>>>     u64 mair, ttbr;
+>>>
+>>>     /* Copy values as union fields overlap */
+>>>     mair = cfg->arm_lpae_s1_cfg.mair[0];
+>>>     ttbr = cfg->arm_lpae_s1_cfg.ttbr[0];
+>>>
+>>>     cfg->arm_mali_lpae_cfg.mair = mair;
+>>>     cfg->arm_mali_lpae_cfg.ttbr = ttbr;
+>>>     cfg->arm_mali_lpae_cfg.ttbr |= ARM_MALI_LPAE_TTBR_READ_INNER |
+>>>       ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
+>>> }
+>>
+>> ...pretty much exactly like that (although I'd still prefer to use the
+>> Mali register names for clarity, and presumably you'll still explicitly
+>> initialise TRANSCFG too in the real patch).
 > 
-> In any virtualization use case, when the first translation stage
-> is "owned" by the guest OS, the host IOMMU driver has no knowledge
-> of caching structure updates unless the guest invalidation activities
-> are trapped by the virtualizer and passed down to the host.
-> 
-> Since the invalidation data are obtained from user space and will be
-> written into physical IOMMU, we must allow security check at various
-> layers. Therefore, generic invalidation data format are proposed here,
-> model specific IOMMU drivers need to convert them into their own format.
-> 
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> 
-> ---
-> v3 -> v4:
-> - full reshape of the API following Alex' comments
-> 
-> v1 -> v2:
-> - add arch_id field
-> - renamed tlb_invalidate into cache_invalidate as this API allows
->   to invalidate context caches on top of IOTLBs
-> 
-> v1:
-> renamed sva_invalidate into tlb_invalidate and add iommu_ prefix in
-> header. Commit message reworded.
-> ---
->  drivers/iommu/iommu.c      | 14 ++++++++
->  include/linux/iommu.h      | 14 ++++++++
->  include/uapi/linux/iommu.h | 71 ++++++++++++++++++++++++++++++++++++++
->  3 files changed, 99 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b3adb77cb14c..bcb8eb15426c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1564,6 +1564,20 @@ void iommu_detach_pasid_table(struct iommu_domain *domain)
->  }
->  EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
->  
-> +int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
-> +			   struct iommu_cache_invalidate_info *inv_info)
-> +{
-> +	int ret = 0;
-> +
-> +	if (unlikely(!domain->ops->cache_invalidate))
-> +		return -ENODEV;
-> +
-> +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
-> +
->  static void __iommu_detach_device(struct iommu_domain *domain,
->  				  struct device *dev)
->  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 7045e26f3a7d..a3b879d0753c 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -189,6 +189,7 @@ struct iommu_resv_region {
->   * @pgsize_bitmap: bitmap of all possible supported page sizes
->   * @attach_pasid_table: attach a pasid table
->   * @detach_pasid_table: detach the pasid table
-> + * @cache_invalidate: invalidate translation caches
->   */
->  struct iommu_ops {
->  	bool (*capable)(enum iommu_cap);
-> @@ -235,6 +236,9 @@ struct iommu_ops {
->  				  struct iommu_pasid_table_config *cfg);
->  	void (*detach_pasid_table)(struct iommu_domain *domain);
->  
-> +	int (*cache_invalidate)(struct iommu_domain *domain, struct device *dev,
-> +				struct iommu_cache_invalidate_info *inv_info);
-> +
->  	unsigned long pgsize_bitmap;
->  };
->  
-> @@ -348,6 +352,9 @@ extern void iommu_detach_device(struct iommu_domain *domain,
->  extern int iommu_attach_pasid_table(struct iommu_domain *domain,
->  				    struct iommu_pasid_table_config *cfg);
->  extern void iommu_detach_pasid_table(struct iommu_domain *domain);
-> +extern int iommu_cache_invalidate(struct iommu_domain *domain,
-> +				  struct device *dev,
-> +				  struct iommu_cache_invalidate_info *inv_info);
->  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> @@ -798,6 +805,13 @@ void iommu_detach_pasid_table(struct iommu_domain *domain)
->  {
->  	return -ENODEV;
->  }
-> +static inline int
-> +iommu_cache_invalidate(struct iommu_domain *domain,
-> +		       struct device *dev,
-> +		       struct iommu_cache_invalidate_info *inv_info)
-> +{
-> +	return -ENODEV;
-> +}
->  
->  #endif /* CONFIG_IOMMU_API */
->  
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index e9065bfa5b24..ae41385b0a7e 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -159,4 +159,75 @@ struct iommu_pasid_table_config {
->  	};
->  };
->  
-> +/* defines the granularity of the invalidation */
-> +enum iommu_inv_granularity {
-> +	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective invalidation */
-> +	IOMMU_INV_GRANU_PASID,	/* pasid-selective invalidation */
-> +	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation */
-> +};
-> +
-> +/**
-> + * Address Selective Invalidation Structure
-> + *
-> + * @flags indicates the granularity of the address-selective invalidation
-> + * - if PASID bit is set, @pasid field is populated and the invalidation
-> + *   relates to cache entries tagged with this PASID and matching the
-> + *   address range.
-> + * - if ARCHID bit is set, @archid is populated and the invalidation relates
-> + *   to cache entries tagged with this architecture specific id and matching
-> + *   the address range.
-> + * - Both PASID and ARCHID can be set as they may tag different caches.
-> + * - if neither PASID or ARCHID is set, global addr invalidation applies
-> + * - LEAF flag indicates whether only the leaf PTE caching needs to be
-> + *   invalidated and other paging structure caches can be preserved.
-> + * @pasid: process address space id
-> + * @archid: architecture-specific id
-> + * @addr: first stage/level input address
-> + * @granule_size: page/block size of the mapping in bytes
-> + * @nb_granules: number of contiguous granules to be invalidated
-> + */
-> +struct iommu_inv_addr_info {
-> +#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
-> +#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
-> +#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
-> +	__u32	flags;
-> +	__u32	archid;
-> +	__u64	pasid;
-> +	__u64	addr;
-> +	__u64	granule_size;
-> +	__u64	nb_granules;
-> +};
+> No, TRANSCFG is only on Bifrost.
 
-Some fields don't need that many bytes, but I'm not sure it matters and
-I'd like to see if this version works for the x86 folks before bothering
-with such details. Looks good to me, from the SMMU perspective.
+Ah, fair enough - I thought that your "cfg->arm_lpae_s1_cfg.tcr = 0;" 
+was deliberately echoing the "setup->transcfg = 0;" in mali_kbase to 
+imply that AS_TRANSCFG_ADRMODE_LEGACY was significant, but I suppose 
+maybe Midgard *is* the legacy in this case. I'll admit I've not gone 
+looking for the actual register-poking to see what's consumed by which 
+devices.
 
-Thanks,
-Jean
+> While the page table format seems to
+> be standard stage 1 64-bit, the registers are still different from
+> anything else. So I guess we'll need yet another format definition
+> when we get there.
 
-> +
-> +/**
-> + * First level/stage invalidation information
-> + * @cache: bitfield that allows to select which caches to invalidate
-> + * @granularity: defines the lowest granularity used for the invalidation:
-> + *     domain > pasid > addr
-> + *
-> + * Not all the combinations of cache/granularity make sense:
-> + *
-> + *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
-> + * granularity	|		|		|      cache	|
-> + * -------------+---------------+---------------+---------------+
-> + * DOMAIN	|	N/A	|       Y	|	Y	|
-> + * PASID	|	Y	|       Y	|	Y	|
-> + * ADDR		|       Y	|       Y	|	N/A	|
-> + */
-> +struct iommu_cache_invalidate_info {
-> +#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
-> +	__u32	version;
-> +/* IOMMU paging structure cache */
-> +#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
-> +#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
-> +#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
-> +	__u8	cache;
-> +	__u8	granularity;
-> +	__u8	padding[2];
-> +	union {
-> +		__u64	pasid;
-> +		struct iommu_inv_addr_info addr_info;
-> +	};
-> +};
-> +
-> +
->  #endif /* _UAPI_IOMMU_H */
-> 
+Hmm, at that point I'd be inclined to use standard AArch64 format and 
+handle the rest in the driver, similar to how we repack TCR values into 
+Context Descriptors for SMMUv3. Those TRANSCFG_PTW_* fields even look 
+like they're pretending to be TCR.SH1 and TCR.IRGN1 (albeit with the 
+latter having a wonky encoding, and the fact that there's no TTBR1 anyway).
+
+I appreciate that somewhat undermines my argument for having io-pgtable 
+fill in complete LPAE-format registers, so if you wanted the driver to 
+handle both cases itself for consistency I wouldn't really mind - as 
+long as LPAE still has its own init_fn where we can fine-tune the 
+relevant constraints and sanity checks I'll be happy.
+
+> Also, we may still have to massage the register
+> values outside of this code. It's not going to know the
+> 'system_coherency' value the kbase driver uses (And I'm not sure how
+> we want to express that upstream either).
+
+AFAICS there are two possible aspects to coherency. One is I/O coherency 
+(i.e. "can the GPU snoop CPU caches"), which is already controlled by 
+the "dma-coherent" property. The other is whether the GPU cache itself 
+is coherent with the other caches in the system (i.e. "can CPUs snoop 
+the GPU cache; how much GPU cache maintenance is necessary") which 
+should be something we can infer from the integration-specific 
+compatible string, because we should always have an integration-specific 
+compatible string, right? ;)
+
+And yes, the existing io-pgtable implementations don't really account 
+for I/O coherency very well in terms of TCR values at the moment - we 
+simply set cacheable walk attributes all the time on the assumption that 
+non-coherent interconnects will ignore them (so if you ever did want a 
+coherent SMMU to make non-cacheable walks for some reason, tough luck). 
+It's a known issue, and there have been some Qcom patches flying around 
+attempting to make it a bit better.
+
+Robin.
