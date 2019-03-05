@@ -1,239 +1,183 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 04/22] iommu: Introduce attach/detach_pasid_table API
-Date: Tue, 5 Mar 2019 19:15:02 +0100
-Message-ID: <65e7e722-61b4-be70-8b8b-0a5047ced1f5@redhat.com>
-References: <20190218135504.25048-1-eric.auger@redhat.com>
- <20190218135504.25048-5-eric.auger@redhat.com>
- <17894c69-7d64-b85a-be91-0755aeb08ca3@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <17894c69-7d64-b85a-be91-0755aeb08ca3@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, will.deacon@arm.com, robin.murphy@arm.com
-Cc: marc.zyngier@arm.com, kevin.tian@intel.com, ashok.raj@intel.com
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: [PATCH v2 RFC/RFT] dma-contiguous: Get normal pages for single-page allocations
+Date: Tue,  5 Mar 2019 10:32:02 -0800
+Message-ID: <20190305183202.16216-1-nicoleotsuka@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: hch@lst.de, robin.murphy@arm.com
+Cc: vdumpa@nvidia.com, catalin.marinas@arm.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
+The addresses within a single page are always contiguous, so it's
+not so necessary to always allocate one single page from CMA area.
+Since the CMA area has a limited predefined size of space, it may
+run out of space in heavy use cases, where there might be quite a
+lot CMA pages being allocated for single pages.
 
-On 3/5/19 4:23 PM, Jean-Philippe Brucker wrote:
-> On 18/02/2019 13:54, Eric Auger wrote:
->> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>
->> In virtualization use case, when a guest is assigned
->> a PCI host device, protected by a virtual IOMMU on the guest,
->> the physical IOMMU must be programmed to be consistent with
->> the guest mappings. If the physical IOMMU supports two
->> translation stages it makes sense to program guest mappings
->> onto the first stage/level (ARM/Intel terminology) while the host
->> owns the stage/level 2.
->>
->> In that case, it is mandated to trap on guest configuration
->> settings and pass those to the physical iommu driver.
->>
->> This patch adds a new API to the iommu subsystem that allows
->> to set/unset the pasid table information.
->>
->> A generic iommu_pasid_table_config struct is introduced in
->> a new iommu.h uapi header. This is going to be used by the VFIO
->> user API.
->>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
->> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
->> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>
->> ---
->>
->> This patch generalizes the API introduced by Jacob & co-authors in
->> https://lwn.net/Articles/754331/
->>
->> v3 -> v4:
->> - s/set_pasid_table/attach_pasid_table
->> - restore detach_pasid_table. Detach can be used on unwind path.
->> - add padding
->> - remove @abort
->> - signature used for config and format
->> - add comments for fields in the SMMU struct
->>
->> v2 -> v3:
->> - replace unbind/bind by set_pasid_table
->> - move table pointer and pasid bits in the generic part of the struct
->>
->> v1 -> v2:
->> - restore the original pasid table name
->> - remove the struct device * parameter in the API
->> - reworked iommu_pasid_smmuv3
->> ---
->>  drivers/iommu/iommu.c      | 19 +++++++++++++++
->>  include/linux/iommu.h      | 22 ++++++++++++++++++
->>  include/uapi/linux/iommu.h | 47 ++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 88 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index c297cdcf7f89..b3adb77cb14c 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1545,6 +1545,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->>  }
->>  EXPORT_SYMBOL_GPL(iommu_attach_device);
->>  
->> +int iommu_attach_pasid_table(struct iommu_domain *domain,
->> +			     struct iommu_pasid_table_config *cfg)
->> +{
->> +	if (unlikely(!domain->ops->attach_pasid_table))
->> +		return -ENODEV;
->> +
->> +	return domain->ops->attach_pasid_table(domain, cfg);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_attach_pasid_table);
->> +
->> +void iommu_detach_pasid_table(struct iommu_domain *domain)
->> +{
->> +	if (unlikely(!domain->ops->detach_pasid_table))
->> +		return;
->> +
->> +	domain->ops->detach_pasid_table(domain);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
->> +
->>  static void __iommu_detach_device(struct iommu_domain *domain,
->>  				  struct device *dev)
->>  {
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index b38e0c100940..7045e26f3a7d 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -187,6 +187,8 @@ struct iommu_resv_region {
->>   * @domain_window_disable: Disable a particular window for a domain
->>   * @of_xlate: add OF master IDs to iommu grouping
->>   * @pgsize_bitmap: bitmap of all possible supported page sizes
->> + * @attach_pasid_table: attach a pasid table
->> + * @detach_pasid_table: detach the pasid table
-> 
-> Should go before pgsize_bitmap
-sure
-> 
->>   */
->>  struct iommu_ops {
->>  	bool (*capable)(enum iommu_cap);
->> @@ -229,6 +231,10 @@ struct iommu_ops {
->>  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
->>  	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
->>  
->> +	int (*attach_pasid_table)(struct iommu_domain *domain,
->> +				  struct iommu_pasid_table_config *cfg);
->> +	void (*detach_pasid_table)(struct iommu_domain *domain);
->> +
->>  	unsigned long pgsize_bitmap;
->>  };
->>  
->> @@ -339,6 +345,9 @@ extern int iommu_attach_device(struct iommu_domain *domain,
->>  			       struct device *dev);
->>  extern void iommu_detach_device(struct iommu_domain *domain,
->>  				struct device *dev);
->> +extern int iommu_attach_pasid_table(struct iommu_domain *domain,
->> +				    struct iommu_pasid_table_config *cfg);
->> +extern void iommu_detach_pasid_table(struct iommu_domain *domain);
->>  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->>  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->>  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
->> @@ -777,6 +786,19 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->>  	return NULL;
->>  }
->>  
->> +static inline
->> +int iommu_attach_pasid_table(struct iommu_domain *domain,
->> +			     struct iommu_pasid_table_config *cfg)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->> +static inline
->> +void iommu_detach_pasid_table(struct iommu_domain *domain)
->> +{
->> +	return -ENODEV;
-> 
-> No return here. With that fixed:
-oups
-> 
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Thanks!
+However, there is also a concern that a device might care where a
+page comes from -- it might expect the page from CMA area and act
+differently if the page doesn't.
 
-Eric
+This patch tries to get normal pages for single-page allocations
+unless the device has its own CMA area. This would save resources
+from the CMA area for more CMA allocations. And it'd also reduce
+CMA fragmentations resulted from trivial allocations.
 
-> 
->> +}
->> +
->>  #endif /* CONFIG_IOMMU_API */
->>  
->>  #ifdef CONFIG_IOMMU_DEBUGFS
->> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
->> index 7ebf23ed6ccb..e9065bfa5b24 100644
->> --- a/include/uapi/linux/iommu.h
->> +++ b/include/uapi/linux/iommu.h
->> @@ -112,4 +112,51 @@ struct iommu_fault {
->>  		struct iommu_fault_page_request prm;
->>  	};
->>  };
->> +
->> +/**
->> + * SMMUv3 Stream Table Entry stage 1 related information
->> + * The PASID table is referred to as the context descriptor (CD) table.
->> + *
->> + * @s1fmt: STE s1fmt (format of the CD table: single CD, linear table
->> +   or 2-level table)
->> + * @s1dss: STE s1dss (specifies the behavior when pasid_bits != 0
->> +   and no pasid is passed along with the incoming transaction)
->> + * Please refer to the smmu 3.x spec (ARM IHI 0070A) for full details
->> + */
->> +struct iommu_pasid_smmuv3 {
->> +#define PASID_TABLE_SMMUV3_CFG_VERSION_1 1
->> +	__u32	version;
->> +	__u8 s1fmt;
->> +	__u8 s1dss;
->> +	__u8 padding[2];
->> +};
->> +
->> +/**
->> + * PASID table data used to bind guest PASID table to the host IOMMU
->> + * Note PASID table corresponds to the Context Table on ARM SMMUv3.
->> + *
->> + * @version: API version to prepare for future extensions
->> + * @format: format of the PASID table
->> + * @base_ptr: guest physical address of the PASID table
->> + * @pasid_bits: number of PASID bits used in the PASID table
->> + * @config: indicates whether the guest translation stage must
->> + * be translated, bypassed or aborted.
->> + */
->> +struct iommu_pasid_table_config {
->> +#define PASID_TABLE_CFG_VERSION_1 1
->> +	__u32	version;
->> +#define IOMMU_PASID_FORMAT_SMMUV3	1
->> +	__u32	format;
->> +	__u64	base_ptr;
->> +	__u8	pasid_bits;
->> +#define IOMMU_PASID_CONFIG_TRANSLATE	1
->> +#define IOMMU_PASID_CONFIG_BYPASS	2
->> +#define IOMMU_PASID_CONFIG_ABORT	3
->> +	__u8	config;
->> +	__u8    padding[6];
->> +	union {
->> +		struct iommu_pasid_smmuv3 smmuv3;
->> +	};
->> +};
->> +
->>  #endif /* _UAPI_IOMMU_H */
->>
-> 
+Also, it updates the API and its callers so as to pass gfp flags.
+
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+Changelog
+v1->v2:
+ * Removed one ';' in header file that caused build errors when
+   CONFIG_DMA_CMA=N.
+
+ arch/arm/mm/dma-mapping.c      |  5 ++---
+ arch/arm64/mm/dma-mapping.c    |  2 +-
+ arch/xtensa/kernel/pci-dma.c   |  2 +-
+ drivers/iommu/amd_iommu.c      |  2 +-
+ drivers/iommu/intel-iommu.c    |  3 +--
+ include/linux/dma-contiguous.h |  4 ++--
+ kernel/dma/contiguous.c        | 23 +++++++++++++++++++----
+ 7 files changed, 27 insertions(+), 14 deletions(-)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 8a90f298af96..c39fc2d97712 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -588,7 +588,7 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
+ 	struct page *page;
+ 	void *ptr = NULL;
+ 
+-	page = dma_alloc_from_contiguous(dev, count, order, gfp & __GFP_NOWARN);
++	page = dma_alloc_from_contiguous(dev, count, order, gfp);
+ 	if (!page)
+ 		return NULL;
+ 
+@@ -1293,8 +1293,7 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
+ 		unsigned long order = get_order(size);
+ 		struct page *page;
+ 
+-		page = dma_alloc_from_contiguous(dev, count, order,
+-						 gfp & __GFP_NOWARN);
++		page = dma_alloc_from_contiguous(dev, count, order, gfp);
+ 		if (!page)
+ 			goto error;
+ 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 78c0a72f822c..660adedaab5d 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -159,7 +159,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 		struct page *page;
+ 
+ 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+-					get_order(size), gfp & __GFP_NOWARN);
++						 get_order(size), gfp);
+ 		if (!page)
+ 			return NULL;
+ 
+diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
+index 9171bff76fc4..e15b893caadb 100644
+--- a/arch/xtensa/kernel/pci-dma.c
++++ b/arch/xtensa/kernel/pci-dma.c
+@@ -157,7 +157,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+ 
+ 	if (gfpflags_allow_blocking(flag))
+ 		page = dma_alloc_from_contiguous(dev, count, get_order(size),
+-						 flag & __GFP_NOWARN);
++						 flag);
+ 
+ 	if (!page)
+ 		page = alloc_pages(flag | __GFP_ZERO, get_order(size));
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6b0760dafb3e..c54923a9e31f 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2691,7 +2691,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 			return NULL;
+ 
+ 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+-					get_order(size), flag & __GFP_NOWARN);
++						 get_order(size), flag);
+ 		if (!page)
+ 			return NULL;
+ 	}
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 87274b54febd..6b5cf7313db6 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3791,8 +3791,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 	if (gfpflags_allow_blocking(flags)) {
+ 		unsigned int count = size >> PAGE_SHIFT;
+ 
+-		page = dma_alloc_from_contiguous(dev, count, order,
+-						 flags & __GFP_NOWARN);
++		page = dma_alloc_from_contiguous(dev, count, order, flags);
+ 		if (page && iommu_no_mapping(dev) &&
+ 		    page_to_phys(page) + size > dev->coherent_dma_mask) {
+ 			dma_release_from_contiguous(dev, page, count);
+diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
+index f247e8aa5e3d..10ea106b720f 100644
+--- a/include/linux/dma-contiguous.h
++++ b/include/linux/dma-contiguous.h
+@@ -112,7 +112,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+ }
+ 
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int order, bool no_warn);
++				       unsigned int order, gfp_t gfp);
+ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+ 				 int count);
+ 
+@@ -145,7 +145,7 @@ int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+ 
+ static inline
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int order, bool no_warn)
++				       unsigned int order, gfp_t gfp)
+ {
+ 	return NULL;
+ }
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index b2a87905846d..11b6d6ef4fc9 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -186,16 +186,31 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+  *
+  * This function allocates memory buffer for specified device. It uses
+  * device specific contiguous memory area if available or the default
+- * global one. Requires architecture specific dev_get_cma_area() helper
+- * function.
++ * global one.
++ *
++ * However, it allocates normal pages for one-page size of allocations
++ * instead of getting from CMA areas. As the addresses within a single
++ * page are always contiguous, so there is no need to waste CMA pages
++ * for that kind; it also helps reduce fragmentations in the CMA area.
++ *
++ * Requires architecture specific dev_get_cma_area() helper function.
+  */
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int align, bool no_warn)
++				       unsigned int align, gfp_t gfp)
+ {
++	struct cma *cma;
++
+ 	if (align > CONFIG_CMA_ALIGNMENT)
+ 		align = CONFIG_CMA_ALIGNMENT;
+ 
+-	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
++	if (dev && dev->cma_area)
++		cma = dev->cma_area;
++	else if (count > 1)
++		cma = dma_contiguous_default_area;
++	else
++		return alloc_pages(gfp, align);
++
++	return cma_alloc(cma, count, align, gfp & __GFP_NOWARN);
+ }
+ 
+ /**
+-- 
+2.17.1
