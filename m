@@ -1,331 +1,151 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 4/4] iommu/vt-d: Remove lazy allocation of domains
-Date: Tue, 5 Mar 2019 14:59:48 +0800
-Message-ID: <fdd74d83-acd4-23da-6c0c-b52573d999bb@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
- <2C75F46E-78FE-45E9-9E7D-280B3138EA13@arista.com>
- <F83456DB-81DD-4E9B-9204-12ED9972D2FA@arista.com>
- <7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v4 00/22] SMMUv3 Nested Stage Setup
+Date: Tue, 5 Mar 2019 09:07:51 +0100
+Message-ID: <05e54ddf-1a86-c924-3d37-731aa389193d@redhat.com>
+References: <20190218135504.25048-1-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
+In-Reply-To: <20190218135504.25048-1-eric.auger@redhat.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: James Sewart <jamessewart@arista.com>, iommu@lists.linux-foundation.org
-Cc: baolu.lu@linux.intel.com, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
+To: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-It's hard for me to understand why do we remove the rmrr related
-code in this patch.
-
-And, now we have two places to hold a domain for a device: group and
-dev->info. We can consider to optimize the use of per device iommu
-arch data. This should be later work anyway.
-
-More comments inline.
-
-On 3/4/19 11:47 PM, James Sewart wrote:
-> The generic IOMMU code will allocate and attach a dma ops domain to each
-> device that comes online, replacing any lazy allocated domain. Removes
-> RMRR application at iommu init time as we won't have a domain attached
-> to any device. iommu.c will do this after attaching a device using
-> create_direct_mappings.
+On 2/18/19 2:54 PM, Eric Auger wrote:
+> This series allows a virtualizer to program the nested stage mode.
+> This is useful when both the host and the guest are exposed with
+> an SMMUv3 and a PCI device is assigned to the guest using VFIO.
 > 
-> Signed-off-by: James Sewart <jamessewart@arista.com>
-> ---
->   drivers/iommu/intel-iommu.c | 202 ++----------------------------------
->   1 file changed, 8 insertions(+), 194 deletions(-)
+> In this mode, the physical IOMMU must be programmed to translate
+> the two stages: the one set up by the guest (IOVA -> GPA) and the
+> one set up by the host VFIO driver as part of the assignment process
+> (GPA -> HPA).
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 71cd6bbfec05..282257e2628d 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -2595,118 +2595,6 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
->   	return domain;
->   }
->   
-> -static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
-> -{
-> -	*(u16 *)opaque = alias;
-> -	return 0;
-> -}
-> -
-> -static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
-> -{
-> -	struct device_domain_info *info = NULL;
-> -	struct dmar_domain *domain = NULL;
-> -	struct intel_iommu *iommu;
-> -	u16 dma_alias;
-> -	unsigned long flags;
-> -	u8 bus, devfn;
-> -
-> -	iommu = device_to_iommu(dev, &bus, &devfn);
-> -	if (!iommu)
-> -		return NULL;
-> -
-> -	if (dev_is_pci(dev)) {
-> -		struct pci_dev *pdev = to_pci_dev(dev);
-> -
-> -		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
-> -
-> -		spin_lock_irqsave(&device_domain_lock, flags);
-> -		info = dmar_search_domain_by_dev_info(pci_domain_nr(pdev->bus),
-> -						      PCI_BUS_NUM(dma_alias),
-> -						      dma_alias & 0xff);
-> -		if (info) {
-> -			iommu = info->iommu;
-> -			domain = info->domain;
-> -		}
-> -		spin_unlock_irqrestore(&device_domain_lock, flags);
-> -
-> -		/* DMA alias already has a domain, use it */
-> -		if (info)
-> -			goto out;
-> -	}
-> -
-> -	/* Allocate and initialize new domain for the device */
-> -	domain = alloc_domain(0);
-> -	if (!domain)
-> -		return NULL;
-> -	if (domain_init(domain, iommu, gaw)) {
-> -		domain_exit(domain);
-> -		return NULL;
-> -	}
-> -
-> -out:
-> -
-> -	return domain;
-> -}
-> -
-> -static struct dmar_domain *set_domain_for_dev(struct device *dev,
-> -					      struct dmar_domain *domain)
-> -{
-> -	struct intel_iommu *iommu;
-> -	struct dmar_domain *tmp;
-> -	u16 req_id, dma_alias;
-> -	u8 bus, devfn;
-> -
-> -	iommu = device_to_iommu(dev, &bus, &devfn);
-> -	if (!iommu)
-> -		return NULL;
-> -
-> -	req_id = ((u16)bus << 8) | devfn;
-> -
-> -	if (dev_is_pci(dev)) {
-> -		struct pci_dev *pdev = to_pci_dev(dev);
-> -
-> -		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
-> -
-> -		/* register PCI DMA alias device */
-> -		if (req_id != dma_alias) {
-> -			tmp = dmar_insert_one_dev_info(iommu, PCI_BUS_NUM(dma_alias),
-> -					dma_alias & 0xff, NULL, domain);
-> -
-> -			if (!tmp || tmp != domain)
-> -				return tmp;
-> -		}
-> -	}
-> -
-> -	tmp = dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
-> -	if (!tmp || tmp != domain)
-> -		return tmp;
-> -
-> -	return domain;
-> -}
-> -
-> -static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
-> -{
-> -	struct dmar_domain *domain, *tmp;
-> -
-> -	domain = find_domain(dev);
-> -	if (domain)
-> -		goto out;
-> -
-> -	domain = find_or_alloc_domain(dev, gaw);
-> -	if (!domain)
-> -		goto out;
-> -
-> -	tmp = set_domain_for_dev(dev, domain);
-> -	if (!tmp || domain != tmp) {
-> -		domain_exit(domain);
-> -		domain = tmp;
-> -	}
-> -
-> -out:
-> -
-> -	return domain;
-> -}
-> -
->   static int iommu_domain_identity_map(struct dmar_domain *domain,
->   				     unsigned long long start,
->   				     unsigned long long end)
-> @@ -2779,7 +2667,7 @@ static int iommu_prepare_identity_map(struct device *dev,
->   	struct dmar_domain *domain;
->   	int ret;
->   
-> -	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
-> +	domain = find_domain(dev);
->   	if (!domain)
->   		return -ENOMEM;
->   
-> @@ -3301,11 +3189,9 @@ static int copy_translation_tables(struct intel_iommu *iommu)
->   static int __init init_dmars(void)
->   {
->   	struct dmar_drhd_unit *drhd;
-> -	struct dmar_rmrr_unit *rmrr;
->   	bool copied_tables = false;
-> -	struct device *dev;
->   	struct intel_iommu *iommu;
-> -	int i, ret;
-> +	int ret;
->   
->   	/*
->   	 * for each drhd
-> @@ -3466,32 +3352,6 @@ static int __init init_dmars(void)
->   			goto free_iommu;
->   		}
->   	}
-> -	/*
-> -	 * For each rmrr
-> -	 *   for each dev attached to rmrr
-> -	 *   do
-> -	 *     locate drhd for dev, alloc domain for dev
-> -	 *     allocate free domain
-> -	 *     allocate page table entries for rmrr
-> -	 *     if context not allocated for bus
-> -	 *           allocate and init context
-> -	 *           set present in root table for this bus
-> -	 *     init context with domain, translation etc
-> -	 *    endfor
-> -	 * endfor
-> -	 */
-> -	pr_info("Setting RMRR:\n");
-> -	for_each_rmrr_units(rmrr) {
-> -		/* some BIOS lists non-exist devices in DMAR table. */
-> -		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
-> -					  i, dev) {
-> -			ret = iommu_prepare_rmrr_dev(rmrr, dev);
-> -			if (ret)
-> -				pr_err("Mapping reserved region failed\n");
-> -		}
-> -	}
-> -
-> -	iommu_prepare_isa();
-
-Why do you want to remove this segment of code?
-
->   
->   domains_done:
->   
-> @@ -3580,53 +3440,6 @@ static unsigned long intel_alloc_iova(struct device *dev,
->   	return iova_pfn;
->   }
->   
-> -struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
-> -{
-> -	struct dmar_domain *domain, *tmp;
-> -	struct dmar_rmrr_unit *rmrr;
-> -	struct device *i_dev;
-> -	int i, ret;
-> -
-> -	domain = find_domain(dev);
-> -	if (domain)
-> -		goto out;
-> -
-> -	domain = find_or_alloc_domain(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
-> -	if (!domain)
-> -		goto out;
-> -
-> -	/* We have a new domain - setup possible RMRRs for the device */
-> -	rcu_read_lock();
-> -	for_each_rmrr_units(rmrr) {
-> -		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
-> -					  i, i_dev) {
-> -			if (i_dev != dev)
-> -				continue;
-> -
-> -			ret = domain_prepare_identity_map(dev, domain,
-> -							  rmrr->base_address,
-> -							  rmrr->end_address);
-> -			if (ret)
-> -				dev_err(dev, "Mapping reserved region failed\n");
-
-We can't simply remove this segment of code, right? At least it should
-be moved to the domain allocation interface.
-
-> -		}
-> -	}
-> -	rcu_read_unlock();
-> -
-> -	tmp = set_domain_for_dev(dev, domain);
-> -	if (!tmp || domain != tmp) {
-> -		domain_exit(domain);
-> -		domain = tmp;
-> -	}
-> -
-> -out:
-> -
-> -	if (!domain)
-> -		pr_err("Allocating domain for %s failed\n", dev_name(dev));
-> -
-> -
-> -	return domain;
-> -}
-> -
->   /* Check if the dev needs to go through non-identity map and unmap process.*/
->   static int iommu_no_mapping(struct device *dev)
->   {
-> @@ -3689,7 +3502,7 @@ static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
->   	if (iommu_no_mapping(dev))
->   		return paddr;
->   
-> -	domain = get_valid_domain_for_dev(dev);
-> +	domain = find_domain(dev);
->   	if (!domain)
->   		return DMA_MAPPING_ERROR;
->   
-> @@ -3753,7 +3566,8 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
->   		return;
->   
->   	domain = find_domain(dev);
-> -	BUG_ON(!domain);
-> +	if (!domain)
-> +		return;
->   
-
-This is not related to this patch. Let's do it in a separated patch.
-
->   	iommu = domain_get_iommu(domain);
->   
-> @@ -3899,7 +3713,7 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
->   	if (iommu_no_mapping(dev))
->   		return intel_nontranslate_map_sg(dev, sglist, nelems, dir);
->   
-> -	domain = get_valid_domain_for_dev(dev);
-> +	domain = find_domain(dev);
->   	if (!domain)
->   		return 0;
->   
-> @@ -5377,9 +5191,9 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sd
->   	u64 ctx_lo;
->   	int ret;
->   
-> -	domain = get_valid_domain_for_dev(sdev->dev);
-> +	domain = find_domain(sdev->dev);
->   	if (!domain)
-> -		return -EINVAL;
-> +		return -ENOMEM;
-
-This is not related to this patch. Let's do it in a separated patch.
-
->   
->   	spin_lock_irqsave(&device_domain_lock, flags);
->   	spin_lock(&iommu->lock);
+> On Intel, this is traditionnaly achieved by combining the 2 stages
+> into a single physical stage. However this relies on the capability
+> to trap on each guest translation structure update. This is possible
+> by using the VTD Caching Mode. Unfortunately the ARM SMMUv3 does
+> not offer a similar mechanism.
 > 
+> However, the ARM SMMUv3 architecture supports 2 physical stages! Those
+> were devised exactly with that use case in mind. Assuming the HW
+> implements both stages (optional), the guest now can use stage 1
+> while the host uses stage 2.
+> 
+> This assumes the virtualizer has means to propagate guest settings
+> to the host SMMUv3 driver. This series brings this VFIO/IOMMU
+> infrastructure.  Those services are:
+> - bind the guest stage 1 configuration to the stream table entry
+> - propagate guest TLB invalidations
+> - bind MSI IOVAs
+> - propagate faults collected at physical level up to the virtualizer
+> 
+> This series largely reuses the user API and infrastructure originally
+> devised for SVA/SVM and patches submitted by Jacob, Yi Liu, Tianyu in
+> [1-2] and Jean-Philippe [3-4].
 
-Best regards,
-Lu Baolu
+I am about to respin to fix the fault handler unregistration bug
+reported by Vincent. Are there any other comments (iommu uapi changes,
+smmuv3 driver changes)?
+
+Thanks
+
+Eric
+> 
+> Best Regards
+> 
+> Eric
+> 
+> This series can be found at:
+> https://github.com/eauger/linux/tree/v5.0-rc7-2stage-v4
+> 
+> References:
+> [1] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
+>     Address (SVA)
+>     https://lwn.net/Articles/754331/
+> [2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
+>     (VFIO part)
+>     https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
+> [3] [v2,00/40] Shared Virtual Addressing for the IOMMU
+>     https://patchwork.ozlabs.org/cover/912129/
+> [4] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
+>     https://patchwork.kernel.org/cover/10608299/
+> 
+> History:
+> v3 -> v4:
+> - took into account Alex, jean-Philippe and Robin's comments on v3
+> - rework of the smmuv3 driver integration
+> - add tear down ops for msi binding and PASID table binding
+> - fix S1 fault propagation
+> - put fault reporting patches at the beginning of the series following
+>   Jean-Philippe's request
+> - update of the cache invalidate and fault API uapis
+> - VFIO fault reporting rework with 2 separate regions and one mmappable
+>   segment for the fault queue
+> - moved to PATCH
+> 
+> v2 -> v3:
+> - When registering the S1 MSI binding we now store the device handle. This
+>   addresses Robin's comment about discimination of devices beonging to
+>   different S1 groups and using different physical MSI doorbells.
+> - Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
+>   set the eventfd and expose the faults through an mmappable fault region
+> 
+> v1 -> v2:
+> - Added the fault reporting capability
+> - asid properly passed on invalidation (fix assignment of multiple
+>   devices)
+> - see individual change logs for more info
+> 
+> Eric Auger (13):
+>   iommu: Introduce bind/unbind_guest_msi
+>   vfio: VFIO_IOMMU_BIND/UNBIND_MSI
+>   iommu/smmuv3: Get prepared for nested stage support
+>   iommu/smmuv3: Implement attach/detach_pasid_table
+>   iommu/smmuv3: Implement cache_invalidate
+>   dma-iommu: Implement NESTED_MSI cookie
+>   iommu/smmuv3: Implement bind/unbind_guest_msi
+>   iommu/smmuv3: Report non recoverable faults
+>   vfio-pci: Add a new VFIO_REGION_TYPE_NESTED region type
+>   vfio-pci: Register an iommu fault handler
+>   vfio_pci: Allow to mmap the fault queue
+>   vfio-pci: Add VFIO_PCI_DMA_FAULT_IRQ_INDEX
+>   vfio: Document nested stage control
+> 
+> Jacob Pan (4):
+>   driver core: add per device iommu param
+>   iommu: introduce device fault data
+>   iommu: introduce device fault report API
+>   iommu: Introduce attach/detach_pasid_table API
+> 
+> Jean-Philippe Brucker (2):
+>   iommu/arm-smmu-v3: Link domains and devices
+>   iommu/arm-smmu-v3: Maintain a SID->device structure
+> 
+> Liu, Yi L (3):
+>   iommu: Introduce cache_invalidate API
+>   vfio: VFIO_IOMMU_ATTACH/DETACH_PASID_TABLE
+>   vfio: VFIO_IOMMU_CACHE_INVALIDATE
+> 
+>  Documentation/vfio.txt              |  83 ++++
+>  drivers/iommu/arm-smmu-v3.c         | 580 ++++++++++++++++++++++++++--
+>  drivers/iommu/dma-iommu.c           | 145 ++++++-
+>  drivers/iommu/iommu.c               | 221 ++++++++++-
+>  drivers/vfio/pci/vfio_pci.c         | 214 ++++++++++
+>  drivers/vfio/pci/vfio_pci_intrs.c   |  19 +
+>  drivers/vfio/pci/vfio_pci_private.h |  20 +
+>  drivers/vfio/pci/vfio_pci_rdwr.c    |  73 ++++
+>  drivers/vfio/vfio_iommu_type1.c     | 158 ++++++++
+>  include/linux/device.h              |   3 +
+>  include/linux/dma-iommu.h           |  18 +
+>  include/linux/iommu.h               | 142 +++++++
+>  include/uapi/linux/iommu.h          | 233 +++++++++++
+>  include/uapi/linux/vfio.h           | 102 +++++
+>  14 files changed, 1977 insertions(+), 34 deletions(-)
+>  create mode 100644 include/uapi/linux/iommu.h
+> 
