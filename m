@@ -1,16 +1,16 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 3/4] iommu/vt-d: Allow IOMMU_DOMAIN_DMA and
- IOMMU_DOMAIN_IDENTITY to be allocated
-Date: Tue, 5 Mar 2019 14:46:16 +0800
-Message-ID: <78df6013-bdcb-abfa-d86a-6460b17dc924@linux.intel.com>
+Subject: Re: [PATCH 4/4] iommu/vt-d: Remove lazy allocation of domains
+Date: Tue, 5 Mar 2019 14:59:48 +0800
+Message-ID: <fdd74d83-acd4-23da-6c0c-b52573d999bb@linux.intel.com>
 References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
  <2C75F46E-78FE-45E9-9E7D-280B3138EA13@arista.com>
  <F83456DB-81DD-4E9B-9204-12ED9972D2FA@arista.com>
+ <7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <F83456DB-81DD-4E9B-9204-12ED9972D2FA@arista.com>
+In-Reply-To: <7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: James Sewart <jamessewart@arista.com>, iommu@lists.linux-foundation.org
@@ -19,252 +19,312 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-On 3/4/19 11:46 PM, James Sewart wrote:
-> Allowing IOMMU_DOMAIN_DMA type IOMMU domain to be allocated allows the
-> default_domain of an iommu_group to be set. This delegates device-domain
-> relationships to the generic IOMMU code.
+It's hard for me to understand why do we remove the rmrr related
+code in this patch.
+
+And, now we have two places to hold a domain for a device: group and
+dev->info. We can consider to optimize the use of per device iommu
+arch data. This should be later work anyway.
+
+More comments inline.
+
+On 3/4/19 11:47 PM, James Sewart wrote:
+> The generic IOMMU code will allocate and attach a dma ops domain to each
+> device that comes online, replacing any lazy allocated domain. Removes
+> RMRR application at iommu init time as we won't have a domain attached
+> to any device. iommu.c will do this after attaching a device using
+> create_direct_mappings.
 > 
 > Signed-off-by: James Sewart <jamessewart@arista.com>
 > ---
->   drivers/iommu/intel-iommu.c | 113 +++++++++++++++++++++++++++---------
->   1 file changed, 84 insertions(+), 29 deletions(-)
+>   drivers/iommu/intel-iommu.c | 202 ++----------------------------------
+>   1 file changed, 8 insertions(+), 194 deletions(-)
 > 
 > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 8e0a4e2ff77f..71cd6bbfec05 100644
+> index 71cd6bbfec05..282257e2628d 100644
 > --- a/drivers/iommu/intel-iommu.c
 > +++ b/drivers/iommu/intel-iommu.c
-> @@ -309,6 +309,14 @@ static int hw_pass_through = 1;
->   /* si_domain contains mulitple devices */
->   #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
->   
-> +/* Domain managed externally, don't cleanup if it isn't attached
-> + * to any devices. */
-> +#define DOMAIN_FLAG_MANAGED_EXTERNALLY	(1 << 2)
-> +
-> +/* Set after domain initialisation. Used when allocating dma domains to
-> + * defer domain initialisation until it is attached to a device */
-> +#define DOMAIN_FLAG_INITIALISED	(1 << 4)
-
-Why do you skip bit 3?
-
-> +
->   #define for_each_domain_iommu(idx, domain)			\
->   	for (idx = 0; idx < g_num_of_iommus; idx++)		\
->   		if (domain->iommu_refcnt[idx])
-> @@ -558,6 +566,16 @@ static inline int domain_type_is_vm_or_si(struct dmar_domain *domain)
->   				DOMAIN_FLAG_STATIC_IDENTITY);
+> @@ -2595,118 +2595,6 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>   	return domain;
 >   }
 >   
-> +static inline int domain_managed_externally(struct dmar_domain *domain)
-> +{
-> +	return domain->flags & DOMAIN_FLAG_MANAGED_EXTERNALLY;
-> +}
-> +
-> +static inline int domain_is_initialised(struct dmar_domain *domain)
-> +{
-> +	return domain->flags & DOMAIN_FLAG_INITIALISED;
-> +}
-> +
->   static inline int domain_pfn_supported(struct dmar_domain *domain,
->   				       unsigned long pfn)
->   {
-> @@ -1662,7 +1680,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
->   
->   		__dmar_remove_one_dev_info(info);
->   
-> -		if (!domain_type_is_vm_or_si(domain)) {
-> +		if (!domain_managed_externally(domain)) {
->   			/*
->   			 * The domain_exit() function  can't be called under
->   			 * device_domain_lock, as it takes this lock itself.
-> @@ -1895,6 +1913,7 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
->   	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
->   	if (!domain->pgd)
->   		return -ENOMEM;
-> +	domain->flags |= DOMAIN_FLAG_INITIALISED;
->   	__iommu_flush_cache(iommu, domain->pgd, PAGE_SIZE);
->   	return 0;
->   }
-> @@ -2807,14 +2826,10 @@ static inline void iommu_prepare_isa(void)
->   
->   static int md_domain_init(struct dmar_domain *domain, int guest_width);
->   
-> -static int __init si_domain_init(int hw)
-> +static int __init si_domain_init(struct dmar_domain *si_domain, int hw)
->   {
->   	int nid, ret = 0;
->   
-> -	si_domain = alloc_domain(DOMAIN_FLAG_STATIC_IDENTITY);
-> -	if (!si_domain)
-> -		return -EFAULT;
+> -static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+> -{
+> -	*(u16 *)opaque = alias;
+> -	return 0;
+> -}
 > -
->   	if (md_domain_init(si_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
->   		domain_exit(si_domain);
->   		return -EFAULT;
-> @@ -3417,9 +3432,16 @@ static int __init init_dmars(void)
->   	check_tylersburg_isoch();
->   
->   	if (iommu_identity_mapping) {
-> -		ret = si_domain_init(hw_pass_through);
-> -		if (ret)
-> +		si_domain = alloc_domain(DOMAIN_FLAG_STATIC_IDENTITY);
-
-Where will this si_domain be used? We still need to keep the global
-si_domain?
-
-> +		if (!si_domain) {
-> +			ret = -EFAULT;
->   			goto free_iommu;
-> +		}
-> +		ret = si_domain_init(si_domain, hw_pass_through);
-> +		if (ret) {
-> +			domain_exit(si_domain);
-> +			goto free_iommu;
-> +		}
->   	}
->   
->   
-> @@ -4575,7 +4597,7 @@ static int device_notifier(struct notifier_block *nb,
->   		return 0;
->   
->   	dmar_remove_one_dev_info(domain, dev);
-> -	if (!domain_type_is_vm_or_si(domain) && list_empty(&domain->devices))
-> +	if (!domain_managed_externally(domain) && list_empty(&domain->devices))
->   		domain_exit(domain);
->   
->   	return 0;
-> @@ -5020,6 +5042,7 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
->   	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
->   	if (!domain->pgd)
->   		return -ENOMEM;
-> +	domain->flags |= DOMAIN_FLAG_INITIALISED;
->   	domain_flush_cache(domain, domain->pgd, PAGE_SIZE);
->   	return 0;
->   }
-> @@ -5028,28 +5051,54 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
->   {
->   	struct dmar_domain *dmar_domain;
->   	struct iommu_domain *domain;
-> +	int flags = DOMAIN_FLAG_MANAGED_EXTERNALLY;
->   
-> -	if (type != IOMMU_DOMAIN_UNMANAGED)
+> -static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
+> -{
+> -	struct device_domain_info *info = NULL;
+> -	struct dmar_domain *domain = NULL;
+> -	struct intel_iommu *iommu;
+> -	u16 dma_alias;
+> -	unsigned long flags;
+> -	u8 bus, devfn;
+> -
+> -	iommu = device_to_iommu(dev, &bus, &devfn);
+> -	if (!iommu)
 > -		return NULL;
 > -
-> -	dmar_domain = alloc_domain(DOMAIN_FLAG_VIRTUAL_MACHINE);
-> -	if (!dmar_domain) {
-> -		pr_err("Can't allocate dmar_domain\n");
+> -	if (dev_is_pci(dev)) {
+> -		struct pci_dev *pdev = to_pci_dev(dev);
+> -
+> -		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
+> -
+> -		spin_lock_irqsave(&device_domain_lock, flags);
+> -		info = dmar_search_domain_by_dev_info(pci_domain_nr(pdev->bus),
+> -						      PCI_BUS_NUM(dma_alias),
+> -						      dma_alias & 0xff);
+> -		if (info) {
+> -			iommu = info->iommu;
+> -			domain = info->domain;
+> -		}
+> -		spin_unlock_irqrestore(&device_domain_lock, flags);
+> -
+> -		/* DMA alias already has a domain, use it */
+> -		if (info)
+> -			goto out;
+> -	}
+> -
+> -	/* Allocate and initialize new domain for the device */
+> -	domain = alloc_domain(0);
+> -	if (!domain)
+> -		return NULL;
+> -	if (domain_init(domain, iommu, gaw)) {
+> -		domain_exit(domain);
 > -		return NULL;
 > -	}
-> -	if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
-> -		pr_err("Domain initialization failed\n");
-> -		domain_exit(dmar_domain);
-> +	switch (type) {
-> +	case IOMMU_DOMAIN_UNMANAGED:
-> +		flags |= DOMAIN_FLAG_VIRTUAL_MACHINE | DOMAIN_FLAG_INITIALISED;
-> +		dmar_domain = alloc_domain(flags);
-> +		if (!dmar_domain) {
-> +			pr_err("Can't allocate dmar_domain\n");
-> +			return NULL;
-> +		}
-> +		if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
-> +			pr_err("Domain initialization failed\n");
-> +			domain_exit(dmar_domain);
-> +			return NULL;
-> +		}
-> +		domain_update_iommu_cap(dmar_domain);
-> +		domain = &dmar_domain->domain;
-> +		domain->geometry.aperture_start = 0;
-> +		domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
-> +		domain->geometry.force_aperture = true;
-> +		break;
-> +	case IOMMU_DOMAIN_DMA:
-> +		dmar_domain = alloc_domain(flags);
-> +		if (!dmar_domain) {
-> +			pr_err("Can't allocate dmar_domain\n");
-
-Not necessary for memory allocation failure.
-
-> +			return NULL;
-> +		}
-> +		// init domain in device attach when we know IOMMU capabilities
-
-Use /* */ for comments, please.
-
-> +		break;
-> +	case IOMMU_DOMAIN_IDENTITY:
-> +		flags |= DOMAIN_FLAG_STATIC_IDENTITY | DOMAIN_FLAG_INITIALISED;
-> +		dmar_domain = alloc_domain(flags);
-> +		if (!dmar_domain) {
-> +			pr_err("Can't allocate dmar_domain\n");
-> +			return NULL;
-> +		}
-> +		if (si_domain_init(dmar_domain, 0)) {
-> +			pr_err("Domain initialization failed\n");
-> +			domain_exit(dmar_domain);
-> +			return NULL;
-> +		}
-> +		break;
-
-How about moving si domain allocation into a separated patch? There are
-two significant changes here, so it worth a new patch for discussion.
-
-1) a shared single si domain vs. per group si domain;
-2) previously vt-d drivers determines what kind of devices should use
-    identity domain; Now, it turns to iommu generic layer, behavior will
-    be changed.
-
-> +	default:
->   		return NULL;
->   	}
-> -	domain_update_iommu_cap(dmar_domain);
 > -
-> -	domain = &dmar_domain->domain;
-> -	domain->geometry.aperture_start = 0;
-> -	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
-> -	domain->geometry.force_aperture = true;
->   
+> -out:
+> -
 > -	return domain;
-> +	dmar_domain->domain.type = type;
-
-Is it necessary to set this?
-
-> +	return &dmar_domain->domain;
->   }
+> -}
+> -
+> -static struct dmar_domain *set_domain_for_dev(struct device *dev,
+> -					      struct dmar_domain *domain)
+> -{
+> -	struct intel_iommu *iommu;
+> -	struct dmar_domain *tmp;
+> -	u16 req_id, dma_alias;
+> -	u8 bus, devfn;
+> -
+> -	iommu = device_to_iommu(dev, &bus, &devfn);
+> -	if (!iommu)
+> -		return NULL;
+> -
+> -	req_id = ((u16)bus << 8) | devfn;
+> -
+> -	if (dev_is_pci(dev)) {
+> -		struct pci_dev *pdev = to_pci_dev(dev);
+> -
+> -		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
+> -
+> -		/* register PCI DMA alias device */
+> -		if (req_id != dma_alias) {
+> -			tmp = dmar_insert_one_dev_info(iommu, PCI_BUS_NUM(dma_alias),
+> -					dma_alias & 0xff, NULL, domain);
+> -
+> -			if (!tmp || tmp != domain)
+> -				return tmp;
+> -		}
+> -	}
+> -
+> -	tmp = dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
+> -	if (!tmp || tmp != domain)
+> -		return tmp;
+> -
+> -	return domain;
+> -}
+> -
+> -static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+> -{
+> -	struct dmar_domain *domain, *tmp;
+> -
+> -	domain = find_domain(dev);
+> -	if (domain)
+> -		goto out;
+> -
+> -	domain = find_or_alloc_domain(dev, gaw);
+> -	if (!domain)
+> -		goto out;
+> -
+> -	tmp = set_domain_for_dev(dev, domain);
+> -	if (!tmp || domain != tmp) {
+> -		domain_exit(domain);
+> -		domain = tmp;
+> -	}
+> -
+> -out:
+> -
+> -	return domain;
+> -}
+> -
+>   static int iommu_domain_identity_map(struct dmar_domain *domain,
+>   				     unsigned long long start,
+>   				     unsigned long long end)
+> @@ -2779,7 +2667,7 @@ static int iommu_prepare_identity_map(struct device *dev,
+>   	struct dmar_domain *domain;
+>   	int ret;
 >   
->   static void intel_iommu_domain_free(struct iommu_domain *domain)
-> @@ -5080,8 +5129,8 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->   			dmar_remove_one_dev_info(old_domain, dev);
->   			rcu_read_unlock();
+> -	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+> +	domain = find_domain(dev);
+>   	if (!domain)
+>   		return -ENOMEM;
 >   
-> -			if (!domain_type_is_vm_or_si(old_domain) &&
-> -			     list_empty(&old_domain->devices))
-> +			if (list_empty(&old_domain->devices) &&
-> +			     !domain_managed_externally(old_domain))
->   				domain_exit(old_domain);
+> @@ -3301,11 +3189,9 @@ static int copy_translation_tables(struct intel_iommu *iommu)
+>   static int __init init_dmars(void)
+>   {
+>   	struct dmar_drhd_unit *drhd;
+> -	struct dmar_rmrr_unit *rmrr;
+>   	bool copied_tables = false;
+> -	struct device *dev;
+>   	struct intel_iommu *iommu;
+> -	int i, ret;
+> +	int ret;
+>   
+>   	/*
+>   	 * for each drhd
+> @@ -3466,32 +3352,6 @@ static int __init init_dmars(void)
+>   			goto free_iommu;
 >   		}
 >   	}
-> @@ -5090,6 +5139,12 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->   	if (!iommu)
->   		return -ENODEV;
+> -	/*
+> -	 * For each rmrr
+> -	 *   for each dev attached to rmrr
+> -	 *   do
+> -	 *     locate drhd for dev, alloc domain for dev
+> -	 *     allocate free domain
+> -	 *     allocate page table entries for rmrr
+> -	 *     if context not allocated for bus
+> -	 *           allocate and init context
+> -	 *           set present in root table for this bus
+> -	 *     init context with domain, translation etc
+> -	 *    endfor
+> -	 * endfor
+> -	 */
+> -	pr_info("Setting RMRR:\n");
+> -	for_each_rmrr_units(rmrr) {
+> -		/* some BIOS lists non-exist devices in DMAR table. */
+> -		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+> -					  i, dev) {
+> -			ret = iommu_prepare_rmrr_dev(rmrr, dev);
+> -			if (ret)
+> -				pr_err("Mapping reserved region failed\n");
+> -		}
+> -	}
+> -
+> -	iommu_prepare_isa();
+
+Why do you want to remove this segment of code?
+
 >   
-> +	// Initialise domain with IOMMU capabilities if it isn't already initialised
+>   domains_done:
+>   
+> @@ -3580,53 +3440,6 @@ static unsigned long intel_alloc_iova(struct device *dev,
+>   	return iova_pfn;
+>   }
+>   
+> -struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
+> -{
+> -	struct dmar_domain *domain, *tmp;
+> -	struct dmar_rmrr_unit *rmrr;
+> -	struct device *i_dev;
+> -	int i, ret;
+> -
+> -	domain = find_domain(dev);
+> -	if (domain)
+> -		goto out;
+> -
+> -	domain = find_or_alloc_domain(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+> -	if (!domain)
+> -		goto out;
+> -
+> -	/* We have a new domain - setup possible RMRRs for the device */
+> -	rcu_read_lock();
+> -	for_each_rmrr_units(rmrr) {
+> -		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+> -					  i, i_dev) {
+> -			if (i_dev != dev)
+> -				continue;
+> -
+> -			ret = domain_prepare_identity_map(dev, domain,
+> -							  rmrr->base_address,
+> -							  rmrr->end_address);
+> -			if (ret)
+> -				dev_err(dev, "Mapping reserved region failed\n");
 
-Ditto.
+We can't simply remove this segment of code, right? At least it should
+be moved to the domain allocation interface.
 
-> +	if (!domain_is_initialised(dmar_domain)) {
-> +		if (domain_init(dmar_domain, iommu, DEFAULT_DOMAIN_ADDRESS_WIDTH))
-> +			return -ENOMEM;
-> +	}
+> -		}
+> -	}
+> -	rcu_read_unlock();
+> -
+> -	tmp = set_domain_for_dev(dev, domain);
+> -	if (!tmp || domain != tmp) {
+> -		domain_exit(domain);
+> -		domain = tmp;
+> -	}
+> -
+> -out:
+> -
+> -	if (!domain)
+> -		pr_err("Allocating domain for %s failed\n", dev_name(dev));
+> -
+> -
+> -	return domain;
+> -}
+> -
+>   /* Check if the dev needs to go through non-identity map and unmap process.*/
+>   static int iommu_no_mapping(struct device *dev)
+>   {
+> @@ -3689,7 +3502,7 @@ static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
+>   	if (iommu_no_mapping(dev))
+>   		return paddr;
+>   
+> -	domain = get_valid_domain_for_dev(dev);
+> +	domain = find_domain(dev);
+>   	if (!domain)
+>   		return DMA_MAPPING_ERROR;
+>   
+> @@ -3753,7 +3566,8 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
+>   		return;
+>   
+>   	domain = find_domain(dev);
+> -	BUG_ON(!domain);
+> +	if (!domain)
+> +		return;
+>   
 
-Each domain, not matter the DMA domain or UNMANAGED domain, is allocated
-first and then gets initialized during device attaching, right? If so,
-why do we need to have a special DOMAIN_FLAG_INITIALISED flag for DMA
-domains?
+This is not related to this patch. Let's do it in a separated patch.
 
-> +
->   	/* check if this iommu agaw is sufficient for max mapped address */
->   	addr_width = agaw_to_width(iommu->agaw);
->   	if (addr_width > cap_mgaw(iommu->cap))
+>   	iommu = domain_get_iommu(domain);
+>   
+> @@ -3899,7 +3713,7 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
+>   	if (iommu_no_mapping(dev))
+>   		return intel_nontranslate_map_sg(dev, sglist, nelems, dir);
+>   
+> -	domain = get_valid_domain_for_dev(dev);
+> +	domain = find_domain(dev);
+>   	if (!domain)
+>   		return 0;
+>   
+> @@ -5377,9 +5191,9 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sd
+>   	u64 ctx_lo;
+>   	int ret;
+>   
+> -	domain = get_valid_domain_for_dev(sdev->dev);
+> +	domain = find_domain(sdev->dev);
+>   	if (!domain)
+> -		return -EINVAL;
+> +		return -ENOMEM;
+
+This is not related to this patch. Let's do it in a separated patch.
+
+>   
+>   	spin_lock_irqsave(&device_domain_lock, flags);
+>   	spin_lock(&iommu->lock);
 > 
 
 Best regards,
