@@ -1,151 +1,68 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 00/22] SMMUv3 Nested Stage Setup
-Date: Tue, 5 Mar 2019 09:07:51 +0100
-Message-ID: <05e54ddf-1a86-c924-3d37-731aa389193d@redhat.com>
-References: <20190218135504.25048-1-eric.auger@redhat.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] Revert "swiotlb: remove SWIOTLB_MAP_ERROR"
+Date: Tue, 5 Mar 2019 09:16:44 +0100
+Message-ID: <CAK8P3a2KQKTDQCQcFR7ZTFJ+_XhfKpy9W27r+YV=iD6hLVu2xg@mail.gmail.com>
+References: <20190304195951.1118807-1-arnd@arndb.de> <b0b995a1-3211-870f-01af-ce837c18e8f9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190218135504.25048-1-eric.auger@redhat.com>
-Content-Language: en-US
+In-Reply-To: <b0b995a1-3211-870f-01af-ce837c18e8f9@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Juergen Gross <jgross@suse.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Stefano Stabellini <sstabellini@kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, xen-devel <xen-devel@lists.xenproject.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Tue, Mar 5, 2019 at 12:56 AM Robin Murphy <robin.murphy@arm.com> wrote:
+> On 2019-03-04 7:59 pm, Arnd Bergmann wrote:
+> > This reverts commit b907e20508d0 ("swiotlb: remove SWIOTLB_MAP_ERROR"), which
+> > introduced an overflow warning in configurations that have a larger
+> > dma_addr_t than phys_addr_t:
+> >
+> > In file included from include/linux/dma-direct.h:5,
+> >                   from kernel/dma/swiotlb.c:23:
+> > kernel/dma/swiotlb.c: In function 'swiotlb_tbl_map_single':
+> > include/linux/dma-mapping.h:136:28: error: conversion from 'long long unsigned int' to 'phys_addr_t' {aka 'unsigned int'} changes value from '18446744073709551615' to '4294967295' [-Werror=overflow]
+> >   #define DMA_MAPPING_ERROR  (~(dma_addr_t)0)
+> >                              ^
+> > kernel/dma/swiotlb.c:544:9: note: in expansion of macro 'DMA_MAPPING_ERROR'
+> >    return DMA_MAPPING_ERROR;
+> >
+> > The configuration that caused this is on 32-bit ARM, where the DMA address
+> > space depends on the enabled hardware platforms, while the physical
+> > address space depends on the type of MMU chosen (classic vs LPAE).
+>
+> Are these real platforms, or random configs? Realistically I don't see a
+> great deal of need to support DMA_ADDR_T_64BIT for non-LPAE.
+> Particularly in this case since AFAIK the only selector of SWIOTLB on
+> Arm is Xen, and that by definition is never going to be useful on
+> non-LPAE hardware.
+...
+On Mon, Mar 4, 2019 at 11:00 PM Konrad Rzeszutek Wilk
+<konrad.wilk@oracle.com> wrote:
+> What about making the phys_addr_t and dma_addr_t have the same
+> width with some magic #ifdef hackery?
 
-On 2/18/19 2:54 PM, Eric Auger wrote:
-> This series allows a virtualizer to program the nested stage mode.
-> This is useful when both the host and the guest are exposed with
-> an SMMUv3 and a PCI device is assigned to the guest using VFIO.
-> 
-> In this mode, the physical IOMMU must be programmed to translate
-> the two stages: the one set up by the guest (IOVA -> GPA) and the
-> one set up by the host VFIO driver as part of the assignment process
-> (GPA -> HPA).
-> 
-> On Intel, this is traditionnaly achieved by combining the 2 stages
-> into a single physical stage. However this relies on the capability
-> to trap on each guest translation structure update. This is possible
-> by using the VTD Caching Mode. Unfortunately the ARM SMMUv3 does
-> not offer a similar mechanism.
-> 
-> However, the ARM SMMUv3 architecture supports 2 physical stages! Those
-> were devised exactly with that use case in mind. Assuming the HW
-> implements both stages (optional), the guest now can use stage 1
-> while the host uses stage 2.
-> 
-> This assumes the virtualizer has means to propagate guest settings
-> to the host SMMUv3 driver. This series brings this VFIO/IOMMU
-> infrastructure.  Those services are:
-> - bind the guest stage 1 configuration to the stream table entry
-> - propagate guest TLB invalidations
-> - bind MSI IOVAs
-> - propagate faults collected at physical level up to the virtualizer
-> 
-> This series largely reuses the user API and infrastructure originally
-> devised for SVA/SVM and patches submitted by Jacob, Yi Liu, Tianyu in
-> [1-2] and Jean-Philippe [3-4].
+As far as I can tell, only randconfig builds see this problem, in
+real systems phys_addr_t is normally the same as dma_addr_t,
+and you could reasonably have a machine with a larger phys_addr_t
+than dma_addr_t but wouldn't need to bother.
 
-I am about to respin to fix the fault handler unregistration bug
-reported by Vincent. Are there any other comments (iommu uapi changes,
-smmuv3 driver changes)?
+The reason I'd like to keep them independent on ARM is that
+the difference does occasionally find real driver bugs where some
+drivers happily mix phys_addr_t and dma_addr_t in ways that
+are broken even when they are the same size.
 
-Thanks
+On Tue, Mar 5, 2019 at 12:56 AM Robin Murphy <robin.murphy@arm.com> wrote:
+> Fair enough that we don't still don't want even randconfigs generating
+> warnings, though. As long as this change doesn't let SWIOTLB_MAP_ERROR
+> leak out to logic expecting DMA_MAP_ERROR - which does appear to be the
+> case - and is also still OK for the opposite weirdness of
+> PHYS_ADDR_T_64BIT && !DMA_ADDR_T_64BIT, then I think it's reasonable.
 
-Eric
-> 
-> Best Regards
-> 
-> Eric
-> 
-> This series can be found at:
-> https://github.com/eauger/linux/tree/v5.0-rc7-2stage-v4
-> 
-> References:
-> [1] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
->     Address (SVA)
->     https://lwn.net/Articles/754331/
-> [2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
->     (VFIO part)
->     https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
-> [3] [v2,00/40] Shared Virtual Addressing for the IOMMU
->     https://patchwork.ozlabs.org/cover/912129/
-> [4] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
->     https://patchwork.kernel.org/cover/10608299/
-> 
-> History:
-> v3 -> v4:
-> - took into account Alex, jean-Philippe and Robin's comments on v3
-> - rework of the smmuv3 driver integration
-> - add tear down ops for msi binding and PASID table binding
-> - fix S1 fault propagation
-> - put fault reporting patches at the beginning of the series following
->   Jean-Philippe's request
-> - update of the cache invalidate and fault API uapis
-> - VFIO fault reporting rework with 2 separate regions and one mmappable
->   segment for the fault queue
-> - moved to PATCH
-> 
-> v2 -> v3:
-> - When registering the S1 MSI binding we now store the device handle. This
->   addresses Robin's comment about discimination of devices beonging to
->   different S1 groups and using different physical MSI doorbells.
-> - Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
->   set the eventfd and expose the faults through an mmappable fault region
-> 
-> v1 -> v2:
-> - Added the fault reporting capability
-> - asid properly passed on invalidation (fix assignment of multiple
->   devices)
-> - see individual change logs for more info
-> 
-> Eric Auger (13):
->   iommu: Introduce bind/unbind_guest_msi
->   vfio: VFIO_IOMMU_BIND/UNBIND_MSI
->   iommu/smmuv3: Get prepared for nested stage support
->   iommu/smmuv3: Implement attach/detach_pasid_table
->   iommu/smmuv3: Implement cache_invalidate
->   dma-iommu: Implement NESTED_MSI cookie
->   iommu/smmuv3: Implement bind/unbind_guest_msi
->   iommu/smmuv3: Report non recoverable faults
->   vfio-pci: Add a new VFIO_REGION_TYPE_NESTED region type
->   vfio-pci: Register an iommu fault handler
->   vfio_pci: Allow to mmap the fault queue
->   vfio-pci: Add VFIO_PCI_DMA_FAULT_IRQ_INDEX
->   vfio: Document nested stage control
-> 
-> Jacob Pan (4):
->   driver core: add per device iommu param
->   iommu: introduce device fault data
->   iommu: introduce device fault report API
->   iommu: Introduce attach/detach_pasid_table API
-> 
-> Jean-Philippe Brucker (2):
->   iommu/arm-smmu-v3: Link domains and devices
->   iommu/arm-smmu-v3: Maintain a SID->device structure
-> 
-> Liu, Yi L (3):
->   iommu: Introduce cache_invalidate API
->   vfio: VFIO_IOMMU_ATTACH/DETACH_PASID_TABLE
->   vfio: VFIO_IOMMU_CACHE_INVALIDATE
-> 
->  Documentation/vfio.txt              |  83 ++++
->  drivers/iommu/arm-smmu-v3.c         | 580 ++++++++++++++++++++++++++--
->  drivers/iommu/dma-iommu.c           | 145 ++++++-
->  drivers/iommu/iommu.c               | 221 ++++++++++-
->  drivers/vfio/pci/vfio_pci.c         | 214 ++++++++++
->  drivers/vfio/pci/vfio_pci_intrs.c   |  19 +
->  drivers/vfio/pci/vfio_pci_private.h |  20 +
->  drivers/vfio/pci/vfio_pci_rdwr.c    |  73 ++++
->  drivers/vfio/vfio_iommu_type1.c     | 158 ++++++++
->  include/linux/device.h              |   3 +
->  include/linux/dma-iommu.h           |  18 +
->  include/linux/iommu.h               | 142 +++++++
->  include/uapi/linux/iommu.h          | 233 +++++++++++
->  include/uapi/linux/vfio.h           | 102 +++++
->  14 files changed, 1977 insertions(+), 34 deletions(-)
->  create mode 100644 include/uapi/linux/iommu.h
-> 
+Another option would be to change the return type of swiotlb_tbl_map_single()
+to 'u64', which would always be large enough to contain both a phys_addr_t
+and DMA_MAP_ERROR. I first tried changing the return type to dma_addr_t,
+which solves the build issue, but I couldn't convince myself that this is
+correct in all cases, or that this is a sensible type to use here.
+
+       Arnd
