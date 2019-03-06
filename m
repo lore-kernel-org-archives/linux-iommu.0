@@ -1,40 +1,277 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v2 10/12] NTB: Introduce NTB MSI Test Client
-Date: Wed, 6 Mar 2019 14:39:32 -0700
-Message-ID: <284dae8b-4e8a-1d7b-e806-bf7fed2a39a7@deltatee.com>
-References: <20190213175454.7506-1-logang@deltatee.com>
- <20190213175454.7506-11-logang@deltatee.com>
- <20190306204400.hzpizimya7fq6swi@mobilestation>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 05/22] iommu: Introduce cache_invalidate API
+Date: Wed, 6 Mar 2019 13:59:10 -0800
+Message-ID: <20190306135910.0ef1eb0d@jacob-builder>
+References: <20190218135504.25048-1-eric.auger@redhat.com>
+	<20190218135504.25048-6-eric.auger@redhat.com>
+	<0762b4da-aff0-4e9f-f257-e2ab294bf235@arm.com>
+	<0e041735-98e8-1d8c-c866-ad23e6cc1db5@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190306204400.hzpizimya7fq6swi@mobilestation>
-Content-Language: en-CA
-Sender: linux-kernel-owner@vger.kernel.org
-To: Serge Semin <fancer.lancer@gmail.com>, linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Eric Pilmore <epilmore@gigaio.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0e041735-98e8-1d8c-c866-ad23e6cc1db5-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, 5 Mar 2019 19:14:42 +0100
+Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 
-
-On 2019-03-06 1:44 p.m., Serge Semin wrote:
-> Alas the test driver is not going to work with IDT NTB hardware,
-> since it uses Spad only, which aren't supported by IDT devices. IDT NTB
-> PCIe functions provide message registers to communicate with peers. See
-> ntb_perf driver code for reference of portable driver design.
+> Hi Kevin, Yi,
 > 
-> In order to make the test driver portable the following alterations
-> are needed:
-> 1) Add NTB Message register API usage together with Scratchpad+Doorbell.
-> 2) When NTB MSI library is updated with functions like
-> ntb_msi_peer_setup_mws()/ntb_msi_peer_clear_mws() they are needed to be
-> utilized in the test driver as well to set a translation address on the
-> peer side.
+> On 3/5/19 4:28 PM, Jean-Philippe Brucker wrote:
+> > On 18/02/2019 13:54, Eric Auger wrote:  
+> >> From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >>
+> >> In any virtualization use case, when the first translation stage
+> >> is "owned" by the guest OS, the host IOMMU driver has no knowledge
+> >> of caching structure updates unless the guest invalidation
+> >> activities are trapped by the virtualizer and passed down to the
+> >> host.
+> >>
+> >> Since the invalidation data are obtained from user space and will
+> >> be written into physical IOMMU, we must allow security check at
+> >> various layers. Therefore, generic invalidation data format are
+> >> proposed here, model specific IOMMU drivers need to convert them
+> >> into their own format.
+> >>
+> >> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >> Signed-off-by: Jean-Philippe Brucker
+> >> <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> Signed-off-by: Jacob Pan
+> >> <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> Signed-off-by: Ashok Raj
+> >> <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> Signed-off-by: Eric Auger
+> >> <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> >>
+> >> ---
+> >> v3 -> v4:
+> >> - full reshape of the API following Alex' comments
+> >>
+> >> v1 -> v2:
+> >> - add arch_id field
+> >> - renamed tlb_invalidate into cache_invalidate as this API allows
+> >>   to invalidate context caches on top of IOTLBs
+> >>
+> >> v1:
+> >> renamed sva_invalidate into tlb_invalidate and add iommu_ prefix in
+> >> header. Commit message reworded.
+> >> ---
+> >>  drivers/iommu/iommu.c      | 14 ++++++++
+> >>  include/linux/iommu.h      | 14 ++++++++
+> >>  include/uapi/linux/iommu.h | 71
+> >> ++++++++++++++++++++++++++++++++++++++ 3 files changed, 99
+> >> insertions(+)
+> >>
+> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> >> index b3adb77cb14c..bcb8eb15426c 100644
+> >> --- a/drivers/iommu/iommu.c
+> >> +++ b/drivers/iommu/iommu.c
+> >> @@ -1564,6 +1564,20 @@ void iommu_detach_pasid_table(struct
+> >> iommu_domain *domain) }
+> >>  EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
+> >>  
+> >> +int iommu_cache_invalidate(struct iommu_domain *domain, struct
+> >> device *dev,
+> >> +			   struct iommu_cache_invalidate_info
+> >> *inv_info) +{
+> >> +	int ret = 0;
+> >> +
+> >> +	if (unlikely(!domain->ops->cache_invalidate))
+> >> +		return -ENODEV;
+> >> +
+> >> +	ret = domain->ops->cache_invalidate(domain, dev,
+> >> inv_info); +
+> >> +	return ret;
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+> >> +
+> >>  static void __iommu_detach_device(struct iommu_domain *domain,
+> >>  				  struct device *dev)
+> >>  {
+> >> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> >> index 7045e26f3a7d..a3b879d0753c 100644
+> >> --- a/include/linux/iommu.h
+> >> +++ b/include/linux/iommu.h
+> >> @@ -189,6 +189,7 @@ struct iommu_resv_region {
+> >>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+> >>   * @attach_pasid_table: attach a pasid table
+> >>   * @detach_pasid_table: detach the pasid table
+> >> + * @cache_invalidate: invalidate translation caches
+> >>   */
+> >>  struct iommu_ops {
+> >>  	bool (*capable)(enum iommu_cap);
+> >> @@ -235,6 +236,9 @@ struct iommu_ops {
+> >>  				  struct iommu_pasid_table_config
+> >> *cfg); void (*detach_pasid_table)(struct iommu_domain *domain);
+> >>  
+> >> +	int (*cache_invalidate)(struct iommu_domain *domain,
+> >> struct device *dev,
+> >> +				struct
+> >> iommu_cache_invalidate_info *inv_info); +
+> >>  	unsigned long pgsize_bitmap;
+> >>  };
+> >>  
+> >> @@ -348,6 +352,9 @@ extern void iommu_detach_device(struct
+> >> iommu_domain *domain, extern int iommu_attach_pasid_table(struct
+> >> iommu_domain *domain, struct iommu_pasid_table_config *cfg);
+> >>  extern void iommu_detach_pasid_table(struct iommu_domain *domain);
+> >> +extern int iommu_cache_invalidate(struct iommu_domain *domain,
+> >> +				  struct device *dev,
+> >> +				  struct
+> >> iommu_cache_invalidate_info *inv_info); extern struct iommu_domain
+> >> *iommu_get_domain_for_dev(struct device *dev); extern struct
+> >> iommu_domain *iommu_get_dma_domain(struct device *dev); extern int
+> >> iommu_map(struct iommu_domain *domain, unsigned long iova, @@
+> >> -798,6 +805,13 @@ void iommu_detach_pasid_table(struct
+> >> iommu_domain *domain) { return -ENODEV;
+> >>  }
+> >> +static inline int
+> >> +iommu_cache_invalidate(struct iommu_domain *domain,
+> >> +		       struct device *dev,
+> >> +		       struct iommu_cache_invalidate_info
+> >> *inv_info) +{
+> >> +	return -ENODEV;
+> >> +}
+> >>  
+> >>  #endif /* CONFIG_IOMMU_API */
+> >>  
+> >> diff --git a/include/uapi/linux/iommu.h
+> >> b/include/uapi/linux/iommu.h index e9065bfa5b24..ae41385b0a7e
+> >> 100644 --- a/include/uapi/linux/iommu.h
+> >> +++ b/include/uapi/linux/iommu.h
+> >> @@ -159,4 +159,75 @@ struct iommu_pasid_table_config {
+> >>  	};
+> >>  };
+> >>  
+> >> +/* defines the granularity of the invalidation */
+> >> +enum iommu_inv_granularity {
+> >> +	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective
+> >> invalidation */
+> >> +	IOMMU_INV_GRANU_PASID,	/* pasid-selective
+> >> invalidation */
+> >> +	IOMMU_INV_GRANU_ADDR,	/* page-selective
+> >> invalidation */ +};
+> >> +
+> >> +/**
+> >> + * Address Selective Invalidation Structure
+> >> + *
+> >> + * @flags indicates the granularity of the address-selective
+> >> invalidation
+> >> + * - if PASID bit is set, @pasid field is populated and the
+> >> invalidation
+> >> + *   relates to cache entries tagged with this PASID and matching
+> >> the
+> >> + *   address range.
+> >> + * - if ARCHID bit is set, @archid is populated and the
+> >> invalidation relates
+> >> + *   to cache entries tagged with this architecture specific id
+> >> and matching
+> >> + *   the address range.
+> >> + * - Both PASID and ARCHID can be set as they may tag different
+> >> caches.
+> >> + * - if neither PASID or ARCHID is set, global addr invalidation
+> >> applies
+> >> + * - LEAF flag indicates whether only the leaf PTE caching needs
+> >> to be
+> >> + *   invalidated and other paging structure caches can be
+> >> preserved.
+> >> + * @pasid: process address space id
+> >> + * @archid: architecture-specific id
+> >> + * @addr: first stage/level input address
+> >> + * @granule_size: page/block size of the mapping in bytes
+> >> + * @nb_granules: number of contiguous granules to be invalidated
+> >> + */
+> >> +struct iommu_inv_addr_info {
+> >> +#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
+> >> +#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
+> >> +#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
+> >> +	__u32	flags;
+> >> +	__u32	archid;
+> >> +	__u64	pasid;
+> >> +	__u64	addr;
+> >> +	__u64	granule_size;
+> >> +	__u64	nb_granules;
+> >> +};  
+> > 
+> > Some fields don't need that many bytes, but I'm not sure it matters
+> > and I'd like to see if this version works for the x86 folks before
+> > bothering with such details. Looks good to me, from the SMMU
+> > perspective.  
+> Does it fit your needs? - Thanks Jean for your feedback -
+Yes, it should fit VT-d's needs.
+We will do some conversion for granularity based on .cache
+and .granularity.
 
-Per, the discussion on the previous email, we can update this later once
-we actually have sensible infrastructure for it. The mess in ntb_perf is
-not something I want to replicate and we don't have any interest in
-creating a large amount of infrastructure to support hardware we don't
-care about.
+Fill in the 4K size for granule_size, then use nb_granules for size of
+iotlb invalidation. We probably dont need arch ID. We also dont need
+the global page flags as you have removed it. So we should be good.
 
-Logan
+We will use this for my next patchset.
+
+Thanks,
+
+Jacob
+
+> 
+> Thanks
+> 
+> Eric
+> 
+> > 
+> > Thanks,
+> > Jean
+> >   
+> >> +
+> >> +/**
+> >> + * First level/stage invalidation information
+> >> + * @cache: bitfield that allows to select which caches to
+> >> invalidate
+> >> + * @granularity: defines the lowest granularity used for the
+> >> invalidation:
+> >> + *     domain > pasid > addr
+> >> + *
+> >> + * Not all the combinations of cache/granularity make sense:
+> >> + *
+> >> + *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
+> >> + * granularity	|		|		|
+> >> cache	|
+> >> + * -------------+---------------+---------------+---------------+
+> >> + * DOMAIN	|	N/A	|       Y	|
+> >> Y	|
+> >> + * PASID	|	Y	|       Y	|
+> >> Y	|
+> >> + * ADDR		|       Y	|       Y	|
+> >> N/A	|
+> >> + */
+> >> +struct iommu_cache_invalidate_info {
+> >> +#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
+> >> +	__u32	version;
+> >> +/* IOMMU paging structure cache */
+> >> +#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB
+> >> */ +#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /*
+> >> Device IOTLB */ +#define IOMMU_CACHE_INV_TYPE_PASID	(1 <<
+> >> 2) /* PASID cache */
+> >> +	__u8	cache;
+> >> +	__u8	granularity;
+> >> +	__u8	padding[2];
+> >> +	union {
+> >> +		__u64	pasid;
+> >> +		struct iommu_inv_addr_info addr_info;
+> >> +	};
+> >> +};
+> >> +
+> >> +
+> >>  #endif /* _UAPI_IOMMU_H */
+> >>  
+> >   
+
+[Jacob Pan]
