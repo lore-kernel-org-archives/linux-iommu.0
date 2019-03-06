@@ -1,187 +1,124 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v2 07/12] NTB: Introduce functions to calculate multi-port
- resource index
-Date: Wed, 6 Mar 2019 16:22:33 -0700
-Message-ID: <4acf79c1-766b-1db6-45c1-4cdd4cbba437@deltatee.com>
-References: <20190213175454.7506-1-logang@deltatee.com>
- <20190213175454.7506-8-logang@deltatee.com>
- <20190306012420.wjeatxgb7nwq3j5q@mobilestation>
- <bd72f24f-5982-0fe7-59df-2fbbfe9f798a@deltatee.com>
- <20190306224542.4eu2dvsixfzc75gr@mobilestation>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v4 03/22] iommu: introduce device fault report API
+Date: Wed, 6 Mar 2019 15:46:16 -0800
+Message-ID: <20190306154616.648e2523@jacob-builder>
+References: <20190218135504.25048-1-eric.auger@redhat.com>
+        <20190218135504.25048-4-eric.auger@redhat.com>
+        <fb5f84e6-812f-978d-3be1-673b3e9717ad@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190306224542.4eu2dvsixfzc75gr@mobilestation>
-Content-Language: en-CA
+In-Reply-To: <fb5f84e6-812f-978d-3be1-673b3e9717ad@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Serge Semin <fancer.lancer@gmail.com>, linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Eric Pilmore <epilmore@gigaio.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, yi.l.liu@linux.intel.com, will.deacon@arm.com, robin.murphy@arm.com, marc.zyngier@arm.com, peter.maydell@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com, christoffer.dall@arm.com, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, 5 Mar 2019 15:03:41 +0000
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-
-
-
-On 2019-03-06 3:45 p.m., Serge Semin wrote:
-[Snip]
-
-Pretty sure everything above is just agreement...
-
-> So your current approach is inbound MW-centralized, while mine is developed
-> around the outbound MWs.
-
-I don't think this has anything to do with inbound vs outbound. The
-problem is the same no matter from which direction you assign things.
-
->> Physical Port Number: 0  2  4  6  8  12  16  20
->> Logical Port Number:  0  1  2  3  4  5   6   7
->> Peer Index (Port 0):  x  0  1  2  3  4   5   6
->> Port Index (Port 8):  0  1  2  3  x  4   5   6
->> (etc)
+> On 18/02/2019 13:54, Eric Auger wrote:
+> [...]> +/**
+> > + * iommu_register_device_fault_handler() - Register a device fault
+> > handler
+> > + * @dev: the device
+> > + * @handler: the fault handler
+> > + * @data: private data passed as argument to the handler
+> > + *
+> > + * When an IOMMU fault event is received, call this handler with
+> > the fault event
+> > + * and data as argument. The handler should return 0 on success.
+> > If the fault is
+> > + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also
+> > complete
+> > + * the fault by calling iommu_page_response() with one of the
+> > following
+> > + * response code:
+> > + * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
+> > + * - IOMMU_PAGE_RESP_INVALID: terminate the fault
+> > + * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop
+> > reporting
+> > + *   page faults if possible.  
 > 
-> That's what I suggested in the two possible solutions:
-> 1st solution: replace current pidx with Logical Port Number,
-> 2nd solution: alter ntb_peer_resource_idx() so it would return the Logical Port Number.
-
-Well my solution wasn't to change pidx and no, we don't want to change
-ntb_peer_resource_idx() to return the logical port number because that's
-not how it's being used and I have no use for a
-ntb_peer_port_global_idx() function. Functions are supposed to be added
-by code that needs to call them, not by some grand design. Part of the
-reason we have this confusing mess is because the API was reviewed and
-merged before any users of the API were presented. Usually this is not
-accepted in kernel development.
-
-My suggestion is to simply say that the existing port numbers are the
-logical port number and have the drivers handle the physical port number
-mapping internally. That requires the fewest changes.
-
-> IMO In case of the 2nd solution I'd also suggest to rename the
-> ntb_peer_resource_idx() method into ntb_peer_port_global_idx(),
-> and then consider the current port indexes used in the NTB API
-> as local port indexes. The resource indexing can be abstracted
-> by a macro like this:
-> #define ntb_peer_resource_idx ntb_peer_port_global_idx
-
-That define would not be useful.
-
-> Finally in order to close the space up we'd also need to define
-> a method: ntb_port_global_idx(), which would return a Logical (global)
-> index of local port.
-
-Again, I'd rather not add a bunch of large semantic and infrastructure
-changes at this point. It's confusing enough as it is and we don't need
-to introduce yet another indexing scheme API to the clients that really
-do not need it. What the clients need is a simple API to decide which
-resources to use for which peers, and to figure out which peers used
-which resources. ntb_peer_port_idx() and ntb_peer_resource_idx() suit
-these purposes. Nothing else really needs to exist.
-
->> Where the Physical Port Number is whatever the hardware uses and the
->> logical port number is a numbering scheme starting with zero with no
->> gaps. Then the port indexes are still as we currently have them. If we
->> say that the port numbers we have now are the Logical Port Number, then
->> ntb_peer_resource_idx() is correct.
->>
+> The comment refers to function and values that haven't been defined
+> yet. Either the page_response() patch should come before, or we need
+> to split this patch.
 > 
-> Current port numbers are the physical port numbers with gaps. 
-
-I think that's up for interpretation as, based on the existing code, I
-naturally interpreted it the other way and therefore it's pretty simple
-to say that it's the logical port number and fix the one driver that
-needs to change.
-
-> That's why we
-> introduced the port-index NTB API abstraction in the first place, to have these gaps
-> eliminated and to provide a simple way of bulk setup. Although that abstraction
-> turned out not that suitable to distribute the shared resources. So
-> the Logical (Global) indexing is needed to do it (that's what ntb_pingpong used
-> to do and ntb_perf still does now).
-
-My interpretation of the port-index was simply to match what was done in
-the two port case seeing code like ntb_transport simply uses the default
-0 as the port index. There was no reason to believe, based on the code,
-that there would be gaps.
-
->> I would strongly argue that the clients don't need to know anything
->> about the Physical Port Number and these should be handled strictly
->> inside the drivers. If multiple drivers need to do something similar to
->> map the logical to physical port numbers then we should introduce helper
->> functions to allow them to do so. If the Physical Numbers are not
->> contained in the driver than the API would need to be expanded to expose
->> which numbers are actually used to avoid needing to constantly loop
->> through all the indexes to find this out.
->>
+> Something I missed before: if the handler fails (returns != 0) it
+> should complete the fault by calling iommu_page_response(), if we're
+> not doing it in iommu_report_device_fault(). It should be indicated
+> in this comment. It's safe for the handler to call page_response()
+> since we're not holding fault_param->lock when calling the handler.
 > 
-> Absolutely agree with you. The main idea of NTB API was to provide a set
-> of methods to access the NTB hardware without any abstractions but
-> with possible useful helpers, like your NTB MSI library, or transport library,
-> or anything else. So the physical port numbers must be available for
-> the client drivers.
+If the page request fault is to be reported to a guest, the report
+function cannot wait for the completion status. As long as the fault is
+injected into the guest, the handler should complete with success. If
+the PRQ report fails, IMHO, the caller of iommu_report_device_fault()
+should send page_response, perhaps after clean up all partial response
+of the group too.
 
-Huh? How can you say you absolutely agree with me? I said the clients
-should not need to know about physical port numbers and you said the
-physical port numbers *must* be available to clients. I think this
-statement needs to be justified. Why should the clients need to know
-about the physical port numbers?
-
->> On a similar vein, I'd  suggest that most clients shouldn't even really
->> need to do anything with the Logical Port Number and should deal largely
->> with Port Indexes. Ideally, Logical Port Numbers should only be used by
->> helper code in the common layer to help assign resources used by the
->> clients (like ntb_peer_resource_idx()).
->>
+> > + *
+> > + * Return 0 if the fault handler was installed successfully, or an
+> > error.
+> > + */  
+> [...]
+> > +/**
+> > + * iommu_report_device_fault() - Report fault event to device
+> > + * @dev: the device
+> > + * @evt: fault event data
+> > + *
+> > + * Called by IOMMU model specific drivers when fault is detected,
+> > typically
+> > + * in a threaded IRQ handler.
+> > + *
+> > + * Return 0 on success, or an error.
+> > + */
+> > +int iommu_report_device_fault(struct device *dev, struct
+> > iommu_fault_event *evt) +{
+> > +	int ret = 0;
+> > +	struct iommu_fault_event *evt_pending;
+> > +	struct iommu_fault_param *fparam;
+> > +
+> > +	/* iommu_param is allocated when device is added to group
+> > */
+> > +	if (!dev->iommu_param | !evt)  
 > 
-> This is the main question. Do we really need the current port indexes
-> implementation at all? After all these years of NTB API usage I don't really
-> see it useful in any case except to loop over the outbound MW resources
-> automatically skipping the local port (usefulness of this is also questionable).
-> As I already said I created the port-index table this way due to the IDT NTB
-> MWs peculiarity, which doesn't seem to me a big problem now comparing to all
-> these additional complications we intend to introduce.
+> Typo: ||
+> 
+> Thanks,
+> Jean
+> 
+> > +		return -EINVAL;
+> > +	/* we only report device fault if there is a handler
+> > registered */
+> > +	mutex_lock(&dev->iommu_param->lock);
+> > +	if (!dev->iommu_param->fault_param ||
+> > +		!dev->iommu_param->fault_param->handler) {
+> > +		ret = -EINVAL;
+> > +		goto done_unlock;
+> > +	}
+> > +	fparam = dev->iommu_param->fault_param;
+> > +	if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
+> > +	    evt->fault.prm.flags &
+> > IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE) {
+> > +		evt_pending = kmemdup(evt, sizeof(struct
+> > iommu_fault_event),
+> > +				GFP_KERNEL);
+> > +		if (!evt_pending) {
+> > +			ret = -ENOMEM;
+> > +			goto done_unlock;
+> > +		}
+> > +		mutex_lock(&fparam->lock);
+> > +		list_add_tail(&evt_pending->list, &fparam->faults);
+> > +		mutex_unlock(&fparam->lock);
+> > +	}
+> > +	ret = fparam->handler(evt, fparam->data);
+> > +done_unlock:
+> > +	mutex_unlock(&dev->iommu_param->lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_report_device_fault);  
+> [...]
 
-To me, it seems like the port indexes are used everywhere. A client
-almost always wants to deal with every port except itself. That seems
-entirely natural to me. Using the port index as the resource index makes
-perfect sense (which is why I implemented the inverse
-ntb_peer_resource_idx()).
-
-> The rest of the drivers code really need to have the Logical (global)
-> port indexes, at least to distribute the shared resources, and don't use
-> the current pidx that much.
-
-Drivers don't care about port indexes or how the resources are
-distributed. I would expect that all they'd do is map the port index
-(which all existing APIs take) to the physical address and program
-hardware as necessary.
-
-> Wouldn't it be better to just redefine the current port-index table
-> in the following way?
-> ntb_port_number() - local physical port number,
-> ntb_port_idx() - local port logical (global) index,
-> ntb_peer_port_count() - total number of ports NTB device provide (including the local one),
-> ntb_peer_port_number() - physical port number of the peer with passed logical port index,
-> ntb_peer_port_idx - logical port index of the passed physical port number.
-
-No, from the perspective of the client, the physical port numbers are
-useless. I don't want the count to include the local one because that
-means I'd always have to subtract one every time I want to loop through
-all peers (I never want to loop through all ports including the local
-one).  I have no idea what your distinction between logical (global)
-index and logical port index is. In fact I find this all confusing.
-
-> while currently we have:
-> ntb_port_number() - local physical port number,
-> ntb_peer_port_count() - total number of ports NTB device provide (excluding the local one),
-> ntb_peer_port_number() - physical port number of the peer with passed port index,
-> ntb_peer_port_idx - port index of the passed physical port number;
-
-What we currently have all makes perfect sense to me and is exactly what
-I want for the clients, except I think ntb_port_number() needs to be the
-logical port number (with the gaps removed), so that we can more easily
-implement ntb_peer_resource_idx(). If ntb_port_number() corresponds to
-the physical port number, then the correct implementation of
-ntb_peer_resource_idx() is going to be crazy, essentially needing to
-generate a logical port number for every port, every time it's called.
-
-Logan
+[Jacob Pan]
