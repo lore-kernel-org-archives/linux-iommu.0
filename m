@@ -1,7 +1,7 @@
 From: Auger Eric <eric.auger@redhat.com>
 Subject: Re: [PATCH v4 02/22] iommu: introduce device fault data
-Date: Wed, 6 Mar 2019 10:38:25 +0100
-Message-ID: <43c5c3be-a609-62e1-efaa-c5571bb762c6@redhat.com>
+Date: Wed, 6 Mar 2019 12:03:50 +0100
+Message-ID: <c97b6fdd-e987-a9dc-536a-24f68a50dd14@redhat.com>
 References: <20190218135504.25048-1-eric.auger@redhat.com>
  <20190218135504.25048-3-eric.auger@redhat.com>
  <c9adfbda-b78a-405a-a691-9f99d7dc2a26@arm.com>
@@ -98,14 +98,6 @@ On 3/5/19 3:56 PM, Jean-Philippe Brucker wrote:
 >> + * - Un-recoverable faults of device interest
 > 
 > "of interest to device drivers"?
-
-Simplified/Replaced by
-"
-* struct iommu_fault_event - Generic fault event
- *
- * Can represent recoverable faults such as a page requests or
- * unrecoverable faults such as DMA or IRQ remapping faults.
-"
 > 
 >> + * - DMA remapping and IRQ remapping faults
 >> + *
@@ -223,7 +215,6 @@ Simplified/Replaced by
 >> + *	IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
 > 
 > Stale comment
-removed
 > 
 >> + */
 >> +struct iommu_fault_unrecoverable {
@@ -232,10 +223,6 @@ removed
 >> +#define IOMMU_FAULT_UNRECOV_PERM_VALID		(1 << 1)
 > 
 > Not needed, since @perm is already a bitfield
-not exactly, READ is encoded as 0. We need to differentiate read fault
-from no perm provided. However if I follow your recommendation below and
-transform the READ FAULT into a set bit this makes sense.
-
 > 
 >> +#define IOMMU_FAULT_UNRECOV_ADDR_VALID		(1 << 2)
 >> +#define IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID	(1 << 3)
@@ -246,7 +233,6 @@ transform the READ FAULT into a set bit this makes sense.
 >> +#define IOMMU_FAULT_PERM_PRIV	(1 << 2) /* priviledged */
 > 
 > typo "privileged"
-OK
 > 
 >> +#define IOMMU_FAULT_PERM_INST	(1 << 3) /* instruction */
 > 
@@ -254,8 +240,16 @@ OK
 > the other struct. And it would be less confusing, from the device driver
 > point of view, to merge those with the existing IOMMU_FAULT_* defines
 > (but moving them to UAPI and making them bits)
-ok I will look at this. Need to check if the read fault value is not
-hardcoded anywhere.
+Eventually I have a mixed opinion about this. Changing the existing flag
+value impacts several iommu driver and handlers in different subsystems
+(0 hardcoded value is used, flags values are exposed in existing error
+logs). Also above flags are permission flags and nothing prevents from
+extending report_iommu_fault flag values with values that do not relate
+to perm.
+
+Thanks
+
+Eric
 > 
 >> +	__u32	perm;
 >> +	__u64	addr;
@@ -275,7 +269,6 @@ hardcoded anywhere.
 >> +#define IOMMU_FAULT_PAGE_REQUEST_PASID_PRESENT	(1 << 0)
 > 
 > PASID_VALID, to be consistent with the other set of flags?
-OK
 > 
 >> +#define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
 >> +#define IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA	(1 << 2)
@@ -287,7 +280,6 @@ OK
 > 
 > Given that we'll be reporting stall faults using this struct, it would
 > be good to have the fetch_addr field and flag here as well.
-OK
 > 
 >> +	__u64	private_data[2];
 >> +};
@@ -306,11 +298,6 @@ OK
 >> +		struct iommu_fault_page_request prm;
 > 
 > What's the 'm' in "prm"? Maybe just "pr"?
-This stands for page request message, I think this is the Intel's naming?
-
-Thank you for the review.
-
-Eric
 > 
 > Thanks,
 > Jean
