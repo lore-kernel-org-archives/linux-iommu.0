@@ -1,165 +1,187 @@
-From: Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH v2 09/12] NTB: Introduce MSI library
-Date: Thu, 7 Mar 2019 02:13:24 +0300
-Message-ID: <20190306231323.gtcuemtdukt6rhcd@mobilestation>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [PATCH v2 07/12] NTB: Introduce functions to calculate multi-port
+ resource index
+Date: Wed, 6 Mar 2019 16:22:33 -0700
+Message-ID: <4acf79c1-766b-1db6-45c1-4cdd4cbba437@deltatee.com>
 References: <20190213175454.7506-1-logang@deltatee.com>
- <20190213175454.7506-10-logang@deltatee.com>
- <20190306202631.3vc3b64e45ackcna@mobilestation>
- <5b420eb7-5010-aae3-e9bd-1c612af409ae@deltatee.com>
+ <20190213175454.7506-8-logang@deltatee.com>
+ <20190306012420.wjeatxgb7nwq3j5q@mobilestation>
+ <bd72f24f-5982-0fe7-59df-2fbbfe9f798a@deltatee.com>
+ <20190306224542.4eu2dvsixfzc75gr@mobilestation>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5b420eb7-5010-aae3-e9bd-1c612af409ae@deltatee.com>
+In-Reply-To: <20190306224542.4eu2dvsixfzc75gr@mobilestation>
+Content-Language: en-CA
 Sender: linux-kernel-owner@vger.kernel.org
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Eric Pilmore <epilmore@gigaio.com>
+To: Serge Semin <fancer.lancer@gmail.com>, linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Eric Pilmore <epilmore@gigaio.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 06, 2019 at 02:35:53PM -0700, Logan Gunthorpe wrote:
-> 
-> 
-> On 2019-03-06 1:26 p.m., Serge Semin wrote:
-> > First of all, It might be unsafe to have some resources consumed by NTB
-> > MSI or some other library without a simple way to warn NTB client drivers
-> > about their attempts to access that resources, since it might lead to random
-> > errors. When I thought about implementing a transport library based on the
-> > Message/Spad+Doorbell registers, I had in mind to create an internal bits-field
-> > array with the resources busy-flags. If, for instance, some message or
-> > scratchpad register is occupied by the library (MSI, transport or some else),
-> > then it would be impossible to access these resources directly through NTB API
-> > methods. So NTB client driver shall retrieve an error in an attempt to
-> > write/read data to/from busy message or scratchpad register, or in an attempt
-> > to set some occupied doorbell bit. The same thing can be done for memory windows.
-> 
-> Yes, it would be nice to have a generic library to manage all the
-> resources, but right now we don't and it's unfair to expect us to take
-> on this work to get the features we care about merged. Right now, it's
-> not at all unsafe as the client is quite capable of ensuring it has the
-> resources for the MSI library. The changes for ntb_transport to ensure
-> this are quite reasonable.
-> 
-> > Second tiny concern is about documentation. Since there is a special file for
-> > all NTB-related doc, it would be good to have some description about the
-> > NTB MSI library there as well:
-> > Documentation/ntb.txt
-> 
-> Sure, I'll add a short blurb for v3. Though, I noticed it's quite out of
-> date since your changes. Especially in the ntb_tool section...
-> 
 
-Ok. Thanks.
-If you want you can add some info to the ntb_tool section as well. If you
-don't have time, I'll update it next time I submit anything new to the
-subsystem.
 
--Sergey
 
-> >> +	u32 *peer_mws[];
-> > 
-> > Shouldn't we use the __iomem attribute here since later the devm_ioremap() is
-> > used to map MWs at these pointers?
+
+On 2019-03-06 3:45 p.m., Serge Semin wrote:
+[Snip]
+
+Pretty sure everything above is just agreement...
+
+> So your current approach is inbound MW-centralized, while mine is developed
+> around the outbound MWs.
+
+I don't think this has anything to do with inbound vs outbound. The
+problem is the same no matter from which direction you assign things.
+
+>> Physical Port Number: 0  2  4  6  8  12  16  20
+>> Logical Port Number:  0  1  2  3  4  5   6   7
+>> Peer Index (Port 0):  x  0  1  2  3  4   5   6
+>> Port Index (Port 8):  0  1  2  3  x  4   5   6
+>> (etc)
 > 
-> Yes, will change for v3.
+> That's what I suggested in the two possible solutions:
+> 1st solution: replace current pidx with Logical Port Number,
+> 2nd solution: alter ntb_peer_resource_idx() so it would return the Logical Port Number.
+
+Well my solution wasn't to change pidx and no, we don't want to change
+ntb_peer_resource_idx() to return the logical port number because that's
+not how it's being used and I have no use for a
+ntb_peer_port_global_idx() function. Functions are supposed to be added
+by code that needs to call them, not by some grand design. Part of the
+reason we have this confusing mess is because the API was reviewed and
+merged before any users of the API were presented. Usually this is not
+accepted in kernel development.
+
+My suggestion is to simply say that the existing port numbers are the
+logical port number and have the drivers handle the physical port number
+mapping internally. That requires the fewest changes.
+
+> IMO In case of the 2nd solution I'd also suggest to rename the
+> ntb_peer_resource_idx() method into ntb_peer_port_global_idx(),
+> and then consider the current port indexes used in the NTB API
+> as local port indexes. The resource indexing can be abstracted
+> by a macro like this:
+> #define ntb_peer_resource_idx ntb_peer_port_global_idx
+
+That define would not be useful.
+
+> Finally in order to close the space up we'd also need to define
+> a method: ntb_port_global_idx(), which would return a Logical (global)
+> index of local port.
+
+Again, I'd rather not add a bunch of large semantic and infrastructure
+changes at this point. It's confusing enough as it is and we don't need
+to introduce yet another indexing scheme API to the clients that really
+do not need it. What the clients need is a simple API to decide which
+resources to use for which peers, and to figure out which peers used
+which resources. ntb_peer_port_idx() and ntb_peer_resource_idx() suit
+these purposes. Nothing else really needs to exist.
+
+>> Where the Physical Port Number is whatever the hardware uses and the
+>> logical port number is a numbering scheme starting with zero with no
+>> gaps. Then the port indexes are still as we currently have them. If we
+>> say that the port numbers we have now are the Logical Port Number, then
+>> ntb_peer_resource_idx() is correct.
+>>
 > 
+> Current port numbers are the physical port numbers with gaps. 
+
+I think that's up for interpretation as, based on the existing code, I
+naturally interpreted it the other way and therefore it's pretty simple
+to say that it's the logical port number and fix the one driver that
+needs to change.
+
+> That's why we
+> introduced the port-index NTB API abstraction in the first place, to have these gaps
+> eliminated and to provide a simple way of bulk setup. Although that abstraction
+> turned out not that suitable to distribute the shared resources. So
+> the Logical (Global) indexing is needed to do it (that's what ntb_pingpong used
+> to do and ntb_perf still does now).
+
+My interpretation of the port-index was simply to match what was done in
+the two port case seeing code like ntb_transport simply uses the default
+0 as the port index. There was no reason to believe, based on the code,
+that there would be gaps.
+
+>> I would strongly argue that the clients don't need to know anything
+>> about the Physical Port Number and these should be handled strictly
+>> inside the drivers. If multiple drivers need to do something similar to
+>> map the logical to physical port numbers then we should introduce helper
+>> functions to allow them to do so. If the Physical Numbers are not
+>> contained in the driver than the API would need to be expanded to expose
+>> which numbers are actually used to avoid needing to constantly loop
+>> through all the indexes to find this out.
+>>
 > 
-> > Simpler and faster cleanup-code would be:
+> Absolutely agree with you. The main idea of NTB API was to provide a set
+> of methods to access the NTB hardware without any abstractions but
+> with possible useful helpers, like your NTB MSI library, or transport library,
+> or anything else. So the physical port numbers must be available for
+> the client drivers.
+
+Huh? How can you say you absolutely agree with me? I said the clients
+should not need to know about physical port numbers and you said the
+physical port numbers *must* be available to clients. I think this
+statement needs to be justified. Why should the clients need to know
+about the physical port numbers?
+
+>> On a similar vein, I'd  suggest that most clients shouldn't even really
+>> need to do anything with the Logical Port Number and should deal largely
+>> with Port Indexes. Ideally, Logical Port Numbers should only be used by
+>> helper code in the common layer to help assign resources used by the
+>> clients (like ntb_peer_resource_idx()).
+>>
 > 
-> > + unroll:
-> > + 	for (--i; i >= 0; --i)
-> > + 		devm_iounmap(&ntb->dev, ntb->msi->peer_mws[i]);
-> 
-> Faster, maybe, but I would not consider this simpler. It's much more
-> complicated to reason about and ensure it's correct. I prefer my way
-> because I don't care about speed, but I do care about readability.
-> 
-> 
-> > Alas calling the ntb_mw_set_trans() method isn't enough to fully initialize
-> > NTB Memory Windows. Yes, the library will work for Intel/AMD/Switchtec
-> > (two-ports legacy configuration), but will fail for IDT due to being based on
-> > the outbound MW xlat interface. So the library at this stage isn't portable
-> > across all NTB hardware. In order to make it working the translation address is
-> > supposed to be transferred to the peer side, where a peer code should call
-> > ntb_peer_mw_set_trans() method with the retrieved xlat address.
-> > See documentation for details:
-> 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/ntb.txt
-> > 
-> > ntb_perf driver can be also used as a reference of the portable NTB MWs setup.
-> 
-> Gross. Well, given that ntb_transport doesn't even support this and we
-> don't really have a sensible library to transfer this information, I'm
-> going to leave it as is for now. Someone can update ntb_msi when they
-> update ntb_transport, preferably after we have a nice library to handle
-> the transfers for us seeing I absolutely do not want to replicate the
-> mess in ntb_perf.
-> 
-> Actually, if we had a generic spad/msg communication library, it would
-> probably be better to have a common ntb_mw_set_trans() function that
-> uses the communications library to send the data and automatically call
-> ntb_peer_mw_set_trans() on the peer. That way we don't have to push this
-> mess into the clients.
-> 
-> > The same cleanup pattern can be utilized here:
-> > +error_out:
-> > +	for (--peer; peer >= 0; --peer) {
-> > +		peer_widx = ntb_peer_highest_mw_idx(ntb, peer);
-> > +		ntb_mw_clear_trans(ntb, i, peer_widx);
-> > +	}
-> > 
-> > So you won't need "i" variable here anymore. You also don't need to check the
-> > return value of ntb_peer_highest_mw_idx() in the cleanup loop because it
-> > was already checked in the main algo code.
-> 
-> See above.
-> 
-> >> +EXPORT_SYMBOL(ntb_msi_clear_mws);
-> >> +
-> > 
-> > Similarly something like ntb_msi_peer_clear_mws() should be added to
-> > unset a translation address on the peer side.
-> 
-> Well, we can table that for when ntb_msi supports the peer MW setting
-> functions.
-> >> +int ntb_msi_peer_trigger(struct ntb_dev *ntb, int peer,
-> >> +			 struct ntb_msi_desc *desc)
-> >> +{
-> >> +	int idx;
-> >> +
-> >> +	if (!ntb->msi)
-> >> +		return -EINVAL;
-> >> +
-> >> +	idx = desc->addr_offset / sizeof(*ntb->msi->peer_mws[peer]);
-> >> +
-> >> +	ntb->msi->peer_mws[peer][idx] = desc->data;
-> >> +
-> > 
-> > Shouldn't we use iowrite32() here instead of direct access to the IO-memory?
-> 
-> Yes, as above I'll fix it for v3.
-> 
-> >> @@ -425,6 +427,10 @@ struct ntb_dev {
-> >>  	spinlock_t			ctx_lock;
-> >>  	/* block unregister until device is fully released */
-> >>  	struct completion		released;
-> >> +
-> >> +	#ifdef CONFIG_NTB_MSI
-> >> +	struct ntb_msi *msi;
-> >> +	#endif
-> > 
-> > I'd align the macro-condition to the most left position:
-> > +#ifdef CONFIG_NTB_MSI
-> > +	struct ntb_msi *msi;
-> > +#endif
-> 
-> Fixed for v3.
-> 
-> 
-> Logan
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "linux-ntb" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to linux-ntb+unsubscribe@googlegroups.com.
-> To post to this group, send email to linux-ntb@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/linux-ntb/5b420eb7-5010-aae3-e9bd-1c612af409ae%40deltatee.com.
-> For more options, visit https://groups.google.com/d/optout.
+> This is the main question. Do we really need the current port indexes
+> implementation at all? After all these years of NTB API usage I don't really
+> see it useful in any case except to loop over the outbound MW resources
+> automatically skipping the local port (usefulness of this is also questionable).
+> As I already said I created the port-index table this way due to the IDT NTB
+> MWs peculiarity, which doesn't seem to me a big problem now comparing to all
+> these additional complications we intend to introduce.
+
+To me, it seems like the port indexes are used everywhere. A client
+almost always wants to deal with every port except itself. That seems
+entirely natural to me. Using the port index as the resource index makes
+perfect sense (which is why I implemented the inverse
+ntb_peer_resource_idx()).
+
+> The rest of the drivers code really need to have the Logical (global)
+> port indexes, at least to distribute the shared resources, and don't use
+> the current pidx that much.
+
+Drivers don't care about port indexes or how the resources are
+distributed. I would expect that all they'd do is map the port index
+(which all existing APIs take) to the physical address and program
+hardware as necessary.
+
+> Wouldn't it be better to just redefine the current port-index table
+> in the following way?
+> ntb_port_number() - local physical port number,
+> ntb_port_idx() - local port logical (global) index,
+> ntb_peer_port_count() - total number of ports NTB device provide (including the local one),
+> ntb_peer_port_number() - physical port number of the peer with passed logical port index,
+> ntb_peer_port_idx - logical port index of the passed physical port number.
+
+No, from the perspective of the client, the physical port numbers are
+useless. I don't want the count to include the local one because that
+means I'd always have to subtract one every time I want to loop through
+all peers (I never want to loop through all ports including the local
+one).  I have no idea what your distinction between logical (global)
+index and logical port index is. In fact I find this all confusing.
+
+> while currently we have:
+> ntb_port_number() - local physical port number,
+> ntb_peer_port_count() - total number of ports NTB device provide (excluding the local one),
+> ntb_peer_port_number() - physical port number of the peer with passed port index,
+> ntb_peer_port_idx - port index of the passed physical port number;
+
+What we currently have all makes perfect sense to me and is exactly what
+I want for the clients, except I think ntb_port_number() needs to be the
+logical port number (with the gaps removed), so that we can more easily
+implement ntb_peer_resource_idx(). If ntb_port_number() corresponds to
+the physical port number, then the correct implementation of
+ntb_peer_resource_idx() is going to be crazy, essentially needing to
+generate a logical port number for every port, every time it's called.
+
+Logan
