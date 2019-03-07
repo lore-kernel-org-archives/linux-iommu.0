@@ -1,124 +1,83 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 03/22] iommu: introduce device fault report API
-Date: Wed, 6 Mar 2019 15:46:16 -0800
-Message-ID: <20190306154616.648e2523@jacob-builder>
-References: <20190218135504.25048-1-eric.auger@redhat.com>
-        <20190218135504.25048-4-eric.auger@redhat.com>
-        <fb5f84e6-812f-978d-3be1-673b3e9717ad@arm.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 4/4] iommu/vt-d: Remove lazy allocation of domains
+Date: Thu, 7 Mar 2019 14:31:09 +0800
+Message-ID: <4b3e29ce-1dff-eb7d-9b7e-1cde54a24dec@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+	<2C75F46E-78FE-45E9-9E7D-280B3138EA13@arista.com>
+	<F83456DB-81DD-4E9B-9204-12ED9972D2FA@arista.com>
+	<7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
+	<fdd74d83-acd4-23da-6c0c-b52573d999bb@linux.intel.com>
+	<4B054B40-0B13-4F1E-87D6-8D2F072B5B9C@arista.com>
+	<06aa306a-278a-a22f-7718-200f6f9e5e87@linux.intel.com>
+	<A8A495EE-D3EA-4D84-AB92-9B4742E6E500@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <fb5f84e6-812f-978d-3be1-673b3e9717ad@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, yi.l.liu@linux.intel.com, will.deacon@arm.com, robin.murphy@arm.com, marc.zyngier@arm.com, peter.maydell@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com, christoffer.dall@arm.com, jacob.jun.pan@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A8A495EE-D3EA-4D84-AB92-9B4742E6E500-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 5 Mar 2019 15:03:41 +0000
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+Hi James,
 
-> On 18/02/2019 13:54, Eric Auger wrote:
-> [...]> +/**
-> > + * iommu_register_device_fault_handler() - Register a device fault
-> > handler
-> > + * @dev: the device
-> > + * @handler: the fault handler
-> > + * @data: private data passed as argument to the handler
-> > + *
-> > + * When an IOMMU fault event is received, call this handler with
-> > the fault event
-> > + * and data as argument. The handler should return 0 on success.
-> > If the fault is
-> > + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also
-> > complete
-> > + * the fault by calling iommu_page_response() with one of the
-> > following
-> > + * response code:
-> > + * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
-> > + * - IOMMU_PAGE_RESP_INVALID: terminate the fault
-> > + * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop
-> > reporting
-> > + *   page faults if possible.  
+On 3/7/19 2:08 AM, James Sewart wrote:
+>>>>> -	/*
+>>>>> -	 * For each rmrr
+>>>>> -	 *   for each dev attached to rmrr
+>>>>> -	 *   do
+>>>>> -	 *     locate drhd for dev, alloc domain for dev
+>>>>> -	 *     allocate free domain
+>>>>> -	 *     allocate page table entries for rmrr
+>>>>> -	 *     if context not allocated for bus
+>>>>> -	 *           allocate and init context
+>>>>> -	 *           set present in root table for this bus
+>>>>> -	 *     init context with domain, translation etc
+>>>>> -	 *    endfor
+>>>>> -	 * endfor
+>>>>> -	 */
+>>>>> -	pr_info("Setting RMRR:\n");
+>>>>> -	for_each_rmrr_units(rmrr) {
+>>>>> -		/* some BIOS lists non-exist devices in DMAR table. */
+>>>>> -		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+>>>>> -					  i, dev) {
+>>>>> -			ret = iommu_prepare_rmrr_dev(rmrr, dev);
+>>>>> -			if (ret)
+>>>>> -				pr_err("Mapping reserved region failed\n");
+>>>>> -		}
+>>>>> -	}
+>>>>> -
+>>>>> -	iommu_prepare_isa();
+>>>> Why do you want to remove this segment of code?
+>>> This will only work if the lazy allocation of domains exists, these
+>>> mappings will disappear once a default domain is attached to a device and
+>>> then remade by iommu_group_create_direct_mappings. This code is redundant
+>>> and removing it allows us to remove all the lazy allocation logic.
+>> No exactly.
+>>
+>> We need to setup the rmrr mapping before enabling dma remapping,
+>> otherwise, there will be a window after dma remapping enabling and
+>> rmrr getting mapped, during which people might see dma faults.
+> Do you think this patch instead should be a refactoring to simplify this initial domain setup before the default domain takes over? It seems like duplicated effort to have both lazy allocated domains and externally managed domains. We could allocate a domain here for any devices with RMRR and call get_resv_regions to avoid duplicating RMRR loop.
 > 
-> The comment refers to function and values that haven't been defined
-> yet. Either the page_response() patch should come before, or we need
-> to split this patch.
-> 
-> Something I missed before: if the handler fails (returns != 0) it
-> should complete the fault by calling iommu_page_response(), if we're
-> not doing it in iommu_report_device_fault(). It should be indicated
-> in this comment. It's safe for the handler to call page_response()
-> since we're not holding fault_param->lock when calling the handler.
-> 
-If the page request fault is to be reported to a guest, the report
-function cannot wait for the completion status. As long as the fault is
-injected into the guest, the handler should complete with success. If
-the PRQ report fails, IMHO, the caller of iommu_report_device_fault()
-should send page_response, perhaps after clean up all partial response
-of the group too.
 
-> > + *
-> > + * Return 0 if the fault handler was installed successfully, or an
-> > error.
-> > + */  
-> [...]
-> > +/**
-> > + * iommu_report_device_fault() - Report fault event to device
-> > + * @dev: the device
-> > + * @evt: fault event data
-> > + *
-> > + * Called by IOMMU model specific drivers when fault is detected,
-> > typically
-> > + * in a threaded IRQ handler.
-> > + *
-> > + * Return 0 on success, or an error.
-> > + */
-> > +int iommu_report_device_fault(struct device *dev, struct
-> > iommu_fault_event *evt) +{
-> > +	int ret = 0;
-> > +	struct iommu_fault_event *evt_pending;
-> > +	struct iommu_fault_param *fparam;
-> > +
-> > +	/* iommu_param is allocated when device is added to group
-> > */
-> > +	if (!dev->iommu_param | !evt)  
-> 
-> Typo: ||
-> 
-> Thanks,
-> Jean
-> 
-> > +		return -EINVAL;
-> > +	/* we only report device fault if there is a handler
-> > registered */
-> > +	mutex_lock(&dev->iommu_param->lock);
-> > +	if (!dev->iommu_param->fault_param ||
-> > +		!dev->iommu_param->fault_param->handler) {
-> > +		ret = -EINVAL;
-> > +		goto done_unlock;
-> > +	}
-> > +	fparam = dev->iommu_param->fault_param;
-> > +	if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
-> > +	    evt->fault.prm.flags &
-> > IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE) {
-> > +		evt_pending = kmemdup(evt, sizeof(struct
-> > iommu_fault_event),
-> > +				GFP_KERNEL);
-> > +		if (!evt_pending) {
-> > +			ret = -ENOMEM;
-> > +			goto done_unlock;
-> > +		}
-> > +		mutex_lock(&fparam->lock);
-> > +		list_add_tail(&evt_pending->list, &fparam->faults);
-> > +		mutex_unlock(&fparam->lock);
-> > +	}
-> > +	ret = fparam->handler(evt, fparam->data);
-> > +done_unlock:
-> > +	mutex_unlock(&dev->iommu_param->lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_report_device_fault);  
-> [...]
+Agree. We should replace the lazy allocated domains with default domain
+in a clean way. Actually, your patches look great to me. But I do think
+we need further cleanups. The rmrr code is one example, and the identity
+domain (si_domain) is another.
 
-[Jacob Pan]
+Do you mind if I work on top of your patches for further cleanups and
+sign off a v2 together with you?
+
+Best regards,
+Lu Baolu
