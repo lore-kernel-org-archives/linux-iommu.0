@@ -1,61 +1,102 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] [v2] dma-mapping: work around clang bug
-Date: Thu, 7 Mar 2019 09:43:06 +0000
-Message-ID: <295485e0-a43e-874e-2314-7c501c56ba71@arm.com>
-References: <20190307085246.1477426-1-arnd@arndb.de>
-	<86b7f396-c525-ae7e-b51c-cb2442d8d507@arm.com>
-	<CAK8P3a19dyTxE2o9KAw3G1qH8p4qXO-dhhc885Z2_w9BDSoFHQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAK8P3a19dyTxE2o9KAw3G1qH8p4qXO-dhhc885Z2_w9BDSoFHQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Nick Desaulniers <ndesaulniers-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Jesper Dangaard Brouer <brouer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+From: James Sewart <jamessewart@arista.com>
+Subject: Re: [PATCH 4/4] iommu/vt-d: Remove lazy allocation of domains
+Date: Thu, 7 Mar 2019 10:21:23 +0000
+Message-ID: <8ED1B579-C6B9-49E0-BD9A-5751474682D1@arista.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+ <2C75F46E-78FE-45E9-9E7D-280B3138EA13@arista.com>
+ <F83456DB-81DD-4E9B-9204-12ED9972D2FA@arista.com>
+ <7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
+ <fdd74d83-acd4-23da-6c0c-b52573d999bb@linux.intel.com>
+ <4B054B40-0B13-4F1E-87D6-8D2F072B5B9C@arista.com>
+ <06aa306a-278a-a22f-7718-200f6f9e5e87@linux.intel.com>
+ <A8A495EE-D3EA-4D84-AB92-9B4742E6E500@arista.com>
+ <4b3e29ce-1dff-eb7d-9b7e-1cde54a24dec@linux.intel.com>
+Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4b3e29ce-1dff-eb7d-9b7e-1cde54a24dec@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2019-03-07 9:28 am, Arnd Bergmann wrote:
-> On Thu, Mar 7, 2019 at 10:17 AM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 2019-03-07 8:52 am, Arnd Bergmann wrote:
->>>
->>> -#define DMA_BIT_MASK(n)      (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
->>> +/* double shift to work around https://bugs.llvm.org/show_bug.cgi?id=38789 */
->>> +#define DMA_BIT_MASK(n)      (((n) == 64) ? ~0ULL : ((1ULL<<((n)-1))<<1)-1)
->>
->> I think that now makes DMA_BIT_MASK(0) undefined - that shouldn't matter
->> in most cases, but it could potentially happen at runtime where callers
->> use a non-constant argument. However, it also means we don't need to
->> special-case 64 any more (since that's there to avoid the same thing
->> anyway), so we could simply flip that to handle 0 instead.
-> 
-> Yes, good idea.
-> 
->> FWIW I'd be very tempted to fold in the second shift as "2ULL<<((n)-1)",
->> but that may not be to everyone's taste.
-> 
-> I like that. So shall we do this?
-> 
-> /*
->   * Shifting '2' instead of '1' because of
->   * https://bugs.llvm.org/show_bug.cgi?id=38789
->   */
-> #define DMA_BIT_MASK(n)    (((n) == 0) ? 0ULL : ((2ULL<<((n)-1)))-1)
+Hey Lu,
 
-Neat - it was too early in the morning for me to think of a succinct way 
-to comment it, but that's great. I suspect there may be a redundant set 
-of parentheses around the shift still, but other than that,
+> On 7 Mar 2019, at 06:31, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>=20
+> Hi James,
+>=20
+> On 3/7/19 2:08 AM, James Sewart wrote:
+>>>>>> -	/*
+>>>>>> -	 * For each rmrr
+>>>>>> -	 *   for each dev attached to rmrr
+>>>>>> -	 *   do
+>>>>>> -	 *     locate drhd for dev, alloc domain for dev
+>>>>>> -	 *     allocate free domain
+>>>>>> -	 *     allocate page table entries for rmrr
+>>>>>> -	 *     if context not allocated for bus
+>>>>>> -	 *           allocate and init context
+>>>>>> -	 *           set present in root table for this bus
+>>>>>> -	 *     init context with domain, translation etc
+>>>>>> -	 *    endfor
+>>>>>> -	 * endfor
+>>>>>> -	 */
+>>>>>> -	pr_info("Setting RMRR:\n");
+>>>>>> -	for_each_rmrr_units(rmrr) {
+>>>>>> -		/* some BIOS lists non-exist devices in DMAR =
+table. */
+>>>>>> -		for_each_active_dev_scope(rmrr->devices, =
+rmrr->devices_cnt,
+>>>>>> -					  i, dev) {
+>>>>>> -			ret =3D iommu_prepare_rmrr_dev(rmrr, =
+dev);
+>>>>>> -			if (ret)
+>>>>>> -				pr_err("Mapping reserved region =
+failed\n");
+>>>>>> -		}
+>>>>>> -	}
+>>>>>> -
+>>>>>> -	iommu_prepare_isa();
+>>>>> Why do you want to remove this segment of code?
+>>>> This will only work if the lazy allocation of domains exists, these
+>>>> mappings will disappear once a default domain is attached to a =
+device and
+>>>> then remade by iommu_group_create_direct_mappings. This code is =
+redundant
+>>>> and removing it allows us to remove all the lazy allocation logic.
+>>> No exactly.
+>>>=20
+>>> We need to setup the rmrr mapping before enabling dma remapping,
+>>> otherwise, there will be a window after dma remapping enabling and
+>>> rmrr getting mapped, during which people might see dma faults.
+>> Do you think this patch instead should be a refactoring to simplify =
+this initial domain setup before the default domain takes over? It seems =
+like duplicated effort to have both lazy allocated domains and =
+externally managed domains. We could allocate a domain here for any =
+devices with RMRR and call get_resv_regions to avoid duplicating RMRR =
+loop.
+>=20
+> Agree. We should replace the lazy allocated domains with default =
+domain
+> in a clean way. Actually, your patches look great to me. But I do =
+think
+> we need further cleanups. The rmrr code is one example, and the =
+identity
+> domain (si_domain) is another.
+>=20
+> Do you mind if I work on top of your patches for further cleanups and
+> sign off a v2 together with you?
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Sure, sounds good. I=E2=80=99ll fixup patch 3 and have a go at =
+integrating=20
+iommu_prepare_isa into get_resv_regions. This should make the initial=20
+domain logic here quite concise.
+
+>=20
+> Best regards,
+> Lu Baolu
 
 Cheers,
-Robin.
+James.=
