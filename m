@@ -1,108 +1,206 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v4 03/22] iommu: introduce device fault report API
-Date: Thu, 7 Mar 2019 11:42:59 +0000
-Message-ID: <1500594f-d7ea-94f2-01aa-0dc0e08b391b@arm.com>
-References: <20190218135504.25048-1-eric.auger@redhat.com>
- <20190218135504.25048-4-eric.auger@redhat.com>
- <fb5f84e6-812f-978d-3be1-673b3e9717ad@arm.com>
- <20190306154616.648e2523@jacob-builder>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH/RFC] driver core: Postpone DMA tear-down until after
+ devres release
+Date: Thu, 7 Mar 2019 14:45:29 +0000
+Message-ID: <1b24a2dc-e9a3-f293-8dd1-360896a554e6@huawei.com>
+References: <20190207193653.18221-1-geert+renesas@glider.be>
+ <20190208164019.GY32526@8bytes.org>
+ <fa781547-7fa8-cb1a-50bd-d18351c02afd@arm.com>
+ <CAMuHMdV6T8EsLZaiM-=M=fRPuDXt05aXg6egmMBr6Sc9V39iKA@mail.gmail.com>
+ <6e64e564-aa6c-4193-1f57-ebf88d6932d5@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190306154616.648e2523@jacob-builder>
-Content-Language: en-US
+In-Reply-To: <6e64e564-aa6c-4193-1f57-ebf88d6932d5@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Eric Auger <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "yi.l.liu@linux.intel.com" <yi.l.liu@linux.intel.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "peter.maydell@linaro.org" <peter.maydell@linaro.org>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, Christoffer Dall <Christoffer.Dall@a>
+To: Robin Murphy <robin.murphy@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Christoph Hellwig <hch@lst.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/03/2019 23:46, Jacob Pan wrote:
-> On Tue, 5 Mar 2019 15:03:41 +0000
-> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-> 
->> On 18/02/2019 13:54, Eric Auger wrote:
->> [...]> +/**
->> > + * iommu_register_device_fault_handler() - Register a device fault
->> > handler
->> > + * @dev: the device
->> > + * @handler: the fault handler
->> > + * @data: private data passed as argument to the handler
->> > + *
->> > + * When an IOMMU fault event is received, call this handler with
->> > the fault event
->> > + * and data as argument. The handler should return 0 on success.
->> > If the fault is
->> > + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also
->> > complete
->> > + * the fault by calling iommu_page_response() with one of the
->> > following
->> > + * response code:
->> > + * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
->> > + * - IOMMU_PAGE_RESP_INVALID: terminate the fault
->> > + * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop
->> > reporting
->> > + *   page faults if possible.  
->> 
->> The comment refers to function and values that haven't been defined
->> yet. Either the page_response() patch should come before, or we need
->> to split this patch.
->> 
->> Something I missed before: if the handler fails (returns != 0) it
->> should complete the fault by calling iommu_page_response(), if we're
->> not doing it in iommu_report_device_fault(). It should be indicated
->> in this comment. It's safe for the handler to call page_response()
->> since we're not holding fault_param->lock when calling the handler.
->> 
-> If the page request fault is to be reported to a guest, the report
-> function cannot wait for the completion status. As long as the fault is
-> injected into the guest, the handler should complete with success. If
-> the PRQ report fails, IMHO, the caller of iommu_report_device_fault()
-> should send page_response, perhaps after clean up all partial response
-> of the group too.
+On 11/02/2019 10:22, Robin Murphy wrote:
+> On 08/02/2019 18:55, Geert Uytterhoeven wrote:
+>> Hi Robin,
+>>
+>> On Fri, Feb 8, 2019 at 6:55 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>> On 08/02/2019 16:40, Joerg Roedel wrote:
+>>>> On Thu, Feb 07, 2019 at 08:36:53PM +0100, Geert Uytterhoeven wrote:
+>>>>> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+>>>>> index 8ac10af17c0043a3..d62487d024559620 100644
+>>>>> --- a/drivers/base/dd.c
+>>>>> +++ b/drivers/base/dd.c
+>>>>> @@ -968,9 +968,9 @@ static void __device_release_driver(struct
+>>>>> device *dev, struct device *parent)
+>>>>>                       drv->remove(dev);
+>>>>>
+>>>>>               device_links_driver_cleanup(dev);
+>>>>> -            arch_teardown_dma_ops(dev);
+>>>>>
+>>>>>               devres_release_all(dev);
+>>>>> +            arch_teardown_dma_ops(dev);
+>>>>>               dev->driver = NULL;
+>>>>>               dev_set_drvdata(dev, NULL);
+>>>>>               if (dev->pm_domain && dev->pm_domain->dismiss)
+>>>>
+>>>> Thanks for the fix! Should it also be tagged for stable and get a Fixes
+>>
+>> FTR, Greg has added it to driver-core-testing, with a CC to stable.
+>
+> So I see, great!
+>
+>>>> tag? I know it only triggers with a fix in v5.0-rc, but still...
+>>>
+>>> I think so:
+>>>
+>>> Fixes: 09515ef5ddad ("of/acpi: Configure dma operations at probe time
+>>> for platform/amba/pci bus devices")
+>>
+>> Thanks! It won't backport cleanly due to commit dc3c05504d38849f
+>> ("dma-mapping: remove dma_deconfigure") in v4.20, though.
+>
+> Ah yes - backports beyond that should simply be a case of moving the
+> dma_deconfigure() wrapper in the same manner.
+>
 
-Ok, the caller (IOMMU driver) sending the page_response if
-iommu_report_device_fault() fails does make more sense. Agreed on the
-partial cleanup as well, we don't keep track of them here, but I need to
-add that to the io-pgfault layer. However some cleanup should probably
-happen in here...
+Hi guys,
 
->> > +   /* we only report device fault if there is a handler
->> > registered */
->> > +   mutex_lock(&dev->iommu_param->lock);
->> > +   if (!dev->iommu_param->fault_param ||
->> > +           !dev->iommu_param->fault_param->handler) {
->> > +           ret = -EINVAL;
->> > +           goto done_unlock;
->> > +   }
->> > +   fparam = dev->iommu_param->fault_param;
->> > +   if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
->> > +       evt->fault.prm.flags &
->> > IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE) {
->> > +           evt_pending = kmemdup(evt, sizeof(struct
->> > iommu_fault_event),
->> > +                           GFP_KERNEL);
->> > +           if (!evt_pending) {
->> > +                   ret = -ENOMEM;
->> > +                   goto done_unlock;
->> > +           }
->> > +           mutex_lock(&fparam->lock);
->> > +           list_add_tail(&evt_pending->list, &fparam->faults);
->> > +           mutex_unlock(&fparam->lock);
->> > +   }
->> > +   ret = fparam->handler(evt, fparam->data);
+Any idea what happened to this fix?
 
-... if ret != 0, removing and freeing the pending event seems more
-appropriate here than asking our caller to do it
+I have this on 5.0:
+
+[    0.000000] Linux version 5.0.0 (john@htsatcamb-server) (gcc version 
+4.8.5 (Linaro GCC 4.8-2015.06)) #121 SMP PREEMPT Thu Mar 7 14:28:39 GMT 2019
+[    0.000000] Kernel command line: BOOT_IMAGE=/john/Image rdinit=/init 
+crashkernel=256M@32M earlycon console=ttyAMA0,115200 acpi=force 
+pcie_aspm=off scsi_mod.use_blk_mq=y no_console_suspend pcie-hisi.disable=1
+
+...
+
+[   26.806856] pci_bus 000c:20: 2-byte config write to 000c:20:00.0 
+offset 0x44 may corrupt adjacent RW1C bits
+[   26.817521] pcieport 0002:f8:00.0: can't derive routing for PCI INT B
+[   26.837167] pci_bus 000c:20: 2-byte config write to 000c:20:00.0 
+offset 0x44 may corrupt adjacent RW1C bits
+[   26.850091] serial 0002:f9:00.1: PCI INT B: no GSI
+[   26.879364] serial 0002:f9:00.1: enabling device (0000 -> 0003)
+[   26.913131] 0002:f9:00.1: ttyS3 at I/O 0x1008 (irq = 0, base_baud = 
+115200) is a ST16650V2
+[   26.992897] rtc-efi rtc-efi: setting system clock to 
+2019-03-07T14:41:48 UTC (1551969708)
+[   27.009380] ALSA device list:
+[   27.015326]   No soundcards found.
+[   27.022549] Freeing unused kernel memory: 1216K
+[   27.055567] Run /init as init process
+root@(none)$ cd /sys/devices/platform/HISI0162:01
+root@(none)$ echo HISI0162:01 > driver/unbind
+[   36.488040] hisi_sas_v2_hw HISI0162:01: dev[9:1] is gone
+[   36.561077] hisi_sas_v2_hw HISI0162:01: dev[8:1] is gone
+[   36.621061] hisi_sas_v2_hw HISI0162:01: dev[7:1] is gone
+[   36.693074] hisi_sas_v2_hw HISI0162:01: dev[6:1] is gone
+[   36.753066] hisi_sas_v2_hw HISI0162:01: dev[5:1] is gone
+[   36.764276] sd 0:0:3:0: [sdd] Synchronizing SCSI cache
+[   36.821106] hisi_sas_v2_hw HISI0162:01: dev[4:1] is gone
+[   36.889048] hisi_sas_v2_hw HISI0162:01: dev[3:1] is gone
+[   36.993002] hisi_sas_v2_hw HISI0162:01: dev[1:1] is gone
+[   37.004276] sd 0:0:0:0: [sda] Synchronizing SCSI cache
+[   37.014768] sd 0:0:0:0: [sda] Stopping disk
+[   37.709094] hisi_sas_v2_hw HISI0162:01: dev[2:5] is gone
+[   37.721231] hisi_sas_v2_hw HISI0162:01: dev[0:2] is gone
+[   37.803774] BUG: Bad page state in process sh  pfn:11356
+[   37.814444] page:ffff7e000044d580 count:1 mapcount:0 
+mapping:0000000000000000 index:0x0
+[   37.830525] flags: 0xfffc00000001000(reserved)
+[   37.839443] raw: 0fffc00000001000 ffff7e000044d588 ffff7e000044d588 
+0000000000000000
+[   37.854998] raw: 0000000000000000 0000000000000000 00000001ffffffff 
+0000000000000000
+[   37.870552] page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
+[   37.883485] bad because of flags: 0x1000(reserved)
+[   37.893098] Modules linked in:
+[   37.899221] CPU: 5 PID: 2691 Comm: sh Not tainted 5.0.0 #121
+[   37.910578] Hardware name: Huawei Taishan 2280 /D05, BIOS Hisilicon 
+D05 IT21 Nemo 2.0 RC0 04/18/2018
+[   37.928924] Call trace:
+[   37.933825]  dump_backtrace+0x0/0x150
+[   37.941166]  show_stack+0x14/0x1c
+[   37.947808]  dump_stack+0x8c/0xb0
+[   37.954451]  bad_page+0xe4/0x144
+[   37.960918]  free_pages_check_bad+0x7c/0x84
+[   37.969307]  __free_pages_ok+0x284/0x290
+[   37.977173]  __free_pages+0x30/0x44
+[   37.984163]  __dma_direct_free_pages+0x68/0x6c
+[   37.993076]  dma_direct_free+0x24/0x38
+[   38.000591]  dma_free_attrs+0x84/0xc0
+[   38.007930]  dmam_release+0x20/0x28
+[   38.014924]  release_nodes+0x128/0x1f8
+[   38.022439]  devres_release_all+0x34/0x4c
+[   38.030478]  device_release_driver_internal+0x190/0x208
+[   38.040963]  device_release_driver+0x14/0x1c
+[   38.049526]  unbind_store+0xbc/0xf4
+[   38.056517]  drv_attr_store+0x20/0x30
+[   38.063859]  sysfs_kf_write+0x44/0x4c
+[   38.071200]  kernfs_fop_write+0xd0/0x1c4
+[   38.079065]  __vfs_write+0x2c/0x158
+[   38.086055]  vfs_write+0xa8/0x19c
+[   38.092696]  ksys_write+0x44/0xa0
+[   38.099338]  __arm64_sys_write+0x1c/0x24
+[   38.107203]  el0_svc_common+0xb0/0x100
+[   38.114718]  el0_svc_handler+0x70/0x88
+[   38.122232]  el0_svc+0x8/0x7c0
+[   38.128356] Disabling lock debugging due to kernel taint
+[   38.139019] BUG: Bad page state in process sh  pfn:11355
+[   38.149682] page:ffff7e000044d540 count:0 mapcount:0 
+mapping:0000000000000000 index:0x0
+[   38.165760] flags: 0xfffc00000001000(reserved)
+[   38.174676] raw: 0fffc00000001000 ffff7e000044d548 ffff7e000044d548 
+0000000000000000
+[   38.190230] raw: 0000000000000000 0000000000000000 00000000ffffffff 
+0000000000000000
+[   38.205783] page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
+[   38.218716] bad because of flags: 0x1000(reserved)
+[   38.228329] Modules linked in:
+[   38.234451] CPU: 5 PID: 2691 Comm: sh Tainted: G    B 
+5.0.0 #121
+[   38.248604] Hardware name: Huawei Taishan 2280 /D05, BIOS Hisilicon 
+D05 IT21 Nemo 2.0 RC0 04/18/2018
+[   38.266949] Call trace:
+[   38.271844]  dump_backtrace+0x0/0x150
+[   38.279185]  show_stack+0x14/0x1c
+[   38.285826]  dump_stack+0x8c/0xb0
+[   38.292468]  bad_page+0xe4/0x144
+[   38.298936]  free_pages_check_bad+0x7c/0x84
+
+...
 
 Thanks,
-Jean
+John
 
->> > +done_unlock:
->> > +   mutex_unlock(&dev->iommu_param->lock);
->> > +   return ret;
->> > +}
->> > +EXPORT_SYMBOL_GPL(iommu_report_device_fault);  
->> [...]
-> 
-> [Jacob Pan]
+> Thanks,
+> Robin.
+>
+>>> There aren't many drivers using dmam_alloc_*(), let alone which would
+>>> also find themselves behind an IOMMU on an Arm system, but it turns out
+>>> I actually have another one which can reproduce the BUG() with 5.0-rc.
+>>
+>> SATA core uses dmam_alloc_*().
+>>
+>>> I've tried a 4.12 kernel with a bit of instrumentation[1] and sure
+>>> enough the devres-managed buffer is freed with the wrong ops[2] even
+>>> then. How it manages not to blow up more catastrophically I have no
+>>> idea... I guess at best it just leaks the buffers and IOMMU mappings,
+>>> and at worst quietly frees random other pages instead.
+>>
+>> May depend on the actual ops, and whether CMA is used or not.
+>>
+>> Gr{oetje,eeting}s,
+>>
+>>                          Geert
+>>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>
+> .
+>
