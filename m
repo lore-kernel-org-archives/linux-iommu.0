@@ -1,48 +1,62 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH/RFC] driver core: Postpone DMA tear-down until after
-	devres release
-Date: Thu, 7 Mar 2019 16:12:57 +0100
-Message-ID: <20190307151257.GA25053@kroah.com>
-References: <20190207193653.18221-1-geert+renesas@glider.be>
-	<20190208164019.GY32526@8bytes.org>
-	<fa781547-7fa8-cb1a-50bd-d18351c02afd@arm.com>
-	<CAMuHMdV6T8EsLZaiM-=M=fRPuDXt05aXg6egmMBr6Sc9V39iKA@mail.gmail.com>
-	<6e64e564-aa6c-4193-1f57-ebf88d6932d5@arm.com>
-	<1b24a2dc-e9a3-f293-8dd1-360896a554e6@huawei.com>
-	<ebc665cc-31c5-4ecd-6c48-6d14962b1f0c@arm.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v7 9/9] vfio/type1: Handle different mdev isolation type
+Date: Thu, 7 Mar 2019 16:56:23 -0700
+Message-ID: <20190307165623.1834cc93@w520.home>
+References: <20190222021927.13132-1-baolu.lu@linux.intel.com>
+        <20190222021927.13132-10-baolu.lu@linux.intel.com>
+        <20190307084453.GA9288@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <ebc665cc-31c5-4ecd-6c48-6d14962b1f0c-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "Rafael J . Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190307084453.GA9288@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Neo Jia <cjia@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 07, 2019 at 02:52:55PM +0000, Robin Murphy wrote:
-> Hi John,
-> 
-> On 07/03/2019 14:45, John Garry wrote:
-> [...]
-> > Hi guys,
+On Thu, 7 Mar 2019 00:44:54 -0800
+Neo Jia <cjia@nvidia.com> wrote:
+
+> On Fri, Feb 22, 2019 at 10:19:27AM +0800, Lu Baolu wrote:
+> > This adds the support to determine the isolation type
+> > of a mediated device group by checking whether it has
+> > an iommu device. If an iommu device exists, an iommu
+> > domain will be allocated and then attached to the iommu
+> > device. Otherwise, keep the same behavior as it is.
 > > 
-> > Any idea what happened to this fix?
+> > Cc: Ashok Raj <ashok.raj@intel.com>
+> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> > ---
+> >  drivers/vfio/vfio_iommu_type1.c | 48 ++++++++++++++++++++++++++++-----
+> >  1 file changed, 41 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> > index ccc4165474aa..f1392c582a3c 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -1368,13 +1368,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
+> >  		iommu_detach_group(domain->domain, group->iommu_group);
+> >  }
+> >    
 > 
-> It's been in -next for a while (commit 376991db4b64) - I assume it will land
-> shortly and hit stable thereafter, at which point somebody gets to sort out
-> the manual backport past 4.20.
+> Hi Baolu,
+> 
+> To allow IOMMU-awared mdev, I think you need to modify the
+> vfio_iommu_type1_pin_pages and vfio_iommu_type1_unpin_pages to remove the
+> iommu->external_domain check.
+> 
+> Could you please include that in your patch? If not, I can send out a separate
+> patch to address that issue.
 
-It's already in Linus's tree, I'll go try to do the stable backporting
-now...
+I figured it was intentional that an IOMMU backed mdev would not use
+the pin/unpin interface and therefore the exiting -EINVAL returns would
+be correct.  Can you elaborate on the use case for still requiring the
+mdev pin/unpin interface for these devices?  Thanks,
 
-greg k-h
+Alex
