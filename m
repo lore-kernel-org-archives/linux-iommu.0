@@ -1,80 +1,22 @@
-From: Randy Li <randy.li@rock-chips.com>
-Subject: [PATCH] [TEST]: media: vb2: reverse DMA addr of each plane
-Date: Fri,  8 Mar 2019 18:04:40 +0800
-Message-ID: <20190308100440.14601-1-randy.li@rock-chips.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [Xen-devel] [PATCH] Revert "swiotlb: remove SWIOTLB_MAP_ERROR"
+Date: Fri, 8 Mar 2019 16:23:55 +0100
+Message-ID: <20190308152355.GA20230@lst.de>
+References: <20190304195951.1118807-1-arnd@arndb.de> <b0b995a1-3211-870f-01af-ce837c18e8f9@arm.com> <CAK8P3a2KQKTDQCQcFR7ZTFJ+_XhfKpy9W27r+YV=iD6hLVu2xg@mail.gmail.com> <957e168a-2589-89c7-3a72-5071a7b6c65a@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <957e168a-2589-89c7-3a72-5071a7b6c65a@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-media@vger.kernel.org
-Cc: Randy Li <randy.li@rock-chips.com>, ayaka@soulik.info, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, pawel@osciak.com, m.szyprowski@samsung.com, kyungmin.park@samsung.com, mchehab@kernel.org, hverkuil@xs4all.nl, nicolas@ndufresne.ca, ezequiel@collabora.com, posciak@chromium.org, groeck@chromium.org, paul.kocialkowski@bootlin.com, linux-rockchip@lists.infradead.org
+To: Julien Grall <julien.grall@arm.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>, Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, xen-devel <xen-devel@lists.xenproject.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-With the default iova and dma-iommu driver, the starting
-address of a new buffer would be at lower address than
-the previous one.
+On Tue, Mar 05, 2019 at 09:41:46AM +0000, Julien Grall wrote:
+> On Xen, dma_addr_t will always be 64-bit while the phys_addr_t will depend 
+> on the MMU type. So we may have phys_addr_t smaller than dma_addr_t from 
+> the kernel point of view.
 
-This patch can solve this problem simply, but I want
-a way to control the address direction of the IOMMU/IOVA.
-
-The reason why we(ayaka and I) need to do this is simple,
-some devices want a contiguous memory for its pixel data.
-But with the single plane buffer, there is not a properly way
-to export its buffer offsets with the userspace,
-since their bytesperline and offset are not full related
-to the picture width or height. You can find more detail
-in the previous mail.
-
-Besides, this patch won't solve all the problem, if you
-don't disable the size_aligned of the iova driver or
-there would be a gap between the plane 0 and plane 1.
-
-This patch is used for showing the problem we met not
-for merging.
-
-Signed-off-by: Randy Li <randy.li@rock-chips.com>
----
- drivers/media/common/videobuf2/videobuf2-core.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/media/common/videobuf2/videobuf2-core.c b/drivers/media/common/videobuf2/videobuf2-core.c
-index 15b6b9c0a2e4..6762d1547e49 100644
---- a/drivers/media/common/videobuf2/videobuf2-core.c
-+++ b/drivers/media/common/videobuf2/videobuf2-core.c
-@@ -204,11 +204,11 @@ static int __vb2_buf_mem_alloc(struct vb2_buffer *vb)
- 	 * Allocate memory for all planes in this buffer
- 	 * NOTE: mmapped areas should be page aligned
- 	 */
--	for (plane = 0; plane < vb->num_planes; ++plane) {
--		unsigned long size = PAGE_ALIGN(vb->planes[plane].length);
-+	for (plane = vb->num_planes; plane > 0; --plane) {
-+		unsigned long size = PAGE_ALIGN(vb->planes[plane - 1].length);
- 
- 		mem_priv = call_ptr_memop(vb, alloc,
--				q->alloc_devs[plane] ? : q->dev,
-+				q->alloc_devs[plane - 1] ? : q->dev,
- 				q->dma_attrs, size, q->dma_dir, q->gfp_flags);
- 		if (IS_ERR_OR_NULL(mem_priv)) {
- 			if (mem_priv)
-@@ -217,15 +217,15 @@ static int __vb2_buf_mem_alloc(struct vb2_buffer *vb)
- 		}
- 
- 		/* Associate allocator private data with this plane */
--		vb->planes[plane].mem_priv = mem_priv;
-+		vb->planes[plane - 1].mem_priv = mem_priv;
- 	}
- 
- 	return 0;
- free:
- 	/* Free already allocated memory if one of the allocations failed */
--	for (; plane > 0; --plane) {
--		call_void_memop(vb, put, vb->planes[plane - 1].mem_priv);
--		vb->planes[plane - 1].mem_priv = NULL;
-+	for (; plane < vb->num_planes; plane++) {
-+		call_void_memop(vb, put, vb->planes[plane].mem_priv);
-+		vb->planes[plane].mem_priv = NULL;
- 	}
- 
- 	return ret;
--- 
-2.20.1
+How can dma_addr_t on arm have value > 32-bit when physical
+addresses are 32-bit only?
