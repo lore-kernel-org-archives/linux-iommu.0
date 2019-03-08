@@ -1,96 +1,141 @@
-From: Chris Chiu <chiu@endlessm.com>
-Subject: [PATCH] iommu/amd: Fix a null pointer dereference for ACPI devices
-Date: Fri,  8 Mar 2019 12:12:10 +0800
-Message-ID: <20190308041210.84518-1-chiu@endlessm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] dma-mapping updates for 5.1
+Date: Fri, 8 Mar 2019 09:42:14 +0100
+Message-ID: <20190308084214.GA17628@infradead.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, linux@endlessm.com, Chris Chiu <chiu@endlessm.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On ASUS laptop X512DK with the realtek USB card reader, the NULL
-pointer dereference happens while bringing up the rtsx_usb driver.
+Hi Linus,
 
-[    1.782281] BUG: unable to handle kernel NULL pointer dereference at 0000000000000090
-[    1.782283] PGD 0 P4D 0
-[    1.782285] Oops: 0000 [#1] SMP NOPTI
-[    1.782287] CPU: 6 PID: 290 Comm: systemd-udevd Not tainted 4.20.0-2-generic #3+dev91.add2285bem1
-[    1.782288] Hardware name: ASUSTeK COMPUTER INC. VivoBook_ASUSLaptop X512DK_X512DK/X512DK, BIOS X512DK.200 01/04/2019
-[    1.782292] RIP: 0010:acpi_device_hid+0x6/0x30
-[    1.782293] Code: ff ff 5b 31 c0 41 5c 5d c3 49 8b 84 24 20 02 00 00 48 85 c0 74 e4 48 8b 40 38 48 85 c0 75 d3 eb d9 90 90 90 0f 1f 44 00 00 55 <48> 8b 97 90 00 00 00 48 8d 8f 90 00 00 00 48 c7 c0 f7 4a ba b9 48
-[    1.782294] RSP: 0018:ffffb1c40209f7a8 EFLAGS: 00010246
-[    1.782295] RAX: 0000000000000000 RBX: ffff9ed23446b200 RCX: 0000000000000000
-[    1.782296] RDX: ffff9ed22ab23010 RSI: 0000000000000001 RDI: 0000000000000000
-[    1.782297] RBP: ffffb1c40209f7e0 R08: 0000000000000000 R09: 0000000000000228
-[    1.782297] R10: 0000000000000000 R11: ffff9ed2288c5ed8 R12: fffffffffffffff0
-[    1.782298] R13: ffff9ed22ab23010 R14: 0000000000000000 R15: 0000000000000000
-[    1.782299] FS:  00007f9aa61988c0(0000) GS:ffff9ed234b80000(0000) knlGS:0000000000000000
-[    1.782300] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    1.782300] CR2: 0000000000000090 CR3: 00000002aaafc000 CR4: 00000000003406e0
-[    1.782301] Call Trace:
-[    1.782307]  ? check_device.part.19+0x5e/0x140
-[    1.782308]  amd_iommu_add_device+0x2d/0x4a0
-[    1.782310]  ? acpi_match_device+0x30/0x70
-[    1.782312]  iommu_bus_notifier+0xc5/0xe0
-[    1.782315]  notifier_call_chain+0x4c/0x70
-[    1.782316]  blocking_notifier_call_chain+0x43/0x60
-[    1.782319]  device_add+0x392/0x6a0
-[    1.782321]  platform_device_add+0x111/0x260
-[    1.782323]  mfd_add_device+0x445/0x570
-[    1.782326]  ? urb_destroy+0x1b/0x40
-[    1.782329]  ? _cond_resched+0x19/0x30
-[    1.782330]  mfd_add_devices+0xab/0x120
-[    1.782333]  rtsx_usb_probe+0x256/0x300 [rtsx_usb]
-[    1.782336]  usb_probe_interface+0xf1/0x300
-[    1.782338]  really_probe+0xfe/0x3b0
-[    1.782339]  driver_probe_device+0xba/0x100
-[    1.782341]  __driver_attach+0xe4/0x110
-[    1.782343]  ? driver_probe_device+0x100/0x100
-[    1.782345]  bus_for_each_dev+0x79/0xc0
-[    1.782347]  ? kmem_cache_alloc_trace+0x15e/0x1e0
-[    1.782348]  driver_attach+0x1e/0x20
-[    1.782350]  bus_add_driver+0x159/0x230
-[    1.782351]  driver_register+0x70/0xc0
-[    1.782353]  usb_register_driver+0x7f/0x140
-[    1.782356]  rtsx_usb_driver_init+0x23/0x1000 [rtsx_usb]
-[    1.782359]  do_one_initcall+0x4a/0x1c4
-[    1.782377] localhost kernel: RIP: 0033:0x7f9aa6806299
-[    1.782379] localhost kernel: Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d c7 6b 0c 00 f7 d8 64 89 01 48
-[    1.782379] localhost kernel: RSP: 002b:00007fff6471bd48 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[    1.782380] localhost kernel: RAX: ffffffffffffffda RBX: 000056264b3ba4a0 RCX: 00007f9aa6806299
-[    1.782381] localhost kernel: RDX: 0000000000000000 RSI: 00007f9aa670acad RDI: 000000000000000e
-[    1.782381] localhost kernel: RBP: 00007f9aa670acad R08: 0000000000000000 R09: 000056264b3ba4a0
-[    1.782382] localhost kernel: R10: 000000000000000e R11: 0000000000000246 R12: 0000000000000000
-[    1.782383] localhost kernel: R13: 000056264b3acc10 R14: 0000000000020000 R15: 000056264b3ba4a0
-[    1.782384] localhost kernel: Modules linked in: rtsx_usb(+) uas usb_storage hid_multitouch hid_generic amdgpu(+) chash amd_iommu_v2 gpu_sched i2c_algo_bit serio_raw drm_kms_helper syscopyarea ahci sysfillrect sysimgblt fb_sys_fops libahci ttm drm wmi video i2c_hid hid
-[    1.782391] localhost kernel: CR2: 0000000000000090
-[    1.782392] localhost kernel: ---[ end trace ba1c82e36e279e13 ]---
+plese pull the dma-mapping updates below.
 
-The reason is the card reader attached to the USB and doesn't have
-corresponding ACPI device. So the ACPI_COMPANION(dev) passed to
-acpi_device_hid() is NULL which results in null derefernce at the
-consequent device->pnp.ids.
+There are various conflicts this time.  Most of them are Kconfig conflicts
+that just have changes right next to each other, where you should take both.
 
-Fix this by validating the ACPI companion of the device first.
+Additionally the powerpc tree that is now merged switched the powerpc code
+to use the generic dma direct code, which means some code touched by this
+pull request has now been removed - please take that variant now in mainline
+through the powerpc tree.
 
-Signed-off-by: Chris Chiu <chiu@endlessm.com>
----
- drivers/iommu/amd_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+Also note that the rpmsg adds a new user of dma_declare_coherent_memory,
+which loses its last parameter tree.  So when you merge that tree it will
+require a manual fixup to compile even if there is no merge conflict.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1167ff0416cf..7737d184a185 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -168,6 +168,9 @@ static inline int get_acpihid_device_id(struct device *dev,
- {
- 	struct acpihid_map_entry *p;
- 
-+	if (!has_acpi_companion(dev))
-+		return -ENODEV;
-+
- 	list_for_each_entry(p, &acpihid_map, list) {
- 		if (!match_hid_uid(dev, p)) {
- 			if (entry)
--- 
-2.20.1
+Last but not least the v4l-dvd tree removes the sh_mobile_ceu driver,
+which is trivially modified in this pull request - just stick to the
+removal for it, obviously.
+
+The following changes since commit f17b5f06cb92ef2250513a1e154c47b78df07d40:
+
+  Linux 5.0-rc4 (2019-01-27 15:18:05 -0800)
+
+are available in the Git repository at:
+
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.1
+
+for you to fetch changes up to 9eb9e96e97b3381e94cba81d93f4a390c26ca6cb:
+
+  Documentation/DMA-API-HOWTO: update dma_mask sections (2019-02-20 07:29:47 -0700)
+
+----------------------------------------------------------------
+DMA mapping updates for 5.1
+
+ - add debugfs support for dumping dma-debug information (Corentin Labbe)
+ - Kconfig cleanups (Andy Shevchenko and me)
+ - debugfs cleanups (Greg Kroah-Hartman)
+ - improve dma_map_resource and use it in the media code
+ - arch_setup_dma_ops / arch_teardown_dma_ops cleanups
+ - various small cleanups and improvements for the per-device coherent
+   allocator
+ - make the DMA mask an upper bound and don't fail "too large" dma mask
+   in the remaning two architectures - this will allow big driver
+   cleanups in the following merge windows
+
+----------------------------------------------------------------
+Andy Shevchenko (1):
+      dma-mapping: move debug configuration options to kernel/dma
+
+Christoph Hellwig (18):
+      dma-mapping: remove the default map_resource implementation
+      dma-mapping: don't BUG when calling dma_map_resource on RAM
+      videobuf2: replace a layering violation with dma_map_resource
+      dma-mapping: add a kconfig symbol for arch_setup_dma_ops availability
+      dma-mapping: add a kconfig symbol for arch_teardown_dma_ops availability
+      mfd/sm501: depend on HAS_DMA
+      device.h: dma_mem is only needed for HAVE_GENERIC_DMA_COHERENT
+      of: select OF_RESERVED_MEM automatically
+      dma-mapping: remove an incorrect __iommem annotation
+      dma-mapping: improve selection of dma_declare_coherent availability
+      dma-mapping: move CONFIG_DMA_CMA to kernel/dma/Kconfig
+      dma-mapping: remove dma_mark_declared_memory_occupied
+      dma-mapping: remove the DMA_MEMORY_EXCLUSIVE flag
+      ccio: allow large DMA masks
+      sparc64: refactor the ali DMA quirk
+      sparc64/iommu: allow large DMA masks
+      sparc64/pci_sun4v: allow large DMA masks
+      Documentation/DMA-API-HOWTO: update dma_mask sections
+
+Corentin Labbe (1):
+      dma-debug: add dumping facility via debugfs
+
+Greg Kroah-Hartman (1):
+      dma: debug: no need to check return value of debugfs_create functions
+
+ Documentation/DMA-API-HOWTO.txt                    | 121 +++++++--------------
+ Documentation/DMA-API.txt                          |  29 +----
+ arch/arc/Kconfig                                   |   3 +-
+ arch/arc/include/asm/Kbuild                        |   1 +
+ arch/arc/include/asm/dma-mapping.h                 |  13 ---
+ arch/arm/Kconfig                                   |   5 +-
+ arch/arm/include/asm/dma-mapping.h                 |   9 --
+ arch/arm/mach-imx/mach-imx27_visstrim_m10.c        |  12 +-
+ arch/arm/mach-imx/mach-mx31moboard.c               |   3 +-
+ arch/arm/mm/dma-mapping.c                          |   2 +
+ arch/arm64/Kconfig                                 |   4 +-
+ arch/arm64/include/asm/dma-mapping.h               |   9 --
+ arch/csky/Kconfig                                  |   2 -
+ arch/mips/Kconfig                                  |   2 +-
+ arch/mips/include/asm/dma-mapping.h                |  10 --
+ arch/mips/mm/dma-noncoherent.c                     |   8 ++
+ arch/powerpc/Kconfig                               |   1 -
+ arch/powerpc/kernel/dma-swiotlb.c                  |   1 +
+ arch/powerpc/kernel/dma.c                          |   1 +
+ arch/riscv/Kconfig                                 |   1 -
+ arch/sh/Kconfig                                    |   2 +-
+ arch/sh/boards/mach-ap325rxa/setup.c               |   5 +-
+ arch/sh/boards/mach-ecovec24/setup.c               |   6 +-
+ arch/sh/boards/mach-kfr2r09/setup.c                |   5 +-
+ arch/sh/boards/mach-migor/setup.c                  |   5 +-
+ arch/sh/boards/mach-se/7724/setup.c                |   6 +-
+ arch/sh/drivers/pci/fixups-dreamcast.c             |   3 +-
+ arch/sparc/kernel/iommu.c                          |  13 +--
+ arch/sparc/kernel/kernel.h                         |   6 +-
+ arch/sparc/kernel/pci.c                            |  46 +++-----
+ arch/sparc/kernel/pci_sun4v.c                      |  18 +--
+ arch/unicore32/Kconfig                             |   1 -
+ arch/x86/Kconfig                                   |   1 -
+ arch/xtensa/Kconfig                                |   1 -
+ drivers/base/Kconfig                               |  77 -------------
+ .../media/common/videobuf2/videobuf2-dma-contig.c  |  41 ++-----
+ .../platform/soc_camera/sh_mobile_ceu_camera.c     |   3 +-
+ drivers/mfd/Kconfig                                |   3 +
+ drivers/of/Kconfig                                 |   6 +-
+ drivers/parisc/ccio-dma.c                          |   4 +-
+ drivers/usb/host/ohci-sm501.c                      |   3 +-
+ drivers/usb/host/ohci-tmio.c                       |   2 +-
+ include/linux/device.h                             |   2 +
+ include/linux/dma-mapping.h                        |  61 +++++------
+ kernel/dma/Kconfig                                 | 121 ++++++++++++++++++++-
+ kernel/dma/Makefile                                |   2 +-
+ kernel/dma/coherent.c                              |  50 ++-------
+ kernel/dma/debug.c                                 | 108 ++++++------------
+ kernel/dma/direct.c                                |  14 +++
+ lib/Kconfig.debug                                  |  36 ------
+ 50 files changed, 344 insertions(+), 544 deletions(-)
+ delete mode 100644 arch/arc/include/asm/dma-mapping.h
