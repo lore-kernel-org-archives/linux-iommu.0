@@ -1,27 +1,13 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 4/4] iommu/vt-d: Remove lazy allocation of domains
-Date: Sun, 10 Mar 2019 10:51:59 +0800
-Message-ID: <514452e0-ba9d-3eb8-e219-944b93e48ad2@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
-	<2C75F46E-78FE-45E9-9E7D-280B3138EA13@arista.com>
-	<F83456DB-81DD-4E9B-9204-12ED9972D2FA@arista.com>
-	<7F6B5F6A-EC76-4A9F-8EB6-AEAB9994D91A@arista.com>
-	<fdd74d83-acd4-23da-6c0c-b52573d999bb@linux.intel.com>
-	<4B054B40-0B13-4F1E-87D6-8D2F072B5B9C@arista.com>
-	<06aa306a-278a-a22f-7718-200f6f9e5e87@linux.intel.com>
-	<A8A495EE-D3EA-4D84-AB92-9B4742E6E500@arista.com>
-	<4b3e29ce-1dff-eb7d-9b7e-1cde54a24dec@linux.intel.com>
-	<8ED1B579-C6B9-49E0-BD9A-5751474682D1@arista.com>
-	<bb9c941b-05b6-27aa-d0ca-1d9c56f8f277@linux.intel.com>
-	<A5E61244-386C-4FD8-AAF8-3135F471B92E@arista.com>
-	<de8f306a-f7f9-f1f4-a8f6-97897b4c78e7@linux.intel.com>
-	<A7A831AB-A7A0-407F-A7E3-B84E354E9986@arista.com>
+From: pr-tracker-bot-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Subject: Re: [GIT PULL] dma-mapping updates for 5.1
+Date: Sun, 10 Mar 2019 22:30:14 +0000
+Message-ID: <155225701458.14748.9837414918632727063.pr-tracker-bot@kernel.org>
+References: <20190308084214.GA17628@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A7A831AB-A7A0-407F-A7E3-B84E354E9986-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20190308084214.GA17628-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -31,49 +17,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAzLzkvMTkgNzo0OSBQTSwgSmFtZXMgU2V3YXJ0IHdyb3RlOgo+IEhleSBMdSwKPiAK
-Pj4gT24gOSBNYXIgMjAxOSwgYXQgMDE6NTMsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+IHdyb3RlOgo+Pgo+PiBIaSBKYW1lcywKPj4KPj4gT24gMy85LzE5IDEyOjU3IEFNLCBK
-YW1lcyBTZXdhcnQgd3JvdGU6Cj4+PiBIZXkgTHUsCj4+Pj4gT24gOCBNYXIgMjAxOSwgYXQgMDM6
-MDksIEx1IEJhb2x1PGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4gIHdyb3RlOgo+Pj4+Pj4KPj4+
-Pj4+IERvIHlvdSBtaW5kIGlmIEkgd29yayBvbiB0b3Agb2YgeW91ciBwYXRjaGVzIGZvciBmdXJ0
-aGVyIGNsZWFudXBzIGFuZAo+Pj4+Pj4gc2lnbiBvZmYgYSB2MiB0b2dldGhlciB3aXRoIHlvdT8K
-Pj4+Pj4gU3VyZSwgc291bmRzIGdvb2QuIEnigJlsbCBmaXh1cCBwYXRjaCAzIGFuZCBoYXZlIGEg
-Z28gYXQgaW50ZWdyYXRpbmcKPj4+Pj4gaW9tbXVfcHJlcGFyZV9pc2EgaW50byBnZXRfcmVzdl9y
-ZWdpb25zLiBUaGlzIHNob3VsZCBtYWtlIHRoZSBpbml0aWFsCj4+Pj4+IGRvbWFpbiBsb2dpYyBo
-ZXJlIHF1aXRlIGNvbmNpc2UuCj4+Pj4gSGVyZSBhdHRhY2hlZCB0aHJlZSBleHRyYSBwYXRjaGVz
-IHdoaWNoIEkgdGhpbmsgc2hvdWxkIGJlIGFkZGVkIGJlZm9yZQo+Pj4+IFBBVENIIDMvNCwgYW5k
-IHNvbWUgZnVydGhlciBjbGVhbnVwIGNoYW5nZXMgd2hpY2ggeW91IGNhbiBtZXJnZSB3aXRoCj4+
-Pj4gUEFUQ0ggNC80Lgo+Pj4+Cj4+Pj4gLS0tLS0tLS0tLS0tLS0tLQo+Pj4+Cj4+Pj4gMDAwNi1p
-b21tdS1BZGQtb3BzLWVudHJ5LWZvci12ZW5kb3Itc3BlY2lmaWMtZGVmYXVsdC1kb21hLnBhdGNo
-Cj4+Pj4gMDAwNy1pb21tdS12dC1kLUFkZC1pc19pZGVudGl0eV9tYXAtb3BzLWVudHJ5LnBhdGNo
-Cj4+Pj4KPj4+PiBUaGVzZSB0d28gcGF0Y2hlcyBhaW0gdG8gYWRkIGEgZ2VuZXJpYyBtZXRob2Qg
-Zm9yIHZlbmRvciBzcGVjaWZpYyBpb21tdQo+Pj4+IGRyaXZlcnMgdG8gc3BlY2lmeSB0aGUgdHlw
-ZSBvZiB0aGUgZGVmYXVsdCBkb21haW4gZm9yIGEgZGV2aWNlLiBJbnRlbAo+Pj4+IGlvbW11IGRy
-aXZlciB3aWxsIHJlZ2lzdGVyIGFuIG9wcyBmb3IgdGhpcyBzaW5jZSBpdCBhbHJlYWR5IGhhcyBp
-dHMgb3duCj4+Pj4gaWRlbnRpdHkgbWFwIGFkanVkaWNhdG9yIGZvciBhIGxvbmcgdGltZS4KPj4+
-IFRoaXMgc2VlbXMgbGlrZSBhIGdvb2QgaWRlYSwgYnV0IGFzIGRvbWFpbiBhbGxvYyBpcyBvbmx5
-IGNhbGxlZCBmb3IgdGhlCj4+PiBkZWZhdWx0IGRvbWFpbiBvbiBmaXJzdCBkZXZpY2UgYXR0YWNo
-ZWQgdG8gYSBncm91cCwgd2UgbWF5IG1pc3MgY2hlY2tpbmcKPj4+IHdoZXRoZXIgYSBkZXZpY2Ug
-YWRkZWQgbGF0ZXIgc2hvdWxkIGhhdmUgYW4gaWRlbnRpdHkgZG9tYWluLiBTaG91bGQgdGhlcmUK
-Pj4+IGJlIHBhdGhzIHRvIGRvd25ncmFkZSBhIGdyb3VwcyBkb21haW4gaWYgb25lIG9mIHRoZSBk
-ZXZpY2VzIHJlcXVpcmVzIG9uZT8KPj4KPj4gR29vZCBjYXRjaCEKPj4KPj4gVGhpcyBpcyBzdXBw
-b3NlZCB0byBiZSBoYW5kbGVkIGluIGlvbW11X25vX21hcHBpbmcoKS4gQnV0LCBvYnZpb3VzbHkK
-Pj4gY3VycmVudCBjb2RlIHN0aWNrcyB0byBsYXp5IGRvbWFpbiBhbGxvY2F0aW9uLiBJJ20gbm90
-IHN1cmUgd2hldGhlcgo+PiB0aGVyZSBhcmUgYW55IHJlYWwgc3VjaCBjYXNlcywgYnV0IHdlIHNo
-b3VsZCBoYW5kbGUgaXQgaW4gYSBjbGVhbiB3YXkuCj4+IE15IGlkZWEgaXMgdGhhdCB3ZSBjb3Vs
-ZCBkb3duZ3JhZGUgdG8gbXVsdGlwbGUgZG9tYWlucyBwZXIgZ3JvdXAgKGp1c3QKPj4gbGlrZSB3
-aGF0IHdlIGhhdmUgbm93KSBpbiB0aGlzIGNhc2UgYW5kIHByaW50IGEga2VybmVsIG1lc3NhZ2Ug
-Zm9yIHRoaXMuCj4gCj4gSSB0aGluayBpZiBhIGRldmljZSByZXF1aXJlcyBhbiBpZGVudGl0eSBk
-b21haW4sIHRoZW4gaXQgc2hvdWxkIGlnbm9yZQo+IGF0dGVtcHRzIHRvIGF0dGFjaCB0byBzb21l
-dGhpbmcgZWxzZS4gQSBwcmludCB0byB3YXJuIGEgdXNlciBhYm91dCB0aGlzCj4gd291bGQgYmUg
-YSBnb29kIGlkZWEuCj4gCj4gSSBmaWd1cmUgZHVyaW5nIGF0dGFjaDogaWYgaW9tbXVfbm9fbWFw
-cGluZygpIHRoZW4gYXR0YWNoIHRvIHNpX2RvbWFpbiBhbmQKPiBwcmludCwgZWxzZSBjb250aW51
-ZSB3aXRoIHRoZSBnaXZlbiBkb21haW4uCgpZZXMsIGFncmVlLgoKQmVzdCByZWdhcmRzLApMdSBC
-YW9sdQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
-dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
-aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+The pull request you sent on Fri, 8 Mar 2019 09:42:14 +0100:
+
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.1
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b7a7d1c1ec688104fdc922568c26395a756f616d
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
