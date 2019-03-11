@@ -1,9 +1,9 @@
-From: Stanislaw Gruszka <sgruszka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: MT76x2U crashes XHCI driver on AMD Ryzen system
-Date: Mon, 11 Mar 2019 09:43:20 +0100
-Message-ID: <20190311084319.GA3310@redhat.com>
-References: <20190226100535.GA20740@8bytes.org>
- <20190226103450.GA2989@redhat.com>
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: [PATCH] iommu/amd: fix sg->dma_address for sg->offset bigger than
+ PAGE_SIZE
+Date: Mon, 11 Mar 2019 10:03:15 +0100
+Message-ID: <20190311090314.GB3310@redhat.com>
+References: <20190226103450.GA2989@redhat.com>
  <20190226104413.GH20740@8bytes.org>
  <20190226112407.GB2989@redhat.com>
  <20190228090411.GA24938@redhat.com>
@@ -12,66 +12,79 @@ References: <20190226100535.GA20740@8bytes.org>
  <20190228134029.GC1594@8bytes.org>
  <20190304071037.GA2787@redhat.com>
  <CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw@mail.gmail.com>
+ <20190311084319.GA3310@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rosen Penev <rosenp-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Lorenzo Bianconi <lorenzo.bianconi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-wireless <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Samuel Sieb <samuel-yL8jFUf1A1M@public.gmane.org>, Alexander Duyck <alexander.h.duyck-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-nvme-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jan.viktorin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+In-Reply-To: <20190311084319.GA3310@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rosen Penev <rosenp@gmail.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, Alexander Duyck <alexander.h.duyck@linux.intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, jan.viktorin@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Mar 03, 2019 at 11:20:45PM -0800, Rosen Penev wrote:
-> On Sun, Mar 3, 2019 at 11:10 PM Stanislaw Gruszka <sgruszka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> >
-> > On Thu, Feb 28, 2019 at 02:40:29PM +0100, Joerg Roedel wrote:
-> > > On Thu, Feb 28, 2019 at 01:19:48PM +0100, Stanislaw Gruszka wrote:
-> > > > Nevermind, the patch is wrong, s->dma_address is initalized in sg_num_pages().
-> > >
-> > > Yes, it is. In sg_num_pages() the offset into the IOMMU mapping is
-> > > stored in s->dma_address, taking also the segment boundary mask into
-> > > account. map_sg() later only adds the base-address to that.
-> >
-> > I have some more info about the issues in
-> > https://bugzilla.kernel.org/show_bug.cgi?id=202673
-> >
-> > We have some bugs in mt76. Apparently we should not use
-> > page_frag_alloc() with size bigger than PAGE_SIZE as page_frag_alloc()
-> > can fallback to single page allocation. And also we should not make
-> > sizes unaligned as pointed in commit:
-> > 3bed3cc4156e ("net: Do not allocate page fragments that are not skb aligned"
-> As a small and totally unrelated note, page_frag_alloc is only used in
-> mt76 and the nvme driver ;)
+Take into account that sg->offset can be bigger than PAGE_SIZE when
+setting segment sg->dma_address. Otherwise sg->dma_address will point
+at diffrent page, what makes DMA not possible with erros like this:
 
-And there is nvme problem on AMD IOMMU:
-https://bugzilla.kernel.org/show_bug.cgi?id=202665
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa70c0 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7040 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7080 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7100 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7000 flags=0x0020]
 
-While page_frag_alloc() should be used with cautious, at least care of
-size alignment with ARCH_DMA_MINALIGN (not for IOMMU, but standard arch
-dma), at this point I think some of those issues are AMD IOMMU problems.
+Additinally with wrong sg->dma_address unmap_sg will free wrong pages,
+what what can cause crashes like this:
 
-> > However after fixing that mt76usb still did not work. To make things
-> > work we had to change rx frag size from 2048 to PAGE_SIZE and change
-> > virt_to_head_page() to virt_to_page() when setting SG's.
->
-> > I think I understand why first change was needed. If we do 2 separate
-> > dma maps of 2 different buffers in single page i.e (PAGE + off=0
-> > and PAGE + off=2048) it causes problem. So either map_sg() return
-> > error which mt76usb does not handle correctly or there is issue
-> > in AMD IOMMU because two dma maps use the same page.
+Feb 28 19:27:45 kernel: BUG: Bad page state in process cinnamon  pfn:39e8b1
+Feb 28 19:27:45 kernel: Disabling lock debugging due to kernel taint
+Feb 28 19:27:45 kernel: flags: 0x2ffff0000000000()
+Feb 28 19:27:45 kernel: raw: 02ffff0000000000 0000000000000000 ffffffff00000301 0000000000000000
+Feb 28 19:27:45 kernel: raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
+Feb 28 19:27:45 kernel: page dumped because: nonzero _refcount
+Feb 28 19:27:45 kernel: Modules linked in: ccm fuse arc4 nct6775 hwmon_vid amdgpu nls_iso8859_1 nls_cp437 edac_mce_amd vfat fat kvm_amd ccp rng_core kvm mt76x0u mt76x0_common mt76x02_usb irqbypass mt76_usb mt76x02_lib mt76 crct10dif_pclmul crc32_pclmul chash mac80211 amd_iommu_v2 ghash_clmulni_intel gpu_sched i2c_algo_bit ttm wmi_bmof snd_hda_codec_realtek snd_hda_codec_generic drm_kms_helper snd_hda_codec_hdmi snd_hda_intel drm snd_hda_codec aesni_intel snd_hda_core snd_hwdep aes_x86_64 crypto_simd snd_pcm cfg80211 cryptd mousedev snd_timer glue_helper pcspkr r8169 input_leds realtek agpgart libphy rfkill snd syscopyarea sysfillrect sysimgblt fb_sys_fops soundcore sp5100_tco k10temp i2c_piix4 wmi evdev gpio_amdpt pinctrl_amd mac_hid pcc_cpufreq acpi_cpufreq sg ip_tables x_tables ext4(E) c
+ rc32c_generic(E) crc16(E) mbcache(E) jbd2(E) fscrypto(E) sd_mod(E) hid_generic(E) usbhid(E) hid(E) dm_mod(E) serio_raw(E) atkbd(E) libps2(E) crc32c_intel(E) ahci(E) libahci(E) libata(E) xhci_pci(E) xhci_hcd(E)
+Feb 28 19:27:45 kernel:  scsi_mod(E) i8042(E) serio(E) bcache(E) crc64(E)
+Feb 28 19:27:45 kernel: CPU: 2 PID: 896 Comm: cinnamon Tainted: G    B   W   E     4.20.12-arch1-1-custom #1
+Feb 28 19:27:45 kernel: Hardware name: To Be Filled By O.E.M. To Be Filled By O.E.M./B450M Pro4, BIOS P1.20 06/26/2018
+Feb 28 19:27:45 kernel: Call Trace:
+Feb 28 19:27:45 kernel:  dump_stack+0x5c/0x80
+Feb 28 19:27:45 kernel:  bad_page.cold.29+0x7f/0xb2
+Feb 28 19:27:45 kernel:  __free_pages_ok+0x2c0/0x2d0
+Feb 28 19:27:45 kernel:  skb_release_data+0x96/0x180
+Feb 28 19:27:45 kernel:  __kfree_skb+0xe/0x20
+Feb 28 19:27:45 kernel:  tcp_recvmsg+0x894/0xc60
+Feb 28 19:27:45 kernel:  ? reuse_swap_page+0x120/0x340
+Feb 28 19:27:45 kernel:  ? ptep_set_access_flags+0x23/0x30
+Feb 28 19:27:45 kernel:  inet_recvmsg+0x5b/0x100
+Feb 28 19:27:45 kernel:  __sys_recvfrom+0xc3/0x180
+Feb 28 19:27:45 kernel:  ? handle_mm_fault+0x10a/0x250
+Feb 28 19:27:45 kernel:  ? syscall_trace_enter+0x1d3/0x2d0
+Feb 28 19:27:45 kernel:  ? __audit_syscall_exit+0x22a/0x290
+Feb 28 19:27:45 kernel:  __x64_sys_recvfrom+0x24/0x30
+Feb 28 19:27:45 kernel:  do_syscall_64+0x5b/0x170
+Feb 28 19:27:45 kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Any comment on that? Is fine or not to do 2 or more dma mappings
-within the same single page on AMD IOMMU? If not, is there any
-mechanism for drivers to find out about this limitation to prevent
-to prepare wrong SG buffers?
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: jan.viktorin@gmail.com
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+ drivers/iommu/amd_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > But I don't understand why the second change was needed. Without
-> > it we have issue with incorrect page->_refcount . It is somehow
-> > related with AMD IOMMU, because on different platforms we do not
-> > have such problems.
-
-I think I found a bug in amd iommu code when setting sg->dma_address
-with sg->offset > PAGE_SIZE. Will post fix shortly. 
-
-Stanislaw
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6b0760dafb3e..949621f33624 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2604,7 +2604,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 	/* Everything is mapped - write the right values into s->dma_address */
+ 	for_each_sg(sglist, s, nelems, i) {
+-		s->dma_address += address + s->offset;
++		s->dma_address += address + (s->offset & ~PAGE_MASK);
+ 		s->dma_length   = s->length;
+ 	}
+ 
+-- 
+2.7.5
