@@ -1,81 +1,85 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 02/13] driver core: Remove the link if there is no driver
- with AUTO flag
-Date: Tue, 12 Mar 2019 15:21:51 +0100
-Message-ID: <e15e94be-3eb9-dc7b-2073-4163f91f0259@gmail.com>
-References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
- <1546318276-18993-3-git-send-email-yong.wu@mediatek.com>
- <CAE=gft7mWs1jc+KQQcPuuhcmxpFRnRBTt35+uC3F20N6R554bQ@mail.gmail.com>
- <1551278000.17917.50.camel@mhfsdcap03>
- <CAE=gft4iHRo8VQot26dH2NaRNLtxxRYWBmSpjkoL2BE_i6eXQw@mail.gmail.com>
+From: Alexander Duyck <alexander.h.duyck-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: fix sg->dma_address for sg->offset bigger
+	than PAGE_SIZE
+Date: Tue, 12 Mar 2019 08:18:16 -0700
+Message-ID: <67c062b183fbd5651a9aa990e677d31673ff7580.camel@linux.intel.com>
+References: <20190226112407.GB2989@redhat.com>
+	<20190228090411.GA24938@redhat.com> <20190228104223.GA2749@redhat.com>
+	<20190228121948.GD6072@redhat.com> <20190228134029.GC1594@8bytes.org>
+	<20190304071037.GA2787@redhat.com>
+	<CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw@mail.gmail.com>
+	<20190311084319.GA3310@redhat.com> <20190311090314.GB3310@redhat.com>
+	<e0630ae9d9bee73d8a1ce3499ea9f77900e9cdfa.camel@linux.intel.com>
+	<20190312070832.GA2483@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE=gft4iHRo8VQot26dH2NaRNLtxxRYWBmSpjkoL2BE_i6eXQw@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Evan Green <evgreen@chromium.org>, Yong Wu <yong.wu@mediatek.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190312070832.GA2483-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stanislaw Gruszka <sgruszka-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Samuel Sieb <samuel-yL8jFUf1A1M@public.gmane.org>, linux-wireless <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-nvme-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rosen Penev <rosenp-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lorenzo Bianconi <lorenzo.bianconi-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jan.viktorin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 05/03/2019 20:03, Evan Green wrote:
-> On Wed, Feb 27, 2019 at 6:33 AM Yong Wu <yong.wu@mediatek.com> wrote:
->>
->> On Mon, 2019-02-25 at 15:53 -0800, Evan Green wrote:
->>> On Mon, Dec 31, 2018 at 8:52 PM Yong Wu <yong.wu@mediatek.com> wrote:
->>>>
->>>> DL_FLAG_AUTOREMOVE_CONSUMER/SUPPLIER means "Remove the link
->>>> automatically on consumer/supplier driver unbind", that means we should
->>>> remove whole the device_link when there is no this driver no matter what
->>>> the ref_count of the link is.
->>>>
->>>> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>>> ---
->>>> The ref_count of our device_link normally is over 1. When the consumer
->>>> device driver is removed, whole the device_link should be removed.
->>>> Thus, I add this patch.
->>>> ---
->>>
->>> I will admit to reading about device links for the first time while
->>> reviewing this patch, but I don't really get this. Why use a kref at
->>> all if we're just going to ignore its value? For instance, I see that
->>> if you call device_link_add() with the same supplier and consumer, it
->>> uses the kref to return the same link. That machinery is broken with
->>> your change. Although I don't see any uses of it, you might also
->>> expect a supplier or consumer could do a kref_get() on the link it got
->>> back from device_link_add(), and have a reasonable expectation that
->>> the link wouldn't be freed out from under it. This would also be
->>> broken.
->>>
->>> Can you explain why your device_links normally have a reference count
->>>> 1,
->>
->> I use device link between the smi-larb device and the iommu-consumer
->> device. Take a example, smi-larb1 have 4 VDEC ports. From 4/13 in this
->> patchset, we use device_link to link the VDEC device and the smi-larb1
->> device in the function(mtk_iommu_config). since there are 4 ports, it
->> will call device_link_add 4 times.
->>
->>>
->>> and why those additional references can't be cleaned up in an
->>> orderly fashion?
->>
->> If the iommu-consume device(like VDEC above) is removed, It should enter
->> device_links_driver_cleanup which only ref_put one time. I guess whole
->> the link should be removed at that time.
+On Tue, 2019-03-12 at 08:08 +0100, Stanislaw Gruszka wrote:
+> On Mon, Mar 11, 2019 at 08:47:44AM -0700, Alexander Duyck wrote:
+> > >  drivers/iommu/amd_iommu.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > > index 6b0760dafb3e..949621f33624 100644
+> > > --- a/drivers/iommu/amd_iommu.c
+> > > +++ b/drivers/iommu/amd_iommu.c
+> > > @@ -2604,7 +2604,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+> > >  
+> > >  	/* Everything is mapped - write the right values into s->dma_address */
+> > >  	for_each_sg(sglist, s, nelems, i) {
+> > > -		s->dma_address += address + s->offset;
+> > > +		s->dma_address += address + (s->offset & ~PAGE_MASK);
+> > >  		s->dma_length   = s->length;
+> > >  	}
+> > >  
+> > 
+> > You should add a comment calling out that this is needed because the
+> > sg_phys(s) call above this is masked with PAGE_MASK. Then this makes
+> > much more sense. Otherwise I would have assumed you needed either the
+> > full offset or none.
 > 
-> It seems like Robin had some suggestions about using
-> mtk_iommu_add_device() rather than the attach_dev() to set the links
-> up, and then track them for removal in the corresponding
-> remove_device() callback. Then you wouldn't need this change, right?
+> Would something like this 
+> 
+> /*
+>  * Everything is mapped - write the right values into s->dma_address. 
+>  * Take into account s->offset can be bigger than page size and sg_phys(s)
+>  * address has to be aligned to page granularity.
+>  */
+> 
+> be appropriate ?
+> 
+> Stanislaw
 > 
 
-FYI, Evan the patch is queued for v5.1-rc1 as
-0fe6f7874d46 ("driver core: Remove the link if there is no driver with AUTO flag")
+No, that isn't a good description. If you take a look at the code a few
+lines up you find:
+	phys_addr = (sg_phys(s) & PAGE_MASK) + (j << PAGE_SHIFT);
 
-So if you think there is something wrong with it, then please provide a fix or
-raise awareness :)
+Now if I am not mistaken the whole reason why you are having to make
+the change here is because the application of PAGE_MASK in this line.
+Basically what sg_phys() will do is take the address of the page,
+convert it to a physical address and add the offset. However what the
+mask is doing is limiting how much of that offset can be added. As a
+result you have to add the remainder that was masked out. So maybe a
+better comment would be something like:
+
+/*
+ * Add in the remaining piece of the scatter-gather offset that was 
+ * masked out when we were determining the physical address via
+ * (sg_phys(s) & PAGE_MASK) earlier.
+ */
