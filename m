@@ -1,95 +1,59 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v1 0/9] Bounce buffer for untrusted devices
-Date: Tue, 12 Mar 2019 14:07:23 +0800
-Message-ID: <b818f647-766e-71f0-779e-1c997fd6a144@linux.intel.com>
-References: <20190312060005.12189-1-baolu.lu@linux.intel.com>
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: Re: [PATCH] iommu/amd: fix sg->dma_address for sg->offset bigger
+ than PAGE_SIZE
+Date: Tue, 12 Mar 2019 08:08:33 +0100
+Message-ID: <20190312070832.GA2483@redhat.com>
+References: <20190226112407.GB2989@redhat.com>
+ <20190228090411.GA24938@redhat.com>
+ <20190228104223.GA2749@redhat.com>
+ <20190228121948.GD6072@redhat.com>
+ <20190228134029.GC1594@8bytes.org>
+ <20190304071037.GA2787@redhat.com>
+ <CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw@mail.gmail.com>
+ <20190311084319.GA3310@redhat.com>
+ <20190311090314.GB3310@redhat.com>
+ <e0630ae9d9bee73d8a1ce3499ea9f77900e9cdfa.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190312060005.12189-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <e0630ae9d9bee73d8a1ce3499ea9f77900e9cdfa.camel@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Cc: Rosen Penev <rosenp@gmail.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, jan.viktorin@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Should be titled as "iommu/vt-d: Bounce buffer for untrusted devices".
-Sorry for the inconvenience.
+On Mon, Mar 11, 2019 at 08:47:44AM -0700, Alexander Duyck wrote:
+> >  drivers/iommu/amd_iommu.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > index 6b0760dafb3e..949621f33624 100644
+> > --- a/drivers/iommu/amd_iommu.c
+> > +++ b/drivers/iommu/amd_iommu.c
+> > @@ -2604,7 +2604,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+> >  
+> >  	/* Everything is mapped - write the right values into s->dma_address */
+> >  	for_each_sg(sglist, s, nelems, i) {
+> > -		s->dma_address += address + s->offset;
+> > +		s->dma_address += address + (s->offset & ~PAGE_MASK);
+> >  		s->dma_length   = s->length;
+> >  	}
+> >  
+> 
+> You should add a comment calling out that this is needed because the
+> sg_phys(s) call above this is masked with PAGE_MASK. Then this makes
+> much more sense. Otherwise I would have assumed you needed either the
+> full offset or none.
 
-On 3/12/19 1:59 PM, Lu Baolu wrote:
-> An external PCI device is a PCI peripheral device connected
-> to the system through an external bus, such as Thunderbolt.
-> What makes it different is that it can't be trusted to the
-> same degree as the devices build into the system. Generally,
-> a trusted PCIe device will DMA into the designated buffers
-> and not overrun or otherwise write outside the specified
-> bounds. But it's different for an external device. The minimum
-> IOMMU mapping granularity is one page (4k), so for DMA transfers
-> smaller than that a malicious PCIe device can access the whole
-> page of memory even if it does not belong to the driver in
-> question. This opens a possibility for DMA attack. For more
-> information about DMA attacks imposed by an untrusted PCI/PCIe
-> device, please refer to [2].
-> 
-> This implements bounce buffer for the untrusted external
-> devices. The transfers should be limited in isolated pages
-> so the IOMMU window does not cover memory outside of what
-> the driver expects. Full pages within a buffer could be
-> directly mapped in IOMMU page table, but for partial pages
-> we use bounce page instead.
-> 
-> In addition, the IOMMU mappings cached in the IOTLB for
-> untrusted devices should be invalidated immediately after
-> the unmap operation. Otherwise, the IOMMU window is left
-> open to attacks.
-> 
-> The implementation of bounce buffers for untrusted devices
-> will cause a little performance overhead, but we didn't see
-> any user experience problems. The users could use the kernel
-> parameter of "intel_iommu=nobounce" to remove the performance
-> overhead if they trust their devices enough.
-> 
-> The Thunderbolt vulnerabiltiies is public and has a nice
-> name as Thunderclap nowadays. Please refer to [1] [3] for
-> more information. This patch series aims to mitigate the
-> concerns.
-> 
-> The bounce buffer idea:
-> 
-> Based-on-idea-by: Mika Westerberg <mika.westerberg@intel.com>
-> Based-on-idea-by: Ashok Raj <ashok.raj@intel.com>
-> Based-on-idea-by: Alan Cox <alan.cox@intel.com>
-> 
-> The patch series has been tested by:
-> 
-> Tested-by: Xu Pengfei <pengfei.xu@intel.com>
-> Tested-by: Mika Westerberg <mika.westerberg@intel.com>
-> 
-> [1] https://thunderclap.io/
-> [2] https://thunderclap.io/thunderclap-paper-ndss2019.pdf
-> [3] https://christian.kellner.me/2019/02/27/thunderclap-and-linux/
-> 
-> Lu Baolu (9):
->    iommu/vt-d: Add trace events for domain map/unmap
->    iommu/vt-d: Add helpers for domain mapping/unmapping
->    iommu/vt-d: Add address walk helper
->    iommu/vt-d: Add bounce buffer API for domain map/unmap
->    iommu/vt-d: Add bounce buffer API for dma sync
->    iommu/vt-d: Check whether device requires bounce buffer
->    iommu/vt-d: Add dma sync ops for untrusted devices
->    iommu/vt-d: Flush IOTLB for untrusted device in time
->    iommu/vt-d: Use bounce buffer for untrusted devices
-> 
->   .../admin-guide/kernel-parameters.txt         |   5 +
->   drivers/iommu/Makefile                        |   1 +
->   drivers/iommu/intel-iommu.c                   | 360 ++++++++++--
->   drivers/iommu/intel-pgtable.c                 | 518 ++++++++++++++++++
->   drivers/iommu/intel-trace.c                   |  14 +
->   include/linux/intel-iommu.h                   |  24 +
->   include/trace/events/intel_iommu.h            | 132 +++++
->   7 files changed, 1010 insertions(+), 44 deletions(-)
->   create mode 100644 drivers/iommu/intel-pgtable.c
->   create mode 100644 drivers/iommu/intel-trace.c
->   create mode 100644 include/trace/events/intel_iommu.h
-> 
+Would something like this 
+
+/*
+ * Everything is mapped - write the right values into s->dma_address. 
+ * Take into account s->offset can be bigger than page size and sg_phys(s)
+ * address has to be aligned to page granularity.
+ */
+
+be appropriate ?
+
+Stanislaw
