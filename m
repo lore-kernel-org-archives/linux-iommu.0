@@ -1,127 +1,40 @@
-From: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel@daenzer.net>
-Subject: Re: [PATCH v2 1/5] drm/rockchip: fix fb references in async update
-Date: Wed, 13 Mar 2019 10:58:25 +0100
-Message-ID: <05750143-708b-b84e-af67-82ec6815bd89@daenzer.net>
-References: <20190312022204.2775-1-helen.koike@collabora.com>
- <20190312022204.2775-2-helen.koike@collabora.com>
- <20190312073438.05ad8173@collabora.com>
- <f888a2d0-c6b1-8995-7254-ba2923dd22f9@collabora.com>
- <20190312165243.5b771e4a@collabora.com>
- <CAAFQd5CCEDaxLbw0E9NJJ-tEcHd8-Lidvcvt8qfPAnKu7uuj8w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <CAAFQd5CCEDaxLbw0E9NJJ-tEcHd8-Lidvcvt8qfPAnKu7uuj8w@mail.gmail.com>
-Content-Language: en-CA
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Tomasz Figa <tfiga@chromium.org>, Boris Brezillon <boris.brezillon@collabora.com>
-Cc: =?UTF-8?Q?St=c3=a9phane_Marchesin?= <marcheu@google.com>, Sean Paul <seanpaul@google.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, Helen Koike <helen.koike@collabora.com>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, kernel@collabora.com, nicholas.kazlauskas@amd.com, linux-arm-kernel@lists.infradead.org
+From: Aaron Ma <aaron.ma@canonical.com>
+Subject: [RESEND][PATCH] iommu/amd: Fix NULL dereference bug in match_hid_uid
+Date: Wed, 13 Mar 2019 21:53:24 +0800
+Message-ID: <1552485204-11381-1-git-send-email-aaron.ma@canonical.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, aaron.ma@canonical.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxOS0wMy0xMyA0OjQyIGEubS4sIFRvbWFzeiBGaWdhIHdyb3RlOgo+IE9uIFdlZCwgTWFy
-IDEzLCAyMDE5IGF0IDEyOjUyIEFNIEJvcmlzIEJyZXppbGxvbgo+IDxib3Jpcy5icmV6aWxsb25A
-Y29sbGFib3JhLmNvbT4gd3JvdGU6Cj4+Cj4+IE9uIFR1ZSwgMTIgTWFyIDIwMTkgMTI6MzQ6NDUg
-LTAzMDAKPj4gSGVsZW4gS29pa2UgPGhlbGVuLmtvaWtlQGNvbGxhYm9yYS5jb20+IHdyb3RlOgo+
-Pgo+Pj4gT24gMy8xMi8xOSAzOjM0IEFNLCBCb3JpcyBCcmV6aWxsb24gd3JvdGU6Cj4+Pj4gT24g
-TW9uLCAxMSBNYXIgMjAxOSAyMzoyMTo1OSAtMDMwMAo+Pj4+IEhlbGVuIEtvaWtlIDxoZWxlbi5r
-b2lrZUBjb2xsYWJvcmEuY29tPiB3cm90ZToKPj4+Pgo+Pj4+PiBJbiB0aGUgY2FzZSBvZiBhc3lu
-YyB1cGRhdGUsIG1vZGlmaWNhdGlvbnMgYXJlIGRvbmUgaW4gcGxhY2UsIGkuZS4gaW4gdGhlCj4+
-Pj4+IGN1cnJlbnQgcGxhbmUgc3RhdGUsIHNvIHRoZSBuZXdfc3RhdGUgaXMgcHJlcGFyZWQgYW5k
-IHRoZSBuZXdfc3RhdGUgaXMKPj4+Pj4gY2xlYW51cCB1cCAoaW5zdGVhZCBvZiB0aGUgb2xkX3N0
-YXRlLCBkaWZlcnJlbnRseSBvbiB3aGF0IGhhcHBlbiBpbiBhCj4+Pj4KPj4+PiAgIF4gY2xlYW5l
-ZCB1cCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4gZGlmZmVyZW50bHkgKGJ1dCBtYXli
-ZQo+Pj4+ICJ1bmxpa2Ugd2hhdCBoYXBwZW5zIiBpcyBtb3JlIGFwcHJvcHJpYXRlIGhlcmUpLgo+
-Pj4+Cj4+Pj4+IG5vcm1hbCBzeW5jIHVwZGF0ZSkuCj4+Pj4+IFRvIGNsZWFudXAgdGhlIG9sZF9m
-YiBwcm9wZXJseSwgaXQgbmVlZHMgdG8gYmUgcGxhY2VkIGluIHRoZSBuZXdfc3RhdGUKPj4+Pj4g
-aW4gdGhlIGVuZCBvZiBhc3luY191cGRhdGUsIHNvIGNsZWFudXAgY2FsbCB3aWxsIHVucmVmZXJl
-bmNlIHRoZSBvbGRfZmIKPj4+Pj4gY29ycmVjdGx5Lgo+Pj4+Pgo+Pj4+PiBBbHNvLCB0aGUgcHJl
-dmlvdXMgY29kZSBoYWQgYToKPj4+Pj4KPj4+Pj4gICAgcGxhbmVfc3RhdGUgPSBwbGFuZS0+ZnVu
-Y3MtPmF0b21pY19kdXBsaWNhdGVfc3RhdGUocGxhbmUpOwo+Pj4+PiAgICAuLi4KPj4+Pj4gICAg
-c3dhcChwbGFuZV9zdGF0ZSwgcGxhbmUtPnN0YXRlKTsKPj4+Pj4KPj4+Pj4gICAgaWYgKHBsYW5l
-LT5zdGF0ZS0+ZmIgJiYgcGxhbmUtPnN0YXRlLT5mYiAhPSBuZXdfc3RhdGUtPmZiKSB7Cj4+Pj4+
-ICAgIC4uLgo+Pj4+PiAgICB9Cj4+Pj4+Cj4+Pj4+IFdoaWNoIHdhcyB3cm9uZywgYXMgdGhlIGZi
-IHdlcmUganVzdCBhc3NpZ25lZCB0byBiZSBlcXVhbCwgc28gdGhpcyBpZgo+Pj4+PiBzdGF0ZW1l
-bnQgbmV2ZXJzIGV2YWx1YXRlcyB0byB0cnVlLgo+Pj4+Pgo+Pj4+PiBBbm90aGVyIGRldGFpbHMg
-aXMgdGhhdCB0aGUgZnVuY3Rpb24gZHJtX2NydGNfdmJsYW5rX2dldCgpIGNhbiBvbmx5IGJlCj4+
-Pj4+IGNhbGxlZCB3aGVuIHZvcC0+aXNfZW5hYmxlZCBpcyB0cnVlLCBvdGhlcndpc2UgaXQgaGFz
-IG5vIGVmZmVjdCBhbmQKPj4+Pj4gdHJvd3MgYSBXQVJOX09OKCkuCj4+Pj4+Cj4+Pj4+IENhbGxp
-bmcgZHJtX2F0b21pY19zZXRfZmJfZm9yX3BsYW5lKCkgKHdoaWNoIGdldCBhIHJlZmVyZW50IG9m
-IHRoZSBuZXcKPj4+Pj4gZmIgYW5kIHB1cyB0aGUgb2xkIGZiKSBpcyBub3QgcmVxdWlyZWQsIGFz
-IGl0IGlzIHRha2VuIGNhcmUgYnkKPj4+Pj4gZHJtX21vZGVfY3Vyc29yX3VuaXZlcnNhbCgpIHdo
-ZW4gY2FsbGluZwo+Pj4+PiBkcm1fYXRvbWljX2hlbHBlcl91cGRhdGVfcGxhbmUoKS4KPj4+Pj4K
-Pj4+Pj4gU2lnbmVkLW9mZi1ieTogSGVsZW4gS29pa2UgPGhlbGVuLmtvaWtlQGNvbGxhYm9yYS5j
-b20+Cj4+Pj4+Cj4+Pj4+IC0tLQo+Pj4+PiBIZWxsbywKPj4+Pj4KPj4+Pj4gSSB0ZXN0ZWQgb24g
-dGhlIHJvY2tjaGlwIGZpY3VzIHYxLjEgdXNpbmcgaWd0IHBsYW5lX2N1cnNvcl9sZWdhY3kgYW5k
-Cj4+Pj4+IGttc19jdXJzb3JfbGVnYWN5IGFuZCBJIGRpZG4ndCBzZWUgYW55IHJlZ3Jlc3Npb25z
-Lgo+Pj4+Pgo+Pj4+PiBDaGFuZ2VzIGluIHYyOiBOb25lCj4+Pj4+Cj4+Pj4+ICBkcml2ZXJzL2dw
-dS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX3ZvcC5jIHwgNDIgKysrKysrKysrKysrLS0tLS0t
-LS0tCj4+Pj4+ICAxIGZpbGUgY2hhbmdlZCwgMjQgaW5zZXJ0aW9ucygrKSwgMTggZGVsZXRpb25z
-KC0pCj4+Pj4+Cj4+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9j
-a2NoaXBfZHJtX3ZvcC5jIGIvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV92
-b3AuYwo+Pj4+PiBpbmRleCBjN2Q0YzYwNzNlYTUuLmExZWU4YzE1NmE3YiAxMDA2NDQKPj4+Pj4g
-LS0tIGEvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV92b3AuYwo+Pj4+PiAr
-KysgYi9kcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX3ZvcC5jCj4+Pj4+IEBA
-IC05MTIsMzAgKzkxMiwzMSBAQCBzdGF0aWMgdm9pZCB2b3BfcGxhbmVfYXRvbWljX2FzeW5jX3Vw
-ZGF0ZShzdHJ1Y3QgZHJtX3BsYW5lICpwbGFuZSwKPj4+Pj4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHN0cnVjdCBkcm1fcGxhbmVfc3RhdGUgKm5ld19zdGF0ZSkKPj4+Pj4g
-IHsKPj4+Pj4gICAgc3RydWN0IHZvcCAqdm9wID0gdG9fdm9wKHBsYW5lLT5zdGF0ZS0+Y3J0Yyk7
-Cj4+Pj4+IC0gIHN0cnVjdCBkcm1fcGxhbmVfc3RhdGUgKnBsYW5lX3N0YXRlOwo+Pj4+PiArICBz
-dHJ1Y3QgZHJtX2ZyYW1lYnVmZmVyICpvbGRfZmIgPSBwbGFuZS0+c3RhdGUtPmZiOwo+Pj4+Pgo+
-Pj4+PiAtICBwbGFuZV9zdGF0ZSA9IHBsYW5lLT5mdW5jcy0+YXRvbWljX2R1cGxpY2F0ZV9zdGF0
-ZShwbGFuZSk7Cj4+Pj4+IC0gIHBsYW5lX3N0YXRlLT5jcnRjX3ggPSBuZXdfc3RhdGUtPmNydGNf
-eDsKPj4+Pj4gLSAgcGxhbmVfc3RhdGUtPmNydGNfeSA9IG5ld19zdGF0ZS0+Y3J0Y195Owo+Pj4+
-PiAtICBwbGFuZV9zdGF0ZS0+Y3J0Y19oID0gbmV3X3N0YXRlLT5jcnRjX2g7Cj4+Pj4+IC0gIHBs
-YW5lX3N0YXRlLT5jcnRjX3cgPSBuZXdfc3RhdGUtPmNydGNfdzsKPj4+Pj4gLSAgcGxhbmVfc3Rh
-dGUtPnNyY194ID0gbmV3X3N0YXRlLT5zcmNfeDsKPj4+Pj4gLSAgcGxhbmVfc3RhdGUtPnNyY195
-ID0gbmV3X3N0YXRlLT5zcmNfeTsKPj4+Pj4gLSAgcGxhbmVfc3RhdGUtPnNyY19oID0gbmV3X3N0
-YXRlLT5zcmNfaDsKPj4+Pj4gLSAgcGxhbmVfc3RhdGUtPnNyY193ID0gbmV3X3N0YXRlLT5zcmNf
-dzsKPj4+Pj4gLQo+Pj4+PiAtICBpZiAocGxhbmVfc3RhdGUtPmZiICE9IG5ld19zdGF0ZS0+ZmIp
-Cj4+Pj4+IC0gICAgICAgICAgZHJtX2F0b21pY19zZXRfZmJfZm9yX3BsYW5lKHBsYW5lX3N0YXRl
-LCBuZXdfc3RhdGUtPmZiKTsKPj4+Pj4gLQo+Pj4+PiAtICBzd2FwKHBsYW5lX3N0YXRlLCBwbGFu
-ZS0+c3RhdGUpOwo+Pj4+PiAtCj4+Pj4+IC0gIGlmIChwbGFuZS0+c3RhdGUtPmZiICYmIHBsYW5l
-LT5zdGF0ZS0+ZmIgIT0gbmV3X3N0YXRlLT5mYikgewo+Pj4+PiArICAvKgo+Pj4+PiArICAgKiBB
-IHNjYW5vdXQgY2FuIHN0aWxsIGJlIG9jY3VycmluZywgc28gd2UgY2FuJ3QgZHJvcCB0aGUgcmVm
-ZXJlbmNlIHRvCj4+Pj4+ICsgICAqIHRoZSBvbGQgZnJhbWVidWZmZXIuIFRvIHNvbHZlIHRoaXMg
-d2UgZ2V0IGEgcmVmZXJlbmNlIHRvIG9sZF9mYiBhbmQKPj4+Pj4gKyAgICogc2V0IGEgd29ya2Vy
-IHRvIHJlbGVhc2UgaXQgbGF0ZXIuCj4+Pj4KPj4+PiBIbSwgZG9lc24ndCBsb29rIGxpa2UgYW4g
-YXN5bmMgdXBkYXRlIHRvIG1lIGlmIHdlIGhhdmUgdG8gd2FpdCBmb3IgdGhlCj4+Pj4gbmV4dCBW
-QkxBTksgdG8gaGFwcGVuIHRvIGdldCB0aGUgbmV3IGNvbnRlbnQgb24gdGhlIHNjcmVlbi4gTWF5
-YmUgd2UKPj4+PiBzaG91bGQgcmVqZWN0IGFzeW5jIHVwZGF0ZXMgd2hlbiBvbGRfZmIgIT0gbmV3
-X2ZiIGluIHRoZSByawo+Pj4+IC0+YXN5bmNfY2hlY2soKSBob29rLgo+Pj4KPj4+IFVubGVzcyBJ
-IGFtIG1pc3VuZGVyc3RhbmRpbmcgdGhpcywgd2UgZG9uJ3Qgd2FpdCBoZXJlLCB3ZSBqdXN0IGdy
-YWIgYQo+Pj4gcmVmZXJlbmNlIHRvIHRoZSBmYiBpbiBjYXNlIGl0IGlzIGJlaW5nIHN0aWxsIHVz
-ZWQgYnkgdGhlIGh3LCBzbyBpdAo+Pj4gZG9lc24ndCBnZXQgcmVsZWFzZWQgcHJlbWF0dXJlbHku
-Cj4+Cj4+IEkgd2FzIGp1c3QgcmVhY3RpbmcgdG8gdGhlIGNvbW1lbnQgdGhhdCBzYXlzIHRoZSBu
-ZXcgRkIgc2hvdWxkIHN0YXkKPj4gYXJvdW5kIHVudGlsIHRoZSBuZXh0IFZCTEFOSyBldmVudCBo
-YXBwZW5zLiBJZiB0aGUgRkIgbXVzdCBzdGF5IGFyb3VuZAo+PiB0aGF0IHByb2JhYmx5IG1lYW5z
-IHRoZSBIVyBpcyBzdGlsbCB1c2luZywgd2hpY2ggbWFkZSBtZSB3b25kZXIgaWYgdGhpcwo+PiBI
-VyBhY3R1YWxseSBzdXBwb3J0cyBhc3luYyB1cGRhdGUgKHdoZXJlIGFzeW5jIG1lYW5zICJ1cGRh
-dGUgbm93IGFuZAo+PiBkb24ndCBjYXJlIGFib3V0IGFib3V0IHRlYXJpbmciKS4gT3IgbWF5YmUg
-aXQgdGFrZXMgc29tZSB0aW1lIHRvIHN3aXRjaAo+PiB0byB0aGUgbmV3IEZCIGFuZCB3YWl0aW5n
-IGZvciB0aGUgbmV4dCBWQkxBTksgdG8gcmVsZWFzZSB0aGUgb2xkIEZCIHdhcwo+PiBhbiBlYXN5
-IHNvbHV0aW9uIHRvIG5vdCB3YWl0IGZvciB0aGUgZmxpcCB0byBhY3R1YWxseSBoYXBwZW4gaW4K
-Pj4gLT5hc3luY191cGRhdGUoKSAod2hpY2ggaXMga2luZCBvZiBhIGNvbWJpbmF0aW9uIG9mIGFz
-eW5jK25vbi1ibG9ja2luZykuCj4gCj4gVGhlIGhhcmR3YXJlIHN3aXRjaGVzIGZyYW1lYnVmZmVy
-cyBvbiB2YmxhbmssIHNvIHdoYXRldmVyIGZyYW1lYnVmZmVyCj4gaXMgY3VycmVudGx5IGJlaW5n
-IHNjYW5uZWQgb3V0IGZyb20gbmVlZHMgdG8gc3RheSB0aGVyZSB1bnRpbCB0aGUKPiBoYXJkd2Fy
-ZSBzd2l0Y2hlcyB0byB0aGUgbmV3IG9uZSBpbiBzaGFkb3cgcmVnaXN0ZXJzLiBJZiB0aGF0IGRv
-ZXNuJ3QKPiBoYXBwZW4sIHlvdSBnZXQgSU9NTVUgZmF1bHRzIGFuZCB0aGUgZGlzcGxheSBjb250
-cm9sbGVyIHN0b3BzIHdvcmtpbmcKPiBzaW5jZSB3ZSBkb24ndCBoYXZlIGFueSBmYXVsdCBoYW5k
-bGluZyBjdXJyZW50bHksIGp1c3QgcHJpbnRpbmcgYQo+IG1lc3NhZ2UuCgpTb3VuZHMgbGlrZSB5
-b3VyIGhhcmR3YXJlIGRvZXNuJ3QgYWN0dWFsbHkgc3VwcG9ydCBhc3luYyBmbGlwcy4gSXQncwpw
-cm9iYWJseSBiZXR0ZXIgZm9yIHRoZSBkcml2ZXIgbm90IHRvIHByZXRlbmQgb3RoZXJ3aXNlLgoK
-Ci0tIApFYXJ0aGxpbmcgTWljaGVsIETDpG56ZXIgICAgICAgICAgICAgICB8ICAgICAgICAgICAg
-ICBodHRwczovL3d3dy5hbWQuY29tCkxpYnJlIHNvZnR3YXJlIGVudGh1c2lhc3QgICAgICAgICAg
-ICAgfCAgICAgICAgICAgICBNZXNhIGFuZCBYIGRldmVsb3BlcgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1k
-ZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
-bWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWw=
+Add a non-NULL check to fix potential NULL pointer dereference
+Cleanup code to call function once.
+
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+ drivers/iommu/amd_iommu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 2a7b78bb98b4..dbda5b86f979 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -140,9 +140,14 @@ static inline int match_hid_uid(struct device *dev,
+ 				struct acpihid_map_entry *entry)
+ {
+ 	const char *hid, *uid;
++	struct acpi_device *adev = ACPI_COMPANION(dev);
+ 
+-	hid = acpi_device_hid(ACPI_COMPANION(dev));
+-	uid = acpi_device_uid(ACPI_COMPANION(dev));
++	if (!adev) {
++		return -ENODEV;
++	}
++
++	hid = acpi_device_hid(adev);
++	uid = acpi_device_uid(adev);
+ 
+ 	if (!hid || !(*hid))
+ 		return -ENODEV;
+-- 
+2.20.1
