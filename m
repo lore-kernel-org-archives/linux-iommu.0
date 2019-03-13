@@ -1,99 +1,139 @@
 From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH 02/13] driver core: Remove the link if there is no
- driver with AUTO flag
-Date: Wed, 13 Mar 2019 17:08:23 +0800
-Message-ID: <1552468103.7433.11.camel@mhfsdcap03>
+Subject: Re: [PATCH 04/13] iommu/mediatek: Add device_link between the
+ consumer and the larb devices
+Date: Wed, 13 Mar 2019 17:11:53 +0800
+Message-ID: <1552468313.7433.14.camel@mhfsdcap03>
 References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
-         <1546318276-18993-3-git-send-email-yong.wu@mediatek.com>
-         <CAE=gft7mWs1jc+KQQcPuuhcmxpFRnRBTt35+uC3F20N6R554bQ@mail.gmail.com>
-         <1551278000.17917.50.camel@mhfsdcap03>
-         <CAE=gft4iHRo8VQot26dH2NaRNLtxxRYWBmSpjkoL2BE_i6eXQw@mail.gmail.com>
-         <e15e94be-3eb9-dc7b-2073-4163f91f0259@gmail.com>
-         <CAE=gft47TODOqKUxCvd+kDKfGbkQC1OVBarb1MaU3KrptcXiNw@mail.gmail.com>
+         <1546318276-18993-5-git-send-email-yong.wu@mediatek.com>
+         <709d7d66-9610-eeb3-128e-e2156bcfb616@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAE=gft47TODOqKUxCvd+kDKfGbkQC1OVBarb1MaU3KrptcXiNw@mail.gmail.com>
+In-Reply-To: <709d7d66-9610-eeb3-128e-e2156bcfb616@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Evan Green <evgreen@chromium.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, youlin.pei@mediatek.com, devicetree@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>, arnd@arndb.de, srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2019-03-12 at 16:17 -0700, Evan Green wrote:
-> On Tue, Mar 12, 2019 at 7:21 AM Matthias Brugger <matthias.bgg@gmail.com> wrote:
-> >
-> >
-> >
-> > On 05/03/2019 20:03, Evan Green wrote:
-> > > On Wed, Feb 27, 2019 at 6:33 AM Yong Wu <yong.wu@mediatek.com> wrote:
-> > >>
-> > >> On Mon, 2019-02-25 at 15:53 -0800, Evan Green wrote:
-> > >>> On Mon, Dec 31, 2018 at 8:52 PM Yong Wu <yong.wu@mediatek.com> wrote:
-> > >>>>
-> > >>>> DL_FLAG_AUTOREMOVE_CONSUMER/SUPPLIER means "Remove the link
-> > >>>> automatically on consumer/supplier driver unbind", that means we should
-> > >>>> remove whole the device_link when there is no this driver no matter what
-> > >>>> the ref_count of the link is.
-> > >>>>
-> > >>>> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > >>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > >>>> ---
-> > >>>> The ref_count of our device_link normally is over 1. When the consumer
-> > >>>> device driver is removed, whole the device_link should be removed.
-> > >>>> Thus, I add this patch.
-> > >>>> ---
-> > >>>
-> > >>> I will admit to reading about device links for the first time while
-> > >>> reviewing this patch, but I don't really get this. Why use a kref at
-> > >>> all if we're just going to ignore its value? For instance, I see that
-> > >>> if you call device_link_add() with the same supplier and consumer, it
-> > >>> uses the kref to return the same link. That machinery is broken with
-> > >>> your change. Although I don't see any uses of it, you might also
-> > >>> expect a supplier or consumer could do a kref_get() on the link it got
-> > >>> back from device_link_add(), and have a reasonable expectation that
-> > >>> the link wouldn't be freed out from under it. This would also be
-> > >>> broken.
-> > >>>
-> > >>> Can you explain why your device_links normally have a reference count
-> > >>>> 1,
-> > >>
-> > >> I use device link between the smi-larb device and the iommu-consumer
-> > >> device. Take a example, smi-larb1 have 4 VDEC ports. From 4/13 in this
-> > >> patchset, we use device_link to link the VDEC device and the smi-larb1
-> > >> device in the function(mtk_iommu_config). since there are 4 ports, it
-> > >> will call device_link_add 4 times.
-> > >>
-> > >>>
-> > >>> and why those additional references can't be cleaned up in an
-> > >>> orderly fashion?
-> > >>
-> > >> If the iommu-consume device(like VDEC above) is removed, It should enter
-> > >> device_links_driver_cleanup which only ref_put one time. I guess whole
-> > >> the link should be removed at that time.
-> > >
-> > > It seems like Robin had some suggestions about using
-> > > mtk_iommu_add_device() rather than the attach_dev() to set the links
-> > > up, and then track them for removal in the corresponding
-> > > remove_device() callback. Then you wouldn't need this change, right?
+Hi Robin,
 
-Hi Evan,  sorry for reply you so late. I have not got time to try
-this(Put it in the add_device), But I guess it works.
-At that time the ref_cnt here should be 1, then this patch is
-unnecessary.
+sorry for reply so late.
 
-> > >
-> >
-> > FYI, Evan the patch is queued for v5.1-rc1 as
-> > 0fe6f7874d46 ("driver core: Remove the link if there is no driver with AUTO flag")
-> >
-> > So if you think there is something wrong with it, then please provide a fix or
-> > raise awareness :)
+On Wed, 2019-02-27 at 19:30 +0000, Robin Murphy wrote:
+> On 01/01/2019 04:51, Yong Wu wrote:
+> > MediaTek IOMMU don't have its power-domain. all the consumer connect
+> > with smi-larb, then connect with smi-common.
+> > 
+> >          M4U
+> >           |
+> >      smi-common
+> >           |
+> >    -------------
+> >    |         |    ...
+> >    |         |
+> > larb1     larb2
+> >    |         |
+> > vdec       venc
+> > 
+> > When the consumer works, it should enable the smi-larb's power which
+> > also need enable the smi-common's power firstly.
+> > 
+> > Thus, First of all, use the device link connect the consumer and the
+> > smi-larbs. then add device link between the smi-larb and smi-common.
+> > 
+> > This patch adds device_link between the consumer and the larbs.
+> > 
+> > Suggested-by: Tomasz Figa <tfiga@chromium.org>
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c    | 15 +++++++++++++--
+> >   drivers/iommu/mtk_iommu_v1.c | 14 ++++++++++++--
+> >   2 files changed, 25 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 202e41b..735ae8d 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -247,6 +247,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+> >   	struct mtk_smi_larb_iommu    *larb_mmu;
+> >   	unsigned int                 larbid, portid;
+> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> > +	struct device_link *link;
+> >   	int i;
+> >   
+> >   	for (i = 0; i < fwspec->num_ids; ++i) {
+> > @@ -257,10 +258,20 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+> >   		dev_dbg(dev, "%s iommu port: %d\n",
+> >   			enable ? "enable" : "disable", portid);
+> >   
+> > -		if (enable)
+> > +		if (enable) {
+> >   			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+> > -		else
+> > +			/* Link the consumer with the larb device(supplier) */
+> > +			link = device_link_add(dev, larb_mmu->dev,
+> > +					       DL_FLAG_PM_RUNTIME |
+> > +					       DL_FLAG_AUTOREMOVE_CONSUMER);
 > 
-> Oh. Thanks for the heads-up Matthias. It's pretty weird that we have
-> the kref there whose count we just completely ignore. I'll try to find
-> some time to submit a patch.
+> This looks technically wrong, since we get here from 
+> mtk_iommu_attach_device(), and in theory a device could get attached to 
+> any number of domains over its lifetime, so adding a link at this point 
+> when there's no corresponding cleanup on detach is definitely 
+> unbalanced. If you want this layer to manage the link on behalf of the 
+> consumer, it would probably be better to do it at the point of 
+> mtk_iommu_add_device(), and either track it for manual cleanup in 
+> mtk_iommu_remove_device() or rely on AUTOREMOVE_SUPPLIER.
 
-Thanks very much if you improve this.
+Thanks. I will try to move the "device_link_add" in add_device in next
+version.
 
-> -Evan
+> 
+> Robin.
+> 
+> > +			if (!link) {
+> > +				dev_err(dev, "Unable to link %s\n",
+> > +					dev_name(larb_mmu->dev));
+> > +				return;
+> > +			}
+> > +		} else {
+> >   			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+> > +		}
+> >   	}
+> >   }
+> >   
+> > diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> > index 9386aee..022bad9 100644
+> > --- a/drivers/iommu/mtk_iommu_v1.c
+> > +++ b/drivers/iommu/mtk_iommu_v1.c
+> > @@ -201,6 +201,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+> >   	struct mtk_smi_larb_iommu    *larb_mmu;
+> >   	unsigned int                 larbid, portid;
+> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> > +	struct device_link *link;
+> >   	int i;
+> >   
+> >   	for (i = 0; i < fwspec->num_ids; ++i) {
+> > @@ -211,10 +212,19 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
+> >   		dev_dbg(dev, "%s iommu port: %d\n",
+> >   			enable ? "enable" : "disable", portid);
+> >   
+> > -		if (enable)
+> > +		if (enable) {
+> >   			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+> > -		else
+> > +			link = device_link_add(dev, larb_mmu->dev,
+> > +					       DL_FLAG_PM_RUNTIME |
+> > +					       DL_FLAG_AUTOREMOVE_CONSUMER);
+> > +			if (!link) {
+> > +				dev_err(dev, "Unable to link %s\n",
+> > +					dev_name(larb_mmu->dev));
+> > +				return;
+> > +			}
+> > +		} else {
+> >   			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+> > +		}
+> >   	}
+> >   }
+> >   
+> > 
