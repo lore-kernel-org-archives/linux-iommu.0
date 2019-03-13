@@ -1,65 +1,98 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v1 4/9] iommu/vt-d: Add bounce buffer API for domain
-	map/unmap
-Date: Wed, 13 Mar 2019 10:31:52 +0800
-Message-ID: <c9fe7879-569e-b4f4-d6ec-47ab7e6fd443@linux.intel.com>
-References: <20190312060005.12189-1-baolu.lu@linux.intel.com>
-	<20190312060005.12189-5-baolu.lu@linux.intel.com>
-	<20190312163845.GA13141@infradead.org>
-	<e653341d-e001-7262-740b-2262842be06d@linux.intel.com>
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: [PATCH v2] iommu/amd: fix sg->dma_address for sg->offset bigger than
+ PAGE_SIZE
+Date: Wed, 13 Mar 2019 10:03:17 +0100
+Message-ID: <20190313090316.GA2663@redhat.com>
+References: <20190228104223.GA2749@redhat.com>
+ <20190228121948.GD6072@redhat.com>
+ <20190228134029.GC1594@8bytes.org>
+ <20190304071037.GA2787@redhat.com>
+ <CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw@mail.gmail.com>
+ <20190311084319.GA3310@redhat.com>
+ <20190311090314.GB3310@redhat.com>
+ <e0630ae9d9bee73d8a1ce3499ea9f77900e9cdfa.camel@linux.intel.com>
+ <20190312070832.GA2483@redhat.com>
+ <67c062b183fbd5651a9aa990e677d31673ff7580.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e653341d-e001-7262-740b-2262842be06d-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <67c062b183fbd5651a9aa990e677d31673ff7580.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexander Duyck <alexander.h.duyck@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Rosen Penev <rosenp@gmail.com>, Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, jan.viktorin@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi again,
 
-On 3/13/19 10:04 AM, Lu Baolu wrote:
-> Hi,
-> 
-> On 3/13/19 12:38 AM, Christoph Hellwig wrote:
->> On Tue, Mar 12, 2019 at 02:00:00PM +0800, Lu Baolu wrote:
->>> This adds the APIs for bounce buffer specified domain
->>> map() and unmap(). The start and end partial pages will
->>> be mapped with bounce buffered pages instead. This will
->>> enhance the security of DMA buffer by isolating the DMA
->>> attacks from malicious devices.
->>
->> Please reuse the swiotlb code instead of reinventing it.
->>
+Take into account that sg->offset can be bigger than PAGE_SIZE when
+setting segment sg->dma_address. Otherwise sg->dma_address will point
+at diffrent page, what makes DMA not possible with erros like this:
 
-Just looked into the code again. At least we could reuse below
-functions:
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa70c0 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7040 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7080 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7100 flags=0x0020]
+xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7000 flags=0x0020]
 
-swiotlb_tbl_map_single()
-swiotlb_tbl_unmap_single()
-swiotlb_tbl_sync_single()
+Additinally with wrong sg->dma_address unmap_sg will free wrong pages,
+what what can cause crashes like this:
 
-Anything else?
+Feb 28 19:27:45 kernel: BUG: Bad page state in process cinnamon  pfn:39e8b1
+Feb 28 19:27:45 kernel: Disabling lock debugging due to kernel taint
+Feb 28 19:27:45 kernel: flags: 0x2ffff0000000000()
+Feb 28 19:27:45 kernel: raw: 02ffff0000000000 0000000000000000 ffffffff00000301 0000000000000000
+Feb 28 19:27:45 kernel: raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
+Feb 28 19:27:45 kernel: page dumped because: nonzero _refcount
+Feb 28 19:27:45 kernel: Modules linked in: ccm fuse arc4 nct6775 hwmon_vid amdgpu nls_iso8859_1 nls_cp437 edac_mce_amd vfat fat kvm_amd ccp rng_core kvm mt76x0u mt76x0_common mt76x02_usb irqbypass mt76_usb mt76x02_lib mt76 crct10dif_pclmul crc32_pclmul chash mac80211 amd_iommu_v2 ghash_clmulni_intel gpu_sched i2c_algo_bit ttm wmi_bmof snd_hda_codec_realtek snd_hda_codec_generic drm_kms_helper snd_hda_codec_hdmi snd_hda_intel drm snd_hda_codec aesni_intel snd_hda_core snd_hwdep aes_x86_64 crypto_simd snd_pcm cfg80211 cryptd mousedev snd_timer glue_helper pcspkr r8169 input_leds realtek agpgart libphy rfkill snd syscopyarea sysfillrect sysimgblt fb_sys_fops soundcore sp5100_tco k10temp i2c_piix4 wmi evdev gpio_amdpt pinctrl_amd mac_hid pcc_cpufreq acpi_cpufreq sg ip_tables x_tables ext4(E) c
+ rc32c_generic(E) crc16(E) mbcache(E) jbd2(E) fscrypto(E) sd_mod(E) hid_generic(E) usbhid(E) hid(E) dm_mod(E) serio_raw(E) atkbd(E) libps2(E) crc32c_intel(E) ahci(E) libahci(E) libata(E) xhci_pci(E) xhci_hcd(E)
+Feb 28 19:27:45 kernel:  scsi_mod(E) i8042(E) serio(E) bcache(E) crc64(E)
+Feb 28 19:27:45 kernel: CPU: 2 PID: 896 Comm: cinnamon Tainted: G    B   W   E     4.20.12-arch1-1-custom #1
+Feb 28 19:27:45 kernel: Hardware name: To Be Filled By O.E.M. To Be Filled By O.E.M./B450M Pro4, BIOS P1.20 06/26/2018
+Feb 28 19:27:45 kernel: Call Trace:
+Feb 28 19:27:45 kernel:  dump_stack+0x5c/0x80
+Feb 28 19:27:45 kernel:  bad_page.cold.29+0x7f/0xb2
+Feb 28 19:27:45 kernel:  __free_pages_ok+0x2c0/0x2d0
+Feb 28 19:27:45 kernel:  skb_release_data+0x96/0x180
+Feb 28 19:27:45 kernel:  __kfree_skb+0xe/0x20
+Feb 28 19:27:45 kernel:  tcp_recvmsg+0x894/0xc60
+Feb 28 19:27:45 kernel:  ? reuse_swap_page+0x120/0x340
+Feb 28 19:27:45 kernel:  ? ptep_set_access_flags+0x23/0x30
+Feb 28 19:27:45 kernel:  inet_recvmsg+0x5b/0x100
+Feb 28 19:27:45 kernel:  __sys_recvfrom+0xc3/0x180
+Feb 28 19:27:45 kernel:  ? handle_mm_fault+0x10a/0x250
+Feb 28 19:27:45 kernel:  ? syscall_trace_enter+0x1d3/0x2d0
+Feb 28 19:27:45 kernel:  ? __audit_syscall_exit+0x22a/0x290
+Feb 28 19:27:45 kernel:  __x64_sys_recvfrom+0x24/0x30
+Feb 28 19:27:45 kernel:  do_syscall_64+0x5b/0x170
+Feb 28 19:27:45 kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Best regards,
-Lu Baolu
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: Jan Viktorin <jan.viktorin@gmail.com>
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+v2: add comment 
 
-> 
-> I don't think we are doing the same thing as swiotlb here. But it's
-> always a good thing to reuse code if possible. I considered this when
-> writing this code, but I found it's hard to do. Do you mind pointing
-> me to the code which I could reuse?
-> 
-> Best regards,
-> Lu Baolu
-> 
+ drivers/iommu/amd_iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 6b0760dafb3e..696c78225dd1 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2604,7 +2604,11 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 	/* Everything is mapped - write the right values into s->dma_address */
+ 	for_each_sg(sglist, s, nelems, i) {
+-		s->dma_address += address + s->offset;
++		/* Add in the remaining piece of the scatter-gather offset that
++		 * was masked out when we were determining the physical address
++		 * via (sg_phys(s) & PAGE_MASK) earlier.
++		 */
++		s->dma_address += address + (s->offset & ~PAGE_MASK);
+ 		s->dma_length   = s->length;
+ 	}
+ 
+-- 
+2.7.5
