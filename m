@@ -1,139 +1,164 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH 04/13] iommu/mediatek: Add device_link between the
- consumer and the larb devices
-Date: Wed, 13 Mar 2019 17:11:53 +0800
-Message-ID: <1552468313.7433.14.camel@mhfsdcap03>
-References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
-         <1546318276-18993-5-git-send-email-yong.wu@mediatek.com>
-         <709d7d66-9610-eeb3-128e-e2156bcfb616@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v6 12/22] memory: mtk-smi: Add gals support
+Date: Wed, 13 Mar 2019 17:25:07 +0800
+Message-ID: <1552469107.7433.21.camel@mhfsdcap03>
+References: <1550394300-17420-1-git-send-email-yong.wu@mediatek.com>
+	<1550394300-17420-13-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <709d7d66-9610-eeb3-128e-e2156bcfb616@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, youlin.pei@mediatek.com, devicetree@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>, arnd@arndb.de, srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1550394300-17420-13-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, anan.sun-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Matthias Kaehlcke <mka-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Matthias,
 
-sorry for reply so late.
+A gentle ping for all the smi part here.
+>From Joerg, your review is expected before he apply.
 
-On Wed, 2019-02-27 at 19:30 +0000, Robin Murphy wrote:
-> On 01/01/2019 04:51, Yong Wu wrote:
-> > MediaTek IOMMU don't have its power-domain. all the consumer connect
-> > with smi-larb, then connect with smi-common.
-> > 
-> >          M4U
-> >           |
-> >      smi-common
-> >           |
-> >    -------------
-> >    |         |    ...
-> >    |         |
-> > larb1     larb2
-> >    |         |
-> > vdec       venc
-> > 
-> > When the consumer works, it should enable the smi-larb's power which
-> > also need enable the smi-common's power firstly.
-> > 
-> > Thus, First of all, use the device link connect the consumer and the
-> > smi-larbs. then add device link between the smi-larb and smi-common.
-> > 
-> > This patch adds device_link between the consumer and the larbs.
-> > 
-> > Suggested-by: Tomasz Figa <tfiga@chromium.org>
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ---
-> >   drivers/iommu/mtk_iommu.c    | 15 +++++++++++++--
-> >   drivers/iommu/mtk_iommu_v1.c | 14 ++++++++++++--
-> >   2 files changed, 25 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 202e41b..735ae8d 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -247,6 +247,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
-> >   	struct mtk_smi_larb_iommu    *larb_mmu;
-> >   	unsigned int                 larbid, portid;
-> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +	struct device_link *link;
-> >   	int i;
-> >   
-> >   	for (i = 0; i < fwspec->num_ids; ++i) {
-> > @@ -257,10 +258,20 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
-> >   		dev_dbg(dev, "%s iommu port: %d\n",
-> >   			enable ? "enable" : "disable", portid);
-> >   
-> > -		if (enable)
-> > +		if (enable) {
-> >   			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
-> > -		else
-> > +			/* Link the consumer with the larb device(supplier) */
-> > +			link = device_link_add(dev, larb_mmu->dev,
-> > +					       DL_FLAG_PM_RUNTIME |
-> > +					       DL_FLAG_AUTOREMOVE_CONSUMER);
+Thanks in advance.
+
+On Sun, 2019-02-17 at 17:04 +0800, Yong Wu wrote:
+> In some SoCs like mt8183, SMI add GALS(Global Async Local Sync) module
+> which can help synchronize for the modules in different clock frequency.
+> It can be seen as a "asynchronous fifo". This is a example diagram:
 > 
-> This looks technically wrong, since we get here from 
-> mtk_iommu_attach_device(), and in theory a device could get attached to 
-> any number of domains over its lifetime, so adding a link at this point 
-> when there's no corresponding cleanup on detach is definitely 
-> unbalanced. If you want this layer to manage the link on behalf of the 
-> consumer, it would probably be better to do it at the point of 
-> mtk_iommu_add_device(), and either track it for manual cleanup in 
-> mtk_iommu_remove_device() or rely on AUTOREMOVE_SUPPLIER.
-
-Thanks. I will try to move the "device_link_add" in add_device in next
-version.
-
+>             M4U
+>              |
+>          ----------
+>          |        |
+>      gals0-rx   gals1-rx
+>          |        |
+>          |        |
+>      gals0-tx   gals1-tx
+>          |        |
+>         ------------
+>          SMI Common
+>         ------------
+>              |
+>   +-----+--------+-----+- ...
+>   |     |        |     |
+>   |  gals-rx  gals-rx  |
+>   |     |        |     |
+>   |     |        |     |
+>   |  gals-tx  gals-tx  |
+>   |     |        |     |
+> larb1 larb2   larb3  larb4
 > 
-> Robin.
+> GALS only help transfer the command/data while it doesn't have the
+> configuring register, thus it has the special "smi" clock and doesn't
+> have the "apb" clock. From the diagram above, we add "gals0" and
+> "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
 > 
-> > +			if (!link) {
-> > +				dev_err(dev, "Unable to link %s\n",
-> > +					dev_name(larb_mmu->dev));
-> > +				return;
-> > +			}
-> > +		} else {
-> >   			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
-> > +		}
-> >   	}
-> >   }
-> >   
-> > diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> > index 9386aee..022bad9 100644
-> > --- a/drivers/iommu/mtk_iommu_v1.c
-> > +++ b/drivers/iommu/mtk_iommu_v1.c
-> > @@ -201,6 +201,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
-> >   	struct mtk_smi_larb_iommu    *larb_mmu;
-> >   	unsigned int                 larbid, portid;
-> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +	struct device_link *link;
-> >   	int i;
-> >   
-> >   	for (i = 0; i < fwspec->num_ids; ++i) {
-> > @@ -211,10 +212,19 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
-> >   		dev_dbg(dev, "%s iommu port: %d\n",
-> >   			enable ? "enable" : "disable", portid);
-> >   
-> > -		if (enable)
-> > +		if (enable) {
-> >   			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
-> > -		else
-> > +			link = device_link_add(dev, larb_mmu->dev,
-> > +					       DL_FLAG_PM_RUNTIME |
-> > +					       DL_FLAG_AUTOREMOVE_CONSUMER);
-> > +			if (!link) {
-> > +				dev_err(dev, "Unable to link %s\n",
-> > +					dev_name(larb_mmu->dev));
-> > +				return;
-> > +			}
-> > +		} else {
-> >   			larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
-> > +		}
-> >   	}
-> >   }
-> >   
-> > 
+> This patch adds gals clock supporting in the SMI. Note that some larbs
+> may still don't have the "gals" clock like larb1 and larb4 above.
+> 
+> This is also a preparing patch for mt8183 which has GALS.
+> 
+> CC: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> ---
+>  drivers/memory/mtk-smi.c | 36 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+> 
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 8a2f968..91634d7 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -56,6 +56,7 @@ enum mtk_smi_gen {
+>  
+>  struct mtk_smi_common_plat {
+>  	enum mtk_smi_gen gen;
+> +	bool             has_gals;
+>  };
+>  
+>  struct mtk_smi_larb_gen {
+> @@ -63,11 +64,13 @@ struct mtk_smi_larb_gen {
+>  	int port_in_larb[MTK_LARB_NR_MAX + 1];
+>  	void (*config_port)(struct device *);
+>  	unsigned int larb_direct_to_common_mask;
+> +	bool             has_gals;
+>  };
+>  
+>  struct mtk_smi {
+>  	struct device			*dev;
+>  	struct clk			*clk_apb, *clk_smi;
+> +	struct clk			*clk_gals0, *clk_gals1;
+>  	struct clk			*clk_async; /*only needed by mt2701*/
+>  	void __iomem			*smi_ao_base;
+>  
+> @@ -99,8 +102,20 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+>  	if (ret)
+>  		goto err_disable_apb;
+>  
+> +	ret = clk_prepare_enable(smi->clk_gals0);
+> +	if (ret)
+> +		goto err_disable_smi;
+> +
+> +	ret = clk_prepare_enable(smi->clk_gals1);
+> +	if (ret)
+> +		goto err_disable_gals0;
+> +
+>  	return 0;
+>  
+> +err_disable_gals0:
+> +	clk_disable_unprepare(smi->clk_gals0);
+> +err_disable_smi:
+> +	clk_disable_unprepare(smi->clk_smi);
+>  err_disable_apb:
+>  	clk_disable_unprepare(smi->clk_apb);
+>  err_put_pm:
+> @@ -110,6 +125,8 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+>  
+>  static void mtk_smi_disable(const struct mtk_smi *smi)
+>  {
+> +	clk_disable_unprepare(smi->clk_gals1);
+> +	clk_disable_unprepare(smi->clk_gals0);
+>  	clk_disable_unprepare(smi->clk_smi);
+>  	clk_disable_unprepare(smi->clk_apb);
+>  	pm_runtime_put_sync(smi->dev);
+> @@ -310,6 +327,15 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  	larb->smi.clk_smi = devm_clk_get(dev, "smi");
+>  	if (IS_ERR(larb->smi.clk_smi))
+>  		return PTR_ERR(larb->smi.clk_smi);
+> +
+> +	if (larb->larb_gen->has_gals) {
+> +		/* The larbs may still haven't gals even if the SoC support.*/
+> +		larb->smi.clk_gals0 = devm_clk_get(dev, "gals");
+> +		if (PTR_ERR(larb->smi.clk_gals0) == -ENOENT)
+> +			larb->smi.clk_gals0 = NULL;
+> +		else if (IS_ERR(larb->smi.clk_gals0))
+> +			return PTR_ERR(larb->smi.clk_gals0);
+> +	}
+>  	larb->smi.dev = dev;
+>  
+>  	if (larb->larb_gen->need_larbid) {
+> @@ -402,6 +428,16 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>  	if (IS_ERR(common->clk_smi))
+>  		return PTR_ERR(common->clk_smi);
+>  
+> +	if (common->plat->has_gals) {
+> +		common->clk_gals0 = devm_clk_get(dev, "gals0");
+> +		if (IS_ERR(common->clk_gals0))
+> +			return PTR_ERR(common->clk_gals0);
+> +
+> +		common->clk_gals1 = devm_clk_get(dev, "gals1");
+> +		if (IS_ERR(common->clk_gals1))
+> +			return PTR_ERR(common->clk_gals1);
+> +	}
+> +
+>  	/*
+>  	 * for mtk smi gen 1, we need to get the ao(always on) base to config
+>  	 * m4u port, and we need to enable the aync clock for transform the smi
