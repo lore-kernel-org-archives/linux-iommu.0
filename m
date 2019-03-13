@@ -1,98 +1,99 @@
-From: Stanislaw Gruszka <sgruszka@redhat.com>
-Subject: [PATCH v2] iommu/amd: fix sg->dma_address for sg->offset bigger than
- PAGE_SIZE
-Date: Wed, 13 Mar 2019 10:03:17 +0100
-Message-ID: <20190313090316.GA2663@redhat.com>
-References: <20190228104223.GA2749@redhat.com>
- <20190228121948.GD6072@redhat.com>
- <20190228134029.GC1594@8bytes.org>
- <20190304071037.GA2787@redhat.com>
- <CAKxU2N-k-9DCYBv6W3CohL963dr3AeY3VHyt8FrUuo=BfacDsw@mail.gmail.com>
- <20190311084319.GA3310@redhat.com>
- <20190311090314.GB3310@redhat.com>
- <e0630ae9d9bee73d8a1ce3499ea9f77900e9cdfa.camel@linux.intel.com>
- <20190312070832.GA2483@redhat.com>
- <67c062b183fbd5651a9aa990e677d31673ff7580.camel@linux.intel.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH 02/13] driver core: Remove the link if there is no
+ driver with AUTO flag
+Date: Wed, 13 Mar 2019 17:08:23 +0800
+Message-ID: <1552468103.7433.11.camel@mhfsdcap03>
+References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
+         <1546318276-18993-3-git-send-email-yong.wu@mediatek.com>
+         <CAE=gft7mWs1jc+KQQcPuuhcmxpFRnRBTt35+uC3F20N6R554bQ@mail.gmail.com>
+         <1551278000.17917.50.camel@mhfsdcap03>
+         <CAE=gft4iHRo8VQot26dH2NaRNLtxxRYWBmSpjkoL2BE_i6eXQw@mail.gmail.com>
+         <e15e94be-3eb9-dc7b-2073-4163f91f0259@gmail.com>
+         <CAE=gft47TODOqKUxCvd+kDKfGbkQC1OVBarb1MaU3KrptcXiNw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <67c062b183fbd5651a9aa990e677d31673ff7580.camel@linux.intel.com>
+In-Reply-To: <CAE=gft47TODOqKUxCvd+kDKfGbkQC1OVBarb1MaU3KrptcXiNw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexander Duyck <alexander.h.duyck@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Rosen Penev <rosenp@gmail.com>, Lorenzo Bianconi <lorenzo.bianconi@redhat.com>, linux-wireless <linux-wireless@vger.kernel.org>, Samuel Sieb <samuel@sieb.net>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, jan.viktorin@gmail.com
+To: Evan Green <evgreen@chromium.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, 2019-03-12 at 16:17 -0700, Evan Green wrote:
+> On Tue, Mar 12, 2019 at 7:21 AM Matthias Brugger <matthias.bgg@gmail.com> wrote:
+> >
+> >
+> >
+> > On 05/03/2019 20:03, Evan Green wrote:
+> > > On Wed, Feb 27, 2019 at 6:33 AM Yong Wu <yong.wu@mediatek.com> wrote:
+> > >>
+> > >> On Mon, 2019-02-25 at 15:53 -0800, Evan Green wrote:
+> > >>> On Mon, Dec 31, 2018 at 8:52 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> > >>>>
+> > >>>> DL_FLAG_AUTOREMOVE_CONSUMER/SUPPLIER means "Remove the link
+> > >>>> automatically on consumer/supplier driver unbind", that means we should
+> > >>>> remove whole the device_link when there is no this driver no matter what
+> > >>>> the ref_count of the link is.
+> > >>>>
+> > >>>> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > >>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > >>>> ---
+> > >>>> The ref_count of our device_link normally is over 1. When the consumer
+> > >>>> device driver is removed, whole the device_link should be removed.
+> > >>>> Thus, I add this patch.
+> > >>>> ---
+> > >>>
+> > >>> I will admit to reading about device links for the first time while
+> > >>> reviewing this patch, but I don't really get this. Why use a kref at
+> > >>> all if we're just going to ignore its value? For instance, I see that
+> > >>> if you call device_link_add() with the same supplier and consumer, it
+> > >>> uses the kref to return the same link. That machinery is broken with
+> > >>> your change. Although I don't see any uses of it, you might also
+> > >>> expect a supplier or consumer could do a kref_get() on the link it got
+> > >>> back from device_link_add(), and have a reasonable expectation that
+> > >>> the link wouldn't be freed out from under it. This would also be
+> > >>> broken.
+> > >>>
+> > >>> Can you explain why your device_links normally have a reference count
+> > >>>> 1,
+> > >>
+> > >> I use device link between the smi-larb device and the iommu-consumer
+> > >> device. Take a example, smi-larb1 have 4 VDEC ports. From 4/13 in this
+> > >> patchset, we use device_link to link the VDEC device and the smi-larb1
+> > >> device in the function(mtk_iommu_config). since there are 4 ports, it
+> > >> will call device_link_add 4 times.
+> > >>
+> > >>>
+> > >>> and why those additional references can't be cleaned up in an
+> > >>> orderly fashion?
+> > >>
+> > >> If the iommu-consume device(like VDEC above) is removed, It should enter
+> > >> device_links_driver_cleanup which only ref_put one time. I guess whole
+> > >> the link should be removed at that time.
+> > >
+> > > It seems like Robin had some suggestions about using
+> > > mtk_iommu_add_device() rather than the attach_dev() to set the links
+> > > up, and then track them for removal in the corresponding
+> > > remove_device() callback. Then you wouldn't need this change, right?
 
-Take into account that sg->offset can be bigger than PAGE_SIZE when
-setting segment sg->dma_address. Otherwise sg->dma_address will point
-at diffrent page, what makes DMA not possible with erros like this:
+Hi Evan,  sorry for reply you so late. I have not got time to try
+this(Put it in the add_device), But I guess it works.
+At that time the ref_cnt here should be 1, then this patch is
+unnecessary.
 
-xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa70c0 flags=0x0020]
-xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7040 flags=0x0020]
-xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7080 flags=0x0020]
-xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7100 flags=0x0020]
-xhci_hcd 0000:38:00.3: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000 address=0x00000000fdaa7000 flags=0x0020]
+> > >
+> >
+> > FYI, Evan the patch is queued for v5.1-rc1 as
+> > 0fe6f7874d46 ("driver core: Remove the link if there is no driver with AUTO flag")
+> >
+> > So if you think there is something wrong with it, then please provide a fix or
+> > raise awareness :)
+> 
+> Oh. Thanks for the heads-up Matthias. It's pretty weird that we have
+> the kref there whose count we just completely ignore. I'll try to find
+> some time to submit a patch.
 
-Additinally with wrong sg->dma_address unmap_sg will free wrong pages,
-what what can cause crashes like this:
+Thanks very much if you improve this.
 
-Feb 28 19:27:45 kernel: BUG: Bad page state in process cinnamon  pfn:39e8b1
-Feb 28 19:27:45 kernel: Disabling lock debugging due to kernel taint
-Feb 28 19:27:45 kernel: flags: 0x2ffff0000000000()
-Feb 28 19:27:45 kernel: raw: 02ffff0000000000 0000000000000000 ffffffff00000301 0000000000000000
-Feb 28 19:27:45 kernel: raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
-Feb 28 19:27:45 kernel: page dumped because: nonzero _refcount
-Feb 28 19:27:45 kernel: Modules linked in: ccm fuse arc4 nct6775 hwmon_vid amdgpu nls_iso8859_1 nls_cp437 edac_mce_amd vfat fat kvm_amd ccp rng_core kvm mt76x0u mt76x0_common mt76x02_usb irqbypass mt76_usb mt76x02_lib mt76 crct10dif_pclmul crc32_pclmul chash mac80211 amd_iommu_v2 ghash_clmulni_intel gpu_sched i2c_algo_bit ttm wmi_bmof snd_hda_codec_realtek snd_hda_codec_generic drm_kms_helper snd_hda_codec_hdmi snd_hda_intel drm snd_hda_codec aesni_intel snd_hda_core snd_hwdep aes_x86_64 crypto_simd snd_pcm cfg80211 cryptd mousedev snd_timer glue_helper pcspkr r8169 input_leds realtek agpgart libphy rfkill snd syscopyarea sysfillrect sysimgblt fb_sys_fops soundcore sp5100_tco k10temp i2c_piix4 wmi evdev gpio_amdpt pinctrl_amd mac_hid pcc_cpufreq acpi_cpufreq sg ip_tables x_tables ext4(E) c
- rc32c_generic(E) crc16(E) mbcache(E) jbd2(E) fscrypto(E) sd_mod(E) hid_generic(E) usbhid(E) hid(E) dm_mod(E) serio_raw(E) atkbd(E) libps2(E) crc32c_intel(E) ahci(E) libahci(E) libata(E) xhci_pci(E) xhci_hcd(E)
-Feb 28 19:27:45 kernel:  scsi_mod(E) i8042(E) serio(E) bcache(E) crc64(E)
-Feb 28 19:27:45 kernel: CPU: 2 PID: 896 Comm: cinnamon Tainted: G    B   W   E     4.20.12-arch1-1-custom #1
-Feb 28 19:27:45 kernel: Hardware name: To Be Filled By O.E.M. To Be Filled By O.E.M./B450M Pro4, BIOS P1.20 06/26/2018
-Feb 28 19:27:45 kernel: Call Trace:
-Feb 28 19:27:45 kernel:  dump_stack+0x5c/0x80
-Feb 28 19:27:45 kernel:  bad_page.cold.29+0x7f/0xb2
-Feb 28 19:27:45 kernel:  __free_pages_ok+0x2c0/0x2d0
-Feb 28 19:27:45 kernel:  skb_release_data+0x96/0x180
-Feb 28 19:27:45 kernel:  __kfree_skb+0xe/0x20
-Feb 28 19:27:45 kernel:  tcp_recvmsg+0x894/0xc60
-Feb 28 19:27:45 kernel:  ? reuse_swap_page+0x120/0x340
-Feb 28 19:27:45 kernel:  ? ptep_set_access_flags+0x23/0x30
-Feb 28 19:27:45 kernel:  inet_recvmsg+0x5b/0x100
-Feb 28 19:27:45 kernel:  __sys_recvfrom+0xc3/0x180
-Feb 28 19:27:45 kernel:  ? handle_mm_fault+0x10a/0x250
-Feb 28 19:27:45 kernel:  ? syscall_trace_enter+0x1d3/0x2d0
-Feb 28 19:27:45 kernel:  ? __audit_syscall_exit+0x22a/0x290
-Feb 28 19:27:45 kernel:  __x64_sys_recvfrom+0x24/0x30
-Feb 28 19:27:45 kernel:  do_syscall_64+0x5b/0x170
-Feb 28 19:27:45 kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Cc: stable@vger.kernel.org
-Reported-and-tested-by: Jan Viktorin <jan.viktorin@gmail.com>
-Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
----
-v2: add comment 
-
- drivers/iommu/amd_iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6b0760dafb3e..696c78225dd1 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2604,7 +2604,11 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 
- 	/* Everything is mapped - write the right values into s->dma_address */
- 	for_each_sg(sglist, s, nelems, i) {
--		s->dma_address += address + s->offset;
-+		/* Add in the remaining piece of the scatter-gather offset that
-+		 * was masked out when we were determining the physical address
-+		 * via (sg_phys(s) & PAGE_MASK) earlier.
-+		 */
-+		s->dma_address += address + (s->offset & ~PAGE_MASK);
- 		s->dma_length   = s->length;
- 	}
- 
--- 
-2.7.5
+> -Evan
