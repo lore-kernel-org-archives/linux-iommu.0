@@ -1,126 +1,53 @@
-From: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>
-Subject: Re: [PATCH v2 1/5] drm/rockchip: fix fb references in async update
-Date: Thu, 14 Mar 2019 10:15:49 +0100
-Message-ID: <d91d5582-3ccf-2249-21ee-9ccf115096b2@daenzer.net>
-References: <20190312022204.2775-1-helen.koike@collabora.com>
-	<20190312022204.2775-2-helen.koike@collabora.com>
-	<20190312073438.05ad8173@collabora.com>
-	<f888a2d0-c6b1-8995-7254-ba2923dd22f9@collabora.com>
-	<20190312165243.5b771e4a@collabora.com>
-	<CAAFQd5CCEDaxLbw0E9NJJ-tEcHd8-Lidvcvt8qfPAnKu7uuj8w@mail.gmail.com>
-	<05750143-708b-b84e-af67-82ec6815bd89@daenzer.net>
-	<ed44e1f4-07da-b1cb-b5cb-d34d29758502@collabora.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ed44e1f4-07da-b1cb-b5cb-d34d29758502-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Content-Language: en-CA
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Helen Koike <helen.koike-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Boris Brezillon <boris.brezillon-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: =?UTF-8?Q?St=c3=a9phane_Marchesin?= <marcheu-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sean Paul <seanpaul-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Daniel Vetter <daniel.vetter-/w4YWyX8dFk@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, nicholas.kazlauskas-5C7GfCeVMHo@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: James Sewart <jamessewart@arista.com>
+Subject: [PATCH v2 0/7] iommu/vt-d: Fix-up device-domain relationship by
+ refactoring to use iommu group default domain.
+Date: Thu, 14 Mar 2019 11:56:54 +0000
+Message-ID: <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxOS0wMy0xMyA3OjA4IHAubS4sIEhlbGVuIEtvaWtlIHdyb3RlOgo+IE9uIDMvMTMvMTkg
-Njo1OCBBTSwgTWljaGVsIETDpG56ZXIgd3JvdGU6Cj4+IE9uIDIwMTktMDMtMTMgNDo0MiBhLm0u
-LCBUb21hc3ogRmlnYSB3cm90ZToKPj4+IE9uIFdlZCwgTWFyIDEzLCAyMDE5IGF0IDEyOjUyIEFN
-IEJvcmlzIEJyZXppbGxvbgo+Pj4gPGJvcmlzLmJyZXppbGxvbkBjb2xsYWJvcmEuY29tPiB3cm90
-ZToKPj4+PiBPbiBUdWUsIDEyIE1hciAyMDE5IDEyOjM0OjQ1IC0wMzAwCj4+Pj4gSGVsZW4gS29p
-a2UgPGhlbGVuLmtvaWtlQGNvbGxhYm9yYS5jb20+IHdyb3RlOgo+Pj4+PiBPbiAzLzEyLzE5IDM6
-MzQgQU0sIEJvcmlzIEJyZXppbGxvbiB3cm90ZToKPj4+Pj4+IE9uIE1vbiwgMTEgTWFyIDIwMTkg
-MjM6MjE6NTkgLTAzMDAKPj4+Pj4+IEhlbGVuIEtvaWtlIDxoZWxlbi5rb2lrZUBjb2xsYWJvcmEu
-Y29tPiB3cm90ZToKPj4+Pj4+Cj4+Pj4+Pj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlw
-L3JvY2tjaGlwX2RybV92b3AuYwo+Pj4+Pj4+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9yb2NrY2hp
-cC9yb2NrY2hpcF9kcm1fdm9wLmMKPj4+Pj4+PiBAQCAtOTEyLDMwICs5MTIsMzEgQEAgc3RhdGlj
-IHZvaWQgdm9wX3BsYW5lX2F0b21pY19hc3luY191cGRhdGUoc3RydWN0IGRybV9wbGFuZSAqcGxh
-bmUsCj4+Pj4+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBk
-cm1fcGxhbmVfc3RhdGUgKm5ld19zdGF0ZSkKPj4+Pj4+PiAgewo+Pj4+Pj4+ICAgIHN0cnVjdCB2
-b3AgKnZvcCA9IHRvX3ZvcChwbGFuZS0+c3RhdGUtPmNydGMpOwo+Pj4+Pj4+IC0gIHN0cnVjdCBk
-cm1fcGxhbmVfc3RhdGUgKnBsYW5lX3N0YXRlOwo+Pj4+Pj4+ICsgIHN0cnVjdCBkcm1fZnJhbWVi
-dWZmZXIgKm9sZF9mYiA9IHBsYW5lLT5zdGF0ZS0+ZmI7Cj4+Pj4+Pj4KPj4+Pj4+PiAtICBwbGFu
-ZV9zdGF0ZSA9IHBsYW5lLT5mdW5jcy0+YXRvbWljX2R1cGxpY2F0ZV9zdGF0ZShwbGFuZSk7Cj4+
-Pj4+Pj4gLSAgcGxhbmVfc3RhdGUtPmNydGNfeCA9IG5ld19zdGF0ZS0+Y3J0Y194Owo+Pj4+Pj4+
-IC0gIHBsYW5lX3N0YXRlLT5jcnRjX3kgPSBuZXdfc3RhdGUtPmNydGNfeTsKPj4+Pj4+PiAtICBw
-bGFuZV9zdGF0ZS0+Y3J0Y19oID0gbmV3X3N0YXRlLT5jcnRjX2g7Cj4+Pj4+Pj4gLSAgcGxhbmVf
-c3RhdGUtPmNydGNfdyA9IG5ld19zdGF0ZS0+Y3J0Y193Owo+Pj4+Pj4+IC0gIHBsYW5lX3N0YXRl
-LT5zcmNfeCA9IG5ld19zdGF0ZS0+c3JjX3g7Cj4+Pj4+Pj4gLSAgcGxhbmVfc3RhdGUtPnNyY195
-ID0gbmV3X3N0YXRlLT5zcmNfeTsKPj4+Pj4+PiAtICBwbGFuZV9zdGF0ZS0+c3JjX2ggPSBuZXdf
-c3RhdGUtPnNyY19oOwo+Pj4+Pj4+IC0gIHBsYW5lX3N0YXRlLT5zcmNfdyA9IG5ld19zdGF0ZS0+
-c3JjX3c7Cj4+Pj4+Pj4gLQo+Pj4+Pj4+IC0gIGlmIChwbGFuZV9zdGF0ZS0+ZmIgIT0gbmV3X3N0
-YXRlLT5mYikKPj4+Pj4+PiAtICAgICAgICAgIGRybV9hdG9taWNfc2V0X2ZiX2Zvcl9wbGFuZShw
-bGFuZV9zdGF0ZSwgbmV3X3N0YXRlLT5mYik7Cj4+Pj4+Pj4gLQo+Pj4+Pj4+IC0gIHN3YXAocGxh
-bmVfc3RhdGUsIHBsYW5lLT5zdGF0ZSk7Cj4+Pj4+Pj4gLQo+Pj4+Pj4+IC0gIGlmIChwbGFuZS0+
-c3RhdGUtPmZiICYmIHBsYW5lLT5zdGF0ZS0+ZmIgIT0gbmV3X3N0YXRlLT5mYikgewo+Pj4+Pj4+
-ICsgIC8qCj4+Pj4+Pj4gKyAgICogQSBzY2Fub3V0IGNhbiBzdGlsbCBiZSBvY2N1cnJpbmcsIHNv
-IHdlIGNhbid0IGRyb3AgdGhlIHJlZmVyZW5jZSB0bwo+Pj4+Pj4+ICsgICAqIHRoZSBvbGQgZnJh
-bWVidWZmZXIuIFRvIHNvbHZlIHRoaXMgd2UgZ2V0IGEgcmVmZXJlbmNlIHRvIG9sZF9mYiBhbmQK
-Pj4+Pj4+PiArICAgKiBzZXQgYSB3b3JrZXIgdG8gcmVsZWFzZSBpdCBsYXRlci4KPj4+Pj4+Cj4+
-Pj4+PiBIbSwgZG9lc24ndCBsb29rIGxpa2UgYW4gYXN5bmMgdXBkYXRlIHRvIG1lIGlmIHdlIGhh
-dmUgdG8gd2FpdCBmb3IgdGhlCj4+Pj4+PiBuZXh0IFZCTEFOSyB0byBoYXBwZW4gdG8gZ2V0IHRo
-ZSBuZXcgY29udGVudCBvbiB0aGUgc2NyZWVuLiBNYXliZSB3ZQo+Pj4+Pj4gc2hvdWxkIHJlamVj
-dCBhc3luYyB1cGRhdGVzIHdoZW4gb2xkX2ZiICE9IG5ld19mYiBpbiB0aGUgcmsKPj4+Pj4+IC0+
-YXN5bmNfY2hlY2soKSBob29rLgo+Pj4+Pgo+Pj4+PiBVbmxlc3MgSSBhbSBtaXN1bmRlcnN0YW5k
-aW5nIHRoaXMsIHdlIGRvbid0IHdhaXQgaGVyZSwgd2UganVzdCBncmFiIGEKPj4+Pj4gcmVmZXJl
-bmNlIHRvIHRoZSBmYiBpbiBjYXNlIGl0IGlzIGJlaW5nIHN0aWxsIHVzZWQgYnkgdGhlIGh3LCBz
-byBpdAo+Pj4+PiBkb2Vzbid0IGdldCByZWxlYXNlZCBwcmVtYXR1cmVseS4KPj4+Pgo+Pj4+IEkg
-d2FzIGp1c3QgcmVhY3RpbmcgdG8gdGhlIGNvbW1lbnQgdGhhdCBzYXlzIHRoZSBuZXcgRkIgc2hv
-dWxkIHN0YXkKPj4+PiBhcm91bmQgdW50aWwgdGhlIG5leHQgVkJMQU5LIGV2ZW50IGhhcHBlbnMu
-IElmIHRoZSBGQiBtdXN0IHN0YXkgYXJvdW5kCj4+Pj4gdGhhdCBwcm9iYWJseSBtZWFucyB0aGUg
-SFcgaXMgc3RpbGwgdXNpbmcsIHdoaWNoIG1hZGUgbWUgd29uZGVyIGlmIHRoaXMKPj4+PiBIVyBh
-Y3R1YWxseSBzdXBwb3J0cyBhc3luYyB1cGRhdGUgKHdoZXJlIGFzeW5jIG1lYW5zICJ1cGRhdGUg
-bm93IGFuZAo+Pj4+IGRvbid0IGNhcmUgYWJvdXQgYWJvdXQgdGVhcmluZyIpLiBPciBtYXliZSBp
-dCB0YWtlcyBzb21lIHRpbWUgdG8gc3dpdGNoCj4+Pj4gdG8gdGhlIG5ldyBGQiBhbmQgd2FpdGlu
-ZyBmb3IgdGhlIG5leHQgVkJMQU5LIHRvIHJlbGVhc2UgdGhlIG9sZCBGQiB3YXMKPj4+PiBhbiBl
-YXN5IHNvbHV0aW9uIHRvIG5vdCB3YWl0IGZvciB0aGUgZmxpcCB0byBhY3R1YWxseSBoYXBwZW4g
-aW4KPj4+PiAtPmFzeW5jX3VwZGF0ZSgpICh3aGljaCBpcyBraW5kIG9mIGEgY29tYmluYXRpb24g
-b2YgYXN5bmMrbm9uLWJsb2NraW5nKS4KPj4+Cj4+PiBUaGUgaGFyZHdhcmUgc3dpdGNoZXMgZnJh
-bWVidWZmZXJzIG9uIHZibGFuaywgc28gd2hhdGV2ZXIgZnJhbWVidWZmZXIKPj4+IGlzIGN1cnJl
-bnRseSBiZWluZyBzY2FubmVkIG91dCBmcm9tIG5lZWRzIHRvIHN0YXkgdGhlcmUgdW50aWwgdGhl
-Cj4+PiBoYXJkd2FyZSBzd2l0Y2hlcyB0byB0aGUgbmV3IG9uZSBpbiBzaGFkb3cgcmVnaXN0ZXJz
-LiBJZiB0aGF0IGRvZXNuJ3QKPj4+IGhhcHBlbiwgeW91IGdldCBJT01NVSBmYXVsdHMgYW5kIHRo
-ZSBkaXNwbGF5IGNvbnRyb2xsZXIgc3RvcHMgd29ya2luZwo+Pj4gc2luY2Ugd2UgZG9uJ3QgaGF2
-ZSBhbnkgZmF1bHQgaGFuZGxpbmcgY3VycmVudGx5LCBqdXN0IHByaW50aW5nIGEKPj4+IG1lc3Nh
-Z2UuCj4+Cj4+IFNvdW5kcyBsaWtlIHlvdXIgaGFyZHdhcmUgZG9lc24ndCBhY3R1YWxseSBzdXBw
-b3J0IGFzeW5jIGZsaXBzLiBJdCdzCj4+IHByb2JhYmx5IGJldHRlciBmb3IgdGhlIGRyaXZlciBu
-b3QgdG8gcHJldGVuZCBvdGhlcndpc2UuCj4gCj4gSSB0aGluayB3ZWUgbmVlZCB0byBjbGFyaWZ5
-IHRoZSBtZWFuaW5nIG9mIHRoZSBhc3luY191cGRhdGUgY2FsbGJhY2sKPiAoYW5kIHdlIHNob3Vs
-ZCBjbGFyaWZ5IGl0IGluIHRoZSBkb2NzKS4KPiAKPiBUaGUgd2F5IEkgdW5kZXJzdGFuZCB3aGF0
-IHRoZSBhc3luY191cGRhdGUgY2FsbGJhY2sgc2hvdWxkIGRvIGlzOiBkb24ndAo+IGJsb2NrIChp
-LmUuIGRvbid0IHdhaXQgZm9yIHRoZSBuZXh0IHZibGFuayksCgpOb3RlIHRoYXQgdGhvc2UgYXJl
-IHR3byBzZXBhcmF0ZSB0aGluZ3MuICJBc3luYyBmbGlwcyIgYXJlIGFib3V0ICJkb24ndAp3YWl0
-IGZvciB2YmxhbmsiLCBub3QgYWJvdXQgImRvbid0IGJsb2NrIi4KCgo+IGFuZCB1cGRhdGUgdGhl
-IGh3IHN0YXRlIGF0IHNvbWUgcG9pbnQgd2l0aCB0aGUgbGF0ZXN0IHN0YXRlIGZyb20gdGhlCj4g
-bGFzdCBjYWxsIHRvIGFzeW5jX3VwZGF0ZS4KPiAKPiBXaGljaCBtZWFucyB0aGF0OiBhbnkgZHJp
-dmVyIGNhbiBpbXBsZW1lbnQgdGhlIGFzeW5jX3VwZGF0ZSBjYWxsYmFjaywKPiBpbmRlcGVuZGVu
-dGx5IGlmIGl0IHN1cHBvcnRzIGNoYW5naW5nIGl0cyBzdGF0ZSByaWdodCBhd2F5IG9yIG5vdC4K
-PiBJZiBodyBzdXBwb3J0cywgYXN5bmNfdXBkYXRlIGNhbiBjaGFuZ2UgdGhlIGh3IHN0YXRlIHJp
-Z2h0IGF3YXksIGlmIG5vdCwKPiB0aGVuIGNoYW5nZXMgd2lsbCBiZSBhcHBsaWVkIGluIHRoZSBu
-ZXh0IHZibGFuayAoaXQgY2FuIGV2ZW4gYW1lbmQgdGhlCj4gcGVuZGluZyBjb21taXQgaWYgdGhl
-cmUgaXMgb25lKS4KPiBXaXRoIHRoaXMsIHdlIGNhbiByZW1vdmUgYWxsIHRoZSBsZWdhY3kgY3Vy
-c29yIGNvZGUgdG8gdXNlIHRoZQo+IGFzeW5jX3VwZGF0ZSBjYWxsYmFjaywgc2luY2UgYXN5bmNf
-dXBkYXRlIGNhbiBiZSBjYWxsZWQgMTAwIHRpbWVzIGJlZm9yZQo+IHRoZSBuZXh0IHZibGFuaywg
-YW5kIHRoZSBsYXRlc3Qgc3RhdGUgd2lsbCBiZSBzZXQgdG8gdGhlIGh3IHdpdGhvdXQKPiB3YWl0
-aW5nIDEwMCB2YmxhbmtzLgo+IAo+IFBsZWFzZSwgbGV0IG1lIGtub3cgaWYgdGhpcyBpcyB5b3Vy
-IHVuZGVyc3RhbmRpbmcgYXMgd2VsbC4gSWYgbm90LCB0aGVuCj4gd2UgbmVlZCB0byByZW1vZGVs
-IHRoaW5ncy4KCldoaWxlIHRoaXMgbWF5IG1ha2Ugc2Vuc2UgZm9yIGN1cnNvciB1cGRhdGVzLCBJ
-IGRvbid0IHRoaW5rIGl0IGRvZXMgZm9yCmFzeW5jIGZsaXBzLiBJZiB0aGUgZmxpcCBvbmx5IGFj
-dHVhbGx5IHRha2VzIGVmZmVjdCBkdXJpbmcgdGhlIG5leHQKdmJsYW5rLCBpdCBkb2Vzbid0IHJl
-YWxseSBmaXQgdGhlIGRlZmluaXRpb24gYW5kIHVzZXJzcGFjZSBleHBlY3RhdGlvbgpvZiBhbiBh
-c3luYyBmbGlwLiBJdCdzIGJldHRlciB0byBjbGVhcmx5IGNvbW11bmljYXRlIHRvIHVzZXJzcGFj
-ZSB0aGF0CnRoZSBoYXJkd2FyZSBjYW5ub3QgZG8gYXN5bmMgZmxpcHMsIHRoYW4gdG8gcHJldGVu
-ZCBpdCBjYW4gYW5kIGZha2UKdGhlbS4gVXNlcnNwYWNlIGhhcyB0byBkZWFsIHdpdGggdGhpcyBh
-bnl3YXksIHNpbmNlIGFzeW5jIGZsaXBzIHdlcmVuJ3QKYWx3YXlzIHN1cHBvcnRlZCBpbiBnZW5l
-cmFsLgoKCi0tIApFYXJ0aGxpbmcgTWljaGVsIETDpG56ZXIgICAgICAgICAgICAgICB8ICAgICAg
-ICAgICAgICBodHRwczovL3d3dy5hbWQuY29tCkxpYnJlIHNvZnR3YXJlIGVudGh1c2lhc3QgICAg
-ICAgICAgICAgfCAgICAgICAgICAgICBNZXNhIGFuZCBYIGRldmVsb3BlcgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
-b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Patches 1 and 2 are the same as v1.
+
+v1-v2:
+  Refactored ISA direct mappings to be returned by iommu_get_resv_regions.
+  Integrated patch by Lu to defer turning on DMAR until iommu.c has mapped 
+reserved regions.
+  Integrated patches by Lu to remove more unused code in cleanup.
+
+Lu: I didn't integrate your patch to set the default domain type as it 
+isn't directly related to the aim of this patchset. Instead patch 4 
+addresses the issue of a device requiring an identity domain by ignoring 
+the domain param in attach_device and printing a warning.
+
+I booted some of our devices with this patchset and haven't seen any 
+issues. It doesn't look like we have any devices with RMRR's though so 
+those codepaths aren't tested.
+
+James Sewart (7):
+  iommu: Move iommu_group_create_direct_mappings to after device_attach
+  iommu/vt-d: Implement apply_resv_region for reserving IOVA ranges
+  iommu/vt-d: Expose ISA direct mapping region via
+    iommu_get_resv_regions
+  iommu/vt-d: Ignore domain parameter in attach_device if device
+    requires identity map
+  iommu/vt-d: Allow IOMMU_DOMAIN_DMA to be allocated by iommu_ops
+  iommu/vt-d: Remove lazy allocation of domains
+
+Lu Baolu (1):
+  iommu/vt-d: Enable DMA remapping after rmrr mapped
+
+ drivers/iommu/intel-iommu.c | 444 +++++++++++-------------------------
+ drivers/iommu/iommu.c       |   4 +-
+ 2 files changed, 131 insertions(+), 317 deletions(-)
+
+-- 
+2.17.1
