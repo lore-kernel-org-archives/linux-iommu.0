@@ -1,45 +1,69 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [Xen-devel] [PATCH] Revert "swiotlb: remove SWIOTLB_MAP_ERROR"
-Date: Wed, 13 Mar 2019 20:44:55 +0100
-Message-ID: <CAK8P3a0yj5TqP95KNwM3uhYuhVSuiLkwYWQe-nLyyVd0j7sGtw@mail.gmail.com>
-References: <20190304195951.1118807-1-arnd@arndb.de> <b0b995a1-3211-870f-01af-ce837c18e8f9@arm.com>
- <CAK8P3a2KQKTDQCQcFR7ZTFJ+_XhfKpy9W27r+YV=iD6hLVu2xg@mail.gmail.com>
- <957e168a-2589-89c7-3a72-5071a7b6c65a@arm.com> <20190308152355.GA20230@lst.de>
- <124f4e49-9eb1-99d9-35f4-c2ef3dff8415@arm.com> <20190313183254.GC4926@lst.de>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v1 4/9] iommu/vt-d: Add bounce buffer API for domain
+	map/unmap
+Date: Thu, 14 Mar 2019 09:01:16 +0800
+Message-ID: <b3e88984-d2ff-c23d-c4bd-3248e4e9487d@linux.intel.com>
+References: <20190312060005.12189-1-baolu.lu@linux.intel.com>
+	<20190312060005.12189-5-baolu.lu@linux.intel.com>
+	<20190312163845.GA13141@infradead.org>
+	<e653341d-e001-7262-740b-2262842be06d@linux.intel.com>
+	<c9fe7879-569e-b4f4-d6ec-47ab7e6fd443@linux.intel.com>
+	<20190313161029.GA23513@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190313183254.GC4926@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Julien Grall <julien.grall@arm.com>, Robin Murphy <robin.murphy@arm.com>, Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, xen-devel <xen-devel@lists.xenproject.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190313161029.GA23513-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 13, 2019 at 7:33 PM Christoph Hellwig <hch@lst.de> wrote:
-> On Fri, Mar 08, 2019 at 05:25:57PM +0000, Julien Grall wrote:
-> > In the common case, Dom0 also contains the PV backend drivers. Those
-> > drivers may directly use the guest buffer in the DMA request (so a copy is
-> > avoided). To avoid using a bounce buffer too much, xen-swiotlb will find
-> > the host physical address associated to the guest buffer and will use it to
-> > compute the DMA address.
-> >
-> > While Dom0 kernel may only deal with 32-bit physical address, the
-> > hypervisor can still deal with up to 40-bit physical address. This means
-> > the guest memory can be allocated above the 4GB threshold. Hence why the
-> > dma_addr_t is always 64-bit with CONFIG_XEN=y.
->
-> This at least makes some sense.  But is it really so much better to
-> avoid having a 64-bit phys_addr_t?
+Hi,
 
-I like the way we tie phys_addr_t to the page table format, as it seems
-consistent to have phys_addr_t be whichever data type can be addressed
-through virtual memory.
+On 3/14/19 12:10 AM, Christoph Hellwig wrote:
+> On Wed, Mar 13, 2019 at 10:31:52AM +0800, Lu Baolu wrote:
+>> Hi again,
+>>
+>> On 3/13/19 10:04 AM, Lu Baolu wrote:
+>>> Hi,
+>>>
+>>> On 3/13/19 12:38 AM, Christoph Hellwig wrote:
+>>>> On Tue, Mar 12, 2019 at 02:00:00PM +0800, Lu Baolu wrote:
+>>>>> This adds the APIs for bounce buffer specified domain
+>>>>> map() and unmap(). The start and end partial pages will
+>>>>> be mapped with bounce buffered pages instead. This will
+>>>>> enhance the security of DMA buffer by isolating the DMA
+>>>>> attacks from malicious devices.
+>>>>
+>>>> Please reuse the swiotlb code instead of reinventing it.
+>>>>
+>>
+>> Just looked into the code again. At least we could reuse below
+>> functions:
+>>
+>> swiotlb_tbl_map_single()
+>> swiotlb_tbl_unmap_single()
+>> swiotlb_tbl_sync_single()
+>>
+>> Anything else?
+> 
+> Yes, that is probably about the level you want to reuse, given that the
+> next higher layer already has hooks into the direct mapping code.
+> 
 
-The main practical advantage I see in allowing phys_addr_t and dma_addr_t
-to be independent rather than having both of them be the same and grow
-to as much as is needed is that most randconfig issues I found that
-result from a type mismatch are for real bugs, typically in driver code that
-is written under the assumption that both have not only the same size
-but also the same binary representation for a given memory address.
+Okay. Thank you!
 
-      Arnd
+I will try to make this happen in v2.
+
+Best regards,
+Lu Baolu
