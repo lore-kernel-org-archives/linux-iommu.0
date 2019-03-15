@@ -1,221 +1,239 @@
-From: Helen Koike <helen.koike@collabora.com>
-Subject: Re: [PATCH v2 1/5] drm/rockchip: fix fb references in async update
-Date: Fri, 15 Mar 2019 13:54:31 -0300
-Message-ID: <db673e6a-7dbb-f529-69b8-afff68dc91db@collabora.com>
-References: <20190312022204.2775-1-helen.koike@collabora.com>
- <20190312022204.2775-2-helen.koike@collabora.com>
- <20190312073438.05ad8173@collabora.com>
- <f888a2d0-c6b1-8995-7254-ba2923dd22f9@collabora.com>
- <20190312165243.5b771e4a@collabora.com>
- <CAAFQd5CCEDaxLbw0E9NJJ-tEcHd8-Lidvcvt8qfPAnKu7uuj8w@mail.gmail.com>
- <05750143-708b-b84e-af67-82ec6815bd89@daenzer.net>
- <ed44e1f4-07da-b1cb-b5cb-d34d29758502@collabora.com>
- <d91d5582-3ccf-2249-21ee-9ccf115096b2@daenzer.net>
- <dd7de9ff-0ac8-80fd-b88b-250bdf988921@collabora.com>
- <61b8420e-9b63-b67f-e9a8-fb8a0cb7d219@daenzer.net>
- <20190315112519.0af4fdc0@collabora.com>
- <e51a154f-ff4c-b4bc-4075-1a662ae89364@daenzer.net>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v5 05/22] iommu: Introduce cache_invalidate API
+Date: Fri, 15 Mar 2019 11:37:02 -0700
+Message-ID: <20190315113702.1184d162@jacob-builder>
+References: <20190315160906.12900-1-eric.auger@redhat.com>
+        <20190315160906.12900-6-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e51a154f-ff4c-b4bc-4075-1a662ae89364@daenzer.net>
-Content-Language: en-US
+In-Reply-To: <20190315160906.12900-6-eric.auger@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel@daenzer.net>, Boris Brezillon <boris.brezillon@collabora.com>
-Cc: =?UTF-8?Q?St=c3=a9phane_Marchesin?= <marcheu@google.com>, Sean Paul <seanpaul@google.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Tomasz Figa <tfiga@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, kernel@collabora.com, nicholas.kazlauskas@amd.com, linux-arm-kernel@lists.infradead.org
+To: Eric Auger <eric.auger@redhat.com>
+Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org, vincent.stehle@arm.com, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, 15 Mar 2019 17:08:49 +0100
+Eric Auger <eric.auger@redhat.com> wrote:
 
-
-On 3/15/19 8:29 AM, Michel Dänzer wrote:
-> On 2019-03-15 11:25 a.m., Boris Brezillon wrote:
->> On Fri, 15 Mar 2019 11:11:36 +0100
->> Michel Dänzer <michel@daenzer.net> wrote:
->>
->>> On 2019-03-14 6:51 p.m., Helen Koike wrote:
->>>> On 3/14/19 6:15 AM, Michel Dänzer wrote:  
->>>>> On 2019-03-13 7:08 p.m., Helen Koike wrote:  
->>>>>> On 3/13/19 6:58 AM, Michel Dänzer wrote:  
->>>>>>> On 2019-03-13 4:42 a.m., Tomasz Figa wrote:  
->>>>>>>> On Wed, Mar 13, 2019 at 12:52 AM Boris Brezillon
->>>>>>>> <boris.brezillon@collabora.com> wrote:  
->>>>>>>>> On Tue, 12 Mar 2019 12:34:45 -0300
->>>>>>>>> Helen Koike <helen.koike@collabora.com> wrote:  
->>>>>>>>>> On 3/12/19 3:34 AM, Boris Brezillon wrote:  
->>>>>>>>>>> On Mon, 11 Mar 2019 23:21:59 -0300
->>>>>>>>>>> Helen Koike <helen.koike@collabora.com> wrote:
->>>>>>>>>>>  
->>>>>>>>>>>> --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
->>>>>>>>>>>> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
->>>>>>>>>>>> @@ -912,30 +912,31 @@ static void vop_plane_atomic_async_update(struct drm_plane *plane,
->>>>>>>>>>>>                                      struct drm_plane_state *new_state)
->>>>>>>>>>>>  {
->>>>>>>>>>>>    struct vop *vop = to_vop(plane->state->crtc);
->>>>>>>>>>>> -  struct drm_plane_state *plane_state;
->>>>>>>>>>>> +  struct drm_framebuffer *old_fb = plane->state->fb;
->>>>>>>>>>>>
->>>>>>>>>>>> -  plane_state = plane->funcs->atomic_duplicate_state(plane);
->>>>>>>>>>>> -  plane_state->crtc_x = new_state->crtc_x;
->>>>>>>>>>>> -  plane_state->crtc_y = new_state->crtc_y;
->>>>>>>>>>>> -  plane_state->crtc_h = new_state->crtc_h;
->>>>>>>>>>>> -  plane_state->crtc_w = new_state->crtc_w;
->>>>>>>>>>>> -  plane_state->src_x = new_state->src_x;
->>>>>>>>>>>> -  plane_state->src_y = new_state->src_y;
->>>>>>>>>>>> -  plane_state->src_h = new_state->src_h;
->>>>>>>>>>>> -  plane_state->src_w = new_state->src_w;
->>>>>>>>>>>> -
->>>>>>>>>>>> -  if (plane_state->fb != new_state->fb)
->>>>>>>>>>>> -          drm_atomic_set_fb_for_plane(plane_state, new_state->fb);
->>>>>>>>>>>> -
->>>>>>>>>>>> -  swap(plane_state, plane->state);
->>>>>>>>>>>> -
->>>>>>>>>>>> -  if (plane->state->fb && plane->state->fb != new_state->fb) {
->>>>>>>>>>>> +  /*
->>>>>>>>>>>> +   * A scanout can still be occurring, so we can't drop the reference to
->>>>>>>>>>>> +   * the old framebuffer. To solve this we get a reference to old_fb and
->>>>>>>>>>>> +   * set a worker to release it later.  
->>>>>>>>>>>
->>>>>>>>>>> Hm, doesn't look like an async update to me if we have to wait for the
->>>>>>>>>>> next VBLANK to happen to get the new content on the screen. Maybe we
->>>>>>>>>>> should reject async updates when old_fb != new_fb in the rk  
->>>>>>>>>>> ->async_check() hook.  
->>>>>>>>>>
->>>>>>>>>> Unless I am misunderstanding this, we don't wait here, we just grab a
->>>>>>>>>> reference to the fb in case it is being still used by the hw, so it
->>>>>>>>>> doesn't get released prematurely.  
->>>>>>>>>
->>>>>>>>> I was just reacting to the comment that says the new FB should stay
->>>>>>>>> around until the next VBLANK event happens. If the FB must stay around
->>>>>>>>> that probably means the HW is still using, which made me wonder if this
->>>>>>>>> HW actually supports async update (where async means "update now and
->>>>>>>>> don't care about about tearing"). Or maybe it takes some time to switch
->>>>>>>>> to the new FB and waiting for the next VBLANK to release the old FB was
->>>>>>>>> an easy solution to not wait for the flip to actually happen in  
->>>>>>>>> ->async_update() (which is kind of a combination of async+non-blocking).  
->>>>>>>>
->>>>>>>> The hardware switches framebuffers on vblank, so whatever framebuffer
->>>>>>>> is currently being scanned out from needs to stay there until the
->>>>>>>> hardware switches to the new one in shadow registers. If that doesn't
->>>>>>>> happen, you get IOMMU faults and the display controller stops working
->>>>>>>> since we don't have any fault handling currently, just printing a
->>>>>>>> message.  
->>>>>>>
->>>>>>> Sounds like your hardware doesn't actually support async flips. It's
->>>>>>> probably better for the driver not to pretend otherwise.  
->>>>>>
->>>>>> I think wee need to clarify the meaning of the async_update callback
->>>>>> (and we should clarify it in the docs).
->>>>>>
->>>>>> The way I understand what the async_update callback should do is: don't
->>>>>> block (i.e. don't wait for the next vblank),  
->>>>>
->>>>> Note that those are two separate things. "Async flips" are about "don't
->>>>> wait for vblank", not about "don't block".
->>>>>
->>>>>  
->>>>>> and update the hw state at some point with the latest state from the
->>>>>> last call to async_update.
->>>>>>
->>>>>> Which means that: any driver can implement the async_update callback,
->>>>>> independently if it supports changing its state right away or not.
->>>>>> If hw supports, async_update can change the hw state right away, if not,
->>>>>> then changes will be applied in the next vblank (it can even amend the
->>>>>> pending commit if there is one).
->>>>>> With this, we can remove all the legacy cursor code to use the
->>>>>> async_update callback, since async_update can be called 100 times before
->>>>>> the next vblank, and the latest state will be set to the hw without
->>>>>> waiting 100 vblanks.
->>>>>>
->>>>>> Please, let me know if this is your understanding as well. If not, then
->>>>>> we need to remodel things.  
->>>>>
->>>>> While this may make sense for cursor updates, I don't think it does for
->>>>> async flips. If the flip only actually takes effect during the next
->>>>> vblank, it doesn't really fit the definition and userspace expectation
->>>>> of an async flip. It's better to clearly communicate to userspace that
->>>>> the hardware cannot do async flips, than to pretend it can and fake
->>>>> them. Userspace has to deal with this anyway, since async flips weren't
->>>>> always supported in general.  
->>>>
->>>> What do you think if we separate two concepts here:
->>>>
->>>> - amend mode: works like cursor updates, i.e, update the hw state at
->>>> some point with the latest state from the last call to async_update. No
->>>> special hardware support is required.
->>>>
->>>> - async update: update hw state immediately. This depends if the hw
->>>> supports it or not.
->>>>
->>>> Every async update is an amend, but the opposite is not necessarily true.
->>>>
->>>> What do you think if we rename the current async_update to amend_update,
->>>> and we add a parameter "force_async" to it? (or maybe
->>>> force_immediate_update?)
->>>> Then amend_check with force_async=1 would fail if the hardware doesn't
->>>> support it (we could also add flags in the capabilities to inform
->>>> userspace the expected behaviour of things and if the hw supports
->>>> force_sync).
->>>>
->>>> Like this, we can implement the cursors using the amend_update (which is
->>>> now called async_update), and async_flips with amend_update with
->>>> force_async=1.  
->>>
->>> Might force_async make sense for cursor updates as well? I thought some
->>> hardware supported HW cursor updates outside of vblank, but I'm not sure.
-
-What I had in mind was actually:
-amend_update() -> could do a real async or not depending on the hw
-force_async=1 -> it means amend_update will fail if the hw doesn't
-support it.
-
->>>
->>> Without force_async, are cursor updates always applied to the hardware
->>> on the next vblank, even if the pending commit is delayed further (e.g.
->>> because a fence it depends on doesn't signal before vblank)? If cursor
->>> updates can be delayed beyond the next vblank, that can result in bad
->>> user experience.
->>
->> You mean you have
->>
->> 1. sync/regular update pending (waiting on a fence)
->> 2. async update on top of #1
->>
->> ?
+> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
 > 
-> Yeah.
+> In any virtualization use case, when the first translation stage
+> is "owned" by the guest OS, the host IOMMU driver has no knowledge
+> of caching structure updates unless the guest invalidation activities
+> are trapped by the virtualizer and passed down to the host.
 > 
+> Since the invalidation data are obtained from user space and will be
+> written into physical IOMMU, we must allow security check at various
+> layers. Therefore, generic invalidation data format are proposed here,
+> model specific IOMMU drivers need to convert them into their own
+> format.
 > 
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> 
+> ---
+> v3 -> v4:
+> - full reshape of the API following Alex' comments
+> 
+> v1 -> v2:
+> - add arch_id field
+> - renamed tlb_invalidate into cache_invalidate as this API allows
+>   to invalidate context caches on top of IOTLBs
+> 
+> v1:
+> renamed sva_invalidate into tlb_invalidate and add iommu_ prefix in
+> header. Commit message reworded.
+> ---
+>  drivers/iommu/iommu.c      | 14 ++++++++
+>  include/linux/iommu.h      | 21 +++++++++++
+>  include/uapi/linux/iommu.h | 71
+> ++++++++++++++++++++++++++++++++++++++ 3 files changed, 106
+> insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7d9285cea100..b72e326ddd41 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1544,6 +1544,20 @@ void iommu_detach_pasid_table(struct
+> iommu_domain *domain) }
+>  EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
+>  
+> +int iommu_cache_invalidate(struct iommu_domain *domain, struct
+> device *dev,
+> +			   struct iommu_cache_invalidate_info
+> *inv_info) +{
+> +	int ret = 0;
+> +
+> +	if (unlikely(!domain->ops->cache_invalidate))
+> +		return -ENODEV;
+> +
+> +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+> +
+>  static void __iommu_detach_device(struct iommu_domain *domain,
+>  				  struct device *dev)
+>  {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index fb9b7a8de25f..3d8e48876162 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -191,6 +191,7 @@ struct iommu_resv_region {
+>   *                      driver init to device driver init (default
+> no)
+>   * @attach_pasid_table: attach a pasid table
+>   * @detach_pasid_table: detach the pasid table
+> + * @cache_invalidate: invalidate translation caches
+>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+>   */
+>  struct iommu_ops {
+> @@ -239,6 +240,9 @@ struct iommu_ops {
+>  				  struct iommu_pasid_table_config
+> *cfg); void (*detach_pasid_table)(struct iommu_domain *domain);
+>  
+> +	int (*cache_invalidate)(struct iommu_domain *domain, struct
+> device *dev,
+> +				struct iommu_cache_invalidate_info
+> *inv_info); +
+>  	unsigned long pgsize_bitmap;
+>  };
+>  
+> @@ -349,6 +353,9 @@ extern void iommu_detach_device(struct
+> iommu_domain *domain, extern int iommu_attach_pasid_table(struct
+> iommu_domain *domain, struct iommu_pasid_table_config *cfg);
+>  extern void iommu_detach_pasid_table(struct iommu_domain *domain);
+> +extern int iommu_cache_invalidate(struct iommu_domain *domain,
+> +				  struct device *dev,
+> +				  struct iommu_cache_invalidate_info
+> *inv_info); extern struct iommu_domain
+> *iommu_get_domain_for_dev(struct device *dev); extern struct
+> iommu_domain *iommu_get_dma_domain(struct device *dev); extern int
+> iommu_map(struct iommu_domain *domain, unsigned long iova, @@ -795,7
+> +802,21 @@ int iommu_attach_pasid_table(struct iommu_domain *domain, }
+>  
+>  static inline
+> +<<<<<<< HEAD
+>  void iommu_detach_pasid_table(struct iommu_domain *domain) {}
+> +=======
+> +void iommu_detach_pasid_table(struct iommu_domain *domain)
+> +{
+> +	return -ENODEV;
+> +}
+> +static inline int
+> +iommu_cache_invalidate(struct iommu_domain *domain,
+> +		       struct device *dev,
+> +		       struct iommu_cache_invalidate_info *inv_info)
+> +{
+> +	return -ENODEV;
+> +}
+> +>>>>>>> 56df871916e5... iommu: Introduce cache_invalidate API  
+forgot to merge :)
+>  
+>  #endif /* CONFIG_IOMMU_API */
+>  
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 532a64075f23..e4c6a447e85a 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -159,4 +159,75 @@ struct iommu_pasid_table_config {
+>  	};
+>  };
+>  
+> +/* defines the granularity of the invalidation */
+> +enum iommu_inv_granularity {
+> +	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective
+> invalidation */
+> +	IOMMU_INV_GRANU_PASID,	/* pasid-selective
+> invalidation */
+> +	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation
+> */ +};
+> +
+> +/**
+> + * Address Selective Invalidation Structure
+> + *
+> + * @flags indicates the granularity of the address-selective
+> invalidation
+> + * - if PASID bit is set, @pasid field is populated and the
+> invalidation
+> + *   relates to cache entries tagged with this PASID and matching the
+> + *   address range.
+> + * - if ARCHID bit is set, @archid is populated and the invalidation
+> relates
+> + *   to cache entries tagged with this architecture specific id and
+> matching
+> + *   the address range.
+> + * - Both PASID and ARCHID can be set as they may tag different
+> caches.
+> + * - if neither PASID or ARCHID is set, global addr invalidation
+> applies
+> + * - LEAF flag indicates whether only the leaf PTE caching needs to
+> be
+> + *   invalidated and other paging structure caches can be preserved.
+> + * @pasid: process address space id
+> + * @archid: architecture-specific id
+> + * @addr: first stage/level input address
+> + * @granule_size: page/block size of the mapping in bytes
+> + * @nb_granules: number of contiguous granules to be invalidated
+> + */
+> +struct iommu_inv_addr_info {
+> +#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
+> +#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
+> +#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
+> +	__u32	flags;
+> +	__u32	archid;
+> +	__u64	pasid;
+> +	__u64	addr;
+> +	__u64	granule_size;
+> +	__u64	nb_granules;
+> +};
+> +
+> +/**
+> + * First level/stage invalidation information
+> + * @cache: bitfield that allows to select which caches to invalidate
+> + * @granularity: defines the lowest granularity used for the
+> invalidation:
+> + *     domain > pasid > addr
+> + *
+> + * Not all the combinations of cache/granularity make sense:
+> + *
+> + *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
+> + * granularity	|		|		|
+> cache	|
+> + * -------------+---------------+---------------+---------------+
+> + * DOMAIN	|	N/A	|       Y	|
+> Y	|
+> + * PASID	|	Y	|       Y	|
+> Y	|
+> + * ADDR		|       Y	|       Y	|
+> N/A	|
+> + */
+> +struct iommu_cache_invalidate_info {
+> +#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
+> +	__u32	version;
+> +/* IOMMU paging structure cache */
+> +#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
+> +#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device
+> IOTLB */ +#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID
+> cache */
+> +	__u8	cache;
+> +	__u8	granularity;
+> +	__u8	padding[2];
+> +	union {
+> +		__u64	pasid;
+just realized there is already a pasid field in the addr_info, do we
+still need this?
+> +		struct iommu_inv_addr_info addr_info;
+> +	};
+> +};
+> +
+> +
+>  #endif /* _UAPI_IOMMU_H */
 
-Actually I was thinking in another solution (without this force_async flag).
-
-Instead of having this force_async, we can have two capabilities:
-
-CAP_ASYNC: means the hw supports real async
-CAP_AMEND: means that the driver supports amend the in-flight update so
-that the new one will take its place in the queue (i.e. the current
-legacy cursor behavior).
-
-If (!CAP_AMEND && !CAP_ASYNC)
-	* use a sync update or update the FB content in place without flipping
-buffers.
-	* legacy cursor update will fallback to sync update.
-	* async flip is not supported.
-
-If (CAP_AMEND && !CAP_ASYNC)
-	* legacy cursor update will amend in-flight pending updates (like how
-rockchip does now) or it will fallback to a sync update if not possible.
-	* async flip is not supported.
-
-If (!CAP_AMEND && CAP_ASYNC)
-	* not sure yet what this would mean.
-
-If (CAP_AMEND && CAP_ASYNC)
-	* legacy cursor update will perform real async update.
-	* async flip is supported.
-
-
-What do you think?
-
-Regards
-Helen
+[Jacob Pan]
