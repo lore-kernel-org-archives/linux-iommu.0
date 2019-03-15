@@ -1,43 +1,148 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2 7/7] iommu/vt-d: Remove lazy allocation of domains
-Date: Thu, 14 Mar 2019 16:35:01 -0700
-Message-ID: <20190314163501.2f414a78@jacob-builder>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+ iommu_get_resv_regions
+Date: Fri, 15 Mar 2019 10:19:05 +0800
+Message-ID: <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
 References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
-	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
-	<F4D76093-3F9F-4184-9F92-191A01126D0F@arista.com>
+ <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+ <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <F4D76093-3F9F-4184-9F92-191A01126D0F-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: James Sewart <jamessewart@arista.com>, iommu@lists.linux-foundation.org
+Cc: baolu.lu@linux.intel.com, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 14 Mar 2019 11:59:36 +0000
-James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org> wrote:
+Hi James,
 
->  
-> -	domain = get_valid_domain_for_dev(dev);
-> +	domain = find_domain(dev);
->  	if (!domain)
->  		return DMA_MAPPING_ERROR;
->  
-> @@ -3914,7 +3624,7 @@ static int intel_map_sg(struct device *dev,
-> struct scatterlist *sglist, int nele if (iommu_no_mapping(dev))
->  		return intel_nontranslate_map_sg(dev, sglist,
-> nelems, dir); 
-> -	domain = get_valid_domain_for_dev(dev);
-> +	domain = find_domain(dev);
-This patchset looks like a very good clean up, I am wondering why we
-can't use the generic iommu_get_domain_for_dev() here, since VT-d has a
-default DMA domain after your patch.
+On 3/14/19 7:58 PM, James Sewart wrote:
+> To support mapping ISA region via iommu_group_create_direct_mappings,
+> make sure its exposed by iommu_get_resv_regions. This allows
+> deduplication of reserved region mappings
+> 
+> Signed-off-by: James Sewart <jamessewart@arista.com>
+> ---
+>   drivers/iommu/intel-iommu.c | 42 +++++++++++++++++++++++++++++--------
+>   1 file changed, 33 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 8e0a4e2ff77f..2e00e8708f06 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -337,6 +337,8 @@ static LIST_HEAD(dmar_rmrr_units);
+>   #define for_each_rmrr_units(rmrr) \
+>   	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+>   
+> +static struct iommu_resv_region *isa_resv_region;
+> +
+>   /* bitmap for indexing intel_iommus */
+>   static int g_num_of_iommus;
+>   
+> @@ -2780,26 +2782,34 @@ static inline int iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
+>   					  rmrr->end_address);
+>   }
+>   
+> +static inline struct iommu_resv_region *iommu_get_isa_resv_region(void)
+> +{
+> +	if (!isa_resv_region)
+> +		isa_resv_region = iommu_alloc_resv_region(0,
+> +				16*1024*1024,
+> +				0, IOMMU_RESV_DIRECT);
+> +
+> +	return isa_resv_region;
+> +}
+> +
+>   #ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+> -static inline void iommu_prepare_isa(void)
+> +static inline void iommu_prepare_isa(struct pci_dev *pdev)
+>   {
+> -	struct pci_dev *pdev;
+>   	int ret;
+> +	struct iommu_resv_region *reg = iommu_get_isa_resv_region();
+>   
+> -	pdev = pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
+> -	if (!pdev)
+> +	if (!reg)
+>   		return;
+>   
+>   	pr_info("Prepare 0-16MiB unity mapping for LPC\n");
+> -	ret = iommu_prepare_identity_map(&pdev->dev, 0, 16*1024*1024 - 1);
+> +	ret = iommu_prepare_identity_map(&pdev->dev, reg->start,
+> +			reg->start + reg->length - 1);
+>   
+>   	if (ret)
+>   		pr_err("Failed to create 0-16MiB identity map - floppy might not work\n");
+> -
+> -	pci_dev_put(pdev);
+>   }
+>   #else
+> -static inline void iommu_prepare_isa(void)
+> +static inline void iommu_prepare_isa(struct pci_dev *pdev)
+>   {
+>   	return;
+>   }
+> @@ -3289,6 +3299,7 @@ static int __init init_dmars(void)
+>   	struct dmar_rmrr_unit *rmrr;
+>   	bool copied_tables = false;
+>   	struct device *dev;
+> +	struct pci_dev *pdev;
+>   	struct intel_iommu *iommu;
+>   	int i, ret;
+>   
+> @@ -3469,7 +3480,11 @@ static int __init init_dmars(void)
+>   		}
+>   	}
+>   
+> -	iommu_prepare_isa();
+> +	pdev = pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
+> +	if (pdev) {
+> +		iommu_prepare_isa(pdev);
+> +		pci_dev_put(pdev);
+> +	}
+>   
+>   domains_done:
+>   
+> @@ -5266,6 +5281,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
+>   	struct iommu_resv_region *reg;
+>   	struct dmar_rmrr_unit *rmrr;
+>   	struct device *i_dev;
+> +	struct pci_dev *pdev;
+>   	int i;
+>   
+>   	rcu_read_lock();
+> @@ -5280,6 +5296,14 @@ static void intel_iommu_get_resv_regions(struct device *device,
+>   	}
+>   	rcu_read_unlock();
+>   
+> +	if (dev_is_pci(device)) {
+> +		pdev = to_pci_dev(device);
+> +		if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
+> +			reg = iommu_get_isa_resv_region();
+> +			list_add_tail(&reg->list, head);
+> +		}
+> +	}
+> +
+
+Just wondering why not just
+
++#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
++	if (dev_is_pci(device)) {
++		pdev = to_pci_dev(device);
++		if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
++			reg = iommu_alloc_resv_region(0,
++				16*1024*1024,
++				0, IOMMU_RESV_DIRECT);
++			if (reg)
++				list_add_tail(&reg->list, head);
++		}
++	}
++#endif
+
+and, remove all other related code?
+
+Best regards,
+Lu Baolu
