@@ -1,26 +1,33 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [RESEND][PATCH] iommu/amd: Fix NULL dereference bug in
- match_hid_uid
-Date: Fri, 15 Mar 2019 16:24:47 +0100
-Message-ID: <20190315152447.GA16974@8bytes.org>
-References: <1552485204-11381-1-git-send-email-aaron.ma@canonical.com>
+Subject: Re: [PATCH] iommu/amd: Fix a null pointer dereference for ACPI
+ devices
+Date: Fri, 15 Mar 2019 16:27:48 +0100
+Message-ID: <20190315152747.GB16974@8bytes.org>
+References: <20190308041210.84518-1-chiu@endlessm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1552485204-11381-1-git-send-email-aaron.ma@canonical.com>
+In-Reply-To: <20190308041210.84518-1-chiu@endlessm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Aaron Ma <aaron.ma@canonical.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Chris Chiu <chiu@endlessm.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux@endlessm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 13, 2019 at 09:53:24PM +0800, Aaron Ma wrote:
-> Add a non-NULL check to fix potential NULL pointer dereference
-> Cleanup code to call function once.
-> 
-> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-> ---
->  drivers/iommu/amd_iommu.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
+Hi Chris,
 
-Applied with cleaned-up coding style and a Fixes tag, thanks.
+On Fri, Mar 08, 2019 at 12:12:10PM +0800, Chris Chiu wrote:
+> On ASUS laptop X512DK with the realtek USB card reader, the NULL
+> pointer dereference happens while bringing up the rtsx_usb driver.
+
+Thanks for your patch, but I applied
+
+	https://lore.kernel.org/lkml/1552485204-11381-1-git-send-email-aaron.ma@canonical.com/
+
+instead because it fixes the issue where the NULL-ptr dereference
+happens. This also covers all future uses of the match_hid_uid()
+function.
+
+Thanks,
+
+	Joerg
