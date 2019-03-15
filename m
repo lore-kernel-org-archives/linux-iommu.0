@@ -1,136 +1,221 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 22/22] vfio: Document nested stage control
-Date: Fri, 15 Mar 2019 17:09:06 +0100
-Message-ID: <20190315160906.12900-23-eric.auger@redhat.com>
-References: <20190315160906.12900-1-eric.auger@redhat.com>
+From: Helen Koike <helen.koike@collabora.com>
+Subject: Re: [PATCH v2 1/5] drm/rockchip: fix fb references in async update
+Date: Fri, 15 Mar 2019 13:54:31 -0300
+Message-ID: <db673e6a-7dbb-f529-69b8-afff68dc91db@collabora.com>
+References: <20190312022204.2775-1-helen.koike@collabora.com>
+ <20190312022204.2775-2-helen.koike@collabora.com>
+ <20190312073438.05ad8173@collabora.com>
+ <f888a2d0-c6b1-8995-7254-ba2923dd22f9@collabora.com>
+ <20190312165243.5b771e4a@collabora.com>
+ <CAAFQd5CCEDaxLbw0E9NJJ-tEcHd8-Lidvcvt8qfPAnKu7uuj8w@mail.gmail.com>
+ <05750143-708b-b84e-af67-82ec6815bd89@daenzer.net>
+ <ed44e1f4-07da-b1cb-b5cb-d34d29758502@collabora.com>
+ <d91d5582-3ccf-2249-21ee-9ccf115096b2@daenzer.net>
+ <dd7de9ff-0ac8-80fd-b88b-250bdf988921@collabora.com>
+ <61b8420e-9b63-b67f-e9a8-fb8a0cb7d219@daenzer.net>
+ <20190315112519.0af4fdc0@collabora.com>
+ <e51a154f-ff4c-b4bc-4075-1a662ae89364@daenzer.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190315160906.12900-1-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, vincent.stehle-5wv7dgnIgG8@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <e51a154f-ff4c-b4bc-4075-1a662ae89364@daenzer.net>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel@daenzer.net>, Boris Brezillon <boris.brezillon@collabora.com>
+Cc: =?UTF-8?Q?St=c3=a9phane_Marchesin?= <marcheu@google.com>, Sean Paul <seanpaul@google.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@ffwll.ch>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Tomasz Figa <tfiga@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, kernel@collabora.com, nicholas.kazlauskas@amd.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-New iotcls were introduced to pass information about guest stage1
-to the host through VFIO. Let's document the nested stage control.
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
----
+On 3/15/19 8:29 AM, Michel Dänzer wrote:
+> On 2019-03-15 11:25 a.m., Boris Brezillon wrote:
+>> On Fri, 15 Mar 2019 11:11:36 +0100
+>> Michel Dänzer <michel@daenzer.net> wrote:
+>>
+>>> On 2019-03-14 6:51 p.m., Helen Koike wrote:
+>>>> On 3/14/19 6:15 AM, Michel Dänzer wrote:  
+>>>>> On 2019-03-13 7:08 p.m., Helen Koike wrote:  
+>>>>>> On 3/13/19 6:58 AM, Michel Dänzer wrote:  
+>>>>>>> On 2019-03-13 4:42 a.m., Tomasz Figa wrote:  
+>>>>>>>> On Wed, Mar 13, 2019 at 12:52 AM Boris Brezillon
+>>>>>>>> <boris.brezillon@collabora.com> wrote:  
+>>>>>>>>> On Tue, 12 Mar 2019 12:34:45 -0300
+>>>>>>>>> Helen Koike <helen.koike@collabora.com> wrote:  
+>>>>>>>>>> On 3/12/19 3:34 AM, Boris Brezillon wrote:  
+>>>>>>>>>>> On Mon, 11 Mar 2019 23:21:59 -0300
+>>>>>>>>>>> Helen Koike <helen.koike@collabora.com> wrote:
+>>>>>>>>>>>  
+>>>>>>>>>>>> --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+>>>>>>>>>>>> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+>>>>>>>>>>>> @@ -912,30 +912,31 @@ static void vop_plane_atomic_async_update(struct drm_plane *plane,
+>>>>>>>>>>>>                                      struct drm_plane_state *new_state)
+>>>>>>>>>>>>  {
+>>>>>>>>>>>>    struct vop *vop = to_vop(plane->state->crtc);
+>>>>>>>>>>>> -  struct drm_plane_state *plane_state;
+>>>>>>>>>>>> +  struct drm_framebuffer *old_fb = plane->state->fb;
+>>>>>>>>>>>>
+>>>>>>>>>>>> -  plane_state = plane->funcs->atomic_duplicate_state(plane);
+>>>>>>>>>>>> -  plane_state->crtc_x = new_state->crtc_x;
+>>>>>>>>>>>> -  plane_state->crtc_y = new_state->crtc_y;
+>>>>>>>>>>>> -  plane_state->crtc_h = new_state->crtc_h;
+>>>>>>>>>>>> -  plane_state->crtc_w = new_state->crtc_w;
+>>>>>>>>>>>> -  plane_state->src_x = new_state->src_x;
+>>>>>>>>>>>> -  plane_state->src_y = new_state->src_y;
+>>>>>>>>>>>> -  plane_state->src_h = new_state->src_h;
+>>>>>>>>>>>> -  plane_state->src_w = new_state->src_w;
+>>>>>>>>>>>> -
+>>>>>>>>>>>> -  if (plane_state->fb != new_state->fb)
+>>>>>>>>>>>> -          drm_atomic_set_fb_for_plane(plane_state, new_state->fb);
+>>>>>>>>>>>> -
+>>>>>>>>>>>> -  swap(plane_state, plane->state);
+>>>>>>>>>>>> -
+>>>>>>>>>>>> -  if (plane->state->fb && plane->state->fb != new_state->fb) {
+>>>>>>>>>>>> +  /*
+>>>>>>>>>>>> +   * A scanout can still be occurring, so we can't drop the reference to
+>>>>>>>>>>>> +   * the old framebuffer. To solve this we get a reference to old_fb and
+>>>>>>>>>>>> +   * set a worker to release it later.  
+>>>>>>>>>>>
+>>>>>>>>>>> Hm, doesn't look like an async update to me if we have to wait for the
+>>>>>>>>>>> next VBLANK to happen to get the new content on the screen. Maybe we
+>>>>>>>>>>> should reject async updates when old_fb != new_fb in the rk  
+>>>>>>>>>>> ->async_check() hook.  
+>>>>>>>>>>
+>>>>>>>>>> Unless I am misunderstanding this, we don't wait here, we just grab a
+>>>>>>>>>> reference to the fb in case it is being still used by the hw, so it
+>>>>>>>>>> doesn't get released prematurely.  
+>>>>>>>>>
+>>>>>>>>> I was just reacting to the comment that says the new FB should stay
+>>>>>>>>> around until the next VBLANK event happens. If the FB must stay around
+>>>>>>>>> that probably means the HW is still using, which made me wonder if this
+>>>>>>>>> HW actually supports async update (where async means "update now and
+>>>>>>>>> don't care about about tearing"). Or maybe it takes some time to switch
+>>>>>>>>> to the new FB and waiting for the next VBLANK to release the old FB was
+>>>>>>>>> an easy solution to not wait for the flip to actually happen in  
+>>>>>>>>> ->async_update() (which is kind of a combination of async+non-blocking).  
+>>>>>>>>
+>>>>>>>> The hardware switches framebuffers on vblank, so whatever framebuffer
+>>>>>>>> is currently being scanned out from needs to stay there until the
+>>>>>>>> hardware switches to the new one in shadow registers. If that doesn't
+>>>>>>>> happen, you get IOMMU faults and the display controller stops working
+>>>>>>>> since we don't have any fault handling currently, just printing a
+>>>>>>>> message.  
+>>>>>>>
+>>>>>>> Sounds like your hardware doesn't actually support async flips. It's
+>>>>>>> probably better for the driver not to pretend otherwise.  
+>>>>>>
+>>>>>> I think wee need to clarify the meaning of the async_update callback
+>>>>>> (and we should clarify it in the docs).
+>>>>>>
+>>>>>> The way I understand what the async_update callback should do is: don't
+>>>>>> block (i.e. don't wait for the next vblank),  
+>>>>>
+>>>>> Note that those are two separate things. "Async flips" are about "don't
+>>>>> wait for vblank", not about "don't block".
+>>>>>
+>>>>>  
+>>>>>> and update the hw state at some point with the latest state from the
+>>>>>> last call to async_update.
+>>>>>>
+>>>>>> Which means that: any driver can implement the async_update callback,
+>>>>>> independently if it supports changing its state right away or not.
+>>>>>> If hw supports, async_update can change the hw state right away, if not,
+>>>>>> then changes will be applied in the next vblank (it can even amend the
+>>>>>> pending commit if there is one).
+>>>>>> With this, we can remove all the legacy cursor code to use the
+>>>>>> async_update callback, since async_update can be called 100 times before
+>>>>>> the next vblank, and the latest state will be set to the hw without
+>>>>>> waiting 100 vblanks.
+>>>>>>
+>>>>>> Please, let me know if this is your understanding as well. If not, then
+>>>>>> we need to remodel things.  
+>>>>>
+>>>>> While this may make sense for cursor updates, I don't think it does for
+>>>>> async flips. If the flip only actually takes effect during the next
+>>>>> vblank, it doesn't really fit the definition and userspace expectation
+>>>>> of an async flip. It's better to clearly communicate to userspace that
+>>>>> the hardware cannot do async flips, than to pretend it can and fake
+>>>>> them. Userspace has to deal with this anyway, since async flips weren't
+>>>>> always supported in general.  
+>>>>
+>>>> What do you think if we separate two concepts here:
+>>>>
+>>>> - amend mode: works like cursor updates, i.e, update the hw state at
+>>>> some point with the latest state from the last call to async_update. No
+>>>> special hardware support is required.
+>>>>
+>>>> - async update: update hw state immediately. This depends if the hw
+>>>> supports it or not.
+>>>>
+>>>> Every async update is an amend, but the opposite is not necessarily true.
+>>>>
+>>>> What do you think if we rename the current async_update to amend_update,
+>>>> and we add a parameter "force_async" to it? (or maybe
+>>>> force_immediate_update?)
+>>>> Then amend_check with force_async=1 would fail if the hardware doesn't
+>>>> support it (we could also add flags in the capabilities to inform
+>>>> userspace the expected behaviour of things and if the hw supports
+>>>> force_sync).
+>>>>
+>>>> Like this, we can implement the cursors using the amend_update (which is
+>>>> now called async_update), and async_flips with amend_update with
+>>>> force_async=1.  
+>>>
+>>> Might force_async make sense for cursor updates as well? I thought some
+>>> hardware supported HW cursor updates outside of vblank, but I'm not sure.
 
-v2 -> v3:
-- document the new fault API
+What I had in mind was actually:
+amend_update() -> could do a real async or not depending on the hw
+force_async=1 -> it means amend_update will fail if the hw doesn't
+support it.
 
-v1 -> v2:
-- use the new ioctl names
-- add doc related to fault handling
----
- Documentation/vfio.txt | 83 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
+>>>
+>>> Without force_async, are cursor updates always applied to the hardware
+>>> on the next vblank, even if the pending commit is delayed further (e.g.
+>>> because a fence it depends on doesn't signal before vblank)? If cursor
+>>> updates can be delayed beyond the next vblank, that can result in bad
+>>> user experience.
+>>
+>> You mean you have
+>>
+>> 1. sync/regular update pending (waiting on a fence)
+>> 2. async update on top of #1
+>>
+>> ?
+> 
+> Yeah.
+> 
+> 
 
-diff --git a/Documentation/vfio.txt b/Documentation/vfio.txt
-index f1a4d3c3ba0b..aab59ddf5ebd 100644
---- a/Documentation/vfio.txt
-+++ b/Documentation/vfio.txt
-@@ -239,6 +239,89 @@ group and can access them as follows::
- 	/* Gratuitous device reset and go... */
- 	ioctl(device, VFIO_DEVICE_RESET);
- 
-+IOMMU Dual Stage Control
-+------------------------
-+
-+Some IOMMUs support 2 stages/levels of translation. "Stage" corresponds to
-+the ARM terminology while "level" corresponds to Intel's VTD terminology. In
-+the following text we use either without distinction.
-+
-+This is useful when the guest is exposed with a virtual IOMMU and some
-+devices are assigned to the guest through VFIO. Then the guest OS can use
-+stage 1 (IOVA -> GPA), while the hypervisor uses stage 2 for VM isolation
-+(GPA -> HPA).
-+
-+The guest gets ownership of the stage 1 page tables and also owns stage 1
-+configuration structures. The hypervisor owns the root configuration structure
-+(for security reason), including stage 2 configuration. This works as long
-+configuration structures and page table format are compatible between the
-+virtual IOMMU and the physical IOMMU.
-+
-+Assuming the HW supports it, this nested mode is selected by choosing the
-+VFIO_TYPE1_NESTING_IOMMU type through:
-+
-+ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_NESTING_IOMMU);
-+
-+This forces the hypervisor to use the stage 2, leaving stage 1 available for
-+guest usage.
-+
-+Once groups are attached to the container, the guest stage 1 translation
-+configuration data can be passed to VFIO by using
-+
-+ioctl(container, VFIO_IOMMU_BIND_PASID_TABLE, &pasid_table_info);
-+
-+This allows to combine guest stage 1 configuration structure along with
-+hypervisor stage 2 configuration structure. stage 1 configuration structures
-+are dependent on the IOMMU type.
-+
-+As the stage 1 translation is fully delegated to the HW, physical events that
-+may occur (especially translation faults), need to be propagated up to
-+the virtualizer and re-injected into the guest.
-+
-+The userspace must be prepared to receive faults. The VFIO-PCI device
-+exposes 2 regions dedicated to HW faults: one read-only "producer" fault
-+region (kernel is the producer and writes into this region) and one
-+write-only "consumer" fault region, type/subtype respectively:
-+- VFIO_REGION_TYPE_NESTED/VFIO_REGION_SUBTYPE_NESTED_FAULT_PROD
-+- VFIO_REGION_TYPE_NESTED/VFIO_REGION_SUBTYPE_NESTED_FAULT_CONS
-+
-+The producer fault region exposes a VFIO_REGION_INFO_CAP_PRODUCER_FAULT
-+region capability that allows the userspace to retrieve the max fault
-+ABI version supported by the kernel.
-+
-+The ABI version can be negotiated: the userspace writes the version it
-+wants in the consumer region (greater or equal than 1). Once set, the
-+ABI version cannot be changed.
-+
-+Then by using VFIO_DEVICE_SET_IRQS along with the VFIO_PCI_DMA_FAULT_IRQ_INDEX
-+index, the virtualizer can register an eventfd signalled whenever a fault is
-+observed at physical level.
-+
-+The kernel writes the fault records formatted according to the negotiated
-+ABI version in the producer region fault queue. This part of the producer
-+fault region can be mmapped (see VFIO_REGION_INFO_CAP_SPARSE_MMAP result).
-+
-+When the userspace consumes a fault in the queue, it should increment
-+the consumer index to allow new fault records to replace the used ones.
-+The queue size and the entry size can be retrieved in the producer region.
-+The consumer index should never overshoot the producer index as in any
-+other circular buffer scheme. Also it must be less than the queue size
-+otherwise the change is ignored by the kernel.
-+
-+When the guest invalidates stage 1 related caches, invalidations must be
-+forwarded to the host through
-+ioctl(container, VFIO_IOMMU_CACHE_INVALIDATE, &inv_data);
-+Those invalidations can happen at various granularity levels, page, context, ...
-+
-+The ARM SMMU specification introduces another challenge: MSIs are translated by
-+both the virtual SMMU and the physical SMMU. To build a nested mapping for the
-+IOVA programmed into the assigned device, the guest needs to pass its IOVA/MSI
-+doorbell GPA binding to the host. Then the hypervisor can build a nested stage 2
-+binding eventually translating into the physical MSI doorbell.
-+
-+This is achieved by
-+ioctl(container, VFIO_IOMMU_BIND_MSI, &guest_binding);
-+
- VFIO User API
- -------------------------------------------------------------------------------
- 
--- 
-2.20.1
+Actually I was thinking in another solution (without this force_async flag).
+
+Instead of having this force_async, we can have two capabilities:
+
+CAP_ASYNC: means the hw supports real async
+CAP_AMEND: means that the driver supports amend the in-flight update so
+that the new one will take its place in the queue (i.e. the current
+legacy cursor behavior).
+
+If (!CAP_AMEND && !CAP_ASYNC)
+	* use a sync update or update the FB content in place without flipping
+buffers.
+	* legacy cursor update will fallback to sync update.
+	* async flip is not supported.
+
+If (CAP_AMEND && !CAP_ASYNC)
+	* legacy cursor update will amend in-flight pending updates (like how
+rockchip does now) or it will fallback to a sync update if not possible.
+	* async flip is not supported.
+
+If (!CAP_AMEND && CAP_ASYNC)
+	* not sure yet what this would mean.
+
+If (CAP_AMEND && CAP_ASYNC)
+	* legacy cursor update will perform real async update.
+	* async flip is supported.
+
+
+What do you think?
+
+Regards
+Helen
