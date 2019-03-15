@@ -1,74 +1,57 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fix for Linux v5.1-rc1
-Date: Fri, 15 Mar 2019 16:44:07 +0100
-Message-ID: <20190315154359.GA22666@8bytes.org>
+From: Robert Richter <rrichter@marvell.com>
+Subject: [PATCH] iommu/iova: Fix tracking of recently failed iova address size
+Date: Fri, 15 Mar 2019 15:56:20 +0000
+Message-ID: <20190315155553.11857-1-rrichter@marvell.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="SLDf9lqlvOQaIe6s"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Ganapatrao Kulkarni <gkulkarni@marvell.com>, Robin Murphy <robin.murphy@arm.com>, Robert Richter <rrichter@marvell.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
+We track the smallest size that failed for a 32 bit allocation. The
+Size decreases only and if we actually walked the tree and noticed an
+allocation failure. Current code is broken and wrongly updates the
+size value even if we did not try an allocation. This leads to
+increased size values and we might go the slow path again even if we
+have seen a failure before for the same or a smaller size.
 
---SLDf9lqlvOQaIe6s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Cc: <stable@vger.kernel.org> # 4.20+
+Fixes: bee60e94a1e2 ("iommu/iova: Optimise attempts to allocate iova from 3=
+2bit address range")
+Signed-off-by: Robert Richter <rrichter@marvell.com>
+---
+ drivers/iommu/iova.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Hi Linus,
-
-The following changes since commit d05e4c8600c36084ce9de6249bb972c9bdd75b7e:
-
-  Merge branches 'iommu/fixes', 'arm/msm', 'arm/tegra', 'arm/mediatek', 'x86/vt-d', 'x86/amd', 'hyper-v' and 'core' into next (2019-03-01 11:24:51 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v5.1-rc1
-
-for you to fetch changes up to bb6bccba390c7d743c1e4427de4ef284c8cc6869:
-
-  iommu/amd: Fix NULL dereference bug in match_hid_uid (2019-03-15 16:22:05 +0100)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v5.1-rc1
-
-	- Fix a NULL-pointer dereference issue in the ACPI device
-	  matching code of the AMD IOMMU driver
-
-----------------------------------------------------------------
-Aaron Ma (1):
-      iommu/amd: Fix NULL dereference bug in match_hid_uid
-
- drivers/iommu/amd_iommu.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---SLDf9lqlvOQaIe6s
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAlyLyD8ACgkQK/BELZcB
-GuMkCQ/+LEAmk4cT1319VxXkGldJKXTDL5UJJL4pokGp+q5oUdE/gpCAmdD7VF9W
-5uErCaYiNjR4gLrdyJijnNvfHo2h39ghdU4dgwlQy5VcK6nNxh0hl9vwmCf2nxOD
-GliUTdjad+b6WTBSKgJ/T+sYObt2e0uLACS5kRzabE09z6pT/oJt23O63yFXUxo8
-s/XakYMAfULoLmP891uPx24BYWQ+ssAevjF/430yuGhDCmJW+/JcISiMi+KIL3e8
-SVjZYEY1DN3fUg7RyswSA/NGQzuziSKerhCcULYJmU/CNCCsU4y1NVyTwIXjKmvw
-ZuLW9vcsBoAL2BHNRMJes2nwTAq+9l9HvgRXYY3x4iyqCWFmo1OAkWNY7uG2FEhA
-/5o3m8hApq3FGjjYVtp8v6sTxFVmB1/KfRQyQ8BRaGEcxWWClAAsDc3tsxEJc/JZ
-YugddwI0pWy4Ff9/63olwXslj/s6QncaKgJS4gh55PyO+3HZOKf1OM0mQY0eTPau
-syvpFTF4bZ8X5qq2yrLifVBaDD+6VQk+XHFDwJCbcioLWCsuxSmHxeFPgbb1Zi/i
-+U0ERsakVXPwahatioD9zh5lEPCFamupeA0x2W3iAH4G8CpNAEjpFS2ZGhB8dIyv
-Ae2JNNtxVd3MIW0FjIWvyA4pa4RxWc8lj9cWEUm/nG6xwXshgEk=
-=8R5f
------END PGP SIGNATURE-----
-
---SLDf9lqlvOQaIe6s--
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index f8d3ba247523..2de8122e218f 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -207,8 +207,10 @@ static int __alloc_and_insert_iova_range(struct iova_d=
+omain *iovad,
+ 		curr_iova =3D rb_entry(curr, struct iova, node);
+ 	} while (curr && new_pfn <=3D curr_iova->pfn_hi);
+=20
+-	if (limit_pfn < size || new_pfn < iovad->start_pfn)
++	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
++		iovad->max32_alloc_size =3D size;
+ 		goto iova32_full;
++	}
+=20
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+ 	new->pfn_lo =3D new_pfn;
+@@ -222,7 +224,6 @@ static int __alloc_and_insert_iova_range(struct iova_do=
+main *iovad,
+ 	return 0;
+=20
+ iova32_full:
+-	iovad->max32_alloc_size =3D size;
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 	return -ENOMEM;
+ }
+--=20
+2.20.1
