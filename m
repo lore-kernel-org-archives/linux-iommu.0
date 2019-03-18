@@ -1,50 +1,73 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC PATCH v1 04/15] iommu: Add DOMAIN_ATTR_PTBASE
-Date: Mon, 18 Mar 2019 08:19:12 -0600
-Message-ID: <20190318141912.GA10168@jcrouse1-lnx.qualcomm.com>
-References: <1551469117-3404-1-git-send-email-jcrouse@codeaurora.org>
- <1551469117-3404-5-git-send-email-jcrouse@codeaurora.org>
- <20190318095321.GA5417@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/iova: Fix tracking of recently failed iova address
+ size
+Date: Mon, 18 Mar 2019 15:19:23 +0000
+Message-ID: <7515342b-f4b2-9406-5249-93ae7880835a@arm.com>
+References: <20190315155553.11857-1-rrichter@marvell.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20190318095321.GA5417-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hoegsberg-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190315155553.11857-1-rrichter@marvell.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robert Richter <rrichter@marvell.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Ganapatrao Kulkarni <gkulkarni@marvell.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBNYXIgMTgsIDIwMTkgYXQgMTA6NTM6MjFBTSArMDEwMCwgSm9lcmcgUm9lZGVsIHdy
-b3RlOgo+IE9uIEZyaSwgTWFyIDAxLCAyMDE5IGF0IDEyOjM4OjI2UE0gLTA3MDAsIEpvcmRhbiBD
-cm91c2Ugd3JvdGU6Cj4gPiBBZGQgYW4gYXR0cmlidXRlIHRvIHJldHVybiB0aGUgYmFzZSBhZGRy
-ZXNzIG9mIHRoZSBwYWdldGFibGUuIFRoaXMgaXMgdXNlZAo+ID4gYnkgYXV4aWxpYXJ5IGRvbWFp
-bnMgZnJvbSBhcm0tc21tdSB0byByZXR1cm4gdGhlIGFkZHJlc3Mgb2YgdGhlIHBhZ2V0YWJsZQo+
-ID4gdG8gdGhlIGxlYWYgZHJpdmVyIHNvIHRoYXQgaXQgY2FuIHNldCB0aGUgYXBwcm9wcmlhdGUg
-cGFnZXRhYmxlIHRocm91Z2gKPiA+IGl0J3Mgb3duIG1lYW5zLgo+IAo+IFdoYXQgaXMgdGhpcyBn
-b2luZyB0byBiZSB1c2VkIGZvcj8gUGFnZS10YWJsZSBtYW5hZ2VtZW50IGlzIHN1cHBvc2VkIHRv
-Cj4gaGFwcGVuIGluIHRoZSBhcm0tc21tdSBkcml2ZXIgYW5kIHRoZSBncHUgZHJpdmVyIG9ubHkg
-bWFrZXMgY2hhbmdlcwo+IHRocm91Z2ggaW9tbXVfbWFwL2lvbW11X3VubWFwIGNhbGxzLgoKQWRy
-ZW5vIEdQVXMgY2FuIGFuIGludGVybmFsIG1lY2hhbmlzbSB0byBzd2l0Y2ggdGhlIHBhZ2V0YWJs
-ZSBhZGRyZXNzIGluIHRoZQphdHRhY2hlZCBhcm0tc21tdSB2MiBJT01NVSBzbyB0aGF0IGVhY2gg
-aW5kaXZpZHVhbCByZW5kZXJpbmcgcHJvY2VzcyBjYW4gaGF2ZQp0aGVpciBvd24gcGFnZXRhYmxl
-LiBUaGUgZHJpdmVyIHVzZXMgaW9tbXVfbWFwIGFuZCBpb21tdV91bm1hcCB0byB3cml0ZQp0aGUg
-cGFnZXRhYmxlIGJ1dCB0aGUgYWRkcmVzcyBmb3IgZWFjaCBpbmRpdmlkdWFsIHBhZ2V0YWJsZSBu
-ZWVkcyB0byBiZSBxdWVyaWVkCnNvIGl0IGNhbiBiZSBzZW50IHRvIHRoZSBoYXJkd2FyZS4gWW91
-IGNhbiBzZWUgdGhlIGRyaXZlciBzcGVjaWZpYyBjb2RlIHRoYXQKZG9lcyB0aGlzIGhlcmU6Cgpo
-dHRwczovL3BhdGNod29yay5mcmVlZGVza3RvcC5vcmcvcGF0Y2gvMjg5NTA3Lz9zZXJpZXM9NTc0
-NDEmcmV2PTEKCkpvcmRhbgoKLS0gClRoZSBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5j
-LiBpcyBhIG1lbWJlciBvZiBDb2RlIEF1cm9yYSBGb3J1bSwKYSBMaW51eCBGb3VuZGF0aW9uIENv
-bGxhYm9yYXRpdmUgUHJvamVjdApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9m
-cmVlZHJlbm8=
+On 15/03/2019 15:56, Robert Richter wrote:
+> We track the smallest size that failed for a 32 bit allocation. The
+> Size decreases only and if we actually walked the tree and noticed an
+> allocation failure. Current code is broken and wrongly updates the
+> size value even if we did not try an allocation. This leads to
+> increased size values and we might go the slow path again even if we
+> have seen a failure before for the same or a smaller size.
+
+That description wasn't too clear (since it rather contradicts itself by 
+starting off with "XYZ happens" when the whole point is that XYZ doesn't 
+actually happen properly), but having gone and looked at the code in 
+context I think I understand it now - specifically, it's that the 
+early-exit path for detecting that a 32-bit allocation request is too 
+big to possibly succeed should never have gone via the route which 
+assigns to max32_alloc_size.
+
+In that respect, the diff looks correct, so modulo possibly tweaking the 
+commit message,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+Thanks,
+Robin.
+
+> Cc: <stable@vger.kernel.org> # 4.20+
+> Fixes: bee60e94a1e2 ("iommu/iova: Optimise attempts to allocate iova from 32bit address range")
+> Signed-off-by: Robert Richter <rrichter@marvell.com>
+> ---
+>   drivers/iommu/iova.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index f8d3ba247523..2de8122e218f 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -207,8 +207,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   		curr_iova = rb_entry(curr, struct iova, node);
+>   	} while (curr && new_pfn <= curr_iova->pfn_hi);
+>   
+> -	if (limit_pfn < size || new_pfn < iovad->start_pfn)
+> +	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+> +		iovad->max32_alloc_size = size;
+>   		goto iova32_full;
+> +	}
+>   
+>   	/* pfn_lo will point to size aligned address if size_aligned is set */
+>   	new->pfn_lo = new_pfn;
+> @@ -222,7 +224,6 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   	return 0;
+>   
+>   iova32_full:
+> -	iovad->max32_alloc_size = size;
+>   	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>   	return -ENOMEM;
+>   }
+> 
