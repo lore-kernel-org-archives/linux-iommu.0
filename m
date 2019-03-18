@@ -1,71 +1,50 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2 1/2] iommu/arm-smmu-v3: make sure the stale caching of L1STD are invalid
-Date: Mon, 18 Mar 2019 21:12:42 +0800
-Message-ID: <20190318131243.20716-2-thunder.leizhen@huawei.com>
-References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [RFC PATCH v1 04/15] iommu: Add DOMAIN_ATTR_PTBASE
+Date: Mon, 18 Mar 2019 08:19:12 -0600
+Message-ID: <20190318141912.GA10168@jcrouse1-lnx.qualcomm.com>
+References: <1551469117-3404-1-git-send-email-jcrouse@codeaurora.org>
+ <1551469117-3404-5-git-send-email-jcrouse@codeaurora.org>
+ <20190318095321.GA5417@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190318131243.20716-1-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190318095321.GA5417-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hoegsberg-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-After the content of L1STD(Level 1 Stream Table Descriptor) in DDR has been
-modified, should make sure the cached copies be invalidated.
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index d3880010c6cfc8c..9b6afa8e69f70f6 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1071,13 +1071,14 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
- 	*dst = cpu_to_le64(val);
- }
- 
--static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu, u32 sid)
-+static void __arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu,
-+					 u32 sid, bool leaf)
- {
- 	struct arm_smmu_cmdq_ent cmd = {
- 		.opcode	= CMDQ_OP_CFGI_STE,
- 		.cfgi	= {
- 			.sid	= sid,
--			.leaf	= true,
-+			.leaf	= leaf,
- 		},
- 	};
- 
-@@ -1085,6 +1086,16 @@ static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu, u32 sid)
- 	arm_smmu_cmdq_issue_sync(smmu);
- }
- 
-+static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu, u32 sid)
-+{
-+	__arm_smmu_sync_ste_for_sid(smmu, sid, true);
-+}
-+
-+static void arm_smmu_sync_std_for_sid(struct arm_smmu_device *smmu, u32 sid)
-+{
-+	__arm_smmu_sync_ste_for_sid(smmu, sid, false);
-+}
-+
- static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 				      __le64 *dst, struct arm_smmu_strtab_ent *ste)
- {
-@@ -1232,6 +1243,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
- 
- 	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
- 	arm_smmu_write_strtab_l1_desc(strtab, desc);
-+	arm_smmu_sync_std_for_sid(smmu, sid);
- 	return 0;
- }
- 
--- 
-1.8.3
+T24gTW9uLCBNYXIgMTgsIDIwMTkgYXQgMTA6NTM6MjFBTSArMDEwMCwgSm9lcmcgUm9lZGVsIHdy
+b3RlOgo+IE9uIEZyaSwgTWFyIDAxLCAyMDE5IGF0IDEyOjM4OjI2UE0gLTA3MDAsIEpvcmRhbiBD
+cm91c2Ugd3JvdGU6Cj4gPiBBZGQgYW4gYXR0cmlidXRlIHRvIHJldHVybiB0aGUgYmFzZSBhZGRy
+ZXNzIG9mIHRoZSBwYWdldGFibGUuIFRoaXMgaXMgdXNlZAo+ID4gYnkgYXV4aWxpYXJ5IGRvbWFp
+bnMgZnJvbSBhcm0tc21tdSB0byByZXR1cm4gdGhlIGFkZHJlc3Mgb2YgdGhlIHBhZ2V0YWJsZQo+
+ID4gdG8gdGhlIGxlYWYgZHJpdmVyIHNvIHRoYXQgaXQgY2FuIHNldCB0aGUgYXBwcm9wcmlhdGUg
+cGFnZXRhYmxlIHRocm91Z2gKPiA+IGl0J3Mgb3duIG1lYW5zLgo+IAo+IFdoYXQgaXMgdGhpcyBn
+b2luZyB0byBiZSB1c2VkIGZvcj8gUGFnZS10YWJsZSBtYW5hZ2VtZW50IGlzIHN1cHBvc2VkIHRv
+Cj4gaGFwcGVuIGluIHRoZSBhcm0tc21tdSBkcml2ZXIgYW5kIHRoZSBncHUgZHJpdmVyIG9ubHkg
+bWFrZXMgY2hhbmdlcwo+IHRocm91Z2ggaW9tbXVfbWFwL2lvbW11X3VubWFwIGNhbGxzLgoKQWRy
+ZW5vIEdQVXMgY2FuIGFuIGludGVybmFsIG1lY2hhbmlzbSB0byBzd2l0Y2ggdGhlIHBhZ2V0YWJs
+ZSBhZGRyZXNzIGluIHRoZQphdHRhY2hlZCBhcm0tc21tdSB2MiBJT01NVSBzbyB0aGF0IGVhY2gg
+aW5kaXZpZHVhbCByZW5kZXJpbmcgcHJvY2VzcyBjYW4gaGF2ZQp0aGVpciBvd24gcGFnZXRhYmxl
+LiBUaGUgZHJpdmVyIHVzZXMgaW9tbXVfbWFwIGFuZCBpb21tdV91bm1hcCB0byB3cml0ZQp0aGUg
+cGFnZXRhYmxlIGJ1dCB0aGUgYWRkcmVzcyBmb3IgZWFjaCBpbmRpdmlkdWFsIHBhZ2V0YWJsZSBu
+ZWVkcyB0byBiZSBxdWVyaWVkCnNvIGl0IGNhbiBiZSBzZW50IHRvIHRoZSBoYXJkd2FyZS4gWW91
+IGNhbiBzZWUgdGhlIGRyaXZlciBzcGVjaWZpYyBjb2RlIHRoYXQKZG9lcyB0aGlzIGhlcmU6Cgpo
+dHRwczovL3BhdGNod29yay5mcmVlZGVza3RvcC5vcmcvcGF0Y2gvMjg5NTA3Lz9zZXJpZXM9NTc0
+NDEmcmV2PTEKCkpvcmRhbgoKLS0gClRoZSBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5j
+LiBpcyBhIG1lbWJlciBvZiBDb2RlIEF1cm9yYSBGb3J1bSwKYSBMaW51eCBGb3VuZGF0aW9uIENv
+bGxhYm9yYXRpdmUgUHJvamVjdApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVz
+a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9m
+cmVlZHJlbm8=
