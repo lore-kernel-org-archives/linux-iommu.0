@@ -1,49 +1,57 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: [RESEND PATCH v4 6/9] iommu/dma-iommu.c: Convert to use
- vm_map_pages()
-Date: Tue, 19 Mar 2019 07:58:19 +0530
-Message-ID: <80c3d220fc6ada73a88ce43ca049afb55a889258.1552921225.git.jrdr.linux@gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
+Date: Tue, 19 Mar 2019 15:41:43 +0800
+Message-ID: <CANMq1KBKF9aRj+8t+AQusNLOF5jrHJ4qY5C00AKXkO6e-8wKuQ@mail.gmail.com>
+References: <20181210011504.122604-1-drinkcat@chromium.org>
+ <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
+ <20190111102155.in5rctq5krs4ewfi@8bytes.org> <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
+ <789fb2e6-0d80-b6de-adf3-57180a50ec3e@suse.cz> <CANMq1KCfhWdWtXP_PRd_LEEcWV8SQg=hOy4V7_grqtL873uUCg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
+In-Reply-To: <CANMq1KCfhWdWtXP_PRd_LEEcWV8SQg=hOy4V7_grqtL873uUCg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, joro@8bytes.org, linux@armlinux.org.uk, robin.murphy@arm.com
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>h
 List-Id: iommu@lists.linux-foundation.org
 
-Convert to use vm_map_pages() to map range of kernel
-memory to user vma.
+On Mon, Feb 25, 2019 at 8:23 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
+>
+> On Thu, Feb 14, 2019 at 1:12 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+> >
+> > On 1/22/19 11:51 PM, Nicolas Boichat wrote:
+> > > Hi Andrew,
+> > >
+> > > On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
+> > >>
+> > >> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
+> > >> > Does anyone have any further comment on this series? If not, which
+> > >> > maintainer is going to pick this up? I assume Andrew Morton?
+> > >>
+> > >> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
+> > >> this should go through mm.
+> > >
+> > > Gentle ping on this series, it seems like it's better if it goes
+> > > through your tree.
+> > >
+> > > Series still applies cleanly on linux-next, but I'm happy to resend if
+> > > that helps.
+> >
+> > Ping, Andrew?
+>
+> Another gentle ping, I still don't see these patches in mmot[ms]. Thanks.
 
-Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
----
- drivers/iommu/dma-iommu.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+Andrew: AFAICT this still applies cleanly on linux-next/master, so I
+don't plan to resend... is there any other issues with this series?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d19f3d6..bacebff 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -620,17 +620,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 
- int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
- {
--	unsigned long uaddr = vma->vm_start;
--	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	int ret = -ENXIO;
--
--	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
--		ret = vm_insert_page(vma, uaddr, pages[i]);
--		if (ret)
--			break;
--		uaddr += PAGE_SIZE;
--	}
--	return ret;
-+	return vm_map_pages(vma, pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
- }
- 
- static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
--- 
-1.9.1
+This is a regression, so it'd be nice to have it fixed in mainline, eventually.
+
+Thanks,
+
+> > > Thanks!
+> > >
+> > >> Regards,
+> > >>
+> > >>         Joerg
+> > >
+> >
