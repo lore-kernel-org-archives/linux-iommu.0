@@ -1,57 +1,83 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Tue, 19 Mar 2019 15:41:43 +0800
-Message-ID: <CANMq1KBKF9aRj+8t+AQusNLOF5jrHJ4qY5C00AKXkO6e-8wKuQ@mail.gmail.com>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
- <20190111102155.in5rctq5krs4ewfi@8bytes.org> <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
- <789fb2e6-0d80-b6de-adf3-57180a50ec3e@suse.cz> <CANMq1KCfhWdWtXP_PRd_LEEcWV8SQg=hOy4V7_grqtL873uUCg@mail.gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v1 4/9] iommu/vt-d: Add bounce buffer API for domain
+ map/unmap
+Date: Tue, 19 Mar 2019 15:59:48 +0800
+Message-ID: <c1ffee0a-24d2-df53-0689-23b0d8ef065d@linux.intel.com>
+References: <20190312060005.12189-1-baolu.lu@linux.intel.com>
+ <20190312060005.12189-5-baolu.lu@linux.intel.com>
+ <20190312163845.GA13141@infradead.org>
+ <e653341d-e001-7262-740b-2262842be06d@linux.intel.com>
+ <c9fe7879-569e-b4f4-d6ec-47ab7e6fd443@linux.intel.com>
+ <20190313161029.GA23513@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CANMq1KCfhWdWtXP_PRd_LEEcWV8SQg=hOy4V7_grqtL873uUCg@mail.gmail.com>
+In-Reply-To: <20190313161029.GA23513@infradead.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>h
+To: Christoph Hellwig <hch@infradead.org>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 25, 2019 at 8:23 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
->
-> On Thu, Feb 14, 2019 at 1:12 AM Vlastimil Babka <vbabka@suse.cz> wrote:
-> >
-> > On 1/22/19 11:51 PM, Nicolas Boichat wrote:
-> > > Hi Andrew,
-> > >
-> > > On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
-> > >>
-> > >> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
-> > >> > Does anyone have any further comment on this series? If not, which
-> > >> > maintainer is going to pick this up? I assume Andrew Morton?
-> > >>
-> > >> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
-> > >> this should go through mm.
-> > >
-> > > Gentle ping on this series, it seems like it's better if it goes
-> > > through your tree.
-> > >
-> > > Series still applies cleanly on linux-next, but I'm happy to resend if
-> > > that helps.
-> >
-> > Ping, Andrew?
->
-> Another gentle ping, I still don't see these patches in mmot[ms]. Thanks.
+Hi Christoph,
 
-Andrew: AFAICT this still applies cleanly on linux-next/master, so I
-don't plan to resend... is there any other issues with this series?
+On 3/14/19 12:10 AM, Christoph Hellwig wrote:
+> On Wed, Mar 13, 2019 at 10:31:52AM +0800, Lu Baolu wrote:
+>> Hi again,
+>>
+>> On 3/13/19 10:04 AM, Lu Baolu wrote:
+>>> Hi,
+>>>
+>>> On 3/13/19 12:38 AM, Christoph Hellwig wrote:
+>>>> On Tue, Mar 12, 2019 at 02:00:00PM +0800, Lu Baolu wrote:
+>>>>> This adds the APIs for bounce buffer specified domain
+>>>>> map() and unmap(). The start and end partial pages will
+>>>>> be mapped with bounce buffered pages instead. This will
+>>>>> enhance the security of DMA buffer by isolating the DMA
+>>>>> attacks from malicious devices.
+>>>>
+>>>> Please reuse the swiotlb code instead of reinventing it.
+>>>>
+>>
+>> Just looked into the code again. At least we could reuse below
+>> functions:
+>>
+>> swiotlb_tbl_map_single()
+>> swiotlb_tbl_unmap_single()
+>> swiotlb_tbl_sync_single()
+>>
+>> Anything else?
+> 
+> Yes, that is probably about the level you want to reuse, given that the
+> next higher layer already has hooks into the direct mapping code.
+> 
 
-This is a regression, so it'd be nice to have it fixed in mainline, eventually.
+I am trying to change my code to reuse swiotlb. But I found that swiotlb
+might not be suitable for my case.
 
-Thanks,
+Below is what I got with swiotlb_map():
 
-> > > Thanks!
-> > >
-> > >> Regards,
-> > >>
-> > >>         Joerg
-> > >
-> >
+phy_addr        size    tlb_addr
+--------------------------------
+0x167eec330     0x8     0x85dc6000
+0x167eef5c0     0x40    0x85dc6800
+0x167eec330     0x8     0x85dc7000
+0x167eef5c0     0x40    0x85dc7800
+
+But what I expected to get is:
+
+phy_addr        size    tlb_addr
+--------------------------------
+0x167eec330     0x8     0xAAAAA330
+0x167eef5c0     0x40    0xBBBBB5c0
+0x167eec330     0x8     0xCCCCC330
+0x167eef5c0     0x40    0xDDDDD5c0
+
+, where 0xXXXXXX000 is the physical address of a bounced page.
+
+Basically, I want a bounce page to replace a leaf page in the vt-d page
+table, which maps a buffer with size less than a PAGE_SIZE.
+
+Best regards,
+Lu Baolu
