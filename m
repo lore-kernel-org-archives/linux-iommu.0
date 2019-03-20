@@ -1,60 +1,88 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Wed, 20 Mar 2019 08:20:47 +0800
-Message-ID: <CANMq1KAWbfNJQt=RaK-+us7eS6ReLFqaEbO3hMPfBy_w3ukj7A@mail.gmail.com>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
- <20190111102155.in5rctq5krs4ewfi@8bytes.org> <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
- <789fb2e6-0d80-b6de-adf3-57180a50ec3e@suse.cz> <CANMq1KCfhWdWtXP_PRd_LEEcWV8SQg=hOy4V7_grqtL873uUCg@mail.gmail.com>
- <CANMq1KBKF9aRj+8t+AQusNLOF5jrHJ4qY5C00AKXkO6e-8wKuQ@mail.gmail.com> <20190319105637.4949b00b854e955d61c0359d@linux-foundation.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 0/7] iommu/vt-d: Fix-up device-domain relationship by
+ refactoring to use iommu group default domain.
+Date: Wed, 20 Mar 2019 09:26:59 +0800
+Message-ID: <418d1432-2036-3f6f-48de-77005807e350@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+ <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+ <0e74cc54-bb90-a620-5763-466cb11aaef7@linux.intel.com>
+ <94706334-3DE4-4964-8FDD-125C58D493A0@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190319105637.4949b00b854e955d61c0359d@linux-foundation.org>
-Sender: stable-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>h
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <94706334-3DE4-4964-8FDD-125C58D493A0@arista.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: James Sewart <jamessewart@arista.com>
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 20, 2019 at 1:56 AM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Tue, 19 Mar 2019 15:41:43 +0800 Nicolas Boichat <drinkcat@chromium.org> wrote:
->
-> > On Mon, Feb 25, 2019 at 8:23 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
-> > >
-> > > On Thu, Feb 14, 2019 at 1:12 AM Vlastimil Babka <vbabka@suse.cz> wrote:
-> > > >
-> > > > On 1/22/19 11:51 PM, Nicolas Boichat wrote:
-> > > > > Hi Andrew,
-> > > > >
-> > > > > On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
-> > > > >>
-> > > > >> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
-> > > > >> > Does anyone have any further comment on this series? If not, which
-> > > > >> > maintainer is going to pick this up? I assume Andrew Morton?
-> > > > >>
-> > > > >> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
-> > > > >> this should go through mm.
-> > > > >
-> > > > > Gentle ping on this series, it seems like it's better if it goes
-> > > > > through your tree.
-> > > > >
-> > > > > Series still applies cleanly on linux-next, but I'm happy to resend if
-> > > > > that helps.
-> > > >
-> > > > Ping, Andrew?
-> > >
-> > > Another gentle ping, I still don't see these patches in mmot[ms]. Thanks.
-> >
-> > Andrew: AFAICT this still applies cleanly on linux-next/master, so I
-> > don't plan to resend... is there any other issues with this series?
-> >
-> > This is a regression, so it'd be nice to have it fixed in mainline, eventually.
->
-> Sorry, seeing "iommu" and "arm" made these escape my gimlet eye.
+Hi James,
 
-Thanks for picking them up!
+On 3/19/19 9:35 PM, James Sewart wrote:
+> Hey Lu,
+> 
+>> On 15 Mar 2019, at 03:13, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> Hi James,
+>>
+>> On 3/14/19 7:56 PM, James Sewart wrote:
+>>> Patches 1 and 2 are the same as v1.
+>>> v1-v2:
+>>>    Refactored ISA direct mappings to be returned by iommu_get_resv_regions.
+>>>    Integrated patch by Lu to defer turning on DMAR until iommu.c has mapped
+>>> reserved regions.
+>>>    Integrated patches by Lu to remove more unused code in cleanup.
+>>> Lu: I didn't integrate your patch to set the default domain type as it
+>>> isn't directly related to the aim of this patchset. Instead patch 4
+>>
+>> Without those patches, user experience will be affected and some devices
+>> will not work on Intel platforms anymore.
+>>
+>> For a long time, Intel IOMMU driver has its own logic to determine
+>> whether a device requires an identity domain. For example, when user
+>> specifies "iommu=pt" in kernel parameter, all device will be attached
+>> with the identity domain. Further more, some quirky devices require
+>> an identity domain to be used before enabling DMA remapping, otherwise,
+>> it will not work. This was done by adding quirk bits in Intel IOMMU
+>> driver.
+>>
+>> So from my point of view, one way is porting all those quirks and kernel
+>> parameters into IOMMU generic layer, or opening a door for vendor IOMMU
+>> driver to determine the default domain type by their own. I prefer the
+>> latter option since it will not impact any behaviors on other
+>> architectures.
+> 
+> I see your point. I’m not confident that using the proposed door to set a
+> groups default domain has the desired behaviour. As discussed before the
+> default domain type will be set based on the desired type for only the
+> first device attached to a group. I think to change the default domain
+> type you would need a slightly different door that wasn’t conditioned on
+> device.
 
-> I'm only seeing acks on [1/3].  What's the review status of [2/3] and [3/3]?
+I think this as another problem. Just a summarize for the ease of
+discussion. We saw two problems:
 
-Replied on the notification, [2/3] had a Ack, [3/3] is somewhat controversial.
+1. When allocating a new group for a device, how should we determine the
+type of the default domain? This is what my proposal patches trying to
+address.
+
+2. If we need to put a device into an existing group which uses a
+different type of domain from what the device desires to use, we might
+break the functionality of the device. For this problem I'd second your
+proposal below if I get your point correctly.
+
+> 
+> For situations where individual devices require an identity domain because
+> of quirks then maybe calling is_identity_map per device in
+> iommu_group_get_for_dev is a better solution than the one I proposed.
+> 
+
+Do you mean if we see a quirky device requires a different domain type
+other than the default domain type of the group, we will assign a new
+group to it? That looks good to me as far as I can see. I suppose this
+should be done in vt-d's ops callback.
+
+Best regards,
+Lu Baolu
