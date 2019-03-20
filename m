@@ -1,185 +1,250 @@
-From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Date: Wed, 20 Mar 2019 13:13:41 -0300
-Message-ID: <87ef71seve.fsf@morokweng.localdomain>
-References: <87zhrj8kcp.fsf@morokweng.localdomain> <87womn8inf.fsf@morokweng.localdomain> <20190129134750-mutt-send-email-mst@kernel.org> <877eefxvyb.fsf@morokweng.localdomain> <20190204144048-mutt-send-email-mst@kernel.org>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v6 05/22] iommu: Introduce cache_invalidate API
+Date: Wed, 20 Mar 2019 09:37:27 -0700
+Message-ID: <20190320093727.45a86866@jacob-builder>
+References: <20190317172232.1068-1-eric.auger@redhat.com>
+ <20190317172232.1068-6-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20190204144048-mutt-send-email-mst@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Michael Roth <mdroth@linux.vnet.ibm.com>, Mike Anderson <andmike@linux.ibm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <20190317172232.1068-6-eric.auger@redhat.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Eric Auger <eric.auger@redhat.com>
+Cc: yi.l.liu@linux.intel.com, kevin.tian@intel.com, vincent.stehle@arm.com, alex.williamson@redhat.com, ashok.raj@intel.com, kvm@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, marc.zyngier@arm.com, iommu@lists.linux-foundation.org, jacob.jun.pan@linux.intel.com, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
+On Sun, 17 Mar 2019 18:22:15 +0100
+Eric Auger <eric.auger@redhat.com> wrote:
 
-Hello Michael,
+> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+> 
+> In any virtualization use case, when the first translation stage
+> is "owned" by the guest OS, the host IOMMU driver has no knowledge
+> of caching structure updates unless the guest invalidation activities
+> are trapped by the virtualizer and passed down to the host.
+> 
+> Since the invalidation data are obtained from user space and will be
+> written into physical IOMMU, we must allow security check at various
+> layers. Therefore, generic invalidation data format are proposed here,
+> model specific IOMMU drivers need to convert them into their own
+> format.
+> 
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> 
+> ---
+> v5 -> v6:
+> - fix merge issue
+> 
+> v3 -> v4:
+> - full reshape of the API following Alex' comments
+> 
+> v1 -> v2:
+> - add arch_id field
+> - renamed tlb_invalidate into cache_invalidate as this API allows
+>   to invalidate context caches on top of IOTLBs
+> 
+> v1:
+> renamed sva_invalidate into tlb_invalidate and add iommu_ prefix in
+> header. Commit message reworded.
+> ---
+>  drivers/iommu/iommu.c      | 14 ++++++++
+>  include/linux/iommu.h      | 15 ++++++++
+>  include/uapi/linux/iommu.h | 71
+> ++++++++++++++++++++++++++++++++++++++ 3 files changed, 100
+> insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7d9285cea100..b72e326ddd41 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1544,6 +1544,20 @@ void iommu_detach_pasid_table(struct
+> iommu_domain *domain) }
+>  EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
+>  
+> +int iommu_cache_invalidate(struct iommu_domain *domain, struct
+> device *dev,
+> +			   struct iommu_cache_invalidate_info
+> *inv_info) +{
+> +	int ret = 0;
+> +
+> +	if (unlikely(!domain->ops->cache_invalidate))
+> +		return -ENODEV;
+> +
+> +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+> +
+>  static void __iommu_detach_device(struct iommu_domain *domain,
+>  				  struct device *dev)
+>  {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index fb9b7a8de25f..7c7c6bad1420 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -191,6 +191,7 @@ struct iommu_resv_region {
+>   *                      driver init to device driver init (default
+> no)
+>   * @attach_pasid_table: attach a pasid table
+>   * @detach_pasid_table: detach the pasid table
+> + * @cache_invalidate: invalidate translation caches
+>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+>   */
+>  struct iommu_ops {
+> @@ -239,6 +240,9 @@ struct iommu_ops {
+>  				  struct iommu_pasid_table_config
+> *cfg); void (*detach_pasid_table)(struct iommu_domain *domain);
+>  
+> +	int (*cache_invalidate)(struct iommu_domain *domain, struct
+> device *dev,
+> +				struct iommu_cache_invalidate_info
+> *inv_info); +
+>  	unsigned long pgsize_bitmap;
+>  };
+>  
+> @@ -349,6 +353,9 @@ extern void iommu_detach_device(struct
+> iommu_domain *domain, extern int iommu_attach_pasid_table(struct
+> iommu_domain *domain, struct iommu_pasid_table_config *cfg);
+>  extern void iommu_detach_pasid_table(struct iommu_domain *domain);
+> +extern int iommu_cache_invalidate(struct iommu_domain *domain,
+> +				  struct device *dev,
+> +				  struct iommu_cache_invalidate_info
+> *inv_info); extern struct iommu_domain
+> *iommu_get_domain_for_dev(struct device *dev); extern struct
+> iommu_domain *iommu_get_dma_domain(struct device *dev); extern int
+> iommu_map(struct iommu_domain *domain, unsigned long iova, @@ -797,6
+> +804,14 @@ int iommu_attach_pasid_table(struct iommu_domain *domain,
+> static inline void iommu_detach_pasid_table(struct iommu_domain
+> *domain) {} 
+> +static inline int
+> +iommu_cache_invalidate(struct iommu_domain *domain,
+> +		       struct device *dev,
+> +		       struct iommu_cache_invalidate_info *inv_info)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  #ifdef CONFIG_IOMMU_DEBUGFS
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 532a64075f23..e4c6a447e85a 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -159,4 +159,75 @@ struct iommu_pasid_table_config {
+>  	};
+>  };
+>  
+> +/* defines the granularity of the invalidation */
+> +enum iommu_inv_granularity {
+> +	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective
+> invalidation */
+> +	IOMMU_INV_GRANU_PASID,	/* pasid-selective
+> invalidation */
+> +	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation
+> */ +};
+> +
+> +/**
+> + * Address Selective Invalidation Structure
+> + *
+> + * @flags indicates the granularity of the address-selective
+> invalidation
+> + * - if PASID bit is set, @pasid field is populated and the
+> invalidation
+> + *   relates to cache entries tagged with this PASID and matching the
+> + *   address range.
+> + * - if ARCHID bit is set, @archid is populated and the invalidation
+> relates
+> + *   to cache entries tagged with this architecture specific id and
+> matching
+> + *   the address range.
+> + * - Both PASID and ARCHID can be set as they may tag different
+> caches.
+> + * - if neither PASID or ARCHID is set, global addr invalidation
+> applies
+> + * - LEAF flag indicates whether only the leaf PTE caching needs to
+> be
+> + *   invalidated and other paging structure caches can be preserved.
+> + * @pasid: process address space id
+> + * @archid: architecture-specific id
+> + * @addr: first stage/level input address
+> + * @granule_size: page/block size of the mapping in bytes
+> + * @nb_granules: number of contiguous granules to be invalidated
+> + */
+> +struct iommu_inv_addr_info {
+> +#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
+> +#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
+> +#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
+> +	__u32	flags;
+> +	__u32	archid;
+> +	__u64	pasid;
+> +	__u64	addr;
+> +	__u64	granule_size;
+> +	__u64	nb_granules;
+> +};
+> +
+> +/**
+> + * First level/stage invalidation information
+> + * @cache: bitfield that allows to select which caches to invalidate
+> + * @granularity: defines the lowest granularity used for the
+> invalidation:
+> + *     domain > pasid > addr
+> + *
+> + * Not all the combinations of cache/granularity make sense:
+> + *
+> + *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
+> + * granularity	|		|		|
+> cache	|
+> + * -------------+---------------+---------------+---------------+
+> + * DOMAIN	|	N/A	|       Y	|
+> Y	|
+> + * PASID	|	Y	|       Y	|
+> Y	|
+> + * ADDR		|       Y	|       Y	|
+> N/A	|
+> + */
+> +struct iommu_cache_invalidate_info {
+> +#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
+> +	__u32	version;
+> +/* IOMMU paging structure cache */
+> +#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
+> +#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device
+> IOTLB */ +#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID
+> cache */
+Just a clarification, this used to be an enum. You do intend to issue a
+single invalidation request on multiple cache types? Perhaps for
+virtio-IOMMU? I only see a single cache type in your patch #14. For VT-d
+we plan to issue one cache type at a time for now. So this format works
+for us.
+However, if multiple cache types are issued in a single invalidation.
+They must share a single granularity, not all combinations are valid.
+e.g. dev IOTLB does not support domain granularity. Just a reminder,
+not an issue. Driver could filter out invalid combinations.
 
-Sorry for the delay in responding. We had some internal discussions on
-this.
+> +	__u8	cache;
+> +	__u8	granularity;
+> +	__u8	padding[2];
+> +	union {
+> +		__u64	pasid;
+> +		struct iommu_inv_addr_info addr_info;
+> +	};
+> +};
+> +
+> +
+>  #endif /* _UAPI_IOMMU_H */
 
-Michael S. Tsirkin <mst@redhat.com> writes:
-
-> On Mon, Feb 04, 2019 at 04:14:20PM -0200, Thiago Jung Bauermann wrote:
->>
->> Hello Michael,
->>
->> Michael S. Tsirkin <mst@redhat.com> writes:
->>
->> > On Tue, Jan 29, 2019 at 03:42:44PM -0200, Thiago Jung Bauermann wrote:
->> So while ACCESS_PLATFORM solves our problems for secure guests, we can't
->> turn it on by default because we can't affect legacy systems. Doing so
->> would penalize existing systems that can access all memory. They would
->> all have to unnecessarily go through address translations, and take a
->> performance hit.
->
-> So as step one, you just give hypervisor admin an option to run legacy
-> systems faster by blocking secure mode. I don't see why that is
-> so terrible.
-
-There are a few reasons why:
-
-1. It's bad user experience to require people to fiddle with knobs for
-obscure reasons if it's possible to design things such that they Just
-Work.
-
-2. "User" in this case can be a human directly calling QEMU, but could
-also be libvirt or one of its users, or some other framework. This means
-having to adjust and/or educate an open-ended number of people and
-software. It's best avoided if possible.
-
-3. The hypervisor admin and the admin of the guest system don't
-necessarily belong to the same organization (e.g., cloud provider and
-cloud customer), so there may be some friction when they need to
-coordinate to get this right.
-
-4. A feature of our design is that the guest may or may not decide to
-"go secure" at boot time, so it's best not to depend on flags that may
-or may not have been set at the time QEMU was started.
-
->> The semantics of ACCESS_PLATFORM assume that the hypervisor/QEMU knows
->> in advance - right when the VM is instantiated - that it will not have
->> access to all guest memory.
->
-> Not quite. It just means that hypervisor can live with not having
-> access to all memory. If platform wants to give it access
-> to all memory that is quite all right.
-
-Except that on powerpc it also means "there's an IOMMU present" and
-there's no way to say "bypass IOMMU translation". :-/
-
->> Another way of looking at this issue which also explains our reluctance
->> is that the only difference between a secure guest and a regular guest
->> (at least regarding virtio) is that the former uses swiotlb while the
->> latter doens't.
->
-> But swiotlb is just one implementation. It's a guest internal thing. The
-> issue is that memory isn't host accessible.
-
->From what I understand of the ACCESS_PLATFORM definition, the host will
-only ever try to access memory addresses that are supplied to it by the
-guest, so all of the secure guest memory that the host cares about is
-accessible:
-
-    If this feature bit is set to 0, then the device has same access to
-    memory addresses supplied to it as the driver has. In particular,
-    the device will always use physical addresses matching addresses
-    used by the driver (typically meaning physical addresses used by the
-    CPU) and not translated further, and can access any address supplied
-    to it by the driver. When clear, this overrides any
-    platform-specific description of whether device access is limited or
-    translated in any way, e.g. whether an IOMMU may be present.
-
-All of the above is true for POWER guests, whether they are secure
-guests or not.
-
-Or are you saying that a virtio device may want to access memory
-addresses that weren't supplied to it by the driver?
-
->> And from the device's point of view they're
->> indistinguishable. It can't tell one guest that is using swiotlb from
->> one that isn't. And that implies that secure guest vs regular guest
->> isn't a virtio interface issue, it's "guest internal affairs". So
->> there's no reason to reflect that in the feature flags.
->
-> So don't. The way not to reflect that in the feature flags is
-> to set ACCESS_PLATFORM.  Then you say *I don't care let platform device*.
->
->
-> Without ACCESS_PLATFORM
-> virtio has a very specific opinion about the security of the
-> device, and that opinion is that device is part of the guest
-> supervisor security domain.
-
-Sorry for being a bit dense, but not sure what "the device is part of
-the guest supervisor security domain" means. In powerpc-speak,
-"supervisor" is the operating system so perhaps that explains my
-confusion. Are you saying that without ACCESS_PLATFORM, the guest
-considers the host to be part of the guest operating system's security
-domain? If so, does that have any other implication besides "the host
-can access any address supplied to it by the driver"? If that is the
-case, perhaps the definition of ACCESS_PLATFORM needs to be amended to
-include that information because it's not part of the current
-definition.
-
->> That said, we still would like to arrive at a proper design for this
->> rather than add yet another hack if we can avoid it. So here's another
->> proposal: considering that the dma-direct code (in kernel/dma/direct.c)
->> automatically uses swiotlb when necessary (thanks to Christoph's recent
->> DMA work), would it be ok to replace virtio's own direct-memory code
->> that is used in the !ACCESS_PLATFORM case with the dma-direct code? That
->> way we'll get swiotlb even with !ACCESS_PLATFORM, and virtio will get a
->> code cleanup (replace open-coded stuff with calls to existing
->> infrastructure).
->
-> Let's say I have some doubts that there's an API that
-> matches what virtio with its bag of legacy compatibility exactly.
-
-Ok.
-
->> > But the name "sev_active" makes me scared because at least AMD guys who
->> > were doing the sensible thing and setting ACCESS_PLATFORM
->>
->> My understanding is, AMD guest-platform knows in advance that their
->> guest will run in secure mode and hence sets the flag at the time of VM
->> instantiation. Unfortunately we dont have that luxury on our platforms.
->
-> Well you do have that luxury. It looks like that there are existing
-> guests that already acknowledge ACCESS_PLATFORM and you are not happy
-> with how that path is slow. So you are trying to optimize for
-> them by clearing ACCESS_PLATFORM and then you have lost ability
-> to invoke DMA API.
->
-> For example if there was another flag just like ACCESS_PLATFORM
-> just not yet used by anyone, you would be all fine using that right?
-
-Yes, a new flag sounds like a great idea. What about the definition
-below?
-
-VIRTIO_F_ACCESS_PLATFORM_NO_IOMMU This feature has the same meaning as
-    VIRTIO_F_ACCESS_PLATFORM both when set and when not set, with the
-    exception that the IOMMU is explicitly defined to be off or bypassed
-    when accessing memory addresses supplied to the device by the
-    driver. This flag should be set by the guest if offered, but to
-    allow for backward-compatibility device implementations allow for it
-    to be left unset by the guest. It is an error to set both this flag
-    and VIRTIO_F_ACCESS_PLATFORM.
-
-> Is there any justification to doing that beyond someone putting
-> out slow code in the past?
-
-The definition of the ACCESS_PLATFORM flag is generic and captures the
-notion of memory access restrictions for the device. Unfortunately, on
-powerpc pSeries guests it also implies that the IOMMU is turned on even
-though pSeries guests have never used IOMMU for virtio devices. Combined
-with the lack of a way to turn off or bypass the IOMMU for virtio
-devices, this means that existing guests in the field are compelled to
-use the IOMMU even though that never was the case before, and said
-guests having no mechanism to turn it off.
-
-Therefore, we need a new flag to signal the memory access restriction
-present in secure guests which doesn't also imply turning on the IOMMU.
-
---
-Thiago Jung Bauermann
-IBM Linux Technology Center
+[Jacob Pan]
