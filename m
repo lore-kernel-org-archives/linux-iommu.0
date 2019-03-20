@@ -1,74 +1,127 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v7 9/9] vfio/type1: Handle different mdev isolation type
-Date: Wed, 20 Mar 2019 13:52:52 +0800
-Message-ID: <939783f6-95e5-1413-8a2a-0e17c71110ef@linux.intel.com>
-References: <20190222021927.13132-1-baolu.lu@linux.intel.com>
- <20190222021927.13132-10-baolu.lu@linux.intel.com>
- <20190307084453.GA9288@nvidia.com> <20190307165623.1834cc93@w520.home>
- <20190308180317.GA30821@nvidia.com>
+From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH] svm/avic: iommu/amd: Flush IOMMU IRT after update all entries
+Date: Wed, 20 Mar 2019 08:14:56 +0000
+Message-ID: <20190320081432.2606-1-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190308180317.GA30821@nvidia.com>
 Content-Language: en-US
+Content-ID: <CBA91A16F2DC4B4EA0139559B0D44A02@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Neo Jia <cjia@nvidia.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "rkrcmar@redhat.com" <rkrcmar@redhat.com>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Neo,
-
-On 3/9/19 2:03 AM, Neo Jia wrote:
-> On Thu, Mar 07, 2019 at 04:56:23PM -0700, Alex Williamson wrote:
->> On Thu, 7 Mar 2019 00:44:54 -0800
->> Neo Jia <cjia@nvidia.com> wrote:
->>
->>> On Fri, Feb 22, 2019 at 10:19:27AM +0800, Lu Baolu wrote:
->>>> This adds the support to determine the isolation type
->>>> of a mediated device group by checking whether it has
->>>> an iommu device. If an iommu device exists, an iommu
->>>> domain will be allocated and then attached to the iommu
->>>> device. Otherwise, keep the same behavior as it is.
->>>>
->>>> Cc: Ashok Raj <ashok.raj@intel.com>
->>>> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>> Cc: Kevin Tian <kevin.tian@intel.com>
->>>> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
->>>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->>>> ---
->>>>   drivers/vfio/vfio_iommu_type1.c | 48 ++++++++++++++++++++++++++++-----
->>>>   1 file changed, 41 insertions(+), 7 deletions(-)
->>>>
->>>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->>>> index ccc4165474aa..f1392c582a3c 100644
->>>> --- a/drivers/vfio/vfio_iommu_type1.c
->>>> +++ b/drivers/vfio/vfio_iommu_type1.c
->>>> @@ -1368,13 +1368,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
->>>>   		iommu_detach_group(domain->domain, group->iommu_group);
->>>>   }
->>>>     
->>>
->>> Hi Baolu,
->>>
->>> To allow IOMMU-awared mdev, I think you need to modify the
->>> vfio_iommu_type1_pin_pages and vfio_iommu_type1_unpin_pages to remove the
->>> iommu->external_domain check.
->>>
->>> Could you please include that in your patch? If not, I can send out a separate
->>> patch to address that issue.
->>
->> I figured it was intentional that an IOMMU backed mdev would not use
->> the pin/unpin interface and therefore the exiting -EINVAL returns would
->> be correct.  Can you elaborate on the use case for still requiring the
->> mdev pin/unpin interface for these devices?  Thanks,
-> 
-> Sure. We are using this api to fetch a pfn of a guest physical address so we can
-> access it for PV.
-
-Okay, I will remove these two checks in the next version.
-
-Best regards,
-Lu Baolu
+V2hlbiBBVklDIGlzIGVuYWJsZWQgYW5kIHRoZSBWTSBoYXMgZGlzY3JldGUgZGV2aWNlIGFzc2ln
+bm1lbnQsDQp0aGUgaW50ZXJydXB0IHJlbWFwcGluZyB0YWJsZSAoSVJUKSBpcyB1c2VkIHRvIGtl
+ZXAgdHJhY2sgb2Ygd2hpY2gNCmRlc3RpbmF0aW9uIEFQSUMgSUQgdGhlIElPTU1VIHdpbGwgaW5q
+ZWN0IHRoZSBkZXZpY2UgaW50ZXJycHV0IHRvLg0KDQpUaGlzIG1lYW5zIGV2ZXJ5IHRpbWUgYSB2
+Y3B1IGlzIGJsb2NrZWQgb3IgY29udGV4dC1zd2l0Y2hlZCAoaS5lLg0KdmNwdV9ibG9ja2luZy91
+bmJsb2NraW5nKCkgYW5kIHZjcHVfbG9hZC9wdXQoKSksIHRoZSBpbmZvcm1hdGlvbg0KaW4gSVJU
+IG11c3QgYmUgdXBkYXRlZCBhbmQgdGhlIElPTU1VIElSVCBmbHVzaCBjb21tYW5kIG11c3QgYmUN
+Cmlzc3VlZC4NCg0KVGhlIGN1cnJlbnQgaW1wbGVtZW50YXRpb24gZmx1c2hlcyBJT01NVSBJUlQg
+ZXZlcnkgdGltZSBhbiBlbnRyeQ0KaXMgbW9kaWZpZWQuIElmIHRoZSBhc3NpZ25lZCBkZXZpY2Ug
+aGFzIGxhcmdlIG51bWJlciBvZiBpbnRlcnJ1cHRzDQooaGVuY2UgbGFyZ2UgbnVtYmVyIG9mIGVu
+dHJpZXMpLCB0aGlzIHdvdWxkIGFkZCBsYXJnZSBhbW91bnQgb2YNCm92ZXJoZWFkIHRvIHZjcHUg
+Y29udGV4dC1zd2l0Y2guIEluc3RlYWQsIHRoaXMgY2FuIGJlIG9wdG1pemVkIGJ5DQpvbmx5IGZs
+dXNoIElSVCBvbmNlIHBlciB2Y3B1IGNvbnRleHQtc3dpdGNoIHBlciBkZXZpY2UgYWZ0ZXIgYWxs
+DQpJUlQgZW50cmllcyBhcmUgbW9kaWZpZWQuDQoNClRoZSBmdW5jdGlvbiBhbWRfaW9tbXVfdXBk
+YXRlX2dhKCkgaXMgcmVmYWN0b3JlZCB0byBvbmx5IHVwZGF0ZQ0KSVJUIGVudHJ5LCB3aGlsZSB0
+aGUgYW1kX2lvbW11X3N5bmNfZ2EoKSBpcyBpbnRyb2R1Y2VkIHRvIGFsbG93DQpJUlQgZmx1c2hp
+bmcgdG8gYmUgZG9uZSBzZXBhcmF0ZWx5Lg0KDQpDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRl
+cy5vcmc+DQpDYzogUmFkaW0gS3LEjW3DocWZIDxya3JjbWFyQHJlZGhhdC5jb20+DQpDYzogUGFv
+bG8gQm9uemluaSA8cGJvbnppbmlAcmVkaGF0LmNvbT4NClNpZ25lZC1vZmYtYnk6IFN1cmF2ZWUg
+U3V0aGlrdWxwYW5pdCA8c3VyYXZlZS5zdXRoaWt1bHBhbml0QGFtZC5jb20+DQotLS0NCiBhcmNo
+L3g4Ni9rdm0vc3ZtLmMgICAgICAgIHwgMzUgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKy0NCiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jIHwgMjAgKysrKysrKysrKysrKysrKyst
+LS0NCiBpbmNsdWRlL2xpbnV4L2FtZC1pb21tdS5oIHwgMTMgKysrKysrKysrKy0tLQ0KIDMgZmls
+ZXMgY2hhbmdlZCwgNjEgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdp
+dCBhL2FyY2gveDg2L2t2bS9zdm0uYyBiL2FyY2gveDg2L2t2bS9zdm0uYw0KaW5kZXggNDdjNDk5
+MzQ0OGM3Li5hNWM3Y2E1ZDcwZDMgMTAwNjQ0DQotLS0gYS9hcmNoL3g4Ni9rdm0vc3ZtLmMNCisr
+KyBiL2FyY2gveDg2L2t2bS9zdm0uYw0KQEAgLTExOCw2ICsxMTgsOCBAQCBNT0RVTEVfREVWSUNF
+X1RBQkxFKHg4NmNwdSwgc3ZtX2NwdV9pZCk7DQogI2RlZmluZSBBVklDX0dBVEFHX1RPX1ZNSUQo
+eCkJCSgoeCA+PiBBVklDX1ZDUFVfSURfQklUUykgJiBBVklDX1ZNX0lEX01BU0spDQogI2RlZmlu
+ZSBBVklDX0dBVEFHX1RPX1ZDUFVJRCh4KQkJKHggJiBBVklDX1ZDUFVfSURfTUFTSykNCiANCisj
+ZGVmaW5lIEFWSUNfREVWSURfQklUTUFQX1NJWkUJCSgxIDw8IDE2KQ0KKw0KIHN0YXRpYyBib29s
+IGVycmF0dW1fMzgzX2ZvdW5kIF9fcmVhZF9tb3N0bHk7DQogDQogc3RhdGljIGNvbnN0IHUzMiBo
+b3N0X3NhdmVfdXNlcl9tc3JzW10gPSB7DQpAQCAtMjUxLDYgKzI1MywxMiBAQCBzdHJ1Y3QgdmNw
+dV9zdm0gew0KIA0KIAkvKiB3aGljaCBob3N0IENQVSB3YXMgdXNlZCBmb3IgcnVubmluZyB0aGlz
+IHZjcHUgKi8NCiAJdW5zaWduZWQgaW50IGxhc3RfY3B1Ow0KKw0KKwkvKg0KKwkgKiBCaXRtYXAg
+dXNlZCB0byBzdG9yZSBQQ0kgZGV2aWQgdG8gc3luYw0KKwkgKiBBTUQgSU9NTVUgaW50ZXJydXB0
+IHJlbWFwcGluZyB0YWJsZQ0KKwkgKi8NCisJdW5zaWduZWQgbG9uZyAqYXZpY19kZXZpZF9zeW5j
+X2JpdG1hcDsNCiB9Ow0KIA0KIC8qDQpAQCAtMTk4NCw2ICsxOTkyLDcgQEAgc3RhdGljIGlubGlu
+ZSBpbnQNCiBhdmljX3VwZGF0ZV9pb21tdV92Y3B1X2FmZmluaXR5KHN0cnVjdCBrdm1fdmNwdSAq
+dmNwdSwgaW50IGNwdSwgYm9vbCByKQ0KIHsNCiAJaW50IHJldCA9IDA7DQorCWludCBkZXZpZCA9
+IDA7DQogCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQogCXN0cnVjdCBhbWRfc3ZtX2lvbW11X2lyICpp
+cjsNCiAJc3RydWN0IHZjcHVfc3ZtICpzdm0gPSB0b19zdm0odmNwdSk7DQpAQCAtMjAwMSw5ICsy
+MDEwLDIxIEBAIGF2aWNfdXBkYXRlX2lvbW11X3ZjcHVfYWZmaW5pdHkoc3RydWN0IGt2bV92Y3B1
+ICp2Y3B1LCBpbnQgY3B1LCBib29sIHIpDQogCQlnb3RvIG91dDsNCiANCiAJbGlzdF9mb3JfZWFj
+aF9lbnRyeShpciwgJnN2bS0+aXJfbGlzdCwgbm9kZSkgew0KLQkJcmV0ID0gYW1kX2lvbW11X3Vw
+ZGF0ZV9nYShjcHUsIHIsIGlyLT5kYXRhKTsNCisJCXJldCA9IGFtZF9pb21tdV91cGRhdGVfZ2Eo
+Y3B1LCByLCBpci0+ZGF0YSwgJmRldmlkKTsNCiAJCWlmIChyZXQpDQogCQkJYnJlYWs7DQorCQlz
+ZXRfYml0KGRldmlkLCBzdm0tPmF2aWNfZGV2aWRfc3luY19iaXRtYXApOw0KKwl9DQorDQorCS8q
+IFN5bmMgQU1EIElPTU1VIGludGVycnVwdCByZW1hcHBpbmcgdGFibGUgY2hhbmdlcyBmb3IgZWFj
+aCBkZXZpY2UuICovDQorCWRldmlkID0gZmluZF9uZXh0X2JpdChzdm0tPmF2aWNfZGV2aWRfc3lu
+Y19iaXRtYXAsDQorCQkJICAgICAgQVZJQ19ERVZJRF9CSVRNQVBfU0laRSwgMCk7DQorDQorCXdo
+aWxlIChkZXZpZCA8IEFWSUNfREVWSURfQklUTUFQX1NJWkUpIHsNCisJCWNsZWFyX2JpdChkZXZp
+ZCwgc3ZtLT5hdmljX2RldmlkX3N5bmNfYml0bWFwKTsNCisJCXJldCA9IGFtZF9pb21tdV9zeW5j
+X2dhKGRldmlkKTsNCisJCWRldmlkID0gZmluZF9uZXh0X2JpdChzdm0tPmF2aWNfZGV2aWRfc3lu
+Y19iaXRtYXAsDQorCQkJCSAgICAgIEFWSUNfREVWSURfQklUTUFQX1NJWkUsIGRldmlkKzEpOw0K
+IAl9DQogb3V0Og0KIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZzdm0tPmlyX2xpc3RfbG9jaywg
+ZmxhZ3MpOw0KQEAgLTIxMDcsNiArMjEyOCwxMyBAQCBzdGF0aWMgaW50IGF2aWNfaW5pdF92Y3B1
+KHN0cnVjdCB2Y3B1X3N2bSAqc3ZtKQ0KIAlJTklUX0xJU1RfSEVBRCgmc3ZtLT5pcl9saXN0KTsN
+CiAJc3Bpbl9sb2NrX2luaXQoJnN2bS0+aXJfbGlzdF9sb2NrKTsNCiANCisJc3ZtLT5hdmljX2Rl
+dmlkX3N5bmNfYml0bWFwID0gKHZvaWQgKilfX2dldF9mcmVlX3BhZ2VzKA0KKwkJCQkJR0ZQX0tF
+Uk5FTCB8IF9fR0ZQX1pFUk8sDQorCQkJCQlnZXRfb3JkZXIoQVZJQ19ERVZJRF9CSVRNQVBfU0la
+RS84KSk7DQorCWlmIChzdm0tPmF2aWNfZGV2aWRfc3luY19iaXRtYXAgPT0gTlVMTCkNCisJCXJl
+dCA9IC1FTk9NRU07DQorCW1lbXNldChzdm0tPmF2aWNfZGV2aWRfc3luY19iaXRtYXAsIDAsIEFW
+SUNfREVWSURfQklUTUFQX1NJWkUvOCk7DQorDQogCXJldHVybiByZXQ7DQogfQ0KIA0KQEAgLTIy
+MjEsNiArMjI0OSwxMSBAQCBzdGF0aWMgdm9pZCBzdm1fZnJlZV92Y3B1KHN0cnVjdCBrdm1fdmNw
+dSAqdmNwdSkNCiAJX19mcmVlX3BhZ2VzKHZpcnRfdG9fcGFnZShzdm0tPm1zcnBtKSwgTVNSUE1f
+QUxMT0NfT1JERVIpOw0KIAlfX2ZyZWVfcGFnZSh2aXJ0X3RvX3BhZ2Uoc3ZtLT5uZXN0ZWQuaHNh
+dmUpKTsNCiAJX19mcmVlX3BhZ2VzKHZpcnRfdG9fcGFnZShzdm0tPm5lc3RlZC5tc3JwbSksIE1T
+UlBNX0FMTE9DX09SREVSKTsNCisNCisJZnJlZV9wYWdlcygodW5zaWduZWQgbG9uZylzdm0tPmF2
+aWNfZGV2aWRfc3luY19iaXRtYXAsDQorCQkgICBnZXRfb3JkZXIoQVZJQ19ERVZJRF9CSVRNQVBf
+U0laRS84KSk7DQorCXN2bS0+YXZpY19kZXZpZF9zeW5jX2JpdG1hcCA9IE5VTEw7DQorDQogCWt2
+bV92Y3B1X3VuaW5pdCh2Y3B1KTsNCiAJa21lbV9jYWNoZV9mcmVlKHg4Nl9mcHVfY2FjaGUsIHN2
+bS0+dmNwdS5hcmNoLmd1ZXN0X2ZwdSk7DQogCWttZW1fY2FjaGVfZnJlZShrdm1fdmNwdV9jYWNo
+ZSwgc3ZtKTsNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jIGIvZHJpdmVy
+cy9pb21tdS9hbWRfaW9tbXUuYw0KaW5kZXggMmE3Yjc4YmI5OGI0Li42MzdiY2M5MTkyZTUgMTAw
+NjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jDQorKysgYi9kcml2ZXJzL2lvbW11
+L2FtZF9pb21tdS5jDQpAQCAtNDQ5OSw3ICs0NDk5LDIwIEBAIGludCBhbWRfaW9tbXVfY3JlYXRl
+X2lycV9kb21haW4oc3RydWN0IGFtZF9pb21tdSAqaW9tbXUpDQogCXJldHVybiAwOw0KIH0NCiAN
+Ci1pbnQgYW1kX2lvbW11X3VwZGF0ZV9nYShpbnQgY3B1LCBib29sIGlzX3J1biwgdm9pZCAqZGF0
+YSkNCitpbnQgYW1kX2lvbW11X3N5bmNfZ2EoaW50IGRldmlkKQ0KK3sNCisJc3RydWN0IGFtZF9p
+b21tdSAqaW9tbXUgPSBhbWRfaW9tbXVfcmxvb2t1cF90YWJsZVtkZXZpZF07DQorDQorCWlmICgh
+aW9tbXUpDQorCQlyZXR1cm4gLUVOT0RFVjsNCisNCisJaW9tbXVfZmx1c2hfaXJ0KGlvbW11LCBk
+ZXZpZCk7DQorCWlvbW11X2NvbXBsZXRpb25fd2FpdChpb21tdSk7DQorCXJldHVybiAwOw0KK30N
+CitFWFBPUlRfU1lNQk9MKGFtZF9pb21tdV9zeW5jX2dhKTsNCisNCitpbnQgYW1kX2lvbW11X3Vw
+ZGF0ZV9nYShpbnQgY3B1LCBib29sIGlzX3J1biwgdm9pZCAqZGF0YSwgaW50ICppZCkNCiB7DQog
+CXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQogCXN0cnVjdCBhbWRfaW9tbXUgKmlvbW11Ow0KQEAgLTQ1
+MjEsNiArNDUzNCw5IEBAIGludCBhbWRfaW9tbXVfdXBkYXRlX2dhKGludCBjcHUsIGJvb2wgaXNf
+cnVuLCB2b2lkICpkYXRhKQ0KIAlpZiAoIXRhYmxlKQ0KIAkJcmV0dXJuIC1FTk9ERVY7DQogDQor
+CWlmIChpZCkNCisJCSppZCA9IGRldmlkOw0KKw0KIAlyYXdfc3Bpbl9sb2NrX2lycXNhdmUoJnRh
+YmxlLT5sb2NrLCBmbGFncyk7DQogDQogCWlmIChyZWYtPmxvLmZpZWxkc192YXBpYy5ndWVzdF9t
+b2RlKSB7DQpAQCAtNDUzNiw4ICs0NTUyLDYgQEAgaW50IGFtZF9pb21tdV91cGRhdGVfZ2EoaW50
+IGNwdSwgYm9vbCBpc19ydW4sIHZvaWQgKmRhdGEpDQogDQogCXJhd19zcGluX3VubG9ja19pcnFy
+ZXN0b3JlKCZ0YWJsZS0+bG9jaywgZmxhZ3MpOw0KIA0KLQlpb21tdV9mbHVzaF9pcnQoaW9tbXUs
+IGRldmlkKTsNCi0JaW9tbXVfY29tcGxldGlvbl93YWl0KGlvbW11KTsNCiAJcmV0dXJuIDA7DQog
+fQ0KIEVYUE9SVF9TWU1CT0woYW1kX2lvbW11X3VwZGF0ZV9nYSk7DQpkaWZmIC0tZ2l0IGEvaW5j
+bHVkZS9saW51eC9hbWQtaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvYW1kLWlvbW11LmgNCmluZGV4
+IDA5NzUxZDM0OTk2My4uYjk0ZDRiMzNkZmQ3IDEwMDY0NA0KLS0tIGEvaW5jbHVkZS9saW51eC9h
+bWQtaW9tbXUuaA0KKysrIGIvaW5jbHVkZS9saW51eC9hbWQtaW9tbXUuaA0KQEAgLTE5Myw4ICsx
+OTMsOSBAQCBzdGF0aWMgaW5saW5lIGludCBhbWRfaW9tbXVfZGV0ZWN0KHZvaWQpIHsgcmV0dXJu
+IC1FTk9ERVY7IH0NCiAvKiBJT01NVSBBVklDIEZ1bmN0aW9uICovDQogZXh0ZXJuIGludCBhbWRf
+aW9tbXVfcmVnaXN0ZXJfZ2FfbG9nX25vdGlmaWVyKGludCAoKm5vdGlmaWVyKSh1MzIpKTsNCiAN
+Ci1leHRlcm4gaW50DQotYW1kX2lvbW11X3VwZGF0ZV9nYShpbnQgY3B1LCBib29sIGlzX3J1biwg
+dm9pZCAqZGF0YSk7DQorZXh0ZXJuIGludCBhbWRfaW9tbXVfdXBkYXRlX2dhKGludCBjcHUsIGJv
+b2wgaXNfcnVuLCB2b2lkICpkYXRhLCBpbnQgKmRldmlkKTsNCisNCitleHRlcm4gaW50IGFtZF9p
+b21tdV9zeW5jX2dhKGludCBkZXZpZCk7DQogDQogI2Vsc2UgLyogZGVmaW5lZChDT05GSUdfQU1E
+X0lPTU1VKSAmJiBkZWZpbmVkKENPTkZJR19JUlFfUkVNQVApICovDQogDQpAQCAtMjA1LDcgKzIw
+NiwxMyBAQCBhbWRfaW9tbXVfcmVnaXN0ZXJfZ2FfbG9nX25vdGlmaWVyKGludCAoKm5vdGlmaWVy
+KSh1MzIpKQ0KIH0NCiANCiBzdGF0aWMgaW5saW5lIGludA0KLWFtZF9pb21tdV91cGRhdGVfZ2Eo
+aW50IGNwdSwgYm9vbCBpc19ydW4sIHZvaWQgKmRhdGEpDQorYW1kX2lvbW11X3VwZGF0ZV9nYShp
+bnQgY3B1LCBib29sIGlzX3J1biwgdm9pZCAqZGF0YSwgaW50ICpkZXZpZCkNCit7DQorCXJldHVy
+biAwOw0KK30NCisNCitzdGF0aWMgaW5saW5lIGludA0KK2FtZF9pb21tdV9zeW5jX2dhKGludCBk
+ZXZpZCkNCiB7DQogCXJldHVybiAwOw0KIH0NCi0tIA0KMi4xNy4xDQoNCg==
