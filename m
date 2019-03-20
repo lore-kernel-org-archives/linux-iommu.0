@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 2/4] iommu/arm-smmu-v3: Link domains and devices
-Date: Wed, 20 Mar 2019 17:36:32 +0000
-Message-ID: <20190320173634.21895-3-jean-philippe.brucker@arm.com>
+Subject: [PATCH 4/4] iommu/arm-smmu-v3: Disable tagged pointers
+Date: Wed, 20 Mar 2019 17:36:34 +0000
+Message-ID: <20190320173634.21895-5-jean-philippe.brucker@arm.com>
 References: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,105 +21,38 @@ To: will.deacon@arm.com
 Cc: lorenzo.pieralisi@arm.com, zhongmiao@hisilicon.com, okaya@kernel.org, joro@8bytes.org, rjw@rjwysocki.net, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-When removing a mapping from a domain, we need to send an invalidation to
-all devices that might have stored it in their Address Translation Cache
-(ATC). In addition when updating the context descriptor of a live domain,
-we'll need to send invalidations for all devices attached to it.
+The ARM architecture has a "Top Byte Ignore" (TBI) option that makes the
+MMU mask out bits [63:56] of an address, allowing a userspace application
+to store data in its pointers. This option is incompatible with PCI ATS.
 
-Maintain a list of devices in each domain, protected by a spinlock. It is
-updated every time we attach or detach devices to and from domains.
+If TBI is enabled in the SMMU and userspace triggers DMA transactions on
+tagged pointers, the endpoint might create ATC entries for addresses that
+include a tag. Software would then have to send ATC invalidation packets
+for each 255 possible alias of an address, or just wipe the whole address
+space. This is not a viable option, so disable TBI.
 
-It needs to be a spinlock because we'll invalidate ATC entries from
-within hardirq-safe contexts, but it may be possible to relax the read
-side with RCU later.
+The impact of this change is unclear, since there are very few users of
+tagged pointers, much less SVA. But the requirement introduced by this
+patch doesn't seem excessive: a userspace application using both tagged
+pointers and SVA should now sanitize addresses (clear the tag) before
+using them for device DMA.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index d3880010c6cf..66a29c113dbc 100644
+index c605d6f1b2df..69afffdaf907 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -594,6 +594,11 @@ struct arm_smmu_device {
- struct arm_smmu_master_data {
- 	struct arm_smmu_device		*smmu;
- 	struct arm_smmu_strtab_ent	ste;
-+
-+	struct arm_smmu_domain		*domain;
-+	struct list_head		domain_head;
-+
-+	struct device			*dev;
- };
+@@ -1076,7 +1076,6 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
+ 	val |= ARM_SMMU_TCR2CD(tcr, EPD0);
+ 	val |= ARM_SMMU_TCR2CD(tcr, EPD1);
+ 	val |= ARM_SMMU_TCR2CD(tcr, IPS);
+-	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
  
- /* SMMU private data for an IOMMU domain */
-@@ -618,6 +623,9 @@ struct arm_smmu_domain {
- 	};
- 
- 	struct iommu_domain		domain;
-+
-+	struct list_head		devices;
-+	spinlock_t			devices_lock;
- };
- 
- struct arm_smmu_option_prop {
-@@ -1493,6 +1501,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	}
- 
- 	mutex_init(&smmu_domain->init_mutex);
-+	INIT_LIST_HEAD(&smmu_domain->devices);
-+	spin_lock_init(&smmu_domain->devices_lock);
-+
- 	return &smmu_domain->domain;
+ 	return val;
  }
- 
-@@ -1711,8 +1722,18 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
- 
- static void arm_smmu_detach_dev(struct device *dev)
- {
-+	unsigned long flags;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct arm_smmu_master_data *master = fwspec->iommu_priv;
-+	struct arm_smmu_domain *smmu_domain = master->domain;
-+
-+	if (smmu_domain) {
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_del(&master->domain_head);
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+
-+		master->domain = NULL;
-+	}
- 
- 	master->ste.assigned = false;
- 	arm_smmu_install_ste_for_dev(fwspec);
-@@ -1721,6 +1742,7 @@ static void arm_smmu_detach_dev(struct device *dev)
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret = 0;
-+	unsigned long flags;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct arm_smmu_device *smmu;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -1757,6 +1779,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	}
- 
- 	ste->assigned = true;
-+	master->domain = smmu_domain;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_add(&master->domain_head, &smmu_domain->devices);
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS) {
- 		ste->s1_cfg = NULL;
-@@ -1883,6 +1910,7 @@ static int arm_smmu_add_device(struct device *dev)
- 			return -ENOMEM;
- 
- 		master->smmu = smmu;
-+		master->dev = dev;
- 		fwspec->iommu_priv = master;
- 	}
- 
 -- 
 2.21.0
