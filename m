@@ -1,11 +1,13 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 0/4] Add PCI ATS support to Arm SMMUv3
-Date: Wed, 20 Mar 2019 17:36:30 +0000
-Message-ID: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
+Subject: [PATCH 1/4] ACPI/IORT: Check ATS capability in root complex nodes
+Date: Wed, 20 Mar 2019 17:36:31 +0000
+Message-ID: <20190320173634.21895-2-jean-philippe.brucker@arm.com>
+References: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,31 +21,69 @@ To: will.deacon@arm.com
 Cc: lorenzo.pieralisi@arm.com, zhongmiao@hisilicon.com, okaya@kernel.org, joro@8bytes.org, rjw@rjwysocki.net, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add ATS support to the SMMUv3 driver. The previous posting was about a
-year ago, as part of SVA v2 [1]. I feel slightly more confident
-upstreaming this now that we can disable the feature for untrusted
-devices. It's a low-hanging fruit in the SVA patch stack, and a good
-candidate for v5.2.
+Root complex node in IORT has a bit telling whether it supports ATS or
+not. Store this bit in the IOMMU fwspec when setting up a device, so it
+can be accessed later by an IOMMU driver.
 
-As for testing, there is a public (free as in beer) software model that
-has both SMMUv3 and a SATA controller with ATS [2]. It's not much since,
-except for a dev_dbg message, you won't notice a difference when
-enabling ATS, but it can still be used for checking that the patches
-don't break anything.
+Use the negative version (NO_ATS) at the moment because it's not clear
+if/how the bit needs to be integrated in other firmware descriptions. The
+SMMU has a feature bit telling if it supports ATS, which might be
+sufficient in most systems for deciding whether or not we should enable
+the ATS capability in endpoints.
 
-[1] https://www.spinics.net/lists/kvm/msg168742.html
-[2] https://patchwork.kernel.org/patch/10781793/
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+---
+ drivers/acpi/arm64/iort.c | 11 +++++++++++
+ include/linux/iommu.h     |  4 ++++
+ 2 files changed, 15 insertions(+)
 
-Jean-Philippe Brucker (4):
-  ACPI/IORT: Check ATS capability in root complex nodes
-  iommu/arm-smmu-v3: Link domains and devices
-  iommu/arm-smmu-v3: Add support for PCI ATS
-  iommu/arm-smmu-v3: Disable tagged pointers
-
- drivers/acpi/arm64/iort.c   |  11 ++
- drivers/iommu/arm-smmu-v3.c | 250 +++++++++++++++++++++++++++++++++++-
- include/linux/iommu.h       |   4 +
- 3 files changed, 259 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index e48894e002ba..7f2c1c9c6b38 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1028,6 +1028,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+ 	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
+ }
+ 
++static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
++{
++	struct acpi_iort_root_complex *pci_rc;
++
++	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
++	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
++}
++
+ /**
+  * iort_iommu_configure - Set-up IOMMU configuration for a device.
+  *
+@@ -1063,6 +1071,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 		info.node = node;
+ 		err = pci_for_each_dma_alias(to_pci_dev(dev),
+ 					     iort_pci_iommu_init, &info);
++
++		if (!err && !iort_pci_rc_supports_ats(node))
++			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_NO_ATS;
+ 	} else {
+ 		int i = 0;
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 3dbeb457fb16..ed6738c358ca 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -509,10 +509,14 @@ struct iommu_fwspec {
+ 	const struct iommu_ops	*ops;
+ 	struct fwnode_handle	*iommu_fwnode;
+ 	void			*iommu_priv;
++	u32			flags;
+ 	unsigned int		num_ids;
+ 	u32			ids[1];
+ };
+ 
++/* Firmware disabled ATS in the root complex */
++#define IOMMU_FWSPEC_PCI_NO_ATS			(1 << 0)
++
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 		      const struct iommu_ops *ops);
+ void iommu_fwspec_free(struct device *dev);
 -- 
 2.21.0
