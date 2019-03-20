@@ -1,100 +1,49 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v6 05/22] iommu: Introduce cache_invalidate API
-Date: Wed, 20 Mar 2019 16:50:07 +0000
-Message-ID: <7ae1df77-18d0-0993-8dab-6af3a4474b42@arm.com>
-References: <20190317172232.1068-1-eric.auger@redhat.com>
- <20190317172232.1068-6-eric.auger@redhat.com>
- <20190320093727.45a86866@jacob-builder>
+Subject: [PATCH 0/4] Add PCI ATS support to Arm SMMUv3
+Date: Wed, 20 Mar 2019 17:36:30 +0000
+Message-ID: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190320093727.45a86866@jacob-builder>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Eric Auger <eric.auger@redhat.com>
-Cc: yi.l.liu@linux.intel.com, kevin.tian@intel.com, vincent.stehle@arm.com, alex.williamson@redhat.com, ashok.raj@intel.com, kvm@vger.kernel.org, peter.maydell@linaro.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, christoffer.dall@arm.com, marc.zyngier@arm.com, iommu@lists.linux-foundation.org, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: will.deacon@arm.com
+Cc: lorenzo.pieralisi@arm.com, zhongmiao@hisilicon.com, okaya@kernel.org, joro@8bytes.org, rjw@rjwysocki.net, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/03/2019 16:37, Jacob Pan wrote:
-[...]
->> +struct iommu_inv_addr_info {
->> +#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
->> +#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
->> +#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
->> +	__u32	flags;
->> +	__u32	archid;
->> +	__u64	pasid;
->> +	__u64	addr;
->> +	__u64	granule_size;
->> +	__u64	nb_granules;
->> +};
->> +
->> +/**
->> + * First level/stage invalidation information
->> + * @cache: bitfield that allows to select which caches to invalidate
->> + * @granularity: defines the lowest granularity used for the
->> invalidation:
->> + *     domain > pasid > addr
->> + *
->> + * Not all the combinations of cache/granularity make sense:
->> + *
->> + *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
->> + * granularity	|		|		|
->> cache	|
->> + * -------------+---------------+---------------+---------------+
->> + * DOMAIN	|	N/A	|       Y	|
->> Y	|
->> + * PASID	|	Y	|       Y	|
->> Y	|
->> + * ADDR		|       Y	|       Y	|
->> N/A	|
->> + */
->> +struct iommu_cache_invalidate_info {
->> +#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
->> +	__u32	version;
->> +/* IOMMU paging structure cache */
->> +#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
->> +#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device
->> IOTLB */ +#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID
->> cache */
-> Just a clarification, this used to be an enum. You do intend to issue a
-> single invalidation request on multiple cache types? Perhaps for
-> virtio-IOMMU? I only see a single cache type in your patch #14. For VT-d
-> we plan to issue one cache type at a time for now. So this format works
-> for us.
+Add ATS support to the SMMUv3 driver. The previous posting was about a
+year ago, as part of SVA v2 [1]. I feel slightly more confident
+upstreaming this now that we can disable the feature for untrusted
+devices. It's a low-hanging fruit in the SVA patch stack, and a good
+candidate for v5.2.
 
-Yes for virtio-iommu I'd like as little overhead as possible, which
-means a single invalidation message to hit both IOTLB and ATC at once,
-and the ability to specify multiple pages with @nb_granules.
+As for testing, there is a public (free as in beer) software model that
+has both SMMUv3 and a SATA controller with ATS [2]. It's not much since,
+except for a dev_dbg message, you won't notice a difference when
+enabling ATS, but it can still be used for checking that the patches
+don't break anything.
 
-> However, if multiple cache types are issued in a single invalidation.
-> They must share a single granularity, not all combinations are valid.
-> e.g. dev IOTLB does not support domain granularity. Just a reminder,
-> not an issue. Driver could filter out invalid combinations.
+[1] https://www.spinics.net/lists/kvm/msg168742.html
+[2] https://patchwork.kernel.org/patch/10781793/
 
-Agreed. Even the core could filter out invalid combinations based on the
-table above: IOTLB and domain granularity are N/A.
+Jean-Philippe Brucker (4):
+  ACPI/IORT: Check ATS capability in root complex nodes
+  iommu/arm-smmu-v3: Link domains and devices
+  iommu/arm-smmu-v3: Add support for PCI ATS
+  iommu/arm-smmu-v3: Disable tagged pointers
 
-Thanks,
-Jean
+ drivers/acpi/arm64/iort.c   |  11 ++
+ drivers/iommu/arm-smmu-v3.c | 250 +++++++++++++++++++++++++++++++++++-
+ include/linux/iommu.h       |   4 +
+ 3 files changed, 259 insertions(+), 6 deletions(-)
 
-> 
->> +	__u8	cache;
->> +	__u8	granularity;
->> +	__u8	padding[2];
->> +	union {
->> +		__u64	pasid;
->> +		struct iommu_inv_addr_info addr_info;
->> +	};
->> +};
->> +
->> +
->>  #endif /* _UAPI_IOMMU_H */
-> 
-> [Jacob Pan]
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+-- 
+2.21.0
