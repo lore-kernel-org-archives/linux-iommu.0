@@ -1,63 +1,42 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu: Remove iommu_callback_data
-Date: Wed, 20 Mar 2019 09:40:24 +0800
-Message-ID: <20190320014024.22332-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 2/2] iommu/vt-d: Save the right domain ID used by hardware
+Date: Wed, 20 Mar 2019 09:58:34 +0800
+Message-ID: <20190320015834.22653-2-baolu.lu@linux.intel.com>
+References: <20190320015834.22653-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190320015834.22653-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The iommu_callback_data is not used anywhere, remove it to make
-the code more concise.
+The driver sets a default domain id (FLPT_DEFAULT_DID) in the
+first level only pasid entry, but saves a different domain id
+in @sdev->did. The value saved in @sdev->did will be used to
+invalidate the translation caches. Hence, the driver might
+result in invalidating the caches with a wrong domain id.
 
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Fixes: 1c4f88b7f1f92 ("iommu/vt-d: Shared virtual address in scalable mode")
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommu.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 33a982e33716..1164b9926a2b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -45,10 +45,6 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
- #endif
- static bool iommu_dma_strict __read_mostly = true;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f002d47d2f27..28cb713d728c 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5335,7 +5335,7 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sd
  
--struct iommu_callback_data {
--	const struct iommu_ops *ops;
--};
--
- struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
-@@ -1215,9 +1211,6 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- {
- 	int err;
- 	struct notifier_block *nb;
--	struct iommu_callback_data cb = {
--		.ops = ops,
--	};
+ 	ctx_lo = context[0].lo;
  
- 	nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
- 	if (!nb)
-@@ -1229,7 +1222,7 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- 	if (err)
- 		goto out_free;
+-	sdev->did = domain->iommu_did[iommu->seq_id];
++	sdev->did = FLPT_DEFAULT_DID;
+ 	sdev->sid = PCI_DEVID(info->bus, info->devfn);
  
--	err = bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
-+	err = bus_for_each_dev(bus, NULL, NULL, add_iommu_group);
- 	if (err)
- 		goto out_err;
- 
-@@ -1238,7 +1231,7 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- 
- out_err:
- 	/* Clean up */
--	bus_for_each_dev(bus, NULL, &cb, remove_iommu_group);
-+	bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
- 	bus_unregister_notifier(bus, nb);
- 
- out_free:
+ 	if (!(ctx_lo & CONTEXT_PASIDE)) {
 -- 
 2.17.1
