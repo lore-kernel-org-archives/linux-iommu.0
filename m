@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 1/4] ACPI/IORT: Check ATS capability in root complex nodes
-Date: Wed, 20 Mar 2019 17:36:31 +0000
-Message-ID: <20190320173634.21895-2-jean-philippe.brucker@arm.com>
+Subject: [PATCH 2/4] iommu/arm-smmu-v3: Link domains and devices
+Date: Wed, 20 Mar 2019 17:36:32 +0000
+Message-ID: <20190320173634.21895-3-jean-philippe.brucker@arm.com>
 References: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,69 +21,105 @@ To: will.deacon@arm.com
 Cc: lorenzo.pieralisi@arm.com, zhongmiao@hisilicon.com, okaya@kernel.org, joro@8bytes.org, rjw@rjwysocki.net, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Root complex node in IORT has a bit telling whether it supports ATS or
-not. Store this bit in the IOMMU fwspec when setting up a device, so it
-can be accessed later by an IOMMU driver.
+When removing a mapping from a domain, we need to send an invalidation to
+all devices that might have stored it in their Address Translation Cache
+(ATC). In addition when updating the context descriptor of a live domain,
+we'll need to send invalidations for all devices attached to it.
 
-Use the negative version (NO_ATS) at the moment because it's not clear
-if/how the bit needs to be integrated in other firmware descriptions. The
-SMMU has a feature bit telling if it supports ATS, which might be
-sufficient in most systems for deciding whether or not we should enable
-the ATS capability in endpoints.
+Maintain a list of devices in each domain, protected by a spinlock. It is
+updated every time we attach or detach devices to and from domains.
+
+It needs to be a spinlock because we'll invalidate ATC entries from
+within hardirq-safe contexts, but it may be possible to relax the read
+side with RCU later.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/acpi/arm64/iort.c | 11 +++++++++++
- include/linux/iommu.h     |  4 ++++
- 2 files changed, 15 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index e48894e002ba..7f2c1c9c6b38 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -1028,6 +1028,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
- 	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
- }
- 
-+static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_root_complex *pci_rc;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d3880010c6cf..66a29c113dbc 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -594,6 +594,11 @@ struct arm_smmu_device {
+ struct arm_smmu_master_data {
+ 	struct arm_smmu_device		*smmu;
+ 	struct arm_smmu_strtab_ent	ste;
 +
-+	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
-+	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
-+}
++	struct arm_smmu_domain		*domain;
++	struct list_head		domain_head;
 +
- /**
-  * iort_iommu_configure - Set-up IOMMU configuration for a device.
-  *
-@@ -1063,6 +1071,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- 		info.node = node;
- 		err = pci_for_each_dma_alias(to_pci_dev(dev),
- 					     iort_pci_iommu_init, &info);
-+
-+		if (!err && !iort_pci_rc_supports_ats(node))
-+			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_NO_ATS;
- 	} else {
- 		int i = 0;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3dbeb457fb16..ed6738c358ca 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -509,10 +509,14 @@ struct iommu_fwspec {
- 	const struct iommu_ops	*ops;
- 	struct fwnode_handle	*iommu_fwnode;
- 	void			*iommu_priv;
-+	u32			flags;
- 	unsigned int		num_ids;
- 	u32			ids[1];
++	struct device			*dev;
  };
  
-+/* Firmware disabled ATS in the root complex */
-+#define IOMMU_FWSPEC_PCI_NO_ATS			(1 << 0)
+ /* SMMU private data for an IOMMU domain */
+@@ -618,6 +623,9 @@ struct arm_smmu_domain {
+ 	};
+ 
+ 	struct iommu_domain		domain;
 +
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops);
- void iommu_fwspec_free(struct device *dev);
++	struct list_head		devices;
++	spinlock_t			devices_lock;
+ };
+ 
+ struct arm_smmu_option_prop {
+@@ -1493,6 +1501,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	}
+ 
+ 	mutex_init(&smmu_domain->init_mutex);
++	INIT_LIST_HEAD(&smmu_domain->devices);
++	spin_lock_init(&smmu_domain->devices_lock);
++
+ 	return &smmu_domain->domain;
+ }
+ 
+@@ -1711,8 +1722,18 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ 
+ static void arm_smmu_detach_dev(struct device *dev)
+ {
++	unsigned long flags;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_master_data *master = fwspec->iommu_priv;
++	struct arm_smmu_domain *smmu_domain = master->domain;
++
++	if (smmu_domain) {
++		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++		list_del(&master->domain_head);
++		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++
++		master->domain = NULL;
++	}
+ 
+ 	master->ste.assigned = false;
+ 	arm_smmu_install_ste_for_dev(fwspec);
+@@ -1721,6 +1742,7 @@ static void arm_smmu_detach_dev(struct device *dev)
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int ret = 0;
++	unsigned long flags;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+@@ -1757,6 +1779,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	}
+ 
+ 	ste->assigned = true;
++	master->domain = smmu_domain;
++
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_add(&master->domain_head, &smmu_domain->devices);
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+ 
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS) {
+ 		ste->s1_cfg = NULL;
+@@ -1883,6 +1910,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 			return -ENOMEM;
+ 
+ 		master->smmu = smmu;
++		master->dev = dev;
+ 		fwspec->iommu_priv = master;
+ 	}
+ 
 -- 
 2.21.0
