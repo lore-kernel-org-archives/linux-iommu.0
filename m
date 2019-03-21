@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 1/7] parport_ip32: pass struct device to DMA API functions
-Date: Thu, 21 Mar 2019 15:52:29 -0700
-Message-ID: <20190321225235.30648-2-hch@lst.de>
+Subject: [PATCH 2/7] da8xx-fb: pass struct device to DMA API functions
+Date: Thu, 21 Mar 2019 15:52:30 -0700
+Message-ID: <20190321225235.30648-3-hch@lst.de>
 References: <20190321225235.30648-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -18,83 +18,57 @@ available struct device from the platform_device to remedy this.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/parport/parport_ip32.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/video/fbdev/da8xx-fb.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/parport/parport_ip32.c b/drivers/parport/parport_ip32.c
-index 62873070f988..b7a892791c3e 100644
---- a/drivers/parport/parport_ip32.c
-+++ b/drivers/parport/parport_ip32.c
-@@ -568,6 +568,7 @@ static irqreturn_t parport_ip32_merr_interrupt(int irq, void *dev_id)
+diff --git a/drivers/video/fbdev/da8xx-fb.c b/drivers/video/fbdev/da8xx-fb.c
+index 43f2a4816860..ec62274b914b 100644
+--- a/drivers/video/fbdev/da8xx-fb.c
++++ b/drivers/video/fbdev/da8xx-fb.c
+@@ -1097,9 +1097,9 @@ static int fb_remove(struct platform_device *dev)
  
- /**
-  * parport_ip32_dma_start - begins a DMA transfer
-+ * @p:		partport to work on
-  * @dir:	DMA direction: DMA_TO_DEVICE or DMA_FROM_DEVICE
-  * @addr:	pointer to data buffer
-  * @count:	buffer size
-@@ -575,8 +576,8 @@ static irqreturn_t parport_ip32_merr_interrupt(int irq, void *dev_id)
-  * Calls to parport_ip32_dma_start() and parport_ip32_dma_stop() must be
-  * correctly balanced.
-  */
--static int parport_ip32_dma_start(enum dma_data_direction dir,
--				  void *addr, size_t count)
-+static int parport_ip32_dma_start(struct parport *p,
-+		enum dma_data_direction dir, void *addr, size_t count)
- {
- 	unsigned int limit;
- 	u64 ctrl;
-@@ -601,7 +602,7 @@ static int parport_ip32_dma_start(enum dma_data_direction dir,
+ 		unregister_framebuffer(info);
+ 		fb_dealloc_cmap(&info->cmap);
+-		dma_free_coherent(NULL, PALETTE_SIZE, par->v_palette_base,
++		dma_free_coherent(par->dev, PALETTE_SIZE, par->v_palette_base,
+ 				  par->p_palette_base);
+-		dma_free_coherent(NULL, par->vram_size, par->vram_virt,
++		dma_free_coherent(par->dev, par->vram_size, par->vram_virt,
+ 				  par->vram_phys);
+ 		pm_runtime_put_sync(&dev->dev);
+ 		pm_runtime_disable(&dev->dev);
+@@ -1425,7 +1425,7 @@ static int fb_probe(struct platform_device *device)
+ 	par->vram_size = roundup(par->vram_size/8, ulcm);
+ 	par->vram_size = par->vram_size * LCD_NUM_BUFFERS;
  
- 	/* Prepare DMA pointers */
- 	parport_ip32_dma.dir = dir;
--	parport_ip32_dma.buf = dma_map_single(NULL, addr, count, dir);
-+	parport_ip32_dma.buf = dma_map_single(&p->bus_dev, addr, count, dir);
- 	parport_ip32_dma.len = count;
- 	parport_ip32_dma.next = parport_ip32_dma.buf;
- 	parport_ip32_dma.left = parport_ip32_dma.len;
-@@ -625,11 +626,12 @@ static int parport_ip32_dma_start(enum dma_data_direction dir,
+-	par->vram_virt = dma_alloc_coherent(NULL,
++	par->vram_virt = dma_alloc_coherent(par->dev,
+ 					    par->vram_size,
+ 					    &par->vram_phys,
+ 					    GFP_KERNEL | GFP_DMA);
+@@ -1446,7 +1446,7 @@ static int fb_probe(struct platform_device *device)
+ 		da8xx_fb_fix.line_length - 1;
  
- /**
-  * parport_ip32_dma_stop - ends a running DMA transfer
-+ * @p:		partport to work on
-  *
-  * Calls to parport_ip32_dma_start() and parport_ip32_dma_stop() must be
-  * correctly balanced.
-  */
--static void parport_ip32_dma_stop(void)
-+static void parport_ip32_dma_stop(struct parport *p)
- {
- 	u64 ctx_a;
- 	u64 ctx_b;
-@@ -685,8 +687,8 @@ static void parport_ip32_dma_stop(void)
- 	enable_irq(MACEISA_PAR_CTXB_IRQ);
- 	parport_ip32_dma.irq_on = 1;
+ 	/* allocate palette buffer */
+-	par->v_palette_base = dma_alloc_coherent(NULL, PALETTE_SIZE,
++	par->v_palette_base = dma_alloc_coherent(par->dev, PALETTE_SIZE,
+ 						 &par->p_palette_base,
+ 						 GFP_KERNEL | GFP_DMA);
+ 	if (!par->v_palette_base) {
+@@ -1532,11 +1532,12 @@ static int fb_probe(struct platform_device *device)
+ 	fb_dealloc_cmap(&da8xx_fb_info->cmap);
  
--	dma_unmap_single(NULL, parport_ip32_dma.buf, parport_ip32_dma.len,
--			 parport_ip32_dma.dir);
-+	dma_unmap_single(&p->bus_dev, parport_ip32_dma.buf,
-+			 parport_ip32_dma.len, parport_ip32_dma.dir);
- }
+ err_release_pl_mem:
+-	dma_free_coherent(NULL, PALETTE_SIZE, par->v_palette_base,
++	dma_free_coherent(par->dev, PALETTE_SIZE, par->v_palette_base,
+ 			  par->p_palette_base);
  
- /**
-@@ -1445,7 +1447,7 @@ static size_t parport_ip32_fifo_write_block_dma(struct parport *p,
+ err_release_fb_mem:
+-	dma_free_coherent(NULL, par->vram_size, par->vram_virt, par->vram_phys);
++	dma_free_coherent(par->dev, par->vram_size, par->vram_virt,
++		          par->vram_phys);
  
- 	priv->irq_mode = PARPORT_IP32_IRQ_HERE;
- 
--	parport_ip32_dma_start(DMA_TO_DEVICE, (void *)buf, len);
-+	parport_ip32_dma_start(p, DMA_TO_DEVICE, (void *)buf, len);
- 	reinit_completion(&priv->irq_complete);
- 	parport_ip32_frob_econtrol(p, ECR_DMAEN | ECR_SERVINTR, ECR_DMAEN);
- 
-@@ -1461,7 +1463,7 @@ static size_t parport_ip32_fifo_write_block_dma(struct parport *p,
- 		if (ecr & ECR_SERVINTR)
- 			break;	/* DMA transfer just finished */
- 	}
--	parport_ip32_dma_stop();
-+	parport_ip32_dma_stop(p);
- 	written = len - parport_ip32_dma_get_residue();
- 
- 	priv->irq_mode = PARPORT_IP32_IRQ_FWD;
+ err_release_fb:
+ 	framebuffer_release(da8xx_fb_info);
 -- 
 2.20.1
