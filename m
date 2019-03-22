@@ -1,40 +1,32 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2] iommu/iova: Fix tracking of recently failed iova
- address
-Date: Fri, 22 Mar 2019 10:31:46 +0100
-Message-ID: <20190322093146.GA18669@8bytes.org>
-References: <20190315155553.11857-1-rrichter@marvell.com>
- <7515342b-f4b2-9406-5249-93ae7880835a@arm.com>
- <20190320185718.jhr6gvs7jdbn4x3p@rric.localdomain>
+Subject: Re: [PATCH 1/2] iommu/vt-d: Check capability before disabling
+ protected memory
+Date: Fri, 22 Mar 2019 10:38:11 +0100
+Message-ID: <20190322093811.GB18669@8bytes.org>
+References: <20190320015834.22653-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190320185718.jhr6gvs7jdbn4x3p@rric.localdomain>
+In-Reply-To: <20190320015834.22653-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robert Richter <rrichter@marvell.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Ganapatrao Kulkarni <gkulkarni@marvell.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, mark gross <mgross@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 20, 2019 at 06:57:23PM +0000, Robert Richter wrote:
-> From: Robert Richter <rrichter@marvell.com>
-> Subject: [PATCH v2] iommu/iova: Fix tracking of recently failed iova address
->  size
+On Wed, Mar 20, 2019 at 09:58:33AM +0800, Lu Baolu wrote:
+> The spec states in 10.4.16 that the Protected Memory Enable
+> Register should be treated as read-only for implementations
+> not supporting protected memory regions (PLMR and PHMR fields
+> reported as Clear in the Capability register).
 > 
-> If a 32 bit allocation request is too big to possibly succeed, it
-> early exits with a failure and then should never update max32_alloc_
-> size. This patch fixes current code, now the size is only updated if
-> the slow path failed while walking the tree. Without the fix the
-> allocation may enter the slow path again even if there was a failure
-> before of a request with the same or a smaller size.
-> 
-> Cc: <stable@vger.kernel.org> # 4.20+
-> Fixes: bee60e94a1e2 ("iommu/iova: Optimise attempts to allocate iova from 32bit address range")
-> Signed-off-by: Robert Richter <rrichter@marvell.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Robert Richter <rrichter@marvell.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: mark gross <mgross@intel.com>
+> Suggested-by: Ashok Raj <ashok.raj@intel.com>
+> Fixes: f8bab73515ca5 ("intel-iommu: PMEN support")
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/iova.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  drivers/iommu/intel-iommu.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Applied, thanks.
+Applied both, thanks.
