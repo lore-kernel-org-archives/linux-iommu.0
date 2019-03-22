@@ -1,59 +1,90 @@
-From: Catalin Marinas <catalin.marinas@arm.com>
-Subject: Re: [PATCH v2 RFC/RFT] dma-contiguous: Get normal pages for
- single-page allocations
-Date: Fri, 22 Mar 2019 10:57:13 +0000
-Message-ID: <20190322105712.GB13384@arrakis.emea.arm.com>
-References: <20190305183202.16216-1-nicoleotsuka@gmail.com>
- <20190319144301.GG59586@arrakis.emea.arm.com>
- <20190321233248.GA6941@Asurada-Nvidia>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.1-rc1
+Date: Fri, 22 Mar 2019 12:22:29 +0100
+Message-ID: <20190322112224.GA22496@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="jRHKVT23PllUwdXP"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190321233248.GA6941@Asurada-Nvidia>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: hch@lst.de, robin.murphy@arm.com, vdumpa@nvidia.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Nicolin,
 
-On Thu, Mar 21, 2019 at 04:32:49PM -0700, Nicolin Chen wrote:
-> On Tue, Mar 19, 2019 at 02:43:01PM +0000, Catalin Marinas wrote:
-> > On Tue, Mar 05, 2019 at 10:32:02AM -0800, Nicolin Chen wrote:
-> > > The addresses within a single page are always contiguous, so it's
-> > > not so necessary to always allocate one single page from CMA area.
-> > > Since the CMA area has a limited predefined size of space, it may
-> > > run out of space in heavy use cases, where there might be quite a
-> > > lot CMA pages being allocated for single pages.
-> > > 
-> > > However, there is also a concern that a device might care where a
-> > > page comes from -- it might expect the page from CMA area and act
-> > > differently if the page doesn't.
-> > > 
-> > > This patch tries to get normal pages for single-page allocations
-> > > unless the device has its own CMA area. This would save resources
-> > > from the CMA area for more CMA allocations. And it'd also reduce
-> > > CMA fragmentations resulted from trivial allocations.
-> > 
-> > This is not sufficient. Some architectures/platforms declare limits on
-> > the CMA range so that DMA is possible with all expected devices. For
-> > example, on arm64 we keep the CMA in the lower 4GB of the address range,
-> > though with this patch you only covered the iommu ops allocation.
-> 
-> I will follow the way of v1 by adding alloc_page()/free_page()
-> function to those callers who don't have fallback allocations.
-> In this way, archs may use different callbacks to alloc pages.
-> 
-> > Do you have any numbers to back this up? You don't seem to address
-> > dma_direct_alloc() either but, as I said above, it's not trivial since
-> > some platforms expect certain physical range for DMA allocations.
-> 
-> What's the dma_direct_alloc() here about? Mind elaborating?
+--jRHKVT23PllUwdXP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I just did a grep for dma_alloc_from_contiguous() in the 5.1-rc1 kernel
-and came up with __dma_direct_alloc_pages(). Should your patch cover
-this as well?
+Hi Linus,
 
--- 
-Catalin
+The following changes since commit 9e98c678c2d6ae3a17cb2de55d17f69dddaa231b:
+
+  Linux 5.1-rc1 (2019-03-17 14:22:26 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.1-rc2
+
+for you to fetch changes up to 84c11e4df5aa4955acaa441f0cf1cb2e50daf64b:
+
+  iommu/vt-d: Save the right domain ID used by hardware (2019-03-22 12:02:27 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.1-rc2
+
+Including:
+
+	- AMD IOMMU fix for sg-mapping with sg->offset > PAGE_SIZE
+
+	- Fix for IOVA code to trigger the slow-path less often
+
+	- Two fixes for Intel VT-d to avoid writing to read-onl registers and
+	  to flush the right domain id for the default domains in scalable
+	  mode
+
+----------------------------------------------------------------
+Lu Baolu (2):
+      iommu/vt-d: Check capability before disabling protected memory
+      iommu/vt-d: Save the right domain ID used by hardware
+
+Robert Richter (1):
+      iommu/iova: Fix tracking of recently failed iova address
+
+Stanislaw Gruszka (1):
+      iommu/amd: fix sg->dma_address for sg->offset bigger than PAGE_SIZE
+
+ drivers/iommu/amd_iommu.c   | 7 ++++++-
+ drivers/iommu/intel-iommu.c | 5 ++++-
+ drivers/iommu/iova.c        | 5 +++--
+ 3 files changed, 13 insertions(+), 4 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--jRHKVT23PllUwdXP
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAlyUxXAACgkQK/BELZcB
+GuOOXA//flT1sZ7JMkiPtVO3sH67adhWnge3n++mWn7SEjSw4s4HJ+Bvu7VztrrG
+yq/EifBsUncZbd/LsCDypNBSVRNinnro+NJbrlpn7Bxg+Rgyw6Y5y2fqh+C/5NA9
+xLVxwETJYuv9koK1QqbfV2I2maZ2Xn8WwBNK8XvvsqCrtnahX/xuybQZDqqCZwJh
+swEqBPzqOmIQocUAQf66XYQBGFjz/Rv5iTvJHY/XMVIS9TCwidtxvnrtesm9unCx
++i45CGJ9J55f2iEVPyPQlpkP9eCd+TR3WIc42No56copsBA/o7upSAji8V2acoSC
+uLv9bUEy7S7s9rjnD4usRxIixTP876ehOw8Agq3n3XsMobZBYXOpewJAB0TTaxmK
+6cMYV73cErOzRNylCVeAI9Z6i1ztniXITM+KapgAc97DlpDwYyvDIJj4pGvum1P1
+ZXT56EparVhPBWeBP6gHlBYun5bJJ99Q3VPDvG+TzET3v9Uov2v+K8/LP7Fi7IYP
+pz9JtEtlV4Dnbc9Gzn09PkmbAzposcfj7UTgaJ5ZRASbQ1VFR23SJ751EE3C0qM3
+u0oEX0CV/uhlDa7/45FNwHe+bKAVyHPEYGAj8u2OMnxJSqFVTDmmVrt6Iw+h6XED
+SI94psVbwBh5uxnx82wChlC2pIecf3Y5cCj45/kDzel6D2zqmqw=
+=ZgKz
+-----END PGP SIGNATURE-----
+
+--jRHKVT23PllUwdXP--
