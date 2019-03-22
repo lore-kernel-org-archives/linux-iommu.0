@@ -1,7 +1,7 @@
 From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v3 02/10] PCI/switchtec: Add module parameter to request more interrupts
-Date: Thu, 21 Mar 2019 18:06:37 -0600
-Message-ID: <20190322000645.15580-3-logang@deltatee.com>
+Subject: [PATCH v3 10/10] NTB: Describe the ntb_msi_test client in the documentation.
+Date: Thu, 21 Mar 2019 18:06:45 -0600
+Message-ID: <20190322000645.15580-11-logang@deltatee.com>
 References: <20190322000645.15580-1-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,49 +12,51 @@ To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com, linux-pci@vger.ker
 Cc: Bjorn Helgaas <bhelgaas@google.com>, Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>, Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>, Logan Gunthorpe <logang@deltatee.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Seeing the we want to use more interrupts in the NTB MSI code
-we need to be able allocate more (sometimes virtual) interrupts
-in the switchtec driver. Therefore add a module parameter to
-request to allocate additional interrupts.
-
-This puts virtually no limit on the number of MSI interrupts available
-to NTB clients.
+Add a blurb in Documentation/ntb.txt to describe the ntb_msi_test tool's
+debugfs interface. Similar to the (out of date) ntb_tool description.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/pci/switch/switchtec.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ Documentation/ntb.txt | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
-index e22766c79fe9..8b1db78197d9 100644
---- a/drivers/pci/switch/switchtec.c
-+++ b/drivers/pci/switch/switchtec.c
-@@ -30,6 +30,10 @@ module_param(use_dma_mrpc, bool, 0644);
- MODULE_PARM_DESC(use_dma_mrpc,
- 		 "Enable the use of the DMA MRPC feature");
+diff --git a/Documentation/ntb.txt b/Documentation/ntb.txt
+index a043854d28df..802a539f1592 100644
+--- a/Documentation/ntb.txt
++++ b/Documentation/ntb.txt
+@@ -194,6 +194,33 @@ Debugfs Files:
+ 	This file is used to read and write peer scratchpads.  See
+ 	*spad* for details.
  
-+static int nirqs = 32;
-+module_param(nirqs, int, 0644);
-+MODULE_PARM_DESC(nirqs, "number of interrupts to allocate (more may be useful for NTB applications)");
++NTB MSI Test Client (ntb\_msi\_test)
++------------------------------------
 +
- static dev_t switchtec_devt;
- static DEFINE_IDA(switchtec_minor_ida);
- 
-@@ -1247,8 +1251,12 @@ static int switchtec_init_isr(struct switchtec_dev *stdev)
- 	int dma_mrpc_irq;
- 	int rc;
- 
--	nvecs = pci_alloc_irq_vectors(stdev->pdev, 1, 4,
--				      PCI_IRQ_MSIX | PCI_IRQ_MSI);
-+	if (nirqs < 4)
-+		nirqs = 4;
++The MSI test client serves to test and debug the MSI library which
++allows for passing MSI interrupts across NTB memory windows. The
++test client is interacted with through the debugfs filesystem:
 +
-+	nvecs = pci_alloc_irq_vectors(stdev->pdev, 1, nirqs,
-+				      PCI_IRQ_MSIX | PCI_IRQ_MSI |
-+				      PCI_IRQ_VIRTUAL);
- 	if (nvecs < 0)
- 		return nvecs;
++* *debugfs*/ntb\_tool/*hw*/
++	A directory in debugfs will be created for each
++	NTB device probed by the tool.  This directory is shortened to *hw*
++	below.
++* *hw*/port
++	This file describes the local port number
++* *hw*/irq*_occurrences
++	One occurrences file exists for each interrupt and, when read,
++	returns the number of times the interrupt has been triggered.
++* *hw*/peer*/port
++	This file describes the port number for each peer
++* *hw*/peer*/count
++	This file describes the number of interrupts that can be
++	triggered on each peer
++* *hw*/peer*/trigger
++	Writing an interrupt number (any number less than the value
++	specified in count) will trigger the interrupt on the
++	specified peer. That peer's interrupt's occurrence file
++	should be incremented.
++
+ NTB Hardware Drivers
+ ====================
  
 -- 
 2.20.1
