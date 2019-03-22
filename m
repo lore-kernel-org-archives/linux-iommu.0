@@ -1,34 +1,24 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH v2 RFC/RFT] dma-contiguous: Get normal pages for
- single-page allocations
-Date: Fri, 22 Mar 2019 13:09:26 -0700
-Message-ID: <20190322200925.GA22219@Asurada-Nvidia>
-References: <20190305183202.16216-1-nicoleotsuka@gmail.com>
- <20190319144301.GG59586@arrakis.emea.arm.com>
- <20190321233248.GA6941@Asurada-Nvidia>
- <20190322105712.GB13384@arrakis.emea.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: pr-tracker-bot@kernel.org
+Subject: Re: [git pull] IOMMU Fixes for Linux v5.1-rc1
+Date: Fri, 22 Mar 2019 21:20:11 +0000
+Message-ID: <155328961182.19902.18128280652950568575.pr-tracker-bot@kernel.org>
+References: <20190322112224.GA22496@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190322105712.GB13384@arrakis.emea.arm.com>
+In-Reply-To: <20190322112224.GA22496@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: hch@lst.de, robin.murphy@arm.com, vdumpa@nvidia.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Catalin,
+The pull request you sent on Fri, 22 Mar 2019 12:22:29 +0100:
 
-On Fri, Mar 22, 2019 at 10:57:13AM +0000, Catalin Marinas wrote:
-> > > Do you have any numbers to back this up? You don't seem to address
-> > > dma_direct_alloc() either but, as I said above, it's not trivial since
-> > > some platforms expect certain physical range for DMA allocations.
-> > 
-> > What's the dma_direct_alloc() here about? Mind elaborating?
-> 
-> I just did a grep for dma_alloc_from_contiguous() in the 5.1-rc1 kernel
-> and came up with __dma_direct_alloc_pages(). Should your patch cover
-> this as well?
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.1-rc2
 
-I don't get the meaning of "cover this" here. What missing part
-do you refer to?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/070c95d457267eefecd70f5dd434740201d5083c
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
