@@ -1,51 +1,197 @@
-From: Catalin Marinas <catalin.marinas@arm.com>
-Subject: Re: [PATCH v2 RFC/RFT] dma-contiguous: Get normal pages for
- single-page allocations
-Date: Mon, 25 Mar 2019 12:14:37 +0000
-Message-ID: <20190325121436.hwmzgqkaggxvnfqx@mbp>
-References: <20190305183202.16216-1-nicoleotsuka@gmail.com>
- <20190319144301.GG59586@arrakis.emea.arm.com>
- <20190321233248.GA6941@Asurada-Nvidia>
- <20190322105712.GB13384@arrakis.emea.arm.com>
- <20190322200925.GA22219@Asurada-Nvidia>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: James Sewart <jamessewart@arista.com>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+ iommu_get_resv_regions
+Date: Mon, 25 Mar 2019 12:57:43 +0000
+Message-ID: <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+ <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+ <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+ <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+ <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+ <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190322200925.GA22219@Asurada-Nvidia>
+In-Reply-To: <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: hch@lst.de, robin.murphy@arm.com, vdumpa@nvidia.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 22, 2019 at 01:09:26PM -0700, Nicolin Chen wrote:
-> On Fri, Mar 22, 2019 at 10:57:13AM +0000, Catalin Marinas wrote:
-> > > > Do you have any numbers to back this up? You don't seem to address
-> > > > dma_direct_alloc() either but, as I said above, it's not trivial since
-> > > > some platforms expect certain physical range for DMA allocations.
-> > > 
-> > > What's the dma_direct_alloc() here about? Mind elaborating?
-> > 
-> > I just did a grep for dma_alloc_from_contiguous() in the 5.1-rc1 kernel
-> > and came up with __dma_direct_alloc_pages(). Should your patch cover
-> > this as well?
-> 
-> I don't get the meaning of "cover this" here. What missing part
-> do you refer to?
+Hey Lu,
 
-What I meant, do you need this hunk as well in your patch?
+> On 25 Mar 2019, at 02:03, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>=20
+> Hi James,
+>=20
+> On 3/22/19 5:57 PM, James Sewart wrote:
+>> Hey Lu,
+>>> On 15 Mar 2019, at 02:19, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>=20
+>>> Hi James,
+>>>=20
+>>> On 3/14/19 7:58 PM, James Sewart wrote:
+>>>> To support mapping ISA region via =
+iommu_group_create_direct_mappings,
+>>>> make sure its exposed by iommu_get_resv_regions. This allows
+>>>> deduplication of reserved region mappings
+>>>> Signed-off-by: James Sewart <jamessewart@arista.com>
+>>>> ---
+>>>>  drivers/iommu/intel-iommu.c | 42 =
++++++++++++++++++++++++++++++--------
+>>>>  1 file changed, 33 insertions(+), 9 deletions(-)
+>>>> diff --git a/drivers/iommu/intel-iommu.c =
+b/drivers/iommu/intel-iommu.c
+>>>> index 8e0a4e2ff77f..2e00e8708f06 100644
+>>>> --- a/drivers/iommu/intel-iommu.c
+>>>> +++ b/drivers/iommu/intel-iommu.c
+>>>> @@ -337,6 +337,8 @@ static LIST_HEAD(dmar_rmrr_units);
+>>>>  #define for_each_rmrr_units(rmrr) \
+>>>>  	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+>>>>  +static struct iommu_resv_region *isa_resv_region;
+>>>> +
+>>>>  /* bitmap for indexing intel_iommus */
+>>>>  static int g_num_of_iommus;
+>>>>  @@ -2780,26 +2782,34 @@ static inline int =
+iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
+>>>>  					  rmrr->end_address);
+>>>>  }
+>>>>  +static inline struct iommu_resv_region =
+*iommu_get_isa_resv_region(void)
+>>>> +{
+>>>> +	if (!isa_resv_region)
+>>>> +		isa_resv_region =3D iommu_alloc_resv_region(0,
+>>>> +				16*1024*1024,
+>>>> +				0, IOMMU_RESV_DIRECT);
+>>>> +
+>>>> +	return isa_resv_region;
+>>>> +}
+>>>> +
+>>>>  #ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+>>>> -static inline void iommu_prepare_isa(void)
+>>>> +static inline void iommu_prepare_isa(struct pci_dev *pdev)
+>>>>  {
+>>>> -	struct pci_dev *pdev;
+>>>>  	int ret;
+>>>> +	struct iommu_resv_region *reg =3D iommu_get_isa_resv_region();
+>>>>  -	pdev =3D pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
+>>>> -	if (!pdev)
+>>>> +	if (!reg)
+>>>>  		return;
+>>>>    	pr_info("Prepare 0-16MiB unity mapping for LPC\n");
+>>>> -	ret =3D iommu_prepare_identity_map(&pdev->dev, 0, 16*1024*1024 - =
+1);
+>>>> +	ret =3D iommu_prepare_identity_map(&pdev->dev, reg->start,
+>>>> +			reg->start + reg->length - 1);
+>>>>    	if (ret)
+>>>>  		pr_err("Failed to create 0-16MiB identity map - floppy =
+might not work\n");
+>>>> -
+>>>> -	pci_dev_put(pdev);
+>>>>  }
+>>>>  #else
+>>>> -static inline void iommu_prepare_isa(void)
+>>>> +static inline void iommu_prepare_isa(struct pci_dev *pdev)
+>>>>  {
+>>>>  	return;
+>>>>  }
+>>>> @@ -3289,6 +3299,7 @@ static int __init init_dmars(void)
+>>>>  	struct dmar_rmrr_unit *rmrr;
+>>>>  	bool copied_tables =3D false;
+>>>>  	struct device *dev;
+>>>> +	struct pci_dev *pdev;
+>>>>  	struct intel_iommu *iommu;
+>>>>  	int i, ret;
+>>>>  @@ -3469,7 +3480,11 @@ static int __init init_dmars(void)
+>>>>  		}
+>>>>  	}
+>>>>  -	iommu_prepare_isa();
+>>>> +	pdev =3D pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
+>>>> +	if (pdev) {
+>>>> +		iommu_prepare_isa(pdev);
+>>>> +		pci_dev_put(pdev);
+>>>> +	}
+>>>>    domains_done:
+>>>>  @@ -5266,6 +5281,7 @@ static void =
+intel_iommu_get_resv_regions(struct device *device,
+>>>>  	struct iommu_resv_region *reg;
+>>>>  	struct dmar_rmrr_unit *rmrr;
+>>>>  	struct device *i_dev;
+>>>> +	struct pci_dev *pdev;
+>>>>  	int i;
+>>>>    	rcu_read_lock();
+>>>> @@ -5280,6 +5296,14 @@ static void =
+intel_iommu_get_resv_regions(struct device *device,
+>>>>  	}
+>>>>  	rcu_read_unlock();
+>>>>  +	if (dev_is_pci(device)) {
+>>>> +		pdev =3D to_pci_dev(device);
+>>>> +		if ((pdev->class >> 8) =3D=3D PCI_CLASS_BRIDGE_ISA) {
+>>>> +			reg =3D iommu_get_isa_resv_region();
+>>>> +			list_add_tail(&reg->list, head);
+>>>> +		}
+>>>> +	}
+>>>> +
+>>>=20
+>>> Just wondering why not just
+>>>=20
+>>> +#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+>>> +	if (dev_is_pci(device)) {
+>>> +		pdev =3D to_pci_dev(device);
+>>> +		if ((pdev->class >> 8) =3D=3D PCI_CLASS_BRIDGE_ISA) {
+>>> +			reg =3D iommu_alloc_resv_region(0,
+>>> +				16*1024*1024,
+>>> +				0, IOMMU_RESV_DIRECT);
+>>> +			if (reg)
+>>> +				list_add_tail(&reg->list, head);
+>>> +		}
+>>> +	}
+>>> +#endif
+>>>=20
+>>> and, remove all other related code?
+>> At this point in the patchset if we remove iommu_prepare_isa then the =
+ISA
+>> region won=E2=80=99t be mapped to the device. Only once the dma =
+domain is allocable
+>> will the reserved regions be mapped by =
+iommu_group_create_direct_mappings.
+>=20
+> Yes. So if we put the allocation code here, it won't impact anything =
+and
+> will take effect as soon as the dma domain is allocatable.
+>=20
+>> Theres an issue that if we choose to alloc a new resv_region with =
+type
+>> IOMMU_RESV_DIRECT, we will need to refactor =
+intel_iommu_put_resv_regions
+>> to free this entry type which means refactoring the rmrr regions in
+>> get_resv_regions. Should this work be in this patchset?
+>=20
+> Do you mean the rmrr regions are not allocated in get_resv_regions, =
+but
+> are freed in put_resv_regions? I think we should fix this in this =
+patch
+> set since this might impact the device passthrough if we don't do it.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index fcdb23e8d2fc..8955ba6f52fc 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -111,8 +111,7 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- again:
- 	/* CMA can be used only in the context which permits sleeping */
- 	if (gfpflags_allow_blocking(gfp)) {
--		page = dma_alloc_from_contiguous(dev, count, page_order,
--						 gfp & __GFP_NOWARN);
-+		page = dma_alloc_from_contiguous(dev, count, page_order, gfp);
- 		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 			dma_release_from_contiguous(dev, page, count);
- 			page = NULL;
+They=E2=80=99re not allocated and not freed currently, only type =
+IOMMU_RESV_MSI is=20
+freed in put_resv_regions. If we allocate a new resv_region with type=20
+IOMMU_RESV_DIRECT for the isa region, then it won=E2=80=99t be freed. If =
+we modify=20
+put_resv_regions to free type IOMMU_RESV_DIRECT, then we will try to =
+free=20
+the static RMRR regions.
+
+Either the ISA region is static and not freed as with my implementation,=20=
+
+or the RMRR regions are converted to be allocated on each call to=20
+get_resv_regions and freed in put_resv_regions.
+
+>=20
+> Best regards,
+> Lu Baolu
+
+Cheers,
+James.=
