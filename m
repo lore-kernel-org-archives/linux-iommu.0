@@ -1,34 +1,51 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu: Remove iommu_callback_data
-Date: Mon, 25 Mar 2019 14:44:24 +0100
-Message-ID: <20190325134423.GA25350@8bytes.org>
-References: <20190320014024.22332-1-baolu.lu@linux.intel.com>
+From: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH] svm/avic: iommu/amd: Flush IOMMU IRT after update all
+ entries
+Date: Mon, 25 Mar 2019 14:46:01 +0100
+Message-ID: <20190325134601.GB25350@8bytes.org>
+References: <20190320081432.2606-1-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190320014024.22332-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20190320081432.2606-1-suravee.suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "pbonzini@redhat.com" <pbonzini@redhat.com>, "rkrcmar@redhat.com" <rkrcmar@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 20, 2019 at 09:40:24AM +0800, Lu Baolu wrote:
-> The iommu_callback_data is not used anywhere, remove it to make
-> the code more concise.
+On Wed, Mar 20, 2019 at 08:14:56AM +0000, Suthikulpanit, Suravee wrote:
+> When AVIC is enabled and the VM has discrete device assignment,
+> the interrupt remapping table (IRT) is used to keep track of which
+> destination APIC ID the IOMMU will inject the device interrput to.
 > 
-> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> This means every time a vcpu is blocked or context-switched (i.e.
+> vcpu_blocking/unblocking() and vcpu_load/put()), the information
+> in IRT must be updated and the IOMMU IRT flush command must be
+> issued.
+> 
+> The current implementation flushes IOMMU IRT every time an entry
+> is modified. If the assigned device has large number of interrupts
+> (hence large number of entries), this would add large amount of
+> overhead to vcpu context-switch. Instead, this can be optmized by
+> only flush IRT once per vcpu context-switch per device after all
+> IRT entries are modified.
+> 
+> The function amd_iommu_update_ga() is refactored to only update
+> IRT entry, while the amd_iommu_sync_ga() is introduced to allow
+> IRT flushing to be done separately.
+> 
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Radim Krčmář <rkrcmar@redhat.com>
+> Cc: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->  drivers/iommu/iommu.c | 11 ++---------
->  1 file changed, 2 insertions(+), 9 deletions(-)
+>  arch/x86/kvm/svm.c        | 35 ++++++++++++++++++++++++++++++++++-
+>  drivers/iommu/amd_iommu.c | 20 +++++++++++++++++---
+>  include/linux/amd-iommu.h | 13 ++++++++++---
+>  3 files changed, 61 insertions(+), 7 deletions(-)
 
-Applied, thanks.
+For the IOMMU parts:
+
+	Acked-by: Joerg Roedel <jroedel@suse.de>
