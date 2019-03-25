@@ -1,41 +1,37 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH v2 RFC/RFT] dma-contiguous: Get normal pages for
- single-page allocations
-Date: Mon, 25 Mar 2019 11:50:23 -0700
-Message-ID: <20190325185022.GA24188@Asurada-Nvidia>
-References: <20190305183202.16216-1-nicoleotsuka@gmail.com>
- <20190319144301.GG59586@arrakis.emea.arm.com>
- <20190321233248.GA6941@Asurada-Nvidia>
- <20190322105712.GB13384@arrakis.emea.arm.com>
- <20190322200925.GA22219@Asurada-Nvidia>
- <20190325121436.hwmzgqkaggxvnfqx@mbp>
+From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v3 09/10] NTB: Add MSI interrupt support to ntb_transport
+Date: Mon, 25 Mar 2019 13:08:24 -0600
+Message-ID: <ef64a491-cfad-5192-3b2f-515206036440@deltatee.com>
+References: <20190322000645.15580-1-logang@deltatee.com>
+	<20190322000645.15580-10-logang@deltatee.com>
+	<20190322164743.GN251185@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190325121436.hwmzgqkaggxvnfqx@mbp>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: hch@lst.de, robin.murphy@arm.com, vdumpa@nvidia.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190322164743.GN251185-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-CA
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Allen Hubbe <allenbh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Serge Semin <fancer.lancer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kselftest-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ntb-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 25, 2019 at 12:14:37PM +0000, Catalin Marinas wrote:
 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index fcdb23e8d2fc..8955ba6f52fc 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -111,8 +111,7 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->  again:
->  	/* CMA can be used only in the context which permits sleeping */
->  	if (gfpflags_allow_blocking(gfp)) {
-> -		page = dma_alloc_from_contiguous(dev, count, page_order,
-> -						 gfp & __GFP_NOWARN);
-> +		page = dma_alloc_from_contiguous(dev, count, page_order, gfp);
 
-Oh...yea...It should have this part. I messed up with some
-thing else so couldn't get it. Thanks for the reply.
+On 2019-03-22 10:47 a.m., Bjorn Helgaas wrote:
+> Hi Logan,
+> 
+> Drive-by nits:
 
-I will go for the previous change by returning NULL in the
-dma_alloc_from_contiguous() so the no_warm parameter would
-not be touched.
+Thanks Bjorn! I've updated my patches for v4 which I'll send out in a
+week or two.
+
+Logan
