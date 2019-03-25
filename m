@@ -1,219 +1,159 @@
-From: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/4] firmware: qcom_scm-64: Add atomic version of
-	qcom_scm_call
-Date: Mon, 25 Mar 2019 14:09:25 -0700
-Message-ID: <20190325210925.GA2899@builder>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v2 2/4] firmware/qcom_scm: Add atomic version of io
+ read/write APIs
+Date: Mon, 25 Mar 2019 14:09:56 -0700
+Message-ID: <20190325210956.GB2899@builder>
 References: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
-	<20180910062551.28175-2-vivek.gautam@codeaurora.org>
+ <20180910062551.28175-3-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180910062551.28175-2-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20180910062551.28175-3-vivek.gautam@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: joro@8bytes.org, andy.gross@linaro.org, will.deacon@arm.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, david.brown@linaro.org, tfiga@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
 On Sun 09 Sep 23:25 PDT 2018, Vivek Gautam wrote:
 
-> There are scnenarios where drivers are required to make a
-> scm call in atomic context, such as in one of the qcom's
-> arm-smmu-500 errata [1].
+> Add atomic versions of qcom_scm_io_readl/writel to enable
+> reading/writing secure registers from atomic context.
 > 
-> [1] ("https://source.codeaurora.org/quic/la/kernel/msm-4.9/
->       tree/drivers/iommu/arm-smmu.c?h=msm-4.9#n4842")
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
 Regards,
 Bjorn
 
 > ---
->  drivers/firmware/qcom_scm-64.c | 136 ++++++++++++++++++++++++++++-------------
->  1 file changed, 92 insertions(+), 44 deletions(-)
+>  drivers/firmware/qcom_scm-32.c | 12 ++++++++++++
+>  drivers/firmware/qcom_scm-64.c | 32 ++++++++++++++++++++++++++++++++
+>  drivers/firmware/qcom_scm.c    | 12 ++++++++++++
+>  drivers/firmware/qcom_scm.h    |  4 ++++
+>  include/linux/qcom_scm.h       |  4 ++++
+>  5 files changed, 64 insertions(+)
 > 
+> diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
+> index 4e24e591ae74..7293e5efad69 100644
+> --- a/drivers/firmware/qcom_scm-32.c
+> +++ b/drivers/firmware/qcom_scm-32.c
+> @@ -627,3 +627,15 @@ int __qcom_scm_io_writel(struct device *dev, phys_addr_t addr, unsigned int val)
+>  	return qcom_scm_call_atomic2(QCOM_SCM_SVC_IO, QCOM_SCM_IO_WRITE,
+>  				     addr, val);
+>  }
+> +
+> +int __qcom_scm_io_readl_atomic(struct device *dev, phys_addr_t addr,
+> +			       unsigned int *val)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +int __qcom_scm_io_writel_atomic(struct device *dev, phys_addr_t addr,
+> +				unsigned int val)
+> +{
+> +	return -ENODEV;
+> +}
 > diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-> index 688525dd4aee..3a8c867cdf51 100644
+> index 3a8c867cdf51..6bf55403f6e3 100644
 > --- a/drivers/firmware/qcom_scm-64.c
 > +++ b/drivers/firmware/qcom_scm-64.c
-> @@ -70,32 +70,71 @@ static DEFINE_MUTEX(qcom_scm_lock);
->  #define FIRST_EXT_ARG_IDX 3
->  #define N_REGISTER_ARGS (MAX_QCOM_SCM_ARGS - N_EXT_QCOM_SCM_ARGS + 1)
->  
-> -/**
-> - * qcom_scm_call() - Invoke a syscall in the secure world
-> - * @dev:	device
-> - * @svc_id:	service identifier
-> - * @cmd_id:	command identifier
-> - * @desc:	Descriptor structure containing arguments and return values
-> - *
-> - * Sends a command to the SCM and waits for the command to finish processing.
-> - * This should *only* be called in pre-emptible context.
-> -*/
-> -static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
-> -			 const struct qcom_scm_desc *desc,
-> -			 struct arm_smccc_res *res)
-> +static void __qcom_scm_call_do(const struct qcom_scm_desc *desc,
-> +			       struct arm_smccc_res *res, u32 fn_id,
-> +			       u64 x5, u32 type)
-> +{
-> +	u64 cmd;
-> +	struct arm_smccc_quirk quirk = {.id = ARM_SMCCC_QUIRK_QCOM_A6};
-> +
-> +	cmd = ARM_SMCCC_CALL_VAL(type, qcom_smccc_convention,
-> +				 ARM_SMCCC_OWNER_SIP, fn_id);
-> +
-> +	quirk.state.a6 = 0;
-> +
-> +	do {
-> +		arm_smccc_smc_quirk(cmd, desc->arginfo, desc->args[0],
-> +				    desc->args[1], desc->args[2], x5,
-> +				    quirk.state.a6, 0, res, &quirk);
-> +
-> +		if (res->a0 == QCOM_SCM_INTERRUPTED)
-> +			cmd = res->a0;
-> +
-> +	} while (res->a0 == QCOM_SCM_INTERRUPTED);
-> +}
-> +
-> +static void qcom_scm_call_do(const struct qcom_scm_desc *desc,
-> +			     struct arm_smccc_res *res, u32 fn_id,
-> +			     u64 x5, bool atomic)
-> +{
-> +	int retry_count = 0;
-> +
-> +	if (!atomic) {
-> +		do {
-> +			mutex_lock(&qcom_scm_lock);
-> +
-> +			__qcom_scm_call_do(desc, res, fn_id, x5,
-> +					   ARM_SMCCC_STD_CALL);
-> +
-> +			mutex_unlock(&qcom_scm_lock);
-> +
-> +			if (res->a0 == QCOM_SCM_V2_EBUSY) {
-> +				if (retry_count++ > QCOM_SCM_EBUSY_MAX_RETRY)
-> +					break;
-> +				msleep(QCOM_SCM_EBUSY_WAIT_MS);
-> +			}
-> +		}  while (res->a0 == QCOM_SCM_V2_EBUSY);
-> +	} else {
-> +		__qcom_scm_call_do(desc, res, fn_id, x5, ARM_SMCCC_FAST_CALL);
-> +	}
-> +}
-> +
-> +static int ___qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
-> +			    const struct qcom_scm_desc *desc,
-> +			    struct arm_smccc_res *res, bool atomic)
->  {
->  	int arglen = desc->arginfo & 0xf;
-> -	int retry_count = 0, i;
-> +	int i;
->  	u32 fn_id = QCOM_SCM_FNID(svc_id, cmd_id);
-> -	u64 cmd, x5 = desc->args[FIRST_EXT_ARG_IDX];
-> +	u64 x5 = desc->args[FIRST_EXT_ARG_IDX];
->  	dma_addr_t args_phys = 0;
->  	void *args_virt = NULL;
->  	size_t alloc_len;
-> -	struct arm_smccc_quirk quirk = {.id = ARM_SMCCC_QUIRK_QCOM_A6};
-> +	gfp_t flag = atomic ? GFP_ATOMIC : GFP_KERNEL;
->  
->  	if (unlikely(arglen > N_REGISTER_ARGS)) {
->  		alloc_len = N_EXT_QCOM_SCM_ARGS * sizeof(u64);
-> -		args_virt = kzalloc(PAGE_ALIGN(alloc_len), GFP_KERNEL);
-> +		args_virt = kzalloc(PAGE_ALIGN(alloc_len), flag);
->  
->  		if (!args_virt)
->  			return -ENOMEM;
-> @@ -125,33 +164,7 @@ static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
->  		x5 = args_phys;
->  	}
->  
-> -	do {
-> -		mutex_lock(&qcom_scm_lock);
-> -
-> -		cmd = ARM_SMCCC_CALL_VAL(ARM_SMCCC_STD_CALL,
-> -					 qcom_smccc_convention,
-> -					 ARM_SMCCC_OWNER_SIP, fn_id);
-> -
-> -		quirk.state.a6 = 0;
-> -
-> -		do {
-> -			arm_smccc_smc_quirk(cmd, desc->arginfo, desc->args[0],
-> -				      desc->args[1], desc->args[2], x5,
-> -				      quirk.state.a6, 0, res, &quirk);
-> -
-> -			if (res->a0 == QCOM_SCM_INTERRUPTED)
-> -				cmd = res->a0;
-> -
-> -		} while (res->a0 == QCOM_SCM_INTERRUPTED);
-> -
-> -		mutex_unlock(&qcom_scm_lock);
-> -
-> -		if (res->a0 == QCOM_SCM_V2_EBUSY) {
-> -			if (retry_count++ > QCOM_SCM_EBUSY_MAX_RETRY)
-> -				break;
-> -			msleep(QCOM_SCM_EBUSY_WAIT_MS);
-> -		}
-> -	}  while (res->a0 == QCOM_SCM_V2_EBUSY);
-> +	qcom_scm_call_do(desc, res, fn_id, x5, atomic);
->  
->  	if (args_virt) {
->  		dma_unmap_single(dev, args_phys, alloc_len, DMA_TO_DEVICE);
-> @@ -164,6 +177,41 @@ static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
->  	return 0;
+> @@ -558,3 +558,35 @@ int __qcom_scm_io_writel(struct device *dev, phys_addr_t addr, unsigned int val)
+>  	return qcom_scm_call(dev, QCOM_SCM_SVC_IO, QCOM_SCM_IO_WRITE,
+>  			     &desc, &res);
 >  }
+> +
+> +int __qcom_scm_io_readl_atomic(struct device *dev, phys_addr_t addr,
+> +			       unsigned int *val)
+> +{
+> +	struct qcom_scm_desc desc = {0};
+> +	struct arm_smccc_res res;
+> +	int ret;
+> +
+> +	desc.args[0] = addr;
+> +	desc.arginfo = QCOM_SCM_ARGS(1);
+> +
+> +	ret = qcom_scm_call_atomic(dev, QCOM_SCM_SVC_IO, QCOM_SCM_IO_READ,
+> +				   &desc, &res);
+> +	if (ret >= 0)
+> +		*val = res.a1;
+> +
+> +	return ret < 0 ? ret : 0;
+> +}
+> +
+> +int __qcom_scm_io_writel_atomic(struct device *dev, phys_addr_t addr,
+> +				unsigned int val)
+> +{
+> +	struct qcom_scm_desc desc = {0};
+> +	struct arm_smccc_res res;
+> +
+> +	desc.args[0] = addr;
+> +	desc.args[1] = val;
+> +	desc.arginfo = QCOM_SCM_ARGS(2);
+> +
+> +	return qcom_scm_call_atomic(dev, QCOM_SCM_SVC_IO, QCOM_SCM_IO_WRITE,
+> +				    &desc, &res);
+> +}
+> diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
+> index e778af766fae..36da0000b37f 100644
+> --- a/drivers/firmware/qcom_scm.c
+> +++ b/drivers/firmware/qcom_scm.c
+> @@ -365,6 +365,18 @@ int qcom_scm_io_writel(phys_addr_t addr, unsigned int val)
+>  }
+>  EXPORT_SYMBOL(qcom_scm_io_writel);
 >  
-> +/**
-> + * qcom_scm_call() - Invoke a syscall in the secure world
-> + * @dev:	device
-> + * @svc_id:	service identifier
-> + * @cmd_id:	command identifier
-> + * @desc:	Descriptor structure containing arguments and return values
-> + *
-> + * Sends a command to the SCM and waits for the command to finish processing.
-> + * This should *only* be called in pre-emptible context.
-> + */
-> +static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
-> +			 const struct qcom_scm_desc *desc,
-> +			 struct arm_smccc_res *res)
+> +int qcom_scm_io_readl_atomic(phys_addr_t addr, unsigned int *val)
 > +{
-> +	return ___qcom_scm_call(dev, svc_id, cmd_id, desc, res, false);
+> +	return __qcom_scm_io_readl_atomic(__scm->dev, addr, val);
 > +}
+> +EXPORT_SYMBOL(qcom_scm_io_readl_atomic);
 > +
-> +/**
-> + * qcom_scm_call_atomic() - atomic variation of qcom_scm_call()
-> + * @dev:	device
-> + * @svc_id:	service identifier
-> + * @cmd_id:	command identifier
-> + * @desc:	Descriptor structure containing arguments and return values
-> + * @res:	Structure containing results from SMC/HVC call
-> + *
-> + * Sends a command to the SCM and waits for the command to finish processing.
-> + * This should be called in atomic context only.
-> + */
-> +static int qcom_scm_call_atomic(struct device *dev, u32 svc_id, u32 cmd_id,
-> +				const struct qcom_scm_desc *desc,
-> +				struct arm_smccc_res *res)
+> +int qcom_scm_io_writel_atomic(phys_addr_t addr, unsigned int val)
 > +{
-> +	return ___qcom_scm_call(dev, svc_id, cmd_id, desc, res, true);
+> +	return __qcom_scm_io_writel_atomic(__scm->dev, addr, val);
 > +}
+> +EXPORT_SYMBOL(qcom_scm_io_writel_atomic);
 > +
->  /**
->   * qcom_scm_set_cold_boot_addr() - Set the cold boot address for cpus
->   * @entry: Entry point function for the cpus
+>  static void qcom_scm_set_download_mode(bool enable)
+>  {
+>  	bool avail;
+> diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
+> index dcd7f7917fc7..bb176107f51e 100644
+> --- a/drivers/firmware/qcom_scm.h
+> +++ b/drivers/firmware/qcom_scm.h
+> @@ -37,6 +37,10 @@ extern void __qcom_scm_cpu_power_down(u32 flags);
+>  #define QCOM_SCM_IO_WRITE		0x2
+>  extern int __qcom_scm_io_readl(struct device *dev, phys_addr_t addr, unsigned int *val);
+>  extern int __qcom_scm_io_writel(struct device *dev, phys_addr_t addr, unsigned int val);
+> +extern int __qcom_scm_io_readl_atomic(struct device *dev, phys_addr_t addr,
+> +				      unsigned int *val);
+> +extern int __qcom_scm_io_writel_atomic(struct device *dev, phys_addr_t addr,
+> +				       unsigned int val);
+>  
+>  #define QCOM_SCM_SVC_INFO		0x6
+>  #define QCOM_IS_CALL_AVAIL_CMD		0x1
+> diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
+> index 5d65521260b3..6a5d0c98b328 100644
+> --- a/include/linux/qcom_scm.h
+> +++ b/include/linux/qcom_scm.h
+> @@ -64,6 +64,8 @@ extern int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size);
+>  extern int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare);
+>  extern int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val);
+>  extern int qcom_scm_io_writel(phys_addr_t addr, unsigned int val);
+> +extern int qcom_scm_io_readl_atomic(phys_addr_t addr, unsigned int *val);
+> +extern int qcom_scm_io_writel_atomic(phys_addr_t addr, unsigned int val);
+>  #else
+>  static inline
+>  int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
+> @@ -100,5 +102,7 @@ static inline int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size) { ret
+>  static inline int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare) { return -ENODEV; }
+>  static inline int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val) { return -ENODEV; }
+>  static inline int qcom_scm_io_writel(phys_addr_t addr, unsigned int val) { return -ENODEV; }
+> +static inline int qcom_scm_io_readl_atomic(phys_addr_t addr, unsigned int *val) { return -ENODEV; }
+> +static inline int qcom_scm_io_writel_atomic(phys_addr_t addr, unsigned int val) { return -ENODEV; }
+>  #endif
+>  #endif
 > -- 
 > QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
 > of Code Aurora Forum, hosted by The Linux Foundation
