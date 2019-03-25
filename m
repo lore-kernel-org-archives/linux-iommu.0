@@ -1,132 +1,113 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] iommu/vt-d: Fix-up device-domain relationship by
-	refactoring to use iommu group default domain.
-Date: Mon, 25 Mar 2019 10:16:28 +0800
-Message-ID: <c41e4691-98a6-6f88-2509-8ff40f0204e9@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
-	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
-	<0e74cc54-bb90-a620-5763-466cb11aaef7@linux.intel.com>
-	<94706334-3DE4-4964-8FDD-125C58D493A0@arista.com>
-	<418d1432-2036-3f6f-48de-77005807e350@linux.intel.com>
-	<0359F732-374F-4EDB-B49C-14B2F1BB637D@arista.com>
+From: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Mon, 25 Mar 2019 11:57:10 +1100
+Message-ID: <20190325005710.GC29295@umbus>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+	<87womn8inf.fsf@morokweng.localdomain>
+	<20190129134750-mutt-send-email-mst@kernel.org>
+	<877eefxvyb.fsf@morokweng.localdomain>
+	<20190204144048-mutt-send-email-mst@kernel.org>
+	<87ef71seve.fsf@morokweng.localdomain>
+	<20190320171027-mutt-send-email-mst@kernel.org>
+	<87tvfvbwpb.fsf@morokweng.localdomain>
+	<20190323165456-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0359F732-374F-4EDB-B49C-14B2F1BB637D-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============6805751237993055165=="
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <20190323165456-mutt-send-email-mst@kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Mike Anderson <andmike@linux.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Alexey Kardashevskiy <aik@linux.ibm.com>, Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, Paul Mackerras <paulus@ozlabs.org>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSmFtZXMsCgpPbiAzLzIyLzE5IDY6MDUgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPiBIZXkg
-THUsCj4gCj4+IE9uIDIwIE1hciAyMDE5LCBhdCAwMToyNiwgTHUgQmFvbHUgPGJhb2x1Lmx1QGxp
-bnV4LmludGVsLmNvbT4gd3JvdGU6Cj4+Cj4+IEhpIEphbWVzLAo+Pgo+PiBPbiAzLzE5LzE5IDk6
-MzUgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPj4+IEhleSBMdSwKPj4+PiBPbiAxNSBNYXIgMjAx
-OSwgYXQgMDM6MTMsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+
-Pj4+Cj4+Pj4gSGkgSmFtZXMsCj4+Pj4KPj4+PiBPbiAzLzE0LzE5IDc6NTYgUE0sIEphbWVzIFNl
-d2FydCB3cm90ZToKPj4+Pj4gUGF0Y2hlcyAxIGFuZCAyIGFyZSB0aGUgc2FtZSBhcyB2MS4KPj4+
-Pj4gdjEtdjI6Cj4+Pj4+ICAgIFJlZmFjdG9yZWQgSVNBIGRpcmVjdCBtYXBwaW5ncyB0byBiZSBy
-ZXR1cm5lZCBieSBpb21tdV9nZXRfcmVzdl9yZWdpb25zLgo+Pj4+PiAgICBJbnRlZ3JhdGVkIHBh
-dGNoIGJ5IEx1IHRvIGRlZmVyIHR1cm5pbmcgb24gRE1BUiB1bnRpbCBpb21tdS5jIGhhcyBtYXBw
-ZWQKPj4+Pj4gcmVzZXJ2ZWQgcmVnaW9ucy4KPj4+Pj4gICAgSW50ZWdyYXRlZCBwYXRjaGVzIGJ5
-IEx1IHRvIHJlbW92ZSBtb3JlIHVudXNlZCBjb2RlIGluIGNsZWFudXAuCj4+Pj4+IEx1OiBJIGRp
-ZG4ndCBpbnRlZ3JhdGUgeW91ciBwYXRjaCB0byBzZXQgdGhlIGRlZmF1bHQgZG9tYWluIHR5cGUg
-YXMgaXQKPj4+Pj4gaXNuJ3QgZGlyZWN0bHkgcmVsYXRlZCB0byB0aGUgYWltIG9mIHRoaXMgcGF0
-Y2hzZXQuIEluc3RlYWQgcGF0Y2ggNAo+Pj4+Cj4+Pj4gV2l0aG91dCB0aG9zZSBwYXRjaGVzLCB1
-c2VyIGV4cGVyaWVuY2Ugd2lsbCBiZSBhZmZlY3RlZCBhbmQgc29tZSBkZXZpY2VzCj4+Pj4gd2ls
-bCBub3Qgd29yayBvbiBJbnRlbCBwbGF0Zm9ybXMgYW55bW9yZS4KPj4+Pgo+Pj4+IEZvciBhIGxv
-bmcgdGltZSwgSW50ZWwgSU9NTVUgZHJpdmVyIGhhcyBpdHMgb3duIGxvZ2ljIHRvIGRldGVybWlu
-ZQo+Pj4+IHdoZXRoZXIgYSBkZXZpY2UgcmVxdWlyZXMgYW4gaWRlbnRpdHkgZG9tYWluLiBGb3Ig
-ZXhhbXBsZSwgd2hlbiB1c2VyCj4+Pj4gc3BlY2lmaWVzICJpb21tdT1wdCIgaW4ga2VybmVsIHBh
-cmFtZXRlciwgYWxsIGRldmljZSB3aWxsIGJlIGF0dGFjaGVkCj4+Pj4gd2l0aCB0aGUgaWRlbnRp
-dHkgZG9tYWluLiBGdXJ0aGVyIG1vcmUsIHNvbWUgcXVpcmt5IGRldmljZXMgcmVxdWlyZQo+Pj4+
-IGFuIGlkZW50aXR5IGRvbWFpbiB0byBiZSB1c2VkIGJlZm9yZSBlbmFibGluZyBETUEgcmVtYXBw
-aW5nLCBvdGhlcndpc2UsCj4+Pj4gaXQgd2lsbCBub3Qgd29yay4gVGhpcyB3YXMgZG9uZSBieSBh
-ZGRpbmcgcXVpcmsgYml0cyBpbiBJbnRlbCBJT01NVQo+Pj4+IGRyaXZlci4KPj4+Pgo+Pj4+IFNv
-IGZyb20gbXkgcG9pbnQgb2Ygdmlldywgb25lIHdheSBpcyBwb3J0aW5nIGFsbCB0aG9zZSBxdWly
-a3MgYW5kIGtlcm5lbAo+Pj4+IHBhcmFtZXRlcnMgaW50byBJT01NVSBnZW5lcmljIGxheWVyLCBv
-ciBvcGVuaW5nIGEgZG9vciBmb3IgdmVuZG9yIElPTU1VCj4+Pj4gZHJpdmVyIHRvIGRldGVybWlu
-ZSB0aGUgZGVmYXVsdCBkb21haW4gdHlwZSBieSB0aGVpciBvd24uIEkgcHJlZmVyIHRoZQo+Pj4+
-IGxhdHRlciBvcHRpb24gc2luY2UgaXQgd2lsbCBub3QgaW1wYWN0IGFueSBiZWhhdmlvcnMgb24g
-b3RoZXIKPj4+PiBhcmNoaXRlY3R1cmVzLgo+Pj4gSSBzZWUgeW91ciBwb2ludC4gSeKAmW0gbm90
-IGNvbmZpZGVudCB0aGF0IHVzaW5nIHRoZSBwcm9wb3NlZCBkb29yIHRvIHNldCBhCj4+PiBncm91
-cHMgZGVmYXVsdCBkb21haW4gaGFzIHRoZSBkZXNpcmVkIGJlaGF2aW91ci4gQXMgZGlzY3Vzc2Vk
-IGJlZm9yZSB0aGUKPj4+IGRlZmF1bHQgZG9tYWluIHR5cGUgd2lsbCBiZSBzZXQgYmFzZWQgb24g
-dGhlIGRlc2lyZWQgdHlwZSBmb3Igb25seSB0aGUKPj4+IGZpcnN0IGRldmljZSBhdHRhY2hlZCB0
-byBhIGdyb3VwLiBJIHRoaW5rIHRvIGNoYW5nZSB0aGUgZGVmYXVsdCBkb21haW4KPj4+IHR5cGUg
-eW91IHdvdWxkIG5lZWQgYSBzbGlnaHRseSBkaWZmZXJlbnQgZG9vciB0aGF0IHdhc27igJl0IGNv
-bmRpdGlvbmVkIG9uCj4+PiBkZXZpY2UuCj4+Cj4+IEkgdGhpbmsgdGhpcyBhcyBhbm90aGVyIHBy
-b2JsZW0uIEp1c3QgYSBzdW1tYXJpemUgZm9yIHRoZSBlYXNlIG9mCj4+IGRpc2N1c3Npb24uIFdl
-IHNhdyB0d28gcHJvYmxlbXM6Cj4+Cj4+IDEuIFdoZW4gYWxsb2NhdGluZyBhIG5ldyBncm91cCBm
-b3IgYSBkZXZpY2UsIGhvdyBzaG91bGQgd2UgZGV0ZXJtaW5lIHRoZQo+PiB0eXBlIG9mIHRoZSBk
-ZWZhdWx0IGRvbWFpbj8gVGhpcyBpcyB3aGF0IG15IHByb3Bvc2FsIHBhdGNoZXMgdHJ5aW5nIHRv
-Cj4+IGFkZHJlc3MuCj4gCj4gVGhpcyB3aWxsIHdvcmsgYXMgZXhwZWN0ZWQgb25seSBpZiBhbGwg
-ZGV2aWNlcyB3aXRoaW4gYSBncm91cCBnZXQgdGhlIHNhbWUKPiByZXN1bHQgZnJvbSBpc19pZGVu
-dGl0eV9tYXAuIE90aGVyd2lzZSB3ZWUgc2VlIGlzc3VlIDIuCj4gCj4+Cj4+IDIuIElmIHdlIG5l
-ZWQgdG8gcHV0IGEgZGV2aWNlIGludG8gYW4gZXhpc3RpbmcgZ3JvdXAgd2hpY2ggdXNlcyBhCj4+
-IGRpZmZlcmVudCB0eXBlIG9mIGRvbWFpbiBmcm9tIHdoYXQgdGhlIGRldmljZSBkZXNpcmVzIHRv
-IHVzZSwgd2UgbWlnaHQKPj4gYnJlYWsgdGhlIGZ1bmN0aW9uYWxpdHkgb2YgdGhlIGRldmljZS4g
-Rm9yIHRoaXMgcHJvYmxlbSBJJ2Qgc2Vjb25kIHlvdXIKPj4gcHJvcG9zYWwgYmVsb3cgaWYgSSBn
-ZXQgeW91ciBwb2ludCBjb3JyZWN0bHkuCj4+Cj4+PiBGb3Igc2l0dWF0aW9ucyB3aGVyZSBpbmRp
-dmlkdWFsIGRldmljZXMgcmVxdWlyZSBhbiBpZGVudGl0eSBkb21haW4gYmVjYXVzZQo+Pj4gb2Yg
-cXVpcmtzIHRoZW4gbWF5YmUgY2FsbGluZyBpc19pZGVudGl0eV9tYXAgcGVyIGRldmljZSBpbgo+
-Pj4gaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9kZXYgaXMgYSBiZXR0ZXIgc29sdXRpb24gdGhhbiB0aGUg
-b25lIEkgcHJvcG9zZWQuCj4+Cj4+IERvIHlvdSBtZWFuIGlmIHdlIHNlZSBhIHF1aXJreSBkZXZp
-Y2UgcmVxdWlyZXMgYSBkaWZmZXJlbnQgZG9tYWluIHR5cGUKPj4gb3RoZXIgdGhhbiB0aGUgZGVm
-YXVsdCBkb21haW4gdHlwZSBvZiB0aGUgZ3JvdXAsIHdlIHdpbGwgYXNzaWduIGEgbmV3Cj4+IGdy
-b3VwIHRvIGl0PyBUaGF0IGxvb2tzIGdvb2QgdG8gbWUgYXMgZmFyIGFzIEkgY2FuIHNlZS4gSSBz
-dXBwb3NlIHRoaXMKPj4gc2hvdWxkIGJlIGRvbmUgaW4gdnQtZCdzIG9wcyBjYWxsYmFjay4KPiAK
-PiBJIGhhdmUgdGhvdWdodCBhYm91dCB0aGlzIGEgYml0IGFuZCBJIHRoaW5rIHRoZSBjbGVhbmVz
-dCBhcHByb2FjaCBpcyB0bwo+IHB1dCBkZXZpY2VzIHRoYXQgcmVxdWlyZSBhbiBpZGVudGl0eSBk
-b21haW4gaW50byB0aGVpciBvd24gZ3JvdXAsIHRoaXMgY2FuCj4gYmUgZG9uZSBpbiB0aGUgZGV2
-aWNlX2dyb3VwIGNhbGxiYWNrLCBhdm9pZGluZyBhbnkgc2l0dWF0aW9uIHdoZXJlIHdlIGhhdmUK
-PiB0byBkZWFsIHdpdGggY3JlYXRpbmcgYSBuZXcgZ3JvdXAgYmFzZWQgb24gZG9tYWluIHR5cGUg
-aW4KPiBpb21tdV9ncm91cF9nZXRfZm9yX2Rldi4gVGhpcyB3YXkgd2Ugc2hvdWxkbuKAmXQgZXZl
-ciBiZSBpbiBhIHNpdHVhdGlvbiB3aXRoCj4gbXVsdGlwbGUgZGlmZmVyZW50IGRvbWFpbiB0eXBl
-cyBwZXIgZ3JvdXAuIFRoaXMgd2F5IHlvdXIgcGF0Y2hlcyB3aWxsIHdvcmsKPiBhcyBleHBlY3Rl
-ZC4gU2VlIGJlbG93IGZvciBhIHBvc3NpYmxlIGltcGxlbWVudGF0aW9uLgo+IAo+Pgo+PiBCZXN0
-IHJlZ2FyZHMsCj4+IEx1IEJhb2x1Cj4gCj4gQ2hlZXJzLAo+IEphbWVzLgo+IAo+IERldmljZXMg
-dGhhdCByZXF1aXJlIGFuIGlkZW50aXR5IG1hcCBiZWNhdXNlIG9mIHF1aXJrcyBvciBvdGhlciBy
-ZWFzb25zCj4gc2hvdWxkIGJlIHB1dCBpbiB0aGVpciBvd24gSU9NTVUgZ3JvdXAgc28gYXMgdG8g
-bm90IGVuZCB1cCB3aXRoIG11bHRpcGxlCj4gZGlmZmVyZW50IGRvbWFpbnMgcGVyIGdyb3VwLgoK
-WWVhaCEgVGhpcyBsb29rcyBnb29kIHRvIG1lLgoKQmVzdCByZWdhcmRzLApMdSBCYW9sdQoKPiAK
-PiBTaWduZWQtb2ZmLWJ5OiBKYW1lcyBTZXdhcnQgPGphbWVzc2V3YXJ0QGFyaXN0YS5jb20+Cj4g
-Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMvaW9t
-bXUvaW50ZWwtaW9tbXUuYwo+IGluZGV4IDNjYjhiMzZhYmY1MC4uMGY1YTEyMWQzMWEwIDEwMDY0
-NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9t
-bXUvaW50ZWwtaW9tbXUuYwo+IEBAIC01NDIxLDYgKzU0MjEsMjIgQEAgc3RydWN0IGludGVsX2lv
-bW11ICppbnRlbF9zdm1fZGV2aWNlX3RvX2lvbW11KHN0cnVjdCBkZXZpY2UgKmRldikKPiAgIH0K
-PiAgICNlbmRpZiAvKiBDT05GSUdfSU5URUxfSU9NTVVfU1ZNICovCj4gCj4gK3N0YXRpYyBzdHJ1
-Y3QgaW9tbXVfZ3JvdXAgKmludGVsX2lkZW50aXR5X2dyb3VwOwo+ICsKPiArc3RydWN0IGlvbW11
-X2dyb3VwICppbnRlbF9pb21tdV9wY2lfZGV2aWNlX2dyb3VwKHN0cnVjdCBkZXZpY2UgKmRldikK
-PiArewo+ICsgICAgICAgaWYgKGlvbW11X25vX21hcHBpbmcoZGV2KSkgewo+ICsgICAgICAgICAg
-ICAgICBpZiAoIWludGVsX2lkZW50aXR5X2dyb3VwKSB7Cj4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgaW50ZWxfaWRlbnRpdHlfZ3JvdXAgPSBpb21tdV9ncm91cF9hbGxvYygpOwo+ICsgICAgICAg
-ICAgICAgICAgICAgICAgIGlmIChJU19FUlIoaW50ZWxfaWRlbnRpdHlfZ3JvdXApKQo+ICsgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIE5VTEw7Cj4gKyAgICAgICAgICAgICAg
-IH0KPiArICAgICAgICAgICAgICAgcmV0dXJuIGludGVsX2lkZW50aXR5X2dyb3VwOwo+ICsgICAg
-ICAgfQo+ICsKPiArICAgICAgIHJldHVybiBwY2lfZGV2aWNlX2dyb3VwKGRldik7Cj4gK30KPiAr
-Cj4gICBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzIGludGVsX2lvbW11X29wcyA9IHsKPiAgICAgICAg
-ICAuY2FwYWJsZSAgICAgICAgICAgICAgICA9IGludGVsX2lvbW11X2NhcGFibGUsCj4gICAgICAg
-ICAgLmRvbWFpbl9hbGxvYyAgICAgICAgICAgPSBpbnRlbF9pb21tdV9kb21haW5fYWxsb2MsCj4g
-QEAgLTU0MzUsNyArNTQ1MSw3IEBAIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgaW50ZWxfaW9tbXVf
-b3BzID0gewo+ICAgICAgICAgIC5nZXRfcmVzdl9yZWdpb25zICAgICAgID0gaW50ZWxfaW9tbXVf
-Z2V0X3Jlc3ZfcmVnaW9ucywKPiAgICAgICAgICAucHV0X3Jlc3ZfcmVnaW9ucyAgICAgICA9IGlu
-dGVsX2lvbW11X3B1dF9yZXN2X3JlZ2lvbnMsCj4gICAgICAgICAgLmFwcGx5X3Jlc3ZfcmVnaW9u
-ICAgICAgPSBpbnRlbF9pb21tdV9hcHBseV9yZXN2X3JlZ2lvbiwKPiAtICAgICAgIC5kZXZpY2Vf
-Z3JvdXAgICAgICAgICAgID0gcGNpX2RldmljZV9ncm91cCwKPiArICAgICAgIC5kZXZpY2VfZ3Jv
-dXAgICAgICAgICAgID0gaW50ZWxfaW9tbXVfcGNpX2RldmljZV9ncm91cCwKPiAgICAgICAgICAu
-cGdzaXplX2JpdG1hcCAgICAgICAgICA9IElOVEVMX0lPTU1VX1BHU0laRVMsCj4gICB9Owo+IApf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
-aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+--===============6805751237993055165==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Fig2xvG2VGoz8o/s"
+Content-Disposition: inline
+
+
+--Fig2xvG2VGoz8o/s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat, Mar 23, 2019 at 05:01:35PM -0400, Michael S. Tsirkin wrote:
+> On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
+> > Michael S. Tsirkin <mst@redhat.com> writes:
+[snip]
+> > >> > Is there any justification to doing that beyond someone putting
+> > >> > out slow code in the past?
+> > >>
+> > >> The definition of the ACCESS_PLATFORM flag is generic and captures t=
+he
+> > >> notion of memory access restrictions for the device. Unfortunately, =
+on
+> > >> powerpc pSeries guests it also implies that the IOMMU is turned on
+> > >
+> > > IIUC that's really because on pSeries IOMMU is *always* turned on.
+> > > Platform has no way to say what you want it to say
+> > > which is bypass the iommu for the specific device.
+> >=20
+> > Yes, that's correct. pSeries guests running on KVM are in a gray area
+> > where theoretically they use an IOMMU but in practice KVM ignores it.
+> > It's unfortunate but it's the reality on the ground today. :-/
+
+Um.. I'm not sure what you mean by this.  As far as I'm concerned
+there is always a guest-visible (paravirtualized) IOMMU, and that will
+be backed onto the host IOMMU when necessary.
+
+[Actually there is an IOMMU bypass hack that's used by the guest
+ firmware, but I don't think we want to expose that]
+
+> Well it's not just the reality, virt setups need something that
+> emulated IOMMUs don't provide. That is not uncommon, e.g.
+> intel's VTD has a "cache mode" field which AFAIK is only used for virt.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--Fig2xvG2VGoz8o/s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAlyYJ2YACgkQbDjKyiDZ
+s5JZyQ//SS59QY9yMVjm5dIHKUEs9Bci33j39MzpLz+QZ/rSLpgkKSlPhWZLhu70
+Sk2aNBu5ILbZaomcSttinaObyDh3IuicBnwqBFvAVWoSdKrrzSPFwHOTC3w5Ncdw
+pkFfxcvfr5jUzh/p3RQuBATbMJfP+/mZC+KaKseXGX2vDte2T4IqZa6SXyEdjLTO
+n9I7zE4D51jmPoCbOen1E65FMRQ7MkLOXsm2GCYYL9HfgdtzDzvQ8GsG4BABUGZg
+BREjDrJ5abIgeaygU69uSGbtJSOIeW1xN9SE1S6DhYj323A0VA2W9HsQCZEvjkrz
+4Ix5hSqOhwLhkhstH4oJAwTsXO+mDb0UIrgt8BnqnUw4OLyDDf1ukf/qf0lQgTSW
+k9c15llwqGFj9uUttu5ZcsCswYbgpug0JjNQn9ebBP9yoQIEZEerX3FBnmF8vwp2
+FgGP6eFM9XnnZPNiuO1AsYSL41G8Tvhjh+cGO6MWyYm4qczY1MoPLwYoihAc+ocr
+SJLZG99l77d344c1eTZeIWFZoYcq/1ZYbcfVVsFRGt8WJ+kM2YrN6zTD4+tS9zwA
+gq0AHzBZUZjln8CDA2HETxgvnXSI6ieyoO3zWu1EF5y/zL3wolKVvREKCeNbcvfI
+bT/RnjLgXMRSvCCxUbWPADa6lDGNtZ4STlnUf10vq7jAFlHgT+4=
+=YCYB
+-----END PGP SIGNATURE-----
+
+--Fig2xvG2VGoz8o/s--
+
+--===============6805751237993055165==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Virtualization mailing list
+Virtualization@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+--===============6805751237993055165==--
