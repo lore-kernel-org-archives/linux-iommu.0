@@ -1,135 +1,117 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v8 9/9] vfio/type1: Handle different mdev isolation type
-Date: Mon, 25 Mar 2019 09:30:36 +0800
-Message-ID: <20190325013036.18400-10-baolu.lu@linux.intel.com>
-References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190325013036.18400-1-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+	iommu_get_resv_regions
+Date: Mon, 25 Mar 2019 10:03:18 +0800
+Message-ID: <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A489539F-4DD4-438A-AD9A-1A2F50404DB9-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This adds the support to determine the isolation type
-of a mediated device group by checking whether it has
-an iommu device. If an iommu device exists, an iommu
-domain will be allocated and then attached to the iommu
-device. Otherwise, keep the same behavior as it is.
-
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- drivers/vfio/vfio_iommu_type1.c | 55 +++++++++++++++++++++++++--------
- 1 file changed, 42 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index ccc4165474aa..b91cafcd5181 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -559,7 +559,7 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 	mutex_lock(&iommu->lock);
- 
- 	/* Fail if notifier list is empty */
--	if ((!iommu->external_domain) || (!iommu->notifier.head)) {
-+	if (!iommu->notifier.head) {
- 		ret = -EINVAL;
- 		goto pin_done;
- 	}
-@@ -641,11 +641,6 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
- 
- 	mutex_lock(&iommu->lock);
- 
--	if (!iommu->external_domain) {
--		mutex_unlock(&iommu->lock);
--		return -EINVAL;
--	}
--
- 	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu);
- 	for (i = 0; i < npage; i++) {
- 		struct vfio_dma *dma;
-@@ -1368,13 +1363,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
- 		iommu_detach_group(domain->domain, group->iommu_group);
- }
- 
-+static bool vfio_bus_is_mdev(struct bus_type *bus)
-+{
-+	struct bus_type *mdev_bus;
-+	bool ret = false;
-+
-+	mdev_bus = symbol_get(mdev_bus_type);
-+	if (mdev_bus) {
-+		ret = (bus == mdev_bus);
-+		symbol_put(mdev_bus_type);
-+	}
-+
-+	return ret;
-+}
-+
-+static int vfio_mdev_iommu_device(struct device *dev, void *data)
-+{
-+	struct device **old = data, *new;
-+
-+	new = vfio_mdev_get_iommu_device(dev);
-+	if (!new || (*old && *old != new))
-+		return -EINVAL;
-+
-+	*old = new;
-+
-+	return 0;
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
- {
- 	struct vfio_iommu *iommu = iommu_data;
- 	struct vfio_group *group;
- 	struct vfio_domain *domain, *d;
--	struct bus_type *bus = NULL, *mdev_bus;
-+	struct bus_type *bus = NULL;
- 	int ret;
- 	bool resv_msi, msi_remap;
- 	phys_addr_t resv_msi_base;
-@@ -1409,23 +1431,30 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_free;
- 
--	mdev_bus = symbol_get(mdev_bus_type);
-+	if (vfio_bus_is_mdev(bus)) {
-+		struct device *iommu_device = NULL;
- 
--	if (mdev_bus) {
--		if ((bus == mdev_bus) && !iommu_present(bus)) {
--			symbol_put(mdev_bus_type);
-+		group->mdev_group = true;
-+
-+		/* Determine the isolation type */
-+		ret = iommu_group_for_each_dev(iommu_group, &iommu_device,
-+					       vfio_mdev_iommu_device);
-+		if (ret || !iommu_device) {
- 			if (!iommu->external_domain) {
- 				INIT_LIST_HEAD(&domain->group_list);
- 				iommu->external_domain = domain;
--			} else
-+			} else {
- 				kfree(domain);
-+			}
- 
- 			list_add(&group->next,
- 				 &iommu->external_domain->group_list);
- 			mutex_unlock(&iommu->lock);
-+
- 			return 0;
- 		}
--		symbol_put(mdev_bus_type);
-+
-+		bus = iommu_device->bus;
- 	}
- 
- 	domain->domain = iommu_domain_alloc(bus);
--- 
-2.17.1
+SGkgSmFtZXMsCgpPbiAzLzIyLzE5IDU6NTcgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPiBIZXkg
+THUsCj4gCj4+IE9uIDE1IE1hciAyMDE5LCBhdCAwMjoxOSwgTHUgQmFvbHUgPGJhb2x1Lmx1QGxp
+bnV4LmludGVsLmNvbT4gd3JvdGU6Cj4+Cj4+IEhpIEphbWVzLAo+Pgo+PiBPbiAzLzE0LzE5IDc6
+NTggUE0sIEphbWVzIFNld2FydCB3cm90ZToKPj4+IFRvIHN1cHBvcnQgbWFwcGluZyBJU0EgcmVn
+aW9uIHZpYSBpb21tdV9ncm91cF9jcmVhdGVfZGlyZWN0X21hcHBpbmdzLAo+Pj4gbWFrZSBzdXJl
+IGl0cyBleHBvc2VkIGJ5IGlvbW11X2dldF9yZXN2X3JlZ2lvbnMuIFRoaXMgYWxsb3dzCj4+PiBk
+ZWR1cGxpY2F0aW9uIG9mIHJlc2VydmVkIHJlZ2lvbiBtYXBwaW5ncwo+Pj4gU2lnbmVkLW9mZi1i
+eTogSmFtZXMgU2V3YXJ0IDxqYW1lc3Nld2FydEBhcmlzdGEuY29tPgo+Pj4gLS0tCj4+PiAgIGRy
+aXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyB8IDQyICsrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrLS0tLS0tLS0KPj4+ICAgMSBmaWxlIGNoYW5nZWQsIDMzIGluc2VydGlvbnMoKyksIDkgZGVs
+ZXRpb25zKC0pCj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIv
+ZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+PiBpbmRleCA4ZTBhNGUyZmY3N2YuLjJlMDBl
+ODcwOGYwNiAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+Pj4g
+KysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+PiBAQCAtMzM3LDYgKzMzNyw4IEBA
+IHN0YXRpYyBMSVNUX0hFQUQoZG1hcl9ybXJyX3VuaXRzKTsKPj4+ICAgI2RlZmluZSBmb3JfZWFj
+aF9ybXJyX3VuaXRzKHJtcnIpIFwKPj4+ICAgCWxpc3RfZm9yX2VhY2hfZW50cnkocm1yciwgJmRt
+YXJfcm1ycl91bml0cywgbGlzdCkKPj4+ICAgK3N0YXRpYyBzdHJ1Y3QgaW9tbXVfcmVzdl9yZWdp
+b24gKmlzYV9yZXN2X3JlZ2lvbjsKPj4+ICsKPj4+ICAgLyogYml0bWFwIGZvciBpbmRleGluZyBp
+bnRlbF9pb21tdXMgKi8KPj4+ICAgc3RhdGljIGludCBnX251bV9vZl9pb21tdXM7Cj4+PiAgIEBA
+IC0yNzgwLDI2ICsyNzgyLDM0IEBAIHN0YXRpYyBpbmxpbmUgaW50IGlvbW11X3ByZXBhcmVfcm1y
+cl9kZXYoc3RydWN0IGRtYXJfcm1ycl91bml0ICpybXJyLAo+Pj4gICAJCQkJCSAgcm1yci0+ZW5k
+X2FkZHJlc3MpOwo+Pj4gICB9Cj4+PiAgICtzdGF0aWMgaW5saW5lIHN0cnVjdCBpb21tdV9yZXN2
+X3JlZ2lvbiAqaW9tbXVfZ2V0X2lzYV9yZXN2X3JlZ2lvbih2b2lkKQo+Pj4gK3sKPj4+ICsJaWYg
+KCFpc2FfcmVzdl9yZWdpb24pCj4+PiArCQlpc2FfcmVzdl9yZWdpb24gPSBpb21tdV9hbGxvY19y
+ZXN2X3JlZ2lvbigwLAo+Pj4gKwkJCQkxNioxMDI0KjEwMjQsCj4+PiArCQkJCTAsIElPTU1VX1JF
+U1ZfRElSRUNUKTsKPj4+ICsKPj4+ICsJcmV0dXJuIGlzYV9yZXN2X3JlZ2lvbjsKPj4+ICt9Cj4+
+PiArCj4+PiAgICNpZmRlZiBDT05GSUdfSU5URUxfSU9NTVVfRkxPUFBZX1dBCj4+PiAtc3RhdGlj
+IGlubGluZSB2b2lkIGlvbW11X3ByZXBhcmVfaXNhKHZvaWQpCj4+PiArc3RhdGljIGlubGluZSB2
+b2lkIGlvbW11X3ByZXBhcmVfaXNhKHN0cnVjdCBwY2lfZGV2ICpwZGV2KQo+Pj4gICB7Cj4+PiAt
+CXN0cnVjdCBwY2lfZGV2ICpwZGV2Owo+Pj4gICAJaW50IHJldDsKPj4+ICsJc3RydWN0IGlvbW11
+X3Jlc3ZfcmVnaW9uICpyZWcgPSBpb21tdV9nZXRfaXNhX3Jlc3ZfcmVnaW9uKCk7Cj4+PiAgIC0J
+cGRldiA9IHBjaV9nZXRfY2xhc3MoUENJX0NMQVNTX0JSSURHRV9JU0EgPDwgOCwgTlVMTCk7Cj4+
+PiAtCWlmICghcGRldikKPj4+ICsJaWYgKCFyZWcpCj4+PiAgIAkJcmV0dXJuOwo+Pj4gICAgIAlw
+cl9pbmZvKCJQcmVwYXJlIDAtMTZNaUIgdW5pdHkgbWFwcGluZyBmb3IgTFBDXG4iKTsKPj4+IC0J
+cmV0ID0gaW9tbXVfcHJlcGFyZV9pZGVudGl0eV9tYXAoJnBkZXYtPmRldiwgMCwgMTYqMTAyNCox
+MDI0IC0gMSk7Cj4+PiArCXJldCA9IGlvbW11X3ByZXBhcmVfaWRlbnRpdHlfbWFwKCZwZGV2LT5k
+ZXYsIHJlZy0+c3RhcnQsCj4+PiArCQkJcmVnLT5zdGFydCArIHJlZy0+bGVuZ3RoIC0gMSk7Cj4+
+PiAgICAgCWlmIChyZXQpCj4+PiAgIAkJcHJfZXJyKCJGYWlsZWQgdG8gY3JlYXRlIDAtMTZNaUIg
+aWRlbnRpdHkgbWFwIC0gZmxvcHB5IG1pZ2h0IG5vdCB3b3JrXG4iKTsKPj4+IC0KPj4+IC0JcGNp
+X2Rldl9wdXQocGRldik7Cj4+PiAgIH0KPj4+ICAgI2Vsc2UKPj4+IC1zdGF0aWMgaW5saW5lIHZv
+aWQgaW9tbXVfcHJlcGFyZV9pc2Eodm9pZCkKPj4+ICtzdGF0aWMgaW5saW5lIHZvaWQgaW9tbXVf
+cHJlcGFyZV9pc2Eoc3RydWN0IHBjaV9kZXYgKnBkZXYpCj4+PiAgIHsKPj4+ICAgCXJldHVybjsK
+Pj4+ICAgfQo+Pj4gQEAgLTMyODksNiArMzI5OSw3IEBAIHN0YXRpYyBpbnQgX19pbml0IGluaXRf
+ZG1hcnModm9pZCkKPj4+ICAgCXN0cnVjdCBkbWFyX3JtcnJfdW5pdCAqcm1ycjsKPj4+ICAgCWJv
+b2wgY29waWVkX3RhYmxlcyA9IGZhbHNlOwo+Pj4gICAJc3RydWN0IGRldmljZSAqZGV2Owo+Pj4g
+KwlzdHJ1Y3QgcGNpX2RldiAqcGRldjsKPj4+ICAgCXN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXU7
+Cj4+PiAgIAlpbnQgaSwgcmV0Owo+Pj4gICBAQCAtMzQ2OSw3ICszNDgwLDExIEBAIHN0YXRpYyBp
+bnQgX19pbml0IGluaXRfZG1hcnModm9pZCkKPj4+ICAgCQl9Cj4+PiAgIAl9Cj4+PiAgIC0JaW9t
+bXVfcHJlcGFyZV9pc2EoKTsKPj4+ICsJcGRldiA9IHBjaV9nZXRfY2xhc3MoUENJX0NMQVNTX0JS
+SURHRV9JU0EgPDwgOCwgTlVMTCk7Cj4+PiArCWlmIChwZGV2KSB7Cj4+PiArCQlpb21tdV9wcmVw
+YXJlX2lzYShwZGV2KTsKPj4+ICsJCXBjaV9kZXZfcHV0KHBkZXYpOwo+Pj4gKwl9Cj4+PiAgICAg
+ZG9tYWluc19kb25lOgo+Pj4gICBAQCAtNTI2Niw2ICs1MjgxLDcgQEAgc3RhdGljIHZvaWQgaW50
+ZWxfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXZpY2UsCj4+PiAgIAlz
+dHJ1Y3QgaW9tbXVfcmVzdl9yZWdpb24gKnJlZzsKPj4+ICAgCXN0cnVjdCBkbWFyX3JtcnJfdW5p
+dCAqcm1ycjsKPj4+ICAgCXN0cnVjdCBkZXZpY2UgKmlfZGV2Owo+Pj4gKwlzdHJ1Y3QgcGNpX2Rl
+diAqcGRldjsKPj4+ICAgCWludCBpOwo+Pj4gICAgIAlyY3VfcmVhZF9sb2NrKCk7Cj4+PiBAQCAt
+NTI4MCw2ICs1Mjk2LDE0IEBAIHN0YXRpYyB2b2lkIGludGVsX2lvbW11X2dldF9yZXN2X3JlZ2lv
+bnMoc3RydWN0IGRldmljZSAqZGV2aWNlLAo+Pj4gICAJfQo+Pj4gICAJcmN1X3JlYWRfdW5sb2Nr
+KCk7Cj4+PiAgICsJaWYgKGRldl9pc19wY2koZGV2aWNlKSkgewo+Pj4gKwkJcGRldiA9IHRvX3Bj
+aV9kZXYoZGV2aWNlKTsKPj4+ICsJCWlmICgocGRldi0+Y2xhc3MgPj4gOCkgPT0gUENJX0NMQVNT
+X0JSSURHRV9JU0EpIHsKPj4+ICsJCQlyZWcgPSBpb21tdV9nZXRfaXNhX3Jlc3ZfcmVnaW9uKCk7
+Cj4+PiArCQkJbGlzdF9hZGRfdGFpbCgmcmVnLT5saXN0LCBoZWFkKTsKPj4+ICsJCX0KPj4+ICsJ
+fQo+Pj4gKwo+Pgo+PiBKdXN0IHdvbmRlcmluZyB3aHkgbm90IGp1c3QKPj4KPj4gKyNpZmRlZiBD
+T05GSUdfSU5URUxfSU9NTVVfRkxPUFBZX1dBCj4+ICsJaWYgKGRldl9pc19wY2koZGV2aWNlKSkg
+ewo+PiArCQlwZGV2ID0gdG9fcGNpX2RldihkZXZpY2UpOwo+PiArCQlpZiAoKHBkZXYtPmNsYXNz
+ID4+IDgpID09IFBDSV9DTEFTU19CUklER0VfSVNBKSB7Cj4+ICsJCQlyZWcgPSBpb21tdV9hbGxv
+Y19yZXN2X3JlZ2lvbigwLAo+PiArCQkJCTE2KjEwMjQqMTAyNCwKPj4gKwkJCQkwLCBJT01NVV9S
+RVNWX0RJUkVDVCk7Cj4+ICsJCQlpZiAocmVnKQo+PiArCQkJCWxpc3RfYWRkX3RhaWwoJnJlZy0+
+bGlzdCwgaGVhZCk7Cj4+ICsJCX0KPj4gKwl9Cj4+ICsjZW5kaWYKPj4KPj4gYW5kLCByZW1vdmUg
+YWxsIG90aGVyIHJlbGF0ZWQgY29kZT8KPiAKPiBBdCB0aGlzIHBvaW50IGluIHRoZSBwYXRjaHNl
+dCBpZiB3ZSByZW1vdmUgaW9tbXVfcHJlcGFyZV9pc2EgdGhlbiB0aGUgSVNBCj4gcmVnaW9uIHdv
+buKAmXQgYmUgbWFwcGVkIHRvIHRoZSBkZXZpY2UuIE9ubHkgb25jZSB0aGUgZG1hIGRvbWFpbiBp
+cyBhbGxvY2FibGUKPiB3aWxsIHRoZSByZXNlcnZlZCByZWdpb25zIGJlIG1hcHBlZCBieSBpb21t
+dV9ncm91cF9jcmVhdGVfZGlyZWN0X21hcHBpbmdzLgoKWWVzLiBTbyBpZiB3ZSBwdXQgdGhlIGFs
+bG9jYXRpb24gY29kZSBoZXJlLCBpdCB3b24ndCBpbXBhY3QgYW55dGhpbmcgYW5kCndpbGwgdGFr
+ZSBlZmZlY3QgYXMgc29vbiBhcyB0aGUgZG1hIGRvbWFpbiBpcyBhbGxvY2F0YWJsZS4KCj4gCj4g
+VGhlcmVzIGFuIGlzc3VlIHRoYXQgaWYgd2UgY2hvb3NlIHRvIGFsbG9jIGEgbmV3IHJlc3ZfcmVn
+aW9uIHdpdGggdHlwZQo+IElPTU1VX1JFU1ZfRElSRUNULCB3ZSB3aWxsIG5lZWQgdG8gcmVmYWN0
+b3IgaW50ZWxfaW9tbXVfcHV0X3Jlc3ZfcmVnaW9ucwo+IHRvIGZyZWUgdGhpcyBlbnRyeSB0eXBl
+IHdoaWNoIG1lYW5zIHJlZmFjdG9yaW5nIHRoZSBybXJyIHJlZ2lvbnMgaW4KPiBnZXRfcmVzdl9y
+ZWdpb25zLiBTaG91bGQgdGhpcyB3b3JrIGJlIGluIHRoaXMgcGF0Y2hzZXQ/CgpEbyB5b3UgbWVh
+biB0aGUgcm1yciByZWdpb25zIGFyZSBub3QgYWxsb2NhdGVkIGluIGdldF9yZXN2X3JlZ2lvbnMs
+IGJ1dAphcmUgZnJlZWQgaW4gcHV0X3Jlc3ZfcmVnaW9ucz8gSSB0aGluayB3ZSBzaG91bGQgZml4
+IHRoaXMgaW4gdGhpcyBwYXRjaApzZXQgc2luY2UgdGhpcyBtaWdodCBpbXBhY3QgdGhlIGRldmlj
+ZSBwYXNzdGhyb3VnaCBpZiB3ZSBkb24ndCBkbyBpdC4KCkJlc3QgcmVnYXJkcywKTHUgQmFvbHUK
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFp
+bGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMu
+bGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
