@@ -1,14 +1,20 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu: Add config option to set lazy mode as default
-Date: Mon, 25 Mar 2019 10:21:16 +0800
-Message-ID: <5C983B1C.80502@huawei.com>
-References: <20190322141121.18428-1-thunder.leizhen@huawei.com>
-	<8cf20613-7a9a-d4a1-b52e-4b526f2c7ff2@huawei.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 0/7] iommu/vt-d: Fix-up device-domain relationship by
+	refactoring to use iommu group default domain.
+Date: Mon, 25 Mar 2019 10:16:28 +0800
+Message-ID: <c41e4691-98a6-6f88-2509-8ff40f0204e9@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+	<0e74cc54-bb90-a620-5763-466cb11aaef7@linux.intel.com>
+	<94706334-3DE4-4964-8FDD-125C58D493A0@arista.com>
+	<418d1432-2036-3f6f-48de-77005807e350@linux.intel.com>
+	<0359F732-374F-4EDB-B49C-14B2F1BB637D@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8cf20613-7a9a-d4a1-b52e-4b526f2c7ff2-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <0359F732-374F-4EDB-B49C-14B2F1BB637D-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,107 +24,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will
-	Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019/3/22 22:42, John Garry wrote:
-> On 22/03/2019 14:11, Zhen Lei wrote:
-> 
->> This allows the default behaviour to be controlled by a kernel config
->> option instead of changing the command line for the kernel to include
->> "iommu.strict=0" on ARM64 where this is desired.
->>
->> This is similar to CONFIG_IOMMU_DEFAULT_PASSTHROUGH
->>
->> Note: At present, intel_iommu, amd_iommu and s390_iommu use lazy mode as
->> defalut, so there is no need to add code for them.
-> 
-> /s/defalut/default/
-> 
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>  drivers/iommu/Kconfig | 14 ++++++++++++++
->>  drivers/iommu/iommu.c |  5 +++++
-> 
-> Do we need to update kernel-parameters.txt for iommu.strict?
-> 
->>  2 files changed, 19 insertions(+)
->>
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index 6f07f3b21816c64..5ec9780f564eaf8 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -85,6 +85,20 @@ config IOMMU_DEFAULT_PASSTHROUGH
->>
->>        If unsure, say N here.
->>
->> +config IOMMU_LAZY_MODE
-> 
-> maybe should add "DMA" to the name, and even "DEFAULT"
-OK, thanks
-
-> 
->> +    bool "IOMMU use lazy mode to flush IOTLB and free IOVA"
->> +    depends on IOMMU_API
->> +    help
->> +      For every IOMMU unmap operation, the flush operation of IOTLB and the free
->> +      operation of IOVA are deferred.
-> 
-> This is a bit unclear, as there is no context. I think that you need to say something like, "Support lazy mode, where for every IOMMU DMA unmap operation, the flush operation of IOTLB and the free operation of IOVA are deferred. "
-> 
-> 
-> They are only guaranteed to be done before
->> +      the related IOVA will be reused. Removing the need to pass in iommu.strict=0
->> +      through command line on ARM64(Now, intel_iommu, amd_iommu, s390_iommu use
->> +      lazy mode as deault).
-> 
-> prone to going out-of-date
-> 
->  If this is enabled, you can still disable with kernel
->> +      parameters, such as iommu.strict=1, intel_iommu=strict, amd_iommu=fullflush
->> +      or s390_iommu=strict depending on the architecture.
->> +
->> +      If unsure, say N here.
->> +
->>  config OF_IOMMU
->>         def_bool y
->>         depends on OF && IOMMU_API
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 33a982e33716369..e307d70d1578b3b 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -43,7 +43,12 @@
->>  #else
->>  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
->>  #endif
->> +
->> +#ifdef CONFIG_IOMMU_LAZY_MODE
->> +static bool iommu_dma_strict __read_mostly;
->> +#else
->>  static bool iommu_dma_strict __read_mostly = true;
->> +#endif
->>
->>  struct iommu_callback_data {
->>      const struct iommu_ops *ops;
->> -- 
->> 1.8.3
->>
->>
->>
-> 
-> Cheers
-> 
-> 
-> 
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+SGkgSmFtZXMsCgpPbiAzLzIyLzE5IDY6MDUgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPiBIZXkg
+THUsCj4gCj4+IE9uIDIwIE1hciAyMDE5LCBhdCAwMToyNiwgTHUgQmFvbHUgPGJhb2x1Lmx1QGxp
+bnV4LmludGVsLmNvbT4gd3JvdGU6Cj4+Cj4+IEhpIEphbWVzLAo+Pgo+PiBPbiAzLzE5LzE5IDk6
+MzUgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPj4+IEhleSBMdSwKPj4+PiBPbiAxNSBNYXIgMjAx
+OSwgYXQgMDM6MTMsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+
+Pj4+Cj4+Pj4gSGkgSmFtZXMsCj4+Pj4KPj4+PiBPbiAzLzE0LzE5IDc6NTYgUE0sIEphbWVzIFNl
+d2FydCB3cm90ZToKPj4+Pj4gUGF0Y2hlcyAxIGFuZCAyIGFyZSB0aGUgc2FtZSBhcyB2MS4KPj4+
+Pj4gdjEtdjI6Cj4+Pj4+ICAgIFJlZmFjdG9yZWQgSVNBIGRpcmVjdCBtYXBwaW5ncyB0byBiZSBy
+ZXR1cm5lZCBieSBpb21tdV9nZXRfcmVzdl9yZWdpb25zLgo+Pj4+PiAgICBJbnRlZ3JhdGVkIHBh
+dGNoIGJ5IEx1IHRvIGRlZmVyIHR1cm5pbmcgb24gRE1BUiB1bnRpbCBpb21tdS5jIGhhcyBtYXBw
+ZWQKPj4+Pj4gcmVzZXJ2ZWQgcmVnaW9ucy4KPj4+Pj4gICAgSW50ZWdyYXRlZCBwYXRjaGVzIGJ5
+IEx1IHRvIHJlbW92ZSBtb3JlIHVudXNlZCBjb2RlIGluIGNsZWFudXAuCj4+Pj4+IEx1OiBJIGRp
+ZG4ndCBpbnRlZ3JhdGUgeW91ciBwYXRjaCB0byBzZXQgdGhlIGRlZmF1bHQgZG9tYWluIHR5cGUg
+YXMgaXQKPj4+Pj4gaXNuJ3QgZGlyZWN0bHkgcmVsYXRlZCB0byB0aGUgYWltIG9mIHRoaXMgcGF0
+Y2hzZXQuIEluc3RlYWQgcGF0Y2ggNAo+Pj4+Cj4+Pj4gV2l0aG91dCB0aG9zZSBwYXRjaGVzLCB1
+c2VyIGV4cGVyaWVuY2Ugd2lsbCBiZSBhZmZlY3RlZCBhbmQgc29tZSBkZXZpY2VzCj4+Pj4gd2ls
+bCBub3Qgd29yayBvbiBJbnRlbCBwbGF0Zm9ybXMgYW55bW9yZS4KPj4+Pgo+Pj4+IEZvciBhIGxv
+bmcgdGltZSwgSW50ZWwgSU9NTVUgZHJpdmVyIGhhcyBpdHMgb3duIGxvZ2ljIHRvIGRldGVybWlu
+ZQo+Pj4+IHdoZXRoZXIgYSBkZXZpY2UgcmVxdWlyZXMgYW4gaWRlbnRpdHkgZG9tYWluLiBGb3Ig
+ZXhhbXBsZSwgd2hlbiB1c2VyCj4+Pj4gc3BlY2lmaWVzICJpb21tdT1wdCIgaW4ga2VybmVsIHBh
+cmFtZXRlciwgYWxsIGRldmljZSB3aWxsIGJlIGF0dGFjaGVkCj4+Pj4gd2l0aCB0aGUgaWRlbnRp
+dHkgZG9tYWluLiBGdXJ0aGVyIG1vcmUsIHNvbWUgcXVpcmt5IGRldmljZXMgcmVxdWlyZQo+Pj4+
+IGFuIGlkZW50aXR5IGRvbWFpbiB0byBiZSB1c2VkIGJlZm9yZSBlbmFibGluZyBETUEgcmVtYXBw
+aW5nLCBvdGhlcndpc2UsCj4+Pj4gaXQgd2lsbCBub3Qgd29yay4gVGhpcyB3YXMgZG9uZSBieSBh
+ZGRpbmcgcXVpcmsgYml0cyBpbiBJbnRlbCBJT01NVQo+Pj4+IGRyaXZlci4KPj4+Pgo+Pj4+IFNv
+IGZyb20gbXkgcG9pbnQgb2Ygdmlldywgb25lIHdheSBpcyBwb3J0aW5nIGFsbCB0aG9zZSBxdWly
+a3MgYW5kIGtlcm5lbAo+Pj4+IHBhcmFtZXRlcnMgaW50byBJT01NVSBnZW5lcmljIGxheWVyLCBv
+ciBvcGVuaW5nIGEgZG9vciBmb3IgdmVuZG9yIElPTU1VCj4+Pj4gZHJpdmVyIHRvIGRldGVybWlu
+ZSB0aGUgZGVmYXVsdCBkb21haW4gdHlwZSBieSB0aGVpciBvd24uIEkgcHJlZmVyIHRoZQo+Pj4+
+IGxhdHRlciBvcHRpb24gc2luY2UgaXQgd2lsbCBub3QgaW1wYWN0IGFueSBiZWhhdmlvcnMgb24g
+b3RoZXIKPj4+PiBhcmNoaXRlY3R1cmVzLgo+Pj4gSSBzZWUgeW91ciBwb2ludC4gSeKAmW0gbm90
+IGNvbmZpZGVudCB0aGF0IHVzaW5nIHRoZSBwcm9wb3NlZCBkb29yIHRvIHNldCBhCj4+PiBncm91
+cHMgZGVmYXVsdCBkb21haW4gaGFzIHRoZSBkZXNpcmVkIGJlaGF2aW91ci4gQXMgZGlzY3Vzc2Vk
+IGJlZm9yZSB0aGUKPj4+IGRlZmF1bHQgZG9tYWluIHR5cGUgd2lsbCBiZSBzZXQgYmFzZWQgb24g
+dGhlIGRlc2lyZWQgdHlwZSBmb3Igb25seSB0aGUKPj4+IGZpcnN0IGRldmljZSBhdHRhY2hlZCB0
+byBhIGdyb3VwLiBJIHRoaW5rIHRvIGNoYW5nZSB0aGUgZGVmYXVsdCBkb21haW4KPj4+IHR5cGUg
+eW91IHdvdWxkIG5lZWQgYSBzbGlnaHRseSBkaWZmZXJlbnQgZG9vciB0aGF0IHdhc27igJl0IGNv
+bmRpdGlvbmVkIG9uCj4+PiBkZXZpY2UuCj4+Cj4+IEkgdGhpbmsgdGhpcyBhcyBhbm90aGVyIHBy
+b2JsZW0uIEp1c3QgYSBzdW1tYXJpemUgZm9yIHRoZSBlYXNlIG9mCj4+IGRpc2N1c3Npb24uIFdl
+IHNhdyB0d28gcHJvYmxlbXM6Cj4+Cj4+IDEuIFdoZW4gYWxsb2NhdGluZyBhIG5ldyBncm91cCBm
+b3IgYSBkZXZpY2UsIGhvdyBzaG91bGQgd2UgZGV0ZXJtaW5lIHRoZQo+PiB0eXBlIG9mIHRoZSBk
+ZWZhdWx0IGRvbWFpbj8gVGhpcyBpcyB3aGF0IG15IHByb3Bvc2FsIHBhdGNoZXMgdHJ5aW5nIHRv
+Cj4+IGFkZHJlc3MuCj4gCj4gVGhpcyB3aWxsIHdvcmsgYXMgZXhwZWN0ZWQgb25seSBpZiBhbGwg
+ZGV2aWNlcyB3aXRoaW4gYSBncm91cCBnZXQgdGhlIHNhbWUKPiByZXN1bHQgZnJvbSBpc19pZGVu
+dGl0eV9tYXAuIE90aGVyd2lzZSB3ZWUgc2VlIGlzc3VlIDIuCj4gCj4+Cj4+IDIuIElmIHdlIG5l
+ZWQgdG8gcHV0IGEgZGV2aWNlIGludG8gYW4gZXhpc3RpbmcgZ3JvdXAgd2hpY2ggdXNlcyBhCj4+
+IGRpZmZlcmVudCB0eXBlIG9mIGRvbWFpbiBmcm9tIHdoYXQgdGhlIGRldmljZSBkZXNpcmVzIHRv
+IHVzZSwgd2UgbWlnaHQKPj4gYnJlYWsgdGhlIGZ1bmN0aW9uYWxpdHkgb2YgdGhlIGRldmljZS4g
+Rm9yIHRoaXMgcHJvYmxlbSBJJ2Qgc2Vjb25kIHlvdXIKPj4gcHJvcG9zYWwgYmVsb3cgaWYgSSBn
+ZXQgeW91ciBwb2ludCBjb3JyZWN0bHkuCj4+Cj4+PiBGb3Igc2l0dWF0aW9ucyB3aGVyZSBpbmRp
+dmlkdWFsIGRldmljZXMgcmVxdWlyZSBhbiBpZGVudGl0eSBkb21haW4gYmVjYXVzZQo+Pj4gb2Yg
+cXVpcmtzIHRoZW4gbWF5YmUgY2FsbGluZyBpc19pZGVudGl0eV9tYXAgcGVyIGRldmljZSBpbgo+
+Pj4gaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9kZXYgaXMgYSBiZXR0ZXIgc29sdXRpb24gdGhhbiB0aGUg
+b25lIEkgcHJvcG9zZWQuCj4+Cj4+IERvIHlvdSBtZWFuIGlmIHdlIHNlZSBhIHF1aXJreSBkZXZp
+Y2UgcmVxdWlyZXMgYSBkaWZmZXJlbnQgZG9tYWluIHR5cGUKPj4gb3RoZXIgdGhhbiB0aGUgZGVm
+YXVsdCBkb21haW4gdHlwZSBvZiB0aGUgZ3JvdXAsIHdlIHdpbGwgYXNzaWduIGEgbmV3Cj4+IGdy
+b3VwIHRvIGl0PyBUaGF0IGxvb2tzIGdvb2QgdG8gbWUgYXMgZmFyIGFzIEkgY2FuIHNlZS4gSSBz
+dXBwb3NlIHRoaXMKPj4gc2hvdWxkIGJlIGRvbmUgaW4gdnQtZCdzIG9wcyBjYWxsYmFjay4KPiAK
+PiBJIGhhdmUgdGhvdWdodCBhYm91dCB0aGlzIGEgYml0IGFuZCBJIHRoaW5rIHRoZSBjbGVhbmVz
+dCBhcHByb2FjaCBpcyB0bwo+IHB1dCBkZXZpY2VzIHRoYXQgcmVxdWlyZSBhbiBpZGVudGl0eSBk
+b21haW4gaW50byB0aGVpciBvd24gZ3JvdXAsIHRoaXMgY2FuCj4gYmUgZG9uZSBpbiB0aGUgZGV2
+aWNlX2dyb3VwIGNhbGxiYWNrLCBhdm9pZGluZyBhbnkgc2l0dWF0aW9uIHdoZXJlIHdlIGhhdmUK
+PiB0byBkZWFsIHdpdGggY3JlYXRpbmcgYSBuZXcgZ3JvdXAgYmFzZWQgb24gZG9tYWluIHR5cGUg
+aW4KPiBpb21tdV9ncm91cF9nZXRfZm9yX2Rldi4gVGhpcyB3YXkgd2Ugc2hvdWxkbuKAmXQgZXZl
+ciBiZSBpbiBhIHNpdHVhdGlvbiB3aXRoCj4gbXVsdGlwbGUgZGlmZmVyZW50IGRvbWFpbiB0eXBl
+cyBwZXIgZ3JvdXAuIFRoaXMgd2F5IHlvdXIgcGF0Y2hlcyB3aWxsIHdvcmsKPiBhcyBleHBlY3Rl
+ZC4gU2VlIGJlbG93IGZvciBhIHBvc3NpYmxlIGltcGxlbWVudGF0aW9uLgo+IAo+Pgo+PiBCZXN0
+IHJlZ2FyZHMsCj4+IEx1IEJhb2x1Cj4gCj4gQ2hlZXJzLAo+IEphbWVzLgo+IAo+IERldmljZXMg
+dGhhdCByZXF1aXJlIGFuIGlkZW50aXR5IG1hcCBiZWNhdXNlIG9mIHF1aXJrcyBvciBvdGhlciBy
+ZWFzb25zCj4gc2hvdWxkIGJlIHB1dCBpbiB0aGVpciBvd24gSU9NTVUgZ3JvdXAgc28gYXMgdG8g
+bm90IGVuZCB1cCB3aXRoIG11bHRpcGxlCj4gZGlmZmVyZW50IGRvbWFpbnMgcGVyIGdyb3VwLgoK
+WWVhaCEgVGhpcyBsb29rcyBnb29kIHRvIG1lLgoKQmVzdCByZWdhcmRzLApMdSBCYW9sdQoKPiAK
+PiBTaWduZWQtb2ZmLWJ5OiBKYW1lcyBTZXdhcnQgPGphbWVzc2V3YXJ0QGFyaXN0YS5jb20+Cj4g
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMvaW9t
+bXUvaW50ZWwtaW9tbXUuYwo+IGluZGV4IDNjYjhiMzZhYmY1MC4uMGY1YTEyMWQzMWEwIDEwMDY0
+NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9t
+bXUvaW50ZWwtaW9tbXUuYwo+IEBAIC01NDIxLDYgKzU0MjEsMjIgQEAgc3RydWN0IGludGVsX2lv
+bW11ICppbnRlbF9zdm1fZGV2aWNlX3RvX2lvbW11KHN0cnVjdCBkZXZpY2UgKmRldikKPiAgIH0K
+PiAgICNlbmRpZiAvKiBDT05GSUdfSU5URUxfSU9NTVVfU1ZNICovCj4gCj4gK3N0YXRpYyBzdHJ1
+Y3QgaW9tbXVfZ3JvdXAgKmludGVsX2lkZW50aXR5X2dyb3VwOwo+ICsKPiArc3RydWN0IGlvbW11
+X2dyb3VwICppbnRlbF9pb21tdV9wY2lfZGV2aWNlX2dyb3VwKHN0cnVjdCBkZXZpY2UgKmRldikK
+PiArewo+ICsgICAgICAgaWYgKGlvbW11X25vX21hcHBpbmcoZGV2KSkgewo+ICsgICAgICAgICAg
+ICAgICBpZiAoIWludGVsX2lkZW50aXR5X2dyb3VwKSB7Cj4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgaW50ZWxfaWRlbnRpdHlfZ3JvdXAgPSBpb21tdV9ncm91cF9hbGxvYygpOwo+ICsgICAgICAg
+ICAgICAgICAgICAgICAgIGlmIChJU19FUlIoaW50ZWxfaWRlbnRpdHlfZ3JvdXApKQo+ICsgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIE5VTEw7Cj4gKyAgICAgICAgICAgICAg
+IH0KPiArICAgICAgICAgICAgICAgcmV0dXJuIGludGVsX2lkZW50aXR5X2dyb3VwOwo+ICsgICAg
+ICAgfQo+ICsKPiArICAgICAgIHJldHVybiBwY2lfZGV2aWNlX2dyb3VwKGRldik7Cj4gK30KPiAr
+Cj4gICBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzIGludGVsX2lvbW11X29wcyA9IHsKPiAgICAgICAg
+ICAuY2FwYWJsZSAgICAgICAgICAgICAgICA9IGludGVsX2lvbW11X2NhcGFibGUsCj4gICAgICAg
+ICAgLmRvbWFpbl9hbGxvYyAgICAgICAgICAgPSBpbnRlbF9pb21tdV9kb21haW5fYWxsb2MsCj4g
+QEAgLTU0MzUsNyArNTQ1MSw3IEBAIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgaW50ZWxfaW9tbXVf
+b3BzID0gewo+ICAgICAgICAgIC5nZXRfcmVzdl9yZWdpb25zICAgICAgID0gaW50ZWxfaW9tbXVf
+Z2V0X3Jlc3ZfcmVnaW9ucywKPiAgICAgICAgICAucHV0X3Jlc3ZfcmVnaW9ucyAgICAgICA9IGlu
+dGVsX2lvbW11X3B1dF9yZXN2X3JlZ2lvbnMsCj4gICAgICAgICAgLmFwcGx5X3Jlc3ZfcmVnaW9u
+ICAgICAgPSBpbnRlbF9pb21tdV9hcHBseV9yZXN2X3JlZ2lvbiwKPiAtICAgICAgIC5kZXZpY2Vf
+Z3JvdXAgICAgICAgICAgID0gcGNpX2RldmljZV9ncm91cCwKPiArICAgICAgIC5kZXZpY2VfZ3Jv
+dXAgICAgICAgICAgID0gaW50ZWxfaW9tbXVfcGNpX2RldmljZV9ncm91cCwKPiAgICAgICAgICAu
+cGdzaXplX2JpdG1hcCAgICAgICAgICA9IElOVEVMX0lPTU1VX1BHU0laRVMsCj4gICB9Owo+IApf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
+aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
+aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
