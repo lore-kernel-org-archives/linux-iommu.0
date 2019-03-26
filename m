@@ -1,75 +1,61 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH v2 RFC/RFT 5/5] dma-contiguous: Do not allocate a single page from CMA area
-Date: Tue, 26 Mar 2019 16:01:31 -0700
-Message-ID: <20190326230131.16275-6-nicoleotsuka@gmail.com>
+From: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 RFC/RFT 2/5] dma-remap: Run alloc_pages() on failure
+Date: Tue, 26 Mar 2019 16:01:28 -0700
+Message-ID: <20190326230131.16275-3-nicoleotsuka@gmail.com>
 References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190326230131.16275-1-nicoleotsuka@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de, robin.murphy@arm.com
-Cc: vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, joro@8bytes.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, tony@atomide.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190326230131.16275-1-nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: hch-jcswGhMUV9g@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The addresses within a single page are always contiguous, so it's
-not so necessary to always allocate one single page from CMA area.
-Since the CMA area has a limited predefined size of space, it may
-run out of space in heavy use cases, where there might be quite a
-lot CMA pages being allocated for single pages.
+The CMA allocation will skip allocations of single pages to save CMA
+resource. This requires its callers to rebound those page allocations
+from normal area.
 
-However, there is also a concern that a device might care where a
-page comes from -- it might expect the page from CMA area and act
-differently if the page doesn't.
+So this patch moves the alloc_pages() call to the fallback routines.
 
-This patch tries to skip of one-page size allocations and returns
-NULL so as to let callers allocate normal pages unless the device
-has its own CMA area. This would save resources from the CMA area
-for more CMA allocations. And it'd also reduce CMA fragmentations
-resulted from trivial allocations.
-
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Signed-off-by: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- kernel/dma/contiguous.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+Changlog
+v1->v2:
+ * PATCH-2: Initialized page pointer to NULL
 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index b2a87905846d..09074bd04793 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -186,16 +186,32 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
-  *
-  * This function allocates memory buffer for specified device. It uses
-  * device specific contiguous memory area if available or the default
-- * global one. Requires architecture specific dev_get_cma_area() helper
-- * function.
-+ * global one.
-+ *
-+ * However, it skips one-page size of allocations from the global area.
-+ * As the addresses within one page are always contiguous, so there is
-+ * no need to waste CMA pages for that kind; it also helps reduce the
-+ * fragmentations in the CMA area. So a caller should be the rebounder
-+ * in such case to allocate a normal page upon NULL return value.
-+ *
-+ * Requires architecture specific dev_get_cma_area() helper function.
-  */
- struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
- 				       unsigned int align, bool no_warn)
+ kernel/dma/remap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+index 2b750f13bc8f..c2076c6d6c17 100644
+--- a/kernel/dma/remap.c
++++ b/kernel/dma/remap.c
+@@ -109,14 +109,14 @@ int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
  {
-+	struct cma *cma;
-+
- 	if (align > CONFIG_CMA_ALIGNMENT)
- 		align = CONFIG_CMA_ALIGNMENT;
+ 	unsigned int pool_size_order = get_order(atomic_pool_size);
+ 	unsigned long nr_pages = atomic_pool_size >> PAGE_SHIFT;
+-	struct page *page;
++	struct page *page = NULL;
+ 	void *addr;
+ 	int ret;
  
--	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
-+	if (dev && dev->cma_area)
-+		cma = dev->cma_area;
-+	else if (count > 1)
-+		cma = dma_contiguous_default_area;
-+	else
-+		return NULL;
-+
-+	return cma_alloc(cma, count, align, no_warn);
- }
- 
- /**
+ 	if (dev_get_cma_area(NULL))
+ 		page = dma_alloc_from_contiguous(NULL, nr_pages,
+ 						 pool_size_order, false);
+-	else
++	if (!page)
+ 		page = alloc_pages(gfp, pool_size_order);
+ 	if (!page)
+ 		goto out;
 -- 
 2.17.1
