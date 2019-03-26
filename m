@@ -1,7 +1,7 @@
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH v2 RFC/RFT 4/5] arm64: dma-mapping: Add fallback normal page allocations
-Date: Tue, 26 Mar 2019 16:01:30 -0700
-Message-ID: <20190326230131.16275-5-nicoleotsuka@gmail.com>
+Subject: [PATCH v2 RFC/RFT 5/5] dma-contiguous: Do not allocate a single page from CMA area
+Date: Tue, 26 Mar 2019 16:01:31 -0700
+Message-ID: <20190326230131.16275-6-nicoleotsuka@gmail.com>
 References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190326230131.16275-1-nicoleotsuka@gmail.com>
@@ -10,72 +10,66 @@ To: hch@lst.de, robin.murphy@arm.com
 Cc: vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, joro@8bytes.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, tony@atomide.com
 List-Id: iommu@lists.linux-foundation.org
 
-The cma allocation will skip allocations of single pages to save CMA
-resource. This requires its callers to rebound those page allocations
-from normal area. So this patch adds fallback routines.
+The addresses within a single page are always contiguous, so it's
+not so necessary to always allocate one single page from CMA area.
+Since the CMA area has a limited predefined size of space, it may
+run out of space in heavy use cases, where there might be quite a
+lot CMA pages being allocated for single pages.
+
+However, there is also a concern that a device might care where a
+page comes from -- it might expect the page from CMA area and act
+differently if the page doesn't.
+
+This patch tries to skip of one-page size allocations and returns
+NULL so as to let callers allocate normal pages unless the device
+has its own CMA area. This would save resources from the CMA area
+for more CMA allocations. And it'd also reduce CMA fragmentations
+resulted from trivial allocations.
 
 Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
 ---
- arch/arm64/mm/dma-mapping.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ kernel/dma/contiguous.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 78c0a72f822c..be2302533334 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -156,17 +156,20 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 		}
- 	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
- 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
-+		unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 		struct page *page;
- 
--		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--					get_order(size), gfp & __GFP_NOWARN);
-+		page = dma_alloc_from_contiguous(dev, count, get_order(size),
-+						 gfp & __GFP_NOWARN);
-+		if (!page)
-+			page = alloc_pages(gfp, get_order(size));
- 		if (!page)
- 			return NULL;
- 
- 		*handle = iommu_dma_map_page(dev, page, 0, iosize, ioprot);
- 		if (*handle == DMA_MAPPING_ERROR) {
--			dma_release_from_contiguous(dev, page,
--						    size >> PAGE_SHIFT);
-+			if (!dma_release_from_contiguous(dev, page, count))
-+				__free_pages(page, get_order(size));
- 			return NULL;
- 		}
- 		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
-@@ -178,8 +181,8 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 			memset(addr, 0, size);
- 		} else {
- 			iommu_dma_unmap_page(dev, *handle, iosize, 0, attrs);
--			dma_release_from_contiguous(dev, page,
--						    size >> PAGE_SHIFT);
-+			if (!dma_release_from_contiguous(dev, page, count))
-+				__free_pages(page, get_order(size));
- 		}
- 	} else {
- 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
-@@ -201,6 +204,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
- 			       dma_addr_t handle, unsigned long attrs)
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index b2a87905846d..09074bd04793 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -186,16 +186,32 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+  *
+  * This function allocates memory buffer for specified device. It uses
+  * device specific contiguous memory area if available or the default
+- * global one. Requires architecture specific dev_get_cma_area() helper
+- * function.
++ * global one.
++ *
++ * However, it skips one-page size of allocations from the global area.
++ * As the addresses within one page are always contiguous, so there is
++ * no need to waste CMA pages for that kind; it also helps reduce the
++ * fragmentations in the CMA area. So a caller should be the rebounder
++ * in such case to allocate a normal page upon NULL return value.
++ *
++ * Requires architecture specific dev_get_cma_area() helper function.
+  */
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+ 				       unsigned int align, bool no_warn)
  {
-+	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	size_t iosize = size;
++	struct cma *cma;
++
+ 	if (align > CONFIG_CMA_ALIGNMENT)
+ 		align = CONFIG_CMA_ALIGNMENT;
  
- 	size = PAGE_ALIGN(size);
-@@ -222,7 +226,8 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
- 		struct page *page = vmalloc_to_page(cpu_addr);
+-	return cma_alloc(dev_get_cma_area(dev), count, align, no_warn);
++	if (dev && dev->cma_area)
++		cma = dev->cma_area;
++	else if (count > 1)
++		cma = dma_contiguous_default_area;
++	else
++		return NULL;
++
++	return cma_alloc(cma, count, align, no_warn);
+ }
  
- 		iommu_dma_unmap_page(dev, handle, iosize, 0, attrs);
--		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
-+		if (!dma_release_from_contiguous(dev, page, count))
-+			__free_pages(page, get_order(size));
- 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
- 	} else if (is_vmalloc_addr(cpu_addr)){
- 		struct vm_struct *area = find_vm_area(cpu_addr);
+ /**
 -- 
 2.17.1
