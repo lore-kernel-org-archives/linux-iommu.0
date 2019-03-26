@@ -1,250 +1,138 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH v2 4/4] iommu/arm-smmu: Add support to handle Qcom's TLBI
- serialization errata
-Date: Mon, 25 Mar 2019 14:16:39 -0700
-Message-ID: <20190325211639.GD2899@builder>
-References: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
- <20180910062551.28175-5-vivek.gautam@codeaurora.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+	iommu_get_resv_regions
+Date: Tue, 26 Mar 2019 09:10:24 +0800
+Message-ID: <5f8f4829-5443-1ab5-85af-636d2f42ad52@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+	<fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+	<445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180910062551.28175-5-vivek.gautam@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: joro@8bytes.org, andy.gross@linaro.org, will.deacon@arm.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, david.brown@linaro.org, tfiga@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, robdclark@gmail.com
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <445F31EA-20F3-481C-B1DF-8B163791FF8C-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun 09 Sep 23:25 PDT 2018, Vivek Gautam wrote:
-
-> Qcom's implementation of arm,mmu-500 require to serialize all
-> TLB invalidations for context banks.
-> In case the TLB invalidation requests don't go through the first
-> time, there's a way to disable/enable the wait for safe logic.
-> Disabling this logic expadites the TLBIs.
-> 
-
-Reading this I get a feeling that this will give a slight performance
-boost, but after finally narrowing the last weeks performance hunt down
-I've concluded that without this patch we loose 1000x throughput on UFS
-and USB (even I2C is completely useless) when the display is on.
-
-So this is definitely needed for SDM845 devices, such as the Dragonboard
-845c and MTP, to be functional.
-
-> Different bootloaders with their access control policies allow this
-> register access differntly. With one, we should be able to directly
-> make qcom-scm call to do io read/write, while with other we should
-> use the specific SCM command to send request to do the complete
-> register configuration.
-> A separate device tree flag for arm-smmu will allow to identify
-> which firmware configuration of the two mentioned above we use.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-
-Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-Regards,
-Bjorn
-
-> ---
->  drivers/iommu/arm-smmu-regs.h |   2 +
->  drivers/iommu/arm-smmu.c      | 133 +++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 133 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-> index a1226e4ab5f8..71662cae9806 100644
-> --- a/drivers/iommu/arm-smmu-regs.h
-> +++ b/drivers/iommu/arm-smmu-regs.h
-> @@ -177,6 +177,8 @@ enum arm_smmu_s2cr_privcfg {
->  #define ARM_SMMU_CB_ATS1PR		0x800
->  #define ARM_SMMU_CB_ATSR		0x8f0
->  
-> +#define ARM_SMMU_GID_QCOM_CUSTOM_CFG	0x300
-> +
->  #define SCTLR_S1_ASIDPNE		(1 << 12)
->  #define SCTLR_CFCFG			(1 << 7)
->  #define SCTLR_CFIE			(1 << 6)
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 411e5ac57c64..de9c4a5bf686 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -49,6 +49,7 @@
->  #include <linux/pci.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/qcom_scm.h>
->  #include <linux/slab.h>
->  #include <linux/spinlock.h>
->  
-> @@ -181,7 +182,8 @@ struct arm_smmu_device {
->  #define ARM_SMMU_FEAT_EXIDS		(1 << 12)
->  	u32				features;
->  
-> -#define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-> +#define ARM_SMMU_OPT_SECURE_CFG_ACCESS	 (1 << 0)
-> +#define ARM_SMMU_OPT_QCOM_FW_IMPL_ERRATA (1 << 1)
->  	u32				options;
->  	enum arm_smmu_arch_version	version;
->  	enum arm_smmu_implementation	model;
-> @@ -266,6 +268,7 @@ static bool using_legacy_binding, using_generic_binding;
->  
->  static struct arm_smmu_option_prop arm_smmu_options[] = {
->  	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
-> +	{ ARM_SMMU_OPT_QCOM_FW_IMPL_ERRATA, "qcom,smmu-500-fw-impl-errata" },
->  	{ 0, NULL},
->  };
->  
-> @@ -531,12 +534,134 @@ static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
->  	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
->  }
->  
-> +#define CUSTOM_CFG_MDP_SAFE_ENABLE		BIT(15)
-> +#define CUSTOM_CFG_IFE1_SAFE_ENABLE		BIT(14)
-> +#define CUSTOM_CFG_IFE0_SAFE_ENABLE		BIT(13)
-> +
-> +static int __qsmmu500_wait_safe_toggle(struct arm_smmu_device *smmu, int en)
-> +{
-> +	int ret;
-> +	u32 val, gid_phys_base;
-> +	phys_addr_t reg;
-> +	struct vm_struct *vm;
-> +
-> +	/* We want physical address of SMMU, so the vm_area */
-> +	vm = find_vm_area(smmu->base);
-> +
-> +	/*
-> +	 * GID (implementation defined address space) is located at
-> +	 * SMMU_BASE + (2 × PAGESIZE).
-> +	 */
-> +	gid_phys_base = vm->phys_addr + (2 << (smmu)->pgshift);
-> +	reg = gid_phys_base + ARM_SMMU_GID_QCOM_CUSTOM_CFG;
-> +
-> +	ret = qcom_scm_io_readl_atomic(reg, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (en)
-> +		val |= CUSTOM_CFG_MDP_SAFE_ENABLE |
-> +		       CUSTOM_CFG_IFE0_SAFE_ENABLE |
-> +		       CUSTOM_CFG_IFE1_SAFE_ENABLE;
-> +	else
-> +		val &= ~(CUSTOM_CFG_MDP_SAFE_ENABLE |
-> +			 CUSTOM_CFG_IFE0_SAFE_ENABLE |
-> +			 CUSTOM_CFG_IFE1_SAFE_ENABLE);
-> +
-> +	ret = qcom_scm_io_writel_atomic(reg, val);
-> +
-> +	return ret;
-> +}
-> +
-> +static int qsmmu500_wait_safe_toggle(struct arm_smmu_device *smmu,
-> +				     int en, bool is_fw_impl)
-> +{
-> +	if (is_fw_impl)
-> +		return qcom_scm_qsmmu500_wait_safe_toggle(en);
-> +	else
-> +		return __qsmmu500_wait_safe_toggle(smmu, en);
-> +}
-> +
-> +static void qcom_errata_tlb_sync(struct arm_smmu_domain *smmu_domain)
-> +{
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	void __iomem *base = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
-> +	bool is_fw_impl;
-> +	u32 val;
-> +
-> +	writel_relaxed(0, base + ARM_SMMU_CB_TLBSYNC);
-> +
-> +	if (!readl_poll_timeout_atomic(base + ARM_SMMU_CB_TLBSTATUS, val,
-> +				       !(val & sTLBGSTATUS_GSACTIVE), 0, 100))
-> +		return;
-> +
-> +	is_fw_impl = smmu->options & ARM_SMMU_OPT_QCOM_FW_IMPL_ERRATA ?
-> +			true : false;
-> +
-> +	/* SCM call here to disable the wait-for-safe logic. */
-> +	if (WARN(qsmmu500_wait_safe_toggle(smmu, false, is_fw_impl),
-> +		 "Failed to disable wait-safe logic, bad hw state\n"))
-> +		return;
-> +
-> +	if (!readl_poll_timeout_atomic(base + ARM_SMMU_CB_TLBSTATUS, val,
-> +				       !(val & sTLBGSTATUS_GSACTIVE), 0, 10000))
-> +		return;
-> +
-> +	/* SCM call here to re-enable the wait-for-safe logic. */
-> +	WARN(qsmmu500_wait_safe_toggle(smmu, true, is_fw_impl),
-> +	     "Failed to re-enable wait-safe logic, bad hw state\n");
-> +
-> +	dev_err_ratelimited(smmu->dev,
-> +			    "TLB sync timed out -- SMMU in bad state\n");
-> +}
-> +
-> +static void qcom_errata_tlb_sync_context(void *cookie)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = cookie;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-> +	qcom_errata_tlb_sync(smmu_domain);
-> +	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-> +}
-> +
-> +static void qcom_errata_tlb_inv_context_s1(void *cookie)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = cookie;
-> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> +	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-> +	writel_relaxed(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
-> +	qcom_errata_tlb_sync(cookie);
-> +	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-> +}
-> +
-> +static void qcom_errata_tlb_inv_range_nosync(unsigned long iova, size_t size,
-> +					     size_t granule, bool leaf,
-> +					     void *cookie)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = cookie;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-> +	arm_smmu_tlb_inv_range_nosync(iova, size, granule, leaf, cookie);
-> +	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-> +}
-> +
->  static const struct iommu_gather_ops arm_smmu_s1_tlb_ops = {
->  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
->  	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
->  	.tlb_sync	= arm_smmu_tlb_sync_context,
->  };
->  
-> +static const struct iommu_gather_ops qcom_errata_s1_tlb_ops = {
-> +	.tlb_flush_all	= qcom_errata_tlb_inv_context_s1,
-> +	.tlb_add_flush	= qcom_errata_tlb_inv_range_nosync,
-> +	.tlb_sync	= qcom_errata_tlb_sync_context,
-> +};
-> +
->  static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v2 = {
->  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->  	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-> @@ -824,7 +949,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->  			ias = min(ias, 32UL);
->  			oas = min(oas, 32UL);
->  		}
-> -		smmu_domain->tlb_ops = &arm_smmu_s1_tlb_ops;
-> +		if (of_device_is_compatible(smmu->dev->of_node,
-> +					    "qcom,sdm845-smmu-500"))
-> +			smmu_domain->tlb_ops = &qcom_errata_s1_tlb_ops;
-> +		else
-> +			smmu_domain->tlb_ops = &arm_smmu_s1_tlb_ops;
->  		break;
->  	case ARM_SMMU_DOMAIN_NESTED:
->  		/*
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
-> 
+SGksCgpPbiAzLzI1LzE5IDg6NTcgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPiBIZXkgTHUsCj4g
+Cj4+IE9uIDI1IE1hciAyMDE5LCBhdCAwMjowMywgTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4Lmlu
+dGVsLmNvbT4gd3JvdGU6Cj4+Cj4+IEhpIEphbWVzLAo+Pgo+PiBPbiAzLzIyLzE5IDU6NTcgUE0s
+IEphbWVzIFNld2FydCB3cm90ZToKPj4+IEhleSBMdSwKPj4+PiBPbiAxNSBNYXIgMjAxOSwgYXQg
+MDI6MTksIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+Pj4+Cj4+
+Pj4gSGkgSmFtZXMsCj4+Pj4KPj4+PiBPbiAzLzE0LzE5IDc6NTggUE0sIEphbWVzIFNld2FydCB3
+cm90ZToKPj4+Pj4gVG8gc3VwcG9ydCBtYXBwaW5nIElTQSByZWdpb24gdmlhIGlvbW11X2dyb3Vw
+X2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MsCj4+Pj4+IG1ha2Ugc3VyZSBpdHMgZXhwb3NlZCBieSBp
+b21tdV9nZXRfcmVzdl9yZWdpb25zLiBUaGlzIGFsbG93cwo+Pj4+PiBkZWR1cGxpY2F0aW9uIG9m
+IHJlc2VydmVkIHJlZ2lvbiBtYXBwaW5ncwo+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBKYW1lcyBTZXdh
+cnQgPGphbWVzc2V3YXJ0QGFyaXN0YS5jb20+Cj4+Pj4+IC0tLQo+Pj4+PiAgIGRyaXZlcnMvaW9t
+bXUvaW50ZWwtaW9tbXUuYyB8IDQyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0t
+LS0KPj4+Pj4gICAxIGZpbGUgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMo
+LSkKPj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZl
+cnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+Pj4+PiBpbmRleCA4ZTBhNGUyZmY3N2YuLjJlMDBlODcw
+OGYwNiAxMDA2NDQKPj4+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+Pj4+
+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+Pj4+PiBAQCAtMzM3LDYgKzMzNyw4
+IEBAIHN0YXRpYyBMSVNUX0hFQUQoZG1hcl9ybXJyX3VuaXRzKTsKPj4+Pj4gICAjZGVmaW5lIGZv
+cl9lYWNoX3JtcnJfdW5pdHMocm1ycikgXAo+Pj4+PiAgIAlsaXN0X2Zvcl9lYWNoX2VudHJ5KHJt
+cnIsICZkbWFyX3JtcnJfdW5pdHMsIGxpc3QpCj4+Pj4+ICAgK3N0YXRpYyBzdHJ1Y3QgaW9tbXVf
+cmVzdl9yZWdpb24gKmlzYV9yZXN2X3JlZ2lvbjsKPj4+Pj4gKwo+Pj4+PiAgIC8qIGJpdG1hcCBm
+b3IgaW5kZXhpbmcgaW50ZWxfaW9tbXVzICovCj4+Pj4+ICAgc3RhdGljIGludCBnX251bV9vZl9p
+b21tdXM7Cj4+Pj4+ICAgQEAgLTI3ODAsMjYgKzI3ODIsMzQgQEAgc3RhdGljIGlubGluZSBpbnQg
+aW9tbXVfcHJlcGFyZV9ybXJyX2RldihzdHJ1Y3QgZG1hcl9ybXJyX3VuaXQgKnJtcnIsCj4+Pj4+
+ICAgCQkJCQkgIHJtcnItPmVuZF9hZGRyZXNzKTsKPj4+Pj4gICB9Cj4+Pj4+ICAgK3N0YXRpYyBp
+bmxpbmUgc3RydWN0IGlvbW11X3Jlc3ZfcmVnaW9uICppb21tdV9nZXRfaXNhX3Jlc3ZfcmVnaW9u
+KHZvaWQpCj4+Pj4+ICt7Cj4+Pj4+ICsJaWYgKCFpc2FfcmVzdl9yZWdpb24pCj4+Pj4+ICsJCWlz
+YV9yZXN2X3JlZ2lvbiA9IGlvbW11X2FsbG9jX3Jlc3ZfcmVnaW9uKDAsCj4+Pj4+ICsJCQkJMTYq
+MTAyNCoxMDI0LAo+Pj4+PiArCQkJCTAsIElPTU1VX1JFU1ZfRElSRUNUKTsKPj4+Pj4gKwo+Pj4+
+PiArCXJldHVybiBpc2FfcmVzdl9yZWdpb247Cj4+Pj4+ICt9Cj4+Pj4+ICsKPj4+Pj4gICAjaWZk
+ZWYgQ09ORklHX0lOVEVMX0lPTU1VX0ZMT1BQWV9XQQo+Pj4+PiAtc3RhdGljIGlubGluZSB2b2lk
+IGlvbW11X3ByZXBhcmVfaXNhKHZvaWQpCj4+Pj4+ICtzdGF0aWMgaW5saW5lIHZvaWQgaW9tbXVf
+cHJlcGFyZV9pc2Eoc3RydWN0IHBjaV9kZXYgKnBkZXYpCj4+Pj4+ICAgewo+Pj4+PiAtCXN0cnVj
+dCBwY2lfZGV2ICpwZGV2Owo+Pj4+PiAgIAlpbnQgcmV0Owo+Pj4+PiArCXN0cnVjdCBpb21tdV9y
+ZXN2X3JlZ2lvbiAqcmVnID0gaW9tbXVfZ2V0X2lzYV9yZXN2X3JlZ2lvbigpOwo+Pj4+PiAgIC0J
+cGRldiA9IHBjaV9nZXRfY2xhc3MoUENJX0NMQVNTX0JSSURHRV9JU0EgPDwgOCwgTlVMTCk7Cj4+
+Pj4+IC0JaWYgKCFwZGV2KQo+Pj4+PiArCWlmICghcmVnKQo+Pj4+PiAgIAkJcmV0dXJuOwo+Pj4+
+PiAgICAgCXByX2luZm8oIlByZXBhcmUgMC0xNk1pQiB1bml0eSBtYXBwaW5nIGZvciBMUENcbiIp
+Owo+Pj4+PiAtCXJldCA9IGlvbW11X3ByZXBhcmVfaWRlbnRpdHlfbWFwKCZwZGV2LT5kZXYsIDAs
+IDE2KjEwMjQqMTAyNCAtIDEpOwo+Pj4+PiArCXJldCA9IGlvbW11X3ByZXBhcmVfaWRlbnRpdHlf
+bWFwKCZwZGV2LT5kZXYsIHJlZy0+c3RhcnQsCj4+Pj4+ICsJCQlyZWctPnN0YXJ0ICsgcmVnLT5s
+ZW5ndGggLSAxKTsKPj4+Pj4gICAgIAlpZiAocmV0KQo+Pj4+PiAgIAkJcHJfZXJyKCJGYWlsZWQg
+dG8gY3JlYXRlIDAtMTZNaUIgaWRlbnRpdHkgbWFwIC0gZmxvcHB5IG1pZ2h0IG5vdCB3b3JrXG4i
+KTsKPj4+Pj4gLQo+Pj4+PiAtCXBjaV9kZXZfcHV0KHBkZXYpOwo+Pj4+PiAgIH0KPj4+Pj4gICAj
+ZWxzZQo+Pj4+PiAtc3RhdGljIGlubGluZSB2b2lkIGlvbW11X3ByZXBhcmVfaXNhKHZvaWQpCj4+
+Pj4+ICtzdGF0aWMgaW5saW5lIHZvaWQgaW9tbXVfcHJlcGFyZV9pc2Eoc3RydWN0IHBjaV9kZXYg
+KnBkZXYpCj4+Pj4+ICAgewo+Pj4+PiAgIAlyZXR1cm47Cj4+Pj4+ICAgfQo+Pj4+PiBAQCAtMzI4
+OSw2ICszMjk5LDcgQEAgc3RhdGljIGludCBfX2luaXQgaW5pdF9kbWFycyh2b2lkKQo+Pj4+PiAg
+IAlzdHJ1Y3QgZG1hcl9ybXJyX3VuaXQgKnJtcnI7Cj4+Pj4+ICAgCWJvb2wgY29waWVkX3RhYmxl
+cyA9IGZhbHNlOwo+Pj4+PiAgIAlzdHJ1Y3QgZGV2aWNlICpkZXY7Cj4+Pj4+ICsJc3RydWN0IHBj
+aV9kZXYgKnBkZXY7Cj4+Pj4+ICAgCXN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXU7Cj4+Pj4+ICAg
+CWludCBpLCByZXQ7Cj4+Pj4+ICAgQEAgLTM0NjksNyArMzQ4MCwxMSBAQCBzdGF0aWMgaW50IF9f
+aW5pdCBpbml0X2RtYXJzKHZvaWQpCj4+Pj4+ICAgCQl9Cj4+Pj4+ICAgCX0KPj4+Pj4gICAtCWlv
+bW11X3ByZXBhcmVfaXNhKCk7Cj4+Pj4+ICsJcGRldiA9IHBjaV9nZXRfY2xhc3MoUENJX0NMQVNT
+X0JSSURHRV9JU0EgPDwgOCwgTlVMTCk7Cj4+Pj4+ICsJaWYgKHBkZXYpIHsKPj4+Pj4gKwkJaW9t
+bXVfcHJlcGFyZV9pc2EocGRldik7Cj4+Pj4+ICsJCXBjaV9kZXZfcHV0KHBkZXYpOwo+Pj4+PiAr
+CX0KPj4+Pj4gICAgIGRvbWFpbnNfZG9uZToKPj4+Pj4gICBAQCAtNTI2Niw2ICs1MjgxLDcgQEAg
+c3RhdGljIHZvaWQgaW50ZWxfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpk
+ZXZpY2UsCj4+Pj4+ICAgCXN0cnVjdCBpb21tdV9yZXN2X3JlZ2lvbiAqcmVnOwo+Pj4+PiAgIAlz
+dHJ1Y3QgZG1hcl9ybXJyX3VuaXQgKnJtcnI7Cj4+Pj4+ICAgCXN0cnVjdCBkZXZpY2UgKmlfZGV2
+Owo+Pj4+PiArCXN0cnVjdCBwY2lfZGV2ICpwZGV2Owo+Pj4+PiAgIAlpbnQgaTsKPj4+Pj4gICAg
+IAlyY3VfcmVhZF9sb2NrKCk7Cj4+Pj4+IEBAIC01MjgwLDYgKzUyOTYsMTQgQEAgc3RhdGljIHZv
+aWQgaW50ZWxfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXZpY2UsCj4+
+Pj4+ICAgCX0KPj4+Pj4gICAJcmN1X3JlYWRfdW5sb2NrKCk7Cj4+Pj4+ICAgKwlpZiAoZGV2X2lz
+X3BjaShkZXZpY2UpKSB7Cj4+Pj4+ICsJCXBkZXYgPSB0b19wY2lfZGV2KGRldmljZSk7Cj4+Pj4+
+ICsJCWlmICgocGRldi0+Y2xhc3MgPj4gOCkgPT0gUENJX0NMQVNTX0JSSURHRV9JU0EpIHsKPj4+
+Pj4gKwkJCXJlZyA9IGlvbW11X2dldF9pc2FfcmVzdl9yZWdpb24oKTsKPj4+Pj4gKwkJCWxpc3Rf
+YWRkX3RhaWwoJnJlZy0+bGlzdCwgaGVhZCk7Cj4+Pj4+ICsJCX0KPj4+Pj4gKwl9Cj4+Pj4+ICsK
+Pj4+Pgo+Pj4+IEp1c3Qgd29uZGVyaW5nIHdoeSBub3QganVzdAo+Pj4+Cj4+Pj4gKyNpZmRlZiBD
+T05GSUdfSU5URUxfSU9NTVVfRkxPUFBZX1dBCj4+Pj4gKwlpZiAoZGV2X2lzX3BjaShkZXZpY2Up
+KSB7Cj4+Pj4gKwkJcGRldiA9IHRvX3BjaV9kZXYoZGV2aWNlKTsKPj4+PiArCQlpZiAoKHBkZXYt
+PmNsYXNzID4+IDgpID09IFBDSV9DTEFTU19CUklER0VfSVNBKSB7Cj4+Pj4gKwkJCXJlZyA9IGlv
+bW11X2FsbG9jX3Jlc3ZfcmVnaW9uKDAsCj4+Pj4gKwkJCQkxNioxMDI0KjEwMjQsCj4+Pj4gKwkJ
+CQkwLCBJT01NVV9SRVNWX0RJUkVDVCk7Cj4+Pj4gKwkJCWlmIChyZWcpCj4+Pj4gKwkJCQlsaXN0
+X2FkZF90YWlsKCZyZWctPmxpc3QsIGhlYWQpOwo+Pj4+ICsJCX0KPj4+PiArCX0KPj4+PiArI2Vu
+ZGlmCj4+Pj4KPj4+PiBhbmQsIHJlbW92ZSBhbGwgb3RoZXIgcmVsYXRlZCBjb2RlPwo+Pj4gQXQg
+dGhpcyBwb2ludCBpbiB0aGUgcGF0Y2hzZXQgaWYgd2UgcmVtb3ZlIGlvbW11X3ByZXBhcmVfaXNh
+IHRoZW4gdGhlIElTQQo+Pj4gcmVnaW9uIHdvbuKAmXQgYmUgbWFwcGVkIHRvIHRoZSBkZXZpY2Uu
+IE9ubHkgb25jZSB0aGUgZG1hIGRvbWFpbiBpcyBhbGxvY2FibGUKPj4+IHdpbGwgdGhlIHJlc2Vy
+dmVkIHJlZ2lvbnMgYmUgbWFwcGVkIGJ5IGlvbW11X2dyb3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGlu
+Z3MuCj4+Cj4+IFllcy4gU28gaWYgd2UgcHV0IHRoZSBhbGxvY2F0aW9uIGNvZGUgaGVyZSwgaXQg
+d29uJ3QgaW1wYWN0IGFueXRoaW5nIGFuZAo+PiB3aWxsIHRha2UgZWZmZWN0IGFzIHNvb24gYXMg
+dGhlIGRtYSBkb21haW4gaXMgYWxsb2NhdGFibGUuCj4+Cj4+PiBUaGVyZXMgYW4gaXNzdWUgdGhh
+dCBpZiB3ZSBjaG9vc2UgdG8gYWxsb2MgYSBuZXcgcmVzdl9yZWdpb24gd2l0aCB0eXBlCj4+PiBJ
+T01NVV9SRVNWX0RJUkVDVCwgd2Ugd2lsbCBuZWVkIHRvIHJlZmFjdG9yIGludGVsX2lvbW11X3B1
+dF9yZXN2X3JlZ2lvbnMKPj4+IHRvIGZyZWUgdGhpcyBlbnRyeSB0eXBlIHdoaWNoIG1lYW5zIHJl
+ZmFjdG9yaW5nIHRoZSBybXJyIHJlZ2lvbnMgaW4KPj4+IGdldF9yZXN2X3JlZ2lvbnMuIFNob3Vs
+ZCB0aGlzIHdvcmsgYmUgaW4gdGhpcyBwYXRjaHNldD8KPj4KPj4gRG8geW91IG1lYW4gdGhlIHJt
+cnIgcmVnaW9ucyBhcmUgbm90IGFsbG9jYXRlZCBpbiBnZXRfcmVzdl9yZWdpb25zLCBidXQKPj4g
+YXJlIGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnM/IEkgdGhpbmsgd2Ugc2hvdWxkIGZpeCB0aGlz
+IGluIHRoaXMgcGF0Y2gKPj4gc2V0IHNpbmNlIHRoaXMgbWlnaHQgaW1wYWN0IHRoZSBkZXZpY2Ug
+cGFzc3Rocm91Z2ggaWYgd2UgZG9uJ3QgZG8gaXQuCj4gCj4gVGhleeKAmXJlIG5vdCBhbGxvY2F0
+ZWQgYW5kIG5vdCBmcmVlZCBjdXJyZW50bHksIG9ubHkgdHlwZSBJT01NVV9SRVNWX01TSSBpcwo+
+IGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnMuIElmIHdlIGFsbG9jYXRlIGEgbmV3IHJlc3ZfcmVn
+aW9uIHdpdGggdHlwZQo+IElPTU1VX1JFU1ZfRElSRUNUIGZvciB0aGUgaXNhIHJlZ2lvbiwgdGhl
+biBpdCB3b27igJl0IGJlIGZyZWVkLiBJZiB3ZSBtb2RpZnkKPiBwdXRfcmVzdl9yZWdpb25zIHRv
+IGZyZWUgdHlwZSBJT01NVV9SRVNWX0RJUkVDVCwgdGhlbiB3ZSB3aWxsIHRyeSB0byBmcmVlCj4g
+dGhlIHN0YXRpYyBSTVJSIHJlZ2lvbnMuCgpBaCB5ZXMhIFRoYW5rcyBmb3IgdGhlIGV4cGxhbmF0
+aW9uLgoKPiAKPiBFaXRoZXIgdGhlIElTQSByZWdpb24gaXMgc3RhdGljIGFuZCBub3QgZnJlZWQg
+YXMgd2l0aCBteSBpbXBsZW1lbnRhdGlvbiwKPiBvciB0aGUgUk1SUiByZWdpb25zIGFyZSBjb252
+ZXJ0ZWQgdG8gYmUgYWxsb2NhdGVkIG9uIGVhY2ggY2FsbCB0bwo+IGdldF9yZXN2X3JlZ2lvbnMg
+YW5kIGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnMuCgpPa2F5LCBJIHNlY29uZCB5b3VyIGltcGxl
+bWVudGF0aW9uIG5vdy4KCj4gCj4+Cj4+IEJlc3QgcmVnYXJkcywKPj4gTHUgQmFvbHUKPiAKPiBD
+aGVlcnMsCj4gSmFtZXMuCj4gCgpCZXN0IHJlZ2FyZHMsCkx1IEJhb2x1Cl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
