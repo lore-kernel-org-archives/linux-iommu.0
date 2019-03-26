@@ -1,149 +1,138 @@
-From: Kirti Wankhede <kwankhede@nvidia.com>
-Subject: Re: [PATCH v8 9/9] vfio/type1: Handle different mdev isolation type
-Date: Tue, 26 Mar 2019 15:03:26 +0530
-Message-ID: <82f373a8-27f0-d217-d87a-aa309acdbc29@nvidia.com>
-References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
- <20190325013036.18400-10-baolu.lu@linux.intel.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH/RFC] driver core: Postpone DMA tear-down until after
+ devres release
+Date: Tue, 26 Mar 2019 11:41:38 +0000
+Message-ID: <9966a420-b081-a8ed-7f7b-20d97c9f7996@huawei.com>
+References: <20190207193653.18221-1-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190325013036.18400-10-baolu.lu@linux.intel.com>
-Content-Language: en-US
+In-Reply-To: <20190207193653.18221-1-geert+renesas@glider.be>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: "ashok.raj@intel.com" <ashok.raj@intel.com>, "sanjay.k.kumar@intel.com" <sanjay.k.kumar@intel.com>, "jacob.jun.pan@intel.com" <jacob.jun.pan@intel.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "yi.y.sun@intel.com" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, "tiwei.bie@intel.com" <tiwei.bie@intel.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Neo Jia <cjia@nvidia.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J . Wysocki" <rafael@kernel.org>
+Cc: linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, chenxiang <chenxiang66@hisilicon.com>, Xiaofei Tan <tanxiaofei@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
+>
+> Memory is incorrectly freed using the direct ops, as dma_map_ops = NULL.
+> Oops...
+>
+> After reversing the order of the calls to arch_teardown_dma_ops() and
+> devres_release_all(), dma_map_ops is still valid, and the DMA memory is
+> now released using __iommu_free_attrs():
+>
+>     +sata_rcar ee300000.sata: dmam_release:32: size 2048 vaddr ffffff8012145000 dma_handle 0x0x00000000fffff000 attrs 0x0
+>     +sata_rcar ee300000.sata: dma_free_attrs:289: size 2048, ops = iommu_dma_ops
+>     +sata_rcar ee300000.sata: dma_free_attrs:311: calling __iommu_free_attrs()
+> ---
+>  drivers/base/dd.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index 8ac10af17c0043a3..d62487d024559620 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -968,9 +968,9 @@ static void __device_release_driver(struct device *dev, struct device *parent)
+>  			drv->remove(dev);
+>
+>  		device_links_driver_cleanup(dev);
+> -		arch_teardown_dma_ops(dev);
+>
+>  		devres_release_all(dev);
+> +		arch_teardown_dma_ops(dev);
+>  		dev->driver = NULL;
 
+Hi guys,
 
-On 3/25/2019 7:00 AM, Lu Baolu wrote:
-> This adds the support to determine the isolation type
-> of a mediated device group by checking whether it has
-> an iommu device. If an iommu device exists, an iommu
-> domain will be allocated and then attached to the iommu
-> device. Otherwise, keep the same behavior as it is.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Could there still be the same problem in the error path of really_probe():
 
-Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
+static int really_probe(struct device *dev, struct device_driver *drv)
+{
+
+	[...]
+
+	goto done;
+
+probe_failed:
+	arch_teardown_dma_ops(dev);
+dma_failed:
+	if (dev->bus)
+		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+				     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
+pinctrl_bind_failed:
+	device_links_no_driver(dev);
+	devres_release_all(dev);
+	driver_sysfs_remove(dev);
+	dev->driver = NULL;
+	dev_set_drvdata(dev, NULL);
+
+We seem to be able to call arch_teardown_dma_ops() prior to 
+devres_release_all() if we reach probe_failed label.
+
+We have seen this crash when our driver probe fails on a dev branch 
+based on v5.1-rc1:
+
+[   87.896707] hisi_sas_v3_hw 0000:74:02.0: Adding to iommu group 2
+[   87.909765] scsi host1: hisi_sas_v3_hw
+[   89.127958] hisi_sas_v3_hw 0000:74:02.0: evaluate _DSM failed
+[   89.134043] BUG: Bad page state in process swapper/0  pfn:313f5
+[   89.139965] page:ffff7e0000c4fd40 count:1 mapcount:0 
+mapping:0000000000000000 index:0x0
+[   89.147960] flags: 0xfffe00000001000(reserved)
+[   89.152398] raw: 0fffe00000001000 ffff7e0000c4fd48 ffff7e0000c4fd48 
+0000000000000000
+[   89.160130] raw: 0000000000000000 0000000000000000 00000001ffffffff 
+0000000000000000
+[   89.167861] page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
+[   89.174290] bad because of flags: 0x1000(reserved)
+[   89.179070] Modules linked in:
+[   89.182117] CPU: 49 PID: 1 Comm: swapper/0 Not tainted 
+5.1.0-rc1-43081-g22d97fd-dirty #1433
+[   89.190453] Hardware name: Huawei D06/D06, BIOS Hisilicon D06 UEFI 
+RC0 - V1.12.01 01/29/2019
+[   89.198876] Call trace:
+[   89.201316]  dump_backtrace+0x0/0x118
+[   89.204965]  show_stack+0x14/0x1c
+[   89.208272]  dump_stack+0xa4/0xc8
+[   89.211576]  bad_page+0xe4/0x13c
+[   89.214791]  free_pages_check_bad+0x4c/0xc0
+[   89.218961]  __free_pages_ok+0x30c/0x340
+[   89.222871]  __free_pages+0x30/0x44
+[   89.226347]  __dma_direct_free_pages+0x30/0x38
+[   89.230777]  dma_direct_free+0x24/0x38
+[   89.234513]  dma_free_attrs+0x9c/0xd8
+[   89.238161]  dmam_release+0x20/0x28
+[   89.241640]  release_nodes+0x17c/0x220
+[   89.245375]  devres_release_all+0x34/0x54
+[   89.249371]  really_probe+0xc4/0x2c8
+[   89.252933]  driver_probe_device+0x58/0xfc
+[   89.257016]  device_driver_attach+0x68/0x70
+[   89.261185]  __driver_attach+0x94/0xdc
+[   89.264921]  bus_for_each_dev+0x5c/0xb4
+[   89.268744]  driver_attach+0x20/0x28
+[   89.272306]  bus_add_driver+0x14c/0x200
+[   89.276128]  driver_register+0x6c/0x124
+[   89.279953]  __pci_register_driver+0x48/0x50
+[   89.284213]  sas_v3_pci_driver_init+0x20/0x28
+[   89.288557]  do_one_initcall+0x40/0x25c
+[   89.292381]  kernel_init_freeable+0x2b8/0x3c0
+[   89.296727]  kernel_init+0x10/0x100
+[   89.300202]  ret_from_fork+0x10/0x18
+[   89.303773] Disabling lock debugging due to kernel taint
+[   89.309076] BUG: Bad page state in process swapper/0  pfn:313f6
+[   89.314988] page:ffff7e0000c4fd80 count:1 mapcount:0 
+mapping:0000000000000000 index:0x0
+[   89.322983] flags: 0xfffe00000001000(reserved)
+[   89.327417] raw: 0fffe00000001000 ffff7e0000c4fd88 ffff7e0000c4fd88 
+0000000000000000
+[   89.335149] raw: 0000000000000000 0000000000000000 00000001ffffffff 
+0000000000000000
 
 Thanks,
-Kirti
+John
 
 
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 55 +++++++++++++++++++++++++--------
->  1 file changed, 42 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index ccc4165474aa..b91cafcd5181 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -559,7 +559,7 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
->  	mutex_lock(&iommu->lock);
->  
->  	/* Fail if notifier list is empty */
-> -	if ((!iommu->external_domain) || (!iommu->notifier.head)) {
-> +	if (!iommu->notifier.head) {
->  		ret = -EINVAL;
->  		goto pin_done;
->  	}
-> @@ -641,11 +641,6 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
->  
->  	mutex_lock(&iommu->lock);
->  
-> -	if (!iommu->external_domain) {
-> -		mutex_unlock(&iommu->lock);
-> -		return -EINVAL;
-> -	}
-> -
->  	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu);
->  	for (i = 0; i < npage; i++) {
->  		struct vfio_dma *dma;
-> @@ -1368,13 +1363,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
->  		iommu_detach_group(domain->domain, group->iommu_group);
->  }
->  
-> +static bool vfio_bus_is_mdev(struct bus_type *bus)
-> +{
-> +	struct bus_type *mdev_bus;
-> +	bool ret = false;
-> +
-> +	mdev_bus = symbol_get(mdev_bus_type);
-> +	if (mdev_bus) {
-> +		ret = (bus == mdev_bus);
-> +		symbol_put(mdev_bus_type);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int vfio_mdev_iommu_device(struct device *dev, void *data)
-> +{
-> +	struct device **old = data, *new;
-> +
-> +	new = vfio_mdev_get_iommu_device(dev);
-> +	if (!new || (*old && *old != new))
-> +		return -EINVAL;
-> +
-> +	*old = new;
-> +
-> +	return 0;
-> +}
-> +
->  static int vfio_iommu_type1_attach_group(void *iommu_data,
->  					 struct iommu_group *iommu_group)
->  {
->  	struct vfio_iommu *iommu = iommu_data;
->  	struct vfio_group *group;
->  	struct vfio_domain *domain, *d;
-> -	struct bus_type *bus = NULL, *mdev_bus;
-> +	struct bus_type *bus = NULL;
->  	int ret;
->  	bool resv_msi, msi_remap;
->  	phys_addr_t resv_msi_base;
-> @@ -1409,23 +1431,30 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	if (ret)
->  		goto out_free;
->  
-> -	mdev_bus = symbol_get(mdev_bus_type);
-> +	if (vfio_bus_is_mdev(bus)) {
-> +		struct device *iommu_device = NULL;
->  
-> -	if (mdev_bus) {
-> -		if ((bus == mdev_bus) && !iommu_present(bus)) {
-> -			symbol_put(mdev_bus_type);
-> +		group->mdev_group = true;
-> +
-> +		/* Determine the isolation type */
-> +		ret = iommu_group_for_each_dev(iommu_group, &iommu_device,
-> +					       vfio_mdev_iommu_device);
-> +		if (ret || !iommu_device) {
->  			if (!iommu->external_domain) {
->  				INIT_LIST_HEAD(&domain->group_list);
->  				iommu->external_domain = domain;
-> -			} else
-> +			} else {
->  				kfree(domain);
-> +			}
->  
->  			list_add(&group->next,
->  				 &iommu->external_domain->group_list);
->  			mutex_unlock(&iommu->lock);
-> +
->  			return 0;
->  		}
-> -		symbol_put(mdev_bus_type);
-> +
-> +		bus = iommu_device->bus;
->  	}
->  
->  	domain->domain = iommu_domain_alloc(bus);
-> 
+>  		dev_set_drvdata(dev, NULL);
+>  		if (dev->pm_domain && dev->pm_domain->dismiss)
+>
