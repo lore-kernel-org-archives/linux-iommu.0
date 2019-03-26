@@ -1,50 +1,230 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
- iommu_get_resv_regions
-Date: Tue, 26 Mar 2019 09:24:20 +0800
-Message-ID: <cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
- <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
- <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
- <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
- <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
- <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
- <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] firmware: qcom_scm-64: Add atomic version of
+	qcom_scm_call
+Date: Tue, 26 Mar 2019 13:32:46 +0530
+Message-ID: <21b0deec-8663-6b59-52e4-6fe568834eb8@codeaurora.org>
+References: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
+	<20180910062551.28175-2-vivek.gautam@codeaurora.org>
+	<20190325210925.GA2899@builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190325210925.GA2899@builder>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: James Sewart <jamessewart@arista.com>
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi James,
 
-On 3/25/19 8:57 PM, James Sewart wrote:
->>> Theres an issue that if we choose to alloc a new resv_region with type
->>> IOMMU_RESV_DIRECT, we will need to refactor intel_iommu_put_resv_regions
->>> to free this entry type which means refactoring the rmrr regions in
->>> get_resv_regions. Should this work be in this patchset?
->> Do you mean the rmrr regions are not allocated in get_resv_regions, but
->> are freed in put_resv_regions? I think we should fix this in this patch
->> set since this might impact the device passthrough if we don't do it.
-> They’re not allocated and not freed currently, only type IOMMU_RESV_MSI is
-> freed in put_resv_regions. If we allocate a new resv_region with type
-> IOMMU_RESV_DIRECT for the isa region, then it won’t be freed. If we modify
-> put_resv_regions to free type IOMMU_RESV_DIRECT, then we will try to free
-> the static RMRR regions.
-> 
-> Either the ISA region is static and not freed as with my implementation,
-> or the RMRR regions are converted to be allocated on each call to
-> get_resv_regions and freed in put_resv_regions.
-> 
+On 3/26/2019 2:39 AM, Bjorn Andersson wrote:
+> On Sun 09 Sep 23:25 PDT 2018, Vivek Gautam wrote:
+>
+>> There are scnenarios where drivers are required to make a
+>> scm call in atomic context, such as in one of the qcom's
+>> arm-smmu-500 errata [1].
+>>
+>> [1] ("https://source.codeaurora.org/quic/la/kernel/msm-4.9/
+>>        tree/drivers/iommu/arm-smmu.c?h=msm-4.9#n4842")
+>>
+>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-By the way, there's another way in my mind. Let's add a new region type
-for LPC devices, e.x. IOMMU_RESV_LPC, and then handle it in the same way
-as those MSI regions. Just FYI.
 
-Best regards,
-Lu Baolu
+Thanks Bjorn for reviewing and testing this series.
+I will repost the series on latest head.
+
+Best regards
+Vivek
+
+>
+> Regards,
+> Bjorn
+>
+>> ---
+>>   drivers/firmware/qcom_scm-64.c | 136 ++++++++++++++++++++++++++++-------------
+>>   1 file changed, 92 insertions(+), 44 deletions(-)
+>>
+>> diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
+>> index 688525dd4aee..3a8c867cdf51 100644
+>> --- a/drivers/firmware/qcom_scm-64.c
+>> +++ b/drivers/firmware/qcom_scm-64.c
+>> @@ -70,32 +70,71 @@ static DEFINE_MUTEX(qcom_scm_lock);
+>>   #define FIRST_EXT_ARG_IDX 3
+>>   #define N_REGISTER_ARGS (MAX_QCOM_SCM_ARGS - N_EXT_QCOM_SCM_ARGS + 1)
+>>   
+>> -/**
+>> - * qcom_scm_call() - Invoke a syscall in the secure world
+>> - * @dev:	device
+>> - * @svc_id:	service identifier
+>> - * @cmd_id:	command identifier
+>> - * @desc:	Descriptor structure containing arguments and return values
+>> - *
+>> - * Sends a command to the SCM and waits for the command to finish processing.
+>> - * This should *only* be called in pre-emptible context.
+>> -*/
+>> -static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
+>> -			 const struct qcom_scm_desc *desc,
+>> -			 struct arm_smccc_res *res)
+>> +static void __qcom_scm_call_do(const struct qcom_scm_desc *desc,
+>> +			       struct arm_smccc_res *res, u32 fn_id,
+>> +			       u64 x5, u32 type)
+>> +{
+>> +	u64 cmd;
+>> +	struct arm_smccc_quirk quirk = {.id = ARM_SMCCC_QUIRK_QCOM_A6};
+>> +
+>> +	cmd = ARM_SMCCC_CALL_VAL(type, qcom_smccc_convention,
+>> +				 ARM_SMCCC_OWNER_SIP, fn_id);
+>> +
+>> +	quirk.state.a6 = 0;
+>> +
+>> +	do {
+>> +		arm_smccc_smc_quirk(cmd, desc->arginfo, desc->args[0],
+>> +				    desc->args[1], desc->args[2], x5,
+>> +				    quirk.state.a6, 0, res, &quirk);
+>> +
+>> +		if (res->a0 == QCOM_SCM_INTERRUPTED)
+>> +			cmd = res->a0;
+>> +
+>> +	} while (res->a0 == QCOM_SCM_INTERRUPTED);
+>> +}
+>> +
+>> +static void qcom_scm_call_do(const struct qcom_scm_desc *desc,
+>> +			     struct arm_smccc_res *res, u32 fn_id,
+>> +			     u64 x5, bool atomic)
+>> +{
+>> +	int retry_count = 0;
+>> +
+>> +	if (!atomic) {
+>> +		do {
+>> +			mutex_lock(&qcom_scm_lock);
+>> +
+>> +			__qcom_scm_call_do(desc, res, fn_id, x5,
+>> +					   ARM_SMCCC_STD_CALL);
+>> +
+>> +			mutex_unlock(&qcom_scm_lock);
+>> +
+>> +			if (res->a0 == QCOM_SCM_V2_EBUSY) {
+>> +				if (retry_count++ > QCOM_SCM_EBUSY_MAX_RETRY)
+>> +					break;
+>> +				msleep(QCOM_SCM_EBUSY_WAIT_MS);
+>> +			}
+>> +		}  while (res->a0 == QCOM_SCM_V2_EBUSY);
+>> +	} else {
+>> +		__qcom_scm_call_do(desc, res, fn_id, x5, ARM_SMCCC_FAST_CALL);
+>> +	}
+>> +}
+>> +
+>> +static int ___qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
+>> +			    const struct qcom_scm_desc *desc,
+>> +			    struct arm_smccc_res *res, bool atomic)
+>>   {
+>>   	int arglen = desc->arginfo & 0xf;
+>> -	int retry_count = 0, i;
+>> +	int i;
+>>   	u32 fn_id = QCOM_SCM_FNID(svc_id, cmd_id);
+>> -	u64 cmd, x5 = desc->args[FIRST_EXT_ARG_IDX];
+>> +	u64 x5 = desc->args[FIRST_EXT_ARG_IDX];
+>>   	dma_addr_t args_phys = 0;
+>>   	void *args_virt = NULL;
+>>   	size_t alloc_len;
+>> -	struct arm_smccc_quirk quirk = {.id = ARM_SMCCC_QUIRK_QCOM_A6};
+>> +	gfp_t flag = atomic ? GFP_ATOMIC : GFP_KERNEL;
+>>   
+>>   	if (unlikely(arglen > N_REGISTER_ARGS)) {
+>>   		alloc_len = N_EXT_QCOM_SCM_ARGS * sizeof(u64);
+>> -		args_virt = kzalloc(PAGE_ALIGN(alloc_len), GFP_KERNEL);
+>> +		args_virt = kzalloc(PAGE_ALIGN(alloc_len), flag);
+>>   
+>>   		if (!args_virt)
+>>   			return -ENOMEM;
+>> @@ -125,33 +164,7 @@ static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
+>>   		x5 = args_phys;
+>>   	}
+>>   
+>> -	do {
+>> -		mutex_lock(&qcom_scm_lock);
+>> -
+>> -		cmd = ARM_SMCCC_CALL_VAL(ARM_SMCCC_STD_CALL,
+>> -					 qcom_smccc_convention,
+>> -					 ARM_SMCCC_OWNER_SIP, fn_id);
+>> -
+>> -		quirk.state.a6 = 0;
+>> -
+>> -		do {
+>> -			arm_smccc_smc_quirk(cmd, desc->arginfo, desc->args[0],
+>> -				      desc->args[1], desc->args[2], x5,
+>> -				      quirk.state.a6, 0, res, &quirk);
+>> -
+>> -			if (res->a0 == QCOM_SCM_INTERRUPTED)
+>> -				cmd = res->a0;
+>> -
+>> -		} while (res->a0 == QCOM_SCM_INTERRUPTED);
+>> -
+>> -		mutex_unlock(&qcom_scm_lock);
+>> -
+>> -		if (res->a0 == QCOM_SCM_V2_EBUSY) {
+>> -			if (retry_count++ > QCOM_SCM_EBUSY_MAX_RETRY)
+>> -				break;
+>> -			msleep(QCOM_SCM_EBUSY_WAIT_MS);
+>> -		}
+>> -	}  while (res->a0 == QCOM_SCM_V2_EBUSY);
+>> +	qcom_scm_call_do(desc, res, fn_id, x5, atomic);
+>>   
+>>   	if (args_virt) {
+>>   		dma_unmap_single(dev, args_phys, alloc_len, DMA_TO_DEVICE);
+>> @@ -164,6 +177,41 @@ static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
+>>   	return 0;
+>>   }
+>>   
+>> +/**
+>> + * qcom_scm_call() - Invoke a syscall in the secure world
+>> + * @dev:	device
+>> + * @svc_id:	service identifier
+>> + * @cmd_id:	command identifier
+>> + * @desc:	Descriptor structure containing arguments and return values
+>> + *
+>> + * Sends a command to the SCM and waits for the command to finish processing.
+>> + * This should *only* be called in pre-emptible context.
+>> + */
+>> +static int qcom_scm_call(struct device *dev, u32 svc_id, u32 cmd_id,
+>> +			 const struct qcom_scm_desc *desc,
+>> +			 struct arm_smccc_res *res)
+>> +{
+>> +	return ___qcom_scm_call(dev, svc_id, cmd_id, desc, res, false);
+>> +}
+>> +
+>> +/**
+>> + * qcom_scm_call_atomic() - atomic variation of qcom_scm_call()
+>> + * @dev:	device
+>> + * @svc_id:	service identifier
+>> + * @cmd_id:	command identifier
+>> + * @desc:	Descriptor structure containing arguments and return values
+>> + * @res:	Structure containing results from SMC/HVC call
+>> + *
+>> + * Sends a command to the SCM and waits for the command to finish processing.
+>> + * This should be called in atomic context only.
+>> + */
+>> +static int qcom_scm_call_atomic(struct device *dev, u32 svc_id, u32 cmd_id,
+>> +				const struct qcom_scm_desc *desc,
+>> +				struct arm_smccc_res *res)
+>> +{
+>> +	return ___qcom_scm_call(dev, svc_id, cmd_id, desc, res, true);
+>> +}
+>> +
+>>   /**
+>>    * qcom_scm_set_cold_boot_addr() - Set the cold boot address for cpus
+>>    * @entry: Entry point function for the cpus
+>> -- 
+>> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+>> of Code Aurora Forum, hosted by The Linux Foundation
+>>
