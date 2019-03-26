@@ -1,99 +1,132 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH/RFC] driver core: Postpone DMA tear-down until after
- devres release
-Date: Tue, 26 Mar 2019 17:36:42 +0000
-Message-ID: <28a3473d-7f80-8b2e-5560-5890359d4b4c@huawei.com>
-References: <20190207193653.18221-1-geert+renesas@glider.be>
- <9966a420-b081-a8ed-7f7b-20d97c9f7996@huawei.com>
- <CAMuHMdUTkPoCoL7jRz2MRRSjLVSrzE4kPx2uMKCKMGfmVayT6A@mail.gmail.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v8 7/9] vfio/mdev: Add iommu related member in
+ mdev_device
+Date: Tue, 26 Mar 2019 11:42:28 -0600
+Message-ID: <20190326114228.5380be3c@x1.home>
+References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+        <20190325013036.18400-8-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdUTkPoCoL7jRz2MRRSjLVSrzE4kPx2uMKCKMGfmVayT6A@mail.gmail.com>
+In-Reply-To: <20190325013036.18400-8-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, chenxiang <chenxiang66@hisilicon.com>, Xiaofei Tan <tanxiaofei@huawei.com>, Rob Herring <robh@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 26/03/2019 12:31, Geert Uytterhoeven wrote:
-> Hi John,
->
-> CC robh
->
-> On Tue, Mar 26, 2019 at 12:42 PM John Garry <john.garry@huawei.com> wrote:
->>> Memory is incorrectly freed using the direct ops, as dma_map_ops = NULL.
->>> Oops...
->>>
->>> After reversing the order of the calls to arch_teardown_dma_ops() and
->>> devres_release_all(), dma_map_ops is still valid, and the DMA memory is
->>> now released using __iommu_free_attrs():
->>>
->>>     +sata_rcar ee300000.sata: dmam_release:32: size 2048 vaddr ffffff8012145000 dma_handle 0x0x00000000fffff000 attrs 0x0
->>>     +sata_rcar ee300000.sata: dma_free_attrs:289: size 2048, ops = iommu_dma_ops
->>>     +sata_rcar ee300000.sata: dma_free_attrs:311: calling __iommu_free_attrs()
->>> ---
->>>  drivers/base/dd.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
->>> index 8ac10af17c0043a3..d62487d024559620 100644
->>> --- a/drivers/base/dd.c
->>> +++ b/drivers/base/dd.c
->>> @@ -968,9 +968,9 @@ static void __device_release_driver(struct device *dev, struct device *parent)
->>>                       drv->remove(dev);
->>>
->>>               device_links_driver_cleanup(dev);
->>> -             arch_teardown_dma_ops(dev);
->>>
->>>               devres_release_all(dev);
->>> +             arch_teardown_dma_ops(dev);
->>>               dev->driver = NULL;
->>
->> Hi guys,
->>
->> Could there still be the same problem in the error path of really_probe():
->>
->> static int really_probe(struct device *dev, struct device_driver *drv)
->> {
->>
->>         [...]
->>
->>         goto done;
->>
->> probe_failed:
->>         arch_teardown_dma_ops(dev);
->> dma_failed:
->>         if (dev->bus)
->>                 blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
->>                                      BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
->> pinctrl_bind_failed:
->>         device_links_no_driver(dev);
->>         devres_release_all(dev);
->>         driver_sysfs_remove(dev);
->>         dev->driver = NULL;
->>         dev_set_drvdata(dev, NULL);
->>
->> We seem to be able to call arch_teardown_dma_ops() prior to
->> devres_release_all() if we reach probe_failed label.
->
-> Yes, this looks like another instance of the same problem.
-> And test_remove doesn't expose this, as it doesn't exercise the full cycle.
->
+On Mon, 25 Mar 2019 09:30:34 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
 
-Hi Geert,
+> A parent device might create different types of mediated
+> devices. For example, a mediated device could be created
+> by the parent device with full isolation and protection
+> provided by the IOMMU. One usage case could be found on
+> Intel platforms where a mediated device is an assignable
+> subset of a PCI, the DMA requests on behalf of it are all
+> tagged with a PASID. Since IOMMU supports PASID-granular
+> translations (scalable mode in VT-d 3.0), this mediated
+> device could be individually protected and isolated by an
+> IOMMU.
+> 
+> This patch adds a new member in the struct mdev_device to
+> indicate that the mediated device represented by mdev could
+> be isolated and protected by attaching a domain to a device
+> represented by mdev->iommu_device. It also adds a helper to
+> add or set the iommu device.
+> 
+> * mdev_device->iommu_device
+>   - This, if set, indicates that the mediated device could
+>     be fully isolated and protected by IOMMU via attaching
+>     an iommu domain to this device. If empty, it indicates
+>     using vendor defined isolation, hence bypass IOMMU.
+> 
+> * mdev_set/get_iommu_device(dev, iommu_device)
+>   - Set or get the iommu device which represents this mdev
+>     in IOMMU's device scope. Drivers don't need to set the
+>     iommu device if it uses vendor defined isolation.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> ---
+>  drivers/vfio/mdev/mdev_core.c    | 18 ++++++++++++++++++
+>  drivers/vfio/mdev/mdev_private.h |  1 +
+>  include/linux/mdev.h             | 14 ++++++++++++++
+>  3 files changed, 33 insertions(+)
 
-OK, thanks.
 
-There is another devres_release_all() call in device_release(). Not sure 
-if there is another potential problem there also...
+Acked-by: Alex Williamson <alex.williamson@redhat.com>
 
-As for this issue, I'll look to fix unless anyone else doing it.
 
-Cheers,
-John
-
-> Gr{oetje,eeting}s,
->
->                         Geert
->
+> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+> index b96fedc77ee5..1b6435529166 100644
+> --- a/drivers/vfio/mdev/mdev_core.c
+> +++ b/drivers/vfio/mdev/mdev_core.c
+> @@ -390,6 +390,24 @@ int mdev_device_remove(struct device *dev, bool force_remove)
+>  	return 0;
+>  }
+>  
+> +int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
+> +{
+> +	struct mdev_device *mdev = to_mdev_device(dev);
+> +
+> +	mdev->iommu_device = iommu_device;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(mdev_set_iommu_device);
+> +
+> +struct device *mdev_get_iommu_device(struct device *dev)
+> +{
+> +	struct mdev_device *mdev = to_mdev_device(dev);
+> +
+> +	return mdev->iommu_device;
+> +}
+> +EXPORT_SYMBOL(mdev_get_iommu_device);
+> +
+>  static int __init mdev_init(void)
+>  {
+>  	return mdev_bus_register();
+> diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
+> index 379758c52b1b..bfb7b22a7cb6 100644
+> --- a/drivers/vfio/mdev/mdev_private.h
+> +++ b/drivers/vfio/mdev/mdev_private.h
+> @@ -34,6 +34,7 @@ struct mdev_device {
+>  	struct list_head next;
+>  	struct kobject *type_kobj;
+>  	bool active;
+> +	struct device *iommu_device;
+>  };
+>  
+>  #define to_mdev_device(dev)	container_of(dev, struct mdev_device, dev)
+> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+> index d7aee90e5da5..df2ea39f47ee 100644
+> --- a/include/linux/mdev.h
+> +++ b/include/linux/mdev.h
+> @@ -15,6 +15,20 @@
+>  
+>  struct mdev_device;
+>  
+> +/*
+> + * Called by the parent device driver to set the device which represents
+> + * this mdev in iommu protection scope. By default, the iommu device is
+> + * NULL, that indicates using vendor defined isolation.
+> + *
+> + * @dev: the mediated device that iommu will isolate.
+> + * @iommu_device: a pci device which represents the iommu for @dev.
+> + *
+> + * Return 0 for success, otherwise negative error value.
+> + */
+> +int mdev_set_iommu_device(struct device *dev, struct device *iommu_device);
+> +
+> +struct device *mdev_get_iommu_device(struct device *dev);
+> +
+>  /**
+>   * struct mdev_parent_ops - Structure to be registered for each parent device to
+>   * register the device to mdev module.
