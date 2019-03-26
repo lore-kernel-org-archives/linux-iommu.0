@@ -1,88 +1,42 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC] driver core: Postpone DMA tear-down until after
- devres release
-Date: Tue, 26 Mar 2019 13:31:23 +0100
-Message-ID: <CAMuHMdUTkPoCoL7jRz2MRRSjLVSrzE4kPx2uMKCKMGfmVayT6A@mail.gmail.com>
-References: <20190207193653.18221-1-geert+renesas@glider.be> <9966a420-b081-a8ed-7f7b-20d97c9f7996@huawei.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Tue, 26 Mar 2019 12:53:59 -0400
+Message-ID: <20190325084348-mutt-send-email-mst@kernel.org>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+ <87womn8inf.fsf@morokweng.localdomain>
+ <20190129134750-mutt-send-email-mst@kernel.org>
+ <6c68f7f7-1b28-6eba-9b8b-2c32efac9701@redhat.com>
+ <20190129213137-mutt-send-email-mst@kernel.org>
+ <20190130074427.GA29516@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9966a420-b081-a8ed-7f7b-20d97c9f7996@huawei.com>
+Content-Disposition: inline
+In-Reply-To: <20190130074427.GA29516@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, chenxiang <chenxiang66@hisilicon.com>, Xiaofei Tan <tanxiaofei@huawei.com>, Rob Herring <robh@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jason Wang <jasowang@redhat.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>, virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, eric.auger@redhat.com, joro@8bytes.org, tnowicki@caviumnetworks.com, kevin.tian@intel.com, Lorenzo.Pieralisi@arm.com, bharat.bhushan@nxp.com, Will.Deacon@arm.com, Robin.Murphy@arm.com, Marc.Zyngier@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi John,
+On Wed, Jan 30, 2019 at 08:44:27AM +0100, Christoph Hellwig wrote:
+> On Tue, Jan 29, 2019 at 09:36:08PM -0500, Michael S. Tsirkin wrote:
+> > This has been discussed ad nauseum. virtio is all about compatibility.
+> > Losing a couple of lines of code isn't worth breaking working setups.
+> > People that want "just use DMA API no tricks" now have the option.
+> > Setting a flag in a feature bit map is literally a single line
+> > of code in the hypervisor. So stop pushing for breaking working
+> > legacy setups and just fix it in the right place.
+> 
+> I agree with the legacy aspect.  What I am missing is an extremely
+> strong wording that says you SHOULD always set this flag for new
+> hosts, including an explanation why.
 
-CC robh
 
-On Tue, Mar 26, 2019 at 12:42 PM John Garry <john.garry@huawei.com> wrote:
-> > Memory is incorrectly freed using the direct ops, as dma_map_ops = NULL.
-> > Oops...
-> >
-> > After reversing the order of the calls to arch_teardown_dma_ops() and
-> > devres_release_all(), dma_map_ops is still valid, and the DMA memory is
-> > now released using __iommu_free_attrs():
-> >
-> >     +sata_rcar ee300000.sata: dmam_release:32: size 2048 vaddr ffffff8012145000 dma_handle 0x0x00000000fffff000 attrs 0x0
-> >     +sata_rcar ee300000.sata: dma_free_attrs:289: size 2048, ops = iommu_dma_ops
-> >     +sata_rcar ee300000.sata: dma_free_attrs:311: calling __iommu_free_attrs()
-> > ---
-> >  drivers/base/dd.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> > index 8ac10af17c0043a3..d62487d024559620 100644
-> > --- a/drivers/base/dd.c
-> > +++ b/drivers/base/dd.c
-> > @@ -968,9 +968,9 @@ static void __device_release_driver(struct device *dev, struct device *parent)
-> >                       drv->remove(dev);
-> >
-> >               device_links_driver_cleanup(dev);
-> > -             arch_teardown_dma_ops(dev);
-> >
-> >               devres_release_all(dev);
-> > +             arch_teardown_dma_ops(dev);
-> >               dev->driver = NULL;
->
-> Hi guys,
->
-> Could there still be the same problem in the error path of really_probe():
->
-> static int really_probe(struct device *dev, struct device_driver *drv)
-> {
->
->         [...]
->
->         goto done;
->
-> probe_failed:
->         arch_teardown_dma_ops(dev);
-> dma_failed:
->         if (dev->bus)
->                 blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
->                                      BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
-> pinctrl_bind_failed:
->         device_links_no_driver(dev);
->         devres_release_all(dev);
->         driver_sysfs_remove(dev);
->         dev->driver = NULL;
->         dev_set_drvdata(dev, NULL);
->
-> We seem to be able to call arch_teardown_dma_ops() prior to
-> devres_release_all() if we reach probe_failed label.
-
-Yes, this looks like another instance of the same problem.
-And test_remove doesn't expose this, as it doesn't exercise the full cycle.
-
-Gr{oetje,eeting}s,
-
-                        Geert
+So as far as power is concerned, IIUC the issue they are struggling with is
+that some platforms do not support pass-through mode in the emulated IOMMU.
+Disabling PLATFORM_ACCESS is so far a way around that, unfortunately just for
+virtio devices.  I would like virtio-iommu to be able to address that need as
+well.
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+MST
