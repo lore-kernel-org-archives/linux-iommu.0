@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.14 042/123] iommu/io-pgtable-arm-v7s: Only
+Subject: [PATCH AUTOSEL 4.9 30/87] iommu/io-pgtable-arm-v7s: Only
 	kmemleak_ignore L2 tables
-Date: Wed, 27 Mar 2019 14:15:06 -0400
-Message-ID: <20190327181628.15899-42-sashal@kernel.org>
-References: <20190327181628.15899-1-sashal@kernel.org>
+Date: Wed, 27 Mar 2019 14:19:43 -0400
+Message-ID: <20190327182040.17444-30-sashal@kernel.org>
+References: <20190327182040.17444-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190327181628.15899-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20190327182040.17444-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -54,11 +54,11 @@ Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 29b7a6755fcd..56368c8bd791 100644
+index d68a552cfe8d..3085b47fac1d 100644
 --- a/drivers/iommu/io-pgtable-arm-v7s.c
 +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -217,7 +217,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 		if (dma != phys)
+@@ -207,7 +207,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		if (dma != virt_to_phys(table))
  			goto out_unmap;
  	}
 -	kmemleak_ignore(table);
