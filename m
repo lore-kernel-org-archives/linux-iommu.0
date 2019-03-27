@@ -1,28 +1,65 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 RFC/RFT 0/5] Save single pages from CMA area
-Date: Wed, 27 Mar 2019 09:08:21 +0100
-Message-ID: <20190327080821.GB20336@lst.de>
-References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: Re: [PATCH v3 0/3] PCIe Host request to reserve IOVA
+Date: Wed, 27 Mar 2019 14:14:20 +0530
+Message-ID: <CABe79T6QVF-Dgajj6S_0Z9ZnfsV3vuWUasU-eLtTBPkEaBzjAw@mail.gmail.com>
+References: <1548411231-27549-1-git-send-email-srinath.mannam@broadcom.com> <CABe79T66daJOditCZ-6ENKW2ugbpDUUfjn1CMHCcDtb3=HiiOQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190326230131.16275-1-nicoleotsuka@gmail.com>
+In-Reply-To: <CABe79T66daJOditCZ-6ENKW2ugbpDUUfjn1CMHCcDtb3=HiiOQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: hch@lst.de, robin.murphy@arm.com, vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, joro@8bytes.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, tony@atomide.com
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>
+Cc: BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 26, 2019 at 04:01:26PM -0700, Nicolin Chen wrote:
-> This series of patches try to save single pages from CMA area bypassing
-> all CMA single page alloctions and allocating normal pages instead, as
-> all addresses within one single page are contiguous.
-> 
-> We had once applied the PATCH-5 but reverted it as actually not all the
-> callers handled the fallback allocations. Per Robin's suggestion, let's
-> stuff alloc_pages()/free_page() fallbacks to those callers before having
-> PATCH-5.
+Hi Bjorn,
 
-Given the problems this has caused so far I'd like to see a good
-explanation of why this optimization is so important that all the churn
-is even worth it..
+Could you please help to review the patch series below?
+
+Thanks,
+Srinath.
+
+On Thu, Feb 21, 2019 at 2:29 PM Srinath Mannam
+<srinath.mannam@broadcom.com> wrote:
+>
+> Hi Bjorn,
+>
+> Please help to review this patch series.
+> Thank you.
+>
+> Regards,
+> Srinath.
+> On Fri, Jan 25, 2019 at 3:44 PM Srinath Mannam
+> <srinath.mannam@broadcom.com> wrote:
+> >
+> > Few SOCs have limitation that their PCIe host can't allow few inbound
+> > address ranges. Allowed inbound address ranges are listed in dma-ranges
+> > DT property and this address ranges are required to do IOVA mapping.
+> > Remaining address ranges have to be reserved in IOVA mapping.
+> >
+> > PCIe Host driver of those SOCs has to list all address ranges which have
+> > to reserve their IOVA address into PCIe host bridge resource entry list.
+> > IOMMU framework will reserve these IOVAs while initializing IOMMU domain.
+> >
+> > This patch set is based on Linux-5.0-rc2.
+> >
+> > Changes from v2:
+> >   - Patch set rebased to Linux-5.0-rc2
+> >
+> > Changes from v1:
+> >   - Addressed Oza review comments.
+> >
+> > Srinath Mannam (3):
+> >   PCI: Add dma-resv window list
+> >   iommu/dma: Reserve IOVA for PCI host reserve address list
+> >   PCI: iproc: Add dma reserve resources to host
+> >
+> >  drivers/iommu/dma-iommu.c           |  8 ++++++
+> >  drivers/pci/controller/pcie-iproc.c | 51 ++++++++++++++++++++++++++++++++++++-
+> >  drivers/pci/probe.c                 |  3 +++
+> >  include/linux/pci.h                 |  1 +
+> >  4 files changed, 62 insertions(+), 1 deletion(-)
+> >
+> > --
+> > 2.7.4
+> >
