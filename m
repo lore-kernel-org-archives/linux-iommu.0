@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
-Date: Wed, 27 Mar 2019 09:04:29 +0100
-Message-ID: <20190327080448.5500-3-hch@lst.de>
+Subject: [PATCH 04/21] dma-iommu: cleanup dma-iommu.h
+Date: Wed, 27 Mar 2019 09:04:31 +0100
+Message-ID: <20190327080448.5500-5-hch@lst.de>
 References: <20190327080448.5500-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,59 +12,50 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The nr_pages checks should be done for all mmap requests, not just those
-using remap_pfn_range.
+No need for a __KERNEL__ guard outside uapi and add a missing comment
+describing the #else cpp statement.  Last but not least include
+<linux/errno.h> instead of the asm version, which is frowned upon.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm64/mm/dma-mapping.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+ include/linux/dma-iommu.h | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index be88beb2e377..e54288921e72 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -73,19 +73,9 @@ static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
- static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
- 			      unsigned long pfn, size_t size)
- {
--	int ret = -ENXIO;
--	unsigned long nr_vma_pages = vma_pages(vma);
--	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	unsigned long off = vma->vm_pgoff;
--
--	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
--		ret = remap_pfn_range(vma, vma->vm_start,
--				      pfn + off,
--				      vma->vm_end - vma->vm_start,
--				      vma->vm_page_prot);
--	}
--
--	return ret;
-+	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
-+			      vma->vm_end - vma->vm_start,
-+			      vma->vm_page_prot);
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index e760dc5d1fa8..3e206f4ee173 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -16,14 +16,14 @@
+ #ifndef __DMA_IOMMU_H
+ #define __DMA_IOMMU_H
+ 
+-#ifdef __KERNEL__
++#include <linux/errno.h>
+ #include <linux/types.h>
+-#include <asm/errno.h>
+ 
+ #ifdef CONFIG_IOMMU_DMA
+ #include <linux/dma-mapping.h>
+ #include <linux/iommu.h>
+ #include <linux/msi.h>
++#include <linux/types.h>
+ 
+ int iommu_dma_init(void);
+ 
+@@ -74,7 +74,7 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 
+-#else
++#else /* CONFIG_IOMMU_DMA */
+ 
+ struct iommu_domain;
+ struct msi_msg;
+@@ -108,5 +108,4 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
  }
- #endif /* CONFIG_IOMMU_DMA */
  
-@@ -241,6 +231,8 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 			      unsigned long attrs)
- {
-+	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+	unsigned long off = vma->vm_pgoff;
- 	struct vm_struct *area;
- 	int ret;
- 
-@@ -249,6 +241,9 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
- 		return ret;
- 
-+	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
-+		return -ENXIO;
-+
- 	if (!is_vmalloc_addr(cpu_addr)) {
- 		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
- 		return __swiotlb_mmap_pfn(vma, pfn, size);
+ #endif	/* CONFIG_IOMMU_DMA */
+-#endif	/* __KERNEL__ */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 2.20.1
