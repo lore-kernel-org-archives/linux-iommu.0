@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 17/21] dma-iommu: refactor iommu_dma_alloc
-Date: Wed, 27 Mar 2019 09:04:44 +0100
-Message-ID: <20190327080448.5500-18-hch@lst.de>
+Subject: [PATCH 12/21] dma-iommu: factor atomic pool allocations into helpers
+Date: Wed, 27 Mar 2019 09:04:39 +0100
+Message-ID: <20190327080448.5500-13-hch@lst.de>
 References: <20190327080448.5500-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,90 +12,93 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Split all functionality related to non-coherent devices into a
-separate helper, and make the decision flow more obvious.
+This keeps the code together and will simplify compiling the code
+out on architectures that are always dma coherent.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 51 +++++++++++++++++++--------------------
- 1 file changed, 25 insertions(+), 26 deletions(-)
+ drivers/iommu/dma-iommu.c | 51 +++++++++++++++++++++++++++++----------
+ 1 file changed, 38 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09b29f6093bb..f65dd19b0953 100644
+index 2013c650718a..8ec69176673d 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -767,6 +767,22 @@ static void *iommu_dma_alloc_pool(struct device *dev, size_t size,
- 	return vaddr;
+@@ -673,6 +673,35 @@ static int iommu_dma_get_sgtable_remap(struct sg_table *sgt, void *cpu_addr,
+ 			GFP_KERNEL);
  }
  
-+static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
++static void iommu_dma_free_pool(struct device *dev, size_t size,
++		void *vaddr, dma_addr_t dma_handle)
++{
++	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), dma_handle, size);
++	dma_free_from_pool(vaddr, PAGE_ALIGN(size));
++}
++
++static void *iommu_dma_alloc_pool(struct device *dev, size_t size,
 +		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
 +{
-+	/*
-+	 * In atomic context we can't remap anything, so we'll only get the
-+	 * virtually contiguous buffer we need by way of a physically
-+	 * contiguous allocation.
-+	 */
-+	if (!gfpflags_allow_blocking(gfp))
-+		return iommu_dma_alloc_pool(dev, size, dma_handle, gfp, attrs);
-+	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
-+		return iommu_dma_alloc_contiguous_remap(dev, size, dma_handle,
-+				gfp, attrs);
-+	return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
++	bool coherent = dev_is_dma_coherent(dev);
++	struct page *page;
++	void *vaddr;
++
++	vaddr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
++	if (!vaddr)
++		return NULL;
++
++	*dma_handle = __iommu_dma_map(dev, page_to_phys(page), size,
++			dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs),
++			iommu_get_domain_for_dev(dev));
++	if (*dma_handle == DMA_MAPPING_ERROR) {
++		dma_free_from_pool(vaddr, PAGE_ALIGN(size));
++		return NULL;
++	}
++
++	return vaddr;
 +}
 +
  static void iommu_dma_sync_single_for_cpu(struct device *dev,
  		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
  {
-@@ -1040,40 +1056,23 @@ static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- }
+@@ -981,21 +1010,18 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 		 * get the virtually contiguous buffer we need by way of a
+ 		 * physically contiguous allocation.
+ 		 */
+-		if (coherent) {
+-			page = alloc_pages(gfp, get_order(size));
+-			addr = page ? page_address(page) : NULL;
+-		} else {
+-			addr = dma_alloc_from_pool(size, &page, gfp);
+-		}
+-		if (!addr)
++		if (!coherent)
++			return iommu_dma_alloc_pool(dev, iosize, handle, gfp,
++					attrs);
++
++		page = alloc_pages(gfp, get_order(size));
++		if (!page)
+ 			return NULL;
  
- static void *iommu_dma_alloc(struct device *dev, size_t size,
--		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
-+		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
--	bool coherent = dev_is_dma_coherent(dev);
--	size_t iosize = size;
--	void *addr;
--
- 	/*
- 	 * Some drivers rely on this, and we probably don't want the
- 	 * possibility of stale kernel data being read by devices anyway.
++		addr = page_address(page);
+ 		*handle = __iommu_dma_map_page(dev, page, 0, iosize, ioprot);
+ 		if (*handle == DMA_MAPPING_ERROR) {
+-			if (coherent)
+-				__free_pages(page, get_order(size));
+-			else
+-				dma_free_from_pool(addr, size);
++			__free_pages(page, get_order(size));
+ 			addr = NULL;
+ 		}
+ 	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+@@ -1049,8 +1075,7 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 	 * Hence how dodgy the below logic looks...
  	 */
- 	gfp |= __GFP_ZERO;
+ 	if (dma_in_atomic_pool(cpu_addr, size)) {
+-		__iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+-		dma_free_from_pool(cpu_addr, size);
++		iommu_dma_free_pool(dev, size, cpu_addr, handle);
+ 	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+ 		struct page *page = vmalloc_to_page(cpu_addr);
  
--	if (!gfpflags_allow_blocking(gfp)) {
--		/*
--		 * In atomic context we can't remap anything, so we'll only
--		 * get the virtually contiguous buffer we need by way of a
--		 * physically contiguous allocation.
--		 */
--		if (!coherent)
--			return iommu_dma_alloc_pool(dev, iosize, handle, gfp,
--					attrs);
--		return iommu_dma_alloc_contiguous(dev, iosize, handle, gfp,
-+	if (!dev_is_dma_coherent(dev))
-+		return iommu_dma_alloc_noncoherent(dev, size, dma_handle, gfp,
- 				attrs);
--	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
--		if (coherent)
--			addr = iommu_dma_alloc_contiguous(dev, iosize, handle,
--					gfp, attrs);
--		else
--			addr = iommu_dma_alloc_contiguous_remap(dev, iosize,
--					handle, gfp, attrs);
--	} else {
--		addr = iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
--	}
--	return addr;
-+
-+	if (gfpflags_allow_blocking(gfp) &&
-+	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
-+		return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
-+
-+	return iommu_dma_alloc_contiguous(dev, size, dma_handle, gfp, attrs);
- }
- 
- static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
 -- 
 2.20.1
