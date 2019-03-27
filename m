@@ -1,97 +1,80 @@
-From: Parav Pandit <parav@mellanox.com>
-Subject: RE: [PATCH v8 7/9] vfio/mdev: Add iommu related member in mdev_device
-Date: Wed, 27 Mar 2019 14:17:57 +0000
-Message-ID: <VI1PR0501MB2271172964AFA3CDD6F1B02CD1580@VI1PR0501MB2271.eurprd05.prod.outlook.com>
-References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
- <20190325013036.18400-8-baolu.lu@linux.intel.com>
- <b45dabe5-04ef-0e05-db25-c8edf111e355@nvidia.com>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 1/1] iommu: Add config option to set lazy mode as default
+Date: Wed, 27 Mar 2019 23:00:30 +0800
+Message-ID: <20190327150030.11112-1-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b45dabe5-04ef-0e05-db25-c8edf111e355@nvidia.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kirti Wankhede <kwankhede@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: "ashok.raj@intel.com" <ashok.raj@intel.com>, "sanjay.k.kumar@intel.com" <sanjay.k.kumar@intel.com>, "jacob.jun.pan@intel.com" <jacob.jun.pan@intel.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "yi.y.sun@intel.com" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, "tiwei.bie@intel.com" <tiwei.bie@intel.com>, "xin.zeng@intel.com" <xin.zeng@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Neo Jia <cjia@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgta2VybmVsLW93
-bmVyQHZnZXIua2VybmVsLm9yZyA8bGludXgta2VybmVsLQ0KPiBvd25lckB2Z2VyLmtlcm5lbC5v
-cmc+IE9uIEJlaGFsZiBPZiBLaXJ0aSBXYW5raGVkZQ0KPiBTZW50OiBUdWVzZGF5LCBNYXJjaCAy
-NiwgMjAxOSA0OjMzIEFNDQo+IFRvOiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29t
-PjsgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+Ow0KPiBEYXZpZCBXb29kaG91c2UgPGR3
-bXcyQGluZnJhZGVhZC5vcmc+OyBBbGV4IFdpbGxpYW1zb24NCj4gPGFsZXgud2lsbGlhbXNvbkBy
-ZWRoYXQuY29tPg0KPiBDYzogYXNob2sucmFqQGludGVsLmNvbTsgc2FuamF5Lmsua3VtYXJAaW50
-ZWwuY29tOw0KPiBqYWNvYi5qdW4ucGFuQGludGVsLmNvbTsga2V2aW4udGlhbkBpbnRlbC5jb207
-IEplYW4tUGhpbGlwcGUgQnJ1Y2tlciA8amVhbi0NCj4gcGhpbGlwcGUuYnJ1Y2tlckBhcm0uY29t
-PjsgeWkubC5saXVAaW50ZWwuY29tOyB5aS55LnN1bkBpbnRlbC5jb207DQo+IHBldGVyeEByZWRo
-YXQuY29tOyB0aXdlaS5iaWVAaW50ZWwuY29tOyB4aW4uemVuZ0BpbnRlbC5jb207DQo+IGlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBrdm1Admdlci5rZXJuZWwub3JnOyBsaW51eC0N
-Cj4ga2VybmVsQHZnZXIua2VybmVsLm9yZzsgSmFjb2IgUGFuIDxqYWNvYi5qdW4ucGFuQGxpbnV4
-LmludGVsLmNvbT47IE5lbyBKaWENCj4gPGNqaWFAbnZpZGlhLmNvbT4NCj4gU3ViamVjdDogUmU6
-IFtQQVRDSCB2OCA3LzldIHZmaW8vbWRldjogQWRkIGlvbW11IHJlbGF0ZWQgbWVtYmVyIGluDQo+
-IG1kZXZfZGV2aWNlDQo+IA0KPiANCj4gDQo+IE9uIDMvMjUvMjAxOSA3OjAwIEFNLCBMdSBCYW9s
-dSB3cm90ZToNCj4gPiBBIHBhcmVudCBkZXZpY2UgbWlnaHQgY3JlYXRlIGRpZmZlcmVudCB0eXBl
-cyBvZiBtZWRpYXRlZCBkZXZpY2VzLiBGb3INCj4gPiBleGFtcGxlLCBhIG1lZGlhdGVkIGRldmlj
-ZSBjb3VsZCBiZSBjcmVhdGVkIGJ5IHRoZSBwYXJlbnQgZGV2aWNlIHdpdGgNCj4gPiBmdWxsIGlz
-b2xhdGlvbiBhbmQgcHJvdGVjdGlvbiBwcm92aWRlZCBieSB0aGUgSU9NTVUuIE9uZSB1c2FnZSBj
-YXNlDQo+ID4gY291bGQgYmUgZm91bmQgb24gSW50ZWwgcGxhdGZvcm1zIHdoZXJlIGEgbWVkaWF0
-ZWQgZGV2aWNlIGlzIGFuDQo+ID4gYXNzaWduYWJsZSBzdWJzZXQgb2YgYSBQQ0ksIHRoZSBETUEg
-cmVxdWVzdHMgb24gYmVoYWxmIG9mIGl0IGFyZSBhbGwNCj4gPiB0YWdnZWQgd2l0aCBhIFBBU0lE
-LiBTaW5jZSBJT01NVSBzdXBwb3J0cyBQQVNJRC1ncmFudWxhciB0cmFuc2xhdGlvbnMNCj4gPiAo
-c2NhbGFibGUgbW9kZSBpbiBWVC1kIDMuMCksIHRoaXMgbWVkaWF0ZWQgZGV2aWNlIGNvdWxkIGJl
-DQo+ID4gaW5kaXZpZHVhbGx5IHByb3RlY3RlZCBhbmQgaXNvbGF0ZWQgYnkgYW4gSU9NTVUuDQo+
-ID4NCj4gPiBUaGlzIHBhdGNoIGFkZHMgYSBuZXcgbWVtYmVyIGluIHRoZSBzdHJ1Y3QgbWRldl9k
-ZXZpY2UgdG8gaW5kaWNhdGUNCj4gPiB0aGF0IHRoZSBtZWRpYXRlZCBkZXZpY2UgcmVwcmVzZW50
-ZWQgYnkgbWRldiBjb3VsZCBiZSBpc29sYXRlZCBhbmQNCj4gPiBwcm90ZWN0ZWQgYnkgYXR0YWNo
-aW5nIGEgZG9tYWluIHRvIGEgZGV2aWNlIHJlcHJlc2VudGVkIGJ5DQo+ID4gbWRldi0+aW9tbXVf
-ZGV2aWNlLiBJdCBhbHNvIGFkZHMgYSBoZWxwZXIgdG8gYWRkIG9yIHNldCB0aGUgaW9tbXUNCj4g
-PiBkZXZpY2UuDQo+ID4NCj4gPiAqIG1kZXZfZGV2aWNlLT5pb21tdV9kZXZpY2UNCj4gPiAgIC0g
-VGhpcywgaWYgc2V0LCBpbmRpY2F0ZXMgdGhhdCB0aGUgbWVkaWF0ZWQgZGV2aWNlIGNvdWxkDQo+
-ID4gICAgIGJlIGZ1bGx5IGlzb2xhdGVkIGFuZCBwcm90ZWN0ZWQgYnkgSU9NTVUgdmlhIGF0dGFj
-aGluZw0KPiA+ICAgICBhbiBpb21tdSBkb21haW4gdG8gdGhpcyBkZXZpY2UuIElmIGVtcHR5LCBp
-dCBpbmRpY2F0ZXMNCj4gPiAgICAgdXNpbmcgdmVuZG9yIGRlZmluZWQgaXNvbGF0aW9uLCBoZW5j
-ZSBieXBhc3MgSU9NTVUuDQo+ID4NCj4gPiAqIG1kZXZfc2V0L2dldF9pb21tdV9kZXZpY2UoZGV2
-LCBpb21tdV9kZXZpY2UpDQo+ID4gICAtIFNldCBvciBnZXQgdGhlIGlvbW11IGRldmljZSB3aGlj
-aCByZXByZXNlbnRzIHRoaXMgbWRldg0KPiA+ICAgICBpbiBJT01NVSdzIGRldmljZSBzY29wZS4g
-RHJpdmVycyBkb24ndCBuZWVkIHRvIHNldCB0aGUNCj4gPiAgICAgaW9tbXUgZGV2aWNlIGlmIGl0
-IHVzZXMgdmVuZG9yIGRlZmluZWQgaXNvbGF0aW9uLg0KPiA+DQo+ID4gQ2M6IEFzaG9rIFJhaiA8
-YXNob2sucmFqQGludGVsLmNvbT4NCj4gPiBDYzogSmFjb2IgUGFuIDxqYWNvYi5qdW4ucGFuQGxp
-bnV4LmludGVsLmNvbT4NCj4gPiBDYzogS2V2aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+
-DQo+ID4gQ2M6IExpdSBZaSBMIDx5aS5sLmxpdUBpbnRlbC5jb20+DQo+ID4gU3VnZ2VzdGVkLWJ5
-OiBLZXZpbiBUaWFuIDxrZXZpbi50aWFuQGludGVsLmNvbT4NCj4gPiBTdWdnZXN0ZWQtYnk6IEFs
-ZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+DQo+ID4gU2lnbmVkLW9m
-Zi1ieTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4NCj4gPiBSZXZpZXdlZC1i
-eTogSmVhbi1QaGlsaXBwZSBCcnVja2VyIDxqZWFuLXBoaWxpcHBlLmJydWNrZXJAYXJtLmNvbT4N
-Cj4gPiAtLS0NCj4gPiAgZHJpdmVycy92ZmlvL21kZXYvbWRldl9jb3JlLmMgICAgfCAxOCArKysr
-KysrKysrKysrKysrKysNCj4gPiAgZHJpdmVycy92ZmlvL21kZXYvbWRldl9wcml2YXRlLmggfCAg
-MSArDQo+ID4gIGluY2x1ZGUvbGludXgvbWRldi5oICAgICAgICAgICAgIHwgMTQgKysrKysrKysr
-KysrKysNCj4gPiAgMyBmaWxlcyBjaGFuZ2VkLCAzMyBpbnNlcnRpb25zKCspDQo+ID4NCj4gPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy92ZmlvL21kZXYvbWRldl9jb3JlLmMNCj4gPiBiL2RyaXZlcnMv
-dmZpby9tZGV2L21kZXZfY29yZS5jIGluZGV4IGI5NmZlZGM3N2VlNS4uMWI2NDM1NTI5MTY2DQo+
-ID4gMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy92ZmlvL21kZXYvbWRldl9jb3JlLmMNCj4gPiAr
-KysgYi9kcml2ZXJzL3ZmaW8vbWRldi9tZGV2X2NvcmUuYw0KPiA+IEBAIC0zOTAsNiArMzkwLDI0
-IEBAIGludCBtZGV2X2RldmljZV9yZW1vdmUoc3RydWN0IGRldmljZSAqZGV2LCBib29sDQo+IGZv
-cmNlX3JlbW92ZSkNCj4gPiAgCXJldHVybiAwOw0KPiA+ICB9DQo+ID4NCj4gPiAraW50IG1kZXZf
-c2V0X2lvbW11X2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2UNCj4gPiAr
-KmlvbW11X2RldmljZSkgew0KPiA+ICsJc3RydWN0IG1kZXZfZGV2aWNlICptZGV2ID0gdG9fbWRl
-dl9kZXZpY2UoZGV2KTsNCj4gPiArDQo+ID4gKwltZGV2LT5pb21tdV9kZXZpY2UgPSBpb21tdV9k
-ZXZpY2U7DQo+ID4gKw0KPiA+ICsJcmV0dXJuIDA7DQo+ID4gK30NCj4gPiArRVhQT1JUX1NZTUJP
-TChtZGV2X3NldF9pb21tdV9kZXZpY2UpOw0KPiA+ICsNCj4gPiArc3RydWN0IGRldmljZSAqbWRl
-dl9nZXRfaW9tbXVfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldikgew0KPiA+ICsJc3RydWN0IG1k
-ZXZfZGV2aWNlICptZGV2ID0gdG9fbWRldl9kZXZpY2UoZGV2KTsNCj4gPiArDQo+ID4gKwlyZXR1
-cm4gbWRldi0+aW9tbXVfZGV2aWNlOw0KPiA+ICt9DQo+ID4gK0VYUE9SVF9TWU1CT0wobWRldl9n
-ZXRfaW9tbXVfZGV2aWNlKTsNCj4gPiArDQo+ID4gIHN0YXRpYyBpbnQgX19pbml0IG1kZXZfaW5p
-dCh2b2lkKQ0KPiA+ICB7DQo+ID4gIAlyZXR1cm4gbWRldl9idXNfcmVnaXN0ZXIoKTsNCj4gPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy92ZmlvL21kZXYvbWRldl9wcml2YXRlLmgNCj4gPiBiL2RyaXZl
-cnMvdmZpby9tZGV2L21kZXZfcHJpdmF0ZS5oDQo+ID4gaW5kZXggMzc5NzU4YzUyYjFiLi5iZmI3
-YjIyYTdjYjYgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy92ZmlvL21kZXYvbWRldl9wcml2YXRl
-LmgNCj4gPiArKysgYi9kcml2ZXJzL3ZmaW8vbWRldi9tZGV2X3ByaXZhdGUuaA0KPiA+IEBAIC0z
-NCw2ICszNCw3IEBAIHN0cnVjdCBtZGV2X2RldmljZSB7DQo+ID4gIAlzdHJ1Y3QgbGlzdF9oZWFk
-IG5leHQ7DQo+ID4gIAlzdHJ1Y3Qga29iamVjdCAqdHlwZV9rb2JqOw0KPiA+ICAJYm9vbCBhY3Rp
-dmU7DQo+ID4gKwlzdHJ1Y3QgZGV2aWNlICppb21tdV9kZXZpY2U7DQo+ID4gIH07DQo+ID4NClRo
-aXMgaXMgbm90IGEgcGVyZm9ybWFuY2UgcGF0aCwgYnV0IGl0IGlzIGEgZ29vZCBwcmFjdGljZSB0
-byBjcmVhdGUgbmF0dXJhbGx5IGFsaWduZWQvcGFja2VkIHN0cnVjdHVyZXMuDQpZb3Ugc2hvdWxk
-IGRlZmluZSBzdHJ1Y3QgZGV2aWNlICppb21tdV9kZXZpY2U7IGJlZm9yZSBib29sIGFjdGl2ZS4N
-Cg==
+This allows the default behaviour to be controlled by a kernel config
+option instead of changing the command line for the kernel to include
+"iommu.strict=0" on ARM64 where this is desired.
+
+This is similar to CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+
+Note: At present, intel_iommu, amd_iommu and s390_iommu use lazy mode as
+default, so there is no need to add code for them.
+
+Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/Kconfig | 14 ++++++++++++++
+ drivers/iommu/iommu.c |  5 +++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 6f07f3b21816c64..5daa110d0e83a07 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -85,6 +85,20 @@ config IOMMU_DEFAULT_PASSTHROUGH
+
+ 	  If unsure, say N here.
+
++config IOMMU_DMA_DEFAULT_LAZY_MODE
++	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
++	depends on IOMMU_API
++	help
++	  Support lazy mode, where for every IOMMU DMA unmap operation, the
++	  flush operation of IOTLB and the free operation of IOVA are deferred.
++	  They are only guaranteed to be done before the related IOVA will be
++	  reused. Removing the need to pass in kernel parameters through
++	  command line. For example, iommu.strict=0 on ARM64. If this is
++	  enabled, you can still disable with kernel parameters, such as
++	  iommu.strict=1 depending on the architecture.
++
++	  If unsure, say N here.
++
+ config OF_IOMMU
+        def_bool y
+        depends on OF && IOMMU_API
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 33a982e33716369..5acb98e79b5b32d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -43,7 +43,12 @@
+ #else
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
++
++#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
++static bool iommu_dma_strict __read_mostly;
++#else
+ static bool iommu_dma_strict __read_mostly = true;
++#endif
+
+ struct iommu_callback_data {
+ 	const struct iommu_ops *ops;
+--
+1.8.3
