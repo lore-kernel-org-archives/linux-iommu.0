@@ -1,14 +1,11 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v2 00/10] iommu/vt-d: Bounce buffer for untrusted devices
-Date: Tue, 26 Mar 2019 23:48:23 -0700
-Message-ID: <20190327064823.GA13309@infradead.org>
-References: <20190327063506.32564-1-baolu.lu@linux.intel.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: implement generic dma_map_ops for IOMMUs v2 [rebase + resend]
+Date: Wed, 27 Mar 2019 09:04:27 +0100
+Message-ID: <20190327080448.5500-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20190327063506.32564-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,16 +15,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 27, 2019 at 02:34:56PM +0800, Lu Baolu wrote:
->   - During the v1 review cycle, we discussed the possibility
->     of reusing swiotlb code to avoid code dumplication, but
->     we found the swiotlb implementations are not ready for the
->     use of bounce page pool.
->     https://lkml.org/lkml/2019/3/19/259
+Hi Robin,
 
-So make it ready.  You too can contribute to common code.  Robin
-also explicitly asked to make the bounce policy iommu-subsystem wide.
+please take a look at this series, which implements a completely generic
+set of dma_map_ops for IOMMU drivers.  This is done by taking the
+existing arm64 code, moving it to drivers/iommu and then massaging it
+so that it can also work for architectures with DMA remapping.  This
+should help future ports to support IOMMUs more easily, and also allow
+to remove various custom IOMMU dma_map_ops implementations, like Tom
+was planning to for the AMD one.
+
+A git tree is also available at:
+
+    git://git.infradead.org/users/hch/misc.git dma-iommu-ops.2
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops.2
+
+Changes since v1:
+ - only include other headers in dma-iommu.h if CONFIG_DMA_IOMMU is enabled
+ - keep using a scatterlist in iommu_dma_alloc
+ - split out mmap/sgtable fixes and move them early in the series
+ - updated a few commit logs
