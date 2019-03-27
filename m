@@ -1,8 +1,8 @@
 From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 5.0 056/262] iommu/vt-d: Disable ATS support on
-	untrusted devices
-Date: Wed, 27 Mar 2019 13:58:31 -0400
-Message-ID: <20190327180158.10245-56-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 085/262] iommu/io-pgtable-arm-v7s: Only
+	kmemleak_ignore L2 tables
+Date: Wed, 27 Mar 2019 13:59:00 -0400
+Message-ID: <20190327180158.10245-85-sashal@kernel.org>
 References: <20190327180158.10245-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,49 +19,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
-[ Upstream commit d8b8591054575f33237556c32762d54e30774d28 ]
+[ Upstream commit 032ebd8548c9d05e8d2bdc7a7ec2fe29454b0ad0 ]
 
-Commit fb58fdcd295b9 ("iommu/vt-d: Do not enable ATS for untrusted
-devices") disables ATS support on the devices which have been marked
-as untrusted. Unfortunately this is not enough to fix the DMA attack
-vulnerabiltiies because IOMMU driver allows translated requests as
-long as a device advertises the ATS capability. Hence a malicious
-peripheral device could use this to bypass IOMMU.
+L1 tables are allocated with __get_dma_pages, and therefore already
+ignored by kmemleak.
 
-This disables the ATS support on untrusted devices by clearing the
-internal per-device ATS mark. As the result, IOMMU driver will block
-any translated requests from any device marked as untrusted.
+Without this, the kernel would print this error message on boot,
+when the first L1 table is allocated:
 
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Suggested-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Suggested-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Fixes: fb58fdcd295b9 ("iommu/vt-d: Do not enable ATS for untrusted devices")
-Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+[    2.810533] kmemleak: Trying to color unknown object at 0xffffffd652388000 as Black
+[    2.818190] CPU: 5 PID: 39 Comm: kworker/5:0 Tainted: G S                4.19.16 #8
+[    2.831227] Workqueue: events deferred_probe_work_func
+[    2.836353] Call trace:
+...
+[    2.852532]  paint_ptr+0xa0/0xa8
+[    2.855750]  kmemleak_ignore+0x38/0x6c
+[    2.859490]  __arm_v7s_alloc_table+0x168/0x1f4
+[    2.863922]  arm_v7s_alloc_pgtable+0x114/0x17c
+[    2.868354]  alloc_io_pgtable_ops+0x3c/0x78
+...
+
+Fixes: e5fc9753b1a8314 ("iommu/io-pgtable: Add ARMv7 short descriptor support")
+Signed-off-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 3 ++-
+ drivers/iommu/io-pgtable-arm-v7s.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 78188bf7e90d..dbd6824dfffa 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2485,7 +2485,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index cec29bf45c9b..98a4a4a0dfb0 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -217,7 +217,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		if (dma != phys)
+ 			goto out_unmap;
+ 	}
+-	kmemleak_ignore(table);
++	if (lvl == 2)
++		kmemleak_ignore(table);
+ 	return table;
  
--		if (!pci_ats_disabled() &&
-+		if (!pdev->untrusted &&
-+		    !pci_ats_disabled() &&
- 		    ecap_dev_iotlb_support(iommu->ecap) &&
- 		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
- 		    dmar_find_matched_atsr_unit(pdev))
+ out_unmap:
 -- 
 2.19.1
