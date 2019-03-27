@@ -1,11 +1,14 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 1/1] iommu: Add config option to set lazy mode as default
-Date: Wed, 27 Mar 2019 23:00:30 +0800
-Message-ID: <20190327150030.11112-1-thunder.leizhen@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 0/3] PCIe Host request to reserve IOVA
+Date: Wed, 27 Mar 2019 15:02:21 +0000
+Message-ID: <c92e07d7-78b2-d4ec-bf1a-29070a9d4145@arm.com>
+References: <1548411231-27549-1-git-send-email-srinath.mannam@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1548411231-27549-1-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,66 +18,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, poza-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This allows the default behaviour to be controlled by a kernel config
-option instead of changing the command line for the kernel to include
-"iommu.strict=0" on ARM64 where this is desired.
+On 25/01/2019 10:13, Srinath Mannam wrote:
+> Few SOCs have limitation that their PCIe host can't allow few inbound
+> address ranges. Allowed inbound address ranges are listed in dma-ranges
+> DT property and this address ranges are required to do IOVA mapping.
+> Remaining address ranges have to be reserved in IOVA mapping.
+> 
+> PCIe Host driver of those SOCs has to list all address ranges which have
+> to reserve their IOVA address into PCIe host bridge resource entry list.
+> IOMMU framework will reserve these IOVAs while initializing IOMMU domain.
 
-This is similar to CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+FWIW I'm still only interested in solving this problem generically, 
+because in principle it's not specific to PCI, for PCI it's certainly 
+not specific to iproc, and either way it's not specific to DT. That 
+said, I don't care strongly enough to keep pushing back on this 
+implementation outright, since it's not something which couldn't be 
+cleaned up 'properly' in future.
 
-Note: At present, intel_iommu, amd_iommu and s390_iommu use lazy mode as
-default, so there is no need to add code for them.
+One general comment I'd make, though, is that AFAIK PCI has a concept of 
+inbound windows much more than it has a concept of gaps-between-windows, 
+so if the PCI layer is going to track anything it should probably be the 
+actual windows, and leave the DMA layer to invert them into the 
+reservations it cares about as it consumes the list. That way you can 
+also avoid the undocumented requirement for the firmware to keep the 
+ranges property sorted in the first place.
 
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/Kconfig | 14 ++++++++++++++
- drivers/iommu/iommu.c |  5 +++++
- 2 files changed, 19 insertions(+)
+Robin.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6f07f3b21816c64..5daa110d0e83a07 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -85,6 +85,20 @@ config IOMMU_DEFAULT_PASSTHROUGH
-
- 	  If unsure, say N here.
-
-+config IOMMU_DMA_DEFAULT_LAZY_MODE
-+	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
-+	depends on IOMMU_API
-+	help
-+	  Support lazy mode, where for every IOMMU DMA unmap operation, the
-+	  flush operation of IOTLB and the free operation of IOVA are deferred.
-+	  They are only guaranteed to be done before the related IOVA will be
-+	  reused. Removing the need to pass in kernel parameters through
-+	  command line. For example, iommu.strict=0 on ARM64. If this is
-+	  enabled, you can still disable with kernel parameters, such as
-+	  iommu.strict=1 depending on the architecture.
-+
-+	  If unsure, say N here.
-+
- config OF_IOMMU
-        def_bool y
-        depends on OF && IOMMU_API
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 33a982e33716369..5acb98e79b5b32d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -43,7 +43,12 @@
- #else
- static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
- #endif
-+
-+#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
-+static bool iommu_dma_strict __read_mostly;
-+#else
- static bool iommu_dma_strict __read_mostly = true;
-+#endif
-
- struct iommu_callback_data {
- 	const struct iommu_ops *ops;
---
-1.8.3
+> 
+> This patch set is based on Linux-5.0-rc2.
+> 
+> Changes from v2:
+>    - Patch set rebased to Linux-5.0-rc2
+> 
+> Changes from v1:
+>    - Addressed Oza review comments.
+> 
+> Srinath Mannam (3):
+>    PCI: Add dma-resv window list
+>    iommu/dma: Reserve IOVA for PCI host reserve address list
+>    PCI: iproc: Add dma reserve resources to host
+> 
+>   drivers/iommu/dma-iommu.c           |  8 ++++++
+>   drivers/pci/controller/pcie-iproc.c | 51 ++++++++++++++++++++++++++++++++++++-
+>   drivers/pci/probe.c                 |  3 +++
+>   include/linux/pci.h                 |  1 +
+>   4 files changed, 62 insertions(+), 1 deletion(-)
+> 
