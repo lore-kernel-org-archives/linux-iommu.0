@@ -1,7 +1,7 @@
 From: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
-Subject: [PATCH v1 2/3] arm64: dts: qcom: msm8998: Add PCIe SMMU node
-Date: Thu, 28 Mar 2019 18:05:10 +0100
-Message-ID: <82ab78ee-4a38-4eee-f064-272b6f964f17@free.fr>
+Subject: [PATCH v1 3/3] arm64: dts: qcom: msm8998: Add PCIe PHY and RC nodes
+Date: Thu, 28 Mar 2019 18:06:17 +0100
+Message-ID: <186f7ca2-84e2-a37e-79e6-f1fec8e25374@free.fr>
 References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,34 +22,97 @@ To: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Cc: Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-ANOC1 SMMU filters PCIe accesses.
+Add MSM8998 PCIe QMP PHY and PCIe root complex DT nodes.
 
 Signed-off-by: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
 ---
- arch/arm64/boot/dts/qcom/msm8998.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ arch/arm64/boot/dts/qcom/msm8998.dtsi | 78 +++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-index f9a922fdae75..5a1c0961b281 100644
+index 5a1c0961b281..9f979a51f679 100644
 --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
 +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-@@ -606,6 +606,21 @@
- 			#thermal-sensor-cells = <1>;
+@@ -621,6 +621,84 @@
+ 				<GIC_SPI 369 IRQ_TYPE_EDGE_RISING>;
  		};
  
-+		anoc1_smmu: arm,smmu@1680000 {
-+			compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
-+			reg = <0x01680000 0x10000>;
-+			#iommu-cells = <1>;
++		pcie0: pci@1c00000 {
++			compatible = "qcom,pcie-msm8996";
++			reg-names = "parf", "dbi", "elbi", "config";
++			reg =	<0x01c00000 0x2000>,
++				<0x1b000000 0xf1d>,
++				<0x1b000f20 0xa8>,
++				<0x1b100000 0x100000>;
++			device_type = "pci";
++			linux,pci-domain = <0>;
++			bus-range = <0x00 0xff>;
++			#address-cells = <3>;
++			#size-cells = <2>;
++			power-domains = <&gcc PCIE_0_GDSC>;
 +
-+			#global-interrupts = <0>;
-+			interrupts =
-+				<GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
-+				<GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
-+				<GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
-+				<GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
-+				<GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
-+				<GIC_SPI 369 IRQ_TYPE_EDGE_RISING>;
++			num-lanes = <1>;
++			phy-names = "pciephy";
++			phys = <&pciephy>;
++
++			ranges =
++			/*** downstream I/O ***/
++			<0x01000000 0x0 0x1b200000 0x1b200000 0x0 0x100000>,
++			/*** non-prefetchable memory ***/
++			<0x02000000 0x0 0x1b300000 0x1b300000 0x0 0xd00000>;
++
++			#interrupt-cells = <1>;
++			interrupt-names = "msi";
++			interrupts = <GIC_SPI 405 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-map-mask = <0 0 0 0x7>;
++			interrupt-map =
++				<0 0 0 1 &intc 0 135 IRQ_TYPE_LEVEL_HIGH>, /* int_a */
++				<0 0 0 2 &intc 0 136 IRQ_TYPE_LEVEL_HIGH>, /* int_b */
++				<0 0 0 3 &intc 0 138 IRQ_TYPE_LEVEL_HIGH>, /* int_c */
++				<0 0 0 4 &intc 0 139 IRQ_TYPE_LEVEL_HIGH>; /* int_d */
++
++			clock-names = "pipe", "bus_master", "bus_slave", "cfg", "aux";
++			clocks =
++				<&gcc GCC_PCIE_0_PIPE_CLK>,
++				<&gcc GCC_PCIE_0_MSTR_AXI_CLK>,
++				<&gcc GCC_PCIE_0_SLV_AXI_CLK>,
++				<&gcc GCC_PCIE_0_CFG_AHB_CLK>,
++				<&gcc GCC_PCIE_0_AUX_CLK>;
++
++			iommu-map = <0x100 &anoc1_smmu 0x1480 1>;
++
++			/* PCIe Fundamental Reset */
++			perst-gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
++		};
++
++		phy@1c06000 {
++			compatible = "qcom,msm8998-qmp-pcie-phy";
++			reg = <0x01c06000 0x18c>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges;
++
++			clock-names = "aux", "cfg_ahb", "ref";
++			clocks =
++				<&gcc GCC_PCIE_PHY_AUX_CLK>,
++				<&gcc GCC_PCIE_0_CFG_AHB_CLK>,
++				<&gcc GCC_PCIE_CLKREF_CLK>;
++
++			reset-names = "phy", "common";
++			resets = <&gcc GCC_PCIE_0_PHY_BCR>, <&gcc GCC_PCIE_PHY_BCR>;
++
++			vdda-phy-supply = <&vreg_l1a_0p875>;
++			vdda-pll-supply = <&vreg_l2a_1p2>;
++
++			pciephy: lane@1c06800 {
++				reg = <0x01c06200 0x128>, <0x01c06400 0x1fc>, <0x01c06800 0x20c>;
++				#phy-cells = <0>;
++
++				clock-names = "pipe0";
++				clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
++				clock-output-names = "pcie_0_pipe_clk_src";
++				#clock-cells = <0>;
++			};
 +		};
 +
  		tcsr_mutex_regs: syscon@1f40000 {
