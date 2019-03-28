@@ -1,236 +1,111 @@
-From: John Garry <john.garry@huawei.com>
-Subject: [PATCH] driver core: Postpone DMA tear-down until after devres release for probe failure
-Date: Thu, 28 Mar 2019 18:08:05 +0800
-Message-ID: <1553767685-27077-1-git-send-email-john.garry@huawei.com>
+From: Srinath Mannam via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v3 0/3] PCIe Host request to reserve IOVA
+Date: Thu, 28 Mar 2019 16:04:04 +0530
+Message-ID: <CABe79T7BC9AO3EF23=JjYwXCHDKX5mDYSPzHfpD_tLzX6gukHg@mail.gmail.com>
+References: <1548411231-27549-1-git-send-email-srinath.mannam@broadcom.com>
+	<c92e07d7-78b2-d4ec-bf1a-29070a9d4145@arm.com>
+Reply-To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: rafael@kernel.org, gregkh@linuxfoundation.org
-Cc: linuxarm@huawei.com, chenxiang66@hisilicon.com, robin.murphy@arm.com, geert@linux-m68k.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, robh@kernel.org, hch@lst.de, John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <c92e07d7-78b2-d4ec-bf1a-29070a9d4145-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: poza-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In commit 376991db4b64 ("driver core: Postpone DMA tear-down until after
-devres release"), we changed the ordering of tearing down the device DMA
-ops and releasing all the device's resources; this was because the DMA ops
-should be maintained until we release the device's managed DMA memories.
+Hi Robin,
 
-However, we have seen another crash on an arm64 system when a
-device driver probe fails:
+Thanks for your feedback. Please see my reply in line.
 
-  hisi_sas_v3_hw 0000:74:02.0: Adding to iommu group 2
-  scsi host1: hisi_sas_v3_hw
-  BUG: Bad page state in process swapper/0  pfn:313f5
-  page:ffff7e0000c4fd40 count:1 mapcount:0
-  mapping:0000000000000000 index:0x0
-  flags: 0xfffe00000001000(reserved)
-  raw: 0fffe00000001000 ffff7e0000c4fd48 ffff7e0000c4fd48
-0000000000000000
-  raw: 0000000000000000 0000000000000000 00000001ffffffff
-0000000000000000
-  page dumped because: PAGE_FLAGS_CHECK_AT_FREE flag(s) set
-  bad because of flags: 0x1000(reserved)
-  Modules linked in:
-  CPU: 49 PID: 1 Comm: swapper/0 Not tainted
-5.1.0-rc1-43081-g22d97fd-dirty #1433
-  Hardware name: Huawei D06/D06, BIOS Hisilicon D06 UEFI
-RC0 - V1.12.01 01/29/2019
-  Call trace:
-  dump_backtrace+0x0/0x118
-  show_stack+0x14/0x1c
-  dump_stack+0xa4/0xc8
-  bad_page+0xe4/0x13c
-  free_pages_check_bad+0x4c/0xc0
-  __free_pages_ok+0x30c/0x340
-  __free_pages+0x30/0x44
-  __dma_direct_free_pages+0x30/0x38
-  dma_direct_free+0x24/0x38
-  dma_free_attrs+0x9c/0xd8
-  dmam_release+0x20/0x28
-  release_nodes+0x17c/0x220
-  devres_release_all+0x34/0x54
-  really_probe+0xc4/0x2c8
-  driver_probe_device+0x58/0xfc
-  device_driver_attach+0x68/0x70
-  __driver_attach+0x94/0xdc
-  bus_for_each_dev+0x5c/0xb4
-  driver_attach+0x20/0x28
-  bus_add_driver+0x14c/0x200
-  driver_register+0x6c/0x124
-  __pci_register_driver+0x48/0x50
-  sas_v3_pci_driver_init+0x20/0x28
-  do_one_initcall+0x40/0x25c
-  kernel_init_freeable+0x2b8/0x3c0
-  kernel_init+0x10/0x100
-  ret_from_fork+0x10/0x18
-  Disabling lock debugging due to kernel taint
-  BUG: Bad page state in process swapper/0  pfn:313f6
-  page:ffff7e0000c4fd80 count:1 mapcount:0
-mapping:0000000000000000 index:0x0
-[   89.322983] flags: 0xfffe00000001000(reserved)
-  raw: 0fffe00000001000 ffff7e0000c4fd88 ffff7e0000c4fd88
-0000000000000000
-  raw: 0000000000000000 0000000000000000 00000001ffffffff
-0000000000000000
+On Wed, Mar 27, 2019 at 8:32 PM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+> On 25/01/2019 10:13, Srinath Mannam wrote:
+> > Few SOCs have limitation that their PCIe host can't allow few inbound
+> > address ranges. Allowed inbound address ranges are listed in dma-ranges
+> > DT property and this address ranges are required to do IOVA mapping.
+> > Remaining address ranges have to be reserved in IOVA mapping.
+> >
+> > PCIe Host driver of those SOCs has to list all address ranges which have
+> > to reserve their IOVA address into PCIe host bridge resource entry list.
+> > IOMMU framework will reserve these IOVAs while initializing IOMMU domain.
+>
+> FWIW I'm still only interested in solving this problem generically,
+> because in principle it's not specific to PCI, for PCI it's certainly
+> not specific to iproc, and either way it's not specific to DT. That
+> said, I don't care strongly enough to keep pushing back on this
+> implementation outright, since it's not something which couldn't be
+> cleaned up 'properly' in future.
+Iproc PCIe host controller supports inbound address translation
+feature to restrict access
+to allowed address ranges. so that allowed memory ranges need to
+program to controller.
+allowed address ranges information is passed to controller driver
+through dma-ranges DT property.
+This feature is specific to iproc PCIe controller, so that I think
+this change has to specific to iproc
+PCIe driver and DT.
+Here I followed the same way how PCI IO regions are reserved
+"iova_reserve_pci_windows". so that this
+change also specific to PCI.
+>
+> One general comment I'd make, though, is that AFAIK PCI has a concept of
+> inbound windows much more than it has a concept of gaps-between-windows,
+> so if the PCI layer is going to track anything it should probably be the
+> actual windows, and leave the DMA layer to invert them into the
+> reservations it cares about as it consumes the list. That way you can
+> also avoid the undocumented requirement for the firmware to keep the
+> ranges property sorted in the first place.
+This implementation has three parts.
+1. parsing dma-ranges and extract allowed and reserved address ranges.
+2. program allowed ranges to iproc PCIe controller.
+3. reserve list of reserved address ranges in IOMMU layer.
+#1 and #2 are done using "of_pci_dma_range_parser_init" in present
+iproc PCIe driver.
+so that, I listed reserve windows at the same place.
+#3 requires list of reserve windows so that I add new
+variable(dma_resv) to carry these
+reserve windows list to iommu layer from iproc driver layer.
+The reasons to not use DMA layer for parsing dma-ranges are,
+1. This feature is not generic for all SOCs.
+2. To avoid dam-ranges parsing in multiple places, already done in
+iproc pcie driver.
+3. Need to do modify standard DMA layer source code "of_dma_configure"
+4. required a carrier to pass reserved windows list from DMA layer to
+IOMMU layer.
+5. I followed existing PCIe IO regions reserve procedure done in IOMMU layer.
 
-The crash occurs for the same reason.
-
-In this case, on the really_probe() failure path, we are still clearing
-the DMA ops prior to releasing the device's managed memories.
-
-This patch fixes this issue by reordering the DMA ops teardown and the
-call to devres_release_all() on the failure path.
-
-Reported-by: Xiang Chen <chenxiang66@hisilicon.com>
-Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
----
-
-For convenience, here is the 2nd half of really_probe() now:
-
-	atomic_inc(&probe_count);
-	pr_debug("bus: '%s': %s: probing driver %s with device %s\n",
-		 drv->bus->name, __func__, drv->name, dev_name(dev));
-	WARN_ON(!list_empty(&dev->devres_head));
-
-re_probe:
-	dev->driver = drv;
-
-	/* If using pinctrl, bind pins now before probing */
-	ret = pinctrl_bind_pins(dev);
-	if (ret)
-		goto pinctrl_bind_failed;
-
-	if (dev->bus->dma_configure) {
-		ret = dev->bus->dma_configure(dev);
-		if (ret)
-			goto probe_failed;
-	}
-
-	if (driver_sysfs_add(dev)) {
-		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
-			__func__, dev_name(dev));
-		goto probe_failed;
-	}
-
-	if (dev->pm_domain && dev->pm_domain->activate) {
-		ret = dev->pm_domain->activate(dev);
-		if (ret)
-			goto probe_failed;
-	}
-
-	if (dev->bus->probe) {
-		ret = dev->bus->probe(dev);
-		if (ret)
-			goto probe_failed;
-	} else if (drv->probe) {
-		ret = drv->probe(dev);
-		if (ret)
-			goto probe_failed;
-	}
-
-	if (test_remove) {
-		test_remove = false;
-
-		if (dev->bus->remove)
-			dev->bus->remove(dev);
-		else if (drv->remove)
-			drv->remove(dev);
-
-		devres_release_all(dev);
-		driver_sysfs_remove(dev);
-		dev->driver = NULL;
-		dev_set_drvdata(dev, NULL);
-		if (dev->pm_domain && dev->pm_domain->dismiss)
-			dev->pm_domain->dismiss(dev);
-		pm_runtime_reinit(dev);
-
-		goto re_probe;
-	}
-
-	pinctrl_init_done(dev);
-
-	if (dev->pm_domain && dev->pm_domain->sync)
-		dev->pm_domain->sync(dev);
-
-	driver_bound(dev);
-	ret = 1;
-	pr_debug("bus: '%s': %s: bound device %s to driver %s\n",
-		 drv->bus->name, __func__, dev_name(dev), drv->name);
-	goto done;
-
-probe_failed:
-	if (dev->bus)
-		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
-pinctrl_bind_failed:
-	device_links_no_driver(dev);
-	devres_release_all(dev);
-	arch_teardown_dma_ops(dev);
-	driver_sysfs_remove(dev);
-	dev->driver = NULL;
-	dev_set_drvdata(dev, NULL);
-	if (dev->pm_domain && dev->pm_domain->dismiss)
-		dev->pm_domain->dismiss(dev);
-	pm_runtime_reinit(dev);
-	dev_pm_set_driver_flags(dev, 0);
-
-	switch (ret) {
-	case -EPROBE_DEFER:
-		/* Driver requested deferred probing */
-		dev_dbg(dev, "Driver %s requests probe deferral\n", drv->name);
-		driver_deferred_probe_add_trigger(dev, local_trigger_count);
-		break;
-	case -ENODEV:
-	case -ENXIO:
-		pr_debug("%s: probe of %s rejects match %d\n",
-			 drv->name, dev_name(dev), ret);
-		break;
-	default:
-		/* driver matched but the probe failed */
-		printk(KERN_WARNING
-		       "%s: probe of %s failed with error %d\n",
-		       drv->name, dev_name(dev), ret);
-	}
-	/*
-	 * Ignore errors returned by ->probe so that the next driver can try
-	 * its luck.
-	 */
-	ret = 0;
-done:
-	atomic_dec(&probe_count);
-	wake_up(&probe_waitqueue);
-	return ret;
-}
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index a823f469e53f..0df9b4461766 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -490,7 +490,7 @@ static int really_probe(struct device *dev, struct device_driver *drv)
- 	if (dev->bus->dma_configure) {
- 		ret = dev->bus->dma_configure(dev);
- 		if (ret)
--			goto dma_failed;
-+			goto probe_failed;
- 	}
- 
- 	if (driver_sysfs_add(dev)) {
-@@ -546,14 +546,13 @@ static int really_probe(struct device *dev, struct device_driver *drv)
- 	goto done;
- 
- probe_failed:
--	arch_teardown_dma_ops(dev);
--dma_failed:
- 	if (dev->bus)
- 		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
- 					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
- pinctrl_bind_failed:
- 	device_links_no_driver(dev);
- 	devres_release_all(dev);
-+	arch_teardown_dma_ops(dev);
- 	driver_sysfs_remove(dev);
- 	dev->driver = NULL;
- 	dev_set_drvdata(dev, NULL);
--- 
-2.17.1
+Regards,
+Srinath.
+>
+> Robin.
+>
+> >
+> > This patch set is based on Linux-5.0-rc2.
+> >
+> > Changes from v2:
+> >    - Patch set rebased to Linux-5.0-rc2
+> >
+> > Changes from v1:
+> >    - Addressed Oza review comments.
+> >
+> > Srinath Mannam (3):
+> >    PCI: Add dma-resv window list
+> >    iommu/dma: Reserve IOVA for PCI host reserve address list
+> >    PCI: iproc: Add dma reserve resources to host
+> >
+> >   drivers/iommu/dma-iommu.c           |  8 ++++++
+> >   drivers/pci/controller/pcie-iproc.c | 51 ++++++++++++++++++++++++++++++++++++-
+> >   drivers/pci/probe.c                 |  3 +++
+> >   include/linux/pci.h                 |  1 +
+> >   4 files changed, 62 insertions(+), 1 deletion(-)
+> >
