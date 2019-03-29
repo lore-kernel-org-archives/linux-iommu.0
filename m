@@ -1,81 +1,46 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 02/13] soc/fsl/bman: map FBPR area in the iommu
-Date: Fri, 29 Mar 2019 14:50:34 +0000
-Message-ID: <b747c418-a495-56e0-c106-a8ec8e82ccb9@arm.com>
-References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
- <20190329140014.8126-3-laurentiu.tudor@nxp.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/amd: Reserve exclusion range in iova-domain
+Date: Fri, 29 Mar 2019 15:51:01 +0100
+Message-ID: <20190329145101.GA27670@8bytes.org>
+References: <20190328104459.18589-1-joro@8bytes.org>
+ <3850c381-30d6-b2a3-d976-66939d8e612a@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190329140014.8126-3-laurentiu.tudor@nxp.com>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <3850c381-30d6-b2a3-d976-66939d8e612a@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: laurentiu.tudor@nxp.com, netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com, camelia.groza@nxp.com, leoyang.li@nxp.com
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net, linux-arm-kernel@lists.infradead.org
+To: Gary R Hook <ghook@amd.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 29/03/2019 14:00, laurentiu.tudor@nxp.com wrote:
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Hi Gary,
+
+On Thu, Mar 28, 2019 at 02:52:19PM +0000, Gary R Hook wrote:
+> On 3/28/19 5:44 AM, Joerg Roedel wrote:
+> > +		if (entry->prot & (1 << 2))
 > 
-> Add a one-to-one iommu mapping for bman private data memory (FBPR).
-> This is required for BMAN to work without faults behind an iommu.
+> Could we add #define IOMMU_WRITE_EXCL (1 << 2) to amd_iommu_types.h?
+
+Yes, I replace that magic number with a descriptive name.
+
+> The problem I see here is that if, for some untold reason, there is more 
+> than one exclusion range emitted, where only the last one wins in the 
+> hardware, we'd still end up with more than one range reserved in the 
+> IOVA tree. Clearly, this is extremely unlikely, but wouldn't we want to 
+> protect against that sort of misuse/mistake?
 > 
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> ---
->   drivers/soc/fsl/qbman/bman_ccsr.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/soc/fsl/qbman/bman_ccsr.c b/drivers/soc/fsl/qbman/bman_ccsr.c
-> index 7c3cc968053c..b209c79511bb 100644
-> --- a/drivers/soc/fsl/qbman/bman_ccsr.c
-> +++ b/drivers/soc/fsl/qbman/bman_ccsr.c
-> @@ -29,6 +29,7 @@
->    */
->   
->   #include "bman_priv.h"
-> +#include <linux/iommu.h>
->   
->   u16 bman_ip_rev;
->   EXPORT_SYMBOL(bman_ip_rev);
-> @@ -178,6 +179,7 @@ static int fsl_bman_probe(struct platform_device *pdev)
->   	int ret, err_irq;
->   	struct device *dev = &pdev->dev;
->   	struct device_node *node = dev->of_node;
-> +	struct iommu_domain *domain;
->   	struct resource *res;
->   	u16 id, bm_pool_cnt;
->   	u8 major, minor;
-> @@ -225,6 +227,15 @@ static int fsl_bman_probe(struct platform_device *pdev)
->   
->   	dev_dbg(dev, "Allocated FBPR 0x%llx 0x%zx\n", fbpr_a, fbpr_sz);
->   
-> +	/* Create an 1-to-1 iommu mapping for FBPR area */
-> +	domain = iommu_get_domain_for_dev(dev);
+> I could be missing something.
 
-If that's expected to be the default domain that you're grabbing, then 
-this is *incredibly* fragile. There's nothing to stop the IOVA that you 
-forcibly map from being automatically allocated later and causing some 
-other DMA mapping to fail noisily and unexpectedly. Furthermore, have 
-you tried this with "iommu.passthrough=1"?
+No, you are not, this could still be a problem. Until now it isn't,
+because this week was the first time I have every seen an AMD IOMMU
+system making use of exclusion ranges, and it doesn't have this problem.
 
-That said, I really don't understand what's going on here anyway :/
+But this problem has been in the code even before this patch and needs
+to be addressed separatly. I think it is the best option to cancel IOMMU
+initialization when the IVRS table defines conflicting exclusion ranges
+for a single IOMMU instance.
 
-As far as I can tell from qbman_init_private_mem(), fbpr_a comes from 
-dma_alloc_coherent() and thus would already be a mapped IOVA - isn't 
-this the stuff that Roy converted to nicely use shared-dma-pool regions 
-a while ago?
+Regards,
 
-Robin.
-
-> +	if (domain) {
-> +		ret = iommu_map(domain, fbpr_a, fbpr_a, fbpr_sz,
-> +				IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
-> +		if (ret)
-> +			dev_warn(dev, "failed to iommu_map() %d\n", ret);
-> +	}
-> +
->   	bm_set_memory(fbpr_a, fbpr_sz);
->   
->   	err_irq = platform_get_irq(pdev, 0);
-> 
+	Joerg
