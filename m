@@ -1,7 +1,7 @@
 From: laurentiu.tudor@nxp.com
-Subject: [PATCH 10/13] dpaa_eth: base dma mappings on the fman rx port
-Date: Fri, 29 Mar 2019 16:00:11 +0200
-Message-ID: <20190329140014.8126-11-laurentiu.tudor@nxp.com>
+Subject: [PATCH 12/13] dpaa_eth: fix iova handling for sg frames
+Date: Fri, 29 Mar 2019 16:00:13 +0200
+Message-ID: <20190329140014.8126-13-laurentiu.tudor@nxp.com>
 References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
@@ -12,62 +12,126 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-The dma transactions initiator is the rx fman port so that's the device
-that the dma mappings should be done. Previously the mappings were done
-through the MAC device which makes no sense because it's neither dma-able
-nor connected in any way to smmu.
+The driver relies on the no longer valid assumption that dma addresses
+(iovas) are identical to physical addressees and uses phys_to_virt() to
+make iova -> vaddr conversions. Fix this also for scatter-gather frames
+using the iova -> phys conversion function added in the previous patch.
+While at it, clean-up a redundant dpaa_bpid2pool() and pass the bp
+as parameter.
 
 Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 41 +++++++++++--------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 647e90e7434f..cdc7e6d83f77 100644
+index f17edc80dc37..daede7272768 100644
 --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2805,8 +2805,15 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
+@@ -1646,14 +1646,17 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
  
-+	mac_dev = dpaa_mac_dev_get(pdev);
-+	if (IS_ERR(mac_dev)) {
-+		dev_err(&pdev->dev, "dpaa_mac_dev_get() failed\n");
-+		err = PTR_ERR(mac_dev);
-+		goto probe_err;
-+	}
+ 	if (unlikely(qm_fd_get_format(fd) == qm_fd_sg)) {
+ 		nr_frags = skb_shinfo(skb)->nr_frags;
+-		dma_unmap_single(dev, addr,
+-				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
+-				 dma_dir);
+ 
+ 		/* The sgt buffer has been allocated with netdev_alloc_frag(),
+ 		 * it's from lowmem.
+ 		 */
+-		sgt = phys_to_virt(addr + qm_fd_get_offset(fd));
++		sgt = phys_to_virt(dpaa_iova_to_phys(dev,
++						     addr +
++						     qm_fd_get_offset(fd)));
 +
- 	/* device used for DMA mapping */
--	dev = pdev->dev.parent;
-+	dev = fman_port_get_device(mac_dev->port[RX]);
- 	err = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(40));
- 	if (err) {
- 		dev_err(dev, "dma_coerce_mask_and_coherent() failed\n");
-@@ -2831,13 +2838,6 @@ static int dpaa_eth_probe(struct platform_device *pdev)
++		dma_unmap_single(dev, addr,
++				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
++				 dma_dir);
  
- 	priv->msg_enable = netif_msg_init(debug, DPAA_MSG_DEFAULT);
+ 		/* sgt[0] is from lowmem, was dma_map_single()-ed */
+ 		dma_unmap_single(dev, qm_sg_addr(&sgt[0]),
+@@ -1668,7 +1671,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+ 		}
  
--	mac_dev = dpaa_mac_dev_get(pdev);
--	if (IS_ERR(mac_dev)) {
--		dev_err(dev, "dpaa_mac_dev_get() failed\n");
--		err = PTR_ERR(mac_dev);
--		goto free_netdev;
--	}
--
- 	/* If fsl_fm_max_frm is set to a higher value than the all-common 1500,
- 	 * we choose conservatively and let the user explicitly set a higher
- 	 * MTU via ifconfig. Otherwise, the user may end up with different MTUs
-@@ -2973,9 +2973,9 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 	qman_release_cgrid(priv->cgr_data.cgr.cgrid);
- free_dpaa_bps:
- 	dpaa_bps_free(priv);
--free_netdev:
- 	dev_set_drvdata(dev, NULL);
- 	free_netdev(net_dev);
-+probe_err:
+ 		/* Free the page frag that we allocated on Tx */
+-		skb_free_frag(phys_to_virt(addr));
++		skb_free_frag(skbh);
+ 	} else {
+ 		dma_unmap_single(dev, addr,
+ 				 skb_tail_pointer(skb) - (u8 *)skbh, dma_dir);
+@@ -1729,14 +1732,14 @@ static struct sk_buff *contig_fd_to_skb(const struct dpaa_priv *priv,
+  * The page fragment holding the S/G Table is recycled here.
+  */
+ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+-				    const struct qm_fd *fd)
++				    const struct qm_fd *fd,
++				    struct dpaa_bp *dpaa_bp,
++				    void *vaddr)
+ {
+ 	ssize_t fd_off = qm_fd_get_offset(fd);
+-	dma_addr_t addr = qm_fd_addr(fd);
+ 	const struct qm_sg_entry *sgt;
+ 	struct page *page, *head_page;
+-	struct dpaa_bp *dpaa_bp;
+-	void *vaddr, *sg_vaddr;
++	void *sg_vaddr;
+ 	int frag_off, frag_len;
+ 	struct sk_buff *skb;
+ 	dma_addr_t sg_addr;
+@@ -1745,7 +1748,6 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+ 	int *count_ptr;
+ 	int i;
  
- 	return err;
- }
+-	vaddr = phys_to_virt(addr);
+ 	WARN_ON(!IS_ALIGNED((unsigned long)vaddr, SMP_CACHE_BYTES));
+ 
+ 	/* Iterate through the SGT entries and add data buffers to the skb */
+@@ -1756,14 +1758,18 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+ 		WARN_ON(qm_sg_entry_is_ext(&sgt[i]));
+ 
+ 		sg_addr = qm_sg_addr(&sgt[i]);
+-		sg_vaddr = phys_to_virt(sg_addr);
+-		WARN_ON(!IS_ALIGNED((unsigned long)sg_vaddr,
+-				    SMP_CACHE_BYTES));
+ 
+ 		/* We may use multiple Rx pools */
+ 		dpaa_bp = dpaa_bpid2pool(sgt[i].bpid);
+-		if (!dpaa_bp)
++		if (!dpaa_bp) {
++			pr_info("%s: fail to get dpaa_bp for sg bpid %d\n",
++				__func__, sgt[i].bpid);
+ 			goto free_buffers;
++		}
++		sg_vaddr = phys_to_virt(dpaa_iova_to_phys(dpaa_bp->dev,
++							  sg_addr));
++		WARN_ON(!IS_ALIGNED((unsigned long)sg_vaddr,
++				    SMP_CACHE_BYTES));
+ 
+ 		count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
+ 		dma_unmap_single(dpaa_bp->dev, sg_addr, dpaa_bp->size,
+@@ -1835,10 +1841,11 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+ 	/* free all the SG entries */
+ 	for (i = 0; i < DPAA_SGT_MAX_ENTRIES ; i++) {
+ 		sg_addr = qm_sg_addr(&sgt[i]);
+-		sg_vaddr = phys_to_virt(sg_addr);
+-		skb_free_frag(sg_vaddr);
+ 		dpaa_bp = dpaa_bpid2pool(sgt[i].bpid);
+ 		if (dpaa_bp) {
++			sg_addr = dpaa_iova_to_phys(dpaa_bp->dev, sg_addr);
++			sg_vaddr = phys_to_virt(sg_addr);
++			skb_free_frag(sg_vaddr);
+ 			count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
+ 			(*count_ptr)--;
+ 		}
+@@ -2331,7 +2338,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+ 	if (likely(fd_format == qm_fd_contig))
+ 		skb = contig_fd_to_skb(priv, fd, dpaa_bp, vaddr);
+ 	else
+-		skb = sg_fd_to_skb(priv, fd);
++		skb = sg_fd_to_skb(priv, fd, dpaa_bp, vaddr);
+ 	if (!skb)
+ 		return qman_cb_dqrr_consume;
+ 
 -- 
 2.17.1
