@@ -1,76 +1,89 @@
-From: Gary R Hook <ghook@amd.com>
-Subject: Re: [PATCH v2] iommu/amd: Reserve exclusion range in iova-domain
-Date: Fri, 29 Mar 2019 16:00:43 +0000
-Message-ID: <f45932fe-a431-dfc3-95cd-6342214ec43e@amd.com>
-References: <20190329151037.19112-1-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.1-rc3
+Date: Fri, 29 Mar 2019 17:26:42 +0100
+Message-ID: <20190329162636.GA29901@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mP3DRpeJDSE+ciuQ"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190329151037.19112-1-joro@8bytes.org>
-Content-Language: en-US
-Content-ID: <2067C1A2C8870243B1AD1EE849546986@namprd12.prod.outlook.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMy8yOS8xOSAxMDoxMCBBTSwgSm9lcmcgUm9lZGVsIHdyb3RlOg0KPiBGcm9tOiBKb2VyZyBS
-b2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4NCj4gDQo+IElmIGEgZGV2aWNlIGhhcyBhbiBleGNsdXNp
-b24gcmFuZ2Ugc3BlY2lmaWVkIGluIHRoZSBJVlJTDQo+IHRhYmxlLCB0aGlzIHJlZ2lvbiBuZWVk
-cyB0byBiZSByZXNlcnZlZCBpbiB0aGUgaW92YS1kb21haW4NCj4gb2YgdGhhdCBkZXZpY2UuIFRo
-aXMgaGFzbid0IGhhcHBlbmVkIHVudGlsIG5vdyBhbmQgY2FuIGNhdXNlDQo+IGRhdGEgY29ycnVw
-dGlvbiBvbiBkYXRhIHRyYW5zZmVyZWQgd2l0aCB0aGVzZSBkZXZpY2VzLg0KPiANCj4gVHJlYXQg
-ZXhjbHVzaW9uIHJhbmdlcyBhcyByZXNlcnZlZCByZWdpb25zIGluIHRoZSBpb21tdS1jb3JlDQo+
-IHRvIGZpeCB0aGUgcHJvYmxlbS4NCg0KUmV2aWV3ZWQtYnk6IEdhcnkgUiBIb29rIDxnYXJ5Lmhv
-b2tAYW1kLmNvbT4NCg0KPiANCj4gRml4ZXM6IGJlMmEwMjJjMGRkMCAoJ3g4NiwgQU1EIElPTU1V
-OiBhZGQgZnVuY3Rpb25zIHRvIHBhcnNlIElPTU1VIG1lbW9yeSBtYXBwaW5nIHJlcXVpcmVtZW50
-cyBmb3IgZGV2aWNlcycpDQo+IFNpZ25lZC1vZmYtYnk6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBz
-dXNlLmRlPg0KPiAtLS0NCj4gICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jICAgICAgIHwgOSAr
-KysrKystLS0NCj4gICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgIHwgNyArKysrLS0t
-DQo+ICAgZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaCB8IDIgKysNCj4gICAzIGZpbGVz
-IGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11
-LmMNCj4gaW5kZXggMjFjYjA4OGQ2Njg3Li5mN2NkZDJhYjdmMTEgMTAwNjQ0DQo+IC0tLSBhL2Ry
-aXZlcnMvaW9tbXUvYW1kX2lvbW11LmMNCj4gKysrIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUu
-Yw0KPiBAQCAtMzE2OSwyMSArMzE2OSwyNCBAQCBzdGF0aWMgdm9pZCBhbWRfaW9tbXVfZ2V0X3Jl
-c3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ICAgCQlyZXR1cm47DQo+ICAgDQo+ICAg
-CWxpc3RfZm9yX2VhY2hfZW50cnkoZW50cnksICZhbWRfaW9tbXVfdW5pdHlfbWFwLCBsaXN0KSB7
-DQo+ICsJCWludCB0eXBlLCBwcm90ID0gMDsNCj4gICAJCXNpemVfdCBsZW5ndGg7DQo+IC0JCWlu
-dCBwcm90ID0gMDsNCj4gICANCj4gICAJCWlmIChkZXZpZCA8IGVudHJ5LT5kZXZpZF9zdGFydCB8
-fCBkZXZpZCA+IGVudHJ5LT5kZXZpZF9lbmQpDQo+ICAgCQkJY29udGludWU7DQo+ICAgDQo+ICsJ
-CXR5cGUgICA9IElPTU1VX1JFU1ZfRElSRUNUOw0KPiAgIAkJbGVuZ3RoID0gZW50cnktPmFkZHJl
-c3NfZW5kIC0gZW50cnktPmFkZHJlc3Nfc3RhcnQ7DQo+ICAgCQlpZiAoZW50cnktPnByb3QgJiBJ
-T01NVV9QUk9UX0lSKQ0KPiAgIAkJCXByb3QgfD0gSU9NTVVfUkVBRDsNCj4gICAJCWlmIChlbnRy
-eS0+cHJvdCAmIElPTU1VX1BST1RfSVcpDQo+ICAgCQkJcHJvdCB8PSBJT01NVV9XUklURTsNCj4g
-KwkJaWYgKGVudHJ5LT5wcm90ICYgSU9NTVVfVU5JVFlfTUFQX0ZMQUdfRVhDTF9SQU5HRSkNCj4g
-KwkJCS8qIEV4Y2x1c2lvbiByYW5nZSAqLw0KPiArCQkJdHlwZSA9IElPTU1VX1JFU1ZfUkVTRVJW
-RUQ7DQo+ICAgDQo+ICAgCQlyZWdpb24gPSBpb21tdV9hbGxvY19yZXN2X3JlZ2lvbihlbnRyeS0+
-YWRkcmVzc19zdGFydCwNCj4gLQkJCQkJCSBsZW5ndGgsIHByb3QsDQo+IC0JCQkJCQkgSU9NTVVf
-UkVTVl9ESVJFQ1QpOw0KPiArCQkJCQkJIGxlbmd0aCwgcHJvdCwgdHlwZSk7DQo+ICAgCQlpZiAo
-IXJlZ2lvbikgew0KPiAgIAkJCWRldl9lcnIoZGV2LCAiT3V0IG9mIG1lbW9yeSBhbGxvY2F0aW5n
-IGRtLXJlZ2lvbnNcbiIpOw0KPiAgIAkJCXJldHVybjsNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-aW9tbXUvYW1kX2lvbW11X2luaXQuYyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X2luaXQuYw0K
-PiBpbmRleCBmNzczNzkyZDc3ZmQuLjFiMTM3ODYxOWZjOSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
-cy9pb21tdS9hbWRfaW9tbXVfaW5pdC5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11
-X2luaXQuYw0KPiBAQCAtMjAxMyw2ICsyMDEzLDkgQEAgc3RhdGljIGludCBfX2luaXQgaW5pdF91
-bml0eV9tYXBfcmFuZ2Uoc3RydWN0IGl2bWRfaGVhZGVyICptKQ0KPiAgIAlpZiAoZSA9PSBOVUxM
-KQ0KPiAgIAkJcmV0dXJuIC1FTk9NRU07DQo+ICAgDQo+ICsJaWYgKG0tPmZsYWdzICYgSVZNRF9G
-TEFHX0VYQ0xfUkFOR0UpDQo+ICsJCWluaXRfZXhjbHVzaW9uX3JhbmdlKG0pOw0KPiArDQo+ICAg
-CXN3aXRjaCAobS0+dHlwZSkgew0KPiAgIAlkZWZhdWx0Og0KPiAgIAkJa2ZyZWUoZSk7DQo+IEBA
-IC0yMDU5LDkgKzIwNjIsNyBAQCBzdGF0aWMgaW50IF9faW5pdCBpbml0X21lbW9yeV9kZWZpbml0
-aW9ucyhzdHJ1Y3QgYWNwaV90YWJsZV9oZWFkZXIgKnRhYmxlKQ0KPiAgIA0KPiAgIAl3aGlsZSAo
-cCA8IGVuZCkgew0KPiAgIAkJbSA9IChzdHJ1Y3QgaXZtZF9oZWFkZXIgKilwOw0KPiAtCQlpZiAo
-bS0+ZmxhZ3MgJiBJVk1EX0ZMQUdfRVhDTF9SQU5HRSkNCj4gLQkJCWluaXRfZXhjbHVzaW9uX3Jh
-bmdlKG0pOw0KPiAtCQllbHNlIGlmIChtLT5mbGFncyAmIElWTURfRkxBR19VTklUWV9NQVApDQo+
-ICsJCWlmIChtLT5mbGFncyAmIChJVk1EX0ZMQUdfVU5JVFlfTUFQIHwgSVZNRF9GTEFHX0VYQ0xf
-UkFOR0UpKQ0KPiAgIAkJCWluaXRfdW5pdHlfbWFwX3JhbmdlKG0pOw0KPiAgIA0KPiAgIAkJcCAr
-PSBtLT5sZW5ndGg7DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV90eXBl
-cy5oIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaA0KPiBpbmRleCBlYWUwNzQxZjcy
-ZGMuLjg3OTY1ZTRkOTY0NyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVf
-dHlwZXMuaA0KPiArKysgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV90eXBlcy5oDQo+IEBAIC0z
-NzQsNiArMzc0LDggQEANCj4gICAjZGVmaW5lIElPTU1VX1BST1RfSVIgMHgwMQ0KPiAgICNkZWZp
-bmUgSU9NTVVfUFJPVF9JVyAweDAyDQo+ICAgDQo+ICsjZGVmaW5lIElPTU1VX1VOSVRZX01BUF9G
-TEFHX0VYQ0xfUkFOR0UJKDEgPDwgMikNCj4gKw0KPiAgIC8qIElPTU1VIGNhcGFiaWxpdGllcyAq
-Lw0KPiAgICNkZWZpbmUgSU9NTVVfQ0FQX0lPVExCICAgMjQNCj4gICAjZGVmaW5lIElPTU1VX0NB
-UF9OUENBQ0hFIDI2DQo+IA0KDQo=
+
+--mP3DRpeJDSE+ciuQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 8c2ffd9174779014c3fe1f96d9dc3641d9175f00:
+
+  Linux 5.1-rc2 (2019-03-24 14:02:26 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.1-rc3
+
+for you to fetch changes up to 8aafaaf2212192012f5bae305bb31cdf7681d777:
+
+  iommu/amd: Reserve exclusion range in iova-domain (2019-03-29 17:12:57 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.1-rc3
+
+Including:
+
+	- Fix a bug in the AMD IOMMU driver not handling exclusion ranges
+	  correctly. In fact the driver did not reserve these ranges for
+	  IOVA allocations, so that dma-handles could be allocated in an
+	  exclusion range, leading to data corruption. Exclusion ranges
+	  have not been used by any firmware up to now, so this issue
+	  remained undiscovered for quite some time.
+
+	- Fix wrong warning messages that the IOMMU core code prints
+	  when it tries to allocate the default domain for an iommu
+	  group and the driver does not support any of the default
+	  domain types (like Intel VT-d).
+
+----------------------------------------------------------------
+Joerg Roedel (2):
+      iommu: Don't print warning when IOMMU driver only supports unmanaged domains
+      iommu/amd: Reserve exclusion range in iova-domain
+
+ drivers/iommu/amd_iommu.c       | 9 ++++++---
+ drivers/iommu/amd_iommu_init.c  | 7 ++++---
+ drivers/iommu/amd_iommu_types.h | 2 ++
+ drivers/iommu/iommu.c           | 8 +++++---
+ 4 files changed, 17 insertions(+), 9 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--mP3DRpeJDSE+ciuQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAlyeRzwACgkQK/BELZcB
+GuM71g/8DR8/HcnbEjWjYEEeSRRreyOO+oKku8wW7khaK8+rQ3jjn9qQ/pVYaImv
+wZmuF4GDO51r+xZzjOxavKEYYHTrc3jvaK8JNcmVJzZKyOopm/F9Foy/sBrKgMXd
+JttxqISIM1zAE0G5Nvx+jyx4PIp5qyy8w+S9L1srooRHCi6WYaIDajIbx1sYhLtb
+cLUqk1whM24kBQFEAETidizoCczGGzmp7hKuTUMVIKyOyFETYcRUleITToVY18sY
+Spv/S2QzI/rx49Kb2D+AlEMy3RyIFO26eltOk8ecyCWf3TVgrwjLFc3pmv22Bq6u
+yoqSrpXcFilK2ZMef9ZWC8phtI5J3tSY9uAJAJdjCDx8tlkug2kD+IxrDXTYddrF
+1fSfpHogXLirVKvVTgaCCnNMKRZGA+UM5lLjDoMbhsKzNh22sAxslbYP/3GQVHPK
+TiKtRZGYKlHSIzn3yFbak7I8Kz8R6m+mOLPAf4WwCfFphINEX1K2ybYumVE9/MgS
+4Z+pVn28EcXnbDvCxJXoZdveSPo3dmEJAiEsWv2AFt4Rp4iifxo0/2NxP3NymBlD
+mM10O+SjHhLML6+jtQH6x8arJEvO9rdQtbtlvlJDVtlgH/ps5l8OS+FUSu14X7I9
+U1ViaI+lA68CsooAEohpDFC+66AyaboOoiaNzuy7hO2y3isOyKE=
+=ABZo
+-----END PGP SIGNATURE-----
+
+--mP3DRpeJDSE+ciuQ--
