@@ -1,46 +1,54 @@
-From: Joerg Roedel <joro@8bytes.org>
+From: Gary R Hook <ghook@amd.com>
 Subject: Re: [PATCH] iommu/amd: Reserve exclusion range in iova-domain
-Date: Fri, 29 Mar 2019 15:51:01 +0100
-Message-ID: <20190329145101.GA27670@8bytes.org>
+Date: Fri, 29 Mar 2019 15:06:41 +0000
+Message-ID: <241612a5-b041-e419-a3bc-e2a2e6ef1687@amd.com>
 References: <20190328104459.18589-1-joro@8bytes.org>
  <3850c381-30d6-b2a3-d976-66939d8e612a@amd.com>
+ <20190329145101.GA27670@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <3850c381-30d6-b2a3-d976-66939d8e612a@amd.com>
+In-Reply-To: <20190329145101.GA27670@8bytes.org>
+Content-Language: en-US
+Content-ID: <5FCFB7220A210641957EFD4281705B35@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Gary R Hook <ghook@amd.com>
+To: Joerg Roedel <joro@8bytes.org>
 Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Gary,
-
-On Thu, Mar 28, 2019 at 02:52:19PM +0000, Gary R Hook wrote:
-> On 3/28/19 5:44 AM, Joerg Roedel wrote:
-> > +		if (entry->prot & (1 << 2))
-> 
-> Could we add #define IOMMU_WRITE_EXCL (1 << 2) to amd_iommu_types.h?
-
-Yes, I replace that magic number with a descriptive name.
-
-> The problem I see here is that if, for some untold reason, there is more 
-> than one exclusion range emitted, where only the last one wins in the 
-> hardware, we'd still end up with more than one range reserved in the 
-> IOVA tree. Clearly, this is extremely unlikely, but wouldn't we want to 
-> protect against that sort of misuse/mistake?
-> 
-> I could be missing something.
-
-No, you are not, this could still be a problem. Until now it isn't,
-because this week was the first time I have every seen an AMD IOMMU
-system making use of exclusion ranges, and it doesn't have this problem.
-
-But this problem has been in the code even before this patch and needs
-to be addressed separatly. I think it is the best option to cancel IOMMU
-initialization when the IVRS table defines conflicting exclusion ranges
-for a single IOMMU instance.
-
-Regards,
-
-	Joerg
+T24gMy8yOS8xOSA5OjUxIEFNLCBKb2VyZyBSb2VkZWwgd3JvdGU6DQo+IEhpIEdhcnksDQo+IA0K
+PiBPbiBUaHUsIE1hciAyOCwgMjAxOSBhdCAwMjo1MjoxOVBNICswMDAwLCBHYXJ5IFIgSG9vayB3
+cm90ZToNCj4+IE9uIDMvMjgvMTkgNTo0NCBBTSwgSm9lcmcgUm9lZGVsIHdyb3RlOg0KPj4+ICsJ
+CWlmIChlbnRyeS0+cHJvdCAmICgxIDw8IDIpKQ0KPj4NCj4+IENvdWxkIHdlIGFkZCAjZGVmaW5l
+IElPTU1VX1dSSVRFX0VYQ0wgKDEgPDwgMikgdG8gYW1kX2lvbW11X3R5cGVzLmg/DQo+IA0KPiBZ
+ZXMsIEkgcmVwbGFjZSB0aGF0IG1hZ2ljIG51bWJlciB3aXRoIGEgZGVzY3JpcHRpdmUgbmFtZS4N
+Cg0KU3VwZXI7IHRoYW5rcy4NCg0KPj4gVGhlIHByb2JsZW0gSSBzZWUgaGVyZSBpcyB0aGF0IGlm
+LCBmb3Igc29tZSB1bnRvbGQgcmVhc29uLCB0aGVyZSBpcyBtb3JlDQo+PiB0aGFuIG9uZSBleGNs
+dXNpb24gcmFuZ2UgZW1pdHRlZCwgd2hlcmUgb25seSB0aGUgbGFzdCBvbmUgd2lucyBpbiB0aGUN
+Cj4+IGhhcmR3YXJlLCB3ZSdkIHN0aWxsIGVuZCB1cCB3aXRoIG1vcmUgdGhhbiBvbmUgcmFuZ2Ug
+cmVzZXJ2ZWQgaW4gdGhlDQo+PiBJT1ZBIHRyZWUuIENsZWFybHksIHRoaXMgaXMgZXh0cmVtZWx5
+IHVubGlrZWx5LCBidXQgd291bGRuJ3Qgd2Ugd2FudCB0bw0KPj4gcHJvdGVjdCBhZ2FpbnN0IHRo
+YXQgc29ydCBvZiBtaXN1c2UvbWlzdGFrZT8NCj4+DQo+PiBJIGNvdWxkIGJlIG1pc3Npbmcgc29t
+ZXRoaW5nLg0KPiANCj4gTm8sIHlvdSBhcmUgbm90LCB0aGlzIGNvdWxkIHN0aWxsIGJlIGEgcHJv
+YmxlbS4gVW50aWwgbm93IGl0IGlzbid0LA0KPiBiZWNhdXNlIHRoaXMgd2VlayB3YXMgdGhlIGZp
+cnN0IHRpbWUgSSBoYXZlIGV2ZXJ5IHNlZW4gYW4gQU1EIElPTU1VDQo+IHN5c3RlbSBtYWtpbmcg
+dXNlIG9mIGV4Y2x1c2lvbiByYW5nZXMsIGFuZCBpdCBkb2Vzbid0IGhhdmUgdGhpcyBwcm9ibGVt
+Lg0KPiANCj4gQnV0IHRoaXMgcHJvYmxlbSBoYXMgYmVlbiBpbiB0aGUgY29kZSBldmVuIGJlZm9y
+ZSB0aGlzIHBhdGNoIGFuZCBuZWVkcw0KPiB0byBiZSBhZGRyZXNzZWQgc2VwYXJhdGx5LiBJIHRo
+aW5rIGl0IGlzIHRoZSBiZXN0IG9wdGlvbiB0byBjYW5jZWwgSU9NTVUNCj4gaW5pdGlhbGl6YXRp
+b24gd2hlbiB0aGUgSVZSUyB0YWJsZSBkZWZpbmVzIGNvbmZsaWN0aW5nIGV4Y2x1c2lvbiByYW5n
+ZXMNCj4gZm9yIGEgc2luZ2xlIElPTU1VIGluc3RhbmNlLg0KDQpSZWFsbHk/IEludGVyZXN0aW5n
+LiBNYXkgSSBhc2sgd2hvLCBhcyBJJ3ZlIG5vdCBzZWVuIGl0IHlldCwgZWl0aGVyPw0KDQpUaGlz
+IGNoYW5nZSBhY2NvbXBsaXNoZXMgdGhlIGdvYWwgb2Ygc2V0dGluZyBleGNsdXNpb24gKyByZXNl
+cnZpbmcgdGhlIA0KSU9WQSByYW5nZSwgYW5kIGlzIHZlcmlmaWVkIHdpdGggdGVzdGluZz8gQ29v
+bC4gT25lIHdvbmRlcnMgaWYgdGhleSd2ZSANCmNvbnNpZGVyZWQgYSB1bml0eSByYW5nZT8NCg0K
+QWdyZWUgdGhhdCBhZGRyZXNzaW5nIHRoZSB1bmlxdWVuZXNzIGlzc3VlIHNlcGFyYXRlbHkgaXMg
+ZmluZS4gSSdkIA0KcHJvYmFibHkgcHJlZmVyICJmaXJzdCBvbmUgd2lucyIgdW50aWwgSU9WQSB0
+cmVlIGNsZWFuLXVwIGNvdWxkIGJlIA0KaW1wbGVtZW50ZWQgZm9yICJsYXN0IG9uZSB3aW5zIi4u
+Li4gYnV0IEknbSBzZWVpbmcgdGhhdCB0aGVyZSBhcmUgYXQgDQpsZWFzdCB0d28gc3BvdHMgaW4g
+dGhlIGNvZGUgdGhhdCBuZWVkIGF0dGVudGlvbi4gSSBtYXkgZ28gZXhwZXJpbWVudCANCndpdGgg
+dGhpcy4NCg0KQWxsIHRvbGQsIHRoaXMgaXMgcmVhbGx5IGFib3V0IGhhbmRsaW5nIGEgY29ybmVy
+IGNhc2UsIGFzIHRoZSBsaWtlbGlob29kIA0Kb2YgYSBCSU9TIHRyeWluZyB0byBzZXQgdXAgPjEg
+ZXhjbHVzaW9uIHJhbmdlcyBzZWVtcyBpbXByb2JhYmxlLCBpZiBub3QgDQppbXBvc3NpYmxlLg0K
+DQoNCmdyaA0K
