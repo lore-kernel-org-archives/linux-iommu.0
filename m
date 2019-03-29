@@ -1,110 +1,114 @@
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: Re: [PATCH v2] iommu/amd: Reserve exclusion range in iova-domain
-Date: Fri, 29 Mar 2019 11:18:46 -0700
-Message-ID: <20190329181846.jjo2wijxkibfs35m@cantor>
-References: <20190329151037.19112-1-joro@8bytes.org>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v1 2/3] arm64: dts: qcom: msm8998: Add PCIe SMMU node
+Date: Fri, 29 Mar 2019 18:29:21 +0000
+Message-ID: <5aa56120-b686-194b-36d6-8177b5749a19@arm.com>
+References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
+	<82ab78ee-4a38-4eee-f064-272b6f964f17@free.fr>
+	<e7c8137a-2408-a71a-f722-199a86a75d13@free.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190329151037.19112-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Gary R Hook <ghook@amd.com>, Joerg Roedel <jroedel@suse.de>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <e7c8137a-2408-a71a-f722-199a86a75d13-GANU6spQydw@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri Mar 29 19, Joerg Roedel wrote:
->From: Joerg Roedel <jroedel@suse.de>
->
->If a device has an exclusion range specified in the IVRS
->table, this region needs to be reserved in the iova-domain
->of that device. This hasn't happened until now and can cause
->data corruption on data transfered with these devices.
->
->Treat exclusion ranges as reserved regions in the iommu-core
->to fix the problem.
->
->Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
->Signed-off-by: Joerg Roedel <jroedel@suse.de>
->---
-> drivers/iommu/amd_iommu.c       | 9 ++++++---
-> drivers/iommu/amd_iommu_init.c  | 7 ++++---
-> drivers/iommu/amd_iommu_types.h | 2 ++
-> 3 files changed, 12 insertions(+), 6 deletions(-)
->
->diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->index 21cb088d6687..f7cdd2ab7f11 100644
->--- a/drivers/iommu/amd_iommu.c
->+++ b/drivers/iommu/amd_iommu.c
->@@ -3169,21 +3169,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
-> 		return;
->
-> 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
->+		int type, prot = 0;
-> 		size_t length;
->-		int prot = 0;
->
-> 		if (devid < entry->devid_start || devid > entry->devid_end)
-> 			continue;
->
->+		type   = IOMMU_RESV_DIRECT;
-> 		length = entry->address_end - entry->address_start;
-> 		if (entry->prot & IOMMU_PROT_IR)
-> 			prot |= IOMMU_READ;
-> 		if (entry->prot & IOMMU_PROT_IW)
-> 			prot |= IOMMU_WRITE;
->+		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
->+			/* Exclusion range */
->+			type = IOMMU_RESV_RESERVED;
->
-> 		region = iommu_alloc_resv_region(entry->address_start,
->-						 length, prot,
->-						 IOMMU_RESV_DIRECT);
->+						 length, prot, type);
-> 		if (!region) {
-> 			dev_err(dev, "Out of memory allocating dm-regions\n");
-> 			return;
->diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
->index f773792d77fd..1b1378619fc9 100644
->--- a/drivers/iommu/amd_iommu_init.c
->+++ b/drivers/iommu/amd_iommu_init.c
->@@ -2013,6 +2013,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
-> 	if (e == NULL)
-> 		return -ENOMEM;
->
->+	if (m->flags & IVMD_FLAG_EXCL_RANGE)
->+		init_exclusion_range(m);
->+
-> 	switch (m->type) {
-> 	default:
-> 		kfree(e);
->@@ -2059,9 +2062,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
->
-> 	while (p < end) {
-> 		m = (struct ivmd_header *)p;
->-		if (m->flags & IVMD_FLAG_EXCL_RANGE)
->-			init_exclusion_range(m);
->-		else if (m->flags & IVMD_FLAG_UNITY_MAP)
->+		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
-> 			init_unity_map_range(m);
->
-> 		p += m->length;
->diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
->index eae0741f72dc..87965e4d9647 100644
->--- a/drivers/iommu/amd_iommu_types.h
->+++ b/drivers/iommu/amd_iommu_types.h
->@@ -374,6 +374,8 @@
-> #define IOMMU_PROT_IR 0x01
-> #define IOMMU_PROT_IW 0x02
->
->+#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
->+
-> /* IOMMU capabilities */
-> #define IOMMU_CAP_IOTLB   24
-> #define IOMMU_CAP_NPCACHE 26
->-- 
->2.16.4
->
+On 29/03/2019 10:51, Marc Gonzalez wrote:
+> On 28/03/2019 18:05, Marc Gonzalez wrote:
+> 
+>> ANOC1 SMMU filters PCIe accesses.
+> 
+> I'm not sure this description is entirely accurate...
+> 
+> ANOC likely stands for "Application Network-On-Chip"
+> 
+> 
+>>   arch/arm64/boot/dts/qcom/msm8998.dtsi | 15 +++++++++++++++
+>>   1 file changed, 15 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+>> index f9a922fdae75..5a1c0961b281 100644
+>> --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+>> @@ -606,6 +606,21 @@
+>>   			#thermal-sensor-cells = <1>;
+>>   		};
+>>   
+>> +		anoc1_smmu: arm,smmu@1680000 {
+>> +			compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
+> 
+> Maybe I should instead use "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
+> and define "qcom,msm8998-smmu-v2" in
+> Documentation/devicetree/bindings/iommu/arm,smmu.txt ?
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Yes please.
+
+> (Would the Documentation change need to be in a separate patch?)
+
+That's generally preferred, yes.
+
+> 
+>> +			reg = <0x01680000 0x10000>;
+>> +			#iommu-cells = <1>;
+> 
+> I'm not sure about this property. IIRC, Robin said <0> is not valid,
+> but I don't have any iommus prop, only iommu-map.
+
+You have to join the dots between the various bindings a little, but the 
+iommu-base part of each iommu-map entry is an IOMMU specifier, and IOMMU 
+specifiers are #iommu-cells long.
+
+To cut a long story short, 1 is definitely appropriate, because 
+arm-smmu's definition of a 2-cell specifier wouldn't make much sense in 
+the iommu-map context (and the current code for parsing iommu-map 
+actually just assumes 1 anyway).
+
+>> +
+>> +			#global-interrupts = <0>;
+>> +			interrupts =
+>> +				<GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
+>> +				<GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
+>> +				<GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
+>> +				<GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
+>> +				<GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
+>> +				<GIC_SPI 369 IRQ_TYPE_EDGE_RISING>;
+>> +		};
+>> +
+> 
+> The rest of the node looks fairly straight-forward.
+
+You should probably have some "bus" and "iface" clocks too, per the 
+requirement of "qcom,smmu-v2". Maybe Vivek might know what's relevant 
+for MSM8998?
+
+> 
+> DT code was adapted from:
+> 
+> https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-8998.dtsi?h=LE.UM.1.3.r3.25#n18
+> 
+> I left out the so-called implementation-defined init:
+> 
+> https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-impl-defs-8998.dtsi?h=LE.UM.1.3.r3.25#n123
+> 
+> Should I try to merge this part in mainline?
+> (I don't have any documentation for it though.)
+
+"pls no :("
+
+I'm not sure what route the path takes from "DT describes the platform" 
+to get to "DT lists opaque register addresses and magic data to write 
+into them", but I imagine it might involve getting hit in the head along 
+the way.
+
+Robin.
