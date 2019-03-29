@@ -1,76 +1,250 @@
 From: laurentiu.tudor@nxp.com
-Subject: [PATCH 03/13] soc/fsl/qman: map FQD and PFDR areas in the iommu
-Date: Fri, 29 Mar 2019 16:00:04 +0200
-Message-ID: <20190329140014.8126-4-laurentiu.tudor@nxp.com>
+Subject: [PATCH 06/13] soc/fsl/qbman_portals: add APIs to retrieve the probing status
+Date: Fri, 29 Mar 2019 16:00:07 +0200
+Message-ID: <20190329140014.8126-7-laurentiu.tudor@nxp.com>
 References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com, camelia.groza@nxp.com, leoyang.li@nxp.com
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net, linux-arm-kernel@lists.infradead.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: davem@davemloft.net, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-Add a one-to-one iommu mapping for qman private data memory areas
-(FQD and PFDR). This is required for QMAN to work without faults
-behind an iommu.
+Add a couple of new APIs to check the probing status of the required
+cpu bound qman and bman portals:
+ 'int bman_portals_probed()' and 'int qman_portals_probed()'.
+They return the following values.
+ *  1 if qman/bman portals were all probed correctly
+ *  0 if qman/bman portals were not yet probed
+ * -1 if probing of qman/bman portals failed
+Portals are considered successful probed if no error occurred during
+the probing of any of the portals and if enough portals were probed
+to have one available for each cpu.
+The error handling paths were slightly rearranged in order to fit this
+new functionality without being too intrusive.
+Drivers that use qman/bman portal driver services are required to use
+these APIs before calling any functions exported by these drivers or
+otherwise they will crash the kernel.
+First user will be the dpaa1 ethernet driver, coming in a subsequent
+patch.
 
 Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 ---
- drivers/soc/fsl/qbman/qman_ccsr.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/soc/fsl/qbman/bman_portal.c | 22 ++++++++++++++++++----
+ drivers/soc/fsl/qbman/qman_portal.c | 23 +++++++++++++++++++----
+ include/soc/fsl/bman.h              |  8 ++++++++
+ include/soc/fsl/qman.h              |  9 +++++++++
+ 4 files changed, 54 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/soc/fsl/qbman/qman_ccsr.c b/drivers/soc/fsl/qbman/qman_ccsr.c
-index 12e414ca3b03..eec7700507e1 100644
---- a/drivers/soc/fsl/qbman/qman_ccsr.c
-+++ b/drivers/soc/fsl/qbman/qman_ccsr.c
-@@ -29,6 +29,7 @@
-  */
+diff --git a/drivers/soc/fsl/qbman/bman_portal.c b/drivers/soc/fsl/qbman/bman_portal.c
+index 2c95cf59f3e7..7819bc29936d 100644
+--- a/drivers/soc/fsl/qbman/bman_portal.c
++++ b/drivers/soc/fsl/qbman/bman_portal.c
+@@ -32,6 +32,7 @@
  
- #include "qman_priv.h"
-+#include <linux/iommu.h>
+ static struct bman_portal *affine_bportals[NR_CPUS];
+ static struct cpumask portal_cpus;
++static int __bman_portals_probed;
+ /* protect bman global registers and global data shared among portals */
+ static DEFINE_SPINLOCK(bman_lock);
  
- u16 qman_ip_rev;
- EXPORT_SYMBOL(qman_ip_rev);
-@@ -699,6 +700,7 @@ static int fsl_qman_probe(struct platform_device *pdev)
+@@ -87,6 +88,12 @@ static int bman_online_cpu(unsigned int cpu)
+ 	return 0;
+ }
+ 
++int bman_portals_probed(void)
++{
++	return __bman_portals_probed;
++}
++EXPORT_SYMBOL_GPL(bman_portals_probed);
++
+ static int bman_portal_probe(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
- 	struct device_node *node = dev->of_node;
-+	struct iommu_domain *domain;
- 	struct resource *res;
- 	int ret, err_irq;
- 	u16 id;
-@@ -778,6 +780,19 @@ static int fsl_qman_probe(struct platform_device *pdev)
+@@ -104,8 +111,10 @@ static int bman_portal_probe(struct platform_device *pdev)
  	}
- 	dev_dbg(dev, "Allocated PFDR 0x%llx 0x%zx\n", pfdr_a, pfdr_sz);
  
-+	/* Create an 1-to-1 iommu mapping for fqd and pfdr areas */
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (domain) {
-+		ret = iommu_map(domain, fqd_a, fqd_a, fqd_sz,
-+				IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
-+		if (ret)
-+			dev_warn(dev, "iommu_map(fqd) failed %d\n", ret);
-+		ret = iommu_map(domain, pfdr_a, pfdr_a, pfdr_sz,
-+				IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
-+		if (ret)
-+			dev_warn(dev, "iommu_map(pfdr) failed %d\n", ret);
+ 	pcfg = devm_kmalloc(dev, sizeof(*pcfg), GFP_KERNEL);
+-	if (!pcfg)
++	if (!pcfg) {
++		__bman_portals_probed = -1;
+ 		return -ENOMEM;
 +	}
+ 
+ 	pcfg->dev = dev;
+ 
+@@ -113,14 +122,14 @@ static int bman_portal_probe(struct platform_device *pdev)
+ 					     DPAA_PORTAL_CE);
+ 	if (!addr_phys[0]) {
+ 		dev_err(dev, "Can't get %pOF property 'reg::CE'\n", node);
+-		return -ENXIO;
++		goto err_ioremap1;
+ 	}
+ 
+ 	addr_phys[1] = platform_get_resource(pdev, IORESOURCE_MEM,
+ 					     DPAA_PORTAL_CI);
+ 	if (!addr_phys[1]) {
+ 		dev_err(dev, "Can't get %pOF property 'reg::CI'\n", node);
+-		return -ENXIO;
++		goto err_ioremap1;
+ 	}
+ 
+ 	pcfg->cpu = -1;
+@@ -128,7 +137,7 @@ static int bman_portal_probe(struct platform_device *pdev)
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq <= 0) {
+ 		dev_err(dev, "Can't get %pOF IRQ'\n", node);
+-		return -ENXIO;
++		goto err_ioremap1;
+ 	}
+ 	pcfg->irq = irq;
+ 
+@@ -156,6 +165,9 @@ static int bman_portal_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	cpumask_set_cpu(cpu, &portal_cpus);
++	if (!__bman_portals_probed &&
++	    cpumask_weight(&portal_cpus) == num_online_cpus())
++		__bman_portals_probed = 1;
+ 	spin_unlock(&bman_lock);
+ 	pcfg->cpu = cpu;
+ 
+@@ -175,6 +187,8 @@ static int bman_portal_probe(struct platform_device *pdev)
+ err_ioremap2:
+ 	memunmap(pcfg->addr_virt_ce);
+ err_ioremap1:
++	 __bman_portals_probed = -1;
 +
- 	ret = qman_init_ccsr(dev);
- 	if (ret) {
- 		dev_err(dev, "CCSR setup failed\n");
+ 	return -ENXIO;
+ }
+ 
+diff --git a/drivers/soc/fsl/qbman/qman_portal.c b/drivers/soc/fsl/qbman/qman_portal.c
+index bce56da2b01f..11ba6c77c0d6 100644
+--- a/drivers/soc/fsl/qbman/qman_portal.c
++++ b/drivers/soc/fsl/qbman/qman_portal.c
+@@ -39,6 +39,7 @@ EXPORT_SYMBOL(qman_dma_portal);
+ #define CONFIG_FSL_DPA_PIRQ_FAST  1
+ 
+ static struct cpumask portal_cpus;
++static int __qman_portals_probed;
+ /* protect qman global registers and global data shared among portals */
+ static DEFINE_SPINLOCK(qman_lock);
+ 
+@@ -221,6 +222,12 @@ static int qman_online_cpu(unsigned int cpu)
+ 	return 0;
+ }
+ 
++int qman_portals_probed(void)
++{
++	return __qman_portals_probed;
++}
++EXPORT_SYMBOL_GPL(qman_portals_probed);
++
+ static int qman_portal_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -240,8 +247,10 @@ static int qman_portal_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	pcfg = devm_kmalloc(dev, sizeof(*pcfg), GFP_KERNEL);
+-	if (!pcfg)
++	if (!pcfg) {
++		__qman_portals_probed = -1;
+ 		return -ENOMEM;
++	}
+ 
+ 	pcfg->dev = dev;
+ 
+@@ -249,19 +258,20 @@ static int qman_portal_probe(struct platform_device *pdev)
+ 					     DPAA_PORTAL_CE);
+ 	if (!addr_phys[0]) {
+ 		dev_err(dev, "Can't get %pOF property 'reg::CE'\n", node);
+-		return -ENXIO;
++		goto err_ioremap1;
+ 	}
+ 
+ 	addr_phys[1] = platform_get_resource(pdev, IORESOURCE_MEM,
+ 					     DPAA_PORTAL_CI);
+ 	if (!addr_phys[1]) {
+ 		dev_err(dev, "Can't get %pOF property 'reg::CI'\n", node);
+-		return -ENXIO;
++		goto err_ioremap1;
+ 	}
+ 
+ 	err = of_property_read_u32(node, "cell-index", &val);
+ 	if (err) {
+ 		dev_err(dev, "Can't get %pOF property 'cell-index'\n", node);
++		__qman_portals_probed = -1;
+ 		return err;
+ 	}
+ 	pcfg->channel = val;
+@@ -269,7 +279,7 @@ static int qman_portal_probe(struct platform_device *pdev)
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq <= 0) {
+ 		dev_err(dev, "Can't get %pOF IRQ\n", node);
+-		return -ENXIO;
++		goto err_ioremap1;
+ 	}
+ 	pcfg->irq = irq;
+ 
+@@ -314,6 +324,9 @@ static int qman_portal_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	cpumask_set_cpu(cpu, &portal_cpus);
++	if (!__qman_portals_probed &&
++	    cpumask_weight(&portal_cpus) == num_online_cpus())
++		__qman_portals_probed = 1;
+ 	spin_unlock(&qman_lock);
+ 	pcfg->cpu = cpu;
+ 
+@@ -338,6 +351,8 @@ static int qman_portal_probe(struct platform_device *pdev)
+ err_ioremap2:
+ 	memunmap(pcfg->addr_virt_ce);
+ err_ioremap1:
++	__qman_portals_probed = -1;
++
+ 	return -ENXIO;
+ }
+ 
+diff --git a/include/soc/fsl/bman.h b/include/soc/fsl/bman.h
+index 5b99cb2ea5ef..173e4049d963 100644
+--- a/include/soc/fsl/bman.h
++++ b/include/soc/fsl/bman.h
+@@ -133,5 +133,13 @@ int bman_acquire(struct bman_pool *pool, struct bm_buffer *bufs, u8 num);
+  * failed to probe or 0 if the bman driver did not probed yet.
+  */
+ int bman_is_probed(void);
++/**
++ * bman_portals_probed - Check if all cpu bound bman portals are probed
++ *
++ * Returns 1 if all the required cpu bound bman portals successfully probed,
++ * -1 if probe errors appeared or 0 if the bman portals did not yet finished
++ * probing.
++ */
++int bman_portals_probed(void);
+ 
+ #endif	/* __FSL_BMAN_H */
+diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
+index 5cc7af06c1ba..aa31c05a103a 100644
+--- a/include/soc/fsl/qman.h
++++ b/include/soc/fsl/qman.h
+@@ -1194,6 +1194,15 @@ int qman_release_cgrid(u32 id);
+  */
+ int qman_is_probed(void);
+ 
++/**
++ * qman_portals_probed - Check if all cpu bound qman portals are probed
++ *
++ * Returns 1 if all the required cpu bound qman portals successfully probed,
++ * -1 if probe errors appeared or 0 if the qman portals did not yet finished
++ * probing.
++ */
++int qman_portals_probed(void);
++
+ /**
+  * qman_dqrr_get_ithresh - Get coalesce interrupt threshold
+  * @portal: portal to get the value for
 -- 
 2.17.1
