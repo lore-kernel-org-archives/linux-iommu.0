@@ -1,56 +1,54 @@
-From: Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v1 2/3] arm64: dts: qcom: msm8998: Add PCIe SMMU node
-Date: Fri, 29 Mar 2019 13:42:37 -0600
-Message-ID: <19de4919-d765-b098-8d83-458567bb03bc@codeaurora.org>
-References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
-	<82ab78ee-4a38-4eee-f064-272b6f964f17@free.fr>
-	<e7c8137a-2408-a71a-f722-199a86a75d13@free.fr>
-	<5aa56120-b686-194b-36d6-8177b5749a19@arm.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [PATCH] x86/calgary: fix bitcast type warnings
+Date: Fri, 29 Mar 2019 15:32:07 -0600
+Message-ID: <3275e86a-5b12-29ff-9b1f-d8eba099ae98@deltatee.com>
+References: <20190328225925.241998-1-jannh@google.com>
+ <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
+ <CAG48ez3UE6cnA0TZQ-7DUnB_QWPFV04bJsv9oKXfgBtu=ugBLw@mail.gmail.com>
+ <CAG48ez13xg1oUiO_pyDHVbJkWRQdW4CoX7uGzoujyf4L6VB-dw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5aa56120-b686-194b-36d6-8177b5749a19-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAG48ez13xg1oUiO_pyDHVbJkWRQdW4CoX7uGzoujyf4L6VB-dw@mail.gmail.com>
+Content-Language: en-CA
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jann Horn <jannh@google.com>, Mukesh Ojha <mojha@codeaurora.org>, =?UTF-8?Q?Horia_Geant=c4=83?= <horia.geanta@nxp.com>
+Cc: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMy8yOS8yMDE5IDEyOjI5IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjkvMDMvMjAx
-OSAxMDo1MSwgTWFyYyBHb256YWxleiB3cm90ZToKPj4gT24gMjgvMDMvMjAxOSAxODowNSwgTWFy
-YyBHb256YWxleiB3cm90ZToKPj4+ICsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNnbG9i
-YWwtaW50ZXJydXB0cyA9IDwwPjsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVw
-dHMgPQo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8R0lDX1NQSSAzNjQgSVJR
-X1RZUEVfRURHRV9SSVNJTkc+LAo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8
-R0lDX1NQSSAzNjUgSVJRX1RZUEVfRURHRV9SSVNJTkc+LAo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCA8R0lDX1NQSSAzNjYgSVJRX1RZUEVfRURHRV9SSVNJTkc+LAo+Pj4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8R0lDX1NQSSAzNjcgSVJRX1RZUEVfRURHRV9S
-SVNJTkc+LAo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8R0lDX1NQSSAzNjgg
-SVJRX1RZUEVfRURHRV9SSVNJTkc+LAo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCA8R0lDX1NQSSAzNjkgSVJRX1RZUEVfRURHRV9SSVNJTkc+Owo+Pj4gK8KgwqDCoMKgwqDCoMKg
-IH07Cj4+PiArCj4+Cj4+IFRoZSByZXN0IG9mIHRoZSBub2RlIGxvb2tzIGZhaXJseSBzdHJhaWdo
-dC1mb3J3YXJkLgo+IAo+IFlvdSBzaG91bGQgcHJvYmFibHkgaGF2ZSBzb21lICJidXMiIGFuZCAi
-aWZhY2UiIGNsb2NrcyB0b28sIHBlciB0aGUgCj4gcmVxdWlyZW1lbnQgb2YgInFjb20sc21tdS12
-MiIuIE1heWJlIFZpdmVrIG1pZ2h0IGtub3cgd2hhdCdzIHJlbGV2YW50IAo+IGZvciBNU004OTk4
-Pwo+IAoKVGhlIGNsb2NrcyB0aGF0IHBvd2VyIHRoZSBTTU1VIGFyZSBub3QgdW5kZXIgdGhlIGNv
-bnRyb2wgb2YgTGludXgsIGJ1dCAKcmF0aGVyIHRoZSBSUE0gc3Vic3lzdGVtLiAgVGhlIGludGVy
-ZmFjZSB0byB0aGVtIGlzIHRoZSBpbnRlcmNvbm5lY3QgCmZyYW1ld29yaywgd2hpY2ggZG9lcyBu
-b3QgeWV0IHN1cHBvcnQgODk5OCBwZXIgbXkgdW5kZXJzdGFuZGluZy4gIFRoZSAKY2xvY2tzIHdp
-bGwgYWx3YXlzIGJlIG9uLCBidXQgcGVyaGFwcyBub3QgYXQgdGhlIGJlc3QgcmF0ZSBmb3IgCnBl
-cmZvcm1hbmNlIHVudGlsIHRoZSBpbnRlcmNvbm5lY3QgaXMgYnJvdWdodCBpbi4KCi0tIApKZWZm
-cmV5IEh1Z28KUXVhbGNvbW0gRGF0YWNlbnRlciBUZWNobm9sb2dpZXMgYXMgYW4gYWZmaWxpYXRl
-IG9mIFF1YWxjb21tIApUZWNobm9sb2dpZXMsIEluYy4KUXVhbGNvbW0gVGVjaG5vbG9naWVzLCBJ
-bmMuIGlzIGEgbWVtYmVyIG9mIHRoZQpDb2RlIEF1cm9yYSBGb3J1bSwgYSBMaW51eCBGb3VuZGF0
-aW9uIENvbGxhYm9yYXRpdmUgUHJvamVjdC4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+
+
+On 2019-03-29 3:19 p.m., Jann Horn wrote:
+>>> Can the existing api's not be used here like iowrite64be/ioread64be/ or
+>>> similar variant in "include/asm-generic/io.h"
+>>
+>> Oooh! I didn't realize that those exist. I'll change that and send a v2.
+Yes, they are very new! It took me a while to get those patches in as it
+is a bit more complicated than it seems.
+
+> Actually, that doesn't work at the moment on x86-64:
+> 
+> include/asm-generic/io.h only defines these things if
+> CONFIG_GENERIC_IOMAP isn't defined; and X86 unconditionally defines
+> it. With CONFIG_GENERIC_IOMAP set, these functions are provided by
+> include/asm-generic/iomap.h.
+
+For CONFIG_GENERIC_IOMAP, lib/iomap.c provides _lo_hi and _hi_lo
+implementations seeing the pio regions must be emulated with 32bit
+operations and we have to define the order.
+
+> The definitions for these are in lib/iomap.c, except that there are no
+> definitions for ioread64be() and iowrite64be(); if you try to use
+> them, you get linker errors.
+
+Some platforms implement these but most do not. If I recall correctly
+only powerpc does.
+
+If you want to use 64 bit operations in a portable fashion, you should
+include "linux/io-64-nonatomic-hi-lo.h" or
+"linux/io-64-nonatomic-lo-hi.h", depending on weather you want the lower
+bits or the higher bits to be written or read first in cases where an
+atomic operation is not available.
+
+Logan
