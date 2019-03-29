@@ -1,100 +1,43 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v2] iommu/amd: Reserve exclusion range in iova-domain
-Date: Fri, 29 Mar 2019 16:10:37 +0100
-Message-ID: <20190329151037.19112-1-joro@8bytes.org>
+From: Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+Subject: Re: [PATCH 13/13] dpaa_eth: fix SG frame cleanup
+Date: Fri, 29 Mar 2019 15:25:22 +0000
+Message-ID: <702d2baba6c2c131c1ae59607943eb8f8813d250.camel@infinera.com>
+References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
+         <20190329140014.8126-14-laurentiu.tudor@nxp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190329140014.8126-14-laurentiu.tudor@nxp.com>
+Content-Language: en-US
+Content-ID: <9880E2E7CACB754F879567570CD6CEF2@namprd10.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Gary R Hook <ghook@amd.com>, Joerg Roedel <jroedel@suse.de>
+To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "madalin.bucur@nxp.com" <madalin.bucur@nxp.com>, "leoyang.li@nxp.com" <leoyang.li@nxp.com>, "laurentiu.tudor@nxp.com" <laurentiu.tudor@nxp.com>, "roy.pledge@nxp.com" <roy.pledge@nxp.com>, "camelia.groza@nxp.com" <camelia.groza@nxp.com>
+Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
-
-If a device has an exclusion range specified in the IVRS
-table, this region needs to be reserved in the iova-domain
-of that device. This hasn't happened until now and can cause
-data corruption on data transfered with these devices.
-
-Treat exclusion ranges as reserved regions in the iommu-core
-to fix the problem.
-
-Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/amd_iommu.c       | 9 ++++++---
- drivers/iommu/amd_iommu_init.c  | 7 ++++---
- drivers/iommu/amd_iommu_types.h | 2 ++
- 3 files changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 21cb088d6687..f7cdd2ab7f11 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3169,21 +3169,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 		return;
- 
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
-+		int type, prot = 0;
- 		size_t length;
--		int prot = 0;
- 
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
- 
-+		type   = IOMMU_RESV_DIRECT;
- 		length = entry->address_end - entry->address_start;
- 		if (entry->prot & IOMMU_PROT_IR)
- 			prot |= IOMMU_READ;
- 		if (entry->prot & IOMMU_PROT_IW)
- 			prot |= IOMMU_WRITE;
-+		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
-+			/* Exclusion range */
-+			type = IOMMU_RESV_RESERVED;
- 
- 		region = iommu_alloc_resv_region(entry->address_start,
--						 length, prot,
--						 IOMMU_RESV_DIRECT);
-+						 length, prot, type);
- 		if (!region) {
- 			dev_err(dev, "Out of memory allocating dm-regions\n");
- 			return;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index f773792d77fd..1b1378619fc9 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2013,6 +2013,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
- 	if (e == NULL)
- 		return -ENOMEM;
- 
-+	if (m->flags & IVMD_FLAG_EXCL_RANGE)
-+		init_exclusion_range(m);
-+
- 	switch (m->type) {
- 	default:
- 		kfree(e);
-@@ -2059,9 +2062,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
- 
- 	while (p < end) {
- 		m = (struct ivmd_header *)p;
--		if (m->flags & IVMD_FLAG_EXCL_RANGE)
--			init_exclusion_range(m);
--		else if (m->flags & IVMD_FLAG_UNITY_MAP)
-+		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
- 			init_unity_map_range(m);
- 
- 		p += m->length;
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index eae0741f72dc..87965e4d9647 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -374,6 +374,8 @@
- #define IOMMU_PROT_IR 0x01
- #define IOMMU_PROT_IW 0x02
- 
-+#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
-+
- /* IOMMU capabilities */
- #define IOMMU_CAP_IOTLB   24
- #define IOMMU_CAP_NPCACHE 26
--- 
-2.16.4
+DQpTaG91bGQgdGhpcyBvbmUgZ28gc3RhYmxlIDQuMTQvNC4xOSB0b28/DQoNCk9uIEZyaSwgMjAx
+OS0wMy0yOSBhdCAxNjowMCArMDIwMCwgbGF1cmVudGl1LnR1ZG9yQG54cC5jb20gd3JvdGU6DQo+
+IA0KPiBGcm9tOiBMYXVyZW50aXUgVHVkb3IgPGxhdXJlbnRpdS50dWRvckBueHAuY29tPg0KPiAN
+Cj4gRml4IGlzc3VlIHdpdGggdGhlIGVudHJ5IGluZGV4aW5nIGluIHRoZSBzZyBmcmFtZSBjbGVh
+bnVwIGNvZGUgYmVpbmcNCj4gb2ZmLWJ5LTEuIFRoaXMgcHJvYmxlbSBzaG93ZWQgdXAgd2hlbiBk
+b2luZyBzb21lIGJhc2ljIGlwZXJmIHRlc3RzIGFuZA0KPiBtYW5pZmVzdGVkIGluIHRyYWZmaWMg
+Y29taW5nIHRvIGEgaGFsdC4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8
+bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+IEFja2VkLWJ5OiBNYWRhbGluIEJ1Y3VyIDxtYWRh
+bGluLmJ1Y3VyQG54cC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNj
+YWxlL2RwYWEvZHBhYV9ldGguYyB8IDIgKy0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlv
+bigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L2ZyZWVzY2FsZS9kcGFhL2RwYWFfZXRoLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVl
+c2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+IGluZGV4IGRhZWRlNzI3Mjc2OC4uNDA0MjBlZGM5Y2U2
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFh
+X2V0aC5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9kcGFhL2RwYWFf
+ZXRoLmMNCj4gQEAgLTE2NjMsNyArMTY2Myw3IEBAIHN0YXRpYyBzdHJ1Y3Qgc2tfYnVmZiAqZHBh
+YV9jbGVhbnVwX3R4X2ZkKGNvbnN0IHN0cnVjdCBkcGFhX3ByaXYgKnByaXYsDQo+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIHFtX3NnX2VudHJ5X2dldF9sZW4oJnNndFswXSksIGRt
+YV9kaXIpOw0KPiANCj4gICAgICAgICAgICAgICAgIC8qIHJlbWFpbmluZyBwYWdlcyB3ZXJlIG1h
+cHBlZCB3aXRoIHNrYl9mcmFnX2RtYV9tYXAoKSAqLw0KPiAtICAgICAgICAgICAgICAgZm9yIChp
+ID0gMTsgaSA8IG5yX2ZyYWdzOyBpKyspIHsNCj4gKyAgICAgICAgICAgICAgIGZvciAoaSA9IDE7
+IGkgPD0gbnJfZnJhZ3M7IGkrKykgew0KPiAgICAgICAgICAgICAgICAgICAgICAgICBXQVJOX09O
+KHFtX3NnX2VudHJ5X2lzX2V4dCgmc2d0W2ldKSk7DQo+IA0KPiAgICAgICAgICAgICAgICAgICAg
+ICAgICBkbWFfdW5tYXBfcGFnZShkZXYsIHFtX3NnX2FkZHIoJnNndFtpXSksDQo+IC0tDQo+IDIu
+MTcuMQ0KPiANCg0K
