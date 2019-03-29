@@ -1,36 +1,122 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 00/10] iommu/vt-d: Bounce buffer for untrusted devices
-Date: Fri, 29 Mar 2019 10:33:02 +0800
-Message-ID: <f1d6340e-88d8-3286-2f23-44094563c1c7@linux.intel.com>
-References: <20190327063506.32564-1-baolu.lu@linux.intel.com>
- <20190327064823.GA13309@infradead.org>
- <04b41eb3-5584-5c7d-5f5e-7c6f28a19b50@linux.intel.com>
- <20190328161134.GA27879@infradead.org>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v3 1/1] iommu: Add config option to set lazy mode as default
+Date: Fri, 29 Mar 2019 10:54:23 +0800
+Message-ID: <20190329025423.15484-1-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190328161134.GA27879@infradead.org>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>, S390 <linux-s390@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+This allows the default behaviour to be controlled by a kernel config
+option instead of changing the command line for the kernel to include
+"iommu.strict=0" on ARM64 where this is desired.
 
-On 3/29/19 12:11 AM, Christoph Hellwig wrote:
-> On Thu, Mar 28, 2019 at 02:33:04PM +0800, Lu Baolu wrote:
->> For the swiotlb APIs, I am thinking about keeping current APIs untouched
->> and adding below new ones for bounce page.
-> 
-> In the lon run I'd like tow avoid duplicate APIs, especially as the
-> current low-level swiotlb APIs only two callers.  But please go ahead
-> with the new APIs for now, I will try to see if we can do something
-> on top later.
-> 
+This is similar to CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
 
-Sure.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ arch/s390/pci/pci_dma.c        |  4 ++++
+ drivers/iommu/Kconfig          | 15 +++++++++++++++
+ drivers/iommu/amd_iommu_init.c |  6 +++++-
+ drivers/iommu/intel-iommu.c    |  4 ++++
+ drivers/iommu/iommu.c          |  5 +++++
+ 5 files changed, 33 insertions(+), 1 deletion(-)
 
-Best regards,
-Lu Baolu
+diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+index 9e52d1527f71495..d05e8c3820793c5 100644
+--- a/arch/s390/pci/pci_dma.c
++++ b/arch/s390/pci/pci_dma.c
+@@ -17,7 +17,11 @@
+ 
+ static struct kmem_cache *dma_region_table_cache;
+ static struct kmem_cache *dma_page_table_cache;
++#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
+ static int s390_iommu_strict;
++#else
++static int s390_iommu_strict = 1;
++#endif
+ 
+ static int zpci_refresh_global(struct zpci_dev *zdev)
+ {
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 6f07f3b21816c64..ed5206a2d316599 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -85,6 +85,21 @@ config IOMMU_DEFAULT_PASSTHROUGH
+ 
+ 	  If unsure, say N here.
+ 
++config IOMMU_DMA_DEFAULT_LAZY_MODE
++	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
++	depends on IOMMU_API
++	default y
++	help
++	  Support lazy mode, where for every IOMMU DMA unmap operation, the
++	  flush operation of IOTLB and the free operation of IOVA are deferred.
++	  They are only guaranteed to be done before the related IOVA will be
++	  reused. Removing the need to pass in kernel parameters through
++	  command line. For example, iommu.strict=0 on ARM64. If this is
++	  enabled, you can still disable with kernel parameters, such as
++	  iommu.strict=1 depending on the architecture.
++
++	  If unsure, say N here.
++
+ config OF_IOMMU
+        def_bool y
+        depends on OF && IOMMU_API
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index f773792d77fd533..a30805c2f77199c 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -166,7 +166,11 @@ struct ivmd_header {
+ 					   to handle */
+ LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
+ 					   we find in ACPI */
+-bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
++#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
++bool amd_iommu_unmap_flush;
++#else
++bool amd_iommu_unmap_flush = true;	/* flush on every unmap */
++#endif
+ 
+ LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
+ 					   system */
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 28cb713d728ceef..560191a9342b2b8 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -362,7 +362,11 @@ static int domain_detach_iommu(struct dmar_domain *domain,
+ 
+ static int dmar_map_gfx = 1;
+ static int dmar_forcedac;
++#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
+ static int intel_iommu_strict;
++#else
++static int intel_iommu_strict = 1;
++#endif
+ static int intel_iommu_superpage = 1;
+ static int intel_iommu_sm;
+ static int iommu_identity_mapping;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 33a982e33716369..5acb98e79b5b32d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -43,7 +43,12 @@
+ #else
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
++
++#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
++static bool iommu_dma_strict __read_mostly;
++#else
+ static bool iommu_dma_strict __read_mostly = true;
++#endif
+ 
+ struct iommu_callback_data {
+ 	const struct iommu_ops *ops;
+-- 
+1.8.3
