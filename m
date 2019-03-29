@@ -1,54 +1,100 @@
-From: Gary R Hook <ghook@amd.com>
-Subject: Re: [PATCH] iommu/amd: Reserve exclusion range in iova-domain
-Date: Fri, 29 Mar 2019 15:06:41 +0000
-Message-ID: <241612a5-b041-e419-a3bc-e2a2e6ef1687@amd.com>
-References: <20190328104459.18589-1-joro@8bytes.org>
- <3850c381-30d6-b2a3-d976-66939d8e612a@amd.com>
- <20190329145101.GA27670@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH v2] iommu/amd: Reserve exclusion range in iova-domain
+Date: Fri, 29 Mar 2019 16:10:37 +0100
+Message-ID: <20190329151037.19112-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190329145101.GA27670@8bytes.org>
-Content-Language: en-US
-Content-ID: <5FCFB7220A210641957EFD4281705B35@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Gary R Hook <ghook@amd.com>, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMy8yOS8xOSA5OjUxIEFNLCBKb2VyZyBSb2VkZWwgd3JvdGU6DQo+IEhpIEdhcnksDQo+IA0K
-PiBPbiBUaHUsIE1hciAyOCwgMjAxOSBhdCAwMjo1MjoxOVBNICswMDAwLCBHYXJ5IFIgSG9vayB3
-cm90ZToNCj4+IE9uIDMvMjgvMTkgNTo0NCBBTSwgSm9lcmcgUm9lZGVsIHdyb3RlOg0KPj4+ICsJ
-CWlmIChlbnRyeS0+cHJvdCAmICgxIDw8IDIpKQ0KPj4NCj4+IENvdWxkIHdlIGFkZCAjZGVmaW5l
-IElPTU1VX1dSSVRFX0VYQ0wgKDEgPDwgMikgdG8gYW1kX2lvbW11X3R5cGVzLmg/DQo+IA0KPiBZ
-ZXMsIEkgcmVwbGFjZSB0aGF0IG1hZ2ljIG51bWJlciB3aXRoIGEgZGVzY3JpcHRpdmUgbmFtZS4N
-Cg0KU3VwZXI7IHRoYW5rcy4NCg0KPj4gVGhlIHByb2JsZW0gSSBzZWUgaGVyZSBpcyB0aGF0IGlm
-LCBmb3Igc29tZSB1bnRvbGQgcmVhc29uLCB0aGVyZSBpcyBtb3JlDQo+PiB0aGFuIG9uZSBleGNs
-dXNpb24gcmFuZ2UgZW1pdHRlZCwgd2hlcmUgb25seSB0aGUgbGFzdCBvbmUgd2lucyBpbiB0aGUN
-Cj4+IGhhcmR3YXJlLCB3ZSdkIHN0aWxsIGVuZCB1cCB3aXRoIG1vcmUgdGhhbiBvbmUgcmFuZ2Ug
-cmVzZXJ2ZWQgaW4gdGhlDQo+PiBJT1ZBIHRyZWUuIENsZWFybHksIHRoaXMgaXMgZXh0cmVtZWx5
-IHVubGlrZWx5LCBidXQgd291bGRuJ3Qgd2Ugd2FudCB0bw0KPj4gcHJvdGVjdCBhZ2FpbnN0IHRo
-YXQgc29ydCBvZiBtaXN1c2UvbWlzdGFrZT8NCj4+DQo+PiBJIGNvdWxkIGJlIG1pc3Npbmcgc29t
-ZXRoaW5nLg0KPiANCj4gTm8sIHlvdSBhcmUgbm90LCB0aGlzIGNvdWxkIHN0aWxsIGJlIGEgcHJv
-YmxlbS4gVW50aWwgbm93IGl0IGlzbid0LA0KPiBiZWNhdXNlIHRoaXMgd2VlayB3YXMgdGhlIGZp
-cnN0IHRpbWUgSSBoYXZlIGV2ZXJ5IHNlZW4gYW4gQU1EIElPTU1VDQo+IHN5c3RlbSBtYWtpbmcg
-dXNlIG9mIGV4Y2x1c2lvbiByYW5nZXMsIGFuZCBpdCBkb2Vzbid0IGhhdmUgdGhpcyBwcm9ibGVt
-Lg0KPiANCj4gQnV0IHRoaXMgcHJvYmxlbSBoYXMgYmVlbiBpbiB0aGUgY29kZSBldmVuIGJlZm9y
-ZSB0aGlzIHBhdGNoIGFuZCBuZWVkcw0KPiB0byBiZSBhZGRyZXNzZWQgc2VwYXJhdGx5LiBJIHRo
-aW5rIGl0IGlzIHRoZSBiZXN0IG9wdGlvbiB0byBjYW5jZWwgSU9NTVUNCj4gaW5pdGlhbGl6YXRp
-b24gd2hlbiB0aGUgSVZSUyB0YWJsZSBkZWZpbmVzIGNvbmZsaWN0aW5nIGV4Y2x1c2lvbiByYW5n
-ZXMNCj4gZm9yIGEgc2luZ2xlIElPTU1VIGluc3RhbmNlLg0KDQpSZWFsbHk/IEludGVyZXN0aW5n
-LiBNYXkgSSBhc2sgd2hvLCBhcyBJJ3ZlIG5vdCBzZWVuIGl0IHlldCwgZWl0aGVyPw0KDQpUaGlz
-IGNoYW5nZSBhY2NvbXBsaXNoZXMgdGhlIGdvYWwgb2Ygc2V0dGluZyBleGNsdXNpb24gKyByZXNl
-cnZpbmcgdGhlIA0KSU9WQSByYW5nZSwgYW5kIGlzIHZlcmlmaWVkIHdpdGggdGVzdGluZz8gQ29v
-bC4gT25lIHdvbmRlcnMgaWYgdGhleSd2ZSANCmNvbnNpZGVyZWQgYSB1bml0eSByYW5nZT8NCg0K
-QWdyZWUgdGhhdCBhZGRyZXNzaW5nIHRoZSB1bmlxdWVuZXNzIGlzc3VlIHNlcGFyYXRlbHkgaXMg
-ZmluZS4gSSdkIA0KcHJvYmFibHkgcHJlZmVyICJmaXJzdCBvbmUgd2lucyIgdW50aWwgSU9WQSB0
-cmVlIGNsZWFuLXVwIGNvdWxkIGJlIA0KaW1wbGVtZW50ZWQgZm9yICJsYXN0IG9uZSB3aW5zIi4u
-Li4gYnV0IEknbSBzZWVpbmcgdGhhdCB0aGVyZSBhcmUgYXQgDQpsZWFzdCB0d28gc3BvdHMgaW4g
-dGhlIGNvZGUgdGhhdCBuZWVkIGF0dGVudGlvbi4gSSBtYXkgZ28gZXhwZXJpbWVudCANCndpdGgg
-dGhpcy4NCg0KQWxsIHRvbGQsIHRoaXMgaXMgcmVhbGx5IGFib3V0IGhhbmRsaW5nIGEgY29ybmVy
-IGNhc2UsIGFzIHRoZSBsaWtlbGlob29kIA0Kb2YgYSBCSU9TIHRyeWluZyB0byBzZXQgdXAgPjEg
-ZXhjbHVzaW9uIHJhbmdlcyBzZWVtcyBpbXByb2JhYmxlLCBpZiBub3QgDQppbXBvc3NpYmxlLg0K
-DQoNCmdyaA0K
+From: Joerg Roedel <jroedel@suse.de>
+
+If a device has an exclusion range specified in the IVRS
+table, this region needs to be reserved in the iova-domain
+of that device. This hasn't happened until now and can cause
+data corruption on data transfered with these devices.
+
+Treat exclusion ranges as reserved regions in the iommu-core
+to fix the problem.
+
+Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu.c       | 9 ++++++---
+ drivers/iommu/amd_iommu_init.c  | 7 ++++---
+ drivers/iommu/amd_iommu_types.h | 2 ++
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 21cb088d6687..f7cdd2ab7f11 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3169,21 +3169,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 		return;
+ 
+ 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
++		int type, prot = 0;
+ 		size_t length;
+-		int prot = 0;
+ 
+ 		if (devid < entry->devid_start || devid > entry->devid_end)
+ 			continue;
+ 
++		type   = IOMMU_RESV_DIRECT;
+ 		length = entry->address_end - entry->address_start;
+ 		if (entry->prot & IOMMU_PROT_IR)
+ 			prot |= IOMMU_READ;
+ 		if (entry->prot & IOMMU_PROT_IW)
+ 			prot |= IOMMU_WRITE;
++		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
++			/* Exclusion range */
++			type = IOMMU_RESV_RESERVED;
+ 
+ 		region = iommu_alloc_resv_region(entry->address_start,
+-						 length, prot,
+-						 IOMMU_RESV_DIRECT);
++						 length, prot, type);
+ 		if (!region) {
+ 			dev_err(dev, "Out of memory allocating dm-regions\n");
+ 			return;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index f773792d77fd..1b1378619fc9 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2013,6 +2013,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+ 	if (e == NULL)
+ 		return -ENOMEM;
+ 
++	if (m->flags & IVMD_FLAG_EXCL_RANGE)
++		init_exclusion_range(m);
++
+ 	switch (m->type) {
+ 	default:
+ 		kfree(e);
+@@ -2059,9 +2062,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+ 
+ 	while (p < end) {
+ 		m = (struct ivmd_header *)p;
+-		if (m->flags & IVMD_FLAG_EXCL_RANGE)
+-			init_exclusion_range(m);
+-		else if (m->flags & IVMD_FLAG_UNITY_MAP)
++		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
+ 			init_unity_map_range(m);
+ 
+ 		p += m->length;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index eae0741f72dc..87965e4d9647 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -374,6 +374,8 @@
+ #define IOMMU_PROT_IR 0x01
+ #define IOMMU_PROT_IW 0x02
+ 
++#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
++
+ /* IOMMU capabilities */
+ #define IOMMU_CAP_IOTLB   24
+ #define IOMMU_CAP_NPCACHE 26
+-- 
+2.16.4
