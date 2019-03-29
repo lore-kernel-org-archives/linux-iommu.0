@@ -1,89 +1,56 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.1-rc3
-Date: Fri, 29 Mar 2019 17:26:42 +0100
-Message-ID: <20190329162636.GA29901@8bytes.org>
+From: Jann Horn <jannh@google.com>
+Subject: Re: [PATCH] x86/calgary: fix bitcast type warnings
+Date: Fri, 29 Mar 2019 17:48:38 +0100
+Message-ID: <CAG48ez3UE6cnA0TZQ-7DUnB_QWPFV04bJsv9oKXfgBtu=ugBLw@mail.gmail.com>
+References: <20190328225925.241998-1-jannh@google.com> <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mP3DRpeJDSE+ciuQ"
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Mukesh Ojha <mojha@codeaurora.org>
+Cc: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, Mar 29, 2019 at 9:19 AM Mukesh Ojha <mojha@codeaurora.org> wrote:
+> On 3/29/2019 4:29 AM, Jann Horn wrote:
+> > The sparse checker attempts to ensure that all conversions between
+> > fixed-endianness numbers and numbers with native endianness are explicit.
+> > However, the calgary code reads and writes big-endian numbers from/to IO
+> > memory using {read,write}{l,q}(), which return native-endian numbers.
+> >
+> > This could be addressed by putting __force casts all over the place, but
+> > that would kind of defeat the point of the warning. Instead, create new
+> > helpers {read,write}{l,q}_be() for big-endian IO that convert from/to
+> > native endianness.
+> >
+> > Most of this patch is a straightforward conversion; the following parts
+> > aren't just mechanical replacement:
+> >
+> >   - ->tar_val is now a native-endian number instead of big-endian
+> >   - calioc2_handle_quirks() did `cpu_to_be32(readl(target))` when it
+> >     intended to do `be32_to_cpu(readl(target))` (but that has no actual
+> >     effects outside of type warnings)
+> >
+> > This gets rid of 108 lines of sparse warnings.
+> >
+> > Signed-off-by: Jann Horn <jannh@google.com>
+> > ---
+> > compile-tested only
+> >
+> >   arch/x86/kernel/pci-calgary_64.c | 108 ++++++++++++++++++-------------
+> >   1 file changed, 64 insertions(+), 44 deletions(-)
+> >
+> > diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
+> > index c70720f61a34..36cd66d940fb 100644
+> > --- a/arch/x86/kernel/pci-calgary_64.c
+> > +++ b/arch/x86/kernel/pci-calgary_64.c
+> > @@ -534,6 +534,26 @@ static inline int is_cal_pci_dev(unsigned short device)
+> >       return (is_calgary(device) || is_calioc2(device));
+> >   }
+>
+>
+> Can the existing api's not be used here like iowrite64be/ioread64be/ or
+> similar variant in "include/asm-generic/io.h"
 
---mP3DRpeJDSE+ciuQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit 8c2ffd9174779014c3fe1f96d9dc3641d9175f00:
-
-  Linux 5.1-rc2 (2019-03-24 14:02:26 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.1-rc3
-
-for you to fetch changes up to 8aafaaf2212192012f5bae305bb31cdf7681d777:
-
-  iommu/amd: Reserve exclusion range in iova-domain (2019-03-29 17:12:57 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.1-rc3
-
-Including:
-
-	- Fix a bug in the AMD IOMMU driver not handling exclusion ranges
-	  correctly. In fact the driver did not reserve these ranges for
-	  IOVA allocations, so that dma-handles could be allocated in an
-	  exclusion range, leading to data corruption. Exclusion ranges
-	  have not been used by any firmware up to now, so this issue
-	  remained undiscovered for quite some time.
-
-	- Fix wrong warning messages that the IOMMU core code prints
-	  when it tries to allocate the default domain for an iommu
-	  group and the driver does not support any of the default
-	  domain types (like Intel VT-d).
-
-----------------------------------------------------------------
-Joerg Roedel (2):
-      iommu: Don't print warning when IOMMU driver only supports unmanaged domains
-      iommu/amd: Reserve exclusion range in iova-domain
-
- drivers/iommu/amd_iommu.c       | 9 ++++++---
- drivers/iommu/amd_iommu_init.c  | 7 ++++---
- drivers/iommu/amd_iommu_types.h | 2 ++
- drivers/iommu/iommu.c           | 8 +++++---
- 4 files changed, 17 insertions(+), 9 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---mP3DRpeJDSE+ciuQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAlyeRzwACgkQK/BELZcB
-GuM71g/8DR8/HcnbEjWjYEEeSRRreyOO+oKku8wW7khaK8+rQ3jjn9qQ/pVYaImv
-wZmuF4GDO51r+xZzjOxavKEYYHTrc3jvaK8JNcmVJzZKyOopm/F9Foy/sBrKgMXd
-JttxqISIM1zAE0G5Nvx+jyx4PIp5qyy8w+S9L1srooRHCi6WYaIDajIbx1sYhLtb
-cLUqk1whM24kBQFEAETidizoCczGGzmp7hKuTUMVIKyOyFETYcRUleITToVY18sY
-Spv/S2QzI/rx49Kb2D+AlEMy3RyIFO26eltOk8ecyCWf3TVgrwjLFc3pmv22Bq6u
-yoqSrpXcFilK2ZMef9ZWC8phtI5J3tSY9uAJAJdjCDx8tlkug2kD+IxrDXTYddrF
-1fSfpHogXLirVKvVTgaCCnNMKRZGA+UM5lLjDoMbhsKzNh22sAxslbYP/3GQVHPK
-TiKtRZGYKlHSIzn3yFbak7I8Kz8R6m+mOLPAf4WwCfFphINEX1K2ybYumVE9/MgS
-4Z+pVn28EcXnbDvCxJXoZdveSPo3dmEJAiEsWv2AFt4Rp4iifxo0/2NxP3NymBlD
-mM10O+SjHhLML6+jtQH6x8arJEvO9rdQtbtlvlJDVtlgH/ps5l8OS+FUSu14X7I9
-U1ViaI+lA68CsooAEohpDFC+66AyaboOoiaNzuy7hO2y3isOyKE=
-=ABZo
------END PGP SIGNATURE-----
-
---mP3DRpeJDSE+ciuQ--
+Oooh! I didn't realize that those exist. I'll change that and send a v2.
