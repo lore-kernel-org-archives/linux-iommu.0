@@ -1,34 +1,56 @@
-From: Logan Gunthorpe <logang@deltatee.com>
+From: Jann Horn <jannh@google.com>
 Subject: Re: [PATCH] x86/calgary: fix bitcast type warnings
-Date: Fri, 29 Mar 2019 15:43:23 -0600
-Message-ID: <6a41d1f8-4be6-40d6-e30d-71abf70f4468@deltatee.com>
-References: <20190328225925.241998-1-jannh@google.com>
- <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
- <CAG48ez3UE6cnA0TZQ-7DUnB_QWPFV04bJsv9oKXfgBtu=ugBLw@mail.gmail.com>
- <CAG48ez13xg1oUiO_pyDHVbJkWRQdW4CoX7uGzoujyf4L6VB-dw@mail.gmail.com>
- <3275e86a-5b12-29ff-9b1f-d8eba099ae98@deltatee.com>
- <CAG48ez1e=vHZqRp7=rQCvOjJnHjQtR5wQKZ69jOAZChto7RDCA@mail.gmail.com>
+Date: Fri, 29 Mar 2019 22:45:21 +0100
+Message-ID: <CAG48ez01TR7xBRgdAyvoHBjttn-ffr-8KBS8sJ904TDm4FLH+Q@mail.gmail.com>
+References: <20190328225925.241998-1-jannh@google.com> <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAG48ez1e=vHZqRp7=rQCvOjJnHjQtR5wQKZ69jOAZChto7RDCA@mail.gmail.com>
-Content-Language: en-CA
+In-Reply-To: <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jann Horn <jannh@google.com>
-Cc: Mukesh Ojha <mojha@codeaurora.org>, =?UTF-8?Q?Horia_Geant=c4=83?= <horia.geanta@nxp.com>, Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>
+To: Mukesh Ojha <mojha@codeaurora.org>
+Cc: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>, Logan Gunthorpe <logang@deltatee.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, Mar 29, 2019 at 9:19 AM Mukesh Ojha <mojha@codeaurora.org> wrote:
+> On 3/29/2019 4:29 AM, Jann Horn wrote:
+> > The sparse checker attempts to ensure that all conversions between
+> > fixed-endianness numbers and numbers with native endianness are explicit.
+> > However, the calgary code reads and writes big-endian numbers from/to IO
+> > memory using {read,write}{l,q}(), which return native-endian numbers.
+> >
+> > This could be addressed by putting __force casts all over the place, but
+> > that would kind of defeat the point of the warning. Instead, create new
+> > helpers {read,write}{l,q}_be() for big-endian IO that convert from/to
+> > native endianness.
+> >
+> > Most of this patch is a straightforward conversion; the following parts
+> > aren't just mechanical replacement:
+> >
+> >   - ->tar_val is now a native-endian number instead of big-endian
+> >   - calioc2_handle_quirks() did `cpu_to_be32(readl(target))` when it
+> >     intended to do `be32_to_cpu(readl(target))` (but that has no actual
+> >     effects outside of type warnings)
+> >
+> > This gets rid of 108 lines of sparse warnings.
+> >
+> > Signed-off-by: Jann Horn <jannh@google.com>
+> > ---
+> > compile-tested only
+> >
+> >   arch/x86/kernel/pci-calgary_64.c | 108 ++++++++++++++++++-------------
+> >   1 file changed, 64 insertions(+), 44 deletions(-)
+> >
+> > diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
+> > index c70720f61a34..36cd66d940fb 100644
+> > --- a/arch/x86/kernel/pci-calgary_64.c
+> > +++ b/arch/x86/kernel/pci-calgary_64.c
+> > @@ -534,6 +534,26 @@ static inline int is_cal_pci_dev(unsigned short device)
+> >       return (is_calgary(device) || is_calioc2(device));
+> >   }
+>
+>
+> Can the existing api's not be used here like iowrite64be/ioread64be/ or
+> similar variant in "include/asm-generic/io.h"
 
-
-On 2019-03-29 3:40 p.m., Jann Horn wrote:
-> So what is the right thing to do in the context of
-> arch/x86/kernel/pci-calgary_64.c? That code wants to perform MMIO with
-> endianness conversion, and these accesses are always performed as
-> MMIO. Using the non-atomic 64-bit I/O helpers for this would be kind
-> of awkward, since the accesses would never actually be split...
-
-Well, if you know you're only ever doing MMIO, you'd probably just want
-to use readq() directly.
-
-Logan
+Given what Logan said, I think it probably makes sense to keep the patch as-is?
