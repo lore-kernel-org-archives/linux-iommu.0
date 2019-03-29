@@ -1,12 +1,12 @@
 From: Li Yang <leoyang.li@nxp.com>
-Subject: Re: [PATCH 01/13] soc/fsl/qman: fixup liodns only on ppc targets
-Date: Fri, 29 Mar 2019 16:50:23 -0500
-Message-ID: <CADRPPNQ9AGRvq8XDjeTerUBry+_hO-U=shCXFaqHhtc9QvMvng@mail.gmail.com>
-References: <20190329140014.8126-1-laurentiu.tudor@nxp.com> <20190329140014.8126-2-laurentiu.tudor@nxp.com>
+Subject: Re: [PATCH 05/13] soc/fsl/bqman: page align iommu mapping sizes
+Date: Fri, 29 Mar 2019 17:06:45 -0500
+Message-ID: <CADRPPNTh65rwPVVzJBWt-cNrbQWAoo0FeTGnCHDiqSxvARa_5g@mail.gmail.com>
+References: <20190329140014.8126-1-laurentiu.tudor@nxp.com> <20190329140014.8126-6-laurentiu.tudor@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190329140014.8126-2-laurentiu.tudor@nxp.com>
+In-Reply-To: <20190329140014.8126-6-laurentiu.tudor@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 Cc: Netdev <netdev@vger.kernel.org>, madalin.bucur@nxp.com, Roy Pledge <roy.pledge@nxp.com>, camelia.groza@nxp.com, David Miller <davem@davemloft.net>, Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, lkml <linux-kernel@vger.kernel.org>
@@ -16,42 +16,72 @@ On Fri, Mar 29, 2019 at 9:01 AM <laurentiu.tudor@nxp.com> wrote:
 >
 > From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 >
-> ARM SoCs use SMMU so the liodn fixup done in the qman driver is no
-> longer making sense and it also breaks the ICID settings inherited
-> from u-boot. Do the fixups only for PPC targets.
+> Prior to calling iommu_map()/iommu_unmap() page align the size or
+> failures such as below could happen:
+>
+> iommu: unaligned: iova 0x... pa 0x... size 0x4000 min_pagesz 0x10000
+> qman_portal 500000000.qman-portal: failed to iommu_map() -22
+>
+> Seen when booted a kernel compiled with 64K page size support.
+
+This will silently incease the actual space mapped to 64K when the
+driver is actually trying to map 4K.  Will this potentially cause
+security breaches?  If it is really safe to map 64K, probably the
+better way is to increase the region size to 64k in the device tree
+explicitly.
+
 >
 > Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 > ---
->  drivers/soc/fsl/qbman/qman_ccsr.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/soc/fsl/qbman/bman_ccsr.c   | 2 +-
+>  drivers/soc/fsl/qbman/qman_ccsr.c   | 4 ++--
+>  drivers/soc/fsl/qbman/qman_portal.c | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
 >
+> diff --git a/drivers/soc/fsl/qbman/bman_ccsr.c b/drivers/soc/fsl/qbman/bman_ccsr.c
+> index b209c79511bb..3a6e01bde32d 100644
+> --- a/drivers/soc/fsl/qbman/bman_ccsr.c
+> +++ b/drivers/soc/fsl/qbman/bman_ccsr.c
+> @@ -230,7 +230,7 @@ static int fsl_bman_probe(struct platform_device *pdev)
+>         /* Create an 1-to-1 iommu mapping for FBPR area */
+>         domain = iommu_get_domain_for_dev(dev);
+>         if (domain) {
+> -               ret = iommu_map(domain, fbpr_a, fbpr_a, fbpr_sz,
+> +               ret = iommu_map(domain, fbpr_a, fbpr_a, PAGE_ALIGN(fbpr_sz),
+>                                 IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
+>                 if (ret)
+>                         dev_warn(dev, "failed to iommu_map() %d\n", ret);
 > diff --git a/drivers/soc/fsl/qbman/qman_ccsr.c b/drivers/soc/fsl/qbman/qman_ccsr.c
-> index 109b38de3176..12e414ca3b03 100644
+> index eec7700507e1..8d3c950ce52d 100644
 > --- a/drivers/soc/fsl/qbman/qman_ccsr.c
 > +++ b/drivers/soc/fsl/qbman/qman_ccsr.c
-> @@ -598,6 +598,7 @@ static int qman_init_ccsr(struct device *dev)
->  #define LIO_CFG_LIODN_MASK 0x0fff0000
->  void qman_liodn_fixup(u16 channel)
->  {
-> +#ifdef CONFIG_PPC
->         static int done;
->         static u32 liodn_offset;
->         u32 before, after;
-> @@ -617,6 +618,7 @@ void qman_liodn_fixup(u16 channel)
->                 qm_ccsr_out(REG_REV3_QCSP_LIO_CFG(idx), after);
->         else
->                 qm_ccsr_out(REG_QCSP_LIO_CFG(idx), after);
-> +#endif
-
-According to the Linux coding style recommendation, it would be better
-to put the #ifdef into the header files
-"drivers/soc/fsl/qbman/qman_priv.h".  And I'm not sure if this is
-needed on PPC when IOMMU(PAMU) driver is not compiled, if not,
-probably using CONFIG_PAMU as condition would be even better.
-
->  }
->
->  #define IO_CFG_SDEST_MASK 0x00ff0000
+> @@ -783,11 +783,11 @@ static int fsl_qman_probe(struct platform_device *pdev)
+>         /* Create an 1-to-1 iommu mapping for fqd and pfdr areas */
+>         domain = iommu_get_domain_for_dev(dev);
+>         if (domain) {
+> -               ret = iommu_map(domain, fqd_a, fqd_a, fqd_sz,
+> +               ret = iommu_map(domain, fqd_a, fqd_a, PAGE_ALIGN(fqd_sz),
+>                                 IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
+>                 if (ret)
+>                         dev_warn(dev, "iommu_map(fqd) failed %d\n", ret);
+> -               ret = iommu_map(domain, pfdr_a, pfdr_a, pfdr_sz,
+> +               ret = iommu_map(domain, pfdr_a, pfdr_a, PAGE_ALIGN(pfdr_sz),
+>                                 IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
+>                 if (ret)
+>                         dev_warn(dev, "iommu_map(pfdr) failed %d\n", ret);
+> diff --git a/drivers/soc/fsl/qbman/qman_portal.c b/drivers/soc/fsl/qbman/qman_portal.c
+> index dfb62f9815e9..bce56da2b01f 100644
+> --- a/drivers/soc/fsl/qbman/qman_portal.c
+> +++ b/drivers/soc/fsl/qbman/qman_portal.c
+> @@ -297,7 +297,7 @@ static int qman_portal_probe(struct platform_device *pdev)
+>                  */
+>                 err = iommu_map(domain,
+>                                 addr_phys[0]->start, addr_phys[0]->start,
+> -                               resource_size(addr_phys[0]),
+> +                               PAGE_ALIGN(resource_size(addr_phys[0])),
+>                                 IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
+>                 if (err)
+>                         dev_warn(dev, "failed to iommu_map() %d\n", err);
 > --
 > 2.17.1
 >
