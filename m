@@ -1,56 +1,110 @@
-From: Jann Horn <jannh@google.com>
-Subject: Re: [PATCH] x86/calgary: fix bitcast type warnings
-Date: Fri, 29 Mar 2019 17:48:38 +0100
-Message-ID: <CAG48ez3UE6cnA0TZQ-7DUnB_QWPFV04bJsv9oKXfgBtu=ugBLw@mail.gmail.com>
-References: <20190328225925.241998-1-jannh@google.com> <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: Re: [PATCH v2] iommu/amd: Reserve exclusion range in iova-domain
+Date: Fri, 29 Mar 2019 11:18:46 -0700
+Message-ID: <20190329181846.jjo2wijxkibfs35m@cantor>
+References: <20190329151037.19112-1-joro@8bytes.org>
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
+Content-Disposition: inline
+In-Reply-To: <20190329151037.19112-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mukesh Ojha <mojha@codeaurora.org>
-Cc: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Gary R Hook <ghook@amd.com>, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 29, 2019 at 9:19 AM Mukesh Ojha <mojha@codeaurora.org> wrote:
-> On 3/29/2019 4:29 AM, Jann Horn wrote:
-> > The sparse checker attempts to ensure that all conversions between
-> > fixed-endianness numbers and numbers with native endianness are explicit.
-> > However, the calgary code reads and writes big-endian numbers from/to IO
-> > memory using {read,write}{l,q}(), which return native-endian numbers.
-> >
-> > This could be addressed by putting __force casts all over the place, but
-> > that would kind of defeat the point of the warning. Instead, create new
-> > helpers {read,write}{l,q}_be() for big-endian IO that convert from/to
-> > native endianness.
-> >
-> > Most of this patch is a straightforward conversion; the following parts
-> > aren't just mechanical replacement:
-> >
-> >   - ->tar_val is now a native-endian number instead of big-endian
-> >   - calioc2_handle_quirks() did `cpu_to_be32(readl(target))` when it
-> >     intended to do `be32_to_cpu(readl(target))` (but that has no actual
-> >     effects outside of type warnings)
-> >
-> > This gets rid of 108 lines of sparse warnings.
-> >
-> > Signed-off-by: Jann Horn <jannh@google.com>
-> > ---
-> > compile-tested only
-> >
-> >   arch/x86/kernel/pci-calgary_64.c | 108 ++++++++++++++++++-------------
-> >   1 file changed, 64 insertions(+), 44 deletions(-)
-> >
-> > diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
-> > index c70720f61a34..36cd66d940fb 100644
-> > --- a/arch/x86/kernel/pci-calgary_64.c
-> > +++ b/arch/x86/kernel/pci-calgary_64.c
-> > @@ -534,6 +534,26 @@ static inline int is_cal_pci_dev(unsigned short device)
-> >       return (is_calgary(device) || is_calioc2(device));
-> >   }
+On Fri Mar 29 19, Joerg Roedel wrote:
+>From: Joerg Roedel <jroedel@suse.de>
 >
+>If a device has an exclusion range specified in the IVRS
+>table, this region needs to be reserved in the iova-domain
+>of that device. This hasn't happened until now and can cause
+>data corruption on data transfered with these devices.
 >
-> Can the existing api's not be used here like iowrite64be/ioread64be/ or
-> similar variant in "include/asm-generic/io.h"
+>Treat exclusion ranges as reserved regions in the iommu-core
+>to fix the problem.
+>
+>Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
+>Signed-off-by: Joerg Roedel <jroedel@suse.de>
+>---
+> drivers/iommu/amd_iommu.c       | 9 ++++++---
+> drivers/iommu/amd_iommu_init.c  | 7 ++++---
+> drivers/iommu/amd_iommu_types.h | 2 ++
+> 3 files changed, 12 insertions(+), 6 deletions(-)
+>
+>diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>index 21cb088d6687..f7cdd2ab7f11 100644
+>--- a/drivers/iommu/amd_iommu.c
+>+++ b/drivers/iommu/amd_iommu.c
+>@@ -3169,21 +3169,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+> 		return;
+>
+> 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
+>+		int type, prot = 0;
+> 		size_t length;
+>-		int prot = 0;
+>
+> 		if (devid < entry->devid_start || devid > entry->devid_end)
+> 			continue;
+>
+>+		type   = IOMMU_RESV_DIRECT;
+> 		length = entry->address_end - entry->address_start;
+> 		if (entry->prot & IOMMU_PROT_IR)
+> 			prot |= IOMMU_READ;
+> 		if (entry->prot & IOMMU_PROT_IW)
+> 			prot |= IOMMU_WRITE;
+>+		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
+>+			/* Exclusion range */
+>+			type = IOMMU_RESV_RESERVED;
+>
+> 		region = iommu_alloc_resv_region(entry->address_start,
+>-						 length, prot,
+>-						 IOMMU_RESV_DIRECT);
+>+						 length, prot, type);
+> 		if (!region) {
+> 			dev_err(dev, "Out of memory allocating dm-regions\n");
+> 			return;
+>diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+>index f773792d77fd..1b1378619fc9 100644
+>--- a/drivers/iommu/amd_iommu_init.c
+>+++ b/drivers/iommu/amd_iommu_init.c
+>@@ -2013,6 +2013,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+> 	if (e == NULL)
+> 		return -ENOMEM;
+>
+>+	if (m->flags & IVMD_FLAG_EXCL_RANGE)
+>+		init_exclusion_range(m);
+>+
+> 	switch (m->type) {
+> 	default:
+> 		kfree(e);
+>@@ -2059,9 +2062,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+>
+> 	while (p < end) {
+> 		m = (struct ivmd_header *)p;
+>-		if (m->flags & IVMD_FLAG_EXCL_RANGE)
+>-			init_exclusion_range(m);
+>-		else if (m->flags & IVMD_FLAG_UNITY_MAP)
+>+		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
+> 			init_unity_map_range(m);
+>
+> 		p += m->length;
+>diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+>index eae0741f72dc..87965e4d9647 100644
+>--- a/drivers/iommu/amd_iommu_types.h
+>+++ b/drivers/iommu/amd_iommu_types.h
+>@@ -374,6 +374,8 @@
+> #define IOMMU_PROT_IR 0x01
+> #define IOMMU_PROT_IW 0x02
+>
+>+#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
+>+
+> /* IOMMU capabilities */
+> #define IOMMU_CAP_IOTLB   24
+> #define IOMMU_CAP_NPCACHE 26
+>-- 
+>2.16.4
+>
 
-Oooh! I didn't realize that those exist. I'll change that and send a v2.
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
