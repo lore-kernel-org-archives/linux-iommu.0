@@ -1,72 +1,108 @@
-From: Li Yang <leoyang.li@nxp.com>
-Subject: Re: [PATCH 02/13] soc/fsl/bman: map FBPR area in the iommu
-Date: Fri, 29 Mar 2019 16:16:20 -0500
-Message-ID: <CADRPPNTPZ1xhYr_YKZvrXVJhVqhV9RNAu6ekVHDeOudXTZx3=g@mail.gmail.com>
-References: <20190329140014.8126-1-laurentiu.tudor@nxp.com> <20190329140014.8126-3-laurentiu.tudor@nxp.com>
+From: Jann Horn <jannh@google.com>
+Subject: Re: [PATCH] x86/calgary: fix bitcast type warnings
+Date: Fri, 29 Mar 2019 22:19:03 +0100
+Message-ID: <CAG48ez13xg1oUiO_pyDHVbJkWRQdW4CoX7uGzoujyf4L6VB-dw@mail.gmail.com>
+References: <20190328225925.241998-1-jannh@google.com> <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
+ <CAG48ez3UE6cnA0TZQ-7DUnB_QWPFV04bJsv9oKXfgBtu=ugBLw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190329140014.8126-3-laurentiu.tudor@nxp.com>
+In-Reply-To: <CAG48ez3UE6cnA0TZQ-7DUnB_QWPFV04bJsv9oKXfgBtu=ugBLw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc: Netdev <netdev@vger.kernel.org>, madalin.bucur@nxp.com, Roy Pledge <roy.pledge@nxp.com>, camelia.groza@nxp.com, David Miller <davem@davemloft.net>, Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, lkml <linux-kernel@vger.kernel.org>
+To: Mukesh Ojha <mojha@codeaurora.org>, Logan Gunthorpe <logang@deltatee.com>, =?UTF-8?Q?Horia_Geant=C4=83?= <horia.geanta@nxp.com>
+Cc: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 29, 2019 at 9:03 AM <laurentiu.tudor@nxp.com> wrote:
->
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
->
-> Add a one-to-one iommu mapping for bman private data memory (FBPR).
-> This is required for BMAN to work without faults behind an iommu.
->
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> ---
->  drivers/soc/fsl/qbman/bman_ccsr.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
->
-> diff --git a/drivers/soc/fsl/qbman/bman_ccsr.c b/drivers/soc/fsl/qbman/bman_ccsr.c
-> index 7c3cc968053c..b209c79511bb 100644
-> --- a/drivers/soc/fsl/qbman/bman_ccsr.c
-> +++ b/drivers/soc/fsl/qbman/bman_ccsr.c
-> @@ -29,6 +29,7 @@
->   */
->
->  #include "bman_priv.h"
-> +#include <linux/iommu.h>
->
->  u16 bman_ip_rev;
->  EXPORT_SYMBOL(bman_ip_rev);
-> @@ -178,6 +179,7 @@ static int fsl_bman_probe(struct platform_device *pdev)
->         int ret, err_irq;
->         struct device *dev = &pdev->dev;
->         struct device_node *node = dev->of_node;
-> +       struct iommu_domain *domain;
->         struct resource *res;
->         u16 id, bm_pool_cnt;
->         u8 major, minor;
-> @@ -225,6 +227,15 @@ static int fsl_bman_probe(struct platform_device *pdev)
->
->         dev_dbg(dev, "Allocated FBPR 0x%llx 0x%zx\n", fbpr_a, fbpr_sz);
->
-> +       /* Create an 1-to-1 iommu mapping for FBPR area */
-> +       domain = iommu_get_domain_for_dev(dev);
-> +       if (domain) {
-> +               ret = iommu_map(domain, fbpr_a, fbpr_a, fbpr_sz,
-> +                               IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
-> +               if (ret)
-> +                       dev_warn(dev, "failed to iommu_map() %d\n", ret);
-> +       }
++Logan Gunthorpe and Horia Geant=C4=83, since they've written a bunch of th=
+is code
 
-Like Robin has pointed out, could you explain why the mapping in this
-patch and other similar patches cannot be dealt with the dma APIs
-automatically?  If the current bqman driver doesn't use the dma APIs
-correctly, we need to fix that instead of doing the mapping
-explicitly.
+On Fri, Mar 29, 2019 at 5:48 PM Jann Horn <jannh@google.com> wrote:
+> On Fri, Mar 29, 2019 at 9:19 AM Mukesh Ojha <mojha@codeaurora.org> wrote:
+> > On 3/29/2019 4:29 AM, Jann Horn wrote:
+> > > The sparse checker attempts to ensure that all conversions between
+> > > fixed-endianness numbers and numbers with native endianness are expli=
+cit.
+> > > However, the calgary code reads and writes big-endian numbers from/to=
+ IO
+> > > memory using {read,write}{l,q}(), which return native-endian numbers.
+> > >
+> > > This could be addressed by putting __force casts all over the place, =
+but
+> > > that would kind of defeat the point of the warning. Instead, create n=
+ew
+> > > helpers {read,write}{l,q}_be() for big-endian IO that convert from/to
+> > > native endianness.
+> > >
+> > > Most of this patch is a straightforward conversion; the following par=
+ts
+> > > aren't just mechanical replacement:
+> > >
+> > >   - ->tar_val is now a native-endian number instead of big-endian
+> > >   - calioc2_handle_quirks() did `cpu_to_be32(readl(target))` when it
+> > >     intended to do `be32_to_cpu(readl(target))` (but that has no actu=
+al
+> > >     effects outside of type warnings)
+> > >
+> > > This gets rid of 108 lines of sparse warnings.
+> > >
+> > > Signed-off-by: Jann Horn <jannh@google.com>
+> > > ---
+> > > compile-tested only
+> > >
+> > >   arch/x86/kernel/pci-calgary_64.c | 108 ++++++++++++++++++----------=
+---
+> > >   1 file changed, 64 insertions(+), 44 deletions(-)
+> > >
+> > > diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-c=
+algary_64.c
+> > > index c70720f61a34..36cd66d940fb 100644
+> > > --- a/arch/x86/kernel/pci-calgary_64.c
+> > > +++ b/arch/x86/kernel/pci-calgary_64.c
+> > > @@ -534,6 +534,26 @@ static inline int is_cal_pci_dev(unsigned short =
+device)
+> > >       return (is_calgary(device) || is_calioc2(device));
+> > >   }
+> >
+> >
+> > Can the existing api's not be used here like iowrite64be/ioread64be/ or
+> > similar variant in "include/asm-generic/io.h"
+>
+> Oooh! I didn't realize that those exist. I'll change that and send a v2.
 
-> +
->         bm_set_memory(fbpr_a, fbpr_sz);
->
->         err_irq = platform_get_irq(pdev, 0);
-> --
-> 2.17.1
->
+Actually, that doesn't work at the moment on x86-64:
+
+include/asm-generic/io.h only defines these things if
+CONFIG_GENERIC_IOMAP isn't defined; and X86 unconditionally defines
+it. With CONFIG_GENERIC_IOMAP set, these functions are provided by
+include/asm-generic/iomap.h.
+
+include/asm-generic/iomap.h has extern definitions of them:
+
+extern unsigned int ioread8(void __iomem *);
+extern unsigned int ioread16(void __iomem *);
+extern unsigned int ioread16be(void __iomem *);
+extern unsigned int ioread32(void __iomem *);
+extern unsigned int ioread32be(void __iomem *);
+#ifdef CONFIG_64BIT
+extern u64 ioread64(void __iomem *);
+extern u64 ioread64be(void __iomem *);
+#endif
+[...]
+extern void iowrite8(u8, void __iomem *);
+extern void iowrite16(u16, void __iomem *);
+extern void iowrite16be(u16, void __iomem *);
+extern void iowrite32(u32, void __iomem *);
+extern void iowrite32be(u32, void __iomem *);
+#ifdef CONFIG_64BIT
+extern void iowrite64(u64, void __iomem *);
+extern void iowrite64be(u64, void __iomem *);
+#endif
+
+The definitions for these are in lib/iomap.c, except that there are no
+definitions for ioread64be() and iowrite64be(); if you try to use
+them, you get linker errors.
+
+I guess maybe the fix for that would be to, in iomap.c, just implement
+iowrite64{,be} the same way as iowrite32{,be}, just under a "#ifdef
+CONFIG_64BIT"?
