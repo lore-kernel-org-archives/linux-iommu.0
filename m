@@ -1,8 +1,10 @@
 From: laurentiu.tudor@nxp.com
-Subject: [PATCH 00/13] Prerequisites for NXP LS104xA SMMU enablement
-Date: Fri, 29 Mar 2019 16:00:01 +0200
-Message-ID: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
+Subject: [PATCH 01/13] soc/fsl/qman: fixup liodns only on ppc targets
+Date: Fri, 29 Mar 2019 16:00:02 +0200
+Message-ID: <20190329140014.8126-2-laurentiu.tudor@nxp.com>
+References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com, camelia.groza@nxp.com, leoyang.li@nxp.com
 Cc: davem@davemloft.net, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>
@@ -10,48 +12,34 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-This patch series contains several fixes in preparation for SMMU
-support on NXP LS1043A and LS1046A chips. Once these get picked up,
-I'll submit the actual SMMU enablement patches consisting in the
-required device tree changes.
+ARM SoCs use SMMU so the liodn fixup done in the qman driver is no
+longer making sense and it also breaks the ICID settings inherited
+from u-boot. Do the fixups only for PPC targets.
 
-This patch series contains only part of the previously submitted one,
-(including also the device tree changes) available here:
+Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+---
+ drivers/soc/fsl/qbman/qman_ccsr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-https://patchwork.kernel.org/cover/10634443/
-
-There are a couple of changes/fixes since then:
- - for consistency, renamed mmu node to smmu
- - new patch page aligning the sizes of the qbman reserved memory
- - rebased on 5.1.0-rc2
-
-Laurentiu Tudor (13):
-  soc/fsl/qman: fixup liodns only on ppc targets
-  soc/fsl/bman: map FBPR area in the iommu
-  soc/fsl/qman: map FQD and PFDR areas in the iommu
-  soc/fsl/qman-portal: map CENA area in the iommu
-  soc/fsl/bqman: page align iommu mapping sizes
-  soc/fsl/qbman_portals: add APIs to retrieve the probing status
-  fsl/fman: backup and restore ICID registers
-  fsl/fman: add API to get the device behind a fman port
-  dpaa_eth: defer probing after qbman
-  dpaa_eth: base dma mappings on the fman rx port
-  dpaa_eth: fix iova handling for contiguous frames
-  dpaa_eth: fix iova handling for sg frames
-  dpaa_eth: fix SG frame cleanup
-
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 136 ++++++++++++------
- drivers/net/ethernet/freescale/fman/fman.c    |  35 ++++-
- drivers/net/ethernet/freescale/fman/fman.h    |   4 +
- .../net/ethernet/freescale/fman/fman_port.c   |  14 ++
- .../net/ethernet/freescale/fman/fman_port.h   |   2 +
- drivers/soc/fsl/qbman/bman_ccsr.c             |  11 ++
- drivers/soc/fsl/qbman/bman_portal.c           |  22 ++-
- drivers/soc/fsl/qbman/qman_ccsr.c             |  17 +++
- drivers/soc/fsl/qbman/qman_portal.c           |  40 +++++-
- include/soc/fsl/bman.h                        |   8 ++
- include/soc/fsl/qman.h                        |   9 ++
- 11 files changed, 242 insertions(+), 56 deletions(-)
-
+diff --git a/drivers/soc/fsl/qbman/qman_ccsr.c b/drivers/soc/fsl/qbman/qman_ccsr.c
+index 109b38de3176..12e414ca3b03 100644
+--- a/drivers/soc/fsl/qbman/qman_ccsr.c
++++ b/drivers/soc/fsl/qbman/qman_ccsr.c
+@@ -598,6 +598,7 @@ static int qman_init_ccsr(struct device *dev)
+ #define LIO_CFG_LIODN_MASK 0x0fff0000
+ void qman_liodn_fixup(u16 channel)
+ {
++#ifdef CONFIG_PPC
+ 	static int done;
+ 	static u32 liodn_offset;
+ 	u32 before, after;
+@@ -617,6 +618,7 @@ void qman_liodn_fixup(u16 channel)
+ 		qm_ccsr_out(REG_REV3_QCSP_LIO_CFG(idx), after);
+ 	else
+ 		qm_ccsr_out(REG_QCSP_LIO_CFG(idx), after);
++#endif
+ }
+ 
+ #define IO_CFG_SDEST_MASK 0x00ff0000
 -- 
 2.17.1
