@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.9 14/21] iommu/dmar: Fix buffer overflow during PCI
+Subject: [PATCH AUTOSEL 4.4 11/16] iommu/dmar: Fix buffer overflow during PCI
 	bus notification
-Date: Fri, 29 Mar 2019 21:31:05 -0400
-Message-ID: <20190330013112.784-14-sashal@kernel.org>
-References: <20190330013112.784-1-sashal@kernel.org>
+Date: Fri, 29 Mar 2019 21:31:55 -0400
+Message-ID: <20190330013200.1130-11-sashal@kernel.org>
+References: <20190330013200.1130-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190330013112.784-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20190330013200.1130-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -91,7 +91,7 @@ Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 63110fbbb410..d51734e0c350 100644
+index 5a63e32a4a6b..cbad1926cec1 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
 @@ -143,7 +143,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
