@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 24/27] iommu/vt-d: Check capability before disabling protected memory
-Date: Fri, 29 Mar 2019 20:55:50 -0400
-Message-ID: <20190330005555.28087-24-sashal@kernel.org>
-References: <20190330005555.28087-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 18/21] iommu/vt-d: Check capability before disabling protected memory
+Date: Fri, 29 Mar 2019 20:56:46 -0400
+Message-ID: <20190330005649.28475-18-sashal@kernel.org>
+References: <20190330005649.28475-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190330005555.28087-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190330005649.28475-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, mark gross <mgross@intel.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
@@ -33,10 +33,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 86e349614e21..28feb1744710 100644
+index 8b4a4d95669a..3e97c4b2ebed 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1636,6 +1636,9 @@ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
+@@ -1598,6 +1598,9 @@ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
  	u32 pmen;
  	unsigned long flags;
  
