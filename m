@@ -1,136 +1,148 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v3 1/1] iommu: Add config option to set lazy mode as
- default
-Date: Sat, 30 Mar 2019 18:43:15 +0800
-Message-ID: <5C9F4843.9010307@huawei.com>
-References: <20190329025423.15484-1-thunder.leizhen@huawei.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v1 2/3] arm64: dts: qcom: msm8998: Add PCIe SMMU node
+Date: Sat, 30 Mar 2019 19:48:49 +0530
+Message-ID: <CAFp+6iHOwW5jJmdVWo-E7154xk2jpR4ZLRoXEJdPwu8_ZJg14Q@mail.gmail.com>
+References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
+	<82ab78ee-4a38-4eee-f064-272b6f964f17@free.fr>
+	<e7c8137a-2408-a71a-f722-199a86a75d13@free.fr>
+	<5aa56120-b686-194b-36d6-8177b5749a19@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190329025423.15484-1-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: S390 <linux-s390@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5aa56120-b686-194b-36d6-8177b5749a19-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Marc,
+
+On Fri, Mar 29, 2019 at 11:59 PM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+> On 29/03/2019 10:51, Marc Gonzalez wrote:
+> > On 28/03/2019 18:05, Marc Gonzalez wrote:
+> >
+> >> ANOC1 SMMU filters PCIe accesses.
+> >
+> > I'm not sure this description is entirely accurate...
+> >
+> > ANOC likely stands for "Application Network-On-Chip"
+
+How about simply saying - "Add device node for ANOC1 SMMU" for
+commit title.
+Commit text -
+ANOC1 smmu services a list of peripherals - USB, UFS, BLSP2, and PCIe.
+Add the device node for this smmu.
+
+> >
+> >
+> >>   arch/arm64/boot/dts/qcom/msm8998.dtsi | 15 +++++++++++++++
+> >>   1 file changed, 15 insertions(+)
+> >>
+> >> diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+> >> index f9a922fdae75..5a1c0961b281 100644
+> >> --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
+> >> +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+> >> @@ -606,6 +606,21 @@
+> >>                      #thermal-sensor-cells = <1>;
+> >>              };
+> >>
+> >> +            anoc1_smmu: arm,smmu@1680000 {
+> >> +                    compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
+> >
+> > Maybe I should instead use "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
+> > and define "qcom,msm8998-smmu-v2" in
+> > Documentation/devicetree/bindings/iommu/arm,smmu.txt ?
+>
+> Yes please.
+>
+> > (Would the Documentation change need to be in a separate patch?)
+>
+> That's generally preferred, yes.
+>
+> >
+> >> +                    reg = <0x01680000 0x10000>;
+> >> +                    #iommu-cells = <1>;
+> >
+> > I'm not sure about this property. IIRC, Robin said <0> is not valid,
+> > but I don't have any iommus prop, only iommu-map.
+>
+> You have to join the dots between the various bindings a little, but the
+> iommu-base part of each iommu-map entry is an IOMMU specifier, and IOMMU
+> specifiers are #iommu-cells long.
+>
+> To cut a long story short, 1 is definitely appropriate, because
+> arm-smmu's definition of a 2-cell specifier wouldn't make much sense in
+> the iommu-map context (and the current code for parsing iommu-map
+> actually just assumes 1 anyway).
+
+Besides this,
+Looking at the SID mappings for ANOC1 smmu, devices such as USB, and UFS
+can very well enable iommu support, and thus iommu-cells = 1 seems
+like the correct thingy.
+
+>
+> >> +
+> >> +                    #global-interrupts = <0>;
+> >> +                    interrupts =
+> >> +                            <GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
+> >> +                            <GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
+> >> +                            <GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
+> >> +                            <GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
+> >> +                            <GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
+> >> +                            <GIC_SPI 369 IRQ_TYPE_EDGE_RISING>;
+> >> +            };
+> >> +
+> >
+> > The rest of the node looks fairly straight-forward.
+>
+> You should probably have some "bus" and "iface" clocks too, per the
+> requirement of "qcom,smmu-v2". Maybe Vivek might know what's relevant
+> for MSM8998?
+
+As Jeffrey rightly mentioned, these clocks are not under the control of Linux.
+So, we won't need to add clocks to this SMMU.
+
+Thanks
+Vivek
+
+>
+> >
+> > DT code was adapted from:
+> >
+> > https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-8998.dtsi?h=LE.UM.1.3.r3.25#n18
+> >
+> > I left out the so-called implementation-defined init:
+> >
+> > https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-impl-defs-8998.dtsi?h=LE.UM.1.3.r3.25#n123
+> >
+> > Should I try to merge this part in mainline?
+> > (I don't have any documentation for it though.)
+>
+> "pls no :("
+>
+> I'm not sure what route the path takes from "DT describes the platform"
+> to get to "DT lists opaque register addresses and magic data to write
+> into them", but I imagine it might involve getting hit in the head along
+> the way.
+>
+> Robin.
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
 
-On 2019/3/29 10:54, Zhen Lei wrote:
-> This allows the default behaviour to be controlled by a kernel config
-> option instead of changing the command line for the kernel to include
-> "iommu.strict=0" on ARM64 where this is desired.
-> 
-> This is similar to CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  arch/s390/pci/pci_dma.c        |  4 ++++
->  drivers/iommu/Kconfig          | 15 +++++++++++++++
->  drivers/iommu/amd_iommu_init.c |  6 +++++-
->  drivers/iommu/intel-iommu.c    |  4 ++++
->  drivers/iommu/iommu.c          |  5 +++++
->  5 files changed, 33 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-> index 9e52d1527f71495..d05e8c3820793c5 100644
-> --- a/arch/s390/pci/pci_dma.c
-> +++ b/arch/s390/pci/pci_dma.c
-> @@ -17,7 +17,11 @@
->  
->  static struct kmem_cache *dma_region_table_cache;
->  static struct kmem_cache *dma_page_table_cache;
-> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
->  static int s390_iommu_strict;
-> +#else
-> +static int s390_iommu_strict = 1;
-> +#endif
->  
->  static int zpci_refresh_global(struct zpci_dev *zdev)
->  {
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 6f07f3b21816c64..ed5206a2d316599 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -85,6 +85,21 @@ config IOMMU_DEFAULT_PASSTHROUGH
->  
->  	  If unsure, say N here.
->  
-> +config IOMMU_DMA_DEFAULT_LAZY_MODE
-> +	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
-> +	depends on IOMMU_API
-> +	default y
-Hi Robin：
-
-   Should I change to:
-+  default y if !(ARM_SMMU || ARM_SMMU_V3)
-
-> +	help
-> +	  Support lazy mode, where for every IOMMU DMA unmap operation, the
-> +	  flush operation of IOTLB and the free operation of IOVA are deferred.
-> +	  They are only guaranteed to be done before the related IOVA will be
-> +	  reused. Removing the need to pass in kernel parameters through
-> +	  command line. For example, iommu.strict=0 on ARM64. If this is
-> +	  enabled, you can still disable with kernel parameters, such as
-> +	  iommu.strict=1 depending on the architecture.
-> +
-> +	  If unsure, say N here.
-> +
->  config OF_IOMMU
->         def_bool y
->         depends on OF && IOMMU_API
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index f773792d77fd533..a30805c2f77199c 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -166,7 +166,11 @@ struct ivmd_header {
->  					   to handle */
->  LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
->  					   we find in ACPI */
-> -bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
-> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
-> +bool amd_iommu_unmap_flush;
-> +#else
-> +bool amd_iommu_unmap_flush = true;	/* flush on every unmap */
-> +#endif
->  
->  LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
->  					   system */
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 28cb713d728ceef..560191a9342b2b8 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -362,7 +362,11 @@ static int domain_detach_iommu(struct dmar_domain *domain,
->  
->  static int dmar_map_gfx = 1;
->  static int dmar_forcedac;
-> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
->  static int intel_iommu_strict;
-> +#else
-> +static int intel_iommu_strict = 1;
-> +#endif
->  static int intel_iommu_superpage = 1;
->  static int intel_iommu_sm;
->  static int iommu_identity_mapping;
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 33a982e33716369..5acb98e79b5b32d 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -43,7 +43,12 @@
->  #else
->  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
->  #endif
-> +
-> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
-> +static bool iommu_dma_strict __read_mostly;
-> +#else
->  static bool iommu_dma_strict __read_mostly = true;
-> +#endif
->  
->  struct iommu_callback_data {
->  	const struct iommu_ops *ops;
-> 
 
 -- 
-Thanks!
-BestRegards
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
