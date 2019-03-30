@@ -1,62 +1,136 @@
-From: Mukesh Ojha <mojha@codeaurora.org>
-Subject: Re: [PATCH] x86/calgary: fix bitcast type warnings
-Date: Sat, 30 Mar 2019 15:54:23 +0530
-Message-ID: <c1c85afd-fbfb-01cd-a1d2-fc5474dee740@codeaurora.org>
-References: <20190328225925.241998-1-jannh@google.com>
- <530a0823-5dcd-9006-2057-ae5b9da2389a@codeaurora.org>
- <CAG48ez01TR7xBRgdAyvoHBjttn-ffr-8KBS8sJ904TDm4FLH+Q@mail.gmail.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v3 1/1] iommu: Add config option to set lazy mode as
+ default
+Date: Sat, 30 Mar 2019 18:43:15 +0800
+Message-ID: <5C9F4843.9010307@huawei.com>
+References: <20190329025423.15484-1-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAG48ez01TR7xBRgdAyvoHBjttn-ffr-8KBS8sJ904TDm4FLH+Q@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <20190329025423.15484-1-thunder.leizhen@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jann Horn <jannh@google.com>
-Cc: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, iommu@lists.linux-foundation.org, kernel list <linux-kernel@vger.kernel.org>, Logan Gunthorpe <logang@deltatee.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: S390 <linux-s390@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
-On 3/30/2019 3:15 AM, Jann Horn wrote:
-> On Fri, Mar 29, 2019 at 9:19 AM Mukesh Ojha <mojha@codeaurora.org> wrote:
->> On 3/29/2019 4:29 AM, Jann Horn wrote:
->>> The sparse checker attempts to ensure that all conversions between
->>> fixed-endianness numbers and numbers with native endianness are explicit.
->>> However, the calgary code reads and writes big-endian numbers from/to IO
->>> memory using {read,write}{l,q}(), which return native-endian numbers.
->>>
->>> This could be addressed by putting __force casts all over the place, but
->>> that would kind of defeat the point of the warning. Instead, create new
->>> helpers {read,write}{l,q}_be() for big-endian IO that convert from/to
->>> native endianness.
->>>
->>> Most of this patch is a straightforward conversion; the following parts
->>> aren't just mechanical replacement:
->>>
->>>    - ->tar_val is now a native-endian number instead of big-endian
->>>    - calioc2_handle_quirks() did `cpu_to_be32(readl(target))` when it
->>>      intended to do `be32_to_cpu(readl(target))` (but that has no actual
->>>      effects outside of type warnings)
->>>
->>> This gets rid of 108 lines of sparse warnings.
->>>
->>> Signed-off-by: Jann Horn <jannh@google.com>
->>> ---
->>> compile-tested only
->>>
->>>    arch/x86/kernel/pci-calgary_64.c | 108 ++++++++++++++++++-------------
->>>    1 file changed, 64 insertions(+), 44 deletions(-)
->>>
->>> diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
->>> index c70720f61a34..36cd66d940fb 100644
->>> --- a/arch/x86/kernel/pci-calgary_64.c
->>> +++ b/arch/x86/kernel/pci-calgary_64.c
->>> @@ -534,6 +534,26 @@ static inline int is_cal_pci_dev(unsigned short device)
->>>        return (is_calgary(device) || is_calioc2(device));
->>>    }
->>
->> Can the existing api's not be used here like iowrite64be/ioread64be/ or
->> similar variant in "include/asm-generic/io.h"
-> Given what Logan said, I think it probably makes sense to keep the patch as-is?
 
-Sure go ahead, will have a look at this patch one more time.
+On 2019/3/29 10:54, Zhen Lei wrote:
+> This allows the default behaviour to be controlled by a kernel config
+> option instead of changing the command line for the kernel to include
+> "iommu.strict=0" on ARM64 where this is desired.
+> 
+> This is similar to CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  arch/s390/pci/pci_dma.c        |  4 ++++
+>  drivers/iommu/Kconfig          | 15 +++++++++++++++
+>  drivers/iommu/amd_iommu_init.c |  6 +++++-
+>  drivers/iommu/intel-iommu.c    |  4 ++++
+>  drivers/iommu/iommu.c          |  5 +++++
+>  5 files changed, 33 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+> index 9e52d1527f71495..d05e8c3820793c5 100644
+> --- a/arch/s390/pci/pci_dma.c
+> +++ b/arch/s390/pci/pci_dma.c
+> @@ -17,7 +17,11 @@
+>  
+>  static struct kmem_cache *dma_region_table_cache;
+>  static struct kmem_cache *dma_page_table_cache;
+> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
+>  static int s390_iommu_strict;
+> +#else
+> +static int s390_iommu_strict = 1;
+> +#endif
+>  
+>  static int zpci_refresh_global(struct zpci_dev *zdev)
+>  {
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 6f07f3b21816c64..ed5206a2d316599 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -85,6 +85,21 @@ config IOMMU_DEFAULT_PASSTHROUGH
+>  
+>  	  If unsure, say N here.
+>  
+> +config IOMMU_DMA_DEFAULT_LAZY_MODE
+> +	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
+> +	depends on IOMMU_API
+> +	default y
+Hi Robin：
+
+   Should I change to:
++  default y if !(ARM_SMMU || ARM_SMMU_V3)
+
+> +	help
+> +	  Support lazy mode, where for every IOMMU DMA unmap operation, the
+> +	  flush operation of IOTLB and the free operation of IOVA are deferred.
+> +	  They are only guaranteed to be done before the related IOVA will be
+> +	  reused. Removing the need to pass in kernel parameters through
+> +	  command line. For example, iommu.strict=0 on ARM64. If this is
+> +	  enabled, you can still disable with kernel parameters, such as
+> +	  iommu.strict=1 depending on the architecture.
+> +
+> +	  If unsure, say N here.
+> +
+>  config OF_IOMMU
+>         def_bool y
+>         depends on OF && IOMMU_API
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index f773792d77fd533..a30805c2f77199c 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -166,7 +166,11 @@ struct ivmd_header {
+>  					   to handle */
+>  LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
+>  					   we find in ACPI */
+> -bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
+> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
+> +bool amd_iommu_unmap_flush;
+> +#else
+> +bool amd_iommu_unmap_flush = true;	/* flush on every unmap */
+> +#endif
+>  
+>  LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
+>  					   system */
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 28cb713d728ceef..560191a9342b2b8 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -362,7 +362,11 @@ static int domain_detach_iommu(struct dmar_domain *domain,
+>  
+>  static int dmar_map_gfx = 1;
+>  static int dmar_forcedac;
+> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
+>  static int intel_iommu_strict;
+> +#else
+> +static int intel_iommu_strict = 1;
+> +#endif
+>  static int intel_iommu_superpage = 1;
+>  static int intel_iommu_sm;
+>  static int iommu_identity_mapping;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 33a982e33716369..5acb98e79b5b32d 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -43,7 +43,12 @@
+>  #else
+>  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+>  #endif
+> +
+> +#ifdef CONFIG_IOMMU_DMA_DEFAULT_LAZY_MODE
+> +static bool iommu_dma_strict __read_mostly;
+> +#else
+>  static bool iommu_dma_strict __read_mostly = true;
+> +#endif
+>  
+>  struct iommu_callback_data {
+>  	const struct iommu_ops *ops;
+> 
+
+-- 
+Thanks!
+BestRegards
