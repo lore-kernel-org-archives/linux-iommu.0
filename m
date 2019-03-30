@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.19 48/52] iommu/vt-d: Check capability before
+Subject: [PATCH AUTOSEL 4.14 34/37] iommu/vt-d: Check capability before
 	disabling protected memory
-Date: Fri, 29 Mar 2019 20:52:55 -0400
-Message-ID: <20190330005301.26868-48-sashal@kernel.org>
-References: <20190330005301.26868-1-sashal@kernel.org>
+Date: Fri, 29 Mar 2019 20:54:35 -0400
+Message-ID: <20190330005441.27540-34-sashal@kernel.org>
+References: <20190330005441.27540-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190330005301.26868-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20190330005441.27540-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -43,10 +43,10 @@ Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2b8f5ebae821..603bf5233a99 100644
+index 802ba7b16e09..fe935293fa7b 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1624,6 +1624,9 @@ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
+@@ -1646,6 +1646,9 @@ static void iommu_disable_protect_mem_regions(struct intel_iommu *iommu)
  	u32 pmen;
  	unsigned long flags;
  
