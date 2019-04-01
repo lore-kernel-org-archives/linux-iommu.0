@@ -1,100 +1,76 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
-Date: Mon, 1 Apr 2019 10:24:44 +0200
-Message-ID: <40a521b3-a99c-2cd3-f3ac-cfec873fc934@baylibre.com>
-References: <20190401074730.12241-1-robh@kernel.org>
- <20190401074730.12241-4-robh@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 20/21] arm64: switch copyright boilerplace to SPDX in
+ dma-mapping.c
+Date: Mon, 1 Apr 2019 10:39:18 +0100
+Message-ID: <caa88042-6338-43c1-960c-293a617ea194@arm.com>
+References: <20190327080448.5500-1-hch@lst.de>
+ <20190327080448.5500-21-hch@lst.de>
+ <872c92d0-53cd-a5e1-13ee-f2f715d017b4@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190401074730.12241-4-robh@kernel.org>
-Content-Language: en-US
+In-Reply-To: <872c92d0-53cd-a5e1-13ee-f2f715d017b4@codeaurora.org>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Lyude Paul <lyude@redhat.com>, Eric Anholt <eric@anholt.net>, "Marty E . Plummer" <hanetzer@startmail.com>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+To: Mukesh Ojha <mojha@codeaurora.org>, Christoph Hellwig <hch@lst.de>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/04/2019 09:47, Rob Herring wrote:
-> This adds the initial driver for panfrost which supports Arm Mali
-> Midgard and Bifrost family of GPUs. Currently, only the T860 and
-> T760 Midgard GPUs have been tested.
+On 01/04/2019 07:28, Mukesh Ojha wrote:
 > 
-> v2:
-> - Add GPU reset on job hangs (Tomeu)
-> - Add RuntimePM and devfreq support (Tomeu)
-> - Fix T760 support (Tomeu)
-> - Add a TODO file (Rob, Tomeu)
-> - Support multiple in fences (Tomeu)
-> - Drop support for shared fences (Tomeu)
-> - Fill in MMU de-init (Rob)
-> - Move register definitions back to single header (Rob)
-> - Clean-up hardcoded job submit todos (Rob)
-> - Implement feature setup based on features/issues (Rob)
-> - Add remaining Midgard DT compatible strings (Rob)
+> On 3/27/2019 1:34 PM, Christoph Hellwig wrote:
+>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>> Acked-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   arch/arm64/mm/dma-mapping.c | 15 +--------------
+>>   1 file changed, 1 insertion(+), 14 deletions(-)
+>>
+>> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+>> index bf49e982c978..ad46594b3799 100644
+>> --- a/arch/arm64/mm/dma-mapping.c
+>> +++ b/arch/arm64/mm/dma-mapping.c
+>> @@ -1,20 +1,7 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+> /* SPDX-License-Identifier: GPL-2.0   */
 > 
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <maxime.ripard@bootlin.com>
-> Cc: Sean Paul <sean@poorly.run>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-> Cc: Lyude Paul <lyude@redhat.com>
-> Cc: Eric Anholt <eric@anholt.net>
-> Signed-off-by: Marty E. Plummer <hanetzer@startmail.com>
-> Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> Neil, I've kept your reset support separate for now. Let me know if you
-> prefer me to squash it or keep it separate.
+> 
+> Can we do this way as discussed in
+> https://lkml.org/lkml/2019/2/13/570
 
-You can squash all my changes and add my sign-off.
+But this isn't a header file... :/
 
-Neil
+Robin.
 
+[FYI Christoph, this series is now at the top of my review pile and I 
+promise I'll get it done by the end of this week :)]
+
+> Once you fix it you can take mine review in all your this kind of patches.
+> Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
 > 
->  drivers/gpu/drm/Kconfig                      |   2 +
->  drivers/gpu/drm/Makefile                     |   1 +
->  drivers/gpu/drm/panfrost/Kconfig             |  14 +
->  drivers/gpu/drm/panfrost/Makefile            |  12 +
->  drivers/gpu/drm/panfrost/TODO                |  27 +
->  drivers/gpu/drm/panfrost/panfrost_devfreq.c  | 191 +++++++
->  drivers/gpu/drm/panfrost/panfrost_devfreq.h  |  14 +
->  drivers/gpu/drm/panfrost/panfrost_device.c   | 227 ++++++++
->  drivers/gpu/drm/panfrost/panfrost_device.h   | 118 ++++
->  drivers/gpu/drm/panfrost/panfrost_drv.c      | 484 ++++++++++++++++
->  drivers/gpu/drm/panfrost/panfrost_features.h | 309 +++++++++++
->  drivers/gpu/drm/panfrost/panfrost_gem.c      |  92 +++
->  drivers/gpu/drm/panfrost/panfrost_gem.h      |  29 +
->  drivers/gpu/drm/panfrost/panfrost_gpu.c      | 374 +++++++++++++
->  drivers/gpu/drm/panfrost/panfrost_gpu.h      |  19 +
->  drivers/gpu/drm/panfrost/panfrost_issues.h   | 176 ++++++
->  drivers/gpu/drm/panfrost/panfrost_job.c      | 556 +++++++++++++++++++
->  drivers/gpu/drm/panfrost/panfrost_job.h      |  51 ++
->  drivers/gpu/drm/panfrost/panfrost_mmu.c      | 366 ++++++++++++
->  drivers/gpu/drm/panfrost/panfrost_mmu.h      |  17 +
->  drivers/gpu/drm/panfrost/panfrost_regs.h     | 298 ++++++++++
->  include/uapi/drm/panfrost_drm.h              | 140 +++++
->  22 files changed, 3517 insertions(+)
->  create mode 100644 drivers/gpu/drm/panfrost/Kconfig
->  create mode 100644 drivers/gpu/drm/panfrost/Makefile
->  create mode 100644 drivers/gpu/drm/panfrost/TODO
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_devfreq.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_devfreq.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_device.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_device.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_drv.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_features.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_gem.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_gem.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_gpu.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_gpu.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_issues.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_job.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_job.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_mmu.c
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_mmu.h
->  create mode 100644 drivers/gpu/drm/panfrost/panfrost_regs.h
->  create mode 100644 include/uapi/drm/panfrost_drm.h
+> Cheers,
+> Mukesh
 > 
-[...]
+>>   /*
+>> - * SWIOTLB-based DMA API implementation
+>> - *
+>>    * Copyright (C) 2012 ARM Ltd.
+>>    * Author: Catalin Marinas <catalin.marinas@arm.com>
+>> - *
+>> - * This program is free software; you can redistribute it and/or modify
+>> - * it under the terms of the GNU General Public License version 2 as
+>> - * published by the Free Software Foundation.
+>> - *
+>> - * This program is distributed in the hope that it will be useful,
+>> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> - * GNU General Public License for more details.
+>> - *
+>> - * You should have received a copy of the GNU General Public License
+>> - * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>>    */
+>>   #include <linux/gfp.h>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
