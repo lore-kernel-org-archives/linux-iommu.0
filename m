@@ -1,57 +1,82 @@
-From: Mukesh Ojha <mojha@codeaurora.org>
-Subject: Re: [PATCH 20/21] arm64: switch copyright boilerplace to SPDX in
- dma-mapping.c
-Date: Mon, 1 Apr 2019 11:58:01 +0530
-Message-ID: <872c92d0-53cd-a5e1-13ee-f2f715d017b4@codeaurora.org>
-References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-21-hch@lst.de>
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 0/3] Initial Panfrost driver
+Date: Mon,  1 Apr 2019 02:47:27 -0500
+Message-ID: <20190401074730.12241-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190327080448.5500-21-hch@lst.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Lyude Paul <lyude@redhat.com>, Eric Anholt <eric@anholt.net>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Ck9uIDMvMjcvMjAxOSAxOjM0IFBNLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToKPiBTaWduZWQt
-b2ZmLWJ5OiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4KPiBBY2tlZC1ieTogUm9iaW4g
-TXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4KPiAtLS0KPiAgIGFyY2gvYXJtNjQvbW0vZG1h
-LW1hcHBpbmcuYyB8IDE1ICstLS0tLS0tLS0tLS0tLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5z
-ZXJ0aW9uKCspLCAxNCBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L21t
-L2RtYS1tYXBwaW5nLmMgYi9hcmNoL2FybTY0L21tL2RtYS1tYXBwaW5nLmMKPiBpbmRleCBiZjQ5
-ZTk4MmM5NzguLmFkNDY1OTRiMzc5OSAxMDA2NDQKPiAtLS0gYS9hcmNoL2FybTY0L21tL2RtYS1t
-YXBwaW5nLmMKPiArKysgYi9hcmNoL2FybTY0L21tL2RtYS1tYXBwaW5nLmMKPiBAQCAtMSwyMCAr
-MSw3IEBACj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCi8qIFNQRFgtTGlj
-ZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wIMKgICovCgoKQ2FuIHdlIGRvIHRoaXMgd2F5IGFzIGRp
-c2N1c3NlZCBpbgpodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOS8yLzEzLzU3MAoKT25jZSB5b3Ug
-Zml4IGl0IHlvdSBjYW4gdGFrZSBtaW5lIHJldmlldyBpbiBhbGwgeW91ciB0aGlzIGtpbmQgb2Yg
-cGF0Y2hlcy4KUmV2aWV3ZWQtYnk6IE11a2VzaCBPamhhIDxtb2poYUBjb2RlYXVyb3JhLm9yZz4K
-CkNoZWVycywKTXVrZXNoCgo+ICAgLyoKPiAtICogU1dJT1RMQi1iYXNlZCBETUEgQVBJIGltcGxl
-bWVudGF0aW9uCj4gLSAqCj4gICAgKiBDb3B5cmlnaHQgKEMpIDIwMTIgQVJNIEx0ZC4KPiAgICAq
-IEF1dGhvcjogQ2F0YWxpbiBNYXJpbmFzIDxjYXRhbGluLm1hcmluYXNAYXJtLmNvbT4KPiAtICoK
-PiAtICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRl
-IGl0IGFuZC9vciBtb2RpZnkKPiAtICogaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2Vu
-ZXJhbCBQdWJsaWMgTGljZW5zZSB2ZXJzaW9uIDIgYXMKPiAtICogcHVibGlzaGVkIGJ5IHRoZSBG
-cmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCj4gLSAqCj4gLSAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0
-cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLAo+IC0gKiBidXQgV0lU
-SE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZgo+
-IC0gKiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0Uu
-ICBTZWUgdGhlCj4gLSAqIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFp
-bHMuCj4gLSAqCj4gLSAqIFlvdSBzaG91bGQgaGF2ZSByZWNlaXZlZCBhIGNvcHkgb2YgdGhlIEdO
-VSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlCj4gLSAqIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtLiAg
-SWYgbm90LCBzZWUgPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy8+Lgo+ICAgICovCj4gICAK
-PiAgICNpbmNsdWRlIDxsaW51eC9nZnAuaD4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFy
-bS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Here's v2 of the panfrost driver. Lots of improvements from the RFC
+primarily with support for job hangs resetting the GPU and runtime-pm
+thanks to Tomeu.
+
+Several dependencies have been applied already, but the first 2 patches
+are the remaining dependencies. We need to take the iommu change via
+drm-misc or we need a stable branch.
+
+A git branch is here[1].
+
+Rob
+
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git panfrost-rebase-v2
+
+Rob Herring (3):
+  iommu: io-pgtable: Add ARM Mali midgard MMU page table format
+  drm: Add a drm_gem_objects_lookup helper
+  drm/panfrost: Add initial panfrost driver
+
+ drivers/gpu/drm/Kconfig                      |   2 +
+ drivers/gpu/drm/Makefile                     |   1 +
+ drivers/gpu/drm/drm_gem.c                    |  46 +-
+ drivers/gpu/drm/panfrost/Kconfig             |  14 +
+ drivers/gpu/drm/panfrost/Makefile            |  12 +
+ drivers/gpu/drm/panfrost/TODO                |  27 +
+ drivers/gpu/drm/panfrost/panfrost_devfreq.c  | 191 +++++++
+ drivers/gpu/drm/panfrost/panfrost_devfreq.h  |  14 +
+ drivers/gpu/drm/panfrost/panfrost_device.c   | 227 ++++++++
+ drivers/gpu/drm/panfrost/panfrost_device.h   | 118 ++++
+ drivers/gpu/drm/panfrost/panfrost_drv.c      | 484 ++++++++++++++++
+ drivers/gpu/drm/panfrost/panfrost_features.h | 309 +++++++++++
+ drivers/gpu/drm/panfrost/panfrost_gem.c      |  92 +++
+ drivers/gpu/drm/panfrost/panfrost_gem.h      |  29 +
+ drivers/gpu/drm/panfrost/panfrost_gpu.c      | 374 +++++++++++++
+ drivers/gpu/drm/panfrost/panfrost_gpu.h      |  19 +
+ drivers/gpu/drm/panfrost/panfrost_issues.h   | 176 ++++++
+ drivers/gpu/drm/panfrost/panfrost_job.c      | 556 +++++++++++++++++++
+ drivers/gpu/drm/panfrost/panfrost_job.h      |  51 ++
+ drivers/gpu/drm/panfrost/panfrost_mmu.c      | 366 ++++++++++++
+ drivers/gpu/drm/panfrost/panfrost_mmu.h      |  17 +
+ drivers/gpu/drm/panfrost/panfrost_regs.h     | 298 ++++++++++
+ drivers/iommu/io-pgtable-arm.c               |  93 +++-
+ drivers/iommu/io-pgtable.c                   |   1 +
+ include/drm/drm_gem.h                        |   2 +
+ include/linux/io-pgtable.h                   |   7 +
+ include/uapi/drm/panfrost_drm.h              | 140 +++++
+ 27 files changed, 3633 insertions(+), 33 deletions(-)
+ create mode 100644 drivers/gpu/drm/panfrost/Kconfig
+ create mode 100644 drivers/gpu/drm/panfrost/Makefile
+ create mode 100644 drivers/gpu/drm/panfrost/TODO
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_devfreq.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_devfreq.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_device.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_device.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_drv.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_features.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_gem.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_gem.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_gpu.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_gpu.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_issues.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_job.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_job.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_mmu.c
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_mmu.h
+ create mode 100644 drivers/gpu/drm/panfrost/panfrost_regs.h
+ create mode 100644 include/uapi/drm/panfrost_drm.h
+
+--
+2.19.1
