@@ -1,68 +1,133 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: RE: [PATCH 02/13] soc/fsl/bman: map FBPR area in the iommu
-Date: Mon, 1 Apr 2019 11:15:21 +0000
-Message-ID: <DB7PR04MB513214FB393EF3C514A26F21EC550@DB7PR04MB5132.eurprd04.prod.outlook.com>
-References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
- <20190329140014.8126-3-laurentiu.tudor@nxp.com>
- <CADRPPNTPZ1xhYr_YKZvrXVJhVqhV9RNAu6ekVHDeOudXTZx3=g@mail.gmail.com>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [PATCH v2 2/3] drm: Add a drm_gem_objects_lookup helper
+Date: Mon, 1 Apr 2019 15:06:48 +0200
+Message-ID: <CAKMK7uE7-XV3cZxS8GT_EDa7yojOLPQi+LqkF85h_0z_JL6gYw@mail.gmail.com>
+References: <20190401074730.12241-1-robh@kernel.org> <20190401074730.12241-3-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CADRPPNTPZ1xhYr_YKZvrXVJhVqhV9RNAu6ekVHDeOudXTZx3=g@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <20190401074730.12241-3-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Leo Li <leoyang.li@nxp.com>
-Cc: Netdev <netdev@vger.kernel.org>, Madalin-cristian Bucur <madalin.bucur@nxp.com>, Roy Pledge <roy.pledge@nxp.com>, Camelia Alexandra Groza <camelia.groza@nxp.com>, David Miller <davem@davemloft.net>, Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, lkml <linux-kernel@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Lyude Paul <lyude@redhat.com>, Eric Anholt <eric@anholt.net>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgTGVvLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IExpIFlhbmcg
-W21haWx0bzpsZW95YW5nLmxpQG54cC5jb21dDQo+IFNlbnQ6IEZyaWRheSwgTWFyY2ggMjksIDIw
-MTkgMTE6MTYgUE0NCj4gDQo+IE9uIEZyaSwgTWFyIDI5LCAyMDE5IGF0IDk6MDMgQU0gPGxhdXJl
-bnRpdS50dWRvckBueHAuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IExhdXJlbnRpdSBUdWRv
-ciA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+ID4NCj4gPiBBZGQgYSBvbmUtdG8tb25lIGlv
-bW11IG1hcHBpbmcgZm9yIGJtYW4gcHJpdmF0ZSBkYXRhIG1lbW9yeSAoRkJQUikuDQo+ID4gVGhp
-cyBpcyByZXF1aXJlZCBmb3IgQk1BTiB0byB3b3JrIHdpdGhvdXQgZmF1bHRzIGJlaGluZCBhbiBp
-b21tdS4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8bGF1cmVudGl1
-LnR1ZG9yQG54cC5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvc29jL2ZzbC9xYm1hbi9ibWFu
-X2Njc3IuYyB8IDExICsrKysrKysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxMSBpbnNlcnRp
-b25zKCspDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zb2MvZnNsL3FibWFuL2JtYW5f
-Y2Nzci5jDQo+IGIvZHJpdmVycy9zb2MvZnNsL3FibWFuL2JtYW5fY2Nzci5jDQo+ID4gaW5kZXgg
-N2MzY2M5NjgwNTNjLi5iMjA5Yzc5NTExYmIgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9zb2Mv
-ZnNsL3FibWFuL2JtYW5fY2Nzci5jDQo+ID4gKysrIGIvZHJpdmVycy9zb2MvZnNsL3FibWFuL2Jt
-YW5fY2Nzci5jDQo+ID4gQEAgLTI5LDYgKzI5LDcgQEANCj4gPiAgICovDQo+ID4NCj4gPiAgI2lu
-Y2x1ZGUgImJtYW5fcHJpdi5oIg0KPiA+ICsjaW5jbHVkZSA8bGludXgvaW9tbXUuaD4NCj4gPg0K
-PiA+ICB1MTYgYm1hbl9pcF9yZXY7DQo+ID4gIEVYUE9SVF9TWU1CT0woYm1hbl9pcF9yZXYpOw0K
-PiA+IEBAIC0xNzgsNiArMTc5LDcgQEAgc3RhdGljIGludCBmc2xfYm1hbl9wcm9iZShzdHJ1Y3Qg
-cGxhdGZvcm1fZGV2aWNlDQo+ICpwZGV2KQ0KPiA+ICAgICAgICAgaW50IHJldCwgZXJyX2lycTsN
-Cj4gPiAgICAgICAgIHN0cnVjdCBkZXZpY2UgKmRldiA9ICZwZGV2LT5kZXY7DQo+ID4gICAgICAg
-ICBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5vZGUgPSBkZXYtPm9mX25vZGU7DQo+ID4gKyAgICAgICBz
-dHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47DQo+ID4gICAgICAgICBzdHJ1Y3QgcmVzb3VyY2Ug
-KnJlczsNCj4gPiAgICAgICAgIHUxNiBpZCwgYm1fcG9vbF9jbnQ7DQo+ID4gICAgICAgICB1OCBt
-YWpvciwgbWlub3I7DQo+ID4gQEAgLTIyNSw2ICsyMjcsMTUgQEAgc3RhdGljIGludCBmc2xfYm1h
-bl9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlDQo+ICpwZGV2KQ0KPiA+DQo+ID4gICAgICAg
-ICBkZXZfZGJnKGRldiwgIkFsbG9jYXRlZCBGQlBSIDB4JWxseCAweCV6eFxuIiwgZmJwcl9hLCBm
-YnByX3N6KTsNCj4gPg0KPiA+ICsgICAgICAgLyogQ3JlYXRlIGFuIDEtdG8tMSBpb21tdSBtYXBw
-aW5nIGZvciBGQlBSIGFyZWEgKi8NCj4gPiArICAgICAgIGRvbWFpbiA9IGlvbW11X2dldF9kb21h
-aW5fZm9yX2RldihkZXYpOw0KPiA+ICsgICAgICAgaWYgKGRvbWFpbikgew0KPiA+ICsgICAgICAg
-ICAgICAgICByZXQgPSBpb21tdV9tYXAoZG9tYWluLCBmYnByX2EsIGZicHJfYSwgZmJwcl9zeiwN
-Cj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIElPTU1VX1JFQUQgfCBJT01NVV9X
-UklURSB8IElPTU1VX0NBQ0hFKTsNCj4gPiArICAgICAgICAgICAgICAgaWYgKHJldCkNCj4gPiAr
-ICAgICAgICAgICAgICAgICAgICAgICBkZXZfd2FybihkZXYsICJmYWlsZWQgdG8gaW9tbXVfbWFw
-KCkgJWRcbiIsDQo+IHJldCk7DQo+ID4gKyAgICAgICB9DQo+IA0KPiBMaWtlIFJvYmluIGhhcyBw
-b2ludGVkIG91dCwgY291bGQgeW91IGV4cGxhaW4gd2h5IHRoZSBtYXBwaW5nIGluIHRoaXMNCj4g
-cGF0Y2ggYW5kIG90aGVyIHNpbWlsYXIgcGF0Y2hlcyBjYW5ub3QgYmUgZGVhbHQgd2l0aCB0aGUg
-ZG1hIEFQSXMNCj4gYXV0b21hdGljYWxseT8gIElmIHRoZSBjdXJyZW50IGJxbWFuIGRyaXZlciBk
-b2Vzbid0IHVzZSB0aGUgZG1hIEFQSXMNCj4gY29ycmVjdGx5LCB3ZSBuZWVkIHRvIGZpeCB0aGF0
-IGluc3RlYWQgb2YgZG9pbmcgdGhlIG1hcHBpbmcNCj4gZXhwbGljaXRseS4NCg0KUGxlYXNlIHNl
-ZSBteSByZXBseSB0byBSb2Jpbi4NCkFzIGEgc2lkZSBjb21tZW50LCBpZiB3ZSB3YW50IHRvIGNv
-bnZlcnQgdG8gZG1hIGFwaSBpdCB3aWxsIGJlIGludGVyZXN0aW5nIHRvIHNlZSBob3cgd2UnbGwg
-ZGVhbCB3aXRoIHRoZSBxbWFuIHBvcnRhbCBkZXZpY2VzIGFzIHRoZXkgcmVxdWlyZSBhIHNtbXUg
-bWFwcGluZyBmb3IgYW4gYXJlYSBvZiB0aGVpciByZWdpc3RlciBibG9jayAod2hlcmUgc3Rhc2hp
-bmcgZ29lcykuIFByb2JsZW0gaXMgdGhleSB0cmVhdGVkIGFzIGRpc3RpbmN0IGRldmljZXMsIHRo
-ZSBhZGRyZXNzIHdoZXJlIHRoZXkgc2hvdWxkIGRtYSBjYW5ub3QgYmUgY29uZmlndXJlZCBpbmRl
-cGVuZGVudGx5IGZvciBlYWNoIG9uZSBvZiB0aGVtLiBJIHRoaW5rIEkgY2FuIGNhbWUgdXAgd2l0
-aCBhIHByb3Bvc2FsIGJ1dCBwcm9iYWJseSB3aWxsIG5vdCBsb29rIHZlcnkgcHJldHR5Lg0KDQot
-LS0NCkJlc3QgUmVnYXJkcywgTGF1cmVudGl1DQoNCj4gPiArDQo+ID4gICAgICAgICBibV9zZXRf
-bWVtb3J5KGZicHJfYSwgZmJwcl9zeik7DQo+ID4NCj4gPiAgICAgICAgIGVycl9pcnEgPSBwbGF0
-Zm9ybV9nZXRfaXJxKHBkZXYsIDApOw0KPiA+IC0tDQo+ID4gMi4xNy4xDQo+ID4NCg==
+On Mon, Apr 1, 2019 at 9:47 AM Rob Herring <robh@kernel.org> wrote:
+>
+> Similar to the single handle drm_gem_object_lookup(),
+> drm_gem_objects_lookup() takes an array of handles and returns an array
+> of GEM objects.
+>
+> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> Cc: Maxime Ripard <maxime.ripard@bootlin.com>
+> Cc: Sean Paul <sean@poorly.run>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  drivers/gpu/drm/drm_gem.c | 46 +++++++++++++++++++++++++++++++--------
+>  include/drm/drm_gem.h     |  2 ++
+>  2 files changed, 39 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
+> index 388b3742e562..5c9bff45e5e1 100644
+> --- a/drivers/gpu/drm/drm_gem.c
+> +++ b/drivers/gpu/drm/drm_gem.c
+> @@ -663,6 +663,42 @@ void drm_gem_put_pages(struct drm_gem_object *obj, struct page **pages,
+>  }
+>  EXPORT_SYMBOL(drm_gem_put_pages);
+>
+> +/**
+> + * drm_gem_objects_lookup - look up GEM objects from an array of handles
+> + * @filp: DRM file private date
+> + * @handle: pointer to array of userspace handle
+> + * @count: size of handle array
+> + * @objs: pointer to array of drm_gem_object pointers
+> + *
+> + * Returns:
+> + *
+> + * @objs filled in with GEM object pointers. -ENOENT is returned on a lookup
+> + * failure. 0 is returned on success.
+
+Bonus points for adding references between the array and normal lookup
+functions to guide people around. Also a comment that the buffers need
+to be released with drm_gem_object_put().
+
+> + */
+> +int drm_gem_objects_lookup(struct drm_file *filp, u32 *handle, int count,
+> +                          struct drm_gem_object **objs)
+
+With a pointer to a pointer I'd expect this function to do the
+allocation, but it doesn't. Normal pointer is enough to pass an array.
+Also maybe make the handle pointer
+const, so it's clear that it's an input parameter.
+
+With the bikesheds addressed:
+
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+
+> +{
+> +       int i, ret = 0;
+> +       struct drm_gem_object *obj;
+> +
+> +       spin_lock(&filp->table_lock);
+> +
+> +       for (i = 0; i < count; i++) {
+> +               /* Check if we currently have a reference on the object */
+> +               obj = idr_find(&filp->object_idr, handle[i]);
+> +               if (!obj) {
+> +                       ret = -ENOENT;
+> +                       break;
+> +               }
+> +               drm_gem_object_get(obj);
+> +               objs[i] = obj;
+> +       }
+> +       spin_unlock(&filp->table_lock);
+> +
+> +       return ret;
+> +}
+> +EXPORT_SYMBOL(drm_gem_objects_lookup);
+> +
+>  /**
+>   * drm_gem_object_lookup - look up a GEM object from its handle
+>   * @filp: DRM file private date
+> @@ -678,15 +714,7 @@ drm_gem_object_lookup(struct drm_file *filp, u32 handle)
+>  {
+>         struct drm_gem_object *obj;
+>
+> -       spin_lock(&filp->table_lock);
+> -
+> -       /* Check if we currently have a reference on the object */
+> -       obj = idr_find(&filp->object_idr, handle);
+> -       if (obj)
+> -               drm_gem_object_get(obj);
+> -
+> -       spin_unlock(&filp->table_lock);
+> -
+> +       drm_gem_objects_lookup(filp, &handle, 1, &obj);
+>         return obj;
+>  }
+>  EXPORT_SYMBOL(drm_gem_object_lookup);
+> diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
+> index 2955aaab3dca..5404225e0194 100644
+> --- a/include/drm/drm_gem.h
+> +++ b/include/drm/drm_gem.h
+> @@ -381,6 +381,8 @@ struct page **drm_gem_get_pages(struct drm_gem_object *obj);
+>  void drm_gem_put_pages(struct drm_gem_object *obj, struct page **pages,
+>                 bool dirty, bool accessed);
+>
+> +int drm_gem_objects_lookup(struct drm_file *filp, u32 *handle, int count,
+> +                          struct drm_gem_object **objs);
+>  struct drm_gem_object *drm_gem_object_lookup(struct drm_file *filp, u32 handle);
+>  long drm_gem_reservation_object_wait(struct drm_file *filep, u32 handle,
+>                                     bool wait_all, unsigned long timeout);
+> --
+> 2.19.1
+>
+
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
