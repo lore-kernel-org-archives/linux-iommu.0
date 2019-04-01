@@ -1,100 +1,98 @@
-From: Eric Anholt <eric@anholt.net>
-Subject: Re: [PATCH v2 2/3] drm: Add a drm_gem_objects_lookup helper
-Date: Mon, 01 Apr 2019 11:22:14 -0700
-Message-ID: <87sgv14mcp.fsf@anholt.net>
-References: <20190401074730.12241-1-robh@kernel.org> <20190401074730.12241-3-robh@kernel.org> <CAKMK7uE7-XV3cZxS8GT_EDa7yojOLPQi+LqkF85h_0z_JL6gYw@mail.gmail.com> <CAL_JsqJ4uppXc_Sti67z0ZBJ4sw1RPgNHCg6usqpUmbQcGQmpQ@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 1/3] iommu: io-pgtable: Add ARM Mali midgard MMU page
+ table format
+Date: Mon, 1 Apr 2019 20:11:00 +0100
+Message-ID: <8d091874-11b0-e348-c4f1-dd1bcfa4bf97@arm.com>
+References: <20190401074730.12241-1-robh@kernel.org>
+ <20190401074730.12241-2-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqJ4uppXc_Sti67z0ZBJ4sw1RPgNHCg6usqpUmbQcGQmpQ@mail.gmail.com>
+In-Reply-To: <20190401074730.12241-2-robh@kernel.org>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-        Joerg Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Lyude Paul <lyude@redhat.com>, Neil Armstrong <narmstrong@baylibre.com>
+To: Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Lyude Paul <lyude@redhat.com>, Eric Anholt <eric@anholt.net>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: iommu@lists.linux-foundation.org
 
---=-=-=
-Content-Type: text/plain
+On 01/04/2019 08:47, Rob Herring wrote:
+> ARM Mali midgard GPU is similar to standard 64-bit stage 1 page tables, but
+> have a few differences. Add a new format type to represent the format. The
+> input address size is 48-bits and the output address size is 40-bits (and
+> possibly less?). Note that the later bifrost GPUs follow the standard
+> 64-bit stage 1 format.
+> 
+> The differences in the format compared to 64-bit stage 1 format are:
+> 
+> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
+> 
+> The access flags are not read-only and unprivileged, but read and write.
+> This is similar to stage 2 entries, but the memory attributes field matches
+> stage 1 being an index.
+> 
+> The nG bit is not set by the vendor driver. This one didn't seem to matter,
+> but we'll keep it aligned to the vendor driver.
+> 
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Please ack this as I need to apply it to the drm-misc tree. Or we need a
+> stable branch with this patch.
 
-Rob Herring <robh@kernel.org> writes:
+With the diff below squashed in to address my outstanding style nits,
 
-> On Mon, Apr 1, 2019 at 8:07 AM Daniel Vetter <daniel@ffwll.ch> wrote:
->>
->> On Mon, Apr 1, 2019 at 9:47 AM Rob Herring <robh@kernel.org> wrote:
->> >
->> > Similar to the single handle drm_gem_object_lookup(),
->> > drm_gem_objects_lookup() takes an array of handles and returns an array
->> > of GEM objects.
->> >
->> > Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
->> > Cc: Maxime Ripard <maxime.ripard@bootlin.com>
->> > Cc: Sean Paul <sean@poorly.run>
->> > Cc: David Airlie <airlied@linux.ie>
->> > Cc: Daniel Vetter <daniel@ffwll.ch>
->> > Signed-off-by: Rob Herring <robh@kernel.org>
->> > ---
->> >  drivers/gpu/drm/drm_gem.c | 46 +++++++++++++++++++++++++++++++--------
->> >  include/drm/drm_gem.h     |  2 ++
->> >  2 files changed, 39 insertions(+), 9 deletions(-)
->> >
->> > diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
->> > index 388b3742e562..5c9bff45e5e1 100644
->> > --- a/drivers/gpu/drm/drm_gem.c
->> > +++ b/drivers/gpu/drm/drm_gem.c
->> > @@ -663,6 +663,42 @@ void drm_gem_put_pages(struct drm_gem_object *obj, struct page **pages,
->> >  }
->> >  EXPORT_SYMBOL(drm_gem_put_pages);
->> >
->> > +/**
->> > + * drm_gem_objects_lookup - look up GEM objects from an array of handles
->> > + * @filp: DRM file private date
->> > + * @handle: pointer to array of userspace handle
->> > + * @count: size of handle array
->> > + * @objs: pointer to array of drm_gem_object pointers
->> > + *
->> > + * Returns:
->> > + *
->> > + * @objs filled in with GEM object pointers. -ENOENT is returned on a lookup
->> > + * failure. 0 is returned on success.
->>
->> Bonus points for adding references between the array and normal lookup
->> functions to guide people around. Also a comment that the buffers need
->> to be released with drm_gem_object_put().
->>
->> > + */
->> > +int drm_gem_objects_lookup(struct drm_file *filp, u32 *handle, int count,
->> > +                          struct drm_gem_object **objs)
->>
->> With a pointer to a pointer I'd expect this function to do the
->> allocation, but it doesn't. Normal pointer is enough to pass an array.
->> Also maybe make the handle pointer
->> const, so it's clear that it's an input parameter.
->
-> I thought about doing the allocation here, but then I couldn't
-> implement the single drm_gem_object_lookup() using this function.
-> Maybe I can refactor in 3 functions making this one a static function.
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-FWIW, I was thinking for v3d that I'd probably add a helper that took in
-the user's pointer to handles :)
+I don't foresee any conflicting io-pgtable changes to prevent this going 
+via DRM, but I'll leave the final say up to Joerg.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks,
+Robin.
 
------BEGIN PGP SIGNATURE-----
+----->8-----
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 98551d0cff59..55ed039da166 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -197,12 +197,13 @@ struct arm_lpae_io_pgtable {
 
-iQIzBAEBCgAdFiEE/JuuFDWp9/ZkuCBXtdYpNtH8nugFAlyiVtYACgkQtdYpNtH8
-nuiMBg//VvQsbg5XwF+KRXj9otwDpkUrrGoK72c+wmoCBIWMPgV9fHi17iVul/8Y
-uoIq7rGWoNnPjMMoj50AecbF/Z3848xgsXtwzCSiCSqyEzt9GWHZotNCjUKk+Usu
-fvSCW2kMlow9LPPG9XcVqxT7+79fWse7d5bL6nh44rkFYynMtbyV4zYFdPgh2UyP
-8IXYtK8W265MCJiLWvMlTxzdoryX7xygVqDnbcqX/bS53zpAVseNar7cxV4I4CK8
-xoOv09Np3SmAVN0OGcJe0JjHV4iRUHHldtHqvddYl1WMAGBPH21fir4Qfdid9DAb
-atb6QzY/OcS3AZ8hRYm4Lm//WPHfbza6AclnCK9QmsierhFxVRECZED5rUieK0kA
-KUYCfNhgB8dxks3lKuYpMOtRXGEbnpiKQsJE1WGiKkWhZvuilb1JCQISZXf7BV93
-32zupQg60EXYs+qNFCa2m9w7tCTqia2F0A52/zDB2nXjDMV0umnMzsoPfaqYCywX
-nKjqknOC7apeMgEl/WvEXDulLTF8Uo2ZN5Nr6cjoZf3aR2YFsMlhDUJ/z/KYIYeK
-JpTowKxpwO3Je7WIQhhDuf7PyiIhUZEy3rxegXKaiDUySuE4mK2p7Nu3F3uAeu2K
-8Ou5n5U5sv5PQMdzpVRE2KjxLdti7fd8osmkupb4J/1MYdsmyms=
-=q8QO
------END PGP SIGNATURE-----
---=-=-=--
+  typedef u64 arm_lpae_iopte;
+
+-static inline bool iopte_leaf(arm_lpae_iopte pte, int l, enum 
+io_pgtable_fmt fmt)
++static inline bool iopte_leaf(arm_lpae_iopte pte, int lvl,
++			      enum io_pgtable_fmt fmt)
+  {
+-	if ((l == (ARM_LPAE_MAX_LEVELS - 1)) && (fmt != ARM_MALI_LPAE))
+-		return iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE;
++	if (lvl == (ARM_LPAE_MAX_LEVELS - 1) && fmt != ARM_MALI_LPAE)
++		return iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_PAGE;
+
+-	return iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK;
++	return iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_BLOCK;
+  }
+
+  static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
+@@ -310,13 +311,10 @@ static void __arm_lpae_init_pte(struct 
+arm_lpae_io_pgtable *data,
+  	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
+  		pte |= ARM_LPAE_PTE_NS;
+
+-	if (lvl == ARM_LPAE_MAX_LEVELS - 1) {
+-		if (data->iop.fmt == ARM_MALI_LPAE)
+-			pte |= ARM_LPAE_PTE_TYPE_BLOCK;
+-		else
+-			pte |= ARM_LPAE_PTE_TYPE_PAGE;
+-	} else
++	if (data->iop.fmt != ARM_MALI_LPAE && lvl != ARM_LPAE_MAX_LEVELS - 1)
+  		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
++	else
++		pte |= ARM_LPAE_PTE_TYPE_PAGE;
+
+  	if (data->iop.fmt != ARM_MALI_LPAE)
+  		pte |= ARM_LPAE_PTE_AF;
