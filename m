@@ -1,101 +1,57 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: Re: [RESEND PATCH v4 0/9] mm: Use vm_map_pages() and
- vm_map_pages_zero() API
-Date: Mon, 1 Apr 2019 10:56:02 +0530
-Message-ID: <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
+From: Mukesh Ojha <mojha@codeaurora.org>
+Subject: Re: [PATCH 20/21] arm64: switch copyright boilerplace to SPDX in
+ dma-mapping.c
+Date: Mon, 1 Apr 2019 11:58:01 +0530
+Message-ID: <872c92d0-53cd-a5e1-13ee-f2f715d017b4@codeaurora.org>
+References: <20190327080448.5500-1-hch@lst.de>
+ <20190327080448.5500-21-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org
-Cc: linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190327080448.5500-21-hch@lst.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Andrew,
-
-On Tue, Mar 19, 2019 at 7:47 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
->
-> Previouly drivers have their own way of mapping range of
-> kernel pages/memory into user vma and this was done by
-> invoking vm_insert_page() within a loop.
->
-> As this pattern is common across different drivers, it can
-> be generalized by creating new functions and use it across
-> the drivers.
->
-> vm_map_pages() is the API which could be used to map
-> kernel memory/pages in drivers which has considered vm_pgoff.
->
-> vm_map_pages_zero() is the API which could be used to map
-> range of kernel memory/pages in drivers which has not considered
-> vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
->
-> We _could_ then at a later "fix" these drivers which are using
-> vm_map_pages_zero() to behave according to the normal vm_pgoff
-> offsetting simply by removing the _zero suffix on the function
-> name and if that causes regressions, it gives us an easy way to revert.
->
-> Tested on Rockchip hardware and display is working fine, including talking
-> to Lima via prime.
->
-> v1 -> v2:
->         Few Reviewed-by.
->
->         Updated the change log in [8/9]
->
->         In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
->         to select a buffer, not as a in-buffer offset by design
->         and it always want to mmap a whole buffer from its beginning.
->         Added additional changes after discussing with Marek and
->         vm_map_pages() could be used instead of vm_map_pages_zero().
->
-> v2 -> v3:
->         Corrected the documentation as per review comment.
->
->         As suggested in v2, renaming the interfaces to -
->         *vm_insert_range() -> vm_map_pages()* and
->         *vm_insert_range_buggy() -> vm_map_pages_zero()*.
->         As the interface is renamed, modified the code accordingly,
->         updated the change logs and modified the subject lines to use the
->         new interfaces. There is no other change apart from renaming and
->         using the new interface.
->
->         Patch[1/9] & [4/9], Tested on Rockchip hardware.
->
-> v3 -> v4:
->         Fixed build warnings on patch [8/9] reported by kbuild test robot.
->
-> Souptick Joarder (9):
->   mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
->   arm: mm: dma-mapping: Convert to use vm_map_pages()
->   drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
->   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
->   drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
->   iommu/dma-iommu.c: Convert to use vm_map_pages()
->   videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
->   xen/gntdev.c: Convert to use vm_map_pages()
->   xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
-
-Is it fine to take these patches into mm tree for regression ?
-
->
->  arch/arm/mm/dma-mapping.c                          | 22 ++----
->  drivers/firewire/core-iso.c                        | 15 +---
->  drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
->  drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
->  drivers/iommu/dma-iommu.c                          | 12 +---
->  drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
->  .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
->  drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
->  drivers/xen/gntdev.c                               | 11 ++-
->  drivers/xen/privcmd-buf.c                          |  8 +--
->  include/linux/mm.h                                 |  4 ++
->  mm/memory.c                                        | 81 ++++++++++++++++++++++
->  mm/nommu.c                                         | 14 ++++
->  13 files changed, 134 insertions(+), 103 deletions(-)
->
-> --
-> 1.9.1
->
+Ck9uIDMvMjcvMjAxOSAxOjM0IFBNLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToKPiBTaWduZWQt
+b2ZmLWJ5OiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4KPiBBY2tlZC1ieTogUm9iaW4g
+TXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4KPiAtLS0KPiAgIGFyY2gvYXJtNjQvbW0vZG1h
+LW1hcHBpbmcuYyB8IDE1ICstLS0tLS0tLS0tLS0tLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5z
+ZXJ0aW9uKCspLCAxNCBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L21t
+L2RtYS1tYXBwaW5nLmMgYi9hcmNoL2FybTY0L21tL2RtYS1tYXBwaW5nLmMKPiBpbmRleCBiZjQ5
+ZTk4MmM5NzguLmFkNDY1OTRiMzc5OSAxMDA2NDQKPiAtLS0gYS9hcmNoL2FybTY0L21tL2RtYS1t
+YXBwaW5nLmMKPiArKysgYi9hcmNoL2FybTY0L21tL2RtYS1tYXBwaW5nLmMKPiBAQCAtMSwyMCAr
+MSw3IEBACj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCi8qIFNQRFgtTGlj
+ZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wIMKgICovCgoKQ2FuIHdlIGRvIHRoaXMgd2F5IGFzIGRp
+c2N1c3NlZCBpbgpodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOS8yLzEzLzU3MAoKT25jZSB5b3Ug
+Zml4IGl0IHlvdSBjYW4gdGFrZSBtaW5lIHJldmlldyBpbiBhbGwgeW91ciB0aGlzIGtpbmQgb2Yg
+cGF0Y2hlcy4KUmV2aWV3ZWQtYnk6IE11a2VzaCBPamhhIDxtb2poYUBjb2RlYXVyb3JhLm9yZz4K
+CkNoZWVycywKTXVrZXNoCgo+ICAgLyoKPiAtICogU1dJT1RMQi1iYXNlZCBETUEgQVBJIGltcGxl
+bWVudGF0aW9uCj4gLSAqCj4gICAgKiBDb3B5cmlnaHQgKEMpIDIwMTIgQVJNIEx0ZC4KPiAgICAq
+IEF1dGhvcjogQ2F0YWxpbiBNYXJpbmFzIDxjYXRhbGluLm1hcmluYXNAYXJtLmNvbT4KPiAtICoK
+PiAtICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRl
+IGl0IGFuZC9vciBtb2RpZnkKPiAtICogaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2Vu
+ZXJhbCBQdWJsaWMgTGljZW5zZSB2ZXJzaW9uIDIgYXMKPiAtICogcHVibGlzaGVkIGJ5IHRoZSBG
+cmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCj4gLSAqCj4gLSAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0
+cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLAo+IC0gKiBidXQgV0lU
+SE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZgo+
+IC0gKiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0Uu
+ICBTZWUgdGhlCj4gLSAqIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFp
+bHMuCj4gLSAqCj4gLSAqIFlvdSBzaG91bGQgaGF2ZSByZWNlaXZlZCBhIGNvcHkgb2YgdGhlIEdO
+VSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlCj4gLSAqIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtLiAg
+SWYgbm90LCBzZWUgPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy8+Lgo+ICAgICovCj4gICAK
+PiAgICNpbmNsdWRlIDxsaW51eC9nZnAuaD4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFy
+bS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
