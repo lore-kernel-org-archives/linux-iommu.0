@@ -1,30 +1,32 @@
-From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: Re: [PATCH v2 0/3] Initial Panfrost driver
-Date: Mon, 1 Apr 2019 08:05:30 -0700
-Message-ID: <20190401150530.GA5110@rosenzweig.io>
-References: <20190401074730.12241-1-robh@kernel.org>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH 3/7] gbefb: switch to managed version of the DMA
+ allocator
+Date: Mon, 1 Apr 2019 17:38:40 +0200
+Message-ID: <a61e5aa5-53ed-168c-9b75-cb0509e0c065@samsung.com>
+References: <20190321225235.30648-1-hch@lst.de>
+        <CGME20190321225318epcas1p2a3b1fc89a14c4ab1241d8b48293fb9e0@epcas1p2.samsung.com>
+        <20190321225235.30648-4-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20190401074730.12241-1-robh@kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: Sean Paul <sean@poorly.run>, Lyude Paul <lyude@redhat.com>, Eric Anholt <eric@anholt.net>, Maxime Ripard <maxime.ripard@bootlin.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Neil Armstrong <narmstrong@baylibre.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190321225235.30648-4-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Russell King <linux@armlinux.org.uk>, x86@kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Nice job!
 
-Patches 1-2 are Acked-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Patch 3 is Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+On 03/21/2019 11:52 PM, Christoph Hellwig wrote:
+> gbefb uses managed resources, so it should do the same for DMA
+> allocations.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Excited to see this mainlined!
+Acked-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
