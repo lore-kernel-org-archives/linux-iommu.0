@@ -1,105 +1,92 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: RE: [PATCH 05/13] soc/fsl/bqman: page align iommu mapping sizes
-Date: Mon, 1 Apr 2019 10:18:33 +0000
-Message-ID: <DB7PR04MB5132F8826AEE540386FA1A33EC550@DB7PR04MB5132.eurprd04.prod.outlook.com>
+From: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [PATCH 01/13] soc/fsl/qman: fixup liodns only on ppc targets
+Date: Mon, 1 Apr 2019 10:21:22 +0000
+Message-ID: <DB7PR04MB5132EF28E1CAB23EBF0238B0EC550@DB7PR04MB5132.eurprd04.prod.outlook.com>
 References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
- <20190329140014.8126-6-laurentiu.tudor@nxp.com>
- <CADRPPNTh65rwPVVzJBWt-cNrbQWAoo0FeTGnCHDiqSxvARa_5g@mail.gmail.com>
+	<20190329140014.8126-2-laurentiu.tudor@nxp.com>
+	<CADRPPNQ9AGRvq8XDjeTerUBry+_hO-U=shCXFaqHhtc9QvMvng@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CADRPPNTh65rwPVVzJBWt-cNrbQWAoo0FeTGnCHDiqSxvARa_5g@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CADRPPNQ9AGRvq8XDjeTerUBry+_hO-U=shCXFaqHhtc9QvMvng-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Leo Li <leoyang.li@nxp.com>
-Cc: Netdev <netdev@vger.kernel.org>, Madalin-cristian Bucur <madalin.bucur@nxp.com>, Roy Pledge <roy.pledge@nxp.com>, Camelia Alexandra Groza <camelia.groza@nxp.com>, David Miller <davem@davemloft.net>, Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, lkml <linux-kernel@vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>
+Cc: Madalin-cristian Bucur <madalin.bucur-3arQi8VN3Tc@public.gmane.org>, Netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Roy Pledge <roy.pledge-3arQi8VN3Tc@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Camelia Alexandra Groza <camelia.groza-3arQi8VN3Tc@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, "moderated list:ARM/FREESCALE IMX /
+	MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgTGVvLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IExpIFlhbmcg
-W21haWx0bzpsZW95YW5nLmxpQG54cC5jb21dDQo+IFNlbnQ6IFNhdHVyZGF5LCBNYXJjaCAzMCwg
-MjAxOSAxMjowNyBBTQ0KPiBUbzogTGF1cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhw
-LmNvbT4NCj4gQ2M6IE5ldGRldiA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IE1hZGFsaW4tY3Jp
-c3RpYW4gQnVjdXINCj4gPG1hZGFsaW4uYnVjdXJAbnhwLmNvbT47IFJveSBQbGVkZ2UgPHJveS5w
-bGVkZ2VAbnhwLmNvbT47IENhbWVsaWENCj4gQWxleGFuZHJhIEdyb3phIDxjYW1lbGlhLmdyb3ph
-QG54cC5jb20+OyBEYXZpZCBNaWxsZXINCj4gPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBMaW51eCBJ
-T01NVSA8aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc+Ow0KPiBtb2RlcmF0ZWQgbGlz
-dDpBUk0vRlJFRVNDQUxFIElNWCAvIE1YQyBBUk0gQVJDSElURUNUVVJFIDxsaW51eC1hcm0tDQo+
-IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnPjsgbGludXhwcGMtZGV2IDxsaW51eHBwYy1kZXZA
-bGlzdHMub3psYWJzLm9yZz47DQo+IGxrbWwgPGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+
-DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMDUvMTNdIHNvYy9mc2wvYnFtYW46IHBhZ2UgYWxpZ24g
-aW9tbXUgbWFwcGluZyBzaXplcw0KPiBJbXBvcnRhbmNlOiBIaWdoDQo+IA0KPiBPbiBGcmksIE1h
-ciAyOSwgMjAxOSBhdCA5OjAxIEFNIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4gd3JvdGU6DQo+
-ID4NCj4gPiBGcm9tOiBMYXVyZW50aXUgVHVkb3IgPGxhdXJlbnRpdS50dWRvckBueHAuY29tPg0K
-PiA+DQo+ID4gUHJpb3IgdG8gY2FsbGluZyBpb21tdV9tYXAoKS9pb21tdV91bm1hcCgpIHBhZ2Ug
-YWxpZ24gdGhlIHNpemUgb3INCj4gPiBmYWlsdXJlcyBzdWNoIGFzIGJlbG93IGNvdWxkIGhhcHBl
-bjoNCj4gPg0KPiA+IGlvbW11OiB1bmFsaWduZWQ6IGlvdmEgMHguLi4gcGEgMHguLi4gc2l6ZSAw
-eDQwMDAgbWluX3BhZ2VzeiAweDEwMDAwDQo+ID4gcW1hbl9wb3J0YWwgNTAwMDAwMDAwLnFtYW4t
-cG9ydGFsOiBmYWlsZWQgdG8gaW9tbXVfbWFwKCkgLTIyDQo+ID4NCj4gPiBTZWVuIHdoZW4gYm9v
-dGVkIGEga2VybmVsIGNvbXBpbGVkIHdpdGggNjRLIHBhZ2Ugc2l6ZSBzdXBwb3J0Lg0KPiANCj4g
-VGhpcyB3aWxsIHNpbGVudGx5IGluY2Vhc2UgdGhlIGFjdHVhbCBzcGFjZSBtYXBwZWQgdG8gNjRL
-IHdoZW4gdGhlDQo+IGRyaXZlciBpcyBhY3R1YWxseSB0cnlpbmcgdG8gbWFwIDRLLiAgV2lsbCB0
-aGlzIHBvdGVudGlhbGx5IGNhdXNlDQo+IHNlY3VyaXR5IGJyZWFjaGVzPyAgSWYgaXQgaXMgcmVh
-bGx5IHNhZmUgdG8gbWFwIDY0SywgcHJvYmFibHkgdGhlDQo+IGJldHRlciB3YXkgaXMgdG8gaW5j
-cmVhc2UgdGhlIHJlZ2lvbiBzaXplIHRvIDY0ayBpbiB0aGUgZGV2aWNlIHRyZWUNCj4gZXhwbGlj
-aXRseS4NCg0KTm90IHN1cmUgaWYgc3VjaCBzbWFsbCByZXNlcnZlZCBhcmVhcyBhcmUgcHJhY3Rp
-Y2FsLCBzbyBJIHdvdWxkbid0IHdvcnJ5IA0KbXVjaC4gQXMgYW4gZXhhbXBsZSwgY3VycmVudGx5
-IG9uIGxzMTA0NmEgd2UgcmVzZXJ2ZSB0aGUgZm9sbG93aW5nIG1lbW9yeToNCmJtYW4gMTZNQiwg
-cW1hbiBmcWQgOE1CLCBxbWFuIHBkZnIgMzJNQi4NCkJ1dCBqdXN0IHRvIGJlIG9uIHRoZSBzYWZl
-IHNpZGUsIG1heWJlIHdlIGNvdWxkIGFkZCBhbiBlcnJvciBjaGVjayBmb3IgDQpkZXZpY2UgdHJl
-ZXMgdGhhdCBzcGVjaWZ5IDwgNjRLQiByZXNlcnZlZCBtZW1vcnkuDQoNCi0tLQ0KQmVzdCBSZWdh
-cmRzLCBMYXVyZW50aXUNCg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogTGF1cmVudGl1IFR1ZG9y
-IDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9zb2MvZnNs
-L3FibWFuL2JtYW5fY2Nzci5jICAgfCAyICstDQo+ID4gIGRyaXZlcnMvc29jL2ZzbC9xYm1hbi9x
-bWFuX2Njc3IuYyAgIHwgNCArKy0tDQo+ID4gIGRyaXZlcnMvc29jL2ZzbC9xYm1hbi9xbWFuX3Bv
-cnRhbC5jIHwgMiArLQ0KPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBk
-ZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3NvYy9mc2wvcWJtYW4v
-Ym1hbl9jY3NyLmMNCj4gYi9kcml2ZXJzL3NvYy9mc2wvcWJtYW4vYm1hbl9jY3NyLmMNCj4gPiBp
-bmRleCBiMjA5Yzc5NTExYmIuLjNhNmUwMWJkZTMyZCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJz
-L3NvYy9mc2wvcWJtYW4vYm1hbl9jY3NyLmMNCj4gPiArKysgYi9kcml2ZXJzL3NvYy9mc2wvcWJt
-YW4vYm1hbl9jY3NyLmMNCj4gPiBAQCAtMjMwLDcgKzIzMCw3IEBAIHN0YXRpYyBpbnQgZnNsX2Jt
-YW5fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiAqcGRldikNCj4gPiAgICAgICAgIC8q
-IENyZWF0ZSBhbiAxLXRvLTEgaW9tbXUgbWFwcGluZyBmb3IgRkJQUiBhcmVhICovDQo+ID4gICAg
-ICAgICBkb21haW4gPSBpb21tdV9nZXRfZG9tYWluX2Zvcl9kZXYoZGV2KTsNCj4gPiAgICAgICAg
-IGlmIChkb21haW4pIHsNCj4gPiAtICAgICAgICAgICAgICAgcmV0ID0gaW9tbXVfbWFwKGRvbWFp
-biwgZmJwcl9hLCBmYnByX2EsIGZicHJfc3osDQo+ID4gKyAgICAgICAgICAgICAgIHJldCA9IGlv
-bW11X21hcChkb21haW4sIGZicHJfYSwgZmJwcl9hLA0KPiBQQUdFX0FMSUdOKGZicHJfc3opLA0K
-PiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSU9NTVVfUkVBRCB8IElPTU1VX1dS
-SVRFIHwgSU9NTVVfQ0FDSEUpOw0KPiA+ICAgICAgICAgICAgICAgICBpZiAocmV0KQ0KPiA+ICAg
-ICAgICAgICAgICAgICAgICAgICAgIGRldl93YXJuKGRldiwgImZhaWxlZCB0byBpb21tdV9tYXAo
-KSAlZFxuIiwNCj4gcmV0KTsNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zb2MvZnNsL3FibWFu
-L3FtYW5fY2Nzci5jDQo+IGIvZHJpdmVycy9zb2MvZnNsL3FibWFuL3FtYW5fY2Nzci5jDQo+ID4g
-aW5kZXggZWVjNzcwMDUwN2UxLi44ZDNjOTUwY2U1MmQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVy
-cy9zb2MvZnNsL3FibWFuL3FtYW5fY2Nzci5jDQo+ID4gKysrIGIvZHJpdmVycy9zb2MvZnNsL3Fi
-bWFuL3FtYW5fY2Nzci5jDQo+ID4gQEAgLTc4MywxMSArNzgzLDExIEBAIHN0YXRpYyBpbnQgZnNs
-X3FtYW5fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiAqcGRldikNCj4gPiAgICAgICAg
-IC8qIENyZWF0ZSBhbiAxLXRvLTEgaW9tbXUgbWFwcGluZyBmb3IgZnFkIGFuZCBwZmRyIGFyZWFz
-ICovDQo+ID4gICAgICAgICBkb21haW4gPSBpb21tdV9nZXRfZG9tYWluX2Zvcl9kZXYoZGV2KTsN
-Cj4gPiAgICAgICAgIGlmIChkb21haW4pIHsNCj4gPiAtICAgICAgICAgICAgICAgcmV0ID0gaW9t
-bXVfbWFwKGRvbWFpbiwgZnFkX2EsIGZxZF9hLCBmcWRfc3osDQo+ID4gKyAgICAgICAgICAgICAg
-IHJldCA9IGlvbW11X21hcChkb21haW4sIGZxZF9hLCBmcWRfYSwNCj4gUEFHRV9BTElHTihmcWRf
-c3opLA0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSU9NTVVfUkVBRCB8IElP
-TU1VX1dSSVRFIHwgSU9NTVVfQ0FDSEUpOw0KPiA+ICAgICAgICAgICAgICAgICBpZiAocmV0KQ0K
-PiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGRldl93YXJuKGRldiwgImlvbW11X21hcChmcWQp
-IGZhaWxlZCAlZFxuIiwNCj4gcmV0KTsNCj4gPiAtICAgICAgICAgICAgICAgcmV0ID0gaW9tbXVf
-bWFwKGRvbWFpbiwgcGZkcl9hLCBwZmRyX2EsIHBmZHJfc3osDQo+ID4gKyAgICAgICAgICAgICAg
-IHJldCA9IGlvbW11X21hcChkb21haW4sIHBmZHJfYSwgcGZkcl9hLA0KPiBQQUdFX0FMSUdOKHBm
-ZHJfc3opLA0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSU9NTVVfUkVBRCB8
-IElPTU1VX1dSSVRFIHwgSU9NTVVfQ0FDSEUpOw0KPiA+ICAgICAgICAgICAgICAgICBpZiAocmV0
-KQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGRldl93YXJuKGRldiwgImlvbW11X21hcChw
-ZmRyKSBmYWlsZWQgJWRcbiIsDQo+IHJldCk7DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc29j
-L2ZzbC9xYm1hbi9xbWFuX3BvcnRhbC5jDQo+IGIvZHJpdmVycy9zb2MvZnNsL3FibWFuL3FtYW5f
-cG9ydGFsLmMNCj4gPiBpbmRleCBkZmI2MmY5ODE1ZTkuLmJjZTU2ZGEyYjAxZiAxMDA2NDQNCj4g
-PiAtLS0gYS9kcml2ZXJzL3NvYy9mc2wvcWJtYW4vcW1hbl9wb3J0YWwuYw0KPiA+ICsrKyBiL2Ry
-aXZlcnMvc29jL2ZzbC9xYm1hbi9xbWFuX3BvcnRhbC5jDQo+ID4gQEAgLTI5Nyw3ICsyOTcsNyBA
-QCBzdGF0aWMgaW50IHFtYW5fcG9ydGFsX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UNCj4g
-KnBkZXYpDQo+ID4gICAgICAgICAgICAgICAgICAqLw0KPiA+ICAgICAgICAgICAgICAgICBlcnIg
-PSBpb21tdV9tYXAoZG9tYWluLA0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-YWRkcl9waHlzWzBdLT5zdGFydCwgYWRkcl9waHlzWzBdLQ0KPiA+c3RhcnQsDQo+ID4gLSAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICByZXNvdXJjZV9zaXplKGFkZHJfcGh5c1swXSksDQo+
-ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBQQUdFX0FMSUdOKHJlc291cmNlX3Np
-emUoYWRkcl9waHlzWzBdKSksDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBJ
-T01NVV9SRUFEIHwgSU9NTVVfV1JJVEUgfCBJT01NVV9DQUNIRSk7DQo+ID4gICAgICAgICAgICAg
-ICAgIGlmIChlcnIpDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgZGV2X3dhcm4oZGV2LCAi
-ZmFpbGVkIHRvIGlvbW11X21hcCgpICVkXG4iLA0KPiBlcnIpOw0KPiA+IC0tDQo+ID4gMi4xNy4x
-DQo+ID4NCg==
+Hi Leo,
+
+> -----Original Message-----
+> From: Li Yang [mailto:leoyang.li-3arQi8VN3Tc@public.gmane.org]
+> Sent: Friday, March 29, 2019 11:50 PM
+> To: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+> Cc: Netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>; Madalin-cristian Bucur
+> <madalin.bucur-3arQi8VN3Tc@public.gmane.org>; Roy Pledge <roy.pledge-3arQi8VN3Tc@public.gmane.org>; Camelia
+> Alexandra Groza <camelia.groza-3arQi8VN3Tc@public.gmane.org>; David Miller
+> <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>;
+> moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE <linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>; linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>;
+> lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+> Subject: Re: [PATCH 01/13] soc/fsl/qman: fixup liodns only on ppc targets
+> Importance: High
+> 
+> On Fri, Mar 29, 2019 at 9:01 AM <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org> wrote:
+> >
+> > From: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+> >
+> > ARM SoCs use SMMU so the liodn fixup done in the qman driver is no
+> > longer making sense and it also breaks the ICID settings inherited
+> > from u-boot. Do the fixups only for PPC targets.
+> >
+> > Signed-off-by: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+> > ---
+> >  drivers/soc/fsl/qbman/qman_ccsr.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/drivers/soc/fsl/qbman/qman_ccsr.c
+> b/drivers/soc/fsl/qbman/qman_ccsr.c
+> > index 109b38de3176..12e414ca3b03 100644
+> > --- a/drivers/soc/fsl/qbman/qman_ccsr.c
+> > +++ b/drivers/soc/fsl/qbman/qman_ccsr.c
+> > @@ -598,6 +598,7 @@ static int qman_init_ccsr(struct device *dev)
+> >  #define LIO_CFG_LIODN_MASK 0x0fff0000
+> >  void qman_liodn_fixup(u16 channel)
+> >  {
+> > +#ifdef CONFIG_PPC
+> >         static int done;
+> >         static u32 liodn_offset;
+> >         u32 before, after;
+> > @@ -617,6 +618,7 @@ void qman_liodn_fixup(u16 channel)
+> >                 qm_ccsr_out(REG_REV3_QCSP_LIO_CFG(idx), after);
+> >         else
+> >                 qm_ccsr_out(REG_QCSP_LIO_CFG(idx), after);
+> > +#endif
+> 
+> According to the Linux coding style recommendation, it would be better
+> to put the #ifdef into the header files
+> "drivers/soc/fsl/qbman/qman_priv.h".  And I'm not sure if this is
+> needed on PPC when IOMMU(PAMU) driver is not compiled, if not,
+> probably using CONFIG_PAMU as condition would be even better.
+
+Good point, will so in the next spin.
+
+---
+Best Regards, Laurentiu
+
+> >  }
+> >
+> >  #define IO_CFG_SDEST_MASK 0x00ff0000
+> > --
+> > 2.17.1
+> >
