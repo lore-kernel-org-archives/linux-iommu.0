@@ -1,148 +1,101 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v1 2/3] arm64: dts: qcom: msm8998: Add PCIe SMMU node
-Date: Sat, 30 Mar 2019 19:48:49 +0530
-Message-ID: <CAFp+6iHOwW5jJmdVWo-E7154xk2jpR4ZLRoXEJdPwu8_ZJg14Q@mail.gmail.com>
-References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
-	<82ab78ee-4a38-4eee-f064-272b6f964f17@free.fr>
-	<e7c8137a-2408-a71a-f722-199a86a75d13@free.fr>
-	<5aa56120-b686-194b-36d6-8177b5749a19@arm.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [RESEND PATCH v4 0/9] mm: Use vm_map_pages() and
+ vm_map_pages_zero() API
+Date: Mon, 1 Apr 2019 10:56:02 +0530
+Message-ID: <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
+References: <cover.1552921225.git.jrdr.linux@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5aa56120-b686-194b-36d6-8177b5749a19-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org
+Cc: linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marc,
+Hi Andrew,
 
-On Fri, Mar 29, 2019 at 11:59 PM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+On Tue, Mar 19, 2019 at 7:47 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
 >
-> On 29/03/2019 10:51, Marc Gonzalez wrote:
-> > On 28/03/2019 18:05, Marc Gonzalez wrote:
-> >
-> >> ANOC1 SMMU filters PCIe accesses.
-> >
-> > I'm not sure this description is entirely accurate...
-> >
-> > ANOC likely stands for "Application Network-On-Chip"
+> Previouly drivers have their own way of mapping range of
+> kernel pages/memory into user vma and this was done by
+> invoking vm_insert_page() within a loop.
+>
+> As this pattern is common across different drivers, it can
+> be generalized by creating new functions and use it across
+> the drivers.
+>
+> vm_map_pages() is the API which could be used to map
+> kernel memory/pages in drivers which has considered vm_pgoff.
+>
+> vm_map_pages_zero() is the API which could be used to map
+> range of kernel memory/pages in drivers which has not considered
+> vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
+>
+> We _could_ then at a later "fix" these drivers which are using
+> vm_map_pages_zero() to behave according to the normal vm_pgoff
+> offsetting simply by removing the _zero suffix on the function
+> name and if that causes regressions, it gives us an easy way to revert.
+>
+> Tested on Rockchip hardware and display is working fine, including talking
+> to Lima via prime.
+>
+> v1 -> v2:
+>         Few Reviewed-by.
+>
+>         Updated the change log in [8/9]
+>
+>         In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
+>         to select a buffer, not as a in-buffer offset by design
+>         and it always want to mmap a whole buffer from its beginning.
+>         Added additional changes after discussing with Marek and
+>         vm_map_pages() could be used instead of vm_map_pages_zero().
+>
+> v2 -> v3:
+>         Corrected the documentation as per review comment.
+>
+>         As suggested in v2, renaming the interfaces to -
+>         *vm_insert_range() -> vm_map_pages()* and
+>         *vm_insert_range_buggy() -> vm_map_pages_zero()*.
+>         As the interface is renamed, modified the code accordingly,
+>         updated the change logs and modified the subject lines to use the
+>         new interfaces. There is no other change apart from renaming and
+>         using the new interface.
+>
+>         Patch[1/9] & [4/9], Tested on Rockchip hardware.
+>
+> v3 -> v4:
+>         Fixed build warnings on patch [8/9] reported by kbuild test robot.
+>
+> Souptick Joarder (9):
+>   mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
+>   arm: mm: dma-mapping: Convert to use vm_map_pages()
+>   drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
+>   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
+>   drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
+>   iommu/dma-iommu.c: Convert to use vm_map_pages()
+>   videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
+>   xen/gntdev.c: Convert to use vm_map_pages()
+>   xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
 
-How about simply saying - "Add device node for ANOC1 SMMU" for
-commit title.
-Commit text -
-ANOC1 smmu services a list of peripherals - USB, UFS, BLSP2, and PCIe.
-Add the device node for this smmu.
-
-> >
-> >
-> >>   arch/arm64/boot/dts/qcom/msm8998.dtsi | 15 +++++++++++++++
-> >>   1 file changed, 15 insertions(+)
-> >>
-> >> diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> >> index f9a922fdae75..5a1c0961b281 100644
-> >> --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> >> +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> >> @@ -606,6 +606,21 @@
-> >>                      #thermal-sensor-cells = <1>;
-> >>              };
-> >>
-> >> +            anoc1_smmu: arm,smmu@1680000 {
-> >> +                    compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
-> >
-> > Maybe I should instead use "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
-> > and define "qcom,msm8998-smmu-v2" in
-> > Documentation/devicetree/bindings/iommu/arm,smmu.txt ?
->
-> Yes please.
->
-> > (Would the Documentation change need to be in a separate patch?)
->
-> That's generally preferred, yes.
->
-> >
-> >> +                    reg = <0x01680000 0x10000>;
-> >> +                    #iommu-cells = <1>;
-> >
-> > I'm not sure about this property. IIRC, Robin said <0> is not valid,
-> > but I don't have any iommus prop, only iommu-map.
->
-> You have to join the dots between the various bindings a little, but the
-> iommu-base part of each iommu-map entry is an IOMMU specifier, and IOMMU
-> specifiers are #iommu-cells long.
->
-> To cut a long story short, 1 is definitely appropriate, because
-> arm-smmu's definition of a 2-cell specifier wouldn't make much sense in
-> the iommu-map context (and the current code for parsing iommu-map
-> actually just assumes 1 anyway).
-
-Besides this,
-Looking at the SID mappings for ANOC1 smmu, devices such as USB, and UFS
-can very well enable iommu support, and thus iommu-cells = 1 seems
-like the correct thingy.
-
->
-> >> +
-> >> +                    #global-interrupts = <0>;
-> >> +                    interrupts =
-> >> +                            <GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
-> >> +                            <GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
-> >> +                            <GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
-> >> +                            <GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
-> >> +                            <GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
-> >> +                            <GIC_SPI 369 IRQ_TYPE_EDGE_RISING>;
-> >> +            };
-> >> +
-> >
-> > The rest of the node looks fairly straight-forward.
->
-> You should probably have some "bus" and "iface" clocks too, per the
-> requirement of "qcom,smmu-v2". Maybe Vivek might know what's relevant
-> for MSM8998?
-
-As Jeffrey rightly mentioned, these clocks are not under the control of Linux.
-So, we won't need to add clocks to this SMMU.
-
-Thanks
-Vivek
+Is it fine to take these patches into mm tree for regression ?
 
 >
-> >
-> > DT code was adapted from:
-> >
-> > https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-8998.dtsi?h=LE.UM.1.3.r3.25#n18
-> >
-> > I left out the so-called implementation-defined init:
-> >
-> > https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-impl-defs-8998.dtsi?h=LE.UM.1.3.r3.25#n123
-> >
-> > Should I try to merge this part in mainline?
-> > (I don't have any documentation for it though.)
+>  arch/arm/mm/dma-mapping.c                          | 22 ++----
+>  drivers/firewire/core-iso.c                        | 15 +---
+>  drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
+>  drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
+>  drivers/iommu/dma-iommu.c                          | 12 +---
+>  drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
+>  .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
+>  drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
+>  drivers/xen/gntdev.c                               | 11 ++-
+>  drivers/xen/privcmd-buf.c                          |  8 +--
+>  include/linux/mm.h                                 |  4 ++
+>  mm/memory.c                                        | 81 ++++++++++++++++++++++
+>  mm/nommu.c                                         | 14 ++++
+>  13 files changed, 134 insertions(+), 103 deletions(-)
 >
-> "pls no :("
+> --
+> 1.9.1
 >
-> I'm not sure what route the path takes from "DT describes the platform"
-> to get to "DT lists opaque register addresses and magic data to write
-> into them", but I imagine it might involve getting hit in the head along
-> the way.
->
-> Robin.
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
