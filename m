@@ -1,13 +1,15 @@
-From: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] arm64: dts: qcom: msm8998: Add ANOC1 SMMU node
-Date: Tue, 2 Apr 2019 09:37:17 +0200
-Message-ID: <6d7deec7-d141-bbde-9358-628c0af7bb8c@free.fr>
-References: <edade219-aa77-e7f0-af68-1c192632b2ca@free.fr>
+From: Stanimir Varbanov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v1 1/3] PCI: qcom: Setup PCIE20_PARF_BDF_TRANSLATE_N
+Date: Tue, 2 Apr 2019 11:08:00 +0300
+Message-ID: <58b4db00-a0fa-5058-99ee-c11c8e2fa529@mm-sol.com>
+References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
+	<958ae127-3aa2-6824-c875-e3012644ed3d@free.fr>
+Reply-To: Stanimir Varbanov <svarbanov-NEYub+7Iv8PQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <edade219-aa77-e7f0-af68-1c192632b2ca-GANU6spQydw@public.gmane.org>
+In-Reply-To: <958ae127-3aa2-6824-c875-e3012644ed3d-GANU6spQydw@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,40 +20,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/04/2019 17:40, Marc Gonzalez wrote:
+Hi Marc,
 
-> The MSM8998 ANOC1(*) SMMU services BLSP2, PCIe, UFS, and USB.
-> (*) Aggregate Network-on-Chip #1
-> 
-> Based on the following DTS downstream:
-> https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-8998.dtsi?h=LE.UM.1.3.r3.25#n18
+Thank you for the work on that!
+
+On 3/28/19 7:01 PM, Marc Gonzalez wrote:
+> Initialize PCIE20_PARF_BDF_TRANSLATE_N for ops_2_3_2.
 > 
 > Signed-off-by: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
 > ---
-> Changes from v1:
-> 	Split off from "PCIe and AR8151 on APQ8098/MSM8998" series
-> 	Change compatible string to use qcom,msm8998-smmu-v2
-> ---
->  arch/arm64/boot/dts/qcom/msm8998.dtsi | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+>  drivers/pci/controller/dwc/pcie-qcom.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> index ef71e8f1d102..f807ea3e2c6e 100644
-> --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> @@ -606,6 +606,21 @@
->  			#thermal-sensor-cells = <1>;
->  		};
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index 0ed235d560e3..5e5522a427b8 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -54,6 +54,7 @@
+>  #define PCIE20_PARF_LTSSM			0x1B0
+>  #define PCIE20_PARF_SID_OFFSET			0x234
+>  #define PCIE20_PARF_BDF_TRANSLATE_CFG		0x24C
+> +#define PCIE20_PARF_BDF_TRANSLATE_N		0x250
 >  
-> +		anoc1_smmu: arm,smmu@1680000 {
+>  #define PCIE20_ELBI_SYS_CTRL			0x04
+>  #define PCIE20_ELBI_SYS_CTRL_LT_ENABLE		BIT(0)
+> @@ -602,6 +603,9 @@ static int qcom_pcie_init_2_3_2(struct qcom_pcie *pcie)
+>  	val |= BIT(31);
+>  	writel(val, pcie->parf + PCIE20_PARF_AXI_MSTR_WR_ADDR_HALT_V2);
+>  
+> +	val = PCI_DEVID(1, 0);
+> +	writel(val, pcie->parf + PCIE20_PARF_BDF_TRANSLATE_N);
 
-Doh! This should probably be anoc1_smmu: iommu@1680000
+I wonder, shouldn't this register manipulation happen in common code
+e.g. pcie-designware-host.c and of course the manipulation should be
+conditional because not all platforms might have iommu.
 
-Bjorn, can you fix it up when you pick up the patch, or do you need me
-to respin?
+Also, could we have more generic iommu-map description like the one for
+sdm845 at [1] ?
 
-Regards.
+-- 
+regards,
+Stan
