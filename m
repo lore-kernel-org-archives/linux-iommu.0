@@ -1,123 +1,137 @@
-From: Marc Gonzalez <marc.w.gonzalez@free.fr>
-Subject: Re: [PATCH v2] iommu/arm-smmu: Break insecure users by disabling
- bypass by default
-Date: Tue, 2 Apr 2019 17:42:08 +0200
-Message-ID: <a860d7e8-54dc-f225-0274-0dcf68373ccb@free.fr>
-References: <20190301192017.39770-1-dianders@chromium.org>
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: Re: [PATCH v2] iommu/amd: Reserve exclusion range in iova-domain
+Date: Tue, 2 Apr 2019 13:20:14 -0700
+Message-ID: <20190402202014.bzjw6eidksg6vymj@cantor>
+References: <20190329151037.19112-1-joro@8bytes.org>
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190301192017.39770-1-dianders@chromium.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190329151037.19112-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Vivek Gautam <vivek.gautam@codeaurora.org>, Rob Clark <robdclark@gmail.com>, Evan Green <evgreen@chromium.org>, iommu <iommu@lists.linux-foundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Gary R Hook <ghook@amd.com>, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/03/2019 20:20, Douglas Anderson wrote:
+On Fri Mar 29 19, Joerg Roedel wrote:
+>From: Joerg Roedel <jroedel@suse.de>
+>
+>If a device has an exclusion range specified in the IVRS
+>table, this region needs to be reserved in the iova-domain
+>of that device. This hasn't happened until now and can cause
+>data corruption on data transfered with these devices.
+>
+>Treat exclusion ranges as reserved regions in the iommu-core
+>to fix the problem.
+>
+>Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
+>Signed-off-by: Joerg Roedel <jroedel@suse.de>
 
-> If you're bisecting why your peripherals stopped working, it's
-> probably this CL.  Specifically if you see this in your dmesg:
->   Unexpected global fault, this could be serious
-> ...then it's almost certainly this CL.
-> 
-> Running your IOMMU-enabled peripherals with the IOMMU in bypass mode
-> is insecure and effectively disables the protection they provide.
-> There are few reasons to allow unmatched stream bypass, and even fewer
-> good ones.
-> 
-> This patch starts the transition over to make it much harder to run
-> your system insecurely.  Expected steps:
-> 
-> 1. By default disable bypass (so anyone insecure will notice) but make
->    it easy for someone to re-enable bypass with just a KConfig change.
->    That's this patch.
-> 
-> 2. After people have had a little time to come to grips with the fact
->    that they need to set their IOMMUs properly and have had time to
->    dig into how to do this, the KConfig will be eliminated and bypass
->    will simply be disabled.  Folks who are truly upset and still
->    haven't fixed their system can either figure out how to add
->    'arm-smmu.disable_bypass=n' to their command line or revert the
->    patch in their own private kernel.  Of course these folks will be
->    less secure.
-> 
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> 
-> Changes in v2:
-> - Flipped default to 'yes' and changed comments a lot.
-> 
->  drivers/iommu/Kconfig    | 25 +++++++++++++++++++++++++
->  drivers/iommu/arm-smmu.c |  3 ++-
->  2 files changed, 27 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 1ca1fa107b21..a4210672804a 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -359,6 +359,31 @@ config ARM_SMMU
->  	  Say Y here if your SoC includes an IOMMU device implementing
->  	  the ARM SMMU architecture.
->  
-> +config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
-> +	bool "Default to disabling bypass on ARM SMMU v1 and v2"
-> +	depends on ARM_SMMU
-> +	default y
-> +	help
-> +	  Say Y here to (by default) disable bypass streams such that
-> +	  incoming transactions from devices that are not attached to
-> +	  an iommu domain will report an abort back to the device and
-> +	  will not be allowed to pass through the SMMU.
-> +
-> +	  Any old kernels that existed before this KConfig was
-> +	  introduced would default to _allowing_ bypass (AKA the
-> +	  equivalent of NO for this config).  However the default for
-> +	  this option is YES because the old behavior is insecure.
-> +
-> +	  There are few reasons to allow unmatched stream bypass, and
-> +	  even fewer good ones.  If saying YES here breaks your board
-> +	  you should work on fixing your board.  This KConfig option
-> +	  is expected to be removed in the future and we'll simply
-> +	  hardcode the bypass disable in the code.
-> +
-> +	  NOTE: the kernel command line parameter
-> +	  'arm-smmu.disable_bypass' will continue to override this
-> +	  config.
-> +
->  config ARM_SMMU_V3
->  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
->  	depends on ARM64
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 045d93884164..930c07635956 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -110,7 +110,8 @@ static int force_stage;
->  module_param(force_stage, int, S_IRUGO);
->  MODULE_PARM_DESC(force_stage,
->  	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
-> -static bool disable_bypass;
-> +static bool disable_bypass =
-> +	IS_ENABLED(CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT);
->  module_param(disable_bypass, bool, S_IRUGO);
->  MODULE_PARM_DESC(disable_bypass,
->  	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
-> 
+I have a version of this that applies to 4.4 and 4,9 using the older
+dm_region code if that would be useful for stable.
 
-OK, so my defconfig contains neither IOMMU_DEFAULT_PASSTHROUGH nor
-ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT.
 
-Thus my .config contains:
-# CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
-CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=y
+--8<--
 
-I have checked that disable_bypass is indeed set to true.
-And that we can override the default value on the command-line with arm-smmu.disable_bypass=0
-And that PCIe and UFS still work on my board (they are "behind" the ANOC1 SMMU).
-
-Reviewed-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
-Tested-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
-
-Regards.
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 0ad8b7c78a43..f388458624cf 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3165,11 +3165,14 @@ static void amd_iommu_get_dm_regions(struct device *dev,
+ 		}
+ 
+ 		region->start = entry->address_start;
++		region->type = IOMMU_RESV_DIRECT;
+ 		region->length = entry->address_end - entry->address_start;
+ 		if (entry->prot & IOMMU_PROT_IR)
+ 			region->prot |= IOMMU_READ;
+ 		if (entry->prot & IOMMU_PROT_IW)
+ 			region->prot |= IOMMU_WRITE;
++		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
++			region->type = IOMMU_RESV_RESERVED;
+ 
+ 		list_add_tail(&region->list, head);
+ 	}
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 94f1bf772ec9..d84041bc77ac 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1495,6 +1495,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+ 	if (e == NULL)
+ 		return -ENOMEM;
+ 
++	if (m->flags & IVMD_FLAG_EXCL_RANGE)
++		init_exclusion_range(m);
++
+ 	switch (m->type) {
+ 	default:
+ 		kfree(e);
+@@ -1541,9 +1544,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+ 
+ 	while (p < end) {
+ 		m = (struct ivmd_header *)p;
+-		if (m->flags & IVMD_FLAG_EXCL_RANGE)
+-			init_exclusion_range(m);
+-		else if (m->flags & IVMD_FLAG_UNITY_MAP)
++		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
+ 			init_unity_map_range(m);
+ 
+ 		p += m->length;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index b08cf57bf455..31d27eb70565 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -324,6 +324,8 @@
+ #define IOMMU_PROT_IR 0x01
+ #define IOMMU_PROT_IW 0x02
+ 
++#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE        (1 << 2)
++
+ /* IOMMU capabilities */
+ #define IOMMU_CAP_IOTLB   24
+ #define IOMMU_CAP_NPCACHE 26
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a070fa39521a..ef4aa2879952 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -351,6 +351,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+ 		start = ALIGN(entry->start, pg_size);
+ 		end   = ALIGN(entry->start + entry->length, pg_size);
+ 
++		if (entry->type != IOMMU_RESV_DIRECT)
++			continue;
++
+ 		for (addr = start; addr < end; addr += pg_size) {
+ 			phys_addr_t phys_addr;
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index f28dff313b07..15b7378f67f3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -115,18 +115,23 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
++#define IOMMU_RESV_DIRECT	(1 << 0)
++#define IOMMU_RESV_RESERVED	(1 << 1)
++
+ /**
+  * struct iommu_dm_region - descriptor for a direct mapped memory region
+  * @list: Linked list pointers
+  * @start: System physical start address of the region
+  * @length: Length of the region in bytes
+  * @prot: IOMMU Protection flags (READ/WRITE/...)
++ * @type: Type of region (DIRECT, RESERVED)
+  */
+ struct iommu_dm_region {
+ 	struct list_head	list;
+ 	phys_addr_t		start;
+ 	size_t			length;
+ 	int			prot;
++	int			type;
+ };
+ 
+ #ifdef CONFIG_IOMMU_API
+-- 
+2.21.0
