@@ -1,64 +1,100 @@
-From: Shaokun Zhang <zhangshaokun@hisilicon.com>
-Subject: [PATCH] iommu/iova: Separate atomic variables to improve performance
-Date: Wed, 3 Apr 2019 16:35:21 +0800
-Message-ID: <1554280521-18375-1-git-send-email-zhangshaokun@hisilicon.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1 1/3] iommu/tegra-smmu: Fix invalid ASID bits on
+	Tegra30/114
+Date: Wed, 3 Apr 2019 10:41:42 +0200
+Message-ID: <20190403084142.GA5238@ulmo>
+References: <20190306225009.3391-1-digetx@gmail.com>
+	<20190306225009.3391-2-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Jinyu Qi <jinyuqi@huawei.com>, Joerg Roedel <joro@8bytes.org>
+Content-Type: multipart/mixed; boundary="===============0719603429282449123=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190306225009.3391-2-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jinyu Qi <jinyuqi@huawei.com> 
 
-In struct iova_domain, there are three atomic variables, the former two
-are about TLB flush counters which use atomic_add operation, anoter is
-used to flush timer that use cmpxhg operation.
-These variables are in the same cache line, so it will cause some
-performance loss under the condition that many cores call queue_iova
-function, Let's isolate the two type atomic variables to different
-cache line to reduce cache line conflict.
+--===============0719603429282449123==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="SUOF0GtieIMvvwua"
+Content-Disposition: inline
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Signed-off-by: Jinyu Qi <jinyuqi@huawei.com>
----
- include/linux/iova.h | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 0b93bf96693e..28a5128405f8 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -76,6 +76,14 @@ struct iova_domain {
- 	unsigned long	start_pfn;	/* Lower limit for this domain */
- 	unsigned long	dma_32bit_pfn;
- 	unsigned long	max32_alloc_size; /* Size of last failed allocation */
-+	struct iova_fq __percpu *fq;	/* Flush Queue */
-+
-+	atomic64_t	fq_flush_start_cnt;	/* Number of TLB flushes that
-+						   have been started */
-+
-+	atomic64_t	fq_flush_finish_cnt;	/* Number of TLB flushes that
-+						   have been finished */
-+
- 	struct iova	anchor;		/* rbtree lookup anchor */
- 	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
- 
-@@ -85,14 +93,6 @@ struct iova_domain {
- 	iova_entry_dtor entry_dtor;	/* IOMMU driver specific destructor for
- 					   iova entry */
- 
--	struct iova_fq __percpu *fq;	/* Flush Queue */
--
--	atomic64_t	fq_flush_start_cnt;	/* Number of TLB flushes that
--						   have been started */
--
--	atomic64_t	fq_flush_finish_cnt;	/* Number of TLB flushes that
--						   have been finished */
--
- 	struct timer_list fq_timer;		/* Timer to regularily empty the
- 						   flush-queues */
- 	atomic_t fq_timer_on;			/* 1 when timer is active, 0
--- 
-2.7.4
+--SUOF0GtieIMvvwua
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Mar 07, 2019 at 01:50:07AM +0300, Dmitry Osipenko wrote:
+> Both Tegra30 and Tegra114 have 4 ASID's and the corresponding bitfield of
+> the TLB_FLUSH register differs from later Tegra generations that have 128
+> ASID's.
+>=20
+> In a result the PTE's are now flushed correctly from TLB and this fixes
+> problems with graphics (randomly failing tests) on Tegra30.
+>=20
+> Cc: stable <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/tegra-smmu.c | 25 ++++++++++++++++++-------
+>  1 file changed, 18 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 5182c7d6171e..8d30653cd13a 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -102,7 +102,6 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu,=
+ unsigned long offset)
+>  #define  SMMU_TLB_FLUSH_VA_MATCH_ALL     (0 << 0)
+>  #define  SMMU_TLB_FLUSH_VA_MATCH_SECTION (2 << 0)
+>  #define  SMMU_TLB_FLUSH_VA_MATCH_GROUP   (3 << 0)
+> -#define  SMMU_TLB_FLUSH_ASID(x)          (((x) & 0x7f) << 24)
+
+Given that the same operation is repeated three times below, it might
+have been worth to fold the conditional into the macro. That'd require
+the macro to take an smmu parameter, but would otherwise leave the
+individual instances shorter.
+
+But either way, the fix is good, so:
+
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+--SUOF0GtieIMvvwua
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlykcb4ACgkQ3SOs138+
+s6HhKA/+IpRuLcBkUwgiebKV4hTvqFg1deczqWWrMafxSFjSuPWer+yFU9nlgZ0X
+4h3FnxqTNu+Am7oDc1mLuHFw4ylmxprSoXrrpW1QR8PYk8fbfeMKrs4jN4wdLKXz
+qK5zTkL7U5t89vmbRu52J1vN/zeulAigPhCnhGNquCGWQ8Rf6so6/ZEpQ2PY4dee
+IlRGRQbLUFYuW1+eQ5YjO/8u+7Fe8qMYmnabkdMiq/aSG4NrDZSC5r67eoD6j+JJ
+C/t/fhKz6NccAkpE9YmfVNQk+cFeqqzoyOXRY5MuJ/0mPDr71Xfk8HzAOjicxK7M
+ZssbwXqhPqQ9TuZNvBZM4mYZzPvDkWk5dTuLGxe3gGM7qMdiGJsOX0h/xEmdWtpt
+Q1qhqjLEXACVl3Fu38Roc/TIUJlSsDuPmrxArqhS7JV6SUXIkAi3amCTrlfkqUMt
+W7fDQMH2Lt+r/tmyiIM7Z34aQVbi9jC6ORY8gy2GScNGirvKJDTtd7Ygk5fveMll
+BCHCM3ULuYqTzLwVrUkDCfMko6eIdzrvjMQc7v88cWvMBaTR1Z5HZVHeYirrHdd6
+QM5m/wU+XmBOLriUVyDukZWNnhZ523bw2TM6KlhNaM6IKxz7lIZhMLBITKmhvNPH
+AP/e3KF6AqcT0Gk2f2F6xFFM3hFV3bQZHuP10fxMAkfhvwGh/9E=
+=nX1U
+-----END PGP SIGNATURE-----
+
+--SUOF0GtieIMvvwua--
+
+--===============0719603429282449123==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0719603429282449123==--
