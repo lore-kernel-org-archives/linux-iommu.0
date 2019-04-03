@@ -1,8 +1,7 @@
 From: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH v9 12/13] xpfo,
-	mm: Defer TLB flushes for non-current CPUs (x86 only)
-Date: Wed,  3 Apr 2019 11:34:13 -0600
-Message-ID: <4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
+Subject: [RFC PATCH v9 01/13] mm: add MAP_HUGETLB support to vm_mmap
+Date: Wed,  3 Apr 2019 11:34:02 -0600
+Message-ID: <155f6a436aa38be6b31e37965187d161e1233a1c.1554248002.git.khalid.aziz@oracle.com>
 References: <cover.1554248001.git.khalid.aziz@oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,160 +20,117 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: juergh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tycho-E0fblnxP3wo@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, liran.alon-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>, aaron.lu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org, james.morse@ar
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>, aaron.lu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, iamjoo
 List-Id: iommu@lists.linux-foundation.org
 
-XPFO flushes kernel space TLB entries for pages that are now mapped
-in userspace on not only the current CPU but also all other CPUs
-synchronously. Processes on each core allocating pages causes a
-flood of IPI messages to all other cores to flush TLB entries.
-Many of these messages are to flush the entire TLB on the core if
-the number of entries being flushed from local core exceeds
-tlb_single_page_flush_ceiling. The cost of TLB flush caused by
-unmapping pages from physmap goes up dramatically on machines with
-high core count.
+From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
 
-This patch flushes relevant TLB entries for current process or
-entire TLB depending upon number of entries for the current CPU
-and posts a pending TLB flush on all other CPUs when a page is
-unmapped from kernel space and mapped in userspace. Each core
-checks the pending TLB flush flag for itself on every context
-switch, flushes its TLB if the flag is set and clears it.
-This patch potentially aggregates multiple TLB flushes into one.
-This has very significant impact especially on machines with large
-core counts. To illustrate this, kernel was compiled with -j on
-two classes of machines - a server with high core count and large
-amount of memory, and a desktop class machine with more modest
-specs. System time from "make -j" from vanilla 4.20 kernel, 4.20
-with XPFO patches before applying this patch and after applying
-this patch are below:
+vm_mmap is exported, which means kernel modules can use it. In particular,
+for testing XPFO support, we want to use it with the MAP_HUGETLB flag, so
+let's support it via vm_mmap.
 
-Hardware: 96-core Intel Xeon Platinum 8160 CPU @ 2.10GHz, 768 GB RAM
-make -j60 all
-
-4.20                            950.966s
-4.20+XPFO                       25073.169s      26.366x
-4.20+XPFO+Deferred flush        1372.874s        1.44x
-
-Hardware: 4-core Intel Core i5-3550 CPU @ 3.30GHz, 8G RAM
-make -j4 all
-
-4.20                            607.671s
-4.20+XPFO                       1588.646s       2.614x
-4.20+XPFO+Deferred flush        803.989s        1.32x
-
-This same code should be implemented for other architectures as
-well once finalized.
-
-Signed-off-by: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
+Tested-by: Marco Benatto <marco.antonio.780-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Tested-by: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Cc: Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>
 ---
- arch/x86/include/asm/tlbflush.h |  1 +
- arch/x86/mm/tlb.c               | 52 +++++++++++++++++++++++++++++++++
- arch/x86/mm/xpfo.c              |  2 +-
- 3 files changed, 54 insertions(+), 1 deletion(-)
+ include/linux/mm.h |  2 ++
+ mm/mmap.c          | 19 +------------------
+ mm/util.c          | 32 ++++++++++++++++++++++++++++++++
+ 3 files changed, 35 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-index f4204bf377fc..92d23629d01d 100644
---- a/arch/x86/include/asm/tlbflush.h
-+++ b/arch/x86/include/asm/tlbflush.h
-@@ -561,6 +561,7 @@ extern void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
- 				unsigned long end, unsigned int stride_shift,
- 				bool freed_tables);
- extern void flush_tlb_kernel_range(unsigned long start, unsigned long end);
-+extern void xpfo_flush_tlb_kernel_range(unsigned long start, unsigned long end);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 80bb6408fe73..3e4f6525d06b 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2412,6 +2412,8 @@ struct vm_unmapped_area_info {
+ extern unsigned long unmapped_area(struct vm_unmapped_area_info *info);
+ extern unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info);
  
- static inline void flush_tlb_page(struct vm_area_struct *vma, unsigned long a)
- {
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index 999d6d8f0bef..cc806a01a0eb 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -37,6 +37,20 @@
-  */
- #define LAST_USER_MM_IBPB	0x1UL
- 
-+/*
-+ * A TLB flush may be needed to flush stale TLB entries
-+ * for pages that have been mapped into userspace and unmapped
-+ * from kernel space. This TLB flush needs to be propagated to
-+ * all CPUs. Asynchronous flush requests to all CPUs can cause
-+ * significant performance imapct. Queue a pending flush for
-+ * a CPU instead. Multiple of these requests can then be handled
-+ * by a CPU at a less disruptive time, like context switch, in
-+ * one go and reduce performance impact significantly. Following
-+ * data structure is used to keep track of CPUs with pending full
-+ * TLB flush forced by xpfo.
-+ */
-+static cpumask_t pending_xpfo_flush;
++struct file *map_hugetlb_setup(unsigned long *len, unsigned long flags);
 +
  /*
-  * We get here when we do something requiring a TLB invalidation
-  * but could not go invalidate all of the contexts.  We do the
-@@ -321,6 +335,16 @@ void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
- 		__flush_tlb_all();
+  * Search for an unmapped address range.
+  *
+diff --git a/mm/mmap.c b/mm/mmap.c
+index fc1809b1bed6..65382d942598 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1582,24 +1582,7 @@ unsigned long ksys_mmap_pgoff(unsigned long addr, unsigned long len,
+ 		if (unlikely(flags & MAP_HUGETLB && !is_file_hugepages(file)))
+ 			goto out_fput;
+ 	} else if (flags & MAP_HUGETLB) {
+-		struct user_struct *user = NULL;
+-		struct hstate *hs;
+-
+-		hs = hstate_sizelog((flags >> MAP_HUGE_SHIFT) & MAP_HUGE_MASK);
+-		if (!hs)
+-			return -EINVAL;
+-
+-		len = ALIGN(len, huge_page_size(hs));
+-		/*
+-		 * VM_NORESERVE is used because the reservations will be
+-		 * taken when vm_ops->mmap() is called
+-		 * A dummy user value is used because we are not locking
+-		 * memory so no accounting is necessary
+-		 */
+-		file = hugetlb_file_setup(HUGETLB_ANON_FILE, len,
+-				VM_NORESERVE,
+-				&user, HUGETLB_ANONHUGE_INODE,
+-				(flags >> MAP_HUGE_SHIFT) & MAP_HUGE_MASK);
++		file = map_hugetlb_setup(&len, flags);
+ 		if (IS_ERR(file))
+ 			return PTR_ERR(file);
  	}
- #endif
-+
-+	/*
-+	 * If there is a pending TLB flush for this CPU due to XPFO
-+	 * flush, do it now.
-+	 */
-+	if (cpumask_test_and_clear_cpu(cpu, &pending_xpfo_flush)) {
-+		count_vm_tlb_event(NR_TLB_REMOTE_FLUSH_RECEIVED);
-+		__flush_tlb_all();
-+	}
-+
- 	this_cpu_write(cpu_tlbstate.is_lazy, false);
- 
- 	/*
-@@ -803,6 +827,34 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
- 	}
+diff --git a/mm/util.c b/mm/util.c
+index 379319b1bcfd..86b763861828 100644
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -357,6 +357,29 @@ unsigned long vm_mmap_pgoff(struct file *file, unsigned long addr,
+ 	return ret;
  }
  
-+void xpfo_flush_tlb_kernel_range(unsigned long start, unsigned long end)
++struct file *map_hugetlb_setup(unsigned long *len, unsigned long flags)
 +{
-+	struct cpumask tmp_mask;
++	struct user_struct *user = NULL;
++	struct hstate *hs;
++
++	hs = hstate_sizelog((flags >> MAP_HUGE_SHIFT) & MAP_HUGE_MASK);
++	if (!hs)
++		return ERR_PTR(-EINVAL);
++
++	*len = ALIGN(*len, huge_page_size(hs));
 +
 +	/*
-+	 * Balance as user space task's flush, a bit conservative.
-+	 * Do a local flush immediately and post a pending flush on all
-+	 * other CPUs. Local flush can be a range flush or full flush
-+	 * depending upon the number of entries to be flushed. Remote
-+	 * flushes will be done by individual processors at the time of
-+	 * context switch and this allows multiple flush requests from
-+	 * other CPUs to be batched together.
++	 * VM_NORESERVE is used because the reservations will be
++	 * taken when vm_ops->mmap() is called
++	 * A dummy user value is used because we are not locking
++	 * memory so no accounting is necessary
 +	 */
-+	if (end == TLB_FLUSH_ALL ||
-+	    (end - start) > tlb_single_page_flush_ceiling << PAGE_SHIFT) {
-+		do_flush_tlb_all(NULL);
-+	} else {
-+		struct flush_tlb_info info;
-+
-+		info.start = start;
-+		info.end = end;
-+		do_kernel_range_flush(&info);
-+	}
-+	cpumask_setall(&tmp_mask);
-+	__cpumask_clear_cpu(smp_processor_id(), &tmp_mask);
-+	cpumask_or(&pending_xpfo_flush, &pending_xpfo_flush, &tmp_mask);
++	return hugetlb_file_setup(HUGETLB_ANON_FILE, *len,
++			VM_NORESERVE,
++			&user, HUGETLB_ANONHUGE_INODE,
++			(flags >> MAP_HUGE_SHIFT) & MAP_HUGE_MASK);
 +}
 +
- void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
- {
- 	struct flush_tlb_info info = {
-diff --git a/arch/x86/mm/xpfo.c b/arch/x86/mm/xpfo.c
-index b42513347865..638eee5b1f09 100644
---- a/arch/x86/mm/xpfo.c
-+++ b/arch/x86/mm/xpfo.c
-@@ -118,7 +118,7 @@ inline void xpfo_flush_kernel_tlb(struct page *page, int order)
- 		return;
- 	}
+ unsigned long vm_mmap(struct file *file, unsigned long addr,
+ 	unsigned long len, unsigned long prot,
+ 	unsigned long flag, unsigned long offset)
+@@ -366,6 +389,15 @@ unsigned long vm_mmap(struct file *file, unsigned long addr,
+ 	if (unlikely(offset_in_page(offset)))
+ 		return -EINVAL;
  
--	flush_tlb_kernel_range(kaddr, kaddr + (1 << order) * size);
-+	xpfo_flush_tlb_kernel_range(kaddr, kaddr + (1 << order) * size);
++	if (flag & MAP_HUGETLB) {
++		if (file)
++			return -EINVAL;
++
++		file = map_hugetlb_setup(&len, flag);
++		if (IS_ERR(file))
++			return PTR_ERR(file);
++	}
++
+ 	return vm_mmap_pgoff(file, addr, len, prot, flag, offset >> PAGE_SHIFT);
  }
- EXPORT_SYMBOL_GPL(xpfo_flush_kernel_tlb);
- 
+ EXPORT_SYMBOL(vm_mmap);
 -- 
 2.17.1
