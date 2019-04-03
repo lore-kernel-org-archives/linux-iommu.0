@@ -1,15 +1,11 @@
 From: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH v9 02/13] x86: always set IF before oopsing from page fault
-Date: Wed,  3 Apr 2019 11:34:03 -0600
-Message-ID: <e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz@oracle.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
+Subject: [RFC PATCH v9 00/13] Add support for eXclusive Page Frame Ownership
+Date: Wed,  3 Apr 2019 11:34:01 -0600
+Message-ID: <cover.1554248001.git.khalid.aziz@oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1554248001.git.khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-In-Reply-To: <cover.1554248001.git.khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-References: <cover.1554248001.git.khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,70 +15,159 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: juergh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tycho-E0fblnxP3wo@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, liran.alon-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>, aaron.lu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, iamjoo
+To: juergh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tycho-E0fblnxP3wo@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, liran.alon-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org, aaron.lu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, mike.kravet
 List-Id: iommu@lists.linux-foundation.org
 
-From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
+This is another update to the work Juerg, Tycho and Julian have
+done on XPFO. After the last round of updates, we were seeing very
+significant performance penalties when stale TLB entries were
+flushed actively after an XPFO TLB update.  Benchmark for measuring
+performance is kernel build using parallel make. To get full
+protection from ret2dir attackes, we must flush stale TLB entries.
+Performance penalty from flushing stale TLB entries goes up as the
+number of cores goes up. On a desktop class machine with only 4
+cores, enabling TLB flush for stale entries causes system time for
+"make -j4" to go up by a factor of 2.61x but on a larger machine
+with 96 cores, system time with "make -j60" goes up by a factor of
+26.37x!  I have been working on reducing this performance penalty.
 
-Oopsing might kill the task, via rewind_stack_do_exit() at the bottom, and
-that might sleep:
+I implemented two solutions to reduce performance penalty and that
+has had large impact. XPFO code flushes TLB every time a page is
+allocated to userspace. It does so by sending IPIs to all processors
+to flush TLB. Back to back allocations of pages to userspace on
+multiple processors results in a storm of IPIs.  Each one of these
+incoming IPIs is handled by a processor by flushing its TLB. To
+reduce this IPI storm, I have added a per CPU flag that can be set
+to tell a processor to flush its TLB. A processor checks this flag
+on every context switch. If the flag is set, it flushes its TLB and
+clears the flag. This allows for multiple TLB flush requests to a
+single CPU to be combined into a single request. A kernel TLB entry
+for a page that has been allocated to userspace is flushed on all
+processors unlike the previous version of this patch. A processor
+could hold a stale kernel TLB entry that was removed on another
+processor until the next context switch. A local userspace page
+allocation by the currently running process could force the TLB
+flush earlier for such entries.
 
-Aug 23 19:30:27 xpfo kernel: [   38.302714] BUG: sleeping function called from invalid context at ./include/linux/percpu-rwsem.h:33
-Aug 23 19:30:27 xpfo kernel: [   38.303837] in_atomic(): 0, irqs_disabled(): 1, pid: 1970, name: lkdtm_xpfo_test
-Aug 23 19:30:27 xpfo kernel: [   38.304758] CPU: 3 PID: 1970 Comm: lkdtm_xpfo_test Tainted: G      D         4.13.0-rc5+ #228
-Aug 23 19:30:27 xpfo kernel: [   38.305813] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.1-1ubuntu1 04/01/2014
-Aug 23 19:30:27 xpfo kernel: [   38.306926] Call Trace:
-Aug 23 19:30:27 xpfo kernel: [   38.307243]  dump_stack+0x63/0x8b
-Aug 23 19:30:27 xpfo kernel: [   38.307665]  ___might_sleep+0xec/0x110
-Aug 23 19:30:27 xpfo kernel: [   38.308139]  __might_sleep+0x45/0x80
-Aug 23 19:30:27 xpfo kernel: [   38.308593]  exit_signals+0x21/0x1c0
-Aug 23 19:30:27 xpfo kernel: [   38.309046]  ? blocking_notifier_call_chain+0x11/0x20
-Aug 23 19:30:27 xpfo kernel: [   38.309677]  do_exit+0x98/0xbf0
-Aug 23 19:30:27 xpfo kernel: [   38.310078]  ? smp_reader+0x27/0x40 [lkdtm]
-Aug 23 19:30:27 xpfo kernel: [   38.310604]  ? kthread+0x10f/0x150
-Aug 23 19:30:27 xpfo kernel: [   38.311045]  ? read_user_with_flags+0x60/0x60 [lkdtm]
-Aug 23 19:30:27 xpfo kernel: [   38.311680]  rewind_stack_do_exit+0x17/0x20
+The other solution reduces the number of TLB flushes required, by
+performing TLB flush for multiple pages at one time when pages are
+refilled on the per-cpu freelist. If the pages being addedd to
+per-cpu freelist are marked for userspace allocation, TLB entries
+for these pages can be flushed upfront and pages tagged as currently
+unmapped. When any such page is allocated to userspace, there is no
+need to performa a TLB flush at that time any more. This batching of
+TLB flushes reduces performance imapct further. Similarly when
+these user pages are freed by userspace and added back to per-cpu
+free list, they are left unmapped and tagged so. This further
+optimization reduced performance impact from 1.32x to 1.28x for
+96-core server and from 1.31x to 1.27x for a 4-core desktop.
 
-To be safe, let's just always enable irqs.
+I measured system time for parallel make with unmodified 4.20
+kernel, 4.20 with XPFO patches before these patches and then again
+after applying each of these patches. Here are the results:
 
-The particular case I'm hitting is:
+Hardware: 96-core Intel Xeon Platinum 8160 CPU @ 2.10GHz, 768 GB RAM
+make -j60 all
 
-Aug 23 19:30:27 xpfo kernel: [   38.278615]  __bad_area_nosemaphore+0x1a9/0x1d0
-Aug 23 19:30:27 xpfo kernel: [   38.278617]  bad_area_nosemaphore+0xf/0x20
-Aug 23 19:30:27 xpfo kernel: [   38.278618]  __do_page_fault+0xd1/0x540
-Aug 23 19:30:27 xpfo kernel: [   38.278620]  ? irq_work_queue+0x9b/0xb0
-Aug 23 19:30:27 xpfo kernel: [   38.278623]  ? wake_up_klogd+0x36/0x40
-Aug 23 19:30:27 xpfo kernel: [   38.278624]  trace_do_page_fault+0x3c/0xf0
-Aug 23 19:30:27 xpfo kernel: [   38.278625]  do_async_page_fault+0x14/0x60
-Aug 23 19:30:27 xpfo kernel: [   38.278627]  async_page_fault+0x28/0x30
+5.0					913.862s
+5.0+this patch series			1165.259ss	1.28x
 
-When a fault is in kernel space which has been triggered by XPFO.
 
-Signed-off-by: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-CC: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Tested-by: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>
----
- arch/x86/mm/fault.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Hardware: 4-core Intel Core i5-3550 CPU @ 3.30GHz, 8G RAM
+make -j4 all
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index 9d5c75f02295..7891add0913f 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -858,6 +858,12 @@ no_context(struct pt_regs *regs, unsigned long error_code,
- 	/* Executive summary in case the body of the oops scrolled away */
- 	printk(KERN_DEFAULT "CR2: %016lx\n", address);
- 
-+	/*
-+	 * We're about to oops, which might kill the task. Make sure we're
-+	 * allowed to sleep.
-+	 */
-+	flags |= X86_EFLAGS_IF;
-+
- 	oops_end(flags, regs, sig);
- }
- 
+5.0					610.642s
+5.0+this patch series			773.075s	1.27x
+
+Performance with this patch set is good enough to use these as
+starting point for further refinement before we merge it into main
+kernel, hence RFC.
+
+I have restructurerd the patches in this version to separate out
+architecture independent code. I folded much of the code
+improvement by Julian to not use page extension into patch 3. 
+
+What remains to be done beyond this patch series:
+
+1. Performance improvements: Ideas to explore - (1) kernel mappings
+   private to an mm, (2) Any others??
+2. Re-evaluate the patch "arm64/mm: Add support for XPFO to swiotlb"
+   from Juerg. I dropped it for now since swiotlb code for ARM has
+   changed a lot since this patch was written. I could use help
+   from ARM experts on this.
+3. Extend the patch "xpfo, mm: Defer TLB flushes for non-current
+   CPUs" to other architectures besides x86.
+4. Change kmap to not map the page back to physmap, instead map it
+   to a new va similar to what kmap_high does. Mapping page back
+   into physmap re-opens the ret2dir security for the duration of
+   kmap. All of the kmap_high and related code can be reused for this
+   but that will require restructuring that code so it can be built for
+   64-bits as well. Any objections to that?
+
+---------------------------------------------------------
+
+Juerg Haefliger (6):
+  mm: Add support for eXclusive Page Frame Ownership (XPFO)
+  xpfo, x86: Add support for XPFO for x86-64
+  lkdtm: Add test for XPFO
+  arm64/mm: Add support for XPFO
+  swiotlb: Map the buffer if it was unmapped by XPFO
+  arm64/mm, xpfo: temporarily map dcache regions
+
+Julian Stecklina (1):
+  xpfo, mm: optimize spinlock usage in xpfo_kunmap
+
+Khalid Aziz (2):
+  xpfo, mm: Defer TLB flushes for non-current CPUs (x86 only)
+  xpfo, mm: Optimize XPFO TLB flushes by batching them together
+
+Tycho Andersen (4):
+  mm: add MAP_HUGETLB support to vm_mmap
+  x86: always set IF before oopsing from page fault
+  mm: add a user_virt_to_phys symbol
+  xpfo: add primitives for mapping underlying memory
+
+ .../admin-guide/kernel-parameters.txt         |   6 +
+ arch/arm64/Kconfig                            |   1 +
+ arch/arm64/mm/Makefile                        |   2 +
+ arch/arm64/mm/flush.c                         |   7 +
+ arch/arm64/mm/mmu.c                           |   2 +-
+ arch/arm64/mm/xpfo.c                          |  66 ++++++
+ arch/x86/Kconfig                              |   1 +
+ arch/x86/include/asm/pgtable.h                |  26 +++
+ arch/x86/include/asm/tlbflush.h               |   1 +
+ arch/x86/mm/Makefile                          |   2 +
+ arch/x86/mm/fault.c                           |   6 +
+ arch/x86/mm/pageattr.c                        |  32 +--
+ arch/x86/mm/tlb.c                             |  39 ++++
+ arch/x86/mm/xpfo.c                            | 185 +++++++++++++++++
+ drivers/misc/lkdtm/Makefile                   |   1 +
+ drivers/misc/lkdtm/core.c                     |   3 +
+ drivers/misc/lkdtm/lkdtm.h                    |   5 +
+ drivers/misc/lkdtm/xpfo.c                     | 196 ++++++++++++++++++
+ include/linux/highmem.h                       |  34 +--
+ include/linux/mm.h                            |   2 +
+ include/linux/mm_types.h                      |   8 +
+ include/linux/page-flags.h                    |  23 +-
+ include/linux/xpfo.h                          | 191 +++++++++++++++++
+ include/trace/events/mmflags.h                |  10 +-
+ kernel/dma/swiotlb.c                          |   3 +-
+ mm/Makefile                                   |   1 +
+ mm/compaction.c                               |   2 +-
+ mm/internal.h                                 |   2 +-
+ mm/mmap.c                                     |  19 +-
+ mm/page_alloc.c                               |  19 +-
+ mm/page_isolation.c                           |   2 +-
+ mm/util.c                                     |  32 +++
+ mm/xpfo.c                                     | 170 +++++++++++++++
+ security/Kconfig                              |  27 +++
+ 34 files changed, 1047 insertions(+), 79 deletions(-)
+ create mode 100644 arch/arm64/mm/xpfo.c
+ create mode 100644 arch/x86/mm/xpfo.c
+ create mode 100644 drivers/misc/lkdtm/xpfo.c
+ create mode 100644 include/linux/xpfo.h
+ create mode 100644 mm/xpfo.c
+
 -- 
 2.17.1
