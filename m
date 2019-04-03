@@ -1,51 +1,115 @@
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: remove NULL struct device support in the DMA API
-Date: Wed, 3 Apr 2019 19:26:40 +0100
-Message-ID: <20190403182640.2ca6w2hngjqp35mt@shell.armlinux.org.uk>
-References: <20190321225235.30648-1-hch@lst.de>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: 5.1-rc1: mpt init crash in scsi_map_dma, dma_4v_map_sg on sparc64
+Date: Wed, 3 Apr 2019 12:36:09 -0700
+Message-ID: <20190403193609.GA23720@infradead.org>
+References: <dbed1f7e-cf7b-0e87-841e-e4dd1eb1ed23@linux.ee>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190321225235.30648-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: x86@kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <dbed1f7e-cf7b-0e87-841e-e4dd1eb1ed23-Y27EyoLml9s@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 21, 2019 at 03:52:28PM -0700, Christoph Hellwig wrote:
-> We still have a few drivers which pass a NULL struct device pointer
-> to DMA API functions, which generally is a bad idea as the API
-> implementations rely on the device not only for ops selection, but
-> also the dma mask and various other attributes, and many implementations
-> have been broken for NULL device support for a while.
+I think this might have been this commit:
 
-I think I must be missing something, but...
+commit 24132a419c68f1d69eb8ecc91b3c80d730ecbb59
+Author: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Date:   Fri Feb 15 09:30:28 2019 +0100
 
-My understanding is that ISA DMA is normally limited to 24 bits of
-address - indeed, the x86 version only programs 24 bits of DMA address.
-Looking through this series, it appears that the conversions mean that
-the DMA mask for ISA becomes the full all-ones DMA mask, which would
-of course lead to memory corruption if only 24 bits of the address end
-up being programmed into the hardware.
+    sparc64/pci_sun4v: allow large DMA masks
 
-Maybe you could say why you think this series is safe in regard to ISA
-DMA?
+the patch below adds a few missing checks and hopefully should fix
+your problem.  If not can you try to revert the commit to check if
+my theory was correct to start with?
 
-> 
-> This series removes the few remaning users that weren't picked up in
-> the last merge window and then removes core support for this "feature".
-> 
-> A git tree is also available at:
-> 
->     git://git.infradead.org/users/hch/misc.git dma-remove-NULL-dev-support
-> 
-> Gitweb:
-> 
->     http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-remove-NULL-dev-support
-> 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Date:   Wed Apr 3 21:34:34 2019 +0200
+
+diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+index a8af6023c126..14b93c5564e3 100644
+--- a/arch/sparc/kernel/pci_sun4v.c
++++ b/arch/sparc/kernel/pci_sun4v.c
+@@ -73,6 +73,11 @@ static inline void iommu_batch_start(struct device *dev, unsigned long prot, uns
+ 	p->npages	= 0;
+ }
+ 
++static inline bool iommu_use_atu(struct iommu *iommu, u64 mask)
++{
++	return iommu->atu && mask > DMA_BIT_MASK(32);
++}
++
+ /* Interrupts must be disabled.  */
+ static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+ {
+@@ -92,7 +97,7 @@ static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+ 		prot &= (HV_PCI_MAP_ATTR_READ | HV_PCI_MAP_ATTR_WRITE);
+ 
+ 	while (npages != 0) {
+-		if (mask <= DMA_BIT_MASK(32) || !pbm->iommu->atu) {
++		if (!iommu_use_atu(pbm->iommu, mask)) {
+ 			num = pci_sun4v_iommu_map(devhandle,
+ 						  HV_PCI_TSBID(0, entry),
+ 						  npages,
+@@ -179,7 +184,6 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
+ 	unsigned long flags, order, first_page, npages, n;
+ 	unsigned long prot = 0;
+ 	struct iommu *iommu;
+-	struct atu *atu;
+ 	struct iommu_map_table *tbl;
+ 	struct page *page;
+ 	void *ret;
+@@ -205,13 +209,11 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
+ 	memset((char *)first_page, 0, PAGE_SIZE << order);
+ 
+ 	iommu = dev->archdata.iommu;
+-	atu = iommu->atu;
+-
+ 	mask = dev->coherent_dma_mask;
+-	if (mask <= DMA_BIT_MASK(32) || !atu)
++	if (!iommu_use_atu(iommu, mask))
+ 		tbl = &iommu->tbl;
+ 	else
+-		tbl = &atu->tbl;
++		tbl = &iommu->atu->tbl;
+ 
+ 	entry = iommu_tbl_range_alloc(dev, tbl, npages, NULL,
+ 				      (unsigned long)(-1), 0);
+@@ -333,7 +335,7 @@ static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
+ 	atu = iommu->atu;
+ 	devhandle = pbm->devhandle;
+ 
+-	if (dvma <= DMA_BIT_MASK(32)) {
++	if (!iommu_use_atu(iommu, dvma)) {
+ 		tbl = &iommu->tbl;
+ 		iotsb_num = 0; /* we don't care for legacy iommu */
+ 	} else {
+@@ -374,7 +376,7 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
+ 	npages >>= IO_PAGE_SHIFT;
+ 
+ 	mask = *dev->dma_mask;
+-	if (mask <= DMA_BIT_MASK(32))
++	if (!iommu_use_atu(iommu, mask))
+ 		tbl = &iommu->tbl;
+ 	else
+ 		tbl = &atu->tbl;
+@@ -510,7 +512,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 				  IO_PAGE_SIZE) >> IO_PAGE_SHIFT;
+ 
+ 	mask = *dev->dma_mask;
+-	if (mask <= DMA_BIT_MASK(32))
++	if (!iommu_use_atu(iommu, mask))
+ 		tbl = &iommu->tbl;
+ 	else
+ 		tbl = &atu->tbl;
