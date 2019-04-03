@@ -1,52 +1,56 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v1 2/3] arm64: dts: qcom: msm8998: Add PCIe SMMU node
-Date: Wed, 3 Apr 2019 14:56:05 +0530
-Message-ID: <868a3924-928c-ff23-e39f-8c521eec455a@codeaurora.org>
-References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
-	<82ab78ee-4a38-4eee-f064-272b6f964f17@free.fr>
-	<e7c8137a-2408-a71a-f722-199a86a75d13@free.fr>
-	<5aa56120-b686-194b-36d6-8177b5749a19@arm.com>
-	<CAFp+6iHOwW5jJmdVWo-E7154xk2jpR4ZLRoXEJdPwu8_ZJg14Q@mail.gmail.com>
-	<e6d2200d-f6b9-3c27-f166-537742b32bfe@arm.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v1 1/3] iommu/tegra-smmu: Fix invalid ASID bits on
+ Tegra30/114
+Date: Wed, 3 Apr 2019 13:27:03 +0300
+Message-ID: <9e7af5f4-9da9-14f4-99a1-53188bebe34f@gmail.com>
+References: <20190306225009.3391-1-digetx@gmail.com>
+ <20190306225009.3391-2-digetx@gmail.com> <20190403084142.GA5238@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e6d2200d-f6b9-3c27-f166-537742b32bfe-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190403084142.GA5238@ulmo>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-On 4/2/2019 7:24 PM, Robin Murphy wrote:
-> On 30/03/2019 14:18, Vivek Gautam wrote:
->>> You should probably have some "bus" and "iface" clocks too, per the
->>> requirement of "qcom,smmu-v2". Maybe Vivek might know what's relevant
->>> for MSM8998?
+03.04.2019 11:41, Thierry Reding пишет:
+> On Thu, Mar 07, 2019 at 01:50:07AM +0300, Dmitry Osipenko wrote:
+>> Both Tegra30 and Tegra114 have 4 ASID's and the corresponding bitfield of
+>> the TLB_FLUSH register differs from later Tegra generations that have 128
+>> ASID's.
 >>
->> As Jeffrey rightly mentioned, these clocks are not under the control 
->> of Linux.
->> So, we won't need to add clocks to this SMMU.
->
-> OK, in that case the "clock-names" part of binding doc probably wants 
-> refining to reflect which implementations do actually require clocks.
+>> In a result the PTE's are now flushed correctly from TLB and this fixes
+>> problems with graphics (randomly failing tests) on Tegra30.
+>>
+>> Cc: stable <stable@vger.kernel.org>
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>> ---
+>>  drivers/iommu/tegra-smmu.c | 25 ++++++++++++++++++-------
+>>  1 file changed, 18 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+>> index 5182c7d6171e..8d30653cd13a 100644
+>> --- a/drivers/iommu/tegra-smmu.c
+>> +++ b/drivers/iommu/tegra-smmu.c
+>> @@ -102,7 +102,6 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
+>>  #define  SMMU_TLB_FLUSH_VA_MATCH_ALL     (0 << 0)
+>>  #define  SMMU_TLB_FLUSH_VA_MATCH_SECTION (2 << 0)
+>>  #define  SMMU_TLB_FLUSH_VA_MATCH_GROUP   (3 << 0)
+>> -#define  SMMU_TLB_FLUSH_ASID(x)          (((x) & 0x7f) << 24)
+> 
+> Given that the same operation is repeated three times below, it might
+> have been worth to fold the conditional into the macro. That'd require
+> the macro to take an smmu parameter, but would otherwise leave the
+> individual instances shorter.
 
-Certainly.
-Marc, do you want to push a patch for the same? Or, let me know I can 
-prepare one.
+I had that variant initially and the result felt more clumsy to me.
+
+> But either way, the fix is good, so:
+> 
+> Acked-by: Thierry Reding <treding@nvidia.com>
+> 
 
 Thanks
-Vivek
-
->
-> Robin.
