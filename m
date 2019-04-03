@@ -1,7 +1,8 @@
 From: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH v9 06/13] lkdtm: Add test for XPFO
-Date: Wed,  3 Apr 2019 11:34:07 -0600
-Message-ID: <f2ebf3d199aec62815242ac45ef2fd9300c1a9d5.1554248002.git.khalid.aziz@oracle.com>
+Subject: [RFC PATCH v9 08/13] swiotlb: Map the buffer if it was unmapped by
+	XPFO
+Date: Wed,  3 Apr 2019 11:34:09 -0600
+Message-ID: <f535a9c158203395f1adae810d92afe0254ce253.1554248002.git.khalid.aziz@oracle.com>
 References: <cover.1554248001.git.khalid.aziz@oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -25,270 +26,56 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Juerg Haefliger <juerg.haefliger-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
 
-This test simply reads from userspace memory via the kernel's linear
-map.
-
-v6: * drop an #ifdef, just let the test fail if XPFO is not supported
-    * add XPFO_SMP test to try and test the case when one CPU does an xpfo
-      unmap of an address, that it can't be used accidentally by other
-      CPUs.
+XPFO can unmap a bounce buffer. Check for this and map it back in if
+needed.
 
 Signed-off-by: Juerg Haefliger <juerg.haefliger-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
 Signed-off-by: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-Tested-by: Marco Benatto <marco.antonio.780-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-[jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org: rebased from v4.13 to v4.19]
-Signed-off-by: Julian Stecklina <jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
-Tested-by: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Cc: Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/misc/lkdtm/Makefile |   1 +
- drivers/misc/lkdtm/core.c   |   3 +
- drivers/misc/lkdtm/lkdtm.h  |   5 +
- drivers/misc/lkdtm/xpfo.c   | 196 ++++++++++++++++++++++++++++++++++++
- 4 files changed, 205 insertions(+)
- create mode 100644 drivers/misc/lkdtm/xpfo.c
+v9: * Added a generic check for whether a page is mapped or not (suggested
+      by Chris Hellwig)
 
-diff --git a/drivers/misc/lkdtm/Makefile b/drivers/misc/lkdtm/Makefile
-index 951c984de61a..97c6b7818cce 100644
---- a/drivers/misc/lkdtm/Makefile
-+++ b/drivers/misc/lkdtm/Makefile
-@@ -9,6 +9,7 @@ lkdtm-$(CONFIG_LKDTM)		+= refcount.o
- lkdtm-$(CONFIG_LKDTM)		+= rodata_objcopy.o
- lkdtm-$(CONFIG_LKDTM)		+= usercopy.o
- lkdtm-$(CONFIG_LKDTM)		+= stackleak.o
-+lkdtm-$(CONFIG_LKDTM)		+= xpfo.o
+v6: * guard against lookup_xpfo() returning NULL
+
+ include/linux/highmem.h | 7 +++++++
+ kernel/dma/swiotlb.c    | 3 ++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 59a1a5fa598d..cf21f023dff4 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -77,6 +77,13 @@ static inline struct page *kmap_to_page(void *addr)
+ }
  
- KASAN_SANITIZE_stackleak.o	:= n
- KCOV_INSTRUMENT_rodata.o	:= n
-diff --git a/drivers/misc/lkdtm/core.c b/drivers/misc/lkdtm/core.c
-index 2837dc77478e..25f4ab4ebf50 100644
---- a/drivers/misc/lkdtm/core.c
-+++ b/drivers/misc/lkdtm/core.c
-@@ -185,6 +185,9 @@ static const struct crashtype crashtypes[] = {
- 	CRASHTYPE(USERCOPY_KERNEL),
- 	CRASHTYPE(USERCOPY_KERNEL_DS),
- 	CRASHTYPE(STACKLEAK_ERASING),
-+	CRASHTYPE(XPFO_READ_USER),
-+	CRASHTYPE(XPFO_READ_USER_HUGE),
-+	CRASHTYPE(XPFO_SMP),
- };
- 
- 
-diff --git a/drivers/misc/lkdtm/lkdtm.h b/drivers/misc/lkdtm/lkdtm.h
-index 3c6fd327e166..6b31ff0c7f8f 100644
---- a/drivers/misc/lkdtm/lkdtm.h
-+++ b/drivers/misc/lkdtm/lkdtm.h
-@@ -87,4 +87,9 @@ void lkdtm_USERCOPY_KERNEL_DS(void);
- /* lkdtm_stackleak.c */
- void lkdtm_STACKLEAK_ERASING(void);
- 
-+/* lkdtm_xpfo.c */
-+void lkdtm_XPFO_READ_USER(void);
-+void lkdtm_XPFO_READ_USER_HUGE(void);
-+void lkdtm_XPFO_SMP(void);
-+
- #endif
-diff --git a/drivers/misc/lkdtm/xpfo.c b/drivers/misc/lkdtm/xpfo.c
-new file mode 100644
-index 000000000000..8876128f0144
---- /dev/null
-+++ b/drivers/misc/lkdtm/xpfo.c
-@@ -0,0 +1,196 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * This is for all the tests related to XPFO (eXclusive Page Frame Ownership).
-+ */
-+
-+#include "lkdtm.h"
-+
-+#include <linux/cpumask.h>
-+#include <linux/mman.h>
-+#include <linux/uaccess.h>
-+#include <linux/xpfo.h>
-+#include <linux/kthread.h>
-+
-+#include <linux/delay.h>
-+#include <linux/sched/task.h>
-+
-+#define XPFO_DATA 0xdeadbeef
-+
-+static unsigned long do_map(unsigned long flags)
+ static inline unsigned long totalhigh_pages(void) { return 0UL; }
++static inline bool page_is_unmapped(struct page *page)
 +{
-+	unsigned long user_addr, user_data = XPFO_DATA;
-+
-+	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
-+			    PROT_READ | PROT_WRITE | PROT_EXEC,
-+			    flags, 0);
-+	if (user_addr >= TASK_SIZE) {
-+		pr_warn("Failed to allocate user memory\n");
-+		return 0;
-+	}
-+
-+	if (copy_to_user((void __user *)user_addr, &user_data,
-+			 sizeof(user_data))) {
-+		pr_warn("copy_to_user failed\n");
-+		goto free_user;
-+	}
-+
-+	return user_addr;
-+
-+free_user:
-+	vm_munmap(user_addr, PAGE_SIZE);
-+	return 0;
-+}
-+
-+static unsigned long *user_to_kernel(unsigned long user_addr)
-+{
-+	phys_addr_t phys_addr;
-+	void *virt_addr;
-+
-+	phys_addr = user_virt_to_phys(user_addr);
-+	if (!phys_addr) {
-+		pr_warn("Failed to get physical address of user memory\n");
-+		return NULL;
-+	}
-+
-+	virt_addr = phys_to_virt(phys_addr);
-+	if (phys_addr != virt_to_phys(virt_addr)) {
-+		pr_warn("Physical address of user memory seems incorrect\n");
-+		return NULL;
-+	}
-+
-+	return virt_addr;
-+}
-+
-+static void read_map(unsigned long *virt_addr)
-+{
-+	pr_info("Attempting bad read from kernel address %p\n", virt_addr);
-+	if (*(unsigned long *)virt_addr == XPFO_DATA)
-+		pr_err("FAIL: Bad read succeeded?!\n");
++	if (PageHighMem(page) || PageXpfoUnmapped(page))
++		return true;
 +	else
-+		pr_err("FAIL: Bad read didn't fail but data is incorrect?!\n");
++		return false;
 +}
-+
-+static void read_user_with_flags(unsigned long flags)
-+{
-+	unsigned long user_addr, *kernel;
-+
-+	user_addr = do_map(flags);
-+	if (!user_addr) {
-+		pr_err("FAIL: map failed\n");
-+		return;
-+	}
-+
-+	kernel = user_to_kernel(user_addr);
-+	if (!kernel) {
-+		pr_err("FAIL: user to kernel conversion failed\n");
-+		goto free_user;
-+	}
-+
-+	read_map(kernel);
-+
-+free_user:
-+	vm_munmap(user_addr, PAGE_SIZE);
-+}
-+
-+/* Read from userspace via the kernel's linear map. */
-+void lkdtm_XPFO_READ_USER(void)
-+{
-+	read_user_with_flags(MAP_PRIVATE | MAP_ANONYMOUS);
-+}
-+
-+void lkdtm_XPFO_READ_USER_HUGE(void)
-+{
-+	read_user_with_flags(MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB);
-+}
-+
-+struct smp_arg {
-+	unsigned long *virt_addr;
-+	unsigned int cpu;
-+};
-+
-+static int smp_reader(void *parg)
-+{
-+	struct smp_arg *arg = parg;
-+	unsigned long *virt_addr;
-+
-+	if (arg->cpu != smp_processor_id()) {
-+		pr_err("FAIL: scheduled on wrong CPU?\n");
-+		return 0;
-+	}
-+
-+	virt_addr = smp_cond_load_acquire(&arg->virt_addr, VAL != NULL);
-+	read_map(virt_addr);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_X86
-+#define XPFO_SMP_KILLED SIGKILL
-+#elif CONFIG_ARM64
-+#define XPFO_SMP_KILLED SIGSEGV
-+#else
-+#error unsupported arch
-+#endif
-+
-+/* The idea here is to read from the kernel's map on a different thread than
-+ * did the mapping (and thus the TLB flushing), to make sure that the page
-+ * faults on other cores too.
-+ */
-+void lkdtm_XPFO_SMP(void)
-+{
-+	unsigned long user_addr, *virt_addr;
-+	struct task_struct *thread;
-+	int ret;
-+	struct smp_arg arg;
-+
-+	if (num_online_cpus() < 2) {
-+		pr_err("not enough to do a multi cpu test\n");
-+		return;
-+	}
-+
-+	arg.virt_addr = NULL;
-+	arg.cpu = (smp_processor_id() + 1) % num_online_cpus();
-+	thread = kthread_create(smp_reader, &arg, "lkdtm_xpfo_test");
-+	if (IS_ERR(thread)) {
-+		pr_err("couldn't create kthread? %ld\n", PTR_ERR(thread));
-+		return;
-+	}
-+
-+	kthread_bind(thread, arg.cpu);
-+	get_task_struct(thread);
-+	wake_up_process(thread);
-+
-+	user_addr = do_map(MAP_PRIVATE | MAP_ANONYMOUS);
-+	if (!user_addr)
-+		goto kill_thread;
-+
-+	virt_addr = user_to_kernel(user_addr);
-+	if (!virt_addr) {
-+		/*
-+		 * let's store something that will fail, so we can unblock the
-+		 * thread
-+		 */
-+		smp_store_release(&arg.virt_addr, &arg);
-+		goto free_user;
-+	}
-+
-+	/* Store to test address to unblock the thread */
-+	smp_store_release(&arg.virt_addr, virt_addr);
-+
-+	/* there must be a better way to do this. */
-+	while (1) {
-+		if (thread->exit_state)
-+			break;
-+		msleep_interruptible(100);
-+	}
-+
-+free_user:
-+	if (user_addr)
-+		vm_munmap(user_addr, PAGE_SIZE);
-+
-+kill_thread:
-+	ret = kthread_stop(thread);
-+	if (ret != XPFO_SMP_KILLED)
-+		pr_err("FAIL: thread wasn't killed: %d\n", ret);
-+	put_task_struct(thread);
-+}
+ 
+ #endif /* CONFIG_HIGHMEM */
+ 
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 1fb6fd68b9c7..90a1a3709b55 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -392,8 +392,9 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+ {
+ 	unsigned long pfn = PFN_DOWN(orig_addr);
+ 	unsigned char *vaddr = phys_to_virt(tlb_addr);
++	struct page *page = pfn_to_page(pfn);
+ 
+-	if (PageHighMem(pfn_to_page(pfn))) {
++	if (page_is_unmapped(page)) {
+ 		/* The buffer does not have a mapping.  Map it in and copy */
+ 		unsigned int offset = orig_addr & ~PAGE_MASK;
+ 		char *buffer;
 -- 
 2.17.1
