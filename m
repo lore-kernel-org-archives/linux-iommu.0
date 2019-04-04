@@ -1,60 +1,35 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
- work well when smmu is enabled
-Date: Thu, 4 Apr 2019 16:30:31 +0100
-Message-ID: <20190404153031.GE27558@fuggles.cambridge.arm.com>
-References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+From: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+Subject: Re: 5.1-rc1: mpt init crash in scsi_map_dma, dma_4v_map_sg on sparc64
+Date: Thu, 4 Apr 2019 18:38:53 +0300
+Message-ID: <7b11ce84-5b66-8fb4-d05f-85e07ef54635@linux.ee>
+References: <dbed1f7e-cf7b-0e87-841e-e4dd1eb1ed23@linux.ee>
+	<20190403193609.GA23720@infradead.org>
+	<f18f2366-677b-ae82-1865-f22e7087179e@linux.ee>
+	<20190404140529.GA18649@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190318131243.20716-1-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190404140529.GA18649-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Language: et-EE
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Zhen Lei,
+>> Yes, reverting this commit makes my T1000 boot.
+> 
+> Does the patch attached to the last mail work as well?
 
-On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
-> v1 --> v2:
-> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
-> (Report abort to device, no event recorded) to suppress the event messages
-> caused by the unexpected devices.
-> 2. rewrite the patch description.
+Sorry for misreading your mail - tested now and yes, it works.
 
-This issue came up a while back:
-
-https://lore.kernel.org/linux-pci/20180302103032.GB19323@arm.com/
-
-and I'd still prefer to solve it using the disable_bypass logic which we
-already have. Something along the lines of the diff below?
-
-We're relying on the DMA API not subsequently requesting a passthrough
-domain, but it should only do that if you've configured your crashkernel
-to do so.
-
-Will
-
---->8
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index d3880010c6cf..91b8f3b2ee25 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	/* Clear CR0 and sync (disables SMMU and queue processing) */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
- 	if (reg & CR0_SMMUEN) {
--		if (is_kdump_kernel()) {
--			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
--			arm_smmu_device_disable(smmu);
--			return -EBUSY;
--		}
--
- 		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
-+		WARN_ON(is_kdump_kernel() && !disable_bypass);
-+		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
- 	}
- 
- 	ret = arm_smmu_device_disable(smmu);
+-- 
+Meelis Roos
