@@ -1,75 +1,87 @@
-From: Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v9 02/13] x86: always set IF before oopsing from page
-	fault
-Date: Wed, 3 Apr 2019 21:12:16 -0700
-Message-ID: <CALCETrVp37Xo3EMHkeedP1zxUMf9og=mceBa8c55e1F4G1DRSQ@mail.gmail.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXvwuwkVSJ+S5s7wTBkNNj3fRVxpx9BvsXWrT=3ZdRnCw@mail.gmail.com>
-	<20190404013956.GA3365@cisco>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+ iommu_get_resv_regions
+Date: Thu, 4 Apr 2019 14:49:05 +0800
+Message-ID: <ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+ <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+ <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+ <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+ <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+ <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+ <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+ <cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
+ <6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
+ <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190404013956.GA3365@cisco>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joao Martins <joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, H. Peter Anvin
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: James Sewart <jamessewart@arista.com>
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 3, 2019 at 6:42 PM Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org> wrote:
->
-> On Wed, Apr 03, 2019 at 05:12:56PM -0700, Andy Lutomirski wrote:
-> > On Wed, Apr 3, 2019 at 10:36 AM Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
-> > >
-> > > From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-> > >
-> > > Oopsing might kill the task, via rewind_stack_do_exit() at the bottom, and
-> > > that might sleep:
-> > >
-> >
-> >
-> > > diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-> > > index 9d5c75f02295..7891add0913f 100644
-> > > --- a/arch/x86/mm/fault.c
-> > > +++ b/arch/x86/mm/fault.c
-> > > @@ -858,6 +858,12 @@ no_context(struct pt_regs *regs, unsigned long error_code,
-> > >         /* Executive summary in case the body of the oops scrolled away */
-> > >         printk(KERN_DEFAULT "CR2: %016lx\n", address);
-> > >
-> > > +       /*
-> > > +        * We're about to oops, which might kill the task. Make sure we're
-> > > +        * allowed to sleep.
-> > > +        */
-> > > +       flags |= X86_EFLAGS_IF;
-> > > +
-> > >         oops_end(flags, regs, sig);
-> > >  }
-> > >
-> >
-> >
-> > NAK.  If there's a bug in rewind_stack_do_exit(), please fix it in
-> > rewind_stack_do_exit().
->
-> [I trimmed the CC list since google rejected it with E2BIG :)]
->
-> I guess the problem is really that do_exit() (or really
-> exit_signals()) might sleep. Maybe we should put an irq_enable() at
-> the beginning of do_exit() instead and fix this problem for all
-> arches?
->
+Hi James,
 
-Hmm.  do_exit() isn't really meant to be "try your best to leave the
-system somewhat usable without returning" -- it's a function that,
-other than in OOPSes, is called from a well-defined state.  So I think
-rewind_stack_do_exit() is probably a better spot.  But we need to
-rewind the stack and *then* turn on IRQs, since we otherwise risk
-exploding quite badly.
+I did a sanity test from my end. The test machine fails to boot. I
+haven't seen any valuable kernel log. It results in a purple screen.
+
+Best regards,
+Lu Baolu
+
+On 3/29/19 11:26 PM, James Sewart wrote:
+> Hey Lu,
+> 
+> I’ve attached a preliminary v3, if you could take a look and run some tests
+> that would be great.
+> 
+> Since v2 i’ve added your default domain type patches, the new device_group
+> handler, and incorporated Jacob’s feedback.
+> 
+>> On 28 Mar 2019, at 18:37, James Sewart <jamessewart@arista.com> wrote:
+>>
+>> Hey Lu,
+>>
+>>> On 26 Mar 2019, at 01:24, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>
+>>> Hi James,
+>>>
+>>> On 3/25/19 8:57 PM, James Sewart wrote:
+>>>>>> Theres an issue that if we choose to alloc a new resv_region with type
+>>>>>> IOMMU_RESV_DIRECT, we will need to refactor intel_iommu_put_resv_regions
+>>>>>> to free this entry type which means refactoring the rmrr regions in
+>>>>>> get_resv_regions. Should this work be in this patchset?
+>>>>> Do you mean the rmrr regions are not allocated in get_resv_regions, but
+>>>>> are freed in put_resv_regions? I think we should fix this in this patch
+>>>>> set since this might impact the device passthrough if we don't do it.
+>>>> They’re not allocated and not freed currently, only type IOMMU_RESV_MSI is
+>>>> freed in put_resv_regions. If we allocate a new resv_region with type
+>>>> IOMMU_RESV_DIRECT for the isa region, then it won’t be freed. If we modify
+>>>> put_resv_regions to free type IOMMU_RESV_DIRECT, then we will try to free
+>>>> the static RMRR regions.
+>>>> Either the ISA region is static and not freed as with my implementation,
+>>>> or the RMRR regions are converted to be allocated on each call to
+>>>> get_resv_regions and freed in put_resv_regions.
+>>>
+>>> By the way, there's another way in my mind. Let's add a new region type
+>>> for LPC devices, e.x. IOMMU_RESV_LPC, and then handle it in the same way
+>>> as those MSI regions. Just FYI.
+>>
+>> This solution would require adding some extra code to
+>> iommu_group_create_direct_mappings as currently only type
+>> IOMMU_RESV_DIRECT is identity mapped, other types are only reserved.
+>>
+>>
+>>>
+>>> Best regards,
+>>> Lu Baolu
+>>
+>> Cheers,
+>> James.
+> 
+> Cheers,
+> James.
+> 
