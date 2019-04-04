@@ -1,15 +1,16 @@
-From: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
-Subject: Re: 5.1-rc1: mpt init crash in scsi_map_dma, dma_4v_map_sg on sparc64
-Date: Thu, 4 Apr 2019 10:11:43 +0300
-Message-ID: <f18f2366-677b-ae82-1865-f22e7087179e@linux.ee>
-References: <dbed1f7e-cf7b-0e87-841e-e4dd1eb1ed23@linux.ee>
-	<20190403193609.GA23720@infradead.org>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+	Ownership (XPFO)
+Date: Thu, 4 Apr 2019 09:21:52 +0200
+Message-ID: <20190404072152.GN4038@hirez.programming.kicks-ass.net>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190403193609.GA23720-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Content-Language: et-EE
+Content-Disposition: inline
+In-Reply-To: <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,22 +20,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, tycho-E0fblnxP3wo@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid@gonehiking>
 List-Id: iommu@lists.linux-foundation.org
 
-> I think this might have been this commit:
-> 
-> commit 24132a419c68f1d69eb8ecc91b3c80d730ecbb59
-> Author: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> Date:   Fri Feb 15 09:30:28 2019 +0100
-> 
->      sparc64/pci_sun4v: allow large DMA masks
-> 
-> the patch below adds a few missing checks and hopefully should fix
-> your problem.  If not can you try to revert the commit to check if
-> my theory was correct to start with?
-Yes, reverting this commit makes my T1000 boot.
+On Wed, Apr 03, 2019 at 11:34:04AM -0600, Khalid Aziz wrote:
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 2c471a2c43fa..d17d33f36a01 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -204,6 +204,14 @@ struct page {
+>  #ifdef LAST_CPUPID_NOT_IN_PAGE_FLAGS
+>  	int _last_cpupid;
+>  #endif
+> +
+> +#ifdef CONFIG_XPFO
+> +	/* Counts the number of times this page has been kmapped. */
+> +	atomic_t xpfo_mapcount;
+> +
+> +	/* Serialize kmap/kunmap of this page */
+> +	spinlock_t xpfo_lock;
 
--- 
-Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+NAK, see ALLOC_SPLIT_PTLOCKS
+
+spinlock_t can be _huge_ (CONFIG_PROVE_LOCKING=y), also are you _really_
+sure you want spinlock_t and not raw_spinlock_t ? For
+CONFIG_PREEMPT_FULL spinlock_t turns into a rtmutex.
+
+> +#endif
+
+Growing the page-frame by 8 bytes (in the good case) is really sad,
+that's a _lot_ of memory.
+
+>  } _struct_page_alignment;
