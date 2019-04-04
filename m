@@ -1,42 +1,115 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [RFC PATCH v9 02/13] x86: always set IF before oopsing from page
- fault
-Date: Thu, 4 Apr 2019 18:23:50 +0200
-Message-ID: <20190404162349.rvkaozmtozamdoar@linutronix.de>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
- <e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz@oracle.com>
- <CALCETrXvwuwkVSJ+S5s7wTBkNNj3fRVxpx9BvsXWrT=3ZdRnCw@mail.gmail.com>
- <20190404013956.GA3365@cisco>
- <CALCETrVp37Xo3EMHkeedP1zxUMf9og=mceBa8c55e1F4G1DRSQ@mail.gmail.com>
- <20190404154727.GA14030@cisco>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] sparc64/pci_sun4v: fix ATU checks for large DMA masks
+Date: Thu,  4 Apr 2019 18:25:38 +0200
+Message-ID: <20190404162538.22428-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190404154727.GA14030@cisco>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tycho Andersen <tycho@tycho.ws>
-Cc: Andy Lutomirski <luto@kernel.org>, Khalid Aziz <khalid.aziz@oracle.com>, iommu@lists.linux-foundation.org, X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, Khalid Aziz <khalid@gonehiking.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mroos-Y27EyoLml9s@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-- stepping on del button while browsing though CCs.
-On 2019-04-04 09:47:27 [-0600], Tycho Andersen wrote:
-> > Hmm.  do_exit() isn't really meant to be "try your best to leave the
-> > system somewhat usable without returning" -- it's a function that,
-> > other than in OOPSes, is called from a well-defined state.  So I think
-> > rewind_stack_do_exit() is probably a better spot.  But we need to
-> > rewind the stack and *then* turn on IRQs, since we otherwise risk
-> > exploding quite badly.
-> 
-> Ok, sounds good. I guess we can include something like this patch in
-> the next series.
+Now that we allow drivers to always need to set larger than required
+DMA masks we need to be a little more careful in the sun4v PCI iommu
+driver to chose when to select the ATU support - a larger DMA mask
+can be set even when the platform does not support ATU, so we always
+have to check if it is avaiable before using it.  Add a little helper
+for that and use it in all the places where we make ATU usage decisions
+based on the DMA mask.
 
-The tracing infrastructure probably doesn't know that the interrupts are
-back on. Also if you were holding a spin lock then your preempt count
-isn't 0 which means that might_sleep() will trigger a splat (in your
-backtrace it was zero).
+Fixes: 24132a419c68 ("sparc64/pci_sun4v: allow large DMA masks")
+Reported-by: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Tested-by: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+---
+ arch/sparc/kernel/pci_sun4v.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-> Thanks,
-> 
-> Tycho
-Sebastian
+diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+index a8af6023c126..14b93c5564e3 100644
+--- a/arch/sparc/kernel/pci_sun4v.c
++++ b/arch/sparc/kernel/pci_sun4v.c
+@@ -73,6 +73,11 @@ static inline void iommu_batch_start(struct device *dev, unsigned long prot, uns
+ 	p->npages	= 0;
+ }
+ 
++static inline bool iommu_use_atu(struct iommu *iommu, u64 mask)
++{
++	return iommu->atu && mask > DMA_BIT_MASK(32);
++}
++
+ /* Interrupts must be disabled.  */
+ static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+ {
+@@ -92,7 +97,7 @@ static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+ 		prot &= (HV_PCI_MAP_ATTR_READ | HV_PCI_MAP_ATTR_WRITE);
+ 
+ 	while (npages != 0) {
+-		if (mask <= DMA_BIT_MASK(32) || !pbm->iommu->atu) {
++		if (!iommu_use_atu(pbm->iommu, mask)) {
+ 			num = pci_sun4v_iommu_map(devhandle,
+ 						  HV_PCI_TSBID(0, entry),
+ 						  npages,
+@@ -179,7 +184,6 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
+ 	unsigned long flags, order, first_page, npages, n;
+ 	unsigned long prot = 0;
+ 	struct iommu *iommu;
+-	struct atu *atu;
+ 	struct iommu_map_table *tbl;
+ 	struct page *page;
+ 	void *ret;
+@@ -205,13 +209,11 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
+ 	memset((char *)first_page, 0, PAGE_SIZE << order);
+ 
+ 	iommu = dev->archdata.iommu;
+-	atu = iommu->atu;
+-
+ 	mask = dev->coherent_dma_mask;
+-	if (mask <= DMA_BIT_MASK(32) || !atu)
++	if (!iommu_use_atu(iommu, mask))
+ 		tbl = &iommu->tbl;
+ 	else
+-		tbl = &atu->tbl;
++		tbl = &iommu->atu->tbl;
+ 
+ 	entry = iommu_tbl_range_alloc(dev, tbl, npages, NULL,
+ 				      (unsigned long)(-1), 0);
+@@ -333,7 +335,7 @@ static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
+ 	atu = iommu->atu;
+ 	devhandle = pbm->devhandle;
+ 
+-	if (dvma <= DMA_BIT_MASK(32)) {
++	if (!iommu_use_atu(iommu, dvma)) {
+ 		tbl = &iommu->tbl;
+ 		iotsb_num = 0; /* we don't care for legacy iommu */
+ 	} else {
+@@ -374,7 +376,7 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
+ 	npages >>= IO_PAGE_SHIFT;
+ 
+ 	mask = *dev->dma_mask;
+-	if (mask <= DMA_BIT_MASK(32))
++	if (!iommu_use_atu(iommu, mask))
+ 		tbl = &iommu->tbl;
+ 	else
+ 		tbl = &atu->tbl;
+@@ -510,7 +512,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 				  IO_PAGE_SIZE) >> IO_PAGE_SHIFT;
+ 
+ 	mask = *dev->dma_mask;
+-	if (mask <= DMA_BIT_MASK(32))
++	if (!iommu_use_atu(iommu, mask))
+ 		tbl = &iommu->tbl;
+ 	else
+ 		tbl = &atu->tbl;
+-- 
+2.20.1
