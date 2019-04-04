@@ -1,15 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu/arm-smmu-v3: Link domains and devices
-Date: Thu, 4 Apr 2019 15:39:24 +0100
-Message-ID: <20190404143924.GB27823@fuggles.cambridge.arm.com>
-References: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
-	<20190320173634.21895-3-jean-philippe.brucker@arm.com>
+From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+	Ownership (XPFO)
+Date: Thu, 4 Apr 2019 08:48:00 -0600
+Message-ID: <20190404144712.GA1249@cisco>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
+	<20190404072152.GN4038@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190320173634.21895-3-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20190404072152.GN4038-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,91 +21,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, okaya-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
-
-First off, thanks for posting this: it's definitely something that I'm keen
-to support, and getting bits in a piece at a time is probably a good idea.
-
-On Wed, Mar 20, 2019 at 05:36:32PM +0000, Jean-Philippe Brucker wrote:
-> When removing a mapping from a domain, we need to send an invalidation to
-> all devices that might have stored it in their Address Translation Cache
-> (ATC). In addition when updating the context descriptor of a live domain,
-> we'll need to send invalidations for all devices attached to it.
+On Thu, Apr 04, 2019 at 09:21:52AM +0200, Peter Zijlstra wrote:
+> On Wed, Apr 03, 2019 at 11:34:04AM -0600, Khalid Aziz wrote:
+> > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> > index 2c471a2c43fa..d17d33f36a01 100644
+> > --- a/include/linux/mm_types.h
+> > +++ b/include/linux/mm_types.h
+> > @@ -204,6 +204,14 @@ struct page {
+> >  #ifdef LAST_CPUPID_NOT_IN_PAGE_FLAGS
+> >  	int _last_cpupid;
+> >  #endif
+> > +
+> > +#ifdef CONFIG_XPFO
+> > +	/* Counts the number of times this page has been kmapped. */
+> > +	atomic_t xpfo_mapcount;
+> > +
+> > +	/* Serialize kmap/kunmap of this page */
+> > +	spinlock_t xpfo_lock;
 > 
-> Maintain a list of devices in each domain, protected by a spinlock. It is
-> updated every time we attach or detach devices to and from domains.
+> NAK, see ALLOC_SPLIT_PTLOCKS
 > 
-> It needs to be a spinlock because we'll invalidate ATC entries from
-> within hardirq-safe contexts, but it may be possible to relax the read
-> side with RCU later.
+> spinlock_t can be _huge_ (CONFIG_PROVE_LOCKING=y), also are you _really_
+> sure you want spinlock_t and not raw_spinlock_t ? For
+> CONFIG_PREEMPT_FULL spinlock_t turns into a rtmutex.
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
+> > +#endif
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index d3880010c6cf..66a29c113dbc 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -594,6 +594,11 @@ struct arm_smmu_device {
->  struct arm_smmu_master_data {
->  	struct arm_smmu_device		*smmu;
->  	struct arm_smmu_strtab_ent	ste;
-> +
-> +	struct arm_smmu_domain		*domain;
-> +	struct list_head		domain_head;
-> +
-> +	struct device			*dev;
->  };
->  
->  /* SMMU private data for an IOMMU domain */
-> @@ -618,6 +623,9 @@ struct arm_smmu_domain {
->  	};
->  
->  	struct iommu_domain		domain;
-> +
-> +	struct list_head		devices;
-> +	spinlock_t			devices_lock;
->  };
->  
->  struct arm_smmu_option_prop {
-> @@ -1493,6 +1501,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
->  	}
->  
->  	mutex_init(&smmu_domain->init_mutex);
-> +	INIT_LIST_HEAD(&smmu_domain->devices);
-> +	spin_lock_init(&smmu_domain->devices_lock);
+> Growing the page-frame by 8 bytes (in the good case) is really sad,
+> that's a _lot_ of memory.
 
-I'm wondering whether we can't take this a bit further and re-organise the
-data structures to make this a little simpler overall. Something along the
-lines of:
+Originally we had this in page_ext, it's not really clear to me why we
+moved it out.
 
-	struct arm_smmu_master_data {
-		struct list_head		list; // masters in the same domain
-		struct arm_smmu_device		*smmu;
-		unsigned int			num_sids;
-		u32				*sids; // Points into fwspec
-		struct arm_smmu_domain		*domain; // NULL -> !assigned
-	};
+Julien?
 
-and then just add a list_head into struct arm_smmu_domain to track the
-masters that have been attached (if you're feeling brave, you could put
-this into the s1_cfg).
-
-The ATC invalidation logic would then be:
-
-  - Detaching a device: walk over the sids from the master data
-  - Unmapping a range from a domain: walk over the attached masters
-
-I think this would also allow us to remove struct arm_smmu_strtab_ent
-completely.
-
-Dunno: this is one of the those things where you really have to try it
-to figure out why it doesn't work...
-
-Will
+Tycho
