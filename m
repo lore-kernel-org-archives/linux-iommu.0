@@ -1,16 +1,17 @@
 From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
-	CPUs (x86 only)
-Date: Thu, 4 Apr 2019 10:18:47 +0200
-Message-ID: <20190404081847.GR4038@hirez.programming.kicks-ass.net>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+	Ownership (XPFO)
+Date: Thu, 4 Apr 2019 11:25:06 +0200
+Message-ID: <20190404092506.GC14281@hirez.programming.kicks-ass.net>
 References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
+	<f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
+	<20190404072152.GN4038@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20190404072152.GN4038-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,117 +25,61 @@ To: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, tycho-E0fblnxP3wo@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid@gonehiking>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 03, 2019 at 11:34:13AM -0600, Khalid Aziz wrote:
-> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-> index 999d6d8f0bef..cc806a01a0eb 100644
-> --- a/arch/x86/mm/tlb.c
-> +++ b/arch/x86/mm/tlb.c
-> @@ -37,6 +37,20 @@
->   */
->  #define LAST_USER_MM_IBPB	0x1UL
->  
-> +/*
-> + * A TLB flush may be needed to flush stale TLB entries
-> + * for pages that have been mapped into userspace and unmapped
-> + * from kernel space. This TLB flush needs to be propagated to
-> + * all CPUs. Asynchronous flush requests to all CPUs can cause
-> + * significant performance imapct. Queue a pending flush for
-> + * a CPU instead. Multiple of these requests can then be handled
-> + * by a CPU at a less disruptive time, like context switch, in
-> + * one go and reduce performance impact significantly. Following
-> + * data structure is used to keep track of CPUs with pending full
-> + * TLB flush forced by xpfo.
-> + */
-> +static cpumask_t pending_xpfo_flush;
-> +
->  /*
->   * We get here when we do something requiring a TLB invalidation
->   * but could not go invalidate all of the contexts.  We do the
-> @@ -321,6 +335,16 @@ void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
->  		__flush_tlb_all();
->  	}
->  #endif
-> +
-> +	/*
-> +	 * If there is a pending TLB flush for this CPU due to XPFO
-> +	 * flush, do it now.
-> +	 */
-> +	if (cpumask_test_and_clear_cpu(cpu, &pending_xpfo_flush)) {
-> +		count_vm_tlb_event(NR_TLB_REMOTE_FLUSH_RECEIVED);
-> +		__flush_tlb_all();
-> +	}
+On Thu, Apr 04, 2019 at 09:21:52AM +0200, Peter Zijlstra wrote:
+> On Wed, Apr 03, 2019 at 11:34:04AM -0600, Khalid Aziz wrote:
+> > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> > index 2c471a2c43fa..d17d33f36a01 100644
+> > --- a/include/linux/mm_types.h
+> > +++ b/include/linux/mm_types.h
+> > @@ -204,6 +204,14 @@ struct page {
+> >  #ifdef LAST_CPUPID_NOT_IN_PAGE_FLAGS
+> >  	int _last_cpupid;
+> >  #endif
+> > +
+> > +#ifdef CONFIG_XPFO
+> > +	/* Counts the number of times this page has been kmapped. */
+> > +	atomic_t xpfo_mapcount;
+> > +
+> > +	/* Serialize kmap/kunmap of this page */
+> > +	spinlock_t xpfo_lock;
+> 
+> NAK, see ALLOC_SPLIT_PTLOCKS
+> 
+> spinlock_t can be _huge_ (CONFIG_PROVE_LOCKING=y), also are you _really_
+> sure you want spinlock_t and not raw_spinlock_t ? For
+> CONFIG_PREEMPT_FULL spinlock_t turns into a rtmutex.
+> 
+> > +#endif
+> 
+> Growing the page-frame by 8 bytes (in the good case) is really sad,
+> that's a _lot_ of memory.
 
-That really should be:
+So if you use the original kmap_atomic/kmap code from i386 and create
+an alias per user you can do away with all that.
 
-	if (cpumask_test_cpu(cpu, &pending_xpfo_flush)) {
-		cpumask_clear_cpu(cpu, &pending_xpfo_flush);
-		count_vm_tlb_event(NR_TLB_REMOTE_FLUSH_RECEIVED);
-		__flush_tlb_all();
-	}
+Now, that leaves you with the fixmap kmap_atomic code, which I also
+hate, but it gets rid of a lot of the ugly you introduce in these here
+patches.
 
-test_and_clear is an unconditional RmW and can cause cacheline
-contention between adjecent CPUs even if none of the bits are set.
+As to the fixmap kmap_atomic; so fundamentally the PTEs are only used on
+a single CPU and therefore CPU local TLB invalidation _should_ suffice.
 
-> +
->  	this_cpu_write(cpu_tlbstate.is_lazy, false);
->  
->  	/*
-> @@ -803,6 +827,34 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
->  	}
->  }
->  
-> +void xpfo_flush_tlb_kernel_range(unsigned long start, unsigned long end)
-> +{
-> +	struct cpumask tmp_mask;
-> +
-> +	/*
-> +	 * Balance as user space task's flush, a bit conservative.
-> +	 * Do a local flush immediately and post a pending flush on all
-> +	 * other CPUs. Local flush can be a range flush or full flush
-> +	 * depending upon the number of entries to be flushed. Remote
-> +	 * flushes will be done by individual processors at the time of
-> +	 * context switch and this allows multiple flush requests from
-> +	 * other CPUs to be batched together.
-> +	 */
-> +	if (end == TLB_FLUSH_ALL ||
-> +	    (end - start) > tlb_single_page_flush_ceiling << PAGE_SHIFT) {
-> +		do_flush_tlb_all(NULL);
-> +	} else {
-> +		struct flush_tlb_info info;
-> +
-> +		info.start = start;
-> +		info.end = end;
-> +		do_kernel_range_flush(&info);
-> +	}
-> +	cpumask_setall(&tmp_mask);
-> +	__cpumask_clear_cpu(smp_processor_id(), &tmp_mask);
-> +	cpumask_or(&pending_xpfo_flush, &pending_xpfo_flush, &tmp_mask);
-> +}
-> +
->  void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
->  {
->  	struct flush_tlb_info info = {
-> diff --git a/arch/x86/mm/xpfo.c b/arch/x86/mm/xpfo.c
-> index b42513347865..638eee5b1f09 100644
-> --- a/arch/x86/mm/xpfo.c
-> +++ b/arch/x86/mm/xpfo.c
-> @@ -118,7 +118,7 @@ inline void xpfo_flush_kernel_tlb(struct page *page, int order)
->  		return;
->  	}
->  
-> -	flush_tlb_kernel_range(kaddr, kaddr + (1 << order) * size);
-> +	xpfo_flush_tlb_kernel_range(kaddr, kaddr + (1 << order) * size);
->  }
->  EXPORT_SYMBOL_GPL(xpfo_flush_kernel_tlb);
+However, speculation...
 
-So this patch is the one that makes it 'work', but I'm with Andy on
-hating it something fierce.
+Another CPU can speculatively hit upon a fixmap entry for another CPU
+and populate it's own TLB entry. Then the TLB invalidate is
+insufficient, it leaves a stale entry in a remote TLB.
 
-Up until this point x86_64 is completely buggered in this series, after
-this it sorta works but *urgh* what crap.
+If the remote CPU then re-uses that fixmap slot to alias another page,
+we have two CPUs with different translations for the same VA, a
+condition that AMD CPU's dislike enough to machine check on (IIRC).
 
-All in all your changelog is complete and utter garbage, this is _NOT_ a
-performance issue. It is a very much a correctness issue.
+Actually hitting that is incredibly difficult (we have to have
+speculation, fixmap reuse and not get a full TLB invalidate in between),
+but, afaict, not impossible.
 
-Also; I distinctly dislike the inconsistent TLB states this generates.
-It makes it very hard to argue for its correctness..
+Your monstrosity from the last patch avoids this particular issue by not
+aliasing in this manner, but it comes at the cost of this page-frame
+bloat. Also, I'm still not sure there's not other problems with it.
+
+Bah..
