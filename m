@@ -1,55 +1,36 @@
-From: Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v9 02/13] x86: always set IF before oopsing from page
-	fault
-Date: Wed, 3 Apr 2019 17:12:56 -0700
-Message-ID: <CALCETrXvwuwkVSJ+S5s7wTBkNNj3fRVxpx9BvsXWrT=3ZdRnCw@mail.gmail.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz@oracle.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH AUTOSEL 5.0 008/262] swiotlb: add checks for the return
+ value of memblock_alloc*()
+Date: Wed, 3 Apr 2019 20:56:44 -0400
+Message-ID: <20190404005644.GI16241@sasha-vm>
+References: <20190327180158.10245-1-sashal@kernel.org>
+ <20190327180158.10245-8-sashal@kernel.org>
+ <20190328055520.GA14864@rapoport-lnx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andrew Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, open
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190328055520.GA14864@rapoport-lnx>
+Sender: stable-owner@vger.kernel.org
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@c-s.fr>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Guo Ren <ren_guo@c-sky.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Juergen Gross <jgross@suse.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 3, 2019 at 10:36 AM Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
+On Thu, Mar 28, 2019 at 07:55:20AM +0200, Mike Rapoport wrote:
+>Hi,
 >
-> From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
+>On Wed, Mar 27, 2019 at 01:57:43PM -0400, Sasha Levin wrote:
+>> From: Mike Rapoport <rppt@linux.ibm.com>
+>>
+>> [ Upstream commit a0bf842e89a3842162aa8514b9bf4611c86fee10 ]
+>>
+>> Add panic() calls if memblock_alloc() returns NULL.
+>>
+>> The panic() format duplicates the one used by memblock itself and in
+>> order to avoid explosion with long parameters list replace open coded
+>> allocation size calculations with a local variable.
 >
-> Oopsing might kill the task, via rewind_stack_do_exit() at the bottom, and
-> that might sleep:
->
+>This patch is a part of a series that removes panic() calls from memblock
+>allocators rather than a fix.
 
-
-> diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-> index 9d5c75f02295..7891add0913f 100644
-> --- a/arch/x86/mm/fault.c
-> +++ b/arch/x86/mm/fault.c
-> @@ -858,6 +858,12 @@ no_context(struct pt_regs *regs, unsigned long error_code,
->         /* Executive summary in case the body of the oops scrolled away */
->         printk(KERN_DEFAULT "CR2: %016lx\n", address);
->
-> +       /*
-> +        * We're about to oops, which might kill the task. Make sure we're
-> +        * allowed to sleep.
-> +        */
-> +       flags |= X86_EFLAGS_IF;
-> +
->         oops_end(flags, regs, sig);
->  }
->
-
-
-NAK.  If there's a bug in rewind_stack_do_exit(), please fix it in
-rewind_stack_do_exit().
+I've dropped it, thanks!
