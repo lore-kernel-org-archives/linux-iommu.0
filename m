@@ -1,158 +1,103 @@
-From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-Subject: Re: [RFC PATCH v9 02/13] x86: always set IF before oopsing from page
-	fault
-Date: Thu, 4 Apr 2019 09:47:27 -0600
-Message-ID: <20190404154727.GA14030@cisco>
+From: Khalid Aziz <khalid.aziz@oracle.com>
+Subject: Re: [RFC PATCH v9 11/13] xpfo, mm: optimize spinlock usage in
+ xpfo_kunmap
+Date: Thu, 4 Apr 2019 10:06:43 -0600
+Message-ID: <89dd158f-c341-9dd9-d70c-787b5eb0b410@oracle.com>
 References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXvwuwkVSJ+S5s7wTBkNNj3fRVxpx9BvsXWrT=3ZdRnCw@mail.gmail.com>
-	<20190404013956.GA3365@cisco>
-	<CALCETrVp37Xo3EMHkeedP1zxUMf9og=mceBa8c55e1F4G1DRSQ@mail.gmail.com>
+ <5bab13e12d4215112ad2180106cc6bb9b513754a.1554248002.git.khalid.aziz@oracle.com>
+ <20190404075648.GQ4038@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CALCETrVp37Xo3EMHkeedP1zxUMf9og=mceBa8c55e1F4G1DRSQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, marco.antonio.780-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, alexander.h.duyck-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Amir Goldstein <amir73il-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, X86 ML <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, deepa.srinivasan-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, cpandya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Joao Martins <joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, LSM List <linux-security-module-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>an
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <kernel-hardening-return-15537-glkh-kernel-hardening=m.gmane.org@lists.openwall.com>
+List-Post: <mailto:kernel-hardening@lists.openwall.com>
+List-Help: <mailto:kernel-hardening-help@lists.openwall.com>
+List-Unsubscribe: <mailto:kernel-hardening-unsubscribe@lists.openwall.com>
+List-Subscribe: <mailto:kernel-hardening-subscribe@lists.openwall.com>
+In-Reply-To: <20190404075648.GQ4038@hirez.programming.kicks-ass.net>
+Content-Language: en-US
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: juergh@gmail.com, tycho@tycho.ws, jsteckli@amazon.de, ak@linux.intel.com, liran.alon@oracle.com, keescook@google.com, konrad.wilk@oracle.com, deepa.srinivasan@oracle.com, chris.hyser@oracle.com, tyhicks@canonical.com, dwmw@amazon.co.uk, andrew.cooper3@citrix.com, jcm@redhat.com, boris.ostrovsky@oracle.com, kanth.ghatraju@oracle.com, joao.m.martins@oracle.com, jmattson@google.com, pradeep.vincent@oracle.com, john.haxby@oracle.com, tglx@linutronix.de, kirill.shutemov@linux.intel.com, hch@lst.de, steven.sistare@oracle.com, labbott@redhat.com, luto@kernel.org, dave.hansen@intel.com, akpm@linux-foundation.org, alexander.h.duyck@linux.intel.com, aneesh.kumar@linux.ibm.com, arnd@arndb.de, bigeasy@linutronix.de, bp@alien8.de, catalin.marinas@arm.com, corbet@lwn.net, dan.j.williams@intel.com, gregk
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 03, 2019 at 09:12:16PM -0700, Andy Lutomirski wrote:
-> On Wed, Apr 3, 2019 at 6:42 PM Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org> wrote:
-> >
-> > On Wed, Apr 03, 2019 at 05:12:56PM -0700, Andy Lutomirski wrote:
-> > > On Wed, Apr 3, 2019 at 10:36 AM Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
-> > > >
-> > > > From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-> > > >
-> > > > Oopsing might kill the task, via rewind_stack_do_exit() at the bottom, and
-> > > > that might sleep:
-> > > >
-> > >
-> > >
-> > > > diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-> > > > index 9d5c75f02295..7891add0913f 100644
-> > > > --- a/arch/x86/mm/fault.c
-> > > > +++ b/arch/x86/mm/fault.c
-> > > > @@ -858,6 +858,12 @@ no_context(struct pt_regs *regs, unsigned long error_code,
-> > > >         /* Executive summary in case the body of the oops scrolled away */
-> > > >         printk(KERN_DEFAULT "CR2: %016lx\n", address);
-> > > >
-> > > > +       /*
-> > > > +        * We're about to oops, which might kill the task. Make sure we're
-> > > > +        * allowed to sleep.
-> > > > +        */
-> > > > +       flags |= X86_EFLAGS_IF;
-> > > > +
-> > > >         oops_end(flags, regs, sig);
-> > > >  }
-> > > >
-> > >
-> > >
-> > > NAK.  If there's a bug in rewind_stack_do_exit(), please fix it in
-> > > rewind_stack_do_exit().
-> >
-> > [I trimmed the CC list since google rejected it with E2BIG :)]
-> >
-> > I guess the problem is really that do_exit() (or really
-> > exit_signals()) might sleep. Maybe we should put an irq_enable() at
-> > the beginning of do_exit() instead and fix this problem for all
-> > arches?
-> >
-> 
-> Hmm.  do_exit() isn't really meant to be "try your best to leave the
-> system somewhat usable without returning" -- it's a function that,
-> other than in OOPSes, is called from a well-defined state.  So I think
-> rewind_stack_do_exit() is probably a better spot.  But we need to
-> rewind the stack and *then* turn on IRQs, since we otherwise risk
-> exploding quite badly.
+On 4/4/19 1:56 AM, Peter Zijlstra wrote:
+> On Wed, Apr 03, 2019 at 11:34:12AM -0600, Khalid Aziz wrote:
+>> From: Julian Stecklina <jsteckli@amazon.de>
+>>
+>> Only the xpfo_kunmap call that needs to actually unmap the page
+>> needs to be serialized. We need to be careful to handle the case,
+>> where after the atomic decrement of the mapcount, a xpfo_kmap
+>> increased the mapcount again. In this case, we can safely skip
+>> modifying the page table.
+>>
+>> Model-checked with up to 4 concurrent callers with Spin.
+>>
+>> Signed-off-by: Julian Stecklina <jsteckli@amazon.de>
+>> Signed-off-by: Khalid Aziz <khalid.aziz@oracle.com>
+>> Cc: Khalid Aziz <khalid@gonehiking.org>
+>> Cc: x86@kernel.org
+>> Cc: kernel-hardening@lists.openwall.com
+>> Cc: Vasileios P. Kemerlis <vpk@cs.columbia.edu>
+>> Cc: Juerg Haefliger <juerg.haefliger@canonical.com>
+>> Cc: Tycho Andersen <tycho@tycho.ws>
+>> Cc: Marco Benatto <marco.antonio.780@gmail.com>
+>> Cc: David Woodhouse <dwmw2@infradead.org>
+>> ---
+>>  include/linux/xpfo.h | 24 +++++++++++++++---------
+>>  1 file changed, 15 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/include/linux/xpfo.h b/include/linux/xpfo.h
+>> index 2318c7eb5fb7..37e7f52fa6ce 100644
+>> --- a/include/linux/xpfo.h
+>> +++ b/include/linux/xpfo.h
+>> @@ -61,6 +61,7 @@ static inline void xpfo_kmap(void *kaddr, struct pag=
+e *page)
+>>  static inline void xpfo_kunmap(void *kaddr, struct page *page)
+>>  {
+>>  	unsigned long flags;
+>> +	bool flush_tlb =3D false;
+>> =20
+>>  	if (!static_branch_unlikely(&xpfo_inited))
+>>  		return;
+>> @@ -72,18 +73,23 @@ static inline void xpfo_kunmap(void *kaddr, struct=
+ page *page)
+>>  	 * The page is to be allocated back to user space, so unmap it from
+>>  	 * the kernel, flush the TLB and tag it as a user page.
+>>  	 */
+>> -	spin_lock_irqsave(&page->xpfo_lock, flags);
+>> -
+>>  	if (atomic_dec_return(&page->xpfo_mapcount) =3D=3D 0) {
+>> -#ifdef CONFIG_XPFO_DEBUG
+>> -		WARN_ON(PageXpfoUnmapped(page));
+>> -#endif
+>> -		SetPageXpfoUnmapped(page);
+>> -		set_kpte(kaddr, page, __pgprot(0));
+>> -		xpfo_flush_kernel_tlb(page, 0);
+>> +		spin_lock_irqsave(&page->xpfo_lock, flags);
+>> +
+>> +		/*
+>> +		 * In the case, where we raced with kmap after the
+>> +		 * atomic_dec_return, we must not nuke the mapping.
+>> +		 */
+>> +		if (atomic_read(&page->xpfo_mapcount) =3D=3D 0) {
+>> +			SetPageXpfoUnmapped(page);
+>> +			set_kpte(kaddr, page, __pgprot(0));
+>> +			flush_tlb =3D true;
+>> +		}
+>> +		spin_unlock_irqrestore(&page->xpfo_lock, flags);
+>>  	}
+>> =20
+>> -	spin_unlock_irqrestore(&page->xpfo_lock, flags);
+>> +	if (flush_tlb)
+>> +		xpfo_flush_kernel_tlb(page, 0);
+>>  }
+>=20
+> This doesn't help with the TLB invalidation issue, AFAICT this is still=
 
-Ok, sounds good. I guess we can include something like this patch in
-the next series.
+> completely buggered. kunmap_atomic() can be called from IRQ context.
+>=20
 
-Thanks,
+OK. xpfo_kmap/xpfo_kunmap need redesign.
 
-Tycho
-
-
->From 34dce229a4f43f90db823671eb0b8da7c4906045 Mon Sep 17 00:00:00 2001
-From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-Date: Thu, 4 Apr 2019 09:41:32 -0600
-Subject: [PATCH] x86/entry: re-enable interrupts before exiting
-
-If the kernel oopses in an interrupt, nothing re-enables interrupts:
-
-Aug 23 19:30:27 xpfo kernel: [   38.302714] BUG: sleeping function called from invalid context at
-./include/linux/percpu-rwsem.h:33
-Aug 23 19:30:27 xpfo kernel: [   38.303837] in_atomic(): 0, irqs_disabled(): 1, pid: 1970, name:
-lkdtm_xpfo_test
-Aug 23 19:30:27 xpfo kernel: [   38.304758] CPU: 3 PID: 1970 Comm: lkdtm_xpfo_test Tainted: G      D
-4.13.0-rc5+ #228
-Aug 23 19:30:27 xpfo kernel: [   38.305813] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.10.1-1ubuntu1 04/01/2014
-Aug 23 19:30:27 xpfo kernel: [   38.306926] Call Trace:
-Aug 23 19:30:27 xpfo kernel: [   38.307243]  dump_stack+0x63/0x8b
-Aug 23 19:30:27 xpfo kernel: [   38.307665]  ___might_sleep+0xec/0x110
-Aug 23 19:30:27 xpfo kernel: [   38.308139]  __might_sleep+0x45/0x80
-Aug 23 19:30:27 xpfo kernel: [   38.308593]  exit_signals+0x21/0x1c0
-Aug 23 19:30:27 xpfo kernel: [   38.309046]  ? blocking_notifier_call_chain+0x11/0x20
-Aug 23 19:30:27 xpfo kernel: [   38.309677]  do_exit+0x98/0xbf0
-Aug 23 19:30:27 xpfo kernel: [   38.310078]  ? smp_reader+0x27/0x40 [lkdtm]
-Aug 23 19:30:27 xpfo kernel: [   38.310604]  ? kthread+0x10f/0x150
-Aug 23 19:30:27 xpfo kernel: [   38.311045]  ? read_user_with_flags+0x60/0x60 [lkdtm]
-Aug 23 19:30:27 xpfo kernel: [   38.311680]  rewind_stack_do_exit+0x17/0x20
-
-do_exit() expects to be called in a well-defined environment, so let's
-re-enable interrupts after unwinding the stack, in case they were disabled.
-
-Signed-off-by: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
----
- arch/x86/entry/entry_32.S | 6 ++++++
- arch/x86/entry/entry_64.S | 6 ++++++
- 2 files changed, 12 insertions(+)
-
-diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
-index d309f30cf7af..8ddb7b41669d 100644
---- a/arch/x86/entry/entry_32.S
-+++ b/arch/x86/entry/entry_32.S
-@@ -1507,6 +1507,12 @@ ENTRY(rewind_stack_do_exit)
- 	movl	PER_CPU_VAR(cpu_current_top_of_stack), %esi
- 	leal	-TOP_OF_KERNEL_STACK_PADDING-PTREGS_SIZE(%esi), %esp
- 
-+	/*
-+	 * If we oopsed in an interrupt handler, interrupts may be off. Let's turn
-+	 * them back on before going back to "normal" code.
-+	 */
-+	sti
-+
- 	call	do_exit
- 1:	jmp 1b
- END(rewind_stack_do_exit)
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 1f0efdb7b629..c0759f3e3ad2 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -1672,5 +1672,11 @@ ENTRY(rewind_stack_do_exit)
- 	leaq	-PTREGS_SIZE(%rax), %rsp
- 	UNWIND_HINT_FUNC sp_offset=PTREGS_SIZE
- 
-+	/*
-+	 * If we oopsed in an interrupt handler, interrupts may be off. Let's turn
-+	 * them back on before going back to "normal" code.
-+	 */
-+	sti
-+
- 	call	do_exit
- END(rewind_stack_do_exit)
--- 
-2.19.1
+--
+Khalid
