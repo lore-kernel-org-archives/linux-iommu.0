@@ -1,87 +1,245 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
- iommu_get_resv_regions
-Date: Thu, 4 Apr 2019 14:49:05 +0800
-Message-ID: <ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
- <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
- <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
- <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
- <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
- <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
- <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
- <cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
- <6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
- <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v6 09/22] vfio: VFIO_IOMMU_BIND/UNBIND_MSI
+Date: Thu, 4 Apr 2019 08:55:25 +0200
+Message-ID: <4b27b707-4917-2c3e-a13c-3b978e850d09@redhat.com>
+References: <20190317172232.1068-1-eric.auger@redhat.com>
+ <20190317172232.1068-10-eric.auger@redhat.com>
+ <20190321170159.38358f38@x1.home>
+ <16931d58-9c88-8cfb-a392-408ea7afdf16@redhat.com>
+ <20190322160947.3f8dacdb@x1.home>
+ <b47128de-88d0-1971-1fbc-86e43439c7ee@redhat.com>
+ <20190403113800.51503693@x1.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
+In-Reply-To: <20190403113800.51503693@x1.home>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: James Sewart <jamessewart@arista.com>
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org, vincent.stehle@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi James,
+Hi Marc, Robin, Alex,
 
-I did a sanity test from my end. The test machine fails to boot. I
-haven't seen any valuable kernel log. It results in a purple screen.
+On 4/3/19 7:38 PM, Alex Williamson wrote:
+> On Wed, 3 Apr 2019 16:30:15 +0200
+> Auger Eric <eric.auger@redhat.com> wrote:
+> 
+>> Hi Alex,
+>>
+>> On 3/22/19 11:09 PM, Alex Williamson wrote:
+>>> On Fri, 22 Mar 2019 10:30:02 +0100
+>>> Auger Eric <eric.auger@redhat.com> wrote:
+>>>   
+>>>> Hi Alex,
+>>>> On 3/22/19 12:01 AM, Alex Williamson wrote:  
+>>>>> On Sun, 17 Mar 2019 18:22:19 +0100
+>>>>> Eric Auger <eric.auger@redhat.com> wrote:
+>>>>>     
+>>>>>> This patch adds the VFIO_IOMMU_BIND/UNBIND_MSI ioctl which aim
+>>>>>> to pass/withdraw the guest MSI binding to/from the host.
+>>>>>>
+>>>>>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>>>>>>
+>>>>>> ---
+>>>>>> v3 -> v4:
+>>>>>> - add UNBIND
+>>>>>> - unwind on BIND error
+>>>>>>
+>>>>>> v2 -> v3:
+>>>>>> - adapt to new proto of bind_guest_msi
+>>>>>> - directly use vfio_iommu_for_each_dev
+>>>>>>
+>>>>>> v1 -> v2:
+>>>>>> - s/vfio_iommu_type1_guest_msi_binding/vfio_iommu_type1_bind_guest_msi
+>>>>>> ---
+>>>>>>  drivers/vfio/vfio_iommu_type1.c | 58 +++++++++++++++++++++++++++++++++
+>>>>>>  include/uapi/linux/vfio.h       | 29 +++++++++++++++++
+>>>>>>  2 files changed, 87 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>>>>>> index 12a40b9db6aa..66513679081b 100644
+>>>>>> --- a/drivers/vfio/vfio_iommu_type1.c
+>>>>>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>>>>>> @@ -1710,6 +1710,25 @@ static int vfio_cache_inv_fn(struct device *dev, void *data)
+>>>>>>  	return iommu_cache_invalidate(d, dev, &ustruct->info);
+>>>>>>  }
+>>>>>>  
+>>>>>> +static int vfio_bind_msi_fn(struct device *dev, void *data)
+>>>>>> +{
+>>>>>> +	struct vfio_iommu_type1_bind_msi *ustruct =
+>>>>>> +		(struct vfio_iommu_type1_bind_msi *)data;
+>>>>>> +	struct iommu_domain *d = iommu_get_domain_for_dev(dev);
+>>>>>> +
+>>>>>> +	return iommu_bind_guest_msi(d, dev, ustruct->iova,
+>>>>>> +				    ustruct->gpa, ustruct->size);
+>>>>>> +}
+>>>>>> +
+>>>>>> +static int vfio_unbind_msi_fn(struct device *dev, void *data)
+>>>>>> +{
+>>>>>> +	dma_addr_t *iova = (dma_addr_t *)data;
+>>>>>> +	struct iommu_domain *d = iommu_get_domain_for_dev(dev);    
+>>>>>
+>>>>> Same as previous, we can encapsulate domain in our own struct to avoid
+>>>>> a lookup.
+>>>>>     
+>>>>>> +
+>>>>>> +	iommu_unbind_guest_msi(d, dev, *iova);    
+>>>>>
+>>>>> Is it strange that iommu-core is exposing these interfaces at a device
+>>>>> level if every one of them requires us to walk all the devices?  Thanks,    
+>>>>
+>>>> Hum this per device API was devised in response of Robin's comments on
+>>>>
+>>>> [RFC v2 12/20] dma-iommu: Implement NESTED_MSI cookie.
+>>>>
+>>>> "
+>>>> But that then seems to reveal a somewhat bigger problem - if the callers
+>>>> are simply registering IPAs, and relying on the ITS driver to grab an
+>>>> entry and fill in a PA later, then how does either one know *which* PA
+>>>> is supposed to belong to a given IPA in the case where you have multiple
+>>>> devices with different ITS targets assigned to the same guest? (and if
+>>>> it's possible to assume a guest will use per-device stage 1 mappings and
+>>>> present it with a single vITS backed by multiple pITSes, I think things
+>>>> start breaking even harder.)
+>>>> "
+>>>>
+>>>> However looking back into the problem I wonder if there was an issue
+>>>> with the iommu_domain based API.
+>>>>
+>>>> If my understanding is correct, when assigned devices are protected by a
+>>>> vIOMMU then they necessarily end up in separate host iommu domains even
+>>>> if they belong to the same iommu_domain on the guest. And there can only
+>>>> be a single device in this iommu_domain.  
+>>>
+>>> Don't forget that a container represents the IOMMU context in a vfio
+>>> environment, groups are associated with containers and a group may
+>>> contain one or more devices.  When a vIOMMU comes into play, we still
+>>> only have an IOMMU context per container.  If we have multiple devices
+>>> in a group, we run into problems with vIOMMU.  We can resolve this by
+>>> requiring that the user ignore all but one device in the group,
+>>> or making sure that the devices in the group have the same IOMMU
+>>> context.  The latter we could do in QEMU if PCIe-to-PCI bridges there
+>>> masked the per-device address space as it does on real hardware (ie.
+>>> there is no requester ID on conventional PCI, all transactions appear to
+>>> the IOMMU with the bridge requester ID).  So I raise this question
+>>> because vfio's minimum domain granularity is a group.
+>>>   
+>>>> If this is confirmed, there is a non ambiguous association between 1
+>>>> physical iommu_domain, 1 device, 1 S1 mapping and 1 physical MSI
+>>>> controller.
+>>>>
+>>>> I added the device handle handle to disambiguate those associations. The
+>>>> gIOVA ->gDB mapping is associated with a device handle. Then when the
+>>>> host needs a stage 1 mapping for this device, to build the nested
+>>>> mapping towards the physical DB it can easily grab the gIOVA->gDB stage
+>>>> 1 mapping registered for this device.
+>>>>
+>>>> The correctness looks more obvious to me, at least.  
+>>>
+>>> Except all devices within all groups within the same container
+>>> necessarily share the same IOMMU context, so from that perspective, it
+>>> appears to impose non-trivial redundancy on the caller.  Thanks,  
+>>
+>> Taking into consideration the case where we could have several devices
+>> attached to the same host iommu group, each of them possibly using
+>> different host MSI doorbells, I think I am in trouble.
+>>
+>> Let's assume that using the pcie-to-pci bridge trick on guest side they
+>> end up in the same container and in the same guest iommu group.
+>>
+>> At the moment there is a single MSI controller on guest, so the same
+>> gIOVA/gDB S1 mapping is going to be created by the guest iommu dommain
+>> and both devices are programmed with gIOVA. If dev0 and dev1 are
+>> attached to different host MSI controllers, I would need to build the 2
+>> nested bindings:
+>> dev0: MSI nested binding: gIOVA -> gDB -> hDB0
+>> dev1: MSI nested binding: gIOVA -> gDB -> hDB1
+>> (on guest there is a single MSI controller at the moment)
+>>
+>> which is not possible as the devices belong to the same host iommu group
+>> and share the same mapping.
+>>
+>> The solution would be to instantiate 2 MSI controllers on guest side, in
+>> which case we would end up with
+>> dev0: gIOVA0 -> gDB0 -> hDB0
+>> dev1: gIOVA1 -> gDB1 -> hDB1
+>>
+>> Isn't it somehow what we do with the IOMMU RID topology. We need to take
+>> into account the host topology (2 devices belonging to the same group)
+>> to force the same on guest by introducing a PCIe-to-PCI bridge. Here we
+>> would need to say, those assigned devices are attached to different MSI
+>> domains on host, so we need the same on guest.
+>>
+>> Anyway, the current container based IOCTL would fail to implement that
+>> because I would register gIOVA0 -> gDB0 and gIOVA1 -> gDB1 for each
+>> device within the container which would definitively fail to build the
+>> correct association. So I think I would need anyway a device based IOTCL
+>> that would aim to tell: this assigned device uses this S1 MSI binding.
+>> All the notification mechanism we have in qemu is based on container, so
+>> this would obliged to have device based notification mechanism.
+>>
+>> So I wonder whether it wouldn't be sensible to restrict this use case
+>> and say we support nested mode only if we have a single assigned device
+>> within the container?
+>>
+>> Thoughts?
+> 
+> We've essentially done that with vIOMMU up to this point already, it's
+> not been possible to assign multiple devices from the same group to a
+> VM with intel-iommu, amd-iommu, or smmu due to the requirement of
+> separate address spaces per device.  It's only when we introduce
+> address space aliasing with bridges that we can even consider this
+> possibility, and it's a configuration which smmu doesn't properly
+> support even on bare metal.  I hope we can consider that to be simply a
+> gap in the implementation that will get fixed and not an architectural
+> problem.
+> 
+> As we discussed offline though, I wonder if we're attempting to support
+> more than necessary with your scenarios above.  If devices within the
+> same group can be verified to share a host MSI controller, do we still
+> have an issue mapping them to a single guest MSI controller?  When we
+> talked we were headed down a path that if a group is necessarily
+> associated to a single IOMMU, perhaps that necessarily means that a
+> group is also associated to a single MSI controller.  I've since
+> thought of a configuration where a group could span physical IOMMU
+> devices, NVLink.  As essentially a secondary bus interface for a
+> device, NVLink can cause devices with arbitrary PCI hierarchy
+> connections to be non-isolated, and ideally our grouping would
+> understand to account for that.  However, if it could be determined
+> that a group associates to a single MSI controller, do we still have an
+> issue with multiple devices within the group?
 
-Best regards,
-Lu Baolu
+Marc, Robin,
 
-On 3/29/19 11:26 PM, James Sewart wrote:
-> Hey Lu,
+Do you think this is a reasonable assumption to consider devices within
+the same host iommu group share the same MSI doorbell?
 > 
-> I’ve attached a preliminary v3, if you could take a look and run some tests
-> that would be great.
+> My issue with the per device interface for what is fundamentally an
+> IOVA mapping is that vfio does not support per device mappings.  We
+> support mappings at the container level, where the minimum set of
+> devices we can attach to a container is a group.  Therefore to create
+> an interface that purports to support device level mappings is not
+> accurate.  Maybe MSI controllers will restrict our configuration but
+> I'd rather not design the interface around the wrong level of mapping
+> granularity.  Thanks,
+
+Alex,
+
+In case of nested, the vfio container is used to setup the stage2 only
+whereas the stage1 is owned by the guest. Here the mapping we pass to
+the host is a stage1 mapping; this information is used to build the
+correct S2 mapping. Then the mapping remains the same for the whole
+container. If dev1 decides to use gIOVA0 it will reach hDB0. Anyway the
+granularity of the mapping cannot change.
+
+So this rather tells this assigned dev uses this given giova for
+reaching a guest MSI doorbell.
+
+Thanks
+
+Eric
 > 
-> Since v2 i’ve added your default domain type patches, the new device_group
-> handler, and incorporated Jacob’s feedback.
-> 
->> On 28 Mar 2019, at 18:37, James Sewart <jamessewart@arista.com> wrote:
->>
->> Hey Lu,
->>
->>> On 26 Mar 2019, at 01:24, Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>>
->>> Hi James,
->>>
->>> On 3/25/19 8:57 PM, James Sewart wrote:
->>>>>> Theres an issue that if we choose to alloc a new resv_region with type
->>>>>> IOMMU_RESV_DIRECT, we will need to refactor intel_iommu_put_resv_regions
->>>>>> to free this entry type which means refactoring the rmrr regions in
->>>>>> get_resv_regions. Should this work be in this patchset?
->>>>> Do you mean the rmrr regions are not allocated in get_resv_regions, but
->>>>> are freed in put_resv_regions? I think we should fix this in this patch
->>>>> set since this might impact the device passthrough if we don't do it.
->>>> They’re not allocated and not freed currently, only type IOMMU_RESV_MSI is
->>>> freed in put_resv_regions. If we allocate a new resv_region with type
->>>> IOMMU_RESV_DIRECT for the isa region, then it won’t be freed. If we modify
->>>> put_resv_regions to free type IOMMU_RESV_DIRECT, then we will try to free
->>>> the static RMRR regions.
->>>> Either the ISA region is static and not freed as with my implementation,
->>>> or the RMRR regions are converted to be allocated on each call to
->>>> get_resv_regions and freed in put_resv_regions.
->>>
->>> By the way, there's another way in my mind. Let's add a new region type
->>> for LPC devices, e.x. IOMMU_RESV_LPC, and then handle it in the same way
->>> as those MSI regions. Just FYI.
->>
->> This solution would require adding some extra code to
->> iommu_group_create_direct_mappings as currently only type
->> IOMMU_RESV_DIRECT is identity mapped, other types are only reserved.
->>
->>
->>>
->>> Best regards,
->>> Lu Baolu
->>
->> Cheers,
->> James.
-> 
-> Cheers,
-> James.
+> Alex
 > 
