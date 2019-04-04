@@ -1,36 +1,67 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH AUTOSEL 5.0 008/262] swiotlb: add checks for the return
- value of memblock_alloc*()
-Date: Wed, 3 Apr 2019 20:56:44 -0400
-Message-ID: <20190404005644.GI16241@sasha-vm>
-References: <20190327180158.10245-1-sashal@kernel.org>
- <20190327180158.10245-8-sashal@kernel.org>
- <20190328055520.GA14864@rapoport-lnx>
+From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
+Subject: Re: [RFC PATCH v9 02/13] x86: always set IF before oopsing from page
+	fault
+Date: Wed, 3 Apr 2019 19:42:39 -0600
+Message-ID: <20190404013956.GA3365@cisco>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<e6c57f675e5b53d4de266412aa526b7660c47918.1554248002.git.khalid.aziz@oracle.com>
+	<CALCETrXvwuwkVSJ+S5s7wTBkNNj3fRVxpx9BvsXWrT=3ZdRnCw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Return-path: <stable-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190328055520.GA14864@rapoport-lnx>
-Sender: stable-owner@vger.kernel.org
-To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@c-s.fr>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Guo Ren <ren_guo@c-sky.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Juergen Gross <jgross@suse.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>
+In-Reply-To: <CALCETrXvwuwkVSJ+S5s7wTBkNNj3fRVxpx9BvsXWrT=3ZdRnCw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, marco.antonio.780-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, alexander.h.duyck-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Amir Goldstein <amir73il-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, X86 ML <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, deepa.srinivasan-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, cpandya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Joao Martins <joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, LSM List <linux-security-module-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>an
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 28, 2019 at 07:55:20AM +0200, Mike Rapoport wrote:
->Hi,
->
->On Wed, Mar 27, 2019 at 01:57:43PM -0400, Sasha Levin wrote:
->> From: Mike Rapoport <rppt@linux.ibm.com>
->>
->> [ Upstream commit a0bf842e89a3842162aa8514b9bf4611c86fee10 ]
->>
->> Add panic() calls if memblock_alloc() returns NULL.
->>
->> The panic() format duplicates the one used by memblock itself and in
->> order to avoid explosion with long parameters list replace open coded
->> allocation size calculations with a local variable.
->
->This patch is a part of a series that removes panic() calls from memblock
->allocators rather than a fix.
+On Wed, Apr 03, 2019 at 05:12:56PM -0700, Andy Lutomirski wrote:
+> On Wed, Apr 3, 2019 at 10:36 AM Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
+> >
+> > From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
+> >
+> > Oopsing might kill the task, via rewind_stack_do_exit() at the bottom, and
+> > that might sleep:
+> >
+> 
+> 
+> > diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+> > index 9d5c75f02295..7891add0913f 100644
+> > --- a/arch/x86/mm/fault.c
+> > +++ b/arch/x86/mm/fault.c
+> > @@ -858,6 +858,12 @@ no_context(struct pt_regs *regs, unsigned long error_code,
+> >         /* Executive summary in case the body of the oops scrolled away */
+> >         printk(KERN_DEFAULT "CR2: %016lx\n", address);
+> >
+> > +       /*
+> > +        * We're about to oops, which might kill the task. Make sure we're
+> > +        * allowed to sleep.
+> > +        */
+> > +       flags |= X86_EFLAGS_IF;
+> > +
+> >         oops_end(flags, regs, sig);
+> >  }
+> >
+> 
+> 
+> NAK.  If there's a bug in rewind_stack_do_exit(), please fix it in
+> rewind_stack_do_exit().
 
-I've dropped it, thanks!
+[I trimmed the CC list since google rejected it with E2BIG :)]
+
+I guess the problem is really that do_exit() (or really
+exit_signals()) might sleep. Maybe we should put an irq_enable() at
+the beginning of do_exit() instead and fix this problem for all
+arches?
+
+Tycho
