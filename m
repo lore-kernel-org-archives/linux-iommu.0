@@ -1,62 +1,57 @@
-From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
-	Ownership (XPFO)
-Date: Thu, 4 Apr 2019 08:48:00 -0600
-Message-ID: <20190404144712.GA1249@cisco>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
-	<20190404072152.GN4038@hirez.programming.kicks-ass.net>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Break insecure users by disabling
+ bypass by default
+Date: Thu, 4 Apr 2019 16:00:05 +0100
+Message-ID: <20190404145957.GA25912@fuggles.cambridge.arm.com>
+References: <20190301192017.39770-1-dianders@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190404072152.GN4038-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org, rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jkosina-AlSwsSmVLrQ@public.gmane.org, joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, joao.m.martins-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, brgl-ARrdPY/1zhM@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jsteckli-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, keescook-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, chris.hyser-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>
+In-Reply-To: <20190301192017.39770-1-dianders@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>, Rob Clark <robdclark@gmail.com>, evgreen@chromium.org, tfiga@chromium.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 04, 2019 at 09:21:52AM +0200, Peter Zijlstra wrote:
-> On Wed, Apr 03, 2019 at 11:34:04AM -0600, Khalid Aziz wrote:
-> > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> > index 2c471a2c43fa..d17d33f36a01 100644
-> > --- a/include/linux/mm_types.h
-> > +++ b/include/linux/mm_types.h
-> > @@ -204,6 +204,14 @@ struct page {
-> >  #ifdef LAST_CPUPID_NOT_IN_PAGE_FLAGS
-> >  	int _last_cpupid;
-> >  #endif
-> > +
-> > +#ifdef CONFIG_XPFO
-> > +	/* Counts the number of times this page has been kmapped. */
-> > +	atomic_t xpfo_mapcount;
-> > +
-> > +	/* Serialize kmap/kunmap of this page */
-> > +	spinlock_t xpfo_lock;
+On Fri, Mar 01, 2019 at 11:20:17AM -0800, Douglas Anderson wrote:
+> If you're bisecting why your peripherals stopped working, it's
+> probably this CL.  Specifically if you see this in your dmesg:
+>   Unexpected global fault, this could be serious
+> ...then it's almost certainly this CL.
 > 
-> NAK, see ALLOC_SPLIT_PTLOCKS
+> Running your IOMMU-enabled peripherals with the IOMMU in bypass mode
+> is insecure and effectively disables the protection they provide.
+> There are few reasons to allow unmatched stream bypass, and even fewer
+> good ones.
 > 
-> spinlock_t can be _huge_ (CONFIG_PROVE_LOCKING=y), also are you _really_
-> sure you want spinlock_t and not raw_spinlock_t ? For
-> CONFIG_PREEMPT_FULL spinlock_t turns into a rtmutex.
+> This patch starts the transition over to make it much harder to run
+> your system insecurely.  Expected steps:
 > 
-> > +#endif
+> 1. By default disable bypass (so anyone insecure will notice) but make
+>    it easy for someone to re-enable bypass with just a KConfig change.
+>    That's this patch.
 > 
-> Growing the page-frame by 8 bytes (in the good case) is really sad,
-> that's a _lot_ of memory.
+> 2. After people have had a little time to come to grips with the fact
+>    that they need to set their IOMMUs properly and have had time to
+>    dig into how to do this, the KConfig will be eliminated and bypass
+>    will simply be disabled.  Folks who are truly upset and still
+>    haven't fixed their system can either figure out how to add
+>    'arm-smmu.disable_bypass=n' to their command line or revert the
+>    patch in their own private kernel.  Of course these folks will be
+>    less secure.
+> 
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+> 
+> Changes in v2:
+> - Flipped default to 'yes' and changed comments a lot.
+> 
+>  drivers/iommu/Kconfig    | 25 +++++++++++++++++++++++++
+>  drivers/iommu/arm-smmu.c |  3 ++-
+>  2 files changed, 27 insertions(+), 1 deletion(-)
 
-Originally we had this in page_ext, it's not really clear to me why we
-moved it out.
+Cheers, I'll pick this one up for 5.2.
 
-Julien?
-
-Tycho
+Will
