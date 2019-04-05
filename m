@@ -1,125 +1,77 @@
-From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
-Date: Fri, 5 Apr 2019 09:16:32 -0700
-Message-ID: <20190405161632.GA9160@rosenzweig.io>
-References: <20190401074730.12241-1-robh@kernel.org>
- <20190401074730.12241-4-robh@kernel.org>
- <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Steven Price <steven.price@arm.com>
-Cc: Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org, Sean Paul <sean@poorly.run>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Neil Armstrong <narmstrong@baylibre.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, "Marty E . Plummer" <hanetzer@startmail.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+From: Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
+Subject: Re: [RFC PATCH v9 12/13] xpfo,
+	mm: Defer TLB flushes for non-current CPUs (x86 only)
+Date: Fri, 5 Apr 2019 10:27:05 -0600
+Message-ID: <E0BBD625-6FE0-4A8A-884B-E10FAFC3319E@amacapital.net>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
+	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
+	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
+	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
+	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
+	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
+	<36b999d4-adf6-08a3-2897-d77b9cba20f8@intel.com>
+Mime-Version: 1.0 (1.0)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <36b999d4-adf6-08a3-2897-d77b9cba20f8-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark
 List-Id: iommu@lists.linux-foundation.org
 
-> I'm also somewhat surprised that you don't need loads of other
-> properties from the GPU - in particular knowing the number of shader
-> cores is useful for allocating the right amount of memory for TLS (and
-> can't be obtained purely from the GPU_ID).
-
-Since I have no idea what TLS is (and in my notes, I've come across the
-acronym once ever and have it as a "??"), I'm not sure how to respond to
-that... We don't know how to allocate memory for the GPU-internal data
-structures (the tiler heap, for instance, but also a few others I've
-just named "misc_0" and "scratchpad" -- guessing one of those is for
-"TLS"). With kbase, I took the worst-case strategy of allocating
-gigantic chunks on startup with tiny commit counts and GROW_ON_GPF set.
-With the new driver, well, our memory consumption is scary since
-implementing GROW_ON_GPF in an upstream-friendly way is a bit more work
-and isn't expected to hit the 5.2 window.
-
-Given this is kernel facing, I'm hoping 're able to share some answers
-here?
-
-> I think this comment might have survived since the very earliest version
-> of the Midgard driver! :)
-
-^_^
-
-> But I'm not sure anything will attempt to lock a region spanning two
-> pages like that.
-
-At least at the moment, I align everything kernel-facing to page
-granularity in userspace, so it's not a cornercase I'm going to hit
-anytime soon. Still probably better to have it technically correct.
-
-> To be fair only for BASE_HW_ISSUE_6367/T60X - but yes it's not a
-> pleasant workaround. There's no way on that hardware to reliably drain
-> the write buffer other than waiting.
-
-*wishing T60X disappeared intensifies* ;)
-
-Granted there are enough other errata specific to it that aren't worked
-around here that, well, it makes you wonder ;)
-
-> Do we have a good way of user space determining which requirements are
-> supported by the driver? At the moment it's just the one. kbase outgeew
-> the original u16 and has an ugly "compat_core_req", so I suspect you're
-> going to need to add several more along the way.
-
-Oh, so that's why compat_/core_req is split off! I thought somebody just
-thought it would be "fun" to break the UABI ;)
-
-I've definitely issues using the wrong core_req field for the kbase I
-had setup, that set me back a little bit on RK3399/T860 bringup *purses
-lips*
-
-To be fair, bunches of the kbase reqs are for soft jobs, which I don't
-feel are a good fit for how the Panfrost kernel works. If we need to
-implement functionality corresponding to softjobs, that would likely be
-done with dedicated ioctl(s), instead of affecting the core_req field.
-
-On that note
-
-> You might also want to consider being able to submit more than one job
-> chain at a time - but that could easily be implemented using a new ioctl
-> in the future.
-
-The issue with that at the bottom is having to introduce something akin
-to kbase's annoyingly intra-job-chain dependency management (read: I
-still don't understand how FBOs are supposed to work with kbase ;) ),
-which AFAIK we push off to userspace right now via standard fencing. If
-we want to submit batches at a time, we would potentially need to
-express those somewhat complex dependency trees, which is a lot of work
-for diminishing returns at this stage. Future ioctl indeed...
-
-> There's no SUBMIT_CL in this posting? I think you just need s/_CL//.
-
-+1
-
-> You are probably going to want flags for at least:
-> 
->  * No execute/No read/No write (good for security, especially with
-> buffer sharing between processes)
-> 
->  * Alignment (shader programs have quite strict alignment requirements,
-> I believe kbase just ensures that the shader memory block doesn't cross
-> a 16MB boundary which covers most cases).
-> 
->  * Page fault behaviour (kbase has GROW_ON_GPF)
-> 
->  * Coherency management
-
-+1 for all of these. This is piped through in userspace (for kbase), but
-the corresponding functionality isn't there yet in the Panfrost kernel.
-You're right there should at least be a flags field for future use.
-
-> One issue that I haven't got to the bottom of is that I can trigger a
-> lockdep splat:
-
-Oh, "fun"...
-
-> This is with the below simple reproducer:
-
-@Rob, ideas?
-
-> Other than that in my testing (on a Firefly RK3288) I didn't experience
-> any problems pushing jobs from the ARM userspace blob through it.
-
-Nice!
-
-Besides what was mentioned above, any other functionality you'll need
-for that? (e.g. the infamous replay workaround...)
+Cgo+IE9uIEFwciA1LCAyMDE5LCBhdCAxMDowMSBBTSwgRGF2ZSBIYW5zZW4gPGRhdmUuaGFuc2Vu
+QGludGVsLmNvbT4gd3JvdGU6Cj4gCj4gT24gNC81LzE5IDg6MjQgQU0sIEFuZHkgTHV0b21pcnNr
+aSB3cm90ZToKPj4+IFNvdW5kcyBsaWtlIHdlIG5lZWQgYSBtZWNoYW5pc20gdGhhdCB3aWxsIGRv
+IHRoZSBkZWZlcnJlZCBYUEZPIFRMQiAKPj4+IGZsdXNoZXMgd2hlbmV2ZXIgdGhlIGtlcm5lbCBp
+cyBlbnRlcmVkLCBhbmQgbm90IF9qdXN0XyBhdCBjb250ZXh0Cj4+PiBzd2l0Y2ggdGltZS4gIFRo
+aXMgcGVybWl0cyBhbiBhcHAgdG8gcnVuIGluIHVzZXJzcGFjZSB3aXRoIHN0YWxlCj4+PiBrZXJu
+ZWwgVExCIGVudHJpZXMgYXMgbG9uZyBhcyBpdCB3YW50cy4uLiB0aGF0J3MgaGFybWxlc3MuCj4g
+Li4uCj4+IEkgc3VwcG9zZSB3ZSBjb3VsZCBkbyB0aGUgZmx1c2ggYXQgY29udGV4dCBzd2l0Y2gg
+KmFuZCoKPj4gZW50cnkuICBJIGJldCB0aGF0IHBlcmZvcm1hbmNlIHN0aWxsIHV0dGVybHkgc3Vj
+a3MsIHRob3VnaCDigJQgb24gbWFueQo+PiB3b3JrbG9hZHMsIHRoaXMgdHVybnMgZXZlcnkgZW50
+cnkgaW50byBhIGZ1bGwgZmx1c2gsIGFuZCB3ZSBhbHJlYWR5Cj4+IGtub3cgZXhhY3RseSBob3cg
+bXVjaCB0aGF0IHN1Y2tzIOKAlCBpdOKAmXMgaWRlbnRpY2FsIHRvIEtQVEkgd2l0aG91dAo+PiBQ
+Q0lELiAgKEFuZCB5ZXMsIGlmIHdlIGdvIHRoaXMgcm91dGUsIHdlIG5lZWQgdG8gbWVyZ2UgdGhp
+cyBsb2dpYwo+PiB0b2dldGhlciDigJQgd2Ugc2hvdWxkbuKAmXQgd3JpdGUgQ1IzIHR3aWNlIG9u
+IGVudHJ5KS4KPiAKPiBZZWFoLCBwcm9iYWJseSB0cnVlLgo+IAo+IEp1c3QgZXllYmFsbGluZyB0
+aGlzLCBpdCB3b3VsZCBtZWFuIG1hcHBpbmcgdGhlICJjcHUgbmVlZHMgZGVmZXJyZWQKPiBmbHVz
+aCIgdmFyaWFibGUgaW50byB0aGUgY3B1X2VudHJ5X2FyZWEsIHdoaWNoIGRvZXNuJ3Qgc2VlbSB0
+b28gYXdmdWwuCj4gCj4gSSB0aGluayB0aGUgYmFzaWMgb3ZlcmFsbCBjb25jZXJuIGlzIHRoYXQg
+dGhlIGRlZmVycmVkIGZsdXNoIGxlYXZlcyB0b28KPiBtYW55IGhvbGVzIGFuZCBieSB0aGUgdGlt
+ZSB3ZSBjbG9zZSB0aGVtIHN1ZmZpY2llbnRseSwgcGVyZm9ybWFuY2Ugd2lsbAo+IHN1Y2sgYWdh
+aW4uICBTZWVtcyBsaWtlIGEgdG90YWxseSB2YWxpZCBjb25jZXJuLCBidXQgbXkgY3J5c3RhbCBi
+YWxsIGlzCj4gaGF6eSBvbiB3aGV0aGVyIGl0IHdpbGwgYmUgd29ydGggaXQgaW4gdGhlIGVuZCB0
+byBtYW55IGZvbGtzCj4gCj4gLi4uCj4+IEluIG90aGVyIHdvcmRzLCBJIHRoaW5rIHRoYXQgcmV0
+MmRpciBpcyBhbiBpbnN1ZmZpY2llbnQganVzdGlmaWNhdGlvbgo+PiBmb3IgWFBGTy4KPiAKPiBZ
+ZWFoLCBvdGhlciB0aGluZ3MgdGhhdCBpdCBpcyBnb29kIGZvciBoYXZlIGtpbmRhIGJlZW4gbG9z
+dCBpbiB0aGUKPiBub2lzZS4gIEkgdGhpbmsgSSBmaXJzdCBzdGFydGVkIGxvb2tpbmcgYXQgdGhp
+cyBsb25nIGJlZm9yZSBNZWx0ZG93biBhbmQKPiBMMVRGIHdlcmUgcHVibGljLgo+IAo+IFRoZXJl
+IGFyZSBoeXBlcnZpc29ycyBvdXQgdGhlcmUgdGhhdCBzaW1wbHkgZG9uJ3QgKHBlcnNpc3RlbnRs
+eSkgbWFwCj4gdXNlciBkYXRhLiAgVGhleSBjYW4ndCBsZWFrIHVzZXIgZGF0YSBiZWNhdXNlIHRo
+ZXkgZG9uJ3QgZXZlbiBoYXZlCj4gYWNjZXNzIHRvIGl0IGluIHRoZWlyIHZpcnR1YWwgYWRkcmVz
+cyBzcGFjZS4gIFRob3NlIGh5cGVydmlzb3JzIGhhZCBhCj4gbXVjaCBlYXNpZXIgdGltZSB3aXRo
+IEwxVEYgbWl0aWdhdGlvbiB0aGFuIHdlIGRpZC4gIEJhc2ljYWxseSwgdGhleQo+IGNvdWxkIGZs
+dXNoIHRoZSBMMSBhZnRlciB1c2VyIGRhdGEgd2FzIGFjY2Vzc2libGUgaW5zdGVhZCBvZiBiZWZv
+cmUKPiB1bnRydXN0ZWQgZ3Vlc3QgY29kZSBydW5zLgo+IAo+IE15IGhvcGUgaXMgdGhhdCBYUEZP
+IGNvdWxkIHByb3ZpZGUgdXMgc2ltaWxhciBwcm90ZWN0aW9uLiAgQnV0LAo+IHNvbWVib2R5J3Mg
+Z290IHRvIHBva2UgYXQgaXQgZm9yIGEgd2hpbGUgdG8gc2VlIGhvdyBmYXIgdGhleSBjYW4gcHVz
+aCBpdC4KPiAKPiBJTU5ITywgWFBGTyBpcyAqYWx3YXlzKiBnb2luZyB0byBiZSBwYWluZnVsIGZv
+ciBrZXJuZWwgY29tcGlsZXMuICBCdXQsCj4gY2xvdWQgcHJvdmlkZXJzIGFyZW4ndCBkb2luZyBh
+IGxvdCBvZiBrZXJuZWwgY29tcGlsZXMgb24gdGhlaXIgS1ZNCj4gaG9zdHMsIGFuZCB0aGV5IGRl
+ZXBseSBjYXJlIGFib3V0IGxlYWtpbmcgdGhlaXIgdXNlcnMnIGRhdGEuCgpBdCB0aGUgcmlzayBv
+ZiBhc2tpbmcgc3R1cGlkIHF1ZXN0aW9uczogd2UgYWxyZWFkeSBoYXZlIGEgbWVjaGFuaXNtIGZv
+ciB0aGlzOiBoaWdobWVtLiAgQ2FuIHdlIGVuYWJsZSBoaWdobWVtIG9uIHg4Nl82NCwgbWF5YmUg
+d2l0aCBzb21lIGhldXJpc3RpY3MgdG8gbWFrZSBpdCB3b3JrIHdlbGw/Cl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
