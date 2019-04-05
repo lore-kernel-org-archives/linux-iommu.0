@@ -1,94 +1,166 @@
-From: Robin Murphy <robin.murphy@arm.com>
+From: Steven Price <steven.price@arm.com>
 Subject: Re: [PATCH v3 1/3] iommu: io-pgtable: Add ARM Mali midgard MMU page
  table format
-Date: Fri, 5 Apr 2019 11:02:31 +0100
-Message-ID: <85471882-3044-eba7-8351-fb01330004d8@arm.com>
+Date: Fri, 5 Apr 2019 11:36:55 +0100
+Message-ID: <0c5f474e-6dd4-8ba5-8c2b-52a99e9b1ca5@arm.com>
 References: <20190401074730.12241-1-robh@kernel.org>
  <20190401074730.12241-2-robh@kernel.org>
- <8d091874-11b0-e348-c4f1-dd1bcfa4bf97@arm.com>
+ <4ab58561-17e8-364c-a315-e55955ffdd49@arm.com>
+ <a5a11a56-46dc-ab44-564b-d2216f32451e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <8d091874-11b0-e348-c4f1-dd1bcfa4bf97@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <a5a11a56-46dc-ab44-564b-d2216f32451e@arm.com>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org
-Cc: Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Will Deacon <will.deacon@arm.com>, David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Sean Paul <sean@poorly.run>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org
+Cc: Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Sean Paul <sean@poorly.run>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDEvMDQvMjAxOSAyMDoxMSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDAxLzA0LzIwMTkg
-MDg6NDcsIFJvYiBIZXJyaW5nIHdyb3RlOgo+PiBBUk0gTWFsaSBtaWRnYXJkIEdQVSBpcyBzaW1p
-bGFyIHRvIHN0YW5kYXJkIDY0LWJpdCBzdGFnZSAxIHBhZ2UgCj4+IHRhYmxlcywgYnV0Cj4+IGhh
-dmUgYSBmZXcgZGlmZmVyZW5jZXMuIEFkZCBhIG5ldyBmb3JtYXQgdHlwZSB0byByZXByZXNlbnQg
-dGhlIGZvcm1hdC4gCj4+IFRoZQo+PiBpbnB1dCBhZGRyZXNzIHNpemUgaXMgNDgtYml0cyBhbmQg
-dGhlIG91dHB1dCBhZGRyZXNzIHNpemUgaXMgNDAtYml0cyAoYW5kCj4+IHBvc3NpYmx5IGxlc3M/
-KS4gTm90ZSB0aGF0IHRoZSBsYXRlciBiaWZyb3N0IEdQVXMgZm9sbG93IHRoZSBzdGFuZGFyZAo+
-PiA2NC1iaXQgc3RhZ2UgMSBmb3JtYXQuCj4+Cj4+IFRoZSBkaWZmZXJlbmNlcyBpbiB0aGUgZm9y
-bWF0IGNvbXBhcmVkIHRvIDY0LWJpdCBzdGFnZSAxIGZvcm1hdCBhcmU6Cj4+Cj4+IFRoZSAzcmQg
-bGV2ZWwgcGFnZSBlbnRyeSBiaXRzIGFyZSAweDEgaW5zdGVhZCBvZiAweDMgZm9yIHBhZ2UgZW50
-cmllcy4KPj4KPj4gVGhlIGFjY2VzcyBmbGFncyBhcmUgbm90IHJlYWQtb25seSBhbmQgdW5wcml2
-aWxlZ2VkLCBidXQgcmVhZCBhbmQgd3JpdGUuCj4+IFRoaXMgaXMgc2ltaWxhciB0byBzdGFnZSAy
-IGVudHJpZXMsIGJ1dCB0aGUgbWVtb3J5IGF0dHJpYnV0ZXMgZmllbGQgCj4+IG1hdGNoZXMKPj4g
-c3RhZ2UgMSBiZWluZyBhbiBpbmRleC4KPj4KPj4gVGhlIG5HIGJpdCBpcyBub3Qgc2V0IGJ5IHRo
-ZSB2ZW5kb3IgZHJpdmVyLiBUaGlzIG9uZSBkaWRuJ3Qgc2VlbSB0byAKPj4gbWF0dGVyLAo+PiBi
-dXQgd2UnbGwga2VlcCBpdCBhbGlnbmVkIHRvIHRoZSB2ZW5kb3IgZHJpdmVyLgo+Pgo+PiBDYzog
-V2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+Cj4+IENjOiBSb2JpbiBNdXJwaHkgPHJv
-YmluLm11cnBoeUBhcm0uY29tPgo+PiBDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+
-Cj4+IENjOiBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKPj4gQ2M6IGlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+IFNpZ25lZC1vZmYtYnk6IFJvYiBIZXJyaW5n
-IDxyb2JoQGtlcm5lbC5vcmc+Cj4+IC0tLQo+PiBQbGVhc2UgYWNrIHRoaXMgYXMgSSBuZWVkIHRv
-IGFwcGx5IGl0IHRvIHRoZSBkcm0tbWlzYyB0cmVlLiBPciB3ZSBuZWVkIGEKPj4gc3RhYmxlIGJy
-YW5jaCB3aXRoIHRoaXMgcGF0Y2guCj4gCj4gV2l0aCB0aGUgZGlmZiBiZWxvdyBzcXVhc2hlZCBp
-biB0byBhZGRyZXNzIG15IG91dHN0YW5kaW5nIHN0eWxlIG5pdHMsCj4gCj4gQWNrZWQtYnk6IFJv
-YmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4gCj4gSSBkb24ndCBmb3Jlc2VlIGFu
-eSBjb25mbGljdGluZyBpby1wZ3RhYmxlIGNoYW5nZXMgdG8gcHJldmVudCB0aGlzIGdvaW5nIAo+
-IHZpYSBEUk0sIGJ1dCBJJ2xsIGxlYXZlIHRoZSBmaW5hbCBzYXkgdXAgdG8gSm9lcmcuCgpVcmdo
-LCBzb3JyeSwgdHVybnMgb3V0IEkgZmxpcHBlZCBvbmUgY29uZGl0aW9uIHRvbyBtYW55IHRoZXJl
-LiBPbiAKcmVmbGVjdGlvbiBJIG1heSBhbHNvIGZvcmdldCBteSBjbGV2ZXIgdHJpY2sgaW4gZnV0
-dXJlIGFuZCBpbmFkdmVydGVudGx5IApicmVhayBpdCwgc28gaXQgcHJvYmFibHkgd2FycmFudHMg
-YSBjb21tZW50LiBQbGVhc2Ugc3VwZXJzZWRlIG15IApwcmV2aW91cyByZXF1ZXN0IHdpdGggdGhl
-IChhY3R1YWxseSB0ZXN0ZWQpIGRpZmYgYmVsb3cgOikKClRoYW5rcywKUm9iaW4uCgotLS0tLT44
-LS0tLS0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYyBiL2RyaXZl
-cnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYwppbmRleCA5ODU1MWQwY2ZmNTkuLjRmN2JlNWEzZTE5
-YiAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jCisrKyBiL2RyaXZl
-cnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYwpAQCAtMTk3LDEyICsxOTcsMTMgQEAgc3RydWN0IGFy
-bV9scGFlX2lvX3BndGFibGUgewoKICB0eXBlZGVmIHU2NCBhcm1fbHBhZV9pb3B0ZTsKCi1zdGF0
-aWMgaW5saW5lIGJvb2wgaW9wdGVfbGVhZihhcm1fbHBhZV9pb3B0ZSBwdGUsIGludCBsLCBlbnVt
-IAppb19wZ3RhYmxlX2ZtdCBmbXQpCitzdGF0aWMgaW5saW5lIGJvb2wgaW9wdGVfbGVhZihhcm1f
-bHBhZV9pb3B0ZSBwdGUsIGludCBsdmwsCisJCQkgICAgICBlbnVtIGlvX3BndGFibGVfZm10IGZt
-dCkKICB7Ci0JaWYgKChsID09IChBUk1fTFBBRV9NQVhfTEVWRUxTIC0gMSkpICYmIChmbXQgIT0g
-QVJNX01BTElfTFBBRSkpCi0JCXJldHVybiBpb3B0ZV90eXBlKHB0ZSxsKSA9PSBBUk1fTFBBRV9Q
-VEVfVFlQRV9QQUdFOworCWlmIChsdmwgPT0gKEFSTV9MUEFFX01BWF9MRVZFTFMgLSAxKSAmJiBm
-bXQgIT0gQVJNX01BTElfTFBBRSkKKwkJcmV0dXJuIGlvcHRlX3R5cGUocHRlLCBsdmwpID09IEFS
-TV9MUEFFX1BURV9UWVBFX1BBR0U7CgotCXJldHVybiBpb3B0ZV90eXBlKHB0ZSxsKSA9PSBBUk1f
-TFBBRV9QVEVfVFlQRV9CTE9DSzsKKwlyZXR1cm4gaW9wdGVfdHlwZShwdGUsIGx2bCkgPT0gQVJN
-X0xQQUVfUFRFX1RZUEVfQkxPQ0s7CiAgfQoKICBzdGF0aWMgYXJtX2xwYWVfaW9wdGUgcGFkZHJf
-dG9faW9wdGUocGh5c19hZGRyX3QgcGFkZHIsCkBAIC0zMTAsMTIgKzMxMSw5IEBAIHN0YXRpYyB2
-b2lkIF9fYXJtX2xwYWVfaW5pdF9wdGUoc3RydWN0IAphcm1fbHBhZV9pb19wZ3RhYmxlICpkYXRh
-LAogIAlpZiAoZGF0YS0+aW9wLmNmZy5xdWlya3MgJiBJT19QR1RBQkxFX1FVSVJLX0FSTV9OUykK
-ICAJCXB0ZSB8PSBBUk1fTFBBRV9QVEVfTlM7CgotCWlmIChsdmwgPT0gQVJNX0xQQUVfTUFYX0xF
-VkVMUyAtIDEpIHsKLQkJaWYgKGRhdGEtPmlvcC5mbXQgPT0gQVJNX01BTElfTFBBRSkKLQkJCXB0
-ZSB8PSBBUk1fTFBBRV9QVEVfVFlQRV9CTE9DSzsKLQkJZWxzZQotCQkJcHRlIHw9IEFSTV9MUEFF
-X1BURV9UWVBFX1BBR0U7Ci0JfSBlbHNlCisJaWYgKGRhdGEtPmlvcC5mbXQgIT0gQVJNX01BTElf
-TFBBRSAmJiBsdmwgPT0gQVJNX0xQQUVfTUFYX0xFVkVMUyAtIDEpCisJCXB0ZSB8PSBBUk1fTFBB
-RV9QVEVfVFlQRV9QQUdFOworCWVsc2UKICAJCXB0ZSB8PSBBUk1fTFBBRV9QVEVfVFlQRV9CTE9D
-SzsKCiAgCWlmIChkYXRhLT5pb3AuZm10ICE9IEFSTV9NQUxJX0xQQUUpCkBAIC00NTIsNyArNDUw
-LDEwIEBAIHN0YXRpYyBhcm1fbHBhZV9pb3B0ZSBhcm1fbHBhZV9wcm90X3RvX3B0ZShzdHJ1Y3Qg
-CmFybV9scGFlX2lvX3BndGFibGUgKmRhdGEsCiAgCQlpZiAocHJvdCAmIElPTU1VX1dSSVRFKQog
-IAkJCXB0ZSB8PSBBUk1fTFBBRV9QVEVfSEFQX1dSSVRFOwogIAl9Ci0KKwkvKgorCSAqIE5vdGUg
-dGhhdCB0aGlzIGxvZ2ljIGlzIHN0cnVjdHVyZWQgdG8gYWNjb21tb2RhdGUgTWFsaSBMUEFFCisJ
-ICogaGF2aW5nIHN0YWdlLTEtbGlrZSBhdHRyaWJ1dGVzIGJ1dCBzdGFnZS0yLWxpa2UgcGVybWlz
-c2lvbnMuCisJICovCiAgCWlmIChkYXRhLT5pb3AuZm10ID09IEFSTV82NF9MUEFFX1MyIHx8CiAg
-CSAgICBkYXRhLT5pb3AuZm10ID09IEFSTV8zMl9MUEFFX1MyKSB7CiAgCQlpZiAocHJvdCAmIElP
-TU1VX01NSU8pCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
-dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+On 05/04/2019 10:51, Robin Murphy wrote:
+> Hi Steve,
+> 
+> On 05/04/2019 10:42, Steven Price wrote:
+>> First let me say congratulations to everyone working on Panfrost - it's
+>> an impressive achievement!
+>>
+>> Full disclosure: I used to work on the Mali kbase driver. And have been
+>> playing around with running the Mali user-space blob with the Panfrost
+>> kernel driver.
+>>
+>> On 01/04/2019 08:47, Rob Herring wrote:
+>>> ARM Mali midgard GPU is similar to standard 64-bit stage 1 page
+>>> tables, but
+>>> have a few differences. Add a new format type to represent the
+>>> format. The
+>>> input address size is 48-bits and the output address size is 40-bits
+>>> (and
+>>> possibly less?). Note that the later bifrost GPUs follow the standard
+>>> 64-bit stage 1 format.
+>>>
+>>> The differences in the format compared to 64-bit stage 1 format are:
+>>>
+>>> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
+>>>
+>>> The access flags are not read-only and unprivileged, but read and write.
+>>> This is similar to stage 2 entries, but the memory attributes field
+>>> matches
+>>> stage 1 being an index.
+>>>
+>>> The nG bit is not set by the vendor driver. This one didn't seem to
+>>> matter,
+>>> but we'll keep it aligned to the vendor driver.
+>>
+>> The nG bit should be ignored by the hardware.
+>>
+>> The MMU in Midgard/Bifrost has a quirk similar to
+>> IO_PGTABLE_QUIRK_TLBI_ON_MAP - you must perform a cache flush for the
+>> GPU to (reliably) pick up new page table mappings.
+>>
+>> You may not have seen this because of the use of the JS_CONFIG_START_MMU
+>> bit - this effectively performs a cache flush and TLB invalidate before
+>> starting a job, however when using a GPU like T760 (e.g. on the Firefly
+>> RK3288) this bit isn't being set. In my testing on the Firefly board I
+>> saw GPU page faults because of this.
+>>
+>> There's two options for fixing this - a patch like below adds the quirk
+>> mode to the MMU. Or alternatively always set JS_CONFIG_START_MMU on
+>> jobs. In my testing both options solve the page faults.
+>>
+>> To be honest I don't know the reasoning behind kbase making the
+>> JS_CONFIG_START_MMU bit conditional - I'm not aware of any reason why it
+>> can't always be set. My guess is performance, but I haven't benchmarked
+>> the difference between this and JS_CONFIG_START_MMU.
+>>
+>> -----8<----------
+>>  From e3f75c7f04e43238dfc579029b8c11fb6b4a0c18 Mon Sep 17 00:00:00 2001
+>> From: Steven Price <steven.price@arm.com>
+>> Date: Thu, 4 Apr 2019 15:53:17 +0100
+>> Subject: [PATCH] iommu: io-pgtable: IO_PGTABLE_QUIRK_TLBI_ON_MAP for LPAE
+>>
+>> Midgard/Bifrost GPUs require a TLB invalidation when mapping pages,
+>> implement IO_PGTABLE_QUIRK_TLBI_ON_MAP for LPAE iommu page table
+>> formats and add the quirk bit to Panfrost.
+>>
+>> Signed-off-by: Steven Price <steven.price@arm.com>
+>> ---
+>>   drivers/gpu/drm/panfrost/panfrost_mmu.c |  1 +
+>>   drivers/iommu/io-pgtable-arm.c          | 11 +++++++++--
+>>   2 files changed, 10 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>> b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>> index f3aad8591cf4..094312074d66 100644
+>> --- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>> +++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>> @@ -343,6 +343,7 @@ int panfrost_mmu_init(struct panfrost_device *pfdev)
+>>       mmu_write(pfdev, MMU_INT_MASK, ~0);
+>>
+>>       pfdev->mmu->pgtbl_cfg = (struct io_pgtable_cfg) {
+>> +        .quirks        = IO_PGTABLE_QUIRK_TLBI_ON_MAP,
+>>           .pgsize_bitmap    = SZ_4K, // | SZ_2M | SZ_1G),
+>>           .ias        = 48,
+>>           .oas        = 40,    /* Should come from dma mask? */
+>> diff --git a/drivers/iommu/io-pgtable-arm.c
+>> b/drivers/iommu/io-pgtable-arm.c
+>> index 84beea1f47a7..45fd7bbdf9aa 100644
+>> --- a/drivers/iommu/io-pgtable-arm.c
+>> +++ b/drivers/iommu/io-pgtable-arm.c
+>> @@ -505,7 +505,13 @@ static int arm_lpae_map(struct io_pgtable_ops *ops,
+>> unsigned long iova,
+>>        * Synchronise all PTE updates for the new mapping before there's
+>>        * a chance for anything to kick off a table walk for the new iova.
+>>        */
+>> -    wmb();
+>> +    if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
+>> +        io_pgtable_tlb_add_flush(&data->iop, iova, size,
+>> +                     ARM_LPAE_BLOCK_SIZE(2, data), false);
+> 
+> For correctness (in case this ever ends up used for something with
+> VMSA-like invalidation behaviour), the granule would need to be "size"
+> here, rather than effectively hard-coded.
+
+Ah yes - I did rather just copy/paste this from io-pgtable-arm-v7s with
+minor fix-ups.
+
+> However, since Mali's invalidations appear to operate on arbitrary
+> ranges, it would probably be a lot more efficient for the driver to
+> handle this case directly, by just issuing a single big invalidation
+> after the for_each_sg() loop in panfrost_mmu_map().
+
+Yes - that would probably be a better option. Although I think
+personally I'd lean towards just using JS_CONFIG_START_MMU for most
+cases. The only thing that won't handle is modifying the MMU while the
+job is running (e.g. faulting in pages). But that can be handled
+internally in Panfrost by invalidating the exact region which is being
+populated.
+
+Steve
+
+> Robin.
+> 
+>> +        io_pgtable_tlb_sync(&data->iop);
+>> +    } else {
+>> +        wmb();
+>> +    }
+>>
+>>       return ret;
+>>   }
+>> @@ -800,7 +806,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg
+>> *cfg, void *cookie)
+>>       struct arm_lpae_io_pgtable *data;
+>>
+>>       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+>> IO_PGTABLE_QUIRK_NO_DMA |
+>> -                IO_PGTABLE_QUIRK_NON_STRICT))
+>> +                IO_PGTABLE_QUIRK_NON_STRICT |
+>> +                IO_PGTABLE_QUIRK_TLBI_ON_MAP))
+>>           return NULL;
+>>
+>>       data = arm_lpae_alloc_pgtable(cfg);
+>>
+> _______________________________________________
+> dri-devel mailing list
+> dri-devel@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/dri-devel
