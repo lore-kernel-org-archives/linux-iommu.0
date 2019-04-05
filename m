@@ -1,60 +1,126 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
-	CPUs (x86 only)
-Date: Fri, 5 Apr 2019 09:17:17 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
-	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
+From: Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v3 1/3] iommu: io-pgtable: Add ARM Mali midgard MMU page
+ table format
+Date: Fri, 5 Apr 2019 10:42:29 +0100
+Message-ID: <4ab58561-17e8-364c-a315-e55955ffdd49@arm.com>
+References: <20190401074730.12241-1-robh@kernel.org>
+ <20190401074730.12241-2-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <91f1dbce-332e-25d1-15f6-0e9cfc8b797b-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29Tb/PtFMR13I2A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190401074730.12241-2-robh@kernel.org>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org
+Cc: Sean Paul <sean@poorly.run>, Maxime Ripard <maxime.ripard@bootlin.com>, Neil Armstrong <narmstrong@baylibre.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 4 Apr 2019, Khalid Aziz wrote:
-> When xpfo unmaps a page from physmap only (after mapping the page in
-> userspace in response to an allocation request from userspace) on one
-> processor, there is a small window of opportunity for ret2dir attack on
-> other cpus until the TLB entry in physmap for the unmapped pages on
-> other cpus is cleared. Forcing that to happen synchronously is the
-> expensive part. A multiple of these requests can come in over a very
-> short time across multiple processors resulting in every cpu asking
-> every other cpusto flush TLB just to close this small window of
-> vulnerability in the kernel. If each request is processed synchronously,
-> each CPU will do multiple TLB flushes in short order. If we could
-> consolidate these TLB flush requests instead and do one TLB flush on
-> each cpu at the time of context switch, we can reduce the performance
-> impact significantly. This bears out in real life measuring the system
-> time when doing a parallel kernel build on a large server. Without this,
-> system time on 96-core server when doing "make -j60 all" went up 26x.
-> After this optimization, impact went down to 1.44x.
+First let me say congratulations to everyone working on Panfrost - it's
+an impressive achievement!
+
+Full disclosure: I used to work on the Mali kbase driver. And have been
+playing around with running the Mali user-space blob with the Panfrost
+kernel driver.
+
+On 01/04/2019 08:47, Rob Herring wrote:
+> ARM Mali midgard GPU is similar to standard 64-bit stage 1 page tables, but
+> have a few differences. Add a new format type to represent the format. The
+> input address size is 48-bits and the output address size is 40-bits (and
+> possibly less?). Note that the later bifrost GPUs follow the standard
+> 64-bit stage 1 format.
 > 
-> The trade-off with this strategy is, the kernel on a cpu is vulnerable
-> for a short time if the current running processor is the malicious
+> The differences in the format compared to 64-bit stage 1 format are:
+> 
+> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
+> 
+> The access flags are not read-only and unprivileged, but read and write.
+> This is similar to stage 2 entries, but the memory attributes field matches
+> stage 1 being an index.
+> 
+> The nG bit is not set by the vendor driver. This one didn't seem to matter,
+> but we'll keep it aligned to the vendor driver.
 
-The "short" time to next context switch on the other CPUs is how short
-exactly? Anything from 1us to seconds- think NOHZ FULL - and even w/o that
-10ms on a HZ=100 kernel is plenty of time to launch an attack.
+The nG bit should be ignored by the hardware.
 
-> process. Is that an acceptable trade-off?
+The MMU in Midgard/Bifrost has a quirk similar to
+IO_PGTABLE_QUIRK_TLBI_ON_MAP - you must perform a cache flush for the
+GPU to (reliably) pick up new page table mappings.
 
-You are not seriously asking whether creating a user controllable ret2dir
-attack window is a acceptable trade-off? April 1st was a few days ago.
+You may not have seen this because of the use of the JS_CONFIG_START_MMU
+bit - this effectively performs a cache flush and TLB invalidate before
+starting a job, however when using a GPU like T760 (e.g. on the Firefly
+RK3288) this bit isn't being set. In my testing on the Firefly board I
+saw GPU page faults because of this.
 
-Thanks,
+There's two options for fixing this - a patch like below adds the quirk
+mode to the MMU. Or alternatively always set JS_CONFIG_START_MMU on
+jobs. In my testing both options solve the page faults.
 
-	tglx
+To be honest I don't know the reasoning behind kbase making the
+JS_CONFIG_START_MMU bit conditional - I'm not aware of any reason why it
+can't always be set. My guess is performance, but I haven't benchmarked
+the difference between this and JS_CONFIG_START_MMU.
+
+-----8<----------
+>From e3f75c7f04e43238dfc579029b8c11fb6b4a0c18 Mon Sep 17 00:00:00 2001
+From: Steven Price <steven.price@arm.com>
+Date: Thu, 4 Apr 2019 15:53:17 +0100
+Subject: [PATCH] iommu: io-pgtable: IO_PGTABLE_QUIRK_TLBI_ON_MAP for LPAE
+
+Midgard/Bifrost GPUs require a TLB invalidation when mapping pages,
+implement IO_PGTABLE_QUIRK_TLBI_ON_MAP for LPAE iommu page table
+formats and add the quirk bit to Panfrost.
+
+Signed-off-by: Steven Price <steven.price@arm.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_mmu.c |  1 +
+ drivers/iommu/io-pgtable-arm.c          | 11 +++++++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index f3aad8591cf4..094312074d66 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -343,6 +343,7 @@ int panfrost_mmu_init(struct panfrost_device *pfdev)
+ 	mmu_write(pfdev, MMU_INT_MASK, ~0);
+
+ 	pfdev->mmu->pgtbl_cfg = (struct io_pgtable_cfg) {
++		.quirks		= IO_PGTABLE_QUIRK_TLBI_ON_MAP,
+ 		.pgsize_bitmap	= SZ_4K, // | SZ_2M | SZ_1G),
+ 		.ias		= 48,
+ 		.oas		= 40,	/* Should come from dma mask? */
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 84beea1f47a7..45fd7bbdf9aa 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -505,7 +505,13 @@ static int arm_lpae_map(struct io_pgtable_ops *ops,
+unsigned long iova,
+ 	 * Synchronise all PTE updates for the new mapping before there's
+ 	 * a chance for anything to kick off a table walk for the new iova.
+ 	 */
+-	wmb();
++	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
++		io_pgtable_tlb_add_flush(&data->iop, iova, size,
++					 ARM_LPAE_BLOCK_SIZE(2, data), false);
++		io_pgtable_tlb_sync(&data->iop);
++	} else {
++		wmb();
++	}
+
+ 	return ret;
+ }
+@@ -800,7 +806,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg
+*cfg, void *cookie)
+ 	struct arm_lpae_io_pgtable *data;
+
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+-			    IO_PGTABLE_QUIRK_NON_STRICT))
++			    IO_PGTABLE_QUIRK_NON_STRICT |
++			    IO_PGTABLE_QUIRK_TLBI_ON_MAP))
+ 		return NULL;
+
+ 	data = arm_lpae_alloc_pgtable(cfg);
+-- 
+2.20.1
