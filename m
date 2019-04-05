@@ -2,55 +2,163 @@ Return-Path: <SRS0=Eb89=SH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B6B1C282CE
-	for <iommu@archiver.kernel.org>; Fri,  5 Apr 2019 17:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F078C282CE
+	for <iommu@archiver.kernel.org>; Fri,  5 Apr 2019 17:40:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 636C320651
-	for <iommu@archiver.kernel.org>; Fri,  5 Apr 2019 17:31:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 636C320651
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4C924206BA
+	for <iommu@archiver.kernel.org>; Fri,  5 Apr 2019 17:40:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="WlX0xHZB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C924206BA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4509D25BC;
-	Fri,  5 Apr 2019 17:31:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0A22025B4;
+	Fri,  5 Apr 2019 17:40:55 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CD3F92365
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5BDC72533
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  5 Apr 2019 17:30:57 +0000 (UTC)
+	Fri,  5 Apr 2019 17:39:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 838B383A
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EEF837F8
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  5 Apr 2019 17:30:56 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D237168F;
-	Fri,  5 Apr 2019 10:30:56 -0700 (PDT)
-Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B107B3F557;
-	Fri,  5 Apr 2019 10:30:53 -0700 (PDT)
-Subject: Re: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
-To: Christoph Hellwig <hch@lst.de>
-References: <20190327080448.5500-1-hch@lst.de>
-	<20190327080448.5500-3-hch@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <3629087c-a8cb-d66e-840b-cfee125bdf4c@arm.com>
-Date: Fri, 5 Apr 2019 18:30:52 +0100
+	Fri,  5 Apr 2019 17:39:50 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+	by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x35HNZ7d103905; Fri, 5 Apr 2019 17:37:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+	h=subject : to : cc :
+	references : from : message-id : date : mime-version : in-reply-to :
+	content-type : content-transfer-encoding; s=corp-2018-07-02;
+	bh=yhCfl/dsZCpeyHFNxA3bv0f5LElE2bX0taQuTIsB/uk=;
+	b=WlX0xHZB2A31SaXIF2spbCzB8KM8iXDHR7cFwFgQs92U/71T9SrzQ/av0+D3eO2Xgt00
+	H/4X17j85Kv7DS68kFzTfO8cf7M0aBPctEvOH04kReF/7KdczslNVrO7DWFQvgpE48K8
+	PG3UfTczU/CY0ZQuuslxMa56/5ue12RXmja3oVPl63a5Of2LFktgGqusoU0vCC8D90Ob
+	bDL+fQzy6n5FssRfIaauBnoCRIkmzOPqeRuwe0/yI7Fh2H7nyHZOSVh2RCRYz0Lcfz4b
+	0Z55Pb4WiH8VVDqviGPOmNF2OX4p3BOxwFvWVCGdnsj+fCB8NMzq9r7O5kKCCRWAJ8Ns
+	yw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+	by aserp2130.oracle.com with ESMTP id 2rhwydpafe-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 05 Apr 2019 17:37:44 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+	by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x35HZgSJ098019; Fri, 5 Apr 2019 17:35:44 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+	by userp3020.oracle.com with ESMTP id 2rp369ga9b-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 05 Apr 2019 17:35:43 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+	by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x35HZR1K013561;
+	Fri, 5 Apr 2019 17:35:27 GMT
+Received: from [192.168.1.16] (/24.9.64.241)
+	by default (Oracle Beehive Gateway v4.0)
+	with ESMTP ; Fri, 05 Apr 2019 10:35:26 -0700
+Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
+	CPUs (x86 only)
+To: Andy Lutomirski <luto@amacapital.net>, Dave Hansen <dave.hansen@intel.com>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
+	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
+	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
+	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
+	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
+	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
+	<36b999d4-adf6-08a3-2897-d77b9cba20f8@intel.com>
+	<E0BBD625-6FE0-4A8A-884B-E10FAFC3319E@amacapital.net>
+From: Khalid Aziz <khalid.aziz@oracle.com>
+Organization: Oracle Corp
+Message-ID: <9a1dcf02-a737-33c2-fee4-f475069e731f@oracle.com>
+Date: Fri, 5 Apr 2019 11:35:22 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thunderbird/60.5.1
 MIME-Version: 1.0
-In-Reply-To: <20190327080448.5500-3-hch@lst.de>
-Content-Language: en-GB
-Cc: Tom Lendacky <thomas.lendacky@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <E0BBD625-6FE0-4A8A-884B-E10FAFC3319E@amacapital.net>
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9218
+	signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+	malwarescore=0
+	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+	engine=8.0.1-1810050000 definitions=main-1904050118
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9218
+	signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+	priorityscore=1501 malwarescore=0
+	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
+	adultscore=0
+	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+	definitions=main-1904050118
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will.deacon@arm.com>, steven.sistare@oracle.com,
+	Christoph Hellwig <hch@lst.de>, Tycho Andersen <tycho@tycho.ws>,
+	Andi Kleen <ak@linux.intel.com>, aneesh.kumar@linux.ibm.com,
+	James Morris <jmorris@namei.org>,
+	David Rientjes <rientjes@google.com>, anthony.yznaga@oracle.com,
+	Rik van Riel <riel@surriel.com>, Nicholas Piggin <npiggin@gmail.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>, Greg KH <gregkh@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
+	Souptick Joarder <jrdr.linux@gmail.com>,
+	Jiri Kosina <jkosina@suse.cz>, Joe Perches <joe@perches.com>,
+	arunks@codeaurora.org, Andrew Morton <akpm@linux-foundation.org>,
+	"Woodhouse, David" <dwmw@amazon.co.uk>,
+	Mark Rutland <mark.rutland@arm.com>, Keith Busch <keith.busch@intel.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, brgl@bgdev.pl,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	jsteckli@amazon.de, Joerg Roedel <jroedel@suse.de>,
+	Kees Cook <keescook@google.com>, zhangshaokun@hisilicon.com,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	chris hyser <chris.hyser@oracle.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	Khalid Aziz <khalid@gonehiking.org>, Aaron Lu <aaron.lu@intel.com>,
+	Steve Capper <steve.capper@arm.com>, James Morse <james.morse@arm.com>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+	Mike Kravetz <mike.kravetz@oracle.com>,
+	Michal Hocko <mhocko@suse.cz>, alexander.h.duyck@linux.intel.com,
+	Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+	Konstantin Khlebnikov <khlebnikov@yandex-team.ru>,
+	kanth.ghatraju@oracle.com, Huang Ying <ying.huang@intel.com>,
+	"Paul E. McKenney" <paulmck@linux.vnet.ibm.com>,
+	Ben Hutchings <ben@decadent.org.uk>, "Serge E. Hallyn" <serge@hallyn.com>,
+	Arnd Bergmann <arnd@arndb.de>, Andrey Konovalov <andreyknvl@google.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Borislav Petkov <bp@alien8.de>,
+	Dan Williams <dan.j.williams@intel.com>, osalvador@suse.de,
+	Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+	iommu@lists.linux-foundation.org,
+	Andrew Cooper <andrew.cooper3@citrix.com>,
+	Logan Gunthorpe <logang@deltatee.com>, Roman Gushchin <guro@fb.com>,
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+	Michal Hocko <mhocko@suse.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Daniel Vetter <daniel.vetter@ffwll.ch>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Amir Goldstein <amir73il@gmail.com>,
+	Linux-MM <linux-mm@kvack.org>, deepa.srinivasan@oracle.com,
+	cpandya@codeaurora.org, X86 ML <x86@kernel.org>,
+	yaojun8558363@gmail.com, Ingo Molnar <mingo@redhat.com>,
+	Jon Masters <jcm@redhat.com>, thymovanbeers@gmail.com,
+	Laura Abbott <labbott@redhat.com>, pradeep.vincent@oracle.com,
+	pavel.tatashin@microsoft.com, Jann Horn <jannh@google.com>,
+	Vlastimil Babka <vbabka@suse.cz>, Jim Mattson <jmattson@google.com>,
+	Juergen Gross <jgross@suse.com>, marco.antonio.780@gmail.com,
+	Juerg Haefliger <juergh@gmail.com>,
+	Mel Gorman <mgorman@techsingularity.net>,
+	Tyler Hicks <tyhicks@canonical.com>, John Haxby <john.haxby@oracle.com>,
+	LSM List <linux-security-module@vger.kernel.org>,
+	Johannes Weiner <hannes@cmpxchg.org>, liran.alon@oracle.com,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,76 +171,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190405173052.jrkhMpDyvC5az5Vyw4ydid63kN77DV-ToSwBFen2U38@z>
+Message-ID: <20190405173522.qHuv3UdxdA3beutm-5c6VH3dhRtCQUyfAVLGdJV5XGo@z>
 
-On 27/03/2019 08:04, Christoph Hellwig wrote:
-> The nr_pages checks should be done for all mmap requests, not just those
-> using remap_pfn_range.
-
-Hmm, the logic in iommu_dma_mmap() inherently returns an error for the 
-"off >= nr_pages" case already. It's also supposed to be robust against 
-the "vma_pages(vma) > nr_pages - off" condition, although by making the 
-partial mapping and treating it as a success, rather than doing nothing 
-and returning an error. What's the exact motivation here?
-
-Robin.
-
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/arm64/mm/dma-mapping.c | 21 ++++++++-------------
->   1 file changed, 8 insertions(+), 13 deletions(-)
+On 4/5/19 10:27 AM, Andy Lutomirski wrote:
+> At the risk of asking stupid questions: we already have a mechanism for this: highmem.  Can we enable highmem on x86_64, maybe with some heuristics to make it work well?
 > 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index be88beb2e377..e54288921e72 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -73,19 +73,9 @@ static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
->   static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
->   			      unsigned long pfn, size_t size)
->   {
-> -	int ret = -ENXIO;
-> -	unsigned long nr_vma_pages = vma_pages(vma);
-> -	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	unsigned long off = vma->vm_pgoff;
-> -
-> -	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
-> -		ret = remap_pfn_range(vma, vma->vm_start,
-> -				      pfn + off,
-> -				      vma->vm_end - vma->vm_start,
-> -				      vma->vm_page_prot);
-> -	}
-> -
-> -	return ret;
-> +	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
-> +			      vma->vm_end - vma->vm_start,
-> +			      vma->vm_page_prot);
->   }
->   #endif /* CONFIG_IOMMU_DMA */
->   
-> @@ -241,6 +231,8 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
->   			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
->   			      unsigned long attrs)
->   {
-> +	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> +	unsigned long off = vma->vm_pgoff;
->   	struct vm_struct *area;
->   	int ret;
->   
-> @@ -249,6 +241,9 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
->   	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
->   		return ret;
->   
-> +	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
-> +		return -ENXIO;
-> +
->   	if (!is_vmalloc_addr(cpu_addr)) {
->   		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
->   		return __swiotlb_mmap_pfn(vma, pfn, size);
-> 
+
+I proposed using highmem infrastructure for xpfo in my cover letter as
+well as in my earlier replies discussing redesigning
+xpfo_kmap/xpfo_kunmap. So that sounds like a reasonable question to me
+:) Looks like we might be getting to an agreement that highmem
+infrastructure is a good thing to use here.
+
+--
+Khalid
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
