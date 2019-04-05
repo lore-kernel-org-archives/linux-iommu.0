@@ -1,69 +1,51 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
-Date: Fri, 5 Apr 2019 13:57:26 +0100
-Message-ID: <d7e21f40-a639-c3e5-c259-3b05562a5446@arm.com>
-References: <20190401074730.12241-1-robh@kernel.org>
- <20190401074730.12241-4-robh@kernel.org>
- <6ce32759-ea83-ee79-33d3-237737f7b866@arm.com>
- <CAL_JsqKbqNDMx26Tkyrem-NXF_0iApcWaaEDphtfy6kX050Upg@mail.gmail.com>
+From: Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
+	CPUs (x86 only)
+Date: Fri, 5 Apr 2019 07:44:09 -0700
+Message-ID: <26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
+	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
+	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
+	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqKbqNDMx26Tkyrem-NXF_0iApcWaaEDphtfy6kX050Upg@mail.gmail.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: dri-devel <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Lyude Paul <lyude@redhat.com>, Eric Anholt <eric@anholt.net>, Neil Armstrong <narmstrong@baylibre.com>, "Marty E . Plummer" <hanetzer@startmail.com>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.21.1904050909520.1802-ecDvlHI5BZPZikZi3RtOZ1XZhhPuCNm+@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29Tb/PtFMR13I2A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/04/2019 05:57, Rob Herring wrote:
-[...]
->>> +static int panfrost_clk_init(struct panfrost_device *pfdev)
->>> +{
->>> +     int err;
->>> +     unsigned long rate;
->>> +
->>> +     pfdev->clock = devm_clk_get(pfdev->dev, NULL);
->>> +     if (IS_ERR(pfdev->clock)) {
->>
->> The DT binding says clocks are optional, but this doesn't treat them as
->> such.
-> 
-> Hum, I would think effectively clocks are always there and necessary
-> for thermal reasons.
+On 4/5/19 12:17 AM, Thomas Gleixner wrote:
+>> process. Is that an acceptable trade-off?
+> You are not seriously asking whether creating a user controllable ret2dir
+> attack window is a acceptable trade-off? April 1st was a few days ago.
 
-Should the binding be updated to move clocks from "optional" to 
-"required" then? Juno does actually have a GPU clock for DVFS, but the 
-clk-scmi driver didn't seem to want to play nicely with either 
-mali_kbase or panfrost DRM, so I've just been leaving it out of my DT 
-for now (and mali_kbase was perfectly happy without).
+Well, let's not forget that this set at least takes us from "always
+vulnerable to ret2dir" to a choice between:
 
->>> +     spin_lock_init(&pfdev->mm_lock);
->>> +
->>> +     /* 4G enough for now. can be 48-bit */
->>> +     drm_mm_init(&pfdev->mm, SZ_32M >> PAGE_SHIFT, SZ_4G);
->>
->> You probably want a dma_set_mask_and_coherent() call for your 'real'
->> output address size somewhere - the default 32-bit mask works out OK for
->> RK3399, but on systems with RAM above 4GB io-pgtable will get very
->> unhappy about DMA bounce-buffering.
-> 
-> Yes, I have a todo for figuring out the # of physaddr bits in the mmu
-> setup (as this call is just relevant to the input address side).
-> Though maybe just calling dma_set_mask_and_coherent() is enough and I
-> don't need to know the exact number of output bits for the io-pgtable
-> setup?
+1. fast-ish and "vulnerable to ret2dir for a user-controllable window"
+2. slow and "mitigated against ret2dir"
 
-True, io-pgtable itself only really depends on the input size, but in 
-order for non-coherent pagtables to work correctly in general, the DMA 
-mask does need to be set appropriately, at which point it may as well 
-also be propagated into OAS for completeness (as we do in arm-smmu*).
+Sounds like we need a mechanism that will do the deferred XPFO TLB
+flushes whenever the kernel is entered, and not _just_ at context switch
+time.  This permits an app to run in userspace with stale kernel TLB
+entries as long as it wants... that's harmless.
 
-FWIW I'm just gonna leave this quote here...
-
-	gpu_props->mmu.va_bits = KBASE_UBFX32(raw->mmu_features, 0U, 8);
-	gpu_props->mmu.pa_bits = KBASE_UBFX32(raw->mmu_features, 8U, 8);
-
-
-Robin.
+But, if it enters the kernel, we could process the deferred flush there.
+ The concern would be catching all the kernel entry paths (PTI does this
+today obviously, but I don't think we want to muck with the PTI code for
+this).  The other concern would be that the code between kernel entry
+and the flush would be vulnerable.  But, that seems like a reasonable
+trade-off to me.
