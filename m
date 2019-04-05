@@ -1,40 +1,80 @@
-From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
-	CPUs (x86 only)
-Date: Fri, 5 Apr 2019 18:41:37 +0200
-Message-ID: <20190405164137.GF4038@hirez.programming.kicks-ass.net>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
-	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
-	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
-	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
-	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
-	<36b999d4-adf6-08a3-2897-d77b9cba20f8@intel.com>
-	<E0BBD625-6FE0-4A8A-884B-E10FAFC3319E@amacapital.net>
+From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+Date: Fri, 5 Apr 2019 09:53:28 -0700
+Message-ID: <20190405165328.GA9532@rosenzweig.io>
+References: <20190401074730.12241-1-robh@kernel.org>
+ <20190401074730.12241-4-robh@kernel.org>
+ <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+ <20190405161632.GA9160@rosenzweig.io>
+ <34a7038e-34f0-0cc4-4fc4-9b7dda356df6@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <E0BBD625-6FE0-4A8A-884B-E10FAFC3319E-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark
+In-Reply-To: <34a7038e-34f0-0cc4-4fc4-9b7dda356df6@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Steven Price <steven.price@arm.com>
+Cc: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, "Marty E . Plummer" <hanetzer@startmail.com>, Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 05, 2019 at 10:27:05AM -0600, Andy Lutomirski wrote:
-> At the risk of asking stupid questions: we already have a mechanism
-> for this: highmem.  Can we enable highmem on x86_64, maybe with some
-> heuristics to make it work well?
+> Sorry - "Thread Local Storage" - e.g. registers spilled to memory from a
+> shader program.
 
-That's what I said; but note that I'm still not convinced fixmap/highmem
-is actually correct TLB wise.
+Gotcha, thank you. Register spilling isn't implemented yet, so I haven't
+run into this. (Partially because the blob's RA is very good so it's
+somewhat nontrivial to get it to spill... not that I've tried, the real
+reason is that the RA I have implemented right now works and I don't
+want to mess with it ;P)
+
+> At the moment I don't have any permission to share details which aren't
+> already public in the kbase driver. Hopefully that situation will
+> change. I'm also very much not an expert on anything but the kernel
+> driver (I tried to stay away from shader compilers and all that graphics
+> knowledge...). The details of the job descriptors is only really
+> publicly documented in terms of the "replay workaround" which is quite
+> limited.
+
+Alright, no worries! We'll see where the tide turns, indeed :)
+
+> I think we all felt like that :) Still the Nexus 10 wasn't a bad tablet,
+> and the Chromebook was an exciting first!
+
+*looks around to 2 Kevins and 2 Veyrons sprawled about* At first,
+indeeed.... ;)
+
+> You should be able to express the dependencies using fences. At the time
+> kbase was started there was no fence mechanism in the kernel. We
+> invented horrible things like UMP[1] and KDS[2] for cross-driver sharing.
+
+Ah-ha, I see; I didn't know if there was an explicit reason kbase didn't
+use fencing, but if it didn't exist, that's reason enough.
+
+> It all comes down to how small your job chains are - if you don't need
+> to squeeze too many through the hardware you should be fine. But there's
+> going to be some performance gain to be had implementing it.
+
+For sure.
+
+> [1] I forget what it actually stands for, but was an attempt to do
+> something like dma_buf
+
+Unified Memory Provider, iirc.
+
+> If you don't implement the replay workaround I'm very happy :)
+
+Pff.
+
+> The main missing part for the Arm user space is feature registers. That
+> and the lack of SAME_VA is horrible to emulate (keep allocating until it
+> happens to land in a free area of user space memory).
+
+Alright, both of those will probably be needed for us sooner or later,
+so no harm in implementing those. Thank you!
+
+> Arm user space also makes use of cached memory with explicit cache sync
+> operations. It of course works fine with uncached and ignoring the sync,
+> but again I'm not sure how much performance is being lost.
+
+I would be interested as well, since even when I used kbase for stuff, I set
+everything uncached/unsynced to keep myself sane, but that could be a
+very real performance issue on some workloads.
