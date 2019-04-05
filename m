@@ -1,15 +1,14 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 01/21] arm64/iommu: handle non-remapped addresses in
- ->mmap and ->get_sgtable
-Date: Fri, 5 Apr 2019 18:16:31 +0100
-Message-ID: <6b54f022-ca2e-b596-efcc-41a8de3d2544@arm.com>
+Subject: Re: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
+Date: Fri, 5 Apr 2019 18:30:52 +0100
+Message-ID: <3629087c-a8cb-d66e-840b-cfee125bdf4c@arm.com>
 References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-2-hch@lst.de>
+ <20190327080448.5500-3-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190327080448.5500-2-hch@lst.de>
+In-Reply-To: <20190327080448.5500-3-hch@lst.de>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
@@ -17,52 +16,66 @@ Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, W
 List-Id: iommu@lists.linux-foundation.org
 
 On 27/03/2019 08:04, Christoph Hellwig wrote:
-> DMA allocations that can't sleep may return non-remapped addresses, but
-> we do not properly handle them in the mmap and get_sgtable methods.
-> Resolve non-vmalloc addresses using virt_to_page to handle this corner
-> case.
-> 
+> The nr_pages checks should be done for all mmap requests, not just those
+> using remap_pfn_range.
+
+Hmm, the logic in iommu_dma_mmap() inherently returns an error for the 
+"off >= nr_pages" case already. It's also supposed to be robust against 
+the "vma_pages(vma) > nr_pages - off" condition, although by making the 
+partial mapping and treating it as a success, rather than doing nothing 
+and returning an error. What's the exact motivation here?
+
+Robin.
+
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->   arch/arm64/mm/dma-mapping.c | 12 +++++++++++-
->   1 file changed, 11 insertions(+), 1 deletion(-)
+>   arch/arm64/mm/dma-mapping.c | 21 ++++++++-------------
+>   1 file changed, 8 insertions(+), 13 deletions(-)
 > 
 > diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 78c0a72f822c..be88beb2e377 100644
+> index be88beb2e377..e54288921e72 100644
 > --- a/arch/arm64/mm/dma-mapping.c
 > +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -249,6 +249,11 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+> @@ -73,19 +73,9 @@ static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
+>   static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
+>   			      unsigned long pfn, size_t size)
+>   {
+> -	int ret = -ENXIO;
+> -	unsigned long nr_vma_pages = vma_pages(vma);
+> -	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	unsigned long off = vma->vm_pgoff;
+> -
+> -	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
+> -		ret = remap_pfn_range(vma, vma->vm_start,
+> -				      pfn + off,
+> -				      vma->vm_end - vma->vm_start,
+> -				      vma->vm_page_prot);
+> -	}
+> -
+> -	return ret;
+> +	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
+> +			      vma->vm_end - vma->vm_start,
+> +			      vma->vm_page_prot);
+>   }
+>   #endif /* CONFIG_IOMMU_DMA */
+>   
+> @@ -241,6 +231,8 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>   			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
+>   			      unsigned long attrs)
+>   {
+> +	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	unsigned long off = vma->vm_pgoff;
+>   	struct vm_struct *area;
+>   	int ret;
+>   
+> @@ -249,6 +241,9 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
 >   	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
 >   		return ret;
 >   
-> +	if (!is_vmalloc_addr(cpu_addr)) {
-> +		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
-> +		return __swiotlb_mmap_pfn(vma, pfn, size);
-> +	}
+> +	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
+> +		return -ENXIO;
 > +
->   	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
->   		/*
->   		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
-> @@ -272,10 +277,15 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
->   	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->   	struct vm_struct *area = find_vm_area(cpu_addr);
->   
-> +	if (!is_vmalloc_addr(cpu_addr)) {
-> +		struct page *page = virt_to_page(cpu_addr);
-> +		return __swiotlb_get_sgtable_page(sgt, page, size);
-> +	}
-> +
->   	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
->   		/*
->   		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
-> -		 * hence in the vmalloc space.
-> +		 *  hence in the vmalloc space.
-
-Without this bit ^^,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
->   		 */
->   		struct page *page = vmalloc_to_page(cpu_addr);
->   		return __swiotlb_get_sgtable_page(sgt, page, size);
+>   	if (!is_vmalloc_addr(cpu_addr)) {
+>   		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+>   		return __swiotlb_mmap_pfn(vma, pfn, size);
 > 
