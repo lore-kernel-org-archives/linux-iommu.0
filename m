@@ -1,20 +1,21 @@
-From: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+From: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
 Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
 	CPUs (x86 only)
-Date: Fri, 5 Apr 2019 09:44:32 -0600
-Message-ID: <c17d5528-59a9-411a-ac1a-58af0b4def60@oracle.com>
+Date: Fri, 5 Apr 2019 09:56:03 -0600
+Message-ID: <20190405155603.GA12463@cisco>
 References: <cover.1554248001.git.khalid.aziz@oracle.com>
 	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
 	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
 	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
 	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
 	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
+	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <26b00051-b03c-9fce-1446-52f0d6ed52f8-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <DFA69954-3F0F-4B79-A9B5-893D33D87E51-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,33 +25,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:DOCUMENTATION" <linux-doc-u79uwXL29Tb/PtFMR13I2A@public.gmane.org>
+To: Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Keit
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/5/19 8:44 AM, Dave Hansen wrote:
-> On 4/5/19 12:17 AM, Thomas Gleixner wrote:
->>> process. Is that an acceptable trade-off?
->> You are not seriously asking whether creating a user controllable ret2dir
->> attack window is a acceptable trade-off? April 1st was a few days ago.
-> 
-> Well, let's not forget that this set at least takes us from "always
-> vulnerable to ret2dir" to a choice between:
-> 
-> 1. fast-ish and "vulnerable to ret2dir for a user-controllable window"
-> 2. slow and "mitigated against ret2dir"
-> 
-> Sounds like we need a mechanism that will do the deferred XPFO TLB
-> flushes whenever the kernel is entered, and not _just_ at context switch
-> time.  This permits an app to run in userspace with stale kernel TLB
-> entries as long as it wants... that's harmless.
-
-That sounds like a good idea. This TLB flush only needs to be done at
-kernel entry when there is a pending flush posted for that cpu. What
-this does is move the cost of TLB flush from next context switch to
-kernel entry and does not add any more flushes than what we are doing
-with these xpfo patches. So the overall performance impact might not
-change much. It seems worth coding up.
-
-Thanks,
-Khalid
+T24gRnJpLCBBcHIgMDUsIDIwMTkgYXQgMDk6MjQ6NTBBTSAtMDYwMCwgQW5keSBMdXRvbWlyc2tp
+IHdyb3RlOgo+IAo+IAo+ID4gT24gQXByIDUsIDIwMTksIGF0IDg6NDQgQU0sIERhdmUgSGFuc2Vu
+IDxkYXZlLmhhbnNlbkBpbnRlbC5jb20+IHdyb3RlOgo+ID4gCj4gPiBPbiA0LzUvMTkgMTI6MTcg
+QU0sIFRob21hcyBHbGVpeG5lciB3cm90ZToKPiA+Pj4gcHJvY2Vzcy4gSXMgdGhhdCBhbiBhY2Nl
+cHRhYmxlIHRyYWRlLW9mZj8KPiA+PiBZb3UgYXJlIG5vdCBzZXJpb3VzbHkgYXNraW5nIHdoZXRo
+ZXIgY3JlYXRpbmcgYSB1c2VyIGNvbnRyb2xsYWJsZSByZXQyZGlyCj4gPj4gYXR0YWNrIHdpbmRv
+dyBpcyBhIGFjY2VwdGFibGUgdHJhZGUtb2ZmPyBBcHJpbCAxc3Qgd2FzIGEgZmV3IGRheXMgYWdv
+Lgo+ID4gCj4gPiBXZWxsLCBsZXQncyBub3QgZm9yZ2V0IHRoYXQgdGhpcyBzZXQgYXQgbGVhc3Qg
+dGFrZXMgdXMgZnJvbSAiYWx3YXlzCj4gPiB2dWxuZXJhYmxlIHRvIHJldDJkaXIiIHRvIGEgY2hv
+aWNlIGJldHdlZW46Cj4gPiAKPiA+IDEuIGZhc3QtaXNoIGFuZCAidnVsbmVyYWJsZSB0byByZXQy
+ZGlyIGZvciBhIHVzZXItY29udHJvbGxhYmxlIHdpbmRvdyIKPiA+IDIuIHNsb3cgYW5kICJtaXRp
+Z2F0ZWQgYWdhaW5zdCByZXQyZGlyIgo+ID4gCj4gPiBTb3VuZHMgbGlrZSB3ZSBuZWVkIGEgbWVj
+aGFuaXNtIHRoYXQgd2lsbCBkbyB0aGUgZGVmZXJyZWQgWFBGTyBUTEIKPiA+IGZsdXNoZXMgd2hl
+bmV2ZXIgdGhlIGtlcm5lbCBpcyBlbnRlcmVkLCBhbmQgbm90IF9qdXN0XyBhdCBjb250ZXh0IHN3
+aXRjaAo+ID4gdGltZS4gIFRoaXMgcGVybWl0cyBhbiBhcHAgdG8gcnVuIGluIHVzZXJzcGFjZSB3
+aXRoIHN0YWxlIGtlcm5lbCBUTEIKPiA+IGVudHJpZXMgYXMgbG9uZyBhcyBpdCB3YW50cy4uLiB0
+aGF0J3MgaGFybWxlc3MuCj4gCj4gSSBkb27igJl0IHRoaW5rIHRoaXMgaXMgZ29vZCBlbm91Z2gu
+IFRoZSBiYWQgZ3V5cyBjYW4gZW50ZXIgdGhlIGtlcm5lbCBhbmQgYXJyYW5nZSBmb3IgdGhlIGtl
+cm5lbCB0byB3YWl0LCAqaW4ga2VybmVsKiwgZm9yIGxvbmcgZW5vdWdoIHRvIHNldCB1cCB0aGUg
+YXR0YWNrLiAgdXNlcmZhdWx0ZmQgaXMgdGhlIG1vc3Qgb2J2aW91cyB3YXksIGJ1dCB0aGVyZSBh
+cmUgcGxlbnR5LiBJIHN1cHBvc2Ugd2UgY291bGQgZG8gdGhlIGZsdXNoIGF0IGNvbnRleHQgc3dp
+dGNoICphbmQqIGVudHJ5LiAgSSBiZXQgdGhhdCBwZXJmb3JtYW5jZSBzdGlsbCB1dHRlcmx5IHN1
+Y2tzLCB0aG91Z2gg4oCUIG9uIG1hbnkgd29ya2xvYWRzLCB0aGlzIHR1cm5zIGV2ZXJ5IGVudHJ5
+IGludG8gYSBmdWxsIGZsdXNoLCBhbmQgd2UgYWxyZWFkeSBrbm93IGV4YWN0bHkgaG93IG11Y2gg
+dGhhdCBzdWNrcyDigJQgaXTigJlzIGlkZW50aWNhbCB0byBLUFRJIHdpdGhvdXQgUENJRC4gIChB
+bmQgeWVzLCBpZiB3ZSBnbyB0aGlzIHJvdXRlLCB3ZSBuZWVkIHRvIG1lcmdlIHRoaXMgbG9naWMg
+dG9nZXRoZXIg4oCUIHdlIHNob3VsZG7igJl0IHdyaXRlIENSMyB0d2ljZSBvbiBlbnRyeSkuCj4g
+Cj4gSSBmZWVsIGxpa2UgdGhpcyB3aG9sZSBhcHByb2FjaCBpcyBtaXNndWlkZWQuIHJldDJkaXIg
+aXMgbm90IHN1Y2ggYSBnYW1lIGNoYW5nZXIgdGhhdCBmaXhpbmcgaXQgaXMgd29ydGggaHVnZSBz
+bG93ZG93bnMuIEkgdGhpbmsgYWxsIHRoaXMgZWZmb3J0IHNob3VsZCBiZSBzcGVudCBvbiBzb21l
+IGtpbmQgb2Ygc2Vuc2libGUgQ0ZJLiBGb3IgZXhhbXBsZSwgd2Ugc2hvdWxkIGJlIGFibGUgdG8g
+bW9zdGx5IHNxdWFzaCByZXQyYW55dGhpbmcgYnkgaW5zZXJ0aW5nIGEgY2hlY2sgdGhhdCB0aGUg
+aGlnaCBiaXRzIG9mIFJTUCBtYXRjaCB0aGUgdmFsdWUgb24gdGhlIHRvcCBvZiB0aGUgc3RhY2sg
+YmVmb3JlIGFueSBjb2RlIHRoYXQgcG9wcyBSU1AuICBPbiBhbiBGUE8gYnVpbGQsIHRoZXJlIGFy
+ZW7igJl0IGFsbCB0aGF0IG1hbnkgaG90IFBPUCBSU1AgaW5zdHJ1Y3Rpb25zLCBJIHRoaW5rLgo+
+IAo+IChBY3R1YWxseSwgY2hlY2tpbmcgdGhlIGJpdHMgaXMgc3Vib3B0aW1hbC4gRG86Cj4gCj4g
+dW5zaWduZWQgbG9uZyBvZmZzZXQgPSAqcnNwIC0gcnNwOwo+IG9mZnNldCA+Pj0gVEhSRUFEX1NI
+SUZUOwo+IGlmICh1bmxpa2VseShvZmZzZXQpKQo+IEJVRygpOwo+IFBPUCBSU1A7CgpUaGlzIGlz
+IGEgbmVhdCB0cmljaywgYW5kIGRlZmluaXRlbHkgcHJldmVudHMgZ29pbmcgcmFuZG9tIHBsYWNl
+cyBpbgp0aGUgaGVhcC4gQnV0LAoKPiBUaGlzIG1lYW5zIHRoYXQgaXTigJlzIGFsc28gaW1wb3Nz
+aWJsZSB0byB0cmljayBhIGZ1bmN0aW9uIHRvIHJldHVybiBpbnRvIGEgYnVmZmVyIHRoYXQgaXMg
+b24gdGhhdCBmdW5jdGlvbuKAmXMgc3RhY2suKQoKV2h5IGlzIHRoaXMgdHJ1ZT8gQWxsIHlvdSdy
+ZSBjaGVja2luZyBpcyB0aGF0IHlvdSBjYW4ndCBzaGlmdCB0aGUKImxvY2F0aW9uIiBvZiB0aGUg
+c3RhY2suIElmIHlvdSBjYW4gaW5qZWN0IHN0dWZmIGludG8gYSBzdGFjayBidWZmZXIsCmNhbid0
+IHlvdSBqdXN0IGluamVjdCB0aGUgcmlnaHQgZnJhbWUgdG8gcmV0dXJuIHRvIHlvdXIgY29kZSBh
+cyB3ZWxsLApzbyB5b3UgZG9uJ3QgaGF2ZSB0byBzaGlmdCBsb2NhdGlvbnM/CgpUaGFua3MhCgpU
+eWNobwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
+dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
