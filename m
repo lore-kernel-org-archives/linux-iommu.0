@@ -1,16 +1,17 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+From: Will Deacon <will.deacon@arm.com>
 Subject: Re: [PATCH 2/4] iommu/arm-smmu-v3: Link domains and devices
-Date: Fri, 5 Apr 2019 17:35:52 +0100
-Message-ID: <312d33a5-8eca-3fae-fd8b-8325e045761b@arm.com>
+Date: Fri, 5 Apr 2019 17:39:49 +0100
+Message-ID: <20190405163949.GA19828@fuggles.cambridge.arm.com>
 References: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
  <20190320173634.21895-3-jean-philippe.brucker@arm.com>
  <20190404143924.GB27823@fuggles.cambridge.arm.com>
+ <312d33a5-8eca-3fae-fd8b-8325e045761b@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190404143924.GB27823@fuggles.cambridge.arm.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <312d33a5-8eca-3fae-fd8b-8325e045761b@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,109 +21,97 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, zhongmiao@hisilicon.com, okaya@kernel.org, rjw@rjwysocki.net, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/04/2019 15:39, Will Deacon wrote:
-> Hi Jean-Philippe,
+On Fri, Apr 05, 2019 at 05:35:52PM +0100, Jean-Philippe Brucker wrote:
+> On 04/04/2019 15:39, Will Deacon wrote:
+> > On Wed, Mar 20, 2019 at 05:36:32PM +0000, Jean-Philippe Brucker wrote:
+> >> When removing a mapping from a domain, we need to send an invalidation to
+> >> all devices that might have stored it in their Address Translation Cache
+> >> (ATC). In addition when updating the context descriptor of a live domain,
+> >> we'll need to send invalidations for all devices attached to it.
+> >>
+> >> Maintain a list of devices in each domain, protected by a spinlock. It is
+> >> updated every time we attach or detach devices to and from domains.
+> >>
+> >> It needs to be a spinlock because we'll invalidate ATC entries from
+> >> within hardirq-safe contexts, but it may be possible to relax the read
+> >> side with RCU later.
+> >>
+> >> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> >> ---
+> >>  drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
+> >>  1 file changed, 28 insertions(+)
+> >>
+> >> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> >> index d3880010c6cf..66a29c113dbc 100644
+> >> --- a/drivers/iommu/arm-smmu-v3.c
+> >> +++ b/drivers/iommu/arm-smmu-v3.c
+> >> @@ -594,6 +594,11 @@ struct arm_smmu_device {
+> >>  struct arm_smmu_master_data {
+> >>  	struct arm_smmu_device		*smmu;
+> >>  	struct arm_smmu_strtab_ent	ste;
+> >> +
+> >> +	struct arm_smmu_domain		*domain;
+> >> +	struct list_head		domain_head;
+> >> +
+> >> +	struct device			*dev;
+> >>  };
+> >>  
+> >>  /* SMMU private data for an IOMMU domain */
+> >> @@ -618,6 +623,9 @@ struct arm_smmu_domain {
+> >>  	};
+> >>  
+> >>  	struct iommu_domain		domain;
+> >> +
+> >> +	struct list_head		devices;
+> >> +	spinlock_t			devices_lock;
+> >>  };
+> >>  
+> >>  struct arm_smmu_option_prop {
+> >> @@ -1493,6 +1501,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+> >>  	}
+> >>  
+> >>  	mutex_init(&smmu_domain->init_mutex);
+> >> +	INIT_LIST_HEAD(&smmu_domain->devices);
+> >> +	spin_lock_init(&smmu_domain->devices_lock);
+> > 
+> > I'm wondering whether we can't take this a bit further and re-organise the
+> > data structures to make this a little simpler overall. Something along the
+> > lines of:
+> > 
+> > 	struct arm_smmu_master_data {
+> > 		struct list_head		list; // masters in the same domain
+> > 		struct arm_smmu_device		*smmu;
+> > 		unsigned int			num_sids;
+> > 		u32				*sids; // Points into fwspec
+> > 		struct arm_smmu_domain		*domain; // NULL -> !assigned
+> > 	};
+> > 
+> > and then just add a list_head into struct arm_smmu_domain to track the
+> > masters that have been attached (if you're feeling brave, you could put
+> > this into the s1_cfg).
 > 
-> First off, thanks for posting this: it's definitely something that I'm keen
-> to support, and getting bits in a piece at a time is probably a good idea.
-> 
-> On Wed, Mar 20, 2019 at 05:36:32PM +0000, Jean-Philippe Brucker wrote:
->> When removing a mapping from a domain, we need to send an invalidation to
->> all devices that might have stored it in their Address Translation Cache
->> (ATC). In addition when updating the context descriptor of a live domain,
->> we'll need to send invalidations for all devices attached to it.
->>
->> Maintain a list of devices in each domain, protected by a spinlock. It is
->> updated every time we attach or detach devices to and from domains.
->>
->> It needs to be a spinlock because we'll invalidate ATC entries from
->> within hardirq-safe contexts, but it may be possible to relax the read
->> side with RCU later.
->>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
->>  1 file changed, 28 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index d3880010c6cf..66a29c113dbc 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -594,6 +594,11 @@ struct arm_smmu_device {
->>  struct arm_smmu_master_data {
->>  	struct arm_smmu_device		*smmu;
->>  	struct arm_smmu_strtab_ent	ste;
->> +
->> +	struct arm_smmu_domain		*domain;
->> +	struct list_head		domain_head;
->> +
->> +	struct device			*dev;
->>  };
->>  
->>  /* SMMU private data for an IOMMU domain */
->> @@ -618,6 +623,9 @@ struct arm_smmu_domain {
->>  	};
->>  
->>  	struct iommu_domain		domain;
->> +
->> +	struct list_head		devices;
->> +	spinlock_t			devices_lock;
->>  };
->>  
->>  struct arm_smmu_option_prop {
->> @@ -1493,6 +1501,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
->>  	}
->>  
->>  	mutex_init(&smmu_domain->init_mutex);
->> +	INIT_LIST_HEAD(&smmu_domain->devices);
->> +	spin_lock_init(&smmu_domain->devices_lock);
-> 
-> I'm wondering whether we can't take this a bit further and re-organise the
-> data structures to make this a little simpler overall. Something along the
-> lines of:
-> 
-> 	struct arm_smmu_master_data {
-> 		struct list_head		list; // masters in the same domain
-> 		struct arm_smmu_device		*smmu;
-> 		unsigned int			num_sids;
-> 		u32				*sids; // Points into fwspec
-> 		struct arm_smmu_domain		*domain; // NULL -> !assigned
-> 	};
-> 
-> and then just add a list_head into struct arm_smmu_domain to track the
-> masters that have been attached (if you're feeling brave, you could put
-> this into the s1_cfg).
+> I'm not sure about that last bit, shouldn't the list of masters apply to
+> both s1 and s2?
 
-I'm not sure about that last bit, shouldn't the list of masters apply to
-both s1 and s2?
+I was assuming that (a) we were only using ATS with stage-1 and (b) we only
+need the masters list for ATC invalidation. Did I go wrong somewhere?
 
+> > The ATC invalidation logic would then be:
+> > 
+> >   - Detaching a device: walk over the sids from the master data
+> >   - Unmapping a range from a domain: walk over the attached masters
+> > 
+> > I think this would also allow us to remove struct arm_smmu_strtab_ent
+> > completely.
 > 
-> The ATC invalidation logic would then be:
-> 
->   - Detaching a device: walk over the sids from the master data
->   - Unmapping a range from a domain: walk over the attached masters
-> 
-> I think this would also allow us to remove struct arm_smmu_strtab_ent
-> completely.
+> Makes sense, it does work and simplifies the structures. It makes the
+> PASID and PRI patches slightly nicer as well. I'll resend once my tests
+> complete.
 
-Makes sense, it does work and simplifies the structures. It makes the
-PASID and PRI patches slightly nicer as well. I'll resend once my tests
-complete.
+Brill, thanks for giving it a go so quickly.
 
-Thanks,
-Jean
-
-> 
-> Dunno: this is one of the those things where you really have to try it
-> to figure out why it doesn't work...
-> 
-> Will
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+Will
