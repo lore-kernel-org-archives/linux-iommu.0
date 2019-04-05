@@ -1,80 +1,68 @@
-From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
-Date: Fri, 5 Apr 2019 09:53:28 -0700
-Message-ID: <20190405165328.GA9532@rosenzweig.io>
-References: <20190401074730.12241-1-robh@kernel.org>
- <20190401074730.12241-4-robh@kernel.org>
- <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
- <20190405161632.GA9160@rosenzweig.io>
- <34a7038e-34f0-0cc4-4fc4-9b7dda356df6@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 01/21] arm64/iommu: handle non-remapped addresses in
+ ->mmap and ->get_sgtable
+Date: Fri, 5 Apr 2019 18:16:31 +0100
+Message-ID: <6b54f022-ca2e-b596-efcc-41a8de3d2544@arm.com>
+References: <20190327080448.5500-1-hch@lst.de>
+ <20190327080448.5500-2-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <34a7038e-34f0-0cc4-4fc4-9b7dda356df6@arm.com>
+In-Reply-To: <20190327080448.5500-2-hch@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Steven Price <steven.price@arm.com>
-Cc: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, "Marty E . Plummer" <hanetzer@startmail.com>, Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> Sorry - "Thread Local Storage" - e.g. registers spilled to memory from a
-> shader program.
+On 27/03/2019 08:04, Christoph Hellwig wrote:
+> DMA allocations that can't sleep may return non-remapped addresses, but
+> we do not properly handle them in the mmap and get_sgtable methods.
+> Resolve non-vmalloc addresses using virt_to_page to handle this corner
+> case.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   arch/arm64/mm/dma-mapping.c | 12 +++++++++++-
+>   1 file changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 78c0a72f822c..be88beb2e377 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -249,6 +249,11 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>   	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+>   		return ret;
+>   
+> +	if (!is_vmalloc_addr(cpu_addr)) {
+> +		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+> +		return __swiotlb_mmap_pfn(vma, pfn, size);
+> +	}
+> +
+>   	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+>   		/*
+>   		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+> @@ -272,10 +277,15 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+>   	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>   	struct vm_struct *area = find_vm_area(cpu_addr);
+>   
+> +	if (!is_vmalloc_addr(cpu_addr)) {
+> +		struct page *page = virt_to_page(cpu_addr);
+> +		return __swiotlb_get_sgtable_page(sgt, page, size);
+> +	}
+> +
+>   	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+>   		/*
+>   		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+> -		 * hence in the vmalloc space.
+> +		 *  hence in the vmalloc space.
 
-Gotcha, thank you. Register spilling isn't implemented yet, so I haven't
-run into this. (Partially because the blob's RA is very good so it's
-somewhat nontrivial to get it to spill... not that I've tried, the real
-reason is that the RA I have implemented right now works and I don't
-want to mess with it ;P)
+Without this bit ^^,
 
-> At the moment I don't have any permission to share details which aren't
-> already public in the kbase driver. Hopefully that situation will
-> change. I'm also very much not an expert on anything but the kernel
-> driver (I tried to stay away from shader compilers and all that graphics
-> knowledge...). The details of the job descriptors is only really
-> publicly documented in terms of the "replay workaround" which is quite
-> limited.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Alright, no worries! We'll see where the tide turns, indeed :)
-
-> I think we all felt like that :) Still the Nexus 10 wasn't a bad tablet,
-> and the Chromebook was an exciting first!
-
-*looks around to 2 Kevins and 2 Veyrons sprawled about* At first,
-indeeed.... ;)
-
-> You should be able to express the dependencies using fences. At the time
-> kbase was started there was no fence mechanism in the kernel. We
-> invented horrible things like UMP[1] and KDS[2] for cross-driver sharing.
-
-Ah-ha, I see; I didn't know if there was an explicit reason kbase didn't
-use fencing, but if it didn't exist, that's reason enough.
-
-> It all comes down to how small your job chains are - if you don't need
-> to squeeze too many through the hardware you should be fine. But there's
-> going to be some performance gain to be had implementing it.
-
-For sure.
-
-> [1] I forget what it actually stands for, but was an attempt to do
-> something like dma_buf
-
-Unified Memory Provider, iirc.
-
-> If you don't implement the replay workaround I'm very happy :)
-
-Pff.
-
-> The main missing part for the Arm user space is feature registers. That
-> and the lack of SAME_VA is horrible to emulate (keep allocating until it
-> happens to land in a free area of user space memory).
-
-Alright, both of those will probably be needed for us sooner or later,
-so no harm in implementing those. Thank you!
-
-> Arm user space also makes use of cached memory with explicit cache sync
-> operations. It of course works fine with uncached and ignoring the sync,
-> but again I'm not sure how much performance is being lost.
-
-I would be interested as well, since even when I used kbase for stuff, I set
-everything uncached/unsynced to keep myself sane, but that could be a
-very real performance issue on some workloads.
+>   		 */
+>   		struct page *page = vmalloc_to_page(cpu_addr);
+>   		return __swiotlb_get_sgtable_page(sgt, page, size);
+> 
