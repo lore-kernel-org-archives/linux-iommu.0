@@ -1,45 +1,100 @@
-From: Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
-	CPUs (x86 only)
-Date: Fri, 5 Apr 2019 11:35:22 -0600
-Message-ID: <9a1dcf02-a737-33c2-fee4-f475069e731f@oracle.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
-	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
-	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
-	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
-	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
-	<36b999d4-adf6-08a3-2897-d77b9cba20f8@intel.com>
-	<E0BBD625-6FE0-4A8A-884B-E10FAFC3319E@amacapital.net>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 03/21] dma-mapping: add a Kconfig symbol to indicated
+ arch_dma_prep_coherent presence
+Date: Fri, 5 Apr 2019 18:41:02 +0100
+Message-ID: <7c464875-b23a-9da4-afe7-93d7879ca3b8@arm.com>
+References: <20190327080448.5500-1-hch@lst.de>
+ <20190327080448.5500-4-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <E0BBD625-6FE0-4A8A-884B-E10FAFC3319E-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Keith
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190327080448.5500-4-hch@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/5/19 10:27 AM, Andy Lutomirski wrote:
-> At the risk of asking stupid questions: we already have a mechanism for this: highmem.  Can we enable highmem on x86_64, maybe with some heuristics to make it work well?
+On 27/03/2019 08:04, Christoph Hellwig wrote:
+> Add a Kconfig symbol that indicates an architecture provides a
+> arch_dma_prep_coherent implementation, and provide a stub otherwise.
 > 
+> This will allow the generic dma-iommu code to it while still allowing
 
-I proposed using highmem infrastructure for xpfo in my cover letter as
-well as in my earlier replies discussing redesigning
-xpfo_kmap/xpfo_kunmap. So that sounds like a reasonable question to me
-:) Looks like we might be getting to an agreement that highmem
-infrastructure is a good thing to use here.
+I think you accidentally a word there.
 
---
-Khalid
+> to be built for cache coherent architectures.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   arch/arm64/Kconfig              | 1 +
+>   arch/csky/Kconfig               | 1 +
+>   include/linux/dma-noncoherent.h | 6 ++++++
+>   kernel/dma/Kconfig              | 3 +++
+>   4 files changed, 11 insertions(+)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 7e34b9eba5de..adda078d6df7 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -13,6 +13,7 @@ config ARM64
+>   	select ARCH_HAS_DEVMEM_IS_ALLOWED
+>   	select ARCH_HAS_DMA_COHERENT_TO_PFN
+>   	select ARCH_HAS_DMA_MMAP_PGPROT
+> +	select ARCH_HAS_DMA_PREP_COHERENT
+>   	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
+>   	select ARCH_HAS_ELF_RANDOMIZE
+>   	select ARCH_HAS_FAST_MULTIPLIER
+> diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
+> index 725a115759c9..2c3178848b7d 100644
+> --- a/arch/csky/Kconfig
+> +++ b/arch/csky/Kconfig
+> @@ -1,6 +1,7 @@
+>   config CSKY
+>   	def_bool y
+>   	select ARCH_32BIT_OFF_T
+> +	select ARCH_HAS_DMA_PREP_COHERENT
+>   	select ARCH_HAS_SYNC_DMA_FOR_CPU
+>   	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+>   	select ARCH_USE_BUILTIN_BSWAP
+> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+> index 69b36ed31a99..9741767e400f 100644
+> --- a/include/linux/dma-noncoherent.h
+> +++ b/include/linux/dma-noncoherent.h
+> @@ -72,6 +72,12 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
+>   }
+>   #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
+>   
+> +#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
+>   void arch_dma_prep_coherent(struct page *page, size_t size);
+> +#else
+> +static inline void arch_dma_prep_coherent(struct page *page, size_t size)
+> +{
+> +}
+> +#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
+>   
+>   #endif /* _LINUX_DMA_NONCOHERENT_H */
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index a06ba3013b3b..feff2d21d8ee 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -38,6 +38,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+>   config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+>   	bool
+>   
+> +config ARCH_HAS_DMA_PREP_COHERENT
+> +	bool
+> +
+
+I guess the sorting in this whole Kconfig is already more or less 
+"randomly-perturbed semi-alphabetical" :(
+
+Anyway,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+>   config ARCH_HAS_DMA_COHERENT_TO_PFN
+>   	bool
+>   
+> 
