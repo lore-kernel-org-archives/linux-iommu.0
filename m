@@ -1,71 +1,125 @@
-From: Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH v9 12/13] xpfo, mm: Defer TLB flushes for non-current
-	CPUs (x86 only)
-Date: Fri, 5 Apr 2019 09:01:23 -0700
-Message-ID: <36b999d4-adf6-08a3-2897-d77b9cba20f8@intel.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
-	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
-	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
-	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
-	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
+From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+Date: Fri, 5 Apr 2019 09:16:32 -0700
+Message-ID: <20190405161632.GA9160@rosenzweig.io>
+References: <20190401074730.12241-1-robh@kernel.org>
+ <20190401074730.12241-4-robh@kernel.org>
+ <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <DFA69954-3F0F-4B79-A9B5-893D33D87E51-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Steven Price <steven.price@arm.com>
+Cc: Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org, Sean Paul <sean@poorly.run>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Neil Armstrong <narmstrong@baylibre.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, "Marty E . Plummer" <hanetzer@startmail.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gNC81LzE5IDg6MjQgQU0sIEFuZHkgTHV0b21pcnNraSB3cm90ZToKPj4gU291bmRzIGxpa2Ug
-d2UgbmVlZCBhIG1lY2hhbmlzbSB0aGF0IHdpbGwgZG8gdGhlIGRlZmVycmVkIFhQRk8gVExCIAo+
-PiBmbHVzaGVzIHdoZW5ldmVyIHRoZSBrZXJuZWwgaXMgZW50ZXJlZCwgYW5kIG5vdCBfanVzdF8g
-YXQgY29udGV4dAo+PiBzd2l0Y2ggdGltZS4gIFRoaXMgcGVybWl0cyBhbiBhcHAgdG8gcnVuIGlu
-IHVzZXJzcGFjZSB3aXRoIHN0YWxlCj4+IGtlcm5lbCBUTEIgZW50cmllcyBhcyBsb25nIGFzIGl0
-IHdhbnRzLi4uIHRoYXQncyBoYXJtbGVzcy4KLi4uCj4gSSBzdXBwb3NlIHdlIGNvdWxkIGRvIHRo
-ZSBmbHVzaCBhdCBjb250ZXh0IHN3aXRjaCAqYW5kKgo+IGVudHJ5LiAgSSBiZXQgdGhhdCBwZXJm
-b3JtYW5jZSBzdGlsbCB1dHRlcmx5IHN1Y2tzLCB0aG91Z2gg4oCUIG9uIG1hbnkKPiB3b3JrbG9h
-ZHMsIHRoaXMgdHVybnMgZXZlcnkgZW50cnkgaW50byBhIGZ1bGwgZmx1c2gsIGFuZCB3ZSBhbHJl
-YWR5Cj4ga25vdyBleGFjdGx5IGhvdyBtdWNoIHRoYXQgc3Vja3Mg4oCUIGl04oCZcyBpZGVudGlj
-YWwgdG8gS1BUSSB3aXRob3V0Cj4gUENJRC4gIChBbmQgeWVzLCBpZiB3ZSBnbyB0aGlzIHJvdXRl
-LCB3ZSBuZWVkIHRvIG1lcmdlIHRoaXMgbG9naWMKPiB0b2dldGhlciDigJQgd2Ugc2hvdWxkbuKA
-mXQgd3JpdGUgQ1IzIHR3aWNlIG9uIGVudHJ5KS4KClllYWgsIHByb2JhYmx5IHRydWUuCgpKdXN0
-IGV5ZWJhbGxpbmcgdGhpcywgaXQgd291bGQgbWVhbiBtYXBwaW5nIHRoZSAiY3B1IG5lZWRzIGRl
-ZmVycmVkCmZsdXNoIiB2YXJpYWJsZSBpbnRvIHRoZSBjcHVfZW50cnlfYXJlYSwgd2hpY2ggZG9l
-c24ndCBzZWVtIHRvbyBhd2Z1bC4KCkkgdGhpbmsgdGhlIGJhc2ljIG92ZXJhbGwgY29uY2VybiBp
-cyB0aGF0IHRoZSBkZWZlcnJlZCBmbHVzaCBsZWF2ZXMgdG9vCm1hbnkgaG9sZXMgYW5kIGJ5IHRo
-ZSB0aW1lIHdlIGNsb3NlIHRoZW0gc3VmZmljaWVudGx5LCBwZXJmb3JtYW5jZSB3aWxsCnN1Y2sg
-YWdhaW4uICBTZWVtcyBsaWtlIGEgdG90YWxseSB2YWxpZCBjb25jZXJuLCBidXQgbXkgY3J5c3Rh
-bCBiYWxsIGlzCmhhenkgb24gd2hldGhlciBpdCB3aWxsIGJlIHdvcnRoIGl0IGluIHRoZSBlbmQg
-dG8gbWFueSBmb2xrcwoKLi4uCj4gSW4gb3RoZXIgd29yZHMsIEkgdGhpbmsgdGhhdCByZXQyZGly
-IGlzIGFuIGluc3VmZmljaWVudCBqdXN0aWZpY2F0aW9uCj4gZm9yIFhQRk8uCgpZZWFoLCBvdGhl
-ciB0aGluZ3MgdGhhdCBpdCBpcyBnb29kIGZvciBoYXZlIGtpbmRhIGJlZW4gbG9zdCBpbiB0aGUK
-bm9pc2UuICBJIHRoaW5rIEkgZmlyc3Qgc3RhcnRlZCBsb29raW5nIGF0IHRoaXMgbG9uZyBiZWZv
-cmUgTWVsdGRvd24gYW5kCkwxVEYgd2VyZSBwdWJsaWMuCgpUaGVyZSBhcmUgaHlwZXJ2aXNvcnMg
-b3V0IHRoZXJlIHRoYXQgc2ltcGx5IGRvbid0IChwZXJzaXN0ZW50bHkpIG1hcAp1c2VyIGRhdGEu
-ICBUaGV5IGNhbid0IGxlYWsgdXNlciBkYXRhIGJlY2F1c2UgdGhleSBkb24ndCBldmVuIGhhdmUK
-YWNjZXNzIHRvIGl0IGluIHRoZWlyIHZpcnR1YWwgYWRkcmVzcyBzcGFjZS4gIFRob3NlIGh5cGVy
-dmlzb3JzIGhhZCBhCm11Y2ggZWFzaWVyIHRpbWUgd2l0aCBMMVRGIG1pdGlnYXRpb24gdGhhbiB3
-ZSBkaWQuICBCYXNpY2FsbHksIHRoZXkKY291bGQgZmx1c2ggdGhlIEwxIGFmdGVyIHVzZXIgZGF0
-YSB3YXMgYWNjZXNzaWJsZSBpbnN0ZWFkIG9mIGJlZm9yZQp1bnRydXN0ZWQgZ3Vlc3QgY29kZSBy
-dW5zLgoKTXkgaG9wZSBpcyB0aGF0IFhQRk8gY291bGQgcHJvdmlkZSB1cyBzaW1pbGFyIHByb3Rl
-Y3Rpb24uICBCdXQsCnNvbWVib2R5J3MgZ290IHRvIHBva2UgYXQgaXQgZm9yIGEgd2hpbGUgdG8g
-c2VlIGhvdyBmYXIgdGhleSBjYW4gcHVzaCBpdC4KCklNTkhPLCBYUEZPIGlzICphbHdheXMqIGdv
-aW5nIHRvIGJlIHBhaW5mdWwgZm9yIGtlcm5lbCBjb21waWxlcy4gIEJ1dCwKY2xvdWQgcHJvdmlk
-ZXJzIGFyZW4ndCBkb2luZyBhIGxvdCBvZiBrZXJuZWwgY29tcGlsZXMgb24gdGhlaXIgS1ZNCmhv
-c3RzLCBhbmQgdGhleSBkZWVwbHkgY2FyZSBhYm91dCBsZWFraW5nIHRoZWlyIHVzZXJzJyBkYXRh
-LgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
-YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+> I'm also somewhat surprised that you don't need loads of other
+> properties from the GPU - in particular knowing the number of shader
+> cores is useful for allocating the right amount of memory for TLS (and
+> can't be obtained purely from the GPU_ID).
+
+Since I have no idea what TLS is (and in my notes, I've come across the
+acronym once ever and have it as a "??"), I'm not sure how to respond to
+that... We don't know how to allocate memory for the GPU-internal data
+structures (the tiler heap, for instance, but also a few others I've
+just named "misc_0" and "scratchpad" -- guessing one of those is for
+"TLS"). With kbase, I took the worst-case strategy of allocating
+gigantic chunks on startup with tiny commit counts and GROW_ON_GPF set.
+With the new driver, well, our memory consumption is scary since
+implementing GROW_ON_GPF in an upstream-friendly way is a bit more work
+and isn't expected to hit the 5.2 window.
+
+Given this is kernel facing, I'm hoping 're able to share some answers
+here?
+
+> I think this comment might have survived since the very earliest version
+> of the Midgard driver! :)
+
+^_^
+
+> But I'm not sure anything will attempt to lock a region spanning two
+> pages like that.
+
+At least at the moment, I align everything kernel-facing to page
+granularity in userspace, so it's not a cornercase I'm going to hit
+anytime soon. Still probably better to have it technically correct.
+
+> To be fair only for BASE_HW_ISSUE_6367/T60X - but yes it's not a
+> pleasant workaround. There's no way on that hardware to reliably drain
+> the write buffer other than waiting.
+
+*wishing T60X disappeared intensifies* ;)
+
+Granted there are enough other errata specific to it that aren't worked
+around here that, well, it makes you wonder ;)
+
+> Do we have a good way of user space determining which requirements are
+> supported by the driver? At the moment it's just the one. kbase outgeew
+> the original u16 and has an ugly "compat_core_req", so I suspect you're
+> going to need to add several more along the way.
+
+Oh, so that's why compat_/core_req is split off! I thought somebody just
+thought it would be "fun" to break the UABI ;)
+
+I've definitely issues using the wrong core_req field for the kbase I
+had setup, that set me back a little bit on RK3399/T860 bringup *purses
+lips*
+
+To be fair, bunches of the kbase reqs are for soft jobs, which I don't
+feel are a good fit for how the Panfrost kernel works. If we need to
+implement functionality corresponding to softjobs, that would likely be
+done with dedicated ioctl(s), instead of affecting the core_req field.
+
+On that note
+
+> You might also want to consider being able to submit more than one job
+> chain at a time - but that could easily be implemented using a new ioctl
+> in the future.
+
+The issue with that at the bottom is having to introduce something akin
+to kbase's annoyingly intra-job-chain dependency management (read: I
+still don't understand how FBOs are supposed to work with kbase ;) ),
+which AFAIK we push off to userspace right now via standard fencing. If
+we want to submit batches at a time, we would potentially need to
+express those somewhat complex dependency trees, which is a lot of work
+for diminishing returns at this stage. Future ioctl indeed...
+
+> There's no SUBMIT_CL in this posting? I think you just need s/_CL//.
+
++1
+
+> You are probably going to want flags for at least:
+> 
+>  * No execute/No read/No write (good for security, especially with
+> buffer sharing between processes)
+> 
+>  * Alignment (shader programs have quite strict alignment requirements,
+> I believe kbase just ensures that the shader memory block doesn't cross
+> a 16MB boundary which covers most cases).
+> 
+>  * Page fault behaviour (kbase has GROW_ON_GPF)
+> 
+>  * Coherency management
+
++1 for all of these. This is piped through in userspace (for kbase), but
+the corresponding functionality isn't there yet in the Panfrost kernel.
+You're right there should at least be a flags field for future use.
+
+> One issue that I haven't got to the bottom of is that I can trigger a
+> lockdep splat:
+
+Oh, "fun"...
+
+> This is with the below simple reproducer:
+
+@Rob, ideas?
+
+> Other than that in my testing (on a Firefly RK3288) I didn't experience
+> any problems pushing jobs from the ARM userspace blob through it.
+
+Nice!
+
+Besides what was mentioned above, any other functionality you'll need
+for that? (e.g. the infamous replay workaround...)
