@@ -1,86 +1,128 @@
-From: Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>
-Subject: Re: [RFC PATCH v9 12/13] xpfo,
-	mm: Defer TLB flushes for non-current CPUs (x86 only)
-Date: Fri, 5 Apr 2019 10:32:17 -0600
-Message-ID: <54380A49-2D32-46BE-AF30-A9930F461FCE@amacapital.net>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<4495dda4bfc4a06b3312cc4063915b306ecfaecb.1554248002.git.khalid.aziz@oracle.com>
-	<CALCETrXMXxnWqN94d83UvGWhkD1BNWiwvH2vsUth1w0T3=0ywQ@mail.gmail.com>
-	<91f1dbce-332e-25d1-15f6-0e9cfc8b797b@oracle.com>
-	<alpine.DEB.2.21.1904050909520.1802@nanos.tec.linutronix.de>
-	<26b00051-b03c-9fce-1446-52f0d6ed52f8@intel.com>
-	<DFA69954-3F0F-4B79-A9B5-893D33D87E51@amacapital.net>
-	<20190405155603.GA12463@cisco>
-Mime-Version: 1.0 (1.0)
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190405155603.GA12463@cisco>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tycho Andersen <tycho-E0fblnxP3wo@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Khalid Aziz <khalid.aziz-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, steven.sistare-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andi Kleen <ak-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, aneesh.kumar-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, anthony.yznaga-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiri Kosina <jkosina-AlSwsSmVLrQ@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, arunks-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Woodhouse, David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Keit
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 2/4] iommu/arm-smmu-v3: Link domains and devices
+Date: Fri, 5 Apr 2019 17:35:52 +0100
+Message-ID: <312d33a5-8eca-3fae-fd8b-8325e045761b@arm.com>
+References: <20190320173634.21895-1-jean-philippe.brucker@arm.com>
+ <20190320173634.21895-3-jean-philippe.brucker@arm.com>
+ <20190404143924.GB27823@fuggles.cambridge.arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190404143924.GB27823@fuggles.cambridge.arm.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, zhongmiao@hisilicon.com, okaya@kernel.org, rjw@rjwysocki.net, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Cgo+IE9uIEFwciA1LCAyMDE5LCBhdCA5OjU2IEFNLCBUeWNobyBBbmRlcnNlbiA8dHljaG9AdHlj
-aG8ud3M+IHdyb3RlOgo+IAo+PiBPbiBGcmksIEFwciAwNSwgMjAxOSBhdCAwOToyNDo1MEFNIC0w
-NjAwLCBBbmR5IEx1dG9taXJza2kgd3JvdGU6Cj4+IAo+PiAKPj4+IE9uIEFwciA1LCAyMDE5LCBh
-dCA4OjQ0IEFNLCBEYXZlIEhhbnNlbiA8ZGF2ZS5oYW5zZW5AaW50ZWwuY29tPiB3cm90ZToKPj4+
-IAo+Pj4gT24gNC81LzE5IDEyOjE3IEFNLCBUaG9tYXMgR2xlaXhuZXIgd3JvdGU6Cj4+Pj4+IHBy
-b2Nlc3MuIElzIHRoYXQgYW4gYWNjZXB0YWJsZSB0cmFkZS1vZmY/Cj4+Pj4gWW91IGFyZSBub3Qg
-c2VyaW91c2x5IGFza2luZyB3aGV0aGVyIGNyZWF0aW5nIGEgdXNlciBjb250cm9sbGFibGUgcmV0
-MmRpcgo+Pj4+IGF0dGFjayB3aW5kb3cgaXMgYSBhY2NlcHRhYmxlIHRyYWRlLW9mZj8gQXByaWwg
-MXN0IHdhcyBhIGZldyBkYXlzIGFnby4KPj4+IAo+Pj4gV2VsbCwgbGV0J3Mgbm90IGZvcmdldCB0
-aGF0IHRoaXMgc2V0IGF0IGxlYXN0IHRha2VzIHVzIGZyb20gImFsd2F5cwo+Pj4gdnVsbmVyYWJs
-ZSB0byByZXQyZGlyIiB0byBhIGNob2ljZSBiZXR3ZWVuOgo+Pj4gCj4+PiAxLiBmYXN0LWlzaCBh
-bmQgInZ1bG5lcmFibGUgdG8gcmV0MmRpciBmb3IgYSB1c2VyLWNvbnRyb2xsYWJsZSB3aW5kb3ci
-Cj4+PiAyLiBzbG93IGFuZCAibWl0aWdhdGVkIGFnYWluc3QgcmV0MmRpciIKPj4+IAo+Pj4gU291
-bmRzIGxpa2Ugd2UgbmVlZCBhIG1lY2hhbmlzbSB0aGF0IHdpbGwgZG8gdGhlIGRlZmVycmVkIFhQ
-Rk8gVExCCj4+PiBmbHVzaGVzIHdoZW5ldmVyIHRoZSBrZXJuZWwgaXMgZW50ZXJlZCwgYW5kIG5v
-dCBfanVzdF8gYXQgY29udGV4dCBzd2l0Y2gKPj4+IHRpbWUuICBUaGlzIHBlcm1pdHMgYW4gYXBw
-IHRvIHJ1biBpbiB1c2Vyc3BhY2Ugd2l0aCBzdGFsZSBrZXJuZWwgVExCCj4+PiBlbnRyaWVzIGFz
-IGxvbmcgYXMgaXQgd2FudHMuLi4gdGhhdCdzIGhhcm1sZXNzLgo+PiAKPj4gSSBkb27igJl0IHRo
-aW5rIHRoaXMgaXMgZ29vZCBlbm91Z2guIFRoZSBiYWQgZ3V5cyBjYW4gZW50ZXIgdGhlIGtlcm5l
-bCBhbmQgYXJyYW5nZSBmb3IgdGhlIGtlcm5lbCB0byB3YWl0LCAqaW4ga2VybmVsKiwgZm9yIGxv
-bmcgZW5vdWdoIHRvIHNldCB1cCB0aGUgYXR0YWNrLiAgdXNlcmZhdWx0ZmQgaXMgdGhlIG1vc3Qg
-b2J2aW91cyB3YXksIGJ1dCB0aGVyZSBhcmUgcGxlbnR5LiBJIHN1cHBvc2Ugd2UgY291bGQgZG8g
-dGhlIGZsdXNoIGF0IGNvbnRleHQgc3dpdGNoICphbmQqIGVudHJ5LiAgSSBiZXQgdGhhdCBwZXJm
-b3JtYW5jZSBzdGlsbCB1dHRlcmx5IHN1Y2tzLCB0aG91Z2gg4oCUIG9uIG1hbnkgd29ya2xvYWRz
-LCB0aGlzIHR1cm5zIGV2ZXJ5IGVudHJ5IGludG8gYSBmdWxsIGZsdXNoLCBhbmQgd2UgYWxyZWFk
-eSBrbm93IGV4YWN0bHkgaG93IG11Y2ggdGhhdCBzdWNrcyDigJQgaXTigJlzIGlkZW50aWNhbCB0
-byBLUFRJIHdpdGhvdXQgUENJRC4gIChBbmQgeWVzLCBpZiB3ZSBnbyB0aGlzIHJvdXRlLCB3ZSBu
-ZWVkIHRvIG1lcmdlIHRoaXMgbG9naWMgdG9nZXRoZXIg4oCUIHdlIHNob3VsZG7igJl0IHdyaXRl
-IENSMyB0d2ljZSBvbiBlbnRyeSkuCj4+IAo+PiBJIGZlZWwgbGlrZSB0aGlzIHdob2xlIGFwcHJv
-YWNoIGlzIG1pc2d1aWRlZC4gcmV0MmRpciBpcyBub3Qgc3VjaCBhIGdhbWUgY2hhbmdlciB0aGF0
-IGZpeGluZyBpdCBpcyB3b3J0aCBodWdlIHNsb3dkb3ducy4gSSB0aGluayBhbGwgdGhpcyBlZmZv
-cnQgc2hvdWxkIGJlIHNwZW50IG9uIHNvbWUga2luZCBvZiBzZW5zaWJsZSBDRkkuIEZvciBleGFt
-cGxlLCB3ZSBzaG91bGQgYmUgYWJsZSB0byBtb3N0bHkgc3F1YXNoIHJldDJhbnl0aGluZyBieSBp
-bnNlcnRpbmcgYSBjaGVjayB0aGF0IHRoZSBoaWdoIGJpdHMgb2YgUlNQIG1hdGNoIHRoZSB2YWx1
-ZSBvbiB0aGUgdG9wIG9mIHRoZSBzdGFjayBiZWZvcmUgYW55IGNvZGUgdGhhdCBwb3BzIFJTUC4g
-IE9uIGFuIEZQTyBidWlsZCwgdGhlcmUgYXJlbuKAmXQgYWxsIHRoYXQgbWFueSBob3QgUE9QIFJT
-UCBpbnN0cnVjdGlvbnMsIEkgdGhpbmsuCj4+IAo+PiAoQWN0dWFsbHksIGNoZWNraW5nIHRoZSBi
-aXRzIGlzIHN1Ym9wdGltYWwuIERvOgo+PiAKPj4gdW5zaWduZWQgbG9uZyBvZmZzZXQgPSAqcnNw
-IC0gcnNwOwo+PiBvZmZzZXQgPj49IFRIUkVBRF9TSElGVDsKPj4gaWYgKHVubGlrZWx5KG9mZnNl
-dCkpCj4+IEJVRygpOwo+PiBQT1AgUlNQOwo+IAo+IFRoaXMgaXMgYSBuZWF0IHRyaWNrLCBhbmQg
-ZGVmaW5pdGVseSBwcmV2ZW50cyBnb2luZyByYW5kb20gcGxhY2VzIGluCj4gdGhlIGhlYXAuIEJ1
-dCwKPiAKPj4gVGhpcyBtZWFucyB0aGF0IGl04oCZcyBhbHNvIGltcG9zc2libGUgdG8gdHJpY2sg
-YSBmdW5jdGlvbiB0byByZXR1cm4gaW50byBhIGJ1ZmZlciB0aGF0IGlzIG9uIHRoYXQgZnVuY3Rp
-b27igJlzIHN0YWNrLikKPiAKPiBXaHkgaXMgdGhpcyB0cnVlPyBBbGwgeW91J3JlIGNoZWNraW5n
-IGlzIHRoYXQgeW91IGNhbid0IHNoaWZ0IHRoZQo+ICJsb2NhdGlvbiIgb2YgdGhlIHN0YWNrLiBJ
-ZiB5b3UgY2FuIGluamVjdCBzdHVmZiBpbnRvIGEgc3RhY2sgYnVmZmVyLAo+IGNhbid0IHlvdSBq
-dXN0IGluamVjdCB0aGUgcmlnaHQgZnJhbWUgdG8gcmV0dXJuIHRvIHlvdXIgY29kZSBhcyB3ZWxs
-LAo+IHNvIHlvdSBkb24ndCBoYXZlIHRvIHNoaWZ0IGxvY2F0aW9ucz8KPiAKPiAKCkJ1dCB0aGUg
-aW5qZWN0ZWQgUk9QIHBheWxvYWQgd2lsbCBiZSAqYmVsb3cqIFJTUCwgc28geW914oCZbGwgbmVl
-ZCBhIGdhZGdldCB0aGF0IGNhbiBkZWNyZW1lbnQgUlNQLiAgVGhpcyBtYWtlcyB0aGUgYXR0YWNr
-IGEgZ29vZCBkZWFsIGhhcmRlci4KClNvbWV0aGluZyBsaWtlIFJBUCBvbiB0b3AsIG9yIENFVCwg
-d2lsbCBtYWtlIHRoaXMgZXZlbiBoYXJkZXIuCgo+IAo+IFR5Y2hvCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 04/04/2019 15:39, Will Deacon wrote:
+> Hi Jean-Philippe,
+> 
+> First off, thanks for posting this: it's definitely something that I'm keen
+> to support, and getting bits in a piece at a time is probably a good idea.
+> 
+> On Wed, Mar 20, 2019 at 05:36:32PM +0000, Jean-Philippe Brucker wrote:
+>> When removing a mapping from a domain, we need to send an invalidation to
+>> all devices that might have stored it in their Address Translation Cache
+>> (ATC). In addition when updating the context descriptor of a live domain,
+>> we'll need to send invalidations for all devices attached to it.
+>>
+>> Maintain a list of devices in each domain, protected by a spinlock. It is
+>> updated every time we attach or detach devices to and from domains.
+>>
+>> It needs to be a spinlock because we'll invalidate ATC entries from
+>> within hardirq-safe contexts, but it may be possible to relax the read
+>> side with RCU later.
+>>
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> ---
+>>  drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
+>>  1 file changed, 28 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index d3880010c6cf..66a29c113dbc 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -594,6 +594,11 @@ struct arm_smmu_device {
+>>  struct arm_smmu_master_data {
+>>  	struct arm_smmu_device		*smmu;
+>>  	struct arm_smmu_strtab_ent	ste;
+>> +
+>> +	struct arm_smmu_domain		*domain;
+>> +	struct list_head		domain_head;
+>> +
+>> +	struct device			*dev;
+>>  };
+>>  
+>>  /* SMMU private data for an IOMMU domain */
+>> @@ -618,6 +623,9 @@ struct arm_smmu_domain {
+>>  	};
+>>  
+>>  	struct iommu_domain		domain;
+>> +
+>> +	struct list_head		devices;
+>> +	spinlock_t			devices_lock;
+>>  };
+>>  
+>>  struct arm_smmu_option_prop {
+>> @@ -1493,6 +1501,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+>>  	}
+>>  
+>>  	mutex_init(&smmu_domain->init_mutex);
+>> +	INIT_LIST_HEAD(&smmu_domain->devices);
+>> +	spin_lock_init(&smmu_domain->devices_lock);
+> 
+> I'm wondering whether we can't take this a bit further and re-organise the
+> data structures to make this a little simpler overall. Something along the
+> lines of:
+> 
+> 	struct arm_smmu_master_data {
+> 		struct list_head		list; // masters in the same domain
+> 		struct arm_smmu_device		*smmu;
+> 		unsigned int			num_sids;
+> 		u32				*sids; // Points into fwspec
+> 		struct arm_smmu_domain		*domain; // NULL -> !assigned
+> 	};
+> 
+> and then just add a list_head into struct arm_smmu_domain to track the
+> masters that have been attached (if you're feeling brave, you could put
+> this into the s1_cfg).
+
+I'm not sure about that last bit, shouldn't the list of masters apply to
+both s1 and s2?
+
+> 
+> The ATC invalidation logic would then be:
+> 
+>   - Detaching a device: walk over the sids from the master data
+>   - Unmapping a range from a domain: walk over the attached masters
+> 
+> I think this would also allow us to remove struct arm_smmu_strtab_ent
+> completely.
+
+Makes sense, it does work and simplifies the structures. It makes the
+PASID and PRI patches slightly nicer as well. I'll resend once my tests
+complete.
+
+Thanks,
+Jean
+
+> 
+> Dunno: this is one of the those things where you really have to try it
+> to figure out why it doesn't work...
+> 
+> Will
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
