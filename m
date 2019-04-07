@@ -1,289 +1,95 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 6/6] x86/iommu: use common boot option iommu.dma_mode
-Date: Sun, 7 Apr 2019 20:41:47 +0800
-Message-ID: <20190407124147.13576-7-thunder.leizhen__37144.2875753687$1554643809$gmane$org@huawei.com>
-References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
+From: Bart Van Assche <bvanassche-HInyCGIudOg@public.gmane.org>
+Subject: kernel BUG at drivers/iommu/intel-iommu.c:608
+Date: Sun, 7 Apr 2019 12:10:38 -0700
+Message-ID: <a523ea10-3dab-fa2c-1ecf-5cf32077565f@acm.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20190407124147.13576-1-thunder.leizhen@huawei.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael
- Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@>
-Cc: Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, James Smart <jsmart2021-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu=pt can be replaced with iommu.dma_mode=passthrough.
-iommu=nopt can be replaced with iommu.dma_mode=lazy.
-intel_iommu=strict can be replaced with iommu.dma_mode=strict.
-amd_iommu=fullflush can be replaced with iommu.dma_mode=strict.
+Hi Jiang,
 
-Note: intel_iommu_strict is not deleted because it can also be assigned
-in quirk_calpella_no_shadow_gtt().
+If I tell qemu to use PCI pass-through for a PCI adapter and next load the
+lpfc driver for an lpfc adapter that has not been passed through to any VM
+a kernel bug is hit. Do you perhaps know whether it should be possible to
+a load kernel driver in this scenario? If so, do you know what should change
+to avoid that this kernel bug is hit? Should the iommu code be modified or
+should the lpfc code be modified? I'm asking you because I think that you
+introduced the BUG() statement that was hit. See also commit ab8dfe251571
+("iommu/vt-d: Introduce helper functions to improve code readability"; v3.17).
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- arch/ia64/include/asm/iommu.h   |  2 --
- arch/ia64/kernel/pci-dma.c      |  2 --
- arch/x86/include/asm/iommu.h    |  1 -
- arch/x86/kernel/pci-dma.c       | 20 --------------------
- drivers/iommu/Kconfig           | 14 ++++++--------
- drivers/iommu/amd_iommu.c       | 12 ++++++------
- drivers/iommu/amd_iommu_init.c  |  4 ----
- drivers/iommu/amd_iommu_types.h |  6 ------
- drivers/iommu/intel-iommu.c     |  7 ++-----
- 9 files changed, 14 insertions(+), 54 deletions(-)
+Thank you,
 
-diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
-index 7429a72f3f92199..92aceef63710861 100644
---- a/arch/ia64/include/asm/iommu.h
-+++ b/arch/ia64/include/asm/iommu.h
-@@ -8,10 +8,8 @@
- extern void no_iommu_init(void);
- #ifdef	CONFIG_INTEL_IOMMU
- extern int force_iommu, no_iommu;
--extern int iommu_pass_through;
- extern int iommu_detected;
- #else
--#define iommu_pass_through	(0)
- #define no_iommu		(1)
- #define iommu_detected		(0)
- #endif
-diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
-index fe988c49f01ce6a..f5d49cd3fbb01a9 100644
---- a/arch/ia64/kernel/pci-dma.c
-+++ b/arch/ia64/kernel/pci-dma.c
-@@ -22,8 +22,6 @@
- int force_iommu __read_mostly;
- #endif
- 
--int iommu_pass_through;
--
- static int __init pci_iommu_init(void)
- {
- 	if (iommu_detected)
-diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-index baedab8ac5385f7..b91623d521d9f0f 100644
---- a/arch/x86/include/asm/iommu.h
-+++ b/arch/x86/include/asm/iommu.h
-@@ -4,7 +4,6 @@
- 
- extern int force_iommu, no_iommu;
- extern int iommu_detected;
--extern int iommu_pass_through;
- 
- /* 10 seconds */
- #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
-diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-index d460998ae828514..bd63d80597ae6d0 100644
---- a/arch/x86/kernel/pci-dma.c
-+++ b/arch/x86/kernel/pci-dma.c
-@@ -34,21 +34,6 @@
- /* Set this to 1 if there is a HW IOMMU in the system */
- int iommu_detected __read_mostly = 0;
- 
--/*
-- * This variable becomes 1 if iommu=pt is passed on the kernel command line.
-- * If this variable is 1, IOMMU implementations do no DMA translation for
-- * devices and allow every device to access to whole physical memory. This is
-- * useful if a user wants to use an IOMMU only for KVM device assignment to
-- * guests and not for driver dma translation.
-- * It is also possible to disable by default in kernel config, and enable with
-- * iommu=nopt at boot time.
-- */
--#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
--int iommu_pass_through __read_mostly = 1;
--#else
--int iommu_pass_through __read_mostly;
--#endif
--
- extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
- 
- /* Dummy device used for NULL arguments (normally ISA). */
-@@ -139,11 +124,6 @@ static __init int iommu_setup(char *p)
- 		if (!strncmp(p, "soft", 4))
- 			swiotlb = 1;
- #endif
--		if (!strncmp(p, "pt", 2))
--			iommu_pass_through = 1;
--		if (!strncmp(p, "nopt", 4))
--			iommu_pass_through = 0;
--
- 		gart_parse_options(p);
- 
- #ifdef CONFIG_CALGARY_IOMMU
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index b053eeaa82ebca8..ff8c5d0d435cf58 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -78,7 +78,7 @@ choice
- 	prompt "IOMMU dma mode"
- 	depends on IOMMU_API
- 	default IOMMU_DMA_MODE_PASSTHROUGH if (PPC_POWERNV && PCI)
--	default IOMMU_DMA_MODE_LAZY if S390_IOMMU
-+	default IOMMU_DMA_MODE_LAZY if (AMD_IOMMU || INTEL_IOMMU || S390_IOMMU)
- 	default IOMMU_DMA_MODE_STRICT
- 	help
- 	  IOMMU dma mode, such as: passthrough, lazy, strict.
-@@ -87,9 +87,8 @@ config IOMMU_DMA_MODE_PASSTHROUGH
- 	bool "Configure DMA to bypass the IOMMU"
-         help
- 	  Enable passthrough by default, removing the need to pass in
--	  iommu.dma_mode=passthrough or iommu=pt through command line. If this
--	  is enabled, you can still disable with iommu.dma_mode={lazy|strict}
--	  or iommu=nopt depending on the architecture.
-+	  iommu.dma_mode=passthrough through command line. If this is enabled,
-+	  you can still disable with iommu.dma_mode={lazy|strict}.
- 
- config IOMMU_DMA_MODE_LAZY
- 	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
-@@ -97,10 +96,9 @@ config IOMMU_DMA_MODE_LAZY
- 	  Support lazy mode, where for every IOMMU DMA unmap operation, the
- 	  flush operation of IOTLB and the free operation of IOVA are deferred.
- 	  They are only guaranteed to be done before the related IOVA will be
--	  reused. Removing the need to pass in kernel parameters through
--	  command line. For example, iommu.dma_mode=lazy on ARM64. If this is
--	  enabled, you can still disable with kernel parameters, such as
--	  iommu.dma_mode=strict depending on the architecture.
-+	  reused. Removing the need to pass in iommu.dma_mode=lazy through
-+	  command line. If this is enabled, you can still disable with
-+	  iommu.dma_mode=strict.
- 
- config IOMMU_DMA_MODE_STRICT
- 	bool "IOMMU DMA use strict mode to flush IOTLB and free IOVA"
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index f7cdd2ab7f11f6c..361fa6d5561a0ff 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -94,7 +94,7 @@
- 
- /*
-  * Domain for untranslated devices - only allocated
-- * if iommu=pt passed on kernel cmd line.
-+ * if iommu.dma_mode=passthrough passed on kernel cmd line.
-  */
- const struct iommu_ops amd_iommu_ops;
- 
-@@ -448,7 +448,7 @@ static int iommu_init_device(struct device *dev)
- 	 * invalid address), we ignore the capability for the device so
- 	 * it'll be forced to go into translation mode.
- 	 */
--	if ((iommu_pass_through || !amd_iommu_force_isolation) &&
-+	if ((IOMMU_DMA_MODE_IS_PASSTHROUGH() || !amd_iommu_force_isolation) &&
- 	    dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
- 		struct amd_iommu *iommu;
- 
-@@ -2274,7 +2274,7 @@ static int amd_iommu_add_device(struct device *dev)
- 
- 	BUG_ON(!dev_data);
- 
--	if (iommu_pass_through || dev_data->iommu_v2)
-+	if (IOMMU_DMA_MODE_IS_PASSTHROUGH() || dev_data->iommu_v2)
- 		iommu_request_dm_for_dev(dev);
- 
- 	/* Domains are initialized for this device - have a look what we ended up with */
-@@ -2479,7 +2479,7 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
- 		start += PAGE_SIZE;
- 	}
- 
--	if (amd_iommu_unmap_flush) {
-+	if (!IOMMU_DMA_MODE_IS_LAZY()) {
- 		domain_flush_tlb(&dma_dom->domain);
- 		domain_flush_complete(&dma_dom->domain);
- 		dma_ops_free_iova(dma_dom, dma_addr, pages);
-@@ -2853,10 +2853,10 @@ int __init amd_iommu_init_api(void)
- 
- int __init amd_iommu_init_dma_ops(void)
- {
--	swiotlb        = (iommu_pass_through || sme_me_mask) ? 1 : 0;
-+	swiotlb = (IOMMU_DMA_MODE_IS_PASSTHROUGH() || sme_me_mask) ? 1 : 0;
- 	iommu_detected = 1;
- 
--	if (amd_iommu_unmap_flush)
-+	if (!IOMMU_DMA_MODE_IS_LAZY())
- 		pr_info("IO/TLB flush on unmap enabled\n");
- 	else
- 		pr_info("Lazy IO/TLB flushing enabled\n");
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 1b1378619fc9ec2..68ab83327997e7b 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -166,8 +166,6 @@ struct ivmd_header {
- 					   to handle */
- LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
- 					   we find in ACPI */
--bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
--
- LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
- 					   system */
- 
-@@ -2856,8 +2854,6 @@ static int __init parse_amd_iommu_intr(char *str)
- static int __init parse_amd_iommu_options(char *str)
- {
- 	for (; *str; ++str) {
--		if (strncmp(str, "fullflush", 9) == 0)
--			amd_iommu_unmap_flush = true;
- 		if (strncmp(str, "off", 3) == 0)
- 			amd_iommu_disabled = true;
- 		if (strncmp(str, "force_isolation", 15) == 0)
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 87965e4d964771b..724182f158523a1 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -743,12 +743,6 @@ struct unity_map_entry {
- /* allocation bitmap for domain ids */
- extern unsigned long *amd_iommu_pd_alloc_bitmap;
- 
--/*
-- * If true, the addresses will be flushed on unmap time, not when
-- * they are reused
-- */
--extern bool amd_iommu_unmap_flush;
--
- /* Smallest max PASID supported by any IOMMU in the system */
- extern u32 amd_iommu_max_pasid;
- 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 28cb713d728ceef..500b3182d0a9280 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -451,9 +451,6 @@ static int __init intel_iommu_setup(char *str)
- 		} else if (!strncmp(str, "forcedac", 8)) {
- 			pr_info("Forcing DAC for PCI devices\n");
- 			dmar_forcedac = 1;
--		} else if (!strncmp(str, "strict", 6)) {
--			pr_info("Disable batched IOTLB flush\n");
--			intel_iommu_strict = 1;
- 		} else if (!strncmp(str, "sp_off", 6)) {
- 			pr_info("Disable supported super page\n");
- 			intel_iommu_superpage = 0;
-@@ -3408,7 +3405,7 @@ static int __init init_dmars(void)
- 		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
- 	}
- 
--	if (iommu_pass_through)
-+	if (IOMMU_DMA_MODE_IS_PASSTHROUGH())
- 		iommu_identity_mapping |= IDENTMAP_ALL;
- 
- #ifdef CONFIG_INTEL_IOMMU_BROKEN_GFX_WA
-@@ -3749,7 +3746,7 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
- 
- 	freelist = domain_unmap(domain, start_pfn, last_pfn);
- 
--	if (intel_iommu_strict) {
-+	if (!IOMMU_DMA_MODE_IS_LAZY() || intel_iommu_strict) {
- 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
- 				      nrpages, !freelist, 0);
- 		/* free iova */
--- 
-1.8.3
+Bart.
+
+------------[ cut here ]------------
+kernel BUG at drivers/iommu/intel-iommu.c:608!
+invalid opcode: 0000 [#1] SMP
+CPU: 7 PID: 7842 Comm: modprobe Not tainted 5.0.7+ #2
+Hardware name: Gigabyte Technology Co., Ltd. Z97X-UD5H/Z97X-UD5H, BIOS F10 08/03/2015
+RIP: 0010:domain_get_iommu+0x50/0x60
+Code: c2 01 eb 0b 48 83 c0 01 8b 34 87 85 f6 75 0b 48 39 c2 48 63 c8 75 ed 31 c0 c3 48 c1 e1 03 48 8b 05 15 9b cd 00 48 8b 04 08 c3 <0f> 0b 31 c9 eb ee 66 2e 0f 1f 84 00 00 00 00 00 41 55 8b 05 d0 9a
+RSP: 0018:ffffa7884024ba60 EFLAGS: 00010202
+RAX: ffff96c8897c60c0 RBX: 00000004046c2000 RCX: ffff96c88edab000
+RDX: 00000000fffffff0 RSI: ffff96c88e08de80 RDI: ffff96c8897c60c0
+RBP: 0000000000000000 R08: ffff96c88b806b40 R09: ffff96c88f802f50
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff96c88edab0b0
+R13: ffffffffffffffff R14: 0000000000001000 R15: ffff96c8897c60c0
+FS:  00007fec74c05b80(0000) GS:ffff96c89fbc0000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fec74c5dc80 CR3: 0000000404686004 CR4: 00000000001626e0
+Call Trace:
+  __intel_map_page+0x7e/0x150
+  intel_alloc_coherent+0xa7/0x130
+  dma_alloc_attrs+0x6b/0xc0
+  dma_pool_alloc+0xb8/0x1a0
+  lpfc_mem_alloc+0x109/0x3e0 [lpfc]
+  lpfc_pci_probe_one+0xdac/0x2060 [lpfc]
+  pci_device_probe+0xc3/0x140
+  really_probe+0xd2/0x380
+  driver_probe_device+0xae/0xf0
+  __driver_attach+0xd5/0x100
+  ? driver_probe_device+0xf0/0xf0
+  bus_for_each_dev+0x5b/0x90
+  bus_add_driver+0x208/0x220
+  ? 0xffffffffc0ad9000
+  driver_register+0x66/0xb0
+  ? 0xffffffffc0ad9000
+  lpfc_init+0xd5/0x1000 [lpfc]
+  do_one_initcall+0x2e/0x181
+  ? __vunmap+0x75/0xb0
+  do_init_module+0x55/0x1e0
+  load_module+0x2438/0x2560
+  ? __do_sys_finit_module+0x8f/0xd0
+  __do_sys_finit_module+0x8f/0xd0
+  do_syscall_64+0x44/0xf0
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7fec74d212f9
+Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 6f 4b 0c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffea26c1458 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+RAX: ffffffffffffffda RBX: 000055eeaf1669c0 RCX: 00007fec74d212f9
+RDX: 0000000000000000 RSI: 000055eeaf0ee3c8 RDI: 0000000000000004
+RBP: 0000000000000000 R08: 0000000000000000 R09: 000055eeaf166400
+R10: 0000000000000004 R11: 0000000000000246 R12: 000055eeaf0ee3c8
+R13: 0000000000040000 R14: 000055eeaf16eb90 R15: 000055eeaf1669c0
+Modules linked in: lpfc(+) scsi_transport_fc mlx4_ib ib_uverbs ib_core mlx4_en mlx4_core pci_stub af_packet vhost_net vhost tun vfio_pci vfio_virqfd vfio_iommu_type1 vfio fuse dm_crypt algif_skcipher af_alg loop devlink bridge stp llc xt_tcpudp ip6t_rpfilter ip6t_REJECT 
+nf_reject_ipv6 ipt_REJECT nf_reject_ipv4 xt_conntrack ebtable_nat ip6table_nat nf_nat_ipv6 ip6table_mangle ip6table_raw ip6table_security iptable_nat nf_nat_ipv4 nf_nat iptable_mangle iptable_raw iptable_security nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 
+scsi_transport_iscsi ip_set nfnetlink ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter ip_tables x_tables bpfilter coretemp hwmon intel_rapl x86_pkg_temp_thermal intel_powerclamp kvm_intel kvm irqbypass crct10dif_pclmul snd_hda_codec_hdmi crc32_pclmul 
+ghash_clmulni_intel snd_hda_codec_realtek snd_hda_codec_generic aesni_intel aes_x86_64 crypto_simd cryptd snd_hda_intel iTCO_wdt mei_me iTCO_vendor_support joydev mxm_wmi glue_helper e1000e alx
+  mdio intel_rapl_perf snd_hda_codec mei ptp lpc_ich pcspkr i2c_i801 snd_hda_core pps_core mfd_core fan thermal wmi pcc_cpufreq acpi_pad button snd_usb_audio snd_usbmidi_lib snd_hwdep snd_rawmidi snd_seq_device snd_pcm snd_timer snd soundcore ext4 crc16 mbcache jbd2 
+hid_generic usbhid sd_mod i915 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops ahci libahci drm drm_panel_orientation_quirks xhci_pci libata ehci_pci agpgart ehci_hcd xhci_hcd i2c_core video usbcore usb_common sg dm_multipath 
+dm_mod scsi_dh_rdac scsi_dh_emc scsi_dh_alua scsi_mod unix ipv6 autofs4 [last unloaded: scsi_transport_fc]
+---[ end trace cc531c0d02c790cc ]---
