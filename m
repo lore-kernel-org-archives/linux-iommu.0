@@ -1,8 +1,7 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 2/6] iommu: keep dma mode build options consistent with
-	cmdline options
-Date: Sun, 7 Apr 2019 20:41:43 +0800
-Message-ID: <20190407124147.13576-3-thunder.leizhen__12405.1766631723$1554641319$gmane$org@huawei.com>
+Subject: [PATCH v4 3/6] iommu: add iommu_default_dma_mode_get() helper
+Date: Sun, 7 Apr 2019 20:41:44 +0800
+Message-ID: <20190407124147.13576-4-thunder.leizhen__35121.7494857096$1554641321$gmane$org@huawei.com>
 References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,80 +22,89 @@ To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, 
 Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-First, add build option IOMMU_DMA_MODE_LAZY, so that we have the
-opportunity to set lazy mode as default at build time. Then put the
-three config options in an choice, make people can only choose one of the
-three at a time, the same to the boot options iommu.dma_mode.
+Add IOMMU_DMA_MODE_IS_LAZY() and IOMMU_DMA_MODE_IS_PASSTHROUGH() to make
+the code looks cleaner.
+
+There is no functional change, just prepare for the following patches.
 
 Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/Kconfig | 30 +++++++++++++++++++++++++++---
- drivers/iommu/iommu.c |  4 +++-
- 2 files changed, 30 insertions(+), 4 deletions(-)
+ drivers/iommu/iommu.c | 12 ++++++++----
+ include/linux/iommu.h | 11 +++++++++++
+ 2 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index b67fcabd668f7b6..19118cfdea1c335 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -74,16 +74,40 @@ config IOMMU_DEBUGFS
- 	  debug/iommu directory, and then populate a subdirectory with
- 	  entries as required.
- 
--config IOMMU_DEFAULT_PASSTHROUGH
--	bool "IOMMU passthrough by default"
-+choice
-+	prompt "IOMMU dma mode"
- 	depends on IOMMU_API
-+	default IOMMU_DMA_MODE_STRICT
-+	help
-+	  IOMMU dma mode, such as: passthrough, lazy, strict.
-+
-+config IOMMU_DMA_MODE_PASSTHROUGH
-+	bool "Configure DMA to bypass the IOMMU"
-         help
- 	  Enable passthrough by default, removing the need to pass in
- 	  iommu.dma_mode=passthrough or iommu=pt through command line. If this
- 	  is enabled, you can still disable with iommu.dma_mode={lazy|strict}
- 	  or iommu=nopt depending on the architecture.
- 
--	  If unsure, say N here.
-+config IOMMU_DMA_MODE_LAZY
-+	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
-+	help
-+	  Support lazy mode, where for every IOMMU DMA unmap operation, the
-+	  flush operation of IOTLB and the free operation of IOVA are deferred.
-+	  They are only guaranteed to be done before the related IOVA will be
-+	  reused. Removing the need to pass in kernel parameters through
-+	  command line. For example, iommu.dma_mode=lazy on ARM64. If this is
-+	  enabled, you can still disable with kernel parameters, such as
-+	  iommu.dma_mode=strict depending on the architecture.
-+
-+config IOMMU_DMA_MODE_STRICT
-+	bool "IOMMU DMA use strict mode to flush IOTLB and free IOVA"
-+	help
-+	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
-+	  the free operation of IOVA are guaranteed to be done in the unmap
-+	  function.
-+
-+endchoice
- 
- config OF_IOMMU
-        def_bool y
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e4d581e6cb8d210..b75e23a2ea08da8 100644
+index b75e23a2ea08da8..876c0966db2481a 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -39,8 +39,10 @@
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
+@@ -168,6 +168,11 @@ static int __init iommu_dma_mode_setup(char *str)
+ }
+ early_param("iommu.dma_mode", iommu_dma_mode_setup);
  
--#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
-+#if defined(CONFIG_IOMMU_DMA_MODE_PASSTHROUGH)
- #define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_PASSTHROUGH
-+#elif defined(CONFIG_IOMMU_DMA_MODE_LAZY)
-+#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_LAZY
- #else
- #define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_STRICT
- #endif
++int iommu_default_dma_mode_get(void)
++{
++	return iommu_default_dma_mode;
++}
++
+ static ssize_t iommu_group_attr_show(struct kobject *kobj,
+ 				     struct attribute *__attr, char *buf)
+ {
+@@ -1109,9 +1114,8 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 	 */
+ 	if (!group->default_domain) {
+ 		struct iommu_domain *dom;
+-		int def_domain_type =
+-			(iommu_default_dma_mode == IOMMU_DMA_MODE_PASSTHROUGH)
+-			? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
++		int def_domain_type = IOMMU_DMA_MODE_IS_PASSTHROUGH() \
++				? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
+ 
+ 		dom = __iommu_domain_alloc(dev->bus, def_domain_type);
+ 		if (!dom && def_domain_type != IOMMU_DOMAIN_DMA) {
+@@ -1127,7 +1131,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 		if (!group->domain)
+ 			group->domain = dom;
+ 
+-		if (dom && (iommu_default_dma_mode == IOMMU_DMA_MODE_LAZY)) {
++		if (dom && IOMMU_DMA_MODE_IS_LAZY()) {
+ 			int attr = 1;
+ 			iommu_domain_set_attr(dom,
+ 					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c3f4e3416176496..1b35ae3f6382e4a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -46,6 +46,10 @@
+ #define IOMMU_DMA_MODE_STRICT		0x0
+ #define IOMMU_DMA_MODE_LAZY		0x1
+ #define IOMMU_DMA_MODE_PASSTHROUGH	0x2
++#define IOMMU_DMA_MODE_IS_LAZY() \
++		(iommu_default_dma_mode_get() == IOMMU_DMA_MODE_LAZY)
++#define IOMMU_DMA_MODE_IS_PASSTHROUGH() \
++		(iommu_default_dma_mode_get() == IOMMU_DMA_MODE_PASSTHROUGH)
+ 
+ struct iommu_ops;
+ struct iommu_group;
+@@ -421,6 +425,8 @@ static inline void dev_iommu_fwspec_set(struct device *dev,
+ int iommu_probe_device(struct device *dev);
+ void iommu_release_device(struct device *dev);
+ 
++extern int iommu_default_dma_mode_get(void);
++
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+@@ -705,6 +711,11 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ 	return NULL;
+ }
+ 
++static inline int iommu_default_dma_mode_get(void)
++{
++	return IOMMU_DMA_MODE_PASSTHROUGH;
++}
++
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #ifdef CONFIG_IOMMU_DEBUGFS
 -- 
 1.8.3
