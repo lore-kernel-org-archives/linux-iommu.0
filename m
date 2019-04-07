@@ -2,39 +2,39 @@ Return-Path: <SRS0=ZMNw=SJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80932C282DE
-	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 817C7C282DE
+	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4F8FD213F2
-	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F8FD213F2
+	by mail.kernel.org (Postfix) with ESMTPS id 55C5E218D9
+	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55C5E218D9
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0A75BB59;
-	Sun,  7 Apr 2019 12:48:11 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3CB7CB8F;
+	Sun,  7 Apr 2019 12:48:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 729F4B50
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B2D3EB50
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  7 Apr 2019 12:48:09 +0000 (UTC)
+	Sun,  7 Apr 2019 12:48:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B8F24709
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1FDD9735
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  7 Apr 2019 12:48:08 +0000 (UTC)
+	Sun,  7 Apr 2019 12:48:15 +0000 (UTC)
 Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id BCA5B2E388295C2AE7BA;
-	Sun,  7 Apr 2019 20:48:05 +0800 (CST)
+	by Forcepoint Email with ESMTP id D94DA2587E4ADED563FF;
+	Sun,  7 Apr 2019 20:48:10 +0800 (CST)
 Received: from HGHY1l002753561.china.huawei.com (10.177.23.164) by
 	DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server
-	id 14.3.408.0; Sun, 7 Apr 2019 20:47:58 +0800
+	id 14.3.408.0; Sun, 7 Apr 2019 20:48:04 +0800
 From: Zhen Lei <thunder.leizhen@huawei.com>
 To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
@@ -52,10 +52,12 @@ To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
 	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
 	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v4 0/6] normalize IOMMU dma mode boot options
-Date: Sun, 7 Apr 2019 20:41:41 +0800
-Message-ID: <20190407124147.13576-1-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 4/6] s390/pci: use common boot option iommu.dma_mode
+Date: Sun, 7 Apr 2019 20:41:45 +0800
+Message-ID: <20190407124147.13576-5-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.19.2.windows.1
+In-Reply-To: <20190407124147.13576-1-thunder.leizhen@huawei.com>
+References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.177.23.164]
 X-CFilter-Loop: Reflected
@@ -77,45 +79,113 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-As Robin Murphy's suggestion:
-"It's also not necessarily obvious to the user how this interacts with
-IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
-would be better to refactor the whole lot into a single selection of something
-like IOMMU_DEFAULT_MODE anyway."
+s390_iommu=strict can be replaced with iommu.dma_mode=strict.
 
-In this version, I tried to normalize the IOMMU dma mode boot options for all
-ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
-lazy(mapping but defer the IOTLB invalidation), strict. But currently each
-ARCHs defined their private boot options, different with each other. For
-example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
-X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt |  7 -------
+ arch/s390/pci/pci_dma.c                         | 20 +++++---------------
+ drivers/iommu/Kconfig                           |  1 +
+ 3 files changed, 6 insertions(+), 22 deletions(-)
 
-
-Zhen Lei (6):
-  iommu: use iommu.dma_mode to replace iommu.passthrough and
-    iommu.strict
-  iommu: keep dma mode build options consistent with cmdline options
-  iommu: add iommu_default_dma_mode_get() helper
-  s390/pci: use common boot option iommu.dma_mode
-  powernv/iommu: use common boot option iommu.dma_mode
-  x86/iommu: use common boot option iommu.dma_mode
-
- Documentation/admin-guide/kernel-parameters.txt | 42 +++++++-------------
- arch/ia64/include/asm/iommu.h                   |  2 -
- arch/ia64/kernel/pci-dma.c                      |  2 -
- arch/powerpc/platforms/powernv/pci-ioda.c       | 23 +----------
- arch/s390/pci/pci_dma.c                         | 20 +++-------
- arch/x86/include/asm/iommu.h                    |  1 -
- arch/x86/kernel/pci-dma.c                       | 20 ----------
- drivers/iommu/Kconfig                           | 36 ++++++++++++++---
- drivers/iommu/amd_iommu.c                       | 12 +++---
- drivers/iommu/amd_iommu_init.c                  |  4 --
- drivers/iommu/amd_iommu_types.h                 |  6 ---
- drivers/iommu/intel-iommu.c                     |  7 +---
- drivers/iommu/iommu.c                           | 52 ++++++++++++++++---------
- include/linux/iommu.h                           | 16 ++++++++
- 14 files changed, 108 insertions(+), 135 deletions(-)
-
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 60409ad23b2ac8b..a2df11945b33fc9 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4095,13 +4095,6 @@
+ 
+ 	S		[KNL] Run init in single mode
+ 
+-	s390_iommu=	[HW,S390]
+-			Set s390 IOTLB flushing mode
+-		strict
+-			With strict flushing every unmap operation will result in
+-			an IOTLB flush. Default is lazy flushing before reuse,
+-			which is faster.
+-
+ 	sa1100ir	[NET]
+ 			See drivers/net/irda/sa1100_ir.c.
+ 
+diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+index 9e52d1527f71495..6f1615c16f33995 100644
+--- a/arch/s390/pci/pci_dma.c
++++ b/arch/s390/pci/pci_dma.c
+@@ -17,7 +17,6 @@
+ 
+ static struct kmem_cache *dma_region_table_cache;
+ static struct kmem_cache *dma_page_table_cache;
+-static int s390_iommu_strict;
+ 
+ static int zpci_refresh_global(struct zpci_dev *zdev)
+ {
+@@ -193,13 +192,13 @@ static int __dma_purge_tlb(struct zpci_dev *zdev, dma_addr_t dma_addr,
+ 		if (!zdev->tlb_refresh)
+ 			return 0;
+ 	} else {
+-		if (!s390_iommu_strict)
++		if (IOMMU_DMA_MODE_IS_LAZY())
+ 			return 0;
+ 	}
+ 
+ 	ret = zpci_refresh_trans((u64) zdev->fh << 32, dma_addr,
+ 				 PAGE_ALIGN(size));
+-	if (ret == -ENOMEM && !s390_iommu_strict) {
++	if (ret == -ENOMEM && IOMMU_DMA_MODE_IS_LAZY()) {
+ 		/* enable the hypervisor to free some resources */
+ 		if (zpci_refresh_global(zdev))
+ 			goto out;
+@@ -278,7 +277,7 @@ static dma_addr_t dma_alloc_address(struct device *dev, int size)
+ 	spin_lock_irqsave(&zdev->iommu_bitmap_lock, flags);
+ 	offset = __dma_alloc_iommu(dev, zdev->next_bit, size);
+ 	if (offset == -1) {
+-		if (!s390_iommu_strict) {
++		if (IOMMU_DMA_MODE_IS_LAZY()) {
+ 			/* global flush before DMA addresses are reused */
+ 			if (zpci_refresh_global(zdev))
+ 				goto out_error;
+@@ -313,7 +312,7 @@ static void dma_free_address(struct device *dev, dma_addr_t dma_addr, int size)
+ 	if (!zdev->iommu_bitmap)
+ 		goto out;
+ 
+-	if (s390_iommu_strict)
++	if (!IOMMU_DMA_MODE_IS_LAZY())
+ 		bitmap_clear(zdev->iommu_bitmap, offset, size);
+ 	else
+ 		bitmap_set(zdev->lazy_bitmap, offset, size);
+@@ -584,7 +583,7 @@ int zpci_dma_init_device(struct zpci_dev *zdev)
+ 		rc = -ENOMEM;
+ 		goto free_dma_table;
+ 	}
+-	if (!s390_iommu_strict) {
++	if (IOMMU_DMA_MODE_IS_LAZY()) {
+ 		zdev->lazy_bitmap = vzalloc(zdev->iommu_pages / 8);
+ 		if (!zdev->lazy_bitmap) {
+ 			rc = -ENOMEM;
+@@ -671,12 +670,3 @@ void zpci_dma_exit(void)
+ 	/* dma_supported is unconditionally true without a callback */
+ };
+ EXPORT_SYMBOL_GPL(s390_pci_dma_ops);
+-
+-static int __init s390_iommu_setup(char *str)
+-{
+-	if (!strncmp(str, "strict", 6))
+-		s390_iommu_strict = 1;
+-	return 0;
+-}
+-
+-__setup("s390_iommu=", s390_iommu_setup);
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 19118cfdea1c335..d88dc44d60d88ea 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -77,6 +77,7 @@ config IOMMU_DEBUGFS
+ choice
+ 	prompt "IOMMU dma mode"
+ 	depends on IOMMU_API
++	default IOMMU_DMA_MODE_LAZY if S390_IOMMU
+ 	default IOMMU_DMA_MODE_STRICT
+ 	help
+ 	  IOMMU dma mode, such as: passthrough, lazy, strict.
 -- 
 1.8.3
 
