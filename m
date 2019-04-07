@@ -6,35 +6,35 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FBBC10F0E
-	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8D0C282DD
+	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D1A42218D9
-	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D1A42218D9
+	by mail.kernel.org (Postfix) with ESMTPS id B1824218FE
+	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 12:48:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B1824218FE
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7244DB7D;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A8931B8E;
 	Sun,  7 Apr 2019 12:48:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0DC6AB50
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 37F81B50
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  7 Apr 2019 12:48:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1EA95709
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A58487A6
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  7 Apr 2019 12:48:15 +0000 (UTC)
 Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id CC23CC9FA88CA792357B;
+	by Forcepoint Email with ESMTP id E518EAC886700A348614;
 	Sun,  7 Apr 2019 20:48:10 +0800 (CST)
 Received: from HGHY1l002753561.china.huawei.com (10.177.23.164) by
 	DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server
-	id 14.3.408.0; Sun, 7 Apr 2019 20:48:00 +0800
+	id 14.3.408.0; Sun, 7 Apr 2019 20:48:01 +0800
 From: Zhen Lei <thunder.leizhen@huawei.com>
 To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
@@ -52,10 +52,10 @@ To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
 	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
 	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v4 1/6] iommu: use iommu.dma_mode to replace iommu.passthrough
-	and iommu.strict
-Date: Sun, 7 Apr 2019 20:41:42 +0800
-Message-ID: <20190407124147.13576-2-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 2/6] iommu: keep dma mode build options consistent with
+	cmdline options
+Date: Sun, 7 Apr 2019 20:41:43 +0800
+Message-ID: <20190407124147.13576-3-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.19.2.windows.1
 In-Reply-To: <20190407124147.13576-1-thunder.leizhen@huawei.com>
 References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
@@ -75,196 +75,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190407124142.zDfOwx5_QfgUnsUqz9rJ3flP36s1pD2FCeV4FWGoTRA@z>
 
-Currently the IOMMU dma contains 3 modes: passthrough, lazy, strict. The
-passthrough mode bypass the IOMMU, the lazy mode defer the invalidation
-of hardware TLBs, and the strict mode invalidate IOMMU hardware TLBs
-synchronously. The three modes are mutually exclusive. So people maybe
-confused about iommu.passthrough and iommu.strict, because thay can not
-be coexist. Use iommu.dma_mode to replace them will be better.
+First, add build option IOMMU_DMA_MODE_LAZY, so that we have the
+opportunity to set lazy mode as default at build time. Then put the
+three config options in an choice, make people can only choose one of the
+three at a time, the same to the boot options iommu.dma_mode.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 33 ++++++++---------
- drivers/iommu/Kconfig                           |  4 +--
- drivers/iommu/iommu.c                           | 48 ++++++++++++++-----------
- include/linux/iommu.h                           |  5 +++
- 4 files changed, 50 insertions(+), 40 deletions(-)
+ drivers/iommu/Kconfig | 30 +++++++++++++++++++++++++++---
+ drivers/iommu/iommu.c |  4 +++-
+ 2 files changed, 30 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2b8ee90bb64470d..60409ad23b2ac8b 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1792,24 +1792,21 @@
- 		nobypass	[PPC/POWERNV]
- 			Disable IOMMU bypass, using IOMMU for PCI devices.
- 
--	iommu.strict=	[ARM64] Configure TLB invalidation behaviour
--			Format: { "0" | "1" }
--			0 - Lazy mode.
--			  Request that DMA unmap operations use deferred
--			  invalidation of hardware TLBs, for increased
--			  throughput at the cost of reduced device isolation.
--			  Will fall back to strict mode if not supported by
--			  the relevant IOMMU driver.
--			1 - Strict mode (default).
--			  DMA unmap operations invalidate IOMMU hardware TLBs
--			  synchronously.
--
--	iommu.passthrough=
--			[ARM64] Configure DMA to bypass the IOMMU by default.
--			Format: { "0" | "1" }
--			0 - Use IOMMU translation for DMA.
--			1 - Bypass the IOMMU for DMA.
--			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
-+
-+	iommu.dma_mode= [ARM64] Configure default dma mode. if unset, use the
-+			value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
-+		passthrough
-+			Configure DMA to bypass the IOMMU by default.
-+		lazy
-+			Request that DMA unmap operations use deferred
-+			invalidation of hardware TLBs, for increased
-+			throughput at the cost of reduced device isolation.
-+			Will fall back to strict mode if not supported by
-+			the relevant IOMMU driver.
-+		strict
-+			Default. DMA unmap operations invalidate IOMMU hardware
-+			TLBs synchronously.
-+
- 
- 	io7=		[HW] IO7 for Marvel based alpha systems
- 			See comment before marvel_specify_io7 in
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6f07f3b21816c64..b67fcabd668f7b6 100644
+index b67fcabd668f7b6..19118cfdea1c335 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -79,8 +79,8 @@ config IOMMU_DEFAULT_PASSTHROUGH
+@@ -74,16 +74,40 @@ config IOMMU_DEBUGFS
+ 	  debug/iommu directory, and then populate a subdirectory with
+ 	  entries as required.
+ 
+-config IOMMU_DEFAULT_PASSTHROUGH
+-	bool "IOMMU passthrough by default"
++choice
++	prompt "IOMMU dma mode"
  	depends on IOMMU_API
++	default IOMMU_DMA_MODE_STRICT
++	help
++	  IOMMU dma mode, such as: passthrough, lazy, strict.
++
++config IOMMU_DMA_MODE_PASSTHROUGH
++	bool "Configure DMA to bypass the IOMMU"
          help
  	  Enable passthrough by default, removing the need to pass in
--	  iommu.passthrough=on or iommu=pt through command line. If this
--	  is enabled, you can still disable with iommu.passthrough=off
-+	  iommu.dma_mode=passthrough or iommu=pt through command line. If this
-+	  is enabled, you can still disable with iommu.dma_mode={lazy|strict}
+ 	  iommu.dma_mode=passthrough or iommu=pt through command line. If this
+ 	  is enabled, you can still disable with iommu.dma_mode={lazy|strict}
  	  or iommu=nopt depending on the architecture.
  
- 	  If unsure, say N here.
+-	  If unsure, say N here.
++config IOMMU_DMA_MODE_LAZY
++	bool "IOMMU DMA use lazy mode to flush IOTLB and free IOVA"
++	help
++	  Support lazy mode, where for every IOMMU DMA unmap operation, the
++	  flush operation of IOTLB and the free operation of IOVA are deferred.
++	  They are only guaranteed to be done before the related IOVA will be
++	  reused. Removing the need to pass in kernel parameters through
++	  command line. For example, iommu.dma_mode=lazy on ARM64. If this is
++	  enabled, you can still disable with kernel parameters, such as
++	  iommu.dma_mode=strict depending on the architecture.
++
++config IOMMU_DMA_MODE_STRICT
++	bool "IOMMU DMA use strict mode to flush IOTLB and free IOVA"
++	help
++	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
++	  the free operation of IOVA are guaranteed to be done in the unmap
++	  function.
++
++endchoice
+ 
+ config OF_IOMMU
+        def_bool y
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 109de67d5d727c2..e4d581e6cb8d210 100644
+index e4d581e6cb8d210..b75e23a2ea08da8 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -38,12 +38,13 @@
- 
+@@ -39,8 +39,10 @@
  static struct kset *iommu_group_kset;
  static DEFINE_IDA(iommu_group_ida);
-+
- #ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
--static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
-+#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_PASSTHROUGH
+ 
+-#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
++#if defined(CONFIG_IOMMU_DMA_MODE_PASSTHROUGH)
+ #define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_PASSTHROUGH
++#elif defined(CONFIG_IOMMU_DMA_MODE_LAZY)
++#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_LAZY
  #else
--static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
-+#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_STRICT
+ #define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_STRICT
  #endif
--static bool iommu_dma_strict __read_mostly = true;
-+static int iommu_default_dma_mode __read_mostly = IOMMU_DEFAULT_DMA_MODE;
- 
- struct iommu_callback_data {
- 	const struct iommu_ops *ops;
-@@ -141,25 +142,29 @@ static int __iommu_attach_group(struct iommu_domain *domain,
- static void __iommu_detach_group(struct iommu_domain *domain,
- 				 struct iommu_group *group);
- 
--static int __init iommu_set_def_domain_type(char *str)
-+static int __init iommu_dma_mode_setup(char *str)
- {
--	bool pt;
--	int ret;
-+	if (!str)
-+		goto fail;
- 
--	ret = kstrtobool(str, &pt);
--	if (ret)
--		return ret;
-+	if (!strncmp(str, "passthrough", 11))
-+		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
-+	else if (!strncmp(str, "lazy", 4))
-+		iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
-+	else if (!strncmp(str, "strict", 6))
-+		iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
-+	else
-+		goto fail;
-+
-+	pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
- 
--	iommu_def_domain_type = pt ? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
- 	return 0;
--}
--early_param("iommu.passthrough", iommu_set_def_domain_type);
- 
--static int __init iommu_dma_setup(char *str)
--{
--	return kstrtobool(str, &iommu_dma_strict);
-+fail:
-+	pr_debug("Boot option iommu.dma_mode is incorrect, ignored\n");
-+	return -EINVAL;
- }
--early_param("iommu.strict", iommu_dma_setup);
-+early_param("iommu.dma_mode", iommu_dma_mode_setup);
- 
- static ssize_t iommu_group_attr_show(struct kobject *kobj,
- 				     struct attribute *__attr, char *buf)
-@@ -1102,14 +1107,17 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	 */
- 	if (!group->default_domain) {
- 		struct iommu_domain *dom;
-+		int def_domain_type =
-+			(iommu_default_dma_mode == IOMMU_DMA_MODE_PASSTHROUGH)
-+			? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
- 
--		dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
--		if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
-+		dom = __iommu_domain_alloc(dev->bus, def_domain_type);
-+		if (!dom && def_domain_type != IOMMU_DOMAIN_DMA) {
- 			dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
- 			if (dom) {
- 				dev_warn(dev,
- 					 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
--					 iommu_def_domain_type);
-+					 def_domain_type);
- 			}
- 		}
- 
-@@ -1117,7 +1125,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 		if (!group->domain)
- 			group->domain = dom;
- 
--		if (dom && !iommu_dma_strict) {
-+		if (dom && (iommu_default_dma_mode == IOMMU_DMA_MODE_LAZY)) {
- 			int attr = 1;
- 			iommu_domain_set_attr(dom,
- 					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ffbbc7e39ceeba3..c3f4e3416176496 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -42,6 +42,11 @@
-  */
- #define IOMMU_PRIV	(1 << 5)
- 
-+
-+#define IOMMU_DMA_MODE_STRICT		0x0
-+#define IOMMU_DMA_MODE_LAZY		0x1
-+#define IOMMU_DMA_MODE_PASSTHROUGH	0x2
-+
- struct iommu_ops;
- struct iommu_group;
- struct bus_type;
 -- 
 1.8.3
 
