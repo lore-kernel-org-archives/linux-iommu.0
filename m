@@ -1,15 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: kernel BUG at drivers/iommu/intel-iommu.c:608
-Date: Sun, 7 Apr 2019 17:31:32 -0600
-Message-ID: <20190407173132.24032810@x1.home>
-References: <a523ea10-3dab-fa2c-1ecf-5cf32077565f@acm.org>
-	<20190407150650.060cc508@x1.home>
-	<8d876549-21da-e027-0157-8737b10e26f8@acm.org>
+From: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 0/6] normalize IOMMU dma mode boot options
+Date: Mon, 8 Apr 2019 09:14:42 +0800
+Message-ID: <b20fd8a6-88ce-7d26-8eb0-ed9f095988a6__27558.3994969324$1554686135$gmane$org@huawei.com>
+References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8d876549-21da-e027-0157-8737b10e26f8-HInyCGIudOg@public.gmane.org>
+In-Reply-To: <20190407124147.13576-1-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,61 +18,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bart Van Assche <bvanassche-HInyCGIudOg@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, James Smart <jsmart2021-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin
+	Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg
+	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sebastian Ott <sebott-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Gerald
+	Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Heiko Carstens <heiko.carstens-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 7 Apr 2019 16:02:31 -0700
-Bart Van Assche <bvanassche-HInyCGIudOg@public.gmane.org> wrote:
+Hi Zhen,
 
-> On 4/7/19 2:06 PM, Alex Williamson wrote:
-> > On Sun, 7 Apr 2019 12:10:38 -0700
-> > Bart Van Assche <bvanassche-HInyCGIudOg@public.gmane.org> wrote:  
-> >> If I tell qemu to use PCI pass-through for a PCI adapter and next load the
-> >> lpfc driver for an lpfc adapter that has not been passed through to any VM
-> >> a kernel bug is hit. Do you perhaps know whether it should be possible to
-> >> a load kernel driver in this scenario? If so, do you know what should change
-> >> to avoid that this kernel bug is hit? Should the iommu code be modified or
-> >> should the lpfc code be modified? I'm asking you because I think that you
-> >> introduced the BUG() statement that was hit. See also commit ab8dfe251571
-> >> ("iommu/vt-d: Introduce helper functions to improve code readability"; v3.17).  
-> > 
-> > Do both of these lpfc devices belong to the same IOMMU group?
-> > (/sys/kernel/iommu_groups/)  Thanks,  
+On 2019/4/7 20:41, Zhen Lei wrote:
+> As Robin Murphy's suggestion:
+> "It's also not necessarily obvious to the user how this interacts with
+> IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
+> would be better to refactor the whole lot into a single selection of something
+> like IOMMU_DEFAULT_MODE anyway."
 > 
-> Hi Alex,
+> In this version, I tried to normalize the IOMMU dma mode boot options for all
+> ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
+> lazy(mapping but defer the IOTLB invalidation), strict. But currently each
+> ARCHs defined their private boot options, different with each other. For
+> example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
+> X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
 > 
-> Apparently the two Emulex (lpfc) and the two QLogic ports are in the same IOMMU group:
 > 
-> # lspci | grep -E 'QLogic|Emulex'
-> 01:00.0 Fibre Channel: Emulex Corporation Lancer Gen6: LPe32000 Fibre Channel Host Adapter (rev 01)
-> 01:00.1 Fibre Channel: Emulex Corporation Lancer Gen6: LPe32000 Fibre Channel Host Adapter (rev 01)
-> 02:00.0 Fibre Channel: QLogic Corp. ISP2532-based 8Gb Fibre Channel to PCI Express HBA (rev 02)
-> 02:00.1 Fibre Channel: QLogic Corp. ISP2532-based 8Gb Fibre Channel to PCI Express HBA (rev 02)
-> 
-> # ls -d /sys/kernel/iommu_groups/*/devices/0000:0[12]:00.*
-> /sys/kernel/iommu_groups/1/devices/0000:01:00.0
-> /sys/kernel/iommu_groups/1/devices/0000:01:00.1
-> /sys/kernel/iommu_groups/1/devices/0000:02:00.0
-> /sys/kernel/iommu_groups/1/devices/0000:02:00.1
+> Zhen Lei (6):
+>   iommu: use iommu.dma_mode to replace iommu.passthrough and
+>     iommu.strict
+>   iommu: keep dma mode build options consistent with cmdline options
+>   iommu: add iommu_default_dma_mode_get() helper
+>   s390/pci: use common boot option iommu.dma_mode
+>   powernv/iommu: use common boot option iommu.dma_mode
+>   x86/iommu: use common boot option iommu.dma_mode
 
-It's not possible to do what you want with this configuration.  An IOMMU
-group represents the smallest set of devices that are isolated from
-other sets of devices and is also therefore the minimum granularity we
-can assign devices to userspace (ex. QEMU).  The kernel reacts to
-breaking the isolation of the group with a BUG_ON.  If you managed not
-to hit the BUG_ON here, you'd hit the BUG_ON in vfio code when the loss
-of isolation is detected there. IOMMU groups are formed at the highest
-point in the topology which guarantees isolation.  This can be
-indicated either via native PCIe ACS support or ACS-equivalent quirks
-in the code.  If the root port provides neither of these, then all
-devices downstream are grouped together as well as all peer root ports
-in the same PCI slot and all devices downstream of those.  If a
-multifunction endpoint does not provide ACS or equivalent quirks, the
-functions will be grouped together. Not all endpoint devices or systems
-are designed for minimum possible granularity.  You can learn more
-here[1].  Thanks,
+This will break systems using boot options as now, and I think
+this is unacceptable. If you want to do so, just introduce iommu.dma_mode
+on top of those iommu boot options with dma mode boot options unchanged,
+and iommu.dma_mode is for all archs but compatible with them.
 
-Alex
-
-[1] http://vfio.blogspot.com/2014/08/iommu-groups-inside-and-out.html
+Thanks
+Hanjun
