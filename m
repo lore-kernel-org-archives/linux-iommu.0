@@ -1,104 +1,55 @@
-From: Thomas Hellstrom via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH] Revert "drm/vmwgfx: Improve on IOMMU detection"
-Date: Mon, 8 Apr 2019 20:05:48 +0000
-Message-ID: <88c0cd21b11a385b3b0130715a25673b71b57112.camel@vmware.com>
-References: <20190408105525.5493-1-hch@lst.de>
-	<20190408105525.5493-2-hch@lst.de>
-Reply-To: Thomas Hellstrom <thellstrom-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/3] drm: Add a drm_gem_objects_lookup helper
+Date: Mon, 8 Apr 2019 15:09:06 -0500
+Message-ID: <CAL_Jsq+So-kadir8o8T-YNYkfOYD8vopAS3UWGbSdRVLjH_JGQ@mail.gmail.com>
+References: <20190401074730.12241-1-robh@kernel.org> <20190401074730.12241-3-robh@kernel.org>
+ <CAKMK7uE7-XV3cZxS8GT_EDa7yojOLPQi+LqkF85h_0z_JL6gYw@mail.gmail.com>
+ <155412649586.24691.809508732198367112@skylake-alporthouse-com> <8736n120jw.fsf@anholt.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190408105525.5493-2-hch-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
-Content-ID: <0151265B32F40043B252873E3BC44AB6-HX+pjaQZbrqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Deepak Singh Rawat <drawat-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <8736n120jw.fsf@anholt.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eric Anholt <eric@anholt.net>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>, Daniel Vetter <daniel@ffwll.ch>, Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, David Airlie <airlied@linux.ie>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sean Paul <sean@poorly.run>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Steven Price <steven.price@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2019-04-08 at 12:55 +0200, Christoph Hellwig wrote:
-> This reverts commit 9ddac734aa310c5fbc0ec93602335d2a39092451.
+On Mon, Apr 1, 2019 at 10:43 AM Eric Anholt <eric@anholt.net> wrote:
+>
+> Chris Wilson <chris@chris-wilson.co.uk> writes:
+>
+> > Quoting Daniel Vetter (2019-04-01 14:06:48)
+> >> On Mon, Apr 1, 2019 at 9:47 AM Rob Herring <robh@kernel.org> wrote:
+> >> > +{
+> >> > +       int i, ret = 0;
+> >> > +       struct drm_gem_object *obj;
+> >> > +
+> >> > +       spin_lock(&filp->table_lock);
+> >> > +
+> >> > +       for (i = 0; i < count; i++) {
+> >> > +               /* Check if we currently have a reference on the object */
+> >> > +               obj = idr_find(&filp->object_idr, handle[i]);
+> >> > +               if (!obj) {
+> >> > +                       ret = -ENOENT;
+> >
+> > Unwind previous drm_gem_object_get(), the caller has no idea how many
+> > were processed before the error.
+>
+> I had the same thought, but the pattern we have is that you're loading
+> into a refcounted struct that will free the BOs when you're done,
+> anyway.
 
-IMHO, rather than reverting, I'd like to see the dma API provide a
-function telling us whether streaming DMA operations are coherent or
-not. 
+The real bug here is if allocation of the array fails. The BO array
+may be NULL when the count is not. So this V3D cleanup hunk:
 
-With that we could fix all drivers that would otherwise just blow up if
-somebody happened to enable swiotlb with bounce buffers...
+for (i = 0; i < exec->bo_count; i++)
+  drm_gem_object_put_unlocked(&exec->bo[i]->base.base);
+  kvfree(exec->bo);
 
-/Thomas
+Needs to be wrapped with 'if (exec->bo)'. We have a similar problem
+with fence arrays too.
 
+Thanks to Steven for noticing this copied code in panfrost.
 
-
-> ---
->  drivers/gpu/drm/vmwgfx/vmwgfx_drv.c | 19 ++-----------------
->  1 file changed, 2 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-> b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-> index 6165fe2c4504..9294b76c8084 100644
-> --- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-> +++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-> @@ -26,7 +26,6 @@
->  
-> *********************************************************************
-> *****/
->  #include <linux/module.h>
->  #include <linux/console.h>
-> -#include <linux/dma-mapping.h>
->  
->  #include <drm/drmP.h>
->  #include "vmwgfx_drv.h"
-> @@ -35,6 +34,7 @@
->  #include <drm/ttm/ttm_placement.h>
->  #include <drm/ttm/ttm_bo_driver.h>
->  #include <drm/ttm/ttm_module.h>
-> +#include <linux/intel-iommu.h>
->  
->  #define VMWGFX_DRIVER_DESC "Linux drm driver for VMware graphics
-> devices"
->  #define VMWGFX_CHIP_SVGAII 0
-> @@ -545,21 +545,6 @@ static void vmw_get_initial_size(struct
-> vmw_private *dev_priv)
->  	dev_priv->initial_height = height;
->  }
->  
-> -/**
-> - * vmw_assume_iommu - Figure out whether coherent dma-remapping
-> might be
-> - * taking place.
-> - * @dev: Pointer to the struct drm_device.
-> - *
-> - * Return: true if iommu present, false otherwise.
-> - */
-> -static bool vmw_assume_iommu(struct drm_device *dev)
-> -{
-> -	const struct dma_map_ops *ops = get_dma_ops(dev->dev);
-> -
-> -	return !dma_is_direct(ops) && ops &&
-> -		ops->map_page != dma_direct_map_page;
-> -}
-> -
->  /**
->   * vmw_dma_select_mode - Determine how DMA mappings should be set up
-> for this
->   * system.
-> @@ -583,7 +568,7 @@ static int vmw_dma_select_mode(struct vmw_private
-> *dev_priv)
->  
->  	if (vmw_force_coherent)
->  		dev_priv->map_mode = vmw_dma_alloc_coherent;
-> -	else if (vmw_assume_iommu(dev_priv->dev))
-> +	else if (intel_iommu_enabled)
->  		dev_priv->map_mode = vmw_dma_map_populate;
->  	else if (!vmw_force_iommu)
->  		dev_priv->map_mode = vmw_dma_phys;
+Rob
