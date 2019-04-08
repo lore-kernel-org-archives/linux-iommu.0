@@ -3,41 +3,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0682C282CE
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 12:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5C4C282CE
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 12:21:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 970C42087F
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 12:21:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 970C42087F
+	by mail.kernel.org (Postfix) with ESMTPS id 82E0221473
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 12:21:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 82E0221473
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7BF14EEE;
-	Mon,  8 Apr 2019 12:21:11 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ADD4FEF1;
+	Mon,  8 Apr 2019 12:21:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9CB2BEED
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CDE2DEED
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 12:21:09 +0000 (UTC)
+	Mon,  8 Apr 2019 12:21:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1E131623
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6C58E623
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 12:21:09 +0000 (UTC)
+	Mon,  8 Apr 2019 12:21:13 +0000 (UTC)
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
 	[10.5.11.11])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 7517030642AA;
-	Mon,  8 Apr 2019 12:21:08 +0000 (UTC)
+	by mx1.redhat.com (Postfix) with ESMTPS id CC42188E48;
+	Mon,  8 Apr 2019 12:21:12 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-117-161.ams2.redhat.com [10.36.117.161])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 4843A63BB5;
-	Mon,  8 Apr 2019 12:20:58 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id C7F902B9F1;
+	Mon,  8 Apr 2019 12:21:08 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
 	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
@@ -45,16 +45,16 @@ To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
 	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
 	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com,
 	robin.murphy@arm.com
-Subject: [PATCH v7 13/23] iommu/smmuv3: Implement attach/detach_pasid_table
-Date: Mon,  8 Apr 2019 14:19:01 +0200
-Message-Id: <20190408121911.24103-14-eric.auger@redhat.com>
+Subject: [PATCH v7 14/23] iommu/smmuv3: Implement cache_invalidate
+Date: Mon,  8 Apr 2019 14:19:02 +0200
+Message-Id: <20190408121911.24103-15-eric.auger@redhat.com>
 In-Reply-To: <20190408121911.24103-1-eric.auger@redhat.com>
 References: <20190408121911.24103-1-eric.auger@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.49]);
-	Mon, 08 Apr 2019 12:21:08 +0000 (UTC)
+	(mx1.redhat.com [10.5.110.25]);
+	Mon, 08 Apr 2019 12:21:13 +0000 (UTC)
 Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
 	ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -73,171 +73,106 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190408121901.kNL--wXL-OnhQLzlrs4eqmSsnZwaTtWbtHDCs32gsfQ@z>
+Message-ID: <20190408121902.SBQvhbhJsSOXPKOZi8LfAP9PttgxE65db9YZvzbf_W4@z>
 
-On attach_pasid_table() we program STE S1 related info set
-by the guest into the actual physical STEs. At minimum
-we need to program the context descriptor GPA and compute
-whether the stage1 is translated/bypassed or aborted.
+Implement domain-selective and page-selective IOTLB invalidations.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
-v6 -> v7:
-- check versions and comment the fact we don't need to take
-  into account s1dss and s1fmt
+v6 -> v7
+- check the uapi version
+
 v3 -> v4:
-- adapt to changes in iommu_pasid_table_config
-- different programming convention at s1_cfg/s2_cfg/ste.abort
+- adapt to changes in the uapi
+- add support for leaf parameter
+- do not use arm_smmu_tlb_inv_range_nosync or arm_smmu_tlb_inv_context
+  anymore
 
 v2 -> v3:
-- callback now is named set_pasid_table and struct fields
-  are laid out differently.
+- replace __arm_smmu_tlb_sync by arm_smmu_cmdq_issue_sync
 
 v1 -> v2:
-- invalidate the STE before changing them
-- hold init_mutex
-- handle new fields
+- properly pass the asid
 ---
- drivers/iommu/arm-smmu-v3.c | 121 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 121 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 60 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e22e944ffc05..1486baf53425 100644
+index 1486baf53425..4366921d8318 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2207,6 +2207,125 @@ static void arm_smmu_put_resv_regions(struct device *dev,
- 		kfree(entry);
+@@ -2326,6 +2326,65 @@ static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
+ 	mutex_unlock(&smmu_domain->init_mutex);
  }
  
-+static int arm_smmu_attach_pasid_table(struct iommu_domain *domain,
-+				       struct iommu_pasid_table_config *cfg)
++static int
++arm_smmu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
++			  struct iommu_cache_invalidate_info *inv_info)
 +{
 +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_master_data *entry;
-+	struct arm_smmu_s1_cfg *s1_cfg;
-+	struct arm_smmu_device *smmu;
-+	unsigned long flags;
-+	int ret = -EINVAL;
-+
-+	if (cfg->format != IOMMU_PASID_FORMAT_SMMUV3)
-+		return -EINVAL;
-+
-+	if (cfg->version != PASID_TABLE_CFG_VERSION_1 ||
-+	    cfg->smmuv3.version != PASID_TABLE_SMMUV3_CFG_VERSION_1)
-+		return -EINVAL;
-+
-+	mutex_lock(&smmu_domain->init_mutex);
-+
-+	smmu = smmu_domain->smmu;
-+
-+	if (!smmu)
-+		goto out;
-+
-+	if (!((smmu->features & ARM_SMMU_FEAT_TRANS_S1) &&
-+	      (smmu->features & ARM_SMMU_FEAT_TRANS_S2))) {
-+		dev_info(smmu_domain->smmu->dev,
-+			 "does not implement two stages\n");
-+		goto out;
-+	}
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
 +
 +	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-+		goto out;
-+
-+	switch (cfg->config) {
-+	case IOMMU_PASID_CONFIG_ABORT:
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_for_each_entry(entry, &smmu_domain->devices, list) {
-+			entry->ste.s1_cfg = NULL;
-+			entry->ste.abort = true;
-+			arm_smmu_install_ste_for_dev(entry->dev->iommu_fwspec);
-+		}
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+		ret = 0;
-+		break;
-+	case IOMMU_PASID_CONFIG_BYPASS:
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_for_each_entry(entry, &smmu_domain->devices, list) {
-+			entry->ste.s1_cfg = NULL;
-+			entry->ste.abort = false;
-+			arm_smmu_install_ste_for_dev(entry->dev->iommu_fwspec);
-+		}
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+		ret = 0;
-+		break;
-+	case IOMMU_PASID_CONFIG_TRANSLATE:
-+		/*
-+		 * we currently support a single CD so s1fmt and s1dss
-+		 * fields are also ignored
-+		 */
-+		if (cfg->pasid_bits)
-+			goto out;
-+
-+		s1_cfg = &smmu_domain->s1_cfg;
-+		s1_cfg->cdptr_dma = cfg->base_ptr;
-+
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_for_each_entry(entry, &smmu_domain->devices, list) {
-+			entry->ste.s1_cfg = s1_cfg;
-+			entry->ste.abort = false;
-+			arm_smmu_install_ste_for_dev(entry->dev->iommu_fwspec);
-+		}
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+		ret = 0;
-+		break;
-+	default:
-+		break;
-+	}
-+out:
-+	mutex_unlock(&smmu_domain->init_mutex);
-+	return ret;
-+}
-+
-+static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_master_data *entry;
-+	struct arm_smmu_device *smmu;
-+	unsigned long flags;
-+
-+	mutex_lock(&smmu_domain->init_mutex);
-+
-+	smmu = smmu_domain->smmu;
++		return -EINVAL;
 +
 +	if (!smmu)
-+		return;
++		return -EINVAL;
 +
-+	if (!((smmu->features & ARM_SMMU_FEAT_TRANS_S1) &&
-+	      (smmu->features & ARM_SMMU_FEAT_TRANS_S2))) {
-+		dev_info(smmu_domain->smmu->dev,
-+			 "does not implement two stages\n");
-+		return;
++	if (inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
++		return -EINVAL;
++
++	if (inv_info->cache & IOMMU_CACHE_INV_TYPE_IOTLB) {
++		if (inv_info->granularity == IOMMU_INV_GRANU_PASID) {
++			struct arm_smmu_cmdq_ent cmd = {
++				.opcode = CMDQ_OP_TLBI_NH_ASID,
++				.tlbi = {
++					.vmid = smmu_domain->s2_cfg.vmid,
++					.asid = inv_info->pasid,
++				},
++			};
++
++			arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++			arm_smmu_cmdq_issue_sync(smmu);
++
++		} else if (inv_info->granularity == IOMMU_INV_GRANU_ADDR) {
++			struct iommu_inv_addr_info *info = &inv_info->addr_info;
++			size_t size = info->nb_granules * info->granule_size;
++			bool leaf = info->flags & IOMMU_INV_ADDR_FLAGS_LEAF;
++			struct arm_smmu_cmdq_ent cmd = {
++				.opcode = CMDQ_OP_TLBI_NH_VA,
++				.tlbi = {
++					.addr = info->addr,
++					.vmid = smmu_domain->s2_cfg.vmid,
++					.asid = info->pasid,
++					.leaf = leaf,
++				},
++			};
++
++			do {
++				arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++				cmd.tlbi.addr += info->granule_size;
++			} while (size -= info->granule_size);
++			arm_smmu_cmdq_issue_sync(smmu);
++		} else {
++			return -EINVAL;
++		}
 +	}
-+
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-+		return;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(entry, &smmu_domain->devices, list) {
-+		entry->ste.s1_cfg = NULL;
-+		entry->ste.abort = true;
-+		arm_smmu_install_ste_for_dev(entry->dev->iommu_fwspec);
++	if (inv_info->cache & IOMMU_CACHE_INV_TYPE_PASID ||
++	    inv_info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB) {
++		return -ENOENT;
 +	}
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+
-+	memset(&smmu_domain->s1_cfg, 0, sizeof(struct arm_smmu_s1_cfg));
-+	mutex_unlock(&smmu_domain->init_mutex);
++	return 0;
 +}
 +
  static struct iommu_ops arm_smmu_ops = {
  	.capable		= arm_smmu_capable,
  	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2225,6 +2344,8 @@ static struct iommu_ops arm_smmu_ops = {
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
+@@ -2346,6 +2405,7 @@ static struct iommu_ops arm_smmu_ops = {
  	.put_resv_regions	= arm_smmu_put_resv_regions,
-+	.attach_pasid_table	= arm_smmu_attach_pasid_table,
-+	.detach_pasid_table	= arm_smmu_detach_pasid_table,
+ 	.attach_pasid_table	= arm_smmu_attach_pasid_table,
+ 	.detach_pasid_table	= arm_smmu_detach_pasid_table,
++	.cache_invalidate	= arm_smmu_cache_invalidate,
  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
  };
  
