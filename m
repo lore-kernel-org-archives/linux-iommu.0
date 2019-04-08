@@ -1,11 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu: Fix offsetof() usage
-Date: Mon,  8 Apr 2019 13:41:47 +0100
-Message-ID: <85778a4619eab832eb0b003a68f377aea9d97b22.1554727307.git.robin.murphy@arm.com>
+From: Bart Van Assche <bvanassche-HInyCGIudOg@public.gmane.org>
+Subject: Re: kernel BUG at drivers/iommu/intel-iommu.c:608
+Date: Mon, 08 Apr 2019 08:13:34 -0700
+Message-ID: <1554736414.118779.265.camel@acm.org>
+References: <a523ea10-3dab-fa2c-1ecf-5cf32077565f@acm.org>
+	<20190407150650.060cc508@x1.home>
+	<8d876549-21da-e027-0157-8737b10e26f8@acm.org>
+	<20190407173132.24032810@x1.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7055709260679886307=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190407173132.24032810-hfcDOgR9qeA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,49 +19,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, James Smart <jsmart2021-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-David rightly points out that, although GCC lets us get away with it,
-using offsetof() with a non-constant member designator is not compliant
-with the C standard. I'm responsible for a couple of those misuses, but
-both in circumstances for which we now have a specific helper, so we can
-use that to put things straight.
+--===============7055709260679886307==
+Content-Type: text/plain; charset="UTF-7"
+Content-Transfer-Encoding: 7bit
 
-Suggested-by: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 3 +--
- drivers/iommu/iommu.c    | 2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
+On Sun, 2019-04-07 at 17:31 -0600, Alex Williamson wrote:
++AD4 It's not possible to do what you want with this configuration.  An IOMMU
++AD4 group represents the smallest set of devices that are isolated from
++AD4 other sets of devices and is also therefore the minimum granularity we
++AD4 can assign devices to userspace (ex. QEMU).  The kernel reacts to
++AD4 breaking the isolation of the group with a BUG+AF8-ON.  If you managed not
++AD4 to hit the BUG+AF8-ON here, you'd hit the BUG+AF8-ON in vfio code when the loss
++AD4 of isolation is detected there. IOMMU groups are formed at the highest
++AD4 point in the topology which guarantees isolation.  This can be
++AD4 indicated either via native PCIe ACS support or ACS-equivalent quirks
++AD4 in the code.  If the root port provides neither of these, then all
++AD4 devices downstream are grouped together as well as all peer root ports
++AD4 in the same PCI slot and all devices downstream of those.  If a
++AD4 multifunction endpoint does not provide ACS or equivalent quirks, the
++AD4 functions will be grouped together. Not all endpoint devices or systems
++AD4 are designed for minimum possible granularity.  You can learn more
++AD4 here+AFs-1+AF0.  Thanks,
++AD4 
++AD4 Alex
++AD4 
++AD4 +AFs-1+AF0 http://vfio.blogspot.com/2014/08/iommu-groups-inside-and-out.html
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 74e944bd4a8d..81d449451494 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1484,8 +1484,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	}
- 
- 	ret = -ENOMEM;
--	cfg = kzalloc(offsetof(struct arm_smmu_master_cfg, smendx[i]),
--		      GFP_KERNEL);
-+	cfg = kzalloc(struct_size(cfg, smendx, i), GFP_KERNEL);
- 	if (!cfg)
- 		goto out_free;
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 33a982e33716..ad28919e1452 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2021,7 +2021,7 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- 	if (!fwspec)
- 		return -EINVAL;
- 
--	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
-+	size = struct_size(fwspec, ids, fwspec->num_ids + num_ids);
- 	if (size > sizeof(*fwspec)) {
- 		fwspec = krealloc(fwspec, size, GFP_KERNEL);
- 		if (!fwspec)
--- 
-2.21.0.dirty
+Hi Alex,
+
+Thank you for the detailed reply. The background information you provided
+makes it very clear why the devices I mentioned in my e-mail ended up in the
+same IOMMU group.
+
+But it seems that I was not clear enough in my original e-mail. My concern is
+that a user space action (modprobe) should never trigger a kernel BUG(). Is
+there any way to make sure that the sequence of actions I performed causes
+modprobe to fail with an error code instead of triggering a kernel BUG()?
+
+Thanks,
+
+Bart.
+
+--===============7055709260679886307==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7055709260679886307==--
