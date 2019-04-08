@@ -2,74 +2,64 @@ Return-Path: <SRS0=6I1K=SK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F68C282DE
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 09:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22277C282CE
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 10:55:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10E6020870
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 09:52:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10E6020870
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id E4ECA21841
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 10:55:50 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="rV1rVna9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E4ECA21841
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B4906E93;
-	Mon,  8 Apr 2019 09:52:11 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8AEC9ED2;
+	Mon,  8 Apr 2019 10:55:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AA2F0E92
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7FF40ECD
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 09:52:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 08B36873
+	Mon,  8 Apr 2019 10:55:48 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2AE0B623
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 09:52:09 +0000 (UTC)
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id 633868A0D550D054A9A4;
-	Mon,  8 Apr 2019 17:52:06 +0800 (CST)
-Received: from [127.0.0.1] (10.177.23.164) by DGGEMS405-HUB.china.huawei.com
-	(10.3.19.205) with Microsoft SMTP Server id 14.3.408.0; Mon, 8 Apr 2019
-	17:51:59 +0800
-Subject: Re: [PATCH v4 0/6] normalize IOMMU dma mode boot options
-To: Thomas Gleixner <tglx@linutronix.de>
-References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
-	<b20fd8a6-88ce-7d26-8eb0-ed9f095988a6@huawei.com>
-	<5CAABD03.9000301@huawei.com>
-	<alpine.DEB.2.21.1904080829490.1840@nanos.tec.linutronix.de>
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <5CAB19BC.2040804@huawei.com>
-Date: Mon, 8 Apr 2019 17:51:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
-	Thunderbird/38.5.1
+	Mon,  8 Apr 2019 10:55:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=mE6r+VqKccIgA61PV+7PKvY1trL7VA9MrernA232p18=;
+	b=rV1rVna9S54v5fGpJjqmY4EAf
+	5jiI+nVhJmj9/G//zFcS7693R0+uRMGTEcI7/fcm1vHnyEU7rTHqCtECJgoDpBpswJeQ9q9TQzYLw
+	LurW0fZ5/mIa42t0zTaaWfKJViQohN99LQKqSTJ8A6jVwOTUzm1/0xypHrv4elnFRIa9o9/feq5Xg
+	hQmAcFU6UeIUYJbpZTzvlTTSRaz4eib/c0zl6U+OuL5TXayYKvpaBEypxNm9pgRx2KwT1hds3ZZnM
+	hCjYnIz/3FUvDdOMQlsJiKhkeykXPsLS25OKG91XdghqrqkT75KW5FGTXqgbrYujLcpseVQdPKeyY
+	mF9crDvlA==;
+Received: from clnet-p19-102.ikbnet.co.at ([83.175.77.102] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hDRwI-0004jl-4f; Mon, 08 Apr 2019 10:55:46 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Linus Torvalds <torvalds@linux-foundation.org>,
+	Thomas Hellstrom <thellstrom@vmware.com>
+Subject: revert dma direct internals abuse
+Date: Mon,  8 Apr 2019 12:55:24 +0200
+Message-Id: <20190408105525.5493-1-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1904080829490.1840@nanos.tec.linutronix.de>
-X-Originating-IP: [10.177.23.164]
-X-CFilter-Loop: Reflected
-Cc: linux-ia64 <linux-ia64@vger.kernel.org>,
-	Sebastian Ott <sebott@linux.ibm.com>,
-	linux-doc <linux-doc@vger.kernel.org>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Heiko Carstens <heiko.carstens@de.ibm.com>,
-	Paul Mackerras <paulus@samba.org>, "H . Peter Anvin" <hpa@zytor.com>,
-	linux-s390 <linux-s390@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>, x86 <x86@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>,
-	Will Deacon <will.deacon@arm.com>,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-	Borislav Petkov <bp@alien8.de>, Gerald
-	Schaefer <gerald.schaefer@de.ibm.com>, Tony Luck <tony.luck@intel.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	iommu <iommu@lists.linux-foundation.org>,
-	Martin Schwidefsky <schwidefsky@de.ibm.com>, Robin
-	Murphy <robin.murphy@arm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, Deepak Rawat <drawat@vmware.com>,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -86,44 +76,22 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190408095156.JpRHpZTZHFf6J0l0HTDMpIVBpUaJ2AhWpB4EQvasYNo@z>
+Message-ID: <20190408105524.QgjbmtgWSgnV2wG9v9DfKyDZxbsJ2AeeY7ctjeYF_1E@z>
 
+Hi Linus,
 
+unfortunately it took less than a merge window for the:
 
-On 2019/4/8 14:32, Thomas Gleixner wrote:
-> On Mon, 8 Apr 2019, Leizhen (ThunderTown) wrote:
->>>
->>> This will break systems using boot options as now, and I think
->>> this is unacceptable. If you want to do so, just introduce iommu.dma_mode
->>> on top of those iommu boot options with dma mode boot options unchanged,
->>> and iommu.dma_mode is for all archs but compatible with them.
->>
->> I just changed the boot options name, but keep the function no change. I added
->> all related maintainers/supporters in the "to=" list, maybe we can disuss this.
-> 
-> Changing the name _IS_ the problem. Think about unattended updates.
-> 
->> Should I add some "obsoleted" warnings for old options and keep them for a while?
-> 
-> No, just keep the old options around for backwards compatibilty sake. We
-> just do not add new arch specific options in the future. New options need
-> to use the generic iommu.dma_mode name space.
+/*
+ * All the dma_direct_* declarations are here just for the indirect call bypass,
+ * and must not be used directly drivers!
+ */
 
-OK, thanks for your advise.
+warning in dma-mapping.h to be ignored.  This series reverts the offender
+to keep our API clean.
 
-
-> 
-> Thanks,
-> 
-> 	tglx
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
-
+Thomas: please talk me first about your needs and I'll be happy to figure out
+a proper API for what you want to do.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
