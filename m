@@ -1,85 +1,91 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
- work well when smmu is enabled
-Date: Mon, 8 Apr 2019 10:31:47 +0800
-Message-ID: <5CAAB293.3080600@huawei.com>
-References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
- <20190404153031.GE27558@fuggles.cambridge.arm.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+	iommu_get_resv_regions
+Date: Mon, 8 Apr 2019 10:43:24 +0800
+Message-ID: <ea8b4315-4db2-00c9-66f7-fee6a4cd1a8c@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+	<fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+	<445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+	<cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
+	<6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
+	<8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
+	<ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
+	<9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190404153031.GE27558@fuggles.cambridge.arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-On 2019/4/4 23:30, Will Deacon wrote:
-> Hi Zhen Lei,
-> 
-> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
->> v1 --> v2:
->> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
->> (Report abort to device, no event recorded) to suppress the event messages
->> caused by the unexpected devices.
->> 2. rewrite the patch description.
-> 
-> This issue came up a while back:
-> 
-> https://lore.kernel.org/linux-pci/20180302103032.GB19323@arm.com/
-> 
-> and I'd still prefer to solve it using the disable_bypass logic which we
-> already have. Something along the lines of the diff below?
-
-Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
-SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
-are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
-(2-level Stream Table), we only allocated and initialized the first level tables,
-but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
-will be reported, if an unexpeted device access memory without reinitialized in
-kdump kernel. So my patches allocated a dummy level 2 table(STE table), and make
-all level 1 table entries pointer to it in advance. That means abort all unexpected
-devices memory access base this dummy STE table. When an expected device(need to be
-used in kdump kernel) attached, we will allocate a new level 2 table(STE table)
-accordingly, but keep others still pointer to the dummy STE table.
-
-
-> 
-> We're relying on the DMA API not subsequently requesting a passthrough
-> domain, but it should only do that if you've configured your crashkernel
-> to do so.
-> 
-> Will
-> 
-> --->8
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index d3880010c6cf..91b8f3b2ee25 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->  	/* Clear CR0 and sync (disables SMMU and queue processing) */
->  	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
->  	if (reg & CR0_SMMUEN) {
-> -		if (is_kdump_kernel()) {
-> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-> -			arm_smmu_device_disable(smmu);
-> -			return -EBUSY;
-> -		}
-> -
->  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
-> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
-> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
->  	}
->  
->  	ret = arm_smmu_device_disable(smmu);
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+SGksCgpPbiA0LzYvMTkgMjowMiBBTSwgSmFtZXMgU2V3YXJ0IHdyb3RlOgo+IEhleSBMdSwKPiAK
+PiBNeSBiYWQsIGRpZCBzb21lIGRlYnVnZ2luZyBvbiBteSBlbmQuIFRoZSBpc3N1ZSB3YXMgc3dh
+cHBpbmcgb3V0Cj4gZmluZF9kb21haW4gZm9yIGlvbW11X2dldF9kb21haW5fZm9yX2Rldi4gSXQg
+c2VlbXMgaW4gc29tZSBzaXR1YXRpb25zIHRoZQo+IGRvbWFpbiBpcyBub3QgYXR0YWNoZWQgdG8g
+dGhlIGdyb3VwIGJ1dCB0aGUgZGV2aWNlIGlzIGV4cGVjdGVkIHRvIGhhdmUgdGhlCj4gZG9tYWlu
+IHN0aWxsIHN0b3JlZCBpbiBpdHMgYXJjaGRhdGEuCj4gCj4gSeKAmXZlIGF0dGFjaGVkIHRoZSBm
+aW5hbCBwYXRjaCB3aXRoIGZpbmRfZG9tYWluIHVucmVtb3ZlZCB3aGljaCBzZWVtcyB0bwo+IHdv
+cmsgaW4gbXkgdGVzdGluZy4KClRoaXMgdmVyc2lvbiB3b3JrcyBmb3IgbWUgbm93LgoKPiAKPiBD
+aGVlcnMsCj4gSmFtZXMuCgpCZXN0IHJlZ2FyZHMsCkx1IEJhb2x1Cgo+IAo+IAo+IAo+IAo+IAo+
+PiBPbiA0IEFwciAyMDE5LCBhdCAwNzo0OSwgTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVs
+LmNvbT4gd3JvdGU6Cj4+Cj4+IEhpIEphbWVzLAo+Pgo+PiBJIGRpZCBhIHNhbml0eSB0ZXN0IGZy
+b20gbXkgZW5kLiBUaGUgdGVzdCBtYWNoaW5lIGZhaWxzIHRvIGJvb3QuIEkKPj4gaGF2ZW4ndCBz
+ZWVuIGFueSB2YWx1YWJsZSBrZXJuZWwgbG9nLiBJdCByZXN1bHRzIGluIGEgcHVycGxlIHNjcmVl
+bi4KPj4KPj4gQmVzdCByZWdhcmRzLAo+PiBMdSBCYW9sdQo+Pgo+PiBPbiAzLzI5LzE5IDExOjI2
+IFBNLCBKYW1lcyBTZXdhcnQgd3JvdGU6Cj4+PiBIZXkgTHUsCj4+PiBJ4oCZdmUgYXR0YWNoZWQg
+YSBwcmVsaW1pbmFyeSB2MywgaWYgeW91IGNvdWxkIHRha2UgYSBsb29rIGFuZCBydW4gc29tZSB0
+ZXN0cwo+Pj4gdGhhdCB3b3VsZCBiZSBncmVhdC4KPj4+IFNpbmNlIHYyIGnigJl2ZSBhZGRlZCB5
+b3VyIGRlZmF1bHQgZG9tYWluIHR5cGUgcGF0Y2hlcywgdGhlIG5ldyBkZXZpY2VfZ3JvdXAKPj4+
+IGhhbmRsZXIsIGFuZCBpbmNvcnBvcmF0ZWQgSmFjb2LigJlzIGZlZWRiYWNrLgo+Pj4+IE9uIDI4
+IE1hciAyMDE5LCBhdCAxODozNywgSmFtZXMgU2V3YXJ0IDxqYW1lc3Nld2FydEBhcmlzdGEuY29t
+PiB3cm90ZToKPj4+Pgo+Pj4+IEhleSBMdSwKPj4+Pgo+Pj4+PiBPbiAyNiBNYXIgMjAxOSwgYXQg
+MDE6MjQsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+Pj4+Pgo+
+Pj4+PiBIaSBKYW1lcywKPj4+Pj4KPj4+Pj4gT24gMy8yNS8xOSA4OjU3IFBNLCBKYW1lcyBTZXdh
+cnQgd3JvdGU6Cj4+Pj4+Pj4+IFRoZXJlcyBhbiBpc3N1ZSB0aGF0IGlmIHdlIGNob29zZSB0byBh
+bGxvYyBhIG5ldyByZXN2X3JlZ2lvbiB3aXRoIHR5cGUKPj4+Pj4+Pj4gSU9NTVVfUkVTVl9ESVJF
+Q1QsIHdlIHdpbGwgbmVlZCB0byByZWZhY3RvciBpbnRlbF9pb21tdV9wdXRfcmVzdl9yZWdpb25z
+Cj4+Pj4+Pj4+IHRvIGZyZWUgdGhpcyBlbnRyeSB0eXBlIHdoaWNoIG1lYW5zIHJlZmFjdG9yaW5n
+IHRoZSBybXJyIHJlZ2lvbnMgaW4KPj4+Pj4+Pj4gZ2V0X3Jlc3ZfcmVnaW9ucy4gU2hvdWxkIHRo
+aXMgd29yayBiZSBpbiB0aGlzIHBhdGNoc2V0Pwo+Pj4+Pj4+IERvIHlvdSBtZWFuIHRoZSBybXJy
+IHJlZ2lvbnMgYXJlIG5vdCBhbGxvY2F0ZWQgaW4gZ2V0X3Jlc3ZfcmVnaW9ucywgYnV0Cj4+Pj4+
+Pj4gYXJlIGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnM/IEkgdGhpbmsgd2Ugc2hvdWxkIGZpeCB0
+aGlzIGluIHRoaXMgcGF0Y2gKPj4+Pj4+PiBzZXQgc2luY2UgdGhpcyBtaWdodCBpbXBhY3QgdGhl
+IGRldmljZSBwYXNzdGhyb3VnaCBpZiB3ZSBkb24ndCBkbyBpdC4KPj4+Pj4+IFRoZXnigJlyZSBu
+b3QgYWxsb2NhdGVkIGFuZCBub3QgZnJlZWQgY3VycmVudGx5LCBvbmx5IHR5cGUgSU9NTVVfUkVT
+Vl9NU0kgaXMKPj4+Pj4+IGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnMuIElmIHdlIGFsbG9jYXRl
+IGEgbmV3IHJlc3ZfcmVnaW9uIHdpdGggdHlwZQo+Pj4+Pj4gSU9NTVVfUkVTVl9ESVJFQ1QgZm9y
+IHRoZSBpc2EgcmVnaW9uLCB0aGVuIGl0IHdvbuKAmXQgYmUgZnJlZWQuIElmIHdlIG1vZGlmeQo+
+Pj4+Pj4gcHV0X3Jlc3ZfcmVnaW9ucyB0byBmcmVlIHR5cGUgSU9NTVVfUkVTVl9ESVJFQ1QsIHRo
+ZW4gd2Ugd2lsbCB0cnkgdG8gZnJlZQo+Pj4+Pj4gdGhlIHN0YXRpYyBSTVJSIHJlZ2lvbnMuCj4+
+Pj4+PiBFaXRoZXIgdGhlIElTQSByZWdpb24gaXMgc3RhdGljIGFuZCBub3QgZnJlZWQgYXMgd2l0
+aCBteSBpbXBsZW1lbnRhdGlvbiwKPj4+Pj4+IG9yIHRoZSBSTVJSIHJlZ2lvbnMgYXJlIGNvbnZl
+cnRlZCB0byBiZSBhbGxvY2F0ZWQgb24gZWFjaCBjYWxsIHRvCj4+Pj4+PiBnZXRfcmVzdl9yZWdp
+b25zIGFuZCBmcmVlZCBpbiBwdXRfcmVzdl9yZWdpb25zLgo+Pj4+Pgo+Pj4+PiBCeSB0aGUgd2F5
+LCB0aGVyZSdzIGFub3RoZXIgd2F5IGluIG15IG1pbmQuIExldCdzIGFkZCBhIG5ldyByZWdpb24g
+dHlwZQo+Pj4+PiBmb3IgTFBDIGRldmljZXMsIGUueC4gSU9NTVVfUkVTVl9MUEMsIGFuZCB0aGVu
+IGhhbmRsZSBpdCBpbiB0aGUgc2FtZSB3YXkKPj4+Pj4gYXMgdGhvc2UgTVNJIHJlZ2lvbnMuIEp1
+c3QgRllJLgo+Pj4+Cj4+Pj4gVGhpcyBzb2x1dGlvbiB3b3VsZCByZXF1aXJlIGFkZGluZyBzb21l
+IGV4dHJhIGNvZGUgdG8KPj4+PiBpb21tdV9ncm91cF9jcmVhdGVfZGlyZWN0X21hcHBpbmdzIGFz
+IGN1cnJlbnRseSBvbmx5IHR5cGUKPj4+PiBJT01NVV9SRVNWX0RJUkVDVCBpcyBpZGVudGl0eSBt
+YXBwZWQsIG90aGVyIHR5cGVzIGFyZSBvbmx5IHJlc2VydmVkLgo+Pj4+Cj4+Pj4KPj4+Pj4KPj4+
+Pj4gQmVzdCByZWdhcmRzLAo+Pj4+PiBMdSBCYW9sdQo+Pj4+Cj4+Pj4gQ2hlZXJzLAo+Pj4+IEph
+bWVzLgo+Pj4gQ2hlZXJzLAo+Pj4gSmFtZXMuCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
+eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
+bi9saXN0aW5mby9pb21tdQ==
