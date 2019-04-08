@@ -1,26 +1,14 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
-	iommu_get_resv_regions
-Date: Mon, 8 Apr 2019 10:43:24 +0800
-Message-ID: <ea8b4315-4db2-00c9-66f7-fee6a4cd1a8c@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
-	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
-	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
-	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
-	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
-	<fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
-	<445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
-	<cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
-	<6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
-	<8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
-	<ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
-	<9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 0/6] normalize IOMMU dma mode boot options
+Date: Mon, 8 Apr 2019 11:16:19 +0800
+Message-ID: <5CAABD03.9000301@huawei.com>
+References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
+	<b20fd8a6-88ce-7d26-8eb0-ed9f095988a6@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <b20fd8a6-88ce-7d26-8eb0-ed9f095988a6-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -30,62 +18,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin
+	Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg
+	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sebastian Ott <sebott-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Gerald
+	Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Heiko Carstens <heiko.carstens-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm+QpoMPSDrYp@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiA0LzYvMTkgMjowMiBBTSwgSmFtZXMgU2V3YXJ0IHdyb3RlOgo+IEhleSBMdSwKPiAK
-PiBNeSBiYWQsIGRpZCBzb21lIGRlYnVnZ2luZyBvbiBteSBlbmQuIFRoZSBpc3N1ZSB3YXMgc3dh
-cHBpbmcgb3V0Cj4gZmluZF9kb21haW4gZm9yIGlvbW11X2dldF9kb21haW5fZm9yX2Rldi4gSXQg
-c2VlbXMgaW4gc29tZSBzaXR1YXRpb25zIHRoZQo+IGRvbWFpbiBpcyBub3QgYXR0YWNoZWQgdG8g
-dGhlIGdyb3VwIGJ1dCB0aGUgZGV2aWNlIGlzIGV4cGVjdGVkIHRvIGhhdmUgdGhlCj4gZG9tYWlu
-IHN0aWxsIHN0b3JlZCBpbiBpdHMgYXJjaGRhdGEuCj4gCj4gSeKAmXZlIGF0dGFjaGVkIHRoZSBm
-aW5hbCBwYXRjaCB3aXRoIGZpbmRfZG9tYWluIHVucmVtb3ZlZCB3aGljaCBzZWVtcyB0bwo+IHdv
-cmsgaW4gbXkgdGVzdGluZy4KClRoaXMgdmVyc2lvbiB3b3JrcyBmb3IgbWUgbm93LgoKPiAKPiBD
-aGVlcnMsCj4gSmFtZXMuCgpCZXN0IHJlZ2FyZHMsCkx1IEJhb2x1Cgo+IAo+IAo+IAo+IAo+IAo+
-PiBPbiA0IEFwciAyMDE5LCBhdCAwNzo0OSwgTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVs
-LmNvbT4gd3JvdGU6Cj4+Cj4+IEhpIEphbWVzLAo+Pgo+PiBJIGRpZCBhIHNhbml0eSB0ZXN0IGZy
-b20gbXkgZW5kLiBUaGUgdGVzdCBtYWNoaW5lIGZhaWxzIHRvIGJvb3QuIEkKPj4gaGF2ZW4ndCBz
-ZWVuIGFueSB2YWx1YWJsZSBrZXJuZWwgbG9nLiBJdCByZXN1bHRzIGluIGEgcHVycGxlIHNjcmVl
-bi4KPj4KPj4gQmVzdCByZWdhcmRzLAo+PiBMdSBCYW9sdQo+Pgo+PiBPbiAzLzI5LzE5IDExOjI2
-IFBNLCBKYW1lcyBTZXdhcnQgd3JvdGU6Cj4+PiBIZXkgTHUsCj4+PiBJ4oCZdmUgYXR0YWNoZWQg
-YSBwcmVsaW1pbmFyeSB2MywgaWYgeW91IGNvdWxkIHRha2UgYSBsb29rIGFuZCBydW4gc29tZSB0
-ZXN0cwo+Pj4gdGhhdCB3b3VsZCBiZSBncmVhdC4KPj4+IFNpbmNlIHYyIGnigJl2ZSBhZGRlZCB5
-b3VyIGRlZmF1bHQgZG9tYWluIHR5cGUgcGF0Y2hlcywgdGhlIG5ldyBkZXZpY2VfZ3JvdXAKPj4+
-IGhhbmRsZXIsIGFuZCBpbmNvcnBvcmF0ZWQgSmFjb2LigJlzIGZlZWRiYWNrLgo+Pj4+IE9uIDI4
-IE1hciAyMDE5LCBhdCAxODozNywgSmFtZXMgU2V3YXJ0IDxqYW1lc3Nld2FydEBhcmlzdGEuY29t
-PiB3cm90ZToKPj4+Pgo+Pj4+IEhleSBMdSwKPj4+Pgo+Pj4+PiBPbiAyNiBNYXIgMjAxOSwgYXQg
-MDE6MjQsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+Pj4+Pgo+
-Pj4+PiBIaSBKYW1lcywKPj4+Pj4KPj4+Pj4gT24gMy8yNS8xOSA4OjU3IFBNLCBKYW1lcyBTZXdh
-cnQgd3JvdGU6Cj4+Pj4+Pj4+IFRoZXJlcyBhbiBpc3N1ZSB0aGF0IGlmIHdlIGNob29zZSB0byBh
-bGxvYyBhIG5ldyByZXN2X3JlZ2lvbiB3aXRoIHR5cGUKPj4+Pj4+Pj4gSU9NTVVfUkVTVl9ESVJF
-Q1QsIHdlIHdpbGwgbmVlZCB0byByZWZhY3RvciBpbnRlbF9pb21tdV9wdXRfcmVzdl9yZWdpb25z
-Cj4+Pj4+Pj4+IHRvIGZyZWUgdGhpcyBlbnRyeSB0eXBlIHdoaWNoIG1lYW5zIHJlZmFjdG9yaW5n
-IHRoZSBybXJyIHJlZ2lvbnMgaW4KPj4+Pj4+Pj4gZ2V0X3Jlc3ZfcmVnaW9ucy4gU2hvdWxkIHRo
-aXMgd29yayBiZSBpbiB0aGlzIHBhdGNoc2V0Pwo+Pj4+Pj4+IERvIHlvdSBtZWFuIHRoZSBybXJy
-IHJlZ2lvbnMgYXJlIG5vdCBhbGxvY2F0ZWQgaW4gZ2V0X3Jlc3ZfcmVnaW9ucywgYnV0Cj4+Pj4+
-Pj4gYXJlIGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnM/IEkgdGhpbmsgd2Ugc2hvdWxkIGZpeCB0
-aGlzIGluIHRoaXMgcGF0Y2gKPj4+Pj4+PiBzZXQgc2luY2UgdGhpcyBtaWdodCBpbXBhY3QgdGhl
-IGRldmljZSBwYXNzdGhyb3VnaCBpZiB3ZSBkb24ndCBkbyBpdC4KPj4+Pj4+IFRoZXnigJlyZSBu
-b3QgYWxsb2NhdGVkIGFuZCBub3QgZnJlZWQgY3VycmVudGx5LCBvbmx5IHR5cGUgSU9NTVVfUkVT
-Vl9NU0kgaXMKPj4+Pj4+IGZyZWVkIGluIHB1dF9yZXN2X3JlZ2lvbnMuIElmIHdlIGFsbG9jYXRl
-IGEgbmV3IHJlc3ZfcmVnaW9uIHdpdGggdHlwZQo+Pj4+Pj4gSU9NTVVfUkVTVl9ESVJFQ1QgZm9y
-IHRoZSBpc2EgcmVnaW9uLCB0aGVuIGl0IHdvbuKAmXQgYmUgZnJlZWQuIElmIHdlIG1vZGlmeQo+
-Pj4+Pj4gcHV0X3Jlc3ZfcmVnaW9ucyB0byBmcmVlIHR5cGUgSU9NTVVfUkVTVl9ESVJFQ1QsIHRo
-ZW4gd2Ugd2lsbCB0cnkgdG8gZnJlZQo+Pj4+Pj4gdGhlIHN0YXRpYyBSTVJSIHJlZ2lvbnMuCj4+
-Pj4+PiBFaXRoZXIgdGhlIElTQSByZWdpb24gaXMgc3RhdGljIGFuZCBub3QgZnJlZWQgYXMgd2l0
-aCBteSBpbXBsZW1lbnRhdGlvbiwKPj4+Pj4+IG9yIHRoZSBSTVJSIHJlZ2lvbnMgYXJlIGNvbnZl
-cnRlZCB0byBiZSBhbGxvY2F0ZWQgb24gZWFjaCBjYWxsIHRvCj4+Pj4+PiBnZXRfcmVzdl9yZWdp
-b25zIGFuZCBmcmVlZCBpbiBwdXRfcmVzdl9yZWdpb25zLgo+Pj4+Pgo+Pj4+PiBCeSB0aGUgd2F5
-LCB0aGVyZSdzIGFub3RoZXIgd2F5IGluIG15IG1pbmQuIExldCdzIGFkZCBhIG5ldyByZWdpb24g
-dHlwZQo+Pj4+PiBmb3IgTFBDIGRldmljZXMsIGUueC4gSU9NTVVfUkVTVl9MUEMsIGFuZCB0aGVu
-IGhhbmRsZSBpdCBpbiB0aGUgc2FtZSB3YXkKPj4+Pj4gYXMgdGhvc2UgTVNJIHJlZ2lvbnMuIEp1
-c3QgRllJLgo+Pj4+Cj4+Pj4gVGhpcyBzb2x1dGlvbiB3b3VsZCByZXF1aXJlIGFkZGluZyBzb21l
-IGV4dHJhIGNvZGUgdG8KPj4+PiBpb21tdV9ncm91cF9jcmVhdGVfZGlyZWN0X21hcHBpbmdzIGFz
-IGN1cnJlbnRseSBvbmx5IHR5cGUKPj4+PiBJT01NVV9SRVNWX0RJUkVDVCBpcyBpZGVudGl0eSBt
-YXBwZWQsIG90aGVyIHR5cGVzIGFyZSBvbmx5IHJlc2VydmVkLgo+Pj4+Cj4+Pj4KPj4+Pj4KPj4+
-Pj4gQmVzdCByZWdhcmRzLAo+Pj4+PiBMdSBCYW9sdQo+Pj4+Cj4+Pj4gQ2hlZXJzLAo+Pj4+IEph
-bWVzLgo+Pj4gQ2hlZXJzLAo+Pj4gSmFtZXMuCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+
+
+On 2019/4/8 9:14, Hanjun Guo wrote:
+> Hi Zhen,
+> 
+> On 2019/4/7 20:41, Zhen Lei wrote:
+>> As Robin Murphy's suggestion:
+>> "It's also not necessarily obvious to the user how this interacts with
+>> IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
+>> would be better to refactor the whole lot into a single selection of something
+>> like IOMMU_DEFAULT_MODE anyway."
+>>
+>> In this version, I tried to normalize the IOMMU dma mode boot options for all
+>> ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
+>> lazy(mapping but defer the IOTLB invalidation), strict. But currently each
+>> ARCHs defined their private boot options, different with each other. For
+>> example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
+>> X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
+>>
+>>
+>> Zhen Lei (6):
+>>   iommu: use iommu.dma_mode to replace iommu.passthrough and
+>>     iommu.strict
+>>   iommu: keep dma mode build options consistent with cmdline options
+>>   iommu: add iommu_default_dma_mode_get() helper
+>>   s390/pci: use common boot option iommu.dma_mode
+>>   powernv/iommu: use common boot option iommu.dma_mode
+>>   x86/iommu: use common boot option iommu.dma_mode
+> 
+> This will break systems using boot options as now, and I think
+> this is unacceptable. If you want to do so, just introduce iommu.dma_mode
+> on top of those iommu boot options with dma mode boot options unchanged,
+> and iommu.dma_mode is for all archs but compatible with them.
+
+I just changed the boot options name, but keep the function no change. I added
+all related maintainers/supporters in the "to=" list, maybe we can disuss this.
+Should I add some "obsoleted" warnings for old options and keep them for a while?
+But I think this kind of thing is best done in one go.
+
+> 
+> Thanks
+> Hanjun
+> 
+> 
+> .
+> 
+
+-- 
+Thanks!
+BestRegards
