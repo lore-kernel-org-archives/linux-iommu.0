@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CE3C10F13
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 23:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52669C282CE
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 23:58:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5EA1820863
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 23:58:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EA1820863
+	by mail.kernel.org (Postfix) with ESMTPS id 2D61620863
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 23:58:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D61620863
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A4772DA6;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D5BC2DA8;
 	Mon,  8 Apr 2019 23:57:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51DE3D36
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6AE3DD49
 	for <iommu@lists.linux-foundation.org>;
 	Mon,  8 Apr 2019 23:57:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B7665F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3554176D
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 23:57:10 +0000 (UTC)
+	Mon,  8 Apr 2019 23:57:09 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
 	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
 	08 Apr 2019 16:57:07 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,327,1549958400"; d="scan'208";a="149169971"
+X-IronPort-AV: E=Sophos;i="5.60,327,1549958400"; d="scan'208";a="149169949"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
 	by orsmga002.jf.intel.com with ESMTP; 08 Apr 2019 16:57:07 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -43,11 +43,9 @@ To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 11/18] iommu/vt-d: Replace Intel specific PASID allocator with
-	IOASID
-Date: Mon,  8 Apr 2019 16:59:26 -0700
-Message-Id:
- <1554767973-30125-12-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 06/18] iommu: introduce device fault report API
+Date: Mon,  8 Apr 2019 16:59:21 -0700
+Message-Id: <1554767973-30125-7-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -70,194 +68,324 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190408235926.dA-PrZzk2FN0DlnJ6UiP-P-BdJlzPyxXfmHflwu0Ywo@z>
+Message-ID: <20190408235921.tu4DA-mP-r-o-rJ5KBYyoez9uAOlQ8-87Rz5S1xPWoY@z>
 
-Make use of generic IOASID code to manage PASID allocation,
-free, and lookup.
+Traditionally, device specific faults are detected and handled within
+their own device drivers. When IOMMU is enabled, faults such as DMA
+related transactions are detected by IOMMU. There is no generic
+reporting mechanism to report faults back to the in-kernel device
+driver or the guest OS in case of assigned devices.
+
+Faults detected by IOMMU is based on the transaction's source ID which
+can be reported at per device basis, regardless of the device type is a
+PCI device or not.
+
+The fault types include recoverable (e.g. page request) and
+unrecoverable faults(e.g. access error). In most cases, faults can be
+handled by IOMMU drivers internally. The primary use cases are as
+follows:
+1. page request fault originated from an SVM capable device that is
+assigned to guest via vIOMMU. In this case, the first level page tables
+are owned by the guest. Page request must be propagated to the guest to
+let guest OS fault in the pages then send page response. In this
+mechanism, the direct receiver of IOMMU fault notification is VFIO,
+which can relay notification events to QEMU or other user space
+software.
+
+2. faults need more subtle handling by device drivers. Other than
+simply invoke reset function, there are needs to let device driver
+handle the fault with a smaller impact.
+
+This patchset is intended to create a generic fault report API such
+that it can scale as follows:
+- all IOMMU types
+- PCI and non-PCI devices
+- recoverable and unrecoverable faults
+- VFIO and other other in kernel users
+- DMA & IRQ remapping (TBD)
+The original idea was brought up by David Woodhouse and discussions
+summarized at https://lwn.net/Articles/608914/.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+[adapt to new iommu_fault fault field, test fault_param on
+ iommu_unregister_device_fault_handler]
 ---
- drivers/iommu/Kconfig       |  1 +
- drivers/iommu/intel-pasid.c | 36 ------------------------------------
- drivers/iommu/intel-svm.c   | 41 ++++++++++++++++++++++++-----------------
- 3 files changed, 25 insertions(+), 53 deletions(-)
+ drivers/iommu/iommu.c | 154 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/iommu.h |  36 +++++++++++-
+ 2 files changed, 188 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6f07f3b..7f92009 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -204,6 +204,7 @@ config INTEL_IOMMU_SVM
- 	bool "Support for Shared Virtual Memory with Intel IOMMU"
- 	depends on INTEL_IOMMU && X86
- 	select PCI_PASID
-+	select IOASID
- 	select MMU_NOTIFIER
- 	help
- 	  Shared Virtual Memory (SVM) provides a facility for devices
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index a17a522..0fda626 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -26,42 +26,6 @@
-  */
- static DEFINE_SPINLOCK(pasid_lock);
- u32 intel_pasid_max_id = PASID_MAX;
--static DEFINE_IDR(pasid_idr);
--
--int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp)
--{
--	int ret, min, max;
--
--	min = max_t(int, start, PASID_MIN);
--	max = min_t(int, end, intel_pasid_max_id);
--
--	WARN_ON(in_interrupt());
--	idr_preload(gfp);
--	spin_lock(&pasid_lock);
--	ret = idr_alloc(&pasid_idr, ptr, min, max, GFP_ATOMIC);
--	spin_unlock(&pasid_lock);
--	idr_preload_end();
--
--	return ret;
--}
--
--void intel_pasid_free_id(int pasid)
--{
--	spin_lock(&pasid_lock);
--	idr_remove(&pasid_idr, pasid);
--	spin_unlock(&pasid_lock);
--}
--
--void *intel_pasid_lookup_id(int pasid)
--{
--	void *p;
--
--	spin_lock(&pasid_lock);
--	p = idr_find(&pasid_idr, pasid);
--	spin_unlock(&pasid_lock);
--
--	return p;
--}
- 
- int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
- {
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 3a4b09a..595ea0a 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -25,6 +25,7 @@
- #include <linux/dmar.h>
- #include <linux/interrupt.h>
- #include <linux/mm_types.h>
-+#include <linux/ioasid.h>
- #include <asm/page.h>
- 
- #include "intel-pasid.h"
-@@ -211,7 +212,9 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(sdev, &svm->devs, list) {
- 		intel_pasid_tear_down_entry(svm->iommu, sdev->dev, svm->pasid);
--		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
-+		/* for emulated iommu, PASID cache invalidation implies IOTLB/DTLB */
-+		if (!cap_caching_mode(svm->iommu->cap))
-+			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 109de67..ac7e6b3 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -648,6 +648,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 		goto err_free_name;
  	}
- 	rcu_read_unlock();
  
-@@ -315,16 +318,15 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (pasid_max > intel_pasid_max_id)
- 			pasid_max = intel_pasid_max_id;
++	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
++	if (!dev->iommu_param) {
++		ret = -ENOMEM;
++		goto err_free_name;
++	}
++	mutex_init(&dev->iommu_param->lock);
++
+ 	kobject_get(group->devices_kobj);
  
--		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
--		ret = intel_pasid_alloc_id(svm,
--					   !!cap_caching_mode(iommu->cap),
--					   pasid_max - 1, GFP_KERNEL);
--		if (ret < 0) {
-+		/* Do not use PASID 0, reserved for RID to PASID */
-+		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
-+					pasid_max - 1, svm);
-+		if (svm->pasid == INVALID_IOASID) {
- 			kfree(svm);
- 			kfree(sdev);
-+			ret = ENOSPC;
- 			goto out;
- 		}
--		svm->pasid = ret;
- 		svm->notifier.ops = &intel_mmuops;
- 		svm->mm = mm;
- 		svm->flags = flags;
-@@ -334,7 +336,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (mm) {
- 			ret = mmu_notifier_register(&svm->notifier, mm);
- 			if (ret) {
--				intel_pasid_free_id(svm->pasid);
-+				ioasid_free(svm->pasid);
- 				kfree(svm);
- 				kfree(sdev);
- 				goto out;
-@@ -350,7 +352,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (ret) {
- 			if (mm)
- 				mmu_notifier_unregister(&svm->notifier, mm);
--			intel_pasid_free_id(svm->pasid);
-+			ioasid_free(svm->pasid);
- 			kfree(svm);
- 			kfree(sdev);
- 			goto out;
-@@ -383,7 +385,12 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
+ 	dev->iommu_group = group;
+@@ -678,6 +685,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 	mutex_unlock(&group->mutex);
+ 	dev->iommu_group = NULL;
+ 	kobject_put(group->devices_kobj);
++	kfree(dev->iommu_param);
+ err_free_name:
+ 	kfree(device->name);
+ err_remove_link:
+@@ -724,7 +732,7 @@ void iommu_group_remove_device(struct device *dev)
+ 	sysfs_remove_link(&dev->kobj, "iommu_group");
  
--	svm = intel_pasid_lookup_id(pasid);
-+	svm = ioasid_find(NULL, pasid, NULL);
-+	if (IS_ERR(svm)) {
-+		ret = PTR_ERR(svm);
-+		goto out;
+ 	trace_remove_device_from_group(group->id, dev);
+-
++	kfree(dev->iommu_param);
+ 	kfree(device->name);
+ 	kfree(device);
+ 	dev->iommu_group = NULL;
+@@ -859,6 +867,150 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
+ EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+ 
+ /**
++ * iommu_register_device_fault_handler() - Register a device fault handler
++ * @dev: the device
++ * @handler: the fault handler
++ * @data: private data passed as argument to the handler
++ *
++ * When an IOMMU fault event is received, call this handler with the fault event
++ * and data as argument. The handler should return 0 on success. If the fault is
++ * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also complete
++ * the fault by calling iommu_page_response() with one of the following
++ * response code:
++ * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
++ * - IOMMU_PAGE_RESP_INVALID: terminate the fault
++ * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
++ *   page faults if possible.
++ *
++ * Return 0 if the fault handler was installed successfully, or an error.
++ */
++int iommu_register_device_fault_handler(struct device *dev,
++					iommu_dev_fault_handler_t handler,
++					void *data)
++{
++	struct iommu_param *param = dev->iommu_param;
++	int ret = 0;
++
++	/*
++	 * Device iommu_param should have been allocated when device is
++	 * added to its iommu_group.
++	 */
++	if (!param)
++		return -EINVAL;
++
++	mutex_lock(&param->lock);
++	/* Only allow one fault handler registered for each device */
++	if (param->fault_param) {
++		ret = -EBUSY;
++		goto done_unlock;
 +	}
 +
- 	if (!svm)
- 		goto out;
- 
-@@ -405,7 +412,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 				kfree_rcu(sdev, rcu);
- 
- 				if (list_empty(&svm->devs)) {
--					intel_pasid_free_id(svm->pasid);
-+					ioasid_free(svm->pasid);
- 					if (svm->mm)
- 						mmu_notifier_unregister(&svm->notifier, svm->mm);
- 
-@@ -440,10 +447,11 @@ int intel_svm_is_pasid_valid(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
- 
--	svm = intel_pasid_lookup_id(pasid);
--	if (!svm)
-+	svm = ioasid_find(NULL, pasid, NULL);
-+	if (IS_ERR(svm)) {
-+		ret = PTR_ERR(svm);
- 		goto out;
--
++	get_device(dev);
++	param->fault_param =
++		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
++	if (!param->fault_param) {
++		put_device(dev);
++		ret = -ENOMEM;
++		goto done_unlock;
 +	}
- 	/* init_mm is used in this case */
- 	if (!svm->mm)
- 		ret = 1;
-@@ -550,13 +558,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
++	mutex_init(&param->fault_param->lock);
++	param->fault_param->handler = handler;
++	param->fault_param->data = data;
++	INIT_LIST_HEAD(&param->fault_param->faults);
++
++done_unlock:
++	mutex_unlock(&param->lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
++
++/**
++ * iommu_unregister_device_fault_handler() - Unregister the device fault handler
++ * @dev: the device
++ *
++ * Remove the device fault handler installed with
++ * iommu_register_device_fault_handler().
++ *
++ * Return 0 on success, or an error.
++ */
++int iommu_unregister_device_fault_handler(struct device *dev)
++{
++	struct iommu_param *param = dev->iommu_param;
++	int ret = 0;
++
++	if (!param)
++		return -EINVAL;
++
++	mutex_lock(&param->lock);
++
++	if (!param->fault_param)
++		goto unlock;
++
++	/* we cannot unregister handler if there are pending faults */
++	if (!list_empty(&param->fault_param->faults)) {
++		ret = -EBUSY;
++		goto unlock;
++	}
++
++	kfree(param->fault_param);
++	param->fault_param = NULL;
++	put_device(dev);
++unlock:
++	mutex_unlock(&param->lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
++
++
++/**
++ * iommu_report_device_fault() - Report fault event to device
++ * @dev: the device
++ * @evt: fault event data
++ *
++ * Called by IOMMU model specific drivers when fault is detected, typically
++ * in a threaded IRQ handler.
++ *
++ * Return 0 on success, or an error.
++ */
++int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
++{
++	int ret = 0;
++	struct iommu_fault_event *evt_pending;
++	struct iommu_fault_param *fparam;
++
++	/* iommu_param is allocated when device is added to group */
++	if (!dev->iommu_param | !evt)
++		return -EINVAL;
++	/* we only report device fault if there is a handler registered */
++	mutex_lock(&dev->iommu_param->lock);
++	if (!dev->iommu_param->fault_param ||
++		!dev->iommu_param->fault_param->handler) {
++		ret = -EINVAL;
++		goto done_unlock;
++	}
++	fparam = dev->iommu_param->fault_param;
++	if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
++	    evt->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE) {
++		evt_pending = kmemdup(evt, sizeof(struct iommu_fault_event),
++				GFP_KERNEL);
++		if (!evt_pending) {
++			ret = -ENOMEM;
++			goto done_unlock;
++		}
++		mutex_lock(&fparam->lock);
++		list_add_tail(&evt_pending->list, &fparam->faults);
++		mutex_unlock(&fparam->lock);
++	}
++	ret = fparam->handler(evt, fparam->data);
++done_unlock:
++	mutex_unlock(&dev->iommu_param->lock);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_report_device_fault);
++
++/**
+  * iommu_group_id - Return ID for a group
+  * @group: the group to ID
+  *
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c8108e7..f12f251 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -260,11 +260,13 @@ struct iommu_device {
+  * - DMA remapping and IRQ remapping faults
+  *
+  * @fault: fault descriptor
++ * @list pending fault event list, used for tracking responses
+  * @iommu_private: used by the IOMMU driver for storing fault-specific
+  *                 data. Users should not modify this field before
+  *                 sending the fault response.
+  */
+ struct iommu_fault_event {
++	struct list_head list;
+ 	struct iommu_fault fault;
+ 	u64 iommu_private;
+ };
+@@ -273,10 +275,13 @@ struct iommu_fault_event {
+  * struct iommu_fault_param - per-device IOMMU fault data
+  * @dev_fault_handler: Callback function to handle IOMMU faults at device level
+  * @data: handler private data
+- *
++ * @faults: holds the pending faults which needs response, e.g. page response.
++ * @lock: protect pending PRQ event list
+  */
+ struct iommu_fault_param {
+ 	iommu_dev_fault_handler_t handler;
++	struct list_head faults;
++	struct mutex lock;
+ 	void *data;
+ };
  
- 		if (!svm || svm->pasid != req->pasid) {
- 			rcu_read_lock();
--			svm = intel_pasid_lookup_id(req->pasid);
-+			svm = ioasid_find(NULL, req->pasid, NULL);
- 			/* It *can't* go away, because the driver is not permitted
- 			 * to unbind the mm while any page faults are outstanding.
- 			 * So we only need RCU to protect the internal idr code. */
- 			rcu_read_unlock();
--
--			if (!svm) {
-+			if (IS_ERR(svm) || !svm) {
- 				pr_err("%s: Page request for invalid PASID %d: %08llx %08llx\n",
- 				       iommu->name, req->pasid, ((unsigned long long *)req)[0],
- 				       ((unsigned long long *)req)[1]);
+@@ -290,6 +295,7 @@ struct iommu_fault_param {
+  *	struct iommu_fwspec	*iommu_fwspec;
+  */
+ struct iommu_param {
++	struct mutex lock;
+ 	struct iommu_fault_param *fault_param;
+ };
+ 
+@@ -382,6 +388,15 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
+ 					 struct notifier_block *nb);
+ extern int iommu_group_unregister_notifier(struct iommu_group *group,
+ 					   struct notifier_block *nb);
++extern int iommu_register_device_fault_handler(struct device *dev,
++					iommu_dev_fault_handler_t handler,
++					void *data);
++
++extern int iommu_unregister_device_fault_handler(struct device *dev);
++
++extern int iommu_report_device_fault(struct device *dev,
++				     struct iommu_fault_event *evt);
++
+ extern int iommu_group_id(struct iommu_group *group);
+ extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+@@ -662,6 +677,25 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
+ 	return 0;
+ }
+ 
++static inline
++int iommu_register_device_fault_handler(struct device *dev,
++					iommu_dev_fault_handler_t handler,
++					void *data)
++{
++	return -ENODEV;
++}
++
++static inline int iommu_unregister_device_fault_handler(struct device *dev)
++{
++	return 0;
++}
++
++static inline
++int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
++{
++	return -ENODEV;
++}
++
+ static inline int iommu_group_id(struct iommu_group *group)
+ {
+ 	return -ENODEV;
 -- 
 2.7.4
 
