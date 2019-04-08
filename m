@@ -1,46 +1,184 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH v4 0/6] normalize IOMMU dma mode boot options
-Date: Mon, 8 Apr 2019 08:32:50 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1904080829490.1840@nanos.tec.linutronix.de>
-References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
-	<b20fd8a6-88ce-7d26-8eb0-ed9f095988a6@huawei.com>
-	<5CAABD03.9000301@huawei.com>
+From: Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v3 1/3] iommu: io-pgtable: Add ARM Mali midgard MMU page
+ table format
+Date: Mon, 8 Apr 2019 09:56:05 +0100
+Message-ID: <e826958c-59e7-8397-ab14-cf55a5387a8f@arm.com>
+References: <20190401074730.12241-1-robh@kernel.org>
+ <20190401074730.12241-2-robh@kernel.org>
+ <4ab58561-17e8-364c-a315-e55955ffdd49@arm.com>
+ <a5a11a56-46dc-ab44-564b-d2216f32451e@arm.com>
+ <0c5f474e-6dd4-8ba5-8c2b-52a99e9b1ca5@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5CAABD03.9000301-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: linux-ia64 <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sebastian Ott <sebott-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, linux-doc <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Heiko Carstens <heiko.carstens-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-s390 <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86 <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs+XwC/5MpYmKg@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <0c5f474e-6dd4-8ba5-8c2b-52a99e9b1ca5@arm.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org
+Cc: Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 8 Apr 2019, Leizhen (ThunderTown) wrote:
-> > 
-> > This will break systems using boot options as now, and I think
-> > this is unacceptable. If you want to do so, just introduce iommu.dma_mode
-> > on top of those iommu boot options with dma mode boot options unchanged,
-> > and iommu.dma_mode is for all archs but compatible with them.
+On 05/04/2019 11:36, Steven Price wrote:
+> On 05/04/2019 10:51, Robin Murphy wrote:
+>> Hi Steve,
+>>
+>> On 05/04/2019 10:42, Steven Price wrote:
+>>> First let me say congratulations to everyone working on Panfrost - it's
+>>> an impressive achievement!
+>>>
+>>> Full disclosure: I used to work on the Mali kbase driver. And have been
+>>> playing around with running the Mali user-space blob with the Panfrost
+>>> kernel driver.
+>>>
+>>> On 01/04/2019 08:47, Rob Herring wrote:
+>>>> ARM Mali midgard GPU is similar to standard 64-bit stage 1 page
+>>>> tables, but
+>>>> have a few differences. Add a new format type to represent the
+>>>> format. The
+>>>> input address size is 48-bits and the output address size is 40-bits
+>>>> (and
+>>>> possibly less?). Note that the later bifrost GPUs follow the standard
+>>>> 64-bit stage 1 format.
+>>>>
+>>>> The differences in the format compared to 64-bit stage 1 format are:
+>>>>
+>>>> The 3rd level page entry bits are 0x1 instead of 0x3 for page entries.
+>>>>
+>>>> The access flags are not read-only and unprivileged, but read and write.
+>>>> This is similar to stage 2 entries, but the memory attributes field
+>>>> matches
+>>>> stage 1 being an index.
+>>>>
+>>>> The nG bit is not set by the vendor driver. This one didn't seem to
+>>>> matter,
+>>>> but we'll keep it aligned to the vendor driver.
+>>>
+>>> The nG bit should be ignored by the hardware.
+>>>
+>>> The MMU in Midgard/Bifrost has a quirk similar to
+>>> IO_PGTABLE_QUIRK_TLBI_ON_MAP - you must perform a cache flush for the
+>>> GPU to (reliably) pick up new page table mappings.
+>>>
+>>> You may not have seen this because of the use of the JS_CONFIG_START_MMU
+>>> bit - this effectively performs a cache flush and TLB invalidate before
+>>> starting a job, however when using a GPU like T760 (e.g. on the Firefly
+>>> RK3288) this bit isn't being set. In my testing on the Firefly board I
+>>> saw GPU page faults because of this.
+>>>
+>>> There's two options for fixing this - a patch like below adds the quirk
+>>> mode to the MMU. Or alternatively always set JS_CONFIG_START_MMU on
+>>> jobs. In my testing both options solve the page faults.
+>>>
+>>> To be honest I don't know the reasoning behind kbase making the
+>>> JS_CONFIG_START_MMU bit conditional - I'm not aware of any reason why it
+>>> can't always be set. My guess is performance, but I haven't benchmarked
+>>> the difference between this and JS_CONFIG_START_MMU.
+>>>
+>>> -----8<----------
+>>>  From e3f75c7f04e43238dfc579029b8c11fb6b4a0c18 Mon Sep 17 00:00:00 2001
+>>> From: Steven Price <steven.price@arm.com>
+>>> Date: Thu, 4 Apr 2019 15:53:17 +0100
+>>> Subject: [PATCH] iommu: io-pgtable: IO_PGTABLE_QUIRK_TLBI_ON_MAP for LPAE
+>>>
+>>> Midgard/Bifrost GPUs require a TLB invalidation when mapping pages,
+>>> implement IO_PGTABLE_QUIRK_TLBI_ON_MAP for LPAE iommu page table
+>>> formats and add the quirk bit to Panfrost.
+>>>
+>>> Signed-off-by: Steven Price <steven.price@arm.com>
+>>> ---
+>>>   drivers/gpu/drm/panfrost/panfrost_mmu.c |  1 +
+>>>   drivers/iommu/io-pgtable-arm.c          | 11 +++++++++--
+>>>   2 files changed, 10 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>>> b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>>> index f3aad8591cf4..094312074d66 100644
+>>> --- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>>> +++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+>>> @@ -343,6 +343,7 @@ int panfrost_mmu_init(struct panfrost_device *pfdev)
+>>>       mmu_write(pfdev, MMU_INT_MASK, ~0);
+>>>
+>>>       pfdev->mmu->pgtbl_cfg = (struct io_pgtable_cfg) {
+>>> +        .quirks        = IO_PGTABLE_QUIRK_TLBI_ON_MAP,
+>>>           .pgsize_bitmap    = SZ_4K, // | SZ_2M | SZ_1G),
+>>>           .ias        = 48,
+>>>           .oas        = 40,    /* Should come from dma mask? */
+>>> diff --git a/drivers/iommu/io-pgtable-arm.c
+>>> b/drivers/iommu/io-pgtable-arm.c
+>>> index 84beea1f47a7..45fd7bbdf9aa 100644
+>>> --- a/drivers/iommu/io-pgtable-arm.c
+>>> +++ b/drivers/iommu/io-pgtable-arm.c
+>>> @@ -505,7 +505,13 @@ static int arm_lpae_map(struct io_pgtable_ops *ops,
+>>> unsigned long iova,
+>>>        * Synchronise all PTE updates for the new mapping before there's
+>>>        * a chance for anything to kick off a table walk for the new iova.
+>>>        */
+>>> -    wmb();
+>>> +    if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
+>>> +        io_pgtable_tlb_add_flush(&data->iop, iova, size,
+>>> +                     ARM_LPAE_BLOCK_SIZE(2, data), false);
+>>
+>> For correctness (in case this ever ends up used for something with
+>> VMSA-like invalidation behaviour), the granule would need to be "size"
+>> here, rather than effectively hard-coded.
 > 
-> I just changed the boot options name, but keep the function no change. I added
-> all related maintainers/supporters in the "to=" list, maybe we can disuss this.
+> Ah yes - I did rather just copy/paste this from io-pgtable-arm-v7s with
+> minor fix-ups.
+> 
+>> However, since Mali's invalidations appear to operate on arbitrary
+>> ranges, it would probably be a lot more efficient for the driver to
+>> handle this case directly, by just issuing a single big invalidation
+>> after the for_each_sg() loop in panfrost_mmu_map().
+> 
+> Yes - that would probably be a better option. Although I think
+> personally I'd lean towards just using JS_CONFIG_START_MMU for most
+> cases. The only thing that won't handle is modifying the MMU while the
+> job is running (e.g. faulting in pages). But that can be handled
+> internally in Panfrost by invalidating the exact region which is being
+> populated.
 
-Changing the name _IS_ the problem. Think about unattended updates.
+I asked around. Apparently there are some interesting issues with
+START_MMU on some hardware revisions. So best to follow mali_kbase here
+and only use START_MMU on those hardware revisions that mali_kbase does
+(what Panfrost is already doing). Which means we'll definitely need this
+quirk in some form.
 
-> Should I add some "obsoleted" warnings for old options and keep them for a while?
+Steve
 
-No, just keep the old options around for backwards compatibilty sake. We
-just do not add new arch specific options in the future. New options need
-to use the generic iommu.dma_mode name space.
-
-Thanks,
-
-	tglx
+> 
+> Steve
+> 
+>> Robin.
+>>
+>>> +        io_pgtable_tlb_sync(&data->iop);
+>>> +    } else {
+>>> +        wmb();
+>>> +    }
+>>>
+>>>       return ret;
+>>>   }
+>>> @@ -800,7 +806,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg
+>>> *cfg, void *cookie)
+>>>       struct arm_lpae_io_pgtable *data;
+>>>
+>>>       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+>>> IO_PGTABLE_QUIRK_NO_DMA |
+>>> -                IO_PGTABLE_QUIRK_NON_STRICT))
+>>> +                IO_PGTABLE_QUIRK_NON_STRICT |
+>>> +                IO_PGTABLE_QUIRK_TLBI_ON_MAP))
+>>>           return NULL;
+>>>
+>>>       data = arm_lpae_alloc_pgtable(cfg);
+>>>
+>> _______________________________________________
+>> dri-devel mailing list
+>> dri-devel@lists.freedesktop.org
+>> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
