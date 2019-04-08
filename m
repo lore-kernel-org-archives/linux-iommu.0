@@ -2,67 +2,58 @@ Return-Path: <SRS0=6I1K=SK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DC7C282DD
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 01:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C77C282DE
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 02:31:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A732320857
-	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 01:15:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A732320857
+	by mail.kernel.org (Postfix) with ESMTPS id 5A01720857
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 02:31:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A01720857
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 532A7AC8;
-	Mon,  8 Apr 2019 01:15:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 14FD6AF3;
+	Mon,  8 Apr 2019 02:31:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D9CAA7F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 658C5AD1
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 01:15:25 +0000 (UTC)
+	Mon,  8 Apr 2019 02:31:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C7196623
+Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AABEB623
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Apr 2019 01:15:24 +0000 (UTC)
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id 9C74596D1F36357E5063;
-	Mon,  8 Apr 2019 09:15:20 +0800 (CST)
-Received: from [127.0.0.1] (10.177.223.23) by DGGEMS413-HUB.china.huawei.com
-	(10.3.19.213) with Microsoft SMTP Server id 14.3.408.0; Mon, 8 Apr 2019
-	09:15:09 +0800
-Subject: Re: [PATCH v4 0/6] normalize IOMMU dma mode boot options
-To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker
-	<jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, "Robin
-	Murphy" <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, "Joerg
-	Roedel" <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc
-	<linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, "Gerald
-	Schaefer" <gerald.schaefer@de.ibm.com>, Martin Schwidefsky
-	<schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras
-	<paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck
-	<tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner
-	<tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
-	<bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David Woodhouse
-	<dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>,
-	linux-kernel
-	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
-	linux-ia64 <linux-ia64@vger.kernel.org>
-References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
-From: Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <b20fd8a6-88ce-7d26-8eb0-ed9f095988a6@huawei.com>
-Date: Mon, 8 Apr 2019 09:14:42 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
-	Thunderbird/52.5.0
+	Mon,  8 Apr 2019 02:31:52 +0000 (UTC)
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 92ACEB5C83C009E88F9C;
+	Mon,  8 Apr 2019 10:31:49 +0800 (CST)
+Received: from [127.0.0.1] (10.177.23.164) by DGGEMS407-HUB.china.huawei.com
+	(10.3.19.207) with Microsoft SMTP Server id 14.3.408.0; Mon, 8 Apr 2019
+	10:31:48 +0800
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
+	work well when smmu is enabled
+To: Will Deacon <will.deacon@arm.com>
+References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+	<20190404153031.GE27558@fuggles.cambridge.arm.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <5CAAB293.3080600@huawei.com>
+Date: Mon, 8 Apr 2019 10:31:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
+	Thunderbird/38.5.1
 MIME-Version: 1.0
-In-Reply-To: <20190407124147.13576-1-thunder.leizhen@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [10.177.223.23]
+In-Reply-To: <20190404153031.GE27558@fuggles.cambridge.arm.com>
+X-Originating-IP: [10.177.23.164]
 X-CFilter-Loop: Reflected
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,44 +66,80 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
+Message-ID: <20190408023147.ledeTZ9bE5lqFOa6q4RRAtLYfMUhjv3hgH-vUfUc4Xc@z>
 
-Hi Zhen,
+Hi Will,
 
-On 2019/4/7 20:41, Zhen Lei wrote:
-> As Robin Murphy's suggestion:
-> "It's also not necessarily obvious to the user how this interacts with
-> IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
-> would be better to refactor the whole lot into a single selection of something
-> like IOMMU_DEFAULT_MODE anyway."
+On 2019/4/4 23:30, Will Deacon wrote:
+> Hi Zhen Lei,
 > 
-> In this version, I tried to normalize the IOMMU dma mode boot options for all
-> ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
-> lazy(mapping but defer the IOTLB invalidation), strict. But currently each
-> ARCHs defined their private boot options, different with each other. For
-> example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
-> X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
+> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
+>> v1 --> v2:
+>> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
+>> (Report abort to device, no event recorded) to suppress the event messages
+>> caused by the unexpected devices.
+>> 2. rewrite the patch description.
 > 
+> This issue came up a while back:
 > 
-> Zhen Lei (6):
->   iommu: use iommu.dma_mode to replace iommu.passthrough and
->     iommu.strict
->   iommu: keep dma mode build options consistent with cmdline options
->   iommu: add iommu_default_dma_mode_get() helper
->   s390/pci: use common boot option iommu.dma_mode
->   powernv/iommu: use common boot option iommu.dma_mode
->   x86/iommu: use common boot option iommu.dma_mode
+> https://lore.kernel.org/linux-pci/20180302103032.GB19323@arm.com/
+> 
+> and I'd still prefer to solve it using the disable_bypass logic which we
+> already have. Something along the lines of the diff below?
 
-This will break systems using boot options as now, and I think
-this is unacceptable. If you want to do so, just introduce iommu.dma_mode
-on top of those iommu boot options with dma mode boot options unchanged,
-and iommu.dma_mode is for all archs but compatible with them.
+Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
+SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
+are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
+(2-level Stream Table), we only allocated and initialized the first level tables,
+but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
+will be reported, if an unexpeted device access memory without reinitialized in
+kdump kernel. So my patches allocated a dummy level 2 table(STE table), and make
+all level 1 table entries pointer to it in advance. That means abort all unexpected
+devices memory access base this dummy STE table. When an expected device(need to be
+used in kdump kernel) attached, we will allocate a new level 2 table(STE table)
+accordingly, but keep others still pointer to the dummy STE table.
 
-Thanks
-Hanjun
+
+> 
+> We're relying on the DMA API not subsequently requesting a passthrough
+> domain, but it should only do that if you've configured your crashkernel
+> to do so.
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index d3880010c6cf..91b8f3b2ee25 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  	/* Clear CR0 and sync (disables SMMU and queue processing) */
+>  	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+>  	if (reg & CR0_SMMUEN) {
+> -		if (is_kdump_kernel()) {
+> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> -			arm_smmu_device_disable(smmu);
+> -			return -EBUSY;
+> -		}
+> -
+>  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
+> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
+> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+>  	}
+>  
+>  	ret = arm_smmu_device_disable(smmu);
+> 
+> .
+> 
+
+-- 
+Thanks!
+BestRegards
 
 _______________________________________________
 iommu mailing list
