@@ -1,60 +1,68 @@
-Return-Path: <SRS0=ZMNw=SJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=6I1K=SK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E99EC10F0E
-	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 23:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DC7C282DD
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 01:15:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BCD1F20879
-	for <iommu@archiver.kernel.org>; Sun,  7 Apr 2019 23:31:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BCD1F20879
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A732320857
+	for <iommu@archiver.kernel.org>; Mon,  8 Apr 2019 01:15:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A732320857
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6CD98A5E;
-	Sun,  7 Apr 2019 23:31:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 532A7AC8;
+	Mon,  8 Apr 2019 01:15:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBF379EE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D9CAA7F
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  7 Apr 2019 23:31:34 +0000 (UTC)
+	Mon,  8 Apr 2019 01:15:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4E6B063D
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C7196623
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  7 Apr 2019 23:31:34 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 8B859307D867;
-	Sun,  7 Apr 2019 23:31:33 +0000 (UTC)
-Received: from x1.home (ovpn-116-153.phx2.redhat.com [10.3.116.153])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id E12355C5DF;
-	Sun,  7 Apr 2019 23:31:32 +0000 (UTC)
-Date: Sun, 7 Apr 2019 17:31:32 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Bart Van Assche <bvanassche@acm.org>
-Subject: Re: kernel BUG at drivers/iommu/intel-iommu.c:608
-Message-ID: <20190407173132.24032810@x1.home>
-In-Reply-To: <8d876549-21da-e027-0157-8737b10e26f8@acm.org>
-References: <a523ea10-3dab-fa2c-1ecf-5cf32077565f@acm.org>
-	<20190407150650.060cc508@x1.home>
-	<8d876549-21da-e027-0157-8737b10e26f8@acm.org>
-Organization: Red Hat
+	Mon,  8 Apr 2019 01:15:24 +0000 (UTC)
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+	by Forcepoint Email with ESMTP id 9C74596D1F36357E5063;
+	Mon,  8 Apr 2019 09:15:20 +0800 (CST)
+Received: from [127.0.0.1] (10.177.223.23) by DGGEMS413-HUB.china.huawei.com
+	(10.3.19.213) with Microsoft SMTP Server id 14.3.408.0; Mon, 8 Apr 2019
+	09:15:09 +0800
+Subject: Re: [PATCH v4 0/6] normalize IOMMU dma mode boot options
+To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker
+	<jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, "Robin
+	Murphy" <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, "Joerg
+	Roedel" <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc
+	<linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, "Gerald
+	Schaefer" <gerald.schaefer@de.ibm.com>, Martin Schwidefsky
+	<schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras
+	<paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck
+	<tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner
+	<tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+	<bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David Woodhouse
+	<dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>,
+	linux-kernel
+	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
+	linux-ia64 <linux-ia64@vger.kernel.org>
+References: <20190407124147.13576-1-thunder.leizhen@huawei.com>
+From: Hanjun Guo <guohanjun@huawei.com>
+Message-ID: <b20fd8a6-88ce-7d26-8eb0-ed9f095988a6@huawei.com>
+Date: Mon, 8 Apr 2019 09:14:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+	Thunderbird/52.5.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.48]);
-	Sun, 07 Apr 2019 23:31:33 +0000 (UTC)
-Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
-	Jiang Liu <jiang.liu@linux.intel.com>, James Smart <jsmart2021@gmail.com>
+In-Reply-To: <20190407124147.13576-1-thunder.leizhen@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.177.223.23]
+X-CFilter-Loop: Reflected
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,66 +75,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190407233132.8sfXGY_HusFVoqZV0qAudAKdtGel8MkRVHSJqDHata0@z>
 
-On Sun, 7 Apr 2019 16:02:31 -0700
-Bart Van Assche <bvanassche@acm.org> wrote:
+Hi Zhen,
 
-> On 4/7/19 2:06 PM, Alex Williamson wrote:
-> > On Sun, 7 Apr 2019 12:10:38 -0700
-> > Bart Van Assche <bvanassche@acm.org> wrote:  
-> >> If I tell qemu to use PCI pass-through for a PCI adapter and next load the
-> >> lpfc driver for an lpfc adapter that has not been passed through to any VM
-> >> a kernel bug is hit. Do you perhaps know whether it should be possible to
-> >> a load kernel driver in this scenario? If so, do you know what should change
-> >> to avoid that this kernel bug is hit? Should the iommu code be modified or
-> >> should the lpfc code be modified? I'm asking you because I think that you
-> >> introduced the BUG() statement that was hit. See also commit ab8dfe251571
-> >> ("iommu/vt-d: Introduce helper functions to improve code readability"; v3.17).  
-> > 
-> > Do both of these lpfc devices belong to the same IOMMU group?
-> > (/sys/kernel/iommu_groups/)  Thanks,  
+On 2019/4/7 20:41, Zhen Lei wrote:
+> As Robin Murphy's suggestion:
+> "It's also not necessarily obvious to the user how this interacts with
+> IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
+> would be better to refactor the whole lot into a single selection of something
+> like IOMMU_DEFAULT_MODE anyway."
 > 
-> Hi Alex,
+> In this version, I tried to normalize the IOMMU dma mode boot options for all
+> ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
+> lazy(mapping but defer the IOTLB invalidation), strict. But currently each
+> ARCHs defined their private boot options, different with each other. For
+> example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
+> X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
 > 
-> Apparently the two Emulex (lpfc) and the two QLogic ports are in the same IOMMU group:
 > 
-> # lspci | grep -E 'QLogic|Emulex'
-> 01:00.0 Fibre Channel: Emulex Corporation Lancer Gen6: LPe32000 Fibre Channel Host Adapter (rev 01)
-> 01:00.1 Fibre Channel: Emulex Corporation Lancer Gen6: LPe32000 Fibre Channel Host Adapter (rev 01)
-> 02:00.0 Fibre Channel: QLogic Corp. ISP2532-based 8Gb Fibre Channel to PCI Express HBA (rev 02)
-> 02:00.1 Fibre Channel: QLogic Corp. ISP2532-based 8Gb Fibre Channel to PCI Express HBA (rev 02)
-> 
-> # ls -d /sys/kernel/iommu_groups/*/devices/0000:0[12]:00.*
-> /sys/kernel/iommu_groups/1/devices/0000:01:00.0
-> /sys/kernel/iommu_groups/1/devices/0000:01:00.1
-> /sys/kernel/iommu_groups/1/devices/0000:02:00.0
-> /sys/kernel/iommu_groups/1/devices/0000:02:00.1
+> Zhen Lei (6):
+>   iommu: use iommu.dma_mode to replace iommu.passthrough and
+>     iommu.strict
+>   iommu: keep dma mode build options consistent with cmdline options
+>   iommu: add iommu_default_dma_mode_get() helper
+>   s390/pci: use common boot option iommu.dma_mode
+>   powernv/iommu: use common boot option iommu.dma_mode
+>   x86/iommu: use common boot option iommu.dma_mode
 
-It's not possible to do what you want with this configuration.  An IOMMU
-group represents the smallest set of devices that are isolated from
-other sets of devices and is also therefore the minimum granularity we
-can assign devices to userspace (ex. QEMU).  The kernel reacts to
-breaking the isolation of the group with a BUG_ON.  If you managed not
-to hit the BUG_ON here, you'd hit the BUG_ON in vfio code when the loss
-of isolation is detected there. IOMMU groups are formed at the highest
-point in the topology which guarantees isolation.  This can be
-indicated either via native PCIe ACS support or ACS-equivalent quirks
-in the code.  If the root port provides neither of these, then all
-devices downstream are grouped together as well as all peer root ports
-in the same PCI slot and all devices downstream of those.  If a
-multifunction endpoint does not provide ACS or equivalent quirks, the
-functions will be grouped together. Not all endpoint devices or systems
-are designed for minimum possible granularity.  You can learn more
-here[1].  Thanks,
+This will break systems using boot options as now, and I think
+this is unacceptable. If you want to do so, just introduce iommu.dma_mode
+on top of those iommu boot options with dma mode boot options unchanged,
+and iommu.dma_mode is for all archs but compatible with them.
 
-Alex
+Thanks
+Hanjun
 
-[1] http://vfio.blogspot.com/2014/08/iommu-groups-inside-and-out.html
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
