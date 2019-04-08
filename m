@@ -1,212 +1,311 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH 08/18] iommu: Introduce cache_invalidate API
-Date: Mon,  8 Apr 2019 16:59:23 -0700
-Message-ID: <1554767973-30125-9-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 15/18] iommu/vt-d: Add bind guest PASID support
+Date: Mon,  8 Apr 2019 16:59:30 -0700
+Message-ID: <1554767973-30125-16-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian,  Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Andriy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org, Yi L <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+When supporting guest SVA with emulated IOMMU, the guest PASID
+table is shadowed in VMM. Updates to guest vIOMMU PASID table
+will result in PASID cache flush which will be passed down to
+the host as bind guest PASID calls.
 
-In any virtualization use case, when the first translation stage
-is "owned" by the guest OS, the host IOMMU driver has no knowledge
-of caching structure updates unless the guest invalidation activities
-are trapped by the virtualizer and passed down to the host.
+For the SL page tables, it will be harvested from device's
+default domain (request w/o PASID), or aux domain in case of
+mediated device.
 
-Since the invalidation data are obtained from user space and will be
-written into physical IOMMU, we must allow security check at various
-layers. Therefore, generic invalidation data format are proposed here,
-model specific IOMMU drivers need to convert them into their own format.
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest process CR3, FL only|
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush -
+    '-------------'                       |
+    |             |                       V
+    |             |                CR3 in GPA
+    '-------------'
+Guest
+------| Shadow |--------------------------|--------
+      v        v                          v
+Host
+    .-------------.  .----------------------.
+    |   pIOMMU    |  | Bind FL for GVA-GPA  |
+    |             |  '----------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.------------------------------.
+    |             |   |SL for GPA-HPA, default domain|
+    |             |   '------------------------------'
+    '-------------'
+Where:
+ - FL = First level/stage one page tables
+ - SL = Second level/stage two page tables
 
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 ---
-v3 -> v4:
-- full reshape of the API following Alex' comments
+ drivers/iommu/intel-iommu.c |   4 +
+ drivers/iommu/intel-svm.c   | 176 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  10 ++-
+ include/linux/intel-svm.h   |   7 ++
+ 4 files changed, 195 insertions(+), 2 deletions(-)
 
-v1 -> v2:
-- add arch_id field
-- renamed tlb_invalidate into cache_invalidate as this API allows
-  to invalidate context caches on top of IOTLBs
-
-v1:
-renamed sva_invalidate into tlb_invalidate and add iommu_ prefix in
-header. Commit message reworded.
----
- drivers/iommu/iommu.c      | 14 +++++++++
- include/linux/iommu.h      | 14 +++++++++
- include/uapi/linux/iommu.h | 71 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 99 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 242f702..344f402 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1566,6 +1566,20 @@ void iommu_detach_pasid_table(struct iommu_domain *domain)
- }
- EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6d3d426..d43b87d 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5446,6 +5446,10 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.put_resv_regions	= intel_iommu_put_resv_regions,
+ 	.device_group		= pci_device_group,
+ 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	.sva_bind_gpasid	= intel_svm_bind_gpasid,
++	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
++#endif
+ };
  
-+int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
-+			   struct iommu_cache_invalidate_info *inv_info)
+ static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 595ea0a..e304fdb 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -228,6 +228,182 @@ static const struct mmu_notifier_ops intel_mmuops = {
+ static DEFINE_MUTEX(pasid_mutex);
+ static LIST_HEAD(global_svm_list);
+ 
++int intel_svm_bind_gpasid(struct iommu_domain *domain,
++			struct device *dev,
++			struct gpasid_bind_data *data)
 +{
++	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
++	struct intel_svm_dev *sdev;
++	struct intel_svm *svm = NULL;
++	struct dmar_domain *ddomain;
++	int pasid_max;
 +	int ret = 0;
 +
-+	if (unlikely(!domain->ops->cache_invalidate))
-+		return -ENODEV;
++	if (WARN_ON(!iommu) || !data)
++		return -EINVAL;
 +
-+	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
++	if (dev_is_pci(dev)) {
++		pasid_max = pci_max_pasids(to_pci_dev(dev));
++		if (pasid_max < 0)
++			return -EINVAL;
++	} else
++		pasid_max = 1 << 20;
++
++	if (data->pasid <= 0 || data->pasid >= pasid_max)
++		return -EINVAL;
++
++	ddomain = to_dmar_domain(domain);
++	/* REVISIT:
++	 * Sanity check adddress width and paging mode support
++	 * width matching in two dimensions:
++	 * 1. paging mode CPU <= IOMMU
++	 * 2. address width Guest <= Host.
++	 */
++	mutex_lock(&pasid_mutex);
++	svm = ioasid_find(NULL, data->pasid, NULL);
++	if (IS_ERR(svm)) {
++		ret = PTR_ERR(svm);
++		goto out;
++	}
++	if (svm) {
++		if (list_empty(&svm->devs)) {
++			dev_err(dev, "GPASID %d has no devices bond but SVA is allocated\n",
++				data->pasid);
++			ret = -ENODEV; /*
++					* If we found svm for the PASID, there must be at
++					* least one device bond, otherwise svm should be freed.
++					*/
++			goto out;
++		}
++
++		list_for_each_entry(sdev, &svm->devs, list) {
++			if (dev == sdev->dev) {
++				/* In case of multiple sub-devices of the same pdev assigned, we should
++				 * allow multiple bind calls with the same PASID and pdev.
++				 */
++				sdev->users++;
++				goto out;
++			}
++		}
++	} else {
++		/* We come here when PASID has never been bond to a device. */
++		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
++		if (!svm) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		/* REVISIT: upper layer/VFIO can track host process that bind the PASID.
++		 * ioasid_set = mm might be sufficient for vfio to check pasid VMM
++		 * ownership.
++		 */
++		svm->mm = get_task_mm(current);
++		svm->pasid = data->pasid;
++		refcount_set(&svm->refs, 0);
++		ioasid_set_data(data->pasid, svm);
++		INIT_LIST_HEAD_RCU(&svm->devs);
++		INIT_LIST_HEAD(&svm->list);
++
++		mmput(svm->mm);
++	}
++	svm->flags |= SVM_FLAG_GUEST_MODE;
++	sdev = kzalloc(sizeof(*sdev), GFP_KERNEL);
++	if (!sdev) {
++		ret = -ENOMEM;
++		goto out;
++	}
++	sdev->dev = dev;
++	sdev->users = 1;
++
++	/* Set up device context entry for PASID if not enabled already */
++	ret = intel_iommu_enable_pasid(iommu, sdev);
++	if (ret) {
++		dev_err(dev, "Failed to enable PASID capability\n");
++		kfree(sdev);
++		goto out;
++	}
++
++	/*
++	 * For guest bind, we need to set up PASID table entry as follows:
++	 * - FLPM matches guest paging mode
++	 * - turn on nested mode
++	 * - SL guest address width matching
++	 */
++	ret = intel_pasid_setup_nested(iommu,
++				dev,
++				(pgd_t *)data->gcr3,
++				data->pasid,
++				data->flags,
++				ddomain,
++				data->addr_width);
++	if (ret) {
++		dev_err(dev, "Failed to set up PASID %d in nested mode, Err %d\n",
++			data->pasid, ret);
++		kfree(sdev);
++		goto out;
++	}
++
++	init_rcu_head(&sdev->rcu);
++	refcount_inc(&svm->refs);
++	list_add_rcu(&sdev->list, &svm->devs);
++ out:
++	mutex_unlock(&pasid_mutex);
++	return ret;
++}
++
++int intel_svm_unbind_gpasid(struct device *dev, int pasid)
++{
++	struct intel_svm_dev *sdev;
++	struct intel_iommu *iommu;
++	struct intel_svm *svm;
++	int ret = -EINVAL;
++
++	mutex_lock(&pasid_mutex);
++	iommu = intel_svm_device_to_iommu(dev);
++	if (!iommu)
++		goto out;
++
++	svm = ioasid_find(NULL, pasid, NULL);
++	if (IS_ERR(svm)) {
++		ret = PTR_ERR(svm);
++		goto out;
++	}
++
++	if (!svm)
++		goto out;
++
++	list_for_each_entry(sdev, &svm->devs, list) {
++		if (dev == sdev->dev) {
++			ret = 0;
++			sdev->users--;
++			if (!sdev->users) {
++				list_del_rcu(&sdev->list);
++				intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
++				/* TODO: Drain in flight PRQ for the PASID since it
++				 * may get reused soon, we don't want to
++				 * confuse with its previous live.
++				 * intel_svm_drain_prq(dev, pasid);
++				 */
++				kfree_rcu(sdev, rcu);
++
++				if (list_empty(&svm->devs)) {
++					list_del(&svm->list);
++					kfree(svm);
++					/*
++					 * We do not free PASID here until explicit call
++					 * from the guest to free.
++					 */
++					ioasid_set_data(pasid, NULL);
++				}
++			}
++			break;
++		}
++	}
++ out:
++	mutex_unlock(&pasid_mutex);
 +
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
 +
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
+ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
  {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 9f870ae..c591ef6 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -192,6 +192,7 @@ struct iommu_resv_region {
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  * @attach_pasid_table: attach a pasid table
-  * @detach_pasid_table: detach the pasid table
-+ * @cache_invalidate: invalidate translation caches
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -239,6 +240,9 @@ struct iommu_ops {
- 				  struct iommu_pasid_table_config *cfg);
- 	void (*detach_pasid_table)(struct iommu_domain *domain);
+ 	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 650cf98..29a615b 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -664,7 +664,9 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+ int intel_svm_init(struct intel_iommu *iommu);
+ extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+ extern int intel_svm_finish_prq(struct intel_iommu *iommu);
+-
++extern int intel_svm_bind_gpasid(struct iommu_domain *domain,
++		struct device *dev, struct gpasid_bind_data *data);
++extern int intel_svm_unbind_gpasid(struct device *dev, int pasid);
+ struct svm_dev_ops;
  
-+	int (*cache_invalidate)(struct iommu_domain *domain, struct device *dev,
-+				struct iommu_cache_invalidate_info *inv_info);
-+
- 	unsigned long pgsize_bitmap;
- };
+ struct intel_svm_dev {
+@@ -680,12 +682,16 @@ struct intel_svm_dev {
  
-@@ -352,6 +356,9 @@ extern void iommu_detach_device(struct iommu_domain *domain,
- extern int iommu_attach_pasid_table(struct iommu_domain *domain,
- 				    struct iommu_pasid_table_config *cfg);
- extern void iommu_detach_pasid_table(struct iommu_domain *domain);
-+extern int iommu_cache_invalidate(struct iommu_domain *domain,
-+				  struct device *dev,
-+				  struct iommu_cache_invalidate_info *inv_info);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -802,6 +809,13 @@ void iommu_detach_pasid_table(struct iommu_domain *domain)
- {
- 	return -ENODEV;
- }
-+static inline int
-+iommu_cache_invalidate(struct iommu_domain *domain,
-+		       struct device *dev,
-+		       struct iommu_cache_invalidate_info *inv_info)
-+{
-+	return -ENODEV;
-+}
- 
- #endif /* CONFIG_IOMMU_API */
- 
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index e9065bf..ae41385 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -159,4 +159,75 @@ struct iommu_pasid_table_config {
- 	};
- };
- 
-+/* defines the granularity of the invalidation */
-+enum iommu_inv_granularity {
-+	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective invalidation */
-+	IOMMU_INV_GRANU_PASID,	/* pasid-selective invalidation */
-+	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation */
-+};
-+
-+/**
-+ * Address Selective Invalidation Structure
-+ *
-+ * @flags indicates the granularity of the address-selective invalidation
-+ * - if PASID bit is set, @pasid field is populated and the invalidation
-+ *   relates to cache entries tagged with this PASID and matching the
-+ *   address range.
-+ * - if ARCHID bit is set, @archid is populated and the invalidation relates
-+ *   to cache entries tagged with this architecture specific id and matching
-+ *   the address range.
-+ * - Both PASID and ARCHID can be set as they may tag different caches.
-+ * - if neither PASID or ARCHID is set, global addr invalidation applies
-+ * - LEAF flag indicates whether only the leaf PTE caching needs to be
-+ *   invalidated and other paging structure caches can be preserved.
-+ * @pasid: process address space id
-+ * @archid: architecture-specific id
-+ * @addr: first stage/level input address
-+ * @granule_size: page/block size of the mapping in bytes
-+ * @nb_granules: number of contiguous granules to be invalidated
-+ */
-+struct iommu_inv_addr_info {
-+#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
-+#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
-+#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
-+	__u32	flags;
-+	__u32	archid;
-+	__u64	pasid;
-+	__u64	addr;
-+	__u64	granule_size;
-+	__u64	nb_granules;
-+};
-+
-+/**
-+ * First level/stage invalidation information
-+ * @cache: bitfield that allows to select which caches to invalidate
-+ * @granularity: defines the lowest granularity used for the invalidation:
-+ *     domain > pasid > addr
-+ *
-+ * Not all the combinations of cache/granularity make sense:
-+ *
-+ *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
-+ * granularity	|		|		|      cache	|
-+ * -------------+---------------+---------------+---------------+
-+ * DOMAIN	|	N/A	|       Y	|	Y	|
-+ * PASID	|	Y	|       Y	|	Y	|
-+ * ADDR		|       Y	|       Y	|	N/A	|
-+ */
-+struct iommu_cache_invalidate_info {
-+#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
-+	__u32	version;
-+/* IOMMU paging structure cache */
-+#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
-+#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
-+#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
-+	__u8	cache;
-+	__u8	granularity;
-+	__u8	padding[2];
+ struct intel_svm {
+ 	struct mmu_notifier notifier;
+-	struct mm_struct *mm;
 +	union {
-+		__u64	pasid;
-+		struct iommu_inv_addr_info addr_info;
++		struct mm_struct *mm;
++		u64 gcr3;
 +	};
-+};
-+
-+
- #endif /* _UAPI_IOMMU_H */
+ 	struct intel_iommu *iommu;
+ 	int flags;
+ 	int pasid;
+ 	struct list_head devs;
+ 	struct list_head list;
++	refcount_t refs; /* # of devs bond to the PASID */
+ };
+ 
+ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index e3f7631..34b0a3b 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -52,6 +52,13 @@ struct svm_dev_ops {
+  * do such IOTLB flushes automatically.
+  */
+ #define SVM_FLAG_SUPERVISOR_MODE	(1<<1)
++/*
++ * The SVM_FLAG_GUEST_MODE flag is used when a guest process bind to a device.
++ * In this case the mm_struct is in the guest kernel or userspace, its life
++ * cycle is managed by VMM and VFIO layer. For IOMMU driver, this API provides
++ * means to bind/unbind guest CR3 with PASIDs allocated for a device.
++ */
++#define SVM_FLAG_GUEST_MODE	(1<<2)
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 
 -- 
 2.7.4
