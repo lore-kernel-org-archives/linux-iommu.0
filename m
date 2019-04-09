@@ -2,53 +2,54 @@ Return-Path: <SRS0=aFDh=SL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46628C10F0E
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6849C282CE
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:09:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 22D1320850
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:02:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 22D1320850
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8F0E420850
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:09:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F0E420850
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 484D6DC0;
-	Tue,  9 Apr 2019 17:02:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8EFB6DC2;
+	Tue,  9 Apr 2019 17:09:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E3031DA1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4DB53ACC
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 17:02:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id CF96676D
+	Tue,  9 Apr 2019 17:09:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ADC227A6
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 17:02:16 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B09DD15BE;
-	Tue,  9 Apr 2019 10:02:16 -0700 (PDT)
-Received: from ostrya.cambridge.arm.com (ostrya.cambridge.arm.com
-	[10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 53FB13F68F; 
-	Tue,  9 Apr 2019 10:02:14 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-To: will.deacon@arm.com
-Subject: [PATCH v2 7/7] iommu/arm-smmu-v3: Disable tagged pointers
-Date: Tue,  9 Apr 2019 17:52:45 +0100
-Message-Id: <20190409165245.26500-8-jean-philippe.brucker@arm.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190409165245.26500-1-jean-philippe.brucker@arm.com>
-References: <20190409165245.26500-1-jean-philippe.brucker@arm.com>
+	Tue,  9 Apr 2019 17:09:26 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id B96E768B02; Tue,  9 Apr 2019 19:09:13 +0200 (CEST)
+Date: Tue, 9 Apr 2019 19:09:13 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
+Message-ID: <20190409170913.GA14679@lst.de>
+References: <20190327080448.5500-1-hch@lst.de>
+	<20190327080448.5500-3-hch@lst.de>
+	<3629087c-a8cb-d66e-840b-cfee125bdf4c@arm.com>
+	<20190407065923.GA9086@lst.de>
+	<45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
 MIME-Version: 1.0
-Cc: zhongmiao@hisilicon.com, okaya@kernel.org, rjw@rjwysocki.net,
-	linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
-	sudeep.holla@arm.com, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+Content-Disposition: inline
+In-Reply-To: <45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Tom Lendacky <thomas.lendacky@amd.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,44 +66,40 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409165245.OGg0pla3dS6RO03s3r5JFwmnMNHBIRuHypH2YfuRFfY@z>
+Message-ID: <20190409170913.u8jV1G8CG6aRoBEJtsoXiml8HHsQx3lYOxwBxecMQ-4@z>
 
-The ARM architecture has a "Top Byte Ignore" (TBI) option that makes the
-MMU mask out bits [63:56] of an address, allowing a userspace application
-to store data in its pointers. This option is incompatible with PCI ATS.
+On Tue, Apr 09, 2019 at 04:12:51PM +0100, Robin Murphy wrote:
+> On 07/04/2019 07:59, Christoph Hellwig wrote:
+>> On Fri, Apr 05, 2019 at 06:30:52PM +0100, Robin Murphy wrote:
+>>> On 27/03/2019 08:04, Christoph Hellwig wrote:
+>>>> The nr_pages checks should be done for all mmap requests, not just those
+>>>> using remap_pfn_range.
+>>>
+>>> Hmm, the logic in iommu_dma_mmap() inherently returns an error for the "off
+>>>> = nr_pages" case already. It's also supposed to be robust against the
+>>> "vma_pages(vma) > nr_pages - off" condition, although by making the partial
+>>> mapping and treating it as a success, rather than doing nothing and
+>>> returning an error. What's the exact motivation here?
+>>
+>> Have one error check at the front of the function that is identical
+>> to the mmap checks in the other dma_map_ops instances so that:
+>>
+>>   a) we get the same error behavior for partial requests everywhere
+>>   b) we can lift these checks into common code in the next round.
+>>
+>
+> Fair enough, but in that case why isn't the dma_mmap_from_coherent() path 
+> also covered?
 
-If TBI is enabled in the SMMU and userspace triggers DMA transactions on
-tagged pointers, the endpoint might create ATC entries for addresses that
-include a tag. Software would then have to send ATC invalidation packets
-for each 255 possible alias of an address, or just wipe the whole address
-space. This is not a viable option, so disable TBI.
+dma_mmap_from_coherent currently duplicates those checks itself, and
+because of that the other callers also don't include it in their
+checks.  I don't actually like that situation and have patches to
+refactor and clean up that whole mess by also moving the dma coherent
+mmap to common code, and share the checks that I plan to also lift.
 
-The impact of this change is unclear, since there are very few users of
-tagged pointers, much less SVA. But the requirement introduced by this
-patch doesn't seem excessive: a userspace application using both tagged
-pointers and SVA should now sanitize addresses (clear the tag) before
-using them for device DMA.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- drivers/iommu/arm-smmu-v3.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 7819cd60d08b..811dd7d83bf0 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1061,7 +1061,6 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- 	val |= ARM_SMMU_TCR2CD(tcr, EPD0);
- 	val |= ARM_SMMU_TCR2CD(tcr, EPD1);
- 	val |= ARM_SMMU_TCR2CD(tcr, IPS);
--	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
- 
- 	return val;
- }
--- 
-2.21.0
-
+But for now I'm holding these back as they would conflict with this
+series and I'm not sure if it will go in and if yes if that is through
+the dma-mapping or iommu tree.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
