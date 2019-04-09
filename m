@@ -2,39 +2,39 @@ Return-Path: <SRS0=aFDh=SL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE7BC282DA
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 12:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC28C282CE
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 12:54:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 15D9E20880
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 12:54:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15D9E20880
+	by mail.kernel.org (Postfix) with ESMTPS id 6526621841
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 12:54:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6526621841
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 05EDFE48;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 391C7E5A;
 	Tue,  9 Apr 2019 12:54:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D7FDD90
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A7619D99
 	for <iommu@lists.linux-foundation.org>;
 	Tue,  9 Apr 2019 12:54:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D7B3467F
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DA18F76D
 	for <iommu@lists.linux-foundation.org>;
 	Tue,  9 Apr 2019 12:54:14 +0000 (UTC)
 Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-	by Forcepoint Email with ESMTP id 3EDFBC03F55BB5BE4CE8;
+	by Forcepoint Email with ESMTP id 56FD4951C8FD7825B0D0;
 	Tue,  9 Apr 2019 20:54:10 +0800 (CST)
 Received: from HGHY1l002753561.china.huawei.com (10.177.23.164) by
 	DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server
-	id 14.3.408.0; Tue, 9 Apr 2019 20:54:00 +0800
+	id 14.3.408.0; Tue, 9 Apr 2019 20:54:03 +0800
 From: Zhen Lei <thunder.leizhen@huawei.com>
 To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
@@ -52,10 +52,13 @@ To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
 	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
 	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v5 0/6] add generic boot option for IOMMU dma mode
-Date: Tue, 9 Apr 2019 20:53:02 +0800
-Message-ID: <20190409125308.18304-1-thunder.leizhen@huawei.com>
+Subject: [PATCH v5 2/6] iommu: add build options corresponding to
+	iommu.dma_mode
+Date: Tue, 9 Apr 2019 20:53:04 +0800
+Message-ID: <20190409125308.18304-3-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.19.2.windows.1
+In-Reply-To: <20190409125308.18304-1-thunder.leizhen@huawei.com>
+References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.177.23.164]
 X-CFilter-Loop: Reflected
@@ -72,54 +75,115 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
+Message-ID: <20190409125304.xkGz-gcmv4B8zE80huCCt6nEH0QlBaSO7Qhd-cqi0II@z>
 
-v4 --> v5:
-As Hanjun and Thomas Gleixner's suggestion:
-1. Keep the old ARCH specific boot options no change.
-2. Keep build option CONFIG_IOMMU_DEFAULT_PASSTHROUGH no change.
+First, add build option IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
+opportunity to set {lazy|strict} mode as default at build time. Then put
+the three config options in an choice, make people can only choose one of
+the three at a time, the same to the boot options iommu.dma_mode.
 
-v4:
-As Robin Murphy's suggestion:
-"It's also not necessarily obvious to the user how this interacts with
-IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
-would be better to refactor the whole lot into a single selection of something
-like IOMMU_DEFAULT_MODE anyway."
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt |  6 ++--
+ drivers/iommu/Kconfig                           | 43 +++++++++++++++++++++----
+ drivers/iommu/iommu.c                           |  4 ++-
+ 3 files changed, 42 insertions(+), 11 deletions(-)
 
-In this version, I tried to normalize the IOMMU dma mode boot options for all
-ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
-lazy(mapping but defer the IOTLB invalidation), strict. But currently each
-ARCHs defined their private boot options, different with each other. For
-example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
-X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
-
-Zhen Lei (6):
-  iommu: add generic boot option iommu.dma_mode
-  iommu: add build options corresponding to iommu.dma_mode
-  iommu: add iommu_default_dma_mode_get/set() helper
-  s390/pci: add support for generic boot option iommu.dma_mode
-  powernv/iommu: add support for generic boot option iommu.dma_mode
-  x86/iommu: add support for generic boot option iommu.dma_mode
-
- Documentation/admin-guide/kernel-parameters.txt | 19 +++++++
- arch/ia64/include/asm/iommu.h                   |  2 -
- arch/ia64/kernel/pci-dma.c                      |  2 -
- arch/powerpc/platforms/powernv/pci-ioda.c       |  5 +-
- arch/s390/pci/pci_dma.c                         | 14 ++---
- arch/x86/include/asm/iommu.h                    |  1 -
- arch/x86/kernel/pci-dma.c                       | 35 ++++++------
- drivers/iommu/Kconfig                           | 45 ++++++++++++---
- drivers/iommu/amd_iommu.c                       | 10 ++--
- drivers/iommu/amd_iommu_init.c                  |  4 +-
- drivers/iommu/amd_iommu_types.h                 |  6 --
- drivers/iommu/intel-iommu.c                     |  9 ++-
- drivers/iommu/iommu.c                           | 73 ++++++++++++++++++++-----
- include/linux/iommu.h                           | 23 ++++++++
- 14 files changed, 176 insertions(+), 72 deletions(-)
-
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f7766f8ac8b9084..92d1b3151d003c2 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1811,9 +1811,9 @@
+ 			1 - Bypass the IOMMU for DMA.
+ 			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+ 
+-	iommu.dma_mode= Configure default dma mode. if unset, use the value
+-			of CONFIG_IOMMU_DEFAULT_PASSTHROUGH to determine
+-			passthrough or not.
++	iommu.dma_mode= Configure default dma mode. if unset, use the build
++			options(such as CONFIG_IOMMU_DEFAULT_PASSTHROUGH) to
++			choose which mode to be used.
+ 			Note: For historical reasons, ARM64/S390/PPC/X86 have
+ 			their specific options. Currently, only ARM64 support
+ 			this boot option, and hope other ARCHs to use this as
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 6f07f3b21816c64..1986f9767da488b 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -74,17 +74,46 @@ config IOMMU_DEBUGFS
+ 	  debug/iommu directory, and then populate a subdirectory with
+ 	  entries as required.
+ 
+-config IOMMU_DEFAULT_PASSTHROUGH
+-	bool "IOMMU passthrough by default"
++choice
++	prompt "IOMMU dma mode"
+ 	depends on IOMMU_API
+-        help
+-	  Enable passthrough by default, removing the need to pass in
+-	  iommu.passthrough=on or iommu=pt through command line. If this
+-	  is enabled, you can still disable with iommu.passthrough=off
+-	  or iommu=nopt depending on the architecture.
++	default IOMMU_DEFAULT_STRICT
++	help
++	  This option allows IOMMU dma mode to be chose at build time, to
++	  override the default dma mode of each ARCHs, removing the need to
++	  pass in kernel parameters through command line. You can still use the
++	  generic boot option iommu.dma_mode or ARCHs specific boot options to
++	  override this option again.
++
++config IOMMU_DEFAULT_PASSTHROUGH
++	bool "passthrough"
++	help
++	  In this mode, the dma access through IOMMU without any addresses
++	  transformation. That means, the wrong or illegal dma access can not
++	  be caught, no error information will be reported.
+ 
+ 	  If unsure, say N here.
+ 
++config IOMMU_DEFAULT_LAZY
++	bool "lazy"
++	help
++	  Support lazy mode, where for every IOMMU DMA unmap operation, the
++	  flush operation of IOTLB and the free operation of IOVA are deferred.
++	  They are only guaranteed to be done before the related IOVA will be
++	  reused.
++
++config IOMMU_DEFAULT_STRICT
++	bool "strict"
++	help
++	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
++	  the free operation of IOVA are guaranteed to be done in the unmap
++	  function.
++
++	  This mode is safer than the two above, but it maybe slow in some high
++	  performace scenarios.
++
++endchoice
++
+ config OF_IOMMU
+        def_bool y
+        depends on OF && IOMMU_API
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index df1ce8e22385b48..f4171bf4b46eaeb 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -39,8 +39,10 @@
+ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+ 
+-#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
++#if defined(CONFIG_IOMMU_DEFAULT_PASSTHROUGH)
+ #define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_PASSTHROUGH
++#elif defined(CONFIG_IOMMU_DEFAULT_LAZY)
++#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_LAZY
+ #else
+ #define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_STRICT
+ #endif
 -- 
 1.8.3
 
