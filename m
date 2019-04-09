@@ -2,68 +2,55 @@ Return-Path: <SRS0=aFDh=SL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1291FC10F0E
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 15:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F970C282DA
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 15:25:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA3C62084F
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 15:21:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA3C62084F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 68A9920883
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 15:25:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68A9920883
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B19A8E60;
-	Tue,  9 Apr 2019 15:21:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1A667101F;
+	Tue,  9 Apr 2019 15:25:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7C680B88
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E2768100B
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 15:21:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E9E08F4
+	Tue,  9 Apr 2019 15:25:51 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 229A876D
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 15:21:35 +0000 (UTC)
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Apr 2019 08:21:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,329,1549958400"; d="scan'208";a="335205951"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
-	by fmsmga006.fm.intel.com with ESMTP; 09 Apr 2019 08:21:31 -0700
-Received: from andy by smile with local (Exim 4.92)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1hDsZ0-0004gu-6p; Tue, 09 Apr 2019 18:21:30 +0300
-Date: Tue, 9 Apr 2019 18:21:30 +0300
-From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: "Paul E. McKenney" <paulmck@linux.ibm.com>
-Subject: Re: [PATCH 01/18] drivers core: Add I/O ASID allocator
-Message-ID: <20190409152130.GS9224@smile.fi.intel.com>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-2-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190409100049.GC9224@smile.fi.intel.com>
-	<20190409100436.GA28683@infradead.org>
-	<20190409103030.GK9224@smile.fi.intel.com>
-	<20190409145308.GZ14111@linux.ibm.com>
+	Tue,  9 Apr 2019 15:25:51 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id E410068B02; Tue,  9 Apr 2019 17:25:38 +0200 (CEST)
+Date: Tue, 9 Apr 2019 17:25:38 +0200
+From: "hch@lst.de" <hch@lst.de>
+To: Thomas Hellstrom <thellstrom@vmware.com>
+Subject: Re: revert dma direct internals abuse
+Message-ID: <20190409152538.GA12816@lst.de>
+References: <20190408105525.5493-1-hch@lst.de>
+	<7d5f35da4a6b58639519f0764c7edbfe4dd1ba02.camel@vmware.com>
+	<20190409095740.GE6827@lst.de>
+	<5f0837ffc135560c764c38849eead40269cebb48.camel@vmware.com>
+	<20190409133157.GA10876@lst.de>
+	<466e658c73607fca5112d718972e87c0b78653ad.camel@vmware.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190409145308.GZ14111@linux.ibm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
-	David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <466e658c73607fca5112d718972e87c0b78653ad.camel@vmware.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Deepak Singh Rawat <drawat@vmware.com>,
+	"torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
+	"hch@lst.de" <hch@lst.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,88 +67,117 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409152130.OjI1CvUrZWbKCC0SC1Rm1OK8TkYQos9CjkWUyOEhc_A@z>
+Message-ID: <20190409152538.1rWjD0xRaGR7OrHW-nJdUVwEwDLeHuTZH2i84u8znFo@z>
 
-On Tue, Apr 09, 2019 at 07:53:08AM -0700, Paul E. McKenney wrote:
-> On Tue, Apr 09, 2019 at 01:30:30PM +0300, Andriy Shevchenko wrote:
-> > On Tue, Apr 09, 2019 at 03:04:36AM -0700, Christoph Hellwig wrote:
-> > > On Tue, Apr 09, 2019 at 01:00:49PM +0300, Andriy Shevchenko wrote:
-> > > > I think it makes sense to add a helper macro to rcupdate.h
-> > > > (and we have several cases in kernel that can utilize it)
-> > > > 
-> > > > #define kfree_non_null_rcu(ptr, rcu_head)		\
-> > > > 	do {						\
-> > > > 		if (ptr)				\
-> > > > 			kfree_rcu(ptr, rcu_head);	\
-> > > > 	} while (0)
-> > > > 
-> > > > as a more common pattern for resource deallocators.
-> > > 
-> > > I think that should move straight into kfree_rcu.  
-> > 
-> > Possible. I didn't dare to offer this due to lack of knowledge how it's used in
-> > other places.
-> > 
-> > > In general
-> > > we expect *free* to deal with NULL pointers transparently, so we
-> > > should do so here as well.
-> > 
-> > Exactly my point, thanks.
-> 
-> As shown below?
+On Tue, Apr 09, 2019 at 02:17:40PM +0000, Thomas Hellstrom wrote:
+> If that's the case, I think most of the graphics drivers will stop
+> functioning. I don't think people would want that, and even if the
+> graphics drivers are "to blame" due to not implementing the sync calls,
+> I think the work involved to get things right is impressive if at all
+> possible.
 
-Looks pretty much good to me, thanks!
-Reviewed-by: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Note that this only affects external, untrusted devices.  But that
+may include eGPU, so yes GPU folks finally need to up their game and
+stop thinking they are above the law^H^H^Hinterface.
 
+> There are two things that concerns me with dma_alloc_coherent:
 > 
-> And now that you mention it, it is a bit surprising that no one has
-> complained before.  ;-)
-> 
-> 							Thanx, Paul
-> 
-> ------------------------------------------------------------------------
-> 
-> commit 23ad938244968e9d2a8001a1c52887c113b182f6
-> Author: Paul E. McKenney <paulmck@linux.ibm.com>
-> Date:   Tue Apr 9 07:48:18 2019 -0700
-> 
->     rcu: Make kfree_rcu() ignore NULL pointers
->     
->     This commit makes the kfree_rcu() macro's semantics be consistent
->     with the likes of kfree() by adding a check for NULL pointers, so
->     that kfree_rcu(NULL, ...) is a no-op.
->     
->     Reported-by: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
->     Reported-by: Christoph Hellwig <hch@infradead.org>
->     Signed-off-by: Paul E. McKenney <paulmck@linux.ibm.com>
-> 
-> diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-> index 922bb6848813..c68649b9bcec 100644
-> --- a/include/linux/rcupdate.h
-> +++ b/include/linux/rcupdate.h
-> @@ -828,9 +828,13 @@ static inline notrace void rcu_read_unlock_sched_notrace(void)
->   * The BUILD_BUG_ON check must not involve any function calls, hence the
->   * checks are done in macros here.
->   */
-> -#define kfree_rcu(ptr, rcu_head)					\
-> -	__kfree_rcu(&((ptr)->rcu_head), offsetof(typeof(*(ptr)), rcu_head))
-> -
-> +#define kfree_rcu(ptr, rhf)						\
-> +do {									\
-> +	typeof (ptr) ___p = (ptr);					\
-> +									\
-> +	if (___p)							\
-> +		__kfree_rcu(&((___p)->rhf), offsetof(typeof(*(ptr)), rhf)); \
-> +} while (0)
->  
->  /*
->   * Place this after a lock-acquisition primitive to guarantee that
-> 
+> 1) It seems to want pages mapped either in the kernel map or vmapped.
+> Graphics drivers allocate huge amounts of memory, Typically up to 50%
+> of system memory or more. In a 32 bit PAE system I'm afraid of running
+> out of vmap space as well as not being able to allocate as much memory
+> as I want. Perhaps a dma_alloc_coherent() interface that returns a page
+> rather than a virtual address would do the trick.
 
--- 
-With Best Regards,
-Andy Shevchenko
+We can't just simply export a page.  For devices that are not cache
+coherent we need to remap the returned memory to be uncached.  In the
+common cases that is either done by setting an uncached bit in the page
+tables, or by using a special address space alias.  So the virtual
+address to access the page matter, and we can't just kmap a random
+page an expect it to be coherent.  If you want memory that is not
+mapped into the kernel direct mapping and DMA to it you need to
+use the proper DMA streaming interface and obey their rules.
 
+> 2) Exporting using dma-buf. A page allocated using dma_alloc_coherent()
+> for one device might not be coherent for another device. What happens
+> if I allocate a page using dma_alloc_coherent() for device 1 and then
+> want to map it using dma_map_page() for device 2?
+
+The problem in this case isn't really the coherency - once a page
+is mapped uncached it is 'coherent' for all devices, even those not
+requiring it.  The problem is addressability - the DMA address for
+the same memory might be different for different devices, and something
+that looks contigous to one device that is using an IOMMU might not
+for another one using the direct mapping.
+
+We have the dma_get_sgtable API to map a piece of coherent memory
+using the streaming APIs for another device, but it has all sorts of
+problems.
+
+That being said: your driver already uses the dma coherent API
+under various circumstances, so you already have the above issues.
+
+In the end swiotlb_nr_tbl() might be the best hint that some bounce
+buffering could happen.  This isn't proper use of the API, but at
+least a little better than your old intel_iommu_emabled check
+and much better than we we have right now.  Something like this:
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+index 6165fe2c4504..ff00bea026c5 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+@@ -545,21 +545,6 @@ static void vmw_get_initial_size(struct vmw_private *dev_priv)
+ 	dev_priv->initial_height = height;
+ }
+ 
+-/**
+- * vmw_assume_iommu - Figure out whether coherent dma-remapping might be
+- * taking place.
+- * @dev: Pointer to the struct drm_device.
+- *
+- * Return: true if iommu present, false otherwise.
+- */
+-static bool vmw_assume_iommu(struct drm_device *dev)
+-{
+-	const struct dma_map_ops *ops = get_dma_ops(dev->dev);
+-
+-	return !dma_is_direct(ops) && ops &&
+-		ops->map_page != dma_direct_map_page;
+-}
+-
+ /**
+  * vmw_dma_select_mode - Determine how DMA mappings should be set up for this
+  * system.
+@@ -581,25 +566,14 @@ static int vmw_dma_select_mode(struct vmw_private *dev_priv)
+ 		[vmw_dma_map_populate] = "Keeping DMA mappings.",
+ 		[vmw_dma_map_bind] = "Giving up DMA mappings early."};
+ 
+-	if (vmw_force_coherent)
+-		dev_priv->map_mode = vmw_dma_alloc_coherent;
+-	else if (vmw_assume_iommu(dev_priv->dev))
+-		dev_priv->map_mode = vmw_dma_map_populate;
+-	else if (!vmw_force_iommu)
+-		dev_priv->map_mode = vmw_dma_phys;
+-	else if (IS_ENABLED(CONFIG_SWIOTLB) && swiotlb_nr_tbl())
++	if (vmw_force_coherent ||
++	    (IS_ENABLED(CONFIG_SWIOTLB) && swiotlb_nr_tbl()))
+ 		dev_priv->map_mode = vmw_dma_alloc_coherent;
++	else if (vmw_restrict_iommu)
++		dev_priv->map_mode = vmw_dma_map_bind;
+ 	else
+ 		dev_priv->map_mode = vmw_dma_map_populate;
+ 
+-	if (dev_priv->map_mode == vmw_dma_map_populate && vmw_restrict_iommu)
+-		dev_priv->map_mode = vmw_dma_map_bind;
+-
+-	/* No TTM coherent page pool? FIXME: Ask TTM instead! */
+-        if (!(IS_ENABLED(CONFIG_SWIOTLB) || IS_ENABLED(CONFIG_INTEL_IOMMU)) &&
+-	    (dev_priv->map_mode == vmw_dma_alloc_coherent))
+-		return -EINVAL;
+-
+ 	DRM_INFO("DMA map mode: %s\n", names[dev_priv->map_mode]);
+ 	return 0;
+ }
 
 _______________________________________________
 iommu mailing list
