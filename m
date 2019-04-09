@@ -1,144 +1,125 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 18/18] iommu/vt-d: Add svm/sva invalidate function
-Date: Tue, 9 Apr 2019 10:43:39 -0700
-Message-ID: <20190409104339.311f3ca0@jacob-builder>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1554767973-30125-19-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20190409145712.GR9224@smile.fi.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
+ helpers
+Date: Tue, 9 Apr 2019 18:59:32 +0100
+Message-ID: <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com>
+References: <20190327080448.5500-1-hch@lst.de>
+ <20190327080448.5500-13-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190409145712.GR9224@smile.fi.intel.com>
+In-Reply-To: <20190327080448.5500-13-hch@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Liu@smile.fi.intel.com, Yi L <yi.l.liu@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 9 Apr 2019 17:57:12 +0300
-Andriy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On 27/03/2019 08:04, Christoph Hellwig wrote:
+> This keeps the code together and will simplify compiling the code
+> out on architectures that are always dma coherent.
 
-> On Mon, Apr 08, 2019 at 04:59:33PM -0700, Jacob Pan wrote:
-> > When Shared Virtual Address (SVA) is enabled for a guest OS via
-> > vIOMMU, we need to provide invalidation support at IOMMU API and
-> > driver level. This patch adds Intel VT-d specific function to
-> > implement iommu passdown invalidate API for shared virtual address.
-> > 
-> > The use case is for supporting caching structure invalidation
-> > of assigned SVM capable devices. Emulated IOMMU exposes queue
-> > invalidation capability and passes down all descriptors from the
-> > guest to the physical IOMMU.
-> > 
-> > The assumption is that guest to host device ID mapping should be
-> > resolved prior to calling IOMMU driver. Based on the device handle,
-> > host IOMMU driver can replace certain fields before submit to the
-> > invalidation queue.  
-> 
-> > +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
-> > +		struct device *dev, struct
-> > iommu_cache_invalidate_info *inv_info) +{
-> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > +	struct device_domain_info *info;
-> > +	struct intel_iommu *iommu;
-> > +	unsigned long flags;
-> > +	int cache_type;
-> > +	u8 bus, devfn;
-> > +	u16 did, sid;
-> > +	int ret = 0;
-> > +	u64 granu;
-> > +	u64 size;
-> > +
-> > +	if (!inv_info || !dmar_domain ||
-> > +		inv_info->version !=
-> > IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> > +		return -EINVAL;
-> > +
-> > +	iommu = device_to_iommu(dev, &bus, &devfn);
-> > +	if (!iommu)
-> > +		return -ENODEV;
-> > +  
-> 
-> > +	if (!dev || !dev_is_pci(dev))
-> > +		return -ENODEV;  
-> 
-> How dev is used in above call? Can be dev NULL there optional and
-> give non-NULL iommu?
-> 
-Good catch, dev cannot be NULL. I will move the check before
-device_to_iommu().
-> > +		switch (1 << cache_type) {  
-> 
-> BIT() ?
-> 
-> > +		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> > +			if (size && (inv_info->addr_info.addr &
-> > ((1 << (VTD_PAGE_SHIFT + size)) - 1))) {  
-> 
-> BIT() ?
-> 
-Sounds good for the two BITs.
+And this is where things take a turn in the direction I just can't get 
+on with - I'm looking at the final result and the twisty maze of little 
+disjoint helpers all overlapping each other in functionality is really 
+difficult to follow. And I would *much* rather have things rely on 
+compile-time constant optimisation than spend the future having to fix 
+the #ifdefed parts for arm64 whenever x86-centric changes fail to test them.
 
-Thanks
-> > +				pr_err("Address out of range,
-> > 0x%llx, size order %llu\n",
-> > +					inv_info->addr_info.addr,
-> > size);
-> > +				ret = -ERANGE;
-> > +				goto out_unlock;
-> > +			}
-> > +
-> > +			qi_flush_piotlb(iommu, did,
-> > mm_to_dma_pfn(inv_info->addr_info.addr),
-> > +					inv_info->addr_info.pasid,
-> > +					size, granu);
-> > +
-> > +			/*
-> > +			 * Always flush device IOTLB if ATS is
-> > enabled since guest
-> > +			 * vIOMMU exposes CM = 1, no device IOTLB
-> > flush will be passed
-> > +			 * down. REVISIT: cannot assume Linux guest
-> > +			 */
-> > +			if (info->ats_enabled) {
-> > +				qi_flush_dev_piotlb(iommu, sid,
-> > info->pfsid,
-> > +
-> > inv_info->addr_info.pasid, info->ats_qdep,
-> > +
-> > inv_info->addr_info.addr, size,
-> > +						granu);
-> > +			}
-> > +			break;
-> > +		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
-> > +			if (info->ats_enabled) {
-> > +				qi_flush_dev_piotlb(iommu, sid,
-> > info->pfsid,
-> > +
-> > inv_info->addr_info.pasid, info->ats_qdep,
-> > +
-> > inv_info->addr_info.addr, size,
-> > +						granu);
-> > +			} else
-> > +				pr_warn("Passdown device IOTLB
-> > flush w/o ATS!\n"); +
-> > +			break;
-> > +		case IOMMU_CACHE_INV_TYPE_PASID:
-> > +			qi_flush_pasid_cache(iommu, did, granu,
-> > inv_info->pasid); +
-> > +			break;
-> > +		default:
-> > +			dev_err(dev, "Unsupported IOMMU
-> > invalidation type %d\n",
-> > +				cache_type);
-> > +			ret = -EINVAL;
-> > +		}  
-> 
-> > +out_unlock:
-> > +	spin_unlock(&iommu->lock);
-> > +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> > +
-> > +	return ret;
-> > +}  
-> 
+Conceptually, everything except the iommu_dma_alloc_remap() case is more 
+or less just dma_direct_alloc() with an IOMMU mapping on top - if we 
+could pass that an internal flag to say "don't fail or bounce because of 
+masks" it seems like that approach could end up being quite a bit 
+simpler (I did once have lofty plans to refactor the old arm64 code in 
+such a way...)
 
-[Jacob Pan]
+Robin.
+
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   drivers/iommu/dma-iommu.c | 51 +++++++++++++++++++++++++++++----------
+>   1 file changed, 38 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 2013c650718a..8ec69176673d 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -673,6 +673,35 @@ static int iommu_dma_get_sgtable_remap(struct sg_table *sgt, void *cpu_addr,
+>   			GFP_KERNEL);
+>   }
+>   
+> +static void iommu_dma_free_pool(struct device *dev, size_t size,
+> +		void *vaddr, dma_addr_t dma_handle)
+> +{
+> +	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), dma_handle, size);
+> +	dma_free_from_pool(vaddr, PAGE_ALIGN(size));
+> +}
+> +
+> +static void *iommu_dma_alloc_pool(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+> +{
+> +	bool coherent = dev_is_dma_coherent(dev);
+> +	struct page *page;
+> +	void *vaddr;
+> +
+> +	vaddr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
+> +	if (!vaddr)
+> +		return NULL;
+> +
+> +	*dma_handle = __iommu_dma_map(dev, page_to_phys(page), size,
+> +			dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs),
+> +			iommu_get_domain_for_dev(dev));
+> +	if (*dma_handle == DMA_MAPPING_ERROR) {
+> +		dma_free_from_pool(vaddr, PAGE_ALIGN(size));
+> +		return NULL;
+> +	}
+> +
+> +	return vaddr;
+> +}
+> +
+>   static void iommu_dma_sync_single_for_cpu(struct device *dev,
+>   		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+>   {
+> @@ -981,21 +1010,18 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+>   		 * get the virtually contiguous buffer we need by way of a
+>   		 * physically contiguous allocation.
+>   		 */
+> -		if (coherent) {
+> -			page = alloc_pages(gfp, get_order(size));
+> -			addr = page ? page_address(page) : NULL;
+> -		} else {
+> -			addr = dma_alloc_from_pool(size, &page, gfp);
+> -		}
+> -		if (!addr)
+> +		if (!coherent)
+> +			return iommu_dma_alloc_pool(dev, iosize, handle, gfp,
+> +					attrs);
+> +
+> +		page = alloc_pages(gfp, get_order(size));
+> +		if (!page)
+>   			return NULL;
+>   
+> +		addr = page_address(page);
+>   		*handle = __iommu_dma_map_page(dev, page, 0, iosize, ioprot);
+>   		if (*handle == DMA_MAPPING_ERROR) {
+> -			if (coherent)
+> -				__free_pages(page, get_order(size));
+> -			else
+> -				dma_free_from_pool(addr, size);
+> +			__free_pages(page, get_order(size));
+>   			addr = NULL;
+>   		}
+>   	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> @@ -1049,8 +1075,7 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+>   	 * Hence how dodgy the below logic looks...
+>   	 */
+>   	if (dma_in_atomic_pool(cpu_addr, size)) {
+> -		__iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+> -		dma_free_from_pool(cpu_addr, size);
+> +		iommu_dma_free_pool(dev, size, cpu_addr, handle);
+>   	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+>   		struct page *page = vmalloc_to_page(cpu_addr);
+>   
+> 
