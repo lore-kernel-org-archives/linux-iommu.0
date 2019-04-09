@@ -2,107 +2,83 @@ Return-Path: <SRS0=aFDh=SL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B120AC10F0E
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 16:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAD7C10F0E
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 16:15:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7D3A52084C
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 16:03:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D3A52084C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id D2F3E218EA
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 16:15:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="GSExMhgc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D2F3E218EA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3FA5AFF6;
-	Tue,  9 Apr 2019 16:03:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 923F9CAB;
+	Tue,  9 Apr 2019 16:15:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CDEA6B8A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0D44AC91
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 15:55:41 +0000 (UTC)
-X-Greylist: delayed 01:02:26 by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 23CBD76D
+	Tue,  9 Apr 2019 16:15:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A91197A6
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 15:55:41 +0000 (UTC)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x39EeUQw073041
-	for <iommu@lists.linux-foundation.org>; Tue, 9 Apr 2019 10:53:14 -0400
-Received: from e14.ny.us.ibm.com (e14.ny.us.ibm.com [129.33.205.204])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2rru3eqp2u-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Tue, 09 Apr 2019 10:53:14 -0400
-Received: from localhost
-	by e14.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
-	Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from
-	<paulmck@linux.vnet.ibm.com>; Tue, 9 Apr 2019 15:53:12 +0100
-Received: from b01cxnp22033.gho.pok.ibm.com (9.57.198.23)
-	by e14.ny.us.ibm.com (146.89.104.201) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Tue, 9 Apr 2019 15:53:09 +0100
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com
-	[9.57.199.108])
-	by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
-	x39Er8Jn27787270
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Tue, 9 Apr 2019 14:53:08 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2C382B2067;
-	Tue,  9 Apr 2019 14:53:08 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 0D4CBB2068;
-	Tue,  9 Apr 2019 14:53:08 +0000 (GMT)
-Received: from paulmck-ThinkPad-W541 (unknown [9.70.82.188])
-	by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-	Tue,  9 Apr 2019 14:53:07 +0000 (GMT)
-Received: by paulmck-ThinkPad-W541 (Postfix, from userid 1000)
-	id 04B7016C34AA; Tue,  9 Apr 2019 07:53:08 -0700 (PDT)
-Date: Tue, 9 Apr 2019 07:53:08 -0700
-From: "Paul E. McKenney" <paulmck@linux.ibm.com>
-To: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 01/18] drivers core: Add I/O ASID allocator
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-2-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190409100049.GC9224@smile.fi.intel.com>
-	<20190409100436.GA28683@infradead.org>
-	<20190409103030.GK9224@smile.fi.intel.com>
+	Tue,  9 Apr 2019 16:15:33 +0000 (UTC)
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com
+	[209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 520E4218EA
+	for <iommu@lists.linux-foundation.org>;
+	Tue,  9 Apr 2019 16:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1554826533;
+	bh=iqwfzav26qB7O1+vlrYQstVE06mZ7Z+Ix2PAnbjQjkI=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=GSExMhgcALA5l1vO3G9FlqDb9didpbiR55HPteUKUuX1bhW+VVtLajp8vnqWeQoBJ
+	+KPrwzNFZe7hW4q145SYxGS7Ba8UNMkBvPChv18i5rDVP7RN/4hbceHAL1OjJxvq0I
+	mYoYfvwHh2+hBHPVEA1jQETvCZukKzNtt1wwqgZg=
+Received: by mail-qt1-f173.google.com with SMTP id v32so20417718qtc.10
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 09 Apr 2019 09:15:33 -0700 (PDT)
+X-Gm-Message-State: APjAAAURysnlRdjMI2UKVIn/hrSNskaZwPnDkAcpF8Ct/c3nWXjj9qAD
+	nl2UzNW6BukzGCxbvwYTIcvsacAiTpRhF/sh9g==
+X-Google-Smtp-Source: APXvYqyQgON6RncgFto+LtazyWMhak9Z6zYeKlyVMxRtYe0ujXd+VlItuD/tvgZ5cohgtmTimMrkPRkjDInIZd36Ly0=
+X-Received: by 2002:ac8:3f6f:: with SMTP id w44mr29567542qtk.59.1554826532511; 
+	Tue, 09 Apr 2019 09:15:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190409103030.GK9224@smile.fi.intel.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19040914-0052-0000-0000-000003A99DE3
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00010896; HX=3.00000242; KW=3.00000007;
-	PH=3.00000004; SC=3.00000284; SDB=6.01186624; UDB=6.00621496;
-	IPR=6.00967384; 
-	MB=3.00026363; MTD=3.00000008; XFM=3.00000015; UTC=2019-04-09 14:53:12
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19040914-0053-0000-0000-0000606FB512
-Message-Id: <20190409145308.GZ14111@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-04-09_06:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1904090094
-X-Mailman-Approved-At: Tue, 09 Apr 2019 16:03:26 +0000
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
-	David Woodhouse <dwmw2@infradead.org>
+References: <20190401074730.12241-1-robh@kernel.org>
+	<20190401074730.12241-4-robh@kernel.org>
+	<5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+	<CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
+	<CAAObsKCnycxxKWA+bUeU9vOu53eT9WZVkzdZ0KCtW9Xj9cV8Cw@mail.gmail.com>
+In-Reply-To: <CAAObsKCnycxxKWA+bUeU9vOu53eT9WZVkzdZ0KCtW9Xj9cV8Cw@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Date: Tue, 9 Apr 2019 11:15:21 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+qcLRFX0xyKuFEDW3+n6oukfmgemtO4MumCFp_-qqcUg@mail.gmail.com>
+Message-ID:
+ <CAL_Jsq+qcLRFX0xyKuFEDW3+n6oukfmgemtO4MumCFp_-qqcUg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Sean Paul <sean@poorly.run>, Will Deacon <will.deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dri-devel <dri-devel@lists.freedesktop.org>,
+	Steven Price <steven.price@arm.com>, David Airlie <airlied@linux.ie>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	"Marty E . Plummer" <hanetzer@startmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,83 +91,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: paulmck@linux.ibm.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409145308.WcMD9-O8UPWhQ9SpXAfSCP1vDGmq27BmbDndSVhXi3U@z>
+Message-ID: <20190409161521.kHWc19XyHbvCwAOMQzMF2R9LMtfIH7bYYnGyRTYXKPY@z>
 
-On Tue, Apr 09, 2019 at 01:30:30PM +0300, Andriy Shevchenko wrote:
-> On Tue, Apr 09, 2019 at 03:04:36AM -0700, Christoph Hellwig wrote:
-> > On Tue, Apr 09, 2019 at 01:00:49PM +0300, Andriy Shevchenko wrote:
-> > > I think it makes sense to add a helper macro to rcupdate.h
-> > > (and we have several cases in kernel that can utilize it)
-> > > 
-> > > #define kfree_non_null_rcu(ptr, rcu_head)		\
-> > > 	do {						\
-> > > 		if (ptr)				\
-> > > 			kfree_rcu(ptr, rcu_head);	\
-> > > 	} while (0)
-> > > 
-> > > as a more common pattern for resource deallocators.
-> > 
-> > I think that should move straight into kfree_rcu.  
-> 
-> Possible. I didn't dare to offer this due to lack of knowledge how it's used in
-> other places.
-> 
-> > In general
-> > we expect *free* to deal with NULL pointers transparently, so we
-> > should do so here as well.
-> 
-> Exactly my point, thanks.
+On Tue, Apr 9, 2019 at 10:56 AM Tomeu Vizoso <tomeu.vizoso@collabora.com> wrote:
+>
+> On Mon, 8 Apr 2019 at 23:04, Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Fri, Apr 5, 2019 at 7:30 AM Steven Price <steven.price@arm.com> wrote:
+> > >
+> > > On 01/04/2019 08:47, Rob Herring wrote:
+> > > > This adds the initial driver for panfrost which supports Arm Mali
+> > > > Midgard and Bifrost family of GPUs. Currently, only the T860 and
+> > > > T760 Midgard GPUs have been tested.
+> >
+> > [...]
+> > > > +
+> > > > +             if (status & JOB_INT_MASK_ERR(j)) {
+> > > > +                     job_write(pfdev, JS_COMMAND_NEXT(j), JS_COMMAND_NOP);
+> > > > +                     job_write(pfdev, JS_COMMAND(j), JS_COMMAND_HARD_STOP_0);
+> > >
+> > > Hard-stopping an already completed job isn't likely to do very much :)
+> > > Also you are using the "_0" version which is only valid when "job chain
+> > > disambiguation" is present.
+>
+> Yeah, guess that can be removed.
 
-As shown below?
+Steven, TBC, are you suggesting removing both lines or leaving
+JS_COMMAND_NOP? I don't think we can ever have a pending job at this
+point as there's no queuing. So the NOP probably isn't needed, but
+doesn't hurt to have it either.
 
-And now that you mention it, it is a bit surprising that no one has
-complained before.  ;-)
+> > > I suspect in this case you should also be signalling the fence? At the
+> > > moment you rely on the GPU timeout recovering from the fault.
+> >
+> > I'll defer to Tomeu who wrote this (IIRC).
+>
+> Yes, that would be an improvement.
 
-							Thanx, Paul
+Actually, I think that would break recovery because the job timeout
+will bail out if the done fence is signaled already. Perhaps we want
+to timeout immediately if that is possible with the scheduler.
 
-------------------------------------------------------------------------
-
-commit 23ad938244968e9d2a8001a1c52887c113b182f6
-Author: Paul E. McKenney <paulmck@linux.ibm.com>
-Date:   Tue Apr 9 07:48:18 2019 -0700
-
-    rcu: Make kfree_rcu() ignore NULL pointers
-    
-    This commit makes the kfree_rcu() macro's semantics be consistent
-    with the likes of kfree() by adding a check for NULL pointers, so
-    that kfree_rcu(NULL, ...) is a no-op.
-    
-    Reported-by: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-    Reported-by: Christoph Hellwig <hch@infradead.org>
-    Signed-off-by: Paul E. McKenney <paulmck@linux.ibm.com>
-
-diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index 922bb6848813..c68649b9bcec 100644
---- a/include/linux/rcupdate.h
-+++ b/include/linux/rcupdate.h
-@@ -828,9 +828,13 @@ static inline notrace void rcu_read_unlock_sched_notrace(void)
-  * The BUILD_BUG_ON check must not involve any function calls, hence the
-  * checks are done in macros here.
-  */
--#define kfree_rcu(ptr, rcu_head)					\
--	__kfree_rcu(&((ptr)->rcu_head), offsetof(typeof(*(ptr)), rcu_head))
--
-+#define kfree_rcu(ptr, rhf)						\
-+do {									\
-+	typeof (ptr) ___p = (ptr);					\
-+									\
-+	if (___p)							\
-+		__kfree_rcu(&((___p)->rhf), offsetof(typeof(*(ptr)), rhf)); \
-+} while (0)
- 
- /*
-  * Place this after a lock-acquisition primitive to guarantee that
-
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
