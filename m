@@ -1,122 +1,172 @@
-From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 18/18] iommu/vt-d: Add svm/sva invalidate function
-Date: Tue, 9 Apr 2019 17:57:12 +0300
-Message-ID: <20190409145712.GR9224@smile.fi.intel.com>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1554767973-30125-19-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 07/21] dma-iommu: move the arm64 wrappers to common code
+Date: Tue, 9 Apr 2019 16:07:02 +0100
+Message-ID: <67573dd3-72c7-692d-bc1a-7edb49ff9551@arm.com>
+References: <20190327080448.5500-1-hch@lst.de>
+ <20190327080448.5500-8-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1554767973-30125-19-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20190327080448.5500-8-hch@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Liu@smile.fi.intel.com, Yi L <yi.l.liu@linux.intel.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 08, 2019 at 04:59:33PM -0700, Jacob Pan wrote:
-> When Shared Virtual Address (SVA) is enabled for a guest OS via
-> vIOMMU, we need to provide invalidation support at IOMMU API and driver
-> level. This patch adds Intel VT-d specific function to implement
-> iommu passdown invalidate API for shared virtual address.
-> 
-> The use case is for supporting caching structure invalidation
-> of assigned SVM capable devices. Emulated IOMMU exposes queue
-> invalidation capability and passes down all descriptors from the guest
-> to the physical IOMMU.
-> 
-> The assumption is that guest to host device ID mapping should be
-> resolved prior to calling IOMMU driver. Based on the device handle,
-> host IOMMU driver can replace certain fields before submit to the
-> invalidation queue.
-
-> +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
-> +		struct device *dev, struct iommu_cache_invalidate_info *inv_info)
+On 27/03/2019 08:04, Christoph Hellwig wrote:
+[...]
+> @@ -649,19 +696,44 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>   	return iova + iova_off;
+>   }
+>   
+> -dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+> +static dma_addr_t __iommu_dma_map_page(struct device *dev, struct page *page,
+>   		unsigned long offset, size_t size, int prot)
+>   {
+>   	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot,
+>   			iommu_get_dma_domain(dev));
+>   }
+>   
+> -void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+> -		enum dma_data_direction dir, unsigned long attrs)
+> +static void __iommu_dma_unmap_page(struct device *dev, dma_addr_t handle,
+> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>   {
+>   	__iommu_dma_unmap(iommu_get_dma_domain(dev), handle, size);
+>   }
+>   
+> +static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+> +		unsigned long offset, size_t size, enum dma_data_direction dir,
+> +		unsigned long attrs)
 > +{
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct device_domain_info *info;
-> +	struct intel_iommu *iommu;
-> +	unsigned long flags;
-> +	int cache_type;
-> +	u8 bus, devfn;
-> +	u16 did, sid;
-> +	int ret = 0;
-> +	u64 granu;
-> +	u64 size;
+> +	phys_addr_t phys = page_to_phys(page) + offset;
+> +	bool coherent = dev_is_dma_coherent(dev);
+> +	dma_addr_t dma_handle;
 > +
-> +	if (!inv_info || !dmar_domain ||
-> +		inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +
-
-> +	if (!dev || !dev_is_pci(dev))
-> +		return -ENODEV;
-
-How dev is used in above call? Can be dev NULL there optional and give non-NULL
-iommu?
-
-> +		switch (1 << cache_type) {
-
-BIT() ?
-
-> +		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> +			if (size && (inv_info->addr_info.addr & ((1 << (VTD_PAGE_SHIFT + size)) - 1))) {
-
-BIT() ?
-
-> +				pr_err("Address out of range, 0x%llx, size order %llu\n",
-> +					inv_info->addr_info.addr, size);
-> +				ret = -ERANGE;
-> +				goto out_unlock;
-> +			}
-> +
-> +			qi_flush_piotlb(iommu, did, mm_to_dma_pfn(inv_info->addr_info.addr),
-> +					inv_info->addr_info.pasid,
-> +					size, granu);
-> +
-> +			/*
-> +			 * Always flush device IOTLB if ATS is enabled since guest
-> +			 * vIOMMU exposes CM = 1, no device IOTLB flush will be passed
-> +			 * down. REVISIT: cannot assume Linux guest
-> +			 */
-> +			if (info->ats_enabled) {
-> +				qi_flush_dev_piotlb(iommu, sid, info->pfsid,
-> +						inv_info->addr_info.pasid, info->ats_qdep,
-> +						inv_info->addr_info.addr, size,
-> +						granu);
-> +			}
-> +			break;
-> +		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
-> +			if (info->ats_enabled) {
-> +				qi_flush_dev_piotlb(iommu, sid, info->pfsid,
-> +						inv_info->addr_info.pasid, info->ats_qdep,
-> +						inv_info->addr_info.addr, size,
-> +						granu);
-> +			} else
-> +				pr_warn("Passdown device IOTLB flush w/o ATS!\n");
-> +
-> +			break;
-> +		case IOMMU_CACHE_INV_TYPE_PASID:
-> +			qi_flush_pasid_cache(iommu, did, granu, inv_info->pasid);
-> +
-> +			break;
-> +		default:
-> +			dev_err(dev, "Unsupported IOMMU invalidation type %d\n",
-> +				cache_type);
-> +			ret = -EINVAL;
-> +		}
-
-> +out_unlock:
-> +	spin_unlock(&iommu->lock);
-> +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> +
-> +	return ret;
+> +	dma_handle =__iommu_dma_map(dev, phys, size,
+> +			dma_info_to_prot(dir, coherent, attrs),
+> +			iommu_get_dma_domain(dev));
+> +	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> +	    dma_handle != DMA_MAPPING_ERROR)
+> +		arch_sync_dma_for_device(dev, phys, size, dir);
+> +	return dma_handle;
 > +}
+> +
+> +static void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
+> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
+> +{
+> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> +		iommu_dma_sync_single_for_cpu(dev, dma_handle, size, dir);
+> +	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), dma_handle, size);
 
--- 
-With Best Regards,
-Andy Shevchenko
+That wants to be iommu_get_dma_domain() there to minimise the overhead. 
+In fact, I guess this could now be streamlined a bit in the style of 
+iommu_dma_map_page() above - i.e. avoid doing a second domain lookup in 
+the sync case - but that can happen later (if indeed you haven't already).
+
+> +}
+> +
+>   /*
+>    * Prepare a successfully-mapped scatterlist to give back to the caller.
+>    *
+
+[...]
+
+> @@ -843,12 +923,257 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+>   			iommu_get_dma_domain(dev));
+>   }
+>   
+> -void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+> +static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+>   		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>   {
+>   	__iommu_dma_unmap(iommu_get_dma_domain(dev), handle, size);
+>   }
+>   
+> +static void *iommu_dma_alloc(struct device *dev, size_t size,
+> +		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
+> +{
+> +	bool coherent = dev_is_dma_coherent(dev);
+> +	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+> +	size_t iosize = size;
+> +	void *addr;
+> +
+> +	size = PAGE_ALIGN(size);
+> +
+> +	/*
+> +	 * Some drivers rely on this, and we probably don't want the
+> +	 * possibility of stale kernel data being read by devices anyway.
+> +	 */
+
+That comment can probably be dropped now that zeroing is official API 
+behaviour.
+
+> +	gfp |= __GFP_ZERO;
+
+[...]
+
+> +/*
+> + * The IOMMU core code allocates the default DMA domain, which the underlying
+> + * IOMMU driver needs to support via the dma-iommu layer.
+> + */
+> +void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> +		const struct iommu_ops *ops)
+
+There's really no need to even pass @ops in here - in the existing arm64 
+logic it's merely a token representing "should I do IOMMU setup?", and 
+after this refactoring that's already been decided by our caller here.
+
+> +{
+> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +
+> +	if (!domain || domain->type != IOMMU_DOMAIN_DMA)
+
+This change means we now spam the logs with spurious warnings when 
+configured for passthrough, which is not what we want.
+
+> +		goto out_err;
+> +	if (iommu_dma_init_domain(domain, dma_base, size, dev))
+> +		goto out_err;
+> +
+> +	dev->dma_ops = &iommu_dma_ops;
+> +	return;
+> +out_err:
+> +	 pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
+> +		 dev_name(dev));
+> +}
+> +
+>   static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   		phys_addr_t msi_addr, struct iommu_domain *domain)
+>   {
+> @@ -921,3 +1246,5 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+>   		msg->address_lo += lower_32_bits(msi_page->iova);
+>   	}
+>   }
+> +
+> +arch_initcall(iova_cache_get);
+
+This feels a bit funky - TBH I'd rather just keep iommu_dma_init() 
+around and make it static, if only for the sake of looking "normal".
+
+[...]
+> -static inline int iommu_dma_init(void)
+> +static inline void iommu_setup_dma_ops(struct device *dev, u64 dma_base,
+> +		u64 size, const struct iommu_ops *ops)
+>   {
+> -	return 0;
+>   }
+
+I don't think it makes sense to have a stub for that - AFAICS it should 
+only ever be called form arch code with an inherent "select IOMMU_DMA" 
+(much like the stuff which isn't stubbed currently).
+
+Otherwise, I'm about 97% sure the rest of the move looks OK - thanks for 
+splitting things up.
+
+Robin.
+
+>   
+>   static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
+> 
