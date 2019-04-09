@@ -1,113 +1,138 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: Re: [RESEND PATCH v4 0/9] mm: Use vm_map_pages() and
- vm_map_pages_zero() API
-Date: Tue, 9 Apr 2019 11:47:37 +0530
-Message-ID: <CAFqt6zbDk7OAdk-WXG50Frppny0DOpdwR1vnTS7pCpjf66j3aQ@mail.gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com> <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
+From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 00/18] Shared virtual address IOMMU and VT-d support
+Date: Tue, 9 Apr 2019 12:56:23 +0300
+Message-ID: <20190409095623.GB9224@smile.fi.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org
-Cc: linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Andrew/ Michal,
+On Mon, Apr 08, 2019 at 04:59:15PM -0700, Jacob Pan wrote:
+> Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on Intel
+> platforms allow address space sharing between device DMA and applications.
+> SVA can reduce programming complexity and enhance security.
+> This series is intended to enable SVA virtualization, i.e. shared guest
+> application address space and physical device DMA address. Only IOMMU portion
+> of the changes are included in this series. Additional support is needed in
+> VFIO and QEMU (will be submitted separately) to complete this functionality.
+> 
+> To make incremental changes and reduce the size of each patchset. This series
+> does not inlcude support for page request services.
+> 
+> In VT-d implementation, PASID table is per device and maintained in the host.
+> Guest PASID table is shadowed in VMM where virtual IOMMU is emulated.
 
-On Mon, Apr 1, 2019 at 10:56 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
->
-> Hi Andrew,
->
-> On Tue, Mar 19, 2019 at 7:47 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
-> >
-> > Previouly drivers have their own way of mapping range of
-> > kernel pages/memory into user vma and this was done by
-> > invoking vm_insert_page() within a loop.
-> >
-> > As this pattern is common across different drivers, it can
-> > be generalized by creating new functions and use it across
-> > the drivers.
-> >
-> > vm_map_pages() is the API which could be used to map
-> > kernel memory/pages in drivers which has considered vm_pgoff.
-> >
-> > vm_map_pages_zero() is the API which could be used to map
-> > range of kernel memory/pages in drivers which has not considered
-> > vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
-> >
-> > We _could_ then at a later "fix" these drivers which are using
-> > vm_map_pages_zero() to behave according to the normal vm_pgoff
-> > offsetting simply by removing the _zero suffix on the function
-> > name and if that causes regressions, it gives us an easy way to revert.
-> >
-> > Tested on Rockchip hardware and display is working fine, including talking
-> > to Lima via prime.
-> >
-> > v1 -> v2:
-> >         Few Reviewed-by.
-> >
-> >         Updated the change log in [8/9]
-> >
-> >         In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
-> >         to select a buffer, not as a in-buffer offset by design
-> >         and it always want to mmap a whole buffer from its beginning.
-> >         Added additional changes after discussing with Marek and
-> >         vm_map_pages() could be used instead of vm_map_pages_zero().
-> >
-> > v2 -> v3:
-> >         Corrected the documentation as per review comment.
-> >
-> >         As suggested in v2, renaming the interfaces to -
-> >         *vm_insert_range() -> vm_map_pages()* and
-> >         *vm_insert_range_buggy() -> vm_map_pages_zero()*.
-> >         As the interface is renamed, modified the code accordingly,
-> >         updated the change logs and modified the subject lines to use the
-> >         new interfaces. There is no other change apart from renaming and
-> >         using the new interface.
-> >
-> >         Patch[1/9] & [4/9], Tested on Rockchip hardware.
-> >
-> > v3 -> v4:
-> >         Fixed build warnings on patch [8/9] reported by kbuild test robot.
-> >
-> > Souptick Joarder (9):
-> >   mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
-> >   arm: mm: dma-mapping: Convert to use vm_map_pages()
-> >   drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
-> >   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
-> >   drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
-> >   iommu/dma-iommu.c: Convert to use vm_map_pages()
-> >   videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
-> >   xen/gntdev.c: Convert to use vm_map_pages()
-> >   xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
->
-> Is it fine to take these patches into mm tree for regression ?
+This seems missed the comments I gave you internally.
 
-v4 of this series has not received any further comments/ kbuild error
-in last 8 weeks (including
-the previously posted v4).
+> 
+>     .-------------.  .---------------------------.
+>     |   vIOMMU    |  | Guest process CR3, FL only|
+>     |             |  '---------------------------'
+>     .----------------/
+>     | PASID Entry |--- PASID cache flush -
+>     '-------------'                       |
+>     |             |                       V
+>     |             |                CR3 in GPA
+>     '-------------'
+> Guest
+> ------| Shadow |--------------------------|--------
+>       v        v                          v
+> Host
+>     .-------------.  .----------------------.
+>     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+>     |             |  '----------------------'
+>     .----------------/  |
+>     | PASID Entry |     V (Nested xlate)
+>     '----------------\.------------------------------.
+>     |             |   |SL for GPA-HPA, default domain|
+>     |             |   '------------------------------'
+>     '-------------'
+> Where:
+>  - FL = First level/stage one page tables
+>  - SL = Second level/stage two page tables
+> 
+> 
+> This work is based on collaboration with other developers on the IOMMU
+> mailing list. Notably,
+> 
+> [1] [PATCH v6 00/22] SMMUv3 Nested Stage Setup by Eric Auger
+> https://lkml.org/lkml/2019/3/17/124
+> 
+> [2] [RFC PATCH 2/6] drivers core: Add I/O ASID allocator by Jean-Philippe
+> Brucker
+> https://www.spinics.net/lists/iommu/msg30639.html
+> 
+> [3] [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation by Lu Baolu
+> https://lkml.org/lkml/2018/11/12/1921
+> 
+> There are roughly three parts:
+> 1. Generic PASID allocator [1] with extension to support custom allocator
+> 2. IOMMU cache invalidation passdown from guest to host
+> 3. Guest PASID bind for nested translation
+> 
+> All generic IOMMU APIs are reused from [1], which has a v7 just published with
+> no real impact to the patches used here. It is worth noting that unlike sMMU
+> nested stage setup, where PASID table is owned by the guest, VT-d PASID table is
+> owned by the host, individual PASIDs are bound instead of the PASID table.
+> 
+> 
+> Jacob Pan (15):
+>   ioasid: Add custom IOASID allocator
+>   ioasid: Convert ioasid_idr to XArray
+>   driver core: add per device iommu param
+>   iommu: introduce device fault data
+>   iommu: introduce device fault report API
+>   iommu: Introduce attach/detach_pasid_table API
+>   iommu/vt-d: Add custom allocator for IOASID
+>   iommu/vt-d: Replace Intel specific PASID allocator with IOASID
+>   iommu: Add guest PASID bind function
+>   iommu/vt-d: Move domain helper to header
+>   iommu/vt-d: Add nested translation support
+>   iommu/vt-d: Add bind guest PASID support
+>   iommu: add max num of cache and granu types
+>   iommu/vt-d: Support flushing more translation cache types
+>   iommu/vt-d: Add svm/sva invalidate function
+> 
+> Jean-Philippe Brucker (1):
+>   drivers core: Add I/O ASID allocator
+> 
+> Liu, Yi L (1):
+>   iommu: Introduce cache_invalidate API
+> 
+> Lu Baolu (1):
+>   iommu/vt-d: Enlightened PASID allocation
+> 
+>  drivers/base/Kconfig        |   7 ++
+>  drivers/base/Makefile       |   1 +
+>  drivers/base/ioasid.c       | 211 +++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/Kconfig       |   1 +
+>  drivers/iommu/dmar.c        |  48 +++++++++
+>  drivers/iommu/intel-iommu.c | 219 ++++++++++++++++++++++++++++++++++++--
+>  drivers/iommu/intel-pasid.c | 191 +++++++++++++++++++++++++++++-----
+>  drivers/iommu/intel-pasid.h |  24 ++++-
+>  drivers/iommu/intel-svm.c   | 217 +++++++++++++++++++++++++++++++++++---
+>  drivers/iommu/iommu.c       | 207 +++++++++++++++++++++++++++++++++++-
+>  include/linux/device.h      |   3 +
+>  include/linux/intel-iommu.h |  40 +++++--
+>  include/linux/intel-svm.h   |   7 ++
+>  include/linux/ioasid.h      |  66 ++++++++++++
+>  include/linux/iommu.h       | 127 +++++++++++++++++++++++
+>  include/uapi/linux/iommu.h  | 248 ++++++++++++++++++++++++++++++++++++++++++++
+>  16 files changed, 1559 insertions(+), 58 deletions(-)
+>  create mode 100644 drivers/base/ioasid.c
+>  create mode 100644 include/linux/ioasid.h
+>  create mode 100644 include/uapi/linux/iommu.h
+> 
+> -- 
+> 2.7.4
+> 
 
-Any suggestion, if it safe to take these changes through mm tree ? or any
-other tree is preferred ?
-
->
-> >
-> >  arch/arm/mm/dma-mapping.c                          | 22 ++----
-> >  drivers/firewire/core-iso.c                        | 15 +---
-> >  drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
-> >  drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
-> >  drivers/iommu/dma-iommu.c                          | 12 +---
-> >  drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
-> >  .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
-> >  drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
-> >  drivers/xen/gntdev.c                               | 11 ++-
-> >  drivers/xen/privcmd-buf.c                          |  8 +--
-> >  include/linux/mm.h                                 |  4 ++
-> >  mm/memory.c                                        | 81 ++++++++++++++++++++++
-> >  mm/nommu.c                                         | 14 ++++
-> >  13 files changed, 134 insertions(+), 103 deletions(-)
-> >
-> > --
-> > 1.9.1
-> >
+-- 
+With Best Regards,
+Andy Shevchenko
