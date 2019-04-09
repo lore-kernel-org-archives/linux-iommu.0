@@ -1,87 +1,78 @@
-From: Thomas Hellstrom <thellstrom@vmware.com>
-Subject: Re: revert dma direct internals abuse
-Date: Tue, 9 Apr 2019 14:17:40 +0000
-Message-ID: <466e658c73607fca5112d718972e87c0b78653ad.camel@vmware.com>
-References: <20190408105525.5493-1-hch@lst.de>
-         <7d5f35da4a6b58639519f0764c7edbfe4dd1ba02.camel@vmware.com>
-         <20190409095740.GE6827@lst.de>
-         <5f0837ffc135560c764c38849eead40269cebb48.camel@vmware.com>
-         <20190409133157.GA10876@lst.de>
+From: Andriy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 15/18] iommu/vt-d: Add bind guest PASID support
+Date: Tue, 9 Apr 2019 17:52:39 +0300
+Message-ID: <20190409145239.GP9224@smile.fi.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1554767973-30125-16-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190409133157.GA10876@lst.de>
-Content-Language: en-US
-Content-ID: <EFF776B10FD27C4D84FB452D0A206EF9@namprd05.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "hch@lst.de" <hch@lst.de>
-Cc: "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Deepak Singh Rawat <drawat@vmware.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1554767973-30125-16-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Liu-XvqNBM/wLWRrdx17CPfAsdBPR1lH4CV8@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCAyMDE5LTA0LTA5IGF0IDE1OjMxICswMjAwLCBoY2hAbHN0LmRlIHdyb3RlOg0KPiBP
-biBUdWUsIEFwciAwOSwgMjAxOSBhdCAwMTowNDo1MVBNICswMDAwLCBUaG9tYXMgSGVsbHN0cm9t
-IHdyb3RlOg0KPiA+IE9uIHRoZSBWTXdhcmUgcGxhdGZvcm0gd2UgaGF2ZSB0d28gcG9zc2libGUg
-dklPTU1VUywgdGhlIEFNRCBpb21tdQ0KPiA+IGFuZA0KPiA+IEludGVsIFZURCwgR2l2ZW4gdGhv
-c2UgY29uZGl0aW9ucyBJIGJlbGl2ZSB0aGUgcGF0Y2ggaXMNCj4gPiBmdW5jdGlvbmFsbHkNCj4g
-PiBjb3JyZWN0LiBXZSBjYW4ndCBjb3ZlciB0aGUgQU1EIGNhc2Ugd2l0aCBpbnRlbF9pb21tdV9l
-bmFibGVkLg0KPiA+IEZ1cnRoZXJtb3JlIHRoZSBvbmx5IGZvcm0gb2YgaW5jb2hlcmVuY3kgdGhh
-dCBjYW4gYWZmZWN0IG91cg0KPiA+IGdyYXBoaWNzDQo+ID4gZGV2aWNlIGlzIHNvbWVvbmUgZm9y
-Y2luZyBTV0lPVExCIGluIHdoaWNoIGNhc2UgdGhhdCBwZXJzb24gd291bGQNCj4gPiBiZQ0KPiA+
-IGhhcHBpZXIgd2l0aCBzb2Z0d2FyZSByZW5kZXJpbmcuIEluIGFueSBjYXNlLCBvYnNlcnZpbmcg
-dGhlIGZhY3QNCj4gPiB0aGF0DQo+ID4gdGhlIGRpcmVjdF9vcHMgYXJlIG5vdCB1c2VkIG1ha2Vz
-IHN1cmUgdGhhdCBTV0lPVExCIGlzIG5vdCB1c2VkLg0KPiA+IEtub3dpbmcgdGhhdCB3ZSdyZSBv
-biB0aGUgVk13YXJlIHBsYXRmb3JtLCB3ZSdyZSBjb2hlcmVudCBhbmQgY2FuDQo+ID4gc2FmZWx5
-IGhhdmUgdGhlIGRtYSBsYXllciBkbyBkbWEgYWRkcmVzcyB0cmFuc2xhdGlvbiBmb3IgdXMuIEFs
-bA0KPiA+IHRoaXMNCj4gPiBpbmZvcm1hdGlvbiB3YXMgbm90IGV4cGxpY2lsdHkgd3JpdHRlbiBp
-biB0aGUgY2hhbmdlbG9nLCBuby4NCj4gDQo+IFdlIGhhdmUgYSBzZXJpZXMgcGVuZGluZyB0aGF0
-IG1pZ2h0IGJvdW5jZSB5b3VyIGJ1ZmZlcnMgZXZlbiB3aGVuDQo+IHVzaW5nIHRoZSBJbnRlbCBJ
-T01NVSwgd2hpY2ggc2hvdWxkIGV2ZW50dWFsbHkgYWxzbyBmaW5kIGl0cyB3YXkNCj4gdG8gb3Ro
-ZXIgSU9NTVVzOg0KPiANCj4gICAgIA0KPiBodHRwczovL25hbTA0LnNhZmVsaW5rcy5wcm90ZWN0
-aW9uLm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZsaXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnJTJGcGlwZXJtYWlsJTJGaW9tbXUlMkYyMDE5LU1hcmNoJTJGMDM0MDkwLmh0bWwmYW1wO2Rh
-dGE9MDIlN0MwMSU3Q3RoZWxsc3Ryb20lNDB2bXdhcmUuY29tJTdDOTkzM2VlN2I4MDU4NDI2MDdl
-YTkwOGQ2YmNlZmM1MDUlN0NiMzkxMzhjYTNjZWU0YjRhYTRkNmNkODNkOWRkNjJmMCU3QzAlN0Mw
-JTdDNjM2OTA0MTM1MzQ1MDEwNjg3JmFtcDtzZGF0YT1QeDUwMCUyQjFGakwlMkZaTGVkVWRiQVh6
-NGElMkJUNURhWkJGZjZ3bmVzVHlGdlpZJTNEJmFtcDtyZXNlcnZlZD0wDQoNCklmIHRoYXQncyB0
-aGUgY2FzZSwgSSB0aGluayBtb3N0IG9mIHRoZSBncmFwaGljcyBkcml2ZXJzIHdpbGwgc3RvcA0K
-ZnVuY3Rpb25pbmcuIEkgZG9uJ3QgdGhpbmsgcGVvcGxlIHdvdWxkIHdhbnQgdGhhdCwgYW5kIGV2
-ZW4gaWYgdGhlDQpncmFwaGljcyBkcml2ZXJzIGFyZSAidG8gYmxhbWUiIGR1ZSB0byBub3QgaW1w
-bGVtZW50aW5nIHRoZSBzeW5jIGNhbGxzLA0KSSB0aGluayB0aGUgd29yayBpbnZvbHZlZCB0byBn
-ZXQgdGhpbmdzIHJpZ2h0IGlzIGltcHJlc3NpdmUgaWYgYXQgYWxsDQpwb3NzaWJsZS4NCg0KPiAN
-Cj4gPiBJbiBhbnkgY2FzZSwgYXNzdW1pbmcgdGhhdCB0aGF0IHBhdGNoIGlzIHJldmVydGVkIGR1
-ZSB0byB0aGUNCj4gPiBsYXllcmluZw0KPiA+IHZpb2xhdGlvbiwgQXJlIHlvdSB3aWxsaW5nIHRv
-IGhlbHAgb3V0IHdpdGggYSBzbWFsbCBBUEkgdG8gZGV0ZWN0DQo+ID4gdGhlDQo+ID4gc2l0dWF0
-aW9uIHdoZXJlIHN0cmVhbWluZyBETUEgaXMgaW5jb2hlcmVudD8NCj4gDQo+IFRoZSBzaG9ydCBi
-dXQgc2FkIGFuc3dlciBpcyB0aGF0IHdlIGNhbid0IGV2ZXIgZ3VhcmFudGVlIHRoYXQgeW91DQo+
-IGNhbiBza2lwIHRoZSBkbWFfKnN5bmNfKiBjYWxscy4gIFRoZXJlIGFyZSB0b28gbWFueSBmYWN0
-b3JzIGluIHBsYXkNCj4gdGhhdCBtaWdodCByZXF1aXJlIGl0IGF0IGFueSB0aW1lIC0gd29ya2lu
-ZyBhcm91bmQgdW5hbGlnbmVkDQo+IGFkZHJlc3Nlcw0KPiBpbiBpb21tdXMsIENQVXMgdGhhdCBh
-cmUgY29oZXJlbnQgZm9yIHNvbWUgZGV2aWNlIGFuZCBub3Qgc29tZSwNCj4gYWRkcmVzc2luZw0K
-PiBsaW1pdGF0aW9ucyBib3RoIGluIHBoeXNpY2FsIENQVXMgYW5kIFZNcyAoc2VlIHRoZSB2YXJp
-b3VzICJzZWN1cmUNCj4gVk0iDQo+IGNvbmNlcHRzIGZsb2F0aW5nIGFyb3VuZCBhdCB0aGUgbW9t
-ZW50KS4NCj4gDQo+IElmIHlvdSB3YW50IHRvIGF2b2lkIHRoZSBkbWFfKnN5bmNfKiBjYWxscyB5
-b3UgbXVzdCB1c2UNCj4gZG1hX2FsbG9jX2NvaGVyZW50IHRvIGFsbG9jYXRlIHRoZSBtZW1vcnku
-ICBOb3RlIHRoYXQgdGhlIG1lbW9yeSBmb3INCj4gZG1hX2FsbG9jX2NvaGVyZW50IGFjdHVhbGx5
-IGNvbWVzIGZyb20gdGhlIG5vcm1hbCBwYWdlIHBvb2wgbW9zdCBvZg0KPiB0aGUgdGltZSwgYW5k
-IGZvciBjZXJ0YWluIG9uIHg4Niwgd2hpY2ggc2VlbXMgdG8gYmUgd2hhdCB5b3UgY2FyZQ0KPiBh
-Ym91dC4gIFRoZSB0aW1lcyBvZiBpdCBkaXBwaW5nIGludG8gdGhlIHRpbnkgc3dpb3RsYiBwb29s
-IGFyZSBsb25nDQo+IGdvbmUuICBTbyBhdCBsZWFzdCBmb3IgeW91IEkgc2VlIGFic29sdXRlbHkg
-bm8gcmVhc29uIHRvIG5vdCBzaW1wbHkNCj4gYWx3YXlzIHVzZSBkbWFfYWxsb2NfY29oZXJlbnQg
-dG8gc3RhcnQgd2l0aC4gIEZvciBvdGhlciB1c2VzIHRoYXQNCj4gaW52b2x2ZSBwbGF0Zm9ybXMg
-d2l0aG91dCBETUEgY29oZXJlbnQgZGV2aWNlcyBsaWtlIGFybSB0aGUgdHJhZGVvZmZzDQo+IG1p
-Z2h0IGJlIGEgbGl0dGxlIGRpZmZlcmVudC4NCg0KVGhlcmUgYXJlIHR3byB0aGluZ3MgdGhhdCBj
-b25jZXJucyBtZSB3aXRoIGRtYV9hbGxvY19jb2hlcmVudDoNCg0KMSkgSXQgc2VlbXMgdG8gd2Fu
-dCBwYWdlcyBtYXBwZWQgZWl0aGVyIGluIHRoZSBrZXJuZWwgbWFwIG9yIHZtYXBwZWQuDQpHcmFw
-aGljcyBkcml2ZXJzIGFsbG9jYXRlIGh1Z2UgYW1vdW50cyBvZiBtZW1vcnksIFR5cGljYWxseSB1
-cCB0byA1MCUNCm9mIHN5c3RlbSBtZW1vcnkgb3IgbW9yZS4gSW4gYSAzMiBiaXQgUEFFIHN5c3Rl
-bSBJJ20gYWZyYWlkIG9mIHJ1bm5pbmcNCm91dCBvZiB2bWFwIHNwYWNlIGFzIHdlbGwgYXMgbm90
-IGJlaW5nIGFibGUgdG8gYWxsb2NhdGUgYXMgbXVjaCBtZW1vcnkNCmFzIEkgd2FudC4gUGVyaGFw
-cyBhIGRtYV9hbGxvY19jb2hlcmVudCgpIGludGVyZmFjZSB0aGF0IHJldHVybnMgYSBwYWdlDQpy
-YXRoZXIgdGhhbiBhIHZpcnR1YWwgYWRkcmVzcyB3b3VsZCBkbyB0aGUgdHJpY2suDQoNCjIpIEV4
-cG9ydGluZyB1c2luZyBkbWEtYnVmLiBBIHBhZ2UgYWxsb2NhdGVkIHVzaW5nIGRtYV9hbGxvY19j
-b2hlcmVudCgpDQpmb3Igb25lIGRldmljZSBtaWdodCBub3QgYmUgY29oZXJlbnQgZm9yIGFub3Ro
-ZXIgZGV2aWNlLiBXaGF0IGhhcHBlbnMNCmlmIEkgYWxsb2NhdGUgYSBwYWdlIHVzaW5nIGRtYV9h
-bGxvY19jb2hlcmVudCgpIGZvciBkZXZpY2UgMSBhbmQgdGhlbg0Kd2FudCB0byBtYXAgaXQgdXNp
-bmcgZG1hX21hcF9wYWdlKCkgZm9yIGRldmljZSAyPw0KDQpUaGFua3MsDQpUaG9tYXMNCg0KDQoN
-Cg==
+On Mon, Apr 08, 2019 at 04:59:30PM -0700, Jacob Pan wrote:
+> When supporting guest SVA with emulated IOMMU, the guest PASID
+> table is shadowed in VMM. Updates to guest vIOMMU PASID table
+> will result in PASID cache flush which will be passed down to
+> the host as bind guest PASID calls.
+> 
+> For the SL page tables, it will be harvested from device's
+> default domain (request w/o PASID), or aux domain in case of
+> mediated device.
+> 
+>     .-------------.  .---------------------------.
+>     |   vIOMMU    |  | Guest process CR3, FL only|
+>     |             |  '---------------------------'
+>     .----------------/
+>     | PASID Entry |--- PASID cache flush -
+>     '-------------'                       |
+>     |             |                       V
+>     |             |                CR3 in GPA
+>     '-------------'
+> Guest
+> ------| Shadow |--------------------------|--------
+>       v        v                          v
+> Host
+>     .-------------.  .----------------------.
+>     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+>     |             |  '----------------------'
+>     .----------------/  |
+>     | PASID Entry |     V (Nested xlate)
+>     '----------------\.------------------------------.
+>     |             |   |SL for GPA-HPA, default domain|
+>     |             |   '------------------------------'
+>     '-------------'
+> Where:
+>  - FL = First level/stage one page tables
+>  - SL = Second level/stage two page tables
+
+> +		list_for_each_entry(sdev, &svm->devs, list) {
+> +			if (dev == sdev->dev) {
+	...
+> +			}
+> +		}
+
+This pattern occurs at least twice, perhaps something like
+
+#define for_each_svm_dev()			\
+	list_for_each_entry()			\
+		if (dev != sdev->dev) {} else
+
+?
+
+-- 
+With Best Regards,
+Andy Shevchenko
