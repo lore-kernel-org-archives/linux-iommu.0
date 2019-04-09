@@ -1,330 +1,113 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 06/18] iommu: introduce device fault report API
-Date: Mon,  8 Apr 2019 16:59:21 -0700
-Message-ID: <1554767973-30125-7-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [RESEND PATCH v4 0/9] mm: Use vm_map_pages() and
+ vm_map_pages_zero() API
+Date: Tue, 9 Apr 2019 11:47:37 +0530
+Message-ID: <CAFqt6zbDk7OAdk-WXG50Frppny0DOpdwR1vnTS7pCpjf66j3aQ@mail.gmail.com>
+References: <cover.1552921225.git.jrdr.linux@gmail.com> <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Eric Auger <eric.auger@redhat.com>
+To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org
+Cc: linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Traditionally, device specific faults are detected and handled within
-their own device drivers. When IOMMU is enabled, faults such as DMA
-related transactions are detected by IOMMU. There is no generic
-reporting mechanism to report faults back to the in-kernel device
-driver or the guest OS in case of assigned devices.
+Hi Andrew/ Michal,
 
-Faults detected by IOMMU is based on the transaction's source ID which
-can be reported at per device basis, regardless of the device type is a
-PCI device or not.
+On Mon, Apr 1, 2019 at 10:56 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
+>
+> Hi Andrew,
+>
+> On Tue, Mar 19, 2019 at 7:47 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
+> >
+> > Previouly drivers have their own way of mapping range of
+> > kernel pages/memory into user vma and this was done by
+> > invoking vm_insert_page() within a loop.
+> >
+> > As this pattern is common across different drivers, it can
+> > be generalized by creating new functions and use it across
+> > the drivers.
+> >
+> > vm_map_pages() is the API which could be used to map
+> > kernel memory/pages in drivers which has considered vm_pgoff.
+> >
+> > vm_map_pages_zero() is the API which could be used to map
+> > range of kernel memory/pages in drivers which has not considered
+> > vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
+> >
+> > We _could_ then at a later "fix" these drivers which are using
+> > vm_map_pages_zero() to behave according to the normal vm_pgoff
+> > offsetting simply by removing the _zero suffix on the function
+> > name and if that causes regressions, it gives us an easy way to revert.
+> >
+> > Tested on Rockchip hardware and display is working fine, including talking
+> > to Lima via prime.
+> >
+> > v1 -> v2:
+> >         Few Reviewed-by.
+> >
+> >         Updated the change log in [8/9]
+> >
+> >         In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
+> >         to select a buffer, not as a in-buffer offset by design
+> >         and it always want to mmap a whole buffer from its beginning.
+> >         Added additional changes after discussing with Marek and
+> >         vm_map_pages() could be used instead of vm_map_pages_zero().
+> >
+> > v2 -> v3:
+> >         Corrected the documentation as per review comment.
+> >
+> >         As suggested in v2, renaming the interfaces to -
+> >         *vm_insert_range() -> vm_map_pages()* and
+> >         *vm_insert_range_buggy() -> vm_map_pages_zero()*.
+> >         As the interface is renamed, modified the code accordingly,
+> >         updated the change logs and modified the subject lines to use the
+> >         new interfaces. There is no other change apart from renaming and
+> >         using the new interface.
+> >
+> >         Patch[1/9] & [4/9], Tested on Rockchip hardware.
+> >
+> > v3 -> v4:
+> >         Fixed build warnings on patch [8/9] reported by kbuild test robot.
+> >
+> > Souptick Joarder (9):
+> >   mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
+> >   arm: mm: dma-mapping: Convert to use vm_map_pages()
+> >   drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
+> >   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
+> >   drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
+> >   iommu/dma-iommu.c: Convert to use vm_map_pages()
+> >   videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
+> >   xen/gntdev.c: Convert to use vm_map_pages()
+> >   xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
+>
+> Is it fine to take these patches into mm tree for regression ?
 
-The fault types include recoverable (e.g. page request) and
-unrecoverable faults(e.g. access error). In most cases, faults can be
-handled by IOMMU drivers internally. The primary use cases are as
-follows:
-1. page request fault originated from an SVM capable device that is
-assigned to guest via vIOMMU. In this case, the first level page tables
-are owned by the guest. Page request must be propagated to the guest to
-let guest OS fault in the pages then send page response. In this
-mechanism, the direct receiver of IOMMU fault notification is VFIO,
-which can relay notification events to QEMU or other user space
-software.
+v4 of this series has not received any further comments/ kbuild error
+in last 8 weeks (including
+the previously posted v4).
 
-2. faults need more subtle handling by device drivers. Other than
-simply invoke reset function, there are needs to let device driver
-handle the fault with a smaller impact.
+Any suggestion, if it safe to take these changes through mm tree ? or any
+other tree is preferred ?
 
-This patchset is intended to create a generic fault report API such
-that it can scale as follows:
-- all IOMMU types
-- PCI and non-PCI devices
-- recoverable and unrecoverable faults
-- VFIO and other other in kernel users
-- DMA & IRQ remapping (TBD)
-The original idea was brought up by David Woodhouse and discussions
-summarized at https://lwn.net/Articles/608914/.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
-[adapt to new iommu_fault fault field, test fault_param on
- iommu_unregister_device_fault_handler]
----
- drivers/iommu/iommu.c | 154 +++++++++++++++++++++++++++++++++++++++++++++++++-
- include/linux/iommu.h |  36 +++++++++++-
- 2 files changed, 188 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 109de67..ac7e6b3 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -648,6 +648,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 		goto err_free_name;
- 	}
- 
-+	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
-+	if (!dev->iommu_param) {
-+		ret = -ENOMEM;
-+		goto err_free_name;
-+	}
-+	mutex_init(&dev->iommu_param->lock);
-+
- 	kobject_get(group->devices_kobj);
- 
- 	dev->iommu_group = group;
-@@ -678,6 +685,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	mutex_unlock(&group->mutex);
- 	dev->iommu_group = NULL;
- 	kobject_put(group->devices_kobj);
-+	kfree(dev->iommu_param);
- err_free_name:
- 	kfree(device->name);
- err_remove_link:
-@@ -724,7 +732,7 @@ void iommu_group_remove_device(struct device *dev)
- 	sysfs_remove_link(&dev->kobj, "iommu_group");
- 
- 	trace_remove_device_from_group(group->id, dev);
--
-+	kfree(dev->iommu_param);
- 	kfree(device->name);
- 	kfree(device);
- 	dev->iommu_group = NULL;
-@@ -859,6 +867,150 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
- EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
- 
- /**
-+ * iommu_register_device_fault_handler() - Register a device fault handler
-+ * @dev: the device
-+ * @handler: the fault handler
-+ * @data: private data passed as argument to the handler
-+ *
-+ * When an IOMMU fault event is received, call this handler with the fault event
-+ * and data as argument. The handler should return 0 on success. If the fault is
-+ * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also complete
-+ * the fault by calling iommu_page_response() with one of the following
-+ * response code:
-+ * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
-+ * - IOMMU_PAGE_RESP_INVALID: terminate the fault
-+ * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
-+ *   page faults if possible.
-+ *
-+ * Return 0 if the fault handler was installed successfully, or an error.
-+ */
-+int iommu_register_device_fault_handler(struct device *dev,
-+					iommu_dev_fault_handler_t handler,
-+					void *data)
-+{
-+	struct iommu_param *param = dev->iommu_param;
-+	int ret = 0;
-+
-+	/*
-+	 * Device iommu_param should have been allocated when device is
-+	 * added to its iommu_group.
-+	 */
-+	if (!param)
-+		return -EINVAL;
-+
-+	mutex_lock(&param->lock);
-+	/* Only allow one fault handler registered for each device */
-+	if (param->fault_param) {
-+		ret = -EBUSY;
-+		goto done_unlock;
-+	}
-+
-+	get_device(dev);
-+	param->fault_param =
-+		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
-+	if (!param->fault_param) {
-+		put_device(dev);
-+		ret = -ENOMEM;
-+		goto done_unlock;
-+	}
-+	mutex_init(&param->fault_param->lock);
-+	param->fault_param->handler = handler;
-+	param->fault_param->data = data;
-+	INIT_LIST_HEAD(&param->fault_param->faults);
-+
-+done_unlock:
-+	mutex_unlock(&param->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
-+
-+/**
-+ * iommu_unregister_device_fault_handler() - Unregister the device fault handler
-+ * @dev: the device
-+ *
-+ * Remove the device fault handler installed with
-+ * iommu_register_device_fault_handler().
-+ *
-+ * Return 0 on success, or an error.
-+ */
-+int iommu_unregister_device_fault_handler(struct device *dev)
-+{
-+	struct iommu_param *param = dev->iommu_param;
-+	int ret = 0;
-+
-+	if (!param)
-+		return -EINVAL;
-+
-+	mutex_lock(&param->lock);
-+
-+	if (!param->fault_param)
-+		goto unlock;
-+
-+	/* we cannot unregister handler if there are pending faults */
-+	if (!list_empty(&param->fault_param->faults)) {
-+		ret = -EBUSY;
-+		goto unlock;
-+	}
-+
-+	kfree(param->fault_param);
-+	param->fault_param = NULL;
-+	put_device(dev);
-+unlock:
-+	mutex_unlock(&param->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
-+
-+
-+/**
-+ * iommu_report_device_fault() - Report fault event to device
-+ * @dev: the device
-+ * @evt: fault event data
-+ *
-+ * Called by IOMMU model specific drivers when fault is detected, typically
-+ * in a threaded IRQ handler.
-+ *
-+ * Return 0 on success, or an error.
-+ */
-+int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-+{
-+	int ret = 0;
-+	struct iommu_fault_event *evt_pending;
-+	struct iommu_fault_param *fparam;
-+
-+	/* iommu_param is allocated when device is added to group */
-+	if (!dev->iommu_param | !evt)
-+		return -EINVAL;
-+	/* we only report device fault if there is a handler registered */
-+	mutex_lock(&dev->iommu_param->lock);
-+	if (!dev->iommu_param->fault_param ||
-+		!dev->iommu_param->fault_param->handler) {
-+		ret = -EINVAL;
-+		goto done_unlock;
-+	}
-+	fparam = dev->iommu_param->fault_param;
-+	if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
-+	    evt->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE) {
-+		evt_pending = kmemdup(evt, sizeof(struct iommu_fault_event),
-+				GFP_KERNEL);
-+		if (!evt_pending) {
-+			ret = -ENOMEM;
-+			goto done_unlock;
-+		}
-+		mutex_lock(&fparam->lock);
-+		list_add_tail(&evt_pending->list, &fparam->faults);
-+		mutex_unlock(&fparam->lock);
-+	}
-+	ret = fparam->handler(evt, fparam->data);
-+done_unlock:
-+	mutex_unlock(&dev->iommu_param->lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-+
-+/**
-  * iommu_group_id - Return ID for a group
-  * @group: the group to ID
-  *
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c8108e7..f12f251 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -260,11 +260,13 @@ struct iommu_device {
-  * - DMA remapping and IRQ remapping faults
-  *
-  * @fault: fault descriptor
-+ * @list pending fault event list, used for tracking responses
-  * @iommu_private: used by the IOMMU driver for storing fault-specific
-  *                 data. Users should not modify this field before
-  *                 sending the fault response.
-  */
- struct iommu_fault_event {
-+	struct list_head list;
- 	struct iommu_fault fault;
- 	u64 iommu_private;
- };
-@@ -273,10 +275,13 @@ struct iommu_fault_event {
-  * struct iommu_fault_param - per-device IOMMU fault data
-  * @dev_fault_handler: Callback function to handle IOMMU faults at device level
-  * @data: handler private data
-- *
-+ * @faults: holds the pending faults which needs response, e.g. page response.
-+ * @lock: protect pending PRQ event list
-  */
- struct iommu_fault_param {
- 	iommu_dev_fault_handler_t handler;
-+	struct list_head faults;
-+	struct mutex lock;
- 	void *data;
- };
- 
-@@ -290,6 +295,7 @@ struct iommu_fault_param {
-  *	struct iommu_fwspec	*iommu_fwspec;
-  */
- struct iommu_param {
-+	struct mutex lock;
- 	struct iommu_fault_param *fault_param;
- };
- 
-@@ -382,6 +388,15 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
- 					 struct notifier_block *nb);
- extern int iommu_group_unregister_notifier(struct iommu_group *group,
- 					   struct notifier_block *nb);
-+extern int iommu_register_device_fault_handler(struct device *dev,
-+					iommu_dev_fault_handler_t handler,
-+					void *data);
-+
-+extern int iommu_unregister_device_fault_handler(struct device *dev);
-+
-+extern int iommu_report_device_fault(struct device *dev,
-+				     struct iommu_fault_event *evt);
-+
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
-@@ -662,6 +677,25 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
- 	return 0;
- }
- 
-+static inline
-+int iommu_register_device_fault_handler(struct device *dev,
-+					iommu_dev_fault_handler_t handler,
-+					void *data)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline int iommu_unregister_device_fault_handler(struct device *dev)
-+{
-+	return 0;
-+}
-+
-+static inline
-+int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int iommu_group_id(struct iommu_group *group)
- {
- 	return -ENODEV;
--- 
-2.7.4
+>
+> >
+> >  arch/arm/mm/dma-mapping.c                          | 22 ++----
+> >  drivers/firewire/core-iso.c                        | 15 +---
+> >  drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
+> >  drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
+> >  drivers/iommu/dma-iommu.c                          | 12 +---
+> >  drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
+> >  .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
+> >  drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
+> >  drivers/xen/gntdev.c                               | 11 ++-
+> >  drivers/xen/privcmd-buf.c                          |  8 +--
+> >  include/linux/mm.h                                 |  4 ++
+> >  mm/memory.c                                        | 81 ++++++++++++++++++++++
+> >  mm/nommu.c                                         | 14 ++++
+> >  13 files changed, 134 insertions(+), 103 deletions(-)
+> >
+> > --
+> > 1.9.1
+> >
