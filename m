@@ -1,44 +1,51 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 07/21] dma-iommu: move the arm64 wrappers to common code
-Date: Tue, 9 Apr 2019 18:33:30 +0100
-Message-ID: <eace43d1-417e-c96d-0c13-160973fce077@arm.com>
-References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-8-hch@lst.de>
- <67573dd3-72c7-692d-bc1a-7edb49ff9551@arm.com>
- <20190409172309.GD14679@lst.de>
+From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 08/18] iommu: Introduce cache_invalidate API
+Date: Tue, 9 Apr 2019 20:37:55 +0300
+Message-ID: <20190409173755.GX9224@smile.fi.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1554767973-30125-9-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20190409100718.GE9224@smile.fi.intel.com>
+ <20190409094328.03731c3c@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190409172309.GD14679@lst.de>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20190409094328.03731c3c@jacob-builder>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, Liu@smile.fi.intel.com, Eric Auger <eric.auger@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/04/2019 18:23, Christoph Hellwig wrote:
-> On Tue, Apr 09, 2019 at 04:07:02PM +0100, Robin Murphy wrote:
->>> -static inline int iommu_dma_init(void)
->>> +static inline void iommu_setup_dma_ops(struct device *dev, u64 dma_base,
->>> +		u64 size, const struct iommu_ops *ops)
->>>    {
->>> -	return 0;
->>>    }
->>
->> I don't think it makes sense to have a stub for that - AFAICS it should
->> only ever be called form arch code with an inherent "select IOMMU_DMA"
->> (much like the stuff which isn't stubbed currently).
->>
->> Otherwise, I'm about 97% sure the rest of the move looks OK - thanks for
->> splitting things up.
-> 
-> arm64 only selects IOMMU_DMA if IOMMU_SUPPORT is selected, which can
-> be disabled.  So to keep some (unusual) arm64 configs compiling we'll need
-> the stub..
+On Tue, Apr 09, 2019 at 09:43:28AM -0700, Jacob Pan wrote:
+> On Tue, 9 Apr 2019 13:07:18 +0300
+> Andriy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Mon, Apr 08, 2019 at 04:59:23PM -0700, Jacob Pan wrote:
 
-Urgh, right, it worked out before because arm64 stubbed its own caller 
-of iommu_dma_init_domain() internally... Oh well - I guess there's no 
-nicer alternative, and we have always treated arch_setup_dma_ops() that way.
+> > > +int iommu_cache_invalidate(struct iommu_domain *domain, struct
+> > > device *dev,
+> > > +			   struct iommu_cache_invalidate_info
+> > > *inv_info) +{
+> > > +	int ret = 0;  
+> > 
+> > Redundant assignment.
+> > 
+> I am not a security expert but initialization of local variable can be
+> more secure.
+> I was looking at this talk.
+> https://outflux.net/slides/2018/lss/danger.pdf
+> https://cwe.mitre.org/data/definitions/457.html
 
-Robin.
+I hardly see any of these applied to your case here.
+Care to show what I'm missing?
+
+> > > +	if (unlikely(!domain->ops->cache_invalidate))
+> > > +		return -ENODEV;
+> > > +
+> > > +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
+> > > +
+> > > +	return ret;
+> > > +}  
+
+-- 
+With Best Regards,
+Andy Shevchenko
