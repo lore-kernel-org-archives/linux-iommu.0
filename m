@@ -2,95 +2,62 @@ Return-Path: <SRS0=aFDh=SL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92047C282DA
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 06:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895FEC282DA
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 09:56:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5A78121874
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 06:17:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iKpuC37b"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A78121874
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5DD6120830
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 09:56:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DD6120830
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1B134E40;
-	Tue,  9 Apr 2019 06:17:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2D6BA106B;
+	Tue,  9 Apr 2019 09:56:31 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E157494B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D88431069
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 06:17:52 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f68.google.com (mail-lf1-f68.google.com
-	[209.85.167.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CAA64CF
+	Tue,  9 Apr 2019 09:56:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4BB85F4
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 06:17:50 +0000 (UTC)
-Received: by mail-lf1-f68.google.com with SMTP id r25so2758618lfn.13
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 08 Apr 2019 23:17:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=XVUI5sWl/mko1IjkbRDCczAOo+DWIKHvVwzZKO9ey8M=;
-	b=iKpuC37b/W9gnQHlKyXQsrbKJd+/drf2Hv8V3oXIdmLPXDVZ9PIoNs12K3H/oeXZSd
-	ntqA/DPibQG3kCHwVQ1+u5E6p3D1xq3D5anzZWBFdTux4ntxY/u+UD79r72OeMCnFR4v
-	+v8oEW8Pce6NPS6evVaWwTmOR8s28EpacqA8lf/PLOsdQOlml8q7m5VaVbiRssH/Cj+I
-	lIdgJUEIvd3wzqVYEklHNeJxatPwj86ktRvsFhosFc+61nBn7yd3rTm8VkMoXQXoLx6I
-	AfzL866vMcmHkMBVnb2EODlFqUt/Tf6sb5rLwjofq6ZQKlmgWDWmVXOru/yi09PGWw6w
-	Hk4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=XVUI5sWl/mko1IjkbRDCczAOo+DWIKHvVwzZKO9ey8M=;
-	b=VmhEv39VeJTYRcLJPT//H5lJbcchOW2/9glA9W9yB/XQSTuwdk7RKTMPdDy6nyB7QV
-	VB5WO/vPsN/cWxZKtBWnYP+aK2WFkP94v0PiIMQbAllpHjwTecBxAJX0bmsaT/lytC+j
-	TB1WoX89zVLZ/n380P+YfX0u5H0uUMGKFtN8QgbzI4dDY0AlTUP86QnMUdhsbYwr+MqY
-	m0ku1EtErGJQzFOiAeS+Tw51X6TeyzThz2PofL3xpr/eEjhKQy0DBmrSPISVEi+nS/rn
-	zzVOvQme/ifYxPYDgaArV6wdGjtNXtX6ZyvaqMttJO2aW6suiRk8C2GkSBhJ56SjPRkR
-	hdEg==
-X-Gm-Message-State: APjAAAWPY/0k9p6UYxJHbAHFZVayyRyzA+41ftOQ3x8IrKe0aYnF3MFt
-	EiPzHt+M/pDFKoe3SuEO7N0YCVxj0pryl+xvOGk=
-X-Google-Smtp-Source: APXvYqzRVyYQF95nCiqgET1kk0SjOcmMhC+aOUtHZXTsDUtBuKrygbCT0gC/J5XPE8cvaOujK9I/d9QG6rJVxJTRI3I=
-X-Received: by 2002:a19:f013:: with SMTP id p19mr12738522lfc.36.1554790669149; 
-	Mon, 08 Apr 2019 23:17:49 -0700 (PDT)
+	Tue,  9 Apr 2019 09:56:29 +0000 (UTC)
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	09 Apr 2019 02:56:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,329,1549958400"; d="scan'208";a="149286846"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
+	by orsmga002.jf.intel.com with ESMTP; 09 Apr 2019 02:56:25 -0700
+Received: from andy by smile with local (Exim 4.92)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1hDnUN-0001SX-QL; Tue, 09 Apr 2019 12:56:23 +0300
+Date: Tue, 9 Apr 2019 12:56:23 +0300
+From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 00/18] Shared virtual address IOMMU and VT-d support
+Message-ID: <20190409095623.GB9224@smile.fi.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
-	<CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
-In-Reply-To: <CAFqt6zaV5zcc495BBk1Wi7p+zOF8y=P5KRfKkvwY=stagUFKWQ@mail.gmail.com>
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Date: Tue, 9 Apr 2019 11:47:37 +0530
-Message-ID:
- <CAFqt6zbDk7OAdk-WXG50Frppny0DOpdwR1vnTS7pCpjf66j3aQ@mail.gmail.com>
-Subject: Re: [RESEND PATCH v4 0/9] mm: Use vm_map_pages() and
-	vm_map_pages_zero() API
-To: Andrew Morton <akpm@linux-foundation.org>,
-	Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>,
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, 
-	Vlastimil Babka <vbabka@suse.cz>, Rik van Riel <riel@surriel.com>, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, 
-	Peter Zijlstra <peterz@infradead.org>,
-	Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, 
-	iamjoonsoo.kim@lge.com, treding@nvidia.com,
-	Kees Cook <keescook@chromium.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de,
-	hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie,
-	oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com,
-	Kyungmin Park <kyungmin.park@samsung.com>, 
-	mchehab@kernel.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>, 
-	Juergen Gross <jgross@suse.com>
-Cc: linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, xen-devel@lists.xen.org,
-	Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org,
-	linux1394-devel@lists.sourceforge.net,
-	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -107,106 +74,133 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409061737.nRQutqfx6iyEdo9H-GTacBVlmh8lT9S44ohesDJ_5Ho@z>
+Message-ID: <20190409095623.hpmx_9k56aMJucf6BiJ04DXirtGGwJRgvO-H_FcDQ0M@z>
 
-Hi Andrew/ Michal,
+On Mon, Apr 08, 2019 at 04:59:15PM -0700, Jacob Pan wrote:
+> Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on Intel
+> platforms allow address space sharing between device DMA and applications.
+> SVA can reduce programming complexity and enhance security.
+> This series is intended to enable SVA virtualization, i.e. shared guest
+> application address space and physical device DMA address. Only IOMMU portion
+> of the changes are included in this series. Additional support is needed in
+> VFIO and QEMU (will be submitted separately) to complete this functionality.
+> 
+> To make incremental changes and reduce the size of each patchset. This series
+> does not inlcude support for page request services.
+> 
+> In VT-d implementation, PASID table is per device and maintained in the host.
+> Guest PASID table is shadowed in VMM where virtual IOMMU is emulated.
 
-On Mon, Apr 1, 2019 at 10:56 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
->
-> Hi Andrew,
->
-> On Tue, Mar 19, 2019 at 7:47 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
-> >
-> > Previouly drivers have their own way of mapping range of
-> > kernel pages/memory into user vma and this was done by
-> > invoking vm_insert_page() within a loop.
-> >
-> > As this pattern is common across different drivers, it can
-> > be generalized by creating new functions and use it across
-> > the drivers.
-> >
-> > vm_map_pages() is the API which could be used to map
-> > kernel memory/pages in drivers which has considered vm_pgoff.
-> >
-> > vm_map_pages_zero() is the API which could be used to map
-> > range of kernel memory/pages in drivers which has not considered
-> > vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
-> >
-> > We _could_ then at a later "fix" these drivers which are using
-> > vm_map_pages_zero() to behave according to the normal vm_pgoff
-> > offsetting simply by removing the _zero suffix on the function
-> > name and if that causes regressions, it gives us an easy way to revert.
-> >
-> > Tested on Rockchip hardware and display is working fine, including talking
-> > to Lima via prime.
-> >
-> > v1 -> v2:
-> >         Few Reviewed-by.
-> >
-> >         Updated the change log in [8/9]
-> >
-> >         In [7/9], vm_pgoff is treated in V4L2 API as a 'cookie'
-> >         to select a buffer, not as a in-buffer offset by design
-> >         and it always want to mmap a whole buffer from its beginning.
-> >         Added additional changes after discussing with Marek and
-> >         vm_map_pages() could be used instead of vm_map_pages_zero().
-> >
-> > v2 -> v3:
-> >         Corrected the documentation as per review comment.
-> >
-> >         As suggested in v2, renaming the interfaces to -
-> >         *vm_insert_range() -> vm_map_pages()* and
-> >         *vm_insert_range_buggy() -> vm_map_pages_zero()*.
-> >         As the interface is renamed, modified the code accordingly,
-> >         updated the change logs and modified the subject lines to use the
-> >         new interfaces. There is no other change apart from renaming and
-> >         using the new interface.
-> >
-> >         Patch[1/9] & [4/9], Tested on Rockchip hardware.
-> >
-> > v3 -> v4:
-> >         Fixed build warnings on patch [8/9] reported by kbuild test robot.
-> >
-> > Souptick Joarder (9):
-> >   mm: Introduce new vm_map_pages() and vm_map_pages_zero() API
-> >   arm: mm: dma-mapping: Convert to use vm_map_pages()
-> >   drivers/firewire/core-iso.c: Convert to use vm_map_pages_zero()
-> >   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_map_pages()
-> >   drm/xen/xen_drm_front_gem.c: Convert to use vm_map_pages()
-> >   iommu/dma-iommu.c: Convert to use vm_map_pages()
-> >   videobuf2/videobuf2-dma-sg.c: Convert to use vm_map_pages()
-> >   xen/gntdev.c: Convert to use vm_map_pages()
-> >   xen/privcmd-buf.c: Convert to use vm_map_pages_zero()
->
-> Is it fine to take these patches into mm tree for regression ?
+This seems missed the comments I gave you internally.
 
-v4 of this series has not received any further comments/ kbuild error
-in last 8 weeks (including
-the previously posted v4).
+> 
+>     .-------------.  .---------------------------.
+>     |   vIOMMU    |  | Guest process CR3, FL only|
+>     |             |  '---------------------------'
+>     .----------------/
+>     | PASID Entry |--- PASID cache flush -
+>     '-------------'                       |
+>     |             |                       V
+>     |             |                CR3 in GPA
+>     '-------------'
+> Guest
+> ------| Shadow |--------------------------|--------
+>       v        v                          v
+> Host
+>     .-------------.  .----------------------.
+>     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+>     |             |  '----------------------'
+>     .----------------/  |
+>     | PASID Entry |     V (Nested xlate)
+>     '----------------\.------------------------------.
+>     |             |   |SL for GPA-HPA, default domain|
+>     |             |   '------------------------------'
+>     '-------------'
+> Where:
+>  - FL = First level/stage one page tables
+>  - SL = Second level/stage two page tables
+> 
+> 
+> This work is based on collaboration with other developers on the IOMMU
+> mailing list. Notably,
+> 
+> [1] [PATCH v6 00/22] SMMUv3 Nested Stage Setup by Eric Auger
+> https://lkml.org/lkml/2019/3/17/124
+> 
+> [2] [RFC PATCH 2/6] drivers core: Add I/O ASID allocator by Jean-Philippe
+> Brucker
+> https://www.spinics.net/lists/iommu/msg30639.html
+> 
+> [3] [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation by Lu Baolu
+> https://lkml.org/lkml/2018/11/12/1921
+> 
+> There are roughly three parts:
+> 1. Generic PASID allocator [1] with extension to support custom allocator
+> 2. IOMMU cache invalidation passdown from guest to host
+> 3. Guest PASID bind for nested translation
+> 
+> All generic IOMMU APIs are reused from [1], which has a v7 just published with
+> no real impact to the patches used here. It is worth noting that unlike sMMU
+> nested stage setup, where PASID table is owned by the guest, VT-d PASID table is
+> owned by the host, individual PASIDs are bound instead of the PASID table.
+> 
+> 
+> Jacob Pan (15):
+>   ioasid: Add custom IOASID allocator
+>   ioasid: Convert ioasid_idr to XArray
+>   driver core: add per device iommu param
+>   iommu: introduce device fault data
+>   iommu: introduce device fault report API
+>   iommu: Introduce attach/detach_pasid_table API
+>   iommu/vt-d: Add custom allocator for IOASID
+>   iommu/vt-d: Replace Intel specific PASID allocator with IOASID
+>   iommu: Add guest PASID bind function
+>   iommu/vt-d: Move domain helper to header
+>   iommu/vt-d: Add nested translation support
+>   iommu/vt-d: Add bind guest PASID support
+>   iommu: add max num of cache and granu types
+>   iommu/vt-d: Support flushing more translation cache types
+>   iommu/vt-d: Add svm/sva invalidate function
+> 
+> Jean-Philippe Brucker (1):
+>   drivers core: Add I/O ASID allocator
+> 
+> Liu, Yi L (1):
+>   iommu: Introduce cache_invalidate API
+> 
+> Lu Baolu (1):
+>   iommu/vt-d: Enlightened PASID allocation
+> 
+>  drivers/base/Kconfig        |   7 ++
+>  drivers/base/Makefile       |   1 +
+>  drivers/base/ioasid.c       | 211 +++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/Kconfig       |   1 +
+>  drivers/iommu/dmar.c        |  48 +++++++++
+>  drivers/iommu/intel-iommu.c | 219 ++++++++++++++++++++++++++++++++++++--
+>  drivers/iommu/intel-pasid.c | 191 +++++++++++++++++++++++++++++-----
+>  drivers/iommu/intel-pasid.h |  24 ++++-
+>  drivers/iommu/intel-svm.c   | 217 +++++++++++++++++++++++++++++++++++---
+>  drivers/iommu/iommu.c       | 207 +++++++++++++++++++++++++++++++++++-
+>  include/linux/device.h      |   3 +
+>  include/linux/intel-iommu.h |  40 +++++--
+>  include/linux/intel-svm.h   |   7 ++
+>  include/linux/ioasid.h      |  66 ++++++++++++
+>  include/linux/iommu.h       | 127 +++++++++++++++++++++++
+>  include/uapi/linux/iommu.h  | 248 ++++++++++++++++++++++++++++++++++++++++++++
+>  16 files changed, 1559 insertions(+), 58 deletions(-)
+>  create mode 100644 drivers/base/ioasid.c
+>  create mode 100644 include/linux/ioasid.h
+>  create mode 100644 include/uapi/linux/iommu.h
+> 
+> -- 
+> 2.7.4
+> 
 
-Any suggestion, if it safe to take these changes through mm tree ? or any
-other tree is preferred ?
+-- 
+With Best Regards,
+Andy Shevchenko
 
->
-> >
-> >  arch/arm/mm/dma-mapping.c                          | 22 ++----
-> >  drivers/firewire/core-iso.c                        | 15 +---
-> >  drivers/gpu/drm/rockchip/rockchip_drm_gem.c        | 17 +----
-> >  drivers/gpu/drm/xen/xen_drm_front_gem.c            | 18 ++---
-> >  drivers/iommu/dma-iommu.c                          | 12 +---
-> >  drivers/media/common/videobuf2/videobuf2-core.c    |  7 ++
-> >  .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 --
-> >  drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++----
-> >  drivers/xen/gntdev.c                               | 11 ++-
-> >  drivers/xen/privcmd-buf.c                          |  8 +--
-> >  include/linux/mm.h                                 |  4 ++
-> >  mm/memory.c                                        | 81 ++++++++++++++++++++++
-> >  mm/nommu.c                                         | 14 ++++
-> >  13 files changed, 134 insertions(+), 103 deletions(-)
-> >
-> > --
-> > 1.9.1
-> >
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
