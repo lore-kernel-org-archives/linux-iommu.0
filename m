@@ -1,49 +1,79 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 05/18] iommu: introduce device fault data
-Date: Tue, 9 Apr 2019 09:44:21 -0700
-Message-ID: <20190409094421.7d5bffca@jacob-builder>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-6-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190409100315.GD9224@smile.fi.intel.com>
+From: Eric Anholt <eric@anholt.net>
+Subject: Re: [PATCH v2 2/3] drm: Add a drm_gem_objects_lookup helper
+Date: Tue, 09 Apr 2019 09:55:27 -0700
+Message-ID: <878swjnmo0.fsf@anholt.net>
+References: <20190401074730.12241-1-robh@kernel.org> <20190401074730.12241-3-robh@kernel.org> <CAKMK7uE7-XV3cZxS8GT_EDa7yojOLPQi+LqkF85h_0z_JL6gYw@mail.gmail.com> <155412649586.24691.809508732198367112@skylake-alporthouse-com> <8736n120jw.fsf@anholt.net> <CAL_Jsq+So-kadir8o8T-YNYkfOYD8vopAS3UWGbSdRVLjH_JGQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190409100315.GD9224-XvqNBM/wLWRrdx17CPfAsdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andriy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Liu-XvqNBM/wLWRrdx17CPfAsdBPR1lH4CV8@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_Jsq+So-kadir8o8T-YNYkfOYD8vopAS3UWGbSdRVLjH_JGQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>, Daniel Vetter <daniel@ffwll.ch>, Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, David Airlie <airlied@linux.ie>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Sean Paul <sean@poorly.run>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Steven Price <steven.price@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 9 Apr 2019 13:03:15 +0300
-Andriy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+--=-=-=
+Content-Type: text/plain
 
-> On Mon, Apr 08, 2019 at 04:59:20PM -0700, Jacob Pan wrote:
-> > Device faults detected by IOMMU can be reported outside the IOMMU
-> > subsystem for further processing. This patch introduces
-> > a generic device fault data structure.
-> > 
-> > The fault can be either an unrecoverable fault or a page request,
-> > also referred to as a recoverable fault.
-> > 
-> > We only care about non internal faults that are likely to be
-> > reported to an external subsystem.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>  
-> 
-> JFYI: we have a Co-developed-by tag as well for better granularity of
-> what certain person/people did.
-> 
-Good to know, thank!
+Rob Herring <robh@kernel.org> writes:
+
+> On Mon, Apr 1, 2019 at 10:43 AM Eric Anholt <eric@anholt.net> wrote:
+>>
+>> Chris Wilson <chris@chris-wilson.co.uk> writes:
+>>
+>> > Quoting Daniel Vetter (2019-04-01 14:06:48)
+>> >> On Mon, Apr 1, 2019 at 9:47 AM Rob Herring <robh@kernel.org> wrote:
+>> >> > +{
+>> >> > +       int i, ret = 0;
+>> >> > +       struct drm_gem_object *obj;
+>> >> > +
+>> >> > +       spin_lock(&filp->table_lock);
+>> >> > +
+>> >> > +       for (i = 0; i < count; i++) {
+>> >> > +               /* Check if we currently have a reference on the object */
+>> >> > +               obj = idr_find(&filp->object_idr, handle[i]);
+>> >> > +               if (!obj) {
+>> >> > +                       ret = -ENOENT;
+>> >
+>> > Unwind previous drm_gem_object_get(), the caller has no idea how many
+>> > were processed before the error.
+>>
+>> I had the same thought, but the pattern we have is that you're loading
+>> into a refcounted struct that will free the BOs when you're done,
+>> anyway.
+>
+> The real bug here is if allocation of the array fails. The BO array
+> may be NULL when the count is not. So this V3D cleanup hunk:
+>
+> for (i = 0; i < exec->bo_count; i++)
+>   drm_gem_object_put_unlocked(&exec->bo[i]->base.base);
+>   kvfree(exec->bo);
+>
+> Needs to be wrapped with 'if (exec->bo)'. We have a similar problem
+> with fence arrays too.
+
+Yeah, seems legit.  Not really going to write new patches when I've got
+month-old critical patches I can't get acked, though. :/
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE/JuuFDWp9/ZkuCBXtdYpNtH8nugFAlyszn8ACgkQtdYpNtH8
+nugquA/8DPK4mN09dn/AZq67osFqFl6wN3K0sqmG6JaW+Opu7DkzH10fmUthRfbD
++q2HSJATWQbIP04FLmCmOp6AeqfWV7aX8jB39ltn3EHxuFb0qdLyFm/Rp6Tyr+sb
+yn+GknjYKzO56+SZFoaIJuBcpZKEUjaxhfr85fgJxfR0nR7B2wH3n+IIRf+dFWeO
+6hmRFNzENYeaPgQCHkNnYLxXnQDIDZ+eScp1Z3CwpU4LCJFEM6LylXx7xordg9qa
+ljfYYT/asSruPYpvTjiQ2fhvlsgFizn6uA4R//Ls45LMtQaT/4gnCFuAI8w8559O
+ppg7QkBHqbUYji7bSZVQzQwp/QNAGwg/aVbaKrLCj1hFRxj73e9VllofndapQV45
+Vv/5CYaG84CntgdN8AK34R1s90NHDRkGJV9A3FaY/9sTk1y7uV+OArcdsChhNNRT
+m4eq1cBGwA4n8ZuxbApcM0m0e6oA6qMxathbeIaTab5UEYnlWl3UTsXaOT0EEuDx
+A0XRCq1X2natvm9Zf40AX9p4WUDH1eNE7DJyIHO7LY2jC++7v2YwWK2T/ccS09tK
+QUAhTvQc4wlCBTIz40s7cWcxPmEWQuhcaAnY6e499HZPiE0RoLarMh42t/fiz+Rp
+Ie3qcv6nRTNQHWJrGCKiKbQEiNK2MSzJxptXA0KGwFcvlp41CcY=
+=vGS6
+-----END PGP SIGNATURE-----
+--=-=-=--
