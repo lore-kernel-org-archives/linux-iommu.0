@@ -1,41 +1,99 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
-Date: Tue, 9 Apr 2019 16:12:51 +0100
-Message-ID: <45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
-References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-3-hch@lst.de>
- <3629087c-a8cb-d66e-840b-cfee125bdf4c@arm.com> <20190407065923.GA9086@lst.de>
+From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 01/18] drivers core: Add I/O ASID allocator
+Date: Tue, 9 Apr 2019 18:21:30 +0300
+Message-ID: <20190409152130.GS9224@smile.fi.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1554767973-30125-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20190409100049.GC9224@smile.fi.intel.com>
+ <20190409100436.GA28683@infradead.org>
+ <20190409103030.GK9224@smile.fi.intel.com>
+ <20190409145308.GZ14111@linux.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190407065923.GA9086@lst.de>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20190409145308.GZ14111@linux.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: "Paul E. McKenney" <paulmck@linux.ibm.com>
+Cc: Christoph Hellwig <hch@infradead.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/04/2019 07:59, Christoph Hellwig wrote:
-> On Fri, Apr 05, 2019 at 06:30:52PM +0100, Robin Murphy wrote:
->> On 27/03/2019 08:04, Christoph Hellwig wrote:
->>> The nr_pages checks should be done for all mmap requests, not just those
->>> using remap_pfn_range.
->>
->> Hmm, the logic in iommu_dma_mmap() inherently returns an error for the "off
->>> = nr_pages" case already. It's also supposed to be robust against the
->> "vma_pages(vma) > nr_pages - off" condition, although by making the partial
->> mapping and treating it as a success, rather than doing nothing and
->> returning an error. What's the exact motivation here?
+On Tue, Apr 09, 2019 at 07:53:08AM -0700, Paul E. McKenney wrote:
+> On Tue, Apr 09, 2019 at 01:30:30PM +0300, Andriy Shevchenko wrote:
+> > On Tue, Apr 09, 2019 at 03:04:36AM -0700, Christoph Hellwig wrote:
+> > > On Tue, Apr 09, 2019 at 01:00:49PM +0300, Andriy Shevchenko wrote:
+> > > > I think it makes sense to add a helper macro to rcupdate.h
+> > > > (and we have several cases in kernel that can utilize it)
+> > > > 
+> > > > #define kfree_non_null_rcu(ptr, rcu_head)		\
+> > > > 	do {						\
+> > > > 		if (ptr)				\
+> > > > 			kfree_rcu(ptr, rcu_head);	\
+> > > > 	} while (0)
+> > > > 
+> > > > as a more common pattern for resource deallocators.
+> > > 
+> > > I think that should move straight into kfree_rcu.  
+> > 
+> > Possible. I didn't dare to offer this due to lack of knowledge how it's used in
+> > other places.
+> > 
+> > > In general
+> > > we expect *free* to deal with NULL pointers transparently, so we
+> > > should do so here as well.
+> > 
+> > Exactly my point, thanks.
 > 
-> Have one error check at the front of the function that is identical
-> to the mmap checks in the other dma_map_ops instances so that:
+> As shown below?
+
+Looks pretty much good to me, thanks!
+Reviewed-by: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+
 > 
->   a) we get the same error behavior for partial requests everywhere
->   b) we can lift these checks into common code in the next round.
+> And now that you mention it, it is a bit surprising that no one has
+> complained before.  ;-)
+> 
+> 							Thanx, Paul
+> 
+> ------------------------------------------------------------------------
+> 
+> commit 23ad938244968e9d2a8001a1c52887c113b182f6
+> Author: Paul E. McKenney <paulmck@linux.ibm.com>
+> Date:   Tue Apr 9 07:48:18 2019 -0700
+> 
+>     rcu: Make kfree_rcu() ignore NULL pointers
+>     
+>     This commit makes the kfree_rcu() macro's semantics be consistent
+>     with the likes of kfree() by adding a check for NULL pointers, so
+>     that kfree_rcu(NULL, ...) is a no-op.
+>     
+>     Reported-by: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+>     Reported-by: Christoph Hellwig <hch@infradead.org>
+>     Signed-off-by: Paul E. McKenney <paulmck@linux.ibm.com>
+> 
+> diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+> index 922bb6848813..c68649b9bcec 100644
+> --- a/include/linux/rcupdate.h
+> +++ b/include/linux/rcupdate.h
+> @@ -828,9 +828,13 @@ static inline notrace void rcu_read_unlock_sched_notrace(void)
+>   * The BUILD_BUG_ON check must not involve any function calls, hence the
+>   * checks are done in macros here.
+>   */
+> -#define kfree_rcu(ptr, rcu_head)					\
+> -	__kfree_rcu(&((ptr)->rcu_head), offsetof(typeof(*(ptr)), rcu_head))
+> -
+> +#define kfree_rcu(ptr, rhf)						\
+> +do {									\
+> +	typeof (ptr) ___p = (ptr);					\
+> +									\
+> +	if (___p)							\
+> +		__kfree_rcu(&((___p)->rhf), offsetof(typeof(*(ptr)), rhf)); \
+> +} while (0)
+>  
+>  /*
+>   * Place this after a lock-acquisition primitive to guarantee that
 > 
 
-Fair enough, but in that case why isn't the dma_mmap_from_coherent() 
-path also covered?
-
-Robin.
+-- 
+With Best Regards,
+Andy Shevchenko
