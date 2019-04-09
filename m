@@ -2,63 +2,72 @@ Return-Path: <SRS0=aFDh=SL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CF6C282CE
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CE8C10F0E
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:04:41 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3A84F20857
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:03:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A84F20857
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6935B2083E
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:04:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="YBZTCpib"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6935B2083E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DD67D25A;
-	Tue,  9 Apr 2019 10:03:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 391C9C11;
+	Tue,  9 Apr 2019 10:04:41 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF8ED22
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 369BB25A
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 10:03:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 60991CF
+	Tue,  9 Apr 2019 10:04:40 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E9896CF
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 10:03:21 +0000 (UTC)
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Apr 2019 03:03:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,329,1549958400"; d="scan'208";a="335126563"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
-	by fmsmga006.fm.intel.com with ESMTP; 09 Apr 2019 03:03:17 -0700
-Received: from andy by smile with local (Exim 4.92)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1hDnb1-0001WB-Tb; Tue, 09 Apr 2019 13:03:15 +0300
-Date: Tue, 9 Apr 2019 13:03:15 +0300
-From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 05/18] iommu: introduce device fault data
-Message-ID: <20190409100315.GD9224@smile.fi.intel.com>
+	Tue,  9 Apr 2019 10:04:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=ECN5RtyAoOFeKS2bytXLHxuqXCY8zXSsiaFPh0hQOLE=;
+	b=YBZTCpibRaLdOoYWUhK9zEG/0
+	BTqM90ug44ilMFjAoeZSG1zHMsGuzCmfCw6zMxBSVSwaiUxPPEttp+BVD4PxBgWkTUiWkcouLTNkm
+	3cO3mpOjPHaR+Yh1aXQSmj6s7qR8TCRY9N+dyrq4ShyJKFS2Dx7AsXv29PHt9l+Uwpy5vB3fsc3lZ
+	oDu5i+lPtNXqjsNhQ6B4NIrREIcorgn7GuD4o2shm/2Fr4J4b+kNvFVKsnR+9p+9nP/hmcJKHh73X
+	bUx5+sib41bVfh8IjO4ycM+bzbqA0x53BifGUJRfr+4NAB7f1nj5WebbWG0HqYZhIw+ANg3On6m0Z
+	+SoGUUkRg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red
+	Hat Linux)) id 1hDncK-0007WU-W6; Tue, 09 Apr 2019 10:04:36 +0000
+Date: Tue, 9 Apr 2019 03:04:36 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 01/18] drivers core: Add I/O ASID allocator
+Message-ID: <20190409100436.GA28683@infradead.org>
 References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-6-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1554767973-30125-2-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20190409100049.GC9224@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1554767973-30125-6-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Yi L <yi.l.liu@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	Raj Ashok <ashok.raj@intel.com>,
+In-Reply-To: <20190409100049.GC9224@smile.fi.intel.com>
+User-Agent: Mutt/1.9.2 (2017-12-15)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
 	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Alex Williamson <alex.williamson@redhat.com>,
-	Liu@smile.fi.intel.com, David Woodhouse <dwmw2@infradead.org>
+	"Paul E. McKenney" <paulmck@linux.ibm.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,33 +84,23 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409100315.leVSs-_hVgVdkZwpMLb9bencERMVZPvjuhMtEVtWWa4@z>
+Message-ID: <20190409100436.Vt-5EU__CTmFojwkex3fpMv1LDukR7J947mWV0seSzY@z>
 
-On Mon, Apr 08, 2019 at 04:59:20PM -0700, Jacob Pan wrote:
-> Device faults detected by IOMMU can be reported outside the IOMMU
-> subsystem for further processing. This patch introduces
-> a generic device fault data structure.
+On Tue, Apr 09, 2019 at 01:00:49PM +0300, Andriy Shevchenko wrote:
+> I think it makes sense to add a helper macro to rcupdate.h
+> (and we have several cases in kernel that can utilize it)
 > 
-> The fault can be either an unrecoverable fault or a page request,
-> also referred to as a recoverable fault.
+> #define kfree_non_null_rcu(ptr, rcu_head)		\
+> 	do {						\
+> 		if (ptr)				\
+> 			kfree_rcu(ptr, rcu_head);	\
+> 	} while (0)
 > 
-> We only care about non internal faults that are likely to be reported
-> to an external subsystem.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> as a more common pattern for resource deallocators.
 
-JFYI: we have a Co-developed-by tag as well for better granularity of what
-certain person/people did.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+I think that should move straight into kfree_rcu.  In general
+we expect *free* to deal with NULL pointers transparently, so we
+should do so here as well.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
