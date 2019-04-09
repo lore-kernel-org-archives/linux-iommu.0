@@ -1,34 +1,44 @@
-From: Christoph Hellwig <hch@lst.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 Subject: Re: [PATCH 07/21] dma-iommu: move the arm64 wrappers to common code
-Date: Tue, 9 Apr 2019 19:15:11 +0200
-Message-ID: <20190409171511.GC14679@lst.de>
-References: <20190327080448.5500-1-hch@lst.de> <20190327080448.5500-8-hch@lst.de> <67573dd3-72c7-692d-bc1a-7edb49ff9551@arm.com>
+Date: Tue, 9 Apr 2019 19:23:09 +0200
+Message-ID: <20190409172309.GD14679@lst.de>
+References: <20190327080448.5500-1-hch@lst.de>
+	<20190327080448.5500-8-hch@lst.de>
+	<67573dd3-72c7-692d-bc1a-7edb49ff9551@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <67573dd3-72c7-692d-bc1a-7edb49ff9551@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+In-Reply-To: <67573dd3-72c7-692d-bc1a-7edb49ff9551-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Tue, Apr 09, 2019 at 04:07:02PM +0100, Robin Murphy wrote:
->> +static void iommu_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
->> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
->> +{
->> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
->> +		iommu_dma_sync_single_for_cpu(dev, dma_handle, size, dir);
->> +	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), dma_handle, size);
+>> -static inline int iommu_dma_init(void)
+>> +static inline void iommu_setup_dma_ops(struct device *dev, u64 dma_base,
+>> +		u64 size, const struct iommu_ops *ops)
+>>   {
+>> -	return 0;
+>>   }
 >
-> That wants to be iommu_get_dma_domain() there to minimise the overhead. In 
-> fact, I guess this could now be streamlined a bit in the style of 
-> iommu_dma_map_page() above - i.e. avoid doing a second domain lookup in the 
-> sync case - but that can happen later (if indeed you haven't already).
+> I don't think it makes sense to have a stub for that - AFAICS it should 
+> only ever be called form arch code with an inherent "select IOMMU_DMA" 
+> (much like the stuff which isn't stubbed currently).
+>
+> Otherwise, I'm about 97% sure the rest of the move looks OK - thanks for 
+> splitting things up.
 
-Yes, this should be iommu_get_dma_domain - this got lost during
-a rebase to the kernel version that changed to the iommu_get_dma_domain
-calls.
-
-I don't think I've optimized to remove the additional call, but
-I can easily throw in another patch to do that.
+arm64 only selects IOMMU_DMA if IOMMU_SUPPORT is selected, which can
+be disabled.  So to keep some (unusual) arm64 configs compiling we'll need
+the stub..
