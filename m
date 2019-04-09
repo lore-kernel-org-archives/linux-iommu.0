@@ -1,58 +1,47 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 7/7] iommu/arm-smmu-v3: Disable tagged pointers
-Date: Tue,  9 Apr 2019 17:52:45 +0100
-Message-ID: <20190409165245.26500-8-jean-philippe.brucker@arm.com>
-References: <20190409165245.26500-1-jean-philippe.brucker@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
+Date: Tue, 9 Apr 2019 19:09:13 +0200
+Message-ID: <20190409170913.GA14679@lst.de>
+References: <20190327080448.5500-1-hch@lst.de> <20190327080448.5500-3-hch@lst.de> <3629087c-a8cb-d66e-840b-cfee125bdf4c@arm.com> <20190407065923.GA9086@lst.de> <45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190409165245.26500-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, okaya-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ARM architecture has a "Top Byte Ignore" (TBI) option that makes the
-MMU mask out bits [63:56] of an address, allowing a userspace application
-to store data in its pointers. This option is incompatible with PCI ATS.
+On Tue, Apr 09, 2019 at 04:12:51PM +0100, Robin Murphy wrote:
+> On 07/04/2019 07:59, Christoph Hellwig wrote:
+>> On Fri, Apr 05, 2019 at 06:30:52PM +0100, Robin Murphy wrote:
+>>> On 27/03/2019 08:04, Christoph Hellwig wrote:
+>>>> The nr_pages checks should be done for all mmap requests, not just those
+>>>> using remap_pfn_range.
+>>>
+>>> Hmm, the logic in iommu_dma_mmap() inherently returns an error for the "off
+>>>> = nr_pages" case already. It's also supposed to be robust against the
+>>> "vma_pages(vma) > nr_pages - off" condition, although by making the partial
+>>> mapping and treating it as a success, rather than doing nothing and
+>>> returning an error. What's the exact motivation here?
+>>
+>> Have one error check at the front of the function that is identical
+>> to the mmap checks in the other dma_map_ops instances so that:
+>>
+>>   a) we get the same error behavior for partial requests everywhere
+>>   b) we can lift these checks into common code in the next round.
+>>
+>
+> Fair enough, but in that case why isn't the dma_mmap_from_coherent() path 
+> also covered?
 
-If TBI is enabled in the SMMU and userspace triggers DMA transactions on
-tagged pointers, the endpoint might create ATC entries for addresses that
-include a tag. Software would then have to send ATC invalidation packets
-for each 255 possible alias of an address, or just wipe the whole address
-space. This is not a viable option, so disable TBI.
+dma_mmap_from_coherent currently duplicates those checks itself, and
+because of that the other callers also don't include it in their
+checks.  I don't actually like that situation and have patches to
+refactor and clean up that whole mess by also moving the dma coherent
+mmap to common code, and share the checks that I plan to also lift.
 
-The impact of this change is unclear, since there are very few users of
-tagged pointers, much less SVA. But the requirement introduced by this
-patch doesn't seem excessive: a userspace application using both tagged
-pointers and SVA should now sanitize addresses (clear the tag) before
-using them for device DMA.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 7819cd60d08b..811dd7d83bf0 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1061,7 +1061,6 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- 	val |= ARM_SMMU_TCR2CD(tcr, EPD0);
- 	val |= ARM_SMMU_TCR2CD(tcr, EPD1);
- 	val |= ARM_SMMU_TCR2CD(tcr, IPS);
--	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
- 
- 	return val;
- }
--- 
-2.21.0
+But for now I'm holding these back as they would conflict with this
+series and I'm not sure if it will go in and if yes if that is through
+the dma-mapping or iommu tree.
