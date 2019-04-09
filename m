@@ -1,45 +1,67 @@
-From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 01/18] drivers core: Add I/O ASID allocator
-Date: Tue, 9 Apr 2019 13:30:30 +0300
-Message-ID: <20190409103030.GK9224@smile.fi.intel.com>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1554767973-30125-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20190409100049.GC9224@smile.fi.intel.com>
- <20190409100436.GA28683@infradead.org>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5 0/6] add generic boot option for IOMMU dma mode
+Date: Tue, 9 Apr 2019 20:53:02 +0800
+Message-ID: <20190409125308.18304-1-thunder.leizhen__16918.4999818512$1554814471$gmane$org@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190409100436.GA28683@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, "Paul E. McKenney" <paulmck@linux.ibm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sebastian Ott <sebott-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Heiko Carstens <heiko.carstens-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael
+	Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel@>
+Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 09, 2019 at 03:04:36AM -0700, Christoph Hellwig wrote:
-> On Tue, Apr 09, 2019 at 01:00:49PM +0300, Andriy Shevchenko wrote:
-> > I think it makes sense to add a helper macro to rcupdate.h
-> > (and we have several cases in kernel that can utilize it)
-> > 
-> > #define kfree_non_null_rcu(ptr, rcu_head)		\
-> > 	do {						\
-> > 		if (ptr)				\
-> > 			kfree_rcu(ptr, rcu_head);	\
-> > 	} while (0)
-> > 
-> > as a more common pattern for resource deallocators.
-> 
-> I think that should move straight into kfree_rcu.  
+v4 --> v5:
+As Hanjun and Thomas Gleixner's suggestion:
+1. Keep the old ARCH specific boot options no change.
+2. Keep build option CONFIG_IOMMU_DEFAULT_PASSTHROUGH no change.
 
-Possible. I didn't dare to offer this due to lack of knowledge how it's used in
-other places.
+v4:
+As Robin Murphy's suggestion:
+"It's also not necessarily obvious to the user how this interacts with
+IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
+would be better to refactor the whole lot into a single selection of something
+like IOMMU_DEFAULT_MODE anyway."
 
-> In general
-> we expect *free* to deal with NULL pointers transparently, so we
-> should do so here as well.
+In this version, I tried to normalize the IOMMU dma mode boot options for all
+ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
+lazy(mapping but defer the IOTLB invalidation), strict. But currently each
+ARCHs defined their private boot options, different with each other. For
+example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
+X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
 
-Exactly my point, thanks.
+Zhen Lei (6):
+  iommu: add generic boot option iommu.dma_mode
+  iommu: add build options corresponding to iommu.dma_mode
+  iommu: add iommu_default_dma_mode_get/set() helper
+  s390/pci: add support for generic boot option iommu.dma_mode
+  powernv/iommu: add support for generic boot option iommu.dma_mode
+  x86/iommu: add support for generic boot option iommu.dma_mode
+
+ Documentation/admin-guide/kernel-parameters.txt | 19 +++++++
+ arch/ia64/include/asm/iommu.h                   |  2 -
+ arch/ia64/kernel/pci-dma.c                      |  2 -
+ arch/powerpc/platforms/powernv/pci-ioda.c       |  5 +-
+ arch/s390/pci/pci_dma.c                         | 14 ++---
+ arch/x86/include/asm/iommu.h                    |  1 -
+ arch/x86/kernel/pci-dma.c                       | 35 ++++++------
+ drivers/iommu/Kconfig                           | 45 ++++++++++++---
+ drivers/iommu/amd_iommu.c                       | 10 ++--
+ drivers/iommu/amd_iommu_init.c                  |  4 +-
+ drivers/iommu/amd_iommu_types.h                 |  6 --
+ drivers/iommu/intel-iommu.c                     |  9 ++-
+ drivers/iommu/iommu.c                           | 73 ++++++++++++++++++++-----
+ include/linux/iommu.h                           | 23 ++++++++
+ 14 files changed, 176 insertions(+), 72 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+1.8.3
