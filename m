@@ -1,14 +1,14 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 09/21] dma-iommu: refactor iommu_dma_get_sgtable
-Date: Tue, 9 Apr 2019 16:49:30 +0100
-Message-ID: <a42133a5-c88b-76c7-80fa-671cfbdd9759@arm.com>
+Subject: Re: [PATCH 10/21] dma-iommu: move __iommu_dma_map
+Date: Tue, 9 Apr 2019 16:54:31 +0100
+Message-ID: <b67950f5-dc3d-af5c-f4ff-d8943e5a5532@arm.com>
 References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-10-hch@lst.de>
+ <20190327080448.5500-11-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190327080448.5500-10-hch@lst.de>
+In-Reply-To: <20190327080448.5500-11-hch@lst.de>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
@@ -16,103 +16,78 @@ Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, W
 List-Id: iommu@lists.linux-foundation.org
 
 On 27/03/2019 08:04, Christoph Hellwig wrote:
-> Move the vm_area handling into a new iommu_dma_get_sgtable_remap helper.
-> 
-> Inline __iommu_dma_get_sgtable_page into the main function to simplify
-> the code flow a bit.
-> 
+> Moving this function up to its unmap counterpart helps to keep related
+> code together for the following changes.
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->   drivers/iommu/dma-iommu.c | 54 +++++++++++++++++----------------------
->   1 file changed, 24 insertions(+), 30 deletions(-)
+>   drivers/iommu/dma-iommu.c | 46 +++++++++++++++++++--------------------
+>   1 file changed, 23 insertions(+), 23 deletions(-)
 > 
 > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 43bd3c7e0f6b..57f2d8621112 100644
+> index 57f2d8621112..4d46beeea5b7 100644
 > --- a/drivers/iommu/dma-iommu.c
 > +++ b/drivers/iommu/dma-iommu.c
-> @@ -625,6 +625,18 @@ static int iommu_dma_mmap_remap(void *cpu_addr, size_t size,
->   	return ret;
+> @@ -435,6 +435,29 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+>   	iommu_dma_free_iova(cookie, dma_addr, size);
 >   }
 >   
-> +static int iommu_dma_get_sgtable_remap(struct sg_table *sgt, void *cpu_addr,
-> +		size_t size)
+> +static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+> +		size_t size, int prot, struct iommu_domain *domain)
 > +{
-> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> +	struct vm_struct *area = find_vm_area(cpu_addr);
+> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> +	size_t iova_off = 0;
+> +	dma_addr_t iova;
 > +
-> +	if (WARN_ON(!area || !area->pages))
-> +		return -ENXIO;
-> +	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
-> +			GFP_KERNEL);
+> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+> +		iova_off = iova_offset(&cookie->iovad, phys);
+> +		size = iova_align(&cookie->iovad, size + iova_off);
+> +	}
+> +
+> +	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+> +	if (!iova)
+> +		return DMA_MAPPING_ERROR;
+> +
+> +	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
+> +		iommu_dma_free_iova(cookie, iova, size);
+> +		return DMA_MAPPING_ERROR;
+> +	}
+> +	return iova + iova_off;
 > +}
 > +
-
-Is this complex enough to deserve being broken out? Really I'd prefer to 
-keep get_sgtable() as small and consolidated as possible so that it's 
-that much easier to delete in future :)
-
-I guess there is a certain symmetry with mmap(), so if that's the angle 
-you're dead set on, could we at least keep this guy down where 
-__iommu_dma_get_sgtable_page() was?
-
-Robin.
-
->   static void iommu_dma_sync_single_for_cpu(struct device *dev,
->   		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+>   static void __iommu_dma_free_pages(struct page **pages, int count)
 >   {
-> @@ -1084,42 +1096,24 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->   			vma_pages(vma) << PAGE_SHIFT, vma->vm_page_prot);
+>   	while (count--)
+> @@ -689,29 +712,6 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+>   		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
 >   }
 >   
-> -static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
-> -		size_t size)
+> -static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+> -		size_t size, int prot, struct iommu_domain *domain)
 > -{
-> -	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> -	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> -	size_t iova_off = 0;
+> -	dma_addr_t iova;
 > -
-> -	if (!ret)
-> -		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
-> -	return ret;
+> -	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+> -		iova_off = iova_offset(&cookie->iovad, phys);
+> -		size = iova_align(&cookie->iovad, size + iova_off);
+> -	}
+> -
+> -	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+> -	if (!iova)
+> -		return DMA_MAPPING_ERROR;
+> -
+> -	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
+> -		iommu_dma_free_iova(cookie, iova, size);
+> -		return DMA_MAPPING_ERROR;
+> -	}
+> -	return iova + iova_off;
 > -}
 > -
->   static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
->   		void *cpu_addr, dma_addr_t dma_addr, size_t size,
->   		unsigned long attrs)
+>   static dma_addr_t __iommu_dma_map_page(struct device *dev, struct page *page,
+>   		unsigned long offset, size_t size, int prot)
 >   {
-> -	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	struct vm_struct *area = find_vm_area(cpu_addr);
-> -
-> -	if (!is_vmalloc_addr(cpu_addr)) {
-> -		struct page *page = virt_to_page(cpu_addr);
-> -		return __iommu_dma_get_sgtable_page(sgt, page, size);
-> -	}
-> -
-> -	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
-> -		/*
-> -		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
-> -		 * hence in the vmalloc space.
-> -		 */
-> -		struct page *page = vmalloc_to_page(cpu_addr);
-> -		return __iommu_dma_get_sgtable_page(sgt, page, size);
-> -	}
-> +	struct page *page;
-> +	int ret;
->   
-> -	if (WARN_ON(!area || !area->pages))
-> -		return -ENXIO;
-> +	if (is_vmalloc_addr(cpu_addr)) {
-> +		if (!(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
-> +			return iommu_dma_get_sgtable_remap(sgt, cpu_addr, size);
-> +		page = vmalloc_to_page(cpu_addr);
-> +	} else
-> +		page = virt_to_page(cpu_addr);
->   
-> -	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
-> -					 GFP_KERNEL);
-> +	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
-> +	if (!ret)
-> +		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
-> +	return ret;
->   }
->   
->   static const struct dma_map_ops iommu_dma_ops = {
 > 
