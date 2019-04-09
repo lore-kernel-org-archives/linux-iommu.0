@@ -6,44 +6,42 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6849C282CE
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A33C10F0E
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:11:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8F0E420850
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:09:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F0E420850
+	by mail.kernel.org (Postfix) with ESMTPS id 1777020850
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 17:11:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1777020850
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8EFB6DC2;
-	Tue,  9 Apr 2019 17:09:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EF7EADCA;
+	Tue,  9 Apr 2019 17:11:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4DB53ACC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4B233DC2
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 17:09:27 +0000 (UTC)
+	Tue,  9 Apr 2019 17:11:04 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ADC227A6
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ECF01F4
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 17:09:26 +0000 (UTC)
+	Tue,  9 Apr 2019 17:11:03 +0000 (UTC)
 Received: by newverein.lst.de (Postfix, from userid 2407)
-	id B96E768B02; Tue,  9 Apr 2019 19:09:13 +0200 (CEST)
-Date: Tue, 9 Apr 2019 19:09:13 +0200
+	id 515BE68B02; Tue,  9 Apr 2019 19:10:52 +0200 (CEST)
+Date: Tue, 9 Apr 2019 19:10:52 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 02/21] arm64/iommu: improve mmap bounds checking
-Message-ID: <20190409170913.GA14679@lst.de>
+Subject: Re: [PATCH 04/21] dma-iommu: cleanup dma-iommu.h
+Message-ID: <20190409171052.GB14679@lst.de>
 References: <20190327080448.5500-1-hch@lst.de>
-	<20190327080448.5500-3-hch@lst.de>
-	<3629087c-a8cb-d66e-840b-cfee125bdf4c@arm.com>
-	<20190407065923.GA9086@lst.de>
-	<45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
+	<20190327080448.5500-5-hch@lst.de>
+	<7d7efc03-75b2-58c7-f744-d7bc3de6a771@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <45672f18-c741-601d-6bb2-92f50b77e981@arm.com>
+In-Reply-To: <7d7efc03-75b2-58c7-f744-d7bc3de6a771@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Tom Lendacky <thomas.lendacky@amd.com>,
 	Catalin Marinas <catalin.marinas@arm.com>,
@@ -66,40 +64,12 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409170913.u8jV1G8CG6aRoBEJtsoXiml8HHsQx3lYOxwBxecMQ-4@z>
+Message-ID: <20190409171052.UXUrxfk3XZs4ZRelXPrJySOTcyTBN4pRVfO2nw-tLQ8@z>
 
-On Tue, Apr 09, 2019 at 04:12:51PM +0100, Robin Murphy wrote:
-> On 07/04/2019 07:59, Christoph Hellwig wrote:
->> On Fri, Apr 05, 2019 at 06:30:52PM +0100, Robin Murphy wrote:
->>> On 27/03/2019 08:04, Christoph Hellwig wrote:
->>>> The nr_pages checks should be done for all mmap requests, not just those
->>>> using remap_pfn_range.
->>>
->>> Hmm, the logic in iommu_dma_mmap() inherently returns an error for the "off
->>>> = nr_pages" case already. It's also supposed to be robust against the
->>> "vma_pages(vma) > nr_pages - off" condition, although by making the partial
->>> mapping and treating it as a success, rather than doing nothing and
->>> returning an error. What's the exact motivation here?
->>
->> Have one error check at the front of the function that is identical
->> to the mmap checks in the other dma_map_ops instances so that:
->>
->>   a) we get the same error behavior for partial requests everywhere
->>   b) we can lift these checks into common code in the next round.
->>
->
-> Fair enough, but in that case why isn't the dma_mmap_from_coherent() path 
-> also covered?
+On Fri, Apr 05, 2019 at 06:42:57PM +0100, Robin Murphy wrote:
+> Other than introducing this unnecessary dupe,
 
-dma_mmap_from_coherent currently duplicates those checks itself, and
-because of that the other callers also don't include it in their
-checks.  I don't actually like that situation and have patches to
-refactor and clean up that whole mess by also moving the dma coherent
-mmap to common code, and share the checks that I plan to also lift.
-
-But for now I'm holding these back as they would conflict with this
-series and I'm not sure if it will go in and if yes if that is through
-the dma-mapping or iommu tree.
+Fixed.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
