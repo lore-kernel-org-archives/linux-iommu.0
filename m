@@ -6,60 +6,59 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1210FC282CE
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69581C282DA
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:09:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E2FB12083E
-	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:07:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E2FB12083E
+	by mail.kernel.org (Postfix) with ESMTPS id 41A5D20857
+	for <iommu@archiver.kernel.org>; Tue,  9 Apr 2019 10:09:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 41A5D20857
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B570FC11;
-	Tue,  9 Apr 2019 10:07:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1464E9EE;
+	Tue,  9 Apr 2019 10:09:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A6AD425A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7BEBA25A
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 10:07:23 +0000 (UTC)
+	Tue,  9 Apr 2019 10:09:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 56147CF
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 296E3CF
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  9 Apr 2019 10:07:23 +0000 (UTC)
+	Tue,  9 Apr 2019 10:09:05 +0000 (UTC)
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
 	by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Apr 2019 03:07:22 -0700
+	09 Apr 2019 03:09:04 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,329,1549958400"; d="scan'208";a="162683267"
+X-IronPort-AV: E=Sophos;i="5.60,329,1549958400"; d="scan'208";a="134214186"
 Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
-	by fmsmga001.fm.intel.com with ESMTP; 09 Apr 2019 03:07:19 -0700
+	by orsmga006.jf.intel.com with ESMTP; 09 Apr 2019 03:09:01 -0700
 Received: from andy by smile with local (Exim 4.92)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1hDnew-0001Y2-9k; Tue, 09 Apr 2019 13:07:18 +0300
-Date: Tue, 9 Apr 2019 13:07:18 +0300
+	id 1hDngZ-0001Ys-K4; Tue, 09 Apr 2019 13:08:59 +0300
+Date: Tue, 9 Apr 2019 13:08:59 +0300
 From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 08/18] iommu: Introduce cache_invalidate API
-Message-ID: <20190409100718.GE9224@smile.fi.intel.com>
+Subject: Re: [PATCH 09/18] iommu/vt-d: Enlightened PASID allocation
+Message-ID: <20190409100859.GF9224@smile.fi.intel.com>
 References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-9-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1554767973-30125-10-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1554767973-30125-9-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1554767973-30125-10-git-send-email-jacob.jun.pan@linux.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: "Liu, Yi L" <yi.l.liu@linux.intel.com>, "Tian,
-	Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
 	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Alex Williamson <alex.williamson@redhat.com>,
-	Liu@smile.fi.intel.com, David Woodhouse <dwmw2@infradead.org>
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,36 +75,26 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190409100718.8H4dGPllEg9liAGpco-Fb9n40xRqJ7yhZxp2Sn84JiE@z>
+Message-ID: <20190409100859.pftNvN-QSFWBiRcT5xwAS04ge6hTaZQJFB3Qvke9hFw@z>
 
-On Mon, Apr 08, 2019 at 04:59:23PM -0700, Jacob Pan wrote:
-> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+On Mon, Apr 08, 2019 at 04:59:24PM -0700, Jacob Pan wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
 > 
-> In any virtualization use case, when the first translation stage
-> is "owned" by the guest OS, the host IOMMU driver has no knowledge
-> of caching structure updates unless the guest invalidation activities
-> are trapped by the virtualizer and passed down to the host.
+> If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the
+> IOMMU driver should rely on the emulation software to allocate
+> and free PASID IDs. The Intel vt-d spec revision 3.0 defines a
+> register set to support this. This includes a capability register,
+> a virtual command register and a virtual response register. Refer
+> to section 10.4.42, 10.4.43, 10.4.44 for more information.
 > 
-> Since the invalidation data are obtained from user space and will be
-> written into physical IOMMU, we must allow security check at various
-> layers. Therefore, generic invalidation data format are proposed here,
-> model specific IOMMU drivers need to convert them into their own format.
+> This patch adds the enlightened PASID allocation/free interfaces
+> via the virtual command register.
 
-> +int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
-> +			   struct iommu_cache_invalidate_info *inv_info)
-> +{
-> +	int ret = 0;
+> +	pr_debug("vcmd alloc pasid\n");
 
-Redundant assignment.
-
-> +
-> +	if (unlikely(!domain->ops->cache_invalidate))
-> +		return -ENODEV;
-> +
-> +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
-> +
-> +	return ret;
-> +}
+Perhaps tracepoints should be in use?
+OTOH we have function tracer, so, this message in any case is a noise.
+And this is applicable to other similar cases.
 
 -- 
 With Best Regards,
