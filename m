@@ -1,97 +1,62 @@
-From: Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
-Date: Wed, 10 Apr 2019 11:28:27 +0100
-Message-ID: <9036b1e7-bb1b-d681-829b-10088bc4c227@arm.com>
-References: <20190401074730.12241-1-robh@kernel.org>
- <20190401074730.12241-4-robh@kernel.org>
- <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
- <CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
- <CAAObsKCnycxxKWA+bUeU9vOu53eT9WZVkzdZ0KCtW9Xj9cV8Cw@mail.gmail.com>
- <CAL_Jsq+qcLRFX0xyKuFEDW3+n6oukfmgemtO4MumCFp_-qqcUg@mail.gmail.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
+Date: Wed, 10 Apr 2019 12:28:22 +0200
+Message-ID: <20190410103646.130022106@linutronix.de>
+References: <20190410102754.387743324@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+qcLRFX0xyKuFEDW3+n6oukfmgemtO4MumCFp_-qqcUg@mail.gmail.com>
-Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Cc: Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, David Airlie <airlied@linux.ie>, Linux IOMMU <iommu@lists.linux-foundation.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, "Marty E . Plummer" <hanetzer@startmail.com>, Robin Murphy <robin.murphy@arm.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Alexander Potapenko <glider@google.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/04/2019 17:15, Rob Herring wrote:
-> On Tue, Apr 9, 2019 at 10:56 AM Tomeu Vizoso <tomeu.vizoso@collabora.com> wrote:
->>
->> On Mon, 8 Apr 2019 at 23:04, Rob Herring <robh@kernel.org> wrote:
->>>
->>> On Fri, Apr 5, 2019 at 7:30 AM Steven Price <steven.price@arm.com> wrote:
->>>>
->>>> On 01/04/2019 08:47, Rob Herring wrote:
->>>>> This adds the initial driver for panfrost which supports Arm Mali
->>>>> Midgard and Bifrost family of GPUs. Currently, only the T860 and
->>>>> T760 Midgard GPUs have been tested.
->>>
->>> [...]
->>>>> +
->>>>> +             if (status & JOB_INT_MASK_ERR(j)) {
->>>>> +                     job_write(pfdev, JS_COMMAND_NEXT(j), JS_COMMAND_NOP);
->>>>> +                     job_write(pfdev, JS_COMMAND(j), JS_COMMAND_HARD_STOP_0);
->>>>
->>>> Hard-stopping an already completed job isn't likely to do very much :)
->>>> Also you are using the "_0" version which is only valid when "job chain
->>>> disambiguation" is present.
->>
->> Yeah, guess that can be removed.
-> 
-> Steven, TBC, are you suggesting removing both lines or leaving
-> JS_COMMAND_NOP? I don't think we can ever have a pending job at this
-> point as there's no queuing. So the NOP probably isn't needed, but
-> doesn't hurt to have it either.
+Replace the indirection through struct stack_trace with an invocation of
+the storage array based interface.
 
-Both lines are redundant and can be removed. But equally neither will
-cause any problems.
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ kernel/dma/debug.c |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-Writing NOP into the next register is basically only needed if you know
-there's a job there which you no longer want to execute.
-
-kbase does this in certain situations. The main one is on a GPU without
-command chain disambiguation if you want to kill a particular job
-there's a potential race. For example:
-
- * Submit job A, followed by job B to slot 0. Job A is currently
-executing, job B is waiting in the _NEXT registers.
-
- * Kernel decides it wants to kill job A (it's taking too long, or the
-application has quit).
-
- * Simply executing a JS_COMMAND_HARD_STOP is racy. If job A finishes
-just before doing the register write, then it's actually job B that gets
-killed (and it's not always safe to just re-execute a killed job).
-
- * Instead write NOP to JS_COMMAND_NEXT, then check (again) whether the
-job currently running is the one you want. When you then HARD_STOP you
-either hit the correct job, or 'miss' and do nothing.
-
-Job chain disambiguation solves this problem by allowing the kernel to
-tag each job with a flag, the hard-stop can then be targetted at the job
-with the correct flag. Writing NOP into JS_COMMAND_NEXT is also useful
-if in the above situation you want to kill job B. In that case you can't
-hard-stop it (it hasn't start), so you simply want to remove it from the
-_NEXT registers.
-
->>>> I suspect in this case you should also be signalling the fence? At the
->>>> moment you rely on the GPU timeout recovering from the fault.
->>>
->>> I'll defer to Tomeu who wrote this (IIRC).
->>
->> Yes, that would be an improvement.
-> 
-> Actually, I think that would break recovery because the job timeout
-> will bail out if the done fence is signaled already. Perhaps we want
-> to timeout immediately if that is possible with the scheduler.
-
-Ideally you would signal the fence with an error code (which is
-presumably what recovery does). There's no actual need to trigger a
-timeout. I'm not sure quite how the DRM infrastructure handles this though.
-
-Steve
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -89,8 +89,8 @@ struct dma_debug_entry {
+ 	int		 sg_mapped_ents;
+ 	enum map_err_types  map_err_type;
+ #ifdef CONFIG_STACKTRACE
+-	struct		 stack_trace stacktrace;
+-	unsigned long	 st_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
++	unsigned int	st_len;
++	unsigned long	st_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
+ #endif
+ };
+ 
+@@ -174,7 +174,7 @@ static inline void dump_entry_trace(stru
+ #ifdef CONFIG_STACKTRACE
+ 	if (entry) {
+ 		pr_warning("Mapped at:\n");
+-		print_stack_trace(&entry->stacktrace, 0);
++		stack_trace_print(entry->st_entries, entry->st_len, 0);
+ 	}
+ #endif
+ }
+@@ -704,12 +704,9 @@ static struct dma_debug_entry *dma_entry
+ 	spin_unlock_irqrestore(&free_entries_lock, flags);
+ 
+ #ifdef CONFIG_STACKTRACE
+-	entry->stacktrace.max_entries = DMA_DEBUG_STACKTRACE_ENTRIES;
+-	entry->stacktrace.entries = entry->st_entries;
+-	entry->stacktrace.skip = 2;
+-	save_stack_trace(&entry->stacktrace);
++	entry->st_len = stack_trace_save(entry->st_entries,
++					 ARRAY_SIZE(entry->st_entries), 2);
+ #endif
+-
+ 	return entry;
+ }
+ 
