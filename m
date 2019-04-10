@@ -1,58 +1,47 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 08/18] iommu: Introduce cache_invalidate API
-Date: Wed, 10 Apr 2019 14:21:31 -0700
-Message-ID: <20190410142131.50ee2e44@jacob-builder>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1554767973-30125-9-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20190409100718.GE9224@smile.fi.intel.com>
-        <20190409094328.03731c3c@jacob-builder>
-        <20190409173755.GX9224@smile.fi.intel.com>
+From: Scott Wood <swood@redhat.com>
+Subject: [PATCH] dma-debug: Only skip one stackframe entry
+Date: Wed, 10 Apr 2019 16:59:25 -0500
+Message-ID: <20190410215925.8458-1-swood@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190409173755.GX9224@smile.fi.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, Liu@smile.fi.intel.com, Eric Auger <eric.auger@redhat.com>, jacob.jun.pan@linux.intel.com
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Scott Wood <swood@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 9 Apr 2019 20:37:55 +0300
-Andriy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+With skip set to 1, I get a traceback like this:
 
-> On Tue, Apr 09, 2019 at 09:43:28AM -0700, Jacob Pan wrote:
-> > On Tue, 9 Apr 2019 13:07:18 +0300
-> > Andriy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:  
-> > > On Mon, Apr 08, 2019 at 04:59:23PM -0700, Jacob Pan wrote:  
-> 
-> > > > +int iommu_cache_invalidate(struct iommu_domain *domain, struct
-> > > > device *dev,
-> > > > +			   struct iommu_cache_invalidate_info
-> > > > *inv_info) +{
-> > > > +	int ret = 0;    
-> > > 
-> > > Redundant assignment.
-> > >   
-> > I am not a security expert but initialization of local variable can
-> > be more secure.
-> > I was looking at this talk.
-> > https://outflux.net/slides/2018/lss/danger.pdf
-> > https://cwe.mitre.org/data/definitions/457.html  
-> 
-> I hardly see any of these applied to your case here.
-> Care to show what I'm missing?
-> 
-I thought your comments was that I should not need to initialize local
-variable ret = 0. Always initialize local variable can be a good
-security practice as suggested in the paper. Perhaps I missed
-something :)
-> > > > +	if (unlikely(!domain->ops->cache_invalidate))
-> > > > +		return -ENODEV;
-> > > > +
-> > > > +	ret = domain->ops->cache_invalidate(domain, dev,
-> > > > inv_info); +
-> > > > +	return ret;
-> > > > +}    
-> 
+[  106.867637] DMA-API: Mapped at:
+[  106.870784]  afu_dma_map_region+0x2cd/0x4f0 [dfl_afu]
+[  106.875839]  afu_ioctl+0x258/0x380 [dfl_afu]
+[  106.880108]  do_vfs_ioctl+0xa9/0x720
+[  106.883688]  ksys_ioctl+0x60/0x90
+[  106.887007]  __x64_sys_ioctl+0x16/0x20
 
-[Jacob Pan]
+With the previous value of 2, afu_dma_map_region was being omitted.  I
+suspect that the code paths have simply changed since the value of 2 was
+chosen a decade ago, but it's also possible that it varies based on which
+mapping function was used, compiler inlining choices, etc.  In any case,
+it's best to err on the side of skipping less.
+
+Signed-off-by: Scott Wood <swood@redhat.com>
+---
+ kernel/dma/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 45d51e8e26f6..a218e43cc382 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -706,7 +706,7 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+ #ifdef CONFIG_STACKTRACE
+ 	entry->stacktrace.max_entries = DMA_DEBUG_STACKTRACE_ENTRIES;
+ 	entry->stacktrace.entries = entry->st_entries;
+-	entry->stacktrace.skip = 2;
++	entry->stacktrace.skip = 1;
+ 	save_stack_trace(&entry->stacktrace);
+ #endif
+ 
+-- 
+1.8.3.1
