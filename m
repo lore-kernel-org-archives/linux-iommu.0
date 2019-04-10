@@ -1,81 +1,134 @@
-From: Vincent =?utf-8?Q?Stehl=C3=A9?= <vincent.stehle@arm.com>
-Subject: Re: [PATCH v6 09/22] vfio: VFIO_IOMMU_BIND/UNBIND_MSI
-Date: Wed, 10 Apr 2019 14:35:32 +0200
-Message-ID: <20190410123531.GA19023@debian>
-References: <20190317172232.1068-1-eric.auger@redhat.com>
- <20190317172232.1068-10-eric.auger@redhat.com>
- <20190321170159.38358f38@x1.home>
- <16931d58-9c88-8cfb-a392-408ea7afdf16@redhat.com>
- <20190322160947.3f8dacdb@x1.home>
- <b47128de-88d0-1971-1fbc-86e43439c7ee@redhat.com>
- <20190403113800.51503693@x1.home>
- <4b27b707-4917-2c3e-a13c-3b978e850d09@redhat.com>
+From: Christian Ehrhardt <christian.ehrhardt-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Subject: Reporting crash fixed by intel_iommu=igfx_off
+Date: Wed, 10 Apr 2019 11:58:04 +0200
+Message-ID: <CAATJJ0Lhr5tjTfLRTpuntm-fmG6mT7QUZjVEAr+bvXy-04vzcw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4b27b707-4917-2c3e-a13c-3b978e850d09@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 04, 2019 at 08:55:25AM +0200, Auger Eric wrote:
-> Hi Marc, Robin, Alex,
-(..)
-> Do you think this is a reasonable assumption to consider devices within
-> the same host iommu group share the same MSI doorbell?
+Hi,
+I was working on an issue [1] triggered by MDEV passthrough to a KVM Guest.
+I got recommended to try intel_iommu=igfx_off and it worked like a
+charm allowing me to run opencl things in the guest on the device.
 
-Hi Eric,
+[2] still states for intel_iommu=igfx_off "If this fixes anything,
+please ensure you file a bug reporting the problem.". While I'm not
+sure how important that is to you still I thought to post you a
+summary.
+Maybe you are collecting a list of affected HW or anything like that?
 
-I am not sure this assumption always hold.
+If you want me to file a bugzilla or provide extra data let me know.
+Here all the snippets I think you might consider helpful.
 
-Marc, Robin and Alex can correct me, but for example I think the following
-topology is valid for Arm systems:
+## Kernel Version ##
+5.0.0-8-generic (Ubuntu)
+The same kernel is active in Host and Guest.
 
- +------------+  +------------+
- | Endpoint A |  | Endpoint B |
- +------------+  +------------+
-            v     v
-          /---------\
-         |  Non-ACS  |
-         |  Switch   |
-          \---------/
-               v
-       +---------------+
-       |     PCIe      |
-       | Root Complex  |
-       +---------------+
-               v
-         +-----------+
-         |   SMMU    |
-         +-----------+
-               v
-  +--------------------------+
-  |   System interconnect    |
-  +--------------------------+
-        v              v
-  +-----------+  +-----------+
-  |   ITS A   |  |   ITS B   |
-  +-----------+  +-----------+
+## Crash ##
+(before the fix by  intel_iommu=igfx_off)
 
-All PCIe Endpoints and ITS could be in the same ITS Group 0, meaning
-devices could send their MSI at any ITS in hardware.
+[  245.284511] DMAR: DRHD: handling fault status reg 2
+[  245.284530] DMAR: [DMA Write] Request device [00:02.0] fault addr
+8c9128000 [fault reason 23] Unknown
+[  245.284560] DMAR: DRHD: handling fault status reg 2
+[  245.284579] DMAR: [DMA Write] Request device [00:02.0] fault addr
+8c914a000 [fault reason 23] Unknown
+[  245.284610] DMAR: DRHD: handling fault status reg 2
+[  250.106273] [drm] GPU HANG: ecode 8:0:0xe757fefe, reason: no
+progress on rcs0, action: reset
+[  250.106274] [drm] GPU hangs can indicate a bug anywhere in the
+entire gfx stack, including userspace.
+[  250.106275] [drm] Please file a _new_ bug report on
+bugs.freedesktop.org against DRI -> DRM/Intel
+[  250.106276] [drm] drm/i915 developers can then reassign to the
+right component if it's not a kernel issue.
+[  250.106276] [drm] The gpu crash dump is required to analyze gpu
+hangs, so please always attach it.
+[  250.106277] [drm] GPU crash dump saved to /sys/class/drm/card0/error
+[  250.106299] i915 0000:00:02.0: Resetting rcs0 for no progress on rcs0
+[  251.900704] i915 0000:00:02.0: Resetting chip for no progress on rcs0
+[  251.900718] i915 0000:00:02.0: GPU recovery failed
 
-For Linux the two PCIe Endpoints would be in the same iommu group, because
-the switch in this example does not support ACS.
 
-I think the devicetree msi-map property could be used to "map" the RID of
-Endpoint A to ITS A and the RID of Endpoint B to ITS B, which would violate
-the assumption.
+## HW Information ##
 
-See the monolithic example in [1], the example system in [2], appendices
-D, E and F in [3] and the msi-map property in [4].
+CPU: Intel(R) Core(TM) i5-5250U CPU @ 1.60GHz
+$ lspci -v -s 00:02.0
+00:02.0 VGA compatible controller: Intel Corporation HD Graphics 6000
+(rev 09) (prog-if 00 [VGA controller])
+        Subsystem: Intel Corporation HD Graphics 6000
+        Flags: bus master, fast devsel, latency 0, IRQ 48
+        Memory at f6000000 (64-bit, non-prefetchable) [size=16M]
+        Memory at e0000000 (64-bit, prefetchable) [size=256M]
+        I/O ports at f000 [size=64]
+        [virtual] Expansion ROM at 000c0000 [disabled] [size=128K]
+        Capabilities: <access denied>
+        Kernel driver in use: i915
+        Kernel modules: i915
 
-Best regards,
-Vincent.
+## Mediated Devices passthrough setup ##
 
-[1] https://static.docs.arm.com/100336/0102/corelink_gic600_generic_interrupt_controller_technical_reference_manual_100336_0102_00_en.pdf
-[2] http://infocenter.arm.com/help/topic/com.arm.doc.den0049d/DEN0049D_IO_Remapping_Table.pdf
-[3] https://static.docs.arm.com/den0029/50/Q1-DEN0029B_SBSA_5.0.pdf
-[4] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/pci/pci-msi.txt
+Enabled on kernel commandline via /etc/default/grub:
+  i915.enable_gvt=1 intel_iommu=on drm.debug=0
+And loading the modules:
+  $ printf "kvmgt\nvfio-iommu-type1\nvfio-mdev" | sudo tee
+/etc/initramfs-tools/modules
+
+Update and reboot
+ $ sudo update-initramfs -u
+ $ sudo update-grub
+
+Then I was creating a UUID for the MDEV
+ $ cd /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/i915-GVTg_V4_4
+ $ echo 4dd50f26-ec08-11e8-b838-4bc3356865b6 | sudo tee create
+
+Finally I was telling libvirt to use that modifying my guest XML like
+ <graphics type='spice'>
+   <listen type='none'/>
+   <gl enable='yes'/>
+ </graphics>
+ <hostdev mode='subsystem' type='mdev' managed='no' model='vfio-pci'>
+   <source>
+     <address uuid='4dd50f26-ec08-11e8-b838-4bc3356865b6'/>
+   </source>
+ </hostdev>
+
+
+## guest workload to force-trigger the bug ##
+
+Note: it could happen without it, but that proved to be faster than
+waiting for the crash
+
+Install opencl bits and try to use it, that would be:
+ $ sudo apt install ocl-icd-libopencl1
+ $ sudo apt install opencl-headers
+ $ sudo apt install clinfo
+ $ sudo apt install beignet
+And then run clinfo
+ $ clinfo
+
+
+[1]: https://bugs.freedesktop.org/show_bug.cgi?id=110238
+[2]: https://www.kernel.org/doc/Documentation/Intel-IOMMU.txt
+
+P.S. the list won't send me the subscription confirmation - three
+tries waited for an hour; so I expect to be at least moderated if not
+denied on the list post :-/
+
+-- 
+Christian Ehrhardt
+Software Engineer, Ubuntu Server
+Canonical Ltd
