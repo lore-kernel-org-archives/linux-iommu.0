@@ -1,74 +1,105 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH v6 09/22] vfio: VFIO_IOMMU_BIND/UNBIND_MSI
-Date: Wed, 10 Apr 2019 14:15:41 +0100
-Message-ID: <73e3c98a-2a2c-83ad-1bbb-7f7368cce274@arm.com>
-References: <20190317172232.1068-1-eric.auger@redhat.com>
- <20190317172232.1068-10-eric.auger@redhat.com>
- <20190321170159.38358f38@x1.home>
- <16931d58-9c88-8cfb-a392-408ea7afdf16@redhat.com>
- <20190322160947.3f8dacdb@x1.home>
- <b47128de-88d0-1971-1fbc-86e43439c7ee@redhat.com>
- <20190403113800.51503693@x1.home>
- <4b27b707-4917-2c3e-a13c-3b978e850d09@redhat.com>
- <20190410123531.GA19023@debian>
+From: Thomas Hellstrom via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: revert dma direct internals abuse
+Date: Wed, 10 Apr 2019 15:01:14 +0000
+Message-ID: <0c897b24b234f8d42ef597dbe31fa8293519a4b2.camel@vmware.com>
+References: <20190408105525.5493-1-hch@lst.de>
+	<7d5f35da4a6b58639519f0764c7edbfe4dd1ba02.camel@vmware.com>
+	<20190409095740.GE6827@lst.de>
+	<5f0837ffc135560c764c38849eead40269cebb48.camel@vmware.com>
+	<20190409133157.GA10876@lst.de>
+	<466e658c73607fca5112d718972e87c0b78653ad.camel@vmware.com>
+	<20190409152538.GA12816@lst.de>
+	<da06614b308500392c179651ef9c6fb835ee4045.camel@vmware.com>
+	<20190410064359.GC5543@lst.de>
+Reply-To: Thomas Hellstrom <thellstrom-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <20190410123531.GA19023@debian>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190410064359.GC5543-jcswGhMUV9g@public.gmane.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: =?UTF-8?Q?Vincent_Stehl=c3=a9?= <vincent.stehle@arm.com>, Auger Eric <eric.auger@redhat.com>
-Cc: yi.l.liu@linux.intel.com, kevin.tian@intel.com, jacob.jun.pan@linux.intel.com, ashok.raj@intel.com, kvm@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
+Content-ID: <5D2AB352DE7A2F4BB71CA19FEF5367B8-HX+pjaQZbrqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Deepak Singh Rawat <drawat-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, "torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVmluY2VudCwKCk9uIDEwLzA0LzIwMTkgMTM6MzUsIFZpbmNlbnQgU3RlaGzDqSB3cm90ZToK
-PiBPbiBUaHUsIEFwciAwNCwgMjAxOSBhdCAwODo1NToyNUFNICswMjAwLCBBdWdlciBFcmljIHdy
-b3RlOgo+PiBIaSBNYXJjLCBSb2JpbiwgQWxleCwKPiAoLi4pCj4+IERvIHlvdSB0aGluayB0aGlz
-IGlzIGEgcmVhc29uYWJsZSBhc3N1bXB0aW9uIHRvIGNvbnNpZGVyIGRldmljZXMgd2l0aGluCj4+
-IHRoZSBzYW1lIGhvc3QgaW9tbXUgZ3JvdXAgc2hhcmUgdGhlIHNhbWUgTVNJIGRvb3JiZWxsPwo+
-IAo+IEhpIEVyaWMsCj4gCj4gSSBhbSBub3Qgc3VyZSB0aGlzIGFzc3VtcHRpb24gYWx3YXlzIGhv
-bGQuCj4gCj4gTWFyYywgUm9iaW4gYW5kIEFsZXggY2FuIGNvcnJlY3QgbWUsIGJ1dCBmb3IgZXhh
-bXBsZSBJIHRoaW5rIHRoZSBmb2xsb3dpbmcKPiB0b3BvbG9neSBpcyB2YWxpZCBmb3IgQXJtIHN5
-c3RlbXM6Cj4gCj4gICstLS0tLS0tLS0tLS0rICArLS0tLS0tLS0tLS0tKwo+ICB8IEVuZHBvaW50
-IEEgfCAgfCBFbmRwb2ludCBCIHwKPiAgKy0tLS0tLS0tLS0tLSsgICstLS0tLS0tLS0tLS0rCj4g
-ICAgICAgICAgICAgdiAgICAgdgo+ICAgICAgICAgICAvLS0tLS0tLS0tXAo+ICAgICAgICAgIHwg
-IE5vbi1BQ1MgIHwKPiAgICAgICAgICB8ICBTd2l0Y2ggICB8Cj4gICAgICAgICAgIFwtLS0tLS0t
-LS0vCj4gICAgICAgICAgICAgICAgdgo+ICAgICAgICArLS0tLS0tLS0tLS0tLS0tKwo+ICAgICAg
-ICB8ICAgICBQQ0llICAgICAgfAo+ICAgICAgICB8IFJvb3QgQ29tcGxleCAgfAo+ICAgICAgICAr
-LS0tLS0tLS0tLS0tLS0tKwo+ICAgICAgICAgICAgICAgIHYKPiAgICAgICAgICArLS0tLS0tLS0t
-LS0rCj4gICAgICAgICAgfCAgIFNNTVUgICAgfAo+ICAgICAgICAgICstLS0tLS0tLS0tLSsKPiAg
-ICAgICAgICAgICAgICB2Cj4gICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCj4gICB8ICAg
-U3lzdGVtIGludGVyY29ubmVjdCAgICB8Cj4gICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0r
-Cj4gICAgICAgICB2ICAgICAgICAgICAgICB2Cj4gICArLS0tLS0tLS0tLS0rICArLS0tLS0tLS0t
-LS0rCj4gICB8ICAgSVRTIEEgICB8ICB8ICAgSVRTIEIgICB8Cj4gICArLS0tLS0tLS0tLS0rICAr
-LS0tLS0tLS0tLS0rCj4gCj4gQWxsIFBDSWUgRW5kcG9pbnRzIGFuZCBJVFMgY291bGQgYmUgaW4g
-dGhlIHNhbWUgSVRTIEdyb3VwIDAsIG1lYW5pbmcKPiBkZXZpY2VzIGNvdWxkIHNlbmQgdGhlaXIg
-TVNJIGF0IGFueSBJVFMgaW4gaGFyZHdhcmUuCj4gCj4gRm9yIExpbnV4IHRoZSB0d28gUENJZSBF
-bmRwb2ludHMgd291bGQgYmUgaW4gdGhlIHNhbWUgaW9tbXUgZ3JvdXAsIGJlY2F1c2UKPiB0aGUg
-c3dpdGNoIGluIHRoaXMgZXhhbXBsZSBkb2VzIG5vdCBzdXBwb3J0IEFDUy4KPiAKPiBJIHRoaW5r
-IHRoZSBkZXZpY2V0cmVlIG1zaS1tYXAgcHJvcGVydHkgY291bGQgYmUgdXNlZCB0byAibWFwIiB0
-aGUgUklEIG9mCj4gRW5kcG9pbnQgQSB0byBJVFMgQSBhbmQgdGhlIFJJRCBvZiBFbmRwb2ludCBC
-IHRvIElUUyBCLCB3aGljaCB3b3VsZCB2aW9sYXRlCj4gdGhlIGFzc3VtcHRpb24uCj4gCj4gU2Vl
-IHRoZSBtb25vbGl0aGljIGV4YW1wbGUgaW4gWzFdLCB0aGUgZXhhbXBsZSBzeXN0ZW0gaW4gWzJd
-LCBhcHBlbmRpY2VzCj4gRCwgRSBhbmQgRiBpbiBbM10gYW5kIHRoZSBtc2ktbWFwIHByb3BlcnR5
-IGluIFs0XS4KCkkgdGhpbmsgd2UgYXJlIGFsbCBpbiBhZ3JlZW1lbnQgdGhhdCB0aGlzIGlzIGEg
-cG9zc2libGUgdG9wb2xvZ3kuIEl0IGlzCmp1c3QgdGhhdCBpdCBkb2Vzbid0IGV4aXN0IGluIGFu
-eSByZWFsLWxpZmUgaW1wbGVtZW50YXRpb24gd2Uga25vdyBvZgoodGhlIElUUyB0ZW5kcyB0byBi
-ZSBjbG9zZSB0byB0aGUgUkMgYW5kIG5vdCBkb3duc3RyZWFtIG9mIHRoZQppbnRlcmNvbm5lY3Qp
-LgoKR2l2ZW4gdGhlIGNvbXBsZXhpdHkgb2Ygd2hhdCB3ZSdyZSB0cnlpbmcgdG8gcHV0IHRvZ2V0
-aGVyLCBJJ2QgcmF0aGVyCnN0YXJ0IHdpdGggYSBzbWFsbCBzdGVwIHdoaWNoIHN1cHBvcnRzIGNv
-bW1vbmx5IGltcGxlbWVudGVkIHRvcG9sb2d5LAphbmQgbGF0ZXIgYWRkcmVzcyB0aGUgb2RkIG9u
-ZXMgaWYgdGhleSBhY3R1YWxseSBjcm9wIHVwLgoKVGhhbmtzLAoKCU0uCi0tIApKYXp6IGlzIG5v
-dCBkZWFkLiBJdCBqdXN0IHNtZWxscyBmdW5ueS4uLgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwprdm1hcm0gbWFpbGluZyBsaXN0Cmt2bWFybUBsaXN0cy5j
-cy5jb2x1bWJpYS5lZHUKaHR0cHM6Ly9saXN0cy5jcy5jb2x1bWJpYS5lZHUvbWFpbG1hbi9saXN0
-aW5mby9rdm1hcm0K
+On Wed, 2019-04-10 at 08:43 +0200, hch-jcswGhMUV9g@public.gmane.org wrote:
+> On Tue, Apr 09, 2019 at 05:24:48PM +0000, Thomas Hellstrom wrote:
+> > > Note that this only affects external, untrusted devices.  But
+> > > that
+> > > may include eGPU,
+> > 
+> > What about discrete graphics cards, like Radeon and Nvidia? Who
+> > gets to
+> > determine what's trusted?
+> 
+> Based on firmware tables.  discrete graphics would not qualify unless
+> they are attached through thunderbolt bridges or external PCIe ports.
+> 
+> > GPU libraries traditionally have been taking care of the CPU
+> > mapping
+> > caching modes since the first AGP drivers. GPU MMU ptes commonly
+> > support various caching options and pages are changing caching mode
+> > dynamically.
+> > So even if the DMA layer needs to do the remapping, couldn't we do
+> > that
+> > on-demand when needed with a simple interface?
+> 
+> The problem is that there is no "simple" interface as the details
+> depend on the architecture.  We have the following base variants
+> to create coherent memory:
+> 
+>   1) do nothing - this works on x86-like platforms where I/O is
+> always
+>      coherent
+>   2) use a special kernel segment, after flushing the caches for the
+>      normal segment, done on platforms like mips that have this
+>      special segment
+>   3) remap the existing kernel direct mapping, after flushing the
+>      caches, done by openrisc and in some cases arm32
+>   4) create a new mapping in vmap or ioremap space after flushing the
+>      caches - done by most architectures with an MMU and non-coherent
+>      devices
+>   5) use a special pool of uncached memory set aside by the hardware
+>      or firmware - done by most architectures without an MMU but with
+>      non-coherent devices
+> 
+
+Understood. Unfortunately IMO this severly limits the use of the
+dma_alloc_coherent() method.
+
+> So that is just five major variants with a lot of details on how
+> it is done in practice.  Add to that that many of the operations
+> are fairly expensive and need to be pre-loaded.
+> 
+> > > That being said: your driver already uses the dma coherent API
+> > > under various circumstances, so you already have the above
+> > > issues.
+> > 
+> > Yes, but they are hidden behind driver options. We can't have
+> > someone
+> > upgrade their kernel and suddenly things don't work anymore, That
+> > said,
+> > I think the SWIOTLB case is rare enough for the below solution to
+> > be
+> > acceptable, although the TTM check for the coherent page pool being
+> > available still needs to remain.
+> 
+> So can you please respin a version acceptable to you and submit it
+> for 5.1 ASAP?  Otherwise I'll need to move ahead with the simple
+> revert.
+
+I will. 
+I need to do some testing to investigate how to best choose between the
+options, but will have something ready for 5.1.
+
+/Thomas
