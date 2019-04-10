@@ -2,110 +2,103 @@ Return-Path: <SRS0=ghiB=SM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B01E9C10F11
-	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 13:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E359EC282CE
+	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 15:01:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8B0FA20830
-	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 13:16:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B0FA20830
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A1B702082E
+	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 15:01:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=vmware.com header.i=@vmware.com header.b="ZtbvpoNs"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1B702082E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 42C9A1840;
-	Wed, 10 Apr 2019 13:16:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D3BA1A09;
+	Wed, 10 Apr 2019 15:01:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 56789174E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 584FD16A0
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Apr 2019 13:15:48 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id CC64276D
+	Wed, 10 Apr 2019 15:01:18 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from NAM03-CO1-obe.outbound.protection.outlook.com
+	(mail-eopbgr790077.outbound.protection.outlook.com [40.107.79.77])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2AD9A860
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Apr 2019 13:15:47 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 889A8A78;
-	Wed, 10 Apr 2019 06:15:47 -0700 (PDT)
-Received: from [10.1.196.92] (usa-sjc-imap-foss1.foss.arm.com [10.72.51.249])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
-	8832B3F68F; Wed, 10 Apr 2019 06:15:44 -0700 (PDT)
-Subject: Re: [PATCH v6 09/22] vfio: VFIO_IOMMU_BIND/UNBIND_MSI
-To: =?UTF-8?Q?Vincent_Stehl=c3=a9?= <vincent.stehle@arm.com>,
-	Auger Eric <eric.auger@redhat.com>
-References: <20190317172232.1068-1-eric.auger@redhat.com>
-	<20190317172232.1068-10-eric.auger@redhat.com>
-	<20190321170159.38358f38@x1.home>
-	<16931d58-9c88-8cfb-a392-408ea7afdf16@redhat.com>
-	<20190322160947.3f8dacdb@x1.home>
-	<b47128de-88d0-1971-1fbc-86e43439c7ee@redhat.com>
-	<20190403113800.51503693@x1.home>
-	<4b27b707-4917-2c3e-a13c-3b978e850d09@redhat.com>
-	<20190410123531.GA19023@debian>
-From: Marc Zyngier <marc.zyngier@arm.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=marc.zyngier@arm.com; prefer-encrypt=mutual; keydata=
-	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
-Organization: ARM Ltd
-Message-ID: <73e3c98a-2a2c-83ad-1bbb-7f7368cce274@arm.com>
-Date: Wed, 10 Apr 2019 14:15:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190410123531.GA19023@debian>
+	Wed, 10 Apr 2019 15:01:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+	s=selector1;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=CQ8Kk2N+TL4xKSWoAAfCVirjmuD7R7tCVz4/9fUB+bM=;
+	b=ZtbvpoNs5ohc8OW2NNUtUzn+24XMKipsS+XVB1vPnCJsYnjK6FhO3XgAMw1xrM//4cf4m7IdWf5BKlUD0357yq+aY/7p6lMDYn76ZfKmSHyIwA3VLKxg6X1xaChGzrRpEn2Uxoj+QW3MR1KhJ7+MY/KqURuFE5wvXwOeo37QuT4=
+Received: from MN2PR05MB6141.namprd05.prod.outlook.com (20.178.241.217) by
+	MN2PR05MB6527.namprd05.prod.outlook.com (20.178.246.209) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1792.7; Wed, 10 Apr 2019 15:01:14 +0000
+Received: from MN2PR05MB6141.namprd05.prod.outlook.com
+	([fe80::91e:292d:e304:78ad]) by MN2PR05MB6141.namprd05.prod.outlook.com
+	([fe80::91e:292d:e304:78ad%7]) with mapi id 15.20.1792.009;
+	Wed, 10 Apr 2019 15:01:14 +0000
+To: "hch@lst.de" <hch@lst.de>
+Subject: Re: revert dma direct internals abuse
+Thread-Topic: revert dma direct internals abuse
+Thread-Index: AQHU7fmi7IV/x30l7UexE5gP02MWCKYymy+AgAD+MwCAADQ1gIAAB6sAgAAMwgCAABMAAIAAIUkAgADfTYCAAIrrAA==
+Date: Wed, 10 Apr 2019 15:01:14 +0000
+Message-ID: <0c897b24b234f8d42ef597dbe31fa8293519a4b2.camel@vmware.com>
+References: <20190408105525.5493-1-hch@lst.de>
+	<7d5f35da4a6b58639519f0764c7edbfe4dd1ba02.camel@vmware.com>
+	<20190409095740.GE6827@lst.de>
+	<5f0837ffc135560c764c38849eead40269cebb48.camel@vmware.com>
+	<20190409133157.GA10876@lst.de>
+	<466e658c73607fca5112d718972e87c0b78653ad.camel@vmware.com>
+	<20190409152538.GA12816@lst.de>
+	<da06614b308500392c179651ef9c6fb835ee4045.camel@vmware.com>
+	<20190410064359.GC5543@lst.de>
+In-Reply-To: <20190410064359.GC5543@lst.de>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: yi.l.liu@linux.intel.com, kevin.tian@intel.com, ashok.raj@intel.com,
-	kvm@vger.kernel.org, peter.maydell@linaro.org,
-	jean-philippe.brucker@arm.com, will.deacon@arm.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	christoffer.dall@arm.com, Alex Williamson <alex.williamson@redhat.com>,
-	robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu,
-	eric.auger.pro@gmail.com
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=thellstrom@vmware.com; 
+x-originating-ip: [155.4.205.56]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2942fa3b-3597-4de4-c523-08d6bdc56063
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600139)(711020)(4605104)(2017052603328)(7193020);
+	SRVR:MN2PR05MB6527; 
+x-ms-traffictypediagnostic: MN2PR05MB6527:
+x-microsoft-antispam-prvs: <MN2PR05MB65272E3B60EBE20B20AFA8F7A12E0@MN2PR05MB6527.namprd05.prod.outlook.com>
+x-forefront-prvs: 00032065B2
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(136003)(396003)(346002)(39860400002)(366004)(376002)(199004)(189003)(8936002)(316002)(97736004)(486006)(14454004)(6486002)(4326008)(36756003)(6512007)(86362001)(99286004)(2616005)(3846002)(6116002)(2501003)(6246003)(305945005)(5660300002)(7736002)(2906002)(93886005)(53936002)(6916009)(54906003)(229853002)(446003)(76176011)(26005)(68736007)(105586002)(81156014)(118296001)(102836004)(5640700003)(81166006)(71200400001)(6506007)(66066001)(476003)(71190400001)(6436002)(186003)(256004)(478600001)(1730700003)(2351001)(5024004)(14444005)(11346002)(25786009)(8676002)(106356001);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:MN2PR05MB6527;
+	H:MN2PR05MB6141.namprd05.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: vmware.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: DOjKWTlKRhmf269CIiqftcX1gpcqKTd/SWebAGDp9ELF8WmYEspzrDNeiXZkNWw0mEVlEaIUeBwovxEVYSb9AMuPAyLQ/GprYjGWJ4WWoYvAs6knKH8u1wojvNqgTDLKVhum3marQrbl5kaXzoICraxkgOUEwle6UcKUtMZbzB41eZmoVGgD8dDPj3tNLFwOwMbyWnzm9muTSNM44SvZsfBTZf5WERTN9zm2ERDUvGJGE/Z9b2tQPKFHt1saahkGcA3aXFfw2gAbvOgQuLgTE6VP76bwu23Quk6JDfOhOMvlXj7XUkP7lYnFlBfQtJmOe0u/8lrmyKKFcVhU2PEM6dI1mitiW/ZDr2ymhjCiaWqpsv8SMPoYMZqdytJO1gBFAHZhl7NUiQ4Jyn6WEXJKUwTPtuPt09W+A3XyXR/Syqs=
+Content-ID: <5D2AB352DE7A2F4BB71CA19FEF5367B8@namprd05.prod.outlook.com>
+MIME-Version: 1.0
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2942fa3b-3597-4de4-c523-08d6bdc56063
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Apr 2019 15:01:14.1931 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR05MB6527
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Deepak Singh Rawat <drawat@vmware.com>,
+	"torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -118,51 +111,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Thomas Hellstrom via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Thomas Hellstrom <thellstrom@vmware.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190410131541.vx_kPpqU2OHCbEgyMS4JofWduo279RTkN0m_pEL5-0Y@z>
+Message-ID: <20190410150114.UWRTu8gKqv8GlM5z6SDFBbREPLRM-UEdtu7MBKMUmr8@z>
 
-SGkgVmluY2VudCwKCk9uIDEwLzA0LzIwMTkgMTM6MzUsIFZpbmNlbnQgU3RlaGzDqSB3cm90ZToK
-PiBPbiBUaHUsIEFwciAwNCwgMjAxOSBhdCAwODo1NToyNUFNICswMjAwLCBBdWdlciBFcmljIHdy
-b3RlOgo+PiBIaSBNYXJjLCBSb2JpbiwgQWxleCwKPiAoLi4pCj4+IERvIHlvdSB0aGluayB0aGlz
-IGlzIGEgcmVhc29uYWJsZSBhc3N1bXB0aW9uIHRvIGNvbnNpZGVyIGRldmljZXMgd2l0aGluCj4+
-IHRoZSBzYW1lIGhvc3QgaW9tbXUgZ3JvdXAgc2hhcmUgdGhlIHNhbWUgTVNJIGRvb3JiZWxsPwo+
-IAo+IEhpIEVyaWMsCj4gCj4gSSBhbSBub3Qgc3VyZSB0aGlzIGFzc3VtcHRpb24gYWx3YXlzIGhv
-bGQuCj4gCj4gTWFyYywgUm9iaW4gYW5kIEFsZXggY2FuIGNvcnJlY3QgbWUsIGJ1dCBmb3IgZXhh
-bXBsZSBJIHRoaW5rIHRoZSBmb2xsb3dpbmcKPiB0b3BvbG9neSBpcyB2YWxpZCBmb3IgQXJtIHN5
-c3RlbXM6Cj4gCj4gICstLS0tLS0tLS0tLS0rICArLS0tLS0tLS0tLS0tKwo+ICB8IEVuZHBvaW50
-IEEgfCAgfCBFbmRwb2ludCBCIHwKPiAgKy0tLS0tLS0tLS0tLSsgICstLS0tLS0tLS0tLS0rCj4g
-ICAgICAgICAgICAgdiAgICAgdgo+ICAgICAgICAgICAvLS0tLS0tLS0tXAo+ICAgICAgICAgIHwg
-IE5vbi1BQ1MgIHwKPiAgICAgICAgICB8ICBTd2l0Y2ggICB8Cj4gICAgICAgICAgIFwtLS0tLS0t
-LS0vCj4gICAgICAgICAgICAgICAgdgo+ICAgICAgICArLS0tLS0tLS0tLS0tLS0tKwo+ICAgICAg
-ICB8ICAgICBQQ0llICAgICAgfAo+ICAgICAgICB8IFJvb3QgQ29tcGxleCAgfAo+ICAgICAgICAr
-LS0tLS0tLS0tLS0tLS0tKwo+ICAgICAgICAgICAgICAgIHYKPiAgICAgICAgICArLS0tLS0tLS0t
-LS0rCj4gICAgICAgICAgfCAgIFNNTVUgICAgfAo+ICAgICAgICAgICstLS0tLS0tLS0tLSsKPiAg
-ICAgICAgICAgICAgICB2Cj4gICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCj4gICB8ICAg
-U3lzdGVtIGludGVyY29ubmVjdCAgICB8Cj4gICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0r
-Cj4gICAgICAgICB2ICAgICAgICAgICAgICB2Cj4gICArLS0tLS0tLS0tLS0rICArLS0tLS0tLS0t
-LS0rCj4gICB8ICAgSVRTIEEgICB8ICB8ICAgSVRTIEIgICB8Cj4gICArLS0tLS0tLS0tLS0rICAr
-LS0tLS0tLS0tLS0rCj4gCj4gQWxsIFBDSWUgRW5kcG9pbnRzIGFuZCBJVFMgY291bGQgYmUgaW4g
-dGhlIHNhbWUgSVRTIEdyb3VwIDAsIG1lYW5pbmcKPiBkZXZpY2VzIGNvdWxkIHNlbmQgdGhlaXIg
-TVNJIGF0IGFueSBJVFMgaW4gaGFyZHdhcmUuCj4gCj4gRm9yIExpbnV4IHRoZSB0d28gUENJZSBF
-bmRwb2ludHMgd291bGQgYmUgaW4gdGhlIHNhbWUgaW9tbXUgZ3JvdXAsIGJlY2F1c2UKPiB0aGUg
-c3dpdGNoIGluIHRoaXMgZXhhbXBsZSBkb2VzIG5vdCBzdXBwb3J0IEFDUy4KPiAKPiBJIHRoaW5r
-IHRoZSBkZXZpY2V0cmVlIG1zaS1tYXAgcHJvcGVydHkgY291bGQgYmUgdXNlZCB0byAibWFwIiB0
-aGUgUklEIG9mCj4gRW5kcG9pbnQgQSB0byBJVFMgQSBhbmQgdGhlIFJJRCBvZiBFbmRwb2ludCBC
-IHRvIElUUyBCLCB3aGljaCB3b3VsZCB2aW9sYXRlCj4gdGhlIGFzc3VtcHRpb24uCj4gCj4gU2Vl
-IHRoZSBtb25vbGl0aGljIGV4YW1wbGUgaW4gWzFdLCB0aGUgZXhhbXBsZSBzeXN0ZW0gaW4gWzJd
-LCBhcHBlbmRpY2VzCj4gRCwgRSBhbmQgRiBpbiBbM10gYW5kIHRoZSBtc2ktbWFwIHByb3BlcnR5
-IGluIFs0XS4KCkkgdGhpbmsgd2UgYXJlIGFsbCBpbiBhZ3JlZW1lbnQgdGhhdCB0aGlzIGlzIGEg
-cG9zc2libGUgdG9wb2xvZ3kuIEl0IGlzCmp1c3QgdGhhdCBpdCBkb2Vzbid0IGV4aXN0IGluIGFu
-eSByZWFsLWxpZmUgaW1wbGVtZW50YXRpb24gd2Uga25vdyBvZgoodGhlIElUUyB0ZW5kcyB0byBi
-ZSBjbG9zZSB0byB0aGUgUkMgYW5kIG5vdCBkb3duc3RyZWFtIG9mIHRoZQppbnRlcmNvbm5lY3Qp
-LgoKR2l2ZW4gdGhlIGNvbXBsZXhpdHkgb2Ygd2hhdCB3ZSdyZSB0cnlpbmcgdG8gcHV0IHRvZ2V0
-aGVyLCBJJ2QgcmF0aGVyCnN0YXJ0IHdpdGggYSBzbWFsbCBzdGVwIHdoaWNoIHN1cHBvcnRzIGNv
-bW1vbmx5IGltcGxlbWVudGVkIHRvcG9sb2d5LAphbmQgbGF0ZXIgYWRkcmVzcyB0aGUgb2RkIG9u
-ZXMgaWYgdGhleSBhY3R1YWxseSBjcm9wIHVwLgoKVGhhbmtzLAoKCU0uCi0tIApKYXp6IGlzIG5v
-dCBkZWFkLiBJdCBqdXN0IHNtZWxscyBmdW5ueS4uLgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
-YW4vbGlzdGluZm8vaW9tbXU=
+On Wed, 2019-04-10 at 08:43 +0200, hch@lst.de wrote:
+> On Tue, Apr 09, 2019 at 05:24:48PM +0000, Thomas Hellstrom wrote:
+> > > Note that this only affects external, untrusted devices.  But
+> > > that
+> > > may include eGPU,
+> > 
+> > What about discrete graphics cards, like Radeon and Nvidia? Who
+> > gets to
+> > determine what's trusted?
+> 
+> Based on firmware tables.  discrete graphics would not qualify unless
+> they are attached through thunderbolt bridges or external PCIe ports.
+> 
+> > GPU libraries traditionally have been taking care of the CPU
+> > mapping
+> > caching modes since the first AGP drivers. GPU MMU ptes commonly
+> > support various caching options and pages are changing caching mode
+> > dynamically.
+> > So even if the DMA layer needs to do the remapping, couldn't we do
+> > that
+> > on-demand when needed with a simple interface?
+> 
+> The problem is that there is no "simple" interface as the details
+> depend on the architecture.  We have the following base variants
+> to create coherent memory:
+> 
+>   1) do nothing - this works on x86-like platforms where I/O is
+> always
+>      coherent
+>   2) use a special kernel segment, after flushing the caches for the
+>      normal segment, done on platforms like mips that have this
+>      special segment
+>   3) remap the existing kernel direct mapping, after flushing the
+>      caches, done by openrisc and in some cases arm32
+>   4) create a new mapping in vmap or ioremap space after flushing the
+>      caches - done by most architectures with an MMU and non-coherent
+>      devices
+>   5) use a special pool of uncached memory set aside by the hardware
+>      or firmware - done by most architectures without an MMU but with
+>      non-coherent devices
+> 
+
+Understood. Unfortunately IMO this severly limits the use of the
+dma_alloc_coherent() method.
+
+> So that is just five major variants with a lot of details on how
+> it is done in practice.  Add to that that many of the operations
+> are fairly expensive and need to be pre-loaded.
+> 
+> > > That being said: your driver already uses the dma coherent API
+> > > under various circumstances, so you already have the above
+> > > issues.
+> > 
+> > Yes, but they are hidden behind driver options. We can't have
+> > someone
+> > upgrade their kernel and suddenly things don't work anymore, That
+> > said,
+> > I think the SWIOTLB case is rare enough for the below solution to
+> > be
+> > acceptable, although the TTM check for the coherent page pool being
+> > available still needs to remain.
+> 
+> So can you please respin a version acceptable to you and submit it
+> for 5.1 ASAP?  Otherwise I'll need to move ahead with the simple
+> revert.
+
+I will. 
+I need to do some testing to investigate how to best choose between the
+options, but will have something ready for 5.1.
+
+/Thomas
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
