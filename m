@@ -2,95 +2,65 @@ Return-Path: <SRS0=ghiB=SM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=BIGNUM_EMAILS,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACCA3C10F11
-	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 10:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B90E0C10F11
+	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 10:20:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 77866217D6
-	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 10:03:09 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Z/f3m+nd"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77866217D6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8D5B7217D6
+	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 10:20:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D5B7217D6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4D8B41703;
-	Wed, 10 Apr 2019 10:03:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5F3321719;
+	Wed, 10 Apr 2019 10:20:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3268116FC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8532B1596
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Apr 2019 10:02:55 +0000 (UTC)
+	Wed, 10 Apr 2019 10:19:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C4B1B17E
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A2C7E17E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Apr 2019 10:02:54 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-	by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3A9rknu062842; Wed, 10 Apr 2019 10:02:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
-	h=date : from : to : cc
-	: subject : message-id : references : mime-version : content-type :
-	in-reply-to; s=corp-2018-07-02;
-	bh=Y8bWGW03G4sGwsf1DK+mK3Dp0edG8wYNJ92rQXGQu1s=;
-	b=Z/f3m+ndWx+cbUAQ0iMiwgevGfWahtSSMaVxBX+yDeaLNbnu/1KeahhBlqLn4tlsPkGC
-	Wc8M1tFvsqC5Vu0rm+35PXcHRtbmxhjpZb3V7cz2HGFLWxdldWhyCU2Coa7BJXiOsU5u
-	GNcbxqldBygMxr7H2h3nuURqvnbHxsdbBE+ko0F18fRJYxyNk0PQ++/7nIcm6ylaPt/m
-	WdNujWnIEIQ3mVqtH/LYkismT9OM2qFntxp3PU6l6a0HjPnGZlc4TEjxwmhgGt5YXQqQ
-	ABT17tOy4vWVg2jQzZYJeUzREjNqOaBYFBSQoz/5qoSFno3JyQrz3y7iIhLnr88N4VGf
-	7w== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-	by aserp2130.oracle.com with ESMTP id 2rphmej91w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 10 Apr 2019 10:02:49 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-	by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3AA2nQt047777; Wed, 10 Apr 2019 10:02:49 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-	by aserp3020.oracle.com with ESMTP id 2rpytc593k-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 10 Apr 2019 10:02:49 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-	by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x3AA2jXD025816;
-	Wed, 10 Apr 2019 10:02:45 GMT
-Received: from kadam (/197.157.0.42) by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Wed, 10 Apr 2019 03:02:44 -0700
-Date: Wed, 10 Apr 2019 13:02:37 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [bug report] iommu/io-pgtable-arm: Fix pgtable allocation in
-	selftest
-Message-ID: <20190410100237.GA31633@kadam>
-References: <20190410093405.GA9889@kadam>
-	<782a999e-ce70-bd8e-5a7b-cd320ce98144@arm.com>
+	Wed, 10 Apr 2019 10:19:58 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 67F9015AB;
+	Wed, 10 Apr 2019 03:19:58 -0700 (PDT)
+Received: from [10.1.196.69] (e112269-lin.cambridge.arm.com [10.1.196.69])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09C523F59C;
+	Wed, 10 Apr 2019 03:19:55 -0700 (PDT)
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+To: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+References: <20190401074730.12241-1-robh@kernel.org>
+	<20190401074730.12241-4-robh@kernel.org>
+	<5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+	<CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
+From: Steven Price <steven.price@arm.com>
+Message-ID: <b52052a3-141e-d6fd-f99a-9f7ddb611d96@arm.com>
+Date: Wed, 10 Apr 2019 11:19:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.5.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <782a999e-ce70-bd8e-5a7b-cd320ce98144@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9222
-	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
-	malwarescore=0
-	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
-	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
-	engine=8.0.1-1810050000 definitions=main-1904100073
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9222
-	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
-	priorityscore=1501 malwarescore=0
-	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
-	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
-	adultscore=0
-	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
-	definitions=main-1904100072
-Cc: jean-philippe.brucker@arm.com, iommu@lists.linux-foundation.org
+In-Reply-To: <CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
+Content-Language: en-GB
+Cc: Neil Armstrong <narmstrong@baylibre.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Sean Paul <sean@poorly.run>, Will Deacon <will.deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dri-devel <dri-devel@lists.freedesktop.org>,
+	David Airlie <airlied@linux.ie>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	"Marty E . Plummer" <hanetzer@startmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -107,51 +77,297 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190410100237.L6ko-in_piwkfBOaxniLC_fumAtdyZA5tMAOQpETG8Q@z>
+Message-ID: <20190410101954.ndVgA1qU47DjgDKXehhKsqI3TOoDbE7AzXYQXfCeyos@z>
 
-On Wed, Apr 10, 2019 at 10:44:03AM +0100, Robin Murphy wrote:
-> Hi Dan,
+On 08/04/2019 22:04, Rob Herring wrote:
+> On Fri, Apr 5, 2019 at 7:30 AM Steven Price <steven.price@arm.com> wrote:
+>>
+>> On 01/04/2019 08:47, Rob Herring wrote:
+>>> This adds the initial driver for panfrost which supports Arm Mali
+>>> Midgard and Bifrost family of GPUs. Currently, only the T860 and
+>>> T760 Midgard GPUs have been tested.
 > 
-> On 10/04/2019 10:34, Dan Carpenter wrote:
-> > Hello Jean-Philippe Brucker,
-> > 
-> > This is a semi-automatic email about new static checker warnings.
-> > 
-> > The patch fac83d29d954: "iommu/io-pgtable-arm: Fix pgtable allocation
-> > in selftest" from Jun 18, 2018, leads to the following Smatch
-> > complaint:
-> > 
-> >      drivers/iommu/io-pgtable-arm.c:246 __arm_lpae_alloc_pages()
-> >      error: we previously assumed 'dev' could be null (see line 239)
-> > 
-> > drivers/iommu/io-pgtable-arm.c
-> >     238		VM_BUG_ON((gfp & __GFP_HIGHMEM));
-> >     239		p = alloc_pages_node(dev ? dev_to_node(dev) : NUMA_NO_NODE,
-> >                                       ^^^
-> > We added a NULL check here
-> > 
-> >     240				     gfp | __GFP_ZERO, order);
-> >     241		if (!p)
-> >     242			return NULL;
-> >     243	
-> >     244		pages = page_address(p);
-> >     245		if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
+> [...]
 > 
-> The selftests *should* always set this quirk such that they never get to the
-> DMA mapping calls (that was one of the reasons for implementing things that
-> way) - I guess that might be a bit too sneaky for Smatch, but I can take a
-> look to double-check that the flow is working correctly such that this
-> really is a false-positive.
+>>> +     case 0xD3: return "TRANSTAB_BUS_FAULT_LEVEL3";
+>>> +     case 0xD4: return "TRANSTAB_BUS_FAULT_LEVEL4";
+>>> +     case 0xD8: return "ACCESS_FLAG";
+>>> +     }
+>>> +
+>>> +     if (panfrost_has_hw_feature(pfdev, HW_FEATURE_AARCH64_MMU)) {
+>>
+>> There's not a great deal of point in this conditional - you won't get
+>> the below exception codes from hardware which doesn't support it AARCH64
+>> page tables.
+> 
+> I wasn't sure if "UNKNOWN" types could happen or not.
+> 
+>>
+>>> +             switch (exception_code) {
+>>> +             case 0xC9 ... 0xCF: return "PERMISSION_FAULT";
+>>> +             case 0xD9 ... 0xDF: return "ACCESS_FLAG";
+>>> +             case 0xE0 ... 0xE7: return "ADDRESS_SIZE_FAULT";
+>>> +             case 0xE8 ... 0xEF: return "MEMORY_ATTRIBUTES_FAULT";
+>>> +             }
+>>> +     }
+>>> +
+>>> +     return "UNKNOWN";
+>>> +}
+> 
+>>> +static inline int panfrost_model_cmp(struct panfrost_device *pfdev, s32 id)
+>>> +{
+>>> +     s32 match_id = pfdev->features.id;
+>>> +
+>>> +     if (match_id & 0xf000)
+>>> +             match_id &= 0xf00f;
+>>
+>> I'm puzzled by this, and really not sure if it's going to work out
+>> ignoring the ARCH_MINOR/ARCH_REV fields. But for now there's no real
+>> Bifrost support.
+> 
+> That seemed to be enough for kbase to select features/issues.
 
-Ah, thanks.
+I can't deny that it seems to work for now, and indeed looking more
+closely at kbase that does seem to be the effect of the current code.
 
-I have a plan for fixing these false positives caused by not tracking
-bit masks.  It's not that complicated to fix, it just takes time to
-write the code.
+>>> +     switch (param->param) {
+>>> +     case DRM_PANFROST_PARAM_GPU_ID:
+>>> +             param->value = pfdev->features.id;
+>>
+>> This is unfortunate naming - this parameter is *not* the GPU_ID. It is
+>> the top half of the GPU_ID which kbase calls the PRODUCT_ID.
+> 
+> I can rename it.
 
-regards,
-dan carpenter
+It would help prevent confusion, thanks!
 
+>> I'm also somewhat surprised that you don't need loads of other
+>> properties from the GPU - in particular knowing the number of shader
+>> cores is useful for allocating the right amount of memory for TLS (and
+>> can't be obtained purely from the GPU_ID).
+> 
+> We'll add them as userspace needs them.
+
+Fair enough. I'm not sure how much you want to provide "forward
+compatibility" by providing them early - the basic definitions are
+already in kbase. I found it a bit surprising that some feature
+registers are printed on probe, but not available to be queried.
+
+>>> +static int
+>>> +panfrost_lookup_bos(struct drm_device *dev,
+>>> +               struct drm_file *file_priv,
+>>> +               struct drm_panfrost_submit *args,
+>>> +               struct panfrost_job *job)
+>>> +{
+>>> +     u32 *handles;
+>>> +     int ret = 0;
+>>> +
+>>> +     job->bo_count = args->bo_handle_count;
+>>> +
+>>> +     if (!job->bo_count)
+>>> +             return 0;
+>>> +
+>>> +     job->bos = kvmalloc_array(job->bo_count,
+>>> +                               sizeof(struct drm_gem_object *),
+>>> +                               GFP_KERNEL | __GFP_ZERO);
+>>> +     if (!job->bos)
+>>
+>> If we return here then job->bo_count has been set, but job->bos is
+>> invalid - this means that panfrost_job_cleanup() will then dereference
+>> NULL. Although maybe this is better fixed in panfrost_job_cleanup().
+> 
+> Good catch. The fence arrays have the same problem. As does V3D which we copied.
+> 
+>>> +             return -ENOMEM;
+>>> +
+>>> +     job->implicit_fences = kvmalloc_array(job->bo_count,
+>>> +                               sizeof(struct dma_fence *),
+>>> +                               GFP_KERNEL | __GFP_ZERO);
+>>> +     if (!job->implicit_fences)
+>>> +             return -ENOMEM;
+> 
+>>> +static irqreturn_t panfrost_gpu_irq_handler(int irq, void *data)
+>>> +{
+>>> +     struct panfrost_device *pfdev = data;
+>>> +     u32 state = gpu_read(pfdev, GPU_INT_STAT);
+>>> +     u32 fault_status = gpu_read(pfdev, GPU_FAULT_STATUS);
+>>> +     u64 address;
+>>> +     bool done = false;
+>>> +
+>>> +     if (!state)
+>>> +             return IRQ_NONE;
+>>> +
+>>> +     if (state & GPU_IRQ_MASK_ERROR) {
+>>> +             address = (u64) gpu_read(pfdev, GPU_FAULT_ADDRESS_HI) << 32;
+>>> +             address |= gpu_read(pfdev, GPU_FAULT_ADDRESS_LO);
+>>> +
+>>> +             dev_warn(pfdev->dev, "GPU Fault 0x%08x (%s) at 0x%016llx\n",
+>>> +                      fault_status & 0xFF, panfrost_exception_name(pfdev, fault_status),
+>>> +                      address);
+>>> +
+>>> +             if (state & GPU_IRQ_MULTIPLE_FAULT)
+>>> +                     dev_warn(pfdev->dev, "There were multiple GPU faults - some have not been reported\n");
+>>> +
+>>> +             gpu_write(pfdev, GPU_INT_MASK, 0);
+>>
+>> Do you intend to mask off future GPU interrupts?
+> 
+> Yes, maybe?
+> 
+> If we fault here, then we are going to reset the gpu on timeout which
+> then re-enables interrupts.
+
+Well fair enough. But there's no actual need to force a GPU reset.
+Really there's nothing you can do other than report a GPU fault. kbase
+simply reports it and otherwise ignores it (no GPU reset).
+
+Also will you actually trigger the GPU timeout? This won't mask of the
+JOB completion IRQ, so jobs can still complete.
+
+When you integrate other GPU irq sources (counters/power management)
+then you almost certainly don't want to mask those off just because of a
+GPU fault.
+
+>>> +static irqreturn_t panfrost_job_irq_handler(int irq, void *data)
+>>> +{
+>>> +     struct panfrost_device *pfdev = data;
+>>> +     u32 status = job_read(pfdev, JOB_INT_STAT);
+>>> +     int j;
+>>> +
+>>> +     dev_dbg(pfdev->dev, "jobslot irq status=%x\n", status);
+>>> +
+>>> +     if (!status)
+>>> +             return IRQ_NONE;
+>>> +
+>>> +     pm_runtime_mark_last_busy(pfdev->dev);
+>>> +
+>>> +     for (j = 0; status; j++) {
+>>> +             u32 mask = MK_JS_MASK(j);
+>>> +
+>>> +             if (!(status & mask))
+>>> +                     continue;
+>>> +
+>>> +             job_write(pfdev, JOB_INT_CLEAR, mask);
+>>> +
+>>> +             if (status & JOB_INT_MASK_ERR(j)) {
+>>> +                     job_write(pfdev, JS_COMMAND_NEXT(j), JS_COMMAND_NOP);
+>>> +                     job_write(pfdev, JS_COMMAND(j), JS_COMMAND_HARD_STOP_0);
+>>
+>> Hard-stopping an already completed job isn't likely to do very much :)
+>> Also you are using the "_0" version which is only valid when "job chain
+>> disambiguation" is present.
+>>
+>> I suspect in this case you should also be signalling the fence? At the
+>> moment you rely on the GPU timeout recovering from the fault.
+> 
+> I'll defer to Tomeu who wrote this (IIRC).
+> 
+> 
+>>> +static void lock_region(struct panfrost_device *pfdev, u32 as_nr,
+>>> +                     u64 iova, size_t size)
+>>> +{
+>>> +     u8 region_width;
+>>> +     u64 region = iova & PAGE_MASK;
+>>> +     /*
+>>> +      * fls returns (given the ASSERT above):
+>>
+>> But where's the assert? :p
+>>
+>>> +      * 1 .. 32
+>>> +      *
+>>> +      * 10 + fls(num_pages)
+>>> +      * results in the range (11 .. 42)
+>>> +      */
+>>> +
+>>> +     size = round_up(size, PAGE_SIZE);
+>>
+>> I'm not sure it matters, but this will break if called on a (small, i.e.
+>> less than a page) region spanning two pages. "region" will be rounded
+>> down to the page (iova & PAGE_MASK), but size will only be rounded up to
+>> the nearest page. This can miss the start of the second page.
+> 
+> This is probably redundant. Everything the driver does with memory is
+> in units of pages. Maybe imported buffers could be unaligned. Not sure
+> and we'd probably break in other places if that was the case.
+
+Yes I don't think this case will occur at the moment. I just noticed it
+because the interface was changed from kbase (kbase passes in a page
+offset, this version uses a byte offset).
+
+>>> +             /* terminal fault, print info about the fault */
+>>> +             dev_err(pfdev->dev,
+>>> +                     "Unhandled Page fault in AS%d at VA 0x%016llX\n"
+>>> +                     "Reason: %s\n"
+>>> +                     "raw fault status: 0x%X\n"
+>>> +                     "decoded fault status: %s\n"
+>>> +                     "exception type 0x%X: %s\n"
+>>> +                     "access type 0x%X: %s\n"
+>>> +                     "source id 0x%X\n",
+>>> +                     i, addr,
+>>> +                     "TODO",
+>>> +                     fault_status,
+>>> +                     (fault_status & (1 << 10) ? "DECODER FAULT" : "SLAVE FAULT"),
+>>> +                     exception_type, panfrost_exception_name(pfdev, exception_type),
+>>> +                     access_type, access_type_name(pfdev, fault_status),
+>>> +                     source_id);
+>>> +
+>>> +             mmu_write(pfdev, MMU_INT_CLEAR, mask);
+>>
+>> To fully handle the fault you will need to issue an MMU command (i.e.
+>> call mmu_hw_do_operation()) - obviously after doing something to fix the
+>> cause (e.g. mapping a page or switching the GPU to UNMAPPED mode to kill
+>> off the job). Otherwise you may see that the GPU hangs. Although in
+>> practice at this stage of the driver the generic timeout is probably the
+>> simplest way of handling an MMU fault.
+> 
+> Any fault currently is unexpected so all we really care about at this
+> point is getting a message.
+
+No problem. It will become relevant when you schedule work from multiple
+applications at the same time.
+
+[...]
+>>
+>> This is with the below simple reproducer:
+>>
+>> ----8<----
+>> #include <sys/ioctl.h>
+>> #include <fcntl.h>
+>> #include <stdio.h>
+>>
+>> #include <libdrm/drm.h>
+>> #include "panfrost_drm.h"
+>>
+>> int main(int argc, char **argv)
+>> {
+>>         int fd;
+>>
+>>         if (argc == 2)
+>>                 fd = open(argv[1], O_RDWR);
+>>         else
+>>                 fd = open("/dev/dri/renderD128", O_RDWR);
+>>         if (fd == -1) {
+>>                 perror("Failed to open");
+>>                 return 0;
+>>         }
+>>
+>>         struct drm_panfrost_submit submit = {
+>>                 .jc = 0,
+>>         };
+>>         return ioctl(fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
+>> }
+>> ----8<----
+>>
+>> Any ideas? I'm not an expert on DRM, so I got somewhat lost!
+
+Interestingly this actually looks similar to this bug for amdgpu:
+
+https://bugs.freedesktop.org/show_bug.cgi?id=109692
+
+There's a patch on there changing the drm scheduler which might be
+relevant. I haven't had chance to try it out.
+
+Steve
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
