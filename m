@@ -1,11 +1,14 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH] iommu/amd: remove the leftover of bypass support
-Date: Wed, 10 Apr 2019 18:50:14 +0200
-Message-ID: <20190410165014.9932-1-hch@lst.de>
+Subject: Re: [PATCH] sparc64/pci_sun4v: fix ATU checks for large DMA masks
+Date: Wed, 10 Apr 2019 18:54:30 +0200
+Message-ID: <20190410165430.GA7538@lst.de>
+References: <20190404162538.22428-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190404162538.22428-1-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,161 +18,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mroos-Y27EyoLml9s@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The AMD iommu dma_ops are only attached on a per-device basis when an
-actual translation is needed.  Remove the leftover bypass support which
-in parts was already broken (e.g. it always returns 0 from ->map_sg).
+Dave, are you going to pick this up through the sparc tree, or do
+you expect me to send it through the dma-mapping one?
 
-Use the opportunity to remove a few local variables and move assignments
-into the declaration line where they were previously separated by the
-bypass check.
-
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 80 +++++++++------------------------------
- 1 file changed, 17 insertions(+), 63 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index f7cdd2ab7f11..982435434c3a 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2498,20 +2498,10 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
- 			   unsigned long attrs)
- {
- 	phys_addr_t paddr = page_to_phys(page) + offset;
--	struct protection_domain *domain;
--	struct dma_ops_domain *dma_dom;
--	u64 dma_mask;
--
--	domain = get_domain(dev);
--	if (PTR_ERR(domain) == -EINVAL)
--		return (dma_addr_t)paddr;
--	else if (IS_ERR(domain))
--		return DMA_MAPPING_ERROR;
--
--	dma_mask = *dev->dma_mask;
--	dma_dom = to_dma_ops_domain(domain);
-+	struct protection_domain *domain = get_domain(dev);
-+	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
- 
--	return __map_single(dev, dma_dom, paddr, size, dir, dma_mask);
-+	return __map_single(dev, dma_dom, paddr, size, dir, *dev->dma_mask);
- }
- 
- /*
-@@ -2520,14 +2510,8 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
- static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
- 		       enum dma_data_direction dir, unsigned long attrs)
- {
--	struct protection_domain *domain;
--	struct dma_ops_domain *dma_dom;
--
--	domain = get_domain(dev);
--	if (IS_ERR(domain))
--		return;
--
--	dma_dom = to_dma_ops_domain(domain);
-+	struct protection_domain *domain = get_domain(dev);
-+	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
- 
- 	__unmap_single(dma_dom, dma_addr, size, dir);
- }
-@@ -2567,20 +2551,13 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 		  unsigned long attrs)
- {
- 	int mapped_pages = 0, npages = 0, prot = 0, i;
--	struct protection_domain *domain;
--	struct dma_ops_domain *dma_dom;
-+	struct protection_domain *domain = get_domain(dev);
-+	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
- 	struct scatterlist *s;
- 	unsigned long address;
--	u64 dma_mask;
-+	u64 dma_mask = *dev->dma_mask;
- 	int ret;
- 
--	domain = get_domain(dev);
--	if (IS_ERR(domain))
--		return 0;
--
--	dma_dom  = to_dma_ops_domain(domain);
--	dma_mask = *dev->dma_mask;
--
- 	npages = sg_num_pages(dev, sglist, nelems);
- 
- 	address = dma_ops_alloc_iova(dev, dma_dom, npages, dma_mask);
-@@ -2652,20 +2629,11 @@ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
- 		     int nelems, enum dma_data_direction dir,
- 		     unsigned long attrs)
- {
--	struct protection_domain *domain;
--	struct dma_ops_domain *dma_dom;
--	unsigned long startaddr;
--	int npages = 2;
--
--	domain = get_domain(dev);
--	if (IS_ERR(domain))
--		return;
--
--	startaddr = sg_dma_address(sglist) & PAGE_MASK;
--	dma_dom   = to_dma_ops_domain(domain);
--	npages    = sg_num_pages(dev, sglist, nelems);
-+	struct protection_domain *domain = get_domain(dev);
-+	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
- 
--	__unmap_single(dma_dom, startaddr, npages << PAGE_SHIFT, dir);
-+	__unmap_single(dma_dom, sg_dma_address(sglist) & PAGE_MASK,
-+			sg_num_pages(dev, sglist, nelems) << PAGE_SHIFT, dir);
- }
- 
- /*
-@@ -2676,16 +2644,11 @@ static void *alloc_coherent(struct device *dev, size_t size,
- 			    unsigned long attrs)
- {
- 	u64 dma_mask = dev->coherent_dma_mask;
--	struct protection_domain *domain;
-+	struct protection_domain *domain = get_domain(dev);
- 	struct dma_ops_domain *dma_dom;
- 	struct page *page;
- 
--	domain = get_domain(dev);
--	if (PTR_ERR(domain) == -EINVAL) {
--		page = alloc_pages(flag, get_order(size));
--		*dma_addr = page_to_phys(page);
--		return page_address(page);
--	} else if (IS_ERR(domain))
-+	if (IS_ERR(domain))
- 		return NULL;
- 
- 	dma_dom   = to_dma_ops_domain(domain);
-@@ -2731,22 +2694,13 @@ static void free_coherent(struct device *dev, size_t size,
- 			  void *virt_addr, dma_addr_t dma_addr,
- 			  unsigned long attrs)
- {
--	struct protection_domain *domain;
--	struct dma_ops_domain *dma_dom;
--	struct page *page;
-+	struct protection_domain *domain = get_domain(dev);
-+	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
-+	struct page *page = virt_to_page(virt_addr);
- 
--	page = virt_to_page(virt_addr);
- 	size = PAGE_ALIGN(size);
- 
--	domain = get_domain(dev);
--	if (IS_ERR(domain))
--		goto free_mem;
--
--	dma_dom = to_dma_ops_domain(domain);
--
- 	__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
--
--free_mem:
- 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
- 		__free_pages(page, get_order(size));
- }
--- 
-2.20.1
+On Thu, Apr 04, 2019 at 06:25:38PM +0200, Christoph Hellwig wrote:
+> Now that we allow drivers to always need to set larger than required
+> DMA masks we need to be a little more careful in the sun4v PCI iommu
+> driver to chose when to select the ATU support - a larger DMA mask
+> can be set even when the platform does not support ATU, so we always
+> have to check if it is avaiable before using it.  Add a little helper
+> for that and use it in all the places where we make ATU usage decisions
+> based on the DMA mask.
+> 
+> Fixes: 24132a419c68 ("sparc64/pci_sun4v: allow large DMA masks")
+> Reported-by: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Tested-by: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+> ---
+>  arch/sparc/kernel/pci_sun4v.c | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+> index a8af6023c126..14b93c5564e3 100644
+> --- a/arch/sparc/kernel/pci_sun4v.c
+> +++ b/arch/sparc/kernel/pci_sun4v.c
+> @@ -73,6 +73,11 @@ static inline void iommu_batch_start(struct device *dev, unsigned long prot, uns
+>  	p->npages	= 0;
+>  }
+>  
+> +static inline bool iommu_use_atu(struct iommu *iommu, u64 mask)
+> +{
+> +	return iommu->atu && mask > DMA_BIT_MASK(32);
+> +}
+> +
+>  /* Interrupts must be disabled.  */
+>  static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+>  {
+> @@ -92,7 +97,7 @@ static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+>  		prot &= (HV_PCI_MAP_ATTR_READ | HV_PCI_MAP_ATTR_WRITE);
+>  
+>  	while (npages != 0) {
+> -		if (mask <= DMA_BIT_MASK(32) || !pbm->iommu->atu) {
+> +		if (!iommu_use_atu(pbm->iommu, mask)) {
+>  			num = pci_sun4v_iommu_map(devhandle,
+>  						  HV_PCI_TSBID(0, entry),
+>  						  npages,
+> @@ -179,7 +184,6 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
+>  	unsigned long flags, order, first_page, npages, n;
+>  	unsigned long prot = 0;
+>  	struct iommu *iommu;
+> -	struct atu *atu;
+>  	struct iommu_map_table *tbl;
+>  	struct page *page;
+>  	void *ret;
+> @@ -205,13 +209,11 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
+>  	memset((char *)first_page, 0, PAGE_SIZE << order);
+>  
+>  	iommu = dev->archdata.iommu;
+> -	atu = iommu->atu;
+> -
+>  	mask = dev->coherent_dma_mask;
+> -	if (mask <= DMA_BIT_MASK(32) || !atu)
+> +	if (!iommu_use_atu(iommu, mask))
+>  		tbl = &iommu->tbl;
+>  	else
+> -		tbl = &atu->tbl;
+> +		tbl = &iommu->atu->tbl;
+>  
+>  	entry = iommu_tbl_range_alloc(dev, tbl, npages, NULL,
+>  				      (unsigned long)(-1), 0);
+> @@ -333,7 +335,7 @@ static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
+>  	atu = iommu->atu;
+>  	devhandle = pbm->devhandle;
+>  
+> -	if (dvma <= DMA_BIT_MASK(32)) {
+> +	if (!iommu_use_atu(iommu, dvma)) {
+>  		tbl = &iommu->tbl;
+>  		iotsb_num = 0; /* we don't care for legacy iommu */
+>  	} else {
+> @@ -374,7 +376,7 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
+>  	npages >>= IO_PAGE_SHIFT;
+>  
+>  	mask = *dev->dma_mask;
+> -	if (mask <= DMA_BIT_MASK(32))
+> +	if (!iommu_use_atu(iommu, mask))
+>  		tbl = &iommu->tbl;
+>  	else
+>  		tbl = &atu->tbl;
+> @@ -510,7 +512,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+>  				  IO_PAGE_SIZE) >> IO_PAGE_SHIFT;
+>  
+>  	mask = *dev->dma_mask;
+> -	if (mask <= DMA_BIT_MASK(32))
+> +	if (!iommu_use_atu(iommu, mask))
+>  		tbl = &iommu->tbl;
+>  	else
+>  		tbl = &atu->tbl;
+> -- 
+> 2.20.1
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+---end quoted text---
