@@ -2,51 +2,78 @@ Return-Path: <SRS0=ghiB=SM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6809C10F14
-	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 11:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC72C10F11
+	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 11:50:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EEA52196F
-	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 11:08:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EEA52196F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id D8B4A2054F
+	for <iommu@archiver.kernel.org>; Wed, 10 Apr 2019 11:50:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8B4A2054F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4917716AA;
-	Wed, 10 Apr 2019 11:08:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A899A174F;
+	Wed, 10 Apr 2019 11:50:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8F95716AA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ACFFE1748
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Apr 2019 11:08:32 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 08E85863
+	Wed, 10 Apr 2019 11:50:32 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-io1-f65.google.com (mail-io1-f65.google.com
+	[209.85.166.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 360C363D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Apr 2019 11:08:31 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 80FA867358; Wed, 10 Apr 2019 13:08:18 +0200 (CEST)
-Date: Wed, 10 Apr 2019 13:08:18 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
-Message-ID: <20190410110818.GA13904@lst.de>
-References: <20190410102754.387743324@linutronix.de>
-	<20190410103646.130022106@linutronix.de>
+	Wed, 10 Apr 2019 11:50:31 +0000 (UTC)
+Received: by mail-io1-f65.google.com with SMTP id p16so1852298iod.2
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 10 Apr 2019 04:50:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=+ur1sVJaGARKj8C5EEbB6ITCD2YEEHUiMS9p6hiLI6s=;
+	b=Sq7HCjr1GGH7mQvLCU7ARLOfuo2xf1GqXI81ZhfTBLWDqU7kaGiBT0WLfKTHy8SsHv
+	fI3bLAaKW5CoHywlCgMMvbb6uz/2vX3cyQXqY4N6FKRMlyVJQGWrb1paQUerdB0weyIc
+	VAOXy8E7LaSODk10yreQqlC5VuUL1c5gHl0K1HuDvSuF9dPmeUd9f7iYFoqpA/QQYWa6
+	NcILcaNbsYmy8vuyvTr1W9+ZUTPYuv1yUXkjptmsiKWhuEB3bsq/kNwGLgMBL30gHIZ5
+	Mobm/3+deqm4Bvjs8jO/UzHCILqox9D7gr7dOOZe5hKfO6oyFaFrpj/gneQo6vEMRfof
+	a2aw==
+X-Gm-Message-State: APjAAAVRzaLfGRvr7XdjOYjhIOtmExLXMHj5JX42OcUz4y5AkKAsqgVf
+	ahLVugrG3tZA/WP/8aqv0vIdWwD3/CkDUt4ZqpU=
+X-Google-Smtp-Source: APXvYqxYyx3OLS2sVLszMGtbn1ej10rUAsCVr1IgdSW0zcoLj9IOm633rp/kLQ4TmuaLCeqUSiRLKcPVb+mIO1/m2E0=
+X-Received: by 2002:a6b:b909:: with SMTP id j9mr28196727iof.184.1554897030478; 
+	Wed, 10 Apr 2019 04:50:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190410103646.130022106@linutronix.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: x86@kernel.org, LKML <linux-kernel@vger.kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>, iommu@lists.linux-foundation.org,
-	Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>,
-	Josh Poimboeuf <jpoimboe@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>
+References: <20190401074730.12241-1-robh@kernel.org>
+	<20190401074730.12241-4-robh@kernel.org>
+	<5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+	<CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
+	<b52052a3-141e-d6fd-f99a-9f7ddb611d96@arm.com>
+In-Reply-To: <b52052a3-141e-d6fd-f99a-9f7ddb611d96@arm.com>
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Wed, 10 Apr 2019 13:50:19 +0200
+Message-ID:
+ <CAAObsKDnoNh8HYF7-piCpa-tJQNiJ6sUc4rfVdCZgke22DWvQg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+To: Steven Price <steven.price@arm.com>
+Cc: Rob Herring <robh@kernel.org>, Neil Armstrong <narmstrong@baylibre.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Sean Paul <sean@poorly.run>, Will Deacon <will.deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dri-devel <dri-devel@lists.freedesktop.org>,
+	David Airlie <airlied@linux.ie>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	"Marty E . Plummer" <hanetzer@startmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,17 +90,306 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190410110818.ON6muUJ79RJFp4dAdVINw6LNPNRezAYnQ1Bn0bgE48k@z>
+Message-ID: <20190410115019.yxd764dAVml4D2dLoEE9XFAJw1ZQTJ418mBHe3-mSBU@z>
 
-On Wed, Apr 10, 2019 at 12:28:22PM +0200, Thomas Gleixner wrote:
-> Replace the indirection through struct stack_trace with an invocation of
-> the storage array based interface.
+On Wed, 10 Apr 2019 at 12:20, Steven Price <steven.price@arm.com> wrote:
+>
+> On 08/04/2019 22:04, Rob Herring wrote:
+> > On Fri, Apr 5, 2019 at 7:30 AM Steven Price <steven.price@arm.com> wrote:
+> >>
+> >> On 01/04/2019 08:47, Rob Herring wrote:
+> >>> This adds the initial driver for panfrost which supports Arm Mali
+> >>> Midgard and Bifrost family of GPUs. Currently, only the T860 and
+> >>> T760 Midgard GPUs have been tested.
+> >
+> > [...]
+> >
+> >>> +     case 0xD3: return "TRANSTAB_BUS_FAULT_LEVEL3";
+> >>> +     case 0xD4: return "TRANSTAB_BUS_FAULT_LEVEL4";
+> >>> +     case 0xD8: return "ACCESS_FLAG";
+> >>> +     }
+> >>> +
+> >>> +     if (panfrost_has_hw_feature(pfdev, HW_FEATURE_AARCH64_MMU)) {
+> >>
+> >> There's not a great deal of point in this conditional - you won't get
+> >> the below exception codes from hardware which doesn't support it AARCH64
+> >> page tables.
+> >
+> > I wasn't sure if "UNKNOWN" types could happen or not.
+> >
+> >>
+> >>> +             switch (exception_code) {
+> >>> +             case 0xC9 ... 0xCF: return "PERMISSION_FAULT";
+> >>> +             case 0xD9 ... 0xDF: return "ACCESS_FLAG";
+> >>> +             case 0xE0 ... 0xE7: return "ADDRESS_SIZE_FAULT";
+> >>> +             case 0xE8 ... 0xEF: return "MEMORY_ATTRIBUTES_FAULT";
+> >>> +             }
+> >>> +     }
+> >>> +
+> >>> +     return "UNKNOWN";
+> >>> +}
+> >
+> >>> +static inline int panfrost_model_cmp(struct panfrost_device *pfdev, s32 id)
+> >>> +{
+> >>> +     s32 match_id = pfdev->features.id;
+> >>> +
+> >>> +     if (match_id & 0xf000)
+> >>> +             match_id &= 0xf00f;
+> >>
+> >> I'm puzzled by this, and really not sure if it's going to work out
+> >> ignoring the ARCH_MINOR/ARCH_REV fields. But for now there's no real
+> >> Bifrost support.
+> >
+> > That seemed to be enough for kbase to select features/issues.
+>
+> I can't deny that it seems to work for now, and indeed looking more
+> closely at kbase that does seem to be the effect of the current code.
+>
+> >>> +     switch (param->param) {
+> >>> +     case DRM_PANFROST_PARAM_GPU_ID:
+> >>> +             param->value = pfdev->features.id;
+> >>
+> >> This is unfortunate naming - this parameter is *not* the GPU_ID. It is
+> >> the top half of the GPU_ID which kbase calls the PRODUCT_ID.
+> >
+> > I can rename it.
+>
+> It would help prevent confusion, thanks!
+>
+> >> I'm also somewhat surprised that you don't need loads of other
+> >> properties from the GPU - in particular knowing the number of shader
+> >> cores is useful for allocating the right amount of memory for TLS (and
+> >> can't be obtained purely from the GPU_ID).
+> >
+> > We'll add them as userspace needs them.
+>
+> Fair enough. I'm not sure how much you want to provide "forward
+> compatibility" by providing them early - the basic definitions are
+> already in kbase. I found it a bit surprising that some feature
+> registers are printed on probe, but not available to be queried.
+>
+> >>> +static int
+> >>> +panfrost_lookup_bos(struct drm_device *dev,
+> >>> +               struct drm_file *file_priv,
+> >>> +               struct drm_panfrost_submit *args,
+> >>> +               struct panfrost_job *job)
+> >>> +{
+> >>> +     u32 *handles;
+> >>> +     int ret = 0;
+> >>> +
+> >>> +     job->bo_count = args->bo_handle_count;
+> >>> +
+> >>> +     if (!job->bo_count)
+> >>> +             return 0;
+> >>> +
+> >>> +     job->bos = kvmalloc_array(job->bo_count,
+> >>> +                               sizeof(struct drm_gem_object *),
+> >>> +                               GFP_KERNEL | __GFP_ZERO);
+> >>> +     if (!job->bos)
+> >>
+> >> If we return here then job->bo_count has been set, but job->bos is
+> >> invalid - this means that panfrost_job_cleanup() will then dereference
+> >> NULL. Although maybe this is better fixed in panfrost_job_cleanup().
+> >
+> > Good catch. The fence arrays have the same problem. As does V3D which we copied.
+> >
+> >>> +             return -ENOMEM;
+> >>> +
+> >>> +     job->implicit_fences = kvmalloc_array(job->bo_count,
+> >>> +                               sizeof(struct dma_fence *),
+> >>> +                               GFP_KERNEL | __GFP_ZERO);
+> >>> +     if (!job->implicit_fences)
+> >>> +             return -ENOMEM;
+> >
+> >>> +static irqreturn_t panfrost_gpu_irq_handler(int irq, void *data)
+> >>> +{
+> >>> +     struct panfrost_device *pfdev = data;
+> >>> +     u32 state = gpu_read(pfdev, GPU_INT_STAT);
+> >>> +     u32 fault_status = gpu_read(pfdev, GPU_FAULT_STATUS);
+> >>> +     u64 address;
+> >>> +     bool done = false;
+> >>> +
+> >>> +     if (!state)
+> >>> +             return IRQ_NONE;
+> >>> +
+> >>> +     if (state & GPU_IRQ_MASK_ERROR) {
+> >>> +             address = (u64) gpu_read(pfdev, GPU_FAULT_ADDRESS_HI) << 32;
+> >>> +             address |= gpu_read(pfdev, GPU_FAULT_ADDRESS_LO);
+> >>> +
+> >>> +             dev_warn(pfdev->dev, "GPU Fault 0x%08x (%s) at 0x%016llx\n",
+> >>> +                      fault_status & 0xFF, panfrost_exception_name(pfdev, fault_status),
+> >>> +                      address);
+> >>> +
+> >>> +             if (state & GPU_IRQ_MULTIPLE_FAULT)
+> >>> +                     dev_warn(pfdev->dev, "There were multiple GPU faults - some have not been reported\n");
+> >>> +
+> >>> +             gpu_write(pfdev, GPU_INT_MASK, 0);
+> >>
+> >> Do you intend to mask off future GPU interrupts?
+> >
+> > Yes, maybe?
+> >
+> > If we fault here, then we are going to reset the gpu on timeout which
+> > then re-enables interrupts.
+>
+> Well fair enough. But there's no actual need to force a GPU reset.
+> Really there's nothing you can do other than report a GPU fault. kbase
+> simply reports it and otherwise ignores it (no GPU reset).
+>
+> Also will you actually trigger the GPU timeout? This won't mask of the
+> JOB completion IRQ, so jobs can still complete.
+>
+> When you integrate other GPU irq sources (counters/power management)
+> then you almost certainly don't want to mask those off just because of a
+> GPU fault.
+>
+> >>> +static irqreturn_t panfrost_job_irq_handler(int irq, void *data)
+> >>> +{
+> >>> +     struct panfrost_device *pfdev = data;
+> >>> +     u32 status = job_read(pfdev, JOB_INT_STAT);
+> >>> +     int j;
+> >>> +
+> >>> +     dev_dbg(pfdev->dev, "jobslot irq status=%x\n", status);
+> >>> +
+> >>> +     if (!status)
+> >>> +             return IRQ_NONE;
+> >>> +
+> >>> +     pm_runtime_mark_last_busy(pfdev->dev);
+> >>> +
+> >>> +     for (j = 0; status; j++) {
+> >>> +             u32 mask = MK_JS_MASK(j);
+> >>> +
+> >>> +             if (!(status & mask))
+> >>> +                     continue;
+> >>> +
+> >>> +             job_write(pfdev, JOB_INT_CLEAR, mask);
+> >>> +
+> >>> +             if (status & JOB_INT_MASK_ERR(j)) {
+> >>> +                     job_write(pfdev, JS_COMMAND_NEXT(j), JS_COMMAND_NOP);
+> >>> +                     job_write(pfdev, JS_COMMAND(j), JS_COMMAND_HARD_STOP_0);
+> >>
+> >> Hard-stopping an already completed job isn't likely to do very much :)
+> >> Also you are using the "_0" version which is only valid when "job chain
+> >> disambiguation" is present.
+> >>
+> >> I suspect in this case you should also be signalling the fence? At the
+> >> moment you rely on the GPU timeout recovering from the fault.
+> >
+> > I'll defer to Tomeu who wrote this (IIRC).
+> >
+> >
+> >>> +static void lock_region(struct panfrost_device *pfdev, u32 as_nr,
+> >>> +                     u64 iova, size_t size)
+> >>> +{
+> >>> +     u8 region_width;
+> >>> +     u64 region = iova & PAGE_MASK;
+> >>> +     /*
+> >>> +      * fls returns (given the ASSERT above):
+> >>
+> >> But where's the assert? :p
+> >>
+> >>> +      * 1 .. 32
+> >>> +      *
+> >>> +      * 10 + fls(num_pages)
+> >>> +      * results in the range (11 .. 42)
+> >>> +      */
+> >>> +
+> >>> +     size = round_up(size, PAGE_SIZE);
+> >>
+> >> I'm not sure it matters, but this will break if called on a (small, i.e.
+> >> less than a page) region spanning two pages. "region" will be rounded
+> >> down to the page (iova & PAGE_MASK), but size will only be rounded up to
+> >> the nearest page. This can miss the start of the second page.
+> >
+> > This is probably redundant. Everything the driver does with memory is
+> > in units of pages. Maybe imported buffers could be unaligned. Not sure
+> > and we'd probably break in other places if that was the case.
+>
+> Yes I don't think this case will occur at the moment. I just noticed it
+> because the interface was changed from kbase (kbase passes in a page
+> offset, this version uses a byte offset).
+>
+> >>> +             /* terminal fault, print info about the fault */
+> >>> +             dev_err(pfdev->dev,
+> >>> +                     "Unhandled Page fault in AS%d at VA 0x%016llX\n"
+> >>> +                     "Reason: %s\n"
+> >>> +                     "raw fault status: 0x%X\n"
+> >>> +                     "decoded fault status: %s\n"
+> >>> +                     "exception type 0x%X: %s\n"
+> >>> +                     "access type 0x%X: %s\n"
+> >>> +                     "source id 0x%X\n",
+> >>> +                     i, addr,
+> >>> +                     "TODO",
+> >>> +                     fault_status,
+> >>> +                     (fault_status & (1 << 10) ? "DECODER FAULT" : "SLAVE FAULT"),
+> >>> +                     exception_type, panfrost_exception_name(pfdev, exception_type),
+> >>> +                     access_type, access_type_name(pfdev, fault_status),
+> >>> +                     source_id);
+> >>> +
+> >>> +             mmu_write(pfdev, MMU_INT_CLEAR, mask);
+> >>
+> >> To fully handle the fault you will need to issue an MMU command (i.e.
+> >> call mmu_hw_do_operation()) - obviously after doing something to fix the
+> >> cause (e.g. mapping a page or switching the GPU to UNMAPPED mode to kill
+> >> off the job). Otherwise you may see that the GPU hangs. Although in
+> >> practice at this stage of the driver the generic timeout is probably the
+> >> simplest way of handling an MMU fault.
+> >
+> > Any fault currently is unexpected so all we really care about at this
+> > point is getting a message.
+>
+> No problem. It will become relevant when you schedule work from multiple
+> applications at the same time.
+>
+> [...]
+> >>
+> >> This is with the below simple reproducer:
+> >>
+> >> ----8<----
+> >> #include <sys/ioctl.h>
+> >> #include <fcntl.h>
+> >> #include <stdio.h>
+> >>
+> >> #include <libdrm/drm.h>
+> >> #include "panfrost_drm.h"
+> >>
+> >> int main(int argc, char **argv)
+> >> {
+> >>         int fd;
+> >>
+> >>         if (argc == 2)
+> >>                 fd = open(argv[1], O_RDWR);
+> >>         else
+> >>                 fd = open("/dev/dri/renderD128", O_RDWR);
+> >>         if (fd == -1) {
+> >>                 perror("Failed to open");
+> >>                 return 0;
+> >>         }
+> >>
+> >>         struct drm_panfrost_submit submit = {
+> >>                 .jc = 0,
+> >>         };
+> >>         return ioctl(fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
+> >> }
+> >> ----8<----
+> >>
+> >> Any ideas? I'm not an expert on DRM, so I got somewhat lost!
+>
+> Interestingly this actually looks similar to this bug for amdgpu:
+>
+> https://bugs.freedesktop.org/show_bug.cgi?id=109692
+>
+> There's a patch on there changing the drm scheduler which might be
+> relevant. I haven't had chance to try it out.
 
-This seems to be missing some context, at least stack_trace_save does
-not actually exist in mainline.
+Seems indeed to be the case, and I guess all drivers using gpu-sched
+have the same problem.
 
-Please always send the whole series out to everyone on the To and Cc
-list, otherwise patch series are not reviewable.
+There's ongoing discussions on the fix for it, so I will leave it be for now.
+
+Thanks for the pointer!
+
+Tomeu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
