@@ -1,68 +1,308 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [bug report] iommu/io-pgtable-arm: Fix pgtable allocation in
-	selftest
-Date: Wed, 10 Apr 2019 13:02:37 +0300
-Message-ID: <20190410100237.GA31633@kadam>
-References: <20190410093405.GA9889@kadam>
-	<782a999e-ce70-bd8e-5a7b-cd320ce98144@arm.com>
+From: Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+Date: Wed, 10 Apr 2019 11:19:54 +0100
+Message-ID: <b52052a3-141e-d6fd-f99a-9f7ddb611d96@arm.com>
+References: <20190401074730.12241-1-robh@kernel.org>
+ <20190401074730.12241-4-robh@kernel.org>
+ <5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+ <CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <782a999e-ce70-bd8e-5a7b-cd320ce98144-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAL_Jsq+wAUS=gukDLoY6DWP40w4Wtyd_Y4B2S3KMCx2ekL97qg@mail.gmail.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, David Airlie <airlied@linux.ie>, Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "Marty E . Plummer" <hanetzer@startmail.com>, Sean Paul <sean@poorly.run>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 10, 2019 at 10:44:03AM +0100, Robin Murphy wrote:
-> Hi Dan,
+On 08/04/2019 22:04, Rob Herring wrote:
+> On Fri, Apr 5, 2019 at 7:30 AM Steven Price <steven.price@arm.com> wrote:
+>>
+>> On 01/04/2019 08:47, Rob Herring wrote:
+>>> This adds the initial driver for panfrost which supports Arm Mali
+>>> Midgard and Bifrost family of GPUs. Currently, only the T860 and
+>>> T760 Midgard GPUs have been tested.
 > 
-> On 10/04/2019 10:34, Dan Carpenter wrote:
-> > Hello Jean-Philippe Brucker,
-> > 
-> > This is a semi-automatic email about new static checker warnings.
-> > 
-> > The patch fac83d29d954: "iommu/io-pgtable-arm: Fix pgtable allocation
-> > in selftest" from Jun 18, 2018, leads to the following Smatch
-> > complaint:
-> > 
-> >      drivers/iommu/io-pgtable-arm.c:246 __arm_lpae_alloc_pages()
-> >      error: we previously assumed 'dev' could be null (see line 239)
-> > 
-> > drivers/iommu/io-pgtable-arm.c
-> >     238		VM_BUG_ON((gfp & __GFP_HIGHMEM));
-> >     239		p = alloc_pages_node(dev ? dev_to_node(dev) : NUMA_NO_NODE,
-> >                                       ^^^
-> > We added a NULL check here
-> > 
-> >     240				     gfp | __GFP_ZERO, order);
-> >     241		if (!p)
-> >     242			return NULL;
-> >     243	
-> >     244		pages = page_address(p);
-> >     245		if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
+> [...]
 > 
-> The selftests *should* always set this quirk such that they never get to the
-> DMA mapping calls (that was one of the reasons for implementing things that
-> way) - I guess that might be a bit too sneaky for Smatch, but I can take a
-> look to double-check that the flow is working correctly such that this
-> really is a false-positive.
+>>> +     case 0xD3: return "TRANSTAB_BUS_FAULT_LEVEL3";
+>>> +     case 0xD4: return "TRANSTAB_BUS_FAULT_LEVEL4";
+>>> +     case 0xD8: return "ACCESS_FLAG";
+>>> +     }
+>>> +
+>>> +     if (panfrost_has_hw_feature(pfdev, HW_FEATURE_AARCH64_MMU)) {
+>>
+>> There's not a great deal of point in this conditional - you won't get
+>> the below exception codes from hardware which doesn't support it AARCH64
+>> page tables.
+> 
+> I wasn't sure if "UNKNOWN" types could happen or not.
+> 
+>>
+>>> +             switch (exception_code) {
+>>> +             case 0xC9 ... 0xCF: return "PERMISSION_FAULT";
+>>> +             case 0xD9 ... 0xDF: return "ACCESS_FLAG";
+>>> +             case 0xE0 ... 0xE7: return "ADDRESS_SIZE_FAULT";
+>>> +             case 0xE8 ... 0xEF: return "MEMORY_ATTRIBUTES_FAULT";
+>>> +             }
+>>> +     }
+>>> +
+>>> +     return "UNKNOWN";
+>>> +}
+> 
+>>> +static inline int panfrost_model_cmp(struct panfrost_device *pfdev, s32 id)
+>>> +{
+>>> +     s32 match_id = pfdev->features.id;
+>>> +
+>>> +     if (match_id & 0xf000)
+>>> +             match_id &= 0xf00f;
+>>
+>> I'm puzzled by this, and really not sure if it's going to work out
+>> ignoring the ARCH_MINOR/ARCH_REV fields. But for now there's no real
+>> Bifrost support.
+> 
+> That seemed to be enough for kbase to select features/issues.
 
-Ah, thanks.
+I can't deny that it seems to work for now, and indeed looking more
+closely at kbase that does seem to be the effect of the current code.
 
-I have a plan for fixing these false positives caused by not tracking
-bit masks.  It's not that complicated to fix, it just takes time to
-write the code.
+>>> +     switch (param->param) {
+>>> +     case DRM_PANFROST_PARAM_GPU_ID:
+>>> +             param->value = pfdev->features.id;
+>>
+>> This is unfortunate naming - this parameter is *not* the GPU_ID. It is
+>> the top half of the GPU_ID which kbase calls the PRODUCT_ID.
+> 
+> I can rename it.
 
-regards,
-dan carpenter
+It would help prevent confusion, thanks!
+
+>> I'm also somewhat surprised that you don't need loads of other
+>> properties from the GPU - in particular knowing the number of shader
+>> cores is useful for allocating the right amount of memory for TLS (and
+>> can't be obtained purely from the GPU_ID).
+> 
+> We'll add them as userspace needs them.
+
+Fair enough. I'm not sure how much you want to provide "forward
+compatibility" by providing them early - the basic definitions are
+already in kbase. I found it a bit surprising that some feature
+registers are printed on probe, but not available to be queried.
+
+>>> +static int
+>>> +panfrost_lookup_bos(struct drm_device *dev,
+>>> +               struct drm_file *file_priv,
+>>> +               struct drm_panfrost_submit *args,
+>>> +               struct panfrost_job *job)
+>>> +{
+>>> +     u32 *handles;
+>>> +     int ret = 0;
+>>> +
+>>> +     job->bo_count = args->bo_handle_count;
+>>> +
+>>> +     if (!job->bo_count)
+>>> +             return 0;
+>>> +
+>>> +     job->bos = kvmalloc_array(job->bo_count,
+>>> +                               sizeof(struct drm_gem_object *),
+>>> +                               GFP_KERNEL | __GFP_ZERO);
+>>> +     if (!job->bos)
+>>
+>> If we return here then job->bo_count has been set, but job->bos is
+>> invalid - this means that panfrost_job_cleanup() will then dereference
+>> NULL. Although maybe this is better fixed in panfrost_job_cleanup().
+> 
+> Good catch. The fence arrays have the same problem. As does V3D which we copied.
+> 
+>>> +             return -ENOMEM;
+>>> +
+>>> +     job->implicit_fences = kvmalloc_array(job->bo_count,
+>>> +                               sizeof(struct dma_fence *),
+>>> +                               GFP_KERNEL | __GFP_ZERO);
+>>> +     if (!job->implicit_fences)
+>>> +             return -ENOMEM;
+> 
+>>> +static irqreturn_t panfrost_gpu_irq_handler(int irq, void *data)
+>>> +{
+>>> +     struct panfrost_device *pfdev = data;
+>>> +     u32 state = gpu_read(pfdev, GPU_INT_STAT);
+>>> +     u32 fault_status = gpu_read(pfdev, GPU_FAULT_STATUS);
+>>> +     u64 address;
+>>> +     bool done = false;
+>>> +
+>>> +     if (!state)
+>>> +             return IRQ_NONE;
+>>> +
+>>> +     if (state & GPU_IRQ_MASK_ERROR) {
+>>> +             address = (u64) gpu_read(pfdev, GPU_FAULT_ADDRESS_HI) << 32;
+>>> +             address |= gpu_read(pfdev, GPU_FAULT_ADDRESS_LO);
+>>> +
+>>> +             dev_warn(pfdev->dev, "GPU Fault 0x%08x (%s) at 0x%016llx\n",
+>>> +                      fault_status & 0xFF, panfrost_exception_name(pfdev, fault_status),
+>>> +                      address);
+>>> +
+>>> +             if (state & GPU_IRQ_MULTIPLE_FAULT)
+>>> +                     dev_warn(pfdev->dev, "There were multiple GPU faults - some have not been reported\n");
+>>> +
+>>> +             gpu_write(pfdev, GPU_INT_MASK, 0);
+>>
+>> Do you intend to mask off future GPU interrupts?
+> 
+> Yes, maybe?
+> 
+> If we fault here, then we are going to reset the gpu on timeout which
+> then re-enables interrupts.
+
+Well fair enough. But there's no actual need to force a GPU reset.
+Really there's nothing you can do other than report a GPU fault. kbase
+simply reports it and otherwise ignores it (no GPU reset).
+
+Also will you actually trigger the GPU timeout? This won't mask of the
+JOB completion IRQ, so jobs can still complete.
+
+When you integrate other GPU irq sources (counters/power management)
+then you almost certainly don't want to mask those off just because of a
+GPU fault.
+
+>>> +static irqreturn_t panfrost_job_irq_handler(int irq, void *data)
+>>> +{
+>>> +     struct panfrost_device *pfdev = data;
+>>> +     u32 status = job_read(pfdev, JOB_INT_STAT);
+>>> +     int j;
+>>> +
+>>> +     dev_dbg(pfdev->dev, "jobslot irq status=%x\n", status);
+>>> +
+>>> +     if (!status)
+>>> +             return IRQ_NONE;
+>>> +
+>>> +     pm_runtime_mark_last_busy(pfdev->dev);
+>>> +
+>>> +     for (j = 0; status; j++) {
+>>> +             u32 mask = MK_JS_MASK(j);
+>>> +
+>>> +             if (!(status & mask))
+>>> +                     continue;
+>>> +
+>>> +             job_write(pfdev, JOB_INT_CLEAR, mask);
+>>> +
+>>> +             if (status & JOB_INT_MASK_ERR(j)) {
+>>> +                     job_write(pfdev, JS_COMMAND_NEXT(j), JS_COMMAND_NOP);
+>>> +                     job_write(pfdev, JS_COMMAND(j), JS_COMMAND_HARD_STOP_0);
+>>
+>> Hard-stopping an already completed job isn't likely to do very much :)
+>> Also you are using the "_0" version which is only valid when "job chain
+>> disambiguation" is present.
+>>
+>> I suspect in this case you should also be signalling the fence? At the
+>> moment you rely on the GPU timeout recovering from the fault.
+> 
+> I'll defer to Tomeu who wrote this (IIRC).
+> 
+> 
+>>> +static void lock_region(struct panfrost_device *pfdev, u32 as_nr,
+>>> +                     u64 iova, size_t size)
+>>> +{
+>>> +     u8 region_width;
+>>> +     u64 region = iova & PAGE_MASK;
+>>> +     /*
+>>> +      * fls returns (given the ASSERT above):
+>>
+>> But where's the assert? :p
+>>
+>>> +      * 1 .. 32
+>>> +      *
+>>> +      * 10 + fls(num_pages)
+>>> +      * results in the range (11 .. 42)
+>>> +      */
+>>> +
+>>> +     size = round_up(size, PAGE_SIZE);
+>>
+>> I'm not sure it matters, but this will break if called on a (small, i.e.
+>> less than a page) region spanning two pages. "region" will be rounded
+>> down to the page (iova & PAGE_MASK), but size will only be rounded up to
+>> the nearest page. This can miss the start of the second page.
+> 
+> This is probably redundant. Everything the driver does with memory is
+> in units of pages. Maybe imported buffers could be unaligned. Not sure
+> and we'd probably break in other places if that was the case.
+
+Yes I don't think this case will occur at the moment. I just noticed it
+because the interface was changed from kbase (kbase passes in a page
+offset, this version uses a byte offset).
+
+>>> +             /* terminal fault, print info about the fault */
+>>> +             dev_err(pfdev->dev,
+>>> +                     "Unhandled Page fault in AS%d at VA 0x%016llX\n"
+>>> +                     "Reason: %s\n"
+>>> +                     "raw fault status: 0x%X\n"
+>>> +                     "decoded fault status: %s\n"
+>>> +                     "exception type 0x%X: %s\n"
+>>> +                     "access type 0x%X: %s\n"
+>>> +                     "source id 0x%X\n",
+>>> +                     i, addr,
+>>> +                     "TODO",
+>>> +                     fault_status,
+>>> +                     (fault_status & (1 << 10) ? "DECODER FAULT" : "SLAVE FAULT"),
+>>> +                     exception_type, panfrost_exception_name(pfdev, exception_type),
+>>> +                     access_type, access_type_name(pfdev, fault_status),
+>>> +                     source_id);
+>>> +
+>>> +             mmu_write(pfdev, MMU_INT_CLEAR, mask);
+>>
+>> To fully handle the fault you will need to issue an MMU command (i.e.
+>> call mmu_hw_do_operation()) - obviously after doing something to fix the
+>> cause (e.g. mapping a page or switching the GPU to UNMAPPED mode to kill
+>> off the job). Otherwise you may see that the GPU hangs. Although in
+>> practice at this stage of the driver the generic timeout is probably the
+>> simplest way of handling an MMU fault.
+> 
+> Any fault currently is unexpected so all we really care about at this
+> point is getting a message.
+
+No problem. It will become relevant when you schedule work from multiple
+applications at the same time.
+
+[...]
+>>
+>> This is with the below simple reproducer:
+>>
+>> ----8<----
+>> #include <sys/ioctl.h>
+>> #include <fcntl.h>
+>> #include <stdio.h>
+>>
+>> #include <libdrm/drm.h>
+>> #include "panfrost_drm.h"
+>>
+>> int main(int argc, char **argv)
+>> {
+>>         int fd;
+>>
+>>         if (argc == 2)
+>>                 fd = open(argv[1], O_RDWR);
+>>         else
+>>                 fd = open("/dev/dri/renderD128", O_RDWR);
+>>         if (fd == -1) {
+>>                 perror("Failed to open");
+>>                 return 0;
+>>         }
+>>
+>>         struct drm_panfrost_submit submit = {
+>>                 .jc = 0,
+>>         };
+>>         return ioctl(fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
+>> }
+>> ----8<----
+>>
+>> Any ideas? I'm not an expert on DRM, so I got somewhat lost!
+
+Interestingly this actually looks similar to this bug for amdgpu:
+
+https://bugs.freedesktop.org/show_bug.cgi?id=109692
+
+There's a patch on there changing the drm scheduler which might be
+relevant. I haven't had chance to try it out.
+
+Steve
