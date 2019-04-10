@@ -1,282 +1,69 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v3 1/1] iommu: Bind process address spaces to devices
-Date: Wed, 10 Apr 2019 16:15:16 +0100
-Message-ID: <20190410151516.47754-2-jean-philippe.brucker@arm.com>
-References: <20190410151516.47754-1-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/amd: Use pci_prg_resp_pasid_required()
+Date: Wed, 10 Apr 2019 16:21:08 +0100
+Message-ID: <20190410152108.48037-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190410151516.47754-1-jean-philippe.brucker@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, christian.koenig@amd.com, kevin.tian@intel.com, jacob.jun.pan@linux.intel.com, ashok.raj@intel.com, baolu.lu@linux.intel.com, zhangfei.gao@foxmail.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add bind() and unbind() operations to the IOMMU API.
-iommu_sva_bind_device() binds a device to an mm, and returns a handle to
-the bond, which is released by calling iommu_sva_unbind_device().
+Commit e5567f5f6762 ("PCI/ATS: Add pci_prg_resp_pasid_required()
+interface.") added a common interface to check the PASID bit in the PRI
+capability. Use it in the AMD driver.
 
-Each mm bound to devices gets a PASID (by convention, a 20-bit system-wide
-ID representing the address space), which can be retrieved with
-iommu_sva_get_pasid(). When programming DMA addresses, device drivers
-include this PASID in a device-specific manner, to let the device access
-the given address space. Since the process memory may be paged out, device
-and IOMMU must support I/O page faults (e.g. PCI PRI).
-
-Using iommu_sva_set_ops(), device drivers provide an mm_exit() callback
-that is called by the IOMMU driver if the process exits before the device
-driver called unbind(). In mm_exit(), device driver should disable DMA
-from the given context, so that the core IOMMU can reallocate the PASID.
-Whether the process exited or nor, the device driver should always release
-the handle with unbind().
-
-To use these functions, device driver must first enable the
-IOMMU_DEV_FEAT_SVA device feature with iommu_dev_enable_feature().
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 104 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/iommu.h |  70 ++++++++++++++++++++++++++++
- 2 files changed, 174 insertions(+)
+ drivers/iommu/amd_iommu.c | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d3403d84b20c..65e3b2f06e22 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2357,3 +2357,107 @@ int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f7cdd2ab7f11..7a0de274934c 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2122,23 +2122,6 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
  	return ret;
  }
- EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
-+
-+/**
-+ * iommu_sva_bind_device() - Bind a process address space to a device
-+ * @dev: the device
-+ * @mm: the mm to bind, caller must hold a reference to it
-+ *
-+ * Create a bond between device and address space, allowing the device to access
-+ * the mm using the returned PASID. If a bond already exists between @device and
-+ * @mm, it is returned and an additional reference is taken. Caller must call
-+ * iommu_sva_unbind_device() to release each reference.
-+ *
-+ * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
-+ * initialize the required SVA features.
-+ *
-+ * On error, returns an ERR_PTR value.
-+ */
-+struct iommu_sva *
-+iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-+{
-+	struct iommu_group *group;
-+	struct iommu_sva *handle = ERR_PTR(-EINVAL);
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+
-+	if (!ops || !ops->sva_bind)
-+		return ERR_PTR(-ENODEV);
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return ERR_PTR(-ENODEV);
-+
-+	/* Ensure device count and domain don't change while we're binding */
-+	mutex_lock(&group->mutex);
-+
-+	/*
-+	 * To keep things simple, SVA currently doesn't support IOMMU groups
-+	 * with more than one device. Existing SVA-capable systems are not
-+	 * affected by the problems that required IOMMU groups (lack of ACS
-+	 * isolation, device ID aliasing and other hardware issues).
-+	 */
-+	if (iommu_group_device_count(group) != 1)
-+		goto out_unlock;
-+
-+	handle = ops->sva_bind(dev, mm, drvdata);
-+
-+out_unlock:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return handle;
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
-+
-+/**
-+ * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
-+ * @handle: the handle returned by iommu_sva_bind_device()
-+ *
-+ * Put reference to a bond between device and address space. The device should
-+ * not be issuing any more transaction for this PASID. All outstanding page
-+ * requests for this PASID must have been flushed to the IOMMU.
-+ *
-+ * Returns 0 on success, or an error value
-+ */
-+void iommu_sva_unbind_device(struct iommu_sva *handle)
-+{
-+	struct iommu_group *group;
-+	struct device *dev = handle->dev;
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+
-+	if (!ops || !ops->sva_unbind)
-+		return;
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return;
-+
-+	mutex_lock(&group->mutex);
-+	ops->sva_unbind(handle);
-+	mutex_unlock(&group->mutex);
-+
-+	iommu_group_put(group);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
-+
-+int iommu_sva_set_ops(struct iommu_sva *handle,
-+		      const struct iommu_sva_ops *sva_ops)
-+{
-+	if (handle->ops && handle->ops != sva_ops)
-+		return -EEXIST;
-+
-+	handle->ops = sva_ops;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_set_ops);
-+
-+int iommu_sva_get_pasid(struct iommu_sva *handle)
-+{
-+	const struct iommu_ops *ops = handle->dev->bus->iommu_ops;
-+
-+	if (!ops || !ops->sva_get_pasid)
-+		return IOMMU_PASID_INVALID;
-+
-+	return ops->sva_get_pasid(handle);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ed6738c358ca..87fe1cddd817 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -51,10 +51,13 @@ struct device;
- struct iommu_domain;
- struct notifier_block;
- struct iommu_fault_event;
-+struct iommu_sva;
  
- typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
- 			struct device *, unsigned long, int, void *);
- typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
-+typedef int (*iommu_mm_exit_handler_t)(struct device *dev, struct iommu_sva *,
-+				       void *);
+-/* FIXME: Move this to PCI code */
+-#define PCI_PRI_TLP_OFF		(1 << 15)
+-
+-static bool pci_pri_tlp_required(struct pci_dev *pdev)
+-{
+-	u16 status;
+-	int pos;
+-
+-	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+-	if (!pos)
+-		return false;
+-
+-	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+-
+-	return (status & PCI_PRI_TLP_OFF) ? true : false;
+-}
+-
+ /*
+  * If a device is not yet associated with a domain, this function makes the
+  * device visible in the domain
+@@ -2167,7 +2150,7 @@ static int attach_device(struct device *dev,
  
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
-@@ -159,6 +162,28 @@ struct iommu_resv_region {
- /* Per device IOMMU features */
- enum iommu_dev_features {
- 	IOMMU_DEV_FEAT_AUX,	/* Aux-domain feature */
-+	IOMMU_DEV_FEAT_SVA,	/* Shared Virtual Addresses */
-+};
-+
-+#define IOMMU_PASID_INVALID	(-1U)
-+
-+/**
-+ * struct iommu_sva_ops - device driver callbacks for an SVA context
-+ *
-+ * @mm_exit: called when the mm is about to be torn down by exit_mmap. After
-+ *           @mm_exit returns, the device must not issue any more transaction
-+ *           with the PASID given as argument.
-+ *
-+ *           The @mm_exit handler is allowed to sleep. Be careful about the
-+ *           locks taken in @mm_exit, because they might lead to deadlocks if
-+ *           they are also held when dropping references to the mm. Consider the
-+ *           following call chain:
-+ *           mutex_lock(A); mmput(mm) -> exit_mm() -> @mm_exit() -> mutex_lock(A)
-+ *           Using mmput_async() prevents this scenario.
-+ *
-+ */
-+struct iommu_sva_ops {
-+	iommu_mm_exit_handler_t mm_exit;
- };
- 
- #ifdef CONFIG_IOMMU_API
-@@ -231,6 +256,10 @@ struct page_response_msg {
-  * @dev_feat_enabled: check enabled feature
-  * @aux_attach/detach_dev: aux-domain specific attach/detach entries.
-  * @aux_get_pasid: get the pasid given an aux-domain
-+ * @sva_bind: Bind process address space to device
-+ * @sva_unbind: Unbind process address space from device
-+ * @sva_set_ops: Set ops for a SVA handle
-+ * @sva_get_pasid: Get PASID associated to a SVA handle
-  * @page_response: handle page request response
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  */
-@@ -287,6 +316,10 @@ struct iommu_ops {
- 	void (*aux_detach_dev)(struct iommu_domain *domain, struct device *dev);
- 	int (*aux_get_pasid)(struct iommu_domain *domain, struct device *dev);
- 
-+	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
-+				      void *drvdata);
-+	void (*sva_unbind)(struct iommu_sva *handle);
-+	int (*sva_get_pasid)(struct iommu_sva *handle);
- 	int (*page_response)(struct device *dev, struct page_response_msg *msg);
- 
- 	unsigned long pgsize_bitmap;
-@@ -514,6 +547,14 @@ struct iommu_fwspec {
- 	u32			ids[1];
- };
- 
-+/**
-+ * struct iommu_sva - handle to a device-mm bond
-+ */
-+struct iommu_sva {
-+	struct device			*dev;
-+	const struct iommu_sva_ops	*ops;
-+};
-+
- /* Firmware disabled ATS in the root complex */
- #define IOMMU_FWSPEC_PCI_NO_ATS			(1 << 0)
- 
-@@ -545,6 +586,14 @@ int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev);
- void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
- int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
- 
-+struct iommu_sva *iommu_sva_bind_device(struct device *dev,
-+					struct mm_struct *mm,
-+					void *drvdata);
-+void iommu_sva_unbind_device(struct iommu_sva *handle);
-+int iommu_sva_set_ops(struct iommu_sva *handle,
-+		      const struct iommu_sva_ops *ops);
-+int iommu_sva_get_pasid(struct iommu_sva *handle);
-+
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
-@@ -893,6 +942,27 @@ iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
- 	return -ENODEV;
- }
- 
-+static inline struct iommu_sva *
-+iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-+{
-+	return NULL;
-+}
-+
-+static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
-+{
-+}
-+
-+static inline int iommu_sva_set_ops(struct iommu_sva *handle,
-+				    const struct iommu_sva_ops *ops)
-+{
-+	return -EINVAL;
-+}
-+
-+static inline int iommu_sva_get_pasid(struct iommu_sva *handle)
-+{
-+	return IOMMU_PASID_INVALID;
-+}
-+
- #endif /* CONFIG_IOMMU_API */
- 
- #ifdef CONFIG_IOMMU_DEBUGFS
+ 			dev_data->ats.enabled = true;
+ 			dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
+-			dev_data->pri_tlp     = pci_pri_tlp_required(pdev);
++			dev_data->pri_tlp     = pci_prg_resp_pasid_required(pdev);
+ 		}
+ 	} else if (amd_iommu_iotlb_sup &&
+ 		   pci_enable_ats(pdev, PAGE_SHIFT) == 0) {
 -- 
 2.21.0
