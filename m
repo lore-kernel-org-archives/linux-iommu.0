@@ -1,24 +1,21 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
-Date: Wed, 10 Apr 2019 13:08:18 +0200
-Message-ID: <20190410110818.GA13904@lst.de>
-References: <20190410102754.387743324@linutronix.de> <20190410103646.130022106@linutronix.de>
+From: Sebastian Ott <sebott@linux.ibm.com>
+Subject: Re: [PATCH v5 4/6] s390/pci: add support for generic boot option
+ iommu.dma_mode
+Date: Wed, 10 Apr 2019 13:46:48 +0200 (CEST)
+Message-ID: <alpine.LFD.2.21.1904101346060.1774@schleppi>
+References: <20190409125308.18304-1-thunder.leizhen@huawei.com> <20190409125308.18304-5-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190410103646.130022106@linutronix.de>
+In-Reply-To: <20190409125308.18304-5-thunder.leizhen@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Alexander Potapenko <glider@google.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+To: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David Woodhouse <dw>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 10, 2019 at 12:28:22PM +0200, Thomas Gleixner wrote:
-> Replace the indirection through struct stack_trace with an invocation of
-> the storage array based interface.
+On Tue, 9 Apr 2019, Zhen Lei wrote:
+> s390_iommu=strict is equivalent to iommu.dma_mode=strict.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-This seems to be missing some context, at least stack_trace_save does
-not actually exist in mainline.
-
-Please always send the whole series out to everyone on the To and Cc
-list, otherwise patch series are not reviewable.
+Acked-by: Sebastian Ott <sebott@linux.ibm.com>
