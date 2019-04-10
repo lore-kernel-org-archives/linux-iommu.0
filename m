@@ -1,79 +1,41 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
- iommu_get_resv_regions
-Date: Wed, 10 Apr 2019 13:22:30 +0800
-Message-ID: <abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
- <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
- <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
- <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
- <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
- <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
- <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
- <cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
- <6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
- <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
- <ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
- <9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
+ helpers
+Date: Wed, 10 Apr 2019 08:11:58 +0200
+Message-ID: <20190410061157.GA5278@lst.de>
+References: <20190327080448.5500-1-hch@lst.de> <20190327080448.5500-13-hch@lst.de> <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: James Sewart <jamessewart@arista.com>
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi James,
+On Tue, Apr 09, 2019 at 06:59:32PM +0100, Robin Murphy wrote:
+> On 27/03/2019 08:04, Christoph Hellwig wrote:
+>> This keeps the code together and will simplify compiling the code
+>> out on architectures that are always dma coherent.
+>
+> And this is where things take a turn in the direction I just can't get on 
+> with - I'm looking at the final result and the twisty maze of little 
+> disjoint helpers all overlapping each other in functionality is really 
+> difficult to follow. And I would *much* rather have things rely on 
+> compile-time constant optimisation than spend the future having to fix the 
+> #ifdefed parts for arm64 whenever x86-centric changes fail to test them.
 
-On 4/6/19 2:02 AM, James Sewart wrote:
-> Hey Lu,
-> 
-> My bad, did some debugging on my end. The issue was swapping out
-> find_domain for iommu_get_domain_for_dev. It seems in some situations the
-> domain is not attached to the group but the device is expected to have the
-> domain still stored in its archdata.
-> 
-> I’ve attached the final patch with find_domain unremoved which seems to
-> work in my testing.
-> 
+Can you draft up a patch on top of my series to show me what you
+want?  I can take care of finishing it up and moving the changes
+into the right patches in the series.
 
-Just looked into your v3 patch set and some thoughts from my end posted
-here just for your information.
+> Conceptually, everything except the iommu_dma_alloc_remap() case is more or 
+> less just dma_direct_alloc() with an IOMMU mapping on top - if we could 
+> pass that an internal flag to say "don't fail or bounce because of masks" 
+> it seems like that approach could end up being quite a bit simpler (I did 
+> once have lofty plans to refactor the old arm64 code in such a way...)
 
-Let me post the problems we want to address.
-
-1. When allocating a new group for a device, how should we determine the
-type of the default domain?
-
-2. If we need to put a device into an existing group which uses a
-different type of domain from what the device desires to use, we might
-break the functionality of the device.
-
-My new thought is letting the iommu generic code to determine the
-default domain type (hence my proposed vendor specific default domain
-type patches could be dropped).
-
-If the default domain type is dynamical mapping, and later in 
-iommu_no_mapping(), we determines that we must use an identity domain,
-we then call iommu_request_dm_for_dev(dev).
-
-If the default domain type is identity mapping, and later in
-iommu_no_mapping(), we determined that we must use a dynamical domain,
-we then call iommu_request_dma_domain_for_dev(dev).
-
-We already have iommu_request_dm_for_dev() in iommu.c. We only need to
-implement iommu_request_dma_domain_for_dev().
-
-With this done, your patch titled "Create an IOMMU group for devices
-that require an identity map" could also be dropped.
-
-Any thoughts?
-
-> Cheers,
-> James.
-
-Best regards,
-Lu Baolu
+I've been wanting to share more code between DMA direct and the iommu
+allocators.  But this series already is huge and has been pending
+far too long.  I'll eventually get to it..
