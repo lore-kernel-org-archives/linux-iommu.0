@@ -7,72 +7,71 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 856F5C10F13
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2636C10F13
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 53ED52184B
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A11BD2184B
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="QBMldSGX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 53ED52184B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="ZqsZwWNr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A11BD2184B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4B2F32D02;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8BD082D05;
 	Fri, 12 Apr 2019 00:03:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4E9CC241A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 814F0241A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 18:49:00 +0000 (UTC)
+	Thu, 11 Apr 2019 18:49:04 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
-	[209.85.208.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1837DF4
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+	[209.85.208.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CD480854
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 18:48:59 +0000 (UTC)
-Received: by mail-ed1-f68.google.com with SMTP id d11so6121483edp.11
+	Thu, 11 Apr 2019 18:49:03 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id x14so6169412eds.1
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 11:48:58 -0700 (PDT)
+	Thu, 11 Apr 2019 11:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=arista.com; s=googlenew;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references;
-	bh=AUkwsqPqLpOQmNdW6Zo0mGf3wmD2BJmU+zJegMbV/Cw=;
-	b=QBMldSGXvc5UwIGLNlY32ptO/VQea8opvEhsRdSzFj4NeN+2G0brH1f/8UVXoDmFzp
-	vgXq8kR+NdanSwtvOTUwpCkm2QCKmWJ4W86KO5tQnP14gTIyY6jfmkyqnM3PIjU1mTrt
-	RDRIQ3bZewU8rrugmcD7S8kRSviGvRiF9zV4bsr6eB83nCXNebkP2SIudff9lbHkRgMS
-	jtauEkPGJgc+fdQv9IWyCVoKtXmY9AvPYOF2tkN2bpTztPvH+bZN2z5g44aD0CJPVIjp
-	Jfs1P1M2x6/FXn9kRoiH7d82Jzo159phG6Ce+OItl5XQo6MoCtkdx/N7GlvqiQu50XsS
-	3gtw==
+	bh=yoJ8L21VfG+7EiXp/r/AWsB982DfY9O3RZBK5Kp8sB8=;
+	b=ZqsZwWNrSw+xqySh9ZjBwb+L6eYpx0X4qksRNIOZU8mg1TOpLf9O0fXmV0r6aHL2fZ
+	3MfvzFGrJstIHcy1Po8voTQFYh8EpRq1/E82o6IVwvbNi70AX9ZsnmIDFYU6mz9IgKtS
+	dYq2HbKPb0HAXgobjaNdmeDR8NvJmumSeiwwulVBya5cl5NYPDrIwZ2Tv3gVZLFW7Ova
+	tsj1dT55hh6+YaiULDGzVztJQZPedQIn3i7JLnjvyt1OWAKoMUr4a3U/hvmoA6UDpVts
+	xZLLAyc0d3/bS++XMrG4Q+Bewl65uvasxMRMjuBIQJx//ij8nSqueitAqBQHl/yYVNfY
+	09hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references;
-	bh=AUkwsqPqLpOQmNdW6Zo0mGf3wmD2BJmU+zJegMbV/Cw=;
-	b=n/6ITY7/KQGr/mgwj3JBjhYoXcs2KIj3Yq0Cy1QLuNd/FJEoCDMRJnuUCNt2A+u9t2
-	+m7Ncr+emKe58ykeHZwFmg85cvo0cnm6iQ3kZag36YUxfe7AYkXflOTfeNkI9dTNhhpd
-	NZtipkPck1CdEN/+UYmkswH3052M/6C52jGb9CvW7qVrsj3iEnEpqQuK+wr8DdTjyl2M
-	b1pHbh0yrOFROiTcKSEIMOthc7q87oO6HXwkR8+42ashIL8cNJWeABZuBRaxliqVxCjk
-	fY3FpjtFOEYYgumcURQLlf6c+OJ3akfhmK1+tCqJxauwhgk4bwKQaK3f3WWR9nxIgP9P
-	AvCw==
-X-Gm-Message-State: APjAAAVKpq441USyExx3PrZCnodaNOIurJxNkaUGfIpwfJmosEgDeA1o
-	U5ut4Ibtj/kMenn8Yzgs3iqsT68yfxi/RuDu
-X-Google-Smtp-Source: APXvYqzL/CeoYgUz/dL+UCoRPB57kS8k+K0AU3mwSjtkIW0qzE0UGCl3M97UgeKZ/ZqnWNSSEOk5sg==
-X-Received: by 2002:a17:906:f0f:: with SMTP id
-	z15mr12761935eji.125.1555008537548; 
-	Thu, 11 Apr 2019 11:48:57 -0700 (PDT)
+	bh=yoJ8L21VfG+7EiXp/r/AWsB982DfY9O3RZBK5Kp8sB8=;
+	b=Wtubs7iVCN1+J0iFf6J4B3t2AT3+INMMdo7YqyK+H9twIuqqziZiucUfNVY9SUSaT4
+	DuZVFzx5+j1Dz3+OsbhHuXaMJJa2oYfF+B59fg+vtDGKTQDqxAtEuff7OjguGfj6ivas
+	BG9sl8HWYj2OyPBKU03nkeCZFpLgolVDPAS0nCFkfjNkZCdMvjdunlqWfLaJvpwyev3i
+	2rflpa00YKvsUbe0cNCOMfM0FR8iIYzALIyZnm7Dfcb0oGX/eo+5FVZy13wI7JZJfPw4
+	+UEskqMkfqHA2xSLIHiwH6mgBx238+wGMswCeKpMAq5vp4IpMrnIN4j9hQDDmVL44eFJ
+	oS6w==
+X-Gm-Message-State: APjAAAU+uNF7h41b0hpdJ8R5hAf7FrbVbsdpPRH9IrLc9qRxEk0VeY4K
+	VMkzDcuOG9uJkZ4Hc4EFm6BTNp80LFVAIc6a
+X-Google-Smtp-Source: APXvYqzhcIOArLgPaFIotHVPB4LMHAtfaoxhteXVLtNCkA9H3EacRfD1/rKtcbt7o0ew6bGKIbXfPg==
+X-Received: by 2002:a17:906:d1da:: with SMTP id
+	bs26mr28530697ejb.149.1555008542329; 
+	Thu, 11 Apr 2019 11:49:02 -0700 (PDT)
 Received: from localhost.localdomain ([80.233.32.123])
 	by smtp.gmail.com with ESMTPSA id
-	b10sm1285130edi.28.2019.04.11.11.48.55
+	b10sm1285130edi.28.2019.04.11.11.49.00
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 11 Apr 2019 11:48:57 -0700 (PDT)
+	Thu, 11 Apr 2019 11:49:01 -0700 (PDT)
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 3/9] iommu/dma-iommu: Add iommu_dma_copy_reserved_iova,
-	iommu_dma_apply_resv_region to the dma-iommu api
-Date: Thu, 11 Apr 2019 19:47:32 +0100
-Message-Id: <20190411184741.27540-4-tmurphy@arista.com>
+Subject: [PATCH 4/9] iommu/dma-iommu: Add iommu_dma_map_page_coherent
+Date: Thu, 11 Apr 2019 19:47:33 +0100
+Message-Id: <20190411184741.27540-5-tmurphy@arista.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190411184741.27540-1-tmurphy@arista.com>
 References: <20190411184741.27540-1-tmurphy@arista.com>
@@ -107,80 +106,96 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411184732.jN-5I_pVvsrxZ1WZCHbfF7mYRJgMOUf3TdfnkgTja2Q@z>
+Message-ID: <20190411184733.HFxQgxEjAAdUWtQBOmzXqfHviZJNxa-j60Z7AYE73d0@z>
 
-To convert the AMD iommu driver to the dma-iommu we need to wrap some of
-the iova reserve functions.
+Add iommu_dma_map_page_coherent function to allow mapping pages through
+the dma-iommu api using the dev->coherent_dma_mask mask instead of the
+dev->dma_mask mask
 
 Signed-off-by: Tom Murphy <tmurphy@arista.com>
 ---
- drivers/iommu/dma-iommu.c | 27 +++++++++++++++++++++++++++
- include/linux/dma-iommu.h |  7 +++++++
- 2 files changed, 34 insertions(+)
+ drivers/iommu/dma-iommu.c | 25 ++++++++++++++++++++-----
+ include/linux/dma-iommu.h |  3 +++
+ 2 files changed, 23 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index cc5da30d6e58..613d181e78a9 100644
+index 613d181e78a9..0128370f8b88 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -162,6 +162,33 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+@@ -663,7 +663,8 @@ int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
  }
- EXPORT_SYMBOL(iommu_put_dma_cookie);
  
-+static struct iova *iommu_dma_reserve_iova(struct iommu_domain *domain,
-+		dma_addr_t iova_lo, dma_addr_t iova_hi)
-+{
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	struct iova_domain *iovad = &cookie->iovad;
-+	unsigned long order = __ffs(domain->pgsize_bitmap);
-+
-+	return reserve_iova(iovad, iova_lo >> order, iova_hi >> order);
+ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+-		size_t size, int prot, struct iommu_domain *domain)
++		size_t size, int prot, struct iommu_domain *domain,
++		dma_addr_t dma_limit)
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	size_t iova_off = 0;
+@@ -674,7 +675,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+ 		size = iova_align(&cookie->iovad, size + iova_off);
+ 	}
+ 
+-	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
++	iova = iommu_dma_alloc_iova(domain, size, dma_limit, dev);
+ 	if (!iova)
+ 		return DMA_MAPPING_ERROR;
+ 
+@@ -693,7 +694,19 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ 		unsigned long offset, size_t size, int prot)
+ {
+ 	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot,
+-			iommu_get_dma_domain(dev));
++			iommu_get_dma_domain(dev), dma_get_mask(dev));
 +}
 +
-+void iommu_dma_copy_reserved_iova(struct iova_domain *from,
-+		struct iommu_domain *to)
++dma_addr_t iommu_dma_map_page_coherent(struct device *dev, struct page *page,
++		unsigned long offset, size_t size, int prot)
 +{
-+	struct iommu_dma_cookie *cookie = to->iova_cookie;
-+	struct iova_domain *to_iovad = &cookie->iovad;
++	dma_addr_t dma_mask = dev->coherent_dma_mask;
 +
-+	copy_reserved_iova(from, to_iovad);
-+}
++	if (!dma_mask)
++		dma_mask = dma_get_mask(dev);
 +
-+void iommu_dma_apply_resv_region(struct device *dev,
-+		 struct iommu_domain *domain, struct iommu_resv_region *region)
-+{
-+	dma_addr_t end = region->start + region->length - 1;
++	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot,
++			iommu_get_dma_domain(dev), dma_mask);
+ }
+ 
+ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+@@ -883,7 +896,7 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+ {
+ 	return __iommu_dma_map(dev, phys, size,
+ 			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
+-			iommu_get_dma_domain(dev));
++			iommu_get_dma_domain(dev), dma_get_mask(dev));
+ }
+ 
+ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+@@ -910,7 +923,9 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	if (!msi_page)
+ 		return NULL;
+ 
+-	iova = __iommu_dma_map(dev, msi_addr, size, prot, domain);
++	iova = __iommu_dma_map(dev, msi_addr, size, prot, domain,
++			dma_get_mask(dev));
 +
-+	WARN_ON_ONCE(iommu_dma_reserve_iova(domain, region->start, end) == NULL);
-+}
-+
- /**
-  * iommu_dma_get_resv_regions - Reserved region driver helper
-  * @dev: Device from iommu_get_resv_regions()
+ 	if (iova == DMA_MAPPING_ERROR)
+ 		goto out_free_page;
+ 
 diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index e760dc5d1fa8..c527ded5c41c 100644
+index c527ded5c41c..185ff8500841 100644
 --- a/include/linux/dma-iommu.h
 +++ b/include/linux/dma-iommu.h
-@@ -23,6 +23,7 @@
- #ifdef CONFIG_IOMMU_DMA
- #include <linux/dma-mapping.h>
- #include <linux/iommu.h>
-+#include <linux/iova.h>
- #include <linux/msi.h>
+@@ -55,6 +55,9 @@ int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
  
- int iommu_dma_init(void);
-@@ -57,6 +58,12 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ 		unsigned long offset, size_t size, int prot);
++dma_addr_t iommu_dma_map_page_coherent(struct device *dev,
++		struct page *page, unsigned long offset,
++		size_t size, int prot);
  int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
  		int nents, int prot);
  
-+/* These are wrappers around some iova functions */
-+void iommu_dma_apply_resv_region(struct device *dev,
-+		struct iommu_domain *domain, struct iommu_resv_region *region);
-+void iommu_dma_copy_reserved_iova(struct iova_domain *from,
-+		struct iommu_domain *to);
-+
- /*
-  * Arch code with no special attribute handling may use these
-  * directly as DMA mapping callbacks for simplicity
 -- 
 2.17.1
 
