@@ -2,55 +2,98 @@ Return-Path: <SRS0=Ap1T=SN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C91C10F13
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 17:45:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 043D4C10F13
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 19:56:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D9CB72082E
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 17:45:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D9CB72082E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id C26B52073F
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 19:56:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="CvI1PNus"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C26B52073F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AE3ED2AAB;
-	Thu, 11 Apr 2019 17:45:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 75F692B08;
+	Thu, 11 Apr 2019 19:56:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 986E52A97
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E7B2F2AFB
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 17:44:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 39176855
+	Thu, 11 Apr 2019 19:55:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7C782854
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 17:44:46 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id F289E68AFE; Thu, 11 Apr 2019 19:44:31 +0200 (CEST)
-Date: Thu, 11 Apr 2019 19:44:31 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
-Message-ID: <20190411174431.GA32109@lst.de>
-References: <20190410102754.387743324@linutronix.de>
-	<20190410103646.130022106@linutronix.de>
-	<20190410110818.GA13904@lst.de>
-	<alpine.DEB.2.21.1904101407190.3479@nanos.tec.linutronix.de>
-	<20190411172130.GA30189@lst.de>
-	<20190411133602.17e8ebdf@gandalf.local.home>
+	Thu, 11 Apr 2019 19:55:36 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+	by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x3BJsmvC161616; Thu, 11 Apr 2019 19:55:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+	h=date : from : to : cc
+	: subject : message-id : references : mime-version : content-type :
+	in-reply-to; s=corp-2018-07-02;
+	bh=VL9345aOgMK3qVvpbctwi4u+WOPjOP1EyqDU/Uq/IHI=;
+	b=CvI1PNus22oPdlmttC8NmMTuSQCQfYZXYYTZZYMEDGk+LVf8F3uQifjL3+ae3eUJhBJL
+	kvEXDL+gCtsl/va/a1JvqlT1n5dSjkt0qUPMxCjsrpUJlRtYPiNS96Ul1K3OlsUHgkLq
+	LQM4pxKZiBi9SE8KfMti0fvBCYlV9JtvYEHwixrh5TRaEzGeJ5dgZqCaYhxmAYOAnQzO
+	H62NNA7UF2KnUkpmtEyop9AbboLFKxHcJygCCFP0lY4DLj1uVZFhyxfnFfNhemFacqWK
+	crL/ZbSdOr4gmDKv/RCA05Mrp53psKeV6H7ESQMGkrMWZnODRgHs/NdxgCH4zYOGZQru
+	vg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+	by aserp2130.oracle.com with ESMTP id 2rphmeu6d9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 11 Apr 2019 19:55:32 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+	by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x3BJrgnH177322; Thu, 11 Apr 2019 19:55:32 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+	by aserp3030.oracle.com with ESMTP id 2rt9uptesc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 11 Apr 2019 19:55:32 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+	by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3BJtQ5Z014619;
+	Thu, 11 Apr 2019 19:55:26 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+	by default (Oracle Beehive Gateway v4.0)
+	with ESMTP ; Thu, 11 Apr 2019 12:55:26 -0700
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+	id B1C3A6A00C3; Thu, 11 Apr 2019 15:55:28 -0400 (EDT)
+Date: Thu, 11 Apr 2019 15:55:28 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Dongli Zhang <dongli.zhang@oracle.com>
+Subject: Re: [PATCH 1/1] swiotlb: dump used and total slots when swiotlb
+	buffer is full
+Message-ID: <20190411195528.GB6033@char.us.oracle.com>
+References: <1554426925-2431-1-git-send-email-dongli.zhang@oracle.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190411133602.17e8ebdf@gandalf.local.home>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: x86@kernel.org, LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux-foundation.org, Alexander Potapenko <glider@google.com>,
-	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
-	Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>
+In-Reply-To: <1554426925-2431-1-git-send-email-dongli.zhang@oracle.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9224
+	signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+	malwarescore=0
+	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+	engine=8.0.1-1810050000 definitions=main-1904110132
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9224
+	signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+	priorityscore=1501 malwarescore=0
+	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
+	adultscore=0
+	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+	definitions=main-1904110132
+Cc: joe.jin@oracle.com, linux-kernel@vger.kernel.org, srinivas.eeda@oracle.com,
+	iommu@lists.linux-foundation.org, robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,20 +110,42 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411174431.jbeKBO-6qs11he0f1Clcc5fHrgV_Dk_fNqunTDTwrxE@z>
+Message-ID: <20190411195528.gFR68RW5UN21M8A6oFMAIqt-0ogrPEDTbV7dpQysWcc@z>
 
-On Thu, Apr 11, 2019 at 01:36:02PM -0400, Steven Rostedt wrote:
-> I guess the issue is when you get a 41 patch series, and there's only
-> one patch you need to look at. There's times I get Cc'd on patch sets
-> that I have no idea why I'm on the Cc. If I skim the patch set and
-> don't see a relevance, I simply ignore it.
+On Fri, Apr 05, 2019 at 09:15:25AM +0800, Dongli Zhang wrote:
+> So far the kernel only prints the requested size if swiotlb buffer if full.
+> It is not possible to know whether it is simply an out of buffer, or it is
+> because swiotlb cannot allocate buffer with the requested size due to
+> fragmentation.
+> 
+> As 'io_tlb_used' is available since commit 71602fe6d4e9 ("swiotlb: add
+> debugfs to track swiotlb buffer usage"), both 'io_tlb_used' and
+> 'io_tlb_nslabs' are printed when swiotlb buffer is full.
+> 
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
 
-I sometimes do that as well, but then again ignoring/deleting is easy.
-I wish people would think a little more on whom to Cc.  In general
-I don't really need a personal Cc for drive by patches - I'll happily
-pick them up from the mailing list and actually prefer it that way.
-But I have received contrary feedback from people that do want to be
-CCed on every little thing.
+Applied. Will send git pull shortly.
+> ---
+>  kernel/dma/swiotlb.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 53012db..3f43b37 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -540,7 +540,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>  not_found:
+>  	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>  	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
+> -		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
+> +		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes), total %lu, used %lu\n",
+> +			 size, io_tlb_nslabs, io_tlb_used);
+>  	return DMA_MAPPING_ERROR;
+>  found:
+>  	io_tlb_used += nslots;
+> -- 
+> 2.7.4
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
