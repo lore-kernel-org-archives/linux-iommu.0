@@ -2,52 +2,49 @@ Return-Path: <SRS0=Ap1T=SN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4BBC10F13
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 15:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F84C10F13
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 15:28:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 533522083E
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 15:20:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 533522083E
+	by mail.kernel.org (Postfix) with ESMTPS id 8B32A2077C
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 15:28:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B32A2077C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 289FF29A3;
-	Thu, 11 Apr 2019 15:20:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6290A29A8;
+	Thu, 11 Apr 2019 15:28:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E5AE9299C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4F34429A5
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 15:19:19 +0000 (UTC)
+	Thu, 11 Apr 2019 15:28:05 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8803E63D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E6AD386F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 15:19:19 +0000 (UTC)
+	Thu, 11 Apr 2019 15:28:04 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 7AEA2451; Thu, 11 Apr 2019 17:19:17 +0200 (CEST)
-Date: Thu, 11 Apr 2019 17:19:17 +0200
+	id 4FA40451; Thu, 11 Apr 2019 17:28:03 +0200 (CEST)
+Date: Thu, 11 Apr 2019 17:28:03 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v8 0/9] vfio/mdev: IOMMU aware mediated device
-Message-ID: <20190411151917.GA29810@8bytes.org>
-References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v3 1/1] iommu: Bind process address spaces to devices
+Message-ID: <20190411152803.GB29810@8bytes.org>
+References: <20190410151516.47754-1-jean-philippe.brucker@arm.com>
+	<20190410151516.47754-2-jean-philippe.brucker@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20190410151516.47754-2-jean-philippe.brucker@arm.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	sanjay.k.kumar@intel.com, Kirti Wankhede <kwankhede@nvidia.com>,
-	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	kvm@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
-	yi.y.sun@intel.com
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, zhangfei.gao@foxmail.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,35 +61,38 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411151917.zLF40AI7D0ojXs0yydWdDN6mNUR1yPOq9BaAH4WgpLA@z>
+Message-ID: <20190411152803.Sa2yZvLkkgnrqwgTA6LVKYJjZyJsYvAq-ggUt2WhZac@z>
 
-Hi Lu Baolu,
+On Wed, Apr 10, 2019 at 04:15:16PM +0100, Jean-Philippe Brucker wrote:
+>  drivers/iommu/iommu.c | 104 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h |  70 ++++++++++++++++++++++++++++
+>  2 files changed, 174 insertions(+)
 
-thanks for these patches!
+Applied to the api-features branch for now, thanks Jean-Philippe!
 
-On Mon, Mar 25, 2019 at 09:30:27AM +0800, Lu Baolu wrote:
-> Lu Baolu (9):
->   iommu: Add APIs for multiple domains per device
->   iommu/vt-d: Make intel_iommu_enable_pasid() more generic
->   iommu/vt-d: Add per-device IOMMU feature ops entries
->   iommu/vt-d: Move common code out of iommu_attch_device()
->   iommu/vt-d: Aux-domain specific domain attach/detach
->   iommu/vt-d: Return ID associated with an auxiliary domain
+'for now' because I have a question below.
 
-I applied the patches above to my tree. The first patch is in a new
-branch called 'api-features' and the other are in the x86/vt-d branch.
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ed6738c358ca..87fe1cddd817 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -51,10 +51,13 @@ struct device;
+>  struct iommu_domain;
+>  struct notifier_block;
+>  struct iommu_fault_event;
+> +struct iommu_sva;
 
->   vfio/mdev: Add iommu related member in mdev_device
->   vfio/type1: Add domain at(de)taching group helpers
->   vfio/type1: Handle different mdev isolation type
+The iommu_fault_event doesn't yet exist in my tree, is this patch based
+on something else I need besided Lu Baolus work? I got quite some
+conflicts while applying the patch because of this.
 
-Can you please address the minor concern on these patches, add all
-review and acks and re-send?
+> + * @sva_set_ops: Set ops for a SVA handle
 
-Thanks,
+I also removed this line.
+
+Regards,
 
 	Joerg
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
