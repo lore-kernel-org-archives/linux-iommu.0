@@ -2,64 +2,52 @@ Return-Path: <SRS0=Ap1T=SN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74928C10F13
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 14:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4BBC10F13
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 15:20:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4470C2077C
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 14:51:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4470C2077C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=free.fr
+	by mail.kernel.org (Postfix) with ESMTPS id 533522083E
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 15:20:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 533522083E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 25BFD2878;
-	Thu, 11 Apr 2019 14:51:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 289FF29A3;
+	Thu, 11 Apr 2019 15:20:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8E4532788
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E5AE9299C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 14:50:39 +0000 (UTC)
+	Thu, 11 Apr 2019 15:19:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 31E67F4
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8803E63D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 14:50:39 +0000 (UTC)
-Received: from ns.iliad.fr (localhost [127.0.0.1])
-	by ns.iliad.fr (Postfix) with ESMTP id B5F3C212CF;
-	Thu, 11 Apr 2019 16:50:37 +0200 (CEST)
-Received: from [192.168.108.49] (freebox.vlq16.iliad.fr [213.36.7.13])
-	by ns.iliad.fr (Postfix) with ESMTP id 9B60C211C7;
-	Thu, 11 Apr 2019 16:50:37 +0200 (CEST)
-Subject: Re: [PATCH v2 2/2] dt-bindings: arm-smmu: Add qcom,msm8998-smmu-v2
-	binding
-From: Marc Gonzalez <marc.w.gonzalez@free.fr>
-To: Bjorn Andersson <bjorn.andersson@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-References: <edade219-aa77-e7f0-af68-1c192632b2ca@free.fr>
-	<f5029889-6aaa-1315-0225-9b0e46e0697c@free.fr>
-Message-ID: <9bac2350-46ef-dcc5-2c6c-5cf41ccf1dbf@free.fr>
-Date: Thu, 11 Apr 2019 16:50:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thu, 11 Apr 2019 15:19:19 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 7AEA2451; Thu, 11 Apr 2019 17:19:17 +0200 (CEST)
+Date: Thu, 11 Apr 2019 17:19:17 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v8 0/9] vfio/mdev: IOMMU aware mediated device
+Message-ID: <20190411151917.GA29810@8bytes.org>
+References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <f5029889-6aaa-1315-0225-9b0e46e0697c@free.fr>
-Content-Language: en-US
-X-Virus-Scanned: ClamAV using ClamSMTP ; ns.iliad.fr ;
-	Thu Apr 11 16:50:37 2019 +0200 (CEST)
-Cc: Jeffrey Hugo <jhugo@codeaurora.org>, MSM <linux-arm-msm@vger.kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Evan Green <evgreen@chromium.org>,
-	Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-	Manu Gautam <mgautam@codeaurora.org>,
-	iommu <iommu@lists.linux-foundation.org>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	sanjay.k.kumar@intel.com, Kirti Wankhede <kwankhede@nvidia.com>,
+	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+	kvm@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+	yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,31 +64,35 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411145037.dU0bDKkiU6TQRWmCxqQCAzVGyM2nzE8ksZ9ju7GSCr0@z>
+Message-ID: <20190411151917.zLF40AI7D0ojXs0yydWdDN6mNUR1yPOq9BaAH4WgpLA@z>
 
-+robh, +mrutland for DT
+Hi Lu Baolu,
 
-On 01/04/2019 17:44, Marc Gonzalez wrote:
+thanks for these patches!
 
-> Unused at the moment, just future-proofing the DTS.
-> 
-> Signed-off-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index 3133f3ba7567..75d8487fd86f 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -25,6 +25,7 @@ conditions.
->                    Qcom SoCs must contain, as below, SoC-specific compatibles
->                    along with "qcom,smmu-v2":
->                    "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
-> +                  "qcom,msm8998-smmu-v2", "qcom,smmu-v2",
->                    "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
->  
->                    Qcom SoCs implementing "arm,mmu-500" must also include,
+On Mon, Mar 25, 2019 at 09:30:27AM +0800, Lu Baolu wrote:
+> Lu Baolu (9):
+>   iommu: Add APIs for multiple domains per device
+>   iommu/vt-d: Make intel_iommu_enable_pasid() more generic
+>   iommu/vt-d: Add per-device IOMMU feature ops entries
+>   iommu/vt-d: Move common code out of iommu_attch_device()
+>   iommu/vt-d: Aux-domain specific domain attach/detach
+>   iommu/vt-d: Return ID associated with an auxiliary domain
+
+I applied the patches above to my tree. The first patch is in a new
+branch called 'api-features' and the other are in the x86/vt-d branch.
+
+>   vfio/mdev: Add iommu related member in mdev_device
+>   vfio/type1: Add domain at(de)taching group helpers
+>   vfio/type1: Handle different mdev isolation type
+
+Can you please address the minor concern on these patches, add all
+review and acks and re-send?
+
+Thanks,
+
+	Joerg
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
