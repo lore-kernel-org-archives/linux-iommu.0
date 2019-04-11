@@ -1,35 +1,29 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
-Date: Wed, 10 Apr 2019 23:09:33 -0400
-Message-ID: <20190410230933.7d1138b3@oasis.local.home>
-References: <20190410102754.387743324@linutronix.de>
-        <20190410103646.130022106@linutronix.de>
-        <20190411030201.uko3njal44w2ea4b@treble>
+From: Christoph Hellwig <hch@lst.de>
+Subject: get rid of dma_max_pfn
+Date: Thu, 11 Apr 2019 09:09:46 +0200
+Message-ID: <20190411070948.29564-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190411030201.uko3njal44w2ea4b@treble>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, Alexander Potapenko <glider@google.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: iommu@lists.linux-foundation.org, linux-mmc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 10 Apr 2019 22:02:01 -0500
-Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+Hi everyone,
 
-> >  #ifdef CONFIG_STACKTRACE
-> > -	struct		 stack_trace stacktrace;
-> > -	unsigned long	 st_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
-> > +	unsigned int	st_len;
-> > +	unsigned long	st_entries[DMA_DEBUG_STACKTRACE_ENTRIES];  
-> 
-> nit: st_entries isn't very readable.  Thanks to the magic of compilers,
-> the characters are free, so why not call them "stacktrace_entries" and
-> "stacktrace_len".
-
-But doesn't that slow down the time it takes to compile?
-
-/me runs...
-
--- Steve
+I though I got rid of all non-highmem, non-ISA block layer bounce
+buffering a while ago, but I missed the MMC case.  While I still plan to
+also kill off the highmem bouncing there I won't get to it this merge
+window, so for now I'd like to make some progress and move MMC to the
+DMA layer (swiotlb or arm dmabounce) bouncing for addressing limitations
+and kill off the dma_max_pfn helper.
