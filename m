@@ -1,64 +1,70 @@
-From: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
-Subject: Re: [PATCH v1 3/3] arm64: dts: qcom: msm8998: Add PCIe PHY and RC
-	nodes
-Date: Thu, 11 Apr 2019 11:38:49 +0200
-Message-ID: <8d890fdf-233e-5454-2696-fe30bd73f54c@free.fr>
-References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
-	<186f7ca2-84e2-a37e-79e6-f1fec8e25374@free.fr>
-	<3f32cfb9-6528-9f5e-85db-cee89fdcfc5d@mm-sol.com>
-	<8ee2ca1b-2a0d-0c98-f770-a47b5b529295@free.fr>
-	<8ada0472-0692-2f03-b52f-c1702bb0c33d@mm-sol.com>
+From: Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 08/18] iommu: Introduce cache_invalidate API
+Date: Thu, 11 Apr 2019 13:02:35 +0300
+Message-ID: <20190411100235.GQ9224@smile.fi.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1554767973-30125-9-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20190409100718.GE9224@smile.fi.intel.com>
+ <20190409094328.03731c3c@jacob-builder>
+ <20190409173755.GX9224@smile.fi.intel.com>
+ <20190410142131.50ee2e44@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8ada0472-0692-2f03-b52f-c1702bb0c33d-NEYub+7Iv8PQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stanimir Varbanov <svarbanov-NEYub+7Iv8PQT0dZR+AlfA@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Jeffrey Hugo <jhugo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, MSM <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Manu Gautam <mgautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190410142131.50ee2e44@jacob-builder>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, Liu@smile.fi.intel.com, Eric Auger <eric.auger@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/04/2019 11:09, Stanimir Varbanov wrote:
+On Wed, Apr 10, 2019 at 02:21:31PM -0700, Jacob Pan wrote:
+> On Tue, 9 Apr 2019 20:37:55 +0300
+> Andriy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Tue, Apr 09, 2019 at 09:43:28AM -0700, Jacob Pan wrote:
+> > > On Tue, 9 Apr 2019 13:07:18 +0300
+> > > Andriy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:  
+> > > > On Mon, Apr 08, 2019 at 04:59:23PM -0700, Jacob Pan wrote:  
+> > 
+> > > > > +int iommu_cache_invalidate(struct iommu_domain *domain, struct
+> > > > > device *dev,
+> > > > > +			   struct iommu_cache_invalidate_info
+> > > > > *inv_info) +{
+> > > > > +	int ret = 0;    
+> > > > 
+> > > > Redundant assignment.
+> > > >   
+> > > I am not a security expert but initialization of local variable can
+> > > be more secure.
+> > > I was looking at this talk.
+> > > https://outflux.net/slides/2018/lss/danger.pdf
+> > > https://cwe.mitre.org/data/definitions/457.html  
+> > 
+> > I hardly see any of these applied to your case here.
+> > Care to show what I'm missing?
+> > 
+> I thought your comments was that I should not need to initialize local
+> variable ret = 0. 
 
-> On 4/11/19 11:44 AM, Marc Gonzalez wrote:
-> 
->> Since we just want to map 0x100, we don't need an iommu-map-mask.
-> 
-> Do you see warnings during boot about missing property?
+Correct.
 
-Absent iommu-map-mask property is expected. No warning:
+> Always initialize local variable can be a good
+> security practice as suggested in the paper. Perhaps I missed
+> something :)
 
-https://elixir.bootlin.com/linux/latest/source/drivers/of/base.c#L2245
+Paper suggested to do that in a sense to avoid use of uninitialized variable.
+This is not your case (usually it's not the case for variable which contains
+return code), so, assignment is redundant. Moreover, default assignment can
+hide an actual warning and an issue. Security people are not always correct.
 
-	/* The default is to select all bits. */
-	map_mask = 0xffffffff;
+> > > > > +	if (unlikely(!domain->ops->cache_invalidate))
+> > > > > +		return -ENODEV;
+> > > > > +
+> > > > > +	ret = domain->ops->cache_invalidate(domain, dev,
+> > > > > inv_info); +
+> > > > > +	return ret;
+> > > > > +}    
 
-	/*
-	 * Can be overridden by "{iommu,msi}-map-mask" property.
-	 * If of_property_read_u32() fails, the default is used.
-	 */
-	if (map_mask_name)
-		of_property_read_u32(np, map_mask_name, &map_mask);
-
-
->>>> +			/* PCIe Fundamental Reset */
->>>
->>> this comment is useless :) please drop it
->>
->> IMO, "perst" is a poor name. Can you guess what it stands for?
-> 
-> The name is got from PCIE base specification. See 6.6.1.
-> Conventional Reset from "PCI EXPRESS BASE SPECIFICATION, REV. 3.0"
-
-Indeed... Well, "perst" still sucks :-p
-
-Regards.
+-- 
+With Best Regards,
+Andy Shevchenko
