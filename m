@@ -2,70 +2,55 @@ Return-Path: <SRS0=Ap1T=SN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_NEOMUTT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB824C10F13
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 07:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9ABFC10F13
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 08:17:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 86EE62133D
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 07:21:01 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ZcVJqm0X"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86EE62133D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id A98BA20873
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 08:17:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A98BA20873
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=verge.net.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 28BF9229A;
-	Thu, 11 Apr 2019 07:20:53 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5FFC7236F;
+	Thu, 11 Apr 2019 08:17:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 35A251ECF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 63998216F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 07:20:36 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D95EBF4
+	Thu, 11 Apr 2019 08:17:40 +0000 (UTC)
+X-Greylist: delayed 00:07:06 by SQLgrey-1.7.6
+Received: from kirsty.vergenet.net (kirsty.vergenet.net [202.4.237.240])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E32FB63D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 07:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=FYiYFX3eg2WXGlXW6/DFT8QDPeE9y3XIAunmMPhB284=;
-	b=ZcVJqm0XyJ4JVyOw5F4VMNXsm/
-	aUoR7AgKq0nEFUzJ76b+nHGfI1rXEO5GFhTKGslPK8uPW8Z4Wxyss8XxSwezyvxfHoOLxXeaeniRf
-	crvFcwtNGXf7xPT9UqILYYWP23ak4R9eeANbL3ZOeZb6fMr9zA9JeJVVt9iRTtTDV/6gz+zte8DOI
-	jEEebY/FNTTJRkg6FLuOYDMb0ybKU1lnswIa0IY9IIhdmxN9pTX3+PKYqt0VWiqGLz35T5+nvDihl
-	AY9aB3OcNgZFx8ucP/6e4OTUHQDALXwa7uz6YOmG5J2tGPmHuEaNrGEKevMdmMoGLJbQ0KhRc3RCU
-	sxZZligQ==;
-Received: from 089144214194.atnat0023.highway.a1.net ([89.144.214.194]
-	helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hEU0e-0002jU-K5; Thu, 11 Apr 2019 07:20:33 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>
-Subject: [PATCH 4/4] swiotlb-xen: ensure we have a single callsite for
-	xen_dma_map_page
-Date: Thu, 11 Apr 2019 09:20:00 +0200
-Message-Id: <20190411072000.4306-5-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190411072000.4306-1-hch@lst.de>
-References: <20190411072000.4306-1-hch@lst.de>
+	Thu, 11 Apr 2019 08:17:39 +0000 (UTC)
+Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
+	by kirsty.vergenet.net (Postfix) with ESMTPA id 50AC725BE7D;
+	Thu, 11 Apr 2019 18:12:16 +1000 (AEST)
+Received: by reginn.horms.nl (Postfix, from userid 7100)
+	id 5FC81940356; Thu, 11 Apr 2019 10:12:14 +0200 (CEST)
+Date: Thu, 11 Apr 2019 10:12:14 +0200
+From: Simon Horman <horms@verge.net.au>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH v2 1/6] iommu/ipmmu-vmsa: Link IOMMUs and devices in sysfs
+Message-ID: <20190411081214.pgdztqdlud5ta466@verge.net.au>
+References: <20190403182148.18058-1-geert+renesas@glider.be>
+	<20190403182148.18058-2-geert+renesas@glider.be>
+	<20190411081028.b2wf3nnzx4tw7xdr@verge.net.au>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20190411081028.b2wf3nnzx4tw7xdr@verge.net.au>
+Organisation: Horms Solutions BV
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+	Magnus Damm <damm+renesas@opensource.se>,
+	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,72 +67,87 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411072000.uDJzZBtpeiWAcPOwH0n6e0JpJttyPRgeCzB2OwRC5mY@z>
+Message-ID: <20190411081214.dimC-8WiHs1t4SNGUISM9crBWAOygGS6unheaxw9NrA@z>
 
-Refactor the code a bit to make further changes easier.
+On Thu, Apr 11, 2019 at 10:10:28AM +0200, Simon Horman wrote:
+> On Wed, Apr 03, 2019 at 08:21:43PM +0200, Geert Uytterhoeven wrote:
+> > As of commit 7af9a5fdb9e0ca33 ("iommu/ipmmu-vmsa: Use
+> > iommu_device_sysfs_add()/remove()"), IOMMU devices show up under
+> > /sys/class/iommus/, but their "devices" subdirectories are empty.
+> 
+> Hi Geert,
+> 
+> Should the path be /sys/class/iommu/ (no trailing 's') ?
+> 
+> > Likewise, devices tied to an IOMMU do not have an "iommu" backlink.
+> > 
+> > Make sure all links are created, on both arm32 and arm64.
+> > 
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > ---
+> > v2:
+> >   - Add Reviewed-by.
+> > ---
+> >  drivers/iommu/ipmmu-vmsa.c | 24 +++++++++++++++++-------
+> >  1 file changed, 17 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index 9a380c10655e182d..9f2b781e20a0eba6 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -885,27 +885,37 @@ static int ipmmu_init_arm_mapping(struct device *dev)
+> >  
+> >  static int ipmmu_add_device(struct device *dev)
+> >  {
+> > +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+> >  	struct iommu_group *group;
+> > +	int ret;
+> >  
+> >  	/*
+> >  	 * Only let through devices that have been verified in xlate()
+> >  	 */
+> > -	if (!to_ipmmu(dev))
+> > +	if (!mmu)
+> >  		return -ENODEV;
+> >  
+> > -	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA))
+> > -		return ipmmu_init_arm_mapping(dev);
+> > +	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA)) {
+> > +		ret = ipmmu_init_arm_mapping(dev);
+> > +		if (ret)
+> > +			return ret;
+> > +	} else {
+> > +		group = iommu_group_get_for_dev(dev);
+> > +		if (IS_ERR(group))
+> > +			return PTR_ERR(group);
+> >  
+> > -	group = iommu_group_get_for_dev(dev);
+> > -	if (IS_ERR(group))
+> > -		return PTR_ERR(group);
+> > +		iommu_group_put(group);
+> > +	}
+> >  
+> > -	iommu_group_put(group);
+> > +	iommu_device_link(&mmu->iommu, dev);
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/xen/swiotlb-xen.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+Also, is there any value in propagating the return value
+of iommu_device_link() ?
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 9a951504dc12..5dcb06fe9667 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -391,13 +391,8 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- 	if (dma_capable(dev, dev_addr, size) &&
- 	    !range_straddles_page_boundary(phys, size) &&
- 		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
--		(swiotlb_force != SWIOTLB_FORCE)) {
--		/* we are not interested in the dma_addr returned by
--		 * xen_dma_map_page, only in the potential cache flushes executed
--		 * by the function. */
--		xen_dma_map_page(dev, page, dev_addr, offset, size, dir, attrs);
--		return dev_addr;
--	}
-+		swiotlb_force != SWIOTLB_FORCE)
-+		goto done;
- 
- 	/*
- 	 * Oh well, have to allocate and map a bounce buffer.
-@@ -410,19 +405,25 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- 		return DMA_MAPPING_ERROR;
- 
- 	dev_addr = xen_phys_to_bus(map);
--	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
--					dev_addr, map & ~PAGE_MASK, size, dir, attrs);
- 
- 	/*
- 	 * Ensure that the address returned is DMA'ble
- 	 */
--	if (dma_capable(dev, dev_addr, size))
--		return dev_addr;
--
--	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
--	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
-+	if (unlikely(!dma_capable(dev, dev_addr, size))) {
-+		swiotlb_tbl_unmap_single(dev, map, size, dir,
-+				attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+		return DMA_MAPPING_ERROR;
-+	}
- 
--	return DMA_MAPPING_ERROR;
-+	page = pfn_to_page(map >> PAGE_SHIFT);
-+	offset = map & ~PAGE_MASK;
-+done:
-+	/*
-+	 * we are not interested in the dma_addr returned by xen_dma_map_page,
-+	 * only in the potential cache flushes executed by the function.
-+	 */
-+	xen_dma_map_page(dev, page, dev_addr, offset, size, dir, attrs);
-+	return dev_addr;
- }
- 
- /*
--- 
-2.20.1
-
+> >  	return 0;
+> >  }
+> >  
+> >  static void ipmmu_remove_device(struct device *dev)
+> >  {
+> > +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+> > +
+> > +	iommu_device_unlink(&mmu->iommu, dev);
+> >  	arm_iommu_detach_device(dev);
+> >  	iommu_group_remove_device(dev);
+> >  }
+> > -- 
+> > 2.17.1
+> > 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
