@@ -1,27 +1,46 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
-Date: Thu, 11 Apr 2019 19:44:31 +0200
-Message-ID: <20190411174431.GA32109@lst.de>
-References: <20190410102754.387743324@linutronix.de> <20190410103646.130022106@linutronix.de> <20190410110818.GA13904@lst.de> <alpine.DEB.2.21.1904101407190.3479@nanos.tec.linutronix.de> <20190411172130.GA30189@lst.de> <20190411133602.17e8ebdf@gandalf.local.home>
+From: Tom Murphy <tmurphy@arista.com>
+Subject: [PATCH 0/9] iommu/amd: Convert the AMD iommu driver to the dma-iommu api
+Date: Thu, 11 Apr 2019 19:47:29 +0100
+Message-ID: <20190411184741.27540-1-tmurphy@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190411133602.17e8ebdf@gandalf.local.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Christoph Hellwig <hch@lst.de>, Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, Alexander Potapenko <glider@google.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+To: iommu@lists.linux-foundation.org
+Cc: dima@arista.com, jamessewart@arista.com, murphyt7@tcd.ie, Tom Murphy <tmurphy@arista.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Marc Zyngier <marc.zyngier@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org, linux-rockchi
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 11, 2019 at 01:36:02PM -0400, Steven Rostedt wrote:
-> I guess the issue is when you get a 41 patch series, and there's only
-> one patch you need to look at. There's times I get Cc'd on patch sets
-> that I have no idea why I'm on the Cc. If I skim the patch set and
-> don't see a relevance, I simply ignore it.
+Convert the AMD iommu driver to the dma-iommu api and remove the iova
+handling code from the AMD iommu driver.
 
-I sometimes do that as well, but then again ignoring/deleting is easy.
-I wish people would think a little more on whom to Cc.  In general
-I don't really need a personal Cc for drive by patches - I'll happily
-pick them up from the mailing list and actually prefer it that way.
-But I have received contrary feedback from people that do want to be
-CCed on every little thing.
+Tom Murphy (9):
+  iommu/dma-iommu: Add iommu_map_atomic
+  iommu/dma-iommu: Add function to flush any cached not present IOTLB
+    entries
+  iommu/dma-iommu: Add iommu_dma_copy_reserved_iova,
+    iommu_dma_apply_resv_region to the dma-iommu api
+  iommu/dma-iommu: Add iommu_dma_map_page_coherent
+  iommu/amd: Implement .flush_np_cache
+  iommu/amd: Implement map_atomic
+  iommu/amd: Use the dma-iommu api
+  iommu/amd: Clean up unused functions
+  iommu/amd: Add allocated domain to global list earlier
+
+ drivers/iommu/Kconfig          |   1 +
+ drivers/iommu/amd_iommu.c      | 468 ++++++++-------------------------
+ drivers/iommu/arm-smmu-v3.c    |   1 +
+ drivers/iommu/arm-smmu.c       |   1 +
+ drivers/iommu/dma-iommu.c      |  68 ++++-
+ drivers/iommu/exynos-iommu.c   |   1 +
+ drivers/iommu/iommu.c          |  46 +++-
+ drivers/iommu/ipmmu-vmsa.c     |   1 +
+ drivers/iommu/mtk_iommu.c      |   1 +
+ drivers/iommu/qcom_iommu.c     |   1 +
+ drivers/iommu/rockchip-iommu.c |   1 +
+ include/linux/dma-iommu.h      |  10 +
+ include/linux/iommu.h          |  25 ++
+ 13 files changed, 253 insertions(+), 372 deletions(-)
+
+-- 
+2.17.1
