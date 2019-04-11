@@ -2,80 +2,73 @@ Return-Path: <SRS0=Ap1T=SN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C7FC10F13
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 09:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DDFC10F13
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 09:10:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BB8D2084D
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 09:01:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9D0342084D
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 09:10:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="r257t7nJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BB8D2084D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=mm-sol.com header.i=@mm-sol.com header.b="icQzSd4N"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D0342084D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C1871239E;
-	Thu, 11 Apr 2019 09:01:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6C5C823AC;
+	Thu, 11 Apr 2019 09:10:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0084F2207
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 999EC239F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 09:01:34 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-vs1-f65.google.com (mail-vs1-f65.google.com
-	[209.85.217.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 56C32F4
+	Thu, 11 Apr 2019 09:09:44 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from extserv.mm-sol.com (ns.mm-sol.com [37.157.136.199])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EEE07F4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 09:01:33 +0000 (UTC)
-Received: by mail-vs1-f65.google.com with SMTP id f22so3028922vso.7
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 02:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=EnatT+jdtQF0JEB7Nk+rRsGXNIW2kJHlGBbezXEtsEA=;
-	b=r257t7nJSEYG00c7JQwV7VQyIw1FZGynR2MOLhNuH/WY4PiuTQUVQkfPYFW1C7+scf
-	0O/IY/861L6ydpdi0TEQJiJ1PjIudUbGY2rV4pYw8bmm6EbWYhUgg46GbBNasCMkO9uV
-	s18KjfS5+l+gfUpRu++r1rByJbLgp2iXi1eoWxifCgroV1A3Mk9kY583ETL20WnOxgI4
-	AS7D/cBatvjctVBm4nxRyqbFL70XToCY7rO70y2mkNC6yYFI4gVOhJNAC90mTIFe2g1k
-	sWvHli5XY2xadk8UyM7D8BbSVGN8u/OSIprB9dzjL03U7SblELbxJGlc3Lsfh/Vu7k8N
-	+21A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=EnatT+jdtQF0JEB7Nk+rRsGXNIW2kJHlGBbezXEtsEA=;
-	b=C1K/FRwfgRB+oG2rTWrv031t8g9WVdIepF6q4xFMNmV4dlcUVGjctOhqZbxEGCsaxl
-	x3s00GzFU/phsBCb6xaGuj+7qF1XE70G4aumziVfvVMDBwkEWbvAAK5wi/vi7blZQ95y
-	9ATsAWzfA699ZgWLylToqpBPXAUrnnR0G57Sa8pK/Qn8WOxUuow/9SdYkdMjl4aofdwf
-	E3fAhHDWE994TN8SKAV3CFKmrXtxlcBGKlLnN3DOj6O3pXWnK+tiCTppf+0X7qT68Tz/
-	hf+yUeAU49K5XeQXiwLcO6kMokSae8D4NOa62J5US3W7I0JPvpaTyGJO/IYy0SXvT9fj
-	B9cg==
-X-Gm-Message-State: APjAAAXA1PcI6ol28MF8qtxRUhfNkVw6ZBQJKpkJ69vycg/wH+uD5EG6
-	kahWPjTkTG6lgh73s1yLKocljFvSAJradIE/YUDWPg==
-X-Google-Smtp-Source: APXvYqwDdqE/o2RrwREk77vUS27uHxKVdSVOxqXYu38QwsgxM0TJnvklLlUyfzHFzBWAhKjrwy0ny1645mJWeUzw0/I=
-X-Received: by 2002:a67:fa04:: with SMTP id i4mr27302504vsq.18.1554973292450; 
-	Thu, 11 Apr 2019 02:01:32 -0700 (PDT)
+	Thu, 11 Apr 2019 09:09:43 +0000 (UTC)
+Received: from [192.168.27.209] (unknown [37.157.136.206])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by extserv.mm-sol.com (Postfix) with ESMTPSA id 37330CE4B;
+	Thu, 11 Apr 2019 12:09:40 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mm-sol.com; s=201706;
+	t=1554973780; bh=HAmbUpNVF06uxT2iVqBFwFyBAbhvD9f6pLZmzK8rpms=;
+	h=Subject:To:Cc:From:Date:From;
+	b=icQzSd4N0igHePEDv/EzUhQTapntDaXx7J8KqWyyL+XRlMiPnjlNFOXuHXO3U+YyB
+	Zf+vNnSPGGerNOeKdJSNDo3b7XVhkF1IBYNYeivOaSZrnkzr06mcHMO8mLuZgm0PHx
+	gUe7+ZxLVfHUbAgYS7zhBvMx6NVn4vpc9scQ2xH3Nnym6Ak8UeqziMVsqq7JiGYb5f
+	7+mZ+yC73ZR+KYnXNKw3EJcHbIgwf6tTGv73jo/mstbKAEqcXXUUfB9Uazjdi/78r1
+	EUazgECAzmFDFEGgkDgVKKH4LcKnTxrDUPQcFOr/ya0DuQVpvMVEpJvkOgxCMxu5Kg
+	7phxBJH8AnPEw==
+Subject: Re: [PATCH v1 3/3] arm64: dts: qcom: msm8998: Add PCIe PHY and RC
+	nodes
+To: Marc Gonzalez <marc.w.gonzalez@free.fr>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <5eedbe6d-f440-1a77-8a7e-81a920e3a0e7@free.fr>
+	<186f7ca2-84e2-a37e-79e6-f1fec8e25374@free.fr>
+	<3f32cfb9-6528-9f5e-85db-cee89fdcfc5d@mm-sol.com>
+	<8ee2ca1b-2a0d-0c98-f770-a47b5b529295@free.fr>
+Message-ID: <8ada0472-0692-2f03-b52f-c1702bb0c33d@mm-sol.com>
+Date: Thu, 11 Apr 2019 12:09:37 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190411070948.29564-1-hch@lst.de>
-	<20190411070948.29564-2-hch@lst.de>
-In-Reply-To: <20190411070948.29564-2-hch@lst.de>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Thu, 11 Apr 2019 11:00:56 +0200
-Message-ID:
- <CAPDyKFqHrvz_5taNTx7k6Skx=Ox+9XgQHHz0LZyr4QNV9orvRw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] mmc: let the dma map ops handle bouncing
-To: Christoph Hellwig <hch@lst.de>
-Cc: "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <8ee2ca1b-2a0d-0c98-f770-a47b5b529295@free.fr>
+Content-Language: en-US
+Cc: Jeffrey Hugo <jhugo@codeaurora.org>, MSM <linux-arm-msm@vger.kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Evan Green <evgreen@chromium.org>,
+	Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+	Manu Gautam <mgautam@codeaurora.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,65 +81,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Stanimir Varbanov via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Stanimir Varbanov <svarbanov@mm-sol.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411090056.qsdFLhIrvc5Rhi40t05Vl2ByeExChfNCdnYDku9Y8Js@z>
+Message-ID: <20190411090937.jJvshbM1y9_ZNrBz4pFYixXMkaIhzg2xlikZ2a32NNU@z>
 
-Hi Christoph,
+Hi Marc,
 
-On Thu, 11 Apr 2019 at 09:10, Christoph Hellwig <hch@lst.de> wrote:
->
-> Just like we do for all other block drivers.  Especially as the limit
-> imposed at the moment might be way to pessimistic for iommus.
+On 4/11/19 11:44 AM, Marc Gonzalez wrote:
+> On 10/04/2019 17:32, Stanimir Varbanov wrote:
+> 
+>> Few comments inline.
+> 
+> I'll send v3.
+> 
+> Changes:
+> 	- Move all X-names props *after* corresponding X(s) prop
+> 	- Drop comments
+> 
+> 
+>>> +			iommu-map = <0x100 &anoc1_smmu 0x1480 1>;
+>>
+>> iommu-map-mask? It is optional but I had to ask :)
+> 
+> The only RID in the system is 0x100.
+> 
+> # lspci
+> 00:00.0 PCI bridge: Qualcomm Device 0105
+> 01:00.0 Ethernet controller: Qualcomm Atheros AR8151 v2.0 Gigabit Ethernet (rev c0)
+> 
+> Since we just want to map 0x100, we don't need an iommu-map-mask.
 
-I would appreciate some information in the changelog, as it's quite
-unclear of what this change really means.
+Do you see warnings during boot about missing property?
 
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/mmc/core/queue.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/mmc/core/queue.c b/drivers/mmc/core/queue.c
-> index 7c364a9c4eeb..eb9c0692062c 100644
-> --- a/drivers/mmc/core/queue.c
-> +++ b/drivers/mmc/core/queue.c
-> @@ -354,18 +354,15 @@ static const struct blk_mq_ops mmc_mq_ops = {
->  static void mmc_setup_queue(struct mmc_queue *mq, struct mmc_card *card)
->  {
->         struct mmc_host *host = card->host;
-> -       u64 limit = BLK_BOUNCE_HIGH;
->         unsigned block_size = 512;
->
-> -       if (mmc_dev(host)->dma_mask && *mmc_dev(host)->dma_mask)
-> -               limit = (u64)dma_max_pfn(mmc_dev(host)) << PAGE_SHIFT;
-> -
->         blk_queue_flag_set(QUEUE_FLAG_NONROT, mq->queue);
->         blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, mq->queue);
->         if (mmc_can_erase(card))
->                 mmc_queue_setup_discard(mq->queue, card);
->
-> -       blk_queue_bounce_limit(mq->queue, limit);
-> +       if (!mmc_dev(host)->dma_mask || !*mmc_dev(host)->dma_mask)
-> +               blk_queue_bounce_limit(mq->queue, BLK_BOUNCE_HIGH);
+> 
+> 
+>>> +			/* PCIe Fundamental Reset */
+>>
+>> this comment is useless :) please drop it
+> 
+> IMO, "perst" is a poor name. Can you guess what it stands for?
 
-So this means we are not going to set a bounce limit for the queue, in
-case we have a dma mask.
+The name is got from PCIE base specification. See 6.6.1.
+Conventional Reset from "PCI EXPRESS BASE SPECIFICATION, REV. 3.0"
 
-Why isn't that needed no more? Whats has changed?
-
->         blk_queue_max_hw_sectors(mq->queue,
->                 min(host->max_blk_count, host->max_req_size / 512));
->         blk_queue_max_segments(mq->queue, host->max_segs);
-> --
-> 2.20.1
->
-
-Kind regards
-Uffe
+-- 
+regards,
+Stan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
