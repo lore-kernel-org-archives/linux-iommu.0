@@ -3,56 +3,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3BEC10F13
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 13:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B69C10F13
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 13:44:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64F832077C
-	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 13:16:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64F832077C
+	by mail.kernel.org (Postfix) with ESMTPS id 0675D2133D
+	for <iommu@archiver.kernel.org>; Thu, 11 Apr 2019 13:44:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0675D2133D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 24CD32703;
-	Thu, 11 Apr 2019 13:16:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C644427C9;
+	Thu, 11 Apr 2019 13:44:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F130B26FF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6228225F0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 13:15:53 +0000 (UTC)
+	Thu, 11 Apr 2019 13:43:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7AEC7F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BA195F4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 13:15:53 +0000 (UTC)
+	Thu, 11 Apr 2019 13:43:15 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id B1A6E42D; Thu, 11 Apr 2019 15:15:51 +0200 (CEST)
-Date: Thu, 11 Apr 2019 15:15:49 +0200
+	id A327A42D; Thu, 11 Apr 2019 15:43:13 +0200 (CEST)
+Date: Thu, 11 Apr 2019 15:43:12 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 1/3] iommu: io-pgtable: Add ARM Mali midgard MMU page
-	table format
-Message-ID: <20190411131549.GB4518@8bytes.org>
-References: <20190401074730.12241-1-robh@kernel.org>
-	<20190401074730.12241-2-robh@kernel.org>
-	<8d091874-11b0-e348-c4f1-dd1bcfa4bf97@arm.com>
+To: Shaokun Zhang <zhangshaokun@hisilicon.com>
+Subject: Re: [PATCH] iommu/iova: Separate atomic variables to improve
+	performance
+Message-ID: <20190411134312.GC4518@8bytes.org>
+References: <1554280521-18375-1-git-send-email-zhangshaokun@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <8d091874-11b0-e348-c4f1-dd1bcfa4bf97@arm.com>
+In-Reply-To: <1554280521-18375-1-git-send-email-zhangshaokun@hisilicon.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Rob Herring <robh@kernel.org>, Lyude Paul <lyude@redhat.com>,
-	Eric Anholt <eric@anholt.net>, Maxime Ripard <maxime.ripard@bootlin.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Neil Armstrong <narmstrong@baylibre.com>,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-	iommu@lists.linux-foundation.org, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
-	linux-arm-kernel@lists.infradead.org
+Cc: Jinyu Qi <jinyuqi@huawei.com>, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,67 +60,27 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411131549.Utn0vnSogxIHr5Biv2uqSHlQOQQQ2JCQYYFtv9_T_3c@z>
+Message-ID: <20190411134312.MGyhXQA2ToUdOIZmMGEt7hpA8PBcHKQAEoVWUB7Vzgw@z>
 
-On Mon, Apr 01, 2019 at 08:11:00PM +0100, Robin Murphy wrote:
-> With the diff below squashed in to address my outstanding style nits,
+On Wed, Apr 03, 2019 at 04:35:21PM +0800, Shaokun Zhang wrote:
+> From: Jinyu Qi <jinyuqi@huawei.com> 
 > 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
+> In struct iova_domain, there are three atomic variables, the former two
+> are about TLB flush counters which use atomic_add operation, anoter is
+> used to flush timer that use cmpxhg operation.
+> These variables are in the same cache line, so it will cause some
+> performance loss under the condition that many cores call queue_iova
+> function, Let's isolate the two type atomic variables to different
+> cache line to reduce cache line conflict.
 > 
-> I don't foresee any conflicting io-pgtable changes to prevent this going via
-> DRM, but I'll leave the final say up to Joerg.
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Signed-off-by: Jinyu Qi <jinyuqi@huawei.com>
+> ---
+>  include/linux/iova.h | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 
-No objection from my side with merging this via DRM. With Robin's
-concerns addressed:
+Applied, thanks.
 
-	Acked-by: Joerg Roedel <jroedel@suse.de>
-
-> 
-> Thanks,
-> Robin.
-> 
-> ----->8-----
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 98551d0cff59..55ed039da166 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -197,12 +197,13 @@ struct arm_lpae_io_pgtable {
-> 
->  typedef u64 arm_lpae_iopte;
-> 
-> -static inline bool iopte_leaf(arm_lpae_iopte pte, int l, enum
-> io_pgtable_fmt fmt)
-> +static inline bool iopte_leaf(arm_lpae_iopte pte, int lvl,
-> +			      enum io_pgtable_fmt fmt)
->  {
-> -	if ((l == (ARM_LPAE_MAX_LEVELS - 1)) && (fmt != ARM_MALI_LPAE))
-> -		return iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE;
-> +	if (lvl == (ARM_LPAE_MAX_LEVELS - 1) && fmt != ARM_MALI_LPAE)
-> +		return iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_PAGE;
-> 
-> -	return iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK;
-> +	return iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_BLOCK;
->  }
-> 
->  static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
-> @@ -310,13 +311,10 @@ static void __arm_lpae_init_pte(struct
-> arm_lpae_io_pgtable *data,
->  	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
->  		pte |= ARM_LPAE_PTE_NS;
-> 
-> -	if (lvl == ARM_LPAE_MAX_LEVELS - 1) {
-> -		if (data->iop.fmt == ARM_MALI_LPAE)
-> -			pte |= ARM_LPAE_PTE_TYPE_BLOCK;
-> -		else
-> -			pte |= ARM_LPAE_PTE_TYPE_PAGE;
-> -	} else
-> +	if (data->iop.fmt != ARM_MALI_LPAE && lvl != ARM_LPAE_MAX_LEVELS - 1)
->  		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
-> +	else
-> +		pte |= ARM_LPAE_PTE_TYPE_PAGE;
-> 
->  	if (data->iop.fmt != ARM_MALI_LPAE)
->  		pte |= ARM_LPAE_PTE_AF;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
