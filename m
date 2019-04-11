@@ -1,51 +1,50 @@
-From: Tom Murphy <tmurphy@arista.com>
-Subject: [PATCH 9/9] iommu/amd: Add allocated domain to global list earlier
-Date: Thu, 11 Apr 2019 19:47:38 +0100
-Message-ID: <20190411184741.27540-10-tmurphy@arista.com>
-References: <20190411184741.27540-1-tmurphy@arista.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH 1/1] swiotlb: dump used and total slots when swiotlb
+ buffer is full
+Date: Thu, 11 Apr 2019 15:55:28 -0400
+Message-ID: <20190411195528.GB6033@char.us.oracle.com>
+References: <1554426925-2431-1-git-send-email-dongli.zhang@oracle.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190411184741.27540-1-tmurphy@arista.com>
+Content-Disposition: inline
+In-Reply-To: <1554426925-2431-1-git-send-email-dongli.zhang@oracle.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: dima@arista.com, jamessewart@arista.com, murphyt7@tcd.ie, Tom Murphy <tmurphy@arista.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <marc.zyngier@arm.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org, linux-rockchi
+To: Dongli Zhang <dongli.zhang@oracle.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, joe.jin@oracle.com, srinivas.eeda@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-dma_ops_domain_free() expects domain to be in a global list.
-Arguably, could be called before protection_domain_init().
+On Fri, Apr 05, 2019 at 09:15:25AM +0800, Dongli Zhang wrote:
+> So far the kernel only prints the requested size if swiotlb buffer if full.
+> It is not possible to know whether it is simply an out of buffer, or it is
+> because swiotlb cannot allocate buffer with the requested size due to
+> fragmentation.
+> 
+> As 'io_tlb_used' is available since commit 71602fe6d4e9 ("swiotlb: add
+> debugfs to track swiotlb buffer usage"), both 'io_tlb_used' and
+> 'io_tlb_nslabs' are printed when swiotlb buffer is full.
+> 
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
 
-Signed-off-by: Dmitry Safonov <dima@arista.com>
-Signed-off-by: Tom Murphy <tmurphy@arista.com>
----
- drivers/iommu/amd_iommu.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 02b351834a3b..bfb021d656aa 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1801,8 +1801,12 @@ static struct protection_domain *dma_ops_domain_alloc(void)
- 	if (!domain)
- 		return NULL;
- 
--	if (protection_domain_init(domain))
--		goto free_domain;
-+	if (protection_domain_init(domain)) {
-+		kfree(domain);
-+		return NULL;
-+	}
-+
-+	add_domain_to_list(domain);
- 
- 	domain->mode = PAGE_MODE_3_LEVEL;
- 	domain->pt_root = (void *)get_zeroed_page(GFP_KERNEL);
-@@ -1824,8 +1828,6 @@ static struct protection_domain *dma_ops_domain_alloc(void)
- 	/* Initialize reserved ranges */
- 	iommu_dma_copy_reserved_iova(&reserved_iova_ranges, &domain->domain);
- 
--	add_domain_to_list(domain);
--
- 	return domain;
- 
- free_cookie:
--- 
-2.17.1
+Applied. Will send git pull shortly.
+> ---
+>  kernel/dma/swiotlb.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 53012db..3f43b37 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -540,7 +540,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>  not_found:
+>  	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>  	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
+> -		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
+> +		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes), total %lu, used %lu\n",
+> +			 size, io_tlb_nslabs, io_tlb_used);
+>  	return DMA_MAPPING_ERROR;
+>  found:
+>  	io_tlb_used += nslots;
+> -- 
+> 2.7.4
+> 
