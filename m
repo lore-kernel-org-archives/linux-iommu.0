@@ -1,40 +1,40 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: clean up the bypass code in intel-iommu a little
-Date: Thu, 11 Apr 2019 17:53:34 +0200
-Message-ID: <20190411155334.GC29810@8bytes.org>
-References: <20190410161408.7119-1-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [RFC patch 28/41] dma/debug: Simplify stracktrace retrieval
+Date: Thu, 11 Apr 2019 19:21:30 +0200
+Message-ID: <20190411172130.GA30189@lst.de>
+References: <20190410102754.387743324@linutronix.de> <20190410103646.130022106@linutronix.de> <20190410110818.GA13904@lst.de> <alpine.DEB.2.21.1904101407190.3479@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190410161408.7119-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+In-Reply-To: <alpine.DEB.2.21.1904101407190.3479@nanos.tec.linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Christoph Hellwig <hch@lst.de>, LKML <linux-kernel@vger.kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Alexander Potapenko <glider@google.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 10, 2019 at 06:14:05PM +0200, Christoph Hellwig wrote:
-> below are three relatively simple patches to clean up the
-> bypass case and make it share more code with the dma-direct
-> implementation.
+On Wed, Apr 10, 2019 at 02:08:19PM +0200, Thomas Gleixner wrote:
+> On Wed, 10 Apr 2019, Christoph Hellwig wrote:
+> 
+> > On Wed, Apr 10, 2019 at 12:28:22PM +0200, Thomas Gleixner wrote:
+> > > Replace the indirection through struct stack_trace with an invocation of
+> > > the storage array based interface.
+> > 
+> > This seems to be missing some context, at least stack_trace_save does
+> > not actually exist in mainline.
+> > 
+> > Please always send the whole series out to everyone on the To and Cc
+> > list, otherwise patch series are not reviewable.
+>  
+> Bah. People complain about overly broad cc-lists and the context is on
+> lkml. But sure, I just bounced it to you.
 
-These look simple and straightforward to me, applied.
+People should stop complaining about that.  Deleting a mail is a single
+keystroke.  Finding all the patches to apply them and test, or even
+to review them is a nightmare.  That is why depending on my mood I'll
+either complain like now when people do that crap, or if I feel bad
+enough just ignore them.  If you don't give me the full context you
+can't expect me to have an informed opinion.
 
-Can you please also Cc LKML on iommu-patches in the future? It makes the
-patches easier to dig out of the email archive.
-
-Also please Cc the Intel people I added here for future intel-iommu
-patches (we should probably more formalize their role on the driver).
-
-Thanks,
-
-	Joerg
+Btw, the private forwarding is the worst of all worlds - now I have
+the patches, but can't sensibly reply to them..
