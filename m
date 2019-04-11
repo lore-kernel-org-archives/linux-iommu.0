@@ -7,72 +7,72 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65373C10F13
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 856F5C10F13
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 333892184B
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 53ED52184B
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 00:03:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="LB8fzaJx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 333892184B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="QBMldSGX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 53ED52184B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 07AA02D00;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4B2F32D02;
 	Fri, 12 Apr 2019 00:03:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 13AAC241A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4E9CC241A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 18:48:55 +0000 (UTC)
+	Thu, 11 Apr 2019 18:49:00 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
 	[209.85.208.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6FAB2F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1837DF4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 18:48:54 +0000 (UTC)
-Received: by mail-ed1-f68.google.com with SMTP id o26so6112247edv.12
+	Thu, 11 Apr 2019 18:48:59 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id d11so6121483edp.11
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 11:48:54 -0700 (PDT)
+	Thu, 11 Apr 2019 11:48:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=arista.com; s=googlenew;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references;
-	bh=6jV061f41NQwb8JTG8oXH2FoN+EzpljlUI1gqzDD5mU=;
-	b=LB8fzaJxGq1UE+kpvHkDhu+B7IYs10PuyLyxZ03R2k40h38528mg8DNtw5CvvGGUEC
-	4dNobAdGceLj4W3cf/sfNIbHYYnxPug8x3dHbMQMr2kBWb4l2K/d40OgBWHu7LGBSrMM
-	s+LiuJL7CxNF9g9cw4QCmZ7DPjTrADiA+PibC+2h5HaxTFrd/3KF3OxCtBPyIfkaGijI
-	w27pVFIysfKxbHH1Oa9xGIwlfToSd/gcWJ+6qScvI3KsfWoRcLhGTSa83G90H5wmgs26
-	LzzyBPinYyZ0Vrq04CSUH9OmCRpgSwAiWliiYd80JUgr4JUSA6+IIwLoCw9dkVOlrsoq
-	r3CQ==
+	bh=AUkwsqPqLpOQmNdW6Zo0mGf3wmD2BJmU+zJegMbV/Cw=;
+	b=QBMldSGXvc5UwIGLNlY32ptO/VQea8opvEhsRdSzFj4NeN+2G0brH1f/8UVXoDmFzp
+	vgXq8kR+NdanSwtvOTUwpCkm2QCKmWJ4W86KO5tQnP14gTIyY6jfmkyqnM3PIjU1mTrt
+	RDRIQ3bZewU8rrugmcD7S8kRSviGvRiF9zV4bsr6eB83nCXNebkP2SIudff9lbHkRgMS
+	jtauEkPGJgc+fdQv9IWyCVoKtXmY9AvPYOF2tkN2bpTztPvH+bZN2z5g44aD0CJPVIjp
+	Jfs1P1M2x6/FXn9kRoiH7d82Jzo159phG6Ce+OItl5XQo6MoCtkdx/N7GlvqiQu50XsS
+	3gtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references;
-	bh=6jV061f41NQwb8JTG8oXH2FoN+EzpljlUI1gqzDD5mU=;
-	b=hls3s+sY83CSByqnYrqWhm5qDlG9IQnlun8pyNiYoYJStu3yGGGsN3Jm4cmW32eQYv
-	60mArxgGsdouxS0yeHODH2DNNS9ITnt04z7NU85dvkRB3/8Xc2mxNdbuBIPEY4zoDOv1
-	J+DPt3HqpMqensZxyT00Vg6JYmjIDTcipm/RE/DEnsJwozoY5KnoOuPJ66HQylx0Hc1F
-	fQ0nl7t83ObnpjDZ6BBeLnOXRsRPuisSkEa/ydFGQy8HVHx+ACP8Xf44crirZXDqIISC
-	cITkOnVrX8J4YBDzEL5AXgb/ALTxgTZNboZ7hFUf331j6JiGgayuONgmuhTlXv9oZ0T4
-	g+vg==
-X-Gm-Message-State: APjAAAWQAtExy+YolKyx4vSw60TnwHaH1437yRYCVnKzB1p7L18YiYA9
-	Ep5t9UBLdv5It271+ZUy1IhO6TD5/9Lj+De7
-X-Google-Smtp-Source: APXvYqxuoTpmggkOjj92suBw5a7aMbe3r0ArbtvwTV09yEmPy8J3qtmyATEWD+DKwUJEiX7Kcbu32A==
-X-Received: by 2002:a17:906:5e0d:: with SMTP id
-	n13mr27817212eju.37.1555008532896; 
-	Thu, 11 Apr 2019 11:48:52 -0700 (PDT)
+	bh=AUkwsqPqLpOQmNdW6Zo0mGf3wmD2BJmU+zJegMbV/Cw=;
+	b=n/6ITY7/KQGr/mgwj3JBjhYoXcs2KIj3Yq0Cy1QLuNd/FJEoCDMRJnuUCNt2A+u9t2
+	+m7Ncr+emKe58ykeHZwFmg85cvo0cnm6iQ3kZag36YUxfe7AYkXflOTfeNkI9dTNhhpd
+	NZtipkPck1CdEN/+UYmkswH3052M/6C52jGb9CvW7qVrsj3iEnEpqQuK+wr8DdTjyl2M
+	b1pHbh0yrOFROiTcKSEIMOthc7q87oO6HXwkR8+42ashIL8cNJWeABZuBRaxliqVxCjk
+	fY3FpjtFOEYYgumcURQLlf6c+OJ3akfhmK1+tCqJxauwhgk4bwKQaK3f3WWR9nxIgP9P
+	AvCw==
+X-Gm-Message-State: APjAAAVKpq441USyExx3PrZCnodaNOIurJxNkaUGfIpwfJmosEgDeA1o
+	U5ut4Ibtj/kMenn8Yzgs3iqsT68yfxi/RuDu
+X-Google-Smtp-Source: APXvYqzL/CeoYgUz/dL+UCoRPB57kS8k+K0AU3mwSjtkIW0qzE0UGCl3M97UgeKZ/ZqnWNSSEOk5sg==
+X-Received: by 2002:a17:906:f0f:: with SMTP id
+	z15mr12761935eji.125.1555008537548; 
+	Thu, 11 Apr 2019 11:48:57 -0700 (PDT)
 Received: from localhost.localdomain ([80.233.32.123])
 	by smtp.gmail.com with ESMTPSA id
-	b10sm1285130edi.28.2019.04.11.11.48.50
+	b10sm1285130edi.28.2019.04.11.11.48.55
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 11 Apr 2019 11:48:52 -0700 (PDT)
+	Thu, 11 Apr 2019 11:48:57 -0700 (PDT)
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 2/9] iommu/dma-iommu: Add function to flush any cached not
-	present IOTLB entries
-Date: Thu, 11 Apr 2019 19:47:31 +0100
-Message-Id: <20190411184741.27540-3-tmurphy@arista.com>
+Subject: [PATCH 3/9] iommu/dma-iommu: Add iommu_dma_copy_reserved_iova,
+	iommu_dma_apply_resv_region to the dma-iommu api
+Date: Thu, 11 Apr 2019 19:47:32 +0100
+Message-Id: <20190411184741.27540-4-tmurphy@arista.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190411184741.27540-1-tmurphy@arista.com>
 References: <20190411184741.27540-1-tmurphy@arista.com>
@@ -107,82 +107,80 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190411184731.CoSWQZyLnCjgydVo8pyFQkxGsJ9MNFYGhP_QGLYEfH8@z>
+Message-ID: <20190411184732.jN-5I_pVvsrxZ1WZCHbfF7mYRJgMOUf3TdfnkgTja2Q@z>
 
-Both the AMD and Intel drivers can cache not present IOTLB entries. To
-convert these drivers to the dma-iommu api we need a generic way to
-flush the NP cache. IOMMU drivers which have a NP cache can implement
-the .flush_np_cache function in the iommu ops struct. I will implement
-.flush_np_cache for both the Intel and AMD drivers in later patches.
-
-The Intel np-cache is described here:
-https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf#G7.66452
-
-And the AMD np-cache is described here:
-https://developer.amd.com/wordpress/media/2012/10/34434-IOMMU-Rev_1.26_2-11-09.pdf#page=63
+To convert the AMD iommu driver to the dma-iommu we need to wrap some of
+the iova reserve functions.
 
 Signed-off-by: Tom Murphy <tmurphy@arista.com>
 ---
- drivers/iommu/dma-iommu.c | 10 ++++++++++
- include/linux/iommu.h     |  3 +++
- 2 files changed, 13 insertions(+)
+ drivers/iommu/dma-iommu.c | 27 +++++++++++++++++++++++++++
+ include/linux/dma-iommu.h |  7 +++++++
+ 2 files changed, 34 insertions(+)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1a4bff3f8427..cc5da30d6e58 100644
+index cc5da30d6e58..613d181e78a9 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -594,6 +594,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 			< size)
- 		goto out_free_sg;
- 
-+	if (domain->ops->flush_np_cache)
-+		domain->ops->flush_np_cache(domain, iova, size);
-+
- 	*handle = iova;
- 	sg_free_table(&sgt);
- 	return pages;
-@@ -652,6 +655,10 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
- 		iommu_dma_free_iova(cookie, iova, size);
- 		return DMA_MAPPING_ERROR;
- 	}
-+
-+	if (domain->ops->flush_np_cache)
-+		domain->ops->flush_np_cache(domain, iova, size);
-+
- 	return iova + iova_off;
+@@ -162,6 +162,33 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
  }
+ EXPORT_SYMBOL(iommu_put_dma_cookie);
  
-@@ -812,6 +819,9 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	if (iommu_map_sg_atomic(domain, iova, sg, nents, prot) < iova_len)
- 		goto out_free_iova;
- 
-+	if (domain->ops->flush_np_cache)
-+		domain->ops->flush_np_cache(domain, iova, iova_len);
++static struct iova *iommu_dma_reserve_iova(struct iommu_domain *domain,
++		dma_addr_t iova_lo, dma_addr_t iova_hi)
++{
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
++	unsigned long order = __ffs(domain->pgsize_bitmap);
 +
- 	return __finalise_sg(dev, sg, nents, iova);
++	return reserve_iova(iovad, iova_lo >> order, iova_hi >> order);
++}
++
++void iommu_dma_copy_reserved_iova(struct iova_domain *from,
++		struct iommu_domain *to)
++{
++	struct iommu_dma_cookie *cookie = to->iova_cookie;
++	struct iova_domain *to_iovad = &cookie->iovad;
++
++	copy_reserved_iova(from, to_iovad);
++}
++
++void iommu_dma_apply_resv_region(struct device *dev,
++		 struct iommu_domain *domain, struct iommu_resv_region *region)
++{
++	dma_addr_t end = region->start + region->length - 1;
++
++	WARN_ON_ONCE(iommu_dma_reserve_iova(domain, region->start, end) == NULL);
++}
++
+ /**
+  * iommu_dma_get_resv_regions - Reserved region driver helper
+  * @dev: Device from iommu_get_resv_regions()
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index e760dc5d1fa8..c527ded5c41c 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -23,6 +23,7 @@
+ #ifdef CONFIG_IOMMU_DMA
+ #include <linux/dma-mapping.h>
+ #include <linux/iommu.h>
++#include <linux/iova.h>
+ #include <linux/msi.h>
  
- out_free_iova:
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 75559918d9bd..47ff8d731d6a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -173,6 +173,7 @@ struct iommu_resv_region {
-  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
-  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-  *            queue
-+ * @flush_np_cache: Flush the non present entry cache
-  * @iova_to_phys: translate iova to physical address
-  * @add_device: add device to iommu grouping
-  * @remove_device: remove device from iommu grouping
-@@ -209,6 +210,8 @@ struct iommu_ops {
- 				unsigned long iova, size_t size);
- 	void (*iotlb_sync_map)(struct iommu_domain *domain);
- 	void (*iotlb_sync)(struct iommu_domain *domain);
-+	void (*flush_np_cache)(struct iommu_domain *domain,
-+				unsigned long iova, size_t size);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
- 	int (*add_device)(struct device *dev);
- 	void (*remove_device)(struct device *dev);
+ int iommu_dma_init(void);
+@@ -57,6 +58,12 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		int nents, int prot);
+ 
++/* These are wrappers around some iova functions */
++void iommu_dma_apply_resv_region(struct device *dev,
++		struct iommu_domain *domain, struct iommu_resv_region *region);
++void iommu_dma_copy_reserved_iova(struct iova_domain *from,
++		struct iommu_domain *to);
++
+ /*
+  * Arch code with no special attribute handling may use these
+  * directly as DMA mapping callbacks for simplicity
 -- 
 2.17.1
 
