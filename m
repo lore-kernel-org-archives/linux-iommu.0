@@ -1,46 +1,35 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 1/1] iommu: Bind process address spaces to devices
-Date: Thu, 11 Apr 2019 17:28:03 +0200
-Message-ID: <20190411152803.GB29810@8bytes.org>
-References: <20190410151516.47754-1-jean-philippe.brucker@arm.com>
- <20190410151516.47754-2-jean-philippe.brucker@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Use pci_prg_resp_pasid_required()
+Date: Thu, 11 Apr 2019 17:32:58 +0200
+Message-ID: <20190411153258.GF4518@8bytes.org>
+References: <20190410152108.48037-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190410151516.47754-2-jean-philippe.brucker@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, christian.koenig@amd.com, kevin.tian@intel.com, jacob.jun.pan@linux.intel.com, ashok.raj@intel.com, baolu.lu@linux.intel.com, zhangfei.gao@foxmail.com
+In-Reply-To: <20190410152108.48037-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 10, 2019 at 04:15:16PM +0100, Jean-Philippe Brucker wrote:
->  drivers/iommu/iommu.c | 104 ++++++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h |  70 ++++++++++++++++++++++++++++
->  2 files changed, 174 insertions(+)
+On Wed, Apr 10, 2019 at 04:21:08PM +0100, Jean-Philippe Brucker wrote:
+> Commit e5567f5f6762 ("PCI/ATS: Add pci_prg_resp_pasid_required()
+> interface.") added a common interface to check the PASID bit in the PRI
+> capability. Use it in the AMD driver.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu.c | 19 +------------------
+>  1 file changed, 1 insertion(+), 18 deletions(-)
 
-Applied to the api-features branch for now, thanks Jean-Philippe!
-
-'for now' because I have a question below.
-
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ed6738c358ca..87fe1cddd817 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -51,10 +51,13 @@ struct device;
->  struct iommu_domain;
->  struct notifier_block;
->  struct iommu_fault_event;
-> +struct iommu_sva;
-
-The iommu_fault_event doesn't yet exist in my tree, is this patch based
-on something else I need besided Lu Baolus work? I got quite some
-conflicts while applying the patch because of this.
-
-> + * @sva_set_ops: Set ops for a SVA handle
-
-I also removed this line.
-
-Regards,
-
-	Joerg
+Applied, thanks.
