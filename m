@@ -1,40 +1,40 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: per-device dma_map_ops for intel-iommu?
-Date: Thu, 11 Apr 2019 15:57:49 +0200
-Message-ID: <20190411135749.GE4518@8bytes.org>
-References: <20190409135924.GA11431@lst.de>
- <b491bb987c8cc3f95328d33586ec25c497cc8b8b.camel@infradead.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/2] mmc: let the dma map ops handle bouncing
+Date: Thu, 11 Apr 2019 16:34:30 +0200
+Message-ID: <20190411143430.GA17371@lst.de>
+References: <20190411070948.29564-1-hch@lst.de> <20190411070948.29564-2-hch@lst.de> <CAPDyKFqHrvz_5taNTx7k6Skx=Ox+9XgQHHz0LZyr4QNV9orvRw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <b491bb987c8cc3f95328d33586ec25c497cc8b8b.camel@infradead.org>
+In-Reply-To: <CAPDyKFqHrvz_5taNTx7k6Skx=Ox+9XgQHHz0LZyr4QNV9orvRw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Christoph Hellwig <hch@lst.de>, Russell King <linux@armlinux.org.uk>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 09, 2019 at 05:03:52PM +0300, David Woodhouse wrote:
-> On Tue, 2019-04-09 at 15:59 +0200, Christoph Hellwig wrote:
-> > Hi David and Joerg,
-> > 
-> > do you remember a good reason why intel-iommu is not using per-device
-> > dma_map_ops like the AMD iommu or the various ARM iommus?
-> > 
-> > Right now intel-iommu.c contains a half-asses reimplementation of the
-> > dma direct code for the iommu_no_mapping() case, and it would seem
-> > much nicer to just fall back to that case and not even call into
-> > intel-iommu in that case.
+On Thu, Apr 11, 2019 at 11:00:56AM +0200, Ulf Hansson wrote:
+> >         blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, mq->queue);
+> >         if (mmc_can_erase(card))
+> >                 mmc_queue_setup_discard(mq->queue, card);
+> >
+> > -       blk_queue_bounce_limit(mq->queue, limit);
+> > +       if (!mmc_dev(host)->dma_mask || !*mmc_dev(host)->dma_mask)
+> > +               blk_queue_bounce_limit(mq->queue, BLK_BOUNCE_HIGH);
 > 
-> Other than the complexities about passthrough mode and various "oh shit
-> we forgot to actually test that iommu+gfx actually works before
-> shipping hardware" type of quirks that bypass the IOMMU for certain
-> devices — and retpolines, which I think you already dealt with — no, no
-> good reason that I recall.
+> So this means we are not going to set a bounce limit for the queue, in
+> case we have a dma mask.
+> 
+> Why isn't that needed no more? Whats has changed?
 
-Same here, I looked into this in the past as well, but I can't recall
-any reason this was left in place.
-
-
-	Joerg
+On most architectures it was never needed, the major hold out was x86-32
+with PAE.  In general the dma_mask tells the DMA API layer what is
+supported, and if the physical addressing doesn't support that it has to
+use bounce buffering like swiotlb (or dmabounce on arm32).  A couple
+month ago I finally fixes x86-32 to also properly set up swiotlb,
+and remove the block layerer bounce buffering that wasn't for highmem
+(which is about having a kernel mapping, not addressing), and ISA DMA
+(which is not handled like everything else, but we'll get there).
+But for some reason I missed mmc back then, so mmc right now is the
+only remaining user of address based block layer bouncing.
