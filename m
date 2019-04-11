@@ -1,13 +1,15 @@
 From: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] arm64: dts: qcom: msm8998: Add ANOC1 SMMU node
-Date: Thu, 11 Apr 2019 16:49:38 +0200
-Message-ID: <b10c2b17-4108-ba09-c56f-079761f3493b@free.fr>
+Subject: Re: [PATCH v2 2/2] dt-bindings: arm-smmu: Add qcom,msm8998-smmu-v2
+	binding
+Date: Thu, 11 Apr 2019 16:50:37 +0200
+Message-ID: <9bac2350-46ef-dcc5-2c6c-5cf41ccf1dbf@free.fr>
 References: <edade219-aa77-e7f0-af68-1c192632b2ca@free.fr>
+	<f5029889-6aaa-1315-0225-9b0e46e0697c@free.fr>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <edade219-aa77-e7f0-af68-1c192632b2ca-GANU6spQydw@public.gmane.org>
+In-Reply-To: <f5029889-6aaa-1315-0225-9b0e46e0697c-GANU6spQydw@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,49 +26,24 @@ List-Id: iommu@lists.linux-foundation.org
 
 +robh, +mrutland for DT
 
-On 01/04/2019 17:40, Marc Gonzalez wrote:
+On 01/04/2019 17:44, Marc Gonzalez wrote:
 
-> The MSM8998 ANOC1(*) SMMU services BLSP2, PCIe, UFS, and USB.
-> (*) Aggregate Network-on-Chip #1
-> 
-> Based on the following DTS downstream:
-> https://source.codeaurora.org/quic/la/kernel/msm-4.4/tree/arch/arm/boot/dts/qcom/msm-arm-smmu-8998.dtsi?h=LE.UM.1.3.r3.25#n18
+> Unused at the moment, just future-proofing the DTS.
 > 
 > Signed-off-by: Marc Gonzalez <marc.w.gonzalez-GANU6spQydw@public.gmane.org>
 > ---
-> Changes from v1:
-> 	Split off from "PCIe and AR8151 on APQ8098/MSM8998" series
-> 	Change compatible string to use qcom,msm8998-smmu-v2
-> ---
->  arch/arm64/boot/dts/qcom/msm8998.dtsi | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+>  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> index ef71e8f1d102..f807ea3e2c6e 100644
-> --- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
-> @@ -606,6 +606,21 @@
->  			#thermal-sensor-cells = <1>;
->  		};
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index 3133f3ba7567..75d8487fd86f 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -25,6 +25,7 @@ conditions.
+>                    Qcom SoCs must contain, as below, SoC-specific compatibles
+>                    along with "qcom,smmu-v2":
+>                    "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
+> +                  "qcom,msm8998-smmu-v2", "qcom,smmu-v2",
+>                    "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
 >  
-> +		anoc1_smmu: arm,smmu@1680000 {
-
-As discussed with Arnd, this should probably be anoc1_smmu: iommu@1680000
-
-> +			compatible = "qcom,msm8998-smmu-v2", "qcom,smmu-v2";
-> +			reg = <0x01680000 0x10000>;
-> +			#iommu-cells = <1>;
-> +
-> +			#global-interrupts = <0>;
-> +			interrupts =
-> +				<GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
-> +				<GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
-> +				<GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
-> +				<GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
-> +				<GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
-> +				<GIC_SPI 369 IRQ_TYPE_EDGE_RISING>;
-> +		};
-> +
->  		tcsr_mutex_regs: syscon@1f40000 {
->  			compatible = "syscon";
->  			reg = <0x1f40000 0x20000>;
+>                    Qcom SoCs implementing "arm,mmu-500" must also include,
