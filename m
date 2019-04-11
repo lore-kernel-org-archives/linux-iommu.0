@@ -1,87 +1,90 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 4/4] swiotlb-xen: ensure we have a single callsite for
-	xen_dma_map_page
-Date: Thu, 11 Apr 2019 09:20:00 +0200
-Message-ID: <20190411072000.4306-5-hch@lst.de>
-References: <20190411072000.4306-1-hch@lst.de>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v2 1/6] iommu/ipmmu-vmsa: Link IOMMUs and devices in sysfs
+Date: Thu, 11 Apr 2019 10:10:28 +0200
+Message-ID: <20190411081028.b2wf3nnzx4tw7xdr@verge.net.au>
+References: <20190403182148.18058-1-geert+renesas@glider.be>
+ <20190403182148.18058-2-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190411072000.4306-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190403182148.18058-2-geert+renesas@glider.be>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Refactor the code a bit to make further changes easier.
+On Wed, Apr 03, 2019 at 08:21:43PM +0200, Geert Uytterhoeven wrote:
+> As of commit 7af9a5fdb9e0ca33 ("iommu/ipmmu-vmsa: Use
+> iommu_device_sysfs_add()/remove()"), IOMMU devices show up under
+> /sys/class/iommus/, but their "devices" subdirectories are empty.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- drivers/xen/swiotlb-xen.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+Hi Geert,
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 9a951504dc12..5dcb06fe9667 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -391,13 +391,8 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- 	if (dma_capable(dev, dev_addr, size) &&
- 	    !range_straddles_page_boundary(phys, size) &&
- 		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
--		(swiotlb_force != SWIOTLB_FORCE)) {
--		/* we are not interested in the dma_addr returned by
--		 * xen_dma_map_page, only in the potential cache flushes executed
--		 * by the function. */
--		xen_dma_map_page(dev, page, dev_addr, offset, size, dir, attrs);
--		return dev_addr;
--	}
-+		swiotlb_force != SWIOTLB_FORCE)
-+		goto done;
- 
- 	/*
- 	 * Oh well, have to allocate and map a bounce buffer.
-@@ -410,19 +405,25 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- 		return DMA_MAPPING_ERROR;
- 
- 	dev_addr = xen_phys_to_bus(map);
--	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
--					dev_addr, map & ~PAGE_MASK, size, dir, attrs);
- 
- 	/*
- 	 * Ensure that the address returned is DMA'ble
- 	 */
--	if (dma_capable(dev, dev_addr, size))
--		return dev_addr;
--
--	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
--	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
-+	if (unlikely(!dma_capable(dev, dev_addr, size))) {
-+		swiotlb_tbl_unmap_single(dev, map, size, dir,
-+				attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+		return DMA_MAPPING_ERROR;
-+	}
- 
--	return DMA_MAPPING_ERROR;
-+	page = pfn_to_page(map >> PAGE_SHIFT);
-+	offset = map & ~PAGE_MASK;
-+done:
-+	/*
-+	 * we are not interested in the dma_addr returned by xen_dma_map_page,
-+	 * only in the potential cache flushes executed by the function.
-+	 */
-+	xen_dma_map_page(dev, page, dev_addr, offset, size, dir, attrs);
-+	return dev_addr;
- }
- 
- /*
--- 
-2.20.1
+Should the path be /sys/class/iommu/ (no trailing 's') ?
+
+> Likewise, devices tied to an IOMMU do not have an "iommu" backlink.
+> 
+> Make sure all links are created, on both arm32 and arm64.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> ---
+> v2:
+>   - Add Reviewed-by.
+> ---
+>  drivers/iommu/ipmmu-vmsa.c | 24 +++++++++++++++++-------
+>  1 file changed, 17 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index 9a380c10655e182d..9f2b781e20a0eba6 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -885,27 +885,37 @@ static int ipmmu_init_arm_mapping(struct device *dev)
+>  
+>  static int ipmmu_add_device(struct device *dev)
+>  {
+> +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+>  	struct iommu_group *group;
+> +	int ret;
+>  
+>  	/*
+>  	 * Only let through devices that have been verified in xlate()
+>  	 */
+> -	if (!to_ipmmu(dev))
+> +	if (!mmu)
+>  		return -ENODEV;
+>  
+> -	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA))
+> -		return ipmmu_init_arm_mapping(dev);
+> +	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA)) {
+> +		ret = ipmmu_init_arm_mapping(dev);
+> +		if (ret)
+> +			return ret;
+> +	} else {
+> +		group = iommu_group_get_for_dev(dev);
+> +		if (IS_ERR(group))
+> +			return PTR_ERR(group);
+>  
+> -	group = iommu_group_get_for_dev(dev);
+> -	if (IS_ERR(group))
+> -		return PTR_ERR(group);
+> +		iommu_group_put(group);
+> +	}
+>  
+> -	iommu_group_put(group);
+> +	iommu_device_link(&mmu->iommu, dev);
+>  	return 0;
+>  }
+>  
+>  static void ipmmu_remove_device(struct device *dev)
+>  {
+> +	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+> +
+> +	iommu_device_unlink(&mmu->iommu, dev);
+>  	arm_iommu_detach_device(dev);
+>  	iommu_group_remove_device(dev);
+>  }
+> -- 
+> 2.17.1
+> 
