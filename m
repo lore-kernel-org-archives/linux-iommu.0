@@ -1,76 +1,40 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.1-rc4
-Date: Fri, 12 Apr 2019 15:29:44 +0200
-Message-ID: <20190412132938.GA13555@8bytes.org>
+From: Joe Jin <joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
+	leaving critical section
+Date: Fri, 12 Apr 2019 07:13:59 -0700
+Message-ID: <5bdc3265-e5a4-e8c8-9098-0bba18a66f19@oracle.com>
+References: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="C7zPtVaVf+AK4Oqc"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1555069106-2964-1-git-send-email-dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: haakon.bugge-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
---C7zPtVaVf+AK4Oqc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit 15ade5d2e7775667cf191cf2f94327a4889f8b9d:
-
-  Linux 5.1-rc4 (2019-04-07 14:09:59 -1000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v5.1-rc5
-
-for you to fetch changes up to 3c677d206210f53a4be972211066c0f1cd47fe12:
-
-  iommu/amd: Set exclusion range correctly (2019-04-12 12:59:45 +0200)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v5.1-rc5
-
-	- Fix an AMD IOMMU issue where the driver didn't correctly setup the
-	  exclusion range in the hardware registers, resulting in exclusion
-	  ranges being one page too big. This can cause data corruption of the
-	  address of that last page is used by DMA operations.
-
-----------------------------------------------------------------
-Joerg Roedel (1):
-      iommu/amd: Set exclusion range correctly
-
- drivers/iommu/amd_iommu_init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---C7zPtVaVf+AK4Oqc
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAlywksIACgkQK/BELZcB
-GuO9Uw/+NJ6SBq7Jxex3lfAJ0169Vejne8T92Zkqs+eLpdHSHhBRE+7DxXrpsXi9
-d83Fg6cuPAa2igKNC0tPQI17k68VTCBJxInebb69FaqCHPtm29FGHSFCBE9gC00y
-czDqfqFEkobLdMrP99Yok9RNqeK8TnZnanbieC4eo9rXsIf2t2iE8VwxR8wW9PGT
-EcFf1Xc6/7RkcSvIHE5/Tn1ywmKBJgc9QmO+0OtjpQO/WU9Og2GbgyBWSnQA9MCh
-Drz/91cOKz43sVKzPRoH/qRw3IRqYXEh3W92Y8PL4M1EzqIH/aZ3iLEwJnj1Xylz
-mb6yBJB+PH8+E8iNVe+sSB35obHJkRP4QHWghLC3t24RvAfvTWib1pqFYcI9npr2
-9AMcIB1myvl63qB7Bmwb48RZ9WtvL+oiTm1MyX3V424cgkpa7AAsjL4Bf/vQt7Rk
-1KHTSJ9D5hOCbFCtic74vPcVrPy9KQf8zhyGdLkiSyczR2mDXoy0TL+3LTQ//Y2M
-Lop9bRR4Y/6RLItNFVAej1sgjs9KdNuLoNnePwKt0sjlh+JhUNDtAoYMdVtKYbfL
-5vdVrbDe8OfxZUIydoCm3mrq4TdzAvtTFFOuqvPW8qbywOljDswfmJ9CcFwkBWLt
-BpLQdfMLi56FF7Jnmt4I+su6bfaY33v0JQBWIxp99LG+vWNVuWM=
-=vUzi
------END PGP SIGNATURE-----
-
---C7zPtVaVf+AK4Oqc--
+SSdtIGdvb2QgdG8gaGF2ZSB0aGlzIHBhdGNoLCB3aGljaCBoZWxwcyBpZGVudGlmeSB0aGUgY2F1
+c2Ugb2YgZmFpbHVyZSBpcwpmcmFnbWVudGF0aW9uIG9yIGl0IHJlYWxseSBiZWVuIHVzZWQgdXAu
+CgpPbiA0LzEyLzE5IDQ6MzggQU0sIERvbmdsaSBaaGFuZyB3cm90ZToKPiBXaGVuIHN3aW90bGIg
+aXMgZnVsbCwgdGhlIGtlcm5lbCB3b3VsZCBwcmludCBpb190bGJfdXNlZC4gSG93ZXZlciwgdGhl
+Cj4gcmVzdWx0IG1pZ2h0IGJlIGluYWNjdXJhdGUgYXQgdGhhdCB0aW1lIGJlY2F1c2Ugd2UgaGF2
+ZSBsZWZ0IHRoZSBjcml0aWNhbAo+IHNlY3Rpb24gcHJvdGVjdGVkIGJ5IHNwaW5sb2NrLgo+IAo+
+IFRoZXJlZm9yZSwgd2UgYmFja3VwIHRoZSBpb190bGJfdXNlZCBpbnRvIGxvY2FsIHZhcmlhYmxl
+IGJlZm9yZSBsZWF2aW5nCj4gY3JpdGljYWwgc2VjdGlvbi4KPiAKPiBGaXhlczogODNjYTI1OTQ4
+OTQwICgic3dpb3RsYjogZHVtcCB1c2VkIGFuZCB0b3RhbCBzbG90cyB3aGVuIHN3aW90bGIgYnVm
+ZmVyIGlzIGZ1bGwiKQo+IFN1Z2dlc3RlZC1ieTogSMOla29uIEJ1Z2dlIDxoYWFrb24uYnVnZ2VA
+b3JhY2xlLmNvbT4KPiBTaWduZWQtb2ZmLWJ5OiBEb25nbGkgWmhhbmcgPGRvbmdsaS56aGFuZ0Bv
+cmFjbGUuY29tPgoKUmV2aWV3ZWQtYnk6IEpvZSBKaW4gPGpvZS5qaW5Ab3JhY2xlLmNvbT4gCgpU
+aGFua3MsCkpvZQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
