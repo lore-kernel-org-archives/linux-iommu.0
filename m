@@ -1,40 +1,53 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
-Date: Fri, 12 Apr 2019 13:16:50 +0200
-Message-ID: <20190412111649.GK4518@8bytes.org>
-References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
- <20190409125308.18304-2-thunder.leizhen@huawei.com>
+From: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
+	leaving critical section
+Date: Fri, 12 Apr 2019 19:38:26 +0800
+Message-ID: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190409125308.18304-2-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, haakon.bugge-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 09, 2019 at 08:53:03PM +0800, Zhen Lei wrote:
-> +static int __init iommu_dma_mode_setup(char *str)
-> +{
-> +	if (!str)
-> +		goto fail;
-> +
-> +	if (!strncmp(str, "passthrough", 11))
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
-> +	else if (!strncmp(str, "lazy", 4))
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
-> +	else if (!strncmp(str, "strict", 6))
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
-> +	else
-> +		goto fail;
-> +
-> +	pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
-
-Printing a number is not very desriptive or helpful to the user. Please
-print the name of the mode instead.
-
-
-Regards,
-
-	Joerg
+V2hlbiBzd2lvdGxiIGlzIGZ1bGwsIHRoZSBrZXJuZWwgd291bGQgcHJpbnQgaW9fdGxiX3VzZWQu
+IEhvd2V2ZXIsIHRoZQpyZXN1bHQgbWlnaHQgYmUgaW5hY2N1cmF0ZSBhdCB0aGF0IHRpbWUgYmVj
+YXVzZSB3ZSBoYXZlIGxlZnQgdGhlIGNyaXRpY2FsCnNlY3Rpb24gcHJvdGVjdGVkIGJ5IHNwaW5s
+b2NrLgoKVGhlcmVmb3JlLCB3ZSBiYWNrdXAgdGhlIGlvX3RsYl91c2VkIGludG8gbG9jYWwgdmFy
+aWFibGUgYmVmb3JlIGxlYXZpbmcKY3JpdGljYWwgc2VjdGlvbi4KCkZpeGVzOiA4M2NhMjU5NDg5
+NDAgKCJzd2lvdGxiOiBkdW1wIHVzZWQgYW5kIHRvdGFsIHNsb3RzIHdoZW4gc3dpb3RsYiBidWZm
+ZXIgaXMgZnVsbCIpClN1Z2dlc3RlZC1ieTogSMOla29uIEJ1Z2dlIDxoYWFrb24uYnVnZ2VAb3Jh
+Y2xlLmNvbT4KU2lnbmVkLW9mZi1ieTogRG9uZ2xpIFpoYW5nIDxkb25nbGkuemhhbmdAb3JhY2xl
+LmNvbT4KLS0tCiBrZXJuZWwvZG1hL3N3aW90bGIuYyB8IDcgKysrKystLQogMSBmaWxlIGNoYW5n
+ZWQsIDUgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9rZXJuZWwv
+ZG1hL3N3aW90bGIuYyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5jCmluZGV4IDg1N2U4MjMuLjZmNzYx
+OWMgMTAwNjQ0Ci0tLSBhL2tlcm5lbC9kbWEvc3dpb3RsYi5jCisrKyBiL2tlcm5lbC9kbWEvc3dp
+b3RsYi5jCkBAIC00NTIsNiArNDUyLDcgQEAgcGh5c19hZGRyX3Qgc3dpb3RsYl90YmxfbWFwX3Np
+bmdsZShzdHJ1Y3QgZGV2aWNlICpod2RldiwKIAl1bnNpZ25lZCBsb25nIG1hc2s7CiAJdW5zaWdu
+ZWQgbG9uZyBvZmZzZXRfc2xvdHM7CiAJdW5zaWduZWQgbG9uZyBtYXhfc2xvdHM7CisJdW5zaWdu
+ZWQgbG9uZyB0bXBfaW9fdGxiX3VzZWQ7CiAKIAlpZiAobm9faW90bGJfbWVtb3J5KQogCQlwYW5p
+YygiQ2FuIG5vdCBhbGxvY2F0ZSBTV0lPVExCIGJ1ZmZlciBlYXJsaWVyIGFuZCBjYW4ndCBub3cg
+cHJvdmlkZSB5b3Ugd2l0aCB0aGUgRE1BIGJvdW5jZSBidWZmZXIiKTsKQEAgLTUzOCwxMCArNTM5
+LDEyIEBAIHBoeXNfYWRkcl90IHN3aW90bGJfdGJsX21hcF9zaW5nbGUoc3RydWN0IGRldmljZSAq
+aHdkZXYsCiAJfSB3aGlsZSAoaW5kZXggIT0gd3JhcCk7CiAKIG5vdF9mb3VuZDoKKwl0bXBfaW9f
+dGxiX3VzZWQgPSBpb190bGJfdXNlZDsKKwogCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmlvX3Rs
+Yl9sb2NrLCBmbGFncyk7CiAJaWYgKCEoYXR0cnMgJiBETUFfQVRUUl9OT19XQVJOKSAmJiBwcmlu
+dGtfcmF0ZWxpbWl0KCkpCi0JCWRldl93YXJuKGh3ZGV2LCAic3dpb3RsYiBidWZmZXIgaXMgZnVs
+bCAoc3o6ICV6ZCBieXRlcyksIHRvdGFsICVsdSwgdXNlZCAlbHVcbiIsCi0JCQkgc2l6ZSwgaW9f
+dGxiX25zbGFicywgaW9fdGxiX3VzZWQpOworCQlkZXZfd2Fybihod2RldiwgInN3aW90bGIgYnVm
+ZmVyIGlzIGZ1bGwgKHN6OiAlemQgYnl0ZXMpLCB0b3RhbCAlbHUgKHNsb3RzKSwgdXNlZCAlbHUg
+KHNsb3RzKVxuIiwKKwkJCSBzaXplLCBpb190bGJfbnNsYWJzLCB0bXBfaW9fdGxiX3VzZWQpOwog
+CXJldHVybiBETUFfTUFQUElOR19FUlJPUjsKIGZvdW5kOgogCWlvX3RsYl91c2VkICs9IG5zbG90
+czsKLS0gCjIuNy40CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
