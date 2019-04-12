@@ -4,74 +4,73 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F48C10F0E
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 03:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 296B8C10F0E
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 03:15:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1B9032083E
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 03:15:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EC37E2083E
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 03:15:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="J9hWhQyS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B9032083E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="S0wLQlRQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC37E2083E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EE19D2D10;
-	Fri, 12 Apr 2019 03:15:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3B3F32D0A;
+	Fri, 12 Apr 2019 03:15:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D6CD2D02
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5B7482D02
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Apr 2019 03:14:06 +0000 (UTC)
+	Fri, 12 Apr 2019 03:14:12 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
 	[209.85.208.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0FB507FB
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B70A27FB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Apr 2019 03:14:05 +0000 (UTC)
-Received: by mail-ed1-f68.google.com with SMTP id d1so6997858edd.13
+	Fri, 12 Apr 2019 03:14:11 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id d11so7000659edp.11
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Apr 2019 20:14:05 -0700 (PDT)
+	Thu, 11 Apr 2019 20:14:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references;
-	bh=lcdd/bPKb2XUUzHHJ4Ig8E0QGdqRPLhszQ1yDGy5ZoU=;
-	b=J9hWhQySSKQQY/XopWADH/wdNBV0kNkG//jg+fm5ydk4AhhSp4gHwr1RUmnOT9S+KM
-	QHb3rpEr99GzSx6C8Dpp35JjOjX+qGTA4QuIfW0QOgTuNkCplW3PyO0jEGB6hpN++Erv
-	VyD/WxxOIeNgUM1EpxGp+vagG6TfquBJVcLyc=
+	bh=GbNAXqps9xM35Y1qLf6z4pd1dBjGUVG8C9gvux3yeDo=;
+	b=S0wLQlRQCoHmNALe9CEPyuUjxW8z6XNQk5U5Qa73DDhJc3MnjrlO062YSZPzKc6SQj
+	MiMxfhnzgrfV1b6/wmTVu1D6Rbs8TOabN3fQyCsWo4y8J1fhiHH1m0ykhKdS9pHOBIMo
+	cjFD3wv2x1JSQxhHbdgnMzf0Bvaqdl8ViTF6M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references;
-	bh=lcdd/bPKb2XUUzHHJ4Ig8E0QGdqRPLhszQ1yDGy5ZoU=;
-	b=pfMxvZBLJyj628zMgmEZ02EYo9OzLZ9u+D/h0sa0HqSRAPYxkp1G+fjPEyPLAn02cw
-	7If8mNWqJjIGomwe+Jir7Du8IGqV+alSuWmTpY46PvSI9Rx9Tod561WCqCQFqY5RLCxw
-	uVS9pGn7JrnxkfY7jgzPwBwPtcPmP0PMAvgeuHrtsVicfAB6f7Gf/W7wwnRFelT+YyxE
-	Y/Pm+VAMhSAVe1Mnl91Yuynthd4BBs6pOEkQnwghjigaNqQUIjcJQT0P2ZiV4T+3CCAY
-	7pezv3FnitkiT7GH+Q+Yl7vc7EtqGiD+WbAgGdK4QEMe55ppeDXHkr0WqiSlMpRI58LO
-	50qA==
-X-Gm-Message-State: APjAAAVFfaT+Tgh+vykClpU/o8Yh/b36kFNBjp+eU+cD5uLBeSOkbXP/
-	Xgel0WpGd4ilXop5htvDzhFwMw==
-X-Google-Smtp-Source: APXvYqyF17DtGNMMVaBx6A9eheF/VVXMsZT2lLxxTqgX/YA0cIoSQ3aE7MBfBF9RiDuoupVXJBcmfQ==
-X-Received: by 2002:a17:906:d72:: with SMTP id
-	s18mr18238050ejh.111.1555038844689; 
-	Thu, 11 Apr 2019 20:14:04 -0700 (PDT)
+	bh=GbNAXqps9xM35Y1qLf6z4pd1dBjGUVG8C9gvux3yeDo=;
+	b=XGO3KpgZsRW12MdWyJjaXHsEppaDznrhK4nwKETtipHjWOiUycbawHev+/RbWthfkI
+	i9iw53mQplmvMG2/j3UtcwiaHPyN42XCPPCq7RJyROasfHuR2D6/66UCAKPhP+k7pHYx
+	jnX0vA/0PxrwF48reUoHiSE/9VQmoraCm8YVzZMBVrBEKxphTSxtQ0E8e83tAmdqG5C8
+	gjz+fp3IqywCmR8ejzsYC1ateRlTw1xHABmwnJ+IJRossDr32aQHF1BZRjBkTY7ZYLgh
+	/X1f7er/tWJ42EHPO5K9qHVJROvRxHGDniGF8f3A8lSCdtD1//G4Y/RACUBZF4nFCo6d
+	otmA==
+X-Gm-Message-State: APjAAAVrYwXSBgOAV29kGLlAnarkIIPRjfhU2TG9G81SDr5/U+//MCcy
+	zCc3E4idEUEZ9R6hIL+k+HCI9Q==
+X-Google-Smtp-Source: APXvYqzHe6MH7gX+enP6X3wR/O1UQC86FkJqmx4BItXItquiOmea3XDTEJQDg7fyInkPPZiGqMYLDg==
+X-Received: by 2002:a17:906:6a12:: with SMTP id
+	o18mr29919543ejr.204.1555038850344; 
+	Thu, 11 Apr 2019 20:14:10 -0700 (PDT)
 Received: from mannams-OptiPlex-7010.dhcp.broadcom.net ([192.19.234.250])
 	by smtp.gmail.com with ESMTPSA id
-	c7sm11533352edt.70.2019.04.11.20.13.59
+	c7sm11533352edt.70.2019.04.11.20.14.05
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-	Thu, 11 Apr 2019 20:14:04 -0700 (PDT)
+	Thu, 11 Apr 2019 20:14:09 -0700 (PDT)
 To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
 	Joerg Roedel <joro@8bytes.org>,
 	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org,
 	Ray Jui <rjui@broadcom.com>
-Subject: [PATCH v4 2/3] iommu/dma: Reserve IOVA for PCIe inaccessible DMA
-	address
-Date: Fri, 12 Apr 2019 08:43:34 +0530
-Message-Id: <1555038815-31916-3-git-send-email-srinath.mannam@broadcom.com>
+Subject: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource entries to
+	host bridge
+Date: Fri, 12 Apr 2019 08:43:35 +0530
+Message-Id: <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
 References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
@@ -97,61 +96,114 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190412031334.TO3FjuZ0TsR9xQEkphDrk4fuiMmH-CILYXSJV9SdeLY@z>
+Message-ID: <20190412031335.lu5iCVR2bd-pG0mm2btqX9Ff-PcXj5nhEPnLqzQnLEk@z>
 
-dma_ranges field of PCI host bridge structure has resource entries in
-sorted order of address range given through dma-ranges DT property. This
-list is the accessible DMA address range. So that this resource list will
-be processed and reserve IOVA address to the inaccessible address holes in
-the list.
+IPROC host has the limitation that it can use only those address ranges
+given by dma-ranges property as inbound address. So that the memory
+address holes in dma-ranges should be reserved to allocate as DMA address.
 
-This method is similar to PCI IO resources address ranges reserving in
-IOMMU for each EP connected to host bridge.
+Inbound address of host accessed by PCIe devices will not be translated
+before it comes to IOMMU or directly to PE. But the limitation of this
+host is, access to few address ranges are ignored. So that IOVA ranges
+for these address ranges have to be reserved.
+
+All allowed address ranges are listed in dma-ranges DT parameter. These
+address ranges are converted as resource entries and listed in sorted
+order add added to dma_ranges list of PCI host bridge structure.
+
+Ex:
+dma-ranges = < \
+  0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
+  0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+  0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+
+In the above example of dma-ranges, memory address from
+0x0 - 0x80000000,
+0x100000000 - 0x800000000,
+0x1000000000 - 0x8000000000 and
+0x10000000000 - 0xffffffffffffffff.
+are not allowed to use as inbound addresses.
 
 Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
 Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
 Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
 ---
- drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d19f3d6..fb42d7c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -212,6 +212,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
- 	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
- 	struct resource_entry *window;
- 	unsigned long lo, hi;
-+	phys_addr_t start = 0, end;
- 
- 	resource_list_for_each_entry(window, &bridge->windows) {
- 		if (resource_type(window->res) != IORESOURCE_MEM)
-@@ -221,6 +222,24 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
- 		hi = iova_pfn(iovad, window->res->end - window->offset);
- 		reserve_iova(iovad, lo, hi);
- 	}
-+
-+	/* Get reserved DMA windows from host bridge */
-+	resource_list_for_each_entry(window, &bridge->dma_ranges) {
-+		end = window->res->start - window->offset;
-+resv_iova:
-+		if (end - start) {
-+			lo = iova_pfn(iovad, start);
-+			hi = iova_pfn(iovad, end);
-+			reserve_iova(iovad, lo, hi);
-+		}
-+		start = window->res->end - window->offset + 1;
-+		/* If window is last entry */
-+		if (window->node.next == &bridge->dma_ranges &&
-+		    end != DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE)) {
-+			end = DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE);
-+			goto resv_iova;
-+		}
-+	}
+diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
+index c20fd6b..94ba5c0 100644
+--- a/drivers/pci/controller/pcie-iproc.c
++++ b/drivers/pci/controller/pcie-iproc.c
+@@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
+ 	return ret;
  }
  
- static int iova_reserve_iommu_regions(struct device *dev,
++static int
++iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
++			 struct of_pci_range *range)
++{
++	struct resource *res;
++	struct resource_entry *entry, *tmp;
++	struct list_head *head = resources;
++
++	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
++	if (!res)
++		return -ENOMEM;
++
++	resource_list_for_each_entry(tmp, resources) {
++		if (tmp->res->start < range->cpu_addr)
++			head = &tmp->node;
++	}
++
++	res->start = range->cpu_addr;
++	res->end = res->start + range->size - 1;
++
++	entry = resource_list_create_entry(res, 0);
++	if (!entry)
++		return -ENOMEM;
++
++	entry->offset = res->start - range->cpu_addr;
++	resource_list_add(entry, head);
++
++	return 0;
++}
++
+ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+ {
++	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
+ 	struct of_pci_range range;
+ 	struct of_pci_range_parser parser;
+ 	int ret;
++	LIST_HEAD(resources);
+ 
+ 	/* Get the dma-ranges from DT */
+ 	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
+@@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+ 		return ret;
+ 
+ 	for_each_of_pci_range(&parser, &range) {
++		ret = iproc_pcie_add_dma_range(pcie->dev,
++					       &resources,
++					       &range);
++		if (ret)
++			goto out;
+ 		/* Each range entry corresponds to an inbound mapping region */
+ 		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
+ 		if (ret)
+-			return ret;
++			goto out;
+ 	}
+ 
++	list_splice_init(&resources, &host->dma_ranges);
++
+ 	return 0;
++out:
++	pci_free_resource_list(&resources);
++	return ret;
+ }
+ 
+ static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
 -- 
 2.7.4
 
