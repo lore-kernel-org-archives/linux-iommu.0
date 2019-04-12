@@ -6,54 +6,54 @@ X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,UNWANTED_LANGUAGE_BODY,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DE2C10F0E
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 15:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B373C10F14
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 15:30:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 43D1B2171F
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 15:30:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6D84C21872
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 15:30:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="QQI9uJli"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43D1B2171F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZIdGPlbQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D84C21872
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 170E5DD9;
-	Fri, 12 Apr 2019 15:30:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 47726DDE;
+	Fri, 12 Apr 2019 15:30:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8AB38DD4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 093AFDD4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Apr 2019 15:30:08 +0000 (UTC)
+	Fri, 12 Apr 2019 15:30:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3BC9687C
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EE469872
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Apr 2019 15:30:08 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for 5.1
+	Fri, 12 Apr 2019 15:30:07 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v5.1-rc4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555083008;
-	bh=1tOsJ3H5oRJ+mSd5NRSdKnvjzqdv+pwa0IGk5X8RX6g=;
+	s=default; t=1555083007;
+	bh=oiV2TF0Cayljh36UB+zkBeste5mIsG5MpuOTV8JQfKQ=;
 	h=From:In-Reply-To:References:Date:To:Cc:From;
-	b=QQI9uJliauPicbBqWNXhTKggcITNgHvsRNJ6Bj+axe4hr7ezTLJtEXWiAltFc3qEL
-	kgi640n2zR7ROcFf5sDr2dQwtJFdQOivu0jWSGHdBFs53JtmhislDwVl5SonQ9DnG9
-	PMUSKORXf876eVA6xhrdGRy4Mknfj52JmAxYYa6U=
+	b=ZIdGPlbQTcaWPexS1EZjg74qqz+cO9RUfsLeHqxtiHEpIPc5GQrk3OzaVqV8iYhWa
+	2ikp9b9ZyoSeJfEo30uPMcCxxeQffJv7eAhVGgIH/w7jY/iqn0b+x4CbH8WCFJywpg
+	EuiVCou/jaw6bnETE52xbtK+4hkmAnrVrEGWJyD4=
 From: pr-tracker-bot@kernel.org
-In-Reply-To: <20190412151901.GA14497@infradead.org>
-References: <20190412151901.GA14497@infradead.org>
+In-Reply-To: <20190412132938.GA13555@8bytes.org>
+References: <20190412132938.GA13555@8bytes.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20190412151901.GA14497@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
-	tags/dma-mapping-5.1-1
-X-PR-Tracked-Commit-Id: 8c5165430c0194df92369162d1c7f53f8672baa5
+X-PR-Tracked-Message-Id: <20190412132938.GA13555@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+	tags/iommu-fix-v5.1-rc5
+X-PR-Tracked-Commit-Id: 3c677d206210f53a4be972211066c0f1cd47fe12
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8ee15f3248660f85102a47410079d408615723d4
+X-PR-Merge-Commit-Id: 4876191cbe2a4702b0067d4156e1d8648ac36801
 Message-Id:
- <155508300802.31973.10103032526645452851.pr-tracker-bot@kernel.org>
-Date: Fri, 12 Apr 2019 15:30:08 +0000
-To: Christoph Hellwig <hch@infradead.org>
+ <155508300772.31973.10115471264720043552.pr-tracker-bot@kernel.org>
+Date: Fri, 12 Apr 2019 15:30:07 +0000
+To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux-foundation.org,
 	Linus Torvalds <torvalds@linux-foundation.org>,
 	linux-kernel@vger.kernel.org
@@ -74,14 +74,14 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190412153008.NxfzTxQ0EjbrdueBxQ5MXypY6EZfVo8I3QzHaTlp_2I@z>
+Message-ID: <20190412153007.9ElzHMuxbr54yOtcWWMxL-E86xWb9bN5OxDc6K-DUmE@z>
 
-The pull request you sent on Fri, 12 Apr 2019 17:19:01 +0200:
+The pull request you sent on Fri, 12 Apr 2019 15:29:44 +0200:
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.1-1
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v5.1-rc5
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8ee15f3248660f85102a47410079d408615723d4
+https://git.kernel.org/torvalds/c/4876191cbe2a4702b0067d4156e1d8648ac36801
 
 Thank you!
 
