@@ -1,53 +1,214 @@
-From: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
-	leaving critical section
-Date: Fri, 12 Apr 2019 19:38:26 +0800
-Message-ID: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
+Date: Fri, 12 Apr 2019 11:26:57 +0100
+Message-ID: <010d3cbd-ef74-ad21-c735-0af8b18955e6__47663.5148793989$1555069020$gmane$org@huawei.com>
+References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
+ <20190409125308.18304-2-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
-Cc: dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, haakon.bugge-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <20190409125308.18304-2-thunder.leizhen@huawei.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will
+ Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael
+ Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-ke>
+Cc: Hanjun Guo <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-V2hlbiBzd2lvdGxiIGlzIGZ1bGwsIHRoZSBrZXJuZWwgd291bGQgcHJpbnQgaW9fdGxiX3VzZWQu
-IEhvd2V2ZXIsIHRoZQpyZXN1bHQgbWlnaHQgYmUgaW5hY2N1cmF0ZSBhdCB0aGF0IHRpbWUgYmVj
-YXVzZSB3ZSBoYXZlIGxlZnQgdGhlIGNyaXRpY2FsCnNlY3Rpb24gcHJvdGVjdGVkIGJ5IHNwaW5s
-b2NrLgoKVGhlcmVmb3JlLCB3ZSBiYWNrdXAgdGhlIGlvX3RsYl91c2VkIGludG8gbG9jYWwgdmFy
-aWFibGUgYmVmb3JlIGxlYXZpbmcKY3JpdGljYWwgc2VjdGlvbi4KCkZpeGVzOiA4M2NhMjU5NDg5
-NDAgKCJzd2lvdGxiOiBkdW1wIHVzZWQgYW5kIHRvdGFsIHNsb3RzIHdoZW4gc3dpb3RsYiBidWZm
-ZXIgaXMgZnVsbCIpClN1Z2dlc3RlZC1ieTogSMOla29uIEJ1Z2dlIDxoYWFrb24uYnVnZ2VAb3Jh
-Y2xlLmNvbT4KU2lnbmVkLW9mZi1ieTogRG9uZ2xpIFpoYW5nIDxkb25nbGkuemhhbmdAb3JhY2xl
-LmNvbT4KLS0tCiBrZXJuZWwvZG1hL3N3aW90bGIuYyB8IDcgKysrKystLQogMSBmaWxlIGNoYW5n
-ZWQsIDUgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9rZXJuZWwv
-ZG1hL3N3aW90bGIuYyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5jCmluZGV4IDg1N2U4MjMuLjZmNzYx
-OWMgMTAwNjQ0Ci0tLSBhL2tlcm5lbC9kbWEvc3dpb3RsYi5jCisrKyBiL2tlcm5lbC9kbWEvc3dp
-b3RsYi5jCkBAIC00NTIsNiArNDUyLDcgQEAgcGh5c19hZGRyX3Qgc3dpb3RsYl90YmxfbWFwX3Np
-bmdsZShzdHJ1Y3QgZGV2aWNlICpod2RldiwKIAl1bnNpZ25lZCBsb25nIG1hc2s7CiAJdW5zaWdu
-ZWQgbG9uZyBvZmZzZXRfc2xvdHM7CiAJdW5zaWduZWQgbG9uZyBtYXhfc2xvdHM7CisJdW5zaWdu
-ZWQgbG9uZyB0bXBfaW9fdGxiX3VzZWQ7CiAKIAlpZiAobm9faW90bGJfbWVtb3J5KQogCQlwYW5p
-YygiQ2FuIG5vdCBhbGxvY2F0ZSBTV0lPVExCIGJ1ZmZlciBlYXJsaWVyIGFuZCBjYW4ndCBub3cg
-cHJvdmlkZSB5b3Ugd2l0aCB0aGUgRE1BIGJvdW5jZSBidWZmZXIiKTsKQEAgLTUzOCwxMCArNTM5
-LDEyIEBAIHBoeXNfYWRkcl90IHN3aW90bGJfdGJsX21hcF9zaW5nbGUoc3RydWN0IGRldmljZSAq
-aHdkZXYsCiAJfSB3aGlsZSAoaW5kZXggIT0gd3JhcCk7CiAKIG5vdF9mb3VuZDoKKwl0bXBfaW9f
-dGxiX3VzZWQgPSBpb190bGJfdXNlZDsKKwogCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmlvX3Rs
-Yl9sb2NrLCBmbGFncyk7CiAJaWYgKCEoYXR0cnMgJiBETUFfQVRUUl9OT19XQVJOKSAmJiBwcmlu
-dGtfcmF0ZWxpbWl0KCkpCi0JCWRldl93YXJuKGh3ZGV2LCAic3dpb3RsYiBidWZmZXIgaXMgZnVs
-bCAoc3o6ICV6ZCBieXRlcyksIHRvdGFsICVsdSwgdXNlZCAlbHVcbiIsCi0JCQkgc2l6ZSwgaW9f
-dGxiX25zbGFicywgaW9fdGxiX3VzZWQpOworCQlkZXZfd2Fybihod2RldiwgInN3aW90bGIgYnVm
-ZmVyIGlzIGZ1bGwgKHN6OiAlemQgYnl0ZXMpLCB0b3RhbCAlbHUgKHNsb3RzKSwgdXNlZCAlbHUg
-KHNsb3RzKVxuIiwKKwkJCSBzaXplLCBpb190bGJfbnNsYWJzLCB0bXBfaW9fdGxiX3VzZWQpOwog
-CXJldHVybiBETUFfTUFQUElOR19FUlJPUjsKIGZvdW5kOgogCWlvX3RsYl91c2VkICs9IG5zbG90
-czsKLS0gCjIuNy40CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
-aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 09/04/2019 13:53, Zhen Lei wrote:
+> Currently the IOMMU dma contains 3 modes: passthrough, lazy, strict. The
+> passthrough mode bypass the IOMMU, the lazy mode defer the invalidation
+> of hardware TLBs, and the strict mode invalidate IOMMU hardware TLBs
+> synchronously. The three modes are mutually exclusive. But the current
+> boot options are confused, such as: iommu.passthrough and iommu.strict,
+> because they are no good to be coexist. So add iommu.dma_mode.
+>
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 19 ++++++++
+>  drivers/iommu/iommu.c                           | 59 ++++++++++++++++++++-----
+>  include/linux/iommu.h                           |  5 +++
+>  3 files changed, 71 insertions(+), 12 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 2b8ee90bb64470d..f7766f8ac8b9084 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1811,6 +1811,25 @@
+>  			1 - Bypass the IOMMU for DMA.
+>  			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+>
+> +	iommu.dma_mode= Configure default dma mode. if unset, use the value
+> +			of CONFIG_IOMMU_DEFAULT_PASSTHROUGH to determine
+> +			passthrough or not.
+
+To me, for unset it's unclear what we default to. So if unset and also 
+CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set, do we get lazy or strict 
+mode? (note: I'm ignoring backwards compatibility and interaction of 
+iommu.strict and .passthorugh also, more below).
+
+Could we considering introducing config DEFAULT_IOMMU_DMA_MODE, similar 
+to DEFAULT_IOSCHED?
+
+> +			Note: For historical reasons, ARM64/S390/PPC/X86 have
+> +			their specific options. Currently, only ARM64 support
+> +			this boot option, and hope other ARCHs to use this as
+> +			generic boot option.
+> +		passthrough
+> +			Configure DMA to bypass the IOMMU by default.
+> +		lazy
+> +			Request that DMA unmap operations use deferred
+> +			invalidation of hardware TLBs, for increased
+> +			throughput at the cost of reduced device isolation.
+> +			Will fall back to strict mode if not supported by
+> +			the relevant IOMMU driver.
+> +		strict
+> +			DMA unmap operations invalidate IOMMU hardware TLBs
+> +			synchronously.
+> +
+>  	io7=		[HW] IO7 for Marvel based alpha systems
+>  			See comment before marvel_specify_io7 in
+>  			arch/alpha/kernel/core_marvel.c.
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 109de67d5d727c2..df1ce8e22385b48 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -38,12 +38,13 @@
+>
+>  static struct kset *iommu_group_kset;
+>  static DEFINE_IDA(iommu_group_ida);
+> +
+>  #ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
+> -static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
+> +#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_PASSTHROUGH
+>  #else
+> -static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+> +#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_STRICT
+>  #endif
+> -static bool iommu_dma_strict __read_mostly = true;
+> +static int iommu_default_dma_mode __read_mostly = IOMMU_DEFAULT_DMA_MODE;
+>
+>  struct iommu_callback_data {
+>  	const struct iommu_ops *ops;
+> @@ -147,20 +148,51 @@ static int __init iommu_set_def_domain_type(char *str)
+>  	int ret;
+>
+>  	ret = kstrtobool(str, &pt);
+> -	if (ret)
+> -		return ret;
+> +	if (!ret && pt)
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
+>
+> -	iommu_def_domain_type = pt ? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
+> -	return 0;
+> +	return ret;
+>  }
+>  early_param("iommu.passthrough", iommu_set_def_domain_type);
+>
+>  static int __init iommu_dma_setup(char *str)
+>  {
+> -	return kstrtobool(str, &iommu_dma_strict);
+> +	bool strict;
+> +	int ret;
+> +
+> +	ret = kstrtobool(str, &strict);
+> +	if (!ret)
+> +		iommu_default_dma_mode = strict ?
+> +				IOMMU_DMA_MODE_STRICT : IOMMU_DMA_MODE_LAZY;
+> +
+> +	return ret;
+>  }
+>  early_param("iommu.strict", iommu_dma_setup);
+>
+> +static int __init iommu_dma_mode_setup(char *str)
+> +{
+> +	if (!str)
+> +		goto fail;
+> +
+> +	if (!strncmp(str, "passthrough", 11))
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
+> +	else if (!strncmp(str, "lazy", 4))
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
+> +	else if (!strncmp(str, "strict", 6))
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
+> +	else
+> +		goto fail;
+> +
+> +	pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
+
+What happens if the cmdline option iommu.dma_mode is passed multiple 
+times? We get mutliple - possibily conflicting - prints, right?
+
+And do we need to have backwards compatibility, such that the setting 
+for iommu.strict or iommu.passthrough trumps iommu.dma_mode, regardless 
+of order?
+
+> +
+> +	return 0;
+> +
+> +fail:
+> +	pr_debug("Boot option iommu.dma_mode is incorrect, ignored\n");
+> +	return -EINVAL;
+> +}
+> +early_param("iommu.dma_mode", iommu_dma_mode_setup);
+> +
+>  static ssize_t iommu_group_attr_show(struct kobject *kobj,
+>  				     struct attribute *__attr, char *buf)
+>  {
+> @@ -1102,14 +1134,17 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+>  	 */
+>  	if (!group->default_domain) {
+>  		struct iommu_domain *dom;
+> +		int def_domain_type =
+> +			(iommu_default_dma_mode == IOMMU_DMA_MODE_PASSTHROUGH)
+> +			? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
+>
+> -		dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
+> -		if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
+> +		dom = __iommu_domain_alloc(dev->bus, def_domain_type);
+> +		if (!dom && def_domain_type != IOMMU_DOMAIN_DMA) {
+>  			dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
+>  			if (dom) {
+>  				dev_warn(dev,
+>  					 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
+> -					 iommu_def_domain_type);
+> +					 def_domain_type);
+>  			}
+>  		}
+>
+> @@ -1117,7 +1152,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+>  		if (!group->domain)
+>  			group->domain = dom;
+>
+> -		if (dom && !iommu_dma_strict) {
+> +		if (dom && (iommu_default_dma_mode == IOMMU_DMA_MODE_LAZY)) {
+>  			int attr = 1;
+>  			iommu_domain_set_attr(dom,
+>  					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ffbbc7e39ceeba3..c3f4e3416176496 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -42,6 +42,11 @@
+>   */
+>  #define IOMMU_PRIV	(1 << 5)
+>
+> +
+> +#define IOMMU_DMA_MODE_STRICT		0x0
+> +#define IOMMU_DMA_MODE_LAZY		0x1
+> +#define IOMMU_DMA_MODE_PASSTHROUGH	0x2
+> +
+>  struct iommu_ops;
+>  struct iommu_group;
+>  struct bus_type;
+>
