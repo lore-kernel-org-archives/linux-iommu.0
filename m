@@ -1,213 +1,41 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
-Date: Fri, 12 Apr 2019 11:26:57 +0100
-Message-ID: <010d3cbd-ef74-ad21-c735-0af8b18955e6__19374.7130966344$1555064864$gmane$org@huawei.com>
-References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
-	<20190409125308.18304-2-thunder.leizhen@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190409125308.18304-2-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will
-	Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sebastian Ott <sebott-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Heiko Carstens <heiko.carstens-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael
-	Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-k>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu/amd: Set exclusion range correctly
+Date: Fri, 12 Apr 2019 12:50:31 +0200
+Message-ID: <20190412105031.27517-1-joro@8bytes.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/04/2019 13:53, Zhen Lei wrote:
-> Currently the IOMMU dma contains 3 modes: passthrough, lazy, strict. The
-> passthrough mode bypass the IOMMU, the lazy mode defer the invalidation
-> of hardware TLBs, and the strict mode invalidate IOMMU hardware TLBs
-> synchronously. The three modes are mutually exclusive. But the current
-> boot options are confused, such as: iommu.passthrough and iommu.strict,
-> because they are no good to be coexist. So add iommu.dma_mode.
->
-> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  Documentation/admin-guide/kernel-parameters.txt | 19 ++++++++
->  drivers/iommu/iommu.c                           | 59 ++++++++++++++++++++-----
->  include/linux/iommu.h                           |  5 +++
->  3 files changed, 71 insertions(+), 12 deletions(-)
->
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 2b8ee90bb64470d..f7766f8ac8b9084 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1811,6 +1811,25 @@
->  			1 - Bypass the IOMMU for DMA.
->  			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
->
-> +	iommu.dma_mode= Configure default dma mode. if unset, use the value
-> +			of CONFIG_IOMMU_DEFAULT_PASSTHROUGH to determine
-> +			passthrough or not.
+From: Joerg Roedel <jroedel@suse.de>
 
-To me, for unset it's unclear what we default to. So if unset and also 
-CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set, do we get lazy or strict 
-mode? (note: I'm ignoring backwards compatibility and interaction of 
-iommu.strict and .passthorugh also, more below).
+The exlcusion range limit register needs to contain the
+base-address of the last page that is part of the range, as
+bits 0-11 of this register are treated as 0xfff by the
+hardware for comparisons.
 
-Could we considering introducing config DEFAULT_IOMMU_DMA_MODE, similar 
-to DEFAULT_IOSCHED?
+So correctly set the exclusion range in the hardware to the
+last page which is _in_ the range.
 
-> +			Note: For historical reasons, ARM64/S390/PPC/X86 have
-> +			their specific options. Currently, only ARM64 support
-> +			this boot option, and hope other ARCHs to use this as
-> +			generic boot option.
-> +		passthrough
-> +			Configure DMA to bypass the IOMMU by default.
-> +		lazy
-> +			Request that DMA unmap operations use deferred
-> +			invalidation of hardware TLBs, for increased
-> +			throughput at the cost of reduced device isolation.
-> +			Will fall back to strict mode if not supported by
-> +			the relevant IOMMU driver.
-> +		strict
-> +			DMA unmap operations invalidate IOMMU hardware TLBs
-> +			synchronously.
-> +
->  	io7=		[HW] IO7 for Marvel based alpha systems
->  			See comment before marvel_specify_io7 in
->  			arch/alpha/kernel/core_marvel.c.
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 109de67d5d727c2..df1ce8e22385b48 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -38,12 +38,13 @@
->
->  static struct kset *iommu_group_kset;
->  static DEFINE_IDA(iommu_group_ida);
-> +
->  #ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
-> -static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
-> +#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_PASSTHROUGH
->  #else
-> -static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
-> +#define IOMMU_DEFAULT_DMA_MODE		IOMMU_DMA_MODE_STRICT
->  #endif
-> -static bool iommu_dma_strict __read_mostly = true;
-> +static int iommu_default_dma_mode __read_mostly = IOMMU_DEFAULT_DMA_MODE;
->
->  struct iommu_callback_data {
->  	const struct iommu_ops *ops;
-> @@ -147,20 +148,51 @@ static int __init iommu_set_def_domain_type(char *str)
->  	int ret;
->
->  	ret = kstrtobool(str, &pt);
-> -	if (ret)
-> -		return ret;
-> +	if (!ret && pt)
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
->
-> -	iommu_def_domain_type = pt ? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
-> -	return 0;
-> +	return ret;
->  }
->  early_param("iommu.passthrough", iommu_set_def_domain_type);
->
->  static int __init iommu_dma_setup(char *str)
->  {
-> -	return kstrtobool(str, &iommu_dma_strict);
-> +	bool strict;
-> +	int ret;
-> +
-> +	ret = kstrtobool(str, &strict);
-> +	if (!ret)
-> +		iommu_default_dma_mode = strict ?
-> +				IOMMU_DMA_MODE_STRICT : IOMMU_DMA_MODE_LAZY;
-> +
-> +	return ret;
->  }
->  early_param("iommu.strict", iommu_dma_setup);
->
-> +static int __init iommu_dma_mode_setup(char *str)
-> +{
-> +	if (!str)
-> +		goto fail;
-> +
-> +	if (!strncmp(str, "passthrough", 11))
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
-> +	else if (!strncmp(str, "lazy", 4))
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
-> +	else if (!strncmp(str, "strict", 6))
-> +		iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
-> +	else
-> +		goto fail;
-> +
-> +	pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
+Fixes: b2026aa2dce44 ('x86, AMD IOMMU: add functions for programming IOMMU MMIO space')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-What happens if the cmdline option iommu.dma_mode is passed multiple 
-times? We get mutliple - possibily conflicting - prints, right?
-
-And do we need to have backwards compatibility, such that the setting 
-for iommu.strict or iommu.passthrough trumps iommu.dma_mode, regardless 
-of order?
-
-> +
-> +	return 0;
-> +
-> +fail:
-> +	pr_debug("Boot option iommu.dma_mode is incorrect, ignored\n");
-> +	return -EINVAL;
-> +}
-> +early_param("iommu.dma_mode", iommu_dma_mode_setup);
-> +
->  static ssize_t iommu_group_attr_show(struct kobject *kobj,
->  				     struct attribute *__attr, char *buf)
->  {
-> @@ -1102,14 +1134,17 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->  	 */
->  	if (!group->default_domain) {
->  		struct iommu_domain *dom;
-> +		int def_domain_type =
-> +			(iommu_default_dma_mode == IOMMU_DMA_MODE_PASSTHROUGH)
-> +			? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
->
-> -		dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
-> -		if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
-> +		dom = __iommu_domain_alloc(dev->bus, def_domain_type);
-> +		if (!dom && def_domain_type != IOMMU_DOMAIN_DMA) {
->  			dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
->  			if (dom) {
->  				dev_warn(dev,
->  					 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
-> -					 iommu_def_domain_type);
-> +					 def_domain_type);
->  			}
->  		}
->
-> @@ -1117,7 +1152,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->  		if (!group->domain)
->  			group->domain = dom;
->
-> -		if (dom && !iommu_dma_strict) {
-> +		if (dom && (iommu_default_dma_mode == IOMMU_DMA_MODE_LAZY)) {
->  			int attr = 1;
->  			iommu_domain_set_attr(dom,
->  					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ffbbc7e39ceeba3..c3f4e3416176496 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -42,6 +42,11 @@
->   */
->  #define IOMMU_PRIV	(1 << 5)
->
-> +
-> +#define IOMMU_DMA_MODE_STRICT		0x0
-> +#define IOMMU_DMA_MODE_LAZY		0x1
-> +#define IOMMU_DMA_MODE_PASSTHROUGH	0x2
-> +
->  struct iommu_ops;
->  struct iommu_group;
->  struct bus_type;
->
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 1b1378619fc9..ff40ba758cf3 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -359,7 +359,7 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
+ static void iommu_set_exclusion_range(struct amd_iommu *iommu)
+ {
+ 	u64 start = iommu->exclusion_start & PAGE_MASK;
+-	u64 limit = (start + iommu->exclusion_length) & PAGE_MASK;
++	u64 limit = (start + iommu->exclusion_length - 1) & PAGE_MASK;
+ 	u64 entry;
+ 
+ 	if (!iommu->exclusion_start)
+-- 
+2.16.4
