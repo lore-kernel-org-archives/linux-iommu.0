@@ -1,50 +1,55 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH 1/1] swiotlb: dump used and total slots when swiotlb
- buffer is full
-Date: Thu, 11 Apr 2019 15:55:28 -0400
-Message-ID: <20190411195528.GB6033@char.us.oracle.com>
-References: <1554426925-2431-1-git-send-email-dongli.zhang@oracle.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v8 0/9] vfio/mdev: IOMMU aware mediated device
+Date: Fri, 12 Apr 2019 09:36:49 +0800
+Message-ID: <0beedc65-fc26-5f17-6f0f-6e0c0aa022a3@linux.intel.com>
+References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+ <20190411151917.GA29810@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1554426925-2431-1-git-send-email-dongli.zhang@oracle.com>
+In-Reply-To: <20190411151917.GA29810@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dongli Zhang <dongli.zhang@oracle.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, joe.jin@oracle.com, srinivas.eeda@oracle.com
+To: Joerg Roedel <joro@8bytes.org>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 05, 2019 at 09:15:25AM +0800, Dongli Zhang wrote:
-> So far the kernel only prints the requested size if swiotlb buffer if full.
-> It is not possible to know whether it is simply an out of buffer, or it is
-> because swiotlb cannot allocate buffer with the requested size due to
-> fragmentation.
-> 
-> As 'io_tlb_used' is available since commit 71602fe6d4e9 ("swiotlb: add
-> debugfs to track swiotlb buffer usage"), both 'io_tlb_used' and
-> 'io_tlb_nslabs' are printed when swiotlb buffer is full.
-> 
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+Hi Joerg,
 
-Applied. Will send git pull shortly.
-> ---
->  kernel/dma/swiotlb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+On 4/11/19 11:19 PM, Joerg Roedel wrote:
+> Hi Lu Baolu,
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 53012db..3f43b37 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -540,7 +540,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
->  not_found:
->  	spin_unlock_irqrestore(&io_tlb_lock, flags);
->  	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
-> -		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
-> +		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes), total %lu, used %lu\n",
-> +			 size, io_tlb_nslabs, io_tlb_used);
->  	return DMA_MAPPING_ERROR;
->  found:
->  	io_tlb_used += nslots;
-> -- 
-> 2.7.4
+> thanks for these patches!
 > 
+> On Mon, Mar 25, 2019 at 09:30:27AM +0800, Lu Baolu wrote:
+>> Lu Baolu (9):
+>>    iommu: Add APIs for multiple domains per device
+>>    iommu/vt-d: Make intel_iommu_enable_pasid() more generic
+>>    iommu/vt-d: Add per-device IOMMU feature ops entries
+>>    iommu/vt-d: Move common code out of iommu_attch_device()
+>>    iommu/vt-d: Aux-domain specific domain attach/detach
+>>    iommu/vt-d: Return ID associated with an auxiliary domain
+> 
+> I applied the patches above to my tree. The first patch is in a new
+> branch called 'api-features' and the other are in the x86/vt-d branch.
+
+Thank you!
+
+> 
+>>    vfio/mdev: Add iommu related member in mdev_device
+>>    vfio/type1: Add domain at(de)taching group helpers
+>>    vfio/type1: Handle different mdev isolation type
+> 
+> Can you please address the minor concern on these patches, add all
+> review and acks and re-send?
+
+Sure. I will resend these soon.
+
+> 
+> Thanks,
+> 
+> 	Joerg
+
+Best regards,
+Lu Baolu
