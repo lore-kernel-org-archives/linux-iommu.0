@@ -1,31 +1,42 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 1/1] iommu: Bind process address spaces to devices
-Date: Fri, 12 Apr 2019 16:59:54 +0200
-Message-ID: <20190412145954.GD29810@8bytes.org>
-References: <20190410151516.47754-1-jean-philippe.brucker@arm.com>
- <20190410151516.47754-2-jean-philippe.brucker@arm.com>
- <20190411152803.GB29810@8bytes.org>
- <aa213d61-2351-73f4-629c-08a18320fbec@arm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] dma-mapping fixes for 5.1
+Date: Fri, 12 Apr 2019 17:19:01 +0200
+Message-ID: <20190412151901.GA14497@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <aa213d61-2351-73f4-629c-08a18320fbec@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "christian.koenig@amd.com" <christian.koenig@amd.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Jean-Philippe,
+The following changes since commit 15ade5d2e7775667cf191cf2f94327a4889f8b9d:
 
-On Fri, Apr 12, 2019 at 01:23:51PM +0100, Jean-Philippe Brucker wrote:
-> I pushed a cleaner version to git://linux-arm.org/linux-jpb.git sva/api
-> (with the below mistake fixed as well) and can resend if necessary.
+  Linux 5.1-rc4 (2019-04-07 14:09:59 -1000)
 
-No need to do that, I solved the conflicts I've seen and compile-testing
-looked good so far, so I've pushed it out already. Maybe you can
-double-check my tree if everything is as it should be?
+are available in the Git repository at:
 
-Regards,
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.1-1
 
-	Joerg
+for you to fetch changes up to 8c5165430c0194df92369162d1c7f53f8672baa5:
+
+  dma-debug: only skip one stackframe entry (2019-04-11 19:29:50 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for 5.1
+
+Fix a sparc64 sun4v_pci regression introduced in this merged window,
+and a dma-debug stracktrace regression from the big refactor last
+merge window.
+
+----------------------------------------------------------------
+Christoph Hellwig (1):
+      sparc64/pci_sun4v: fix ATU checks for large DMA masks
+
+Scott Wood (1):
+      dma-debug: only skip one stackframe entry
+
+ arch/sparc/kernel/pci_sun4v.c | 20 +++++++++++---------
+ kernel/dma/debug.c            |  2 +-
+ 2 files changed, 12 insertions(+), 10 deletions(-)
