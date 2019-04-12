@@ -1,55 +1,71 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v8 0/9] vfio/mdev: IOMMU aware mediated device
-Date: Fri, 12 Apr 2019 09:36:49 +0800
-Message-ID: <0beedc65-fc26-5f17-6f0f-6e0c0aa022a3@linux.intel.com>
-References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
- <20190411151917.GA29810@8bytes.org>
+From: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Do we always need to reserve an iova before iommu_map?
+Date: Thu, 11 Apr 2019 18:42:20 -0700
+Message-ID: <20190412014219.GA23701@Asurada-Nvidia.nvidia.com>
+References: <20190409224718.GA3281@Asurada-Nvidia.nvidia.com>
+	<3916e00d-d3a9-11be-4107-73429f6dd8bf@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190411151917.GA29810@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <3916e00d-d3a9-11be-4107-73429f6dd8bf-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Thanks for the reply Robin.
 
-On 4/11/19 11:19 PM, Joerg Roedel wrote:
-> Hi Lu Baolu,
+On Wed, Apr 10, 2019 at 10:20:38AM +0100, Robin Murphy wrote:
+> On 09/04/2019 23:47, Nicolin Chen wrote:
+> > According to the routine of iommu_dma_alloc(), it allocates an iova
+> > then does iommu_map() to map the iova to a physical address of new
+> > allocated pages. However, in remoteproc_core.c, I see its code try
+> > to iommu_map() without having an alloc_iova() or alloc_iova_fast().
+> >
+> > Is it safe to do so? If an iova range is not allocated but mapped,
+> > would a later iommu_dma_alloc() happen to hit this iova range when
+> > doing its alloc_iova() and then fail to map?
+> > 
+> > And I am not very familiar with remoteproc code, so if I am missing
+> > something, please kindly educate me.
 > 
-> thanks for these patches!
-> 
-> On Mon, Mar 25, 2019 at 09:30:27AM +0800, Lu Baolu wrote:
->> Lu Baolu (9):
->>    iommu: Add APIs for multiple domains per device
->>    iommu/vt-d: Make intel_iommu_enable_pasid() more generic
->>    iommu/vt-d: Add per-device IOMMU feature ops entries
->>    iommu/vt-d: Move common code out of iommu_attch_device()
->>    iommu/vt-d: Aux-domain specific domain attach/detach
->>    iommu/vt-d: Return ID associated with an auxiliary domain
-> 
-> I applied the patches above to my tree. The first patch is in a new
-> branch called 'api-features' and the other are in the x86/vt-d branch.
+> AFAICS that area of the remoteproc code is using its own IOMMU domain, so
+> it's free to manage that domain's address space however it wants - the
 
-Thank you!
+I see. So it seems that it would be safe to map to an iova without
+dealing with iova_domain, as long as the device is attached to a
+separately allocated iommu_domain; for those who use DMA API would
+need to go through iova management.
 
-> 
->>    vfio/mdev: Add iommu related member in mdev_device
->>    vfio/type1: Add domain at(de)taching group helpers
->>    vfio/type1: Handle different mdev isolation type
-> 
-> Can you please address the minor concern on these patches, add all
-> review and acks and re-send?
+> generic IOVA allocator is a good option for the DMA API where the only
+> constraint is that the address we get fits within a mask, but drivers with
+> more specific requirements may well be better off using other allocation
+> methods. See also various DRM drivers (Tegra/Rockchip/etc.) that do similar,
+> using a drm_mm to manage the address space.
 
-Sure. I will resend these soon.
+Yea, I am aware of DRM drivers that manage both iommu_domain and
+iova_domain manually. But it feels a bit heavy for our use case:
 
-> 
-> Thanks,
-> 
-> 	Joerg
+We have a downstream driver using DMA API for iommu_dma_alloc().
+And it is happy with the API because the same API works for both
+IOMMU and non-IOMMU configurations. But it also has one single
+allocation that requires (same as remoteproc) to iommu_map to a
+hard coded iova. Although it's so far a downstream use case, we
+want to seek for a solution that could be closer to the mainline.
 
-Best regards,
-Lu Baolu
+The current solution seems to give up the API and add own IOMMU
+domain and iova management like DRM drivers. Could there be any
+way of reserving an IOVA without giving up the API?
+
+Thank you
+Nicolin
