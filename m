@@ -2,61 +2,76 @@ Return-Path: <SRS0=HOzV=SO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9C3C10F13
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 01:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAEBC10F0E
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 03:14:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9FF2D21850
-	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 01:43:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FF2D21850
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A2A342184B
+	for <iommu@archiver.kernel.org>; Fri, 12 Apr 2019 03:14:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="YFno93QX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A2A342184B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 763072AF4;
-	Fri, 12 Apr 2019 01:43:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6BB8D2D08;
+	Fri, 12 Apr 2019 03:14:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 579D928D8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 641762D02
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Apr 2019 01:42:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 447FB25A
+	Fri, 12 Apr 2019 03:13:55 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+	[209.85.208.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DA1747ED
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Apr 2019 01:42:49 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	11 Apr 2019 18:42:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,339,1549958400"; d="scan'208";a="130677578"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga007.jf.intel.com with ESMTP; 11 Apr 2019 18:42:45 -0700
-Subject: Re: [PATCH v8 0/9] vfio/mdev: IOMMU aware mediated device
-To: Joerg Roedel <joro@8bytes.org>
-References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
-	<20190411151917.GA29810@8bytes.org>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <0beedc65-fc26-5f17-6f0f-6e0c0aa022a3@linux.intel.com>
-Date: Fri, 12 Apr 2019 09:36:49 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.5.1
-MIME-Version: 1.0
-In-Reply-To: <20190411151917.GA29810@8bytes.org>
-Content-Language: en-US
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	sanjay.k.kumar@intel.com, Kirti Wankhede <kwankhede@nvidia.com>,
-	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	kvm@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
-	yi.y.sun@intel.com
+	Fri, 12 Apr 2019 03:13:54 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id d46so2218412eda.7
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 11 Apr 2019 20:13:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+	h=from:to:cc:subject:date:message-id;
+	bh=lSZmLfiTS0tVJgkUC+AaFkmLshmlkzFI4jJrlCOnI6o=;
+	b=YFno93QXuTT8g873ob4lzZVYz3tZWm+LfJx0YMpac2uEV9aJ6oZNSx9WOKnOf8lAo1
+	+NqfDN8Br13bz4GqPuBdzRpRcU4aHRKhvkkpILIQq8DCmznfx/atr8QKvtlKx36BCQ8b
+	DHYXbpmkIT46Gjd93nsMUBag2FEmJGH9PF5Ws=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=lSZmLfiTS0tVJgkUC+AaFkmLshmlkzFI4jJrlCOnI6o=;
+	b=rmACM4IRbQ46FfpGJ2zID25mXaODiU4/irTD7ZmoDLjv/PJqDf5wfRgtwvtFn4JjZg
+	D4f0BtgQR7kJdJAZm3pT/7uFj2TX3Xo5q6p5FrSl2Xmx0zemdNWl+J5yxIT21zBlvWux
+	iHbAxP3jek9ZFvbo8isuCS/uW1hS4A7e+1l7wmHhFq59mAXobK/2t+T3SeVSUMCJDGjW
+	G5+ALNFHF1W0shAD7+dr6P/KyG5m/0B6Og3VzcifRu0VaVXW23DKZ9HSfdJ0e+kUUS6Z
+	bj9WrOPwHhLLVZouaTX20nP+6lYnASum/jh430cHyRXQBqWlv5LLXjMJy+BPvCubgsjp
+	3djw==
+X-Gm-Message-State: APjAAAU6k6iQJH50ZK5+Lxrc6Lz2j0Q7CBhSRe4ZYt5ZwTHrH/pN/jwb
+	Yebaeb5du59c71+vGEnmY9h1Lg==
+X-Google-Smtp-Source: APXvYqz8Z8DBYr6JemK9OQFaobK4cwQGMmE9tVq+z/+aM5UzwZDbxfR2W0WlgQFUXvqBP0mVwT6VEg==
+X-Received: by 2002:aa7:dc4d:: with SMTP id g13mr5176207edu.106.1555038833471; 
+	Thu, 11 Apr 2019 20:13:53 -0700 (PDT)
+Received: from mannams-OptiPlex-7010.dhcp.broadcom.net ([192.19.234.250])
+	by smtp.gmail.com with ESMTPSA id
+	c7sm11533352edt.70.2019.04.11.20.13.47
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+	Thu, 11 Apr 2019 20:13:52 -0700 (PDT)
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org,
+	Ray Jui <rjui@broadcom.com>
+Subject: [PATCH v4 0/3] PCIe Host request to reserve IOVA
+Date: Fri, 12 Apr 2019 08:43:32 +0530
+Message-Id: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+X-Mailer: git-send-email 2.7.4
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Srinath Mannam <srinath.mannam@broadcom.com>,
+	bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,50 +84,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Srinath Mannam via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Srinath Mannam <srinath.mannam@broadcom.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190412013649.vW6uhqbgOJoLogFBtxN7EZmrMijQiTzvf3U8P0vMIz8@z>
+Message-ID: <20190412031332.oxslffrvZaxFvmoPKpcdB-nEMJoy6IA7yUgLZbTgxT8@z>
 
-Hi Joerg,
+Few SOCs have limitation that their PCIe host can't allow few inbound
+address ranges. Allowed inbound address ranges are listed in dma-ranges
+DT property and this address ranges are required to do IOVA mapping.
+Remaining address ranges have to be reserved in IOVA mapping.
 
-On 4/11/19 11:19 PM, Joerg Roedel wrote:
-> Hi Lu Baolu,
-> 
-> thanks for these patches!
-> 
-> On Mon, Mar 25, 2019 at 09:30:27AM +0800, Lu Baolu wrote:
->> Lu Baolu (9):
->>    iommu: Add APIs for multiple domains per device
->>    iommu/vt-d: Make intel_iommu_enable_pasid() more generic
->>    iommu/vt-d: Add per-device IOMMU feature ops entries
->>    iommu/vt-d: Move common code out of iommu_attch_device()
->>    iommu/vt-d: Aux-domain specific domain attach/detach
->>    iommu/vt-d: Return ID associated with an auxiliary domain
-> 
-> I applied the patches above to my tree. The first patch is in a new
-> branch called 'api-features' and the other are in the x86/vt-d branch.
+PCIe Host driver of those SOCs has to list resource entries of allowed
+address ranges given in dma-ranges DT property in sorted order. This
+sorted list of resources will be processed and reserve IOVA address for
+inaccessible address holes while initializing IOMMU domain.
 
-Thank you!
+This patch set is based on Linux-5.0-rc2.
 
-> 
->>    vfio/mdev: Add iommu related member in mdev_device
->>    vfio/type1: Add domain at(de)taching group helpers
->>    vfio/type1: Handle different mdev isolation type
-> 
-> Can you please address the minor concern on these patches, add all
-> review and acks and re-send?
+Changes from v3:
+  - Addressed Robin Murphy review comments.
+    - pcie-iproc: parse dma-ranges and make sorted resource list.
+    - dma-iommu: process list and reserve gaps between entries
 
-Sure. I will resend these soon.
+Changes from v2:
+  - Patch set rebased to Linux-5.0-rc2
 
-> 
-> Thanks,
-> 
-> 	Joerg
+Changes from v1:
+  - Addressed Oza review comments.
 
-Best regards,
-Lu Baolu
+Srinath Mannam (3):
+  PCI: Add dma_ranges window list
+  iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
+  PCI: iproc: Add sorted dma ranges resource entries to host bridge
+
+ drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
+ drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+ drivers/pci/probe.c                 |  3 +++
+ include/linux/pci.h                 |  1 +
+ 4 files changed, 66 insertions(+), 1 deletion(-)
+
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
