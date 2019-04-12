@@ -1,120 +1,124 @@
-From: Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource entries to host bridge
-Date: Fri, 12 Apr 2019 08:43:35 +0530
-Message-ID: <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v9 1/3] vfio/mdev: Add iommu related member in mdev_device
+Date: Fri, 12 Apr 2019 12:13:24 +0800
+Message-ID: <20190412041326.19914-2-baolu.lu@linux.intel.com>
+References: <20190412041326.19914-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+In-Reply-To: <20190412041326.19914-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Srinath Mannam <srinath.mannam@broadcom.com>
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-IPROC host has the limitation that it can use only those address ranges
-given by dma-ranges property as inbound address. So that the memory
-address holes in dma-ranges should be reserved to allocate as DMA address.
+A parent device might create different types of mediated
+devices. For example, a mediated device could be created
+by the parent device with full isolation and protection
+provided by the IOMMU. One usage case could be found on
+Intel platforms where a mediated device is an assignable
+subset of a PCI, the DMA requests on behalf of it are all
+tagged with a PASID. Since IOMMU supports PASID-granular
+translations (scalable mode in VT-d 3.0), this mediated
+device could be individually protected and isolated by an
+IOMMU.
 
-Inbound address of host accessed by PCIe devices will not be translated
-before it comes to IOMMU or directly to PE. But the limitation of this
-host is, access to few address ranges are ignored. So that IOVA ranges
-for these address ranges have to be reserved.
+This patch adds a new member in the struct mdev_device to
+indicate that the mediated device represented by mdev could
+be isolated and protected by attaching a domain to a device
+represented by mdev->iommu_device. It also adds a helper to
+add or set the iommu device.
 
-All allowed address ranges are listed in dma-ranges DT parameter. These
-address ranges are converted as resource entries and listed in sorted
-order add added to dma_ranges list of PCI host bridge structure.
+* mdev_device->iommu_device
+  - This, if set, indicates that the mediated device could
+    be fully isolated and protected by IOMMU via attaching
+    an iommu domain to this device. If empty, it indicates
+    using vendor defined isolation, hence bypass IOMMU.
 
-Ex:
-dma-ranges = < \
-  0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
-  0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
-  0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+* mdev_set/get_iommu_device(dev, iommu_device)
+  - Set or get the iommu device which represents this mdev
+    in IOMMU's device scope. Drivers don't need to set the
+    iommu device if it uses vendor defined isolation.
 
-In the above example of dma-ranges, memory address from
-0x0 - 0x80000000,
-0x100000000 - 0x800000000,
-0x1000000000 - 0x8000000000 and
-0x10000000000 - 0xffffffffffffffff.
-are not allowed to use as inbound addresses.
-
-Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
-Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Liu Yi L <yi.l.liu@intel.com>
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
+Acked-by: Alex Williamson <alex.williamson@redhat.com>
 ---
- drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 43 insertions(+), 1 deletion(-)
+ drivers/vfio/mdev/mdev_core.c    | 18 ++++++++++++++++++
+ drivers/vfio/mdev/mdev_private.h |  1 +
+ include/linux/mdev.h             | 14 ++++++++++++++
+ 3 files changed, 33 insertions(+)
 
-diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-index c20fd6b..94ba5c0 100644
---- a/drivers/pci/controller/pcie-iproc.c
-+++ b/drivers/pci/controller/pcie-iproc.c
-@@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
- 	return ret;
+diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+index 9d29c71bcf99..318959a994e4 100644
+--- a/drivers/vfio/mdev/mdev_core.c
++++ b/drivers/vfio/mdev/mdev_core.c
+@@ -396,6 +396,24 @@ int mdev_device_remove(struct device *dev, bool force_remove)
+ 	return 0;
  }
  
-+static int
-+iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
-+			 struct of_pci_range *range)
++int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
 +{
-+	struct resource *res;
-+	struct resource_entry *entry, *tmp;
-+	struct list_head *head = resources;
++	struct mdev_device *mdev = to_mdev_device(dev);
 +
-+	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-+	if (!res)
-+		return -ENOMEM;
-+
-+	resource_list_for_each_entry(tmp, resources) {
-+		if (tmp->res->start < range->cpu_addr)
-+			head = &tmp->node;
-+	}
-+
-+	res->start = range->cpu_addr;
-+	res->end = res->start + range->size - 1;
-+
-+	entry = resource_list_create_entry(res, 0);
-+	if (!entry)
-+		return -ENOMEM;
-+
-+	entry->offset = res->start - range->cpu_addr;
-+	resource_list_add(entry, head);
++	mdev->iommu_device = iommu_device;
 +
 +	return 0;
 +}
++EXPORT_SYMBOL(mdev_set_iommu_device);
 +
- static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
++struct device *mdev_get_iommu_device(struct device *dev)
++{
++	struct mdev_device *mdev = to_mdev_device(dev);
++
++	return mdev->iommu_device;
++}
++EXPORT_SYMBOL(mdev_get_iommu_device);
++
+ static int __init mdev_init(void)
  {
-+	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
- 	struct of_pci_range range;
- 	struct of_pci_range_parser parser;
- 	int ret;
-+	LIST_HEAD(resources);
+ 	return mdev_bus_register();
+diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
+index 379758c52b1b..f4eba723fea5 100644
+--- a/drivers/vfio/mdev/mdev_private.h
++++ b/drivers/vfio/mdev/mdev_private.h
+@@ -33,6 +33,7 @@ struct mdev_device {
+ 	struct kref ref;
+ 	struct list_head next;
+ 	struct kobject *type_kobj;
++	struct device *iommu_device;
+ 	bool active;
+ };
  
- 	/* Get the dma-ranges from DT */
- 	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
-@@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
- 		return ret;
+diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+index 12354ab4164a..f4a88a6dd054 100644
+--- a/include/linux/mdev.h
++++ b/include/linux/mdev.h
+@@ -15,6 +15,20 @@
  
- 	for_each_of_pci_range(&parser, &range) {
-+		ret = iproc_pcie_add_dma_range(pcie->dev,
-+					       &resources,
-+					       &range);
-+		if (ret)
-+			goto out;
- 		/* Each range entry corresponds to an inbound mapping region */
- 		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
- 		if (ret)
--			return ret;
-+			goto out;
- 	}
+ struct mdev_device;
  
-+	list_splice_init(&resources, &host->dma_ranges);
++/*
++ * Called by the parent device driver to set the device which represents
++ * this mdev in iommu protection scope. By default, the iommu device is
++ * NULL, that indicates using vendor defined isolation.
++ *
++ * @dev: the mediated device that iommu will isolate.
++ * @iommu_device: a pci device which represents the iommu for @dev.
++ *
++ * Return 0 for success, otherwise negative error value.
++ */
++int mdev_set_iommu_device(struct device *dev, struct device *iommu_device);
 +
- 	return 0;
-+out:
-+	pci_free_resource_list(&resources);
-+	return ret;
- }
- 
- static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
++struct device *mdev_get_iommu_device(struct device *dev);
++
+ /**
+  * struct mdev_parent_ops - Structure to be registered for each parent device to
+  * register the device to mdev module.
 -- 
-2.7.4
+2.17.1
