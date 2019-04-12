@@ -1,35 +1,31 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH] qcom_iommu: fix a config symbol typo
-Date: Fri, 12 Apr 2019 16:43:11 +0200
-Message-ID: <20190412144311.12949-1-hch@lst.de>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v3 1/1] iommu: Bind process address spaces to devices
+Date: Fri, 12 Apr 2019 16:59:54 +0200
+Message-ID: <20190412145954.GD29810@8bytes.org>
+References: <20190410151516.47754-1-jean-philippe.brucker@arm.com>
+ <20190410151516.47754-2-jean-philippe.brucker@arm.com>
+ <20190411152803.GB29810@8bytes.org>
+ <aa213d61-2351-73f4-629c-08a18320fbec@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <aa213d61-2351-73f4-629c-08a18320fbec@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: robdclark@gmail.com
-Cc: iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "christian.koenig@amd.com" <christian.koenig@amd.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The arm/arm64 symbol for big endian builds is CONFIG_CPU_BIG_ENDIAN,
-not CONFIG_BIG_ENDIAN.
+Hey Jean-Philippe,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/iommu/qcom_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, Apr 12, 2019 at 01:23:51PM +0100, Jean-Philippe Brucker wrote:
+> I pushed a cleaner version to git://linux-arm.org/linux-jpb.git sva/api
+> (with the below mistake fixed as well) and can resend if necessary.
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 8cdd3f059513..69f58b633f9d 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -280,7 +280,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE |
- 			SCTLR_M | SCTLR_S1_ASIDPNE | SCTLR_CFCFG;
- 
--		if (IS_ENABLED(CONFIG_BIG_ENDIAN))
-+		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 			reg |= SCTLR_E;
- 
- 		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, reg);
--- 
-2.20.1
+No need to do that, I solved the conflicts I've seen and compile-testing
+looked good so far, so I've pushed it out already. Maybe you can
+double-check my tree if everything is as it should be?
+
+Regards,
+
+	Joerg
