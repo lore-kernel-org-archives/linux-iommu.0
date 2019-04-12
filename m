@@ -1,29 +1,40 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Flush IOTLB for untrusted device in time
-Date: Fri, 12 Apr 2019 13:03:40 +0200
-Message-ID: <20190412110339.GI4518@8bytes.org>
-References: <20190412042613.20257-1-baolu.lu@linux.intel.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
+Date: Fri, 12 Apr 2019 13:16:50 +0200
+Message-ID: <20190412111649.GK4518@8bytes.org>
+References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
+ <20190409125308.18304-2-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190412042613.20257-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+In-Reply-To: <20190409125308.18304-2-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 12, 2019 at 12:26:13PM +0800, Lu Baolu wrote:
->  drivers/iommu/intel-iommu.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+On Tue, Apr 09, 2019 at 08:53:03PM +0800, Zhen Lei wrote:
+> +static int __init iommu_dma_mode_setup(char *str)
+> +{
+> +	if (!str)
+> +		goto fail;
+> +
+> +	if (!strncmp(str, "passthrough", 11))
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
+> +	else if (!strncmp(str, "lazy", 4))
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
+> +	else if (!strncmp(str, "strict", 6))
+> +		iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
+> +	else
+> +		goto fail;
+> +
+> +	pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
 
-Applied, thanks.
+Printing a number is not very desriptive or helpful to the user. Please
+print the name of the mode instead.
+
+
+Regards,
+
+	Joerg
