@@ -2,59 +2,63 @@ Return-Path: <SRS0=E2BV=SR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D4E1C282DA
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 22:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AA3C282DA
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 22:55:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D75B62075B
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 22:42:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D75B62075B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5F82320880
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 22:55:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="N9XA429Z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F82320880
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 918A1CAF;
-	Mon, 15 Apr 2019 22:42:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 22DBECB2;
+	Mon, 15 Apr 2019 22:55:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4ED3AAE7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2051FCA8
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 22:42:47 +0000 (UTC)
+	Mon, 15 Apr 2019 22:55:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4A2D62C3
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 93F7B2C3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 22:42:45 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	15 Apr 2019 15:42:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,355,1549958400"; d="scan'208";a="136086306"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga006.jf.intel.com with ESMTP; 15 Apr 2019 15:42:45 -0700
-Date: Mon, 15 Apr 2019 15:45:23 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 02/18] ioasid: Add custom IOASID allocator
-Message-ID: <20190415154523.39fb57d7@jacob-builder>
-In-Reply-To: <20190415125348.58073042@x1.home>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-3-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190415125348.58073042@x1.home>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Mon, 15 Apr 2019 22:55:25 +0000 (UTC)
+Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
+	(using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id D8A2E20854;
+	Mon, 15 Apr 2019 22:55:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1555368925;
+	bh=js5bvjA0nzgx2XC9yVTzbOWG3i5fe6edHcYz6nrpovI=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=N9XA429Zj8gSNYepsV9rlu5XZ2plyupWHwkuBWe4QVqPayX/ovaK3xgC5Ze6cuB2t
+	KfvfAEseR3aeN+vBbV5LWyPONhHDL9x5xlN7FudL+376tqdYy7EUh/XFTeysNWD8en
+	ubUREYUwsq+85+7LayAO0rUKZtNQdwitN/xPe/J0=
+Date: Mon, 15 Apr 2019 15:55:24 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-X260
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/4] swiotlb-xen: make instances match their method names
+In-Reply-To: <20190411072000.4306-2-hch@lst.de>
+Message-ID: <alpine.DEB.2.10.1904151534390.29275@sstabellini-ThinkPad-X260>
+References: <20190411072000.4306-1-hch@lst.de>
+	<20190411072000.4306-2-hch@lst.de>
+User-Agent: Alpine 2.10 (DEB 1266 2009-07-14)
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,324 +75,72 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415224523.eSo997rH7iVL9VaqLInqqMXfuflfduqxQfKyurTiwk8@z>
+Message-ID: <20190415225524.AWApijTcTS6tKqGRaYoemZe_tyQLDIEDiBTJ9_pBBio@z>
 
-On Mon, 15 Apr 2019 12:53:48 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+On Thu, 11 Apr 2019, Christoph Hellwig wrote:
+> Just drop two pointless _attrs prefixes to make the code a little
+> more grep-able.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-> On Mon,  8 Apr 2019 16:59:17 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> 
-> > Sometimes, IOASID allocation must be handled by platform specific
-> > code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs need
-> > to be allocated by the host via enlightened or paravirt interfaces.
-> > 
-> > This patch adds an extension to the IOASID allocator APIs such that
-> > platform drivers can register a custom allocator, possibly at boot
-> > time, to take over the allocation. IDR is still used for tracking
-> > and searching purposes internal to the IOASID code. Private data of
-> > an IOASID can also be set after the allocation.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/base/ioasid.c  | 124
-> > +++++++++++++++++++++++++++++++++++++++++++++----
-> > include/linux/ioasid.h |  28 ++++++++++- 2 files changed, 143
-> > insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
-> > index cf122b2..294e856 100644
-> > --- a/drivers/base/ioasid.c
-> > +++ b/drivers/base/ioasid.c
-> > @@ -17,6 +17,74 @@ struct ioasid_data {
-> >  };
-> >  
-> >  static DEFINE_IDR(ioasid_idr);
-> > +static DEFINE_MUTEX(ioasid_allocator_lock);
-> > +static const struct ioasid_allocator *ioasid_allocator;
-> > +
-> > +
-> > +/**
-> > + * ioasid_set_allocator - register a custom allocator
-> > + *
-> > + * Custom allocator take precedence over the default IDR based
-> > allocator.
-> > + * Private data associated with the ASID are managed by ASID
-> > common code
-> > + * similar to IDR data.
-> > + */
-> > +int ioasid_set_allocator(struct ioasid_allocator *allocator)
-> > +{
-> > +	int ret = 0;
-> > +
-> > +	if (!allocator)
-> > +		return -EINVAL;
-> > +
-> > +	mutex_lock(&ioasid_allocator_lock);
-> > +	if (ioasid_allocator) {
-> > +		ret = -EBUSY;
-> > +		goto exit_unlock;
-> > +	}
-> > +	ioasid_allocator = allocator;
-> > +
-> > +exit_unlock:
-> > +	mutex_unlock(&ioasid_allocator_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_set_allocator);  
-> 
-> Should this fault if there are existing idr's allocated?
-> 
-Yes, I think that would make things much simpler. There can be only one
-allocator for the entire time per boot.
-> > +
-> > +/**
-> > + * ioasid_clear_allocator - Free the custom IOASID allocator
-> > + *
-> > + * REVISIT: So far there is only one custom allocator allowed.
-> > + */
-> > +void ioasid_clear_allocator(void)
-> > +{
-> > +	mutex_lock(&ioasid_allocator_lock);
-> > +	ioasid_allocator = NULL;
-> > +	mutex_unlock(&ioasid_allocator_lock);
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_clear_allocator);
-> > +
-> > +/**
-> > + * ioasid_set_data - Set private data for an allocated ioasid
-> > + *
-> > + * For IOASID that is already allocated, private data can be set
-> > + * via this API. Future lookup can be done via ioasid_find.
-> > + */
-> > +int ioasid_set_data(ioasid_t ioasid, void *data)
-> > +{
-> > +	struct ioasid_data *ioasid_data;
-> > +	int ret = 0;
-> > +
-> > +	idr_lock(&ioasid_idr);
-> > +	ioasid_data = idr_find(&ioasid_idr, ioasid);
-> > +	if (ioasid_data)
-> > +		ioasid_data->private = data;
-> > +	else
-> > +		ret = -ENOENT;
-> > +	idr_unlock(&ioasid_idr);
-> > +	/* getter may use the private data */
-> > +	synchronize_rcu();
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_set_data);
-> >  
-> >  /**
-> >   * ioasid_alloc - Allocate an IOASID
-> > @@ -32,7 +100,7 @@ static DEFINE_IDR(ioasid_idr);
-> >  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-> > ioasid_t max, void *private)
-> >  {
-> > -	int id = -1;
-> > +	int id = INVALID_IOASID;
-> >  	struct ioasid_data *data;
-> >  
-> >  	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> > @@ -42,13 +110,30 @@ ioasid_t ioasid_alloc(struct ioasid_set *set,
-> > ioasid_t min, ioasid_t max, data->set = set;
-> >  	data->private = private;
-> >  
-> > +	/* Use custom allocator if available, otherwise default to
-> > IDR */
-> > +	if (ioasid_allocator) {  
-> 
-> If this races with ioasid_clear_allocator() ioasid_allocator might be
-> set above, but NULL below to generate a segfault.  If this races with
-> ioasid_set_allocator() an id can be allocated that the custom
-> allocator doesn't track.
-> 
-right, need to move this under the lock below. And protect it under
-clear and set function. Or delete the ioasid_clear_allocator() function
-to prevent the case you mentioned below.
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
 
-> > +		mutex_lock(&ioasid_allocator_lock);
-> > +		id = ioasid_allocator->alloc(min, max,
-> > ioasid_allocator->pdata);
-> > +		mutex_unlock(&ioasid_allocator_lock);
-> > +		if (id == INVALID_IOASID) {
-> > +			pr_err("Failed ASID allocation by custom
-> > allocator\n");
-> > +			goto exit_free;
-> > +		}
-> > +		/*
-> > +		 * Use IDR to manage private data also sanitiy
-> > check custom
-> > +		 * allocator for duplicates.
-> > +		 */
-> > +		min = id;
-> > +		max = id + 1;
-> > +	}
-> >  	idr_preload(GFP_KERNEL);
-> >  	idr_lock(&ioasid_idr);
-> >  	data->id = id = idr_alloc(&ioasid_idr, data, min, max,
-> > GFP_ATOMIC); idr_unlock(&ioasid_idr);
-> >  	idr_preload_end();
-> >  
-> > -	if (id < 0) {
-> > +exit_free:
-> > +	if (id < 0 || id == INVALID_IOASID) {
-> >  		kfree(data);  
+> ---
+>  drivers/xen/swiotlb-xen.c | 17 +++++++----------
+>  1 file changed, 7 insertions(+), 10 deletions(-)
 > 
-> What if an ioasid is already allocated before the ioasid_allocator is
-> registered?  The .alloc callback above could return an id that
-> idr_alloc cannot provide, in which case this cleanup does not call the
-> custom allocator's free callback.
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 877baf2a94f4..d4bc3aabd44d 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -504,9 +504,8 @@ xen_swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
+>   * concerning calls here are the same as for swiotlb_unmap_page() above.
+>   */
+>  static void
+> -xen_swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+> -			   int nelems, enum dma_data_direction dir,
+> -			   unsigned long attrs)
+> +xen_swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
+> +		enum dma_data_direction dir, unsigned long attrs)
+>  {
+>  	struct scatterlist *sg;
+>  	int i;
+> @@ -535,9 +534,8 @@ xen_swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+>   * same here.
+>   */
+>  static int
+> -xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+> -			 int nelems, enum dma_data_direction dir,
+> -			 unsigned long attrs)
+> +xen_swiotlb_map_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
+> +		enum dma_data_direction dir, unsigned long attrs)
+>  {
+>  	struct scatterlist *sg;
+>  	int i;
+> @@ -562,8 +560,7 @@ xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+>  				/* Don't panic here, we expect map_sg users
+>  				   to do proper error handling. */
+>  				attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+> -				xen_swiotlb_unmap_sg_attrs(hwdev, sgl, i, dir,
+> -							   attrs);
+> +				xen_swiotlb_unmap_sg(hwdev, sgl, i, dir, attrs);
+>  				sg_dma_len(sgl) = 0;
+>  				return 0;
+>  			}
+> @@ -690,8 +687,8 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
+>  	.sync_single_for_device = xen_swiotlb_sync_single_for_device,
+>  	.sync_sg_for_cpu = xen_swiotlb_sync_sg_for_cpu,
+>  	.sync_sg_for_device = xen_swiotlb_sync_sg_for_device,
+> -	.map_sg = xen_swiotlb_map_sg_attrs,
+> -	.unmap_sg = xen_swiotlb_unmap_sg_attrs,
+> +	.map_sg = xen_swiotlb_map_sg,
+> +	.unmap_sg = xen_swiotlb_unmap_sg,
+>  	.map_page = xen_swiotlb_map_page,
+>  	.unmap_page = xen_swiotlb_unmap_page,
+>  	.dma_supported = xen_swiotlb_dma_supported,
+> -- 
+> 2.20.1
 > 
-Good point, I was assuming the custom allocator must be set at boot time
-prior to any allocation thus idr allocation would always be satisfied.
-
-I think I also need to prevent the clearing of custom allocator to
-prevent user from going between IDR and custom allocator back and forth.
-I.e. once a custom allocator is registered, it cannot be deleted.
-
-Also undo EXPORT_SYMBOL_GPL(ioasid_set_data), to make it a one way trip.
-> >  		return INVALID_IOASID;
-> >  	}
-> > @@ -60,9 +145,20 @@ EXPORT_SYMBOL_GPL(ioasid_alloc);
-> >   * ioasid_free - Free an IOASID
-> >   * @ioasid: the ID to remove
-> >   */
-> > -void ioasid_free(ioasid_t ioasid)
-> > +int ioasid_free(ioasid_t ioasid)
-> >  {
-> >  	struct ioasid_data *ioasid_data;
-> > +	int ret = 0;
-> > +
-> > +	if (ioasid_allocator) {  
-> 
-> Same races as above.
-> 
-right, I will delete the ioasid_clear_allocator() function.
-
-Thanks!
-> > +		mutex_lock(&ioasid_allocator_lock);
-> > +		ret = ioasid_allocator->free(ioasid,
-> > ioasid_allocator->pdata);
-> > +		mutex_unlock(&ioasid_allocator_lock);
-> > +	}
-> > +	if (ret) {
-> > +		pr_err("ioasid %d custom allocator free failed\n",
-> > ioasid);
-> > +		return ret;
-> > +	}
-> >  
-> >  	idr_lock(&ioasid_idr);
-> >  	ioasid_data = idr_remove(&ioasid_idr, ioasid);
-> > @@ -70,6 +166,8 @@ void ioasid_free(ioasid_t ioasid)
-> >  
-> >  	if (ioasid_data)
-> >  		kfree_rcu(ioasid_data, rcu);
-> > +
-> > +	return ret;
-> >  }
-> >  EXPORT_SYMBOL_GPL(ioasid_free);
-> >  
-> > @@ -84,7 +182,8 @@ EXPORT_SYMBOL_GPL(ioasid_free);
-> >   * if @getter returns false, then the object is invalid and NULL
-> > is returned. *
-> >   * If the IOASID has been allocated for this set, return the
-> > private pointer
-> > - * passed to ioasid_alloc. Otherwise return NULL.
-> > + * passed to ioasid_alloc. Private data can be NULL if not set.
-> > Return an error
-> > + * if the IOASID is not found or not belong to the set.
-> >   */
-> >  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> >  		  bool (*getter)(void *))
-> > @@ -94,11 +193,20 @@ void *ioasid_find(struct ioasid_set *set,
-> > ioasid_t ioasid, 
-> >  	rcu_read_lock();
-> >  	ioasid_data = idr_find(&ioasid_idr, ioasid);
-> > -	if (ioasid_data && ioasid_data->set == set) {
-> > -		priv = ioasid_data->private;
-> > -		if (getter && !getter(priv))
-> > -			priv = NULL;
-> > +	if (!ioasid_data) {
-> > +		priv = ERR_PTR(-ENOENT);
-> > +		goto unlock;
-> > +	}
-> > +	if (set && ioasid_data->set != set) {
-> > +		/* data found but does not belong to the set */
-> > +		priv = ERR_PTR(-EACCES);
-> > +		goto unlock;
-> >  	}
-> > +	/* Now IOASID and its set is verified, we can return the
-> > private data */
-> > +	priv = ioasid_data->private;
-> > +	if (getter && !getter(priv))
-> > +		priv = NULL;
-> > +unlock:
-> >  	rcu_read_unlock();
-> >  
-> >  	return priv;
-> > diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> > index 6f3655a..64994e7 100644
-> > --- a/include/linux/ioasid.h
-> > +++ b/include/linux/ioasid.h
-> > @@ -5,20 +5,31 @@
-> >  #define INVALID_IOASID ((ioasid_t)-1)
-> >  typedef unsigned int ioasid_t;
-> >  typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void
-> > *data); +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min,
-> > ioasid_t max, void *data); +typedef int
-> > (*ioasid_free_fn_t)(ioasid_t ioasid, void *data); 
-> >  struct ioasid_set {
-> >  	int dummy;
-> >  };
-> >  
-> > +struct ioasid_allocator {
-> > +	ioasid_alloc_fn_t alloc;
-> > +	ioasid_free_fn_t free;
-> > +	void *pdata;
-> > +};
-> > +
-> >  #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
-> >  
-> >  #ifdef CONFIG_IOASID
-> >  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-> > ioasid_t max, void *private);
-> > -void ioasid_free(ioasid_t ioasid);
-> > +int ioasid_free(ioasid_t ioasid);
-> >  
-> >  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> >  		  bool (*getter)(void *));
-> > +int ioasid_set_allocator(struct ioasid_allocator *allocator);
-> > +void ioasid_clear_allocator(void);
-> > +int ioasid_set_data(ioasid_t ioasid, void *data);
-> >  
-> >  #else /* !CONFIG_IOASID */
-> >  static inline ioasid_t ioasid_alloc(struct ioasid_set *set,
-> > ioasid_t min, @@ -36,5 +47,20 @@ static inline void
-> > *ioasid_find(struct ioasid_set *set, ioasid_t ioasid, {
-> >  	return NULL;
-> >  }
-> > +
-> > +static inline int ioasid_set_allocator(struct ioasid_allocator
-> > *allocator) +{
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static inline void ioasid_clear_allocator(void)
-> > +{
-> > +}
-> > +
-> > +static inline int ioasid_set_data(ioasid_t ioasid, void *data)
-> > +{
-> > +	return -EINVAL;
-> > +}
-> > +
-> >  #endif /* CONFIG_IOASID */
-> >  #endif /* __LINUX_IOASID_H */  
-> 
-
-[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
