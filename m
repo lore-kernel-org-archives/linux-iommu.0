@@ -6,52 +6,52 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5BBC10F12
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2930FC10F0E
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 20:37:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 146872073F
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:53:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 146872073F
+	by mail.kernel.org (Postfix) with ESMTPS id ECDBF2087C
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 20:37:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECDBF2087C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BCE3CBE4;
-	Mon, 15 Apr 2019 18:53:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A1975CC1;
+	Mon, 15 Apr 2019 20:37:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54C3BB4B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2A63BA95
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 18:53:51 +0000 (UTC)
+	Mon, 15 Apr 2019 20:37:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8DFFB6C5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83389854
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 18:53:50 +0000 (UTC)
+	Mon, 15 Apr 2019 20:37:13 +0000 (UTC)
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
 	[10.5.11.22])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id B48EC59454;
-	Mon, 15 Apr 2019 18:53:49 +0000 (UTC)
+	by mx1.redhat.com (Postfix) with ESMTPS id D31D133024A;
+	Mon, 15 Apr 2019 20:37:12 +0000 (UTC)
 Received: from x1.home (ovpn-116-122.phx2.redhat.com [10.3.116.122])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id B24661001E6F;
-	Mon, 15 Apr 2019 18:53:48 +0000 (UTC)
-Date: Mon, 15 Apr 2019 12:53:48 -0600
+	by smtp.corp.redhat.com (Postfix) with ESMTP id B4F3D1001E93;
+	Mon, 15 Apr 2019 20:37:11 +0000 (UTC)
+Date: Mon, 15 Apr 2019 14:37:11 -0600
 From: Alex Williamson <alex.williamson@redhat.com>
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 02/18] ioasid: Add custom IOASID allocator
-Message-ID: <20190415125348.58073042@x1.home>
-In-Reply-To: <1554767973-30125-3-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
+Message-ID: <20190415143711.13c29308@x1.home>
+In-Reply-To: <1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-3-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
 Organization: Red Hat
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.39]);
-	Mon, 15 Apr 2019 18:53:49 +0000 (UTC)
+	(mx1.redhat.com [10.5.110.29]);
+	Mon, 15 Apr 2019 20:37:13 +0000 (UTC)
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
 	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
@@ -73,289 +73,113 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415185348.-JmdXJM1ldX9T48hs9BlOG2M9mVgpj9M6L-mg8k6KiE@z>
+Message-ID: <20190415203711.OOerlM1tACHPg20lHQxwzPmg7CdAxIxndFJD97yC5_U@z>
 
-On Mon,  8 Apr 2019 16:59:17 -0700
+On Mon,  8 Apr 2019 16:59:25 -0700
 Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 
-> Sometimes, IOASID allocation must be handled by platform specific
-> code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs need
-> to be allocated by the host via enlightened or paravirt interfaces.
+> When VT-d driver runs in the guest, PASID allocation must be
+> performed via virtual command interface. This patch register a
+> custom IOASID allocator which takes precedence over the default
+> IDR based allocator. The resulting IOASID allocation will always
+> come from the host. This ensures that PASID namespace is system-
+> wide.
 > 
-> This patch adds an extension to the IOASID allocator APIs such that
-> platform drivers can register a custom allocator, possibly at boot
-> time, to take over the allocation. IDR is still used for tracking
-> and searching purposes internal to the IOASID code. Private data of
-> an IOASID can also be set after the allocation.
-> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
 > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > ---
->  drivers/base/ioasid.c  | 124 +++++++++++++++++++++++++++++++++++++++++++++----
->  include/linux/ioasid.h |  28 ++++++++++-
->  2 files changed, 143 insertions(+), 9 deletions(-)
+>  drivers/iommu/intel-iommu.c | 50 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/intel-iommu.h |  1 +
+>  2 files changed, 51 insertions(+)
 > 
-> diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
-> index cf122b2..294e856 100644
-> --- a/drivers/base/ioasid.c
-> +++ b/drivers/base/ioasid.c
-> @@ -17,6 +17,74 @@ struct ioasid_data {
->  };
->  
->  static DEFINE_IDR(ioasid_idr);
-> +static DEFINE_MUTEX(ioasid_allocator_lock);
-> +static const struct ioasid_allocator *ioasid_allocator;
-> +
-> +
-> +/**
-> + * ioasid_set_allocator - register a custom allocator
-> + *
-> + * Custom allocator take precedence over the default IDR based allocator.
-> + * Private data associated with the ASID are managed by ASID common code
-> + * similar to IDR data.
-> + */
-> +int ioasid_set_allocator(struct ioasid_allocator *allocator)
-> +{
-> +	int ret = 0;
-> +
-> +	if (!allocator)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&ioasid_allocator_lock);
-> +	if (ioasid_allocator) {
-> +		ret = -EBUSY;
-> +		goto exit_unlock;
-> +	}
-> +	ioasid_allocator = allocator;
-> +
-> +exit_unlock:
-> +	mutex_unlock(&ioasid_allocator_lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_set_allocator);
-
-Should this fault if there are existing idr's allocated?
-
-> +
-> +/**
-> + * ioasid_clear_allocator - Free the custom IOASID allocator
-> + *
-> + * REVISIT: So far there is only one custom allocator allowed.
-> + */
-> +void ioasid_clear_allocator(void)
-> +{
-> +	mutex_lock(&ioasid_allocator_lock);
-> +	ioasid_allocator = NULL;
-> +	mutex_unlock(&ioasid_allocator_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_clear_allocator);
-> +
-> +/**
-> + * ioasid_set_data - Set private data for an allocated ioasid
-> + *
-> + * For IOASID that is already allocated, private data can be set
-> + * via this API. Future lookup can be done via ioasid_find.
-> + */
-> +int ioasid_set_data(ioasid_t ioasid, void *data)
-> +{
-> +	struct ioasid_data *ioasid_data;
-> +	int ret = 0;
-> +
-> +	idr_lock(&ioasid_idr);
-> +	ioasid_data = idr_find(&ioasid_idr, ioasid);
-> +	if (ioasid_data)
-> +		ioasid_data->private = data;
-> +	else
-> +		ret = -ENOENT;
-> +	idr_unlock(&ioasid_idr);
-> +	/* getter may use the private data */
-> +	synchronize_rcu();
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_set_data);
->  
->  /**
->   * ioasid_alloc - Allocate an IOASID
-> @@ -32,7 +100,7 @@ static DEFINE_IDR(ioasid_idr);
->  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
->  		      void *private)
->  {
-> -	int id = -1;
-> +	int id = INVALID_IOASID;
->  	struct ioasid_data *data;
->  
->  	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> @@ -42,13 +110,30 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
->  	data->set = set;
->  	data->private = private;
->  
-> +	/* Use custom allocator if available, otherwise default to IDR */
-> +	if (ioasid_allocator) {
-
-If this races with ioasid_clear_allocator() ioasid_allocator might be
-set above, but NULL below to generate a segfault.  If this races with
-ioasid_set_allocator() an id can be allocated that the custom allocator
-doesn't track.
-
-> +		mutex_lock(&ioasid_allocator_lock);
-> +		id = ioasid_allocator->alloc(min, max, ioasid_allocator->pdata);
-> +		mutex_unlock(&ioasid_allocator_lock);
-> +		if (id == INVALID_IOASID) {
-> +			pr_err("Failed ASID allocation by custom allocator\n");
-> +			goto exit_free;
-> +		}
-> +		/*
-> +		 * Use IDR to manage private data also sanitiy check custom
-> +		 * allocator for duplicates.
-> +		 */
-> +		min = id;
-> +		max = id + 1;
-> +	}
->  	idr_preload(GFP_KERNEL);
->  	idr_lock(&ioasid_idr);
->  	data->id = id = idr_alloc(&ioasid_idr, data, min, max, GFP_ATOMIC);
->  	idr_unlock(&ioasid_idr);
->  	idr_preload_end();
->  
-> -	if (id < 0) {
-> +exit_free:
-> +	if (id < 0 || id == INVALID_IOASID) {
->  		kfree(data);
-
-What if an ioasid is already allocated before the ioasid_allocator is
-registered?  The .alloc callback above could return an id that
-idr_alloc cannot provide, in which case this cleanup does not call the
-custom allocator's free callback.
-
->  		return INVALID_IOASID;
->  	}
-> @@ -60,9 +145,20 @@ EXPORT_SYMBOL_GPL(ioasid_alloc);
->   * ioasid_free - Free an IOASID
->   * @ioasid: the ID to remove
->   */
-> -void ioasid_free(ioasid_t ioasid)
-> +int ioasid_free(ioasid_t ioasid)
->  {
->  	struct ioasid_data *ioasid_data;
-> +	int ret = 0;
-> +
-> +	if (ioasid_allocator) {
-
-Same races as above.
-
-> +		mutex_lock(&ioasid_allocator_lock);
-> +		ret = ioasid_allocator->free(ioasid, ioasid_allocator->pdata);
-> +		mutex_unlock(&ioasid_allocator_lock);
-> +	}
-> +	if (ret) {
-> +		pr_err("ioasid %d custom allocator free failed\n", ioasid);
-> +		return ret;
-> +	}
->  
->  	idr_lock(&ioasid_idr);
->  	ioasid_data = idr_remove(&ioasid_idr, ioasid);
-> @@ -70,6 +166,8 @@ void ioasid_free(ioasid_t ioasid)
->  
->  	if (ioasid_data)
->  		kfree_rcu(ioasid_data, rcu);
-> +
-> +	return ret;
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 28cb713..a38d774 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4820,6 +4820,42 @@ static int __init platform_optin_force_iommu(void)
+>  	return 1;
 >  }
->  EXPORT_SYMBOL_GPL(ioasid_free);
 >  
-> @@ -84,7 +182,8 @@ EXPORT_SYMBOL_GPL(ioasid_free);
->   * if @getter returns false, then the object is invalid and NULL is returned.
->   *
->   * If the IOASID has been allocated for this set, return the private pointer
-> - * passed to ioasid_alloc. Otherwise return NULL.
-> + * passed to ioasid_alloc. Private data can be NULL if not set. Return an error
-> + * if the IOASID is not found or not belong to the set.
->   */
->  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
->  		  bool (*getter)(void *))
-> @@ -94,11 +193,20 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
->  
->  	rcu_read_lock();
->  	ioasid_data = idr_find(&ioasid_idr, ioasid);
-> -	if (ioasid_data && ioasid_data->set == set) {
-> -		priv = ioasid_data->private;
-> -		if (getter && !getter(priv))
-> -			priv = NULL;
-> +	if (!ioasid_data) {
-> +		priv = ERR_PTR(-ENOENT);
-> +		goto unlock;
+> +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max, void *data)
+> +{
+> +	struct intel_iommu *iommu = data;
+> +	ioasid_t ioasid;
+> +
+> +	if (vcmd_alloc_pasid(iommu, &ioasid))
+> +		return INVALID_IOASID;
+> +	return ioasid;
+
+How does this honor min/max?
+
+> +}
+> +
+> +static int intel_ioasid_free(ioasid_t ioasid, void *data)
+> +{
+> +	struct iommu_pasid_alloc_info *svm;
+> +	struct intel_iommu *iommu = data;
+> +
+> +	if (!iommu || !cap_caching_mode(iommu->cap))
+> +		return -EINVAL;
+> +	/*
+> +	 * Sanity check the ioasid owner is done at upper layer, e.g. VFIO
+> +	 * We can only free the PASID when all the devices are unbond.
+> +	 */
+> +	svm = ioasid_find(NULL, ioasid, NULL);
+> +	if (!svm) {
+> +		pr_warn("Freeing unbond IOASID %d\n", ioasid);
+> +		return -EBUSY;
 > +	}
-> +	if (set && ioasid_data->set != set) {
-> +		/* data found but does not belong to the set */
-> +		priv = ERR_PTR(-EACCES);
-> +		goto unlock;
->  	}
-> +	/* Now IOASID and its set is verified, we can return the private data */
-> +	priv = ioasid_data->private;
-> +	if (getter && !getter(priv))
-> +		priv = NULL;
-> +unlock:
->  	rcu_read_unlock();
->  
->  	return priv;
-> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> index 6f3655a..64994e7 100644
-> --- a/include/linux/ioasid.h
-> +++ b/include/linux/ioasid.h
-> @@ -5,20 +5,31 @@
->  #define INVALID_IOASID ((ioasid_t)-1)
->  typedef unsigned int ioasid_t;
->  typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
-> +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
-> +typedef int (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
->  
->  struct ioasid_set {
->  	int dummy;
->  };
->  
-> +struct ioasid_allocator {
-> +	ioasid_alloc_fn_t alloc;
-> +	ioasid_free_fn_t free;
-> +	void *pdata;
+> +	vcmd_free_pasid(iommu, ioasid);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct ioasid_allocator intel_iommu_ioasid_allocator = {
+> +	.alloc = intel_ioasid_alloc,
+> +	.free = intel_ioasid_free,
 > +};
 > +
->  #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
->  
->  #ifdef CONFIG_IOASID
->  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
->  		      void *private);
-> -void ioasid_free(ioasid_t ioasid);
-> +int ioasid_free(ioasid_t ioasid);
->  
->  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
->  		  bool (*getter)(void *));
-> +int ioasid_set_allocator(struct ioasid_allocator *allocator);
-> +void ioasid_clear_allocator(void);
-> +int ioasid_set_data(ioasid_t ioasid, void *data);
->  
->  #else /* !CONFIG_IOASID */
->  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-> @@ -36,5 +47,20 @@ static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  int __init intel_iommu_init(void)
 >  {
->  	return NULL;
->  }
-> +
-> +static inline int ioasid_set_allocator(struct ioasid_allocator *allocator)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline void ioasid_clear_allocator(void)
-> +{
-> +}
-> +
-> +static inline int ioasid_set_data(ioasid_t ioasid, void *data)
-> +{
-> +	return -EINVAL;
-> +}
-> +
->  #endif /* CONFIG_IOASID */
->  #endif /* __LINUX_IOASID_H */
+>  	int ret = -ENODEV;
+> @@ -4921,6 +4957,20 @@ int __init intel_iommu_init(void)
+>  				       "%s", iommu->name);
+>  		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
+>  		iommu_device_register(&iommu->iommu);
+> +		if (cap_caching_mode(iommu->cap) && sm_supported(iommu)) {
+> +			/*
+> +			 * Register a custom ASID allocator if we are running
+> +			 * in a guest, the purpose is to have a system wide PASID
+> +			 * namespace among all PASID users.
+> +			 * Note that only one vIOMMU in each guest is supported.
+
+Why one vIOMMU per guest?  This would prevent guests with multiple PCI
+domains aiui.
+
+> +			 */
+> +			intel_iommu_ioasid_allocator.pdata = (void *)iommu;
+> +			ret = ioasid_set_allocator(&intel_iommu_ioasid_allocator);
+> +			if (ret == -EBUSY) {
+> +				pr_info("Custom IOASID allocator already registered\n");
+> +				break;
+> +			}
+> +		}
+>  	}
+>  
+>  	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index b29c85c..bc09d80 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -31,6 +31,7 @@
+>  #include <linux/iommu.h>
+>  #include <linux/io-64-nonatomic-lo-hi.h>
+>  #include <linux/dmar.h>
+> +#include <linux/ioasid.h>
+>  
+>  #include <asm/cacheflush.h>
+>  #include <asm/iommu.h>
 
 _______________________________________________
 iommu mailing list
