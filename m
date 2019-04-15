@@ -2,95 +2,57 @@ Return-Path: <SRS0=E2BV=SR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 196FBC282DA
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 14:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFBFC10F0E
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 17:22:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DDF2720880
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 14:17:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="ohP5ctvw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDF2720880
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9763F2183F
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 17:22:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9763F2183F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 98D40EE4;
-	Mon, 15 Apr 2019 14:17:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 43E8EB3E;
+	Mon, 15 Apr 2019 17:22:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9099EEE3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A93012C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 14:17:36 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
-	[209.85.208.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E4EA56C5
+	Mon, 15 Apr 2019 17:22:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F3558823
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 14:17:35 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id j20so4636939edq.10
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 07:17:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=arista.com; s=googlenew;
-	h=mime-version:subject:from:in-reply-to:date:cc
-	:content-transfer-encoding:message-id:references:to;
-	bh=2RZaeAv+eqJ722KuXxMWvVJUMBptaLufbtc0h7dNhY4=;
-	b=ohP5ctvwsWeO2EoS3ztuH2OLHRFqIhelMxBuN6GGyFYcrZ57Ub7yZnDd7jqQ+cMnNe
-	y07a9VCTM67sfIK6JWjUhu10kjuGU9sIFk4angf0JSR2gor9wLJR1nhmaWBmtqC8/oN7
-	up08qj6Mg3ER/Hy02Y/Aa6KA268D5kkRJ+QPHz7ZspDoXOn8Gt1T+S6NEN5RmUo4831f
-	deJe/y3/M1E/I2ChIV3ls5u2cowgQA5grDeOEOZWoLIzTjjVs4dCeoeh+RaySkS8ifHr
-	oRNnKNGYPweVQBQaXdcOuDUM/jTR4sH2XtCI35X1b6Wx298coCGcxQMfiCl6fy7Px8gi
-	3//w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-	:content-transfer-encoding:message-id:references:to;
-	bh=2RZaeAv+eqJ722KuXxMWvVJUMBptaLufbtc0h7dNhY4=;
-	b=Jxufpbl7Yf9Ij5QUq2TIZf/QSR5VXcr1KmCiWixjLmvD6GpNmhzGCr818JZT1LpSUJ
-	Z9CGIjLK/h08KetgyW5ADyaFu8HI3fHUkpg6pz9oNtn2Nf0wY7Buqy72jAnI7GMt3Oji
-	7u5m1/0NJsJI7bR2gTaXVi34dYBjyMH+aID024bsxiUIc8OvpocMY514Vx6k/ZUtIx22
-	T9jGM3L8mrvPWN6h2rQqAkkLvheLbF5tfxiKypSwTv13fKgDI7t9TJX/ag6jleOofSUn
-	Y9oVzA8CR9GY5MToPRQgM3yaQGJU6vW8Wzp2Z/fVh5Oev68sRIB6CS9XGOJt4ynyUNs0
-	9Mtg==
-X-Gm-Message-State: APjAAAUFnE8OhXQbXMu9Z16lhRLDepG/08Pd/mLmktnJci8PdD0/3EbW
-	QlxN7ibqsG3Al0DFVqomo16W3A==
-X-Google-Smtp-Source: APXvYqxwTCc+h0GnVrjXkxPREHIwykDrHaykShpxhVxLj2GzPIwHvzoE31mINAa3kg1KsjeRIBT2Kg==
-X-Received: by 2002:a17:906:4d4e:: with SMTP id
-	b14mr11641741ejv.68.1555337854494; 
-	Mon, 15 Apr 2019 07:17:34 -0700 (PDT)
-Received: from [10.83.36.220] ([217.173.96.166])
-	by smtp.gmail.com with ESMTPSA id
-	s14sm4576593eda.26.2019.04.15.07.17.33
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Mon, 15 Apr 2019 07:17:33 -0700 (PDT)
-Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
-Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
-	iommu_get_resv_regions
-In-Reply-To: <abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
-Date: Mon, 15 Apr 2019 15:16:59 +0100
-Message-Id: <1D51CB31-089A-4D71-A9C1-E54E50A56C46@arista.com>
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
-	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
-	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
-	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
-	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
-	<fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
-	<445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
-	<cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
-	<6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
-	<8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
-	<ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
-	<9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
-	<abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-X-Mailer: Apple Mail (2.3445.102.3)
-Cc: Tom Murphy <tmurphy@arista.com>, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, Dmitry Safonov <dima@arista.com>
+	Mon, 15 Apr 2019 17:22:25 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	15 Apr 2019 10:22:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,354,1549958400"; d="scan'208";a="316168612"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga005.jf.intel.com with ESMTP; 15 Apr 2019 10:22:25 -0700
+Date: Mon, 15 Apr 2019 10:25:02 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex
+	Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker
+	<jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 00/18] Shared virtual address IOMMU and VT-d support
+Message-ID: <20190415102502.3a47b24b@jacob-builder>
+In-Reply-To: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -103,62 +65,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: James Sewart via iommu <iommu@lists.linux-foundation.org>
-Reply-To: James Sewart <jamessewart@arista.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415141659.znAowZBMOzkBsSMFeC8a8RfMY0uYudPpFDH7BAfvlDg@z>
+Message-ID: <20190415172502.oWChSQUF_8wPMYsBluXLfIg1NmYf6STvAjHaYt9nhKY@z>
 
-SGV5IEx1LAoKPiBPbiAxMCBBcHIgMjAxOSwgYXQgMDY6MjIsIEx1IEJhb2x1IDxiYW9sdS5sdUBs
-aW51eC5pbnRlbC5jb20+IHdyb3RlOgo+IAo+IEhpIEphbWVzLAo+IAo+IE9uIDQvNi8xOSAyOjAy
-IEFNLCBKYW1lcyBTZXdhcnQgd3JvdGU6Cj4+IEhleSBMdSwKPj4gTXkgYmFkLCBkaWQgc29tZSBk
-ZWJ1Z2dpbmcgb24gbXkgZW5kLiBUaGUgaXNzdWUgd2FzIHN3YXBwaW5nIG91dAo+PiBmaW5kX2Rv
-bWFpbiBmb3IgaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2LiBJdCBzZWVtcyBpbiBzb21lIHNpdHVh
-dGlvbnMgdGhlCj4+IGRvbWFpbiBpcyBub3QgYXR0YWNoZWQgdG8gdGhlIGdyb3VwIGJ1dCB0aGUg
-ZGV2aWNlIGlzIGV4cGVjdGVkIHRvIGhhdmUgdGhlCj4+IGRvbWFpbiBzdGlsbCBzdG9yZWQgaW4g
-aXRzIGFyY2hkYXRhLgo+PiBJ4oCZdmUgYXR0YWNoZWQgdGhlIGZpbmFsIHBhdGNoIHdpdGggZmlu
-ZF9kb21haW4gdW5yZW1vdmVkIHdoaWNoIHNlZW1zIHRvCj4+IHdvcmsgaW4gbXkgdGVzdGluZy4K
-PiAKPiBKdXN0IGxvb2tlZCBpbnRvIHlvdXIgdjMgcGF0Y2ggc2V0IGFuZCBzb21lIHRob3VnaHRz
-IGZyb20gbXkgZW5kIHBvc3RlZAo+IGhlcmUganVzdCBmb3IgeW91ciBpbmZvcm1hdGlvbi4KPiAK
-PiBMZXQgbWUgcG9zdCB0aGUgcHJvYmxlbXMgd2Ugd2FudCB0byBhZGRyZXNzLgo+IAo+IDEuIFdo
-ZW4gYWxsb2NhdGluZyBhIG5ldyBncm91cCBmb3IgYSBkZXZpY2UsIGhvdyBzaG91bGQgd2UgZGV0
-ZXJtaW5lIHRoZQo+IHR5cGUgb2YgdGhlIGRlZmF1bHQgZG9tYWluPwo+IAo+IDIuIElmIHdlIG5l
-ZWQgdG8gcHV0IGEgZGV2aWNlIGludG8gYW4gZXhpc3RpbmcgZ3JvdXAgd2hpY2ggdXNlcyBhCj4g
-ZGlmZmVyZW50IHR5cGUgb2YgZG9tYWluIGZyb20gd2hhdCB0aGUgZGV2aWNlIGRlc2lyZXMgdG8g
-dXNlLCB3ZSBtaWdodAo+IGJyZWFrIHRoZSBmdW5jdGlvbmFsaXR5IG9mIHRoZSBkZXZpY2UuCj4g
-Cj4gTXkgbmV3IHRob3VnaHQgaXMgbGV0dGluZyB0aGUgaW9tbXUgZ2VuZXJpYyBjb2RlIHRvIGRl
-dGVybWluZSB0aGUKPiBkZWZhdWx0IGRvbWFpbiB0eXBlIChoZW5jZSBteSBwcm9wb3NlZCB2ZW5k
-b3Igc3BlY2lmaWMgZGVmYXVsdCBkb21haW4KPiB0eXBlIHBhdGNoZXMgY291bGQgYmUgZHJvcHBl
-ZCkuCj4gCj4gSWYgdGhlIGRlZmF1bHQgZG9tYWluIHR5cGUgaXMgZHluYW1pY2FsIG1hcHBpbmcs
-IGFuZCBsYXRlciBpbiBpb21tdV9ub19tYXBwaW5nKCksIHdlIGRldGVybWluZXMgdGhhdCB3ZSBt
-dXN0IHVzZSBhbiBpZGVudGl0eSBkb21haW4sCj4gd2UgdGhlbiBjYWxsIGlvbW11X3JlcXVlc3Rf
-ZG1fZm9yX2RldihkZXYpLgo+IAo+IElmIHRoZSBkZWZhdWx0IGRvbWFpbiB0eXBlIGlzIGlkZW50
-aXR5IG1hcHBpbmcsIGFuZCBsYXRlciBpbgo+IGlvbW11X25vX21hcHBpbmcoKSwgd2UgZGV0ZXJt
-aW5lZCB0aGF0IHdlIG11c3QgdXNlIGEgZHluYW1pY2FsIGRvbWFpbiwKPiB3ZSB0aGVuIGNhbGwg
-aW9tbXVfcmVxdWVzdF9kbWFfZG9tYWluX2Zvcl9kZXYoZGV2KS4KPiAKPiBXZSBhbHJlYWR5IGhh
-dmUgaW9tbXVfcmVxdWVzdF9kbV9mb3JfZGV2KCkgaW4gaW9tbXUuYy4gV2Ugb25seSBuZWVkIHRv
-Cj4gaW1wbGVtZW50IGlvbW11X3JlcXVlc3RfZG1hX2RvbWFpbl9mb3JfZGV2KCkuCj4gCj4gV2l0
-aCB0aGlzIGRvbmUsIHlvdXIgcGF0Y2ggdGl0bGVkICJDcmVhdGUgYW4gSU9NTVUgZ3JvdXAgZm9y
-IGRldmljZXMKPiB0aGF0IHJlcXVpcmUgYW4gaWRlbnRpdHkgbWFwIiBjb3VsZCBhbHNvIGJlIGRy
-b3BwZWQuCj4gCj4gQW55IHRob3VnaHRzPwoKVGhlcmVzIGEgY291cGxlIGlzc3VlcyBJIGNhbiB0
-aGluayBvZi4gaW9tbXVfcmVxdWVzdF9kbV9mb3JfZGV2IGNoYW5nZXMgCnRoZSBkb21haW4gZm9y
-IGFsbCBkZXZpY2VzIHdpdGhpbiB0aGUgZGV2aWNlcyBncm91cCwgaWYgd2UgbWF5IGhhdmUgCmRl
-dmljZXMgd2l0aCBkaWZmZXJlbnQgZG9tYWluIHJlcXVpcmVtZW50cyBpbiB0aGUgc2FtZSBncm91
-cCB0aGVuIG9ubHkgdGhlIApsYXN0IGluaXRpYWxpc2VkIGRldmljZSB3aWxsIGdldCB0aGUgZG9t
-YWluIGl0IHdhbnRzLiBJZiB3ZSB3YW50IHRvIGFkZCAKaW9tbXVfcmVxdWVzdF9kbWFfZG9tYWlu
-X2Zvcl9kZXYgdGhlbiB3ZSB3b3VsZCBzdGlsbCBuZWVkIGFub3RoZXIgSU9NTVUgCmdyb3VwIGZv
-ciBpZGVudGl0eSBkb21haW4gZGV2aWNlcy4KCkJvdGggd2l0aCB2MyBhbmQgdGhlIHByb3Bvc2Vk
-IG1ldGhvZCBoZXJlLCBpb21tdV9zaG91bGRfaWRlbnRpdHlfbWFwIGlzIApkZXRlcm1pbmluZyB3
-aGV0aGVyIHRoZSBkZXZpY2UgcmVxdWlyZXMgYW4gaWRlbnRpdHkgbWFwLiBJbiB2MyB0aGlzIGlz
-IApjYWxsZWQgb25jZSB1cCBmcm9udCBieSB0aGUgZ2VuZXJpYyBjb2RlIHRvIGRldGVybWluZSBm
-b3IgdGhlIElPTU1VIGdyb3VwIAp3aGljaCBkb21haW4gdHlwZSB0byB1c2UuIEluIHRoZSBwcm9w
-b3NlZCBtZXRob2QgSSB0aGluayB0aGlzIHdvdWxkIGhhcHBlbiAKYWZ0ZXIgaW5pdGlhbCBkb21h
-aW4gYWxsb2NhdGlvbiBhbmQgd291bGQgdHJpZ2dlciB0aGUgZG9tYWluIHRvIGJlIApyZXBsYWNl
-ZCB3aXRoIGEgZGlmZmVyZW50IGRvbWFpbi4KCkkgcHJlZmVyIHRoZSBzb2x1dGlvbiBpbiB2My4g
-V2hhdCBkbyB5b3UgdGhpbms/Cgo+IAo+PiBDaGVlcnMsCj4+IEphbWVzLgo+IAo+IEJlc3QgcmVn
-YXJkcywKPiBMdSBCYW9sdQoKQ2hlZXJzLApKYW1lcy4KCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+
+Hi Joerg and all,
+
+Just a gentle reminder if you have any comments on this series. The
+goal is to support vSVA but without page request. It shares code with
+Eric Auger's series sMMU v3 for nested mode.
+
+Jean, I took your ioasid allocator and modified for PASID allocation as
+we discussed for the need of custom allocator both for vt-d and pvIOMMU.
+
+Thanks,
+
+Jacob
+
+On Mon,  8 Apr 2019 16:59:15 -0700
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+
+> Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on
+> Intel platforms allow address space sharing between device DMA and
+> applications. SVA can reduce programming complexity and enhance
+> security. This series is intended to enable SVA virtualization, i.e.
+> shared guest application address space and physical device DMA
+> address. Only IOMMU portion of the changes are included in this
+> series. Additional support is needed in VFIO and QEMU (will be
+> submitted separately) to complete this functionality.
+> 
+> To make incremental changes and reduce the size of each patchset.
+> This series does not inlcude support for page request services.
+> 
+> In VT-d implementation, PASID table is per device and maintained in
+> the host. Guest PASID table is shadowed in VMM where virtual IOMMU is
+> emulated.
+> 
+>     .-------------.  .---------------------------.
+>     |   vIOMMU    |  | Guest process CR3, FL only|
+>     |             |  '---------------------------'
+>     .----------------/
+>     | PASID Entry |--- PASID cache flush -
+>     '-------------'                       |
+>     |             |                       V
+>     |             |                CR3 in GPA
+>     '-------------'
+> Guest
+> ------| Shadow |--------------------------|--------
+>       v        v                          v
+> Host
+>     .-------------.  .----------------------.
+>     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+>     |             |  '----------------------'
+>     .----------------/  |
+>     | PASID Entry |     V (Nested xlate)
+>     '----------------\.------------------------------.
+>     |             |   |SL for GPA-HPA, default domain|
+>     |             |   '------------------------------'
+>     '-------------'
+> Where:
+>  - FL = First level/stage one page tables
+>  - SL = Second level/stage two page tables
+> 
+> 
+> This work is based on collaboration with other developers on the IOMMU
+> mailing list. Notably,
+> 
+> [1] [PATCH v6 00/22] SMMUv3 Nested Stage Setup by Eric Auger
+> https://lkml.org/lkml/2019/3/17/124
+> 
+> [2] [RFC PATCH 2/6] drivers core: Add I/O ASID allocator by
+> Jean-Philippe Brucker
+> https://www.spinics.net/lists/iommu/msg30639.html
+> 
+> [3] [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation by
+> Lu Baolu https://lkml.org/lkml/2018/11/12/1921
+> 
+> There are roughly three parts:
+> 1. Generic PASID allocator [1] with extension to support custom
+> allocator 2. IOMMU cache invalidation passdown from guest to host
+> 3. Guest PASID bind for nested translation
+> 
+> All generic IOMMU APIs are reused from [1], which has a v7 just
+> published with no real impact to the patches used here. It is worth
+> noting that unlike sMMU nested stage setup, where PASID table is
+> owned by the guest, VT-d PASID table is owned by the host, individual
+> PASIDs are bound instead of the PASID table.
+> 
+> 
+> Jacob Pan (15):
+>   ioasid: Add custom IOASID allocator
+>   ioasid: Convert ioasid_idr to XArray
+>   driver core: add per device iommu param
+>   iommu: introduce device fault data
+>   iommu: introduce device fault report API
+>   iommu: Introduce attach/detach_pasid_table API
+>   iommu/vt-d: Add custom allocator for IOASID
+>   iommu/vt-d: Replace Intel specific PASID allocator with IOASID
+>   iommu: Add guest PASID bind function
+>   iommu/vt-d: Move domain helper to header
+>   iommu/vt-d: Add nested translation support
+>   iommu/vt-d: Add bind guest PASID support
+>   iommu: add max num of cache and granu types
+>   iommu/vt-d: Support flushing more translation cache types
+>   iommu/vt-d: Add svm/sva invalidate function
+> 
+> Jean-Philippe Brucker (1):
+>   drivers core: Add I/O ASID allocator
+> 
+> Liu, Yi L (1):
+>   iommu: Introduce cache_invalidate API
+> 
+> Lu Baolu (1):
+>   iommu/vt-d: Enlightened PASID allocation
+> 
+>  drivers/base/Kconfig        |   7 ++
+>  drivers/base/Makefile       |   1 +
+>  drivers/base/ioasid.c       | 211
+> +++++++++++++++++++++++++++++++++++++ drivers/iommu/Kconfig       |
+> 1 + drivers/iommu/dmar.c        |  48 +++++++++
+>  drivers/iommu/intel-iommu.c | 219
+> ++++++++++++++++++++++++++++++++++++-- drivers/iommu/intel-pasid.c |
+> 191 +++++++++++++++++++++++++++++----- drivers/iommu/intel-pasid.h |
+> 24 ++++- drivers/iommu/intel-svm.c   | 217
+> +++++++++++++++++++++++++++++++++++--- drivers/iommu/iommu.c       |
+> 207 +++++++++++++++++++++++++++++++++++- include/linux/device.h
+> |   3 + include/linux/intel-iommu.h |  40 +++++--
+>  include/linux/intel-svm.h   |   7 ++
+>  include/linux/ioasid.h      |  66 ++++++++++++
+>  include/linux/iommu.h       | 127 +++++++++++++++++++++++
+>  include/uapi/linux/iommu.h  | 248
+> ++++++++++++++++++++++++++++++++++++++++++++ 16 files changed, 1559
+> insertions(+), 58 deletions(-) create mode 100644
+> drivers/base/ioasid.c create mode 100644 include/linux/ioasid.h
+>  create mode 100644 include/uapi/linux/iommu.h
+> 
+
+[Jacob Pan]
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
