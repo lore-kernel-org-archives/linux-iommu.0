@@ -2,68 +2,81 @@ Return-Path: <SRS0=E2BV=SR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	HTML_MESSAGE,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA0EC10F0E
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 11:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE05C282DD
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 12:05:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B88E5206BA
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 11:26:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B88E5206BA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7D9FB20833
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 12:05:39 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Io6I2v0a";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="iQg3Zp+9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D9FB20833
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6C21CEEF;
-	Mon, 15 Apr 2019 11:26:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 50B69EF3;
+	Mon, 15 Apr 2019 12:05:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 85AB4EED
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 10F5EEF2
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 11:26:42 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f66.google.com (mail-lf1-f66.google.com
-	[209.85.167.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B41096C5
+	Mon, 15 Apr 2019 12:05:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0E9472C3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 11:26:41 +0000 (UTC)
-Received: by mail-lf1-f66.google.com with SMTP id t30so12766115lfd.8
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 04:26:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-	:from:date:message-id:subject:to:cc;
-	bh=Gtltvyt5bPf4pEYBWaZi4zNXKSd5ik7zfMHdcuVAsvo=;
-	b=WFTy4zWEZ96qrC2uFbZrV+aPPHnxQRlSC0Y1frVAPU+sfZfNpg7gX0pihIpK1XTxiL
-	zIBgQzbJp+gCzk9uuo9P6gXGX44pCpC5aCvTY41eg1XvT7SGZM/2xyvhOG3nvLZQuNDs
-	V3qDmBqLXrXxjvrZ25huS5cw+PUKx7iTUOIXK/QmPOgkpt5tV8D//1BnLFIz6y6SRP50
-	FxOBV8ZsyUXD+fq5FXKLCbugHw28lP0kwrmO23nwr8vSbaMBFEQPXdJUQxDHgC18dtNE
-	YQgVLYn5oxdEc80Lt+g1RDZACfob3bGu6pHN4h6v31fEqHjs+4iejVOzgSRXRo+1cLd3
-	GaKQ==
-X-Gm-Message-State: APjAAAWJAbc2cYhCy17gfjpShR+bKboioqp0kcwv3Lq0aAGjB3fXkODd
-	YOjz7Il0P2ElFg2u8ybZy1h40msct3yqgJbmMhg=
-X-Google-Smtp-Source: APXvYqx2XB0789itDfHvUjZ5Id3fdUxLaHBr5ccySZs+cQ+zhuXKbqXfdJ1rNyVktsIxlJ23YCGZwM3RRUXBv0Wxgpc=
-X-Received: by 2002:a19:ec01:: with SMTP id b1mr1406735lfa.128.1555327599960; 
-	Mon, 15 Apr 2019 04:26:39 -0700 (PDT)
+	Mon, 15 Apr 2019 12:05:36 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 6C89F6188E; Mon, 15 Apr 2019 12:05:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1555329936;
+	bh=WEkLI02HkMlfLPjkCRB4kQX+Yc8CE5+4/CD8RPw+AQc=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=Io6I2v0a0cW7kANYfTUWUp+lAt1d2CzHnZ4hl9YOfSFer1Z6OikDywOcQS9FiYuuT
+	p345UC1wX+7CUS2/NgSS/h6o+XCGSKfar8P6P676a6P/BhbkvzmqGE4IPnT/nOFrtn
+	171u/2XClzWK4uVdqQIhCvyaRlAAfwtB8Azb0p1Y=
+Received: from [10.79.129.68]
+	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
+	[103.229.18.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 07F0E61793;
+	Mon, 15 Apr 2019 12:05:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1555329931;
+	bh=WEkLI02HkMlfLPjkCRB4kQX+Yc8CE5+4/CD8RPw+AQc=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=iQg3Zp+9/4ZOq2F8j4H95sttETImEvHggDy3OJvA9dhTo+yXLicyrrVNgqys+vu7C
+	Xupq0TjJ1SrhiP4StLWG5C1yjGfvU4pX/K6lfV8yNmhuYToLc0qeBV5a2ryrUhthus
+	s9ClfyFm+iSDNhOwbZydMUySttYaON2ec2JBHuOk=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 07F0E61793
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add SID information to context fault
+	log
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+	will.deacon@arm.com, iommu@lists.linux-foundation.org
+References: <20190415080734.6843-1-vivek.gautam@codeaurora.org>
+	<e5945adb-a1a3-1743-e671-39707276fad6@arm.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Message-ID: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762@codeaurora.org>
+Date: Mon, 15 Apr 2019 17:35:27 +0530
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
-	<5bdc3265-e5a4-e8c8-9098-0bba18a66f19@oracle.com>
-	<38f6f868-013e-5619-b939-a8273fc64ee4@oracle.com>
-In-Reply-To: <38f6f868-013e-5619-b939-a8273fc64ee4@oracle.com>
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Date: Mon, 15 Apr 2019 07:26:28 -0400
-Message-ID:
- <CAPbh3rvyVd_D9tMfE-Bo2JmdabaiQnaipmmadc67tUt_Lrt2gw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
-	leaving critical section
-To: Dongli Zhang <dongli.zhang@oracle.com>
-Cc: konrad.wilk@oracle.com, joe.jin@oracle.com, haakon.bugge@oracle.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	robin.murphy@arm.com, hch@lst.de
+In-Reply-To: <e5945adb-a1a3-1743-e671-39707276fad6@arm.com>
+Content-Language: en-US
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,129 +89,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: konrad@darnok.org
-Content-Type: multipart/mixed; boundary="===============6932956733148858444=="
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415112628.qmHxzHiOw7t_87vXqxRrPQCKQDY7TTEXkRAK4iW0nfo@z>
+Message-ID: <20190415120527.lC0nb4qZfEo7LqLFx1FztIrbjDrXkHs9d3EZadvykSs@z>
 
---===============6932956733148858444==
-Content-Type: multipart/alternative; boundary="0000000000001ae7b505868fedb0"
-
---0000000000001ae7b505868fedb0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Apr 15, 2019, 2:50 AM Dongli Zhang <dongli.zhang@oracle.com> wrote:
-
-> As the patch to be fixed is still in Konrad's own tree, I will send the v=
-2
-> for
-> the patch to be fixed, instead of an incremental fix.
->
-
-I squashed it in.
-
-
-> Dongli Zhang
->
-> On 4/12/19 10:13 PM, Joe Jin wrote:
-> > I'm good to have this patch, which helps identify the cause of failure =
-is
-> > fragmentation or it really been used up.
-> >
-> > On 4/12/19 4:38 AM, Dongli Zhang wrote:
-> >> When swiotlb is full, the kernel would print io_tlb_used. However, the
-> >> result might be inaccurate at that time because we have left the
-> critical
-> >> section protected by spinlock.
-> >>
-> >> Therefore, we backup the io_tlb_used into local variable before leavin=
-g
-> >> critical section.
-> >>
-> >> Fixes: 83ca25948940 ("swiotlb: dump used and total slots when swiotlb
-> buffer is full")
-> >> Suggested-by: H=C3=A5kon Bugge <haakon.bugge@oracle.com>
-> >> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> >
-> > Reviewed-by: Joe Jin <joe.jin@oracle.com>
-> >
-> > Thanks,
-> > Joe
-> >
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
---0000000000001ae7b505868fedb0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"auto"><div><br><br><div class=3D"gmail_quote"><div dir=3D"ltr" =
-class=3D"gmail_attr">On Mon, Apr 15, 2019, 2:50 AM Dongli Zhang &lt;<a href=
-=3D"mailto:dongli.zhang@oracle.com">dongli.zhang@oracle.com</a>&gt; wrote:<=
-br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex">As the patch to be fixed is still i=
-n Konrad&#39;s own tree, I will send the v2 for<br>
-the patch to be fixed, instead of an incremental fix.<br></blockquote></div=
-></div><div dir=3D"auto"><br></div><div dir=3D"auto">I squashed it in.</div=
-><div dir=3D"auto"><br></div><div dir=3D"auto"><div class=3D"gmail_quote"><=
-blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px=
- #ccc solid;padding-left:1ex">
-<br>
-Dongli Zhang<br>
-<br>
-On 4/12/19 10:13 PM, Joe Jin wrote:<br>
-&gt; I&#39;m good to have this patch, which helps identify the cause of fai=
-lure is<br>
-&gt; fragmentation or it really been used up.<br>
-&gt; <br>
-&gt; On 4/12/19 4:38 AM, Dongli Zhang wrote:<br>
-&gt;&gt; When swiotlb is full, the kernel would print io_tlb_used. However,=
- the<br>
-&gt;&gt; result might be inaccurate at that time because we have left the c=
-ritical<br>
-&gt;&gt; section protected by spinlock.<br>
-&gt;&gt;<br>
-&gt;&gt; Therefore, we backup the io_tlb_used into local variable before le=
-aving<br>
-&gt;&gt; critical section.<br>
-&gt;&gt;<br>
-&gt;&gt; Fixes: 83ca25948940 (&quot;swiotlb: dump used and total slots when=
- swiotlb buffer is full&quot;)<br>
-&gt;&gt; Suggested-by: H=C3=A5kon Bugge &lt;<a href=3D"mailto:haakon.bugge@=
-oracle.com" target=3D"_blank" rel=3D"noreferrer">haakon.bugge@oracle.com</a=
->&gt;<br>
-&gt;&gt; Signed-off-by: Dongli Zhang &lt;<a href=3D"mailto:dongli.zhang@ora=
-cle.com" target=3D"_blank" rel=3D"noreferrer">dongli.zhang@oracle.com</a>&g=
-t;<br>
-&gt; <br>
-&gt; Reviewed-by: Joe Jin &lt;<a href=3D"mailto:joe.jin@oracle.com" target=
-=3D"_blank" rel=3D"noreferrer">joe.jin@oracle.com</a>&gt; <br>
-&gt; <br>
-&gt; Thanks,<br>
-&gt; Joe<br>
-&gt; <br>
-_______________________________________________<br>
-iommu mailing list<br>
-<a href=3D"mailto:iommu@lists.linux-foundation.org" target=3D"_blank" rel=
-=3D"noreferrer">iommu@lists.linux-foundation.org</a><br>
-<a href=3D"https://lists.linuxfoundation.org/mailman/listinfo/iommu" rel=3D=
-"noreferrer noreferrer" target=3D"_blank">https://lists.linuxfoundation.org=
-/mailman/listinfo/iommu</a></blockquote></div></div></div>
-
---0000000000001ae7b505868fedb0--
-
---===============6932956733148858444==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6932956733148858444==--
+Ck9uIDQvMTUvMjAxOSAzOjExIFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMTUvMDQvMjAx
+OSAwOTowNywgVml2ZWsgR2F1dGFtIHdyb3RlOgo+PiBFeHRyYWN0IHRoZSBTSUQgYW5kIGFkZCB0
+aGUgaW5mb3JtYXRpb24gdG8gY29udGV4dCBmYXVsdCBsb2cuCj4+IFRoaXMgaXMgc3BlY2lhbGx5
+IHVzZWZ1bCBpbiBhIGRpc3RyaWJ1dGVkIHNtbXUgYXJjaGl0ZWN0dXJlCj4+IHdoZXJlIG11bHRp
+cGxlIG1hc3RlcnMgYXJlIGNvbm5lY3RlZCB0byBzbW11LiBTSUQgaW5mb3JtYXRpb24KPj4gaGVs
+cHMgdG8gcXVpY2tseSBpZGVudGlmeSB0aGUgZmF1bHRpbmcgbWFzdGVyIGRldmljZS4KPgo+IEht
+bSwgZ2l2ZW4gaG93IGl0J3MgVU5LTk9XTiBmb3IgdHJhbnNsYXRpb24gZmF1bHRzLCB3aGljaCBh
+cmUgYXJndWFibHkgCj4gdGhlIG1vc3QgbGlrZWx5IGNvbnRleHQgZmF1bHQsIEkgcmVja29uIGl0
+IHByb2JhYmx5IG1ha2VzIG1vcmUgc2Vuc2UgCj4gdG8ganVzdCBkdW1wIHRoZSByYXcgcmVnaXN0
+ZXIgdmFsdWUgZm9yIHRoZSB1c2VyIHRvIGludGVycHJldCwgYXMgd2UgCj4gZG8gZm9yIGZzci9m
+c3luci4KCgpUaGFua3MgUm9iaW4uIFN1cmUgd2lsbCB1cGRhdGUgaXQgdG8gZHVtcCB0aGUgcmF3
+IHJlZ2lzdGVyIHZhbHVlLgoKUmVnYXJkcwpWaXZlawoKPgo+IFJvYmluLgo+Cj4+IFNpZ25lZC1v
+ZmYtYnk6IFZpdmVrIEdhdXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPgo+PiAtLS0K
+Pj4gwqAgZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggfMKgIDQgKysrKwo+PiDCoCBkcml2
+ZXJzL2lvbW11L2FybS1zbW11LmPCoMKgwqDCoMKgIHwgMTQgKysrKysrKysrKysrLS0KPj4gwqAg
+MiBmaWxlcyBjaGFuZ2VkLCAxNiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+Pgo+PiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggCj4+IGIvZHJpdmVycy9p
+b21tdS9hcm0tc21tdS1yZWdzLmgKPj4gaW5kZXggYTEyMjZlNGFiNWY4Li5lNWJlMDM0NGI2MTAg
+MTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCj4+ICsrKyBiL2Ry
+aXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCj4+IEBAIC0xNDcsNiArMTQ3LDEwIEBAIGVudW0g
+YXJtX3NtbXVfczJjcl9wcml2Y2ZnIHsKPj4gwqAgI2RlZmluZSBDQkFSX0lSUFRORFhfU0hJRlTC
+oMKgwqDCoMKgwqDCoCAyNAo+PiDCoCAjZGVmaW5lIENCQVJfSVJQVE5EWF9NQVNLwqDCoMKgwqDC
+oMKgwqAgMHhmZgo+PiDCoCArI2RlZmluZSBBUk1fU01NVV9HUjFfQ0JGUlNZTlJBKG4pwqDCoMKg
+ICgweDQwMCArICgobikgPDwgMikpCj4+ICsjZGVmaW5lIENCRlJTWU5SQV9WMl9TSURfTUFTS8Kg
+wqDCoMKgwqDCoMKgIDB4ZmZmZgo+PiArI2RlZmluZSBDQkZSU1lOUkFfVjFfU0lEX01BU0vCoMKg
+wqDCoMKgwqDCoCAweDdmZmYKPj4gKwo+PiDCoCAjZGVmaW5lIEFSTV9TTU1VX0dSMV9DQkEyUihu
+KcKgwqDCoMKgwqDCoMKgICgweDgwMCArICgobikgPDwgMikpCj4+IMKgICNkZWZpbmUgQ0JBMlJf
+Ulc2NF8zMkJJVMKgwqDCoMKgwqDCoMKgICgwIDw8IDApCj4+IMKgICNkZWZpbmUgQ0JBMlJfUlc2
+NF82NEJJVMKgwqDCoMKgwqDCoMKgICgxIDw8IDApCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
+bW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPj4gaW5kZXggMDQ1ZDkz
+ODg0MTY0Li5hYTM0MjZkYzY4ZDAgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNt
+bXUuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPj4gQEAgLTU3NSw3ICs1NzUs
+MTAgQEAgc3RhdGljIGlycXJldHVybl90IGFybV9zbW11X2NvbnRleHRfZmF1bHQoaW50IAo+PiBp
+cnEsIHZvaWQgKmRldikKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11
+X2RvbWFpbiA9IHRvX3NtbXVfZG9tYWluKGRvbWFpbik7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IGFy
+bV9zbW11X2NmZyAqY2ZnID0gJnNtbXVfZG9tYWluLT5jZmc7Cj4+IMKgwqDCoMKgwqAgc3RydWN0
+IGFybV9zbW11X2RldmljZSAqc21tdSA9IHNtbXVfZG9tYWluLT5zbW11Owo+PiArwqDCoMKgIHZv
+aWQgX19pb21lbSAqZ3IxX2Jhc2UgPSBBUk1fU01NVV9HUjEoc21tdSk7Cj4+IMKgwqDCoMKgwqAg
+dm9pZCBfX2lvbWVtICpjYl9iYXNlOwo+PiArwqDCoMKgIHUzMiBjYmZyc3lucmE7Cj4+ICvCoMKg
+wqAgdTE2IHNpZDsKPj4gwqAgwqDCoMKgwqDCoCBjYl9iYXNlID0gQVJNX1NNTVVfQ0Ioc21tdSwg
+Y2ZnLT5jYm5keCk7Cj4+IMKgwqDCoMKgwqAgZnNyID0gcmVhZGxfcmVsYXhlZChjYl9iYXNlICsg
+QVJNX1NNTVVfQ0JfRlNSKTsKPj4gQEAgLTU4Niw5ICs1ODksMTYgQEAgc3RhdGljIGlycXJldHVy
+bl90IGFybV9zbW11X2NvbnRleHRfZmF1bHQoaW50IAo+PiBpcnEsIHZvaWQgKmRldikKPj4gwqDC
+oMKgwqDCoCBmc3luciA9IHJlYWRsX3JlbGF4ZWQoY2JfYmFzZSArIEFSTV9TTU1VX0NCX0ZTWU5S
+MCk7Cj4+IMKgwqDCoMKgwqAgaW92YSA9IHJlYWRxX3JlbGF4ZWQoY2JfYmFzZSArIEFSTV9TTU1V
+X0NCX0ZBUik7Cj4+IMKgICvCoMKgwqAgY2JmcnN5bnJhID0gcmVhZGxfcmVsYXhlZChncjFfYmFz
+ZSArCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEFSTV9TTU1VX0dSMV9D
+QkZSU1lOUkEoY2ZnLT5jYm5keCkpOwo+PiArwqDCoMKgIGlmIChzbW11LT52ZXJzaW9uID4gQVJN
+X1NNTVVfVjEpCj4+ICvCoMKgwqDCoMKgwqDCoCBzaWQgPSBjYmZyc3lucmEgJiBDQkZSU1lOUkFf
+VjJfU0lEX01BU0s7Cj4+ICvCoMKgwqAgZWxzZQo+PiArwqDCoMKgwqDCoMKgwqAgc2lkID0gY2Jm
+cnN5bnJhICYgQ0JGUlNZTlJBX1YxX1NJRF9NQVNLOwo+PiArCj4+IMKgwqDCoMKgwqAgZGV2X2Vy
+cl9yYXRlbGltaXRlZChzbW11LT5kZXYsCj4+IC3CoMKgwqAgIlVuaGFuZGxlZCBjb250ZXh0IGZh
+dWx0OiBmc3I9MHgleCwgaW92YT0weCUwOGx4LCBmc3lucj0weCV4LCAKPj4gY2I9JWRcbiIsCj4+
+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZnNyLCBpb3ZhLCBmc3luciwgY2ZnLT5j
+Ym5keCk7Cj4+ICvCoMKgwqAgIlVuaGFuZGxlZCBjb250ZXh0IGZhdWx0OiBmc3I9MHgleCwgaW92
+YT0weCUwOGx4LCBmc3lucj0weCV4LCAKPj4gY2I9JWQgc2lkID0gJXVcbiIsCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZnNyLCBpb3ZhLCBmc3luciwgY2ZnLT5jYm5keCwgc2lk
+KTsKPj4gwqAgwqDCoMKgwqDCoCB3cml0ZWwoZnNyLCBjYl9iYXNlICsgQVJNX1NNTVVfQ0JfRlNS
+KTsKPj4gwqDCoMKgwqDCoCByZXR1cm4gSVJRX0hBTkRMRUQ7Cj4+Cl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
