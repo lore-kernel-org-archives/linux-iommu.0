@@ -6,51 +6,57 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB424C10F0E
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5BBC10F12
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:53:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 832212087C
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:31:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 832212087C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 146872073F
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:53:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 146872073F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E98EA95;
-	Mon, 15 Apr 2019 18:31:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BCE3CBE4;
+	Mon, 15 Apr 2019 18:53:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C4D2DA70
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54C3BB4B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 18:31:23 +0000 (UTC)
+	Mon, 15 Apr 2019 18:53:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 501E11C0
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8DFFB6C5
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 18:31:23 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E7FAE80D;
-	Mon, 15 Apr 2019 11:31:22 -0700 (PDT)
-Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AC9023F706;
-	Mon, 15 Apr 2019 11:31:20 -0700 (PDT)
-Subject: Re: [PATCH v2 1/7] ACPI/IORT: Check ATS capability in root complex
-	nodes
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, will.deacon@arm.com
-References: <20190409165245.26500-1-jean-philippe.brucker@arm.com>
-	<20190409165245.26500-2-jean-philippe.brucker@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c10c7adb-c7f6-f8c6-05cc-f4f143427a2d@arm.com>
-Date: Mon, 15 Apr 2019 19:31:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Mon, 15 Apr 2019 18:53:50 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+	[10.5.11.22])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id B48EC59454;
+	Mon, 15 Apr 2019 18:53:49 +0000 (UTC)
+Received: from x1.home (ovpn-116-122.phx2.redhat.com [10.3.116.122])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id B24661001E6F;
+	Mon, 15 Apr 2019 18:53:48 +0000 (UTC)
+Date: Mon, 15 Apr 2019 12:53:48 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 02/18] ioasid: Add custom IOASID allocator
+Message-ID: <20190415125348.58073042@x1.home>
+In-Reply-To: <1554767973-30125-3-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1554767973-30125-3-git-send-email-jacob.jun.pan@linux.intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <20190409165245.26500-2-jean-philippe.brucker@arm.com>
-Content-Language: en-GB
-Cc: zhongmiao@hisilicon.com, okaya@kernel.org, rjw@rjwysocki.net,
-	linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
-	sudeep.holla@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.39]);
+	Mon, 15 Apr 2019 18:53:49 +0000 (UTC)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,106 +69,294 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415183118.tv9NlWzYTL0i8Spux6OC1oSrTD7Qw5tq3EJ6BD5ePXI@z>
+Message-ID: <20190415185348.-JmdXJM1ldX9T48hs9BlOG2M9mVgpj9M6L-mg8k6KiE@z>
 
-On 09/04/2019 17:52, Jean-Philippe Brucker wrote:
-> Root complex node in IORT has a bit telling whether it supports ATS or
-> not. Store this bit in the IOMMU fwspec when setting up a device, so it
-> can be accessed later by an IOMMU driver.
+On Mon,  8 Apr 2019 16:59:17 -0700
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 
-Hmm, it doesn't feel quite right to store a copy of the same RC/SMMU 
-integration property for every endpoint...
-
-It seems like it might be more logical to track this at the SMMU end, 
-i.e. only allow ARM_SMMU_FEAT_ATS to be set if all RCs targeting that 
-SMMU also support ATS. For the moment that seems sufficiently realistic, 
-and unless some wacky topology ever actually shows up in silicon to 
-complain, I'm inclined not to care too much about it being potentially 
-overly restrictive.
-
-Furthermore, I'm now wondering whether it would make sense to push this 
-into the PCI layer as well (or instead), i.e. hook into pci_init_ats() 
-or pci_enable_ats() and it the device is untrusted or the topology 
-doesn't support ATS, prevent the capability from ever being enabled at 
-all, rather than trying to mitigate it later at the SMMU end. What do 
-you reckon?
-
-> Use the negative version (NO_ATS) at the moment because it's not clear
-> if/how the bit needs to be integrated in other firmware descriptions. The
-> SMMU has a feature bit telling if it supports ATS, which might be
-> sufficient in most systems for deciding whether or not we should enable
-> the ATS capability in endpoints.
-
-I can fairly confidently guarantee that it won't. For instance, MMU-600 
-reports IDR0.ATS==1 because MMU-600 implements the SMMUv3 architectural 
-ATS support. Actually making use of that support, though, still requires 
-an RC capable of generating the appropriate DTI-ATS messages, and that a 
-DTI interface is wired up correctly between the two.
-
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->   drivers/acpi/arm64/iort.c | 11 +++++++++++
->   include/linux/iommu.h     |  4 ++++
->   2 files changed, 15 insertions(+)
+> Sometimes, IOASID allocation must be handled by platform specific
+> code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs need
+> to be allocated by the host via enlightened or paravirt interfaces.
 > 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index e48894e002ba..7f2c1c9c6b38 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -1028,6 +1028,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
->   	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
->   }
->   
-> +static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
-> +{
-> +	struct acpi_iort_root_complex *pci_rc;
+> This patch adds an extension to the IOASID allocator APIs such that
+> platform drivers can register a custom allocator, possibly at boot
+> time, to take over the allocation. IDR is still used for tracking
+> and searching purposes internal to the IOASID code. Private data of
+> an IOASID can also be set after the allocation.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/base/ioasid.c  | 124 +++++++++++++++++++++++++++++++++++++++++++++----
+>  include/linux/ioasid.h |  28 ++++++++++-
+>  2 files changed, 143 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
+> index cf122b2..294e856 100644
+> --- a/drivers/base/ioasid.c
+> +++ b/drivers/base/ioasid.c
+> @@ -17,6 +17,74 @@ struct ioasid_data {
+>  };
+>  
+>  static DEFINE_IDR(ioasid_idr);
+> +static DEFINE_MUTEX(ioasid_allocator_lock);
+> +static const struct ioasid_allocator *ioasid_allocator;
 > +
-> +	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
-> +	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
+> +
+> +/**
+> + * ioasid_set_allocator - register a custom allocator
+> + *
+> + * Custom allocator take precedence over the default IDR based allocator.
+> + * Private data associated with the ASID are managed by ASID common code
+> + * similar to IDR data.
+> + */
+> +int ioasid_set_allocator(struct ioasid_allocator *allocator)
+> +{
+> +	int ret = 0;
+> +
+> +	if (!allocator)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&ioasid_allocator_lock);
+> +	if (ioasid_allocator) {
+> +		ret = -EBUSY;
+> +		goto exit_unlock;
+> +	}
+> +	ioasid_allocator = allocator;
+> +
+> +exit_unlock:
+> +	mutex_unlock(&ioasid_allocator_lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_allocator);
+
+Should this fault if there are existing idr's allocated?
+
+> +
+> +/**
+> + * ioasid_clear_allocator - Free the custom IOASID allocator
+> + *
+> + * REVISIT: So far there is only one custom allocator allowed.
+> + */
+> +void ioasid_clear_allocator(void)
+> +{
+> +	mutex_lock(&ioasid_allocator_lock);
+> +	ioasid_allocator = NULL;
+> +	mutex_unlock(&ioasid_allocator_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_clear_allocator);
+> +
+> +/**
+> + * ioasid_set_data - Set private data for an allocated ioasid
+> + *
+> + * For IOASID that is already allocated, private data can be set
+> + * via this API. Future lookup can be done via ioasid_find.
+> + */
+> +int ioasid_set_data(ioasid_t ioasid, void *data)
+> +{
+> +	struct ioasid_data *ioasid_data;
+> +	int ret = 0;
+> +
+> +	idr_lock(&ioasid_idr);
+> +	ioasid_data = idr_find(&ioasid_idr, ioasid);
+> +	if (ioasid_data)
+> +		ioasid_data->private = data;
+> +	else
+> +		ret = -ENOENT;
+> +	idr_unlock(&ioasid_idr);
+> +	/* getter may use the private data */
+> +	synchronize_rcu();
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_data);
+>  
+>  /**
+>   * ioasid_alloc - Allocate an IOASID
+> @@ -32,7 +100,7 @@ static DEFINE_IDR(ioasid_idr);
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private)
+>  {
+> -	int id = -1;
+> +	int id = INVALID_IOASID;
+>  	struct ioasid_data *data;
+>  
+>  	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> @@ -42,13 +110,30 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  	data->set = set;
+>  	data->private = private;
+>  
+> +	/* Use custom allocator if available, otherwise default to IDR */
+> +	if (ioasid_allocator) {
+
+If this races with ioasid_clear_allocator() ioasid_allocator might be
+set above, but NULL below to generate a segfault.  If this races with
+ioasid_set_allocator() an id can be allocated that the custom allocator
+doesn't track.
+
+> +		mutex_lock(&ioasid_allocator_lock);
+> +		id = ioasid_allocator->alloc(min, max, ioasid_allocator->pdata);
+> +		mutex_unlock(&ioasid_allocator_lock);
+> +		if (id == INVALID_IOASID) {
+> +			pr_err("Failed ASID allocation by custom allocator\n");
+> +			goto exit_free;
+> +		}
+> +		/*
+> +		 * Use IDR to manage private data also sanitiy check custom
+> +		 * allocator for duplicates.
+> +		 */
+> +		min = id;
+> +		max = id + 1;
+> +	}
+>  	idr_preload(GFP_KERNEL);
+>  	idr_lock(&ioasid_idr);
+>  	data->id = id = idr_alloc(&ioasid_idr, data, min, max, GFP_ATOMIC);
+>  	idr_unlock(&ioasid_idr);
+>  	idr_preload_end();
+>  
+> -	if (id < 0) {
+> +exit_free:
+> +	if (id < 0 || id == INVALID_IOASID) {
+>  		kfree(data);
+
+What if an ioasid is already allocated before the ioasid_allocator is
+registered?  The .alloc callback above could return an id that
+idr_alloc cannot provide, in which case this cleanup does not call the
+custom allocator's free callback.
+
+>  		return INVALID_IOASID;
+>  	}
+> @@ -60,9 +145,20 @@ EXPORT_SYMBOL_GPL(ioasid_alloc);
+>   * ioasid_free - Free an IOASID
+>   * @ioasid: the ID to remove
+>   */
+> -void ioasid_free(ioasid_t ioasid)
+> +int ioasid_free(ioasid_t ioasid)
+>  {
+>  	struct ioasid_data *ioasid_data;
+> +	int ret = 0;
+> +
+> +	if (ioasid_allocator) {
+
+Same races as above.
+
+> +		mutex_lock(&ioasid_allocator_lock);
+> +		ret = ioasid_allocator->free(ioasid, ioasid_allocator->pdata);
+> +		mutex_unlock(&ioasid_allocator_lock);
+> +	}
+> +	if (ret) {
+> +		pr_err("ioasid %d custom allocator free failed\n", ioasid);
+> +		return ret;
+> +	}
+>  
+>  	idr_lock(&ioasid_idr);
+>  	ioasid_data = idr_remove(&ioasid_idr, ioasid);
+> @@ -70,6 +166,8 @@ void ioasid_free(ioasid_t ioasid)
+>  
+>  	if (ioasid_data)
+>  		kfree_rcu(ioasid_data, rcu);
+> +
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(ioasid_free);
+>  
+> @@ -84,7 +182,8 @@ EXPORT_SYMBOL_GPL(ioasid_free);
+>   * if @getter returns false, then the object is invalid and NULL is returned.
+>   *
+>   * If the IOASID has been allocated for this set, return the private pointer
+> - * passed to ioasid_alloc. Otherwise return NULL.
+> + * passed to ioasid_alloc. Private data can be NULL if not set. Return an error
+> + * if the IOASID is not found or not belong to the set.
+>   */
+>  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  		  bool (*getter)(void *))
+> @@ -94,11 +193,20 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  
+>  	rcu_read_lock();
+>  	ioasid_data = idr_find(&ioasid_idr, ioasid);
+> -	if (ioasid_data && ioasid_data->set == set) {
+> -		priv = ioasid_data->private;
+> -		if (getter && !getter(priv))
+> -			priv = NULL;
+> +	if (!ioasid_data) {
+> +		priv = ERR_PTR(-ENOENT);
+> +		goto unlock;
+> +	}
+> +	if (set && ioasid_data->set != set) {
+> +		/* data found but does not belong to the set */
+> +		priv = ERR_PTR(-EACCES);
+> +		goto unlock;
+>  	}
+> +	/* Now IOASID and its set is verified, we can return the private data */
+> +	priv = ioasid_data->private;
+> +	if (getter && !getter(priv))
+> +		priv = NULL;
+> +unlock:
+>  	rcu_read_unlock();
+>  
+>  	return priv;
+> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+> index 6f3655a..64994e7 100644
+> --- a/include/linux/ioasid.h
+> +++ b/include/linux/ioasid.h
+> @@ -5,20 +5,31 @@
+>  #define INVALID_IOASID ((ioasid_t)-1)
+>  typedef unsigned int ioasid_t;
+>  typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
+> +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
+> +typedef int (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
+>  
+>  struct ioasid_set {
+>  	int dummy;
+>  };
+>  
+> +struct ioasid_allocator {
+> +	ioasid_alloc_fn_t alloc;
+> +	ioasid_free_fn_t free;
+> +	void *pdata;
+> +};
+> +
+>  #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
+>  
+>  #ifdef CONFIG_IOASID
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private);
+> -void ioasid_free(ioasid_t ioasid);
+> +int ioasid_free(ioasid_t ioasid);
+>  
+>  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  		  bool (*getter)(void *));
+> +int ioasid_set_allocator(struct ioasid_allocator *allocator);
+> +void ioasid_clear_allocator(void);
+> +int ioasid_set_data(ioasid_t ioasid, void *data);
+>  
+>  #else /* !CONFIG_IOASID */
+>  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+> @@ -36,5 +47,20 @@ static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  {
+>  	return NULL;
+>  }
+> +
+> +static inline int ioasid_set_allocator(struct ioasid_allocator *allocator)
+> +{
+> +	return -EINVAL;
 > +}
 > +
->   /**
->    * iort_iommu_configure - Set-up IOMMU configuration for a device.
->    *
-> @@ -1063,6 +1071,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->   		info.node = node;
->   		err = pci_for_each_dma_alias(to_pci_dev(dev),
->   					     iort_pci_iommu_init, &info);
+> +static inline void ioasid_clear_allocator(void)
+> +{
+> +}
 > +
-> +		if (!err && !iort_pci_rc_supports_ats(node))
-> +			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_NO_ATS;
->   	} else {
->   		int i = 0;
->   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 3dbeb457fb16..ed6738c358ca 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -509,10 +509,14 @@ struct iommu_fwspec {
->   	const struct iommu_ops	*ops;
->   	struct fwnode_handle	*iommu_fwnode;
->   	void			*iommu_priv;
-> +	u32			flags;
->   	unsigned int		num_ids;
->   	u32			ids[1];
->   };
->   
-> +/* Firmware disabled ATS in the root complex */
-
-More likely firmware is just describing how the hardware was built ;)
-
-Robin.
-
-> +#define IOMMU_FWSPEC_PCI_NO_ATS			(1 << 0)
+> +static inline int ioasid_set_data(ioasid_t ioasid, void *data)
+> +{
+> +	return -EINVAL;
+> +}
 > +
->   int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
->   		      const struct iommu_ops *ops);
->   void iommu_fwspec_free(struct device *dev);
-> 
+>  #endif /* CONFIG_IOASID */
+>  #endif /* __LINUX_IOASID_H */
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
