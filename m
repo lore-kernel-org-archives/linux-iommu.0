@@ -2,75 +2,102 @@ Return-Path: <SRS0=E2BV=SR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29078C10F0E
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 08:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6C2C282CE
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 09:18:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D61E7206BA
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 08:07:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 242BE2087E
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 09:18:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="c99QFiXJ";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="AImYsxeU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D61E7206BA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="bfIvQYOs"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 242BE2087E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 83DB1AF7;
-	Mon, 15 Apr 2019 08:07:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B1771E90;
+	Mon, 15 Apr 2019 09:18:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B0711AE7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C6F4A22
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 08:07:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4AAA62C3
+	Mon, 15 Apr 2019 09:18:42 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+	[209.85.208.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 245F02C3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 08:07:51 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 1734761633; Mon, 15 Apr 2019 08:07:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1555315671;
-	bh=Sev9nk/GjSs3ut+txPBymvd0Ls4JpMVjwugfhgI0Xm4=;
-	h=From:To:Cc:Subject:Date:From;
-	b=c99QFiXJLz69YjbqTm4O7w3GP5b0cwjIg98qM9PpMYtFB8f3L2XCwnv2PA0lyPny9
-	1X/3eE4UXuXB7GkMV5NlkLSNgDnFRQzRxOtD+DFjR1/jrgJ3i73feSkdVk34MD2haB
-	C/SBe4dO63nTW7FKHDAP4IACnP8deshA5I9bYGWI=
-Received: from blr-ubuntu-41.ap.qualcomm.com
-	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
-	[103.229.18.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id 0587260CF0;
-	Mon, 15 Apr 2019 08:07:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1555315670;
-	bh=Sev9nk/GjSs3ut+txPBymvd0Ls4JpMVjwugfhgI0Xm4=;
-	h=From:To:Cc:Subject:Date:From;
-	b=AImYsxeUCc6jF2VImAPIMx9ej9MQYLDwfPU0TVCXLgdG+4HBD7eGoUBpje7N22CPF
-	DexSInFSBscTBj/EYWfeST01g/onxrMQWSwk63NAizO5u13zC1f4yE56+OAQWN66Ie
-	4H0+DGd+Yz9VFg+Szta7z2qZaCZjhhGg4JzTJi8w=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0587260CF0
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-To: joro@8bytes.org, will.deacon@arm.com, robin.murphy@arm.com,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH 1/1] iommu/arm-smmu: Add SID information to context fault log
-Date: Mon, 15 Apr 2019 13:37:34 +0530
-Message-Id: <20190415080734.6843-1-vivek.gautam@codeaurora.org>
-X-Mailer: git-send-email 2.16.1.72.g5be1f00a9a70
-Cc: linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	Mon, 15 Apr 2019 09:18:41 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id f53so12440679ede.4
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 15 Apr 2019 02:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ffwll.ch; s=google;
+	h=sender:date:from:to:cc:subject:message-id:mail-followup-to
+	:references:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=ynQtq/6aBUoTAipkeDKcQtf7kKsME/OPz6dQg69/ZqA=;
+	b=bfIvQYOsMuRfY7e2nyCsEZp366cC8dWDkDaYDWjxwzxadojySJtksZwssf/48Lk7uf
+	GUHPNRX/ujNQ1QYwPiFyrGwtJaU7VpLIjhP0kl/W9R9YUMRSfK4Gyd8c0Ab6ecPHf9bw
+	kywY6l2dmW2fER/dievAMG/iLNhDovtkvEkX0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+	:mail-followup-to:references:mime-version:content-disposition
+	:in-reply-to:user-agent;
+	bh=ynQtq/6aBUoTAipkeDKcQtf7kKsME/OPz6dQg69/ZqA=;
+	b=bpwnh//qw9nmGSUoJl1S29uGejvVZh9thOfPMaEgn2/ukQEHPWHm70UmwjymGDW9Xv
+	qea4Bluo0PcyieBnnSGV93jqncYT3pYtMsmSJjGKgZwbsDDKNRJCWXITXW9DNH/p4fXq
+	gkkk+Matj5wqDttFpNpjvUUknSB3hLfVzPSJlKY605m1qLDdoeI/ZEDTNh8F5zsrCttJ
+	PXFzs49ZRzDliTs+9Ud1ocsqVGF7QpjA9mRDkEYN3maI1uUIwzfdwT53/51XpBtYtYee
+	slaXdgzY8Gp2HXIUZjR1yQsUKOKKdJ6MvHnz+LM2p+GXAgjrj0/bXacvJBRXI3EvDJY4
+	UBeQ==
+X-Gm-Message-State: APjAAAXi2DU2NaWwdhOO4ftt/efyDwyo0u2InN8nD0AYGLp2Iy4Hvsdg
+	LaAtXoW9fobrWdNemxbNSGrjrA==
+X-Google-Smtp-Source: APXvYqz4bP4buv8PrROHVBzhkpiDUy0i+0wCAHiCT1WKRbo3mf5xVcBaqcpM2rq8dc8Va+iUasniiA==
+X-Received: by 2002:aa7:ca07:: with SMTP id y7mr14132059eds.149.1555319920740; 
+	Mon, 15 Apr 2019 02:18:40 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:569e:0:3106:d637:d723:e855])
+	by smtp.gmail.com with ESMTPSA id b2sm2635652eds.15.2019.04.15.02.18.39
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Mon, 15 Apr 2019 02:18:39 -0700 (PDT)
+Date: Mon, 15 Apr 2019 11:18:37 +0200
+From: Daniel Vetter <daniel@ffwll.ch>
+To: Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 3/3] drm/panfrost: Add initial panfrost driver
+Message-ID: <20190415091837.GV2665@phenom.ffwll.local>
+Mail-Followup-To: Steven Price <steven.price@arm.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+	Neil Armstrong <narmstrong@baylibre.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Sean Paul <sean@poorly.run>, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	David Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org,
+	"Marty E . Plummer" <hanetzer@startmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org
+References: <20190401074730.12241-1-robh@kernel.org>
+	<20190401074730.12241-4-robh@kernel.org>
+	<5efdc3cb-7367-65e1-d1bf-14051db5da10@arm.com>
+	<20190405161632.GA9160@rosenzweig.io>
+	<34a7038e-34f0-0cc4-4fc4-9b7dda356df6@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <34a7038e-34f0-0cc4-4fc4-9b7dda356df6@arm.com>
+X-Operating-System: Linux phenom 4.19.0-1-amd64 
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+	Neil Armstrong <narmstrong@baylibre.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+	"Marty E . Plummer" <hanetzer@startmail.com>, Sean Paul <sean@poorly.run>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,77 +110,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415080734.3yS11hBjy-Yvu_FpV94AOmJF8KD_DW2AcPpgQWC_lpI@z>
+Message-ID: <20190415091837.jZRyDUiwhgcq8kcFjQ81KHsKcBkFmU_5cXkUT4EY0nQ@z>
 
-Extract the SID and add the information to context fault log.
-This is specially useful in a distributed smmu architecture
-where multiple masters are connected to smmu. SID information
-helps to quickly identify the faulting master device.
+On Fri, Apr 05, 2019 at 05:42:33PM +0100, Steven Price wrote:
+> On 05/04/2019 17:16, Alyssa Rosenzweig wrote:
+> > acronym once ever and have it as a "??"), I'm not sure how to respond to
+> > that... We don't know how to allocate memory for the GPU-internal data
+> > structures (the tiler heap, for instance, but also a few others I've
+> > just named "misc_0" and "scratchpad" -- guessing one of those is for
+> > "TLS"). With kbase, I took the worst-case strategy of allocating
+> > gigantic chunks on startup with tiny commit counts and GROW_ON_GPF set.
+> > With the new driver, well, our memory consumption is scary since
+> > implementing GROW_ON_GPF in an upstream-friendly way is a bit more work
+> > and isn't expected to hit the 5.2 window.
+> 
+> Yes GROW_ON_GPF is pretty much required for the tiler heap - it's not
+> (reasonably) possible to determine how big it should be. The Arm user
+> space driver does the same approach (tiny commit count, but allow it to
+> grow).
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
----
- drivers/iommu/arm-smmu-regs.h |  4 ++++
- drivers/iommu/arm-smmu.c      | 14 ++++++++++++--
- 2 files changed, 16 insertions(+), 2 deletions(-)
+Jumping in here with a drive through comment ...
 
-diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-index a1226e4ab5f8..e5be0344b610 100644
---- a/drivers/iommu/arm-smmu-regs.h
-+++ b/drivers/iommu/arm-smmu-regs.h
-@@ -147,6 +147,10 @@ enum arm_smmu_s2cr_privcfg {
- #define CBAR_IRPTNDX_SHIFT		24
- #define CBAR_IRPTNDX_MASK		0xff
- 
-+#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
-+#define CBFRSYNRA_V2_SID_MASK		0xffff
-+#define CBFRSYNRA_V1_SID_MASK		0x7fff
-+
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
- #define CBA2R_RW64_32BIT		(0 << 0)
- #define CBA2R_RW64_64BIT		(1 << 0)
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 045d93884164..aa3426dc68d0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -575,7 +575,10 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
- 	void __iomem *cb_base;
-+	u32 cbfrsynra;
-+	u16 sid;
- 
- 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
- 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
-@@ -586,9 +589,16 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
- 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
- 
-+	cbfrsynra = readl_relaxed(gr1_base +
-+				  ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
-+	if (smmu->version > ARM_SMMU_V1)
-+		sid = cbfrsynra & CBFRSYNRA_V2_SID_MASK;
-+	else
-+		sid = cbfrsynra & CBFRSYNRA_V1_SID_MASK;
-+
- 	dev_err_ratelimited(smmu->dev,
--	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cfg->cbndx);
-+	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d sid = %u\n",
-+			    fsr, iova, fsynr, cfg->cbndx, sid);
- 
- 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
- 	return IRQ_HANDLED;
+Growing gem bo and dma-buf is going to be endless amounts of fun, since we
+hard-coded that their size is invariant.
+
+I think the only reasonable way to implement this is if you allocate a
+really huge bo, map it, but only put the pages in on faulting. Or when
+really evil userspace tries to export it. Actually changing the underlying
+buffer size is not going to work I think.
+
+Note: I didn't read kbase, so might be totally wrong in how GROW_ON_GPF
+works.
+-Daniel
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
