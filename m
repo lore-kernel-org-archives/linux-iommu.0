@@ -1,40 +1,56 @@
-From: Dongli Zhang <dongli.zhang@oracle.com>
-Subject: Re: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
- leaving critical section
-Date: Mon, 15 Apr 2019 20:08:20 +0800
-Message-ID: <f10187e3-b84c-6c8c-2dae-09059a5f3270@oracle.com>
-References: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
- <5bdc3265-e5a4-e8c8-9098-0bba18a66f19@oracle.com>
- <38f6f868-013e-5619-b939-a8273fc64ee4@oracle.com>
- <CAPbh3rvyVd_D9tMfE-Bo2JmdabaiQnaipmmadc67tUt_Lrt2gw@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/7] Add PCI ATS support to Arm SMMUv3
+Date: Mon, 15 Apr 2019 14:20:54 +0100
+Message-ID: <20190415132054.GA15023@fuggles.cambridge.arm.com>
+References: <20190409165245.26500-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAPbh3rvyVd_D9tMfE-Bo2JmdabaiQnaipmmadc67tUt_Lrt2gw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: konrad@darnok.org
-Cc: joe.jin@oracle.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com, haakon.bugge@oracle.com, robin.murphy@arm.com, linux-kernel@vger.kernel.org, hch@lst.de
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190409165245.26500-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, okaya-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Jean-Philippe,
 
-
-On 04/15/2019 07:26 PM, Konrad Rzeszutek Wilk wrote:
+On Tue, Apr 09, 2019 at 05:52:38PM +0100, Jean-Philippe Brucker wrote:
+> This series enables PCI ATS in SMMUv3. Changes since v1 [1]:
 > 
+> * Simplify the SMMU structures (patches 2-4 are new).
 > 
-> On Mon, Apr 15, 2019, 2:50 AM Dongli Zhang <dongli.zhang@oracle.com
-> <mailto:dongli.zhang@oracle.com>> wrote:
+> * Don't enable ATS for devices that are attached to a bypass domain,
+>   because in that case a translation request would cause F_BAD_ATS_TREQ.
+>   Translation requests in that case cause F_BAD_ATS_TREQ. Enable ATS in
+>   attach_dev() rather than add_device().
 > 
->     As the patch to be fixed is still in Konrad's own tree, I will send the v2 for
->     the patch to be fixed, instead of an incremental fix.
+> * Enable ATS for stage-1 and stage-2 STEs alike. There is no benefit to
+>   disabling ATS for stage-2 domains.
 > 
+> [1] https://www.spinics.net/lists/arm-kernel/msg714628.html
 > 
-> I squashed it in.
+> Jean-Philippe Brucker (7):
+>   ACPI/IORT: Check ATS capability in root complex nodes
+>   iommu/arm-smmu-v3: Rename arm_smmu_master_data to arm_smmu_master
+>   iommu/arm-smmu-v3: Store SteamIDs in master
+>   iommu/arm-smmu-v3: Add a master->domain pointer
+>   iommu/arm-smmu-v3: Link domains and devices
+>   iommu/arm-smmu-v3: Add support for PCI ATS
+>   iommu/arm-smmu-v3: Disable tagged pointers
 
-Thank you very much!
+Patches 2, 3, 4, 5 and 7 look fine to me. I've left some comments on the
+other two.
 
-I saw it is at:
+Cheers,
 
-https://git.kernel.org/pub/scm/linux/kernel/git/konrad/swiotlb.git/commit/?h=devel/for-linus-5.1&id=53b29c336830db48ad3dc737f88b8c065b1f0851
-
-Dongli Zhang
+Will
