@@ -2,86 +2,77 @@ Return-Path: <SRS0=E2BV=SR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1AAC10F0E
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A34D0C282DA
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:07:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4BA2D218A1
-	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:06:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 70666218DA
+	for <iommu@archiver.kernel.org>; Mon, 15 Apr 2019 18:07:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="i3wHdbvu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BA2D218A1
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="N0NTSq3Q"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70666218DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 005CD9EE;
-	Mon, 15 Apr 2019 18:06:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 48CAE9BA;
+	Mon, 15 Apr 2019 18:07:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DDBE92F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3F7AB2F
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 18:06:49 +0000 (UTC)
+	Mon, 15 Apr 2019 18:07:43 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
-	[209.85.221.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A1DA1C0
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
+	[209.85.208.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B42C96C5
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 18:06:49 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id k17so18472296wrx.10
+	Mon, 15 Apr 2019 18:07:42 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id j20so5311597edq.10
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Apr 2019 11:06:49 -0700 (PDT)
+	Mon, 15 Apr 2019 11:07:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=arista.com; s=googlenew;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=EkcG1ecxbRvbtTZp8pykP1WrSpDo5FL3IoRO1jdwX4A=;
-	b=i3wHdbvuoVxt1LC2EUpNdj3M95LS7TyzrhgbGppZWVWnHDaHBVWDrEBfZItz/IEpmj
-	3eCG15hLn0pJiWlrRV0+/QJzosPkdKhD8R6kRPMC3v+mXlBk/eWJiZbDkXeYXRyJgvnA
-	kFO3X/OQADph8cOzNyl8ghHq8eNls4gmuYn3zD2caH4i6SyW+Lz1//QnXAwxHIkvF4yW
-	6dchgbPcTwSNCBiTbGIMuTBmkEquKlAdwic7WWO4NAIKMXyOPJrP9171Uf2VUg0A4RJs
-	SaNGmeLRvjUCJHdxf/+If6oudX4GNonpbvKHjIGuAQV4fGGVw/oJLm0PXWjpHiFZjgfU
-	tL9g==
+	h=from:to:cc:subject:date:message-id;
+	bh=DMnZhta68iAX33CpRchMA+yMZHDHOGcPtQBVqQabrNw=;
+	b=N0NTSq3Q4ojuYpUkjlK2prw6mQsPcTEtqzN7mYy7VPjp34PF8ONNdXWw1+iPNdnMDJ
+	xhaqAvzIpQd1qUWrgFJQ6fjSJDFkQet6N168sqou/tTfja7IUhiFUZxrtuc4vxN9LthX
+	zsmU0vvqYuzZiaoo7nnxLLLRF10ySHc4yGHS+0+I087jXXFqNTtnioOyqFjRnzqvzpgz
+	dfYTImWltwKzcVkctMJHVKWr7ayYtpXXpEOJPE7kyk/NPmGAcXqKpKlE4VQDmhGPld5d
+	U/nueMEpAXswgB9QUjfcgjx2cjo6SYz+flU4eSSi9cQ/ki8izPQA0/rolbY7c8ZrQ77b
+	VwzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=EkcG1ecxbRvbtTZp8pykP1WrSpDo5FL3IoRO1jdwX4A=;
-	b=qyopPQDH4KUbStr+9oH7tMNo/Ciucp+kxIUYXPymkE7iLqaIwFnTZ4DfMgaDcMFVhr
-	aYH2R7CW5h5glL9PUa8fjSX8BbdSa4lHlt1p9Ct/8UCEVidvMXF+eluDZgrktvyZC1ex
-	TjXzWhSxUNNIlYb03VkkhylQGhAUtEpKYX/OAUUkWQm4YvkF10AaiZRNM9ZTvW/sea3x
-	ytZ72l6iPA4MKY4JLlyehWccOAJWyntOVsOYiRYMtyqLBi7tWwVFSS7tkq1dxUX9+hRV
-	YD27dmRax3Tee8nBQzbcavod4LjrPAHN5MyS8CASBcxOqkg1LwvdhRXOvzWDSoAPQt8J
-	qSpg==
-X-Gm-Message-State: APjAAAVlRmp2JMNtfW15r03olnm7DZ1HgexMFCoY5lN+a8V3QSXaWfJ8
-	Ik0kt++y/X/SOAiG5jSQ0GHgab5sErH0QrN36X3lBg==
-X-Google-Smtp-Source: APXvYqzVHTURCpFodSDEVwDlFPrvJXAWwZaZ1ZcGTLFFboOAeqzMpHqKjqAGWTImBYBNh9/uPFXAlPRrxNpPAja/0iQ=
-X-Received: by 2002:a5d:68cd:: with SMTP id p13mr12937108wrw.22.1555351607916; 
-	Mon, 15 Apr 2019 11:06:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190411184741.27540-1-tmurphy@arista.com>
-	<20190411184741.27540-10-tmurphy@arista.com>
-	<20190415062316.GC18154@infradead.org>
-In-Reply-To: <20190415062316.GC18154@infradead.org>
-Date: Mon, 15 Apr 2019 19:06:36 +0100
-Message-ID:
- <CAPL0++4cvqD1gg=mDASrLRBv69ei75v-g3BWWW+Poz3_TUOkbQ@mail.gmail.com>
-Subject: Re: [PATCH 9/9] iommu/amd: Add allocated domain to global list earlier
-To: Christoph Hellwig <hch@infradead.org>
-Cc: linux-samsung-soc@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
-	Dmitry Safonov <dima@arista.com>, Marc Zyngier <marc.zyngier@arm.com>,
-	linux-arm-msm@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
-	linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
-	David Brown <david.brown@linaro.org>,
-	iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
-	linux-mediatek@lists.infradead.org, Tom Murphy <murphyt7@tcd.ie>,
-	Andy Gross <andy.gross@linaro.org>, linux-rockchip@lists.infradead.org,
-	Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=DMnZhta68iAX33CpRchMA+yMZHDHOGcPtQBVqQabrNw=;
+	b=JFd+ghlApIj52A8VbX7M6vSm064dIck8a3y6QMPv9VntRQrzeUci25bThoAHT0wkeR
+	XOeJQk61TwEOJIzRpIJBlbDEKtkVromuNDPAKJJKA5ZIA9sfiOu9u8IbpXmicr/V4FPY
+	4PzsZ/KGXAsN9Aroo1/NiOEXBevH+XrNHF8tf/SMa5iuBVMaCy3Vw+u99ArmB51FiM2Y
+	hLjvb7J0Hy8NQSfbpoG11p03vBNSPe/bJeMI5x50Idq5jOsFIQQ/3pLrzWme7FTjkgZJ
+	NB1mzAQxSEDB197RDymvqhkW+FG92Rtaehghc21sa3tRmWh51qapFB/3gqbpv7IhRaLS
+	Cskg==
+X-Gm-Message-State: APjAAAX0CdjDiXc3ztmf8JcDfryePnNUzT5qIZP6XpsrjOQrY7vUkzpR
+	NrTJKY1LZoCJQG8tGNyNPUm6ARxgyH+E8g==
+X-Google-Smtp-Source: APXvYqxGbF6PBQssGl3zTaMtgNXM17abXrU39qUCc3fAxi71G1CMTTcoSTWH5P0IEoifOlPy8P3TAg==
+X-Received: by 2002:a50:fc0a:: with SMTP id i10mr30663836edr.143.1555351661237;
+	Mon, 15 Apr 2019 11:07:41 -0700 (PDT)
+Received: from linux-ThinkPad-X1-Carbon-5th.Hitronhub.home ([80.111.101.37])
+	by smtp.gmail.com with ESMTPSA id
+	y12sm7239984ejr.75.2019.04.15.11.07.39
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Mon, 15 Apr 2019 11:07:40 -0700 (PDT)
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/amd: Add allocated domain to global list earlier
+Date: Mon, 15 Apr 2019 19:05:56 +0100
+Message-Id: <20190415180556.5018-1-tmurphy@arista.com>
+X-Mailer: git-send-email 2.17.1
+Cc: dima@arista.com, Tom Murphy <tmurphy@arista.com>,
+	linux-kernel@vger.kernel.org, murphyt7@tcd.ie
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -96,27 +87,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Tom Murphy via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Tom Murphy <tmurphy@arista.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190415180636.Gp0r7GFzNoIZxVgB1Gj0XobfVPupL1NKxzDR3xbnuCE@z>
+Message-ID: <20190415180556.Q7bSV0LoeDi1DqtxVwgGgkVmIFFx7Cko2XgRI6hxmSY@z>
 
->This seems like a fix to the existing code and should probably go out first.
+dma_ops_domain_free() expects domain to be in a global list.
+Arguably, could be called before protection_domain_init().
 
-I'll send this patch out on it's own now.
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+Signed-off-by: Tom Murphy <tmurphy@arista.com>
+---
+ drivers/iommu/amd_iommu.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-On Mon, Apr 15, 2019 at 7:23 AM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Thu, Apr 11, 2019 at 07:47:38PM +0100, Tom Murphy via iommu wrote:
-> > dma_ops_domain_free() expects domain to be in a global list.
-> > Arguably, could be called before protection_domain_init().
-> >
-> > Signed-off-by: Dmitry Safonov <dima@arista.com>
-> > Signed-off-by: Tom Murphy <tmurphy@arista.com>
->
-> This seems like a fix to the existing code and should probably go
-> out first.
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 02b351834a3b..bfb021d656aa 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1801,8 +1801,12 @@ static struct protection_domain *dma_ops_domain_alloc(void)
+ 	if (!domain)
+ 		return NULL;
+ 
+-	if (protection_domain_init(domain))
+-		goto free_domain;
++	if (protection_domain_init(domain)) {
++		kfree(domain);
++		return NULL;
++	}
++
++	add_domain_to_list(domain);
+ 
+ 	domain->mode = PAGE_MODE_3_LEVEL;
+ 	domain->pt_root = (void *)get_zeroed_page(GFP_KERNEL);
+@@ -1824,8 +1828,6 @@ static struct protection_domain *dma_ops_domain_alloc(void)
+ 	/* Initialize reserved ranges */
+ 	iommu_dma_copy_reserved_iova(&reserved_iova_ranges, &domain->domain);
+ 
+-	add_domain_to_list(domain);
+-
+ 	return domain;
+ 
+ free_cookie:
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
