@@ -1,14 +1,14 @@
 From: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/4] swiotlb-xen: make instances match their method names
-Date: Mon, 15 Apr 2019 15:55:24 -0700 (PDT)
-Message-ID: <alpine.DEB.2.10.1904151534390.29275@sstabellini-ThinkPad-X260>
+Subject: Re: [PATCH 2/4] swiotlb-xen: use ->map_page to implement ->map_sg
+Date: Mon, 15 Apr 2019 15:55:36 -0700 (PDT)
+Message-ID: <alpine.DEB.2.10.1904151541370.29275@sstabellini-ThinkPad-X260>
 References: <20190411072000.4306-1-hch@lst.de>
-	<20190411072000.4306-2-hch@lst.de>
+	<20190411072000.4306-3-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190411072000.4306-2-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20190411072000.4306-3-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,66 +23,110 @@ Cc: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Stefano Stabellini <sst
 List-Id: iommu@lists.linux-foundation.org
 
 On Thu, 11 Apr 2019, Christoph Hellwig wrote:
-> Just drop two pointless _attrs prefixes to make the code a little
-> more grep-able.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> We can simply loop over the segments and map them, removing lots of
+> duplicate code.
+
+Right, the only difference is the additional dma_capable check which is
+good to have.
 
 Reviewed-by: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
+
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 > ---
->  drivers/xen/swiotlb-xen.c | 17 +++++++----------
->  1 file changed, 7 insertions(+), 10 deletions(-)
+>  drivers/xen/swiotlb-xen.c | 68 ++++++---------------------------------
+>  1 file changed, 10 insertions(+), 58 deletions(-)
 > 
 > diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index 877baf2a94f4..d4bc3aabd44d 100644
+> index d4bc3aabd44d..97a55c225593 100644
 > --- a/drivers/xen/swiotlb-xen.c
 > +++ b/drivers/xen/swiotlb-xen.c
-> @@ -504,9 +504,8 @@ xen_swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
->   * concerning calls here are the same as for swiotlb_unmap_page() above.
->   */
->  static void
-> -xen_swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
-> -			   int nelems, enum dma_data_direction dir,
-> -			   unsigned long attrs)
-> +xen_swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
-> +		enum dma_data_direction dir, unsigned long attrs)
->  {
->  	struct scatterlist *sg;
->  	int i;
-> @@ -535,9 +534,8 @@ xen_swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
->   * same here.
->   */
+> @@ -517,24 +517,8 @@ xen_swiotlb_unmap_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
+>  
+>  }
+>  
+> -/*
+> - * Map a set of buffers described by scatterlist in streaming mode for DMA.
+> - * This is the scatter-gather version of the above xen_swiotlb_map_page
+> - * interface.  Here the scatter gather list elements are each tagged with the
+> - * appropriate dma address and length.  They are obtained via
+> - * sg_dma_{address,length}(SG).
+> - *
+> - * NOTE: An implementation may be able to use a smaller number of
+> - *       DMA address/length pairs than there are SG table elements.
+> - *       (for example via virtual mapping capabilities)
+> - *       The routine returns the number of addr/length pairs actually
+> - *       used, at most nents.
+> - *
+> - * Device ownership issues as mentioned above for xen_swiotlb_map_page are the
+> - * same here.
+> - */
 >  static int
-> -xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
-> -			 int nelems, enum dma_data_direction dir,
-> -			 unsigned long attrs)
-> +xen_swiotlb_map_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
-> +		enum dma_data_direction dir, unsigned long attrs)
+> -xen_swiotlb_map_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
+> +xen_swiotlb_map_sg(struct device *dev, struct scatterlist *sgl, int nelems,
+>  		enum dma_data_direction dir, unsigned long attrs)
 >  {
 >  	struct scatterlist *sg;
->  	int i;
-> @@ -562,8 +560,7 @@ xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
->  				/* Don't panic here, we expect map_sg users
->  				   to do proper error handling. */
->  				attrs |= DMA_ATTR_SKIP_CPU_SYNC;
-> -				xen_swiotlb_unmap_sg_attrs(hwdev, sgl, i, dir,
-> -							   attrs);
-> +				xen_swiotlb_unmap_sg(hwdev, sgl, i, dir, attrs);
->  				sg_dma_len(sgl) = 0;
->  				return 0;
->  			}
-> @@ -690,8 +687,8 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
->  	.sync_single_for_device = xen_swiotlb_sync_single_for_device,
->  	.sync_sg_for_cpu = xen_swiotlb_sync_sg_for_cpu,
->  	.sync_sg_for_device = xen_swiotlb_sync_sg_for_device,
-> -	.map_sg = xen_swiotlb_map_sg_attrs,
-> -	.unmap_sg = xen_swiotlb_unmap_sg_attrs,
-> +	.map_sg = xen_swiotlb_map_sg,
-> +	.unmap_sg = xen_swiotlb_unmap_sg,
->  	.map_page = xen_swiotlb_map_page,
->  	.unmap_page = xen_swiotlb_unmap_page,
->  	.dma_supported = xen_swiotlb_dma_supported,
+> @@ -543,50 +527,18 @@ xen_swiotlb_map_sg(struct device *hwdev, struct scatterlist *sgl, int nelems,
+>  	BUG_ON(dir == DMA_NONE);
+>  
+>  	for_each_sg(sgl, sg, nelems, i) {
+> -		phys_addr_t paddr = sg_phys(sg);
+> -		dma_addr_t dev_addr = xen_phys_to_bus(paddr);
+> -
+> -		if (swiotlb_force == SWIOTLB_FORCE ||
+> -		    xen_arch_need_swiotlb(hwdev, paddr, dev_addr) ||
+> -		    !dma_capable(hwdev, dev_addr, sg->length) ||
+> -		    range_straddles_page_boundary(paddr, sg->length)) {
+> -			phys_addr_t map = swiotlb_tbl_map_single(hwdev,
+> -								 start_dma_addr,
+> -								 sg_phys(sg),
+> -								 sg->length,
+> -								 dir, attrs);
+> -			if (map == DMA_MAPPING_ERROR) {
+> -				dev_warn(hwdev, "swiotlb buffer is full\n");
+> -				/* Don't panic here, we expect map_sg users
+> -				   to do proper error handling. */
+> -				attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+> -				xen_swiotlb_unmap_sg(hwdev, sgl, i, dir, attrs);
+> -				sg_dma_len(sgl) = 0;
+> -				return 0;
+> -			}
+> -			dev_addr = xen_phys_to_bus(map);
+> -			xen_dma_map_page(hwdev, pfn_to_page(map >> PAGE_SHIFT),
+> -						dev_addr,
+> -						map & ~PAGE_MASK,
+> -						sg->length,
+> -						dir,
+> -						attrs);
+> -			sg->dma_address = dev_addr;
+> -		} else {
+> -			/* we are not interested in the dma_addr returned by
+> -			 * xen_dma_map_page, only in the potential cache flushes executed
+> -			 * by the function. */
+> -			xen_dma_map_page(hwdev, pfn_to_page(paddr >> PAGE_SHIFT),
+> -						dev_addr,
+> -						paddr & ~PAGE_MASK,
+> -						sg->length,
+> -						dir,
+> -						attrs);
+> -			sg->dma_address = dev_addr;
+> -		}
+> +		sg->dma_address = xen_swiotlb_map_page(dev, sg_page(sg),
+> +				sg->offset, sg->length, dir, attrs);
+> +		if (sg->dma_address == DMA_MAPPING_ERROR)
+> +			goto out_unmap;
+>  		sg_dma_len(sg) = sg->length;
+>  	}
+> +
+>  	return nelems;
+> +out_unmap:
+> +	xen_swiotlb_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+> +	sg_dma_len(sgl) = 0;
+> +	return 0;
+>  }
+>  
+>  /*
 > -- 
 > 2.20.1
 > 
