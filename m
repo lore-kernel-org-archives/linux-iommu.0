@@ -1,13 +1,17 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context fault
-Date: Mon, 15 Apr 2019 23:07:58 +0530
-Message-ID: <20190415173758.22112-1-vivek.gautam@codeaurora.org>
-References: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762@codeaurora.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 1/7] ACPI/IORT: Check ATS capability in root complex
+	nodes
+Date: Mon, 15 Apr 2019 19:00:04 +0100
+Message-ID: <ca0bf1eb-dc8f-97b5-6577-f72bdb60e5bd@arm.com>
+References: <20190409165245.26500-1-jean-philippe.brucker@arm.com>
+	<20190409165245.26500-2-jean-philippe.brucker@arm.com>
+	<20190415132108.GB15023@fuggles.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20190415132108.GB15023-UDVVEH7NWB15pKCnmE3YQBJ8xKzm50AiAL8bYrjMMd8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,75 +21,66 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, okaya-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Bits[15:0] in CBFRSYNRA register contain information about
-StreamID of the incoming transaction that generated the
-fault. Dump CBFRSYNRA register to get this info.
-This is specially useful in a distributed SMMU architecture
-where multiple masters are connected to the SMMU.
-SID information helps to quickly identify the faulting
-master device.
+On 15/04/2019 14:21, Will Deacon wrote:
+> On Tue, Apr 09, 2019 at 05:52:39PM +0100, Jean-Philippe Brucker wrote:
+>> Root complex node in IORT has a bit telling whether it supports ATS or
+>> not. Store this bit in the IOMMU fwspec when setting up a device, so it
+>> can be accessed later by an IOMMU driver.
+>>
+>> Use the negative version (NO_ATS) at the moment because it's not clear
+>> if/how the bit needs to be integrated in other firmware descriptions. The
+>> SMMU has a feature bit telling if it supports ATS, which might be
+>> sufficient in most systems for deciding whether or not we should enable
+>> the ATS capability in endpoints.
+> 
+> Hmm, the SMMUv3 architecture manual is pretty explicit about this:
+> 
+>   | It [SMMU_IDR0.ATS] does not guarantee that client devices and intermediate
+>   | components also support ATS and this must be determined separately.
+> 
+> so we may need to extend the PCI bindings to describe this. I think the
+> negative logic is likely to get in the way if that's the case.
 
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
+Right. For devicetree I can resurrect the patch I proposed a while ago
+[1]. Rob wasn't keen on adding an "ats-supported" property to PCI host
+bridge nodes. Instead the host controller drivers should deduce whether
+ATS is supported from the compatible string. But I'll resend that patch
+adding the property only to pci-host-ecam-generic.
 
-V1 of the patch available @
-https://lore.kernel.org/patchwork/patch/1061615/
+[1] https://lists.linuxfoundation.org/pipermail/iommu/2017-May/022043.html
 
-Changes from v1:
- - Dump the raw register value of CBFRSYNRA register in the
-   context fault log rather than extracting the SID inforamtion
-   and dumping that.
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  drivers/acpi/arm64/iort.c | 11 +++++++++++
+>>  include/linux/iommu.h     |  4 ++++
+>>  2 files changed, 15 insertions(+)
+>>
+>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+>> index e48894e002ba..7f2c1c9c6b38 100644
+>> --- a/drivers/acpi/arm64/iort.c
+>> +++ b/drivers/acpi/arm64/iort.c
+>> @@ -1028,6 +1028,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+>>  	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
+>>  }
+>>  
+>> +static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
+>> +{
+>> +	struct acpi_iort_root_complex *pci_rc;
+>> +
+>> +	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
+>> +	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
+>> +}
+> 
+> Do we need to worry about the "noats" command-line option here? It feels
+> like we should be checking with the PCI subsystem before telling the SMMU
+> we're good to go.
 
- drivers/iommu/arm-smmu-regs.h | 2 ++
- drivers/iommu/arm-smmu.c      | 8 ++++++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
+I'm checking the noats option in arm_smmu_enable_ats() at the moment,
+using the pci_ats_disabled() helper.
 
-diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-index a1226e4ab5f8..e9132a926761 100644
---- a/drivers/iommu/arm-smmu-regs.h
-+++ b/drivers/iommu/arm-smmu-regs.h
-@@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
- #define CBAR_IRPTNDX_SHIFT		24
- #define CBAR_IRPTNDX_MASK		0xff
- 
-+#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
-+
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
- #define CBA2R_RW64_32BIT		(0 << 0)
- #define CBA2R_RW64_64BIT		(1 << 0)
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 045d93884164..a4773e8c6b0e 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
- 	void __iomem *cb_base;
-+	u32 cbfrsynra;
- 
- 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
- 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
-@@ -585,10 +587,12 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 
- 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
- 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-+	cbfrsynra = readl_relaxed(gr1_base +
-+				  ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
- 
- 	dev_err_ratelimited(smmu->dev,
--	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cfg->cbndx);
-+	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra = 0x%x, cb=%d\n",
-+			    fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
- 
- 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
- 	return IRQ_HANDLED;
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Thanks,
+Jean
