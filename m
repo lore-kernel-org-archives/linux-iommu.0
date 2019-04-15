@@ -1,88 +1,40 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add SID information to context fault
-	log
-Date: Mon, 15 Apr 2019 17:35:27 +0530
-Message-ID: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762@codeaurora.org>
-References: <20190415080734.6843-1-vivek.gautam@codeaurora.org>
-	<e5945adb-a1a3-1743-e671-39707276fad6@arm.com>
+From: Dongli Zhang <dongli.zhang@oracle.com>
+Subject: Re: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
+ leaving critical section
+Date: Mon, 15 Apr 2019 20:08:20 +0800
+Message-ID: <f10187e3-b84c-6c8c-2dae-09059a5f3270@oracle.com>
+References: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
+ <5bdc3265-e5a4-e8c8-9098-0bba18a66f19@oracle.com>
+ <38f6f868-013e-5619-b939-a8273fc64ee4@oracle.com>
+ <CAPbh3rvyVd_D9tMfE-Bo2JmdabaiQnaipmmadc67tUt_Lrt2gw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e5945adb-a1a3-1743-e671-39707276fad6-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAPbh3rvyVd_D9tMfE-Bo2JmdabaiQnaipmmadc67tUt_Lrt2gw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: konrad@darnok.org
+Cc: joe.jin@oracle.com, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com, haakon.bugge@oracle.com, robin.murphy@arm.com, linux-kernel@vger.kernel.org, hch@lst.de
 List-Id: iommu@lists.linux-foundation.org
 
-Ck9uIDQvMTUvMjAxOSAzOjExIFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMTUvMDQvMjAx
-OSAwOTowNywgVml2ZWsgR2F1dGFtIHdyb3RlOgo+PiBFeHRyYWN0IHRoZSBTSUQgYW5kIGFkZCB0
-aGUgaW5mb3JtYXRpb24gdG8gY29udGV4dCBmYXVsdCBsb2cuCj4+IFRoaXMgaXMgc3BlY2lhbGx5
-IHVzZWZ1bCBpbiBhIGRpc3RyaWJ1dGVkIHNtbXUgYXJjaGl0ZWN0dXJlCj4+IHdoZXJlIG11bHRp
-cGxlIG1hc3RlcnMgYXJlIGNvbm5lY3RlZCB0byBzbW11LiBTSUQgaW5mb3JtYXRpb24KPj4gaGVs
-cHMgdG8gcXVpY2tseSBpZGVudGlmeSB0aGUgZmF1bHRpbmcgbWFzdGVyIGRldmljZS4KPgo+IEht
-bSwgZ2l2ZW4gaG93IGl0J3MgVU5LTk9XTiBmb3IgdHJhbnNsYXRpb24gZmF1bHRzLCB3aGljaCBh
-cmUgYXJndWFibHkgCj4gdGhlIG1vc3QgbGlrZWx5IGNvbnRleHQgZmF1bHQsIEkgcmVja29uIGl0
-IHByb2JhYmx5IG1ha2VzIG1vcmUgc2Vuc2UgCj4gdG8ganVzdCBkdW1wIHRoZSByYXcgcmVnaXN0
-ZXIgdmFsdWUgZm9yIHRoZSB1c2VyIHRvIGludGVycHJldCwgYXMgd2UgCj4gZG8gZm9yIGZzci9m
-c3luci4KCgpUaGFua3MgUm9iaW4uIFN1cmUgd2lsbCB1cGRhdGUgaXQgdG8gZHVtcCB0aGUgcmF3
-IHJlZ2lzdGVyIHZhbHVlLgoKUmVnYXJkcwpWaXZlawoKPgo+IFJvYmluLgo+Cj4+IFNpZ25lZC1v
-ZmYtYnk6IFZpdmVrIEdhdXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPgo+PiAtLS0K
-Pj4gwqAgZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggfMKgIDQgKysrKwo+PiDCoCBkcml2
-ZXJzL2lvbW11L2FybS1zbW11LmPCoMKgwqDCoMKgIHwgMTQgKysrKysrKysrKysrLS0KPj4gwqAg
-MiBmaWxlcyBjaGFuZ2VkLCAxNiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+Pgo+PiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggCj4+IGIvZHJpdmVycy9p
-b21tdS9hcm0tc21tdS1yZWdzLmgKPj4gaW5kZXggYTEyMjZlNGFiNWY4Li5lNWJlMDM0NGI2MTAg
-MTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCj4+ICsrKyBiL2Ry
-aXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCj4+IEBAIC0xNDcsNiArMTQ3LDEwIEBAIGVudW0g
-YXJtX3NtbXVfczJjcl9wcml2Y2ZnIHsKPj4gwqAgI2RlZmluZSBDQkFSX0lSUFRORFhfU0hJRlTC
-oMKgwqDCoMKgwqDCoCAyNAo+PiDCoCAjZGVmaW5lIENCQVJfSVJQVE5EWF9NQVNLwqDCoMKgwqDC
-oMKgwqAgMHhmZgo+PiDCoCArI2RlZmluZSBBUk1fU01NVV9HUjFfQ0JGUlNZTlJBKG4pwqDCoMKg
-ICgweDQwMCArICgobikgPDwgMikpCj4+ICsjZGVmaW5lIENCRlJTWU5SQV9WMl9TSURfTUFTS8Kg
-wqDCoMKgwqDCoMKgIDB4ZmZmZgo+PiArI2RlZmluZSBDQkZSU1lOUkFfVjFfU0lEX01BU0vCoMKg
-wqDCoMKgwqDCoCAweDdmZmYKPj4gKwo+PiDCoCAjZGVmaW5lIEFSTV9TTU1VX0dSMV9DQkEyUihu
-KcKgwqDCoMKgwqDCoMKgICgweDgwMCArICgobikgPDwgMikpCj4+IMKgICNkZWZpbmUgQ0JBMlJf
-Ulc2NF8zMkJJVMKgwqDCoMKgwqDCoMKgICgwIDw8IDApCj4+IMKgICNkZWZpbmUgQ0JBMlJfUlc2
-NF82NEJJVMKgwqDCoMKgwqDCoMKgICgxIDw8IDApCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
-bW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPj4gaW5kZXggMDQ1ZDkz
-ODg0MTY0Li5hYTM0MjZkYzY4ZDAgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNt
-bXUuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPj4gQEAgLTU3NSw3ICs1NzUs
-MTAgQEAgc3RhdGljIGlycXJldHVybl90IGFybV9zbW11X2NvbnRleHRfZmF1bHQoaW50IAo+PiBp
-cnEsIHZvaWQgKmRldikKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11
-X2RvbWFpbiA9IHRvX3NtbXVfZG9tYWluKGRvbWFpbik7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IGFy
-bV9zbW11X2NmZyAqY2ZnID0gJnNtbXVfZG9tYWluLT5jZmc7Cj4+IMKgwqDCoMKgwqAgc3RydWN0
-IGFybV9zbW11X2RldmljZSAqc21tdSA9IHNtbXVfZG9tYWluLT5zbW11Owo+PiArwqDCoMKgIHZv
-aWQgX19pb21lbSAqZ3IxX2Jhc2UgPSBBUk1fU01NVV9HUjEoc21tdSk7Cj4+IMKgwqDCoMKgwqAg
-dm9pZCBfX2lvbWVtICpjYl9iYXNlOwo+PiArwqDCoMKgIHUzMiBjYmZyc3lucmE7Cj4+ICvCoMKg
-wqAgdTE2IHNpZDsKPj4gwqAgwqDCoMKgwqDCoCBjYl9iYXNlID0gQVJNX1NNTVVfQ0Ioc21tdSwg
-Y2ZnLT5jYm5keCk7Cj4+IMKgwqDCoMKgwqAgZnNyID0gcmVhZGxfcmVsYXhlZChjYl9iYXNlICsg
-QVJNX1NNTVVfQ0JfRlNSKTsKPj4gQEAgLTU4Niw5ICs1ODksMTYgQEAgc3RhdGljIGlycXJldHVy
-bl90IGFybV9zbW11X2NvbnRleHRfZmF1bHQoaW50IAo+PiBpcnEsIHZvaWQgKmRldikKPj4gwqDC
-oMKgwqDCoCBmc3luciA9IHJlYWRsX3JlbGF4ZWQoY2JfYmFzZSArIEFSTV9TTU1VX0NCX0ZTWU5S
-MCk7Cj4+IMKgwqDCoMKgwqAgaW92YSA9IHJlYWRxX3JlbGF4ZWQoY2JfYmFzZSArIEFSTV9TTU1V
-X0NCX0ZBUik7Cj4+IMKgICvCoMKgwqAgY2JmcnN5bnJhID0gcmVhZGxfcmVsYXhlZChncjFfYmFz
-ZSArCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEFSTV9TTU1VX0dSMV9D
-QkZSU1lOUkEoY2ZnLT5jYm5keCkpOwo+PiArwqDCoMKgIGlmIChzbW11LT52ZXJzaW9uID4gQVJN
-X1NNTVVfVjEpCj4+ICvCoMKgwqDCoMKgwqDCoCBzaWQgPSBjYmZyc3lucmEgJiBDQkZSU1lOUkFf
-VjJfU0lEX01BU0s7Cj4+ICvCoMKgwqAgZWxzZQo+PiArwqDCoMKgwqDCoMKgwqAgc2lkID0gY2Jm
-cnN5bnJhICYgQ0JGUlNZTlJBX1YxX1NJRF9NQVNLOwo+PiArCj4+IMKgwqDCoMKgwqAgZGV2X2Vy
-cl9yYXRlbGltaXRlZChzbW11LT5kZXYsCj4+IC3CoMKgwqAgIlVuaGFuZGxlZCBjb250ZXh0IGZh
-dWx0OiBmc3I9MHgleCwgaW92YT0weCUwOGx4LCBmc3lucj0weCV4LCAKPj4gY2I9JWRcbiIsCj4+
-IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZnNyLCBpb3ZhLCBmc3luciwgY2ZnLT5j
-Ym5keCk7Cj4+ICvCoMKgwqAgIlVuaGFuZGxlZCBjb250ZXh0IGZhdWx0OiBmc3I9MHgleCwgaW92
-YT0weCUwOGx4LCBmc3lucj0weCV4LCAKPj4gY2I9JWQgc2lkID0gJXVcbiIsCj4+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZnNyLCBpb3ZhLCBmc3luciwgY2ZnLT5jYm5keCwgc2lk
-KTsKPj4gwqAgwqDCoMKgwqDCoCB3cml0ZWwoZnNyLCBjYl9iYXNlICsgQVJNX1NNTVVfQ0JfRlNS
-KTsKPj4gwqDCoMKgwqDCoCByZXR1cm4gSVJRX0hBTkRMRUQ7Cj4+Cl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+
+
+On 04/15/2019 07:26 PM, Konrad Rzeszutek Wilk wrote:
+> 
+> 
+> On Mon, Apr 15, 2019, 2:50 AM Dongli Zhang <dongli.zhang@oracle.com
+> <mailto:dongli.zhang@oracle.com>> wrote:
+> 
+>     As the patch to be fixed is still in Konrad's own tree, I will send the v2 for
+>     the patch to be fixed, instead of an incremental fix.
+> 
+> 
+> I squashed it in.
+
+Thank you very much!
+
+I saw it is at:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/konrad/swiotlb.git/commit/?h=devel/for-linus-5.1&id=53b29c336830db48ad3dc737f88b8c065b1f0851
+
+Dongli Zhang
