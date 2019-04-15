@@ -1,93 +1,147 @@
-From: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 4/4] swiotlb-xen: ensure we have a single callsite for
-	xen_dma_map_page
-Date: Mon, 15 Apr 2019 15:56:33 -0700 (PDT)
-Message-ID: <alpine.DEB.2.10.1904151552250.29275@sstabellini-ThinkPad-X260>
-References: <20190411072000.4306-1-hch@lst.de>
-	<20190411072000.4306-5-hch@lst.de>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
+Date: Mon, 15 Apr 2019 16:10:15 -0700
+Message-ID: <20190415161015.564cb071@jacob-builder>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
+        <20190415143711.13c29308@x1.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190411072000.4306-5-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190415143711.13c29308@x1.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 11 Apr 2019, Christoph Hellwig wrote:
-> Refactor the code a bit to make further changes easier.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+On Mon, 15 Apr 2019 14:37:11 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
-Reviewed-by: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-
-> ---
->  drivers/xen/swiotlb-xen.c | 31 ++++++++++++++++---------------
->  1 file changed, 16 insertions(+), 15 deletions(-)
+> On Mon,  8 Apr 2019 16:59:25 -0700
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 > 
-> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index 9a951504dc12..5dcb06fe9667 100644
-> --- a/drivers/xen/swiotlb-xen.c
-> +++ b/drivers/xen/swiotlb-xen.c
-> @@ -391,13 +391,8 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
->  	if (dma_capable(dev, dev_addr, size) &&
->  	    !range_straddles_page_boundary(phys, size) &&
->  		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
-> -		(swiotlb_force != SWIOTLB_FORCE)) {
-> -		/* we are not interested in the dma_addr returned by
-> -		 * xen_dma_map_page, only in the potential cache flushes executed
-> -		 * by the function. */
-> -		xen_dma_map_page(dev, page, dev_addr, offset, size, dir, attrs);
-> -		return dev_addr;
-> -	}
-> +		swiotlb_force != SWIOTLB_FORCE)
-> +		goto done;
->  
->  	/*
->  	 * Oh well, have to allocate and map a bounce buffer.
-> @@ -410,19 +405,25 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
->  		return DMA_MAPPING_ERROR;
->  
->  	dev_addr = xen_phys_to_bus(map);
-> -	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
-> -					dev_addr, map & ~PAGE_MASK, size, dir, attrs);
->  
->  	/*
->  	 * Ensure that the address returned is DMA'ble
->  	 */
-> -	if (dma_capable(dev, dev_addr, size))
-> -		return dev_addr;
-> -
-> -	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
-> -	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
-> +	if (unlikely(!dma_capable(dev, dev_addr, size))) {
-> +		swiotlb_tbl_unmap_single(dev, map, size, dir,
-> +				attrs | DMA_ATTR_SKIP_CPU_SYNC);
-> +		return DMA_MAPPING_ERROR;
-> +	}
->  
-> -	return DMA_MAPPING_ERROR;
-> +	page = pfn_to_page(map >> PAGE_SHIFT);
-> +	offset = map & ~PAGE_MASK;
-> +done:
-> +	/*
-> +	 * we are not interested in the dma_addr returned by xen_dma_map_page,
-> +	 * only in the potential cache flushes executed by the function.
-> +	 */
-> +	xen_dma_map_page(dev, page, dev_addr, offset, size, dir, attrs);
-> +	return dev_addr;
->  }
->  
->  /*
-> -- 
-> 2.20.1
+> > When VT-d driver runs in the guest, PASID allocation must be
+> > performed via virtual command interface. This patch register a
+> > custom IOASID allocator which takes precedence over the default
+> > IDR based allocator. The resulting IOASID allocation will always
+> > come from the host. This ensures that PASID namespace is system-
+> > wide.
+> > 
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/intel-iommu.c | 50
+> > +++++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/intel-iommu.h |  1 + 2 files changed, 51 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index 28cb713..a38d774 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -4820,6 +4820,42 @@ static int __init
+> > platform_optin_force_iommu(void) return 1;
+> >  }
+> >  
+> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
+> > void *data) +{
+> > +	struct intel_iommu *iommu = data;
+> > +	ioasid_t ioasid;
+> > +
+> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
+> > +		return INVALID_IOASID;
+> > +	return ioasid;  
+> 
+> How does this honor min/max?
+> 
+> > +}
+> > +
+> > +static int intel_ioasid_free(ioasid_t ioasid, void *data)
+> > +{
+> > +	struct iommu_pasid_alloc_info *svm;
+> > +	struct intel_iommu *iommu = data;
+> > +
+> > +	if (!iommu || !cap_caching_mode(iommu->cap))
+> > +		return -EINVAL;
+> > +	/*
+> > +	 * Sanity check the ioasid owner is done at upper layer,
+> > e.g. VFIO
+> > +	 * We can only free the PASID when all the devices are
+> > unbond.
+> > +	 */
+> > +	svm = ioasid_find(NULL, ioasid, NULL);
+> > +	if (!svm) {
+> > +		pr_warn("Freeing unbond IOASID %d\n", ioasid);
+> > +		return -EBUSY;
+> > +	}
+> > +	vcmd_free_pasid(iommu, ioasid);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct ioasid_allocator intel_iommu_ioasid_allocator = {
+> > +	.alloc = intel_ioasid_alloc,
+> > +	.free = intel_ioasid_free,
+> > +};
+> > +
+> >  int __init intel_iommu_init(void)
+> >  {
+> >  	int ret = -ENODEV;
+> > @@ -4921,6 +4957,20 @@ int __init intel_iommu_init(void)
+> >  				       "%s", iommu->name);
+> >  		iommu_device_set_ops(&iommu->iommu,
+> > &intel_iommu_ops); iommu_device_register(&iommu->iommu);
+> > +		if (cap_caching_mode(iommu->cap) &&
+> > sm_supported(iommu)) {
+> > +			/*
+> > +			 * Register a custom ASID allocator if we
+> > are running
+> > +			 * in a guest, the purpose is to have a
+> > system wide PASID
+> > +			 * namespace among all PASID users.
+> > +			 * Note that only one vIOMMU in each guest
+> > is supported.  
+> 
+> Why one vIOMMU per guest?  This would prevent guests with multiple PCI
+> domains aiui.
+> 
+This is mainly for simplicity reasons. These are all virtual BDFs
+anyway. As long as guest BDF can be mapped to a host BDF, it should be
+sufficient, am I missing anything?
+
+>From PASID allocation perspective, it is not tied to any PCI device
+until bind call. We only need to track PASID ownership per guest.
+
+virtio-IOMMU spec does support multiple PCI domains but I am not sure
+if that applies to all assigned devices, whether all assigned devices
+are under the same domain. Perhaps Jean can help to clarify how PASID
+allocation API looks like on virtio IOMMU.
+
+> > +			 */
+> > +			intel_iommu_ioasid_allocator.pdata = (void
+> > *)iommu;
+> > +			ret =
+> > ioasid_set_allocator(&intel_iommu_ioasid_allocator);
+> > +			if (ret == -EBUSY) {
+> > +				pr_info("Custom IOASID allocator
+> > already registered\n");
+> > +				break;
+> > +			}
+> > +		}
+> >  	}
+> >  
+> >  	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+> > diff --git a/include/linux/intel-iommu.h
+> > b/include/linux/intel-iommu.h index b29c85c..bc09d80 100644
+> > --- a/include/linux/intel-iommu.h
+> > +++ b/include/linux/intel-iommu.h
+> > @@ -31,6 +31,7 @@
+> >  #include <linux/iommu.h>
+> >  #include <linux/io-64-nonatomic-lo-hi.h>
+> >  #include <linux/dmar.h>
+> > +#include <linux/ioasid.h>
+> >  
+> >  #include <asm/cacheflush.h>
+> >  #include <asm/iommu.h>  
 > 
