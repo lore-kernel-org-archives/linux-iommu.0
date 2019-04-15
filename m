@@ -1,16 +1,11 @@
-From: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] swiotlb: save io_tlb_used to local variable before
-	leaving critical section
-Date: Mon, 15 Apr 2019 14:50:49 +0800
-Message-ID: <38f6f868-013e-5619-b939-a8273fc64ee4@oracle.com>
-References: <1555069106-2964-1-git-send-email-dongli.zhang@oracle.com>
-	<5bdc3265-e5a4-e8c8-9098-0bba18a66f19@oracle.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 1/1] iommu/arm-smmu: Add SID information to context fault log
+Date: Mon, 15 Apr 2019 13:37:34 +0530
+Message-ID: <20190415080734.6843-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5bdc3265-e5a4-e8c8-9098-0bba18a66f19-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,26 +15,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joe Jin <joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
-Cc: haakon.bugge-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-QXMgdGhlIHBhdGNoIHRvIGJlIGZpeGVkIGlzIHN0aWxsIGluIEtvbnJhZCdzIG93biB0cmVlLCBJ
-IHdpbGwgc2VuZCB0aGUgdjIgZm9yCnRoZSBwYXRjaCB0byBiZSBmaXhlZCwgaW5zdGVhZCBvZiBh
-biBpbmNyZW1lbnRhbCBmaXguCgpEb25nbGkgWmhhbmcKCk9uIDQvMTIvMTkgMTA6MTMgUE0sIEpv
-ZSBKaW4gd3JvdGU6Cj4gSSdtIGdvb2QgdG8gaGF2ZSB0aGlzIHBhdGNoLCB3aGljaCBoZWxwcyBp
-ZGVudGlmeSB0aGUgY2F1c2Ugb2YgZmFpbHVyZSBpcwo+IGZyYWdtZW50YXRpb24gb3IgaXQgcmVh
-bGx5IGJlZW4gdXNlZCB1cC4KPiAKPiBPbiA0LzEyLzE5IDQ6MzggQU0sIERvbmdsaSBaaGFuZyB3
-cm90ZToKPj4gV2hlbiBzd2lvdGxiIGlzIGZ1bGwsIHRoZSBrZXJuZWwgd291bGQgcHJpbnQgaW9f
-dGxiX3VzZWQuIEhvd2V2ZXIsIHRoZQo+PiByZXN1bHQgbWlnaHQgYmUgaW5hY2N1cmF0ZSBhdCB0
-aGF0IHRpbWUgYmVjYXVzZSB3ZSBoYXZlIGxlZnQgdGhlIGNyaXRpY2FsCj4+IHNlY3Rpb24gcHJv
-dGVjdGVkIGJ5IHNwaW5sb2NrLgo+Pgo+PiBUaGVyZWZvcmUsIHdlIGJhY2t1cCB0aGUgaW9fdGxi
-X3VzZWQgaW50byBsb2NhbCB2YXJpYWJsZSBiZWZvcmUgbGVhdmluZwo+PiBjcml0aWNhbCBzZWN0
-aW9uLgo+Pgo+PiBGaXhlczogODNjYTI1OTQ4OTQwICgic3dpb3RsYjogZHVtcCB1c2VkIGFuZCB0
-b3RhbCBzbG90cyB3aGVuIHN3aW90bGIgYnVmZmVyIGlzIGZ1bGwiKQo+PiBTdWdnZXN0ZWQtYnk6
-IEjDpWtvbiBCdWdnZSA8aGFha29uLmJ1Z2dlQG9yYWNsZS5jb20+Cj4+IFNpZ25lZC1vZmYtYnk6
-IERvbmdsaSBaaGFuZyA8ZG9uZ2xpLnpoYW5nQG9yYWNsZS5jb20+Cj4gCj4gUmV2aWV3ZWQtYnk6
-IEpvZSBKaW4gPGpvZS5qaW5Ab3JhY2xlLmNvbT4gCj4gCj4gVGhhbmtzLAo+IEpvZQo+IApfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Extract the SID and add the information to context fault log.
+This is specially useful in a distributed smmu architecture
+where multiple masters are connected to smmu. SID information
+helps to quickly identify the faulting master device.
+
+Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-regs.h |  4 ++++
+ drivers/iommu/arm-smmu.c      | 14 ++++++++++++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
+index a1226e4ab5f8..e5be0344b610 100644
+--- a/drivers/iommu/arm-smmu-regs.h
++++ b/drivers/iommu/arm-smmu-regs.h
+@@ -147,6 +147,10 @@ enum arm_smmu_s2cr_privcfg {
+ #define CBAR_IRPTNDX_SHIFT		24
+ #define CBAR_IRPTNDX_MASK		0xff
+ 
++#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
++#define CBFRSYNRA_V2_SID_MASK		0xffff
++#define CBFRSYNRA_V1_SID_MASK		0x7fff
++
+ #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
+ #define CBA2R_RW64_32BIT		(0 << 0)
+ #define CBA2R_RW64_64BIT		(1 << 0)
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 045d93884164..aa3426dc68d0 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -575,7 +575,10 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
+ 	void __iomem *cb_base;
++	u32 cbfrsynra;
++	u16 sid;
+ 
+ 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+ 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
+@@ -586,9 +589,16 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+ 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+ 
++	cbfrsynra = readl_relaxed(gr1_base +
++				  ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
++	if (smmu->version > ARM_SMMU_V1)
++		sid = cbfrsynra & CBFRSYNRA_V2_SID_MASK;
++	else
++		sid = cbfrsynra & CBFRSYNRA_V1_SID_MASK;
++
+ 	dev_err_ratelimited(smmu->dev,
+-	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+-			    fsr, iova, fsynr, cfg->cbndx);
++	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d sid = %u\n",
++			    fsr, iova, fsynr, cfg->cbndx, sid);
+ 
+ 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+ 	return IRQ_HANDLED;
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
