@@ -2,97 +2,75 @@ Return-Path: <SRS0=xVSy=SS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C77C282DA
-	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84818C10F13
+	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:58:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4448E20880
-	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:48:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4E3AE2077C
+	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:58:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RlNJmhvP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4448E20880
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="Y3qzE8Cu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E3AE2077C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2A7A7FF1;
-	Tue, 16 Apr 2019 11:48:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F2D3EFE8;
+	Tue, 16 Apr 2019 11:58:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E7043FEA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5E40CACD
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Apr 2019 11:48:02 +0000 (UTC)
+	Tue, 16 Apr 2019 11:58:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
-	[209.85.210.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A05661C0
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+	[209.85.128.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BBA325E4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Apr 2019 11:48:02 +0000 (UTC)
-Received: by mail-pf1-f196.google.com with SMTP id 8so10296850pfr.4
+	Tue, 16 Apr 2019 11:58:49 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id q16so25005764wmj.3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Apr 2019 04:48:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:in-reply-to:references;
-	bh=F9hIq6OqtC1SVS2O3U7ZkPoLnNclA70DsapCWy7Q+lE=;
-	b=RlNJmhvPVJ3UxKO1l98lIMDXQUnrSkDMLarOhFladUUf3Fd2LaDOG6+U01Z2z+YiG6
-	sNYefT86LOIxnqlnmYbZyAcDruQYSCoLZfKjsI5qTBm4ikzvhilXTlPgz8vD0vD1p4zp
-	nUgSswnCr91BRUTNAb6b5zyVdAQ+av7Sc02gJFy++x4EdGU7Ba+eVKI/tSv7RiqlDMKy
-	SLqyqJH65OUoe0UtHrsN3h68RjIqxVfa3ycMpFEZs+Uo8eJrS3RcKM40edoCs9WmwoYn
-	teADUMkiqANnatUpNqvAlG9eQwygGnntxE0k2iDAigCWgYcsyUHjVSZh8cAxSeXbIBT7
-	1ERg==
+	Tue, 16 Apr 2019 04:58:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=tvK2sa7exPaSAS1BCNTfVTF+f0dJduiqmdfTPCXRTxQ=;
+	b=Y3qzE8CuehoVU2JfivbphrYd1kXSDbWiJd15b0YraHpauEe4+3KgXpvysPrkt+d0+q
+	Nie2KkJCmBPzIQ1V+zNzrgXmt6Q4MZ/+r86391Oh9LisXSvHVyF1Ifnjb5usb/3vVRCO
+	+rq6v7h1N3Hztfqd3Hg9RpyDQgCgLjefkXfnE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:in-reply-to:references;
-	bh=F9hIq6OqtC1SVS2O3U7ZkPoLnNclA70DsapCWy7Q+lE=;
-	b=ik0CK9Fb3T9jHG8/pIg7xkWgrNmBTgpWyiPfrVhXB0zUrWlLnBKPtfxEDdNwp04FRR
-	oFpQlZkNRaiYhbQqg7V13wOXeeNP3iVWbbUYS10wk76j73lD57CUqrQ2T8SwdcehXNwf
-	n8bijlbihvWZlhLXLHSjfTu0KaWmcHJwlL6jhaGPB0oB1L1w4F60jwyk16GATEzaT2ju
-	u7uC+OOJTASrjWg7wobWXmD3EohPy11VM4Ra3SV+fgiKwOadlJI68TuIXdKAV3sG+jjm
-	n5eGLgs+MOpFVJ3AY65aa/c80qBOt2GWdyF87eg/clMJ6j+JFWWTI07Kkh5EBjRoM/rt
-	pglw==
-X-Gm-Message-State: APjAAAXdAHdXxxG8el/bgVvudHLN0HK7wa/+42P87/wcqXHkgSoUBnXR
-	TfJ/Wfrq8rZYMX2REtbLakU=
-X-Google-Smtp-Source: APXvYqx2gh4QQGIyXcsK611dByHpjpx+tKjskfqa9rV5hBQis2QAQtHs+h2xQ6nYUrNHQ3rVd4NVTA==
-X-Received: by 2002:a63:f115:: with SMTP id f21mr70665089pgi.65.1555415282264; 
-	Tue, 16 Apr 2019 04:48:02 -0700 (PDT)
-Received: from jordon-HP-15-Notebook-PC.domain.name ([49.207.50.11])
-	by smtp.gmail.com with ESMTPSA id
-	p6sm55942835pfd.122.2019.04.16.04.47.53
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-	Tue, 16 Apr 2019 04:48:01 -0700 (PDT)
-From: Souptick Joarder <jrdr.linux@gmail.com>
-To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com,
-	kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com,
-	sfr@canb.auug.org.au, rppt@linux.vnet.ibm.com, peterz@infradead.org,
-	linux@armlinux.org.uk, robin.murphy@arm.com, iamjoonsoo.kim@lge.com,
-	treding@nvidia.com, keescook@chromium.org, m.szyprowski@samsung.com,
-	stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, heiko@sntech.de,
-	airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org,
-	pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org,
-	boris.ostrovsky@oracle.com, jgross@suse.com
-Subject: [REBASE PATCH v5 9/9] xen/privcmd-buf.c: Convert to use
-	vm_map_pages_zero()
-Date: Tue, 16 Apr 2019 17:19:50 +0530
-Message-Id: <acf678e81d554d01a9b590716ac0ccbdcdf71c25.1552921225.git.jrdr.linux@gmail.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
-In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
-Cc: linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, xen-devel@lists.xen.org,
-	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-	Souptick Joarder <jrdr.linux@gmail.com>,
-	linux1394-devel@lists.sourceforge.net,
-	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=tvK2sa7exPaSAS1BCNTfVTF+f0dJduiqmdfTPCXRTxQ=;
+	b=FWyj/Zej1binhDYG/RiynmxWMr8qmhKypS10tGV9/Kpe5sR/zxmM2iXCBiv+0MXe5j
+	Q0e8rholfYo8cGFxgUy/w9lfIKJDuOhezn+supTYJZsIWMvQ7OAKlcrgLY013z33SYg0
+	sL1i0Mkkz4S3U80Sd7Cv2pHwBGnmEdN6ksrxjM026PWnrwsiPhgjtlBnNLxsBgf2tgqG
+	vkoOp7yaHsfc066M18vU6PsgCqw6VYRXGWxrA/17JEEkdpldSRzlPznH8Ovg52qr0Shq
+	7C4uPwD8zgQBDOnJjSg+zei8+fNc1VX523K06ATZ+PPVE1oBwYh0dHSNP+npnMfoJhBB
+	HbXA==
+X-Gm-Message-State: APjAAAXqbegi4iLdOfoG9WUneuaNQWSeohQDDNlJ00tX5/2/Yx0PWCo4
+	E79aAPYq+dHXER6XfFTZacFYvv1YVrEZ8rknSfUAaw==
+X-Google-Smtp-Source: APXvYqx9pEsPdLDRVAfOZknCIo9BraQeodyvjhJEUqZ6zl8QqzmDfeG8+S2TeUCCpTnJFTA694wREsA0FbQTQGLRcEM=
+X-Received: by 2002:a1c:b088:: with SMTP id z130mr26203392wme.5.1555415928328; 
+	Tue, 16 Apr 2019 04:58:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+	<20190412223409.GB126710@google.com>
+In-Reply-To: <20190412223409.GB126710@google.com>
+Date: Tue, 16 Apr 2019 17:28:36 +0530
+Message-ID:
+ <CABe79T7h9t_Obmo3+B0MHgLZ4ff9GxpBBBLGtSf0C=zmLrWVBQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/3] PCIe Host request to reserve IOVA
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: poza@codeaurora.org, Ray Jui <rjui@broadcom.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux-foundation.org,
+	BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+	linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -105,48 +83,82 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Srinath Mannam via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Srinath Mannam <srinath.mannam@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
+Message-ID: <20190416115836.Z_6FlfOCXuU8gVh8tGPKO8BtlH3zVdVnzIrIix0zccI@z>
 
-Convert to use vm_map_pages_zero() to map range of kernel
-memory to user vma.
+Hi Bjorn,
 
-This driver has ignored vm_pgoff. We could later "fix" these drivers
-to behave according to the normal vm_pgoff offsetting simply by
-removing the _zero suffix on the function name and if that causes
-regressions, it gives us an easy way to revert.
+Thanks for review. Please find my reply below.
 
-Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
----
- drivers/xen/privcmd-buf.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+On Sat, Apr 13, 2019 at 4:04 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Fri, Apr 12, 2019 at 08:43:32AM +0530, Srinath Mannam wrote:
+> > Few SOCs have limitation that their PCIe host can't allow few inbound
+> > address ranges. Allowed inbound address ranges are listed in dma-ranges
+> > DT property and this address ranges are required to do IOVA mapping.
+> > Remaining address ranges have to be reserved in IOVA mapping.
+>
+> If I understand correctly, devices below these PCIe host bridges can
+> DMA only to the listed address ranges, and you prevent devices from
+> doing DMA to the holes between the listed ranges by reserving the
+> holes in dma-iommu.
+Yes, devices below these PCIe host bridges can DMA only to the listed
+address ranges,
+and this patch prevents to allocate DMA(IOVA) addresses in the holes
+of listed ranges.
+>
+> Apparently there's something that makes sure driver dma_map_*() always
+> goes through dma-iommu?  I traced as far as seeing that dma-iommu
+> depends on CONFIG_IOMMU_DMA, and that arm64 selects CONFIG_IOMMU_DMA
+> if CONFIG_IOMMU_SUPPORT, but then the trail got cold.  I didn't see
+> what selects CONFIG_IOMMU_SUPPORT.
+IOMMU_SUPPORT depends on MMU.
+>
+> This does look like what Robin suggested, as far as I can tell.
+> Hopefully he'll take a look and give his reviewed-by.  Thanks for
+> persevering!
+Thank you.
 
-diff --git a/drivers/xen/privcmd-buf.c b/drivers/xen/privcmd-buf.c
-index de01a6d..d02dc43 100644
---- a/drivers/xen/privcmd-buf.c
-+++ b/drivers/xen/privcmd-buf.c
-@@ -166,12 +166,8 @@ static int privcmd_buf_mmap(struct file *file, struct vm_area_struct *vma)
- 	if (vma_priv->n_pages != count)
- 		ret = -ENOMEM;
- 	else
--		for (i = 0; i < vma_priv->n_pages; i++) {
--			ret = vm_insert_page(vma, vma->vm_start + i * PAGE_SIZE,
--					     vma_priv->pages[i]);
--			if (ret)
--				break;
--		}
-+		ret = vm_map_pages_zero(vma, vma_priv->pages,
-+						vma_priv->n_pages);
- 
- 	if (ret)
- 		privcmd_buf_vmapriv_free(vma_priv);
--- 
-1.9.1
-
+Regards,
+Srinath.
+>
+> > PCIe Host driver of those SOCs has to list resource entries of allowed
+> > address ranges given in dma-ranges DT property in sorted order. This
+> > sorted list of resources will be processed and reserve IOVA address for
+> > inaccessible address holes while initializing IOMMU domain.
+> >
+> > This patch set is based on Linux-5.0-rc2.
+> >
+> > Changes from v3:
+> >   - Addressed Robin Murphy review comments.
+> >     - pcie-iproc: parse dma-ranges and make sorted resource list.
+> >     - dma-iommu: process list and reserve gaps between entries
+> >
+> > Changes from v2:
+> >   - Patch set rebased to Linux-5.0-rc2
+> >
+> > Changes from v1:
+> >   - Addressed Oza review comments.
+> >
+> > Srinath Mannam (3):
+> >   PCI: Add dma_ranges window list
+> >   iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
+> >   PCI: iproc: Add sorted dma ranges resource entries to host bridge
+> >
+> >  drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
+> >  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+> >  drivers/pci/probe.c                 |  3 +++
+> >  include/linux/pci.h                 |  1 +
+> >  4 files changed, 66 insertions(+), 1 deletion(-)
+> >
+> > --
+> > 2.7.4
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
