@@ -1,147 +1,127 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
-Date: Mon, 15 Apr 2019 16:10:15 -0700
-Message-ID: <20190415161015.564cb071@jacob-builder>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20190415143711.13c29308@x1.home>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+ iommu_get_resv_regions
+Date: Tue, 16 Apr 2019 10:18:51 +0800
+Message-ID: <1b7d37da-5660-f635-cd2f-619e5573d35a@linux.intel.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+ <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+ <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+ <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+ <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+ <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+ <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+ <cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
+ <6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
+ <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
+ <ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
+ <9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
+ <abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
+ <1D51CB31-089A-4D71-A9C1-E54E50A56C46@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190415143711.13c29308@x1.home>
+In-Reply-To: <1D51CB31-089A-4D71-A9C1-E54E50A56C46@arista.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: James Sewart <jamessewart@arista.com>
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org, Tom Murphy <tmurphy@arista.com>, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 15 Apr 2019 14:37:11 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+Hi James,
 
-> On Mon,  8 Apr 2019 16:59:25 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+On 4/15/19 10:16 PM, James Sewart wrote:
+> Hey Lu,
 > 
-> > When VT-d driver runs in the guest, PASID allocation must be
-> > performed via virtual command interface. This patch register a
-> > custom IOASID allocator which takes precedence over the default
-> > IDR based allocator. The resulting IOASID allocation will always
-> > come from the host. This ensures that PASID namespace is system-
-> > wide.
-> > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 50
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/intel-iommu.h |  1 + 2 files changed, 51 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index 28cb713..a38d774 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -4820,6 +4820,42 @@ static int __init
-> > platform_optin_force_iommu(void) return 1;
-> >  }
-> >  
-> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
-> > void *data) +{
-> > +	struct intel_iommu *iommu = data;
-> > +	ioasid_t ioasid;
-> > +
-> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
-> > +		return INVALID_IOASID;
-> > +	return ioasid;  
+>> On 10 Apr 2019, at 06:22, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> Hi James,
+>>
+>> On 4/6/19 2:02 AM, James Sewart wrote:
+>>> Hey Lu,
+>>> My bad, did some debugging on my end. The issue was swapping out
+>>> find_domain for iommu_get_domain_for_dev. It seems in some situations the
+>>> domain is not attached to the group but the device is expected to have the
+>>> domain still stored in its archdata.
+>>> I’ve attached the final patch with find_domain unremoved which seems to
+>>> work in my testing.
+>>
+>> Just looked into your v3 patch set and some thoughts from my end posted
+>> here just for your information.
+>>
+>> Let me post the problems we want to address.
+>>
+>> 1. When allocating a new group for a device, how should we determine the
+>> type of the default domain?
+>>
+>> 2. If we need to put a device into an existing group which uses a
+>> different type of domain from what the device desires to use, we might
+>> break the functionality of the device.
+>>
+>> My new thought is letting the iommu generic code to determine the
+>> default domain type (hence my proposed vendor specific default domain
+>> type patches could be dropped).
+>>
+>> If the default domain type is dynamical mapping, and later in iommu_no_mapping(), we determines that we must use an identity domain,
+>> we then call iommu_request_dm_for_dev(dev).
+>>
+>> If the default domain type is identity mapping, and later in
+>> iommu_no_mapping(), we determined that we must use a dynamical domain,
+>> we then call iommu_request_dma_domain_for_dev(dev).
+>>
+>> We already have iommu_request_dm_for_dev() in iommu.c. We only need to
+>> implement iommu_request_dma_domain_for_dev().
+>>
+>> With this done, your patch titled "Create an IOMMU group for devices
+>> that require an identity map" could also be dropped.
+>>
+>> Any thoughts?
 > 
-> How does this honor min/max?
-> 
-> > +}
-> > +
-> > +static int intel_ioasid_free(ioasid_t ioasid, void *data)
-> > +{
-> > +	struct iommu_pasid_alloc_info *svm;
-> > +	struct intel_iommu *iommu = data;
-> > +
-> > +	if (!iommu || !cap_caching_mode(iommu->cap))
-> > +		return -EINVAL;
-> > +	/*
-> > +	 * Sanity check the ioasid owner is done at upper layer,
-> > e.g. VFIO
-> > +	 * We can only free the PASID when all the devices are
-> > unbond.
-> > +	 */
-> > +	svm = ioasid_find(NULL, ioasid, NULL);
-> > +	if (!svm) {
-> > +		pr_warn("Freeing unbond IOASID %d\n", ioasid);
-> > +		return -EBUSY;
-> > +	}
-> > +	vcmd_free_pasid(iommu, ioasid);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct ioasid_allocator intel_iommu_ioasid_allocator = {
-> > +	.alloc = intel_ioasid_alloc,
-> > +	.free = intel_ioasid_free,
-> > +};
-> > +
-> >  int __init intel_iommu_init(void)
-> >  {
-> >  	int ret = -ENODEV;
-> > @@ -4921,6 +4957,20 @@ int __init intel_iommu_init(void)
-> >  				       "%s", iommu->name);
-> >  		iommu_device_set_ops(&iommu->iommu,
-> > &intel_iommu_ops); iommu_device_register(&iommu->iommu);
-> > +		if (cap_caching_mode(iommu->cap) &&
-> > sm_supported(iommu)) {
-> > +			/*
-> > +			 * Register a custom ASID allocator if we
-> > are running
-> > +			 * in a guest, the purpose is to have a
-> > system wide PASID
-> > +			 * namespace among all PASID users.
-> > +			 * Note that only one vIOMMU in each guest
-> > is supported.  
-> 
-> Why one vIOMMU per guest?  This would prevent guests with multiple PCI
-> domains aiui.
-> 
-This is mainly for simplicity reasons. These are all virtual BDFs
-anyway. As long as guest BDF can be mapped to a host BDF, it should be
-sufficient, am I missing anything?
+> Theres a couple issues I can think of. iommu_request_dm_for_dev changes
+> the domain for all devices within the devices group, if we may have
+> devices with different domain requirements in the same group then only the
+> last initialised device will get the domain it wants. If we want to add
+> iommu_request_dma_domain_for_dev then we would still need another IOMMU
+> group for identity domain devices.
 
->From PASID allocation perspective, it is not tied to any PCI device
-until bind call. We only need to track PASID ownership per guest.
+Current solution (a.k.a. v3) for this is to assign a new group to the
+device which requires an identity mapped domain. This will break the
+functionality of device direct pass-through (to user level). The iommu
+group represents the minimum granularity of iommu isolation and
+protection. The requirement of identity mapped domain should not be a
+factor for a new group.
 
-virtio-IOMMU spec does support multiple PCI domains but I am not sure
-if that applies to all assigned devices, whether all assigned devices
-are under the same domain. Perhaps Jean can help to clarify how PASID
-allocation API looks like on virtio IOMMU.
+Both iomm_request_dma_domain_for_dev() or iommu_request_dm_for_dev()
+only support groups with a single device in it.
 
-> > +			 */
-> > +			intel_iommu_ioasid_allocator.pdata = (void
-> > *)iommu;
-> > +			ret =
-> > ioasid_set_allocator(&intel_iommu_ioasid_allocator);
-> > +			if (ret == -EBUSY) {
-> > +				pr_info("Custom IOASID allocator
-> > already registered\n");
-> > +				break;
-> > +			}
-> > +		}
-> >  	}
-> >  
-> >  	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index b29c85c..bc09d80 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -31,6 +31,7 @@
-> >  #include <linux/iommu.h>
-> >  #include <linux/io-64-nonatomic-lo-hi.h>
-> >  #include <linux/dmar.h>
-> > +#include <linux/ioasid.h>
-> >  
-> >  #include <asm/cacheflush.h>
-> >  #include <asm/iommu.h>  
+The users could choose between domains of DMA type or IDENTITY type for
+a group. If multiple devices share a single group and both don't work
+for them, they have to disable the IOMMU. This isn't a valid
+configuration from IOMMU's point of view.
+
 > 
+> Both with v3 and the proposed method here, iommu_should_identity_map is
+> determining whether the device requires an identity map. In v3 this is
+> called once up front by the generic code to determine for the IOMMU group
+> which domain type to use. In the proposed method I think this would happen
+> after initial domain allocation and would trigger the domain to be
+> replaced with a different domain.
+> 
+> I prefer the solution in v3. What do you think?
+
+The only concern of solution in v3 from my point of view is some kind of
+duplication. Even we can ask the Intel IOMMU driver to tell the default
+domain type, we might change it after boot up. For example, for 32-bit
+pci devices, we don't know whether it's 64-bit or 32-bit capable during
+IOMMU initialization, so we might tell iommu.c to use identity mapped
+domain. After boot up, we check it again, and find out that it's only
+32-bit capable (hence only can access physical memory below 4G) and the
+default identity domain doesn't work. And we have to change it to DMA
+domain via iommu_request_dma_domain_for_dev().
+
+So to make it simple and straight-forward, we can just let iommu.c to
+determine the default domain type and after that the Intel IOMMU driver
+could tweak it according to the quirk bits in the driver.
+
+Best regards,
+Lu Baolu
