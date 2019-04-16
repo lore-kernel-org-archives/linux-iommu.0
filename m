@@ -1,8 +1,7 @@
 From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: [REBASE PATCH v5 7/9] videobuf2/videobuf2-dma-sg.c: Convert to use
- vm_map_pages()
-Date: Tue, 16 Apr 2019 17:19:48 +0530
-Message-ID: <a953fe6b3056de1cc6eab654effdd4a22f125375.1552921225.git.jrdr.linux__26232.8296130121$1555415325$gmane$org@gmail.com>
+Subject: [REBASE PATCH v5 8/9] xen/gntdev.c: Convert to use vm_map_pages()
+Date: Tue, 16 Apr 2019 17:19:49 +0530
+Message-ID: <88e56e82d2db98705c2d842e9c9806c00b366d67.1552921225.git.jrdr.linux__1156.66842773265$1555415334$gmane$org@gmail.com>
 References: <cover.1552921225.git.jrdr.linux@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,95 +23,47 @@ To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, kirill.shut
 Cc: linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Souptick Joarder <jrdr.linux@gmail.com>, linux1394-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Convert to use vm_map_pages() to map range of kernel memory
-to user vma.
+Convert to use vm_map_pages() to map range of kernel
+memory to user vma.
 
-vm_pgoff is treated in V4L2 API as a 'cookie' to select a buffer,
-not as a in-buffer offset by design and it always want to mmap a
-whole buffer from its beginning.
+map->count is passed to vm_map_pages() and internal API
+verify map->count against count ( count = vma_pages(vma))
+for page array boundary overrun condition.
 
 Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-Suggested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 ---
- drivers/media/common/videobuf2/videobuf2-core.c    |  7 +++++++
- .../media/common/videobuf2/videobuf2-dma-contig.c  |  6 ------
- drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 22 ++++++----------------
- 3 files changed, 13 insertions(+), 22 deletions(-)
+ drivers/xen/gntdev.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-core.c b/drivers/media/common/videobuf2/videobuf2-core.c
-index 70e8c33..ca4577a 100644
---- a/drivers/media/common/videobuf2/videobuf2-core.c
-+++ b/drivers/media/common/videobuf2/videobuf2-core.c
-@@ -2175,6 +2175,13 @@ int vb2_mmap(struct vb2_queue *q, struct vm_area_struct *vma)
- 		goto unlock;
- 	}
+diff --git a/drivers/xen/gntdev.c b/drivers/xen/gntdev.c
+index 5efc5ee..5d64262 100644
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -1084,7 +1084,7 @@ static int gntdev_mmap(struct file *flip, struct vm_area_struct *vma)
+ 	int index = vma->vm_pgoff;
+ 	int count = vma_pages(vma);
+ 	struct gntdev_grant_map *map;
+-	int i, err = -EINVAL;
++	int err = -EINVAL;
  
-+	/*
-+	 * vm_pgoff is treated in V4L2 API as a 'cookie' to select a buffer,
-+	 * not as a in-buffer offset. We always want to mmap a whole buffer
-+	 * from its beginning.
-+	 */
-+	vma->vm_pgoff = 0;
-+
- 	ret = call_memop(vb, mmap, vb->planes[plane].mem_priv, vma);
- 
- unlock:
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index aff0ab7..46245c5 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -186,12 +186,6 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
+ 	if ((vma->vm_flags & VM_WRITE) && !(vma->vm_flags & VM_SHARED))
  		return -EINVAL;
- 	}
+@@ -1145,12 +1145,9 @@ static int gntdev_mmap(struct file *flip, struct vm_area_struct *vma)
+ 		goto out_put_map;
  
--	/*
--	 * dma_mmap_* uses vm_pgoff as in-buffer offset, but we want to
--	 * map whole buffer
--	 */
--	vma->vm_pgoff = 0;
--
- 	ret = dma_mmap_attrs(buf->dev, vma, buf->cookie,
- 		buf->dma_addr, buf->size, buf->attrs);
- 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-index 015e737..d6b8eca 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-@@ -328,28 +328,18 @@ static unsigned int vb2_dma_sg_num_users(void *buf_priv)
- static int vb2_dma_sg_mmap(void *buf_priv, struct vm_area_struct *vma)
- {
- 	struct vb2_dma_sg_buf *buf = buf_priv;
--	unsigned long uaddr = vma->vm_start;
--	unsigned long usize = vma->vm_end - vma->vm_start;
--	int i = 0;
-+	int err;
- 
- 	if (!buf) {
- 		printk(KERN_ERR "No memory to map\n");
- 		return -EINVAL;
- 	}
- 
--	do {
--		int ret;
--
--		ret = vm_insert_page(vma, uaddr, buf->pages[i++]);
--		if (ret) {
--			printk(KERN_ERR "Remapping memory, error: %d\n", ret);
--			return ret;
+ 	if (!use_ptemod) {
+-		for (i = 0; i < count; i++) {
+-			err = vm_insert_page(vma, vma->vm_start + i*PAGE_SIZE,
+-				map->pages[i]);
+-			if (err)
+-				goto out_put_map;
 -		}
--
--		uaddr += PAGE_SIZE;
--		usize -= PAGE_SIZE;
--	} while (usize > 0);
--
-+	err = vm_map_pages(vma, buf->pages, buf->num_pages);
-+	if (err) {
-+		printk(KERN_ERR "Remapping memory, error: %d\n", err);
-+		return err;
-+	}
- 
- 	/*
- 	 * Use common vm_area operations to track buffer refcount.
++		err = vm_map_pages(vma, map->pages, map->count);
++		if (err)
++			goto out_put_map;
+ 	} else {
+ #ifdef CONFIG_X86
+ 		/*
 -- 
 1.9.1
