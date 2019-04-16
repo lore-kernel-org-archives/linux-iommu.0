@@ -1,64 +1,68 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
-Date: Tue, 16 Apr 2019 08:30:25 -0700
-Message-ID: <20190416083025.378f3915@jacob-builder>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20190415143711.13c29308@x1.home>
+From: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH -next] xen-swiotlb: Make two functions static
+Date: Tue, 16 Apr 2019 11:44:22 -0400
+Message-ID: <2ea8f27b-3c1b-7491-f02a-1473476fdcdd@oracle.com>
+References: <20190416144950.37952-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190415143711.13c29308@x1.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190416144950.37952-1-yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yue Haibing <yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jgross-IBi9RG/b67k@public.gmane.org, sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 15 Apr 2019 14:37:11 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+On 4/16/19 10:49 AM, Yue Haibing wrote:
+> From: YueHaibing <yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>
+> Fix sparse warnings:
+>
+> drivers/xen/swiotlb-xen.c:489:1: warning:
+>  symbol 'xen_swiotlb_sync_single_for_cpu' was not declared. Should it be static?
+> drivers/xen/swiotlb-xen.c:496:1: warning:
+>  symbol 'xen_swiotlb_sync_single_for_device' was not declared. Should it be static?
+>
+> Reported-by: Hulk Robot <hulkci-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: YueHaibing <yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 
-> On Mon,  8 Apr 2019 16:59:25 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> 
-> > When VT-d driver runs in the guest, PASID allocation must be
-> > performed via virtual command interface. This patch register a
-> > custom IOASID allocator which takes precedence over the default
-> > IDR based allocator. The resulting IOASID allocation will always
-> > come from the host. This ensures that PASID namespace is system-
-> > wide.
-> > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 50
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/intel-iommu.h |  1 + 2 files changed, 51 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index 28cb713..a38d774 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -4820,6 +4820,42 @@ static int __init
-> > platform_optin_force_iommu(void) return 1;
-> >  }
-> >  
-> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
-> > void *data) +{
-> > +	struct intel_iommu *iommu = data;
-> > +	ioasid_t ioasid;
-> > +
-> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
-> > +		return INVALID_IOASID;
-> > +	return ioasid;  
-> 
-> How does this honor min/max?
-> 
-Sorry I missed this in my previous reply.
-VT-d virtual command interface always allocate PASIDs with full 20bit
-range. I think a range checking is missing here. Thanks for pointing
-this out.
 
->  [...]  
-> 
+I think latest patches from Christoph take care of this.
+
+-boris
+
+
+> ---
+>  drivers/xen/swiotlb-xen.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 877baf2..e741df4 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -485,14 +485,14 @@ xen_swiotlb_sync_single(struct device *hwdev, dma_addr_t dev_addr,
+>  		xen_dma_sync_single_for_device(hwdev, dev_addr, size, dir);
+>  }
+>  
+> -void
+> +static void
+>  xen_swiotlb_sync_single_for_cpu(struct device *hwdev, dma_addr_t dev_addr,
+>  				size_t size, enum dma_data_direction dir)
+>  {
+>  	xen_swiotlb_sync_single(hwdev, dev_addr, size, dir, SYNC_FOR_CPU);
+>  }
+>  
+> -void
+> +static void
+>  xen_swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
+>  				   size_t size, enum dma_data_direction dir)
+>  {
