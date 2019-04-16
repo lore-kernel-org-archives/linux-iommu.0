@@ -1,97 +1,50 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 6/9] iommu/amd: Implement map_atomic
-Date: Tue, 16 Apr 2019 15:13:16 +0100
-Message-ID: <78f2114b-0dcb-2dcf-c3b3-411e064b079f@arm.com>
-References: <20190411184741.27540-1-tmurphy@arista.com>
- <20190411184741.27540-7-tmurphy@arista.com>
+From: Yue Haibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] xen-swiotlb: Make two functions static
+Date: Tue, 16 Apr 2019 22:49:50 +0800
+Message-ID: <20190416144950.37952-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190411184741.27540-7-tmurphy@arista.com>
-Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Murphy <tmurphy@arista.com>, iommu@lists.linux-foundation.org
-Cc: dima@arista.com, jamessewart@arista.com, murphyt7@tcd.ie, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Rob Clark <robdclark@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Marc Zyngier <marc.zyngier@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org, linux-rockchip@lists.infradead.org
+To: konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com, sstabellini@kernel.org
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, YueHaibing <yuehaibing@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/04/2019 19:47, Tom Murphy wrote:
-> Instead of using a spin lock I removed the mutex lock from both the
-> amd_iommu_map and amd_iommu_unmap path as well. iommu_map doesn’t lock
-> while mapping and so if iommu_map is called by two different threads on
-> the same iova region it results in a race condition even with the locks.
-> So the locking in amd_iommu_map and amd_iommu_unmap doesn't add any real
-> protection. The solution to this is for whatever manages the allocated
-> iova’s externally to make sure iommu_map isn’t called twice on the same
-> region at the same time.
+From: YueHaibing <yuehaibing@huawei.com>
 
-Note that that assumption is not necessarily sufficient - even with 
-correct address space management you can have cases like two threads 
-mapping adjacent pages, where even thought they are targeting different 
-PTEs they can race to install/modify intermediate levels of the 
-pagetable. I believe AMD is actually OK in that regard, but some drivers 
-*are* relying on locking for correctness so it can't just be 
-unequivocally removed everywhere.
+Fix sparse warnings:
 
-Robin.
+drivers/xen/swiotlb-xen.c:489:1: warning:
+ symbol 'xen_swiotlb_sync_single_for_cpu' was not declared. Should it be static?
+drivers/xen/swiotlb-xen.c:496:1: warning:
+ symbol 'xen_swiotlb_sync_single_for_device' was not declared. Should it be static?
 
-> Signed-off-by: Tom Murphy <tmurphy@arista.com>
-> ---
->   drivers/iommu/amd_iommu.c | 25 ++++++++++++++++++-------
->   1 file changed, 18 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 2d4ee10626b4..b45e0e033adc 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3089,12 +3089,12 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
->   	return ret;
->   }
->   
-> -static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
-> -			 phys_addr_t paddr, size_t page_size, int iommu_prot)
-> +static int __amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
-> +			 phys_addr_t paddr, size_t page_size, int iommu_prot,
-> +			 gfp_t gfp)
->   {
->   	struct protection_domain *domain = to_pdomain(dom);
->   	int prot = 0;
-> -	int ret;
->   
->   	if (domain->mode == PAGE_MODE_NONE)
->   		return -EINVAL;
-> @@ -3104,11 +3104,21 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
->   	if (iommu_prot & IOMMU_WRITE)
->   		prot |= IOMMU_PROT_IW;
->   
-> -	mutex_lock(&domain->api_lock);
-> -	ret = iommu_map_page(domain, iova, paddr, page_size, prot, GFP_KERNEL);
-> -	mutex_unlock(&domain->api_lock);
-> +	return iommu_map_page(domain, iova, paddr, page_size, prot, gfp);
-> +}
->   
-> -	return ret;
-> +static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
-> +			 phys_addr_t paddr, size_t page_size, int iommu_prot)
-> +{
-> +	return __amd_iommu_map(dom, iova, paddr, page_size, iommu_prot,
-> +			GFP_KERNEL);
-> +}
-> +
-> +static int amd_iommu_map_atomic(struct iommu_domain *dom, unsigned long iova,
-> +			 phys_addr_t paddr, size_t page_size, int iommu_prot)
-> +{
-> +	return __amd_iommu_map(dom, iova, paddr, page_size, iommu_prot,
-> +			GFP_ATOMIC);
->   }
->   
->   static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
-> @@ -3262,6 +3272,7 @@ const struct iommu_ops amd_iommu_ops = {
->   	.attach_dev = amd_iommu_attach_device,
->   	.detach_dev = amd_iommu_detach_device,
->   	.map = amd_iommu_map,
-> +	.map_atomic = amd_iommu_map_atomic,
->   	.unmap = amd_iommu_unmap,
->   	.iova_to_phys = amd_iommu_iova_to_phys,
->   	.add_device = amd_iommu_add_device,
-> 
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/xen/swiotlb-xen.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 877baf2..e741df4 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -485,14 +485,14 @@ xen_swiotlb_sync_single(struct device *hwdev, dma_addr_t dev_addr,
+ 		xen_dma_sync_single_for_device(hwdev, dev_addr, size, dir);
+ }
+ 
+-void
++static void
+ xen_swiotlb_sync_single_for_cpu(struct device *hwdev, dma_addr_t dev_addr,
+ 				size_t size, enum dma_data_direction dir)
+ {
+ 	xen_swiotlb_sync_single(hwdev, dev_addr, size, dir, SYNC_FOR_CPU);
+ }
+ 
+-void
++static void
+ xen_swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
+ 				   size_t size, enum dma_data_direction dir)
+ {
+-- 
+2.7.4
