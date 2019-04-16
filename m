@@ -1,8 +1,8 @@
 From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [REBASE PATCH v5 3/9] drivers/firewire/core-iso.c: Convert to use
-	vm_map_pages_zero()
-Date: Tue, 16 Apr 2019 17:19:44 +0530
-Message-ID: <88645f5ea8202784a8baaf389e592aeb8c505e8e.1552921225.git.jrdr.linux__48985.8379865595$1555415235$gmane$org@gmail.com>
+Subject: [REBASE PATCH v5 4/9] drm/rockchip/rockchip_drm_gem.c: Convert to use
+	vm_map_pages()
+Date: Tue, 16 Apr 2019 17:19:45 +0530
+Message-ID: <7ba359eb1aceac388d05983c1f29b915bdf291f9.1552921225.git.jrdr.linux__33319.3863438041$1555415245$gmane$org@gmail.com>
 References: <cover.1552921225.git.jrdr.linux@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,45 +24,50 @@ To: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, willy-wEGCiKHe2LqWVf
 Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Convert to use vm_map_pages_zero() to map range of kernel memory
-to user vma.
+Convert to use vm_map_pages() to map range of kernel
+memory to user vma.
 
-This driver has ignored vm_pgoff and mapped the entire pages. We
-could later "fix" these drivers to behave according to the normal
-vm_pgoff offsetting simply by removing the _zero suffix on the
-function name and if that causes regressions, it gives us an easy
-way to revert.
+Tested on Rockchip hardware and display is working,
+including talking to Lima via prime.
 
 Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 ---
- drivers/firewire/core-iso.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/firewire/core-iso.c b/drivers/firewire/core-iso.c
-index 35e784c..5414eb1 100644
---- a/drivers/firewire/core-iso.c
-+++ b/drivers/firewire/core-iso.c
-@@ -107,19 +107,8 @@ int fw_iso_buffer_init(struct fw_iso_buffer *buffer, struct fw_card *card,
- int fw_iso_buffer_map_vma(struct fw_iso_buffer *buffer,
- 			  struct vm_area_struct *vma)
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_gem.c b/drivers/gpu/drm/rockchip/rockchip_drm_gem.c
+index a8db758..a2ebb08 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_gem.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_gem.c
+@@ -221,26 +221,13 @@ static int rockchip_drm_gem_object_mmap_iommu(struct drm_gem_object *obj,
+ 					      struct vm_area_struct *vma)
  {
--	unsigned long uaddr;
--	int i, err;
--
--	uaddr = vma->vm_start;
--	for (i = 0; i < buffer->page_count; i++) {
--		err = vm_insert_page(vma, uaddr, buffer->pages[i]);
--		if (err)
--			return err;
--
+ 	struct rockchip_gem_object *rk_obj = to_rockchip_obj(obj);
+-	unsigned int i, count = obj->size >> PAGE_SHIFT;
++	unsigned int count = obj->size >> PAGE_SHIFT;
+ 	unsigned long user_count = vma_pages(vma);
+-	unsigned long uaddr = vma->vm_start;
+-	unsigned long offset = vma->vm_pgoff;
+-	unsigned long end = user_count + offset;
+-	int ret;
+ 
+ 	if (user_count == 0)
+ 		return -ENXIO;
+-	if (end > count)
+-		return -ENXIO;
+ 
+-	for (i = offset; i < end; i++) {
+-		ret = vm_insert_page(vma, uaddr, rk_obj->pages[i]);
+-		if (ret)
+-			return ret;
 -		uaddr += PAGE_SIZE;
 -	}
 -
 -	return 0;
-+	return vm_map_pages_zero(vma, buffer->pages,
-+					buffer->page_count);
++	return vm_map_pages(vma, rk_obj->pages, count);
  }
  
- void fw_iso_buffer_destroy(struct fw_iso_buffer *buffer,
+ static int rockchip_drm_gem_object_mmap_dma(struct drm_gem_object *obj,
 -- 
 1.9.1
