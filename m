@@ -1,65 +1,64 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
-Date: Tue, 16 Apr 2019 16:21:00 +0100
-Message-ID: <20190416152100.GB4187@fuggles.cambridge.arm.com>
-References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
- <20190409125308.18304-2-thunder.leizhen@huawei.com>
- <010d3cbd-ef74-ad21-c735-0af8b18955e6@huawei.com>
- <222946ee-adcc-1311-82a7-6afc9ffbc846@arm.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
+Date: Tue, 16 Apr 2019 08:30:25 -0700
+Message-ID: <20190416083025.378f3915@jacob-builder>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
+        <20190415143711.13c29308@x1.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <222946ee-adcc-1311-82a7-6afc9ffbc846@arm.com>
+In-Reply-To: <20190415143711.13c29308@x1.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: John Garry <john.garry@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 12, 2019 at 02:11:31PM +0100, Robin Murphy wrote:
-> On 12/04/2019 11:26, John Garry wrote:
-> > On 09/04/2019 13:53, Zhen Lei wrote:
-> > > +static int __init iommu_dma_mode_setup(char *str)
-> > > +{
-> > > +    if (!str)
-> > > +        goto fail;
-> > > +
-> > > +    if (!strncmp(str, "passthrough", 11))
-> > > +        iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
-> > > +    else if (!strncmp(str, "lazy", 4))
-> > > +        iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
-> > > +    else if (!strncmp(str, "strict", 6))
-> > > +        iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
-> > > +    else
-> > > +        goto fail;
-> > > +
-> > > +    pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
+On Mon, 15 Apr 2019 14:37:11 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
+
+> On Mon,  8 Apr 2019 16:59:25 -0700
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> 
+> > When VT-d driver runs in the guest, PASID allocation must be
+> > performed via virtual command interface. This patch register a
+> > custom IOASID allocator which takes precedence over the default
+> > IDR based allocator. The resulting IOASID allocation will always
+> > come from the host. This ensures that PASID namespace is system-
+> > wide.
 > > 
-> > What happens if the cmdline option iommu.dma_mode is passed multiple
-> > times? We get mutliple - possibily conflicting - prints, right?
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/intel-iommu.c | 50
+> > +++++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/intel-iommu.h |  1 + 2 files changed, 51 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index 28cb713..a38d774 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -4820,6 +4820,42 @@ static int __init
+> > platform_optin_force_iommu(void) return 1;
+> >  }
+> >  
+> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
+> > void *data) +{
+> > +	struct intel_iommu *iommu = data;
+> > +	ioasid_t ioasid;
+> > +
+> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
+> > +		return INVALID_IOASID;
+> > +	return ioasid;  
 > 
-> Indeed; we ended up removing such prints for the existing options here,
-> specifically because multiple messages seemed more likely to be confusing
-> than useful.
+> How does this honor min/max?
 > 
-> > And do we need to have backwards compatibility, such that the setting
-> > for iommu.strict or iommu.passthrough trumps iommu.dma_mode, regardless
-> > of order?
-> 
-> As above I think it would be preferable to just keep using the existing
-> options anyway. The current behaviour works out as:
-> 
-> iommu.passthrough |      Y	|	  N
-> iommu.strict	  |      x	|    Y         N
-> ------------------|-------------|---------|--------
-> MODE		  | PASSTHROUGH | STRICT  |  LAZY
-> 
-> which seems intuitive enough that a specific dma_mode option doesn't add
-> much value, and would more likely just overcomplicate things for users as
-> well as our implementation.
+Sorry I missed this in my previous reply.
+VT-d virtual command interface always allocate PASIDs with full 20bit
+range. I think a range checking is missing here. Thanks for pointing
+this out.
 
-Agreed. We can't remove the existing options, and they do the job perfectly
-well so I don't see the need to add more options on top.
-
-Will
+>  [...]  
+> 
