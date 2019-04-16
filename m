@@ -1,82 +1,69 @@
-From: Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: Re: [PATCH v4 0/3] PCIe Host request to reserve IOVA
-Date: Tue, 16 Apr 2019 17:28:36 +0530
-Message-ID: <CABe79T7h9t_Obmo3+B0MHgLZ4ff9GxpBBBLGtSf0C=zmLrWVBQ@mail.gmail.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com> <20190412223409.GB126710@google.com>
+From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [REBASE PATCH v5 8/9] xen/gntdev.c: Convert to use vm_map_pages()
+Date: Tue, 16 Apr 2019 17:19:49 +0530
+Message-ID: <88e56e82d2db98705c2d842e9c9806c00b366d67.1552921225.git.jrdr.linux__18633.1600927346$1555415977$gmane$org@gmail.com>
+References: <cover.1552921225.git.jrdr.linux@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190412223409.GB126710@google.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <cover.1552921225.git.jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <cover.1552921225.git.jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+References: <cover.1552921225.git.jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jgross-IBi9RG/b67k@public.gmane.org
+Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+Convert to use vm_map_pages() to map range of kernel
+memory to user vma.
 
-Thanks for review. Please find my reply below.
+map->count is passed to vm_map_pages() and internal API
+verify map->count against count ( count = vma_pages(vma))
+for page array boundary overrun condition.
 
-On Sat, Apr 13, 2019 at 4:04 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Fri, Apr 12, 2019 at 08:43:32AM +0530, Srinath Mannam wrote:
-> > Few SOCs have limitation that their PCIe host can't allow few inbound
-> > address ranges. Allowed inbound address ranges are listed in dma-ranges
-> > DT property and this address ranges are required to do IOVA mapping.
-> > Remaining address ranges have to be reserved in IOVA mapping.
->
-> If I understand correctly, devices below these PCIe host bridges can
-> DMA only to the listed address ranges, and you prevent devices from
-> doing DMA to the holes between the listed ranges by reserving the
-> holes in dma-iommu.
-Yes, devices below these PCIe host bridges can DMA only to the listed
-address ranges,
-and this patch prevents to allocate DMA(IOVA) addresses in the holes
-of listed ranges.
->
-> Apparently there's something that makes sure driver dma_map_*() always
-> goes through dma-iommu?  I traced as far as seeing that dma-iommu
-> depends on CONFIG_IOMMU_DMA, and that arm64 selects CONFIG_IOMMU_DMA
-> if CONFIG_IOMMU_SUPPORT, but then the trail got cold.  I didn't see
-> what selects CONFIG_IOMMU_SUPPORT.
-IOMMU_SUPPORT depends on MMU.
->
-> This does look like what Robin suggested, as far as I can tell.
-> Hopefully he'll take a look and give his reviewed-by.  Thanks for
-> persevering!
-Thank you.
+Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/xen/gntdev.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-Regards,
-Srinath.
->
-> > PCIe Host driver of those SOCs has to list resource entries of allowed
-> > address ranges given in dma-ranges DT property in sorted order. This
-> > sorted list of resources will be processed and reserve IOVA address for
-> > inaccessible address holes while initializing IOMMU domain.
-> >
-> > This patch set is based on Linux-5.0-rc2.
-> >
-> > Changes from v3:
-> >   - Addressed Robin Murphy review comments.
-> >     - pcie-iproc: parse dma-ranges and make sorted resource list.
-> >     - dma-iommu: process list and reserve gaps between entries
-> >
-> > Changes from v2:
-> >   - Patch set rebased to Linux-5.0-rc2
-> >
-> > Changes from v1:
-> >   - Addressed Oza review comments.
-> >
-> > Srinath Mannam (3):
-> >   PCI: Add dma_ranges window list
-> >   iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
-> >   PCI: iproc: Add sorted dma ranges resource entries to host bridge
-> >
-> >  drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
-> >  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
-> >  drivers/pci/probe.c                 |  3 +++
-> >  include/linux/pci.h                 |  1 +
-> >  4 files changed, 66 insertions(+), 1 deletion(-)
-> >
-> > --
-> > 2.7.4
-> >
+diff --git a/drivers/xen/gntdev.c b/drivers/xen/gntdev.c
+index 5efc5ee..5d64262 100644
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -1084,7 +1084,7 @@ static int gntdev_mmap(struct file *flip, struct vm_area_struct *vma)
+ 	int index = vma->vm_pgoff;
+ 	int count = vma_pages(vma);
+ 	struct gntdev_grant_map *map;
+-	int i, err = -EINVAL;
++	int err = -EINVAL;
+ 
+ 	if ((vma->vm_flags & VM_WRITE) && !(vma->vm_flags & VM_SHARED))
+ 		return -EINVAL;
+@@ -1145,12 +1145,9 @@ static int gntdev_mmap(struct file *flip, struct vm_area_struct *vma)
+ 		goto out_put_map;
+ 
+ 	if (!use_ptemod) {
+-		for (i = 0; i < count; i++) {
+-			err = vm_insert_page(vma, vma->vm_start + i*PAGE_SIZE,
+-				map->pages[i]);
+-			if (err)
+-				goto out_put_map;
+-		}
++		err = vm_map_pages(vma, map->pages, map->count);
++		if (err)
++			goto out_put_map;
+ 	} else {
+ #ifdef CONFIG_X86
+ 		/*
+-- 
+1.9.1
