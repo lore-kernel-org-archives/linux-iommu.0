@@ -8,66 +8,67 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD293C10F14
-	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BCAC10F13
+	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:47:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8E4DE2087C
-	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:46:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C459B20873
+	for <iommu@archiver.kernel.org>; Tue, 16 Apr 2019 11:47:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oeEcKFpL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E4DE2087C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cU96DRv2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C459B20873
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 74CC9FF1;
-	Tue, 16 Apr 2019 11:46:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AC584FF6;
+	Tue, 16 Apr 2019 11:47:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CA5F2FE9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 64ADFFEC
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Apr 2019 11:46:55 +0000 (UTC)
+	Tue, 16 Apr 2019 11:47:05 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com
-	[209.85.210.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 80F776C5
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
+	[209.85.214.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 19B741C0
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Apr 2019 11:46:55 +0000 (UTC)
-Received: by mail-pf1-f195.google.com with SMTP id 188so10280996pfd.8
+	Tue, 16 Apr 2019 11:47:05 +0000 (UTC)
+Received: by mail-pl1-f193.google.com with SMTP id d1so10214878plj.8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Apr 2019 04:46:55 -0700 (PDT)
+	Tue, 16 Apr 2019 04:47:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references
 	:in-reply-to:references;
-	bh=cNyFM0J2DfW9voxw9FzV7E7Y/LrzsWkGDKLqwe0d5pk=;
-	b=oeEcKFpL3vmK9+DpAkDM2pqJ4cwz8D1E2liXXkVcMS/mCROTNxreZ3tJiZU7AMhYGa
-	jdvIuxFSG51quKMSoG7eGUWo0OFVjsfwlsv0j6QgATWKo4Y/zRlxt4YEDfEpCBvwBcDU
-	oLh7KOdm3sUnBXGsWZumlJIoubWl0FlACsdqSTDMD22x9YueAbdJduUdqxf+Fzo+qE4b
-	G/2XochB6n9yIyfIIw7vwaFhmKiDJzF2ILx3ft6jONO/3Tp5olQ3mZrspX0N7+OtxUzw
-	L3gftE9ttJboi/nhCsZ8IHvh1byiu+1G+2wjx/i6t9Le5dXmn/WMY4e9g4nRHdsI6qmW
-	KGJw==
+	bh=naB3KMuHNTCaDD6/Z64EGJGrk7XQ7GW1pzVQ9Q3Vf6s=;
+	b=cU96DRv2ov3f6Cd6NK8xcTZ/pxd6ORU1P19E6pQIz3B49Xye1iNecd9iNZibBfJcjQ
+	zuIvUPJ+CLar5CQjZRDX3VQ1TZCDeFWlILHsb8dRJWggD00EqzXEkyE8uJG1kMP2eIvp
+	n24W6tCY3AanegajVewju3yYDXmhf0X9II/qFV5HCylGUkejdXzo9E/koqfyqUqq8zr9
+	mW/ZBFGmtcso0v4QTX5OavZW9KBMU22Tan8pYhZR4Ld+BqKTsHamZTqQU3PDd55gPcFI
+	MsgxhBrhXIs5Fh8xdDdB8AJYcTdBC4NqYXVKmPD9APCljql55oe+X1QMkhe2S4UTALoW
+	5KAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references:in-reply-to:references;
-	bh=cNyFM0J2DfW9voxw9FzV7E7Y/LrzsWkGDKLqwe0d5pk=;
-	b=R5oFEyrbMHe1P78yCc/hoXsJoYBayKN2aGTVfLAdDelwVZFQ1Ymu6hYnWI2ebU6cXM
-	YIAdYflPHhq+PefXPA8V1Wz12EFe9dM6+gwYS7dZSlngFGrM6zReKn7awQBF9Pm16hTK
-	9XPt1G8LO5iI9XWMzQRq5hGpwOI2Xy/KYm3d/QeazWiRHjHiS9JNs9KMduKvtEvHG7y1
-	DhIT8igYZ2EZt1FyGBgobQicaN2RPaGFFiMQTdCgbVYfJDyvBg3jPKuMzdW/fW78VTm3
-	9cmeQ7R1D37XtZ99kEp9GRToz8pybHidqRMiKRAuxTU6pCudo9BTlN8TAKUkkGhVJWR1
-	6E2w==
-X-Gm-Message-State: APjAAAUPkrxt5/o0ZRv0VW24XxtqnBYslmQUPlRLQrMlj0Xhsen9y1as
-	7M2dqLcFSs9RGNfp0jnKbVw=
-X-Google-Smtp-Source: APXvYqzT/G52JjPlhhzDjlzXSHHg4UNZ4b12u0OW4Mw/nQ9ugBF4FdGP/KIWXfE/EW5Pz1mzLpMj5g==
-X-Received: by 2002:a62:6ec6:: with SMTP id j189mr346760pfc.195.1555415215118; 
-	Tue, 16 Apr 2019 04:46:55 -0700 (PDT)
+	bh=naB3KMuHNTCaDD6/Z64EGJGrk7XQ7GW1pzVQ9Q3Vf6s=;
+	b=Sg7rPmS+78jot6Bfr8rSem1UbcJt1g/Ce6/yResws2OaPiLBaGvFxq6tihGvgKPEx1
+	TYW28zjiLD3g3PP0N6jsM2HYzB72AnyXNH1FlRk1McHqUjjtvcUpaJ8B+maabJzVyFx9
+	slIiLnCi4raiy4/W8H8ok69RnZlvYrvI+gCGseIb4YX3e3AXSEt8GLdAlL8Fq16OVY9A
+	w2R7pp0x4At5qcqYl22qbY3SO00/b0FlEd6GzJZNTKiSOGTXQD2g/zLxV8nRheb9j+2U
+	AKu9VfOLwoPma+VEk1A1TWRsobj6EC1btpNq0sgQY5JLXdWmJ+uLPJkxA184e9yMVbtm
+	nYsA==
+X-Gm-Message-State: APjAAAXvk450AoHz7XuBakdRp3FmXL/Lofd6nMoJLxI4fiUr/V9wT6YK
+	XCdrOeP4vxljputQTeR/E7c=
+X-Google-Smtp-Source: APXvYqzDjDcAV7GNAw1BnDNouVWt6jT57KNhFlyZntYAXIOvC1nqtveURqFOLb2rK8ycg0MhFKUzow==
+X-Received: by 2002:a17:902:d24:: with SMTP id
+	33mr83552990plu.246.1555415224705; 
+	Tue, 16 Apr 2019 04:47:04 -0700 (PDT)
 Received: from jordon-HP-15-Notebook-PC.domain.name ([49.207.50.11])
 	by smtp.gmail.com with ESMTPSA id
-	p6sm55942835pfd.122.2019.04.16.04.46.45
+	p6sm55942835pfd.122.2019.04.16.04.46.55
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-	Tue, 16 Apr 2019 04:46:54 -0700 (PDT)
+	Tue, 16 Apr 2019 04:47:03 -0700 (PDT)
 From: Souptick Joarder <jrdr.linux@gmail.com>
 To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com,
 	kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com,
@@ -78,10 +79,10 @@ To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com,
 	airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org,
 	pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org,
 	boris.ostrovsky@oracle.com, jgross@suse.com
-Subject: [REBASE PATCH v5 2/9] arm: mm: dma-mapping: Convert to use
-	vm_map_pages()
-Date: Tue, 16 Apr 2019 17:19:43 +0530
-Message-Id: <936e5e107c746a7310e3a3c471188ca3ac8f9754.1552921225.git.jrdr.linux@gmail.com>
+Subject: [REBASE PATCH v5 3/9] drivers/firewire/core-iso.c: Convert to use
+	vm_map_pages_zero()
+Date: Tue, 16 Apr 2019 17:19:44 +0530
+Message-Id: <88645f5ea8202784a8baaf389e592aeb8c505e8e.1552921225.git.jrdr.linux@gmail.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
 References: <cover.1552921225.git.jrdr.linux@gmail.com>
@@ -111,56 +112,46 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Convert to use vm_map_pages() to map range of kernel
-memory to user vma.
+Convert to use vm_map_pages_zero() to map range of kernel memory
+to user vma.
+
+This driver has ignored vm_pgoff and mapped the entire pages. We
+could later "fix" these drivers to behave according to the normal
+vm_pgoff offsetting simply by removing the _zero suffix on the
+function name and if that causes regressions, it gives us an easy
+way to revert.
 
 Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
 ---
- arch/arm/mm/dma-mapping.c | 22 ++++++----------------
- 1 file changed, 6 insertions(+), 16 deletions(-)
+ drivers/firewire/core-iso.c | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index f1e2922..de7c76e 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1575,31 +1575,21 @@ static int __arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma
- 		    void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		    unsigned long attrs)
+diff --git a/drivers/firewire/core-iso.c b/drivers/firewire/core-iso.c
+index 35e784c..5414eb1 100644
+--- a/drivers/firewire/core-iso.c
++++ b/drivers/firewire/core-iso.c
+@@ -107,19 +107,8 @@ int fw_iso_buffer_init(struct fw_iso_buffer *buffer, struct fw_card *card,
+ int fw_iso_buffer_map_vma(struct fw_iso_buffer *buffer,
+ 			  struct vm_area_struct *vma)
  {
--	unsigned long uaddr = vma->vm_start;
--	unsigned long usize = vma->vm_end - vma->vm_start;
- 	struct page **pages = __iommu_get_pages(cpu_addr, attrs);
- 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	unsigned long off = vma->vm_pgoff;
-+	int err;
- 
- 	if (!pages)
- 		return -ENXIO;
- 
--	if (off >= nr_pages || (usize >> PAGE_SHIFT) > nr_pages - off)
-+	if (vma->vm_pgoff >= nr_pages)
- 		return -ENXIO;
- 
--	pages += off;
+-	unsigned long uaddr;
+-	int i, err;
 -
--	do {
--		int ret = vm_insert_page(vma, uaddr, *pages++);
--		if (ret) {
--			pr_err("Remapping memory failed: %d\n", ret);
--			return ret;
--		}
+-	uaddr = vma->vm_start;
+-	for (i = 0; i < buffer->page_count; i++) {
+-		err = vm_insert_page(vma, uaddr, buffer->pages[i]);
+-		if (err)
+-			return err;
+-
 -		uaddr += PAGE_SIZE;
--		usize -= PAGE_SIZE;
--	} while (usize > 0);
-+	err = vm_map_pages(vma, pages, nr_pages);
-+	if (err)
-+		pr_err("Remapping memory failed: %d\n", err);
- 
+-	}
+-
 -	return 0;
-+	return err;
++	return vm_map_pages_zero(vma, buffer->pages,
++					buffer->page_count);
  }
- static int arm_iommu_mmap_attrs(struct device *dev,
- 		struct vm_area_struct *vma, void *cpu_addr,
+ 
+ void fw_iso_buffer_destroy(struct fw_iso_buffer *buffer,
 -- 
 1.9.1
 
