@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 2/9] PCI: Add a stub for pci_ats_disabled()
-Date: Wed, 17 Apr 2019 19:24:41 +0100
-Message-ID: <20190417182448.12382-3-jean-philippe.brucker@arm.com>
+Subject: [PATCH v3 5/9] iommu/arm-smmu-v3: Store SteamIDs in master
+Date: Wed, 17 Apr 2019 19:24:44 +0100
+Message-ID: <20190417182448.12382-6-jean-philippe.brucker@arm.com>
 References: <20190417182448.12382-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +21,111 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@publ
 Cc: zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, okaya-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently pci_ats_disabled() is only defined when CONFIG_PCI is enabled.
-Since we're about to use the function in the Arm SMMUv3 driver, which
-could be built with CONFIG_PCI disabled, add a definition of
-pci_ats_disabled() for !CONFIG_PCI.
+Simplify the attach/detach code a bit by keeping a pointer to the stream
+IDs in the master structure. Although not completely obvious here, it does
+make the subsequent support for ATS, PRI and PASID a bit simpler.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/pci.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/arm-smmu-v3.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 169c6a18d0b0..61d7cd888bad 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1713,6 +1713,7 @@ static inline int pci_irqd_intx_xlate(struct irq_domain *d,
- static inline const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
- 							 struct pci_dev *dev)
- { return NULL; }
-+static inline bool pci_ats_disabled(void) { return true; }
- #endif /* CONFIG_PCI */
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 50cb037f3d8a..25ba546cae7f 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -594,6 +594,8 @@ struct arm_smmu_device {
+ struct arm_smmu_master {
+ 	struct arm_smmu_device		*smmu;
+ 	struct arm_smmu_strtab_ent	ste;
++	u32				*sids;
++	unsigned int			num_sids;
+ };
  
- #ifdef CONFIG_PCI_ATS
+ /* SMMU private data for an IOMMU domain */
+@@ -1688,19 +1690,18 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+ 	return step;
+ }
+ 
+-static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
++static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
+ {
+ 	int i, j;
+-	struct arm_smmu_master *master = fwspec->iommu_priv;
+ 	struct arm_smmu_device *smmu = master->smmu;
+ 
+-	for (i = 0; i < fwspec->num_ids; ++i) {
+-		u32 sid = fwspec->ids[i];
++	for (i = 0; i < master->num_sids; ++i) {
++		u32 sid = master->sids[i];
+ 		__le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
+ 
+ 		/* Bridged PCI devices may end up with duplicated IDs */
+ 		for (j = 0; j < i; j++)
+-			if (fwspec->ids[j] == sid)
++			if (master->sids[j] == sid)
+ 				break;
+ 		if (j < i)
+ 			continue;
+@@ -1709,13 +1710,10 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ 	}
+ }
+ 
+-static void arm_smmu_detach_dev(struct device *dev)
++static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+ {
+-	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_master *master = fwspec->iommu_priv;
+-
+ 	master->ste.assigned = false;
+-	arm_smmu_install_ste_for_dev(fwspec);
++	arm_smmu_install_ste_for_dev(master);
+ }
+ 
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+@@ -1736,7 +1734,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+ 	/* Already attached to a different domain? */
+ 	if (ste->assigned)
+-		arm_smmu_detach_dev(dev);
++		arm_smmu_detach_dev(master);
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+@@ -1770,7 +1768,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		ste->s2_cfg = &smmu_domain->s2_cfg;
+ 	}
+ 
+-	arm_smmu_install_ste_for_dev(fwspec);
++	arm_smmu_install_ste_for_dev(master);
+ out_unlock:
+ 	mutex_unlock(&smmu_domain->init_mutex);
+ 	return ret;
+@@ -1883,12 +1881,14 @@ static int arm_smmu_add_device(struct device *dev)
+ 			return -ENOMEM;
+ 
+ 		master->smmu = smmu;
++		master->sids = fwspec->ids;
++		master->num_sids = fwspec->num_ids;
+ 		fwspec->iommu_priv = master;
+ 	}
+ 
+ 	/* Check the SIDs are in range of the SMMU and our stream table */
+-	for (i = 0; i < fwspec->num_ids; i++) {
+-		u32 sid = fwspec->ids[i];
++	for (i = 0; i < master->num_sids; i++) {
++		u32 sid = master->sids[i];
+ 
+ 		if (!arm_smmu_sid_in_range(smmu, sid))
+ 			return -ERANGE;
+@@ -1922,7 +1922,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	master = fwspec->iommu_priv;
+ 	smmu = master->smmu;
+ 	if (master && master->ste.assigned)
+-		arm_smmu_detach_dev(dev);
++		arm_smmu_detach_dev(master);
+ 	iommu_group_remove_device(dev);
+ 	iommu_device_unlink(&smmu->iommu, dev);
+ 	kfree(master);
 -- 
 2.21.0
