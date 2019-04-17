@@ -1,74 +1,170 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
- Ownership (XPFO)
-Date: Wed, 17 Apr 2019 23:19:50 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1904172317460.3174@nanos.tec.linutronix.de>
-References: <cover.1554248001.git.khalid.aziz@oracle.com> <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com> <20190417161042.GA43453@gmail.com> <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com> <20190417170918.GA68678@gmail.com>
- <56A175F6-E5DA-4BBD-B244-53B786F27B7F@gmail.com> <20190417172632.GA95485@gmail.com> <063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
+From: Thiago Jung Bauermann <bauerman-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Wed, 17 Apr 2019 18:42:00 -0300
+Message-ID: <87a7go71hz.fsf@morokweng.localdomain>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+	<87womn8inf.fsf@morokweng.localdomain>
+	<20190129134750-mutt-send-email-mst@kernel.org>
+	<877eefxvyb.fsf@morokweng.localdomain>
+	<20190204144048-mutt-send-email-mst@kernel.org>
+	<87ef71seve.fsf@morokweng.localdomain>
+	<20190320171027-mutt-send-email-mst@kernel.org>
+	<87tvfvbwpb.fsf@morokweng.localdomain>
+	<20190323165456-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1402638458-1555535997=:3174"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nadav Amit <nadav.amit@gmail.com>
-Cc: Ingo Molnar <mingo@kernel.org>, Khalid Aziz <khalid.aziz@oracle.com>, juergh@gmail.com, Tycho Andersen <tycho@tycho.ws>, jsteckli@amazon.de, keescook@google.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Juerg Haefliger <juerg.haefliger@canonical.com>, deepa.srinivasan@oracle.com, chris.hyser@oracle.com, tyhicks@canonical.com, David Woodhouse <dwmw@amazon.co.uk>, Andrew Cooper <andrew.cooper3@citrix.com>, jcm@redhat.com, Boris Ostrovsky <boris.ostrovsky@oracle.com>, iommu <iommu@lists.linux-foundation.org>, X86 ML <x86@kernel.org>, linux-arm-kernel@lists.infradead.org, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <20190323165456-mutt-send-email-mst-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Mike Anderson <andmike-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Michael Roth <mdroth-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Ram Pai <linuxram-r/Jw6+rmf7HQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1402638458-1555535997=:3174
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Michael S. Tsirkin <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> writes:
 
-On Wed, 17 Apr 2019, Nadav Amit wrote:
-> > On Apr 17, 2019, at 10:26 AM, Ingo Molnar <mingo@kernel.org> wrote:
-> >> As I was curious, I looked at the paper. Here is a quote from it:
-> >> 
-> >> "In x86-64, however, the permissions of physmap are not in sane state.
-> >> Kernels up to v3.8.13 violate the W^X property by mapping the entire region
-> >> as “readable, writeable, and executable” (RWX)—only very recent kernels
-> >> (≥v3.9) use the more conservative RW mapping.”
-> > 
-> > But v3.8.13 is a 5+ years old kernel, it doesn't count as a "modern" 
-> > kernel in any sense of the word. For any proposed patchset with 
-> > significant complexity and non-trivial costs the benchmark version 
-> > threshold is the "current upstream kernel".
-> > 
-> > So does that quote address my followup questions:
-> > 
-> >> Is this actually true of modern x86-64 kernels? We've locked down W^X
-> >> protections in general.
-> >> 
-> >> I.e. this conclusion:
-> >> 
-> >>  "Therefore, by simply overwriting kfptr with 0xFFFF87FF9F080000 and
-> >>   triggering the kernel to dereference it, an attacker can directly
-> >>   execute shell code with kernel privileges."
-> >> 
-> >> ... appears to be predicated on imperfect W^X protections on the x86-64
-> >> kernel.
-> >> 
-> >> Do such holes exist on the latest x86-64 kernel? If yes, is there a
-> >> reason to believe that these W^X holes cannot be fixed, or that any fix
-> >> would be more expensive than XPFO?
-> > 
-> > ?
-> > 
-> > What you are proposing here is a XPFO patch-set against recent kernels 
-> > with significant runtime overhead, so my questions about the W^X holes 
-> > are warranted.
-> > 
-> 
-> Just to clarify - I am an innocent bystander and have no part in this work.
-> I was just looking (again) at the paper, as I was curious due to the recent
-> patches that I sent that improve W^X protection.
+> On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
+>>
+>> Michael S. Tsirkin <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> writes:
+>>
+>> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
+>> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
+>> >> only ever try to access memory addresses that are supplied to it by the
+>> >> guest, so all of the secure guest memory that the host cares about is
+>> >> accessible:
+>> >>
+>> >>     If this feature bit is set to 0, then the device has same access to
+>> >>     memory addresses supplied to it as the driver has. In particular,
+>> >>     the device will always use physical addresses matching addresses
+>> >>     used by the driver (typically meaning physical addresses used by the
+>> >>     CPU) and not translated further, and can access any address supplied
+>> >>     to it by the driver. When clear, this overrides any
+>> >>     platform-specific description of whether device access is limited or
+>> >>     translated in any way, e.g. whether an IOMMU may be present.
+>> >>
+>> >> All of the above is true for POWER guests, whether they are secure
+>> >> guests or not.
+>> >>
+>> >> Or are you saying that a virtio device may want to access memory
+>> >> addresses that weren't supplied to it by the driver?
+>> >
+>> > Your logic would apply to IOMMUs as well.  For your mode, there are
+>> > specific encrypted memory regions that driver has access to but device
+>> > does not. that seems to violate the constraint.
+>>
+>> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
+>> the device can ignore the IOMMU for all practical purposes I would
+>> indeed say that the logic would apply to IOMMUs as well. :-)
+>>
+>> I guess I'm still struggling with the purpose of signalling to the
+>> driver that the host may not have access to memory addresses that it
+>> will never try to access.
+>
+> For example, one of the benefits is to signal to host that driver does
+> not expect ability to access all memory. If it does, host can
+> fail initialization gracefully.
 
-It's not necessarily a W+X issue. The user space text is mapped in the
-kernel as well and even if it is mapped RX then this can happen. So any
-kernel mappings of user space text need to be mapped NX!
+But why would the ability to access all memory be necessary or even
+useful? When would the host access memory that the driver didn't tell it
+to access?
 
-Thanks,
+>> >> >> > But the name "sev_active" makes me scared because at least AMD guys who
+>> >> >> > were doing the sensible thing and setting ACCESS_PLATFORM
+>> >> >>
+>> >> >> My understanding is, AMD guest-platform knows in advance that their
+>> >> >> guest will run in secure mode and hence sets the flag at the time of VM
+>> >> >> instantiation. Unfortunately we dont have that luxury on our platforms.
+>> >> >
+>> >> > Well you do have that luxury. It looks like that there are existing
+>> >> > guests that already acknowledge ACCESS_PLATFORM and you are not happy
+>> >> > with how that path is slow. So you are trying to optimize for
+>> >> > them by clearing ACCESS_PLATFORM and then you have lost ability
+>> >> > to invoke DMA API.
+>> >> >
+>> >> > For example if there was another flag just like ACCESS_PLATFORM
+>> >> > just not yet used by anyone, you would be all fine using that right?
+>> >>
+>> >> Yes, a new flag sounds like a great idea. What about the definition
+>> >> below?
+>> >>
+>> >> VIRTIO_F_ACCESS_PLATFORM_NO_IOMMU This feature has the same meaning as
+>> >>     VIRTIO_F_ACCESS_PLATFORM both when set and when not set, with the
+>> >>     exception that the IOMMU is explicitly defined to be off or bypassed
+>> >>     when accessing memory addresses supplied to the device by the
+>> >>     driver. This flag should be set by the guest if offered, but to
+>> >>     allow for backward-compatibility device implementations allow for it
+>> >>     to be left unset by the guest. It is an error to set both this flag
+>> >>     and VIRTIO_F_ACCESS_PLATFORM.
+>> >
+>> > It looks kind of narrow but it's an option.
+>>
+>> Great!
+>>
+>> > I wonder how we'll define what's an iommu though.
+>>
+>> Hm, it didn't occur to me it could be an issue. I'll try.
 
-	tglx
---8323329-1402638458-1555535997=:3174--
+I rephrased it in terms of address translation. What do you think of
+this version? The flag name is slightly different too:
+
+
+VIRTIO_F_ACCESS_PLATFORM_NO_TRANSLATION This feature has the same
+    meaning as VIRTIO_F_ACCESS_PLATFORM both when set and when not set,
+    with the exception that address translation is guaranteed to be
+    unnecessary when accessing memory addresses supplied to the device
+    by the driver. Which is to say, the device will always use physical
+    addresses matching addresses used by the driver (typically meaning
+    physical addresses used by the CPU) and not translated further. This
+    flag should be set by the guest if offered, but to allow for
+    backward-compatibility device implementations allow for it to be
+    left unset by the guest. It is an error to set both this flag and
+    VIRTIO_F_ACCESS_PLATFORM.
+
+>> > Another idea is maybe something like virtio-iommu?
+>>
+>> You mean, have legacy guests use virtio-iommu to request an IOMMU
+>> bypass? If so, it's an interesting idea for new guests but it doesn't
+>> help with guests that are out today in the field, which don't have A
+>> virtio-iommu driver.
+>
+> I presume legacy guests don't use encrypted memory so why do we
+> worry about them at all?
+
+They don't use encrypted memory, but a host machine will run a mix of
+secure and legacy guests. And since the hypervisor doesn't know whether
+a guest will be secure or not at the time it is launched, legacy guests
+will have to be launched with the same configuration as secure guests.
+
+>> >> > Is there any justification to doing that beyond someone putting
+>> >> > out slow code in the past?
+>> >>
+>> >> The definition of the ACCESS_PLATFORM flag is generic and captures the
+>> >> notion of memory access restrictions for the device. Unfortunately, on
+>> >> powerpc pSeries guests it also implies that the IOMMU is turned on
+>> >
+>> > IIUC that's really because on pSeries IOMMU is *always* turned on.
+>> > Platform has no way to say what you want it to say
+>> > which is bypass the iommu for the specific device.
+>>
+>> Yes, that's correct. pSeries guests running on KVM are in a gray area
+>> where theoretically they use an IOMMU but in practice KVM ignores it.
+>> It's unfortunate but it's the reality on the ground today. :-/
+>
+> Well it's not just the reality, virt setups need something that
+> emulated IOMMUs don't provide. That is not uncommon, e.g.
+> intel's VTD has a "cache mode" field which AFAIK is only used for virt.
+
+That's good to know. Thanks for this example.
+
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
