@@ -1,81 +1,35 @@
-From: Wen Yang <wen.yang99@zte.com.cn>
-Subject: [PATCH] iommu/mediatek: fix leaked of_node references
-Date: Wed, 17 Apr 2019 10:41:19 +0800
-Message-ID: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
+ helpers
+Date: Wed, 17 Apr 2019 08:33:58 +0200
+Message-ID: <20190417063358.GA24139@lst.de>
+References: <20190327080448.5500-1-hch@lst.de> <20190327080448.5500-13-hch@lst.de> <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com> <20190410061157.GA5278@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190410061157.GA5278@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: wang.yi59@zte.com.cn, Wen Yang <wen.yang99@zte.com.cn>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The call to of_parse_phandle returns a node pointer with refcount
-incremented thus it must be explicitly decremented after the last
-usage.
+On Wed, Apr 10, 2019 at 08:11:57AM +0200, Christoph Hellwig wrote:
+> On Tue, Apr 09, 2019 at 06:59:32PM +0100, Robin Murphy wrote:
+> > On 27/03/2019 08:04, Christoph Hellwig wrote:
+> >> This keeps the code together and will simplify compiling the code
+> >> out on architectures that are always dma coherent.
+> >
+> > And this is where things take a turn in the direction I just can't get on 
+> > with - I'm looking at the final result and the twisty maze of little 
+> > disjoint helpers all overlapping each other in functionality is really 
+> > difficult to follow. And I would *much* rather have things rely on 
+> > compile-time constant optimisation than spend the future having to fix the 
+> > #ifdefed parts for arm64 whenever x86-centric changes fail to test them.
+> 
+> Can you draft up a patch on top of my series to show me what you
+> want?  I can take care of finishing it up and moving the changes
+> into the right patches in the series.
 
-581 static int mtk_iommu_probe(struct platform_device *pdev)
-582 {
-    ...
-626         for (i = 0; i < larb_nr; i++) {
-627                 struct device_node *larbnode;
-    ...
-631                 larbnode = of_parse_phandle(...);
-632                 if (!larbnode)
-633                         return -EINVAL;
-634
-635                 if (!of_device_is_available(larbnode))
-636                         continue;             ---> leaked here
-637
-    ...
-643                 if (!plarbdev)
-644                         return -EPROBE_DEFER; ---> leaked here
-    ...
-647                 component_match_add_release(dev, &match, release_of,
-648                                             compare_of, larbnode);
-                                   ---> release_of will call of_node_put
-649         }
-    ...
-650
-
-Detected by coccinelle with the following warnings:
-./drivers/iommu/mtk_iommu.c:644:3-9: ERROR: missing of_node_put; acquired a node pointer with refcount incremented on line 631, but without a corresponding object release within this function.
-
-Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/iommu/mtk_iommu.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index de3e022..b66d11b 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -632,16 +632,20 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		if (!larbnode)
- 			return -EINVAL;
- 
--		if (!of_device_is_available(larbnode))
-+		if (!of_device_is_available(larbnode)) {
-+			of_node_put(larbnode);
- 			continue;
-+		}
- 
- 		ret = of_property_read_u32(larbnode, "mediatek,larb-id", &id);
- 		if (ret)/* The id is consecutive if there is no this property */
- 			id = i;
- 
- 		plarbdev = of_find_device_by_node(larbnode);
--		if (!plarbdev)
-+		if (!plarbdev) {
-+			of_node_put(larbnode);
- 			return -EPROBE_DEFER;
-+		}
- 		data->smi_imu.larb_imu[id].dev = &plarbdev->dev;
- 
- 		component_match_add_release(dev, &match, release_of,
--- 
-2.9.5
+Any chance to make some progress on this?  Or at least a better
+description of what you want?
