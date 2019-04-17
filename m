@@ -7,41 +7,41 @@ X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C735C282DA
-	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 14:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FA1C282DA
+	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 14:03:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 57834206BA
-	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 14:03:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C90CC206BA
+	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 14:03:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="TpzO2TJI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57834206BA
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="XfjW4KD8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C90CC206BA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 15C4810BF;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 43F2F10C5;
 	Wed, 17 Apr 2019 14:03:24 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 332D7C03
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 13BC1C03
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Apr 2019 13:34:26 +0000 (UTC)
+	Wed, 17 Apr 2019 13:34:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.web.de (mout.web.de [212.227.15.14])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 60EE5F4
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 159A51C0
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 17 Apr 2019 13:34:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
 	s=dbaedf251592; t=1555508037;
 	bh=jeHayOfdlzOXU5AkN9VyN6oM+YUPMiiBzPcQ1CTi91o=;
 	h=X-UI-Sender-Class:Cc:References:Subject:To:From:Date:In-Reply-To;
-	b=TpzO2TJIxFlgN9YXg45N7Srum4LpGoiFF4wyT1tL8IAh2jwVmFRqOKhlxGcKBDj/B
-	i7cjYYJAe0YFBjr9F9lAx10i5C3+xeWL6Z6KO6QYBwnv6dsGCFSuOyWMv63RDp7Fqq
-	iHwEYkqSTRyzAwQEF6Ij7Que82svA8owugST1qBA=
+	b=XfjW4KD8BlM8S6pXe0Lh1LEmdGkeDbxFtRa6eFDp8WgU368CEiadVjLvZxsUCzzYI
+	ZCD2mZlLEzZ5URXSongBneZ0lKf6WfhEvSip1T7qijbpwkFNKjMD79B2WVQdP5tqgL
+	hNeh+OcHzO1UCFdJvCFQB3LIi+R63P1OKpgrAo80=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([93.135.118.230]) by smtp.web.de (mrweb003
-	[213.165.67.108]) with ESMTPSA (Nemesis) id 0MMEyj-1hDBnc0bdN-0083Kw;
+Received: from [192.168.1.3] ([93.135.118.230]) by smtp.web.de (mrweb004
+	[213.165.67.108]) with ESMTPSA (Nemesis) id 0Lnmpz-1gdZrm0B5z-00hwXV;
 	Wed, 17 Apr 2019 15:33:57 +0200
 References: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
 Subject: Re: [PATCH] iommu/mediatek: fix leaked of_node references
@@ -93,32 +93,32 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
 	x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
 	pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI
 	FEE=
-Message-ID: <3c0b6fd0-6ab7-1207-654a-8c737409ef05@web.de>
-Date: Wed, 17 Apr 2019 15:33:54 +0200
+Message-ID: <13cb52b9-2e41-2b47-96cd-37748de86531@web.de>
+Date: Wed, 17 Apr 2019 15:33:53 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
 In-Reply-To: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
 Content-Language: en-US
-X-Provags-ID: V03:K1:BQi//gbAZkEPae5jl9hHfvn2nraMtA1wObJCmE3cjzllS237fdV
-	BADaHI1oAaTteDyE/sHKTM/gwGsU6aSjTzAmqXoKPjkmxpNR//Ihx4xx5QM/8InW389RST1
-	84gbFOiUB+btA6KwTi8D2X6e/gsV3ZpnEMgmUNvHQW1ppGUphhJvVkIUFscrFx8K9chtn5u
-	cxE0PD2bYPmiJspXjMkwQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8Xm8Vf0O77k=:BGt8OPVk6gtik9/wer1Ip5
-	7Gfd/xvL0mBGKwgmde4h6dcwoM2cZ2VuM0hsmVwNrTi66f06QH7ncTVGvbPN6hgyTIWn+P7fy
-	/5fPGice+9OfS2RebfxpZDQ2QrBkWzYWSyeggxRzGBAivjBm0Q+UM823C0Px1mpReSxHhmzu4
-	WC5knLgL541u9+dQ4ehmyl0YeDcxUUjWwisDwd4U8IbrWe+t/MIeCZZbDSsH+XdiSr1zyFJyP
-	LT4P2m1MJdtNJHyUNvMEYr1/PlLCBcgm6iO0LImGIIR+6BTpCd+zpGvCk5PCTXw11vFMtTcOZ
-	P2B8M945CWyxF9eqO+Uow7LtOKmGgohtPubZUJ7qHqHyBiGdxkS2cH/peWG4Km/PYx8/LBAWM
-	c5mKfXh44d8hZ/M6Uvz2KJVq5Cb3LB6bzLqavJfV9szyb0tFfAbmpqXZKNO6E0BBxOtcuq8C8
-	Lef9KEBBVemqCtm3KUyCmk9AIl/g4LV6srRk7iDeIuntR0TpIfR63jm9vyFcg6FJbYfj+zT23
-	ETm5sCDgixM71WvrtvxkMJKzJHTcmg9Iyk++8aoVlwqVr0yNPjmeRcQ59hta7QPE8GCjiWxmz
-	c385lnUPWugEIXR0mgyPcwhF0gcrMlULG2M0A9HOX2uEVkOV3v5G9f0KqC04U9tCNgrbS59ie
-	y+xrWFTCYeZD57JJAZx5PZ83leAsyg4vesm/4fwa6Zp/px4t4qvgWNkfDAHR/LD6p/i6AhQnO
-	YTWnPqFL//lTSpKx7DC+lloI3YTvugg+dt7tgAZrfB2VWJs/thdTaKDtyQZXwqVxEf86mm2O/
-	5kjEHlEMeY+d1cwLeRfEnVPfuEHeBgpNo9n4jktR1N86MlpcRiWVsLXMLYkTforUV/xi3UtQg
-	uwnSHSTAs2jjqMHcX2VBDuy2/len9lzq8e+hDVb7Xg9xrH9gmfGf3OXHlGsVz/hWQl/I6JNfi
-	jHAaYhTZFqg==
+X-Provags-ID: V03:K1:+Gy4sfhG5cueN7eSVW9rMAEMyvDnqbHm+v7380RBvA9a/DoqTFA
+	b2pzTCsJGITdVEr+tuT+J9H1DbVYsI+eccGY1IYibfNhCUwVAOnBSSniPP00e1JHfhMqAgg
+	SdfOhr/jueUDkuvPUh0kC0s/ywcAVQcIb/KGb2eQpllWtsQphI1QvZ5hhhac4NjxLuW3Yko
+	qZGWvPupLu/QnAhXDUY1g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:R7cE1OPw2v4=:u7JOKH1vVykiGeFwdKNl3W
+	kKIltqKPBmWUmAtKmdySFsQmIfDgjiKds/AhfyD2it0Q2JNjo778H4joGwrWUVSigGkydy/00
+	HlmNr29i2xfvPGNXr/3n4zO4rBFSa34r9CiPazgrxM3mniBFYCo4xOdVhGuOb0JQOmwh6LCum
+	tzZNCMKmI3wI7ril6n/JvpFIpNFKdXbr0rs0h7dW1DQEPrcrY/9iAK9NjhLhZ3/IVj4FQIuRR
+	h8MnAiE3zBluXh9vxd8dKUgjDOfP7qBvud7ZwnK48+BYuOWWfIWI76Y0j0UuYqFq16sGr0QKk
+	naxm8WrqB50xFjVSu3e60uFWLsTgpGqRz0CVQgj1QnIesvSVjQjm5d43o5q8aYSu6GcimRjTg
+	LQQ4Q/aGkBci+h2lAhxxbzr3tviejV6D+WxYPWWiXgVWOrJj5lwaQbfOH1FDKk5/GyzG6Yzia
+	jCVNaxwScdQJPEc9TntRUfpu2J+NCuKk6Bov6bTSwp7UQcfZ0jB/YoX9QZulDeapLTo0/i1Cf
+	6KJp0bibekz7L2Nsg7yQv2CwD4czRrULtcSNn3zPfDNSlUsB9nNrj/RROb9DmIQh7mbaCTosO
+	BGqnH++4qES5/DL9LrGdhuwCBfecFTUZPfADvIBTT6cK+IaX+0oGrbgnCyrk7b7m0HhOnzMsh
+	2vZlq6c1JkFol2ij+1M/BJFcZnfWbtJUbINBiX6Ebd2Y75yrCvFRUtNxbXgjTAPpsFfPD66H/
+	TcWnU0IxO3RfckYsj3eUvjJ0d6xtZxvazsNNg8iorv9fsBRoV9p/+6CypNrNMvrTqHIy6qMOX
+	oX+QGLVlSM7UPcW+JPnPXJrRtAePc7/hA85dpl4vZmf+na8ESjNdxLQLKBmSAKl2xvZXKrkxP
+	mJWq64cUb4Jt8+s4SEk1O5Dxi1LxcBW8KCvzreQPJ6LsTos+my0Qj/HV+JMK0pC4lWPE1hf/X
+	FE/RkzYZ/CA==
 X-Mailman-Approved-At: Wed, 17 Apr 2019 14:03:23 +0000
 Cc: Yi Wang <wang.yi59@zte.com.cn>, Matthias Brugger <mbrugger@suse.com>,
 	linux-kernel@vger.kernel.org
@@ -138,7 +138,7 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190417133354.CPsdSOT0nEz2PTuP12WJg0qGmZRmC4LX-qnn-18s-Yk@z>
+Message-ID: <20190417133353.kZ5at9iw2XVOXeUWSP_NopupggOhookJKyvGYBcMfRU@z>
 
 > The call to of_parse_phandle returns a node pointer with refcount
 > incremented thus it must be explicitly decremented after the last
