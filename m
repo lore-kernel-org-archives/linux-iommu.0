@@ -1,44 +1,74 @@
-From: dann frazier <dann.frazier@canonical.com>
-Subject: [RFC] arm64: swiotlb: cma_alloc error spew
-Date: Wed, 17 Apr 2019 14:48:17 -0600
-Message-ID: <20190417204817.GA28897@xps13.dannf>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+ Ownership (XPFO)
+Date: Wed, 17 Apr 2019 23:19:50 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1904172317460.3174@nanos.tec.linutronix.de>
+References: <cover.1554248001.git.khalid.aziz@oracle.com> <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com> <20190417161042.GA43453@gmail.com> <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com> <20190417170918.GA68678@gmail.com>
+ <56A175F6-E5DA-4BBD-B244-53B786F27B7F@gmail.com> <20190417172632.GA95485@gmail.com> <063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="8323329-1402638458-1555535997=:3174"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Xinwei Kong <kong.kongxinwei@hisilicon.com>
+To: Nadav Amit <nadav.amit@gmail.com>
+Cc: Ingo Molnar <mingo@kernel.org>, Khalid Aziz <khalid.aziz@oracle.com>, juergh@gmail.com, Tycho Andersen <tycho@tycho.ws>, jsteckli@amazon.de, keescook@google.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Juerg Haefliger <juerg.haefliger@canonical.com>, deepa.srinivasan@oracle.com, chris.hyser@oracle.com, tyhicks@canonical.com, David Woodhouse <dwmw@amazon.co.uk>, Andrew Cooper <andrew.cooper3@citrix.com>, jcm@redhat.com, Boris Ostrovsky <boris.ostrovsky@oracle.com>, iommu <iommu@lists.linux-foundation.org>, X86 ML <x86@kernel.org>, linux-arm-kernel@lists.infradead.org, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, LSM List <linux-security-module@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-hey,
-  I'm seeing an issue on a couple of arm64 systems[*] where they spew
-~10K "cma: cma_alloc: alloc failed" messages at boot. The errors are
-non-fatal, and bumping up cma to a large enough size (~128M) gets rid
-of them - but that seems suboptimal. Bisection shows that this started
-after commit fafadcd16595 ("swiotlb: don't dip into swiotlb pool for
-coherent allocations"). It looks like __dma_direct_alloc_pages()
-is opportunistically using CMA memory but falls back to non-CMA if CMA
-disabled or unavailable. I've demonstrated that this fallback is
-indeed returning a valid pointer. So perhaps the issue is really just
-the warning emission.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-The following naive patch solves the problem for me - just silence the
-cma errors, since it looks like a soft error. But is there a better
-approach?
+--8323329-1402638458-1555535997=:3174
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 
-[*] APM X-Gene & HiSilicon Hi1620 w/ SMMU disabled
+On Wed, 17 Apr 2019, Nadav Amit wrote:
+> > On Apr 17, 2019, at 10:26 AM, Ingo Molnar <mingo@kernel.org> wrote:
+> >> As I was curious, I looked at the paper. Here is a quote from it:
+> >> 
+> >> "In x86-64, however, the permissions of physmap are not in sane state.
+> >> Kernels up to v3.8.13 violate the W^X property by mapping the entire region
+> >> as “readable, writeable, and executable” (RWX)—only very recent kernels
+> >> (≥v3.9) use the more conservative RW mapping.”
+> > 
+> > But v3.8.13 is a 5+ years old kernel, it doesn't count as a "modern" 
+> > kernel in any sense of the word. For any proposed patchset with 
+> > significant complexity and non-trivial costs the benchmark version 
+> > threshold is the "current upstream kernel".
+> > 
+> > So does that quote address my followup questions:
+> > 
+> >> Is this actually true of modern x86-64 kernels? We've locked down W^X
+> >> protections in general.
+> >> 
+> >> I.e. this conclusion:
+> >> 
+> >>  "Therefore, by simply overwriting kfptr with 0xFFFF87FF9F080000 and
+> >>   triggering the kernel to dereference it, an attacker can directly
+> >>   execute shell code with kernel privileges."
+> >> 
+> >> ... appears to be predicated on imperfect W^X protections on the x86-64
+> >> kernel.
+> >> 
+> >> Do such holes exist on the latest x86-64 kernel? If yes, is there a
+> >> reason to believe that these W^X holes cannot be fixed, or that any fix
+> >> would be more expensive than XPFO?
+> > 
+> > ?
+> > 
+> > What you are proposing here is a XPFO patch-set against recent kernels 
+> > with significant runtime overhead, so my questions about the W^X holes 
+> > are warranted.
+> > 
+> 
+> Just to clarify - I am an innocent bystander and have no part in this work.
+> I was just looking (again) at the paper, as I was curious due to the recent
+> patches that I sent that improve W^X protection.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 6310ad01f915b..0324aa606c173 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -112,7 +112,7 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
-        /* CMA can be used only in the context which permits sleeping */
-        if (gfpflags_allow_blocking(gfp)) {
-                page = dma_alloc_from_contiguous(dev, count, page_order,
--                                                gfp & __GFP_NOWARN);
-+                                                true);
-                if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-                        dma_release_from_contiguous(dev, page, count);
-                        page = NULL;
+It's not necessarily a W+X issue. The user space text is mapped in the
+kernel as well and even if it is mapped RX then this can happen. So any
+kernel mappings of user space text need to be mapped NX!
+
+Thanks,
+
+	tglx
+--8323329-1402638458-1555535997=:3174--
