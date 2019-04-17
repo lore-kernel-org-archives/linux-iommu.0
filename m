@@ -1,92 +1,40 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] iommu/mediatek: fix leaked of_node references
-Date: Wed, 17 Apr 2019 10:28:21 +0200
-Message-ID: <cddad8e5-ccdc-f8b7-6b0c-8dcbe33768a6@gmail.com>
-References: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Pan Bian <bianpan2016@163.com>
+Subject: iommu/vt-d: drop mm use count if address is not canonical
+Date: Wed, 17 Apr 2019 17:12:57 +0800
+Message-ID: <1555492377-79859-1-git-send-email-bianpan2016@163.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Wen Yang <wen.yang99@zte.com.cn>, linux-kernel@vger.kernel.org
-Cc: wang.yi59@zte.com.cn, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Pan Bian <bianpan2016@163.com>
 List-Id: iommu@lists.linux-foundation.org
 
+The use count of svm->mm is incremented by mmget_not_zero. However, it
+is not dropped when the address is not canonical. This patch fixes the
+bug.
 
+Fixes: 9d8c3af31607("iommu/vt-d: IOMMU Page Request needs to check if
+address is canonical.")
 
-On 17/04/2019 04:41, Wen Yang wrote:
-> The call to of_parse_phandle returns a node pointer with refcount
-> incremented thus it must be explicitly decremented after the last
-> usage.
-> 
-> 581 static int mtk_iommu_probe(struct platform_device *pdev)
-> 582 {
->     ...
-> 626         for (i = 0; i < larb_nr; i++) {
-> 627                 struct device_node *larbnode;
->     ...
-> 631                 larbnode = of_parse_phandle(...);
-> 632                 if (!larbnode)
-> 633                         return -EINVAL;
-> 634
-> 635                 if (!of_device_is_available(larbnode))
-> 636                         continue;             ---> leaked here
-> 637
->     ...
-> 643                 if (!plarbdev)
-> 644                         return -EPROBE_DEFER; ---> leaked here
->     ...
-> 647                 component_match_add_release(dev, &match, release_of,
-> 648                                             compare_of, larbnode);
->                                    ---> release_of will call of_node_put
-> 649         }
->     ...
-> 650
-> 
-> Detected by coccinelle with the following warnings:
-> ./drivers/iommu/mtk_iommu.c:644:3-9: ERROR: missing of_node_put; acquired a node pointer with refcount incremented on line 631, but without a corresponding object release within this function.
-> 
-> Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-mediatek@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+---
+ drivers/iommu/intel-svm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Reviewed-by: Matthias Brugger <mbrugger@suse.com>
-
-> ---
->  drivers/iommu/mtk_iommu.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index de3e022..b66d11b 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -632,16 +632,20 @@ static int mtk_iommu_probe(struct platform_device *pdev)
->  		if (!larbnode)
->  			return -EINVAL;
->  
-> -		if (!of_device_is_available(larbnode))
-> +		if (!of_device_is_available(larbnode)) {
-> +			of_node_put(larbnode);
->  			continue;
-> +		}
->  
->  		ret = of_property_read_u32(larbnode, "mediatek,larb-id", &id);
->  		if (ret)/* The id is consecutive if there is no this property */
->  			id = i;
->  
->  		plarbdev = of_find_device_by_node(larbnode);
-> -		if (!plarbdev)
-> +		if (!plarbdev) {
-> +			of_node_put(larbnode);
->  			return -EPROBE_DEFER;
-> +		}
->  		data->smi_imu.larb_imu[id].dev = &plarbdev->dev;
->  
->  		component_match_add_release(dev, &match, release_of,
-> 
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 3a4b09a..2630d2e 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -574,8 +574,10 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 			goto bad_req;
+ 
+ 		/* If address is not canonical, return invalid response */
+-		if (!is_canonical_address(address))
++		if (!is_canonical_address(address)) {
++			mmput(svm->mm);
+ 			goto bad_req;
++		}
+ 
+ 		down_read(&svm->mm->mmap_sem);
+ 		vma = find_extend_vma(svm->mm, address);
+-- 
+2.7.4
