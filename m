@@ -2,47 +2,49 @@ Return-Path: <SRS0=ag5I=ST=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0329FC282DD
-	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 18:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C483C282DD
+	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 18:28:32 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D34DB2064B
-	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 18:28:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D34DB2064B
+	by mail.kernel.org (Postfix) with ESMTPS id EABE82064B
+	for <iommu@archiver.kernel.org>; Wed, 17 Apr 2019 18:28:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EABE82064B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8EEC8E5E;
-	Wed, 17 Apr 2019 18:28:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C1A9CE61;
+	Wed, 17 Apr 2019 18:28:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BEFAFE4E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF273E50
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Apr 2019 18:28:18 +0000 (UTC)
+	Wed, 17 Apr 2019 18:28:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6C8BA14D
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5C2BD14D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Apr 2019 18:28:18 +0000 (UTC)
+	Wed, 17 Apr 2019 18:28:21 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3F8441688;
-	Wed, 17 Apr 2019 11:28:18 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A81A15AB;
+	Wed, 17 Apr 2019 11:28:21 -0700 (PDT)
 Received: from ostrya.cambridge.arm.com (ostrya.cambridge.arm.com
 	[10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 911183F59C; 
-	Wed, 17 Apr 2019 11:28:15 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7C4A83F59C; 
+	Wed, 17 Apr 2019 11:28:18 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 To: will.deacon@arm.com,
 	lorenzo.pieralisi@arm.com,
 	bhelgaas@google.com
-Subject: [PATCH v3 3/9] ACPI/IORT: Check ATS capability in root complex nodes
-Date: Wed, 17 Apr 2019 19:24:42 +0100
-Message-Id: <20190417182448.12382-4-jean-philippe.brucker@arm.com>
+Subject: [PATCH v3 4/9] iommu/arm-smmu-v3: Rename arm_smmu_master_data to
+	arm_smmu_master
+Date: Wed, 17 Apr 2019 19:24:43 +0100
+Message-Id: <20190417182448.12382-5-jean-philippe.brucker@arm.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190417182448.12382-1-jean-philippe.brucker@arm.com>
 References: <20190417182448.12382-1-jean-philippe.brucker@arm.com>
@@ -67,71 +69,76 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190417182442.R3Di_7n1u3bH1i1CxQ6DkSbjOdYYw85M9BNncL6VDTw@z>
+Message-ID: <20190417182443.lq2d5jeroxo7b6Vf3jEknGZolpTk5Gyi2w2CXFkyGT0@z>
 
-Root complex node in IORT has a bit telling whether it supports ATS or
-not. Store this bit in the IOMMU fwspec when setting up a device, so it
-can be accessed later by an IOMMU driver. In the future we'll probably
-want to store this bit at the host bridge or SMMU rather than in each
-endpoint.
+The arm_smmu_master_data structure already represents more than just the
+firmware data associated to a master, and will be used extensively to
+represent a device's state when implementing more SMMU features. Rename
+the structure to arm_smmu_master.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/acpi/arm64/iort.c | 11 +++++++++++
- include/linux/iommu.h     |  4 ++++
- 2 files changed, 15 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index e48894e002ba..4000902e57f0 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -1028,6 +1028,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
- 	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
- }
- 
-+static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_root_complex *pci_rc;
-+
-+	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
-+	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
-+}
-+
- /**
-  * iort_iommu_configure - Set-up IOMMU configuration for a device.
-  *
-@@ -1063,6 +1071,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- 		info.node = node;
- 		err = pci_for_each_dma_alias(to_pci_dev(dev),
- 					     iort_pci_iommu_init, &info);
-+
-+		if (!err && iort_pci_rc_supports_ats(node))
-+			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_RC_ATS;
- 	} else {
- 		int i = 0;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 480921dfbadf..51ab006d348e 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -446,6 +446,7 @@ struct iommu_fwspec {
- 	const struct iommu_ops	*ops;
- 	struct fwnode_handle	*iommu_fwnode;
- 	void			*iommu_priv;
-+	u32			flags;
- 	unsigned int		num_ids;
- 	u32			ids[1];
- };
-@@ -458,6 +459,9 @@ struct iommu_sva {
- 	const struct iommu_sva_ops	*ops;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d3880010c6cf..50cb037f3d8a 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -591,7 +591,7 @@ struct arm_smmu_device {
  };
  
-+/* ATS is supported */
-+#define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
-+
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops);
- void iommu_fwspec_free(struct device *dev);
+ /* SMMU private data for each master */
+-struct arm_smmu_master_data {
++struct arm_smmu_master {
+ 	struct arm_smmu_device		*smmu;
+ 	struct arm_smmu_strtab_ent	ste;
+ };
+@@ -1691,7 +1691,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ {
+ 	int i, j;
+-	struct arm_smmu_master_data *master = fwspec->iommu_priv;
++	struct arm_smmu_master *master = fwspec->iommu_priv;
+ 	struct arm_smmu_device *smmu = master->smmu;
+ 
+ 	for (i = 0; i < fwspec->num_ids; ++i) {
+@@ -1712,7 +1712,7 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ static void arm_smmu_detach_dev(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_master_data *master = fwspec->iommu_priv;
++	struct arm_smmu_master *master = fwspec->iommu_priv;
+ 
+ 	master->ste.assigned = false;
+ 	arm_smmu_install_ste_for_dev(fwspec);
+@@ -1724,7 +1724,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct arm_smmu_master_data *master;
++	struct arm_smmu_master *master;
+ 	struct arm_smmu_strtab_ent *ste;
+ 
+ 	if (!fwspec)
+@@ -1860,7 +1860,7 @@ static int arm_smmu_add_device(struct device *dev)
+ {
+ 	int i, ret;
+ 	struct arm_smmu_device *smmu;
+-	struct arm_smmu_master_data *master;
++	struct arm_smmu_master *master;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct iommu_group *group;
+ 
+@@ -1913,7 +1913,7 @@ static int arm_smmu_add_device(struct device *dev)
+ static void arm_smmu_remove_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_master_data *master;
++	struct arm_smmu_master *master;
+ 	struct arm_smmu_device *smmu;
+ 
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
 -- 
 2.21.0
 
