@@ -1,92 +1,81 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
-Date: Wed, 17 Apr 2019 10:36:58 +0800
-Message-ID: <5CB6914A.8050308@huawei.com>
-References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
- <20190409125308.18304-2-thunder.leizhen@huawei.com>
- <010d3cbd-ef74-ad21-c735-0af8b18955e6@huawei.com>
- <222946ee-adcc-1311-82a7-6afc9ffbc846@arm.com>
- <20190416152100.GB4187@fuggles.cambridge.arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+From: Wen Yang <wen.yang99@zte.com.cn>
+Subject: [PATCH] iommu/mediatek: fix leaked of_node references
+Date: Wed, 17 Apr 2019 10:41:19 +0800
+Message-ID: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190416152100.GB4187@fuggles.cambridge.arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: John Garry <john.garry@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott <sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>iommu <i>
+To: linux-kernel@vger.kernel.org
+Cc: wang.yi59@zte.com.cn, Wen Yang <wen.yang99@zte.com.cn>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
+The call to of_parse_phandle returns a node pointer with refcount
+incremented thus it must be explicitly decremented after the last
+usage.
 
+581 static int mtk_iommu_probe(struct platform_device *pdev)
+582 {
+    ...
+626         for (i = 0; i < larb_nr; i++) {
+627                 struct device_node *larbnode;
+    ...
+631                 larbnode = of_parse_phandle(...);
+632                 if (!larbnode)
+633                         return -EINVAL;
+634
+635                 if (!of_device_is_available(larbnode))
+636                         continue;             ---> leaked here
+637
+    ...
+643                 if (!plarbdev)
+644                         return -EPROBE_DEFER; ---> leaked here
+    ...
+647                 component_match_add_release(dev, &match, release_of,
+648                                             compare_of, larbnode);
+                                   ---> release_of will call of_node_put
+649         }
+    ...
+650
 
-On 2019/4/16 23:21, Will Deacon wrote:
-> On Fri, Apr 12, 2019 at 02:11:31PM +0100, Robin Murphy wrote:
->> On 12/04/2019 11:26, John Garry wrote:
->>> On 09/04/2019 13:53, Zhen Lei wrote:
->>>> +static int __init iommu_dma_mode_setup(char *str)
->>>> +{
->>>> +    if (!str)
->>>> +        goto fail;
->>>> +
->>>> +    if (!strncmp(str, "passthrough", 11))
->>>> +        iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
->>>> +    else if (!strncmp(str, "lazy", 4))
->>>> +        iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
->>>> +    else if (!strncmp(str, "strict", 6))
->>>> +        iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
->>>> +    else
->>>> +        goto fail;
->>>> +
->>>> +    pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
->>>
->>> What happens if the cmdline option iommu.dma_mode is passed multiple
->>> times? We get mutliple - possibily conflicting - prints, right?
->>
->> Indeed; we ended up removing such prints for the existing options here,
->> specifically because multiple messages seemed more likely to be confusing
->> than useful.
+Detected by coccinelle with the following warnings:
+./drivers/iommu/mtk_iommu.c:644:3-9: ERROR: missing of_node_put; acquired a node pointer with refcount incremented on line 631, but without a corresponding object release within this function.
 
-I originally intended to be compatible with X86 printing.
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux-foundation.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-mediatek@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/iommu/mtk_iommu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
- 		} else if (!strncmp(str, "strict", 6)) {
- 			pr_info("Disable batched IOTLB flush\n");
-			intel_iommu_strict = 1;
- 		}
-
->>
->>> And do we need to have backwards compatibility, such that the setting
->>> for iommu.strict or iommu.passthrough trumps iommu.dma_mode, regardless
->>> of order?
->>
->> As above I think it would be preferable to just keep using the existing
->> options anyway. The current behaviour works out as:
->>
->> iommu.passthrough |      Y	|	  N
->> iommu.strict	  |      x	|    Y         N
->> ------------------|-------------|---------|--------
->> MODE		  | PASSTHROUGH | STRICT  |  LAZY
->>
->> which seems intuitive enough that a specific dma_mode option doesn't add
->> much value, and would more likely just overcomplicate things for users as
->> well as our implementation.
-> 
-> Agreed. We can't remove the existing options, and they do the job perfectly
-> well so I don't see the need to add more options on top.
-
-OK, I will remove the iommu.dma_mode option in the next version. Thanks for you three.
-
-I didn't want to add it at first, but later found that the boot options on
-each ARCH are different, then want to normalize it.
-
-In addition, do we need to compatible the build option name IOMMU_DEFAULT_PASSTHROUGH? or
-change it to IOMMU_DEFAULT_DMA_MODE_PASSTHROUGH or IOMMU_DEFAULT_MODE_PASSTHROUGH?
-
-> 
-> Will
-> 
-> .
-> 
-
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index de3e022..b66d11b 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -632,16 +632,20 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		if (!larbnode)
+ 			return -EINVAL;
+ 
+-		if (!of_device_is_available(larbnode))
++		if (!of_device_is_available(larbnode)) {
++			of_node_put(larbnode);
+ 			continue;
++		}
+ 
+ 		ret = of_property_read_u32(larbnode, "mediatek,larb-id", &id);
+ 		if (ret)/* The id is consecutive if there is no this property */
+ 			id = i;
+ 
+ 		plarbdev = of_find_device_by_node(larbnode);
+-		if (!plarbdev)
++		if (!plarbdev) {
++			of_node_put(larbnode);
+ 			return -EPROBE_DEFER;
++		}
+ 		data->smi_imu.larb_imu[id].dev = &plarbdev->dev;
+ 
+ 		component_match_add_release(dev, &match, release_of,
 -- 
-Thanks!
-BestRegards
+2.9.5
