@@ -1,55 +1,92 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: [REBASE PATCH v5 2/9] arm: mm: dma-mapping: Convert to use
- vm_map_pages()
-Date: Tue, 16 Apr 2019 17:19:43 +0530
-Message-ID: <936e5e107c746a7310e3a3c471188ca3ac8f9754.1552921225.git.jrdr.linux__14153.9764286549$1555484696$gmane$org@gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH] iommu/mediatek: fix leaked of_node references
+Date: Wed, 17 Apr 2019 10:28:21 +0200
+Message-ID: <cddad8e5-ccdc-f8b7-6b0c-8dcbe33768a6@gmail.com>
+References: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
-In-Reply-To: <cover.1552921225.git.jrdr.linux@gmail.com>
-References: <cover.1552921225.git.jrdr.linux@gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com, sfr@canb.auug.org.au, rppt@linux.vnet.ibm.com, peterz@infradead.org, linux@armlinux.org.uk, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, keescook@chromium.org, m.szyprowski@samsung.com, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, heiko@sntech.de, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com
-Cc: linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Souptick Joarder <jrdr.linux@gmail.com>, linux1394-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1555468879-34684-1-git-send-email-wen.yang99@zte.com.cn>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wen Yang <wen.yang99@zte.com.cn>, linux-kernel@vger.kernel.org
+Cc: wang.yi59@zte.com.cn, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Q29udmVydCB0byB1c2Ugdm1fbWFwX3BhZ2VzKCkgdG8gbWFwIHJhbmdlIG9mIGtlcm5lbAptZW1v
-cnkgdG8gdXNlciB2bWEuCgpTaWduZWQtb2ZmLWJ5OiBTb3VwdGljayBKb2FyZGVyIDxqcmRyLmxp
-bnV4QGdtYWlsLmNvbT4KLS0tCiBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jIHwgMjIgKysrKysr
-LS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMTYgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYyBiL2FyY2gv
-YXJtL21tL2RtYS1tYXBwaW5nLmMKaW5kZXggZjFlMjkyMi4uZGU3Yzc2ZSAxMDA2NDQKLS0tIGEv
-YXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYworKysgYi9hcmNoL2FybS9tbS9kbWEtbWFwcGluZy5j
-CkBAIC0xNTc1LDMxICsxNTc1LDIxIEBAIHN0YXRpYyBpbnQgX19hcm1faW9tbXVfbW1hcF9hdHRy
-cyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hCiAJCSAgICB2
-b2lkICpjcHVfYWRkciwgZG1hX2FkZHJfdCBkbWFfYWRkciwgc2l6ZV90IHNpemUsCiAJCSAgICB1
-bnNpZ25lZCBsb25nIGF0dHJzKQogewotCXVuc2lnbmVkIGxvbmcgdWFkZHIgPSB2bWEtPnZtX3N0
-YXJ0OwotCXVuc2lnbmVkIGxvbmcgdXNpemUgPSB2bWEtPnZtX2VuZCAtIHZtYS0+dm1fc3RhcnQ7
-CiAJc3RydWN0IHBhZ2UgKipwYWdlcyA9IF9faW9tbXVfZ2V0X3BhZ2VzKGNwdV9hZGRyLCBhdHRy
-cyk7CiAJdW5zaWduZWQgbG9uZyBucl9wYWdlcyA9IFBBR0VfQUxJR04oc2l6ZSkgPj4gUEFHRV9T
-SElGVDsKLQl1bnNpZ25lZCBsb25nIG9mZiA9IHZtYS0+dm1fcGdvZmY7CisJaW50IGVycjsKIAog
-CWlmICghcGFnZXMpCiAJCXJldHVybiAtRU5YSU87CiAKLQlpZiAob2ZmID49IG5yX3BhZ2VzIHx8
-ICh1c2l6ZSA+PiBQQUdFX1NISUZUKSA+IG5yX3BhZ2VzIC0gb2ZmKQorCWlmICh2bWEtPnZtX3Bn
-b2ZmID49IG5yX3BhZ2VzKQogCQlyZXR1cm4gLUVOWElPOwogCi0JcGFnZXMgKz0gb2ZmOwotCi0J
-ZG8gewotCQlpbnQgcmV0ID0gdm1faW5zZXJ0X3BhZ2Uodm1hLCB1YWRkciwgKnBhZ2VzKyspOwot
-CQlpZiAocmV0KSB7Ci0JCQlwcl9lcnIoIlJlbWFwcGluZyBtZW1vcnkgZmFpbGVkOiAlZFxuIiwg
-cmV0KTsKLQkJCXJldHVybiByZXQ7Ci0JCX0KLQkJdWFkZHIgKz0gUEFHRV9TSVpFOwotCQl1c2l6
-ZSAtPSBQQUdFX1NJWkU7Ci0JfSB3aGlsZSAodXNpemUgPiAwKTsKKwllcnIgPSB2bV9tYXBfcGFn
-ZXModm1hLCBwYWdlcywgbnJfcGFnZXMpOworCWlmIChlcnIpCisJCXByX2VycigiUmVtYXBwaW5n
-IG1lbW9yeSBmYWlsZWQ6ICVkXG4iLCBlcnIpOwogCi0JcmV0dXJuIDA7CisJcmV0dXJuIGVycjsK
-IH0KIHN0YXRpYyBpbnQgYXJtX2lvbW11X21tYXBfYXR0cnMoc3RydWN0IGRldmljZSAqZGV2LAog
-CQlzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwgdm9pZCAqY3B1X2FkZHIsCi0tIAoxLjkuMQoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+
+
+On 17/04/2019 04:41, Wen Yang wrote:
+> The call to of_parse_phandle returns a node pointer with refcount
+> incremented thus it must be explicitly decremented after the last
+> usage.
+> 
+> 581 static int mtk_iommu_probe(struct platform_device *pdev)
+> 582 {
+>     ...
+> 626         for (i = 0; i < larb_nr; i++) {
+> 627                 struct device_node *larbnode;
+>     ...
+> 631                 larbnode = of_parse_phandle(...);
+> 632                 if (!larbnode)
+> 633                         return -EINVAL;
+> 634
+> 635                 if (!of_device_is_available(larbnode))
+> 636                         continue;             ---> leaked here
+> 637
+>     ...
+> 643                 if (!plarbdev)
+> 644                         return -EPROBE_DEFER; ---> leaked here
+>     ...
+> 647                 component_match_add_release(dev, &match, release_of,
+> 648                                             compare_of, larbnode);
+>                                    ---> release_of will call of_node_put
+> 649         }
+>     ...
+> 650
+> 
+> Detected by coccinelle with the following warnings:
+> ./drivers/iommu/mtk_iommu.c:644:3-9: ERROR: missing of_node_put; acquired a node pointer with refcount incremented on line 631, but without a corresponding object release within this function.
+> 
+> Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> Cc: iommu@lists.linux-foundation.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-mediatek@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+
+Reviewed-by: Matthias Brugger <mbrugger@suse.com>
+
+> ---
+>  drivers/iommu/mtk_iommu.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index de3e022..b66d11b 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -632,16 +632,20 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>  		if (!larbnode)
+>  			return -EINVAL;
+>  
+> -		if (!of_device_is_available(larbnode))
+> +		if (!of_device_is_available(larbnode)) {
+> +			of_node_put(larbnode);
+>  			continue;
+> +		}
+>  
+>  		ret = of_property_read_u32(larbnode, "mediatek,larb-id", &id);
+>  		if (ret)/* The id is consecutive if there is no this property */
+>  			id = i;
+>  
+>  		plarbdev = of_find_device_by_node(larbnode);
+> -		if (!plarbdev)
+> +		if (!plarbdev) {
+> +			of_node_put(larbnode);
+>  			return -EPROBE_DEFER;
+> +		}
+>  		data->smi_imu.larb_imu[id].dev = &plarbdev->dev;
+>  
+>  		component_match_add_release(dev, &match, release_of,
+> 
