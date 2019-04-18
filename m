@@ -6,39 +6,39 @@ X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 649A7C10F14
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2609C10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:35:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3EEB8214DA
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:34:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3EEB8214DA
+	by mail.kernel.org (Postfix) with ESMTPS id 7EDA8214DA
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:35:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EDA8214DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BDEC9151E;
-	Thu, 18 Apr 2019 09:34:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0B3881524;
+	Thu, 18 Apr 2019 09:34:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 132F7115D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF09F1146
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 09:34:47 +0000 (UTC)
+	Thu, 18 Apr 2019 09:34:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9CF7A466
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 46DF3823
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 09:34:46 +0000 (UTC)
+	Thu, 18 Apr 2019 09:34:55 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hH30P-0001xS-En; Thu, 18 Apr 2019 11:06:53 +0200
-Message-Id: <20190418084255.364915116@linutronix.de>
+	id 1hH2zp-0001nn-CA; Thu, 18 Apr 2019 11:06:17 +0200
+Message-Id: <20190418084253.903603121@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 18 Apr 2019 10:41:44 +0200
+Date: Thu, 18 Apr 2019 10:41:28 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 25/29] livepatch: Simplify stack trace retrieval
+Subject: [patch V2 09/29] mm/kasan: Simplify stacktrace handling
 References: <20190418084119.056416939@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -49,10 +49,10 @@ Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
 	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
 	x86@kernel.org, kasan-dev@googlegroups.com,
-	Johannes Thumshirn <jthumshirn@suse.de>,
+	David Rientjes <rientjes@google.com>,
 	Andrey Ryabinin <aryabinin@virtuozzo.com>,
 	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	David Rientjes <rientjes@google.com>,
+	Johannes Thumshirn <jthumshirn@suse.de>,
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
@@ -81,73 +81,88 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418084144.wrsZLS6kXep5kyrgwI-63VqxknWd3E7XqATZXtgSeQ8@z>
+Message-ID: <20190418084128.2c2Sf1hiAVL5HPnPfKKSIHsvyG5abDPeM4wtp-zC9nI@z>
 
 Replace the indirection through struct stack_trace by using the storage
 array based interfaces.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Dmitry Vyukov <dvyukov@google.com>
+Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: kasan-dev@googlegroups.com
+Cc: linux-mm@kvack.org
 ---
- kernel/livepatch/transition.c |   22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ mm/kasan/common.c |   30 ++++++++++++------------------
+ mm/kasan/report.c |    7 ++++---
+ 2 files changed, 16 insertions(+), 21 deletions(-)
 
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -202,15 +202,15 @@ void klp_update_patch_state(struct task_
-  * Determine whether the given stack trace includes any references to a
-  * to-be-patched or to-be-unpatched function.
-  */
--static int klp_check_stack_func(struct klp_func *func,
--				struct stack_trace *trace)
-+static int klp_check_stack_func(struct klp_func *func, unsigned long *entries,
-+				unsigned int nr_entries)
- {
- 	unsigned long func_addr, func_size, address;
- 	struct klp_ops *ops;
- 	int i;
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -48,34 +48,28 @@ static inline int in_irqentry_text(unsig
+ 		 ptr < (unsigned long)&__softirqentry_text_end);
+ }
  
--	for (i = 0; i < trace->nr_entries; i++) {
--		address = trace->entries[i];
+-static inline void filter_irq_stacks(struct stack_trace *trace)
++static inline unsigned int filter_irq_stacks(unsigned long *entries,
++					     unsigned int nr_entries)
+ {
+-	int i;
++	unsigned int i;
+ 
+-	if (!trace->nr_entries)
+-		return;
+-	for (i = 0; i < trace->nr_entries; i++)
+-		if (in_irqentry_text(trace->entries[i])) {
 +	for (i = 0; i < nr_entries; i++) {
-+		address = entries[i];
++		if (in_irqentry_text(entries[i])) {
+ 			/* Include the irqentry function into the stack. */
+-			trace->nr_entries = i + 1;
+-			break;
++			return i + 1;
+ 		}
++	}
++	return nr_entries;
+ }
  
- 		if (klp_target_state == KLP_UNPATCHED) {
- 			 /*
-@@ -254,29 +254,25 @@ static int klp_check_stack_func(struct k
- static int klp_check_stack(struct task_struct *task, char *err_buf)
+ static inline depot_stack_handle_t save_stack(gfp_t flags)
  {
- 	static unsigned long entries[MAX_STACK_ENTRIES];
--	struct stack_trace trace;
- 	struct klp_object *obj;
- 	struct klp_func *func;
--	int ret;
-+	int ret, nr_entries;
+ 	unsigned long entries[KASAN_STACK_DEPTH];
+-	struct stack_trace trace = {
+-		.nr_entries = 0,
+-		.entries = entries,
+-		.max_entries = KASAN_STACK_DEPTH,
+-		.skip = 0
+-	};
++	unsigned int nr_entries;
  
--	trace.skip = 0;
--	trace.nr_entries = 0;
--	trace.max_entries = MAX_STACK_ENTRIES;
--	trace.entries = entries;
--	ret = save_stack_trace_tsk_reliable(task, &trace);
-+	ret = stack_trace_save_tsk_reliable(task, entries, ARRAY_SIZE(entries));
- 	WARN_ON_ONCE(ret == -ENOSYS);
--	if (ret) {
-+	if (ret < 0) {
- 		snprintf(err_buf, STACK_ERR_BUF_SIZE,
- 			 "%s: %s:%d has an unreliable stack\n",
- 			 __func__, task->comm, task->pid);
- 		return ret;
+-	save_stack_trace(&trace);
+-	filter_irq_stacks(&trace);
+-
+-	return depot_save_stack(&trace, flags);
++	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
++	nr_entries = filter_irq_stacks(entries, nr_entries);
++	return stack_depot_save(entries, nr_entries, flags);
+ }
+ 
+ static inline void set_track(struct kasan_track *track, gfp_t flags)
+--- a/mm/kasan/report.c
++++ b/mm/kasan/report.c
+@@ -100,10 +100,11 @@ static void print_track(struct kasan_tra
+ {
+ 	pr_err("%s by task %u:\n", prefix, track->pid);
+ 	if (track->stack) {
+-		struct stack_trace trace;
++		unsigned long *entries;
++		unsigned int nr_entries;
+ 
+-		depot_fetch_stack(track->stack, &trace);
+-		print_stack_trace(&trace, 0);
++		nr_entries = stack_depot_fetch(track->stack, &entries);
++		stack_trace_print(entries, nr_entries, 0);
+ 	} else {
+ 		pr_err("(stack is not available)\n");
  	}
-+	nr_entries = ret;
- 
- 	klp_for_each_object(klp_transition_patch, obj) {
- 		if (!obj->patched)
- 			continue;
- 		klp_for_each_func(obj, func) {
--			ret = klp_check_stack_func(func, &trace);
-+			ret = klp_check_stack_func(func, entries, nr_entries);
- 			if (ret) {
- 				snprintf(err_buf, STACK_ERR_BUF_SIZE,
- 					 "%s: %s:%d is sleeping on function %s\n",
 
 
 _______________________________________________
