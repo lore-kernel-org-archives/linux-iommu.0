@@ -1,45 +1,39 @@
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] iommu/dmar: Use struct_size() helper
-Date: Thu, 18 Apr 2019 13:46:24 -0500
-Message-ID: <20190418184624.GA17025@embeddedor>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH 1/7] genirq/msi: Add a new field in msi_desc to store an
+ IOMMU cookie
+Date: Thu, 18 Apr 2019 21:28:12 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1904182126540.3174@nanos.tec.linutronix.de>
+References: <20190418172611.21561-1-julien.grall@arm.com> <20190418172611.21561-2-julien.grall@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20190418172611.21561-2-julien.grall@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To: Julien Grall <julien.grall@arm.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, logang@deltatee.com, douliyangs@gmail.com, miquel.raynal@bootlin.com, marc.zyngier@arm.com, jason@lakedaemon.net, joro@8bytes.org, robin.murphy@arm.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes, in particular in the
-context in which this code is being used.
+On Thu, 18 Apr 2019, Julien Grall wrote:
 
-So, replace code of the following form:
+> When an MSI doorbell is located downstream of an IOMMU, it is required
+> to swizzle the physical address with an appropriately-mapped IOVA for any
+> device attached to one of our DMA ops domain.
+> 
+> At the moment, the allocation of the mapping may be done when composing
+> the message. However, the composing may be done in non-preemtible
+> context while the allocation requires to be called from preemptible
+> context.
+> 
+> A follow-up patch will split the current logic in two functions
+> requiring to keep an IOMMU cookie per MSI.
+> 
+> This patch introduces a new field in msi_desc to store an IOMMU cookie
+> when CONFIG_IOMMU_DMA is selected.
 
-size = sizeof(*info) + level * sizeof(info->path[0]);
+# git grep 'This patch' Documentation/process/
 
-with:
+Applied to the whole series.
 
-size = struct_size(info, path, level);
+Thanks
 
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/iommu/dmar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9c49300e9fb7..6d969a172fbb 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -145,7 +145,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
- 		for (tmp = dev; tmp; tmp = tmp->bus->self)
- 			level++;
- 
--	size = sizeof(*info) + level * sizeof(info->path[0]);
-+	size = struct_size(info, path, level);
- 	if (size <= sizeof(dmar_pci_notify_info_buf)) {
- 		info = (struct dmar_pci_notify_info *)dmar_pci_notify_info_buf;
- 	} else {
--- 
-2.21.0
+	tglx
