@@ -1,96 +1,97 @@
-From: Alexander Potapenko <glider@google.com>
-Subject: Re: [patch V2 14/29] dm bufio: Simplify stack trace retrieval
-Date: Thu, 18 Apr 2019 12:44:08 +0200
-Message-ID: <CAG_fn=WP9+bVv9hedoaTzWK+xBzedxaGJGVOPnF0o115s-oWvg@mail.gmail.com>
-References: <20190418084119.056416939@linutronix.de> <20190418084254.361284697@linutronix.de>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v3 3/9] ACPI/IORT: Check ATS capability in root complex
+ nodes
+Date: Thu, 18 Apr 2019 12:20:29 +0100
+Message-ID: <20190418112018.GA20470@red-moon>
+References: <20190417182448.12382-1-jean-philippe.brucker@arm.com>
+ <20190417182448.12382-4-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190418084254.361284697@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, dm-devel@redhat.com, Mike Snitzer <snitzer@redhat.com>, Alasdair Kergon <agk@redhat.com>, Alexey Dobriyan <adobriyan@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, Pekka Enberg <penberg@kernel.org>, Linux Memory Management List <linux-mm@kvack.org>, David Rientjes <rientjes@google.com>, Christoph Lameter <cl@linux.com>, Catalin Marinas <catalin.marinas@arm.com>, Dmitry Vyukov <dvyukov@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, kasan-dev <kasan-dev@googlegroups.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Akinobu Mita <akinobu.mita@gmail.com>, iommu@lists.linu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190417182448.12382-4-jean-philippe.brucker@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: eric.auger@redhat.com, zhongmiao@hisilicon.com, rjw@rjwysocki.net, joro@8bytes.org, will.deacon@arm.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, bhelgaas@google.com, okaya@kernel.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 18, 2019 at 11:06 AM Thomas Gleixner <tglx@linutronix.de> wrote=
-:
->
-> Replace the indirection through struct stack_trace with an invocation of
-> the storage array based interface.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: dm-devel@redhat.com
-> Cc: Mike Snitzer <snitzer@redhat.com>
-> Cc: Alasdair Kergon <agk@redhat.com>
+On Wed, Apr 17, 2019 at 07:24:42PM +0100, Jean-Philippe Brucker wrote:
+> Root complex node in IORT has a bit telling whether it supports ATS or
+> not. Store this bit in the IOMMU fwspec when setting up a device, so it
+> can be accessed later by an IOMMU driver. In the future we'll probably
+> want to store this bit at the host bridge or SMMU rather than in each
+> endpoint.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 > ---
->  drivers/md/dm-bufio.c |   15 ++++++---------
->  1 file changed, 6 insertions(+), 9 deletions(-)
->
-> --- a/drivers/md/dm-bufio.c
-> +++ b/drivers/md/dm-bufio.c
-> @@ -150,7 +150,7 @@ struct dm_buffer {
->         void (*end_io)(struct dm_buffer *, blk_status_t);
->  #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
->  #define MAX_STACK 10
-> -       struct stack_trace stack_trace;
-> +       unsigned int stack_len;
->         unsigned long stack_entries[MAX_STACK];
->  #endif
+>  drivers/acpi/arm64/iort.c | 11 +++++++++++
+>  include/linux/iommu.h     |  4 ++++
+>  2 files changed, 15 insertions(+)
+
+For the IORT portion:
+
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index e48894e002ba..4000902e57f0 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -1028,6 +1028,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+>  	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
+>  }
+>  
+> +static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
+> +{
+> +	struct acpi_iort_root_complex *pci_rc;
+> +
+> +	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
+> +	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
+> +}
+> +
+>  /**
+>   * iort_iommu_configure - Set-up IOMMU configuration for a device.
+>   *
+> @@ -1063,6 +1071,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+>  		info.node = node;
+>  		err = pci_for_each_dma_alias(to_pci_dev(dev),
+>  					     iort_pci_iommu_init, &info);
+> +
+> +		if (!err && iort_pci_rc_supports_ats(node))
+> +			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_RC_ATS;
+>  	} else {
+>  		int i = 0;
+>  
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 480921dfbadf..51ab006d348e 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -446,6 +446,7 @@ struct iommu_fwspec {
+>  	const struct iommu_ops	*ops;
+>  	struct fwnode_handle	*iommu_fwnode;
+>  	void			*iommu_priv;
+> +	u32			flags;
+>  	unsigned int		num_ids;
+>  	u32			ids[1];
 >  };
-> @@ -232,11 +232,7 @@ static DEFINE_MUTEX(dm_bufio_clients_loc
->  #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
->  static void buffer_record_stack(struct dm_buffer *b)
->  {
-> -       b->stack_trace.nr_entries =3D 0;
-> -       b->stack_trace.max_entries =3D MAX_STACK;
-> -       b->stack_trace.entries =3D b->stack_entries;
-> -       b->stack_trace.skip =3D 2;
-> -       save_stack_trace(&b->stack_trace);
-> +       b->stack_len =3D stack_trace_save(b->stack_entries, MAX_STACK, 2)=
-;
-As noted in one of similar patches before, can we have an inline
-comment to indicate what does this "2" stand for?
->  }
->  #endif
->
-> @@ -438,7 +434,7 @@ static struct dm_buffer *alloc_buffer(st
->         adjust_total_allocated(b->data_mode, (long)c->block_size);
->
->  #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
-> -       memset(&b->stack_trace, 0, sizeof(b->stack_trace));
-> +       b->stack_len =3D 0;
->  #endif
->         return b;
->  }
-> @@ -1520,8 +1516,9 @@ static void drop_buffers(struct dm_bufio
->                         DMERR("leaked buffer %llx, hold count %u, list %d=
-",
->                               (unsigned long long)b->block, b->hold_count=
-, i);
->  #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
-> -                       print_stack_trace(&b->stack_trace, 1);
-> -                       b->hold_count =3D 0; /* mark unclaimed to avoid B=
-UG_ON below */
-> +                       stack_trace_print(b->stack_entries, b->stack_len,=
- 1);
-> +                       /* mark unclaimed to avoid BUG_ON below */
-> +                       b->hold_count =3D 0;
->  #endif
->                 }
->
->
->
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+> @@ -458,6 +459,9 @@ struct iommu_sva {
+>  	const struct iommu_sva_ops	*ops;
+>  };
+>  
+> +/* ATS is supported */
+> +#define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
+> +
+>  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+>  		      const struct iommu_ops *ops);
+>  void iommu_fwspec_free(struct device *dev);
+> -- 
+> 2.21.0
+> 
