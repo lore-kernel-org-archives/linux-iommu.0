@@ -2,60 +2,63 @@ Return-Path: <SRS0=+ohw=SU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07438C10F14
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 18:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BCFC10F14
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 18:22:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C05C620643
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 18:22:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2B6BA20643
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 18:22:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="PQdcUONt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C05C620643
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="0LOPYLmm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B6BA20643
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 792521BFF;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B84EE1C03;
 	Thu, 18 Apr 2019 18:22:24 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A434E1ACC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AEACC1BF7
 	for <iommu@lists.linux-foundation.org>;
 	Thu, 18 Apr 2019 18:22:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from usvae2-clmxp01.aristanetworks.com (smtp.aristanetworks.com
 	[52.0.43.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 59C7E854
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5741782D
 	for <iommu@lists.linux-foundation.org>;
 	Thu, 18 Apr 2019 18:22:02 +0000 (UTC)
 Received: from usvae2-clmxp01.aristanetworks.com (localhost [127.0.0.1])
 	by usvae2-clmxp01.aristanetworks.com (Postfix) with ESMTP id
-	303F330C1544; Thu, 18 Apr 2019 11:14:51 -0700 (PDT)
+	9EDBE30C1543; Thu, 18 Apr 2019 11:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-	s=Arista-A; t=1555611291;
-	bh=gZKRKJcuRQSwe2TyYVhO9ixqNktFM8piGcLI2AKiDUY=;
-	h=From:To:Cc:Subject:Date;
-	b=PQdcUONtqO60OTMOPax126YZzHGTYv4/yNhybwcUoFmDLb0oBAPy+8RdtoMuLi1EQ
-	ujwRPI9Amej+D9Zp6PNrJK1T4+El39dEAUrCImDOr41dBsfXaWPNe7OyslEMqsm85/
-	V6KkH1M/ELP6dM5oWXFrOiL9iOCNsp14L3WSRiDvKDfOlqsIXjya/aay8jPr4eDAo3
-	VCKwgdxh0ATtlSVP5CRUnz2OU+/Uon97Kb3wLTyo54DZh13rQiJ5IY3zbYLMU/boo8
-	0OzQXxkwMxuwIUkX1DSu77AUlaebbrbagfjUI252fQNeGTgTzfsGcId0MvdxmAMv8W
-	fOEurSylj4jCQ==
+	s=Arista-A; t=1555611290;
+	bh=Ur8IpLq8gF2to3WfM7YOfN36My26fjgqB6sAL0vxTRg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=0LOPYLmm59k/40Do6zhCFh4U8u0n9aASRLMRyU7psrFphTTo8J1eKRWg9GRgcff8q
+	bquR4RB3Kudy/Rc4d0H7AQYtoBLrZzNyEj84Wc++Gfixo8Ii3O/hC/xveetp4BWb88
+	PzcFyuca23ucuFmzsTVbK4wI13VTTbohxCpfmH+FWjySZ2lCCmmYxIw4kQOqq+cZEU
+	qdVghjRrRVuDoUwxDCExWFiFcCOEPghHad7NEIXRXg1BSTlGJ/34OQmnREzu2+qvrO
+	5u0lULS/uci7TJ+xX8LKWh4lbOPjGuXynlkQTbv2Uar508NeZNRI0CZfWtg6kG2Oio
+	rHYaCSEkpRFzw==
 Received: from chmeee (unknown [10.80.4.152])
 	by usvae2-clmxp01.aristanetworks.com (Postfix) with ESMTP id
-	15FBC30C1542; Thu, 18 Apr 2019 11:14:51 -0700 (PDT)
+	8581430C1542; Thu, 18 Apr 2019 11:14:50 -0700 (PDT)
 Received: from kevmitch by chmeee with local (Exim 4.92)
 	(envelope-from <kevmitch@chmeee>)
-	id 1hHBJS-0001Dz-U2; Thu, 18 Apr 2019 10:59:06 -0700
+	id 1hHBKV-0002oq-GU; Thu, 18 Apr 2019 11:00:11 -0700
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 0/3] handle init errors more gracefully in amd_iommu
-Date: Thu, 18 Apr 2019 10:57:43 -0700
-Message-Id: <20190418175744.6229-1-kevmitch@arista.com>
+Subject: [PATCH 2/3] iommu/amd: move gart fallback to amd_iommu_init
+Date: Thu, 18 Apr 2019 10:57:47 -0700
+Message-Id: <20190418175744.6229-3-kevmitch@arista.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190418175744.6229-1-kevmitch@arista.com>
+References: <20190418175744.6229-1-kevmitch@arista.com>
 MIME-Version: 1.0
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -75,35 +78,59 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418175743.2wJCSMKFlpwqBDF_HFfNzaC84SvtTqttE8Ecl9-kEiU@z>
+Message-ID: <20190418175747.f3p0yLFeMKPGvhmbuqeE7PV6DOfk8vEnv08lVv_EbSc@z>
 
-This series makes error handling more robust in the amd_iommu init
-code. It was initially motivated by problematic firmware that does not
-set up the physical address of the iommu. This led to a NULL dereference
-panic when iommu_disable was called during cleanup.
+The fallback to the GART driver in the case amd_iommu doesn't work was
+executed in a function called free_iommu_resources, which didn't really
+make sense. This was even being called twice if amd_iommu=off was
+specified on the command line.
 
-While the first patch is sufficient to avoid the panic, the subsequent
-two move the cleanup closer to the actual error and avoid calling the
-cleanup code twice when amd_iommu=off is specified on the command line.
+The only complication is that it needs to be verified that amd_iommu has
+fully relinquished control by calling free_iommu_resources and emptying
+the amd_iommu_list.
 
-I have tested this series on a variety of AMD CPUs with firmware
-exhibiting the issue. I have additionally tested on platforms where the
-firmware has been fixed. I tried both with and without amd_iommu=off. I
-have also tested on older CPUs where no IOMMU is detected and even one
-where the GART driver ends up running.
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+---
+ drivers/iommu/amd_iommu_init.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-Thanks,
-
-Kevin
-
-Kevin Mitchell (3):
-  iommu/amd: make iommu_disable safer
-  iommu/amd: move gart fallback to amd_iommu_init
-  iommu/amd: only free resources once on init error
-
- drivers/iommu/amd_iommu_init.c | 45 ++++++++++++++++++----------------
- 1 file changed, 24 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 3798d7303c99..5f3df5ae6ba8 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2345,15 +2345,6 @@ static void __init free_iommu_resources(void)
+ 	amd_iommu_dev_table = NULL;
+ 
+ 	free_iommu_all();
+-
+-#ifdef CONFIG_GART_IOMMU
+-	/*
+-	 * We failed to initialize the AMD IOMMU - try fallback to GART
+-	 * if possible.
+-	 */
+-	gart_iommu_init();
+-
+-#endif
+ }
+ 
+ /* SB IOAPIC is always on this device in AMD systems */
+@@ -2774,6 +2765,16 @@ static int __init amd_iommu_init(void)
+ 		}
+ 	}
+ 
++#ifdef CONFIG_GART_IOMMU
++	if (ret && list_empty(&amd_iommu_list)) {
++		/*
++		 * We failed to initialize the AMD IOMMU - try fallback
++		 * to GART if possible.
++		 */
++		gart_iommu_init();
++	}
++#endif
++
+ 	for_each_iommu(iommu)
+ 		amd_iommu_debugfs_setup(iommu);
+ 
 -- 
 2.20.1
 
