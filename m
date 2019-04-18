@@ -6,39 +6,39 @@ X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64964C10F14
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771FAC10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:33:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F82F214DA
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:33:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F82F214DA
+	by mail.kernel.org (Postfix) with ESMTPS id 4F2A4214DA
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:33:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F2A4214DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2612714FA;
-	Thu, 18 Apr 2019 09:33:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5C82B1520;
+	Thu, 18 Apr 2019 09:33:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E29CB115D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C089C115D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 09:33:46 +0000 (UTC)
+	Thu, 18 Apr 2019 09:33:51 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 52B85466
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 09:33:46 +0000 (UTC)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CF60B466;
+	Thu, 18 Apr 2019 09:33:50 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hH30B-0001tP-SF; Thu, 18 Apr 2019 11:06:40 +0200
-Message-Id: <20190418084254.819500258@linutronix.de>
+	id 1hH30X-00020X-3n; Thu, 18 Apr 2019 11:07:01 +0200
+Message-Id: <20190418084255.652003111@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 18 Apr 2019 10:41:38 +0200
+Date: Thu, 18 Apr 2019 10:41:47 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 19/29] lockdep: Simplify stack trace handling
+Subject: [patch V2 28/29] stacktrace: Provide common infrastructure
 References: <20190418084119.056416939@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -49,10 +49,10 @@ Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
 	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
 	x86@kernel.org, kasan-dev@googlegroups.com,
-	Johannes Thumshirn <jthumshirn@suse.de>,
+	David Rientjes <rientjes@google.com>,
 	Andrey Ryabinin <aryabinin@virtuozzo.com>,
 	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	David Rientjes <rientjes@google.com>,
+	Johannes Thumshirn <jthumshirn@suse.de>,
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
@@ -81,176 +81,285 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418084138.2nxUctsHbbjunarXIbxRySTi0PRIJY5PzBU315q6Oas@z>
+Message-ID: <20190418084147.p0oEKWbwbaiA-Ng0ZbJgavNDQJgPv7kFFqEDemkd5dk@z>
 
-Replace the indirection through struct stack_trace by using the storage
-array based interfaces and storing the information is a small lockdep
-specific data structure.
+All architectures which support stacktrace carry duplicated code and
+do the stack storage and filtering at the architecture side.
+
+Provide a consolidated interface with a callback function for consuming the
+stack entries provided by the architecture specific stack walker. This
+removes lots of duplicated code and allows to implement better filtering
+than 'skip number of entries' in the future without touching any
+architecture specific code.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-arch@vger.kernel.org
 ---
- include/linux/lockdep.h  |    9 +++++++--
- kernel/locking/lockdep.c |   44 +++++++++++++++++++++++++-------------------
- 2 files changed, 32 insertions(+), 21 deletions(-)
+ include/linux/stacktrace.h |   38 +++++++++
+ kernel/stacktrace.c        |  173 +++++++++++++++++++++++++++++++++++++++++++++
+ lib/Kconfig                |    4 +
+ 3 files changed, 215 insertions(+)
 
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -66,6 +66,11 @@ struct lock_class_key {
+--- a/include/linux/stacktrace.h
++++ b/include/linux/stacktrace.h
+@@ -23,6 +23,43 @@ unsigned int stack_trace_save_regs(struc
+ unsigned int stack_trace_save_user(unsigned long *store, unsigned int size);
  
- extern struct lock_class_key __lockdep_no_validate__;
+ /* Internal interfaces. Do not use in generic code */
++#ifdef CONFIG_ARCH_STACKWALK
++
++/**
++ * stack_trace_consume_fn - Callback for arch_stack_walk()
++ * @cookie:	Caller supplied pointer handed back by arch_stack_walk()
++ * @addr:	The stack entry address to consume
++ * @reliable:	True when the stack entry is reliable. Required by
++ *		some printk based consumers.
++ *
++ * Returns:	True, if the entry was consumed or skipped
++ *		False, if there is no space left to store
++ */
++typedef bool (*stack_trace_consume_fn)(void *cookie, unsigned long addr,
++				       bool reliable);
++/**
++ * arch_stack_walk - Architecture specific function to walk the stack
++
++ * @consume_entry:	Callback which is invoked by the architecture code for
++ *			each entry.
++ * @cookie:		Caller supplied pointer which is handed back to
++ *			@consume_entry
++ * @task:		Pointer to a task struct, can be NULL
++ * @regs:		Pointer to registers, can be NULL
++ *
++ * @task	@regs:
++ * NULL		NULL	Stack trace from current
++ * task		NULL	Stack trace from task (can be current)
++ * NULL		regs	Stack trace starting on regs->stackpointer
++ */
++void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
++		     struct task_struct *task, struct pt_regs *regs);
++int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry, void *cookie,
++			     struct task_struct *task);
++void arch_stack_walk_user(stack_trace_consume_fn consume_entry, void *cookie,
++			  const struct pt_regs *regs);
++
++#else /* CONFIG_ARCH_STACKWALK */
+ struct stack_trace {
+ 	unsigned int nr_entries, max_entries;
+ 	unsigned long *entries;
+@@ -37,6 +74,7 @@ extern void save_stack_trace_tsk(struct
+ extern int save_stack_trace_tsk_reliable(struct task_struct *tsk,
+ 					 struct stack_trace *trace);
+ extern void save_stack_trace_user(struct stack_trace *trace);
++#endif /* !CONFIG_ARCH_STACKWALK */
+ #endif /* CONFIG_STACKTRACE */
  
-+struct lock_trace {
-+	unsigned int		nr_entries;
-+	unsigned int		offset;
+ #if defined(CONFIG_STACKTRACE) && defined(CONFIG_HAVE_RELIABLE_STACKTRACE)
+--- a/kernel/stacktrace.c
++++ b/kernel/stacktrace.c
+@@ -5,6 +5,8 @@
+  *
+  *  Copyright (C) 2006 Red Hat, Inc., Ingo Molnar <mingo@redhat.com>
+  */
++#include <linux/sched/task_stack.h>
++#include <linux/sched/debug.h>
+ #include <linux/sched.h>
+ #include <linux/kernel.h>
+ #include <linux/export.h>
+@@ -64,6 +66,175 @@ int stack_trace_snprint(char *buf, size_
+ }
+ EXPORT_SYMBOL_GPL(stack_trace_snprint);
+ 
++#ifdef CONFIG_ARCH_STACKWALK
++
++struct stacktrace_cookie {
++	unsigned long	*store;
++	unsigned int	size;
++	unsigned int	skip;
++	unsigned int	len;
 +};
 +
- #define LOCKSTAT_POINTS		4
- 
- /*
-@@ -100,7 +105,7 @@ struct lock_class {
- 	 * IRQ/softirq usage tracking bits:
- 	 */
- 	unsigned long			usage_mask;
--	struct stack_trace		usage_traces[XXX_LOCK_USAGE_STATES];
-+	struct lock_trace		usage_traces[XXX_LOCK_USAGE_STATES];
- 
- 	/*
- 	 * Generation counter, when doing certain classes of graph walking,
-@@ -188,7 +193,7 @@ struct lock_list {
- 	struct list_head		entry;
- 	struct lock_class		*class;
- 	struct lock_class		*links_to;
--	struct stack_trace		trace;
-+	struct lock_trace		trace;
- 	int				distance;
- 
- 	/*
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -434,18 +434,14 @@ static void print_lockdep_off(const char
- #endif
- }
- 
--static int save_trace(struct stack_trace *trace)
-+static int save_trace(struct lock_trace *trace)
- {
--	trace->nr_entries = 0;
--	trace->max_entries = MAX_STACK_TRACE_ENTRIES - nr_stack_trace_entries;
--	trace->entries = stack_trace + nr_stack_trace_entries;
--
--	trace->skip = 3;
--
--	save_stack_trace(trace);
--
--	trace->max_entries = trace->nr_entries;
-+	unsigned long *entries = stack_trace + nr_stack_trace_entries;
-+	unsigned int max_entries;
- 
-+	trace->offset = nr_stack_trace_entries;
-+	max_entries = MAX_STACK_TRACE_ENTRIES - nr_stack_trace_entries;
-+	trace->nr_entries = stack_trace_save(entries, max_entries, 3);
- 	nr_stack_trace_entries += trace->nr_entries;
- 
- 	if (nr_stack_trace_entries >= MAX_STACK_TRACE_ENTRIES-1) {
-@@ -1196,7 +1192,7 @@ static struct lock_list *alloc_list_entr
- static int add_lock_to_list(struct lock_class *this,
- 			    struct lock_class *links_to, struct list_head *head,
- 			    unsigned long ip, int distance,
--			    struct stack_trace *trace)
-+			    struct lock_trace *trace)
- {
- 	struct lock_list *entry;
- 	/*
-@@ -1415,6 +1411,13 @@ static inline int __bfs_backwards(struct
-  * checking.
-  */
- 
-+static void print_lock_trace(struct lock_trace *trace, unsigned int spaces)
++static bool stack_trace_consume_entry(void *cookie, unsigned long addr,
++				      bool reliable)
 +{
-+	unsigned long *entries = stack_trace + trace->offset;
++	struct stacktrace_cookie *c = cookie;
 +
-+	stack_trace_print(entries, trace->nr_entries, spaces);
++	if (c->len >= c->size)
++		return false;
++
++	if (c->skip > 0) {
++		c->skip--;
++		return true;
++	}
++	c->store[c->len++] = addr;
++	return c->len < c->size;
 +}
 +
- /*
-  * Print a dependency chain entry (this is only done when a deadlock
-  * has been detected):
-@@ -1427,8 +1430,7 @@ print_circular_bug_entry(struct lock_lis
- 	printk("\n-> #%u", depth);
- 	print_lock_name(target->class);
- 	printk(KERN_CONT ":\n");
--	print_stack_trace(&target->trace, 6);
--
-+	print_lock_trace(&target->trace, 6);
- 	return 0;
- }
- 
-@@ -1740,7 +1742,7 @@ static void print_lock_class_header(stru
- 
- 			len += printk("%*s   %s", depth, "", usage_str[bit]);
- 			len += printk(KERN_CONT " at:\n");
--			print_stack_trace(class->usage_traces + bit, len);
-+			print_lock_trace(class->usage_traces + bit, len);
- 		}
- 	}
- 	printk("%*s }\n", depth, "");
-@@ -1765,7 +1767,7 @@ print_shortest_lock_dependencies(struct
- 	do {
- 		print_lock_class_header(entry->class, depth);
- 		printk("%*s ... acquired at:\n", depth, "");
--		print_stack_trace(&entry->trace, 2);
-+		print_lock_trace(&entry->trace, 2);
- 		printk("\n");
- 
- 		if (depth == 0 && (entry != root)) {
-@@ -1878,14 +1880,14 @@ print_bad_irq_dependency(struct task_str
- 	print_lock_name(backwards_entry->class);
- 	pr_warn("\n... which became %s-irq-safe at:\n", irqclass);
- 
--	print_stack_trace(backwards_entry->class->usage_traces + bit1, 1);
-+	print_lock_trace(backwards_entry->class->usage_traces + bit1, 1);
- 
- 	pr_warn("\nto a %s-irq-unsafe lock:\n", irqclass);
- 	print_lock_name(forwards_entry->class);
- 	pr_warn("\n... which became %s-irq-unsafe at:\n", irqclass);
- 	pr_warn("...");
- 
--	print_stack_trace(forwards_entry->class->usage_traces + bit2, 1);
-+	print_lock_trace(forwards_entry->class->usage_traces + bit2, 1);
- 
- 	pr_warn("\nother info that might help us debug this:\n\n");
- 	print_irq_lock_scenario(backwards_entry, forwards_entry,
-@@ -2161,9 +2163,9 @@ check_prev_add(struct task_struct *curr,
- 	       struct held_lock *next, int distance)
- {
- 	struct lock_list *uninitialized_var(target_entry);
--	struct stack_trace trace;
- 	struct lock_list *entry;
- 	struct lock_list this;
-+	struct lock_trace trace;
- 	int ret;
- 
- 	if (!hlock_class(prev)->key || !hlock_class(next)->key) {
-@@ -2705,6 +2707,10 @@ static inline int validate_chain(struct
- {
- 	return 1;
- }
-+
-+static void print_lock_trace(struct lock_trace *trace, unsigned int spaces)
++static bool stack_trace_consume_entry_nosched(void *cookie, unsigned long addr,
++					      bool reliable)
 +{
++	if (in_sched_functions(addr))
++		return true;
++	return stack_trace_consume_entry(cookie, addr, reliable);
 +}
- #endif
- 
++
++/**
++ * stack_trace_save - Save a stack trace into a storage array
++ * @store:	Pointer to storage array
++ * @size:	Size of the storage array
++ * @skipnr:	Number of entries to skip at the start of the stack trace
++ *
++ * Returns number of entries stored.
++ */
++unsigned int stack_trace_save(unsigned long *store, unsigned int size,
++			      unsigned int skipnr)
++{
++	stack_trace_consume_fn consume_entry = stack_trace_consume_entry;
++	struct stacktrace_cookie c = {
++		.store	= store,
++		.size	= size,
++		.skip	= skipnr + 1,
++	};
++
++	arch_stack_walk(consume_entry, &c, current, NULL);
++	return c.len;
++}
++EXPORT_SYMBOL_GPL(stack_trace_save);
++
++/**
++ * stack_trace_save_tsk - Save a task stack trace into a storage array
++ * @task:	The task to examine
++ * @store:	Pointer to storage array
++ * @size:	Size of the storage array
++ * @skipnr:	Number of entries to skip at the start of the stack trace
++ *
++ * Returns number of entries stored.
++ */
++unsigned int stack_trace_save_tsk(struct task_struct *tsk, unsigned long *store,
++				  unsigned int size, unsigned int skipnr)
++{
++	stack_trace_consume_fn consume_entry = stack_trace_consume_entry_nosched;
++	struct stacktrace_cookie c = {
++		.store	= store,
++		.size	= size,
++		.skip	= skipnr + 1,
++	};
++
++	if (!try_get_task_stack(tsk))
++		return 0;
++
++	arch_stack_walk(consume_entry, &c, tsk, NULL);
++	put_task_stack(tsk);
++	return c.len;
++}
++
++/**
++ * stack_trace_save_regs - Save a stack trace based on pt_regs into a storage array
++ * @regs:	Pointer to pt_regs to examine
++ * @store:	Pointer to storage array
++ * @size:	Size of the storage array
++ * @skipnr:	Number of entries to skip at the start of the stack trace
++ *
++ * Returns number of entries stored.
++ */
++unsigned int stack_trace_save_regs(struct pt_regs *regs, unsigned long *store,
++				   unsigned int size, unsigned int skipnr)
++{
++	stack_trace_consume_fn consume_entry = stack_trace_consume_entry;
++	struct stacktrace_cookie c = {
++		.store	= store,
++		.size	= size,
++		.skip	= skipnr,
++	};
++
++	arch_stack_walk(consume_entry, &c, current, regs);
++	return c.len;
++}
++
++#ifdef CONFIG_HAVE_RELIABLE_STACKTRACE
++/**
++ * stack_trace_save_tsk_reliable - Save task stack with verification
++ * @tsk:	Pointer to the task to examine
++ * @store:	Pointer to storage array
++ * @size:	Size of the storage array
++ *
++ * Returns:	An error if it detects any unreliable features of the
++ *		stack. Otherwise it guarantees that the stack trace is
++ *		reliable and returns the number of entries stored.
++ *
++ * If the task is not 'current', the caller *must* ensure the task is inactive.
++ */
++int stack_trace_save_tsk_reliable(struct task_struct *tsk, unsigned long *store,
++				  unsigned int size)
++{
++	stack_trace_consume_fn consume_entry = stack_trace_consume_entry;
++	struct stacktrace_cookie c = {
++		.store	= store,
++		.size	= size,
++	};
++	int ret;
++
++	/*
++	 * If the task doesn't have a stack (e.g., a zombie), the stack is
++	 * "reliably" empty.
++	 */
++	if (!try_get_task_stack(tsk))
++		return 0;
++
++	ret = arch_stack_walk_reliable(consume_entry, &c, tsk);
++	put_task_stack(tsk);
++	return ret;
++}
++#endif
++
++#ifdef CONFIG_USER_STACKTRACE_SUPPORT
++/**
++ * stack_trace_save_user - Save a user space stack trace into a storage array
++ * @store:	Pointer to storage array
++ * @size:	Size of the storage array
++ *
++ * Returns number of entries stored.
++ */
++unsigned int stack_trace_save_user(unsigned long *store, unsigned int size)
++{
++	stack_trace_consume_fn consume_entry = stack_trace_consume_entry;
++	struct stacktrace_cookie c = {
++		.store	= store,
++		.size	= size,
++	};
++
++	/* Trace user stack if not a kernel thread */
++	if (!current->mm)
++		return 0;
++
++	arch_stack_walk_user(consume_entry, &c, task_pt_regs(current));
++	return c.len;
++}
++#endif
++
++#else /* CONFIG_ARCH_STACKWALK */
++
  /*
-@@ -2801,7 +2807,7 @@ print_usage_bug(struct task_struct *curr
- 	print_lock(this);
+  * Architectures that do not implement save_stack_trace_*()
+  * get these weak aliases and once-per-bootup warnings
+@@ -193,3 +364,5 @@ unsigned int stack_trace_save_user(unsig
+ 	return trace.nr_entries;
+ }
+ #endif /* CONFIG_USER_STACKTRACE_SUPPORT */
++
++#endif /* !CONFIG_ARCH_STACKWALK */
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -597,6 +597,10 @@ config ARCH_HAS_UACCESS_FLUSHCACHE
+ config ARCH_HAS_UACCESS_MCSAFE
+ 	bool
  
- 	pr_warn("{%s} state was registered at:\n", usage_str[prev_bit]);
--	print_stack_trace(hlock_class(this)->usage_traces + prev_bit, 1);
-+	print_lock_trace(hlock_class(this)->usage_traces + prev_bit, 1);
- 
- 	print_irqtrace_events(curr);
- 	pr_warn("\nother info that might help us debug this:\n");
++# Temporary. Goes away when all archs are cleaned up
++config ARCH_STACKWALK
++       bool
++
+ config STACKDEPOT
+ 	bool
+ 	select STACKTRACE
 
 
 _______________________________________________
