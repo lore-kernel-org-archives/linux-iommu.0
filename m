@@ -1,65 +1,93 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [patch V2 01/29] tracing: Cleanup stack trace code
-Date: Fri, 19 Apr 2019 00:44:17 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1904190040510.3174@nanos.tec.linutronix.de>
-References: <20190418084119.056416939@linutronix.de>
-	<20190418084253.142712304@linutronix.de>
-	<20190418181938.2e2a9a04@gandalf.local.home>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v4 0/3] PCIe Host request to reserve IOVA
+Date: Thu, 18 Apr 2019 18:42:41 -0500
+Message-ID: <20190418234241.GF126710@google.com>
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+ <20190412223409.GB126710@google.com>
+ <CABe79T7h9t_Obmo3+B0MHgLZ4ff9GxpBBBLGtSf0C=zmLrWVBQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190418181938.2e2a9a04-f9ZlEuEWxVcJvu8Pb33WZ0EMvNT87kid@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
-Cc: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joonas Lahtinen <joonas.lahtinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Alasdair Kergon <agk-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Johannes Thumshirn <jthumshirn-l3A5Bk7waGM@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Alexey Dobriyan <adobriyan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Maarten Lankhorst <maarten.lankhorst-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jani Nikula <jani.nikula-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Josef Bacik <josef-DigfWCa+lFGyeJad7bwFQA@public.gmane.org>, Rodrigo Vivi <rodrigo.vivi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt@linux>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CABe79T7h9t_Obmo3+B0MHgLZ4ff9GxpBBBLGtSf0C=zmLrWVBQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Srinath Mannam <srinath.mannam@broadcom.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 18 Apr 2019, Steven Rostedt wrote:
-> On Thu, 18 Apr 2019 10:41:20 +0200
-> Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org> wrote:
+On Tue, Apr 16, 2019 at 05:28:36PM +0530, Srinath Mannam wrote:
+> On Sat, Apr 13, 2019 at 4:04 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Fri, Apr 12, 2019 at 08:43:32AM +0530, Srinath Mannam wrote:
+> > > Few SOCs have limitation that their PCIe host can't allow few inbound
+> > > address ranges. Allowed inbound address ranges are listed in dma-ranges
+> > > DT property and this address ranges are required to do IOVA mapping.
+> > > Remaining address ranges have to be reserved in IOVA mapping.
+>
+> > If I understand correctly, devices below these PCIe host bridges can
+> > DMA only to the listed address ranges, and you prevent devices from
+> > doing DMA to the holes between the listed ranges by reserving the
+> > holes in dma-iommu.
+>
+> Yes, devices below these PCIe host bridges can DMA only to the listed
+> address ranges,
+> and this patch prevents to allocate DMA(IOVA) addresses in the holes
+> of listed ranges.
+>
+> > Apparently there's something that makes sure driver dma_map_*() always
+> > goes through dma-iommu?  I traced as far as seeing that dma-iommu
+> > depends on CONFIG_IOMMU_DMA, and that arm64 selects CONFIG_IOMMU_DMA
+> > if CONFIG_IOMMU_SUPPORT, but then the trail got cold.  I didn't see
+> > what selects CONFIG_IOMMU_SUPPORT.
+>
+> IOMMU_SUPPORT depends on MMU.
+
+Yes, I see that IOMMU_SUPPORT depends on MMU (in
+drivers/iommu/Kconfig).  But that doesn't *select* IOMMU_SUPPORT; it
+only means you *can't* select it unless MMU has already been selected.
+
+I think you only get dma-iommu if you choose to select IOMMU_SUPPORT
+via menuconfig or whatever, and the current config rules allow you to
+turn that off.  Maybe that's OK, I dunno.  If you do turn it off, I
+guess we'll ignore the holes in "dma-ranges" and devices will be able
+to DMA to the holes.
+
+> > This does look like what Robin suggested, as far as I can tell.
+> > Hopefully he'll take a look and give his reviewed-by.  Thanks for
+> > persevering!
+> Thank you.
 > 
-> > @@ -412,23 +404,20 @@ stack_trace_sysctl(struct ctl_table *tab
-> >  		   void __user *buffer, size_t *lenp,
-> >  		   loff_t *ppos)
-> >  {
-> > -	int ret;
-> > +	int ret, was_enabled;
-> 
-> One small nit. Could this be:
-> 
-> 	int was_enabled;
-> 	int ret;
-> 
-> I prefer only joining variables that are related on the same line.
-> Makes it look cleaner IMO.
-
-If you wish so. To me it's waste of screen space :)
-
-> >  
-> >  	mutex_lock(&stack_sysctl_mutex);
-> > +	was_enabled = !!stack_tracer_enabled;
-> >  
-> 
-> Bah, not sure why I didn't do it this way to begin with. I think I
-> copied something else that couldn't do it this way for some reason and
-> didn't put any brain power behind the copy. :-/ But that was back in
-> 2008 so I blame it on being "young and stupid" ;-)
-
-The young part is gone for sure :)
-
-> Other then the above nit and removing the unneeded +1 in max_entries:
-
-s/+1/-1/
-
-Thanks,
-
-	tglx
+> Regards,
+> Srinath.
+> >
+> > > PCIe Host driver of those SOCs has to list resource entries of allowed
+> > > address ranges given in dma-ranges DT property in sorted order. This
+> > > sorted list of resources will be processed and reserve IOVA address for
+> > > inaccessible address holes while initializing IOMMU domain.
+> > >
+> > > This patch set is based on Linux-5.0-rc2.
+> > >
+> > > Changes from v3:
+> > >   - Addressed Robin Murphy review comments.
+> > >     - pcie-iproc: parse dma-ranges and make sorted resource list.
+> > >     - dma-iommu: process list and reserve gaps between entries
+> > >
+> > > Changes from v2:
+> > >   - Patch set rebased to Linux-5.0-rc2
+> > >
+> > > Changes from v1:
+> > >   - Addressed Oza review comments.
+> > >
+> > > Srinath Mannam (3):
+> > >   PCI: Add dma_ranges window list
+> > >   iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
+> > >   PCI: iproc: Add sorted dma ranges resource entries to host bridge
+> > >
+> > >  drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
+> > >  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+> > >  drivers/pci/probe.c                 |  3 +++
+> > >  include/linux/pci.h                 |  1 +
+> > >  4 files changed, 66 insertions(+), 1 deletion(-)
+> > >
+> > > --
+> > > 2.7.4
+> > >
