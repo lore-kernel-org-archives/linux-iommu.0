@@ -6,45 +6,46 @@ X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 557F5C10F0E
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 21:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BB8C10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 21:50:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 27B55205ED
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 21:25:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27B55205ED
+	by mail.kernel.org (Postfix) with ESMTPS id D97C520693
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 21:50:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D97C520693
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E8241D0D;
-	Thu, 18 Apr 2019 21:25:12 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AE6B91E3B;
+	Thu, 18 Apr 2019 21:50:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5638118AB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3564E1E38
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 21:24:50 +0000 (UTC)
+	Thu, 18 Apr 2019 21:50:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5B558823
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 36E9D6C5
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 21:24:49 +0000 (UTC)
+	Thu, 18 Apr 2019 21:50:27 +0000 (UTC)
 Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com
 	[66.24.58.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id DB27A205ED;
-	Thu, 18 Apr 2019 21:24:45 +0000 (UTC)
-Date: Thu, 18 Apr 2019 17:24:43 -0400
+	by mail.kernel.org (Postfix) with ESMTPSA id C8F7B20693;
+	Thu, 18 Apr 2019 21:50:23 +0000 (UTC)
+Date: Thu, 18 Apr 2019 17:50:22 -0400
 From: Steven Rostedt <rostedt@goodmis.org>
 To: Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [patch V2 01/29] tracing: Cleanup stack trace code
-Message-ID: <20190418172443.30ec83e3@gandalf.local.home>
-In-Reply-To: <alpine.DEB.2.21.1904182313470.3174@nanos.tec.linutronix.de>
+Message-ID: <20190418175022.4e222d07@gandalf.local.home>
+In-Reply-To: <20190418172443.30ec83e3@gandalf.local.home>
 References: <20190418084119.056416939@linutronix.de>
 	<20190418084253.142712304@linutronix.de>
 	<20190418135721.5vwd6ngxagrrrrtt@treble>
 	<alpine.DEB.2.21.1904182313470.3174@nanos.tec.linutronix.de>
+	<20190418172443.30ec83e3@gandalf.local.home>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -86,27 +87,24 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418212443.tMmxTXagXCdpOUKb20vQwXb85X9tIDd7OZYuftCKXGs@z>
+Message-ID: <20190418215022.a1R4JHr2bCsSmX6kUNvhy0YDaQutO2s5Zld0JtPCfwg@z>
 
-On Thu, 18 Apr 2019 23:14:45 +0200 (CEST)
-Thomas Gleixner <tglx@linutronix.de> wrote:
+On Thu, 18 Apr 2019 17:24:43 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-> On Thu, 18 Apr 2019, Josh Poimboeuf wrote:
-> 
-> > On Thu, Apr 18, 2019 at 10:41:20AM +0200, Thomas Gleixner wrote:  
-> > > - Remove the extra array member of stack_dump_trace[]. It's not required as
-> > >   the stack tracer stores at max array size - 1 entries so there is still
-> > >   an empty slot.  
-> > 
-> > What is the empty slot used for?  
-> 
-> I was trying to find an answer but failed. Maybe it's just historical
-> leftovers or Steven knows where the magic is in this maze.
->
+> I believe it was for historical leftovers (there was a time it was
+> required), and left there for "paranoid" sake. But let me apply the
+> patch and see if it is really needed.
 
-I believe it was for historical leftovers (there was a time it was
-required), and left there for "paranoid" sake. But let me apply the
-patch and see if it is really needed.
+I removed the +1 on the max_entries and set SET_TRACE_ENTRIES to 5 (a
+bit extreme). Then I ran the stack tracing with KASAN enabled and it
+never complained.
+
+As stated, it was there for historical reasons and I felt 500 was way
+more than enough and left the buffer there just out of laziness and
+paranoia.
+
+Feel free to remove that if you want.
 
 -- Steve
 _______________________________________________
