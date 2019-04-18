@@ -2,72 +2,74 @@ Return-Path: <SRS0=+ohw=SU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3422C10F0E
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9246CC10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:30:48 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 957612064A
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:20:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 957612064A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6EB6A2087F
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:30:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EB6A2087F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3490B1EBE;
-	Thu, 18 Apr 2019 22:20:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 341FE1D82;
+	Thu, 18 Apr 2019 22:30:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 30F641CD5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 434431C39
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 22:19:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D2F58823
+	Thu, 18 Apr 2019 19:09:05 +0000 (UTC)
+X-Greylist: delayed 00:22:36 by SQLgrey-1.7.6
+Received: from gateway21.websitewelcome.com (gateway21.websitewelcome.com
+	[192.185.45.95])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 40E4C466
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 22:19:44 +0000 (UTC)
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com
-	[66.24.58.225])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 509352064A;
-	Thu, 18 Apr 2019 22:19:41 +0000 (UTC)
-Date: Thu, 18 Apr 2019 18:19:38 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 01/29] tracing: Cleanup stack trace code
-Message-ID: <20190418181938.2e2a9a04@gandalf.local.home>
-In-Reply-To: <20190418084253.142712304@linutronix.de>
-References: <20190418084119.056416939@linutronix.de>
-	<20190418084253.142712304@linutronix.de>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	Thu, 18 Apr 2019 19:09:04 +0000 (UTC)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+	by gateway21.websitewelcome.com (Postfix) with ESMTP id 963B4400D7427
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 18 Apr 2019 13:46:27 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22]) by cmsmtp with SMTP
+	id HC3Hh7zHLYTGMHC3HhF7tg; Thu, 18 Apr 2019 13:46:27 -0500
+X-Authority-Reason: nr=8
+Received: from [189.250.104.103] (port=43216 helo=embeddedor)
+	by gator4166.hostgator.com with esmtpa (Exim 4.91)
+	(envelope-from <gustavo@embeddedor.com>)
+	id 1hHC3G-002rUT-10; Thu, 18 Apr 2019 13:46:26 -0500
+Date: Thu, 18 Apr 2019 13:46:24 -0500
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu/dmar: Use struct_size() helper
+Message-ID: <20190418184624.GA17025@embeddedor>
 MIME-Version: 1.0
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
-	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
-	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
-	x86@kernel.org, kasan-dev@googlegroups.com,
-	Johannes Thumshirn <jthumshirn@suse.de>,
-	Andrey Ryabinin <aryabinin@virtuozzo.com>,
-	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	David Rientjes <rientjes@google.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Josef Bacik <josef@toxicpanda.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>,
-	Josh Poimboeuf <jpoimboe@redhat.com>, David Sterba <dsterba@suse.com>,
-	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
-	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
-	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse,
+	please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - lists.linux-foundation.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.104.103
+X-Source-L: No
+X-Exim-ID: 1hHC3G-002rUT-10
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.250.104.103]:43216
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 9
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-Mailman-Approved-At: Thu, 18 Apr 2019 22:30:27 +0000
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	"Gustavo A. R. Silva" <gustavo@embeddedor.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -84,70 +86,40 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418221938.A9i-6FrvLzZwT5RYEpMrEMNi1Y2eAq87WxO6QWclctw@z>
+Message-ID: <20190418184624.ecajf-o3u5Jz2EescZBDEynuuTB4Bwg_2E4poe-Pqwg@z>
 
-On Thu, 18 Apr 2019 10:41:20 +0200
-Thomas Gleixner <tglx@linutronix.de> wrote:
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes, in particular in the
+context in which this code is being used.
 
+So, replace code of the following form:
 
-> @@ -412,23 +404,20 @@ stack_trace_sysctl(struct ctl_table *tab
->  		   void __user *buffer, size_t *lenp,
->  		   loff_t *ppos)
->  {
-> -	int ret;
-> +	int ret, was_enabled;
+size = sizeof(*info) + level * sizeof(info->path[0]);
 
-One small nit. Could this be:
+with:
 
-	int was_enabled;
-	int ret;
+size = struct_size(info, path, level);
 
-I prefer only joining variables that are related on the same line.
-Makes it look cleaner IMO.
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/iommu/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  
->  	mutex_lock(&stack_sysctl_mutex);
-> +	was_enabled = !!stack_tracer_enabled;
->  
-
-Bah, not sure why I didn't do it this way to begin with. I think I
-copied something else that couldn't do it this way for some reason and
-didn't put any brain power behind the copy. :-/ But that was back in
-2008 so I blame it on being "young and stupid" ;-)
-
-Other then the above nit and removing the unneeded +1 in max_entries:
-
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
--- Steve
-
-
->  	ret = proc_dointvec(table, write, buffer, lenp, ppos);
->  
-> -	if (ret || !write ||
-> -	    (last_stack_tracer_enabled == !!stack_tracer_enabled))
-> +	if (ret || !write || (was_enabled == !!stack_tracer_enabled))
->  		goto out;
->  
-> -	last_stack_tracer_enabled = !!stack_tracer_enabled;
-> -
->  	if (stack_tracer_enabled)
->  		register_ftrace_function(&trace_ops);
->  	else
->  		unregister_ftrace_function(&trace_ops);
-> -
->   out:
->  	mutex_unlock(&stack_sysctl_mutex);
->  	return ret;
-> @@ -444,7 +433,6 @@ static __init int enable_stacktrace(char
->  		strncpy(stack_trace_filter_buf, str + len, COMMAND_LINE_SIZE);
->  
->  	stack_tracer_enabled = 1;
-> -	last_stack_tracer_enabled = 1;
->  	return 1;
->  }
->  __setup("stacktrace", enable_stacktrace);
-> 
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9c49300e9fb7..6d969a172fbb 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -145,7 +145,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
+ 		for (tmp = dev; tmp; tmp = tmp->bus->self)
+ 			level++;
+ 
+-	size = sizeof(*info) + level * sizeof(info->path[0]);
++	size = struct_size(info, path, level);
+ 	if (size <= sizeof(dmar_pci_notify_info_buf)) {
+ 		info = (struct dmar_pci_notify_info *)dmar_pci_notify_info_buf;
+ 	} else {
+-- 
+2.21.0
 
 _______________________________________________
 iommu mailing list
