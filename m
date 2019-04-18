@@ -2,58 +2,77 @@ Return-Path: <SRS0=+ohw=SU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D98DBC282DD
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 15:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 241CBC10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 15:43:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2F1820675
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 15:36:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2F1820675
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id F2C832083D
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 15:43:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2C832083D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 82A8A1945;
-	Thu, 18 Apr 2019 15:36:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BEB9F194D;
+	Thu, 18 Apr 2019 15:43:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6281F1188
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7F44514B9
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 15:36:07 +0000 (UTC)
+	Thu, 18 Apr 2019 15:43:11 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D4D0C828
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 15:36:06 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9EFD015AB;
-	Thu, 18 Apr 2019 08:36:06 -0700 (PDT)
-Received: from [10.1.32.54] (unknown [10.1.32.54])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09D3E3F5AF;
-	Thu, 18 Apr 2019 08:36:03 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190415143711.13c29308@x1.home>
-	<20190415161015.564cb071@jacob-builder>
-Message-ID: <70c6b197-029e-94cd-2745-d4a193cbbcd0@arm.com>
-Date: Thu, 18 Apr 2019 16:36:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 097A4108;
+	Thu, 18 Apr 2019 15:43:10 +0000 (UTC)
+Received: from pd9ef12d2.dip0.t-ipconnect.de ([217.239.18.210] helo=nanos)
+	by Galois.linutronix.de with esmtpsa
+	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
+	(envelope-from <tglx@linutronix.de>)
+	id 1hH9Bh-0004nI-GJ; Thu, 18 Apr 2019 17:42:57 +0200
+Date: Thu, 18 Apr 2019 17:42:55 +0200 (CEST)
+From: Thomas Gleixner <tglx@linutronix.de>
+To: Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [patch V2 28/29] stacktrace: Provide common infrastructure
+In-Reply-To: <20190418145201.mjzyqbmkjcghqzex@treble>
+Message-ID: <alpine.DEB.2.21.1904181734200.3174@nanos.tec.linutronix.de>
+References: <20190418084119.056416939@linutronix.de>
+	<20190418084255.652003111@linutronix.de>
+	<20190418145201.mjzyqbmkjcghqzex@treble>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20190415161015.564cb071@jacob-builder>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
+	SHORTCIRCUIT=-0.0001
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
+	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
+	x86@kernel.org, kasan-dev@googlegroups.com,
+	David Rientjes <rientjes@google.com>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	David Sterba <dsterba@suse.com>,
+	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
+	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
+	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,123 +86,71 @@ List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418153602.Xf0Q9wtJiY7VJHoLwnqY9cnSpudP7r6rhMMfmMK3YPo@z>
+Message-ID: <20190418154255.EylWBd9COJaBevU8EE2tJjdzkfrPrACt5NaWFXAS87o@z>
 
-On 16/04/2019 00:10, Jacob Pan wrote:[...]
->> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 /*
->> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * Register =
-a custom ASID allocator if we
->> > are running
->> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * in a gues=
-t, the purpose is to have a
->> > system wide PASID
->> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * namespace=
- among all PASID users.
->> > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * Note that=
- only one vIOMMU in each guest
->> > is supported.=A0 =
+On Thu, 18 Apr 2019, Josh Poimboeuf wrote:
 
->> =
+> On Thu, Apr 18, 2019 at 10:41:47AM +0200, Thomas Gleixner wrote:
+> > All architectures which support stacktrace carry duplicated code and
+> > do the stack storage and filtering at the architecture side.
+> > 
+> > Provide a consolidated interface with a callback function for consuming the
+> > stack entries provided by the architecture specific stack walker. This
+> > removes lots of duplicated code and allows to implement better filtering
+> > than 'skip number of entries' in the future without touching any
+> > architecture specific code.
+> > 
+> > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: linux-arch@vger.kernel.org
+> 
+> This is a step in the right direction, especially if it allows us to get
+> rid of the 'skip' stuff.  But I'm not crazy about the callbacks.
+> 
+> Another idea I had (but never got a chance to work on) was to extend the
+> x86 unwind interface to all arches.  So instead of the callbacks, each
+> arch would implement something like this API:
+> 
+> 
+> struct unwind_state state;
+> 
+> void unwind_start(struct unwind_state *state, struct task_struct *task,
+> 		  struct pt_regs *regs, unsigned long *first_frame);
+> 
+> bool unwind_next_frame(struct unwind_state *state);
+> 
+> inline bool unwind_done(struct unwind_state *state);
+> 
+> 
+> Not only would it avoid the callbacks (which is a nice benefit already),
+> it would also allow the interfaces to be used outside of the
+> stack_trace_*() interfaces.  That would come in handy in cases like the
+> ftrace stack tracer code, which needs more than the stack_trace_*() API
+> can give.
 
->> Why one vIOMMU per guest?=A0 This would prevent guests with multiple PCI
->> domains aiui.
->> =
+I surely thought about that, but after staring at all incarnations of
+arch/*/stacktrace.c I just gave up.
 
-> This is mainly for simplicity reasons. These are all virtual BDFs
-> anyway. As long as guest BDF can be mapped to a host BDF, it should be
-> sufficient, am I missing anything?
-> =
+Aside of that quite some archs already have callback based unwinders
+because they use them for more than stacktracing and just have a single
+implementation of that loop.
 
-> From PASID allocation perspective, it is not tied to any PCI device
-> until bind call. We only need to track PASID ownership per guest.
-> =
+I'm fine either way. We can start with x86 and then let archs convert over
+their stuff, but I wouldn't hold my breath that this will be completed in
+the forseeable future.
 
-> virtio-IOMMU spec does support multiple PCI domains but I am not sure
-> if that applies to all assigned devices, whether all assigned devices
-> are under the same domain. Perhaps Jean can help to clarify how PASID
-> allocation API looks like on virtio IOMMU.
+> Of course, this may be more work than what you thought you signed up for
+> ;-)
 
-[Ugh, this is much longer than I hoped. In short I don't think multiple
-vIOMMUs is a problem, because the host uses the same allocator for all of
-them.]
-
-Yes there can be a single virtio-iommu instance for multiple PCI
-domains, or multiple instances each managing assigned devices. It's up to
-the hypervisor to decide on the topology.
-
-For Linux and QEMU I was assuming that choosing the vIOMMU used for PASID
-allocation isn't a big deal, since in the end they all use the same
-allocator in the host. It gets complicated when some vIOMMUs can be
-removed at runtime (unload the virtio-iommu module that was providing the
-PASID allocator, and then you can't allocate PASIDs for the VT-d instance
-anymore), so maybe limiting to one type of vIOMMU (don't mix VT-d and
-virtio-iommu in the same VM) is more reasonable.
-
-It's a bit more delicate from the virtio-iommu perspective. The
-interface is portable and I can't tie it down to the choices we're making
-for Linux and KVM. Having a system-wide PASID space is what we picked for
-Linux but the PCIe architecture allows for each device to have
-their own PASID space, and I suppose some hypervisors and guests might
-prefer implementing it that way.
-
-My plan for the moment is to implement global PASID allocation using one
-feature bit and two new requests, but leave space for a per-device PASID
-allocation, introduced with another feature bit if necessary. If it ever
-gets added, I expect the per-device allocation to be done during the bind
-request rather than with a separate PASID_ALLOC request.
-
-So currently I have a new feature bit and two commands:
-
-#define VIRTIO_IOMMU_F_PASID_ALLOC
-#define VIRTIO_IOMMU_T_ALLOC_PASID
-#define VIRTIO_IOMMU_T_FREE_PASID
-
-struct virtio_iommu_req_alloc_pasid {
-        struct virtio_iommu_req_head head;
-        u32 reserved;
-
-        /* Device-writeable */
-        le32 pasid;
-        struct virtio_iommu_req_tail tail;
-};
-
-struct virtio_iommu_req_free_pasid {
-        struct virtio_iommu_req_head head;
-        u32 reserved;
-        le32 pasid;
-
-        /* Device-writeable */
-        struct virtio_iommu_req_tail tail;
-};
-
-If the feature bit is offered it must be used, and the guest can only use
-PASIDs allocated via VIRTIO_IOMMU_T_ALLOC_PASID in its bind requests.
-
-The PASID space is global at the host scope. If multiple virtio-iommu
-devices in the VM offer the feature bit, then using either of their
-command queue to issue a VIRTIO_IOMMU_F_ALLOC_PASID and
-VIRTIO_IOMMU_F_FREE_PASID is equivalent. Another possibility is to require
-that only one of the virtio-iommu instances per VM offers the feature bit.
-I do prefer this option, but there is the vIOMMU removal problem mentioned
-above - which, with the first option, could be solved by keeping a list of
-PASID allocator functions rather than a single one.
-
-I'm considering adding max_pasid field to virtio_iommu_req_alloc_pasid. If
-VIRTIO_IOMMU_T_ALLOC_PASID returns a random 20-bit value then a lot of
-space might be needed for storing PASID contexts (is that a real concern
-though? For internal data it can use a binary tree, and the guest is not
-in charge of hardware PASID tables here). If the guest is short on memory
-then it could benefit from a smaller number of PASID bits. That could
-either be globally configurable in the virtio-iommu config space, or using
-a max_pasid field in the VIRTIO_IOMMU_T_ALLOC_PASID request. The latter
-allows to support devices with less than 20 PASID bits, though we're
-hoping that no one will implement that.
+I did not sign up for anything. I tripped over that mess by accident and me
+being me hated it strong enough to give it at least an initial steam blast.
 
 Thanks,
-Jean
+
+	tglx
+	
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
