@@ -1,50 +1,50 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
- helpers
-Date: Thu, 18 Apr 2019 19:15:00 +0100
-Message-ID: <228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com>
-References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-13-hch@lst.de>
- <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com> <20190410061157.GA5278@lst.de>
- <20190417063358.GA24139@lst.de>
- <83615173-a8b4-e0eb-bac3-1a58d61ea4ef@arm.com>
- <20190418163512.GA25347@lst.de>
+From: Kevin Mitchell via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [PATCH 0/3] handle init errors more gracefully in amd_iommu
+Date: Thu, 18 Apr 2019 10:57:43 -0700
+Message-ID: <20190418175744.6229-1-kevmitch@arista.com>
+Reply-To: Kevin Mitchell <kevmitch-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190418163512.GA25347@lst.de>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/04/2019 17:35, Christoph Hellwig wrote:
-> On Thu, Apr 18, 2019 at 04:06:56PM +0100, Robin Murphy wrote:
->> OK, I'm still looking at mmap and get_sgtable, but for now I've pushed out
->> a partial branch that consolidates alloc and free in a way which makes
->> sense to me:
->>
->>    git://linux-arm.org/linux-rm  dma/rework
->>
->> Please let me know what you think.
-> 
->  From a very high level POV this looks ok, but sometimes a bit to
-> convoluted to me.  The major issue why I went with the version I posted
-> is that I can cleanly ifdef out the remap code in just a few sections.
-> In this version it is spread out a lot more, and the use of IS_ENABLED
-> means that we'd need a lot more stubs for functionality that won't
-> ever be called but needs to be compilable.
+This series makes error handling more robust in the amd_iommu init
+code. It was initially motivated by problematic firmware that does not
+set up the physical address of the iommu. This led to a NULL dereference
+panic when iommu_disable was called during cleanup.
 
-OK, for some reason I'd convinced myself that mmap and get_sgtable would 
-need changes to properly handle the new non-remapped CMA case - not sure 
-how I reached that conclusion. On inspection they do appear to be broken 
-for the non-coherent atomic case, but AFAICS that's been so forever...
+While the first patch is sufficient to avoid the panic, the subsequent
+two move the cleanup closer to the actual error and avoid calling the
+cleanup code twice when amd_iommu=off is specified on the command line.
 
-Still, I've worked in the vm_map_pages() stuff pending in MM and given 
-them the same treatment to finish the picture. Both x86_64_defconfig and 
-i386_defconfig do indeed compile and link fine as I expected, so I 
-really would like to understand the concern around #ifdefs better.
+I have tested this series on a variety of AMD CPUs with firmware
+exhibiting the issue. I have additionally tested on platforms where the
+firmware has been fixed. I tried both with and without amd_iommu=off. I
+have also tested on older CPUs where no IOMMU is detected and even one
+where the GART driver ends up running.
 
-Robin.
+Thanks,
+
+Kevin
+
+Kevin Mitchell (3):
+  iommu/amd: make iommu_disable safer
+  iommu/amd: move gart fallback to amd_iommu_init
+  iommu/amd: only free resources once on init error
+
+ drivers/iommu/amd_iommu_init.c | 45 ++++++++++++++++++----------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
+
+-- 
+2.20.1
