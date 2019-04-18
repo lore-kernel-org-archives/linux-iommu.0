@@ -3,42 +3,42 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81161C10F0E
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15647C10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:34:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5B09E214DA
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:34:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B09E214DA
+	by mail.kernel.org (Postfix) with ESMTPS id E5498214DA
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 09:34:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5498214DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EF8401522;
-	Thu, 18 Apr 2019 09:34:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3345B1520;
+	Thu, 18 Apr 2019 09:34:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 73F5011B0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7157E11B0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 09:34:32 +0000 (UTC)
-X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
+	Thu, 18 Apr 2019 09:34:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0357D466;
-	Thu, 18 Apr 2019 09:34:32 +0000 (UTC)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EFBFA828
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 18 Apr 2019 09:34:35 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hH2zy-0001qB-1o; Thu, 18 Apr 2019 11:06:26 +0200
-Message-Id: <20190418084254.270025615@linutronix.de>
+	id 1hH309-0001su-Qw; Thu, 18 Apr 2019 11:06:38 +0200
+Message-Id: <20190418084254.729689921@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 18 Apr 2019 10:41:32 +0200
+Date: Thu, 18 Apr 2019 10:41:37 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 13/29] btrfs: ref-verify: Simplify stack trace retrieval
+Subject: [patch V2 18/29] lockdep: Move stack trace logic into check_prev_add()
 References: <20190418084119.056416939@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -54,8 +54,8 @@ Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
 	David Rientjes <rientjes@google.com>,
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Josef Bacik <josef@toxicpanda.com>, Steven Rostedt <rostedt@goodmis.org>,
 	Akinobu Mita <akinobu.mita@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
 	Rodrigo Vivi <rodrigo.vivi@intel.com>,
 	Mike Rapoport <rppt@linux.vnet.ibm.com>,
 	Jani Nikula <jani.nikula@linux.intel.com>,
@@ -81,54 +81,106 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418084132.h8u1RSR_AD7UR9-tWuhoQjfFLC7cSuQ4JE6iT75A-mE@z>
+Message-ID: <20190418084137.YfA0Lh4VGxarTDcc3wqjOaQvnChcewsQyplmRtwQuzQ@z>
 
-Replace the indirection through struct stack_trace with an invocation of
-the storage array based interface.
+There is only one caller of check_prev_add() which hands in a zeroed struct
+stack trace and a function pointer to save_stack(). Inside check_prev_add()
+the stack_trace struct is checked for being empty, which is always
+true. Based on that one code path stores a stack trace which is unused. The
+comment there does not make sense either. It's all leftovers from
+historical lockdep code (cross release).
+
+Move the variable into check_prev_add() itself and cleanup the nonsensical
+checks and the pointless stack trace recording.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
-Acked-by: David Sterba <dsterba@suse.com>
-Cc: Chris Mason <clm@fb.com>
-Cc: Josef Bacik <josef@toxicpanda.com>
-Cc: linux-btrfs@vger.kernel.org
 ---
- fs/btrfs/ref-verify.c |   15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ kernel/locking/lockdep.c |   30 ++++++++----------------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
 
---- a/fs/btrfs/ref-verify.c
-+++ b/fs/btrfs/ref-verify.c
-@@ -205,28 +205,17 @@ static struct root_entry *lookup_root_en
- #ifdef CONFIG_STACKTRACE
- static void __save_stack_trace(struct ref_action *ra)
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -2158,10 +2158,10 @@ check_deadlock(struct task_struct *curr,
+  */
+ static int
+ check_prev_add(struct task_struct *curr, struct held_lock *prev,
+-	       struct held_lock *next, int distance, struct stack_trace *trace,
+-	       int (*save)(struct stack_trace *trace))
++	       struct held_lock *next, int distance)
  {
--	struct stack_trace stack_trace;
--
--	stack_trace.max_entries = MAX_TRACE;
--	stack_trace.nr_entries = 0;
--	stack_trace.entries = ra->trace;
--	stack_trace.skip = 2;
--	save_stack_trace(&stack_trace);
--	ra->trace_len = stack_trace.nr_entries;
-+	ra->trace_len = stack_trace_save(ra->trace, MAX_TRACE, 2);
- }
+ 	struct lock_list *uninitialized_var(target_entry);
++	struct stack_trace trace;
+ 	struct lock_list *entry;
+ 	struct lock_list this;
+ 	int ret;
+@@ -2196,17 +2196,8 @@ check_prev_add(struct task_struct *curr,
+ 	this.class = hlock_class(next);
+ 	this.parent = NULL;
+ 	ret = check_noncircular(&this, hlock_class(prev), &target_entry);
+-	if (unlikely(!ret)) {
+-		if (!trace->entries) {
+-			/*
+-			 * If @save fails here, the printing might trigger
+-			 * a WARN but because of the !nr_entries it should
+-			 * not do bad things.
+-			 */
+-			save(trace);
+-		}
++	if (unlikely(!ret))
+ 		return print_circular_bug(&this, target_entry, next, prev);
+-	}
+ 	else if (unlikely(ret < 0))
+ 		return print_bfs_bug(ret);
  
- static void __print_stack_trace(struct btrfs_fs_info *fs_info,
- 				struct ref_action *ra)
+@@ -2253,7 +2244,7 @@ check_prev_add(struct task_struct *curr,
+ 		return print_bfs_bug(ret);
+ 
+ 
+-	if (!trace->entries && !save(trace))
++	if (!save_trace(&trace))
+ 		return 0;
+ 
+ 	/*
+@@ -2262,14 +2253,14 @@ check_prev_add(struct task_struct *curr,
+ 	 */
+ 	ret = add_lock_to_list(hlock_class(next), hlock_class(prev),
+ 			       &hlock_class(prev)->locks_after,
+-			       next->acquire_ip, distance, trace);
++			       next->acquire_ip, distance, &trace);
+ 
+ 	if (!ret)
+ 		return 0;
+ 
+ 	ret = add_lock_to_list(hlock_class(prev), hlock_class(next),
+ 			       &hlock_class(next)->locks_before,
+-			       next->acquire_ip, distance, trace);
++			       next->acquire_ip, distance, &trace);
+ 	if (!ret)
+ 		return 0;
+ 
+@@ -2287,12 +2278,6 @@ check_prevs_add(struct task_struct *curr
  {
--	struct stack_trace trace;
--
- 	if (ra->trace_len == 0) {
- 		btrfs_err(fs_info, "  ref-verify: no stacktrace");
- 		return;
- 	}
--	trace.nr_entries = ra->trace_len;
--	trace.entries = ra->trace;
--	print_stack_trace(&trace, 2);
-+	stack_trace_print(ra->trace, ra->trace_len, 2);
- }
- #else
- static void inline __save_stack_trace(struct ref_action *ra)
+ 	int depth = curr->lockdep_depth;
+ 	struct held_lock *hlock;
+-	struct stack_trace trace = {
+-		.nr_entries = 0,
+-		.max_entries = 0,
+-		.entries = NULL,
+-		.skip = 0,
+-	};
+ 
+ 	/*
+ 	 * Debugging checks.
+@@ -2318,7 +2303,8 @@ check_prevs_add(struct task_struct *curr
+ 		 * added:
+ 		 */
+ 		if (hlock->read != 2 && hlock->check) {
+-			int ret = check_prev_add(curr, hlock, next, distance, &trace, save_trace);
++			int ret = check_prev_add(curr, hlock, next, distance);
++
+ 			if (!ret)
+ 				return 0;
+ 
 
 
 _______________________________________________
