@@ -1,50 +1,45 @@
-From: Kevin Mitchell via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH 1/3] iommu/amd: make iommu_disable safer
-Date: Thu, 18 Apr 2019 10:57:45 -0700
-Message-ID: <20190418175744.6229-2-kevmitch@arista.com>
-References: <20190418175744.6229-1-kevmitch@arista.com>
-Reply-To: Kevin Mitchell <kevmitch-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] iommu/dmar: Use struct_size() helper
+Date: Thu, 18 Apr 2019 13:46:24 -0500
+Message-ID: <20190418184624.GA17025@embeddedor>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190418175744.6229-1-kevmitch-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Make it safe to call iommu_disable during early init error conditions
-before mmio_base is set, but after the struct amd_iommu has been added
-to the amd_iommu_list. For example, this happens if firmware fails to
-fill in mmio_phys in the ACPI table leading to a NULL pointer
-dereference in iommu_feature_disable.
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes, in particular in the
+context in which this code is being used.
 
-Signed-off-by: Kevin Mitchell <kevmitch-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+So, replace code of the following form:
+
+size = sizeof(*info) + level * sizeof(info->path[0]);
+
+with:
+
+size = struct_size(info, path, level);
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/iommu/amd_iommu_init.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index f773792d77fd..3798d7303c99 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -424,6 +424,9 @@ static void iommu_enable(struct amd_iommu *iommu)
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9c49300e9fb7..6d969a172fbb 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -145,7 +145,7 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
+ 		for (tmp = dev; tmp; tmp = tmp->bus->self)
+ 			level++;
  
- static void iommu_disable(struct amd_iommu *iommu)
- {
-+	if (!iommu->mmio_base)
-+		return;
-+
- 	/* Disable command buffer */
- 	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
- 
+-	size = sizeof(*info) + level * sizeof(info->path[0]);
++	size = struct_size(info, path, level);
+ 	if (size <= sizeof(dmar_pci_notify_info_buf)) {
+ 		info = (struct dmar_pci_notify_info *)dmar_pci_notify_info_buf;
+ 	} else {
 -- 
-2.20.1
+2.21.0
