@@ -1,7 +1,7 @@
 From: Kevin Mitchell via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH 2/3] iommu/amd: move gart fallback to amd_iommu_init
-Date: Thu, 18 Apr 2019 10:57:47 -0700
-Message-ID: <20190418175744.6229-3-kevmitch@arista.com>
+Subject: [PATCH 3/3] iommu/amd: only free resources once on init error
+Date: Thu, 18 Apr 2019 10:57:49 -0700
+Message-ID: <20190418175744.6229-4-kevmitch@arista.com>
 References: <20190418175744.6229-1-kevmitch@arista.com>
 Reply-To: Kevin Mitchell <kevmitch-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
@@ -21,56 +21,74 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The fallback to the GART driver in the case amd_iommu doesn't work was
-executed in a function called free_iommu_resources, which didn't really
-make sense. This was even being called twice if amd_iommu=off was
-specified on the command line.
+When amd_iommu=off was specified on the command line, free_X_resources
+functions were called immediately after early_amd_iommu_init. They were
+then called again when amd_iommu_init also failed (as expected).
 
-The only complication is that it needs to be verified that amd_iommu has
-fully relinquished control by calling free_iommu_resources and emptying
-the amd_iommu_list.
+Instead, call them only once: at the end of state_next() whenever
+there's an error. These functions should be safe to call any time and
+any number of times. However, since state_next is never called again in
+an error state, the cleanup will only ever be run once.
+
+This also ensures that cleanup code is run as soon as possible after an
+error is detected rather than waiting for amd_iommu_init() to be called.
 
 Signed-off-by: Kevin Mitchell <kevmitch-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 3798d7303c99..5f3df5ae6ba8 100644
+index 5f3df5ae6ba8..24fc060fe596 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2345,15 +2345,6 @@ static void __init free_iommu_resources(void)
- 	amd_iommu_dev_table = NULL;
- 
- 	free_iommu_all();
--
--#ifdef CONFIG_GART_IOMMU
--	/*
--	 * We failed to initialize the AMD IOMMU - try fallback to GART
--	 * if possible.
--	 */
--	gart_iommu_init();
--
--#endif
- }
- 
- /* SB IOAPIC is always on this device in AMD systems */
-@@ -2774,6 +2765,16 @@ static int __init amd_iommu_init(void)
+@@ -2638,8 +2638,6 @@ static int __init state_next(void)
+ 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
+ 		if (init_state == IOMMU_ACPI_FINISHED && amd_iommu_disabled) {
+ 			pr_info("AMD IOMMU disabled on kernel command-line\n");
+-			free_dma_resources();
+-			free_iommu_resources();
+ 			init_state = IOMMU_CMDLINE_DISABLED;
+ 			ret = -EINVAL;
  		}
+@@ -2680,6 +2678,19 @@ static int __init state_next(void)
+ 		BUG();
  	}
  
-+#ifdef CONFIG_GART_IOMMU
-+	if (ret && list_empty(&amd_iommu_list)) {
-+		/*
-+		 * We failed to initialize the AMD IOMMU - try fallback
-+		 * to GART if possible.
-+		 */
-+		gart_iommu_init();
-+	}
-+#endif
++	if (ret) {
++		free_dma_resources();
++		if (!irq_remapping_enabled) {
++			disable_iommus();
++			free_iommu_resources();
++		} else {
++			struct amd_iommu *iommu;
 +
- 	for_each_iommu(iommu)
- 		amd_iommu_debugfs_setup(iommu);
++			uninit_device_table_dma();
++			for_each_iommu(iommu)
++				iommu_flush_all_caches(iommu);
++		}
++	}
+ 	return ret;
+ }
  
+@@ -2753,18 +2764,6 @@ static int __init amd_iommu_init(void)
+ 	int ret;
+ 
+ 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
+-	if (ret) {
+-		free_dma_resources();
+-		if (!irq_remapping_enabled) {
+-			disable_iommus();
+-			free_iommu_resources();
+-		} else {
+-			uninit_device_table_dma();
+-			for_each_iommu(iommu)
+-				iommu_flush_all_caches(iommu);
+-		}
+-	}
+-
+ #ifdef CONFIG_GART_IOMMU
+ 	if (ret && list_empty(&amd_iommu_list)) {
+ 		/*
 -- 
 2.20.1
