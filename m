@@ -6,53 +6,49 @@ X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C71C10F0E
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A29F6C10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:44:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10AD12087F
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:30:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10AD12087F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 773CC20693
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 22:44:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 773CC20693
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AC05F1D0C;
-	Thu, 18 Apr 2019 22:30:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4CBD61C38;
+	Thu, 18 Apr 2019 22:44:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E01B21CD8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C81201A8C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 20:22:27 +0000 (UTC)
+	Thu, 18 Apr 2019 22:44:30 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AD9EA466
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 20:22:26 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	18 Apr 2019 13:22:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,367,1549958400"; d="scan'208";a="141818813"
-Received: from dytagah-mobl.amr.corp.intel.com ([10.254.15.29])
-	by fmsmga008.fm.intel.com with ESMTP; 18 Apr 2019 13:22:22 -0700
-Message-ID: <a8b9954d0c0a6cc4c213ff65c9ec3795ed0a05ba.camel@linux.intel.com>
-Subject: Re: [patch V2 20/29] tracing: Simplify stacktrace retrieval in
-	histograms
-From: Tom Zanussi <tom.zanussi@linux.intel.com>
+Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 66C4E466;
+	Thu, 18 Apr 2019 22:44:30 +0000 (UTC)
+Received: from pd9ef12d2.dip0.t-ipconnect.de ([217.239.18.210] helo=nanos)
+	by Galois.linutronix.de with esmtpsa
+	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
+	(envelope-from <tglx@linutronix.de>)
+	id 1hHFlT-0000Hv-O2; Fri, 19 Apr 2019 00:44:19 +0200
+Date: Fri, 19 Apr 2019 00:44:17 +0200 (CEST)
+From: Thomas Gleixner <tglx@linutronix.de>
 To: Steven Rostedt <rostedt@goodmis.org>
-Date: Thu, 18 Apr 2019 15:22:22 -0500
-In-Reply-To: <20190418161342.34f4abca@gandalf.local.home>
+Subject: Re: [patch V2 01/29] tracing: Cleanup stack trace code
+In-Reply-To: <20190418181938.2e2a9a04@gandalf.local.home>
+Message-ID: <alpine.DEB.2.21.1904190040510.3174@nanos.tec.linutronix.de>
 References: <20190418084119.056416939@linutronix.de>
-	<20190418084254.910579307@linutronix.de>
-	<20190418094014.7d457f29@gandalf.local.home>
-	<014a7564d606b249a5e50bef0fedf266977a935b.camel@linux.intel.com>
-	<20190418161342.34f4abca@gandalf.local.home>
-X-Mailer: Evolution 3.28.5 (3.28.5-1.fc28) 
-Mime-Version: 1.0
-X-Mailman-Approved-At: Thu, 18 Apr 2019 22:30:27 +0000
+	<20190418084253.142712304@linutronix.de>
+	<20190418181938.2e2a9a04@gandalf.local.home>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
+	SHORTCIRCUIT=-0.0001
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Catalin Marinas <catalin.marinas@arm.com>,
 	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -61,17 +57,16 @@ Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
 	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
 	x86@kernel.org, kasan-dev@googlegroups.com,
-	David Rientjes <rientjes@google.com>,
+	Johannes Thumshirn <jthumshirn@suse.de>,
 	Andrey Ryabinin <aryabinin@virtuozzo.com>,
 	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	Johannes Thumshirn <jthumshirn@suse.de>,
+	David Rientjes <rientjes@google.com>,
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	Jani Nikula <jani.nikula@linux.intel.com>,
 	Josef Bacik <josef@toxicpanda.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
 	Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>,
 	Josh Poimboeuf <jpoimboe@redhat.com>, David Sterba <dsterba@suse.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
 	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
 	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
 	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
@@ -93,38 +88,48 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418202222.18iNoPISCZ3Mz0ez-4hC0-bzNUJ-asAwJosl1aO_rZE@z>
+Message-ID: <20190418224417.q_XxciGJW1o_R_t2ve-pa355L7_yE3zYUyfEP_fsVT4@z>
 
-Hi Steve,
-
-On Thu, 2019-04-18 at 16:13 -0400, Steven Rostedt wrote:
-> On Thu, 18 Apr 2019 14:58:55 -0500
-> Tom Zanussi <tom.zanussi@linux.intel.com> wrote:
+On Thu, 18 Apr 2019, Steven Rostedt wrote:
+> On Thu, 18 Apr 2019 10:41:20 +0200
+> Thomas Gleixner <tglx@linutronix.de> wrote:
 > 
-> > > Tom,
-> > > 
-> > > Can you review this too?  
-> > 
-> > Looks good to me too!
-> > 
-> > Acked-by: Tom Zanussi <tom.zanussi@linux.intel.com>
-> > 
+> > @@ -412,23 +404,20 @@ stack_trace_sysctl(struct ctl_table *tab
+> >  		   void __user *buffer, size_t *lenp,
+> >  		   loff_t *ppos)
+> >  {
+> > -	int ret;
+> > +	int ret, was_enabled;
 > 
-> Would you be OK to upgrade this to a Reviewed-by tag?
+> One small nit. Could this be:
 > 
-
-Yeah, I did review it and even tested it, so:
-
-Reviewed-by: Tom Zanussi <tom.zanussi@linux.intel.com>
-Tested-by: Tom Zanussi <tom.zanussi@linux.intel.com>
-
-Tom
-
-
-> Thanks!
+> 	int was_enabled;
+> 	int ret;
 > 
-> -- Steve
+> I prefer only joining variables that are related on the same line.
+> Makes it look cleaner IMO.
 
+If you wish so. To me it's waste of screen space :)
+
+> >  
+> >  	mutex_lock(&stack_sysctl_mutex);
+> > +	was_enabled = !!stack_tracer_enabled;
+> >  
+> 
+> Bah, not sure why I didn't do it this way to begin with. I think I
+> copied something else that couldn't do it this way for some reason and
+> didn't put any brain power behind the copy. :-/ But that was back in
+> 2008 so I blame it on being "young and stupid" ;-)
+
+The young part is gone for sure :)
+
+> Other then the above nit and removing the unneeded +1 in max_entries:
+
+s/+1/-1/
+
+Thanks,
+
+	tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
