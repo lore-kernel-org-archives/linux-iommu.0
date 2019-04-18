@@ -1,46 +1,92 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
- helpers
-Date: Thu, 18 Apr 2019 17:41:00 +0100
-Message-ID: <433dec64-ef15-b31d-ace4-4c72b81d2942@arm.com>
-References: <20190327080448.5500-1-hch@lst.de>
- <20190327080448.5500-13-hch@lst.de>
- <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com> <20190410061157.GA5278@lst.de>
- <20190417063358.GA24139@lst.de>
- <83615173-a8b4-e0eb-bac3-1a58d61ea4ef@arm.com>
- <20190418163512.GA25347@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Julien Grall <julien.grall@arm.com>
+Subject: [PATCH 0/7] iommu/dma-iommu: Split iommu_dma_map_msi_msg in two parts
+Date: Thu, 18 Apr 2019 18:26:04 +0100
+Message-ID: <20190418172611.21561-1-julien.grall@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190418163512.GA25347@lst.de>
-Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: logang@deltatee.com, douliyangs@gmail.com, miquel.raynal@bootlin.com, marc.zyngier@arm.com, jason@lakedaemon.net, tglx@linutronix.de, joro@8bytes.org, robin.murphy@arm.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org, Julien Grall <julien.grall@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/04/2019 17:35, Christoph Hellwig wrote:
-> On Thu, Apr 18, 2019 at 04:06:56PM +0100, Robin Murphy wrote:
->> OK, I'm still looking at mmap and get_sgtable, but for now I've pushed out
->> a partial branch that consolidates alloc and free in a way which makes
->> sense to me:
->>
->>    git://linux-arm.org/linux-rm  dma/rework
->>
->> Please let me know what you think.
-> 
->  From a very high level POV this looks ok, but sometimes a bit to
-> convoluted to me.  The major issue why I went with the version I posted
-> is that I can cleanly ifdef out the remap code in just a few sections.
-> In this version it is spread out a lot more, and the use of IS_ENABLED
-> means that we'd need a lot more stubs for functionality that won't
-> ever be called but needs to be compilable.
+Hi all,
 
-What functionality do you have planned in that regard? I did do a quick 
-build test of my arm64 config with DMA_DIRECT_REMAP hacked out, and 
-dma-iommu.o appeared to link OK (although other bits of arm64 and 
-dma-direct didn't, as expected). I will try x86 with IOMMU_DMA to make 
-sure, though.
+On RT, the function iommu_dma_map_msi_msg expects to be called from preemptible
+context. However, this is not always the case resulting a splat with
+!CONFIG_DEBUG_ATOMIC_SLEEP:
 
-Robin.
+[   48.875777] BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:974
+[   48.875779] in_atomic(): 1, irqs_disabled(): 128, pid: 2103, name: ip
+[   48.875782] INFO: lockdep is turned off.
+[   48.875784] irq event stamp: 10684
+[   48.875786] hardirqs last  enabled at (10683): [<ffff0000110c8d70>] _raw_spin_unlock_irqrestore+0x88/0x90
+[   48.875791] hardirqs last disabled at (10684): [<ffff0000110c8b2c>] _raw_spin_lock_irqsave+0x24/0x68
+[   48.875796] softirqs last  enabled at (0): [<ffff0000100ec590>] copy_process.isra.1.part.2+0x8d8/0x1970
+[   48.875801] softirqs last disabled at (0): [<0000000000000000>]           (null)
+[   48.875805] Preemption disabled at:
+[   48.875805] [<ffff000010189ae8>] __setup_irq+0xd8/0x6c0
+[   48.875811] CPU: 2 PID: 2103 Comm: ip Not tainted 5.0.3-rt1-00007-g42ede9a0fed6 #45
+[   48.875815] Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development Platform, BIOS EDK II Jan 23 2017
+[   48.875817] Call trace:
+[   48.875818]  dump_backtrace+0x0/0x140
+[   48.875821]  show_stack+0x14/0x20
+[   48.875823]  dump_stack+0xa0/0xd4
+[   48.875827]  ___might_sleep+0x16c/0x1f8
+[   48.875831]  rt_spin_lock+0x5c/0x70
+[   48.875835]  iommu_dma_map_msi_msg+0x5c/0x1d8
+[   48.875839]  gicv2m_compose_msi_msg+0x3c/0x48
+[   48.875843]  irq_chip_compose_msi_msg+0x40/0x58
+[   48.875846]  msi_domain_activate+0x38/0x98
+[   48.875849]  __irq_domain_activate_irq+0x58/0xa0
+[   48.875852]  irq_domain_activate_irq+0x34/0x58
+[   48.875855]  irq_activate+0x28/0x30
+[   48.875858]  __setup_irq+0x2b0/0x6c0
+[   48.875861]  request_threaded_irq+0xdc/0x188
+[   48.875865]  sky2_setup_irq+0x44/0xf8
+[   48.875868]  sky2_open+0x1a4/0x240
+[   48.875871]  __dev_open+0xd8/0x188
+[   48.875874]  __dev_change_flags+0x164/0x1f0
+[   48.875877]  dev_change_flags+0x20/0x60
+[   48.875879]  do_setlink+0x2a0/0xd30
+[   48.875882]  __rtnl_newlink+0x5b4/0x6d8
+[   48.875885]  rtnl_newlink+0x50/0x78
+[   48.875888]  rtnetlink_rcv_msg+0x178/0x640
+[   48.875891]  netlink_rcv_skb+0x58/0x118
+[   48.875893]  rtnetlink_rcv+0x14/0x20
+[   48.875896]  netlink_unicast+0x188/0x200
+[   48.875898]  netlink_sendmsg+0x248/0x3d8
+[   48.875900]  sock_sendmsg+0x18/0x40
+[   48.875904]  ___sys_sendmsg+0x294/0x2d0
+[   48.875908]  __sys_sendmsg+0x68/0xb8
+[   48.875911]  __arm64_sys_sendmsg+0x20/0x28
+[   48.875914]  el0_svc_common+0x90/0x118
+[   48.875918]  el0_svc_handler+0x2c/0x80
+[   48.875922]  el0_svc+0x8/0xc
+
+This series is a first attempt to rework how MSI are mapped and composed
+when an IOMMU is present.
+
+I was able to test the changes in GICv2m and GICv3 ITS. I don't have
+hardware for the other interrupt controllers.
+
+Cheers,
+
+Julien Grall (7):
+  genirq/msi: Add a new field in msi_desc to store an IOMMU cookie
+  iommu/dma-iommu: Split iommu_dma_map_msi_msg in two parts
+  irqchip/gicv2m: Don't map the MSI page in gicv2m_compose_msi_msg
+  irqchip/gic-v3-its: Don't map the MSI page in its_irq_compose_msi_msg
+  irqchip/ls-scfg-msi: Don't map the MSI page in ls_scfg_msi_compose_msg
+  irqchip/gic-v3-mbi: Don't map the MSI page in mbi_compose_m{b, s}i_msg
+  iommu/dma-iommu: Remove iommu_dma_map_msi_msg()
+
+ drivers/iommu/dma-iommu.c         | 45 ++++++++++++++++++++-------------------
+ drivers/irqchip/irq-gic-v2m.c     |  8 ++++++-
+ drivers/irqchip/irq-gic-v3-its.c  |  5 ++++-
+ drivers/irqchip/irq-gic-v3-mbi.c  | 15 +++++++++++--
+ drivers/irqchip/irq-ls-scfg-msi.c |  7 +++++-
+ include/linux/dma-iommu.h         | 20 +++++++++++++++--
+ include/linux/msi.h               |  3 +++
+ 7 files changed, 74 insertions(+), 29 deletions(-)
+
+-- 
+2.11.0
