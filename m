@@ -3,80 +3,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA2AC10F0E
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 13:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AD5C10F0E
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 14:00:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 060502083D
-	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 13:57:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 060502083D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 66D41217D7
+	for <iommu@archiver.kernel.org>; Thu, 18 Apr 2019 14:00:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66D41217D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id ADC98176A;
-	Thu, 18 Apr 2019 13:57:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 372EF176D;
+	Thu, 18 Apr 2019 14:00:25 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BA2A01751
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0AC611721
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 13:57:33 +0000 (UTC)
+	Thu, 18 Apr 2019 14:00:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 66630108
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D9C61466
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 13:57:33 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 097C26696F;
-	Thu, 18 Apr 2019 13:57:32 +0000 (UTC)
-Received: from treble (ovpn-124-190.rdu2.redhat.com [10.10.124.190])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F70A5C205;
-	Thu, 18 Apr 2019 13:57:23 +0000 (UTC)
-Date: Thu, 18 Apr 2019 08:57:21 -0500
-From: Josh Poimboeuf <jpoimboe@redhat.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 01/29] tracing: Cleanup stack trace code
-Message-ID: <20190418135721.5vwd6ngxagrrrrtt@treble>
-References: <20190418084119.056416939@linutronix.de>
-	<20190418084253.142712304@linutronix.de>
+	Thu, 18 Apr 2019 14:00:05 +0000 (UTC)
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 88937F67DDE42C3BF8C7;
+	Thu, 18 Apr 2019 22:00:02 +0800 (CST)
+Received: from HGHY1l002753561.china.huawei.com (10.177.23.164) by
+	DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server
+	id 14.3.408.0; Thu, 18 Apr 2019 21:59:56 +0800
+From: Zhen Lei <thunder.leizhen@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
+	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+	<will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet
+	<corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott
+	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
+	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
+	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
+	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
+	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
+	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
+	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
+	<iommu@lists.linux-foundation.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
+	linux-ia64 <linux-ia64@vger.kernel.org>
+Subject: [PATCH v6 0/1] iommu: enhance IOMMU dma mode build options
+Date: Thu, 18 Apr 2019 21:57:00 +0800
+Message-ID: <20190418135701.24668-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.19.2.windows.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190418084253.142712304@linutronix.de>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.38]);
-	Thu, 18 Apr 2019 13:57:32 +0000 (UTC)
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
-	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
-	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
-	x86@kernel.org, kasan-dev@googlegroups.com,
-	Johannes Thumshirn <jthumshirn@suse.de>,
-	Andrey Ryabinin <aryabinin@virtuozzo.com>,
-	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	David Rientjes <rientjes@google.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
-	Mike Rapoport <rppt@linux.vnet.ibm.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Andy Lutomirski <luto@kernel.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	David Sterba <dsterba@suse.com>,
-	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
-	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
-	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
+X-Originating-IP: [10.177.23.164]
+X-CFilter-Loop: Reflected
+Cc: Hanjun Guo <guohanjun@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -89,21 +72,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190418135721.sR8fYMDIjrcx7hRZFHy8nHF1JtJXywoFtQEsltItXkI@z>
 
-On Thu, Apr 18, 2019 at 10:41:20AM +0200, Thomas Gleixner wrote:
-> - Remove the extra array member of stack_dump_trace[]. It's not required as
->   the stack tracer stores at max array size - 1 entries so there is still
->   an empty slot.
+v5 --> v6:
+1. give up adding boot option iommu.dma_mode
 
-What is the empty slot used for?
+v4 --> v5:
+As Hanjun and Thomas Gleixner's suggestion:
+1. Keep the old ARCH specific boot options no change.
+2. Keep build option CONFIG_IOMMU_DEFAULT_PASSTHROUGH no change.
+
+v4:
+As Robin Murphy's suggestion:
+"It's also not necessarily obvious to the user how this interacts with
+IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
+would be better to refactor the whole lot into a single selection of something
+like IOMMU_DEFAULT_MODE anyway."
+
+In this version, I tried to normalize the IOMMU dma mode boot options for all
+ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
+lazy(mapping but defer the IOTLB invalidation), strict. But currently each
+ARCHs defined their private boot options, different with each other. For
+example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
+X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
+
+Zhen Lei (1):
+  iommu: enhance IOMMU dma mode build options
+
+ arch/ia64/kernel/pci-dma.c                |  2 +-
+ arch/powerpc/platforms/powernv/pci-ioda.c |  3 ++-
+ arch/s390/pci/pci_dma.c                   |  2 +-
+ arch/x86/kernel/pci-dma.c                 |  7 ++---
+ drivers/iommu/Kconfig                     | 44 ++++++++++++++++++++++++++-----
+ drivers/iommu/amd_iommu_init.c            |  3 ++-
+ drivers/iommu/intel-iommu.c               |  2 +-
+ drivers/iommu/iommu.c                     |  3 ++-
+ 8 files changed, 48 insertions(+), 18 deletions(-)
 
 -- 
-Josh
+1.8.3
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
