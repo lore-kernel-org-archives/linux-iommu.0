@@ -6,70 +6,58 @@ X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3200DC10F14
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 00:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F48AC282DA
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 04:27:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EF20A217FA
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 00:40:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF20A217FA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
+	by mail.kernel.org (Postfix) with ESMTPS id 4CF8921736
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 04:27:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CF8921736
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BD8532161;
-	Fri, 19 Apr 2019 00:40:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1B6E22171;
+	Fri, 19 Apr 2019 04:27:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77BC5214E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 81BE51E09
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 00:40:00 +0000 (UTC)
+	Fri, 19 Apr 2019 04:27:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D889F466
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A8867108
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 00:39:59 +0000 (UTC)
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com
-	[66.24.58.225])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 51E6C2171F;
-	Fri, 19 Apr 2019 00:39:56 +0000 (UTC)
-Date: Thu, 18 Apr 2019 20:39:54 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 01/29] tracing: Cleanup stack trace code
-Message-ID: <20190418203954.631914cb@oasis.local.home>
-In-Reply-To: <alpine.DEB.2.21.1904190040510.3174@nanos.tec.linutronix.de>
-References: <20190418084119.056416939@linutronix.de>
-	<20190418084253.142712304@linutronix.de>
-	<20190418181938.2e2a9a04@gandalf.local.home>
-	<alpine.DEB.2.21.1904190040510.3174@nanos.tec.linutronix.de>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	Fri, 19 Apr 2019 04:27:19 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+	by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	18 Apr 2019 21:27:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,368,1549958400"; d="scan'208";a="292800020"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga004.jf.intel.com with ESMTP; 18 Apr 2019 21:27:18 -0700
+Date: Thu, 18 Apr 2019 21:29:58 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
+Message-ID: <20190418212958.65975103@jacob-builder>
+In-Reply-To: <70c6b197-029e-94cd-2745-d4a193cbbcd0@arm.com>
+References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20190415143711.13c29308@x1.home>
+	<20190415161015.564cb071@jacob-builder>
+	<70c6b197-029e-94cd-2745-d4a193cbbcd0@arm.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
-	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
-	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
-	x86@kernel.org, kasan-dev@googlegroups.com,
-	Johannes Thumshirn <jthumshirn@suse.de>,
-	Andrey Ryabinin <aryabinin@virtuozzo.com>,
-	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	David Rientjes <rientjes@google.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Josef Bacik <josef@toxicpanda.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>,
-	Josh Poimboeuf <jpoimboe@redhat.com>, David Sterba <dsterba@suse.com>,
-	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
-	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
-	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,61 +71,112 @@ List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190419003954.yyHubnyKRfImIMg8xc1HTJf-gGhiJ6tvwS8aoBN1QZ8@z>
+Message-ID: <20190419042958.mIIssIWe7-Z2VR-sn1MhBwv99sWN3lkpNSRZXw6EcrA@z>
 
-On Fri, 19 Apr 2019 00:44:17 +0200 (CEST)
-Thomas Gleixner <tglx@linutronix.de> wrote:
-
-> On Thu, 18 Apr 2019, Steven Rostedt wrote:
-> > On Thu, 18 Apr 2019 10:41:20 +0200
-> > Thomas Gleixner <tglx@linutronix.de> wrote:
-> >   
-> > > @@ -412,23 +404,20 @@ stack_trace_sysctl(struct ctl_table *tab
-> > >  		   void __user *buffer, size_t *lenp,
-> > >  		   loff_t *ppos)
-> > >  {
-> > > -	int ret;
-> > > +	int ret, was_enabled;  
-> > 
-> > One small nit. Could this be:
-> > 
-> > 	int was_enabled;
-> > 	int ret;
-> > 
-> > I prefer only joining variables that are related on the same line.
-> > Makes it look cleaner IMO.  
-> 
-> If you wish so. To me it's waste of screen space :)
-
-At least you didn't say it helps the compiler ;-)
-
-> 
-> > >  
-> > >  	mutex_lock(&stack_sysctl_mutex);
-> > > +	was_enabled = !!stack_tracer_enabled;
-> > >    
-> > 
-> > Bah, not sure why I didn't do it this way to begin with. I think I
-> > copied something else that couldn't do it this way for some reason and
-> > didn't put any brain power behind the copy. :-/ But that was back in
-> > 2008 so I blame it on being "young and stupid" ;-)  
-> 
-> The young part is gone for sure :)
-
-I purposely set you up for that response.
-
-> 
-> > Other then the above nit and removing the unneeded +1 in max_entries:  
-> 
-> s/+1/-1/
-
-That was an ode to G+
-
--- Steve
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCAxOCBBcHIgMjAxOSAxNjozNjowMiArMDEwMApKZWFuLVBoaWxpcHBlIEJydWNrZXIg
+PGplYW4tcGhpbGlwcGUuYnJ1Y2tlckBhcm0uY29tPiB3cm90ZToKCj4gT24gMTYvMDQvMjAxOSAw
+MDoxMCwgSmFjb2IgUGFuIHdyb3RlOlsuLi5dCj4gPj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIC8qCj4gPj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgKiBSZWdpc3RlciBhIGN1c3RvbSBBU0lEIGFsbG9jYXRvciBpZiB3ZQo+ID4+ID4g
+YXJlIHJ1bm5pbmcKPiA+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAqIGluIGEgZ3Vlc3QsIHRoZSBwdXJwb3NlIGlzIHRvIGhhdmUgYQo+ID4+ID4gc3lzdGVtIHdp
+ZGUgUEFTSUQKPiA+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAq
+IG5hbWVzcGFjZSBhbW9uZyBhbGwgUEFTSUQgdXNlcnMuCj4gPj4gPiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBOb3RlIHRoYXQgb25seSBvbmUgdklPTU1VIGluIGVh
+Y2ggZ3Vlc3QKPiA+PiA+IGlzIHN1cHBvcnRlZC7CoCAgIAo+ID4+IAo+ID4+IFdoeSBvbmUgdklP
+TU1VIHBlciBndWVzdD/CoCBUaGlzIHdvdWxkIHByZXZlbnQgZ3Vlc3RzIHdpdGggbXVsdGlwbGUK
+PiA+PiBQQ0kgZG9tYWlucyBhaXVpLgo+ID4+ICAgCj4gPiBUaGlzIGlzIG1haW5seSBmb3Igc2lt
+cGxpY2l0eSByZWFzb25zLiBUaGVzZSBhcmUgYWxsIHZpcnR1YWwgQkRGcwo+ID4gYW55d2F5LiBB
+cyBsb25nIGFzIGd1ZXN0IEJERiBjYW4gYmUgbWFwcGVkIHRvIGEgaG9zdCBCREYsIGl0IHNob3Vs
+ZAo+ID4gYmUgc3VmZmljaWVudCwgYW0gSSBtaXNzaW5nIGFueXRoaW5nPwo+ID4gCj4gPiBGcm9t
+IFBBU0lEIGFsbG9jYXRpb24gcGVyc3BlY3RpdmUsIGl0IGlzIG5vdCB0aWVkIHRvIGFueSBQQ0kg
+ZGV2aWNlCj4gPiB1bnRpbCBiaW5kIGNhbGwuIFdlIG9ubHkgbmVlZCB0byB0cmFjayBQQVNJRCBv
+d25lcnNoaXAgcGVyIGd1ZXN0Lgo+ID4gCj4gPiB2aXJ0aW8tSU9NTVUgc3BlYyBkb2VzIHN1cHBv
+cnQgbXVsdGlwbGUgUENJIGRvbWFpbnMgYnV0IEkgYW0gbm90Cj4gPiBzdXJlIGlmIHRoYXQgYXBw
+bGllcyB0byBhbGwgYXNzaWduZWQgZGV2aWNlcywgd2hldGhlciBhbGwgYXNzaWduZWQKPiA+IGRl
+dmljZXMgYXJlIHVuZGVyIHRoZSBzYW1lIGRvbWFpbi4gUGVyaGFwcyBKZWFuIGNhbiBoZWxwIHRv
+IGNsYXJpZnkKPiA+IGhvdyBQQVNJRCBhbGxvY2F0aW9uIEFQSSBsb29rcyBsaWtlIG9uIHZpcnRp
+byBJT01NVS4gIAo+IAo+IFtVZ2gsIHRoaXMgaXMgbXVjaCBsb25nZXIgdGhhbiBJIGhvcGVkLiBJ
+biBzaG9ydCBJIGRvbid0IHRoaW5rCj4gbXVsdGlwbGUgdklPTU1VcyBpcyBhIHByb2JsZW0sIGJl
+Y2F1c2UgdGhlIGhvc3QgdXNlcyB0aGUgc2FtZQo+IGFsbG9jYXRvciBmb3IgYWxsIG9mIHRoZW0u
+XQo+IApJIGFncmVlZCwgaXQgaXMgbm90IGFuIGlzc3VlIGFzIGZhciBhcyBQQVNJRCBhbGxvY2F0
+aW9uIGlzIGNvbmNlcm5lZC4KPiBZZXMgdGhlcmUgY2FuIGJlIGEgc2luZ2xlIHZpcnRpby1pb21t
+dSBpbnN0YW5jZSBmb3IgbXVsdGlwbGUgUENJCj4gZG9tYWlucywgb3IgbXVsdGlwbGUgaW5zdGFu
+Y2VzIGVhY2ggbWFuYWdpbmcgYXNzaWduZWQgZGV2aWNlcy4gSXQncwo+IHVwIHRvIHRoZSBoeXBl
+cnZpc29yIHRvIGRlY2lkZSBvbiB0aGUgdG9wb2xvZ3kuCj4gCj4gRm9yIExpbnV4IGFuZCBRRU1V
+IEkgd2FzIGFzc3VtaW5nIHRoYXQgY2hvb3NpbmcgdGhlIHZJT01NVSB1c2VkIGZvcgo+IFBBU0lE
+IGFsbG9jYXRpb24gaXNuJ3QgYSBiaWcgZGVhbCwgc2luY2UgaW4gdGhlIGVuZCB0aGV5IGFsbCB1
+c2UgdGhlCj4gc2FtZSBhbGxvY2F0b3IgaW4gdGhlIGhvc3QuIEl0IGdldHMgY29tcGxpY2F0ZWQg
+d2hlbiBzb21lIHZJT01NVXMgY2FuCj4gYmUgcmVtb3ZlZCBhdCBydW50aW1lICh1bmxvYWQgdGhl
+IHZpcnRpby1pb21tdSBtb2R1bGUgdGhhdCB3YXMKPiBwcm92aWRpbmcgdGhlIFBBU0lEIGFsbG9j
+YXRvciwgYW5kIHRoZW4geW91IGNhbid0IGFsbG9jYXRlIFBBU0lEcyBmb3IKPiB0aGUgVlQtZCBp
+bnN0YW5jZSBhbnltb3JlKSwgc28gbWF5YmUgbGltaXRpbmcgdG8gb25lIHR5cGUgb2YgdklPTU1V
+Cj4gKGRvbid0IG1peCBWVC1kIGFuZCB2aXJ0aW8taW9tbXUgaW4gdGhlIHNhbWUgVk0pIGlzIG1v
+cmUgcmVhc29uYWJsZS4KPiAKSSB0aGluayB5b3UgY2FuIGRlYWwgd2l0aCB0aGUgaG90IHJlbW92
+YWwgb2YgdklPTU1VIGJ5IGtlZXBpbmcgbXVsdGlwbGUKYWxsb2NhdG9ycyBpbiBhIGxpc3QuIGku
+ZS4gd2hlbiB0aGUgc2Vjb25kIHZJT01NVSByZWdpc3RlciBhbgphbGxvY2F0b3IsIGluc3RlYWQg
+b2YgcmV0dXJuIC1FQlVTWSwgd2UganVzdCBrZWVwIHRoZSBpdCBpbiBiYWNrIHBvY2tldApsaXN0
+LiBJZiB0aGUgZmlyc3QgdklPTU1VIGlzIHJlbW92ZWQsIHRoZSBzZWNvbmQgb25lIGNhbiBiZSBw
+b3BwZWQgb3V0CmludG8gYWN0aW9uIChhbmQgdmlzZSB2ZXJzYSkuIFRoZW4gd2UgYWx3YXlzIGhh
+dmUgYW4gYWxsb2NhdG9yLgo+IEl0J3MgYSBiaXQgbW9yZSBkZWxpY2F0ZSBmcm9tIHRoZSB2aXJ0
+aW8taW9tbXUgcGVyc3BlY3RpdmUuIFRoZQo+IGludGVyZmFjZSBpcyBwb3J0YWJsZSBhbmQgSSBj
+YW4ndCB0aWUgaXQgZG93biB0byB0aGUgY2hvaWNlcyB3ZSdyZQo+IG1ha2luZyBmb3IgTGludXgg
+YW5kIEtWTS4gSGF2aW5nIGEgc3lzdGVtLXdpZGUgUEFTSUQgc3BhY2UgaXMgd2hhdCB3ZQo+IHBp
+Y2tlZCBmb3IgTGludXggYnV0IHRoZSBQQ0llIGFyY2hpdGVjdHVyZSBhbGxvd3MgZm9yIGVhY2gg
+ZGV2aWNlIHRvCj4gaGF2ZSB0aGVpciBvd24gUEFTSUQgc3BhY2UsIGFuZCBJIHN1cHBvc2Ugc29t
+ZSBoeXBlcnZpc29ycyBhbmQgZ3Vlc3RzCj4gbWlnaHQgcHJlZmVyIGltcGxlbWVudGluZyBpdCB0
+aGF0IHdheS4KPiAKPiBNeSBwbGFuIGZvciB0aGUgbW9tZW50IGlzIHRvIGltcGxlbWVudCBnbG9i
+YWwgUEFTSUQgYWxsb2NhdGlvbiB1c2luZwo+IG9uZSBmZWF0dXJlIGJpdCBhbmQgdHdvIG5ldyBy
+ZXF1ZXN0cywgYnV0IGxlYXZlIHNwYWNlIGZvciBhCj4gcGVyLWRldmljZSBQQVNJRCBhbGxvY2F0
+aW9uLCBpbnRyb2R1Y2VkIHdpdGggYW5vdGhlciBmZWF0dXJlIGJpdCBpZgo+IG5lY2Vzc2FyeS4g
+SWYgaXQgZXZlciBnZXRzIGFkZGVkLCBJIGV4cGVjdCB0aGUgcGVyLWRldmljZSBhbGxvY2F0aW9u
+Cj4gdG8gYmUgZG9uZSBkdXJpbmcgdGhlIGJpbmQgcmVxdWVzdCByYXRoZXIgdGhhbiB3aXRoIGEg
+c2VwYXJhdGUKPiBQQVNJRF9BTExPQyByZXF1ZXN0Lgo+IAo+IFNvIGN1cnJlbnRseSBJIGhhdmUg
+YSBuZXcgZmVhdHVyZSBiaXQgYW5kIHR3byBjb21tYW5kczoKPiAKPiAjZGVmaW5lIFZJUlRJT19J
+T01NVV9GX1BBU0lEX0FMTE9DCj4gI2RlZmluZSBWSVJUSU9fSU9NTVVfVF9BTExPQ19QQVNJRAo+
+ICNkZWZpbmUgVklSVElPX0lPTU1VX1RfRlJFRV9QQVNJRAo+IAo+IHN0cnVjdCB2aXJ0aW9faW9t
+bXVfcmVxX2FsbG9jX3Bhc2lkIHsKPiAgICAgICAgIHN0cnVjdCB2aXJ0aW9faW9tbXVfcmVxX2hl
+YWQgaGVhZDsKPiAgICAgICAgIHUzMiByZXNlcnZlZDsKPiAKPiAgICAgICAgIC8qIERldmljZS13
+cml0ZWFibGUgKi8KPiAgICAgICAgIGxlMzIgcGFzaWQ7Cj4gICAgICAgICBzdHJ1Y3QgdmlydGlv
+X2lvbW11X3JlcV90YWlsIHRhaWw7Cj4gfTsKPiAKPiBzdHJ1Y3QgdmlydGlvX2lvbW11X3JlcV9m
+cmVlX3Bhc2lkIHsKPiAgICAgICAgIHN0cnVjdCB2aXJ0aW9faW9tbXVfcmVxX2hlYWQgaGVhZDsK
+PiAgICAgICAgIHUzMiByZXNlcnZlZDsKPiAgICAgICAgIGxlMzIgcGFzaWQ7Cj4gCj4gICAgICAg
+ICAvKiBEZXZpY2Utd3JpdGVhYmxlICovCj4gICAgICAgICBzdHJ1Y3QgdmlydGlvX2lvbW11X3Jl
+cV90YWlsIHRhaWw7Cj4gfTsKPiAKPiBJZiB0aGUgZmVhdHVyZSBiaXQgaXMgb2ZmZXJlZCBpdCBt
+dXN0IGJlIHVzZWQsIGFuZCB0aGUgZ3Vlc3QgY2FuIG9ubHkKPiB1c2UgUEFTSURzIGFsbG9jYXRl
+ZCB2aWEgVklSVElPX0lPTU1VX1RfQUxMT0NfUEFTSUQgaW4gaXRzIGJpbmQKPiByZXF1ZXN0cy4K
+PiAKPiBUaGUgUEFTSUQgc3BhY2UgaXMgZ2xvYmFsIGF0IHRoZSBob3N0IHNjb3BlLiBJZiBtdWx0
+aXBsZSB2aXJ0aW8taW9tbXUKPiBkZXZpY2VzIGluIHRoZSBWTSBvZmZlciB0aGUgZmVhdHVyZSBi
+aXQsIHRoZW4gdXNpbmcgZWl0aGVyIG9mIHRoZWlyCj4gY29tbWFuZCBxdWV1ZSB0byBpc3N1ZSBh
+IFZJUlRJT19JT01NVV9GX0FMTE9DX1BBU0lEIGFuZAo+IFZJUlRJT19JT01NVV9GX0ZSRUVfUEFT
+SUQgaXMgZXF1aXZhbGVudC4gQW5vdGhlciBwb3NzaWJpbGl0eSBpcyB0bwo+IHJlcXVpcmUgdGhh
+dCBvbmx5IG9uZSBvZiB0aGUgdmlydGlvLWlvbW11IGluc3RhbmNlcyBwZXIgVk0gb2ZmZXJzIHRo
+ZQo+IGZlYXR1cmUgYml0LiBJIGRvIHByZWZlciB0aGlzIG9wdGlvbiwgYnV0IHRoZXJlIGlzIHRo
+ZSB2SU9NTVUgcmVtb3ZhbAo+IHByb2JsZW0gbWVudGlvbmVkIGFib3ZlIC0gd2hpY2gsIHdpdGgg
+dGhlIGZpcnN0IG9wdGlvbiwgY291bGQgYmUKPiBzb2x2ZWQgYnkga2VlcGluZyBhIGxpc3Qgb2Yg
+UEFTSUQgYWxsb2NhdG9yIGZ1bmN0aW9ucyByYXRoZXIgdGhhbiBhCj4gc2luZ2xlIG9uZS4KPiAK
+PiBJJ20gY29uc2lkZXJpbmcgYWRkaW5nIG1heF9wYXNpZCBmaWVsZCB0bwo+IHZpcnRpb19pb21t
+dV9yZXFfYWxsb2NfcGFzaWQuIElmIFZJUlRJT19JT01NVV9UX0FMTE9DX1BBU0lEIHJldHVybnMg
+YQo+IHJhbmRvbSAyMC1iaXQgdmFsdWUgdGhlbiBhIGxvdCBvZiBzcGFjZSBtaWdodCBiZSBuZWVk
+ZWQgZm9yIHN0b3JpbmcKPiBQQVNJRCBjb250ZXh0cyAoaXMgdGhhdCBhIHJlYWwgY29uY2VybiB0
+aG91Z2g/IEZvciBpbnRlcm5hbCBkYXRhIGl0Cj4gY2FuIHVzZSBhIGJpbmFyeSB0cmVlLCBhbmQg
+dGhlIGd1ZXN0IGlzIG5vdCBpbiBjaGFyZ2Ugb2YgaGFyZHdhcmUKPiBQQVNJRCB0YWJsZXMgaGVy
+ZSkuIElmIHRoZSBndWVzdCBpcyBzaG9ydCBvbiBtZW1vcnkgdGhlbiBpdCBjb3VsZAo+IGJlbmVm
+aXQgZnJvbSBhIHNtYWxsZXIgbnVtYmVyIG9mIFBBU0lEIGJpdHMuIFRoYXQgY291bGQgZWl0aGVy
+IGJlCj4gZ2xvYmFsbHkgY29uZmlndXJhYmxlIGluIHRoZSB2aXJ0aW8taW9tbXUgY29uZmlnIHNw
+YWNlLCBvciB1c2luZyBhCj4gbWF4X3Bhc2lkIGZpZWxkIGluIHRoZSBWSVJUSU9fSU9NTVVfVF9B
+TExPQ19QQVNJRCByZXF1ZXN0LiBUaGUgbGF0dGVyCj4gYWxsb3dzIHRvIHN1cHBvcnQgZGV2aWNl
+cyB3aXRoIGxlc3MgdGhhbiAyMCBQQVNJRCBiaXRzLCB0aG91Z2ggd2UncmUKPiBob3BpbmcgdGhh
+dCBubyBvbmUgd2lsbCBpbXBsZW1lbnQgdGhhdC4KPiAKU3BhY2UgaXMgbm90IGFuIGNvbmNlcm4g
+Zm9yIFZ0LWQgdklPTU1VIGluIHRoYXQgd2UgaGF2ZSBhIHR3byBsZXZlbApwYXNpZCB0YWJsZS4g
+QW5kIHdlIG5lZWQgdG8gc2hhZG93IGFueXdheS4KCklmIGl0IGlzIE9LIHdpdGggeW91LCBJIHdp
+bGwgc3F1YXNoIG15IGNoYW5nZXMgaW50byB5b3VyIGlvYXNpZCBwYXRjaAphbmQgYWRkcmVzcyB0
+aGUgcmV2aWV3IGNvbW1lbnRzIGluIHRoZSB2MiBvZiB0aGlzIHNldCwgT0s/CmkuZS4gCltQQVRD
+SCAwMi8xOF0gaW9hc2lkOiBBZGQgY3VzdG9tIElPQVNJRCBhbGxvY2F0b3IKW1BBVENIIDAzLzE4
+XSBpb2FzaWQ6IENvbnZlcnQgaW9hc2lkX2lkciB0byBYQXJyYXkKCj4gVGhhbmtzLAo+IEplYW4K
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
+aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
+LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
