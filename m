@@ -1,91 +1,118 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: RE: [PATCH 02/13] soc/fsl/bman: map FBPR area in the iommu
-Date: Fri, 19 Apr 2019 13:41:38 +0000
-Message-ID: <VI1PR04MB5134C8A672CD99F521DBFE7EEC270@VI1PR04MB5134.eurprd04.prod.outlook.com>
-References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
- <20190329140014.8126-3-laurentiu.tudor@nxp.com>
- <b747c418-a495-56e0-c106-a8ec8e82ccb9@arm.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
+	work well when smmu is enabled
+Date: Fri, 19 Apr 2019 21:48:05 +0800
+Message-ID: <5CB9D195.7000707@huawei.com>
+References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+	<20190404153031.GE27558@fuggles.cambridge.arm.com>
+	<5CAAB293.3080600@huawei.com>
+	<20190416091410.GC31579@fuggles.cambridge.arm.com>
+	<5CB683D2.9010901@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <b747c418-a495-56e0-c106-a8ec8e82ccb9@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Madalin-cristian Bucur <madalin.bucur@nxp.com>, Roy Pledge <roy.pledge@nxp.com>, Camelia Alexandra Groza <camelia.groza@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "davem@davemloft.net" <davem@davemloft.net>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5CB683D2.9010901-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
 
-> -----Original Message-----
-> From: Robin Murphy <robin.murphy@arm.com>
-> Sent: Friday, March 29, 2019 4:51 PM
+
+On 2019/4/17 9:39, Leizhen (ThunderTown) wrote:
 > 
-> On 29/03/2019 14:00, laurentiu.tudor@nxp.com wrote:
-> > From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> >
-> > Add a one-to-one iommu mapping for bman private data memory (FBPR).
-> > This is required for BMAN to work without faults behind an iommu.
-> >
-> > Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> > ---
-> >   drivers/soc/fsl/qbman/bman_ccsr.c | 11 +++++++++++
-> >   1 file changed, 11 insertions(+)
-> >
-> > diff --git a/drivers/soc/fsl/qbman/bman_ccsr.c
-> b/drivers/soc/fsl/qbman/bman_ccsr.c
-> > index 7c3cc968053c..b209c79511bb 100644
-> > --- a/drivers/soc/fsl/qbman/bman_ccsr.c
-> > +++ b/drivers/soc/fsl/qbman/bman_ccsr.c
-> > @@ -29,6 +29,7 @@
-> >    */
-> >
-> >   #include "bman_priv.h"
-> > +#include <linux/iommu.h>
-> >
-> >   u16 bman_ip_rev;
-> >   EXPORT_SYMBOL(bman_ip_rev);
-> > @@ -178,6 +179,7 @@ static int fsl_bman_probe(struct platform_device
-> *pdev)
-> >   	int ret, err_irq;
-> >   	struct device *dev = &pdev->dev;
-> >   	struct device_node *node = dev->of_node;
-> > +	struct iommu_domain *domain;
-> >   	struct resource *res;
-> >   	u16 id, bm_pool_cnt;
-> >   	u8 major, minor;
-> > @@ -225,6 +227,15 @@ static int fsl_bman_probe(struct platform_device
-> *pdev)
-> >
-> >   	dev_dbg(dev, "Allocated FBPR 0x%llx 0x%zx\n", fbpr_a, fbpr_sz);
-> >
-> > +	/* Create an 1-to-1 iommu mapping for FBPR area */
-> > +	domain = iommu_get_domain_for_dev(dev);
 > 
-> If that's expected to be the default domain that you're grabbing, then
-> this is *incredibly* fragile. There's nothing to stop the IOVA that you
-> forcibly map from being automatically allocated later and causing some
-> other DMA mapping to fail noisily and unexpectedly. Furthermore, have
-> you tried this with "iommu.passthrough=1"?
+> On 2019/4/16 17:14, Will Deacon wrote:
+>> On Mon, Apr 08, 2019 at 10:31:47AM +0800, Leizhen (ThunderTown) wrote:
+>>> On 2019/4/4 23:30, Will Deacon wrote:
+>>>> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
+>>>>> v1 --> v2:
+>>>>> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
+>>>>> (Report abort to device, no event recorded) to suppress the event messages
+>>>>> caused by the unexpected devices.
+>>>>> 2. rewrite the patch description.
+>>>>
+>>>> This issue came up a while back:
+>>>>
+>>>> https://lore.kernel.org/linux-pci/20180302103032.GB19323-5wv7dgnIgG8@public.gmane.org/
+>>>>
+>>>> and I'd still prefer to solve it using the disable_bypass logic which we
+>>>> already have. Something along the lines of the diff below?
+>>>
+>>> Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
+>>> SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
+>>> are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
+>>> (2-level Stream Table), we only allocated and initialized the first level tables,
+>>> but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
+>>> will be reported, if an unexpeted device access memory without reinitialized in
+>>> kdump kernel.
+>>
+>> So is your problem just that the C_BAD_STREAMID events are noisy? If so,
+>> perhaps we should be disabling fault reporting entirely in the kdump kernel.
+>>
+>> How about the update diff below? I'm keen to have this as simple as
+>> possible, so we don't end up introducing rarely tested, complex code on
+>> the crash path.
+> In theory, it can solve the problem, let me test it.
+Hi Will,
+  I have tested your patch on my board today. It works well.
+
 > 
-> That said, I really don't understand what's going on here anyway :/
+> But then again, below patch will also disable the fault reporting come from the
+> expected devices which are used in the kdump kernel. In fact, my patches have been
+> merged into our interval version more than 2 months, no bug have been found yet.
 > 
-> As far as I can tell from qbman_init_private_mem(), fbpr_a comes from
-> dma_alloc_coherent() and thus would already be a mapped IOVA - isn't
-> this the stuff that Roy converted to nicely use shared-dma-pool regions
-> a while ago?
+> However, my patches do not support the case that the hardware does not support the
+> "STE bypass" feature, I think your patch can also resolve it.
+> 
+>>
+>> Will
+>>
+>> --->8
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index d3880010c6cf..d8b73da6447d 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>>  	/* Clear CR0 and sync (disables SMMU and queue processing) */
+>>  	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+>>  	if (reg & CR0_SMMUEN) {
+>> -		if (is_kdump_kernel()) {
+>> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+>> -			arm_smmu_device_disable(smmu);
+>> -			return -EBUSY;
+>> -		}
+>> -
+>>  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
+>> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
+>> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+>>  	}
+>>  
+>>  	ret = arm_smmu_device_disable(smmu);
+>> @@ -2553,6 +2549,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>>  		return ret;
+>>  	}
+>>  
+>> +	if (is_kdump_kernel())
+>> +		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+>>  
+>>  	/* Enable the SMMU interface, or ensure bypass */
+>>  	if (!bypass || disable_bypass) {
+>>
+>> .
+>>
 > 
 
-Finally found some time to look into this, sorry for the delay. It seems that on the code path taken in our case (dma_alloc_coherent() -> dma_alloc_attrs() -> dma_alloc_from_dev_coherent() -> __dma_alloc_from_coherent()) there's no call into the iommu layer, thus no mapping in the smmu. I plan to come up with a RFC patch early next week so we have something concrete to discuss on.
-
----
-Best Regards, Laurentiu
+-- 
+Thanks!
+BestRegards
