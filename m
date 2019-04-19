@@ -1,81 +1,102 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v4 1/3] PCI: Add dma_ranges window list
-Date: Thu, 18 Apr 2019 18:49:23 -0500
-Message-ID: <20190418234922.GH126710@google.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
- <1555038815-31916-2-git-send-email-srinath.mannam@broadcom.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context
+ fault
+Date: Thu, 18 Apr 2019 17:24:57 -0700
+Message-ID: <20190419002457.GA3137@builder>
+References: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762@codeaurora.org>
+ <20190415173758.22112-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1555038815-31916-2-git-send-email-srinath.mannam@broadcom.com>
+In-Reply-To: <20190415173758.22112-1-vivek.gautam@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Srinath Mannam <srinath.mannam@broadcom.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: joro@8bytes.org, will.deacon@arm.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 12, 2019 at 08:43:33AM +0530, Srinath Mannam wrote:
-> Add a dma_ranges field in PCI host bridge structure to hold resource
-> entries list of memory regions in sorted order given through dma-ranges
-> DT property.
+On Mon 15 Apr 10:37 PDT 2019, Vivek Gautam wrote:
+
+> Bits[15:0] in CBFRSYNRA register contain information about
+> StreamID of the incoming transaction that generated the
+> fault. Dump CBFRSYNRA register to get this info.
+> This is specially useful in a distributed SMMU architecture
+> where multiple masters are connected to the SMMU.
+> SID information helps to quickly identify the faulting
+> master device.
 > 
-> While initializing IOMMU domain of PCI EPs connected to that host bridge
-> This list of resources will be processed and IOVAs for the address holes
-> will be reserved.
-
-s/bridge This list/bridge, this list/
-
-> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
-> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
 > ---
->  drivers/pci/probe.c | 3 +++
->  include/linux/pci.h | 1 +
->  2 files changed, 4 insertions(+)
 > 
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 257b9f6..ce5505f 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -544,6 +544,7 @@ struct pci_host_bridge *pci_alloc_host_bridge(size_t priv)
->  		return NULL;
+> V1 of the patch available @
+> https://lore.kernel.org/patchwork/patch/1061615/
+> 
+> Changes from v1:
+>  - Dump the raw register value of CBFRSYNRA register in the
+>    context fault log rather than extracting the SID inforamtion
+>    and dumping that.
+> 
+>  drivers/iommu/arm-smmu-regs.h | 2 ++
+>  drivers/iommu/arm-smmu.c      | 8 ++++++--
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
+> index a1226e4ab5f8..e9132a926761 100644
+> --- a/drivers/iommu/arm-smmu-regs.h
+> +++ b/drivers/iommu/arm-smmu-regs.h
+> @@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
+>  #define CBAR_IRPTNDX_SHIFT		24
+>  #define CBAR_IRPTNDX_MASK		0xff
 >  
->  	INIT_LIST_HEAD(&bridge->windows);
-> +	INIT_LIST_HEAD(&bridge->dma_ranges);
->  	bridge->dev.release = pci_release_host_bridge_dev;
+> +#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
+> +
+>  #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
+>  #define CBA2R_RW64_32BIT		(0 << 0)
+>  #define CBA2R_RW64_64BIT		(1 << 0)
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 045d93884164..a4773e8c6b0e 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
+>  	void __iomem *cb_base;
+> +	u32 cbfrsynra;
 >  
->  	/*
-> @@ -572,6 +573,7 @@ struct pci_host_bridge *devm_pci_alloc_host_bridge(struct device *dev,
->  		return NULL;
+>  	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+>  	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
+> @@ -585,10 +587,12 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
 >  
->  	INIT_LIST_HEAD(&bridge->windows);
-> +	INIT_LIST_HEAD(&bridge->dma_ranges);
->  	bridge->dev.release = devm_pci_release_host_bridge_dev;
+>  	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+>  	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+> +	cbfrsynra = readl_relaxed(gr1_base +
+> +				  ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
+
+The 80 char limit is more like a guideline anyways...please don't wrap
+this.
+
 >  
->  	return bridge;
-> @@ -581,6 +583,7 @@ EXPORT_SYMBOL(devm_pci_alloc_host_bridge);
->  void pci_free_host_bridge(struct pci_host_bridge *bridge)
->  {
->  	pci_free_resource_list(&bridge->windows);
-> +	pci_free_resource_list(&bridge->dma_ranges);
+>  	dev_err_ratelimited(smmu->dev,
+> -	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+> -			    fsr, iova, fsynr, cfg->cbndx);
+> +	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra = 0x%x, cb=%d\n",
+
+Drop the spaces around '='.
+
+With those addressed, you have my
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+> +			    fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
 >  
->  	kfree(bridge);
->  }
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 65f1d8c..016a044 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -487,6 +487,7 @@ struct pci_host_bridge {
->  	void		*sysdata;
->  	int		busnr;
->  	struct list_head windows;	/* resource_entry */
-> +	struct list_head dma_ranges;	/* dma ranges resource list */
->  	u8 (*swizzle_irq)(struct pci_dev *, u8 *); /* Platform IRQ swizzler */
->  	int (*map_irq)(const struct pci_dev *, u8, u8);
->  	void (*release_fn)(struct pci_host_bridge *);
+>  	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+>  	return IRQ_HANDLED;
 > -- 
-> 2.7.4
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
 > 
