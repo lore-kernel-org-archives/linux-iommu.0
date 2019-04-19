@@ -2,93 +2,52 @@ Return-Path: <SRS0=myD+=SV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43FDC282DA
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 05:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50EACC282DA
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 06:50:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 909752087F
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 05:34:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="n28YC/1X";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="n28YC/1X"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 909752087F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 16E1421736
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 06:50:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16E1421736
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 503C81F25;
-	Fri, 19 Apr 2019 05:34:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B74D61F25;
+	Fri, 19 Apr 2019 06:50:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 336CA1EBC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 677F417E4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 05:34:15 +0000 (UTC)
+	Fri, 19 Apr 2019 06:49:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B986B108
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DBD296C5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 05:34:14 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 740B1615BF; Fri, 19 Apr 2019 05:34:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1555652054;
-	bh=ynX1XiN+F09ar8DitQQHvhoLDOwf4suTYCkS8lWqtOs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=n28YC/1XscTnbcd2PndXOSwiZ8LP7lf8E6TmR4IFeUuHDxvFs/cU07lt8T1iA24eT
-	8HCE7/WCqq4dXGlK5q82Nc2BXJ8tRQs/+L8rZqpTULXtvAWz3EMGqg4x8VV52DR+d1
-	d4S4JhSUjnm6fD2i2U94Z5Kx8Lj7HmYftndqihn0=
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com
-	[209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id AE9AE61576
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 05:34:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1555652054;
-	bh=ynX1XiN+F09ar8DitQQHvhoLDOwf4suTYCkS8lWqtOs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=n28YC/1XscTnbcd2PndXOSwiZ8LP7lf8E6TmR4IFeUuHDxvFs/cU07lt8T1iA24eT
-	8HCE7/WCqq4dXGlK5q82Nc2BXJ8tRQs/+L8rZqpTULXtvAWz3EMGqg4x8VV52DR+d1
-	d4S4JhSUjnm6fD2i2U94Z5Kx8Lj7HmYftndqihn0=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AE9AE61576
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
-Received: by mail-ed1-f50.google.com with SMTP id d1so3570259edd.13
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Apr 2019 22:34:13 -0700 (PDT)
-X-Gm-Message-State: APjAAAXMl5A268XF22rCD0UhzEQ+18O4Dcj38ySnBNypleOhbSHLkVWG
-	oeMHSyDmm0bWKtFhPhVN1aMXwRpHk+aDG0h7BTs=
-X-Google-Smtp-Source: APXvYqxKBkj/cAGFLjJH0WBxF78ZtkgeIy6ptaKEC1snAwaCsNqTXmJNxY1CDdKIh3zm81v36mBP2LJKptmGM5OShm8=
-X-Received: by 2002:a50:b51b:: with SMTP id y27mr1157250edd.251.1555652052483; 
-	Thu, 18 Apr 2019 22:34:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762@codeaurora.org>
-	<20190415173758.22112-1-vivek.gautam@codeaurora.org>
-	<20190419002457.GA3137@builder>
-In-Reply-To: <20190419002457.GA3137@builder>
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Date: Fri, 19 Apr 2019 11:04:01 +0530
-X-Gmail-Original-Message-ID: <CAFp+6iFSeOLh-RE2GM_Yah+ANmVUQZjuyH7zF9qOOSLxhGbdvw@mail.gmail.com>
-Message-ID:
- <CAFp+6iFSeOLh-RE2GM_Yah+ANmVUQZjuyH7zF9qOOSLxhGbdvw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context
-	fault
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-	Will Deacon <will.deacon@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>
+	Fri, 19 Apr 2019 06:49:46 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	18 Apr 2019 23:49:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,368,1549958400"; d="scan'208";a="162971214"
+Received: from allen-box.sh.intel.com ([10.239.159.136])
+	by fmsmga002.fm.intel.com with ESMTP; 18 Apr 2019 23:49:44 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH 1/1] iommu/vt-d: Don't request page request irq under
+	dmar_global_lock
+Date: Fri, 19 Apr 2019 14:43:29 +0800
+Message-Id: <20190419064329.17946-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -101,116 +60,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190419053401.PRPHyi--LSMKk2pH_RoKgUSs1YN8vKgjRa-aaJsYztM@z>
+Message-ID: <20190419064329.lqiNWXYJpJUi84PIYSvq1x74dozp9pb7alp5a2XrPNY@z>
 
-On Fri, Apr 19, 2019 at 5:55 AM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> On Mon 15 Apr 10:37 PDT 2019, Vivek Gautam wrote:
->
-> > Bits[15:0] in CBFRSYNRA register contain information about
-> > StreamID of the incoming transaction that generated the
-> > fault. Dump CBFRSYNRA register to get this info.
-> > This is specially useful in a distributed SMMU architecture
-> > where multiple masters are connected to the SMMU.
-> > SID information helps to quickly identify the faulting
-> > master device.
-> >
-> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> > ---
-> >
-> > V1 of the patch available @
-> > https://lore.kernel.org/patchwork/patch/1061615/
-> >
-> > Changes from v1:
-> >  - Dump the raw register value of CBFRSYNRA register in the
-> >    context fault log rather than extracting the SID inforamtion
-> >    and dumping that.
-> >
-> >  drivers/iommu/arm-smmu-regs.h | 2 ++
-> >  drivers/iommu/arm-smmu.c      | 8 ++++++--
-> >  2 files changed, 8 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-> > index a1226e4ab5f8..e9132a926761 100644
-> > --- a/drivers/iommu/arm-smmu-regs.h
-> > +++ b/drivers/iommu/arm-smmu-regs.h
-> > @@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
-> >  #define CBAR_IRPTNDX_SHIFT           24
-> >  #define CBAR_IRPTNDX_MASK            0xff
-> >
-> > +#define ARM_SMMU_GR1_CBFRSYNRA(n)    (0x400 + ((n) << 2))
-> > +
-> >  #define ARM_SMMU_GR1_CBA2R(n)                (0x800 + ((n) << 2))
-> >  #define CBA2R_RW64_32BIT             (0 << 0)
-> >  #define CBA2R_RW64_64BIT             (1 << 0)
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index 045d93884164..a4773e8c6b0e 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-> >       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> >       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> >       struct arm_smmu_device *smmu = smmu_domain->smmu;
-> > +     void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
-> >       void __iomem *cb_base;
-> > +     u32 cbfrsynra;
-> >
-> >       cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
-> >       fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
-> > @@ -585,10 +587,12 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-> >
-> >       fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
-> >       iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-> > +     cbfrsynra = readl_relaxed(gr1_base +
-> > +                               ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
->
-> The 80 char limit is more like a guideline anyways...please don't wrap
-> this.
->
-> >
-> >       dev_err_ratelimited(smmu->dev,
-> > -     "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
-> > -                         fsr, iova, fsynr, cfg->cbndx);
-> > +     "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra = 0x%x, cb=%d\n",
->
-> Drop the spaces around '='.
->
-> With those addressed, you have my
->
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Requesting page reqest irq under dmar_global_lock could cause
+potential lock race condition (caught by lockdep).
 
-Thanks for the review Bjorn. Will address above comments and respin.
+[    4.100055] ======================================================
+[    4.100063] WARNING: possible circular locking dependency detected
+[    4.100072] 5.1.0-rc4+ #2169 Not tainted
+[    4.100078] ------------------------------------------------------
+[    4.100086] swapper/0/1 is trying to acquire lock:
+[    4.100094] 000000007dcbe3c3 (dmar_lock){+.+.}, at: dmar_alloc_hwirq+0x35/0x140
+[    4.100112] but task is already holding lock:
+[    4.100120] 0000000060bbe946 (dmar_global_lock){++++}, at: intel_iommu_init+0x191/0x1438
+[    4.100136] which lock already depends on the new lock.
+[    4.100146] the existing dependency chain (in reverse order) is:
+[    4.100155]
+               -> #2 (dmar_global_lock){++++}:
+[    4.100169]        down_read+0x44/0xa0
+[    4.100178]        intel_irq_remapping_alloc+0xb2/0x7b0
+[    4.100186]        mp_irqdomain_alloc+0x9e/0x2e0
+[    4.100195]        __irq_domain_alloc_irqs+0x131/0x330
+[    4.100203]        alloc_isa_irq_from_domain.isra.4+0x9a/0xd0
+[    4.100212]        mp_map_pin_to_irq+0x244/0x310
+[    4.100221]        setup_IO_APIC+0x757/0x7ed
+[    4.100229]        x86_late_time_init+0x17/0x1c
+[    4.100238]        start_kernel+0x425/0x4e3
+[    4.100247]        secondary_startup_64+0xa4/0xb0
+[    4.100254]
+               -> #1 (irq_domain_mutex){+.+.}:
+[    4.100265]        __mutex_lock+0x7f/0x9d0
+[    4.100273]        __irq_domain_add+0x195/0x2b0
+[    4.100280]        irq_domain_create_hierarchy+0x3d/0x40
+[    4.100289]        msi_create_irq_domain+0x32/0x110
+[    4.100297]        dmar_alloc_hwirq+0x111/0x140
+[    4.100305]        dmar_set_interrupt.part.14+0x1a/0x70
+[    4.100314]        enable_drhd_fault_handling+0x2c/0x6c
+[    4.100323]        apic_bsp_setup+0x75/0x7a
+[    4.100330]        x86_late_time_init+0x17/0x1c
+[    4.100338]        start_kernel+0x425/0x4e3
+[    4.100346]        secondary_startup_64+0xa4/0xb0
+[    4.100352]
+               -> #0 (dmar_lock){+.+.}:
+[    4.100364]        lock_acquire+0xb4/0x1c0
+[    4.100372]        __mutex_lock+0x7f/0x9d0
+[    4.100379]        dmar_alloc_hwirq+0x35/0x140
+[    4.100389]        intel_svm_enable_prq+0x61/0x180
+[    4.100397]        intel_iommu_init+0x1128/0x1438
+[    4.100406]        pci_iommu_init+0x16/0x3f
+[    4.100414]        do_one_initcall+0x5d/0x2be
+[    4.100422]        kernel_init_freeable+0x1f0/0x27c
+[    4.100431]        kernel_init+0xa/0x110
+[    4.100438]        ret_from_fork+0x3a/0x50
+[    4.100444]
+               other info that might help us debug this:
 
-Best regards
-Vivek
+[    4.100454] Chain exists of:
+                 dmar_lock --> irq_domain_mutex --> dmar_global_lock
+[    4.100469]  Possible unsafe locking scenario:
 
->
-> Regards,
-> Bjorn
->
-> > +                         fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
-> >
-> >       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
-> >       return IRQ_HANDLED;
-> > --
-> > QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> > of Code Aurora Forum, hosted by The Linux Foundation
-> >
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+[    4.100476]        CPU0                    CPU1
+[    4.100483]        ----                    ----
+[    4.100488]   lock(dmar_global_lock);
+[    4.100495]                                lock(irq_domain_mutex);
+[    4.100503]                                lock(dmar_global_lock);
+[    4.100512]   lock(dmar_lock);
+[    4.100518]
+                *** DEADLOCK ***
 
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Reported-by: Dave Jiang <dave.jiang@intel.com>
+Fixes: a222a7f0bb6c9 ("iommu/vt-d: Implement page request handling")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel-iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3d504b685dd8..c1f2f83e25d2 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3498,7 +3498,13 @@ static int __init init_dmars(void)
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 		if (pasid_supported(iommu) && ecap_prs(iommu->ecap)) {
++			/*
++			 * Call dmar_alloc_hwirq() with dmar_global_lock held,
++			 * could cause possible lock race condition.
++			 */
++			up_write(&dmar_global_lock);
+ 			ret = intel_svm_enable_prq(iommu);
++			down_write(&dmar_global_lock);
+ 			if (ret)
+ 				goto free_iommu;
+ 		}
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
