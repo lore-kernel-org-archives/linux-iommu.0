@@ -1,78 +1,91 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [patch V2 22/29] tracing: Make
- ftrace_trace_userstack() static and conditional
-Date: Fri, 19 Apr 2019 09:28:23 -0400
-Message-ID: <20190419092823.094a6061@gandalf.local.home>
-References: <20190418084119.056416939@linutronix.de>
- <20190418084255.088813838@linutronix.de>
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: RE: [PATCH 02/13] soc/fsl/bman: map FBPR area in the iommu
+Date: Fri, 19 Apr 2019 13:41:38 +0000
+Message-ID: <VI1PR04MB5134C8A672CD99F521DBFE7EEC270@VI1PR04MB5134.eurprd04.prod.outlook.com>
+References: <20190329140014.8126-1-laurentiu.tudor@nxp.com>
+ <20190329140014.8126-3-laurentiu.tudor@nxp.com>
+ <b747c418-a495-56e0-c106-a8ec8e82ccb9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20190418084255.088813838@linutronix.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>, Catalin Marinas <catalin.marinas@arm.com>, dri-devel@lists.freedesktop.org, linux-mm@kvack.org, dm-devel@redhat.com, Alexander Potapenko <glider@google.com>, Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>, Alasdair Kergon <agk@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arch@vger.kernel.org, x86@kernel.org, kasan-dev@googlegroups.com, Johannes Thumshirn <jthumshirn@suse.de>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org, David Rientjes <rientjes@google.com>, Akinobu Mita <akinobu.mita@gmail.com>, Josef Bacik <josef@toxicpanda.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>, David Sterba <dsterba@suse.com>, Dmitry Vyukov <dvyukov@g>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <b747c418-a495-56e0-c106-a8ec8e82ccb9@arm.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Madalin-cristian Bucur <madalin.bucur@nxp.com>, Roy Pledge <roy.pledge@nxp.com>, Camelia Alexandra Groza <camelia.groza@nxp.com>, Leo Li <leoyang.li@nxp.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "davem@davemloft.net" <davem@davemloft.net>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAxOCBBcHIgMjAxOSAxMDo0MTo0MSArMDIwMApUaG9tYXMgR2xlaXhuZXIgPHRnbHhA
-bGludXRyb25peC5kZT4gd3JvdGU6Cgo+IEl0J3Mgb25seSB1c2VkIGluIHRyYWNlLmMgYW5kIHRo
-ZXJlIGlzIGFic29sdXRlbHkgbm8gcG9pbnQgaW4gY29tcGlsaW5nIGl0Cj4gaW4gd2hlbiB1c2Vy
-IHNwYWNlIHN0YWNrIHRyYWNlcyBhcmUgbm90IHN1cHBvcnRlZC4KPiAKPiBTaWduZWQtb2ZmLWJ5
-OiBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25peC5kZT4KPiBDYzogU3RldmVuIFJvc3Rl
-ZHQgPHJvc3RlZHRAZ29vZG1pcy5vcmc+CgpGdW5ueSwgdGhlc2Ugd2VyZSBtb3ZlZCBvdXQgdG8g
-Z2xvYmFsIGZ1bmN0aW9ucyBhbG9uZyB3aXRoIHRoZQpmdHJhY2VfdHJhY2Vfc3RhY2soKSBidXQg
-SSBndWVzcyB0aGV5IHdlcmUgbmV2ZXIgdXNlZC4KClRoaXMgYmFzaWNhbGx5IGp1c3QgZG9lcyBh
-IHBhcnRpYWwgcmV2ZXJ0IG9mOgoKIGMwYTBkMGQzZjY1MjggKCJ0cmFjaW5nL2NvcmU6IE1ha2Ug
-dGhlIHN0YWNrIGVudHJ5IGhlbHBlcnMgZ2xvYmFsIikKCgo+IC0tLQo+ICBrZXJuZWwvdHJhY2Uv
-dHJhY2UuYyB8ICAgMTQgKysrKysrKystLS0tLS0KPiAga2VybmVsL3RyYWNlL3RyYWNlLmggfCAg
-ICA4IC0tLS0tLS0tCj4gIDIgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCAxNCBkZWxl
-dGlvbnMoLSkKPiAKPiAtLS0gYS9rZXJuZWwvdHJhY2UvdHJhY2UuYwo+ICsrKyBiL2tlcm5lbC90
-cmFjZS90cmFjZS5jCj4gQEAgLTE1OSw2ICsxNTksOCBAQCBzdGF0aWMgdW5pb24gdHJhY2VfZXZh
-bF9tYXBfaXRlbSAqdHJhY2VfCj4gICNlbmRpZiAvKiBDT05GSUdfVFJBQ0VfRVZBTF9NQVBfRklM
-RSAqLwo+ICAKPiAgc3RhdGljIGludCB0cmFjaW5nX3NldF90cmFjZXIoc3RydWN0IHRyYWNlX2Fy
-cmF5ICp0ciwgY29uc3QgY2hhciAqYnVmKTsKPiArc3RhdGljIHZvaWQgZnRyYWNlX3RyYWNlX3Vz
-ZXJzdGFjayhzdHJ1Y3QgcmluZ19idWZmZXIgKmJ1ZmZlciwKPiArCQkJCSAgIHVuc2lnbmVkIGxv
-bmcgZmxhZ3MsIGludCBwYyk7Cj4gIAo+ICAjZGVmaW5lIE1BWF9UUkFDRVJfU0laRQkJMTAwCj4g
-IHN0YXRpYyBjaGFyIGJvb3R1cF90cmFjZXJfYnVmW01BWF9UUkFDRVJfU0laRV0gX19pbml0ZGF0
-YTsKPiBAQCAtMjkwNSw5ICsyOTA3LDEwIEBAIHZvaWQgdHJhY2VfZHVtcF9zdGFjayhpbnQgc2tp
-cCkKPiAgfQo+ICBFWFBPUlRfU1lNQk9MX0dQTCh0cmFjZV9kdW1wX3N0YWNrKTsKPiAgCj4gKyNp
-ZmRlZiBDT05GSUdfVVNFUl9TVEFDS1RSQUNFX1NVUFBPUlQKPiAgc3RhdGljIERFRklORV9QRVJf
-Q1BVKGludCwgdXNlcl9zdGFja19jb3VudCk7Cj4gIAo+IC12b2lkCj4gK3N0YXRpYyB2b2lkCj4g
-IGZ0cmFjZV90cmFjZV91c2Vyc3RhY2soc3RydWN0IHJpbmdfYnVmZmVyICpidWZmZXIsIHVuc2ln
-bmVkIGxvbmcgZmxhZ3MsIGludCBwYykKPiAgewo+ICAJc3RydWN0IHRyYWNlX2V2ZW50X2NhbGwg
-KmNhbGwgPSAmZXZlbnRfdXNlcl9zdGFjazsKPiBAQCAtMjk1OCwxMyArMjk2MSwxMiBAQCBmdHJh
-Y2VfdHJhY2VfdXNlcnN0YWNrKHN0cnVjdCByaW5nX2J1ZmZlCj4gICBvdXQ6Cj4gIAlwcmVlbXB0
-X2VuYWJsZSgpOwo+ICB9Cj4gLQo+IC0jaWZkZWYgVU5VU0VECgpTdHJhbmdlLCBJIG5ldmVyIGtu
-ZXcgYWJvdXQgdGhpcyBpZmRlZi4gSSB3b3VsZCBoYXZlIG51a2VkIGl0IHdoZW4gSQpzYXcgaXQu
-CgpBbnl3YXksCgpSZXZpZXdlZC1ieTogU3RldmVuIFJvc3RlZHQgKFZNd2FyZSkgPHJvc3RlZHRA
-Z29vZG1pcy5vcmc+CgotLSBTdGV2ZQoKCj4gLXN0YXRpYyB2b2lkIF9fdHJhY2VfdXNlcnN0YWNr
-KHN0cnVjdCB0cmFjZV9hcnJheSAqdHIsIHVuc2lnbmVkIGxvbmcgZmxhZ3MpCj4gKyNlbHNlIC8q
-IENPTkZJR19VU0VSX1NUQUNLVFJBQ0VfU1VQUE9SVCAqLwo+ICtzdGF0aWMgdm9pZCBmdHJhY2Vf
-dHJhY2VfdXNlcnN0YWNrKHN0cnVjdCByaW5nX2J1ZmZlciAqYnVmZmVyLAo+ICsJCQkJICAgdW5z
-aWduZWQgbG9uZyBmbGFncywgaW50IHBjKQo+ICB7Cj4gLQlmdHJhY2VfdHJhY2VfdXNlcnN0YWNr
-KHRyLCBmbGFncywgcHJlZW1wdF9jb3VudCgpKTsKPiAgfQo+IC0jZW5kaWYgLyogVU5VU0VEICov
-Cj4gKyNlbmRpZiAvKiAhQ09ORklHX1VTRVJfU1RBQ0tUUkFDRV9TVVBQT1JUICovCj4gIAo+ICAj
-ZW5kaWYgLyogQ09ORklHX1NUQUNLVFJBQ0UgKi8KPiAgCj4gLS0tIGEva2VybmVsL3RyYWNlL3Ry
-YWNlLmgKPiArKysgYi9rZXJuZWwvdHJhY2UvdHJhY2UuaAo+IEBAIC03ODIsMTcgKzc4Miw5IEBA
-IHZvaWQgdXBkYXRlX21heF90cl9zaW5nbGUoc3RydWN0IHRyYWNlX2EKPiAgI2VuZGlmIC8qIENP
-TkZJR19UUkFDRVJfTUFYX1RSQUNFICovCj4gIAo+ICAjaWZkZWYgQ09ORklHX1NUQUNLVFJBQ0UK
-PiAtdm9pZCBmdHJhY2VfdHJhY2VfdXNlcnN0YWNrKHN0cnVjdCByaW5nX2J1ZmZlciAqYnVmZmVy
-LCB1bnNpZ25lZCBsb25nIGZsYWdzLAo+IC0JCQkgICAgaW50IHBjKTsKPiAtCj4gIHZvaWQgX190
-cmFjZV9zdGFjayhzdHJ1Y3QgdHJhY2VfYXJyYXkgKnRyLCB1bnNpZ25lZCBsb25nIGZsYWdzLCBp
-bnQgc2tpcCwKPiAgCQkgICBpbnQgcGMpOwo+ICAjZWxzZQo+IC1zdGF0aWMgaW5saW5lIHZvaWQg
-ZnRyYWNlX3RyYWNlX3VzZXJzdGFjayhzdHJ1Y3QgcmluZ19idWZmZXIgKmJ1ZmZlciwKPiAtCQkJ
-CQkgIHVuc2lnbmVkIGxvbmcgZmxhZ3MsIGludCBwYykKPiAtewo+IC19Cj4gLQo+ICBzdGF0aWMg
-aW5saW5lIHZvaWQgX190cmFjZV9zdGFjayhzdHJ1Y3QgdHJhY2VfYXJyYXkgKnRyLCB1bnNpZ25l
-ZCBsb25nIGZsYWdzLAo+ICAJCQkJIGludCBza2lwLCBpbnQgcGMpCj4gIHsKPiAKCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5n
-IGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVk
-ZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeA==
+Hi Robin,
+
+> -----Original Message-----
+> From: Robin Murphy <robin.murphy@arm.com>
+> Sent: Friday, March 29, 2019 4:51 PM
+> 
+> On 29/03/2019 14:00, laurentiu.tudor@nxp.com wrote:
+> > From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >
+> > Add a one-to-one iommu mapping for bman private data memory (FBPR).
+> > This is required for BMAN to work without faults behind an iommu.
+> >
+> > Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> > ---
+> >   drivers/soc/fsl/qbman/bman_ccsr.c | 11 +++++++++++
+> >   1 file changed, 11 insertions(+)
+> >
+> > diff --git a/drivers/soc/fsl/qbman/bman_ccsr.c
+> b/drivers/soc/fsl/qbman/bman_ccsr.c
+> > index 7c3cc968053c..b209c79511bb 100644
+> > --- a/drivers/soc/fsl/qbman/bman_ccsr.c
+> > +++ b/drivers/soc/fsl/qbman/bman_ccsr.c
+> > @@ -29,6 +29,7 @@
+> >    */
+> >
+> >   #include "bman_priv.h"
+> > +#include <linux/iommu.h>
+> >
+> >   u16 bman_ip_rev;
+> >   EXPORT_SYMBOL(bman_ip_rev);
+> > @@ -178,6 +179,7 @@ static int fsl_bman_probe(struct platform_device
+> *pdev)
+> >   	int ret, err_irq;
+> >   	struct device *dev = &pdev->dev;
+> >   	struct device_node *node = dev->of_node;
+> > +	struct iommu_domain *domain;
+> >   	struct resource *res;
+> >   	u16 id, bm_pool_cnt;
+> >   	u8 major, minor;
+> > @@ -225,6 +227,15 @@ static int fsl_bman_probe(struct platform_device
+> *pdev)
+> >
+> >   	dev_dbg(dev, "Allocated FBPR 0x%llx 0x%zx\n", fbpr_a, fbpr_sz);
+> >
+> > +	/* Create an 1-to-1 iommu mapping for FBPR area */
+> > +	domain = iommu_get_domain_for_dev(dev);
+> 
+> If that's expected to be the default domain that you're grabbing, then
+> this is *incredibly* fragile. There's nothing to stop the IOVA that you
+> forcibly map from being automatically allocated later and causing some
+> other DMA mapping to fail noisily and unexpectedly. Furthermore, have
+> you tried this with "iommu.passthrough=1"?
+> 
+> That said, I really don't understand what's going on here anyway :/
+> 
+> As far as I can tell from qbman_init_private_mem(), fbpr_a comes from
+> dma_alloc_coherent() and thus would already be a mapped IOVA - isn't
+> this the stuff that Roy converted to nicely use shared-dma-pool regions
+> a while ago?
+> 
+
+Finally found some time to look into this, sorry for the delay. It seems that on the code path taken in our case (dma_alloc_coherent() -> dma_alloc_attrs() -> dma_alloc_from_dev_coherent() -> __dma_alloc_from_coherent()) there's no call into the iommu layer, thus no mapping in the smmu. I plan to come up with a RFC patch early next week so we have something concrete to discuss on.
+
+---
+Best Regards, Laurentiu
