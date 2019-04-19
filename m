@@ -1,118 +1,59 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
-	work well when smmu is enabled
-Date: Fri, 19 Apr 2019 21:48:05 +0800
-Message-ID: <5CB9D195.7000707@huawei.com>
-References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
-	<20190404153031.GE27558@fuggles.cambridge.arm.com>
-	<5CAAB293.3080600@huawei.com>
-	<20190416091410.GC31579@fuggles.cambridge.arm.com>
-	<5CB683D2.9010901@huawei.com>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [patch V2 28/29] stacktrace: Provide common
+ infrastructure
+Date: Fri, 19 Apr 2019 10:50:44 -0500
+Message-ID: <20190419155044.2uch7eaj4vzg47w6@treble>
+References: <20190418084119.056416939@linutronix.de>
+ <20190418084255.652003111@linutronix.de>
+ <20190418145201.mjzyqbmkjcghqzex@treble>
+ <alpine.DEB.2.21.1904181734200.3174@nanos.tec.linutronix.de>
+ <20190419070211.GL4038@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5CB683D2.9010901-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20190419070211.GL4038@hirez.programming.kicks-ass.net>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>, Catalin Marinas <catalin.marinas@arm.com>, dri-devel@lists.freedesktop.org, linux-mm@kvack.org, dm-devel@redhat.com, Alexander Potapenko <glider@google.com>, Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>, Alasdair Kergon <agk@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arch@vger.kernel.org, x86@kernel.org, kasan-dev@googlegroups.com, David Rientjes <rientjes@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org, Johannes Thumshirn <jthumshirn@suse.de>, Akinobu Mita <akinobu.mita@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>, David Sterba <dsterba@suse.com>, Thomas Gleixner <tglx@li>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019/4/17 9:39, Leizhen (ThunderTown) wrote:
-> 
-> 
-> On 2019/4/16 17:14, Will Deacon wrote:
->> On Mon, Apr 08, 2019 at 10:31:47AM +0800, Leizhen (ThunderTown) wrote:
->>> On 2019/4/4 23:30, Will Deacon wrote:
->>>> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
->>>>> v1 --> v2:
->>>>> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
->>>>> (Report abort to device, no event recorded) to suppress the event messages
->>>>> caused by the unexpected devices.
->>>>> 2. rewrite the patch description.
->>>>
->>>> This issue came up a while back:
->>>>
->>>> https://lore.kernel.org/linux-pci/20180302103032.GB19323-5wv7dgnIgG8@public.gmane.org/
->>>>
->>>> and I'd still prefer to solve it using the disable_bypass logic which we
->>>> already have. Something along the lines of the diff below?
->>>
->>> Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
->>> SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
->>> are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
->>> (2-level Stream Table), we only allocated and initialized the first level tables,
->>> but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
->>> will be reported, if an unexpeted device access memory without reinitialized in
->>> kdump kernel.
->>
->> So is your problem just that the C_BAD_STREAMID events are noisy? If so,
->> perhaps we should be disabling fault reporting entirely in the kdump kernel.
->>
->> How about the update diff below? I'm keen to have this as simple as
->> possible, so we don't end up introducing rarely tested, complex code on
->> the crash path.
-> In theory, it can solve the problem, let me test it.
-Hi Will,
-  I have tested your patch on my board today. It works well.
-
-> 
-> But then again, below patch will also disable the fault reporting come from the
-> expected devices which are used in the kdump kernel. In fact, my patches have been
-> merged into our interval version more than 2 months, no bug have been found yet.
-> 
-> However, my patches do not support the case that the hardware does not support the
-> "STE bypass" feature, I think your patch can also resolve it.
-> 
->>
->> Will
->>
->> --->8
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index d3880010c6cf..d8b73da6447d 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->>  	/* Clear CR0 and sync (disables SMMU and queue processing) */
->>  	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
->>  	if (reg & CR0_SMMUEN) {
->> -		if (is_kdump_kernel()) {
->> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
->> -			arm_smmu_device_disable(smmu);
->> -			return -EBUSY;
->> -		}
->> -
->>  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
->> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
->> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
->>  	}
->>  
->>  	ret = arm_smmu_device_disable(smmu);
->> @@ -2553,6 +2549,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->>  		return ret;
->>  	}
->>  
->> +	if (is_kdump_kernel())
->> +		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
->>  
->>  	/* Enable the SMMU interface, or ensure bypass */
->>  	if (!bypass || disable_bypass) {
->>
->> .
->>
-> 
-
--- 
-Thanks!
-BestRegards
+T24gRnJpLCBBcHIgMTksIDIwMTkgYXQgMDk6MDI6MTFBTSArMDIwMCwgUGV0ZXIgWmlqbHN0cmEg
+d3JvdGU6Cj4gT24gVGh1LCBBcHIgMTgsIDIwMTkgYXQgMDU6NDI6NTVQTSArMDIwMCwgVGhvbWFz
+IEdsZWl4bmVyIHdyb3RlOgo+ID4gT24gVGh1LCAxOCBBcHIgMjAxOSwgSm9zaCBQb2ltYm9ldWYg
+d3JvdGU6Cj4gCj4gPiA+IEFub3RoZXIgaWRlYSBJIGhhZCAoYnV0IG5ldmVyIGdvdCBhIGNoYW5j
+ZSB0byB3b3JrIG9uKSB3YXMgdG8gZXh0ZW5kIHRoZQo+ID4gPiB4ODYgdW53aW5kIGludGVyZmFj
+ZSB0byBhbGwgYXJjaGVzLiAgU28gaW5zdGVhZCBvZiB0aGUgY2FsbGJhY2tzLCBlYWNoCj4gPiA+
+IGFyY2ggd291bGQgaW1wbGVtZW50IHNvbWV0aGluZyBsaWtlIHRoaXMgQVBJOgo+IAo+ID4gSSBz
+dXJlbHkgdGhvdWdodCBhYm91dCB0aGF0LCBidXQgYWZ0ZXIgc3RhcmluZyBhdCBhbGwgaW5jYXJu
+YXRpb25zIG9mCj4gPiBhcmNoLyovc3RhY2t0cmFjZS5jIEkganVzdCBnYXZlIHVwLgo+ID4gCj4g
+PiBBc2lkZSBvZiB0aGF0IHF1aXRlIHNvbWUgYXJjaHMgYWxyZWFkeSBoYXZlIGNhbGxiYWNrIGJh
+c2VkIHVud2luZGVycwo+ID4gYmVjYXVzZSB0aGV5IHVzZSB0aGVtIGZvciBtb3JlIHRoYW4gc3Rh
+Y2t0cmFjaW5nIGFuZCBqdXN0IGhhdmUgYSBzaW5nbGUKPiA+IGltcGxlbWVudGF0aW9uIG9mIHRo
+YXQgbG9vcC4KPiA+IAo+ID4gSSdtIGZpbmUgZWl0aGVyIHdheS4gV2UgY2FuIHN0YXJ0IHdpdGgg
+eDg2IGFuZCB0aGVuIGxldCBhcmNocyBjb252ZXJ0IG92ZXIKPiA+IHRoZWlyIHN0dWZmLCBidXQg
+SSB3b3VsZG4ndCBob2xkIG15IGJyZWF0aCB0aGF0IHRoaXMgd2lsbCBiZSBjb21wbGV0ZWQgaW4K
+PiA+IHRoZSBmb3JzZWVhYmxlIGZ1dHVyZS4KPiAKPiBJIHN1Z2dlc3RlZCB0aGUgc2FtZSB0byBU
+aG9tYXMgZWFybHkgb24sIGFuZCBJIGV2ZW4gc3BlbmQgdGhlIHRpbWUgdG8KPiBjb252ZXJ0IHNv
+bWUgJHJhbmRvbSBhcmNoIHRvIHRoZSBpdGVyYXRvciBpbnRlcmZhY2UsIGFuZCB3aGlsZSBpdCBp
+cwo+IGluZGVlZCBlbnRpcmVseSBmZWFzaWJsZSwgaXQgaXMgX2Zhcl8gbW9yZSB3b3JrLgo+IAo+
+IFRoZSBjYWxsYmFjayB0aGluZyBPVE9IIGlzIGZsZXhpYmxlIGVub3VnaCB0byBkbyB3aGF0IHdl
+IHdhbnQgdG8gZG8gbm93LAo+IGFuZCBhbGxvd3MgY29udmVydGluZyBtb3N0IGFyY2hzIHRvIGl0
+IHdpdGhvdXQgdG9vIG11Y2ggcGFpbiAoYXMgVGhvbWFzCj4gc2FpZCwgbWFueSBhcmNocyBhcmUg
+YWxyZWFkeSBpbiB0aGlzIGZvcm0gYW5kIG9ubHkgbmVlZCBtaW5vciBBUEkKPiBhZGp1c3RtZW50
+cyksIHdoaWNoIGdldHMgdXMgaW4gYSBmYXIgYmV0dGVyIHBsYWNlIHRoYW4gd2UgYXJlIG5vdy4K
+PiAKPiBBbmQgd2UgY2FuIGFsd2F5cyBnbyB0byBpdGVyYXRvcnMgbGF0ZXIgb24uIEJ1dCBJIHRo
+aW5rIGdldHRpbmcgdGhlCj4gZ2VuZXJpYyB1bndpbmRlciBpbXByb3ZlZCBhY3Jvc3MgYWxsIGFy
+Y2hzIGlzIGEgcmVhbGx5IGltcG9ydGFudCBmaXJzdAo+IHN0ZXAgaGVyZS4KCkZhaXIgZW5vdWdo
+LgoKLS0gCkpvc2gKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4
