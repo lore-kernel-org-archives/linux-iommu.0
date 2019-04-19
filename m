@@ -1,131 +1,131 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 10/18] iommu/vt-d: Add custom allocator for IOASID
-Date: Thu, 18 Apr 2019 21:29:58 -0700
-Message-ID: <20190418212958.65975103@jacob-builder>
-References: <1554767973-30125-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1554767973-30125-11-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190415143711.13c29308@x1.home>
-	<20190415161015.564cb071@jacob-builder>
-	<70c6b197-029e-94cd-2745-d4a193cbbcd0@arm.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context
+ fault
+Date: Fri, 19 Apr 2019 11:04:01 +0530
+Message-ID: <CAFp+6iFSeOLh-RE2GM_Yah+ANmVUQZjuyH7zF9qOOSLxhGbdvw@mail.gmail.com>
+References: <4cfc7b3b-bc74-6b37-19f5-40b6394fa762@codeaurora.org>
+ <20190415173758.22112-1-vivek.gautam@codeaurora.org>
+ <20190419002457.GA3137@builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <70c6b197-029e-94cd-2745-d4a193cbbcd0-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190419002457.GA3137@builder>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAxOCBBcHIgMjAxOSAxNjozNjowMiArMDEwMApKZWFuLVBoaWxpcHBlIEJydWNrZXIg
-PGplYW4tcGhpbGlwcGUuYnJ1Y2tlckBhcm0uY29tPiB3cm90ZToKCj4gT24gMTYvMDQvMjAxOSAw
-MDoxMCwgSmFjb2IgUGFuIHdyb3RlOlsuLi5dCj4gPj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIC8qCj4gPj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgKiBSZWdpc3RlciBhIGN1c3RvbSBBU0lEIGFsbG9jYXRvciBpZiB3ZQo+ID4+ID4g
-YXJlIHJ1bm5pbmcKPiA+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCAqIGluIGEgZ3Vlc3QsIHRoZSBwdXJwb3NlIGlzIHRvIGhhdmUgYQo+ID4+ID4gc3lzdGVtIHdp
-ZGUgUEFTSUQKPiA+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAq
-IG5hbWVzcGFjZSBhbW9uZyBhbGwgUEFTSUQgdXNlcnMuCj4gPj4gPiArwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBOb3RlIHRoYXQgb25seSBvbmUgdklPTU1VIGluIGVh
-Y2ggZ3Vlc3QKPiA+PiA+IGlzIHN1cHBvcnRlZC7CoCAgIAo+ID4+IAo+ID4+IFdoeSBvbmUgdklP
-TU1VIHBlciBndWVzdD/CoCBUaGlzIHdvdWxkIHByZXZlbnQgZ3Vlc3RzIHdpdGggbXVsdGlwbGUK
-PiA+PiBQQ0kgZG9tYWlucyBhaXVpLgo+ID4+ICAgCj4gPiBUaGlzIGlzIG1haW5seSBmb3Igc2lt
-cGxpY2l0eSByZWFzb25zLiBUaGVzZSBhcmUgYWxsIHZpcnR1YWwgQkRGcwo+ID4gYW55d2F5LiBB
-cyBsb25nIGFzIGd1ZXN0IEJERiBjYW4gYmUgbWFwcGVkIHRvIGEgaG9zdCBCREYsIGl0IHNob3Vs
-ZAo+ID4gYmUgc3VmZmljaWVudCwgYW0gSSBtaXNzaW5nIGFueXRoaW5nPwo+ID4gCj4gPiBGcm9t
-IFBBU0lEIGFsbG9jYXRpb24gcGVyc3BlY3RpdmUsIGl0IGlzIG5vdCB0aWVkIHRvIGFueSBQQ0kg
-ZGV2aWNlCj4gPiB1bnRpbCBiaW5kIGNhbGwuIFdlIG9ubHkgbmVlZCB0byB0cmFjayBQQVNJRCBv
-d25lcnNoaXAgcGVyIGd1ZXN0Lgo+ID4gCj4gPiB2aXJ0aW8tSU9NTVUgc3BlYyBkb2VzIHN1cHBv
-cnQgbXVsdGlwbGUgUENJIGRvbWFpbnMgYnV0IEkgYW0gbm90Cj4gPiBzdXJlIGlmIHRoYXQgYXBw
-bGllcyB0byBhbGwgYXNzaWduZWQgZGV2aWNlcywgd2hldGhlciBhbGwgYXNzaWduZWQKPiA+IGRl
-dmljZXMgYXJlIHVuZGVyIHRoZSBzYW1lIGRvbWFpbi4gUGVyaGFwcyBKZWFuIGNhbiBoZWxwIHRv
-IGNsYXJpZnkKPiA+IGhvdyBQQVNJRCBhbGxvY2F0aW9uIEFQSSBsb29rcyBsaWtlIG9uIHZpcnRp
-byBJT01NVS4gIAo+IAo+IFtVZ2gsIHRoaXMgaXMgbXVjaCBsb25nZXIgdGhhbiBJIGhvcGVkLiBJ
-biBzaG9ydCBJIGRvbid0IHRoaW5rCj4gbXVsdGlwbGUgdklPTU1VcyBpcyBhIHByb2JsZW0sIGJl
-Y2F1c2UgdGhlIGhvc3QgdXNlcyB0aGUgc2FtZQo+IGFsbG9jYXRvciBmb3IgYWxsIG9mIHRoZW0u
-XQo+IApJIGFncmVlZCwgaXQgaXMgbm90IGFuIGlzc3VlIGFzIGZhciBhcyBQQVNJRCBhbGxvY2F0
-aW9uIGlzIGNvbmNlcm5lZC4KPiBZZXMgdGhlcmUgY2FuIGJlIGEgc2luZ2xlIHZpcnRpby1pb21t
-dSBpbnN0YW5jZSBmb3IgbXVsdGlwbGUgUENJCj4gZG9tYWlucywgb3IgbXVsdGlwbGUgaW5zdGFu
-Y2VzIGVhY2ggbWFuYWdpbmcgYXNzaWduZWQgZGV2aWNlcy4gSXQncwo+IHVwIHRvIHRoZSBoeXBl
-cnZpc29yIHRvIGRlY2lkZSBvbiB0aGUgdG9wb2xvZ3kuCj4gCj4gRm9yIExpbnV4IGFuZCBRRU1V
-IEkgd2FzIGFzc3VtaW5nIHRoYXQgY2hvb3NpbmcgdGhlIHZJT01NVSB1c2VkIGZvcgo+IFBBU0lE
-IGFsbG9jYXRpb24gaXNuJ3QgYSBiaWcgZGVhbCwgc2luY2UgaW4gdGhlIGVuZCB0aGV5IGFsbCB1
-c2UgdGhlCj4gc2FtZSBhbGxvY2F0b3IgaW4gdGhlIGhvc3QuIEl0IGdldHMgY29tcGxpY2F0ZWQg
-d2hlbiBzb21lIHZJT01NVXMgY2FuCj4gYmUgcmVtb3ZlZCBhdCBydW50aW1lICh1bmxvYWQgdGhl
-IHZpcnRpby1pb21tdSBtb2R1bGUgdGhhdCB3YXMKPiBwcm92aWRpbmcgdGhlIFBBU0lEIGFsbG9j
-YXRvciwgYW5kIHRoZW4geW91IGNhbid0IGFsbG9jYXRlIFBBU0lEcyBmb3IKPiB0aGUgVlQtZCBp
-bnN0YW5jZSBhbnltb3JlKSwgc28gbWF5YmUgbGltaXRpbmcgdG8gb25lIHR5cGUgb2YgdklPTU1V
-Cj4gKGRvbid0IG1peCBWVC1kIGFuZCB2aXJ0aW8taW9tbXUgaW4gdGhlIHNhbWUgVk0pIGlzIG1v
-cmUgcmVhc29uYWJsZS4KPiAKSSB0aGluayB5b3UgY2FuIGRlYWwgd2l0aCB0aGUgaG90IHJlbW92
-YWwgb2YgdklPTU1VIGJ5IGtlZXBpbmcgbXVsdGlwbGUKYWxsb2NhdG9ycyBpbiBhIGxpc3QuIGku
-ZS4gd2hlbiB0aGUgc2Vjb25kIHZJT01NVSByZWdpc3RlciBhbgphbGxvY2F0b3IsIGluc3RlYWQg
-b2YgcmV0dXJuIC1FQlVTWSwgd2UganVzdCBrZWVwIHRoZSBpdCBpbiBiYWNrIHBvY2tldApsaXN0
-LiBJZiB0aGUgZmlyc3QgdklPTU1VIGlzIHJlbW92ZWQsIHRoZSBzZWNvbmQgb25lIGNhbiBiZSBw
-b3BwZWQgb3V0CmludG8gYWN0aW9uIChhbmQgdmlzZSB2ZXJzYSkuIFRoZW4gd2UgYWx3YXlzIGhh
-dmUgYW4gYWxsb2NhdG9yLgo+IEl0J3MgYSBiaXQgbW9yZSBkZWxpY2F0ZSBmcm9tIHRoZSB2aXJ0
-aW8taW9tbXUgcGVyc3BlY3RpdmUuIFRoZQo+IGludGVyZmFjZSBpcyBwb3J0YWJsZSBhbmQgSSBj
-YW4ndCB0aWUgaXQgZG93biB0byB0aGUgY2hvaWNlcyB3ZSdyZQo+IG1ha2luZyBmb3IgTGludXgg
-YW5kIEtWTS4gSGF2aW5nIGEgc3lzdGVtLXdpZGUgUEFTSUQgc3BhY2UgaXMgd2hhdCB3ZQo+IHBp
-Y2tlZCBmb3IgTGludXggYnV0IHRoZSBQQ0llIGFyY2hpdGVjdHVyZSBhbGxvd3MgZm9yIGVhY2gg
-ZGV2aWNlIHRvCj4gaGF2ZSB0aGVpciBvd24gUEFTSUQgc3BhY2UsIGFuZCBJIHN1cHBvc2Ugc29t
-ZSBoeXBlcnZpc29ycyBhbmQgZ3Vlc3RzCj4gbWlnaHQgcHJlZmVyIGltcGxlbWVudGluZyBpdCB0
-aGF0IHdheS4KPiAKPiBNeSBwbGFuIGZvciB0aGUgbW9tZW50IGlzIHRvIGltcGxlbWVudCBnbG9i
-YWwgUEFTSUQgYWxsb2NhdGlvbiB1c2luZwo+IG9uZSBmZWF0dXJlIGJpdCBhbmQgdHdvIG5ldyBy
-ZXF1ZXN0cywgYnV0IGxlYXZlIHNwYWNlIGZvciBhCj4gcGVyLWRldmljZSBQQVNJRCBhbGxvY2F0
-aW9uLCBpbnRyb2R1Y2VkIHdpdGggYW5vdGhlciBmZWF0dXJlIGJpdCBpZgo+IG5lY2Vzc2FyeS4g
-SWYgaXQgZXZlciBnZXRzIGFkZGVkLCBJIGV4cGVjdCB0aGUgcGVyLWRldmljZSBhbGxvY2F0aW9u
-Cj4gdG8gYmUgZG9uZSBkdXJpbmcgdGhlIGJpbmQgcmVxdWVzdCByYXRoZXIgdGhhbiB3aXRoIGEg
-c2VwYXJhdGUKPiBQQVNJRF9BTExPQyByZXF1ZXN0Lgo+IAo+IFNvIGN1cnJlbnRseSBJIGhhdmUg
-YSBuZXcgZmVhdHVyZSBiaXQgYW5kIHR3byBjb21tYW5kczoKPiAKPiAjZGVmaW5lIFZJUlRJT19J
-T01NVV9GX1BBU0lEX0FMTE9DCj4gI2RlZmluZSBWSVJUSU9fSU9NTVVfVF9BTExPQ19QQVNJRAo+
-ICNkZWZpbmUgVklSVElPX0lPTU1VX1RfRlJFRV9QQVNJRAo+IAo+IHN0cnVjdCB2aXJ0aW9faW9t
-bXVfcmVxX2FsbG9jX3Bhc2lkIHsKPiAgICAgICAgIHN0cnVjdCB2aXJ0aW9faW9tbXVfcmVxX2hl
-YWQgaGVhZDsKPiAgICAgICAgIHUzMiByZXNlcnZlZDsKPiAKPiAgICAgICAgIC8qIERldmljZS13
-cml0ZWFibGUgKi8KPiAgICAgICAgIGxlMzIgcGFzaWQ7Cj4gICAgICAgICBzdHJ1Y3QgdmlydGlv
-X2lvbW11X3JlcV90YWlsIHRhaWw7Cj4gfTsKPiAKPiBzdHJ1Y3QgdmlydGlvX2lvbW11X3JlcV9m
-cmVlX3Bhc2lkIHsKPiAgICAgICAgIHN0cnVjdCB2aXJ0aW9faW9tbXVfcmVxX2hlYWQgaGVhZDsK
-PiAgICAgICAgIHUzMiByZXNlcnZlZDsKPiAgICAgICAgIGxlMzIgcGFzaWQ7Cj4gCj4gICAgICAg
-ICAvKiBEZXZpY2Utd3JpdGVhYmxlICovCj4gICAgICAgICBzdHJ1Y3QgdmlydGlvX2lvbW11X3Jl
-cV90YWlsIHRhaWw7Cj4gfTsKPiAKPiBJZiB0aGUgZmVhdHVyZSBiaXQgaXMgb2ZmZXJlZCBpdCBt
-dXN0IGJlIHVzZWQsIGFuZCB0aGUgZ3Vlc3QgY2FuIG9ubHkKPiB1c2UgUEFTSURzIGFsbG9jYXRl
-ZCB2aWEgVklSVElPX0lPTU1VX1RfQUxMT0NfUEFTSUQgaW4gaXRzIGJpbmQKPiByZXF1ZXN0cy4K
-PiAKPiBUaGUgUEFTSUQgc3BhY2UgaXMgZ2xvYmFsIGF0IHRoZSBob3N0IHNjb3BlLiBJZiBtdWx0
-aXBsZSB2aXJ0aW8taW9tbXUKPiBkZXZpY2VzIGluIHRoZSBWTSBvZmZlciB0aGUgZmVhdHVyZSBi
-aXQsIHRoZW4gdXNpbmcgZWl0aGVyIG9mIHRoZWlyCj4gY29tbWFuZCBxdWV1ZSB0byBpc3N1ZSBh
-IFZJUlRJT19JT01NVV9GX0FMTE9DX1BBU0lEIGFuZAo+IFZJUlRJT19JT01NVV9GX0ZSRUVfUEFT
-SUQgaXMgZXF1aXZhbGVudC4gQW5vdGhlciBwb3NzaWJpbGl0eSBpcyB0bwo+IHJlcXVpcmUgdGhh
-dCBvbmx5IG9uZSBvZiB0aGUgdmlydGlvLWlvbW11IGluc3RhbmNlcyBwZXIgVk0gb2ZmZXJzIHRo
-ZQo+IGZlYXR1cmUgYml0LiBJIGRvIHByZWZlciB0aGlzIG9wdGlvbiwgYnV0IHRoZXJlIGlzIHRo
-ZSB2SU9NTVUgcmVtb3ZhbAo+IHByb2JsZW0gbWVudGlvbmVkIGFib3ZlIC0gd2hpY2gsIHdpdGgg
-dGhlIGZpcnN0IG9wdGlvbiwgY291bGQgYmUKPiBzb2x2ZWQgYnkga2VlcGluZyBhIGxpc3Qgb2Yg
-UEFTSUQgYWxsb2NhdG9yIGZ1bmN0aW9ucyByYXRoZXIgdGhhbiBhCj4gc2luZ2xlIG9uZS4KPiAK
-PiBJJ20gY29uc2lkZXJpbmcgYWRkaW5nIG1heF9wYXNpZCBmaWVsZCB0bwo+IHZpcnRpb19pb21t
-dV9yZXFfYWxsb2NfcGFzaWQuIElmIFZJUlRJT19JT01NVV9UX0FMTE9DX1BBU0lEIHJldHVybnMg
-YQo+IHJhbmRvbSAyMC1iaXQgdmFsdWUgdGhlbiBhIGxvdCBvZiBzcGFjZSBtaWdodCBiZSBuZWVk
-ZWQgZm9yIHN0b3JpbmcKPiBQQVNJRCBjb250ZXh0cyAoaXMgdGhhdCBhIHJlYWwgY29uY2VybiB0
-aG91Z2g/IEZvciBpbnRlcm5hbCBkYXRhIGl0Cj4gY2FuIHVzZSBhIGJpbmFyeSB0cmVlLCBhbmQg
-dGhlIGd1ZXN0IGlzIG5vdCBpbiBjaGFyZ2Ugb2YgaGFyZHdhcmUKPiBQQVNJRCB0YWJsZXMgaGVy
-ZSkuIElmIHRoZSBndWVzdCBpcyBzaG9ydCBvbiBtZW1vcnkgdGhlbiBpdCBjb3VsZAo+IGJlbmVm
-aXQgZnJvbSBhIHNtYWxsZXIgbnVtYmVyIG9mIFBBU0lEIGJpdHMuIFRoYXQgY291bGQgZWl0aGVy
-IGJlCj4gZ2xvYmFsbHkgY29uZmlndXJhYmxlIGluIHRoZSB2aXJ0aW8taW9tbXUgY29uZmlnIHNw
-YWNlLCBvciB1c2luZyBhCj4gbWF4X3Bhc2lkIGZpZWxkIGluIHRoZSBWSVJUSU9fSU9NTVVfVF9B
-TExPQ19QQVNJRCByZXF1ZXN0LiBUaGUgbGF0dGVyCj4gYWxsb3dzIHRvIHN1cHBvcnQgZGV2aWNl
-cyB3aXRoIGxlc3MgdGhhbiAyMCBQQVNJRCBiaXRzLCB0aG91Z2ggd2UncmUKPiBob3BpbmcgdGhh
-dCBubyBvbmUgd2lsbCBpbXBsZW1lbnQgdGhhdC4KPiAKU3BhY2UgaXMgbm90IGFuIGNvbmNlcm4g
-Zm9yIFZ0LWQgdklPTU1VIGluIHRoYXQgd2UgaGF2ZSBhIHR3byBsZXZlbApwYXNpZCB0YWJsZS4g
-QW5kIHdlIG5lZWQgdG8gc2hhZG93IGFueXdheS4KCklmIGl0IGlzIE9LIHdpdGggeW91LCBJIHdp
-bGwgc3F1YXNoIG15IGNoYW5nZXMgaW50byB5b3VyIGlvYXNpZCBwYXRjaAphbmQgYWRkcmVzcyB0
-aGUgcmV2aWV3IGNvbW1lbnRzIGluIHRoZSB2MiBvZiB0aGlzIHNldCwgT0s/CmkuZS4gCltQQVRD
-SCAwMi8xOF0gaW9hc2lkOiBBZGQgY3VzdG9tIElPQVNJRCBhbGxvY2F0b3IKW1BBVENIIDAzLzE4
-XSBpb2FzaWQ6IENvbnZlcnQgaW9hc2lkX2lkciB0byBYQXJyYXkKCj4gVGhhbmtzLAo+IEplYW4K
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
-aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
-LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Fri, Apr 19, 2019 at 5:55 AM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Mon 15 Apr 10:37 PDT 2019, Vivek Gautam wrote:
+>
+> > Bits[15:0] in CBFRSYNRA register contain information about
+> > StreamID of the incoming transaction that generated the
+> > fault. Dump CBFRSYNRA register to get this info.
+> > This is specially useful in a distributed SMMU architecture
+> > where multiple masters are connected to the SMMU.
+> > SID information helps to quickly identify the faulting
+> > master device.
+> >
+> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> > ---
+> >
+> > V1 of the patch available @
+> > https://lore.kernel.org/patchwork/patch/1061615/
+> >
+> > Changes from v1:
+> >  - Dump the raw register value of CBFRSYNRA register in the
+> >    context fault log rather than extracting the SID inforamtion
+> >    and dumping that.
+> >
+> >  drivers/iommu/arm-smmu-regs.h | 2 ++
+> >  drivers/iommu/arm-smmu.c      | 8 ++++++--
+> >  2 files changed, 8 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
+> > index a1226e4ab5f8..e9132a926761 100644
+> > --- a/drivers/iommu/arm-smmu-regs.h
+> > +++ b/drivers/iommu/arm-smmu-regs.h
+> > @@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
+> >  #define CBAR_IRPTNDX_SHIFT           24
+> >  #define CBAR_IRPTNDX_MASK            0xff
+> >
+> > +#define ARM_SMMU_GR1_CBFRSYNRA(n)    (0x400 + ((n) << 2))
+> > +
+> >  #define ARM_SMMU_GR1_CBA2R(n)                (0x800 + ((n) << 2))
+> >  #define CBA2R_RW64_32BIT             (0 << 0)
+> >  #define CBA2R_RW64_64BIT             (1 << 0)
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 045d93884164..a4773e8c6b0e 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+> >       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> >       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> >       struct arm_smmu_device *smmu = smmu_domain->smmu;
+> > +     void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
+> >       void __iomem *cb_base;
+> > +     u32 cbfrsynra;
+> >
+> >       cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+> >       fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
+> > @@ -585,10 +587,12 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+> >
+> >       fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+> >       iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+> > +     cbfrsynra = readl_relaxed(gr1_base +
+> > +                               ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
+>
+> The 80 char limit is more like a guideline anyways...please don't wrap
+> this.
+>
+> >
+> >       dev_err_ratelimited(smmu->dev,
+> > -     "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+> > -                         fsr, iova, fsynr, cfg->cbndx);
+> > +     "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra = 0x%x, cb=%d\n",
+>
+> Drop the spaces around '='.
+>
+> With those addressed, you have my
+>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Thanks for the review Bjorn. Will address above comments and respin.
+
+Best regards
+Vivek
+
+>
+> Regards,
+> Bjorn
+>
+> > +                         fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
+> >
+> >       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+> >       return IRQ_HANDLED;
+> > --
+> > QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> > of Code Aurora Forum, hosted by The Linux Foundation
+> >
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
