@@ -2,52 +2,94 @@ Return-Path: <SRS0=myD+=SV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50EACC282DA
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 06:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 767B7C282DA
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 07:03:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 16E1421736
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 06:50:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16E1421736
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 40863217FA
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 07:03:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="i1Hy/GRW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40863217FA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B74D61F25;
-	Fri, 19 Apr 2019 06:50:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F0E0921B3;
+	Fri, 19 Apr 2019 07:03:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 677F417E4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 519FA2140
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 06:49:47 +0000 (UTC)
+	Fri, 19 Apr 2019 07:02:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DBD296C5
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0CAFF14D
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 06:49:46 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	18 Apr 2019 23:49:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,368,1549958400"; d="scan'208";a="162971214"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by fmsmga002.fm.intel.com with ESMTP; 18 Apr 2019 23:49:44 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 1/1] iommu/vt-d: Don't request page request irq under
-	dmar_global_lock
-Date: Fri, 19 Apr 2019 14:43:29 +0800
-Message-Id: <20190419064329.17946-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
+	Fri, 19 Apr 2019 07:02:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=L7eq8Aug6+D0Uzgmn7vgZITr6hThHMPewFsEW47cNZg=;
+	b=i1Hy/GRW9HiWiapoFoRTCdgu1
+	cUt7Er7sr71bgd43+dYv+n0Lv5GqnvJ+fSpYP2kjtQcZK4KSH9eqZMuPMywNyKvmhH64/AJZF28Kd
+	AlhoxD9/xO4V7UsOg/7MAE2EeVnrnoWM0Pi7ybOHHUHP44EMSsIwE6Jwu+NXpJ/AgQnIsAxNgPdAJ
+	Ota/ejkQQY1W48qZZdy3Q4RNzTzjM7hk86diK53SIfg/s2qF6MI2J0OScfSmfawFdDLDzngU6/tDG
+	13MF/x52A68J+MK67YWX2NX2H2bIpQcWWr4GQXNqFjTBedeNIaoV6M4g88Nvr+yKVzWJBaI25hvyv
+	9aVlwsorw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100]
+	helo=hirez.programming.kicks-ass.net)
+	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hHNXI-00007w-SC; Fri, 19 Apr 2019 07:02:13 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 5B5DB29B52F42; Fri, 19 Apr 2019 09:02:11 +0200 (CEST)
+Date: Fri, 19 Apr 2019 09:02:11 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch V2 28/29] stacktrace: Provide common infrastructure
+Message-ID: <20190419070211.GL4038@hirez.programming.kicks-ass.net>
+References: <20190418084119.056416939@linutronix.de>
+	<20190418084255.652003111@linutronix.de>
+	<20190418145201.mjzyqbmkjcghqzex@treble>
+	<alpine.DEB.2.21.1904181734200.3174@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.1904181734200.3174@nanos.tec.linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
+	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
+	x86@kernel.org, kasan-dev@googlegroups.com,
+	David Rientjes <rientjes@google.com>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+	David Sterba <dsterba@suse.com>,
+	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
+	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
+	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,110 +102,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190419064329.lqiNWXYJpJUi84PIYSvq1x74dozp9pb7alp5a2XrPNY@z>
+Message-ID: <20190419070211.sxTsH279rQrtr7ECXNJlUl_JGdGlSi55BvHg8QlPjOE@z>
 
-Requesting page reqest irq under dmar_global_lock could cause
-potential lock race condition (caught by lockdep).
+On Thu, Apr 18, 2019 at 05:42:55PM +0200, Thomas Gleixner wrote:
+> On Thu, 18 Apr 2019, Josh Poimboeuf wrote:
 
-[    4.100055] ======================================================
-[    4.100063] WARNING: possible circular locking dependency detected
-[    4.100072] 5.1.0-rc4+ #2169 Not tainted
-[    4.100078] ------------------------------------------------------
-[    4.100086] swapper/0/1 is trying to acquire lock:
-[    4.100094] 000000007dcbe3c3 (dmar_lock){+.+.}, at: dmar_alloc_hwirq+0x35/0x140
-[    4.100112] but task is already holding lock:
-[    4.100120] 0000000060bbe946 (dmar_global_lock){++++}, at: intel_iommu_init+0x191/0x1438
-[    4.100136] which lock already depends on the new lock.
-[    4.100146] the existing dependency chain (in reverse order) is:
-[    4.100155]
-               -> #2 (dmar_global_lock){++++}:
-[    4.100169]        down_read+0x44/0xa0
-[    4.100178]        intel_irq_remapping_alloc+0xb2/0x7b0
-[    4.100186]        mp_irqdomain_alloc+0x9e/0x2e0
-[    4.100195]        __irq_domain_alloc_irqs+0x131/0x330
-[    4.100203]        alloc_isa_irq_from_domain.isra.4+0x9a/0xd0
-[    4.100212]        mp_map_pin_to_irq+0x244/0x310
-[    4.100221]        setup_IO_APIC+0x757/0x7ed
-[    4.100229]        x86_late_time_init+0x17/0x1c
-[    4.100238]        start_kernel+0x425/0x4e3
-[    4.100247]        secondary_startup_64+0xa4/0xb0
-[    4.100254]
-               -> #1 (irq_domain_mutex){+.+.}:
-[    4.100265]        __mutex_lock+0x7f/0x9d0
-[    4.100273]        __irq_domain_add+0x195/0x2b0
-[    4.100280]        irq_domain_create_hierarchy+0x3d/0x40
-[    4.100289]        msi_create_irq_domain+0x32/0x110
-[    4.100297]        dmar_alloc_hwirq+0x111/0x140
-[    4.100305]        dmar_set_interrupt.part.14+0x1a/0x70
-[    4.100314]        enable_drhd_fault_handling+0x2c/0x6c
-[    4.100323]        apic_bsp_setup+0x75/0x7a
-[    4.100330]        x86_late_time_init+0x17/0x1c
-[    4.100338]        start_kernel+0x425/0x4e3
-[    4.100346]        secondary_startup_64+0xa4/0xb0
-[    4.100352]
-               -> #0 (dmar_lock){+.+.}:
-[    4.100364]        lock_acquire+0xb4/0x1c0
-[    4.100372]        __mutex_lock+0x7f/0x9d0
-[    4.100379]        dmar_alloc_hwirq+0x35/0x140
-[    4.100389]        intel_svm_enable_prq+0x61/0x180
-[    4.100397]        intel_iommu_init+0x1128/0x1438
-[    4.100406]        pci_iommu_init+0x16/0x3f
-[    4.100414]        do_one_initcall+0x5d/0x2be
-[    4.100422]        kernel_init_freeable+0x1f0/0x27c
-[    4.100431]        kernel_init+0xa/0x110
-[    4.100438]        ret_from_fork+0x3a/0x50
-[    4.100444]
-               other info that might help us debug this:
+> > Another idea I had (but never got a chance to work on) was to extend the
+> > x86 unwind interface to all arches.  So instead of the callbacks, each
+> > arch would implement something like this API:
 
-[    4.100454] Chain exists of:
-                 dmar_lock --> irq_domain_mutex --> dmar_global_lock
-[    4.100469]  Possible unsafe locking scenario:
+> I surely thought about that, but after staring at all incarnations of
+> arch/*/stacktrace.c I just gave up.
+> 
+> Aside of that quite some archs already have callback based unwinders
+> because they use them for more than stacktracing and just have a single
+> implementation of that loop.
+> 
+> I'm fine either way. We can start with x86 and then let archs convert over
+> their stuff, but I wouldn't hold my breath that this will be completed in
+> the forseeable future.
 
-[    4.100476]        CPU0                    CPU1
-[    4.100483]        ----                    ----
-[    4.100488]   lock(dmar_global_lock);
-[    4.100495]                                lock(irq_domain_mutex);
-[    4.100503]                                lock(dmar_global_lock);
-[    4.100512]   lock(dmar_lock);
-[    4.100518]
-                *** DEADLOCK ***
+I suggested the same to Thomas early on, and I even spend the time to
+convert some $random arch to the iterator interface, and while it is
+indeed entirely feasible, it is _far_ more work.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Reported-by: Dave Jiang <dave.jiang@intel.com>
-Fixes: a222a7f0bb6c9 ("iommu/vt-d: Implement page request handling")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel-iommu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+The callback thing OTOH is flexible enough to do what we want to do now,
+and allows converting most archs to it without too much pain (as Thomas
+said, many archs are already in this form and only need minor API
+adjustments), which gets us in a far better place than we are now.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3d504b685dd8..c1f2f83e25d2 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3498,7 +3498,13 @@ static int __init init_dmars(void)
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 		if (pasid_supported(iommu) && ecap_prs(iommu->ecap)) {
-+			/*
-+			 * Call dmar_alloc_hwirq() with dmar_global_lock held,
-+			 * could cause possible lock race condition.
-+			 */
-+			up_write(&dmar_global_lock);
- 			ret = intel_svm_enable_prq(iommu);
-+			down_write(&dmar_global_lock);
- 			if (ret)
- 				goto free_iommu;
- 		}
--- 
-2.17.1
-
+And we can always go to iterators later on. But I think getting the
+generic unwinder improved across all archs is a really important first
+step here.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
