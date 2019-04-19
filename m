@@ -2,57 +2,78 @@ Return-Path: <SRS0=myD+=SV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 963CEC282DA
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 08:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B02C282DA
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 08:33:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D5AD20869
-	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 08:24:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D5AD20869
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 90E9F218AE
+	for <iommu@archiver.kernel.org>; Fri, 19 Apr 2019 08:33:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 90E9F218AE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2F5782161;
-	Fri, 19 Apr 2019 08:24:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3AFB821BE;
+	Fri, 19 Apr 2019 08:33:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D1DC7211B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BDCE821A7
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 08:24:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 80A4F466
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Apr 2019 08:24:04 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 15E2C68BFE; Fri, 19 Apr 2019 10:23:49 +0200 (CEST)
-Date: Fri, 19 Apr 2019 10:23:48 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
-	helpers
-Message-ID: <20190419082348.GA22299@lst.de>
-References: <20190327080448.5500-1-hch@lst.de>
-	<20190327080448.5500-13-hch@lst.de>
-	<b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com>
-	<20190410061157.GA5278@lst.de> <20190417063358.GA24139@lst.de>
-	<83615173-a8b4-e0eb-bac3-1a58d61ea4ef@arm.com>
-	<20190418163512.GA25347@lst.de>
-	<228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com>
+	Fri, 19 Apr 2019 08:32:49 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E552823;
+	Fri, 19 Apr 2019 08:32:48 +0000 (UTC)
+Received: from pd9ef12d2.dip0.t-ipconnect.de ([217.239.18.210] helo=nanos)
+	by Galois.linutronix.de with esmtpsa
+	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
+	(envelope-from <tglx@linutronix.de>)
+	id 1hHOwh-0001UI-Ot; Fri, 19 Apr 2019 10:32:31 +0200
+Date: Fri, 19 Apr 2019 10:32:30 +0200 (CEST)
+From: Thomas Gleixner <tglx@linutronix.de>
+To: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [patch V2 28/29] stacktrace: Provide common infrastructure
+In-Reply-To: <20190419071843.GM4038@hirez.programming.kicks-ass.net>
+Message-ID: <alpine.DEB.2.21.1904191031390.3174@nanos.tec.linutronix.de>
+References: <20190418084119.056416939@linutronix.de>
+	<20190418084255.652003111@linutronix.de>
+	<20190419071843.GM4038@hirez.programming.kicks-ass.net>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Tom Lendacky <thomas.lendacky@amd.com>,
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
+	SHORTCIRCUIT=-0.0001
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
-	linux-arm-kernel@lists.infradead.org
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
+	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
+	x86@kernel.org, kasan-dev@googlegroups.com,
+	David Rientjes <rientjes@google.com>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+	David Sterba <dsterba@suse.com>,
+	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
+	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
+	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,183 +90,43 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190419082348.0MpeoeTNzI9TWowhYhBxpiWsiNNCVPRuC-3rzsz1cEA@z>
+Message-ID: <20190419083230.UmYfKr2ep0BrxPTvjVzdCMzh_jbbdWmNWCFjZoixL_Q@z>
 
-On Thu, Apr 18, 2019 at 07:15:00PM +0100, Robin Murphy wrote:
-> Still, I've worked in the vm_map_pages() stuff pending in MM and given them 
-> the same treatment to finish the picture. Both x86_64_defconfig and 
-> i386_defconfig do indeed compile and link fine as I expected, so I really 
-> would like to understand the concern around #ifdefs better.
+On Fri, 19 Apr 2019, Peter Zijlstra wrote:
+> On Thu, Apr 18, 2019 at 10:41:47AM +0200, Thomas Gleixner wrote:
+> 
+> > +typedef bool (*stack_trace_consume_fn)(void *cookie, unsigned long addr,
+> > +                                      bool reliable);
+> 
+> > +void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
+> > +		     struct task_struct *task, struct pt_regs *regs);
+> > +int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry, void *cookie,
+> > +			     struct task_struct *task);
+> 
+> This bugs me a little; ideally the _reliable() thing would not exists.
+> 
+> Thomas said that the existing __save_stack_trace_reliable() is different
+> enough for the unification to be non-trivial, but maybe Josh can help
+> out?
+> 
+> >From what I can see the biggest significant differences are:
+> 
+>  - it looks at the regs sets on the stack and for FP bails early
+>  - bails for khreads and idle (after it does all the hard work!?!)
+> 
+> The first (FP checking for exceptions) should probably be reflected in
+> consume_fn(.reliable) anyway -- although that would mean a lot of extra
+> '?' entries where there are none today.
+> 
+> And the second (KTHREAD/IDLE) is something that the generic code can
+> easily do before calling into the arch unwinder.
 
-This looks generally fine to me.  One thing I'd like to do is to
-generally make use of the fact that __iommu_dma_get_pages returns NULL
-for the force contigous case as that cleans up a few things.  Also
-for the !DMA_REMAP case we need to try the page allocator when
-dma_alloc_from_contiguous does not return a page.  What do you thing
-of the following incremental diff?  If that is fine with you I can
-fold that in and add back in the remaining patches from my series
-not obsoleted by your patches and resend.
+And looking at the powerpc version of it, that has even more interesting
+extra checks in that function.
 
+Thanks,
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1bc8d1de1a1d..50b44e220de3 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -894,7 +894,7 @@ static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- 
- static void __iommu_dma_free(struct device *dev, void *cpu_addr, size_t size)
- {
--	struct page *page, **pages;
-+	struct page *page = NULL;
- 	int count = size >> PAGE_SHIFT;
- 
- 	/* Non-coherent atomic allocation? Easy */
-@@ -902,24 +902,26 @@ static void __iommu_dma_free(struct device *dev, void *cpu_addr, size_t size)
- 	    dma_free_from_pool(cpu_addr, size))
- 		return;
- 
--	/* Lowmem means a coherent atomic or CMA allocation */
--	if (!IS_ENABLED(CONFIG_DMA_REMAP) || !is_vmalloc_addr(cpu_addr)) {
--		page = virt_to_page(cpu_addr);
--		if (!dma_release_from_contiguous(dev, page, count))
--			__free_pages(page, get_order(size));
--		return;
--	}
--	/*
--	 * If it's remapped, then it's either non-coherent or highmem CMA, or
--	 * an iommu_dma_alloc_remap() construction.
--	 */
--	page = vmalloc_to_page(cpu_addr);
--	if (!dma_release_from_contiguous(dev, page, count)) {
--		pages = __iommu_dma_get_pages(cpu_addr);
-+	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+		/*
-+		 * If it the address is remapped, then it's either non-coherent
-+		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
-+		 */
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
-+
- 		if (pages)
- 			__iommu_dma_free_pages(pages, count);
-+		else
-+			page = vmalloc_to_page(cpu_addr);
-+
-+		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
-+	} else {
-+		/* Lowmem means a coherent atomic or CMA allocation */
-+		page = virt_to_page(cpu_addr);
- 	}
--	dma_common_free_remap(cpu_addr, size, VM_USERMAP);
-+
-+	if (page && !dma_release_from_contiguous(dev, page, count))
-+		__free_pages(page, get_order(size));
- }
- 
- static void *iommu_dma_alloc(struct device *dev, size_t size,
-@@ -935,25 +937,26 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 
- 	gfp |= __GFP_ZERO;
- 
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
-+	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
-+		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
-+
- 	if (!gfpflags_allow_blocking(gfp)) {
--		if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) && !coherent)
-+		if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) && !coherent) {
- 			cpu_addr = dma_alloc_from_pool(alloc_size, &page, gfp);
--		else
--			page = alloc_pages(gfp, page_order);
--	} else if (!IS_ENABLED(CONFIG_DMA_REMAP) ||
--		   (attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
-+			if (!cpu_addr)
-+				return NULL;
-+			goto do_iommu_map;
-+		}
-+	} else {
- 		page = dma_alloc_from_contiguous(dev, count, page_order,
- 						 gfp & __GFP_NOWARN);
--	} else {
--		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
- 	}
--
-+	if (!page)
-+		page = alloc_pages(gfp, page_order);
- 	if (!page)
- 		return NULL;
- 
--	if (cpu_addr)
--		goto do_iommu_map;
--
- 	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
- 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 
-@@ -1007,16 +1010,14 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
- 		return -ENXIO;
- 
--	if (!is_vmalloc_addr(cpu_addr)) {
--		pfn = page_to_pfn(virt_to_page(cpu_addr));
--	} else if (!IS_ENABLED(CONFIG_DMA_REMAP) ||
--		 (attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
-+
-+		if (pages)
-+			return vm_map_pages(vma, pages, nr_pages);
- 		pfn = vmalloc_to_pfn(cpu_addr);
- 	} else {
--		struct page **pages = __iommu_dma_get_pages(cpu_addr);
--		if (!pages)
--			return -ENXIO;
--		return vm_map_pages(vma, pages, nr_pages);
-+		pfn = page_to_pfn(virt_to_page(cpu_addr));
- 	}
- 
- 	return remap_pfn_range(vma, vma->vm_start, pfn + off,
-@@ -1028,26 +1029,25 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs)
- {
--	struct page *page = NULL, **pages = NULL;
--	int ret = -ENXIO;
-+	struct page *page;
-+	int ret;
- 
--	if (!is_vmalloc_addr(cpu_addr))
--		page = virt_to_page(cpu_addr);
--	else if (!IS_ENABLED(CONFIG_DMA_REMAP) ||
--		 (attrs & DMA_ATTR_FORCE_CONTIGUOUS))
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
-+
-+		if (pages)
-+			return sg_alloc_table_from_pages(sgt,
-+					__iommu_dma_get_pages(cpu_addr),
-+					PAGE_ALIGN(size) >> PAGE_SHIFT, 0, size,
-+					GFP_KERNEL);
- 		page = vmalloc_to_page(cpu_addr);
--	else
--		pages = __iommu_dma_get_pages(cpu_addr);
--
--	if (page) {
--		ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
--		if (!ret)
--			sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
--	} else if (pages) {
--		ret = sg_alloc_table_from_pages(sgt, pages,
--						PAGE_ALIGN(size) >> PAGE_SHIFT,
--						0, size, GFP_KERNEL);
-+	} else {
-+		page = virt_to_page(cpu_addr);
- 	}
-+
-+	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
-+	if (!ret)
-+		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
- 	return ret;
- }
- 
+	tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
