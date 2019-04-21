@@ -6,45 +6,44 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3192C282DD
-	for <iommu@archiver.kernel.org>; Sun, 21 Apr 2019 01:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC69BC282DD
+	for <iommu@archiver.kernel.org>; Sun, 21 Apr 2019 01:25:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7DF5420651
-	for <iommu@archiver.kernel.org>; Sun, 21 Apr 2019 01:25:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7DF5420651
+	by mail.kernel.org (Postfix) with ESMTPS id C94DC20651
+	for <iommu@archiver.kernel.org>; Sun, 21 Apr 2019 01:25:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C94DC20651
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 582C82C9A;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9CAA22CAC;
 	Sun, 21 Apr 2019 01:25:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 301602BE9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2DAF82BE9
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 21 Apr 2019 01:24:11 +0000 (UTC)
+	Sun, 21 Apr 2019 01:24:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B8AD614D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9B5AA782
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 21 Apr 2019 01:24:10 +0000 (UTC)
+	Sun, 21 Apr 2019 01:24:13 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
 	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	20 Apr 2019 18:24:10 -0700
+	20 Apr 2019 18:24:13 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,376,1549958400"; d="scan'208";a="136008189"
+X-IronPort-AV: E=Sophos;i="5.60,376,1549958400"; d="scan'208";a="136008192"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga008.jf.intel.com with ESMTP; 20 Apr 2019 18:24:07 -0700
+	by orsmga008.jf.intel.com with ESMTP; 20 Apr 2019 18:24:10 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: David Woodhouse <dwmw2@infradead.org>,
 	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 08/10] iommu/vt-d: Check whether device requires bounce
-	buffer
-Date: Sun, 21 Apr 2019 09:17:17 +0800
-Message-Id: <20190421011719.14909-9-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 09/10] iommu/vt-d: Add dma sync ops for untrusted devices
+Date: Sun, 21 Apr 2019 09:17:18 +0800
+Message-Id: <20190421011719.14909-10-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190421011719.14909-1-baolu.lu@linux.intel.com>
 References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
@@ -71,13 +70,11 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190421011717.0ih9cL4Pvy0brf77fQjWWsSMuY8KcUkyLeqG22KqW0Y@z>
+Message-ID: <20190421011718.Ff723N90N1Mk5cR5-N9oRVTQzw11ayN6DylAjpy0wdk@z>
 
-This adds a helper to check whether a device needs to
-use bounce buffer. It also provides a boot time option
-to disable the bounce buffer. Users can use this to
-prevent the iommu driver from using the bounce buffer
-for performance gain.
+This adds the dma sync ops for dma buffers used by any
+untrusted device. We need to sync such buffers because
+they might have been mapped with bounce pages.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -86,68 +83,130 @@ Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Tested-by: Xu Pengfei <pengfei.xu@intel.com>
 Tested-by: Mika Westerberg <mika.westerberg@intel.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  5 +++++
- drivers/iommu/intel-iommu.c                     | 17 +++++++++++++++++
- 2 files changed, 22 insertions(+)
+ drivers/iommu/Kconfig       |  1 +
+ drivers/iommu/intel-iommu.c | 96 +++++++++++++++++++++++++++++++++----
+ 2 files changed, 88 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2b8ee90bb644..86880eb3fc73 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1726,6 +1726,11 @@
- 			Note that using this option lowers the security
- 			provided by tboot because it makes the system
- 			vulnerable to DMA attacks.
-+		nobounce [Default off]
-+			Do not use the bounce buffer for untrusted devices like
-+			the Thunderbolt devices. This will treat the untrusted
-+			devices as the trusted ones, hence might expose security
-+			risks of DMA attacks.
- 
- 	intel_idle.max_cstate=	[KNL,HW,ACPI,X86]
- 			0	disables intel_idle and fall back on acpi_idle.
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index b918c22ca25b..f3191ec29e45 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -194,6 +194,7 @@ config INTEL_IOMMU
+ 	select IOMMU_IOVA
+ 	select NEED_DMA_MAP_STATE
+ 	select DMAR_TABLE
++	select IOMMU_BOUNCE_PAGE
+ 	help
+ 	  DMA remapping (DMAR) devices support enables independent address
+ 	  translations for Direct Memory Access (DMA) from devices.
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e4a164324bdd..0d80f26b8a72 100644
+index 0d80f26b8a72..ed941ec9b9d5 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -380,6 +380,7 @@ static int intel_iommu_strict;
- static int intel_iommu_superpage = 1;
- static int intel_iommu_sm;
- static int iommu_identity_mapping;
-+static int intel_no_bounce;
+@@ -3683,16 +3683,94 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
+ 	return nelems;
+ }
  
- #define IDENTMAP_ALL		1
- #define IDENTMAP_GFX		2
-@@ -396,6 +397,19 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
- 
-+static inline bool device_needs_bounce(struct device *dev)
++static void
++intel_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
++			  size_t size, enum dma_data_direction dir)
 +{
-+	struct pci_dev *pdev = NULL;
++	if (WARN_ON(dir == DMA_NONE))
++		return;
 +
-+	if (intel_no_bounce)
-+		return false;
++	if (!device_needs_bounce(dev))
++		return;
 +
-+	if (dev_is_pci(dev))
-+		pdev = to_pci_dev(dev);
++	if (iommu_no_mapping(dev))
++		return;
 +
-+	return pdev ? pdev->untrusted : false;
++	iommu_bounce_sync_single(dev, addr, size, dir, SYNC_FOR_CPU);
 +}
 +
- /*
-  * Iterate over elements in device_domain_list and call the specified
-  * callback @fn against each element.
-@@ -478,6 +492,9 @@ static int __init intel_iommu_setup(char *str)
- 			printk(KERN_INFO
- 				"Intel-IOMMU: not forcing on after tboot. This could expose security risk for tboot\n");
- 			intel_iommu_tboot_noforce = 1;
-+		} else if (!strncmp(str, "nobounce", 8)) {
-+			pr_info("Intel-IOMMU: No bounce buffer. This could expose security risks of DMA attacks\n");
-+			intel_no_bounce = 1;
- 		}
++static void
++intel_sync_single_for_device(struct device *dev, dma_addr_t addr,
++			     size_t size, enum dma_data_direction dir)
++{
++	if (WARN_ON(dir == DMA_NONE))
++		return;
++
++	if (!device_needs_bounce(dev))
++		return;
++
++	if (iommu_no_mapping(dev))
++		return;
++
++	iommu_bounce_sync_single(dev, addr, size, dir, SYNC_FOR_DEVICE);
++}
++
++static void
++intel_sync_sg_for_cpu(struct device *dev, struct scatterlist *sglist,
++		      int nelems, enum dma_data_direction dir)
++{
++	struct scatterlist *sg;
++	int i;
++
++	if (WARN_ON(dir == DMA_NONE))
++		return;
++
++	if (!device_needs_bounce(dev))
++		return;
++
++	if (iommu_no_mapping(dev))
++		return;
++
++	for_each_sg(sglist, sg, nelems, i)
++		iommu_bounce_sync_single(dev, sg_dma_address(sg),
++					 sg_dma_len(sg), dir, SYNC_FOR_CPU);
++}
++
++static void
++intel_sync_sg_for_device(struct device *dev, struct scatterlist *sglist,
++			 int nelems, enum dma_data_direction dir)
++{
++	struct scatterlist *sg;
++	int i;
++
++	if (WARN_ON(dir == DMA_NONE))
++		return;
++
++	if (!device_needs_bounce(dev))
++		return;
++
++	if (iommu_no_mapping(dev))
++		return;
++
++	for_each_sg(sglist, sg, nelems, i)
++		iommu_bounce_sync_single(dev, sg_dma_address(sg),
++					 sg_dma_len(sg), dir, SYNC_FOR_DEVICE);
++}
++
+ static const struct dma_map_ops intel_dma_ops = {
+-	.alloc = intel_alloc_coherent,
+-	.free = intel_free_coherent,
+-	.map_sg = intel_map_sg,
+-	.unmap_sg = intel_unmap_sg,
+-	.map_page = intel_map_page,
+-	.unmap_page = intel_unmap_page,
+-	.map_resource = intel_map_resource,
+-	.unmap_resource = intel_unmap_page,
+-	.dma_supported = dma_direct_supported,
++	.alloc			= intel_alloc_coherent,
++	.free			= intel_free_coherent,
++	.map_sg			= intel_map_sg,
++	.unmap_sg		= intel_unmap_sg,
++	.map_page		= intel_map_page,
++	.unmap_page		= intel_unmap_page,
++	.sync_single_for_cpu	= intel_sync_single_for_cpu,
++	.sync_single_for_device	= intel_sync_single_for_device,
++	.sync_sg_for_cpu	= intel_sync_sg_for_cpu,
++	.sync_sg_for_device	= intel_sync_sg_for_device,
++	.map_resource		= intel_map_resource,
++	.unmap_resource		= intel_unmap_page,
++	.dma_supported		= dma_direct_supported,
+ };
  
- 		str += strcspn(str, ",");
+ static inline int iommu_domain_cache_init(void)
 -- 
 2.17.1
 
