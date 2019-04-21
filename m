@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v3 04/10] swiotlb: Extend swiotlb to support page bounce
-Date: Sun, 21 Apr 2019 09:17:13 +0800
-Message-ID: <20190421011719.14909-5-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 06/10] iommu/vt-d: Add trace events for domain map/unmap
+Date: Sun, 21 Apr 2019 09:17:15 +0800
+Message-ID: <20190421011719.14909-7-baolu.lu@linux.intel.com>
 References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,146 +21,193 @@ To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roede
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This extends below swiotlb APIs to support page bounce.
+This adds trace support for the Intel IOMMU driver. It
+also declares some events which could be used to trace
+the events when an IOVA is being mapped or unmapped in
+a domain.
 
-- swiotlb_tbl_map_single()
-- swiotlb_tbl_unmap_single()
-
-In page bounce manner, swiotlb allocates a whole page from the
-slot pool, syncs the data, and returns the start place of the
-bounced buffer in the page. The caller is responsible to sync
-the data after DMA transfer with swiotlb_tbl_sync_single().
-
-In order to distinguish page bounce from other type of bounces,
-this introduces a new DMA attribution bit (DMA_ATTR_BOUNCE_PAGE)
-which will be set in the @attrs passed to these APIs.
-
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/dma-mapping.h |  6 +++++
- kernel/dma/swiotlb.c        | 53 ++++++++++++++++++++++++++++++++-----
- 2 files changed, 53 insertions(+), 6 deletions(-)
+ drivers/iommu/Makefile             |   1 +
+ drivers/iommu/intel-trace.c        |  14 +++
+ include/trace/events/intel_iommu.h | 132 +++++++++++++++++++++++++++++
+ 3 files changed, 147 insertions(+)
+ create mode 100644 drivers/iommu/intel-trace.c
+ create mode 100644 include/trace/events/intel_iommu.h
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 75e60be91e5f..26e506e5b04c 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -70,6 +70,12 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 8c71a15e986b..8b5fb8051281 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
+ obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+ obj-$(CONFIG_DMAR_TABLE) += dmar.o
+ obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o intel-pasid.o
++obj-$(CONFIG_INTEL_IOMMU) += intel-trace.o
+ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += intel-iommu-debugfs.o
+ obj-$(CONFIG_INTEL_IOMMU_SVM) += intel-svm.o
+ obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
+diff --git a/drivers/iommu/intel-trace.c b/drivers/iommu/intel-trace.c
+new file mode 100644
+index 000000000000..bfb6a6e37a88
+--- /dev/null
++++ b/drivers/iommu/intel-trace.c
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * DMA_ATTR_BOUNCE_PAGE: used by the IOMMU sub-system to indicate that
-+ * the buffer is used as a bounce page in the DMA remapping page table.
++ * Intel IOMMU trace support
++ *
++ * Copyright (C) 2019 Intel Corporation
++ *
++ * Author: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 + */
-+#define DMA_ATTR_BOUNCE_PAGE		(1UL << 10)
 +
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.
-  * It can be given to a device to use as a DMA source or target.  A CPU cannot
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index dbb937ce79c8..96b87a11dee1 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -34,6 +34,7 @@
- #include <linux/scatterlist.h>
- #include <linux/mem_encrypt.h>
- #include <linux/set_memory.h>
-+#include <linux/iommu.h>
- #ifdef CONFIG_DEBUG_FS
- #include <linux/debugfs.h>
- #endif
-@@ -596,6 +597,14 @@ swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
- 	spin_unlock_irqrestore(&io_tlb_lock, flags);
- }
- 
-+static unsigned long
-+get_iommu_pgsize(struct device *dev, phys_addr_t phys, size_t size)
-+{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++#include <linux/string.h>
++#include <linux/types.h>
 +
-+	return domain_minimal_pgsize(domain);
-+}
++#define CREATE_TRACE_POINTS
++#include <trace/events/intel_iommu.h>
+diff --git a/include/trace/events/intel_iommu.h b/include/trace/events/intel_iommu.h
+new file mode 100644
+index 000000000000..49ca57a90079
+--- /dev/null
++++ b/include/trace/events/intel_iommu.h
+@@ -0,0 +1,132 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Intel IOMMU trace support
++ *
++ * Copyright (C) 2019 Intel Corporation
++ *
++ * Author: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
++ */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM intel_iommu
 +
- phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- 				   dma_addr_t tbl_dma_addr,
- 				   phys_addr_t orig_addr, size_t size,
-@@ -603,17 +612,37 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- 				   unsigned long attrs)
- {
- 	phys_addr_t tlb_addr;
-+	unsigned long offset = 0;
++#if !defined(_TRACE_INTEL_IOMMU_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_INTEL_IOMMU_H
 +
-+	if (attrs & DMA_ATTR_BOUNCE_PAGE) {
-+		unsigned long pgsize = get_iommu_pgsize(hwdev, orig_addr, size);
++#include <linux/tracepoint.h>
++#include <linux/intel-iommu.h>
 +
-+		offset = orig_addr & (pgsize - 1);
++TRACE_EVENT(bounce_map_single,
++	TP_PROTO(struct device *dev, dma_addr_t dev_addr, phys_addr_t phys_addr,
++		 size_t size),
 +
-+		/* Don't allow the buffer to cross page boundary. */
-+		if (offset + size > pgsize)
-+			return DMA_MAPPING_ERROR;
++	TP_ARGS(dev, dev_addr, phys_addr, size),
 +
-+		tlb_addr = swiotlb_tbl_alloc_tlb(hwdev,
-+				__phys_to_dma(hwdev, io_tlb_start),
-+				ALIGN_DOWN(orig_addr, pgsize), pgsize);
-+	} else {
-+		tlb_addr = swiotlb_tbl_alloc_tlb(hwdev,
-+				tbl_dma_addr, orig_addr, size);
-+	}
- 
--	tlb_addr = swiotlb_tbl_alloc_tlb(hwdev, tbl_dma_addr, orig_addr, size);
- 	if (tlb_addr == DMA_MAPPING_ERROR) {
- 		if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
- 			dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n",
- 				 size);
--	} else if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--		   (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)) {
--		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
-+		return DMA_MAPPING_ERROR;
- 	}
- 
-+	tlb_addr += offset;
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-+	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
-+		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
++	TP_STRUCT__entry(
++		__string(dev_name, dev_name(dev))
++		__field(dma_addr_t, dev_addr)
++		__field(phys_addr_t, phys_addr)
++		__field(size_t,	size)
++	),
 +
- 	return tlb_addr;
- }
- 
-@@ -626,6 +655,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- {
- 	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
- 	phys_addr_t orig_addr = io_tlb_orig_addr[index];
-+	unsigned long offset = 0;
++	TP_fast_assign(
++		__assign_str(dev_name, dev_name(dev));
++		__entry->dev_addr = dev_addr;
++		__entry->phys_addr = phys_addr;
++		__entry->size = size;
++	),
 +
-+	if (attrs & DMA_ATTR_BOUNCE_PAGE)
-+		offset = tlb_addr & ((1 << IO_TLB_SHIFT) - 1);
- 
- 	/*
- 	 * First, sync the memory before unmapping the entry
-@@ -633,9 +666,17 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- 	if (orig_addr != INVALID_PHYS_ADDR &&
- 	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
- 	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
--		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_FROM_DEVICE);
-+		swiotlb_bounce(orig_addr + offset,
-+			       tlb_addr, size, DMA_FROM_DEVICE);
++	TP_printk("dev=%s dev_addr=0x%llx phys_addr=0x%llx size=%zu",
++		  __get_str(dev_name),
++		  (unsigned long long)__entry->dev_addr,
++		  (unsigned long long)__entry->phys_addr,
++		  __entry->size)
++);
 +
-+	if (attrs & DMA_ATTR_BOUNCE_PAGE) {
-+		unsigned long pgsize = get_iommu_pgsize(hwdev, tlb_addr, size);
- 
--	swiotlb_tbl_free_tlb(hwdev, tlb_addr, size);
-+		swiotlb_tbl_free_tlb(hwdev,
-+				     ALIGN_DOWN(tlb_addr, pgsize), pgsize);
-+	} else {
-+		swiotlb_tbl_free_tlb(hwdev, tlb_addr, size);
-+	}
- }
- 
- void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
++TRACE_EVENT(bounce_unmap_single,
++	TP_PROTO(struct device *dev, dma_addr_t dev_addr, size_t size),
++
++	TP_ARGS(dev, dev_addr, size),
++
++	TP_STRUCT__entry(
++		__string(dev_name, dev_name(dev))
++		__field(dma_addr_t, dev_addr)
++		__field(size_t,	size)
++	),
++
++	TP_fast_assign(
++		__assign_str(dev_name, dev_name(dev));
++		__entry->dev_addr = dev_addr;
++		__entry->size = size;
++	),
++
++	TP_printk("dev=%s dev_addr=0x%llx size=%zu",
++		  __get_str(dev_name),
++		  (unsigned long long)__entry->dev_addr,
++		  __entry->size)
++);
++
++TRACE_EVENT(bounce_map_sg,
++	TP_PROTO(struct device *dev, unsigned int i, unsigned int nelems,
++		 dma_addr_t dev_addr, phys_addr_t phys_addr, size_t size),
++
++	TP_ARGS(dev, i, nelems, dev_addr, phys_addr, size),
++
++	TP_STRUCT__entry(
++		__string(dev_name, dev_name(dev))
++		__field(unsigned int, i)
++		__field(unsigned int, last)
++		__field(dma_addr_t, dev_addr)
++		__field(phys_addr_t, phys_addr)
++		__field(size_t,	size)
++	),
++
++	TP_fast_assign(
++		__assign_str(dev_name, dev_name(dev));
++		__entry->i = i;
++		__entry->last = nelems - 1;
++		__entry->dev_addr = dev_addr;
++		__entry->phys_addr = phys_addr;
++		__entry->size = size;
++	),
++
++	TP_printk("dev=%s elem=%u/%u dev_addr=0x%llx phys_addr=0x%llx size=%zu",
++		  __get_str(dev_name), __entry->i, __entry->last,
++		  (unsigned long long)__entry->dev_addr,
++		  (unsigned long long)__entry->phys_addr,
++		  __entry->size)
++);
++
++TRACE_EVENT(bounce_unmap_sg,
++	TP_PROTO(struct device *dev, unsigned int i, unsigned int nelems,
++		 dma_addr_t dev_addr, phys_addr_t phys_addr, size_t size),
++
++	TP_ARGS(dev, i, nelems, dev_addr, phys_addr, size),
++
++	TP_STRUCT__entry(
++		__string(dev_name, dev_name(dev))
++		__field(unsigned int, i)
++		__field(unsigned int, last)
++		__field(dma_addr_t, dev_addr)
++		__field(phys_addr_t, phys_addr)
++		__field(size_t,	size)
++	),
++
++	TP_fast_assign(
++		__assign_str(dev_name, dev_name(dev));
++		__entry->i = i;
++		__entry->last = nelems - 1;
++		__entry->dev_addr = dev_addr;
++		__entry->phys_addr = phys_addr;
++		__entry->size = size;
++	),
++
++	TP_printk("dev=%s elem=%u/%u dev_addr=0x%llx phys_addr=0x%llx size=%zu",
++		  __get_str(dev_name), __entry->i, __entry->last,
++		  (unsigned long long)__entry->dev_addr,
++		  (unsigned long long)__entry->phys_addr,
++		  __entry->size)
++);
++#endif /* _TRACE_INTEL_IOMMU_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
 -- 
 2.17.1
