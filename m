@@ -1,175 +1,148 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Date: Fri, 19 Apr 2019 19:09:14 -0400
-Message-ID: <20190419190258-mutt-send-email-mst@kernel.org>
-References: <87zhrj8kcp.fsf@morokweng.localdomain>
- <87womn8inf.fsf@morokweng.localdomain>
- <20190129134750-mutt-send-email-mst@kernel.org>
- <877eefxvyb.fsf@morokweng.localdomain>
- <20190204144048-mutt-send-email-mst@kernel.org>
- <87ef71seve.fsf@morokweng.localdomain>
- <20190320171027-mutt-send-email-mst@kernel.org>
- <87tvfvbwpb.fsf@morokweng.localdomain>
- <20190323165456-mutt-send-email-mst@kernel.org>
- <87a7go71hz.fsf@morokweng.localdomain>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v3 00/10] iommu: Bounce page for untrusted devices
+Date: Sun, 21 Apr 2019 09:17:09 +0800
+Message-ID: <20190421011719.14909-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87a7go71hz.fsf@morokweng.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Michael Roth <mdroth@linux.vnet.ibm.com>, Mike Anderson <andmike@linux.ibm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
-> 
-> Michael S. Tsirkin <mst@redhat.com> writes:
-> 
-> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
-> >>
-> >> Michael S. Tsirkin <mst@redhat.com> writes:
-> >>
-> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
-> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
-> >> >> only ever try to access memory addresses that are supplied to it by the
-> >> >> guest, so all of the secure guest memory that the host cares about is
-> >> >> accessible:
-> >> >>
-> >> >>     If this feature bit is set to 0, then the device has same access to
-> >> >>     memory addresses supplied to it as the driver has. In particular,
-> >> >>     the device will always use physical addresses matching addresses
-> >> >>     used by the driver (typically meaning physical addresses used by the
-> >> >>     CPU) and not translated further, and can access any address supplied
-> >> >>     to it by the driver. When clear, this overrides any
-> >> >>     platform-specific description of whether device access is limited or
-> >> >>     translated in any way, e.g. whether an IOMMU may be present.
-> >> >>
-> >> >> All of the above is true for POWER guests, whether they are secure
-> >> >> guests or not.
-> >> >>
-> >> >> Or are you saying that a virtio device may want to access memory
-> >> >> addresses that weren't supplied to it by the driver?
-> >> >
-> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
-> >> > specific encrypted memory regions that driver has access to but device
-> >> > does not. that seems to violate the constraint.
-> >>
-> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
-> >> the device can ignore the IOMMU for all practical purposes I would
-> >> indeed say that the logic would apply to IOMMUs as well. :-)
-> >>
-> >> I guess I'm still struggling with the purpose of signalling to the
-> >> driver that the host may not have access to memory addresses that it
-> >> will never try to access.
-> >
-> > For example, one of the benefits is to signal to host that driver does
-> > not expect ability to access all memory. If it does, host can
-> > fail initialization gracefully.
-> 
-> But why would the ability to access all memory be necessary or even
-> useful? When would the host access memory that the driver didn't tell it
-> to access?
+The Thunderbolt vulnerabilities are public and have a nice
+name as Thunderclap [1] [3] nowadays. This patch series aims
+to mitigate those concerns.
 
-When I say all memory I mean even memory not allowed by the IOMMU.
+An external PCI device is a PCI peripheral device connected
+to the system through an external bus, such as Thunderbolt.
+What makes it different is that it can't be trusted to the
+same degree as the devices build into the system. Generally,
+a trusted PCIe device will DMA into the designated buffers
+and not overrun or otherwise write outside the specified
+bounds. But it's different for an external device.
 
+The minimum IOMMU mapping granularity is one page (4k), so
+for DMA transfers smaller than that a malicious PCIe device
+can access the whole page of memory even if it does not
+belong to the driver in question. This opens a possibility
+for DMA attack. For more information about DMA attacks
+imposed by an untrusted PCI/PCIe device, please refer to [2].
 
-> >> >> >> > But the name "sev_active" makes me scared because at least AMD guys who
-> >> >> >> > were doing the sensible thing and setting ACCESS_PLATFORM
-> >> >> >>
-> >> >> >> My understanding is, AMD guest-platform knows in advance that their
-> >> >> >> guest will run in secure mode and hence sets the flag at the time of VM
-> >> >> >> instantiation. Unfortunately we dont have that luxury on our platforms.
-> >> >> >
-> >> >> > Well you do have that luxury. It looks like that there are existing
-> >> >> > guests that already acknowledge ACCESS_PLATFORM and you are not happy
-> >> >> > with how that path is slow. So you are trying to optimize for
-> >> >> > them by clearing ACCESS_PLATFORM and then you have lost ability
-> >> >> > to invoke DMA API.
-> >> >> >
-> >> >> > For example if there was another flag just like ACCESS_PLATFORM
-> >> >> > just not yet used by anyone, you would be all fine using that right?
-> >> >>
-> >> >> Yes, a new flag sounds like a great idea. What about the definition
-> >> >> below?
-> >> >>
-> >> >> VIRTIO_F_ACCESS_PLATFORM_NO_IOMMU This feature has the same meaning as
-> >> >>     VIRTIO_F_ACCESS_PLATFORM both when set and when not set, with the
-> >> >>     exception that the IOMMU is explicitly defined to be off or bypassed
-> >> >>     when accessing memory addresses supplied to the device by the
-> >> >>     driver. This flag should be set by the guest if offered, but to
-> >> >>     allow for backward-compatibility device implementations allow for it
-> >> >>     to be left unset by the guest. It is an error to set both this flag
-> >> >>     and VIRTIO_F_ACCESS_PLATFORM.
-> >> >
-> >> > It looks kind of narrow but it's an option.
-> >>
-> >> Great!
-> >>
-> >> > I wonder how we'll define what's an iommu though.
-> >>
-> >> Hm, it didn't occur to me it could be an issue. I'll try.
-> 
-> I rephrased it in terms of address translation. What do you think of
-> this version? The flag name is slightly different too:
-> 
-> 
-> VIRTIO_F_ACCESS_PLATFORM_NO_TRANSLATION This feature has the same
->     meaning as VIRTIO_F_ACCESS_PLATFORM both when set and when not set,
->     with the exception that address translation is guaranteed to be
->     unnecessary when accessing memory addresses supplied to the device
->     by the driver. Which is to say, the device will always use physical
->     addresses matching addresses used by the driver (typically meaning
->     physical addresses used by the CPU) and not translated further. This
->     flag should be set by the guest if offered, but to allow for
->     backward-compatibility device implementations allow for it to be
->     left unset by the guest. It is an error to set both this flag and
->     VIRTIO_F_ACCESS_PLATFORM.
+This implements bounce buffer for the untrusted external
+devices. The transfers should be limited in isolated pages
+so the IOMMU window does not cover memory outside of what
+the driver expects. Full pages within a buffer could be
+directly mapped in IOMMU page table, but for partial pages
+we use bounce page instead.
 
-Thanks, I'll think about this approach. Will respond next week.
+The implementation of bounce buffers for untrusted devices
+will cause a little performance overhead, but we didn't see
+any user experience problems. The users could use the kernel
+parameter defined in the IOMMU driver to remove the performance
+overhead if they trust their devices enough.
 
-> >> > Another idea is maybe something like virtio-iommu?
-> >>
-> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
-> >> bypass? If so, it's an interesting idea for new guests but it doesn't
-> >> help with guests that are out today in the field, which don't have A
-> >> virtio-iommu driver.
-> >
-> > I presume legacy guests don't use encrypted memory so why do we
-> > worry about them at all?
-> 
-> They don't use encrypted memory, but a host machine will run a mix of
-> secure and legacy guests. And since the hypervisor doesn't know whether
-> a guest will be secure or not at the time it is launched, legacy guests
-> will have to be launched with the same configuration as secure guests.
+The first part of this patch series (PATCH1/10 ~ 4/10) extends
+the swiotlb APIs to support bounce buffer in page manner. The
+second part (PATCH 5/10) introduce the APIs for bounce page:
 
-OK and so I think the issue is that hosts generally fail if they set
-ACCESS_PLATFORM and guests do not negotiate it.
-So you can not just set ACCESS_PLATFORM for everyone.
-Is that the issue here?
+ * iommu_bounce_map(dev, addr, paddr, size, dir, attrs)
+   - Map a buffer start at DMA address @addr in bounce page
+     manner. For buffer parts that doesn't cross a whole
+     minimal IOMMU page, the bounce page policy is applied.
+     A bounce page mapped by swiotlb will be used as the DMA
+     target in the IOMMU page table. Otherwise, the physical
+     address @paddr is mapped instead.
+ 
+ * iommu_bounce_unmap(dev, addr, size, dir, attrs)
+   - Unmap the buffer mapped with iommu_bounce_map(). The bounce
+     page will be torn down after the bounced data get synced.
+ 
+ * iommu_bounce_sync_single(dev, addr, size, dir, target)
+   - Synce the bounced data in case the bounce mapped buffer is
+     reused.
 
+The third part of this patch series (PATCH 6/10 ~ 10/10) uses
+the bounce page APIs to map/unmap/sync DMA buffers for those
+untrusted devices in Intel IOMMU driver.
 
-> >> >> > Is there any justification to doing that beyond someone putting
-> >> >> > out slow code in the past?
-> >> >>
-> >> >> The definition of the ACCESS_PLATFORM flag is generic and captures the
-> >> >> notion of memory access restrictions for the device. Unfortunately, on
-> >> >> powerpc pSeries guests it also implies that the IOMMU is turned on
-> >> >
-> >> > IIUC that's really because on pSeries IOMMU is *always* turned on.
-> >> > Platform has no way to say what you want it to say
-> >> > which is bypass the iommu for the specific device.
-> >>
-> >> Yes, that's correct. pSeries guests running on KVM are in a gray area
-> >> where theoretically they use an IOMMU but in practice KVM ignores it.
-> >> It's unfortunate but it's the reality on the ground today. :-/
-> >
-> > Well it's not just the reality, virt setups need something that
-> > emulated IOMMUs don't provide. That is not uncommon, e.g.
-> > intel's VTD has a "cache mode" field which AFAIK is only used for virt.
-> 
-> That's good to know. Thanks for this example.
-> 
-> --
-> Thiago Jung Bauermann
-> IBM Linux Technology Center
+The third part of this patch series depends on a patch set posted
+here [4] for discussion. It delegates Intel IOMMU DMA domains to
+the iommu generic layer.
+
+The bounce page idea:
+Based-on-idea-by: Mika Westerberg <mika.westerberg-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Based-on-idea-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Based-on-idea-by: Alan Cox <alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Based-on-idea-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+The patch series has been tested by:
+Tested-by: Xu Pengfei <pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Tested-by: Mika Westerberg <mika.westerberg-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+Reference:
+[1] https://thunderclap.io/
+[2] https://thunderclap.io/thunderclap-paper-ndss2019.pdf
+[3] https://christian.kellner.me/2019/02/27/thunderclap-and-linux/
+[4] https://lkml.org/lkml/2019/3/4/644
+
+Best regards,
+Lu Baolu
+
+Change log:
+  v2->v3:
+  - The previous v2 was posed here:
+    https://lkml.org/lkml/2019/3/27/157
+  - Reuse the existing swiotlb APIs for bounce buffer by
+    extending it to support bounce page.
+  - Move the bouce page APIs into iommu generic layer.
+  - This patch series is based on 5.1-rc1.
+
+  v1->v2:
+  - The previous v1 was posted here:
+    https://lkml.org/lkml/2019/3/12/66
+  - Refactor the code to remove struct bounce_param;
+  - During the v1 review cycle, we discussed the possibility
+    of reusing swiotlb code to avoid code dumplication, but
+    we found the swiotlb implementations are not ready for the
+    use of bounce page pool.
+    https://lkml.org/lkml/2019/3/19/259
+  - This patch series has been rebased to v5.1-rc2.
+
+Lu Baolu (10):
+  iommu: Add helper to get minimal page size of domain
+  swiotlb: Factor out slot allocation and free
+  swiotlb: Limit tlb address range inside slot pool
+  swiotlb: Extend swiotlb to support page bounce
+  iommu: Add bounce page APIs
+  iommu/vt-d: Add trace events for domain map/unmap
+  iommu/vt-d: Keep swiotlb on if bounce page is necessary
+  iommu/vt-d: Check whether device requires bounce buffer
+  iommu/vt-d: Add dma sync ops for untrusted devices
+  iommu/vt-d: Use bounce buffer for untrusted devices
+
+ .../admin-guide/kernel-parameters.txt         |   5 +
+ drivers/iommu/Kconfig                         |  15 +
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/intel-iommu.c                   | 276 ++++++++++++++----
+ drivers/iommu/intel-trace.c                   |  14 +
+ drivers/iommu/iommu.c                         | 275 +++++++++++++++++
+ include/linux/dma-mapping.h                   |   6 +
+ include/linux/iommu.h                         |  50 ++++
+ include/trace/events/intel_iommu.h            | 132 +++++++++
+ kernel/dma/swiotlb.c                          | 117 ++++++--
+ 10 files changed, 808 insertions(+), 83 deletions(-)
+ create mode 100644 drivers/iommu/intel-trace.c
+ create mode 100644 include/trace/events/intel_iommu.h
+
+-- 
+2.17.1
