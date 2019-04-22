@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 15/26] iommu/dma: Refactor iommu_dma_alloc
-Date: Mon, 22 Apr 2019 19:59:31 +0200
-Message-ID: <20190422175942.18788-16-hch@lst.de>
+Subject: [PATCH 16/26] iommu/dma: Don't remap CMA unnecessarily
+Date: Mon, 22 Apr 2019 19:59:32 +0200
+Message-ID: <20190422175942.18788-17-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,105 +14,53 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Robin Murphy <robin.murphy@arm.com>
 
-Shuffle around the self-contained atomic and non-contiguous cases to
-return early and get out of the way of the CMA case that we're about to
-work on next.
+Always remapping CMA allocations was largely a bodge to keep the freeing
+logic manageable when it was split between here and an arch wrapper. Now
+that it's all together and streamlined, we can relax that limitation.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-[hch: slight changes to the code flow]
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 60 +++++++++++++++++++--------------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+ drivers/iommu/dma-iommu.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9658c4cc3cfe..504dd27312bb 100644
+index 504dd27312bb..6f4febf5e1de 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -956,14 +956,19 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+@@ -956,7 +956,6 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
  {
  	bool coherent = dev_is_dma_coherent(dev);
  	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
-+	pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
+-	pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
  	size_t iosize = size;
-+	struct page *page;
+ 	struct page *page;
  	void *addr;
+@@ -1004,13 +1003,19 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	if (*handle == DMA_MAPPING_ERROR)
+ 		goto out_free_pages;
  
- 	size = PAGE_ALIGN(size);
- 	gfp |= __GFP_ZERO;
+-	addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
+-			__builtin_return_address(0));
+-	if (!addr)
+-		goto out_unmap;
++	if (!coherent || PageHighMem(page)) {
++		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
  
-+	if (gfpflags_allow_blocking(gfp) &&
-+	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
-+		return iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
+-	if (!coherent)
+-		arch_dma_prep_coherent(page, iosize);
++		addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
++				__builtin_return_address(0));
++		if (!addr)
++			goto out_unmap;
 +
- 	if (!gfpflags_allow_blocking(gfp)) {
--		struct page *page;
- 		/*
- 		 * In atomic context we can't remap anything, so we'll only
- 		 * get the virtually contiguous buffer we need by way of a
-@@ -985,39 +990,34 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 				__free_pages(page, get_order(size));
- 			else
- 				dma_free_from_pool(addr, size);
--			addr = NULL;
--		}
--	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
--		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
--		struct page *page;
--
--		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--					get_order(size), gfp & __GFP_NOWARN);
--		if (!page)
- 			return NULL;
--
--		*handle = __iommu_dma_map(dev, page_to_phys(page), iosize, ioprot);
--		if (*handle == DMA_MAPPING_ERROR) {
--			dma_release_from_contiguous(dev, page,
--						    size >> PAGE_SHIFT);
--			return NULL;
--		}
--		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
--						   prot,
--						   __builtin_return_address(0));
--		if (addr) {
--			if (!coherent)
--				arch_dma_prep_coherent(page, iosize);
--			memset(addr, 0, size);
--		} else {
--			__iommu_dma_unmap(dev, *handle, iosize);
--			dma_release_from_contiguous(dev, page,
--						    size >> PAGE_SHIFT);
- 		}
--	} else {
--		addr = iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
-+		return addr;
- 	}
-+
-+	page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
-+					 get_order(size), gfp & __GFP_NOWARN);
-+	if (!page)
-+		return NULL;
-+
-+	*handle = __iommu_dma_map(dev, page_to_phys(page), iosize, ioprot);
-+	if (*handle == DMA_MAPPING_ERROR)
-+		goto out_free_pages;
-+
-+	addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
-+			__builtin_return_address(0));
-+	if (!addr)
-+		goto out_unmap;
-+
-+	if (!coherent)
-+		arch_dma_prep_coherent(page, iosize);
-+	memset(addr, 0, size);
++		if (!coherent)
++			arch_dma_prep_coherent(page, iosize);
++	} else {
++		addr = page_address(page);
++	}
+ 	memset(addr, 0, size);
  	return addr;
-+out_unmap:
-+	__iommu_dma_unmap(dev, *handle, iosize);
-+out_free_pages:
-+	dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
-+	return NULL;
- }
- 
- static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
+ out_unmap:
 -- 
 2.20.1
