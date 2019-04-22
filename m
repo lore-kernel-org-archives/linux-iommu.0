@@ -2,75 +2,83 @@ Return-Path: <SRS0=kOFq=SY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 549DBC282E2
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 07:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D33C10F11
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 12:52:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 14C21213A2
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 07:10:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Wi6frBnN";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="JQmuOtU2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14C21213A2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id F1A142077C
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 12:52:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1A142077C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E1A971D1F;
-	Mon, 22 Apr 2019 07:10:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DD96E1EC3;
+	Mon, 22 Apr 2019 12:52:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D4B881D1E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C315D101E
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 07:10:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D3489829
+	Mon, 22 Apr 2019 12:33:12 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
+	[209.85.210.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C04E1829
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 07:10:52 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 92026615B0; Mon, 22 Apr 2019 07:10:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1555917052;
-	bh=uAi5cYsiLvl7oGhOuwY5p/liIWrZ/Lrhjglq9hnUl30=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Wi6frBnNeHaQCUYQDXOynObh9f4+b1pDnzN1iRQ2rs0+DOMg80SltYoS7xx7De6sh
-	4btrlahjphjQ3S5AYGoVy8y9bIr8RWjfgnxIiCDfZHyP3HgQ+PrIU3OVy5fIUdpS2T
-	pRDiaKha55RU5KrOzdU7rI3YeFPDT7Loi8WB280U=
-Received: from blr-ubuntu-41.ap.qualcomm.com
-	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
-	[103.229.18.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id 0C9B2604BE;
-	Mon, 22 Apr 2019 07:10:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1555917051;
-	bh=uAi5cYsiLvl7oGhOuwY5p/liIWrZ/Lrhjglq9hnUl30=;
-	h=From:To:Cc:Subject:Date:From;
-	b=JQmuOtU2ah7B6C7mVcRpEkmW2qLjBOh3hpxe/xQt/+0ryoq3WpXiVr+hq4YF25L8+
-	iG5rmswtXF5+lbpN8arkLctshQLYZj/RhRaWM2MvRnvXy6vHCG73oQ7aixh4p6N0D5
-	qMAVQn8R5jNLad6CeQCSVb4cnnENWYALoYs4ZHSY=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0C9B2604BE
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-To: joro@8bytes.org, will.deacon@arm.com, robin.murphy@arm.com,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH v2 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context fault
-Date: Mon, 22 Apr 2019 12:40:36 +0530
-Message-Id: <20190422071036.32671-1-vivek.gautam@codeaurora.org>
-X-Mailer: git-send-email 2.16.1.72.g5be1f00a9a70
-Cc: linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org
+	Mon, 22 Apr 2019 12:33:11 +0000 (UTC)
+Received: by mail-pf1-f196.google.com with SMTP id 8so5666481pfr.4
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Apr 2019 05:33:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+	:user-agent:mime-version:in-reply-to:content-language
+	:content-transfer-encoding;
+	bh=vLn+Kof7sEmcVl/KsYpnRdLNgg3fMUQp9bpI2yJlGNQ=;
+	b=VIWa6I4JTQfR39A0/6hh8mhN7bTsdKtaozUteDuOJe9RfaQ688fXExYXBnTO11PRCx
+	VVj2YkTQSos8Fb5lb9WHzH6lTFi0xdNFkw8mmRkh3nT/ERLv7QJWwmMNkonK4m66ft6A
+	gBcuTJ22PRtd4dTIqZ3zOd4j0pTSXkJfyWgESwYXsGgehvNRDPjtwChLSFcLxvMa7vHk
+	HosEOb8RY8j8ciLxygNnIvlcXY6yyToONK3uupOtv0SgnCmdl3qj9mbis1i5m7tTs0R1
+	Ot7ovfyC1ck0ud/hR2CkqehO5PoafWBoX6iohBJGLUnAKN3bngfXfUWDg8VUHpSZHnQy
+	jFSw==
+X-Gm-Message-State: APjAAAXRv4+1jR1y/zofHsHg5jjO4qmMxHsgpE5e6D3lX9L1sp0tHiR/
+	LNcR30uuQL1speI1BP8Yujcy4g==
+X-Google-Smtp-Source: APXvYqyC3kPnDknrObC7+6k/LBZJPREgpC8svVXOr3VN/uHIc9DHS8WFFFLK2nLuTc7u4xqEVTjhnA==
+X-Received: by 2002:a62:5582:: with SMTP id j124mr20429931pfb.53.1555936390738;
+	Mon, 22 Apr 2019 05:33:10 -0700 (PDT)
+Received: from localhost.localdomain ([182.69.198.211])
+	by smtp.gmail.com with ESMTPSA id
+	b7sm21973363pfj.67.2019.04.22.05.33.05
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Mon, 22 Apr 2019 05:33:09 -0700 (PDT)
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
+	work well when smmu is enabled
+To: Will Deacon <will.deacon@arm.com>,
+	"Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+	<20190404153031.GE27558@fuggles.cambridge.arm.com>
+	<5CAAB293.3080600@huawei.com>
+	<20190416091410.GC31579@fuggles.cambridge.arm.com>
+From: Bhupesh Sharma <bhsharma@redhat.com>
+Message-ID: <1846d5b7-bd57-e70e-4808-72c0172ed0ee@redhat.com>
+Date: Mon, 22 Apr 2019 18:03:02 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+	Thunderbird/52.2.1
+MIME-Version: 1.0
+In-Reply-To: <20190416091410.GC31579@fuggles.cambridge.arm.com>
+Content-Language: en-US
+X-Mailman-Approved-At: Mon, 22 Apr 2019 12:52:13 +0000
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	"kexec@lists.infradead.org" <kexec@lists.infradead.org>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Bhupesh SHARMA <bhupesh.linux@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,77 +91,122 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422071036.jmBrNsfo4T1SJS2E6QyJxLkwiqGm8kMkjGw87xntoCE@z>
+Message-ID: <20190422123302.gagnbY0BOHRyiUNATNNKKVMukU_3x_FyD7WRNSUuvdY@z>
 
-Bits[15:0] in CBFRSYNRA register contain information about
-StreamID of the incoming transaction that generated the
-fault. Dump CBFRSYNRA register to get this info.
-This is specially useful in a distributed SMMU architecture
-where multiple masters are connected to the SMMU.
-SID information helps to quickly identify the faulting
-master device.
+Hi Will,
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
+On 04/16/2019 02:44 PM, Will Deacon wrote:
+> On Mon, Apr 08, 2019 at 10:31:47AM +0800, Leizhen (ThunderTown) wrote:
+>> On 2019/4/4 23:30, Will Deacon wrote:
+>>> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
+>>>> v1 --> v2:
+>>>> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
+>>>> (Report abort to device, no event recorded) to suppress the event messages
+>>>> caused by the unexpected devices.
+>>>> 2. rewrite the patch description.
+>>>
+>>> This issue came up a while back:
+>>>
+>>> https://lore.kernel.org/linux-pci/20180302103032.GB19323@arm.com/
+>>>
+>>> and I'd still prefer to solve it using the disable_bypass logic which we
+>>> already have. Something along the lines of the diff below?
+>>
+>> Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
+>> SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
+>> are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
+>> (2-level Stream Table), we only allocated and initialized the first level tables,
+>> but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
+>> will be reported, if an unexpeted device access memory without reinitialized in
+>> kdump kernel.
+> 
+> So is your problem just that the C_BAD_STREAMID events are noisy? If so,
+> perhaps we should be disabling fault reporting entirely in the kdump kernel.
+> 
+> How about the update diff below? I'm keen to have this as simple as
+> possible, so we don't end up introducing rarely tested, complex code on
+> the crash path.
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index d3880010c6cf..d8b73da6447d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>   	/* Clear CR0 and sync (disables SMMU and queue processing) */
+>   	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+>   	if (reg & CR0_SMMUEN) {
+> -		if (is_kdump_kernel()) {
+> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> -			arm_smmu_device_disable(smmu);
+> -			return -EBUSY;
+> -		}
+> -
+>   		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
+> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
+> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+>   	}
+>   
+>   	ret = arm_smmu_device_disable(smmu);
+> @@ -2553,6 +2549,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>   		return ret;
+>   	}
+>   
+> +	if (is_kdump_kernel())
+> +		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+>   
+>   	/* Enable the SMMU interface, or ensure bypass */
+>   	if (!bypass || disable_bypass) {
+> 
 
-Changes since v1:
- - Addressed review comments, given by Bjorn, for nits.
+Thanks for the fix.
 
- drivers/iommu/arm-smmu-regs.h | 2 ++
- drivers/iommu/arm-smmu.c      | 7 +++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+I can confirm that after this kdump kernel boots well for me on huawei 
+boards, so feel free to add:
 
-diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-index a1226e4ab5f8..e9132a926761 100644
---- a/drivers/iommu/arm-smmu-regs.h
-+++ b/drivers/iommu/arm-smmu-regs.h
-@@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
- #define CBAR_IRPTNDX_SHIFT		24
- #define CBAR_IRPTNDX_MASK		0xff
- 
-+#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
-+
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
- #define CBA2R_RW64_32BIT		(0 << 0)
- #define CBA2R_RW64_64BIT		(1 << 0)
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 045d93884164..e000473f8205 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
- 	void __iomem *cb_base;
-+	u32 cbfrsynra;
- 
- 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
- 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
-@@ -585,10 +587,11 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 
- 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
- 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-+	cbfrsynra = readl_relaxed(gr1_base + ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
- 
- 	dev_err_ratelimited(smmu->dev,
--	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cfg->cbndx);
-+	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
-+			    fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
- 
- 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
- 	return IRQ_HANDLED;
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Tested-by: Bhupesh Sharma <bhsharma@redhat.com>
 
+Here are the kdump kernel logs without this fix:
+
+[    4.514181] arm-smmu-v3 arm-smmu-v3.1.auto: EVTQ overflow detected -- 
+events lost
+
+.. And then repeating messages like the following ..
+
+[    4.521654] arm-smmu-v3 arm-smmu-v3.1.auto: event 0x02 received:
+[    4.527654] arm-smmu-v3 arm-smmu-v3.1.auto:  0x00007d0200000002
+[    4.533567] arm-smmu-v3 arm-smmu-v3.1.auto:  0x000000010000017e
+[    4.539478] arm-smmu-v3 arm-smmu-v3.1.auto:  0x00000000ff6de000
+[    4.545390] arm-smmu-v3 arm-smmu-v3.1.auto:  0x000000000eee03e8
+
+And with the fix applied, kdump kernel logs can be seen below:
+
+[ 9136.361094] Starting crashdump kernel...
+[ 9136.365007] Bye!
+[    0.000000] Booting Linux on physical CPU 0x0000070002 [0x480fd010]
+[    0.000000] Linux version 5.1.0-rc6+
+
+<..snip..>
+
+[    3.424103] arm-smmu-v3 arm-smmu-v3.0.auto: option mask 0x0
+[    3.429674] arm-smmu-v3 arm-smmu-v3.0.auto: ias 48-bit, oas 48-bit 
+(features 0x00000fef)
+[    3.437780] arm-smmu-v3 arm-smmu-v3.0.auto: SMMU currently enabled! 
+Resetting...
+[    3.445431] arm-smmu-v3 arm-smmu-v3.1.auto: option mask 0x0
+
+
+<..snip..>
+
+Thanks,
+Bhupesh
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
