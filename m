@@ -1,71 +1,140 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 13/26] iommu/dma: Remove __iommu_dma_free
-Date: Mon, 22 Apr 2019 19:59:29 +0200
-Message-ID: <20190422175942.18788-14-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 20/26] iommu/dma: Refactor iommu_dma_alloc, part 2
+Date: Mon, 22 Apr 2019 19:59:36 +0200
+Message-ID: <20190422175942.18788-21-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190422175942.18788-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190422175942.18788-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-We only have a single caller of this function left, so open code it there.
+From: Robin Murphy <robin.murphy@arm.com>
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Apart from the iommu_dma_alloc_remap() case which remains sufficiently
+different that it's better off being self-contained, the rest of the
+logic can now be consolidated into a single flow which separates the
+logcially-distinct steps of allocating pages, getting the CPU address,
+and finally getting the IOMMU address.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+[hch: split the page allocation into a new helper to simplify the flow]
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 21 ++-------------------
- 1 file changed, 2 insertions(+), 19 deletions(-)
+ drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++------------------
+ 1 file changed, 35 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index b8e46e89a60a..4632b9d301a1 100644
+index 9b269f0792f3..acdfe866cb29 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -534,24 +534,6 @@ static struct page **__iommu_dma_get_pages(void *cpu_addr)
- 	return area->pages;
+@@ -955,35 +955,14 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 	__iommu_dma_free(dev, size, cpu_addr);
  }
  
--/**
-- * iommu_dma_free - Free a buffer allocated by iommu_dma_alloc_remap()
-- * @dev: Device which owns this buffer
-- * @pages: Array of buffer pages as returned by __iommu_dma_alloc_remap()
-- * @size: Size of buffer in bytes
-- * @handle: DMA address of buffer
-- *
-- * Frees both the pages associated with the buffer, and the array
-- * describing them
-- */
--static void __iommu_dma_free(struct device *dev, struct page **pages,
--		size_t size, dma_addr_t *handle)
--{
--	__iommu_dma_unmap(dev, *handle, size);
--	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
--	*handle = DMA_MAPPING_ERROR;
--}
--
- /**
-  * iommu_dma_alloc_remap - Allocate and map a buffer contiguous in IOVA space
-  * @dev: Device to allocate memory for. Must be a real device
-@@ -1034,7 +1016,8 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+-static void *iommu_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
++static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
++		struct page **pagep, gfp_t gfp, unsigned long attrs)
+ {
+ 	bool coherent = dev_is_dma_coherent(dev);
+-	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+ 	size_t alloc_size = PAGE_ALIGN(size);
+ 	struct page *page = NULL;
+ 	void *cpu_addr;
  
- 		if (WARN_ON(!pages))
- 			return;
--		__iommu_dma_free(dev, pages, iosize, &handle);
-+		__iommu_dma_unmap(dev, handle, iosize);
-+		__iommu_dma_free_pages(pages, size >> PAGE_SHIFT);
- 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+-	gfp |= __GFP_ZERO;
+-
+-	if (gfpflags_allow_blocking(gfp) &&
+-	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+-		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
+-
+-	if (!gfpflags_allow_blocking(gfp) && !coherent) {
+-		cpu_addr = dma_alloc_from_pool(alloc_size, &page, gfp);
+-		if (!cpu_addr)
+-			return NULL;
+-
+-		*handle = __iommu_dma_map(dev, page_to_phys(page), size,
+-					  ioprot);
+-		if (*handle == DMA_MAPPING_ERROR) {
+-			dma_free_from_pool(cpu_addr, alloc_size);
+-			return NULL;
+-		}
+-		return cpu_addr;
+-	}
+-
+ 	if (gfpflags_allow_blocking(gfp))
+ 		page = dma_alloc_from_contiguous(dev, alloc_size >> PAGE_SHIFT,
+ 						 get_order(alloc_size),
+@@ -993,33 +972,59 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	if (!page)
+ 		return NULL;
+ 
+-	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
+-	if (*handle == DMA_MAPPING_ERROR)
+-		goto out_free_pages;
+-
+ 	if (!coherent || PageHighMem(page)) {
+ 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
+ 
+ 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
+ 				VM_USERMAP, prot, __builtin_return_address(0));
+ 		if (!cpu_addr)
+-			goto out_unmap;
++			goto out_free_pages;
+ 
+ 		if (!coherent)
+ 			arch_dma_prep_coherent(page, size);
  	} else {
- 		__iommu_dma_unmap(dev, handle, iosize);
+ 		cpu_addr = page_address(page);
+ 	}
++
++	*pagep = page;
+ 	memset(cpu_addr, 0, alloc_size);
+ 	return cpu_addr;
+-out_unmap:
+-	__iommu_dma_unmap(dev, *handle, size);
+ out_free_pages:
+ 	if (!dma_release_from_contiguous(dev, page, alloc_size >> PAGE_SHIFT))
+ 		__free_pages(page, get_order(alloc_size));
+ 	return NULL;
+ }
+ 
++static void *iommu_dma_alloc(struct device *dev, size_t size,
++		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
++{
++	bool coherent = dev_is_dma_coherent(dev);
++	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
++	struct page *page = NULL;
++	void *cpu_addr;
++
++	gfp |= __GFP_ZERO;
++
++	if (gfpflags_allow_blocking(gfp) &&
++	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
++		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
++
++	if (!gfpflags_allow_blocking(gfp) && !coherent)
++		cpu_addr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
++	else
++		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
++	if (!cpu_addr)
++		return NULL;
++
++	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
++	if (*handle == DMA_MAPPING_ERROR) {
++		__iommu_dma_free(dev, size, cpu_addr);
++		return NULL;
++	}
++
++	return cpu_addr;
++}
++
+ static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
+ 			      unsigned long pfn, size_t size)
+ {
 -- 
 2.20.1
