@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 11/26] iommu/dma: Factor out remapped pages lookup
-Date: Mon, 22 Apr 2019 19:59:27 +0200
-Message-ID: <20190422175942.18788-12-hch@lst.de>
+Subject: [PATCH 14/26] iommu/dma: Refactor iommu_dma_free
+Date: Mon, 22 Apr 2019 19:59:30 +0200
+Message-ID: <20190422175942.18788-15-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,97 +14,112 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Robin Murphy <robin.murphy@arm.com>
 
-Since we duplicate the find_vm_area() logic a few times in places where
-we only care aboute the pages, factor out a helper to abstract it.
+The freeing logic was made particularly horrible by part of it being
+opaque to the arch wrapper, which led to a lot of convoluted repetition
+to ensure each path did everything in the right order. Now that it's
+all private, we can pick apart and consolidate the logically-distinct
+steps of freeing the IOMMU mapping, the underlying pages, and the CPU
+remap (if necessary) into something much more manageable.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-[hch: don't warn when not finding a region, as we'll rely on that later]
+[various cosmetic changes to the code flow]
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ drivers/iommu/dma-iommu.c | 75 ++++++++++++++++++---------------------
+ 1 file changed, 35 insertions(+), 40 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index b52c5d6be7b4..8e2d9733113e 100644
+index 4632b9d301a1..9658c4cc3cfe 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -525,6 +525,15 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
- 	return pages;
+@@ -916,6 +916,41 @@ static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ 	__iommu_dma_unmap(dev, handle, size);
  }
  
-+static struct page **__iommu_dma_get_pages(void *cpu_addr)
++static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
++		dma_addr_t handle, unsigned long attrs)
 +{
-+	struct vm_struct *area = find_vm_area(cpu_addr);
++	size_t alloc_size = PAGE_ALIGN(size);
++	int count = alloc_size >> PAGE_SHIFT;
++	struct page *page = NULL;
 +
-+	if (!area || !area->pages)
-+		return NULL;
-+	return area->pages;
++	__iommu_dma_unmap(dev, handle, size);
++
++	/* Non-coherent atomic allocation? Easy */
++	if (dma_free_from_pool(cpu_addr, alloc_size))
++		return;
++
++	if (is_vmalloc_addr(cpu_addr)) {
++		/*
++		 * If it the address is remapped, then it's either non-coherent
++		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
++		 */
++		struct page **pages = __iommu_dma_get_pages(cpu_addr);
++
++		if (pages)
++			__iommu_dma_free_pages(pages, count);
++		else
++			page = vmalloc_to_page(cpu_addr);
++
++		dma_common_free_remap(cpu_addr, alloc_size, VM_USERMAP);
++	} else {
++		/* Lowmem means a coherent atomic or CMA allocation */
++		page = virt_to_page(cpu_addr);
++	}
++
++	if (page && !dma_release_from_contiguous(dev, page, count))
++		__free_pages(page, get_order(alloc_size));
 +}
 +
- /**
-  * iommu_dma_free - Free a buffer allocated by __iommu_dma_alloc()
-  * @dev: Device which owns this buffer
-@@ -1023,11 +1032,11 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
- 		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
- 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
- 	} else if (is_vmalloc_addr(cpu_addr)){
--		struct vm_struct *area = find_vm_area(cpu_addr);
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
- 
--		if (WARN_ON(!area || !area->pages))
-+		if (WARN_ON(!pages))
- 			return;
--		__iommu_dma_free(dev, area->pages, iosize, &handle);
-+		__iommu_dma_free(dev, pages, iosize, &handle);
- 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
- 	} else {
- 		__iommu_dma_unmap(dev, handle, iosize);
-@@ -1049,7 +1058,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
  {
- 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	unsigned long off = vma->vm_pgoff;
--	struct vm_struct *area;
-+	struct page **pages;
- 	int ret;
- 
- 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-@@ -1074,11 +1083,10 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 		return __iommu_dma_mmap_pfn(vma, pfn, size);
- 	}
- 
--	area = find_vm_area(cpu_addr);
--	if (WARN_ON(!area || !area->pages))
-+	pages = __iommu_dma_get_pages(cpu_addr);
-+	if (WARN_ON_ONCE(!pages))
- 		return -ENXIO;
--
--	return __iommu_dma_mmap(area->pages, size, vma);
-+	return __iommu_dma_mmap(pages, size, vma);
+@@ -985,46 +1020,6 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	return addr;
  }
  
- static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
-@@ -1096,7 +1104,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		unsigned long attrs)
- {
- 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	struct vm_struct *area = find_vm_area(cpu_addr);
-+	struct page **pages;
- 
- 	if (!is_vmalloc_addr(cpu_addr)) {
- 		struct page *page = virt_to_page(cpu_addr);
-@@ -1112,10 +1120,10 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		return __iommu_dma_get_sgtable_page(sgt, page, size);
- 	}
- 
--	if (WARN_ON(!area || !area->pages))
-+	pages = __iommu_dma_get_pages(cpu_addr);
-+	if (WARN_ON_ONCE(!pages))
- 		return -ENXIO;
+-static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+-		dma_addr_t handle, unsigned long attrs)
+-{
+-	size_t iosize = size;
 -
--	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
-+	return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
- 					 GFP_KERNEL);
- }
- 
+-	size = PAGE_ALIGN(size);
+-	/*
+-	 * @cpu_addr will be one of 4 things depending on how it was allocated:
+-	 * - A remapped array of pages for contiguous allocations.
+-	 * - A remapped array of pages from iommu_dma_alloc_remap(), for all
+-	 *   non-atomic allocations.
+-	 * - A non-cacheable alias from the atomic pool, for atomic
+-	 *   allocations by non-coherent devices.
+-	 * - A normal lowmem address, for atomic allocations by
+-	 *   coherent devices.
+-	 * Hence how dodgy the below logic looks...
+-	 */
+-	if (dma_in_atomic_pool(cpu_addr, size)) {
+-		__iommu_dma_unmap(dev, handle, iosize);
+-		dma_free_from_pool(cpu_addr, size);
+-	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+-		struct page *page = vmalloc_to_page(cpu_addr);
+-
+-		__iommu_dma_unmap(dev, handle, iosize);
+-		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
+-		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+-	} else if (is_vmalloc_addr(cpu_addr)){
+-		struct page **pages = __iommu_dma_get_pages(cpu_addr);
+-
+-		if (WARN_ON(!pages))
+-			return;
+-		__iommu_dma_unmap(dev, handle, iosize);
+-		__iommu_dma_free_pages(pages, size >> PAGE_SHIFT);
+-		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+-	} else {
+-		__iommu_dma_unmap(dev, handle, iosize);
+-		__free_pages(virt_to_page(cpu_addr), get_order(size));
+-	}
+-}
+-
+ static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
+ 			      unsigned long pfn, size_t size)
+ {
 -- 
 2.20.1
