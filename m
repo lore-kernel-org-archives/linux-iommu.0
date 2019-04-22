@@ -1,73 +1,138 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: [PATCH v2 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context fault
-Date: Mon, 22 Apr 2019 12:40:36 +0530
-Message-ID: <20190422071036.32671-1-vivek.gautam@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, will.deacon@arm.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org
-Cc: vivek.gautam@codeaurora.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org
+From: Bhupesh Sharma <bhsharma@redhat.com>
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
+ work well when smmu is enabled
+Date: Mon, 22 Apr 2019 18:03:02 +0530
+Message-ID: <1846d5b7-bd57-e70e-4808-72c0172ed0ee@redhat.com>
+References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+ <20190404153031.GE27558@fuggles.cambridge.arm.com>
+ <5CAAB293.3080600@huawei.com>
+ <20190416091410.GC31579@fuggles.cambridge.arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190416091410.GC31579@fuggles.cambridge.arm.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Joerg Roedel <joro@8bytes.org>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>, Bhupesh SHARMA <bhupesh.linux@gmail.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Bits[15:0] in CBFRSYNRA register contain information about
-StreamID of the incoming transaction that generated the
-fault. Dump CBFRSYNRA register to get this info.
-This is specially useful in a distributed SMMU architecture
-where multiple masters are connected to the SMMU.
-SID information helps to quickly identify the faulting
-master device.
+Hi Will,
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
+On 04/16/2019 02:44 PM, Will Deacon wrote:
+> On Mon, Apr 08, 2019 at 10:31:47AM +0800, Leizhen (ThunderTown) wrote:
+>> On 2019/4/4 23:30, Will Deacon wrote:
+>>> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
+>>>> v1 --> v2:
+>>>> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
+>>>> (Report abort to device, no event recorded) to suppress the event messages
+>>>> caused by the unexpected devices.
+>>>> 2. rewrite the patch description.
+>>>
+>>> This issue came up a while back:
+>>>
+>>> https://lore.kernel.org/linux-pci/20180302103032.GB19323@arm.com/
+>>>
+>>> and I'd still prefer to solve it using the disable_bypass logic which we
+>>> already have. Something along the lines of the diff below?
+>>
+>> Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
+>> SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
+>> are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
+>> (2-level Stream Table), we only allocated and initialized the first level tables,
+>> but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
+>> will be reported, if an unexpeted device access memory without reinitialized in
+>> kdump kernel.
+> 
+> So is your problem just that the C_BAD_STREAMID events are noisy? If so,
+> perhaps we should be disabling fault reporting entirely in the kdump kernel.
+> 
+> How about the update diff below? I'm keen to have this as simple as
+> possible, so we don't end up introducing rarely tested, complex code on
+> the crash path.
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index d3880010c6cf..d8b73da6447d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>   	/* Clear CR0 and sync (disables SMMU and queue processing) */
+>   	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+>   	if (reg & CR0_SMMUEN) {
+> -		if (is_kdump_kernel()) {
+> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> -			arm_smmu_device_disable(smmu);
+> -			return -EBUSY;
+> -		}
+> -
+>   		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
+> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
+> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+>   	}
+>   
+>   	ret = arm_smmu_device_disable(smmu);
+> @@ -2553,6 +2549,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>   		return ret;
+>   	}
+>   
+> +	if (is_kdump_kernel())
+> +		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+>   
+>   	/* Enable the SMMU interface, or ensure bypass */
+>   	if (!bypass || disable_bypass) {
+> 
 
-Changes since v1:
- - Addressed review comments, given by Bjorn, for nits.
+Thanks for the fix.
 
- drivers/iommu/arm-smmu-regs.h | 2 ++
- drivers/iommu/arm-smmu.c      | 7 +++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+I can confirm that after this kdump kernel boots well for me on huawei 
+boards, so feel free to add:
 
-diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-index a1226e4ab5f8..e9132a926761 100644
---- a/drivers/iommu/arm-smmu-regs.h
-+++ b/drivers/iommu/arm-smmu-regs.h
-@@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
- #define CBAR_IRPTNDX_SHIFT		24
- #define CBAR_IRPTNDX_MASK		0xff
- 
-+#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
-+
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
- #define CBA2R_RW64_32BIT		(0 << 0)
- #define CBA2R_RW64_64BIT		(1 << 0)
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 045d93884164..e000473f8205 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
- 	void __iomem *cb_base;
-+	u32 cbfrsynra;
- 
- 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
- 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
-@@ -585,10 +587,11 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 
- 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
- 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-+	cbfrsynra = readl_relaxed(gr1_base + ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
- 
- 	dev_err_ratelimited(smmu->dev,
--	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cfg->cbndx);
-+	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
-+			    fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
- 
- 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
- 	return IRQ_HANDLED;
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Tested-by: Bhupesh Sharma <bhsharma@redhat.com>
+
+Here are the kdump kernel logs without this fix:
+
+[    4.514181] arm-smmu-v3 arm-smmu-v3.1.auto: EVTQ overflow detected -- 
+events lost
+
+.. And then repeating messages like the following ..
+
+[    4.521654] arm-smmu-v3 arm-smmu-v3.1.auto: event 0x02 received:
+[    4.527654] arm-smmu-v3 arm-smmu-v3.1.auto:  0x00007d0200000002
+[    4.533567] arm-smmu-v3 arm-smmu-v3.1.auto:  0x000000010000017e
+[    4.539478] arm-smmu-v3 arm-smmu-v3.1.auto:  0x00000000ff6de000
+[    4.545390] arm-smmu-v3 arm-smmu-v3.1.auto:  0x000000000eee03e8
+
+And with the fix applied, kdump kernel logs can be seen below:
+
+[ 9136.361094] Starting crashdump kernel...
+[ 9136.365007] Bye!
+[    0.000000] Booting Linux on physical CPU 0x0000070002 [0x480fd010]
+[    0.000000] Linux version 5.1.0-rc6+
+
+<..snip..>
+
+[    3.424103] arm-smmu-v3 arm-smmu-v3.0.auto: option mask 0x0
+[    3.429674] arm-smmu-v3 arm-smmu-v3.0.auto: ias 48-bit, oas 48-bit 
+(features 0x00000fef)
+[    3.437780] arm-smmu-v3 arm-smmu-v3.0.auto: SMMU currently enabled! 
+Resetting...
+[    3.445431] arm-smmu-v3 arm-smmu-v3.1.auto: option mask 0x0
+
+
+<..snip..>
+
+Thanks,
+Bhupesh
