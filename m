@@ -4,58 +4,57 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5EAC10F11
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D77C10F11
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E06220B1F
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CB88720B1F
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="IeWl5cMo"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E06220B1F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MNe1WR44"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB88720B1F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EE7C6D82;
-	Mon, 22 Apr 2019 18:00:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 301E6D80;
+	Mon, 22 Apr 2019 18:00:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 67B23D56
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5053DD6A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:00:15 +0000 (UTC)
+	Mon, 22 Apr 2019 18:00:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0DCAD829
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DBF8C82E
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:00:14 +0000 (UTC)
+	Mon, 22 Apr 2019 18:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=jHO4QKebr4nW7rEKUksDM8kg9jAX/dS0i99h/BNfNOQ=;
-	b=IeWl5cMoZHEBVKSLN4qdAYkxwq
-	mpfYaqboEZyb5ojZQAY63AaMGKWyCJEfRUfS6fw3gKxt8DDtR3rGRFbNLcVVmIaG2A+FNNjo6iPMR
-	oYMYdCrOz0jETYNiXrfyVRLDXln6CdifNE33yD+ZaTAJ1wT4pjAp77fD5sZd1CmYYxmPi4XTv5GbK
-	G6m/qQbxPb5uDkhmRNg4EvfYV3Q2NCKDo0eSg4voMAoZKB2wC70Ej4uD1EhB6Ia776lUlkgJ7sUv5
-	vxDdMOuEZmBqRAYfiiP0F0oVcYxw7tKdOPiPZpTNUY8Q4hqVGtPTXve2oRhBUfdq4ETx4z7JVMMWB
-	bXR5J2Kw==;
+	bh=Q+2KlgV0RqA8qqGzcp7z9LBrBJFk8+Th88ZyXfO7Rq0=;
+	b=MNe1WR44xCnsb9ZRqtj6nHPCws
+	TGM9s555Pj35d9Fp5b+zb19rtzV1ThZ0LjzoVJrKvocbo+Ut7GSKphfek29jCU3TFLS63J+OF2VAC
+	g6r/lTpWLQp5VrqAR8HVQXLj1YsiPrktZ8Kwo+YSgKCdLZXgdTyic/01GBoM28Eh6f3KLRFZxXDxo
+	8QnxxQDntHo2hXTqRePgWPC8UtBq0nS7ZcCofp+CUP4Phve+hhcs+zSqP7r0/By1u+/BSQZE/34km
+	rAurl8UW1om3aCq1cq5z4z2XOuw+VF2IT0iMhRw9ZDyBcCxMihbGn+z4Q0FLQLBM09F6a9jHS8CNW
+	rmzoWOqw==;
 Received: from 213-225-37-80.nat.highway.a1.net ([213.225.37.80]
 	helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hIdEg-0001QL-Nw; Mon, 22 Apr 2019 18:00:11 +0000
+	id 1hIdEj-0001R1-7d; Mon, 22 Apr 2019 18:00:13 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 01/26] arm64/iommu: handle non-remapped addresses in ->mmap
-	and ->get_sgtable
-Date: Mon, 22 Apr 2019 19:59:17 +0200
-Message-Id: <20190422175942.18788-2-hch@lst.de>
+Subject: [PATCH 02/26] arm64/iommu: improve mmap bounds checking
+Date: Mon, 22 Apr 2019 19:59:18 +0200
+Message-Id: <20190422175942.18788-3-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190422175942.18788-1-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
@@ -82,47 +81,62 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422175917.0ZMi2XV2t7BRrVTQDNXXlqzPd1FUcSXCX0Cprd9oz2Y@z>
+Message-ID: <20190422175918.wMBlO4GM2AI-6ijcf6byCCcva61M5lCuaSpaC2Ohc44@z>
 
-DMA allocations that can't sleep may return non-remapped addresses, but
-we do not properly handle them in the mmap and get_sgtable methods.
-Resolve non-vmalloc addresses using virt_to_page to handle this corner
-case.
+The nr_pages checks should be done for all mmap requests, not just those
+using remap_pfn_range.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/arm64/mm/dma-mapping.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm64/mm/dma-mapping.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
 diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 78c0a72f822c..674860e3e478 100644
+index 674860e3e478..604c638b2787 100644
 --- a/arch/arm64/mm/dma-mapping.c
 +++ b/arch/arm64/mm/dma-mapping.c
-@@ -249,6 +249,11 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+@@ -73,19 +73,9 @@ static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
+ static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
+ 			      unsigned long pfn, size_t size)
+ {
+-	int ret = -ENXIO;
+-	unsigned long nr_vma_pages = vma_pages(vma);
+-	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	unsigned long off = vma->vm_pgoff;
+-
+-	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
+-		ret = remap_pfn_range(vma, vma->vm_start,
+-				      pfn + off,
+-				      vma->vm_end - vma->vm_start,
+-				      vma->vm_page_prot);
+-	}
+-
+-	return ret;
++	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
++			      vma->vm_end - vma->vm_start,
++			      vma->vm_page_prot);
+ }
+ #endif /* CONFIG_IOMMU_DMA */
+ 
+@@ -241,6 +231,8 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+ 			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
+ 			      unsigned long attrs)
+ {
++	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	unsigned long off = vma->vm_pgoff;
+ 	struct vm_struct *area;
+ 	int ret;
+ 
+@@ -249,6 +241,9 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
  	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
  		return ret;
  
-+	if (!is_vmalloc_addr(cpu_addr)) {
-+		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
-+		return __swiotlb_mmap_pfn(vma, pfn, size);
-+	}
++	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
++		return -ENXIO;
 +
- 	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
- 		/*
- 		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
-@@ -272,6 +277,11 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
- 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	struct vm_struct *area = find_vm_area(cpu_addr);
- 
-+	if (!is_vmalloc_addr(cpu_addr)) {
-+		struct page *page = virt_to_page(cpu_addr);
-+		return __swiotlb_get_sgtable_page(sgt, page, size);
-+	}
-+
- 	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
- 		/*
- 		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+ 	if (!is_vmalloc_addr(cpu_addr)) {
+ 		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+ 		return __swiotlb_mmap_pfn(vma, pfn, size);
 -- 
 2.20.1
 
