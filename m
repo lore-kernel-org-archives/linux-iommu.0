@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 24/26] iommu/dma: Switch copyright boilerplace to SPDX
-Date: Mon, 22 Apr 2019 19:59:40 +0200
-Message-ID: <20190422175942.18788-25-hch@lst.de>
+Subject: [PATCH 26/26] arm64: trim includes in dma-mapping.c
+Date: Mon, 22 Apr 2019 19:59:42 +0200
+Message-ID: <20190422175942.18788-27-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,63 +12,38 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/dma-iommu.c | 13 +------------
- include/linux/dma-iommu.h | 13 +------------
- 2 files changed, 2 insertions(+), 24 deletions(-)
+With most of the previous functionality now elsewhere a lot of the
+headers included in this file are not needed.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 278a9a960107..b6bc342a8163 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1,3 +1,4 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * A fairly generic DMA-API to IOMMU-API glue layer.
-  *
-@@ -5,18 +6,6 @@
-  *
-  * based in part on arch/arm/mm/dma-mapping.c:
-  * Copyright (C) 2000-2004 Russell King
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/arm64/mm/dma-mapping.c | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 184ef9ccd69d..15bd768ceb7e 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -5,20 +5,9 @@
   */
  
- #include <linux/acpi_iort.h>
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index dadf4383f555..3fc76918e9bf 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -1,17 +1,6 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright (C) 2014-2015 ARM Ltd.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  */
- #ifndef __DMA_IOMMU_H
- #define __DMA_IOMMU_H
+ #include <linux/gfp.h>
+-#include <linux/acpi.h>
+-#include <linux/memblock.h>
+ #include <linux/cache.h>
+-#include <linux/export.h>
+-#include <linux/slab.h>
+-#include <linux/genalloc.h>
+-#include <linux/dma-direct.h>
+ #include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
+ #include <linux/dma-iommu.h>
+-#include <linux/vmalloc.h>
+-#include <linux/swiotlb.h>
+-#include <linux/pci.h>
+-
+ #include <asm/cacheflush.h>
+ 
+ pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
 -- 
 2.20.1
