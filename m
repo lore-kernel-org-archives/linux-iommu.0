@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 03/26] dma-mapping: add a Kconfig symbol to indicated arch_dma_prep_coherent presence
-Date: Mon, 22 Apr 2019 19:59:19 +0200
-Message-ID: <20190422175942.18788-4-hch@lst.de>
+Subject: [PATCH 04/26] iommu/dma: Cleanup dma-iommu.h
+Date: Mon, 22 Apr 2019 19:59:20 +0200
+Message-ID: <20190422175942.18788-5-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,75 +12,45 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a Kconfig symbol that indicates an architecture provides a
-arch_dma_prep_coherent implementation, and provide a stub otherwise.
-
-This will allow the generic dma-iommu code to use it while still
-allowing to be built for cache coherent architectures.
+No need for a __KERNEL__ guard outside uapi and add a missing comment
+describing the #else cpp statement.  Last but not least include
+<linux/errno.h> instead of the asm version, which is frowned upon.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/arm64/Kconfig              | 1 +
- arch/csky/Kconfig               | 1 +
- include/linux/dma-noncoherent.h | 6 ++++++
- kernel/dma/Kconfig              | 3 +++
- 4 files changed, 11 insertions(+)
+ include/linux/dma-iommu.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7e34b9eba5de..adda078d6df7 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -13,6 +13,7 @@ config ARM64
- 	select ARCH_HAS_DEVMEM_IS_ALLOWED
- 	select ARCH_HAS_DMA_COHERENT_TO_PFN
- 	select ARCH_HAS_DMA_MMAP_PGPROT
-+	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
- 	select ARCH_HAS_ELF_RANDOMIZE
- 	select ARCH_HAS_FAST_MULTIPLIER
-diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-index 725a115759c9..2c3178848b7d 100644
---- a/arch/csky/Kconfig
-+++ b/arch/csky/Kconfig
-@@ -1,6 +1,7 @@
- config CSKY
- 	def_bool y
- 	select ARCH_32BIT_OFF_T
-+	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_USE_BUILTIN_BSWAP
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index 69b36ed31a99..9741767e400f 100644
---- a/include/linux/dma-noncoherent.h
-+++ b/include/linux/dma-noncoherent.h
-@@ -72,6 +72,12 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index e760dc5d1fa8..8741637941ca 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -16,9 +16,8 @@
+ #ifndef __DMA_IOMMU_H
+ #define __DMA_IOMMU_H
+ 
+-#ifdef __KERNEL__
++#include <linux/errno.h>
+ #include <linux/types.h>
+-#include <asm/errno.h>
+ 
+ #ifdef CONFIG_IOMMU_DMA
+ #include <linux/dma-mapping.h>
+@@ -74,7 +73,7 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 
+-#else
++#else /* CONFIG_IOMMU_DMA */
+ 
+ struct iommu_domain;
+ struct msi_msg;
+@@ -108,5 +107,4 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
  }
- #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
  
-+#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
- void arch_dma_prep_coherent(struct page *page, size_t size);
-+#else
-+static inline void arch_dma_prep_coherent(struct page *page, size_t size)
-+{
-+}
-+#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
- 
- #endif /* _LINUX_DMA_NONCOHERENT_H */
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index a06ba3013b3b..feff2d21d8ee 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -38,6 +38,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
- config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
- 	bool
- 
-+config ARCH_HAS_DMA_PREP_COHERENT
-+	bool
-+
- config ARCH_HAS_DMA_COHERENT_TO_PFN
- 	bool
- 
+ #endif	/* CONFIG_IOMMU_DMA */
+-#endif	/* __KERNEL__ */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 2.20.1
