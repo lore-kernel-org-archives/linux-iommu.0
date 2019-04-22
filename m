@@ -2,176 +2,52 @@ Return-Path: <SRS0=kOFq=SY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66D7C282CE
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 16:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4463CC10F11
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 16:46:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D422214AE
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 16:38:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D422214AE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id 222EC214AE
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 16:46:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 222EC214AE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5CE7BCAD;
-	Mon, 22 Apr 2019 16:38:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 499C0B1F;
+	Mon, 22 Apr 2019 16:46:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 136F0C37
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 73870A95
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 16:38:03 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [207.54.116.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4E7B7854
+	Mon, 22 Apr 2019 16:46:13 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 22DA282B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 16:38:02 +0000 (UTC)
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-	by ale.deltatee.com with esmtp (Exim 4.89)
-	(envelope-from <logang@deltatee.com>)
-	id 1hIbx7-0005wS-NL; Mon, 22 Apr 2019 10:37:58 -0600
-To: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-	Linux Doc Mailing List <linux-doc@vger.kernel.org>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
-	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <3e26b3a0-bcd3-93a1-d21c-ac1041f93697@deltatee.com>
-Date: Mon, 22 Apr 2019 10:37:35 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Mon, 22 Apr 2019 16:46:12 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id 0856B68AFE; Mon, 22 Apr 2019 18:45:56 +0200 (CEST)
+Date: Mon, 22 Apr 2019 18:45:55 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+Message-ID: <20190422164555.GA31181@lst.de>
+References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
+	<20190421011719.14909-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
-Content-Language: en-CA
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: linux-security-module@vger.kernel.org,
-	kernel-hardening@lists.openwall.com, linux-mm@kvack.org,
-	iommu@lists.linux-foundation.org,
-	platform-driver-x86@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org,
-	openipmi-developer@lists.sourceforge.net,
-	linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
-	sparclinux@vger.kernel.org, linux-sh@vger.kernel.org,
-	linux-parisc@vger.kernel.org, linux-ia64@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, kvm@vger.kernel.org,
-	linux-s390@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	netdev@vger.kernel.org, linux-arch@vger.kernel.org,
-	tboot-devel@lists.sourceforge.net, linux-fbdev@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-wireless@vger.kernel.org,
-	serge@hallyn.com, jmorris@namei.org, re.emese@gmail.com,
-	keescook@chromium.org, steffen.klassert@secunet.com,
-	robin.murphy@arm.com, m.szyprowski@samsung.com, hch@lst.de,
-	kwankh
-	ede@nvidia.com, alex.williamson@redhat.com, perex@perex.cz,
-	stuart.w.hayes@gmail.com, andy@infradead.org,
-	dvhart@infradead.org, bgolaszewski@baylibre.com,
-	linus.walleij@linaro.org, sumit.semwal@linaro.org,
-	minyard@acm.org, herbert@gondor.apana.org.au, mpm@selenic.com,
-	arnd@arndb.de, rafael@kernel.org, gregkh@linuxfoundation.org,
-	axboe@kernel.dk, gxt@pku.edu.cn, dalias@libc.org,
-	ysato@users.sourceforge.jp, deller@gmx.de,
-	James.Bottomley@HansenPartnership.com, fenghua.yu@intel.com,
-	tony.luck@intel.com, linux@armlinux.org.uk, x86@kernel.org,
-	hpa@zytor.com, bp@alien8.de, tglx@linutronix.de,
-	linux@roeck-us.net, wim@linux-watchdog.org,
-	jerry.hoemann@hpe.com, alex.shi@linux.alibaba.com,
-	harryxiyou@gmail.com, heiko.carstens@de.ibm.com,
-	schwidefsky@de.ibm.com, pasic@linux.ibm.com,
-	farman@linux.ibm.com, alifm@linux.ibm.com, cohuck@redhat.com,
-	manivannan.sadhasivam@linaro.org, afaerber@suse.de,
-	davem@davemloft.net, dlustig@nvidia.com, akiyks@gmail.com,
-	paulmck@linux.ibm.com, luc.marang
-	et@inria.fr, j.alglave@ucl.ac.uk, dhowells@redhat.com, npiggin@gmail.com,
-	boqun.feng@gmail.com, andrea.parri@amarulasolutions.com,
-	stern@rowland.harvard.edu, will.deacon@arm.com, mingo@redhat.com,
-	peterz@infradead.org, ning.sun@intel.com, sean@poorly.run,
-	maxime.ripard@bootlin.com, maarten.lankhorst@linux.intel.com,
-	daniel@ffwll.ch, airlied@linux.ie, b.zolnierkie@samsung.com,
-	mark.rutland@arm.com, robh+dt@kernel.org, kishon@ti.com,
-	dm-devel@redhat.com, snitzer@redhat.com, agk@redhat.com,
-	bhelgaas@google.com, kurt.schwemmer@microsemi.com,
-	johannes@sipsolutions.net, corbet@lwn.net,
-	linux-kernel@vger.kernel.org, mchehab@infradead.org,
-	linux-doc@vger.kernel.org, mchehab+samsung@kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST files
-	to *.rst
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
-	Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
-	Jaroslav Kysela <perex@perex.cz>, kernel-hardening@lists.openwall.com,
-	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-	linux-sh@vger.kernel.org, James Morris <jmorris@namei.org>,
-	Halil Pasic <pasic@linux.ibm.com>, tboot-devel@lists.sourceforge.net,
-	Alan Stern <stern@rowland.harvard.edu>,
-	openipmi-developer@lists.sourceforge.net,
-	Guenter Roeck <linux@roeck-us.net>, Boqun Feng <boqun.feng@gmail.com>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Matt Mackall <mpm@selenic.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Sean Paul <sean@poorly.run>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-crypto@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>, linux-fbdev@vger.kernel.org,
-	linux-ia64@vger.kernel.org, David Airlie <airlied@linux.ie>,
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-	dm-devel@redhat.com, Harry Wei <harryxiyou@gmail.com>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Alasdair Kergon <agk@redhat.com>, linux-s390@vger.kernel.org,
-	Alex Shi <alex.shi@linux.alibaba.com>,
-	Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	linux-watchdog@vger.kernel.org, Corey Minyard <minyard@acm.org>,
-	Mauro Carvalho Chehab <mchehab@infradead.org>,
-	linaro-mm-sig@lists.linaro.org, linux-gpio@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
-	Tony Luck <tony.luck@intel.com>, Cornelia Huck <cohuck@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Andrea Parri <andrea.parri@amarulasolutions.com>,
-	linux-pci@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-	Heiko Carstens <heiko.carstens@de.ibm.com>,
-	platform-driver-x86@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@linux.ibm.com>,
-	Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>,
-	Maxime Ripard <maxime.ripard@bootlin.com>,
-	Emese Revfy <re.emese@gmail.com>, Darren Hart <dvhart@infradead.org>,
-	Jade Alglave <j.alglave@ucl.ac.uk>, "Serge E. Hallyn" <serge@hallyn.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Ning Sun <ning.sun@intel.com>, Borislav Petkov <bp@alien8.de>,
-	Luc Maranget <luc.maranget@inria.fr>,
-	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-	Guan Xuetao <gxt@pku.edu.cn>, linux-parisc@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Stuart Hayes <stuart.w.hayes@gmail.com>,
-	=?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-	Rich Felker <dalias@libc.org>, kvm@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Jerry Hoemann <jerry.hoemann@hpe.com>,
-	David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
-	Kirti Wankhede <kwankhede@nvidia.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>, x86@kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	Ingo Molnar <mingo@redhat.com>, devicetree@vger.kernel.org,
-	Daniel Lustig <dlustig@nvidia.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	linux-block@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
-	linux-security-module@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Robin Murphy <robin.murphy@arm.com>, Andy Shevchenko <andy@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190421011719.14909-3-baolu.lu@linux.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: kevin.tian@intel.com, mika.westerberg@linux.intel.com, ashok.raj@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	alan.cox@intel.com, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	pengfei.xu@intel.com, jacob.jun.pan@intel.com,
+	David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -188,123 +64,380 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422163735.h_Lgp8CjOumcqY86adyjt4NI69-18XNYjaB3vYjvFt8@z>
+Message-ID: <20190422164555.MpjXcYJTHQziNjpJdhKSZsSk1Rf6PTqPom7jaQuV1gk@z>
 
+I looked over your swiotlb modification and I don't think we really need
+them.  The only thing we really need is to split the size parameter to
+swiotlb_tbl_map_single and swiotlb_tbl_unmap_single into an alloc_size
+and a mapping_size paramter, where the latter one is rounded up to the
+iommu page size.  Below is an untested patch on top of your series to
+show what I mean.  That being said - both the current series and the one
+with my patch will still leak the content of the swiotlb buffer
+allocated but not used to the untrusted external device.  Is that
+acceptable?  If not we need to clear that part, at which point you don't
+need swiotlb changes.  Another implication is that for untrusted devices
+the size of the dma coherent allocations needs to be rounded up to the
+iommu page size (if that can ever be larger than the host page size).
 
-
-On 2019-04-22 7:27 a.m., Mauro Carvalho Chehab wrote:
-
-> 
-> Later patches will move them to a better place and remove the
-> :orphan: markup.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> ---
->  Documentation/ABI/removed/sysfs-class-rfkill  |  2 +-
->  Documentation/ABI/stable/sysfs-class-rfkill   |  2 +-
->  Documentation/ABI/stable/sysfs-devices-node   |  2 +-
->  Documentation/ABI/testing/procfs-diskstats    |  2 +-
->  Documentation/ABI/testing/sysfs-block         |  2 +-
->  .../ABI/testing/sysfs-class-switchtec         |  2 +-
->  .../ABI/testing/sysfs-devices-system-cpu      |  4 +-
->  .../{DMA-API-HOWTO.txt => DMA-API-HOWTO.rst}  |  2 +
->  Documentation/{DMA-API.txt => DMA-API.rst}    |  8 ++-
->  .../{DMA-ISA-LPC.txt => DMA-ISA-LPC.rst}      |  4 +-
->  ...{DMA-attributes.txt => DMA-attributes.rst} |  2 +
->  Documentation/{IPMI.txt => IPMI.rst}          |  2 +
->  .../{IRQ-affinity.txt => IRQ-affinity.rst}    |  2 +
->  .../{IRQ-domain.txt => IRQ-domain.rst}        |  2 +
->  Documentation/{IRQ.txt => IRQ.rst}            |  2 +
->  .../{Intel-IOMMU.txt => Intel-IOMMU.rst}      |  2 +
->  Documentation/PCI/pci.txt                     |  8 +--
->  Documentation/{SAK.txt => SAK.rst}            |  2 +
->  Documentation/{SM501.txt => SM501.rst}        |  2 +
->  .../admin-guide/kernel-parameters.txt         |  6 +-
->  Documentation/admin-guide/l1tf.rst            |  2 +-
->  .../{atomic_bitops.txt => atomic_bitops.rst}  |  2 +
->  Documentation/block/biodoc.txt                |  2 +-
->  .../{bt8xxgpio.txt => bt8xxgpio.rst}          |  2 +
->  Documentation/{btmrvl.txt => btmrvl.rst}      |  2 +
->  ...-mapping.txt => bus-virt-phys-mapping.rst} |  4 +-
->  ...g-warn-once.txt => clearing-warn-once.rst} |  2 +
->  Documentation/{cpu-load.txt => cpu-load.rst}  |  2 +
->  .../{cputopology.txt => cputopology.rst}      |  2 +
->  Documentation/{crc32.txt => crc32.rst}        |  2 +
->  Documentation/{dcdbas.txt => dcdbas.rst}      |  2 +
->  ...ging-modules.txt => debugging-modules.rst} |  2 +
->  ...hci1394.txt => debugging-via-ohci1394.rst} |  2 +
->  Documentation/{dell_rbu.txt => dell_rbu.rst}  |  2 +
->  Documentation/device-mapper/statistics.rst    |  4 +-
->  .../devicetree/bindings/phy/phy-bindings.txt  |  2 +-
->  Documentation/{digsig.txt => digsig.rst}      |  2 +
->  Documentation/driver-api/usb/dma.rst          |  6 +-
->  Documentation/driver-model/device.rst         |  2 +-
->  Documentation/{efi-stub.txt => efi-stub.rst}  |  2 +
->  Documentation/{eisa.txt => eisa.rst}          |  2 +
->  Documentation/fb/vesafb.rst                   |  2 +-
->  Documentation/filesystems/sysfs.txt           |  2 +-
->  ...ex-requeue-pi.txt => futex-requeue-pi.rst} |  2 +
->  .../{gcc-plugins.txt => gcc-plugins.rst}      |  2 +
->  Documentation/gpu/drm-mm.rst                  |  2 +-
->  Documentation/{highuid.txt => highuid.rst}    |  2 +
->  .../{hw_random.txt => hw_random.rst}          |  2 +
->  .../{hwspinlock.txt => hwspinlock.rst}        |  2 +
->  Documentation/ia64/IRQ-redir.txt              |  2 +-
->  .../{intel_txt.txt => intel_txt.rst}          |  2 +
->  .../{io-mapping.txt => io-mapping.rst}        |  2 +
->  .../{io_ordering.txt => io_ordering.rst}      |  2 +
->  Documentation/{iostats.txt => iostats.rst}    |  2 +
->  ...flags-tracing.txt => irqflags-tracing.rst} |  2 +
->  Documentation/{isa.txt => isa.rst}            |  2 +
->  Documentation/{isapnp.txt => isapnp.rst}      |  2 +
->  ...hreads.txt => kernel-per-CPU-kthreads.rst} |  4 +-
->  Documentation/{kobject.txt => kobject.rst}    |  4 +-
->  Documentation/{kprobes.txt => kprobes.rst}    |  2 +
->  Documentation/{kref.txt => kref.rst}          |  2 +
->  Documentation/laptops/thinkpad-acpi.txt       |  6 +-
->  Documentation/{ldm.txt => ldm.rst}            |  2 +
->  Documentation/locking/rt-mutex.rst            |  2 +-
->  ...kup-watchdogs.txt => lockup-watchdogs.rst} |  2 +
->  Documentation/{lsm.txt => lsm.rst}            |  2 +
->  Documentation/{lzo.txt => lzo.rst}            |  2 +
->  Documentation/{mailbox.txt => mailbox.rst}    |  2 +
->  Documentation/memory-barriers.txt             |  6 +-
->  ...hameleon-bus.txt => men-chameleon-bus.rst} |  2 +
->  Documentation/networking/scaling.rst          |  4 +-
->  .../{nommu-mmap.txt => nommu-mmap.rst}        |  2 +
->  Documentation/{ntb.txt => ntb.rst}            |  2 +
->  Documentation/{numastat.txt => numastat.rst}  |  2 +
->  Documentation/{padata.txt => padata.rst}      |  2 +
->  ...port-lowlevel.txt => parport-lowlevel.rst} |  2 +
->  ...-semaphore.txt => percpu-rw-semaphore.rst} |  2 +
->  Documentation/{phy.txt => phy.rst}            |  2 +
->  Documentation/{pi-futex.txt => pi-futex.rst}  |  2 +
->  Documentation/{pnp.txt => pnp.rst}            |  2 +
->  ...reempt-locking.txt => preempt-locking.rst} |  2 +
->  Documentation/{pwm.txt => pwm.rst}            |  2 +
->  Documentation/{rbtree.txt => rbtree.rst}      |  2 +
->  .../{remoteproc.txt => remoteproc.rst}        |  4 +-
->  Documentation/{rfkill.txt => rfkill.rst}      |  2 +
->  ...ust-futex-ABI.txt => robust-futex-ABI.rst} |  2 +
->  ...{robust-futexes.txt => robust-futexes.rst} |  2 +
->  Documentation/{rpmsg.txt => rpmsg.rst}        |  2 +
->  Documentation/{rtc.txt => rtc.rst}            |  2 +
->  Documentation/s390/vfio-ccw.rst               |  6 +-
->  Documentation/{sgi-ioc4.txt => sgi-ioc4.rst}  |  2 +
->  Documentation/{siphash.txt => siphash.rst}    |  2 +
->  .../{smsc_ece1099.txt => smsc_ece1099.rst}    |  2 +
->  .../{speculation.txt => speculation.rst}      |  2 +
->  .../{static-keys.txt => static-keys.rst}      |  2 +
->  Documentation/{svga.txt => svga.rst}          |  2 +
->  .../{switchtec.txt => switchtec.rst}          |  4 +-
-
-For all the switchtec changes:
-
-Acked-by: Logan Gunthorpe <logang@deltatee.com>
-
-Thanks,
-
-Logan
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8c4a078fb041..eb5c32ad4443 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2151,10 +2151,13 @@ static int bounce_map(struct device *dev, struct iommu_domain *domain,
+ 		      void *data)
+ {
+ 	const struct iommu_ops *ops = domain->ops;
++	unsigned long page_size = domain_minimal_pgsize(domain);
+ 	phys_addr_t tlb_addr;
+ 	int prot = 0;
+ 	int ret;
+ 
++	if (WARN_ON_ONCE(size > page_size))
++		return -EINVAL;
+ 	if (unlikely(!ops->map || domain->pgsize_bitmap == 0UL))
+ 		return -ENODEV;
+ 
+@@ -2164,16 +2167,16 @@ static int bounce_map(struct device *dev, struct iommu_domain *domain,
+ 	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
+ 		prot |= IOMMU_WRITE;
+ 
+-	tlb_addr = phys_to_dma(dev, paddr);
+-	if (!swiotlb_map(dev, &paddr, &tlb_addr, size,
+-			 dir, attrs | DMA_ATTR_BOUNCE_PAGE))
++	tlb_addr = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
++			paddr, size, page_size, dir, attrs);
++	if (tlb_addr == DMA_MAPPING_ERROR)
+ 		return -ENOMEM;
+ 
+ 	ret = ops->map(domain, addr, tlb_addr, size, prot);
+-	if (ret)
+-		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
+-					 dir, attrs | DMA_ATTR_BOUNCE_PAGE);
+-
++	if (ret) {
++		swiotlb_tbl_unmap_single(dev, tlb_addr, size, page_size,
++					 dir, attrs);
++	}
+ 	return ret;
+ }
+ 
+@@ -2194,11 +2197,12 @@ static int bounce_unmap(struct device *dev, struct iommu_domain *domain,
+ 
+ 	if (unlikely(!ops->unmap))
+ 		return -ENODEV;
+-	ops->unmap(domain, ALIGN_DOWN(addr, page_size), page_size);
++	ops->unmap(domain, addr, page_size);
+ 
+-	if (tlb_addr)
+-		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
+-					 dir, attrs | DMA_ATTR_BOUNCE_PAGE);
++	if (tlb_addr) {
++		swiotlb_tbl_unmap_single(dev, tlb_addr, size, page_size,
++					 dir, attrs);
++	}
+ 
+ 	return 0;
+ }
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 877baf2a94f4..3b6ce643bffa 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -404,7 +404,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 	 */
+ 	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
+ 
+-	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
++	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, size, dir,
+ 				     attrs);
+ 	if (map == DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+@@ -420,7 +420,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 		return dev_addr;
+ 
+ 	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+-	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
++	swiotlb_tbl_unmap_single(dev, map, size, size, dir, attrs);
+ 
+ 	return DMA_MAPPING_ERROR;
+ }
+@@ -445,7 +445,7 @@ static void xen_unmap_single(struct device *hwdev, dma_addr_t dev_addr,
+ 
+ 	/* NOTE: We use dev_addr here, not paddr! */
+ 	if (is_xen_swiotlb_buffer(dev_addr))
+-		swiotlb_tbl_unmap_single(hwdev, paddr, size, dir, attrs);
++		swiotlb_tbl_unmap_single(hwdev, paddr, size, size, dir, attrs);
+ }
+ 
+ static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+@@ -556,6 +556,7 @@ xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+ 								 start_dma_addr,
+ 								 sg_phys(sg),
+ 								 sg->length,
++								 sg->length,
+ 								 dir, attrs);
+ 			if (map == DMA_MAPPING_ERROR) {
+ 				dev_warn(hwdev, "swiotlb buffer is full\n");
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 26e506e5b04c..75e60be91e5f 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -70,12 +70,6 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
+-/*
+- * DMA_ATTR_BOUNCE_PAGE: used by the IOMMU sub-system to indicate that
+- * the buffer is used as a bounce page in the DMA remapping page table.
+- */
+-#define DMA_ATTR_BOUNCE_PAGE		(1UL << 10)
+-
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+  * It can be given to a device to use as a DMA source or target.  A CPU cannot
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 361f62bb4a8e..e1c738eb5baf 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -44,16 +44,13 @@ enum dma_sync_target {
+ 	SYNC_FOR_DEVICE = 1,
+ };
+ 
+-extern phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+-					  dma_addr_t tbl_dma_addr,
+-					  phys_addr_t phys, size_t size,
+-					  enum dma_data_direction dir,
+-					  unsigned long attrs);
+-
+-extern void swiotlb_tbl_unmap_single(struct device *hwdev,
+-				     phys_addr_t tlb_addr,
+-				     size_t size, enum dma_data_direction dir,
+-				     unsigned long attrs);
++phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
++		dma_addr_t tbl_dma_addr, phys_addr_t phys, size_t mapping_size,
++		size_t alloc_size, enum dma_data_direction dir,
++		unsigned long attrs);
++void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
++		size_t mapping_size, size_t alloc_size,
++		enum dma_data_direction dir, unsigned long attrs);
+ 
+ extern void swiotlb_tbl_sync_single(struct device *hwdev,
+ 				    phys_addr_t tlb_addr,
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index fcdb23e8d2fc..0edc0bf80207 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -290,7 +290,7 @@ void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
+ 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+ 
+ 	if (unlikely(is_swiotlb_buffer(phys)))
+-		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
++		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
+ }
+ EXPORT_SYMBOL(dma_direct_unmap_page);
+ 
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 96b87a11dee1..feec87196cc8 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -34,7 +34,6 @@
+ #include <linux/scatterlist.h>
+ #include <linux/mem_encrypt.h>
+ #include <linux/set_memory.h>
+-#include <linux/iommu.h>
+ #ifdef CONFIG_DEBUG_FS
+ #include <linux/debugfs.h>
+ #endif
+@@ -440,9 +439,10 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+ 	}
+ }
+ 
+-static phys_addr_t
+-swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+-		      phys_addr_t orig_addr, size_t size)
++phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
++		dma_addr_t tbl_dma_addr, phys_addr_t orig_addr,
++		size_t mapping_size, size_t alloc_size,
++		enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	unsigned long flags;
+ 	phys_addr_t tlb_addr;
+@@ -476,8 +476,8 @@ swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+ 	 * For mappings greater than or equal to a page, we limit the stride
+ 	 * (and hence alignment) to a page size.
+ 	 */
+-	nslots = ALIGN(size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+-	if (size >= PAGE_SIZE)
++	nslots = ALIGN(alloc_size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
++	if (alloc_size >= PAGE_SIZE)
+ 		stride = (1 << (PAGE_SHIFT - IO_TLB_SHIFT));
+ 	else
+ 		stride = 1;
+@@ -538,6 +538,9 @@ swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+ 
+ not_found:
+ 	spin_unlock_irqrestore(&io_tlb_lock, flags);
++	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
++		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n",
++				alloc_size);
+ 	return DMA_MAPPING_ERROR;
+ found:
+ 	io_tlb_used += nslots;
+@@ -550,21 +553,34 @@ swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+ 	 */
+ 	for (i = 0; i < nslots; i++)
+ 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
++		swiotlb_bounce(orig_addr, tlb_addr, mapping_size,
++				DMA_TO_DEVICE);
+ 
+ 	return tlb_addr;
+ }
+ 
+-static void
+-swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
++/*
++ * tlb_addr is the physical address of the bounce buffer to unmap.
++ */
++void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
++		size_t mapping_size, size_t alloc_size,
++		enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	unsigned long flags;
+-	int i, count, nslots = ALIGN(size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
++	int i, count, nslots;
+ 	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
++	phys_addr_t orig_addr = io_tlb_orig_addr[index];
+ 
+-	/* Return directly if the tlb address is out of slot pool. */
+-	if (tlb_addr < io_tlb_start || tlb_addr + size > io_tlb_end) {
+-		dev_warn(hwdev, "invalid tlb address\n");
+-		return;
++	/*
++	 * First, sync the memory before unmapping the entry
++	 */
++	if (orig_addr != INVALID_PHYS_ADDR &&
++	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)) {
++		swiotlb_bounce(orig_addr, tlb_addr, mapping_size,
++				DMA_FROM_DEVICE);
+ 	}
+ 
+ 	/*
+@@ -573,6 +589,7 @@ swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
+ 	 * While returning the entries to the free list, we merge the entries
+ 	 * with slots below and above the pool being returned.
+ 	 */
++	nslots = ALIGN(alloc_size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+ 	spin_lock_irqsave(&io_tlb_lock, flags);
+ 	{
+ 		count = ((index + nslots) < ALIGN(index + 1, IO_TLB_SEGSIZE) ?
+@@ -597,88 +614,6 @@ swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
+ 	spin_unlock_irqrestore(&io_tlb_lock, flags);
+ }
+ 
+-static unsigned long
+-get_iommu_pgsize(struct device *dev, phys_addr_t phys, size_t size)
+-{
+-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-
+-	return domain_minimal_pgsize(domain);
+-}
+-
+-phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+-				   dma_addr_t tbl_dma_addr,
+-				   phys_addr_t orig_addr, size_t size,
+-				   enum dma_data_direction dir,
+-				   unsigned long attrs)
+-{
+-	phys_addr_t tlb_addr;
+-	unsigned long offset = 0;
+-
+-	if (attrs & DMA_ATTR_BOUNCE_PAGE) {
+-		unsigned long pgsize = get_iommu_pgsize(hwdev, orig_addr, size);
+-
+-		offset = orig_addr & (pgsize - 1);
+-
+-		/* Don't allow the buffer to cross page boundary. */
+-		if (offset + size > pgsize)
+-			return DMA_MAPPING_ERROR;
+-
+-		tlb_addr = swiotlb_tbl_alloc_tlb(hwdev,
+-				__phys_to_dma(hwdev, io_tlb_start),
+-				ALIGN_DOWN(orig_addr, pgsize), pgsize);
+-	} else {
+-		tlb_addr = swiotlb_tbl_alloc_tlb(hwdev,
+-				tbl_dma_addr, orig_addr, size);
+-	}
+-
+-	if (tlb_addr == DMA_MAPPING_ERROR) {
+-		if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
+-			dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n",
+-				 size);
+-		return DMA_MAPPING_ERROR;
+-	}
+-
+-	tlb_addr += offset;
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+-		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+-
+-	return tlb_addr;
+-}
+-
+-/*
+- * tlb_addr is the physical address of the bounce buffer to unmap.
+- */
+-void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+-			      size_t size, enum dma_data_direction dir,
+-			      unsigned long attrs)
+-{
+-	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
+-	phys_addr_t orig_addr = io_tlb_orig_addr[index];
+-	unsigned long offset = 0;
+-
+-	if (attrs & DMA_ATTR_BOUNCE_PAGE)
+-		offset = tlb_addr & ((1 << IO_TLB_SHIFT) - 1);
+-
+-	/*
+-	 * First, sync the memory before unmapping the entry
+-	 */
+-	if (orig_addr != INVALID_PHYS_ADDR &&
+-	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
+-		swiotlb_bounce(orig_addr + offset,
+-			       tlb_addr, size, DMA_FROM_DEVICE);
+-
+-	if (attrs & DMA_ATTR_BOUNCE_PAGE) {
+-		unsigned long pgsize = get_iommu_pgsize(hwdev, tlb_addr, size);
+-
+-		swiotlb_tbl_free_tlb(hwdev,
+-				     ALIGN_DOWN(tlb_addr, pgsize), pgsize);
+-	} else {
+-		swiotlb_tbl_free_tlb(hwdev, tlb_addr, size);
+-	}
+-}
+-
+ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
+ 			     size_t size, enum dma_data_direction dir,
+ 			     enum dma_sync_target target)
+@@ -727,14 +662,14 @@ bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
+ 
+ 	/* Oh well, have to allocate and map a bounce buffer. */
+ 	*phys = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
+-			*phys, size, dir, attrs);
++			*phys, size, size, dir, attrs);
+ 	if (*phys == DMA_MAPPING_ERROR)
+ 		return false;
+ 
+ 	/* Ensure that the address returned is DMA'ble */
+ 	*dma_addr = __phys_to_dma(dev, *phys);
+ 	if (unlikely(!dma_capable(dev, *dma_addr, size))) {
+-		swiotlb_tbl_unmap_single(dev, *phys, size, dir,
++		swiotlb_tbl_unmap_single(dev, *phys, size, size, dir,
+ 			attrs | DMA_ATTR_SKIP_CPU_SYNC);
+ 		return false;
+ 	}
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
