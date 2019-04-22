@@ -1,51 +1,75 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC PATCH] dma-mapping: create iommu mapping for newly
- allocated dma coherent mem
-Date: Mon, 22 Apr 2019 20:11:00 +0200
-Message-ID: <20190422181100.GB32490@lst.de>
-References: <20190422165125.21704-1-laurentiu.tudor@nxp.com>
+From: Khalid Aziz <khalid.aziz@oracle.com>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+ Ownership (XPFO)
+Date: Mon, 22 Apr 2019 13:30:41 -0600
+Message-ID: <302e3d5b-d2fd-3c25-335b-466ba83035c5@oracle.com>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+ <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
+ <20190417161042.GA43453@gmail.com>
+ <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
+ <20190417170918.GA68678@gmail.com>
+ <56A175F6-E5DA-4BBD-B244-53B786F27B7F@gmail.com>
+ <20190417172632.GA95485@gmail.com>
+ <063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
+ <alpine.DEB.2.21.1904172317460.3174@nanos.tec.linutronix.de>
+ <CAHk-=wgBMg9P-nYQR2pS0XwVdikPCBqLsMFqR9nk=wSmAd4_5g@mail.gmail.com>
+ <alpine.DEB.2.21.1904180129000.3174@nanos.tec.linutronix.de>
+ <CAHk-=whUwOjFW6RjHVM8kNOv1QVLJuHj2Dda0=mpLPdJ1UyatQ@mail.gmail.com>
+ <CALCETrXm9PuUTEEmzA8bQJmg=PHC_2XSywECittVhXbMJS1rSA@mail.gmail.com>
+ <CAGXu5jL-qJtW7eH8S2yhqciE+J+FWz8HHzTrGJTgVUbd55n6dQ@mail.gmail.com>
+ <8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190422165125.21704-1-laurentiu.tudor@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: laurentiu.tudor@nxp.com
-Cc: hch@lst.de, robin.murphy@arm.com, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, leoyang.li@nxp.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Kees Cook <keescook@google.com>, Andy Lutomirski <luto@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Dave Hansen <dave@sr71.net>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, deepa.srinivasan@oracle.com, "H. Peter Anvin" <hpa@zytor.com>, Nadav Amit <nadav.amit@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Tycho Andersen <tycho@tycho.ws>, X86 ML <x86@kernel.org>, iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@kernel.org>, Julian Stecklina <jsteckli@amazon.de>, Arjan van de Ven <arjan@infradead.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jon Masters <jcm@redhat.com>, Borislav Petkov <bp@alien8.de>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, chris hyser <chris.hyser@oracle.com>, "linux-alpha@vger.kernel.org" <linux-arm-kernel@lists.infradead.org>, Khalid Aziz <khalid@gonehiking.org>, Juerg Haefliger <juergh@gmail.com>, Andrew Cooper <andrew.cooper3@citrix.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 22, 2019 at 07:51:25PM +0300, laurentiu.tudor@nxp.com wrote:
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+On 4/18/19 8:34 AM, Khalid Aziz wrote:
+> On 4/17/19 11:41 PM, Kees Cook wrote:
+>> On Wed, Apr 17, 2019 at 11:41 PM Andy Lutomirski <luto@kernel.org> wrote:
+>>> I don't think this type of NX goof was ever the argument for XPFO.
+>>> The main argument I've heard is that a malicious user program writes a
+>>> ROP payload into user memory (regular anonymous user memory) and then
+>>> gets the kernel to erroneously set RSP (*not* RIP) to point there.
+>>
+>> Well, more than just ROP. Any of the various attack primitives. The NX
+>> stuff is about moving RIP: SMEP-bypassing. But there is still basic
+>> SMAP-bypassing for putting a malicious structure in userspace and
+>> having the kernel access it via the linear mapping, etc.
+>>
+>>> I find this argument fairly weak for a couple reasons.  First, if
+>>> we're worried about this, let's do in-kernel CFI, not XPFO, to
+>>
+>> CFI is getting much closer. Getting the kernel happy under Clang, LTO,
+>> and CFI is under active development. (It's functional for arm64
+>> already, and pieces have been getting upstreamed.)
+>>
 > 
-> If possible / available call into the DMA API to get a proper iommu
-> mapping and a dma address for the newly allocated coherent dma memory.
+> CFI theoretically offers protection with fairly low overhead. I have not
+> played much with CFI in clang. I agree with Linus that probability of
+> bugs in XPFO implementation itself is a cause of concern. If CFI in
+> Clang can provide us the same level of protection as XPFO does, I
+> wouldn't want to push for an expensive change like XPFO.
+> 
+> If Clang/CFI can't get us there for extended period of time, does it
+> make sense to continue to poke at XPFO?
 
-I don't think this is so simple.  The original use case of
-dma_declare_coherent_memory was memory that is local to a device, where
-we copy in data through a MMIO mapping and the device can then access
-it.  This use case still seems to be alive in the ohci-sm501 and
-ohci-tmio drivers.  Going through the iommu in those cases would be
-counter productive.
+Any feedback on continued effort on XPFO? If it makes sense to have XPFO
+available as a solution for ret2dir issue in case Clang/CFI does not
+work out, I will continue to refine it.
 
-The other use cases, including the OF ones seem to be (and Marek who
-added that support should correct me if I'm wrong) normal host DRAM
-that is just set aside for the device.
-
-So if we want to support these prealloc pools with an iommu we need to
-split the use cases.  I have to say I really hate the way we do the DMA
-"coherent" allocations, so I'm all in favor of that, it just hasn't
-bubbled up towards the front of my todo list yet.
-
-My highlevel plan here would be:
-
- a) move the two OHCI drivers away from our current DMA declare
-    coherent code, and just use a trivial genalloc allocator for
-    their MMIO space, given that the USB layer already wraps the
-    dma_alloc/free APIs anyway
- b) move the rest of the DMA coherent stuff into the actual dma
-    map ops, similar to how we handle CMA allocations.  In fact
-    we should probably do this by a new page allocation helper
-    that tries CMA, "coherent" or the page allocator as fallback
- b) also merge the OF-side handling of CMA vs "coherent" into a
-    single implementation.  Preferably dropping the misleading
-    "coherent" name while we are at it.
+--
+Khalid
