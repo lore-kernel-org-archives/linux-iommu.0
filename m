@@ -2,66 +2,112 @@ Return-Path: <SRS0=kOFq=SY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29101C282CE
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 21:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EDFC282E1
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 22:23:48 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EFE6B2175B
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 21:06:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFE6B2175B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8CF21205F4
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 22:23:48 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="Vl0fYQ0U"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8CF21205F4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 54DA5E54;
-	Mon, 22 Apr 2019 21:05:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 36C08CAF;
+	Mon, 22 Apr 2019 22:23:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8690BE5C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D59DFCAD
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 21:05:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [207.54.116.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 318D5855
+	Mon, 22 Apr 2019 22:23:46 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-vk1-f193.google.com (mail-vk1-f193.google.com
+	[209.85.221.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 49CAFF4
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 21:05:37 +0000 (UTC)
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-	by ale.deltatee.com with esmtps
-	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.89)
-	(envelope-from <gunthorp@deltatee.com>)
-	id 1hIg85-0004im-S1; Mon, 22 Apr 2019 15:05:36 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.89)
-	(envelope-from <gunthorp@deltatee.com>)
-	id 1hIg83-0003zt-Be; Mon, 22 Apr 2019 15:05:31 -0600
-From: Logan Gunthorpe <logang@deltatee.com>
-To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com,
-	linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
-	linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>,
-	Joerg Roedel <joro@8bytes.org>
-Date: Mon, 22 Apr 2019 15:05:27 -0600
-Message-Id: <20190422210528.15289-10-logang@deltatee.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190422210528.15289-1-logang@deltatee.com>
-References: <20190422210528.15289-1-logang@deltatee.com>
+	Mon, 22 Apr 2019 22:23:46 +0000 (UTC)
+Received: by mail-vk1-f193.google.com with SMTP id x194so2767223vke.0
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Apr 2019 15:23:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=Apsh13b43ex5kM603MFVFBzVRJeAAR6IMS53yCHVuRM=;
+	b=Vl0fYQ0UCHGtndl0jafErZw5vqbDAq4DrFX3SfBAIMhEhneL9rXawPTcud8fgV5g3D
+	W/sHE49ARVD9KYD5FloU01n2RfA2pTgnKMthR4SE5EVifhT+Zv7f89iMoQqyLkH17UHR
+	Ufjeoo3iZe8A1ywqY/dQX9OJ6hQY+RdFMicuSiIFmS2kjW0kxDgF0PQchZJoFDeQwLJ4
+	Bu9iNZw8/m1h5Vvq6bsIi0oFDRabTh4fUKE/VXZ1BpEeHCWZiVc862ytrlz+nAaTR+Cp
+	kF/vZydc6r2yg2X0nSiZbBoPzLhOuIzzabOzb88ffPr/VLLo66HUZNIe7JxAbYTKUz7T
+	O38g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=Apsh13b43ex5kM603MFVFBzVRJeAAR6IMS53yCHVuRM=;
+	b=In44Fqthg6QId2znFeE9X+xIprmxzJf9b3cTTy47QnATb/f3KFO+qOAvvyx6/zBwY2
+	DAxB2klT443nA6hbUE8AbAkAL5eOv6w6aB17zDsrM+JuphInZ1c99HpqaSBSaTz7OHWe
+	smcdCb+jBEcNqswoRLMA2nWxkjxWjRwkyQ26PUONCfI0LLpJYX4Z3rh0MGQxKfvCG6A/
+	405+KgzXcpqS9Pw2zS/+KZyZk0godHt0xdnaKKq3zwIbOtWjgf9YQaKL/ZyWz4D0tRdp
+	nPmacTFR8H9h80DXeIiN1549jLM0qg7rw6CFzoNwd8wMOBLtoLaHWm13k1n2t2E06X19
+	HB+g==
+X-Gm-Message-State: APjAAAVDX98HfsVPwSWyphX8nJlV/FAX6mwOKdnMkXwCcKACPvbWY5ld
+	uXX93b7A3GAznPhHCWznnd8ZiW1NjEK+l7s72wePUQ==
+X-Google-Smtp-Source: APXvYqxiq50qJu8wanUuH+yOCTaJNMUpHEhGXVEwCujnFscJAmlLegU3s6VeZj+61I7iVGG+tUCCywSMlxsTtse/mUo=
+X-Received: by 2002:a1f:2e07:: with SMTP id u7mr11692664vku.44.1555971825052; 
+	Mon, 22 Apr 2019 15:23:45 -0700 (PDT)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-ntb@googlegroups.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, jdmason@kudzu.us,
-	joro@8bytes.org, bhelgaas@google.com, dave.jiang@intel.com,
-	allenbh@gmail.com, fancer.lancer@gmail.com, epilmore@gigaio.com,
-	logang@deltatee.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v4 09/10] NTB: Add MSI interrupt support to ntb_transport
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>,
-	Serge Semin <fancer.lancer@gmail.com>, Eric Pilmore <epilmore@gigaio.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+	<f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
+	<20190417161042.GA43453@gmail.com>
+	<e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
+	<20190417170918.GA68678@gmail.com>
+	<56A175F6-E5DA-4BBD-B244-53B786F27B7F@gmail.com>
+	<20190417172632.GA95485@gmail.com>
+	<063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
+	<alpine.DEB.2.21.1904172317460.3174@nanos.tec.linutronix.de>
+	<CAHk-=wgBMg9P-nYQR2pS0XwVdikPCBqLsMFqR9nk=wSmAd4_5g@mail.gmail.com>
+	<alpine.DEB.2.21.1904180129000.3174@nanos.tec.linutronix.de>
+	<CAHk-=whUwOjFW6RjHVM8kNOv1QVLJuHj2Dda0=mpLPdJ1UyatQ@mail.gmail.com>
+	<CALCETrXm9PuUTEEmzA8bQJmg=PHC_2XSywECittVhXbMJS1rSA@mail.gmail.com>
+	<CAGXu5jL-qJtW7eH8S2yhqciE+J+FWz8HHzTrGJTgVUbd55n6dQ@mail.gmail.com>
+	<8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
+In-Reply-To: <8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
+Date: Mon, 22 Apr 2019 15:23:32 -0700
+Message-ID:
+ <CAGXu5jLPkD_6BL1m2=13KVTfZ7znr-xAyz+CB23eoeboFgCSOg@mail.gmail.com>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+	Ownership (XPFO)
+To: Khalid Aziz <khalid.aziz@oracle.com>
+Cc: Dave Hansen <dave@sr71.net>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	Linux-MM <linux-mm@kvack.org>, deepa.srinivasan@oracle.com,
+	"H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>,
+	Tycho Andersen <tycho@tycho.ws>, X86 ML <x86@kernel.org>,
+	LSM List <linux-security-module@vger.kernel.org>,
+	Ingo Molnar <mingo@kernel.org>, Julian Stecklina <jsteckli@amazon.de>,
+	Arjan van de Ven <arjan@infradead.org>,
+	Peter Zijlstra <a.p.zijlstra@chello.nl>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Jon Masters <jcm@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Andy Lutomirski <luto@kernel.org>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	chris hyser <chris.hyser@oracle.com>,
+	"linux-alpha@vger.kernel.org" <linux-arm-kernel@lists.infradead.org>,
+	Khalid Aziz <khalid@gonehiking.org>, Juerg Haefliger <juergh@gmail.com>,
+	Andrew Cooper <andrew.cooper3@citrix.com>,
+	Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+	Tyler Hicks <tyhicks@canonical.com>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Juerg Haefliger <juerg.haefliger@canonical.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	David Woodhouse <dwmw@amazon.co.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,291 +120,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Kees Cook via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Kees Cook <keescook@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422210527.TMuvHvLJw92PEmjYq9UUprTkgFRDI45fIhKwJhkoTlY@z>
+Message-ID: <20190422222332.COQaj6dLNF4scPERHWieGx2fFstcpMxQRhUV-mODLHg@z>
 
-Introduce the module parameter 'use_msi' which, when set, uses
-MSI interrupts instead of doorbells for each queue pair (QP). The
-parameter is only available if NTB MSI support is configured into
-the kernel. We also require there to be more than one memory window
-(MW) so that an extra one is available to forward the APIC region.
+On Thu, Apr 18, 2019 at 7:35 AM Khalid Aziz <khalid.aziz@oracle.com> wrote:
+>
+> On 4/17/19 11:41 PM, Kees Cook wrote:
+> > On Wed, Apr 17, 2019 at 11:41 PM Andy Lutomirski <luto@kernel.org> wrote:
+> >> I don't think this type of NX goof was ever the argument for XPFO.
+> >> The main argument I've heard is that a malicious user program writes a
+> >> ROP payload into user memory (regular anonymous user memory) and then
+> >> gets the kernel to erroneously set RSP (*not* RIP) to point there.
+> >
+> > Well, more than just ROP. Any of the various attack primitives. The NX
+> > stuff is about moving RIP: SMEP-bypassing. But there is still basic
+> > SMAP-bypassing for putting a malicious structure in userspace and
+> > having the kernel access it via the linear mapping, etc.
+> >
+> >> I find this argument fairly weak for a couple reasons.  First, if
+> >> we're worried about this, let's do in-kernel CFI, not XPFO, to
+> >
+> > CFI is getting much closer. Getting the kernel happy under Clang, LTO,
+> > and CFI is under active development. (It's functional for arm64
+> > already, and pieces have been getting upstreamed.)
+> >
+>
+> CFI theoretically offers protection with fairly low overhead. I have not
+> played much with CFI in clang. I agree with Linus that probability of
+> bugs in XPFO implementation itself is a cause of concern. If CFI in
+> Clang can provide us the same level of protection as XPFO does, I
+> wouldn't want to push for an expensive change like XPFO.
+>
+> If Clang/CFI can't get us there for extended period of time, does it
+> make sense to continue to poke at XPFO?
 
-To use MSIs, we request one interrupt per QP and forward the MSI address
-and data to the peer using scratch pad registers (SPADS) above the MW
-SPADS. (If there are not enough SPADS the MSI interrupt will not be used.)
+Well, I think CFI will certainly vastly narrow the execution paths
+available to an attacker, but what I continue to see XPFO useful for
+is stopping attacks that need to locate something in memory. (i.e. not
+ret2dir but, like, read2dir.) It's arguable that such attacks would
+just use heap, stack, etc to hold such things, but the linear map
+remains relatively easy to find/target. But I agree: the protection is
+getting more and more narrow (especially with CFI coming down the
+pipe), and if it's still a 28% hit, that's not going to be tenable for
+anyone but the truly paranoid. :)
 
-Once registered, we simply use ntb_msi_peer_trigger and the receiving
-ISR simply queues up the rxc_db_work for the queue.
+All that said, there isn't a very good backward-edge CFI protection
+(i.e. ROP defense) on x86 in Clang. The forward-edge looks decent, but
+requires LTO, etc. My point is there is still a long path to gaining
+CFI in upstream.
 
-This addition can significantly improve performance of ntb_transport.
-In a simple, untuned, apples-to-apples comparision using ntb_netdev
-and iperf with switchtec hardware, I see 3.88Gb/s without MSI
-interrupts and 14.1Gb/s wit MSI, which is a more than 3x improvement.
-
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Jon Mason <jdmason@kudzu.us>
-Cc: Dave Jiang <dave.jiang@intel.com>
-Cc: Allen Hubbe <allenbh@gmail.com>
----
- drivers/ntb/ntb_transport.c | 169 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 168 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/ntb/ntb_transport.c b/drivers/ntb/ntb_transport.c
-index d4f39ba1d976..f1cf0942cb99 100644
---- a/drivers/ntb/ntb_transport.c
-+++ b/drivers/ntb/ntb_transport.c
-@@ -93,6 +93,12 @@ static bool use_dma;
- module_param(use_dma, bool, 0644);
- MODULE_PARM_DESC(use_dma, "Use DMA engine to perform large data copy");
- 
-+static bool use_msi;
-+#ifdef CONFIG_NTB_MSI
-+module_param(use_msi, bool, 0644);
-+MODULE_PARM_DESC(use_msi, "Use MSI interrupts instead of doorbells");
-+#endif
-+
- static struct dentry *nt_debugfs_dir;
- 
- /* Only two-ports NTB devices are supported */
-@@ -188,6 +194,11 @@ struct ntb_transport_qp {
- 	u64 tx_err_no_buf;
- 	u64 tx_memcpy;
- 	u64 tx_async;
-+
-+	bool use_msi;
-+	int msi_irq;
-+	struct ntb_msi_desc msi_desc;
-+	struct ntb_msi_desc peer_msi_desc;
- };
- 
- struct ntb_transport_mw {
-@@ -221,6 +232,10 @@ struct ntb_transport_ctx {
- 	u64 qp_bitmap;
- 	u64 qp_bitmap_free;
- 
-+	bool use_msi;
-+	unsigned int msi_spad_offset;
-+	u64 msi_db_mask;
-+
- 	bool link_is_up;
- 	struct delayed_work link_work;
- 	struct work_struct link_cleanup;
-@@ -667,6 +682,114 @@ static int ntb_transport_setup_qp_mw(struct ntb_transport_ctx *nt,
- 	return 0;
- }
- 
-+static irqreturn_t ntb_transport_isr(int irq, void *dev)
-+{
-+	struct ntb_transport_qp *qp = dev;
-+
-+	tasklet_schedule(&qp->rxc_db_work);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void ntb_transport_setup_qp_peer_msi(struct ntb_transport_ctx *nt,
-+					    unsigned int qp_num)
-+{
-+	struct ntb_transport_qp *qp = &nt->qp_vec[qp_num];
-+	int spad = qp_num * 2 + nt->msi_spad_offset;
-+
-+	if (!nt->use_msi)
-+		return;
-+
-+	if (spad >= ntb_spad_count(nt->ndev))
-+		return;
-+
-+	qp->peer_msi_desc.addr_offset =
-+		ntb_peer_spad_read(qp->ndev, PIDX, spad);
-+	qp->peer_msi_desc.data =
-+		ntb_peer_spad_read(qp->ndev, PIDX, spad + 1);
-+
-+	dev_dbg(&qp->ndev->pdev->dev, "QP%d Peer MSI addr=%x data=%x\n",
-+		qp_num, qp->peer_msi_desc.addr_offset, qp->peer_msi_desc.data);
-+
-+	if (qp->peer_msi_desc.addr_offset) {
-+		qp->use_msi = true;
-+		dev_info(&qp->ndev->pdev->dev,
-+			 "Using MSI interrupts for QP%d\n", qp_num);
-+	}
-+}
-+
-+static void ntb_transport_setup_qp_msi(struct ntb_transport_ctx *nt,
-+				       unsigned int qp_num)
-+{
-+	struct ntb_transport_qp *qp = &nt->qp_vec[qp_num];
-+	int spad = qp_num * 2 + nt->msi_spad_offset;
-+	int rc;
-+
-+	if (!nt->use_msi)
-+		return;
-+
-+	if (spad >= ntb_spad_count(nt->ndev)) {
-+		dev_warn_once(&qp->ndev->pdev->dev,
-+			      "Not enough SPADS to use MSI interrupts\n");
-+		return;
-+	}
-+
-+	ntb_spad_write(qp->ndev, spad, 0);
-+	ntb_spad_write(qp->ndev, spad + 1, 0);
-+
-+	if (!qp->msi_irq) {
-+		qp->msi_irq = ntbm_msi_request_irq(qp->ndev, ntb_transport_isr,
-+						   KBUILD_MODNAME, qp,
-+						   &qp->msi_desc);
-+		if (qp->msi_irq < 0) {
-+			dev_warn(&qp->ndev->pdev->dev,
-+				 "Unable to allocate MSI interrupt for qp%d\n",
-+				 qp_num);
-+			return;
-+		}
-+	}
-+
-+	rc = ntb_spad_write(qp->ndev, spad, qp->msi_desc.addr_offset);
-+	if (rc)
-+		goto err_free_interrupt;
-+
-+	rc = ntb_spad_write(qp->ndev, spad + 1, qp->msi_desc.data);
-+	if (rc)
-+		goto err_free_interrupt;
-+
-+	dev_dbg(&qp->ndev->pdev->dev, "QP%d MSI %d addr=%x data=%x\n",
-+		qp_num, qp->msi_irq, qp->msi_desc.addr_offset,
-+		qp->msi_desc.data);
-+
-+	return;
-+
-+err_free_interrupt:
-+	devm_free_irq(&nt->ndev->dev, qp->msi_irq, qp);
-+}
-+
-+static void ntb_transport_msi_peer_desc_changed(struct ntb_transport_ctx *nt)
-+{
-+	int i;
-+
-+	dev_dbg(&nt->ndev->pdev->dev, "Peer MSI descriptors changed");
-+
-+	for (i = 0; i < nt->qp_count; i++)
-+		ntb_transport_setup_qp_peer_msi(nt, i);
-+}
-+
-+static void ntb_transport_msi_desc_changed(void *data)
-+{
-+	struct ntb_transport_ctx *nt = data;
-+	int i;
-+
-+	dev_dbg(&nt->ndev->pdev->dev, "MSI descriptors changed");
-+
-+	for (i = 0; i < nt->qp_count; i++)
-+		ntb_transport_setup_qp_msi(nt, i);
-+
-+	ntb_peer_db_set(nt->ndev, nt->msi_db_mask);
-+}
-+
- static void ntb_free_mw(struct ntb_transport_ctx *nt, int num_mw)
- {
- 	struct ntb_transport_mw *mw = &nt->mw_vec[num_mw];
-@@ -905,6 +1028,20 @@ static void ntb_transport_link_work(struct work_struct *work)
- 	int rc = 0, i, spad;
- 
- 	/* send the local info, in the opposite order of the way we read it */
-+
-+	if (nt->use_msi) {
-+		rc = ntb_msi_setup_mws(ndev);
-+		if (rc) {
-+			dev_warn(&pdev->dev,
-+				 "Failed to register MSI memory window: %d\n",
-+				 rc);
-+			nt->use_msi = false;
-+		}
-+	}
-+
-+	for (i = 0; i < nt->qp_count; i++)
-+		ntb_transport_setup_qp_msi(nt, i);
-+
- 	for (i = 0; i < nt->mw_count; i++) {
- 		size = nt->mw_vec[i].phys_size;
- 
-@@ -962,6 +1099,7 @@ static void ntb_transport_link_work(struct work_struct *work)
- 		struct ntb_transport_qp *qp = &nt->qp_vec[i];
- 
- 		ntb_transport_setup_qp_mw(nt, i);
-+		ntb_transport_setup_qp_peer_msi(nt, i);
- 
- 		if (qp->client_ready)
- 			schedule_delayed_work(&qp->link_work, 0);
-@@ -1135,6 +1273,19 @@ static int ntb_transport_probe(struct ntb_client *self, struct ntb_dev *ndev)
- 		return -ENOMEM;
- 
- 	nt->ndev = ndev;
-+
-+	/*
-+	 * If we are using MSI, and have at least one extra memory window,
-+	 * we will reserve the last MW for the MSI window.
-+	 */
-+	if (use_msi && mw_count > 1) {
-+		rc = ntb_msi_init(ndev, ntb_transport_msi_desc_changed);
-+		if (!rc) {
-+			mw_count -= 1;
-+			nt->use_msi = true;
-+		}
-+	}
-+
- 	spad_count = ntb_spad_count(ndev);
- 
- 	/* Limit the MW's based on the availability of scratchpads */
-@@ -1148,6 +1299,8 @@ static int ntb_transport_probe(struct ntb_client *self, struct ntb_dev *ndev)
- 	max_mw_count_for_spads = (spad_count - MW0_SZ_HIGH) / 2;
- 	nt->mw_count = min(mw_count, max_mw_count_for_spads);
- 
-+	nt->msi_spad_offset = nt->mw_count * 2 + MW0_SZ_HIGH;
-+
- 	nt->mw_vec = kcalloc_node(mw_count, sizeof(*nt->mw_vec),
- 				  GFP_KERNEL, node);
- 	if (!nt->mw_vec) {
-@@ -1178,6 +1331,12 @@ static int ntb_transport_probe(struct ntb_client *self, struct ntb_dev *ndev)
- 	qp_bitmap = ntb_db_valid_mask(ndev);
- 
- 	qp_count = ilog2(qp_bitmap);
-+	if (nt->use_msi) {
-+		qp_count -= 1;
-+		nt->msi_db_mask = 1 << qp_count;
-+		ntb_db_clear_mask(ndev, nt->msi_db_mask);
-+	}
-+
- 	if (max_num_clients && max_num_clients < qp_count)
- 		qp_count = max_num_clients;
- 	else if (nt->mw_count < qp_count)
-@@ -1601,7 +1760,10 @@ static void ntb_tx_copy_callback(void *data,
- 
- 	iowrite32(entry->flags | DESC_DONE_FLAG, &hdr->flags);
- 
--	ntb_peer_db_set(qp->ndev, BIT_ULL(qp->qp_num));
-+	if (qp->use_msi)
-+		ntb_msi_peer_trigger(qp->ndev, PIDX, &qp->peer_msi_desc);
-+	else
-+		ntb_peer_db_set(qp->ndev, BIT_ULL(qp->qp_num));
- 
- 	/* The entry length can only be zero if the packet is intended to be a
- 	 * "link down" or similar.  Since no payload is being sent in these
-@@ -2268,6 +2430,11 @@ static void ntb_transport_doorbell_callback(void *data, int vector)
- 	u64 db_bits;
- 	unsigned int qp_num;
- 
-+	if (ntb_db_read(nt->ndev) & nt->msi_db_mask) {
-+		ntb_transport_msi_peer_desc_changed(nt);
-+		ntb_db_clear(nt->ndev, nt->msi_db_mask);
-+	}
-+
- 	db_bits = (nt->qp_bitmap & ~nt->qp_bitmap_free &
- 		   ntb_db_vector_mask(nt->ndev, vector));
- 
 -- 
-2.20.1
-
+Kees Cook
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
