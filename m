@@ -1,58 +1,76 @@
-Return-Path: <SRS0=OYPK=SX=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=kOFq=SY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B5A9C282E2
-	for <iommu@archiver.kernel.org>; Sun, 21 Apr 2019 01:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 549DBC282E2
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 07:10:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 15F9220651
-	for <iommu@archiver.kernel.org>; Sun, 21 Apr 2019 01:25:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15F9220651
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 14C21213A2
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 07:10:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Wi6frBnN";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="JQmuOtU2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14C21213A2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D30F02CB0;
-	Sun, 21 Apr 2019 01:25:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E1A971D1F;
+	Mon, 22 Apr 2019 07:10:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54CBA2BE9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D4B881D1E
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 21 Apr 2019 01:24:17 +0000 (UTC)
+	Mon, 22 Apr 2019 07:10:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 835C614D
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D3489829
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 21 Apr 2019 01:24:16 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	20 Apr 2019 18:24:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,376,1549958400"; d="scan'208";a="136008202"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga008.jf.intel.com with ESMTP; 20 Apr 2019 18:24:13 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 10/10] iommu/vt-d: Use bounce buffer for untrusted devices
-Date: Sun, 21 Apr 2019 09:17:19 +0800
-Message-Id: <20190421011719.14909-11-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-Cc: kevin.tian@intel.com, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	pengfei.xu@intel.com, jacob.jun.pan@intel.com,
-	mika.westerberg@linux.intel.com, Christoph Hellwig <hch@lst.de>
+	Mon, 22 Apr 2019 07:10:52 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 92026615B0; Mon, 22 Apr 2019 07:10:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1555917052;
+	bh=uAi5cYsiLvl7oGhOuwY5p/liIWrZ/Lrhjglq9hnUl30=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Wi6frBnNeHaQCUYQDXOynObh9f4+b1pDnzN1iRQ2rs0+DOMg80SltYoS7xx7De6sh
+	4btrlahjphjQ3S5AYGoVy8y9bIr8RWjfgnxIiCDfZHyP3HgQ+PrIU3OVy5fIUdpS2T
+	pRDiaKha55RU5KrOzdU7rI3YeFPDT7Loi8WB280U=
+Received: from blr-ubuntu-41.ap.qualcomm.com
+	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
+	[103.229.18.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 0C9B2604BE;
+	Mon, 22 Apr 2019 07:10:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1555917051;
+	bh=uAi5cYsiLvl7oGhOuwY5p/liIWrZ/Lrhjglq9hnUl30=;
+	h=From:To:Cc:Subject:Date:From;
+	b=JQmuOtU2ah7B6C7mVcRpEkmW2qLjBOh3hpxe/xQt/+0ryoq3WpXiVr+hq4YF25L8+
+	iG5rmswtXF5+lbpN8arkLctshQLYZj/RhRaWM2MvRnvXy6vHCG73oQ7aixh4p6N0D5
+	qMAVQn8R5jNLad6CeQCSVb4cnnENWYALoYs4ZHSY=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0C9B2604BE
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+To: joro@8bytes.org, will.deacon@arm.com, robin.murphy@arm.com,
+	iommu@lists.linux-foundation.org
+Subject: [PATCH v2 1/1] iommu/arm-smmu: Log CBFRSYNRA register on context fault
+Date: Mon, 22 Apr 2019 12:40:36 +0530
+Message-Id: <20190422071036.32671-1-vivek.gautam@codeaurora.org>
+X-Mailer: git-send-email 2.16.1.72.g5be1f00a9a70
+Cc: linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,284 +88,71 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190421011719.eVESgUomFpRsdg4BFFdaC6dHv6M_U2VsyBeA1lYpiiQ@z>
+Message-ID: <20190422071036.jmBrNsfo4T1SJS2E6QyJxLkwiqGm8kMkjGw87xntoCE@z>
 
-The Intel VT-d hardware uses paging for DMA remapping.
-The minimum mapped window is a page size. The device
-drivers may map buffers not filling the whole IOMMU
-window. This allows the device to access to possibly
-unrelated memory and a malicious device could exploit
-this to perform DMA attacks. To address this, the
-Intel IOMMU driver will use bounce pages for those
-buffers which don't fill a whole IOMMU page.
+Bits[15:0] in CBFRSYNRA register contain information about
+StreamID of the incoming transaction that generated the
+fault. Dump CBFRSYNRA register to get this info.
+This is specially useful in a distributed SMMU architecture
+where multiple masters are connected to the SMMU.
+SID information helps to quickly identify the faulting
+master device.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Tested-by: Xu Pengfei <pengfei.xu@intel.com>
-Tested-by: Mika Westerberg <mika.westerberg@intel.com>
+Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/iommu/intel-iommu.c | 138 ++++++++++++++++++++++++++----------
- 1 file changed, 99 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ed941ec9b9d5..52ccbd3f1425 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -52,6 +52,7 @@
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-+#include <trace/events/intel_iommu.h>
+Changes since v1:
+ - Addressed review comments, given by Bjorn, for nits.
+
+ drivers/iommu/arm-smmu-regs.h | 2 ++
+ drivers/iommu/arm-smmu.c      | 7 +++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
+index a1226e4ab5f8..e9132a926761 100644
+--- a/drivers/iommu/arm-smmu-regs.h
++++ b/drivers/iommu/arm-smmu-regs.h
+@@ -147,6 +147,8 @@ enum arm_smmu_s2cr_privcfg {
+ #define CBAR_IRPTNDX_SHIFT		24
+ #define CBAR_IRPTNDX_MASK		0xff
  
- #include "irq_remapping.h"
- #include "intel-pasid.h"
-@@ -3410,15 +3411,17 @@ static int iommu_no_mapping(struct device *dev)
- }
- 
- static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
--				     size_t size, int dir, u64 dma_mask)
-+				     size_t size, enum dma_data_direction dir,
-+				     unsigned long attrs, u64 dma_mask)
- {
- 	struct dmar_domain *domain;
--	phys_addr_t start_paddr;
-+	dma_addr_t start_dma;
- 	unsigned long iova_pfn;
- 	int prot = 0;
- 	int ret;
- 	struct intel_iommu *iommu;
- 	unsigned long paddr_pfn = paddr >> PAGE_SHIFT;
-+	unsigned long nrpages;
- 
- 	BUG_ON(dir == DMA_NONE);
- 
-@@ -3430,9 +3433,10 @@ static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
- 		return DMA_MAPPING_ERROR;
- 
- 	iommu = domain_get_iommu(domain);
--	size = aligned_nrpages(paddr, size);
-+	nrpages = aligned_nrpages(paddr, size);
- 
--	iova_pfn = intel_alloc_iova(dev, domain, dma_to_mm_pfn(size), dma_mask);
-+	iova_pfn = intel_alloc_iova(dev, domain,
-+				    dma_to_mm_pfn(nrpages), dma_mask);
- 	if (!iova_pfn)
- 		goto error;
- 
-@@ -3445,24 +3449,33 @@ static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
- 		prot |= DMA_PTE_READ;
- 	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
- 		prot |= DMA_PTE_WRITE;
++#define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
 +
-+	start_dma = (dma_addr_t)iova_pfn << PAGE_SHIFT;
-+	start_dma += offset_in_page(paddr);
-+
- 	/*
- 	 * paddr - (paddr + size) might be partial page, we should map the whole
- 	 * page.  Note: if two part of one page are separately mapped, we
- 	 * might have two guest_addr mapping to the same host paddr, but this
- 	 * is not a big problem
- 	 */
--	ret = domain_pfn_mapping(domain, mm_to_dma_pfn(iova_pfn),
--				 mm_to_dma_pfn(paddr_pfn), size, prot);
-+	if (device_needs_bounce(dev)) {
-+		ret = iommu_bounce_map(dev, start_dma, paddr, size, dir, attrs);
-+		if (!ret)
-+			trace_bounce_map_single(dev, start_dma, paddr, size);
-+	} else {
-+		ret = domain_pfn_mapping(domain, mm_to_dma_pfn(iova_pfn),
-+					 mm_to_dma_pfn(paddr_pfn),
-+					 nrpages, prot);
-+	}
- 	if (ret)
- 		goto error;
+ #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
+ #define CBA2R_RW64_32BIT		(0 << 0)
+ #define CBA2R_RW64_64BIT		(1 << 0)
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 045d93884164..e000473f8205 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -575,7 +575,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
+ 	void __iomem *cb_base;
++	u32 cbfrsynra;
  
--	start_paddr = (phys_addr_t)iova_pfn << PAGE_SHIFT;
--	start_paddr += paddr & ~PAGE_MASK;
--	return start_paddr;
--
-+	return start_dma;
- error:
- 	if (iova_pfn)
--		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(size));
-+		free_iova_fast(&domain->iovad, iova_pfn,
-+			       dma_to_mm_pfn(nrpages));
- 	dev_err(dev, "Device request: %zx@%llx dir %d --- failed\n",
- 		size, (unsigned long long)paddr, dir);
- 	return DMA_MAPPING_ERROR;
-@@ -3474,44 +3487,79 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
- 				 unsigned long attrs)
- {
- 	return __intel_map_single(dev, page_to_phys(page) + offset, size,
--				  dir, *dev->dma_mask);
-+				  dir, attrs, *dev->dma_mask);
- }
+ 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+ 	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
+@@ -585,10 +587,11 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
  
- static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
- 				     size_t size, enum dma_data_direction dir,
- 				     unsigned long attrs)
- {
--	return __intel_map_single(dev, phys_addr, size, dir, *dev->dma_mask);
-+	return __intel_map_single(dev, phys_addr, size,
-+				  dir, attrs, *dev->dma_mask);
- }
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+ 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
++	cbfrsynra = readl_relaxed(gr1_base + ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
  
--static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
-+static void
-+intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size,
-+	    struct scatterlist *sglist, int nelems,
-+	    enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct dmar_domain *domain;
- 	unsigned long start_pfn, last_pfn;
--	unsigned long nrpages;
-+	unsigned long nrpages = 0;
- 	unsigned long iova_pfn;
- 	struct intel_iommu *iommu;
--	struct page *freelist;
-+	struct page *freelist = NULL;
-+	struct pci_dev *pdev = NULL;
+ 	dev_err_ratelimited(smmu->dev,
+-	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+-			    fsr, iova, fsynr, cfg->cbndx);
++	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
++			    fsr, iova, fsynr, cbfrsynra, cfg->cbndx);
  
- 	if (iommu_no_mapping(dev))
- 		return;
- 
-+	if (dev_is_pci(dev))
-+		pdev = to_pci_dev(dev);
-+
- 	domain = find_domain(dev);
- 	BUG_ON(!domain);
- 
- 	iommu = domain_get_iommu(domain);
- 
--	iova_pfn = IOVA_PFN(dev_addr);
--
--	nrpages = aligned_nrpages(dev_addr, size);
--	start_pfn = mm_to_dma_pfn(iova_pfn);
--	last_pfn = start_pfn + nrpages - 1;
--
--	dev_dbg(dev, "Device unmapping: pfn %lx-%lx\n", start_pfn, last_pfn);
-+	if (sglist) {
-+		struct scatterlist *sg;
-+		int i;
- 
--	freelist = domain_unmap(domain, start_pfn, last_pfn);
-+		dev_addr = sg_dma_address(sglist) & PAGE_MASK;
-+		iova_pfn = IOVA_PFN(dev_addr);
-+		for_each_sg(sglist, sg, nelems, i) {
-+			nrpages += aligned_nrpages(sg_dma_address(sg),
-+						   sg_dma_len(sg));
-+		}
-+		start_pfn = mm_to_dma_pfn(iova_pfn);
-+		last_pfn = start_pfn + nrpages - 1;
-+
-+		if (device_needs_bounce(dev))
-+			for_each_sg(sglist, sg, nelems, i) {
-+				iommu_bounce_unmap(dev, sg_dma_address(sg),
-+						   sg->length, dir, attrs);
-+				trace_bounce_unmap_sg(dev, i, nelems,
-+						      sg_dma_address(sg),
-+						      sg_phys(sg), sg->length);
-+			}
-+		else
-+			freelist = domain_unmap(domain, start_pfn, last_pfn);
-+	} else {
-+		iova_pfn = IOVA_PFN(dev_addr);
-+		nrpages = aligned_nrpages(dev_addr, size);
-+		start_pfn = mm_to_dma_pfn(iova_pfn);
-+		last_pfn = start_pfn + nrpages - 1;
-+
-+		if (device_needs_bounce(dev)) {
-+			iommu_bounce_unmap(dev, dev_addr, size, dir, attrs);
-+			trace_bounce_unmap_single(dev, dev_addr, size);
-+		} else {
-+			freelist = domain_unmap(domain, start_pfn, last_pfn);
-+		}
-+	}
- 
--	if (intel_iommu_strict) {
-+	if (intel_iommu_strict || (pdev && pdev->untrusted)) {
- 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
- 				      nrpages, !freelist, 0);
- 		/* free iova */
-@@ -3531,7 +3579,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
- 			     size_t size, enum dma_data_direction dir,
- 			     unsigned long attrs)
- {
--	intel_unmap(dev, dev_addr, size);
-+	intel_unmap(dev, dev_addr, size, NULL, 0, dir, attrs);
- }
- 
- static void *intel_alloc_coherent(struct device *dev, size_t size,
-@@ -3572,7 +3620,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
- 	memset(page_address(page), 0, size);
- 
- 	*dma_handle = __intel_map_single(dev, page_to_phys(page), size,
--					 DMA_BIDIRECTIONAL,
-+					 DMA_BIDIRECTIONAL, attrs,
- 					 dev->coherent_dma_mask);
- 	if (*dma_handle != DMA_MAPPING_ERROR)
- 		return page_address(page);
-@@ -3591,7 +3639,7 @@ static void intel_free_coherent(struct device *dev, size_t size, void *vaddr,
- 	size = PAGE_ALIGN(size);
- 	order = get_order(size);
- 
--	intel_unmap(dev, dma_handle, size);
-+	intel_unmap(dev, dma_handle, size, NULL, 0, 0, attrs);
- 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
- 		__free_pages(page, order);
- }
-@@ -3600,16 +3648,7 @@ static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 			   int nelems, enum dma_data_direction dir,
- 			   unsigned long attrs)
- {
--	dma_addr_t startaddr = sg_dma_address(sglist) & PAGE_MASK;
--	unsigned long nrpages = 0;
--	struct scatterlist *sg;
--	int i;
--
--	for_each_sg(sglist, sg, nelems, i) {
--		nrpages += aligned_nrpages(sg_dma_address(sg), sg_dma_len(sg));
--	}
--
--	intel_unmap(dev, startaddr, nrpages << VTD_PAGE_SHIFT);
-+	intel_unmap(dev, 0, 0, sglist, nelems, dir, attrs);
- }
- 
- static int intel_nontranslate_map_sg(struct device *hddev,
-@@ -3671,7 +3710,28 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
- 
- 	start_vpfn = mm_to_dma_pfn(iova_pfn);
- 
--	ret = domain_sg_mapping(domain, start_vpfn, sglist, size, prot);
-+	if (device_needs_bounce(dev)) {
-+		for_each_sg(sglist, sg, nelems, i) {
-+			unsigned int pgoff = offset_in_page(sg->offset);
-+			dma_addr_t addr;
-+
-+			addr = ((dma_addr_t)iova_pfn << PAGE_SHIFT) + pgoff;
-+			ret = iommu_bounce_map(dev, addr, sg_phys(sg),
-+					       sg->length, dir, attrs);
-+			if (ret)
-+				break;
-+
-+			trace_bounce_map_sg(dev, i, nelems, addr,
-+					    sg_phys(sg), sg->length);
-+
-+			sg->dma_address = addr;
-+			sg->dma_length = sg->length;
-+			iova_pfn += aligned_nrpages(sg->offset, sg->length);
-+		}
-+	} else {
-+		ret = domain_sg_mapping(domain, start_vpfn, sglist, size, prot);
-+	}
-+
- 	if (unlikely(ret)) {
- 		dma_pte_free_pagetable(domain, start_vpfn,
- 				       start_vpfn + size - 1,
+ 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+ 	return IRQ_HANDLED;
 -- 
-2.17.1
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
 
 _______________________________________________
 iommu mailing list
