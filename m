@@ -2,69 +2,57 @@ Return-Path: <SRS0=kOFq=SY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72492C10F11
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4C8C282CE
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:03:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4181B20B1F
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="O0ioONp6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4181B20B1F
+	by mail.kernel.org (Postfix) with ESMTPS id 1886621738
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:03:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1886621738
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 66BF8D80;
-	Mon, 22 Apr 2019 18:01:18 +0000 (UTC)
-Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
-	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8DB61D7F
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E7AF4D73;
+	Mon, 22 Apr 2019 18:03:38 +0000 (UTC)
+Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
+	[172.17.192.35])
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4EDD0D3B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:01:15 +0000 (UTC)
+	Mon, 22 Apr 2019 18:03:37 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id 268131DCEE
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EA3CF829
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:01:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=KNBSxELbXU0pku+vbXf0mb5CVZS4m7+aLZgrSaKjimg=;
-	b=O0ioONp68hRSEfHTIvDbiBW+UG
-	6xt9MiBDMbZdcEyZKNvizAjpXal9ZI9GDFJZ2JfQ+8kiBmXr6TZFiOngdD3TyFrdgPum5i2ilOllA
-	5RGyskhfAghx9+0HAgERrj4mw8+QrJ1uwDr0W+6Ft/19cUThg7FiDRc2PCneNNh0HRQd1W0lmteUy
-	JqMO+ZaOgXq3MAwCAdwZjriNwQa8ZEhq9PX1A7Q4UvepVGLXVPCjgMRRkjOXtMdTF0AAo/GM4pbzx
-	+3JCJGL0WPLMf5wW02NEg6jE7MNZho+irCTuQtuRnHDAIUBT9VcKbhUHUlOTJBJMUmSxiZyMp1QfK
-	MOPp332w==;
-Received: from 213-225-37-80.nat.highway.a1.net ([213.225.37.80]
-	helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hIdFc-0002ed-0p; Mon, 22 Apr 2019 18:01:08 +0000
+	Mon, 22 Apr 2019 18:03:36 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id C703C68B02; Mon, 22 Apr 2019 20:03:19 +0200 (CEST)
+Date: Mon, 22 Apr 2019 20:03:19 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 23/26] iommu/dma: Don't depend on CONFIG_DMA_DIRECT_REMAP
-Date: Mon, 22 Apr 2019 19:59:39 +0200
-Message-Id: <20190422175942.18788-24-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190422175942.18788-1-hch@lst.de>
-References: <20190422175942.18788-1-hch@lst.de>
+Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
+	helpers
+Message-ID: <20190422180319.GA32490@lst.de>
+References: <20190327080448.5500-1-hch@lst.de>
+	<20190327080448.5500-13-hch@lst.de>
+	<b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com>
+	<20190410061157.GA5278@lst.de> <20190417063358.GA24139@lst.de>
+	<83615173-a8b4-e0eb-bac3-1a58d61ea4ef@arm.com>
+	<20190418163512.GA25347@lst.de>
+	<228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Disposition: inline
+In-Reply-To: <228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Tom Lendacky <thomas.lendacky@amd.com>,
 	Catalin Marinas <catalin.marinas@arm.com>,
 	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+	iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,93 +69,16 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422175939.xqBSHf13d7kLywGcpQkeHjsh0qORqL4cHoWEsMCHgDo@z>
+Message-ID: <20190422180319._Y6m4bmyLSSdwv3KfEeLrEPr_iRJbi6eVd7MJ0m2yoo@z>
 
-For entirely dma coherent architectures there is no requirement to ever
-remap dma coherent allocation.  Move all the remap and pool code under
-IS_ENABLED() checks and drop the Kconfig dependency.
+On Thu, Apr 18, 2019 at 07:15:00PM +0100, Robin Murphy wrote:
+> Still, I've worked in the vm_map_pages() stuff pending in MM and given them 
+> the same treatment to finish the picture.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/iommu/Kconfig     |  1 -
- drivers/iommu/dma-iommu.c | 16 +++++++++-------
- 2 files changed, 9 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index bdc14baf2ee5..6f07f3b21816 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -95,7 +95,6 @@ config IOMMU_DMA
- 	select IOMMU_API
- 	select IOMMU_IOVA
- 	select NEED_SG_DMA_LENGTH
--	depends on DMA_DIRECT_REMAP
- 
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 8fc6098c1eeb..278a9a960107 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -923,10 +923,11 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
- 	struct page *page = NULL;
- 
- 	/* Non-coherent atomic allocation? Easy */
--	if (dma_free_from_pool(cpu_addr, alloc_size))
-+	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-+	    dma_free_from_pool(cpu_addr, alloc_size))
- 		return;
- 
--	if (is_vmalloc_addr(cpu_addr)) {
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
- 		/*
- 		 * If it the address is remapped, then it's either non-coherent
- 		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
-@@ -972,7 +973,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	if (!page)
- 		return NULL;
- 
--	if (!coherent || PageHighMem(page)) {
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
- 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 
- 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
-@@ -1005,11 +1006,12 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 
- 	gfp |= __GFP_ZERO;
- 
--	if (gfpflags_allow_blocking(gfp) &&
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
- 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
- 		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
- 
--	if (!gfpflags_allow_blocking(gfp) && !coherent)
-+	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-+	    !gfpflags_allow_blocking(gfp) && !coherent)
- 		cpu_addr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
- 	else
- 		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
-@@ -1041,7 +1043,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
- 		return -ENXIO;
- 
--	if (is_vmalloc_addr(cpu_addr)) {
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
- 		struct page **pages = __iommu_dma_get_pages(cpu_addr);
- 
- 		if (pages)
-@@ -1063,7 +1065,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 	struct page *page;
- 	int ret;
- 
--	if (is_vmalloc_addr(cpu_addr)) {
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
- 		struct page **pages = __iommu_dma_get_pages(cpu_addr);
- 
- 		if (pages) {
--- 
-2.20.1
-
+I had to drop this - given that the changes are only in -mm and not
+an actual git tree we can't pull a tree for that in.  But on the plus
+side we can trivially replace __iommu_dma_mmap with vm_map_pages at
+any later point in time.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
