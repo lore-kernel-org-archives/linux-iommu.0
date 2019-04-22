@@ -1,75 +1,118 @@
-From: Khalid Aziz <khalid.aziz@oracle.com>
-Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
- Ownership (XPFO)
-Date: Mon, 22 Apr 2019 13:30:41 -0600
-Message-ID: <302e3d5b-d2fd-3c25-335b-466ba83035c5@oracle.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
- <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
- <20190417161042.GA43453@gmail.com>
- <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
- <20190417170918.GA68678@gmail.com>
- <56A175F6-E5DA-4BBD-B244-53B786F27B7F@gmail.com>
- <20190417172632.GA95485@gmail.com>
- <063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
- <alpine.DEB.2.21.1904172317460.3174@nanos.tec.linutronix.de>
- <CAHk-=wgBMg9P-nYQR2pS0XwVdikPCBqLsMFqR9nk=wSmAd4_5g@mail.gmail.com>
- <alpine.DEB.2.21.1904180129000.3174@nanos.tec.linutronix.de>
- <CAHk-=whUwOjFW6RjHVM8kNOv1QVLJuHj2Dda0=mpLPdJ1UyatQ@mail.gmail.com>
- <CALCETrXm9PuUTEEmzA8bQJmg=PHC_2XSywECittVhXbMJS1rSA@mail.gmail.com>
- <CAGXu5jL-qJtW7eH8S2yhqciE+J+FWz8HHzTrGJTgVUbd55n6dQ@mail.gmail.com>
- <8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
+From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH AUTOSEL 5.0 94/98] iommu/amd: Reserve exclusion range in
+	iova-domain
+Date: Mon, 22 Apr 2019 15:42:01 -0400
+Message-ID: <20190422194205.10404-94-sashal@kernel.org>
+References: <20190422194205.10404-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kees Cook <keescook@google.com>, Andy Lutomirski <luto@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Dave Hansen <dave@sr71.net>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, deepa.srinivasan@oracle.com, "H. Peter Anvin" <hpa@zytor.com>, Nadav Amit <nadav.amit@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Tycho Andersen <tycho@tycho.ws>, X86 ML <x86@kernel.org>, iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@kernel.org>, Julian Stecklina <jsteckli@amazon.de>, Arjan van de Ven <arjan@infradead.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jon Masters <jcm@redhat.com>, Borislav Petkov <bp@alien8.de>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, chris hyser <chris.hyser@oracle.com>, "linux-alpha@vger.kernel.org" <linux-arm-kernel@lists.infradead.org>, Khalid Aziz <khalid@gonehiking.org>, Juerg Haefliger <juergh@gmail.com>, Andrew Cooper <andrew.cooper3@citrix.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190422194205.10404-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/18/19 8:34 AM, Khalid Aziz wrote:
-> On 4/17/19 11:41 PM, Kees Cook wrote:
->> On Wed, Apr 17, 2019 at 11:41 PM Andy Lutomirski <luto@kernel.org> wrote:
->>> I don't think this type of NX goof was ever the argument for XPFO.
->>> The main argument I've heard is that a malicious user program writes a
->>> ROP payload into user memory (regular anonymous user memory) and then
->>> gets the kernel to erroneously set RSP (*not* RIP) to point there.
->>
->> Well, more than just ROP. Any of the various attack primitives. The NX
->> stuff is about moving RIP: SMEP-bypassing. But there is still basic
->> SMAP-bypassing for putting a malicious structure in userspace and
->> having the kernel access it via the linear mapping, etc.
->>
->>> I find this argument fairly weak for a couple reasons.  First, if
->>> we're worried about this, let's do in-kernel CFI, not XPFO, to
->>
->> CFI is getting much closer. Getting the kernel happy under Clang, LTO,
->> and CFI is under active development. (It's functional for arm64
->> already, and pieces have been getting upstreamed.)
->>
-> 
-> CFI theoretically offers protection with fairly low overhead. I have not
-> played much with CFI in clang. I agree with Linus that probability of
-> bugs in XPFO implementation itself is a cause of concern. If CFI in
-> Clang can provide us the same level of protection as XPFO does, I
-> wouldn't want to push for an expensive change like XPFO.
-> 
-> If Clang/CFI can't get us there for extended period of time, does it
-> make sense to continue to poke at XPFO?
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Any feedback on continued effort on XPFO? If it makes sense to have XPFO
-available as a solution for ret2dir issue in case Clang/CFI does not
-work out, I will continue to refine it.
+[ Upstream commit 8aafaaf2212192012f5bae305bb31cdf7681d777 ]
 
---
-Khalid
+If a device has an exclusion range specified in the IVRS
+table, this region needs to be reserved in the iova-domain
+of that device. This hasn't happened until now and can cause
+data corruption on data transfered with these devices.
+
+Treat exclusion ranges as reserved regions in the iommu-core
+to fix the problem.
+
+Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Reviewed-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Sasha Levin (Microsoft) <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c       | 9 ++++++---
+ drivers/iommu/amd_iommu_init.c  | 7 ++++---
+ drivers/iommu/amd_iommu_types.h | 2 ++
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index e628ef23418f..55b3e4b9d5dc 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3166,21 +3166,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 		return;
+ 
+ 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
++		int type, prot = 0;
+ 		size_t length;
+-		int prot = 0;
+ 
+ 		if (devid < entry->devid_start || devid > entry->devid_end)
+ 			continue;
+ 
++		type   = IOMMU_RESV_DIRECT;
+ 		length = entry->address_end - entry->address_start;
+ 		if (entry->prot & IOMMU_PROT_IR)
+ 			prot |= IOMMU_READ;
+ 		if (entry->prot & IOMMU_PROT_IW)
+ 			prot |= IOMMU_WRITE;
++		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
++			/* Exclusion range */
++			type = IOMMU_RESV_RESERVED;
+ 
+ 		region = iommu_alloc_resv_region(entry->address_start,
+-						 length, prot,
+-						 IOMMU_RESV_DIRECT);
++						 length, prot, type);
+ 		if (!region) {
+ 			pr_err("Out of memory allocating dm-regions for %s\n",
+ 				dev_name(dev));
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 66123b911ec8..84fa5b22371e 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2013,6 +2013,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+ 	if (e == NULL)
+ 		return -ENOMEM;
+ 
++	if (m->flags & IVMD_FLAG_EXCL_RANGE)
++		init_exclusion_range(m);
++
+ 	switch (m->type) {
+ 	default:
+ 		kfree(e);
+@@ -2059,9 +2062,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+ 
+ 	while (p < end) {
+ 		m = (struct ivmd_header *)p;
+-		if (m->flags & IVMD_FLAG_EXCL_RANGE)
+-			init_exclusion_range(m);
+-		else if (m->flags & IVMD_FLAG_UNITY_MAP)
++		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
+ 			init_unity_map_range(m);
+ 
+ 		p += m->length;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index eae0741f72dc..87965e4d9647 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -374,6 +374,8 @@
+ #define IOMMU_PROT_IR 0x01
+ #define IOMMU_PROT_IW 0x02
+ 
++#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
++
+ /* IOMMU capabilities */
+ #define IOMMU_CAP_IOTLB   24
+ #define IOMMU_CAP_NPCACHE 26
+-- 
+2.19.1
