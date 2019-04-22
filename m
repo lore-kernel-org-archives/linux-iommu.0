@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0E2C282CE
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72492C10F11
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C7F720B1F
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4181B20B1F
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="owINEIk4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C7F720B1F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="O0ioONp6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4181B20B1F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 395F5D88;
-	Mon, 22 Apr 2019 18:01:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 66BF8D80;
+	Mon, 22 Apr 2019 18:01:18 +0000 (UTC)
 Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
 	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D9F1AD56
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8DB61D7F
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:01:14 +0000 (UTC)
+	Mon, 22 Apr 2019 18:01:15 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id 7EE9D1DCEE
+	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id 268131DCEE
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:01:14 +0000 (UTC)
+	Mon, 22 Apr 2019 18:01:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=3sBtdtTwyQrODlGISgYAotsQnEJe1GrnNJIVafUW8bw=;
-	b=owINEIk4AXmNCAQKEwNtN+ddsK
-	dIWA0lcuei7wlPvWOX9aK+Z1Z9uoMNLCLWoslZ/QL/K5tJ+vQZutoSdP28Flom9VErQv/TqxI1iE2
-	S9Mw67EyfYsPMuegkrpkCjgPalIagzgj8mZHYZXyavqQwk3vktAZlQGEi+9lnPxX8jZHE6EuY/l6s
-	1ik0qsFuxcv13KtZijaMQAZFXghPT6lsu02x0XxrfNsPfz0ITvglDagETo5tUw2f4j5uUFhPG1+t+
-	M0tFY6j1fxjAZCUPXRcByKSGyZMYWP0I89n7fe9oZxxKxtsJU0CAfmVzEyPAhh14Ew70kLrsL8p9e
-	pzVmOr3A==;
+	bh=KNBSxELbXU0pku+vbXf0mb5CVZS4m7+aLZgrSaKjimg=;
+	b=O0ioONp68hRSEfHTIvDbiBW+UG
+	6xt9MiBDMbZdcEyZKNvizAjpXal9ZI9GDFJZ2JfQ+8kiBmXr6TZFiOngdD3TyFrdgPum5i2ilOllA
+	5RGyskhfAghx9+0HAgERrj4mw8+QrJ1uwDr0W+6Ft/19cUThg7FiDRc2PCneNNh0HRQd1W0lmteUy
+	JqMO+ZaOgXq3MAwCAdwZjriNwQa8ZEhq9PX1A7Q4UvepVGLXVPCjgMRRkjOXtMdTF0AAo/GM4pbzx
+	+3JCJGL0WPLMf5wW02NEg6jE7MNZho+irCTuQtuRnHDAIUBT9VcKbhUHUlOTJBJMUmSxiZyMp1QfK
+	MOPp332w==;
 Received: from 213-225-37-80.nat.highway.a1.net ([213.225.37.80]
 	helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hIdFZ-0002bd-GQ; Mon, 22 Apr 2019 18:01:05 +0000
+	id 1hIdFc-0002ed-0p; Mon, 22 Apr 2019 18:01:08 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 22/26] iommu/dma: Refactor iommu_dma_mmap
-Date: Mon, 22 Apr 2019 19:59:38 +0200
-Message-Id: <20190422175942.18788-23-hch@lst.de>
+Subject: [PATCH 23/26] iommu/dma: Don't depend on CONFIG_DMA_DIRECT_REMAP
+Date: Mon, 22 Apr 2019 19:59:39 +0200
+Message-Id: <20190422175942.18788-24-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190422175942.18788-1-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
@@ -81,79 +81,90 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422175938.PI91sicTD1RUol1cPF5QBquaogHNUqOCvwzrqXOW77o@z>
+Message-ID: <20190422175939.xqBSHf13d7kLywGcpQkeHjsh0qORqL4cHoWEsMCHgDo@z>
 
-Inline __iommu_dma_mmap_pfn into the main function, and use the
-fact that __iommu_dma_get_pages return NULL for remapped contigous
-allocations to simplify the code flow a bit.
+For entirely dma coherent architectures there is no requirement to ever
+remap dma coherent allocation.  Move all the remap and pool code under
+IS_ENABLED() checks and drop the Kconfig dependency.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 36 +++++++++++-------------------------
- 1 file changed, 11 insertions(+), 25 deletions(-)
+ drivers/iommu/Kconfig     |  1 -
+ drivers/iommu/dma-iommu.c | 16 +++++++++-------
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index bdc14baf2ee5..6f07f3b21816 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -95,7 +95,6 @@ config IOMMU_DMA
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+ 	select NEED_SG_DMA_LENGTH
+-	depends on DMA_DIRECT_REMAP
+ 
+ config FSL_PAMU
+ 	bool "Freescale IOMMU support"
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 138b85e675c8..8fc6098c1eeb 100644
+index 8fc6098c1eeb..278a9a960107 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -1025,21 +1025,12 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 	return cpu_addr;
- }
+@@ -923,10 +923,11 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
+ 	struct page *page = NULL;
  
--static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
--			      unsigned long pfn, size_t size)
--{
--	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
--			       vma->vm_end - vma->vm_start,
--			       vma->vm_page_prot);
--}
--
- static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs)
- {
- 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	unsigned long off = vma->vm_pgoff;
--	struct page **pages;
-+	unsigned long pfn, off = vma->vm_pgoff;
- 	int ret;
+ 	/* Non-coherent atomic allocation? Easy */
+-	if (dma_free_from_pool(cpu_addr, alloc_size))
++	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
++	    dma_free_from_pool(cpu_addr, alloc_size))
+ 		return;
  
- 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-@@ -1050,24 +1041,19 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+-	if (is_vmalloc_addr(cpu_addr)) {
++	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
+ 		/*
+ 		 * If it the address is remapped, then it's either non-coherent
+ 		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
+@@ -972,7 +973,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+ 	if (!page)
+ 		return NULL;
+ 
+-	if (!coherent || PageHighMem(page)) {
++	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
+ 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
+ 
+ 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
+@@ -1005,11 +1006,12 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 
+ 	gfp |= __GFP_ZERO;
+ 
+-	if (gfpflags_allow_blocking(gfp) &&
++	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
+ 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+ 		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
+ 
+-	if (!gfpflags_allow_blocking(gfp) && !coherent)
++	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
++	    !gfpflags_allow_blocking(gfp) && !coherent)
+ 		cpu_addr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
+ 	else
+ 		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
+@@ -1041,7 +1043,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
  	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
  		return -ENXIO;
  
--	if (!is_vmalloc_addr(cpu_addr)) {
--		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
--		return __iommu_dma_mmap_pfn(vma, pfn, size);
--	}
-+	if (is_vmalloc_addr(cpu_addr)) {
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
+-	if (is_vmalloc_addr(cpu_addr)) {
++	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
+ 		struct page **pages = __iommu_dma_get_pages(cpu_addr);
  
--	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
--		/*
--		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
--		 * hence in the vmalloc space.
--		 */
--		unsigned long pfn = vmalloc_to_pfn(cpu_addr);
--		return __iommu_dma_mmap_pfn(vma, pfn, size);
-+		if (pages)
-+			return __iommu_dma_mmap(pages, size, vma);
-+		pfn = vmalloc_to_pfn(cpu_addr);
-+	} else {
-+		pfn = page_to_pfn(virt_to_page(cpu_addr));
- 	}
+ 		if (pages)
+@@ -1063,7 +1065,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	struct page *page;
+ 	int ret;
  
--	pages = __iommu_dma_get_pages(cpu_addr);
--	if (WARN_ON_ONCE(!pages))
--		return -ENXIO;
--	return __iommu_dma_mmap(pages, size, vma);
-+	return remap_pfn_range(vma, vma->vm_start, pfn + off,
-+			       vma->vm_end - vma->vm_start,
-+			       vma->vm_page_prot);
- }
+-	if (is_vmalloc_addr(cpu_addr)) {
++	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
+ 		struct page **pages = __iommu_dma_get_pages(cpu_addr);
  
- static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 		if (pages) {
 -- 
 2.20.1
 
