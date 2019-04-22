@@ -1,14 +1,14 @@
-From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.14 41/43] iommu/amd: Reserve exclusion range in
-	iova-domain
-Date: Mon, 22 Apr 2019 15:47:25 -0400
-Message-ID: <20190422194727.12495-41-sashal@kernel.org>
-References: <20190422194727.12495-1-sashal@kernel.org>
+From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v4 02/10] PCI/switchtec: Add module parameter to request more
+	interrupts
+Date: Mon, 22 Apr 2019 15:05:20 -0600
+Message-ID: <20190422210528.15289-3-logang@deltatee.com>
+References: <20190422210528.15289-1-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190422194727.12495-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20190422210528.15289-1-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,101 +18,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ntb-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kselftest-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Allen Hubbe <allenbh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Serge Semin <fancer.lancer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Seeing the we want to use more interrupts in the NTB MSI code
+we need to be able allocate more (sometimes virtual) interrupts
+in the switchtec driver. Therefore add a module parameter to
+request to allocate additional interrupts.
 
-[ Upstream commit 8aafaaf2212192012f5bae305bb31cdf7681d777 ]
+This puts virtually no limit on the number of MSI interrupts available
+to NTB clients.
 
-If a device has an exclusion range specified in the IVRS
-table, this region needs to be reserved in the iova-domain
-of that device. This hasn't happened until now and can cause
-data corruption on data transfered with these devices.
-
-Treat exclusion ranges as reserved regions in the iommu-core
-to fix the problem.
-
-Fixes: be2a022c0dd0 ('x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices')
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Reviewed-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Signed-off-by: Sasha Levin (Microsoft) <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 9 ++++++---
- drivers/iommu/amd_iommu_init.c  | 7 ++++---
- drivers/iommu/amd_iommu_types.h | 2 ++
- 3 files changed, 12 insertions(+), 6 deletions(-)
+ drivers/pci/switch/switchtec.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index bd339bfe0d15..684f7cdd814b 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3127,21 +3127,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 		return;
+diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
+index e22766c79fe9..8b1db78197d9 100644
+--- a/drivers/pci/switch/switchtec.c
++++ b/drivers/pci/switch/switchtec.c
+@@ -30,6 +30,10 @@ module_param(use_dma_mrpc, bool, 0644);
+ MODULE_PARM_DESC(use_dma_mrpc,
+ 		 "Enable the use of the DMA MRPC feature");
  
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
-+		int type, prot = 0;
- 		size_t length;
--		int prot = 0;
- 
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
- 
-+		type   = IOMMU_RESV_DIRECT;
- 		length = entry->address_end - entry->address_start;
- 		if (entry->prot & IOMMU_PROT_IR)
- 			prot |= IOMMU_READ;
- 		if (entry->prot & IOMMU_PROT_IW)
- 			prot |= IOMMU_WRITE;
-+		if (entry->prot & IOMMU_UNITY_MAP_FLAG_EXCL_RANGE)
-+			/* Exclusion range */
-+			type = IOMMU_RESV_RESERVED;
- 
- 		region = iommu_alloc_resv_region(entry->address_start,
--						 length, prot,
--						 IOMMU_RESV_DIRECT);
-+						 length, prot, type);
- 		if (!region) {
- 			pr_err("Out of memory allocating dm-regions for %s\n",
- 				dev_name(dev));
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index b97984a5ddad..91d7718625a6 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1980,6 +1980,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
- 	if (e == NULL)
- 		return -ENOMEM;
- 
-+	if (m->flags & IVMD_FLAG_EXCL_RANGE)
-+		init_exclusion_range(m);
++static int nirqs = 32;
++module_param(nirqs, int, 0644);
++MODULE_PARM_DESC(nirqs, "number of interrupts to allocate (more may be useful for NTB applications)");
 +
- 	switch (m->type) {
- 	default:
- 		kfree(e);
-@@ -2026,9 +2029,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+ static dev_t switchtec_devt;
+ static DEFINE_IDA(switchtec_minor_ida);
  
- 	while (p < end) {
- 		m = (struct ivmd_header *)p;
--		if (m->flags & IVMD_FLAG_EXCL_RANGE)
--			init_exclusion_range(m);
--		else if (m->flags & IVMD_FLAG_UNITY_MAP)
-+		if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
- 			init_unity_map_range(m);
+@@ -1247,8 +1251,12 @@ static int switchtec_init_isr(struct switchtec_dev *stdev)
+ 	int dma_mrpc_irq;
+ 	int rc;
  
- 		p += m->length;
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index f6b24c7d8b70..3054c0971759 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -369,6 +369,8 @@
- #define IOMMU_PROT_IR 0x01
- #define IOMMU_PROT_IW 0x02
- 
-+#define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
+-	nvecs = pci_alloc_irq_vectors(stdev->pdev, 1, 4,
+-				      PCI_IRQ_MSIX | PCI_IRQ_MSI);
++	if (nirqs < 4)
++		nirqs = 4;
 +
- /* IOMMU capabilities */
- #define IOMMU_CAP_IOTLB   24
- #define IOMMU_CAP_NPCACHE 26
++	nvecs = pci_alloc_irq_vectors(stdev->pdev, 1, nirqs,
++				      PCI_IRQ_MSIX | PCI_IRQ_MSI |
++				      PCI_IRQ_VIRTUAL);
+ 	if (nvecs < 0)
+ 		return nvecs;
+ 
 -- 
-2.19.1
+2.20.1
