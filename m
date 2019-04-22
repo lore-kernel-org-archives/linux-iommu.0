@@ -6,54 +6,54 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99062C10F11
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 19:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B66AC282CE
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 19:47:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 615D9218D9
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 19:45:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E9AC221905
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 19:47:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="jjfhBAP9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 615D9218D9
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="pFpylcyO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9AC221905
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 35DD9DD5;
-	Mon, 22 Apr 2019 19:45:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B60ADD8;
+	Mon, 22 Apr 2019 19:47:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EFF7ADD4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 71E73DD1
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 19:45:07 +0000 (UTC)
+	Mon, 22 Apr 2019 19:47:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 949A2F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 12F9D829
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 19:45:07 +0000 (UTC)
+	Mon, 22 Apr 2019 19:47:20 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
 	[73.47.72.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id AB3DD21902;
-	Mon, 22 Apr 2019 19:45:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 29B5B21906;
+	Mon, 22 Apr 2019 19:47:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555962307;
-	bh=IAPikkAGx80dK1h5T9epE5Abk7jyy3k1wkTycyh9lBg=;
+	s=default; t=1555962440;
+	bh=SWLbllo8DxeoSqq5pqLlUBhpVqixTFUZacJ0l7z86bM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=jjfhBAP9sWOr6bN6PcptyyaUHBWT6h3bhLSS6rxdJtiYCSAbJ2Rxa9zNe17yXiSrq
-	PCwqA3SohJKWYv9HcCX/49nJF4DgD160stQee8UQwyUzaVUbSkLuEOT66W0Tz0Wi4q
-	/fFlN4hZm6FCwr1dyyQoF8SsuxNQ51FI9861pTZM=
+	b=pFpylcyOyelgnnGrIJ3Z/rWvYOF23TnDBAyIzKvNh8vQ/bESB0HljZEmAr98/BmC/
+	1ZyCM8uHZBUC6AbPHGWpfnE2/bK3Y46PvrI5MbYBDuuqeNSI7jjaHu9bgwwzBuBUkL
+	Az+dFBylK27D55aXM/FYo7NESiue81Sim/SW26TU=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 94/98] iommu/amd: Reserve exclusion range in
+Subject: [PATCH AUTOSEL 4.19 65/68] iommu/amd: Reserve exclusion range in
 	iova-domain
-Date: Mon, 22 Apr 2019 15:42:01 -0400
-Message-Id: <20190422194205.10404-94-sashal@kernel.org>
+Date: Mon, 22 Apr 2019 15:45:13 -0400
+Message-Id: <20190422194516.11634-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190422194205.10404-1-sashal@kernel.org>
-References: <20190422194205.10404-1-sashal@kernel.org>
+In-Reply-To: <20190422194516.11634-1-sashal@kernel.org>
+References: <20190422194516.11634-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -75,7 +75,7 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422194201.-vJFezQQg-LwpLpkqqLWE3SMi_S1wqfHp3T_zaca5hM@z>
+Message-ID: <20190422194513.WrPncAmvfM9vwKf0i90f8WUXeE90DMf1H4w9yLCm8oc@z>
 
 From: Joerg Roedel <jroedel@suse.de>
 
@@ -100,10 +100,10 @@ Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
  3 files changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index e628ef23418f..55b3e4b9d5dc 100644
+index 0b3877681e4a..8d9920ff4134 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3166,21 +3166,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+@@ -3119,21 +3119,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
  		return;
  
  	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
@@ -132,10 +132,10 @@ index e628ef23418f..55b3e4b9d5dc 100644
  			pr_err("Out of memory allocating dm-regions for %s\n",
  				dev_name(dev));
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 66123b911ec8..84fa5b22371e 100644
+index e062ab9687c7..be3801d43d48 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2013,6 +2013,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+@@ -2001,6 +2001,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
  	if (e == NULL)
  		return -ENOMEM;
  
@@ -145,7 +145,7 @@ index 66123b911ec8..84fa5b22371e 100644
  	switch (m->type) {
  	default:
  		kfree(e);
-@@ -2059,9 +2062,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+@@ -2047,9 +2050,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
  
  	while (p < end) {
  		m = (struct ivmd_header *)p;
@@ -157,10 +157,10 @@ index 66123b911ec8..84fa5b22371e 100644
  
  		p += m->length;
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index eae0741f72dc..87965e4d9647 100644
+index e2b342e65a7b..69f3d4c95b53 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -374,6 +374,8 @@
+@@ -373,6 +373,8 @@
  #define IOMMU_PROT_IR 0x01
  #define IOMMU_PROT_IW 0x02
  
