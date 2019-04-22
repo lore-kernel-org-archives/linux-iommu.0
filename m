@@ -3,47 +3,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279FAC10F11
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 21:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B58C282CE
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 21:05:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0162B21738
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 21:05:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0162B21738
+	by mail.kernel.org (Postfix) with ESMTPS id 66EAD20896
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 21:05:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66EAD20896
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C28B1CAD;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EE709E48;
 	Mon, 22 Apr 2019 21:05:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 17675C3F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 37EF1C3F
 	for <iommu@lists.linux-foundation.org>;
 	Mon, 22 Apr 2019 21:05:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from ale.deltatee.com (ale.deltatee.com [207.54.116.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C19A0829
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8494E82E
 	for <iommu@lists.linux-foundation.org>;
 	Mon, 22 Apr 2019 21:05:36 +0000 (UTC)
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
 	by ale.deltatee.com with esmtps
 	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.89)
 	(envelope-from <gunthorp@deltatee.com>)
-	id 1hIg85-0004id-Rs; Mon, 22 Apr 2019 15:05:36 -0600
+	id 1hIg85-0004il-S1; Mon, 22 Apr 2019 15:05:35 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.89)
 	(envelope-from <gunthorp@deltatee.com>)
-	id 1hIg82-0003zh-UN; Mon, 22 Apr 2019 15:05:30 -0600
+	id 1hIg83-0003zq-8f; Mon, 22 Apr 2019 15:05:31 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com,
 	linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
 	linux-kselftest@vger.kernel.org, Jon Mason <jdmason@kudzu.us>,
 	Joerg Roedel <joro@8bytes.org>
-Date: Mon, 22 Apr 2019 15:05:23 -0600
-Message-Id: <20190422210528.15289-6-logang@deltatee.com>
+Date: Mon, 22 Apr 2019 15:05:26 -0600
+Message-Id: <20190422210528.15289-9-logang@deltatee.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190422210528.15289-1-logang@deltatee.com>
 References: <20190422210528.15289-1-logang@deltatee.com>
@@ -56,8 +56,7 @@ X-SA-Exim-Rcpt-To: linux-ntb@googlegroups.com, iommu@lists.linux-foundation.org,
 	allenbh@gmail.com, fancer.lancer@gmail.com, epilmore@gigaio.com,
 	logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v4 05/10] NTB: Rename ntb.c to support multiple source files
-	in the module
+Subject: [PATCH v4 08/10] NTB: Add ntb_msi_test support to ntb_test
 X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Allen Hubbe <allenbh@gmail.com>, Dave Jiang <dave.jiang@intel.com>,
@@ -79,39 +78,114 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422210523.ee1nE2BEOC2s0FF-DzL33WbSdcoOj2FQ9VDquOTVB0o@z>
+Message-ID: <20190422210526.p42MnBd_srcYlwtZ8C80ZV-rF24qxFKieRPGd-gCBKY@z>
 
-The kbuild system does not support having multiple source files in
-a module if one of those source files has the same name as the module.
-
-Therefore, we must rename ntb.c to core.c, while the module remains
-ntb.ko.
-
-This is similar to the way the nvme modules are structured.
+When the ntb_msi_test module is available, the test code will trigger
+each of the interrupts and ensure the corresponding occurrences files
+gets incremented.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 Cc: Jon Mason <jdmason@kudzu.us>
 Cc: Dave Jiang <dave.jiang@intel.com>
 Cc: Allen Hubbe <allenbh@gmail.com>
 ---
- drivers/ntb/Makefile          | 2 ++
- drivers/ntb/{ntb.c => core.c} | 0
- 2 files changed, 2 insertions(+)
- rename drivers/ntb/{ntb.c => core.c} (100%)
+ tools/testing/selftests/ntb/ntb_test.sh | 54 ++++++++++++++++++++++++-
+ 1 file changed, 52 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ntb/Makefile b/drivers/ntb/Makefile
-index 1921dec1949d..537226f8e78d 100644
---- a/drivers/ntb/Makefile
-+++ b/drivers/ntb/Makefile
-@@ -1,2 +1,4 @@
- obj-$(CONFIG_NTB) += ntb.o hw/ test/
- obj-$(CONFIG_NTB_TRANSPORT) += ntb_transport.o
+diff --git a/tools/testing/selftests/ntb/ntb_test.sh b/tools/testing/selftests/ntb/ntb_test.sh
+index 17ca36403d04..1a10b8f67727 100755
+--- a/tools/testing/selftests/ntb/ntb_test.sh
++++ b/tools/testing/selftests/ntb/ntb_test.sh
+@@ -87,10 +87,10 @@ set -e
+ 
+ function _modprobe()
+ {
+-	modprobe "$@"
++	modprobe "$@" || return 1
+ 
+ 	if [[ "$REMOTE_HOST" != "" ]]; then
+-		ssh "$REMOTE_HOST" modprobe "$@"
++		ssh "$REMOTE_HOST" modprobe "$@" || return 1
+ 	fi
+ }
+ 
+@@ -451,6 +451,30 @@ function pingpong_test()
+ 	echo "  Passed"
+ }
+ 
++function msi_test()
++{
++	LOC=$1
++	REM=$2
 +
-+ntb-y := core.o
-diff --git a/drivers/ntb/ntb.c b/drivers/ntb/core.c
-similarity index 100%
-rename from drivers/ntb/ntb.c
-rename to drivers/ntb/core.c
++	write_file 1 $LOC/ready
++
++	echo "Running MSI interrupt tests on: $(subdirname $LOC) / $(subdirname $REM)"
++
++	CNT=$(read_file "$LOC/count")
++	for ((i = 0; i < $CNT; i++)); do
++		START=$(read_file $REM/../irq${i}_occurrences)
++		write_file $i $LOC/trigger
++		END=$(read_file $REM/../irq${i}_occurrences)
++
++		if [[ $(($END - $START)) != 1 ]]; then
++			echo "MSI did not trigger the interrupt on the remote side!" >&2
++			exit 1
++		fi
++	done
++
++	echo "  Passed"
++}
++
+ function perf_test()
+ {
+ 	USE_DMA=$1
+@@ -529,6 +553,29 @@ function ntb_pingpong_tests()
+ 	_modprobe -r ntb_pingpong
+ }
+ 
++function ntb_msi_tests()
++{
++	LOCAL_MSI="$DEBUGFS/ntb_msi_test/$LOCAL_DEV"
++	REMOTE_MSI="$REMOTE_HOST:$DEBUGFS/ntb_msi_test/$REMOTE_DEV"
++
++	echo "Starting ntb_msi_test tests..."
++
++	if ! _modprobe ntb_msi_test 2> /dev/null; then
++		echo "  Not doing MSI tests seeing the module is not available."
++		return
++	fi
++
++	port_test $LOCAL_MSI $REMOTE_MSI
++
++	LOCAL_PEER="$LOCAL_MSI/peer$LOCAL_PIDX"
++	REMOTE_PEER="$REMOTE_MSI/peer$REMOTE_PIDX"
++
++	msi_test $LOCAL_PEER $REMOTE_PEER
++	msi_test $REMOTE_PEER $LOCAL_PEER
++
++	_modprobe -r ntb_msi_test
++}
++
+ function ntb_perf_tests()
+ {
+ 	LOCAL_PERF="$DEBUGFS/ntb_perf/$LOCAL_DEV"
+@@ -550,6 +597,7 @@ function cleanup()
+ 	_modprobe -r ntb_perf 2> /dev/null
+ 	_modprobe -r ntb_pingpong 2> /dev/null
+ 	_modprobe -r ntb_transport 2> /dev/null
++	_modprobe -r ntb_msi_test 2> /dev/null
+ 	set -e
+ }
+ 
+@@ -586,5 +634,7 @@ ntb_tool_tests
+ echo
+ ntb_pingpong_tests
+ echo
++ntb_msi_tests
++echo
+ ntb_perf_tests
+ echo
 -- 
 2.20.1
 
