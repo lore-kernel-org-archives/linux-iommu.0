@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.19 65/68] iommu/amd: Reserve exclusion range in
+Subject: [PATCH AUTOSEL 4.14 41/43] iommu/amd: Reserve exclusion range in
 	iova-domain
-Date: Mon, 22 Apr 2019 15:45:13 -0400
-Message-ID: <20190422194516.11634-65-sashal@kernel.org>
-References: <20190422194516.11634-1-sashal@kernel.org>
+Date: Mon, 22 Apr 2019 15:47:25 -0400
+Message-ID: <20190422194727.12495-41-sashal@kernel.org>
+References: <20190422194727.12495-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190422194516.11634-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20190422194727.12495-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -45,10 +45,10 @@ Signed-off-by: Sasha Levin (Microsoft) <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gma
  3 files changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 0b3877681e4a..8d9920ff4134 100644
+index bd339bfe0d15..684f7cdd814b 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3119,21 +3119,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+@@ -3127,21 +3127,24 @@ static void amd_iommu_get_resv_regions(struct device *dev,
  		return;
  
  	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
@@ -77,10 +77,10 @@ index 0b3877681e4a..8d9920ff4134 100644
  			pr_err("Out of memory allocating dm-regions for %s\n",
  				dev_name(dev));
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e062ab9687c7..be3801d43d48 100644
+index b97984a5ddad..91d7718625a6 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2001,6 +2001,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+@@ -1980,6 +1980,9 @@ static int __init init_unity_map_range(struct ivmd_header *m)
  	if (e == NULL)
  		return -ENOMEM;
  
@@ -90,7 +90,7 @@ index e062ab9687c7..be3801d43d48 100644
  	switch (m->type) {
  	default:
  		kfree(e);
-@@ -2047,9 +2050,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+@@ -2026,9 +2029,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
  
  	while (p < end) {
  		m = (struct ivmd_header *)p;
@@ -102,10 +102,10 @@ index e062ab9687c7..be3801d43d48 100644
  
  		p += m->length;
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index e2b342e65a7b..69f3d4c95b53 100644
+index f6b24c7d8b70..3054c0971759 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -373,6 +373,8 @@
+@@ -369,6 +369,8 @@
  #define IOMMU_PROT_IR 0x01
  #define IOMMU_PROT_IW 0x02
  
