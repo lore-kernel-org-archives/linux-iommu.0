@@ -7,54 +7,55 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D77C10F11
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C72FC10F11
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB88720B1F
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3BB1E20B1F
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:00:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MNe1WR44"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB88720B1F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="nr6ZGAVT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BB1E20B1F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 301E6D80;
-	Mon, 22 Apr 2019 18:00:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 62F99D7D;
+	Mon, 22 Apr 2019 18:00:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5053DD6A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B1E6AD6A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:00:19 +0000 (UTC)
+	Mon, 22 Apr 2019 18:00:20 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DBF8C82E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5949C829
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:00:18 +0000 (UTC)
+	Mon, 22 Apr 2019 18:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Q+2KlgV0RqA8qqGzcp7z9LBrBJFk8+Th88ZyXfO7Rq0=;
-	b=MNe1WR44xCnsb9ZRqtj6nHPCws
-	TGM9s555Pj35d9Fp5b+zb19rtzV1ThZ0LjzoVJrKvocbo+Ut7GSKphfek29jCU3TFLS63J+OF2VAC
-	g6r/lTpWLQp5VrqAR8HVQXLj1YsiPrktZ8Kwo+YSgKCdLZXgdTyic/01GBoM28Eh6f3KLRFZxXDxo
-	8QnxxQDntHo2hXTqRePgWPC8UtBq0nS7ZcCofp+CUP4Phve+hhcs+zSqP7r0/By1u+/BSQZE/34km
-	rAurl8UW1om3aCq1cq5z4z2XOuw+VF2IT0iMhRw9ZDyBcCxMihbGn+z4Q0FLQLBM09F6a9jHS8CNW
-	rmzoWOqw==;
+	bh=Df0F3GJIw856JDj29FbyyhQeVRaUqjwewBc2/XOVfNI=;
+	b=nr6ZGAVTVFVW5vlEKbql7I5NYh
+	fFtFDmQzkfxB5Ar7bHPJJ3Q/nvTCEF4ad6zGtoX8q5zRaDCM2yJ7rhlDcP5uBQV8kf4N5FdC6gHBn
+	DW0sYOVZj+2pa+d0D4eZQCmVEMGXWDcNi15Yl9fboxGOrhkoeL1rt5mIi4b09RrShY+lC6q2OuqoI
+	yxGOE9vLmIcYEatdbA2xMCCvWQahYtnHYb/GbhgMQzQNWQT8ZOH1GqipIfIjmxp3br76PrOYxC37z
+	pIgPOn+9yaFsQ2D2QzvlyYmfbuoAFCTi2KgPmhS23mub7hinBR3fBZfHSHfVlq9zyYuX5UuP6KV0m
+	c5+6ts1Q==;
 Received: from 213-225-37-80.nat.highway.a1.net ([213.225.37.80]
 	helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hIdEj-0001R1-7d; Mon, 22 Apr 2019 18:00:13 +0000
+	id 1hIdEl-0001Tt-P9; Mon, 22 Apr 2019 18:00:16 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 02/26] arm64/iommu: improve mmap bounds checking
-Date: Mon, 22 Apr 2019 19:59:18 +0200
-Message-Id: <20190422175942.18788-3-hch@lst.de>
+Subject: [PATCH 03/26] dma-mapping: add a Kconfig symbol to indicated
+	arch_dma_prep_coherent presence
+Date: Mon, 22 Apr 2019 19:59:19 +0200
+Message-Id: <20190422175942.18788-4-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190422175942.18788-1-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
@@ -81,62 +82,78 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422175918.wMBlO4GM2AI-6ijcf6byCCcva61M5lCuaSpaC2Ohc44@z>
+Message-ID: <20190422175919.qvWl8hfNCgprtW1dkYiEIT-j1LngpPKFzUoG34_Md5I@z>
 
-The nr_pages checks should be done for all mmap requests, not just those
-using remap_pfn_range.
+Add a Kconfig symbol that indicates an architecture provides a
+arch_dma_prep_coherent implementation, and provide a stub otherwise.
+
+This will allow the generic dma-iommu code to use it while still
+allowing to be built for cache coherent architectures.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/arm64/mm/dma-mapping.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+ arch/arm64/Kconfig              | 1 +
+ arch/csky/Kconfig               | 1 +
+ include/linux/dma-noncoherent.h | 6 ++++++
+ kernel/dma/Kconfig              | 3 +++
+ 4 files changed, 11 insertions(+)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 674860e3e478..604c638b2787 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -73,19 +73,9 @@ static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
- static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
- 			      unsigned long pfn, size_t size)
- {
--	int ret = -ENXIO;
--	unsigned long nr_vma_pages = vma_pages(vma);
--	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	unsigned long off = vma->vm_pgoff;
--
--	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
--		ret = remap_pfn_range(vma, vma->vm_start,
--				      pfn + off,
--				      vma->vm_end - vma->vm_start,
--				      vma->vm_page_prot);
--	}
--
--	return ret;
-+	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
-+			      vma->vm_end - vma->vm_start,
-+			      vma->vm_page_prot);
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 7e34b9eba5de..adda078d6df7 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -13,6 +13,7 @@ config ARM64
+ 	select ARCH_HAS_DEVMEM_IS_ALLOWED
+ 	select ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	select ARCH_HAS_DMA_MMAP_PGPROT
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
+ 	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_FAST_MULTIPLIER
+diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
+index 725a115759c9..2c3178848b7d 100644
+--- a/arch/csky/Kconfig
++++ b/arch/csky/Kconfig
+@@ -1,6 +1,7 @@
+ config CSKY
+ 	def_bool y
+ 	select ARCH_32BIT_OFF_T
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+ 	select ARCH_USE_BUILTIN_BSWAP
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index 69b36ed31a99..9741767e400f 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -72,6 +72,12 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
  }
- #endif /* CONFIG_IOMMU_DMA */
+ #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
  
-@@ -241,6 +231,8 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 			      unsigned long attrs)
- {
-+	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+	unsigned long off = vma->vm_pgoff;
- 	struct vm_struct *area;
- 	int ret;
++#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
+ void arch_dma_prep_coherent(struct page *page, size_t size);
++#else
++static inline void arch_dma_prep_coherent(struct page *page, size_t size)
++{
++}
++#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
  
-@@ -249,6 +241,9 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
- 		return ret;
+ #endif /* _LINUX_DMA_NONCOHERENT_H */
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index a06ba3013b3b..feff2d21d8ee 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -38,6 +38,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+ config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+ 	bool
  
-+	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
-+		return -ENXIO;
++config ARCH_HAS_DMA_PREP_COHERENT
++	bool
 +
- 	if (!is_vmalloc_addr(cpu_addr)) {
- 		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
- 		return __swiotlb_mmap_pfn(vma, pfn, size);
+ config ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	bool
+ 
 -- 
 2.20.1
 
