@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 16/26] iommu/dma: Don't remap CMA unnecessarily
-Date: Mon, 22 Apr 2019 19:59:32 +0200
-Message-ID: <20190422175942.18788-17-hch@lst.de>
+Subject: [PATCH 17/26] iommu/dma: Merge the CMA and alloc_pages allocation paths
+Date: Mon, 22 Apr 2019 19:59:33 +0200
+Message-ID: <20190422175942.18788-18-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,55 +12,85 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+Instead of having a separate code path for the non-blocking alloc_pages
+and CMA allocations paths merge them into one.  There is a slight
+behavior change here in that we try the page allocator if CMA fails.
+This matches what dma-direct and other iommu drivers do and will be
+needed to use the dma-iommu code on architectures without DMA remapping
+later on.
 
-Always remapping CMA allocations was largely a bodge to keep the freeing
-logic manageable when it was split between here and an arch wrapper. Now
-that it's all together and streamlined, we can relax that limitation.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/iommu/dma-iommu.c | 32 ++++++++++++--------------------
+ 1 file changed, 12 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 504dd27312bb..6f4febf5e1de 100644
+index 6f4febf5e1de..a1b8c232ad42 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -956,7 +956,6 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- {
+@@ -957,7 +957,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
  	bool coherent = dev_is_dma_coherent(dev);
  	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
--	pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
  	size_t iosize = size;
- 	struct page *page;
+-	struct page *page;
++	struct page *page = NULL;
  	void *addr;
-@@ -1004,13 +1003,19 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 	if (*handle == DMA_MAPPING_ERROR)
- 		goto out_free_pages;
  
--	addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
--			__builtin_return_address(0));
--	if (!addr)
--		goto out_unmap;
-+	if (!coherent || PageHighMem(page)) {
-+		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
+ 	size = PAGE_ALIGN(size);
+@@ -967,35 +967,26 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+ 		return iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
  
--	if (!coherent)
--		arch_dma_prep_coherent(page, iosize);
-+		addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
-+				__builtin_return_address(0));
-+		if (!addr)
-+			goto out_unmap;
-+
-+		if (!coherent)
-+			arch_dma_prep_coherent(page, iosize);
-+	} else {
-+		addr = page_address(page);
-+	}
- 	memset(addr, 0, size);
- 	return addr;
+-	if (!gfpflags_allow_blocking(gfp)) {
+-		/*
+-		 * In atomic context we can't remap anything, so we'll only
+-		 * get the virtually contiguous buffer we need by way of a
+-		 * physically contiguous allocation.
+-		 */
+-		if (coherent) {
+-			page = alloc_pages(gfp, get_order(size));
+-			addr = page ? page_address(page) : NULL;
+-		} else {
+-			addr = dma_alloc_from_pool(size, &page, gfp);
+-		}
++	if (!gfpflags_allow_blocking(gfp) && !coherent) {
++		addr = dma_alloc_from_pool(size, &page, gfp);
+ 		if (!addr)
+ 			return NULL;
+ 
+ 		*handle = __iommu_dma_map(dev, page_to_phys(page), iosize,
+ 					  ioprot);
+ 		if (*handle == DMA_MAPPING_ERROR) {
+-			if (coherent)
+-				__free_pages(page, get_order(size));
+-			else
+-				dma_free_from_pool(addr, size);
++			dma_free_from_pool(addr, size);
+ 			return NULL;
+ 		}
+ 		return addr;
+ 	}
+ 
+-	page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+-					 get_order(size), gfp & __GFP_NOWARN);
++	if (gfpflags_allow_blocking(gfp))
++		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
++						 get_order(size),
++						 gfp & __GFP_NOWARN);
++	if (!page)
++		page = alloc_pages(gfp, get_order(size));
+ 	if (!page)
+ 		return NULL;
+ 
+@@ -1021,7 +1012,8 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
  out_unmap:
+ 	__iommu_dma_unmap(dev, *handle, iosize);
+ out_free_pages:
+-	dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
++	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
++		__free_pages(page, get_order(size));
+ 	return NULL;
+ }
+ 
 -- 
 2.20.1
