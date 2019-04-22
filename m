@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E505EC282CE
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C717C10F11
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B43E620B1F
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0ADDC20B1F
+	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 18:02:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Duwcx4sr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B43E620B1F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="vEToXoqj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0ADDC20B1F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A00FFD8B;
-	Mon, 22 Apr 2019 18:01:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D0569D7E;
+	Mon, 22 Apr 2019 18:01:09 +0000 (UTC)
 Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
 	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 66CFED3D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B2A0AD3D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:01:05 +0000 (UTC)
+	Mon, 22 Apr 2019 18:01:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id BA71B1DCEE
+	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id AB74A1DCEE
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 18:01:04 +0000 (UTC)
+	Mon, 22 Apr 2019 18:01:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=uzgSnQXP6vcf7CnS63KV/WlaoJYHrG3AbQZAfPX3/hM=;
-	b=Duwcx4srF+A/o9UeUqyXlmohsg
-	bWufyQ9ceJdjqf8HLvyfLwFFxsTxITfZI9YbHWw5tPpyF7MNiAc/4LjpwP30N5ab8vF1XHYusmiz9
-	qK1BFj5kP2e64aZE44h0ZNDdB/yf+t8JTwfb9RM/OnfabcrDJv2aQDPMkMVQXltLcfO8vv/Nokt7W
-	65mgyYO4xeDM0/AfCopz6RORlEFadQxIEa2hPomAyODhVv9JH+sQ6r7LcX0wek8u4AtVCOk7WnjIo
-	4YWDtalyhvslWYnJ6sHixju1/XDn6C5PP6RFK0I/IxW78IfVMap2FuLlC3EZtpuqw4w92EkWEAZF0
-	txwf0jvw==;
+	bh=pCvPHNIJc+2XUkyhBlEJNWKVKvK8GagilonQxBslMQQ=;
+	b=vEToXoqjQjq3J6LfKlYcyeLeu3
+	woHeia27SMbTUuBvDMz7Rm+602KzjktwFQbQWPJ/AEWamhTbji+LccRshKzxTEVRyzBR+6sZEB5By
+	Vk2ey5aym3V7TVP8wyV8vUrEop5NQK5t85mL2ZwpJX/gSk1P0ccHf/vuhjX5PFirIv1P5gtC9BUCU
+	WwwArRxL0tLmBbiHdQaT4qV7BIMAQBK3l6IT9mErErAVU1xGKVuY61btSkBqQ/siQMKYzW8lhf9Ft
+	urCwopjHV1svCLwCGJrMIF9YQ8kb2M+pt3I/66efxe6Wa7N2wAQSnSmoLte2g2EaUcsX3ruYw74ac
+	fp1wOW7w==;
 Received: from 213-225-37-80.nat.highway.a1.net ([213.225.37.80]
 	helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hIdFR-0002S5-Rn; Mon, 22 Apr 2019 18:00:58 +0000
+	id 1hIdFU-0002VE-Am; Mon, 22 Apr 2019 18:01:00 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 19/26] iommu/dma: Cleanup variable naming in iommu_dma_alloc
-Date: Mon, 22 Apr 2019 19:59:35 +0200
-Message-Id: <20190422175942.18788-20-hch@lst.de>
+Subject: [PATCH 20/26] iommu/dma: Refactor iommu_dma_alloc, part 2
+Date: Mon, 22 Apr 2019 19:59:36 +0200
+Message-Id: <20190422175942.18788-21-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190422175942.18788-1-hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
@@ -81,112 +81,132 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422175935.xdCjljgC_gbw6P2N6hYGycUMB5MZQY8lhldLjEsf3F4@z>
+Message-ID: <20190422175936.n2f3pWVggqr4V7dNn-YwNQakGF7KuqdGZYT6DzlirN4@z>
 
 From: Robin Murphy <robin.murphy@arm.com>
 
-Most importantly clear up the size / iosize confusion.  Also rename addr
-to cpu_addr to match the surrounding code and make the intention a little
-more clear.
+Apart from the iommu_dma_alloc_remap() case which remains sufficiently
+different that it's better off being self-contained, the rest of the
+logic can now be consolidated into a single flow which separates the
+logcially-distinct steps of allocating pages, getting the CPU address,
+and finally getting the IOMMU address.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-[hch: split from a larger patch]
+[hch: split the page allocation into a new helper to simplify the flow]
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 45 +++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 23 deletions(-)
+ drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++------------------
+ 1 file changed, 35 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 95a12e975994..9b269f0792f3 100644
+index 9b269f0792f3..acdfe866cb29 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -960,64 +960,63 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+@@ -955,35 +955,14 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 	__iommu_dma_free(dev, size, cpu_addr);
+ }
+ 
+-static void *iommu_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
++static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
++		struct page **pagep, gfp_t gfp, unsigned long attrs)
  {
  	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
--	size_t iosize = size;
-+	size_t alloc_size = PAGE_ALIGN(size);
+-	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+ 	size_t alloc_size = PAGE_ALIGN(size);
  	struct page *page = NULL;
--	void *addr;
-+	void *cpu_addr;
+ 	void *cpu_addr;
  
--	size = PAGE_ALIGN(size);
- 	gfp |= __GFP_ZERO;
- 
- 	if (gfpflags_allow_blocking(gfp) &&
- 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
--		return iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
-+		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
- 
- 	if (!gfpflags_allow_blocking(gfp) && !coherent) {
--		addr = dma_alloc_from_pool(size, &page, gfp);
--		if (!addr)
-+		cpu_addr = dma_alloc_from_pool(alloc_size, &page, gfp);
-+		if (!cpu_addr)
- 			return NULL;
- 
--		*handle = __iommu_dma_map(dev, page_to_phys(page), iosize,
-+		*handle = __iommu_dma_map(dev, page_to_phys(page), size,
- 					  ioprot);
- 		if (*handle == DMA_MAPPING_ERROR) {
--			dma_free_from_pool(addr, size);
-+			dma_free_from_pool(cpu_addr, alloc_size);
- 			return NULL;
- 		}
--		return addr;
-+		return cpu_addr;
- 	}
- 
+-	gfp |= __GFP_ZERO;
+-
+-	if (gfpflags_allow_blocking(gfp) &&
+-	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+-		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
+-
+-	if (!gfpflags_allow_blocking(gfp) && !coherent) {
+-		cpu_addr = dma_alloc_from_pool(alloc_size, &page, gfp);
+-		if (!cpu_addr)
+-			return NULL;
+-
+-		*handle = __iommu_dma_map(dev, page_to_phys(page), size,
+-					  ioprot);
+-		if (*handle == DMA_MAPPING_ERROR) {
+-			dma_free_from_pool(cpu_addr, alloc_size);
+-			return NULL;
+-		}
+-		return cpu_addr;
+-	}
+-
  	if (gfpflags_allow_blocking(gfp))
--		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--						 get_order(size),
-+		page = dma_alloc_from_contiguous(dev, alloc_size >> PAGE_SHIFT,
-+						 get_order(alloc_size),
- 						 gfp & __GFP_NOWARN);
- 	if (!page)
--		page = alloc_pages(gfp, get_order(size));
-+		page = alloc_pages(gfp, get_order(alloc_size));
+ 		page = dma_alloc_from_contiguous(dev, alloc_size >> PAGE_SHIFT,
+ 						 get_order(alloc_size),
+@@ -993,33 +972,59 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
  	if (!page)
  		return NULL;
  
--	*handle = __iommu_dma_map(dev, page_to_phys(page), iosize, ioprot);
-+	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
- 	if (*handle == DMA_MAPPING_ERROR)
- 		goto out_free_pages;
- 
+-	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
+-	if (*handle == DMA_MAPPING_ERROR)
+-		goto out_free_pages;
+-
  	if (!coherent || PageHighMem(page)) {
  		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
  
--		addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
--				__builtin_return_address(0));
--		if (!addr)
-+		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
-+				VM_USERMAP, prot, __builtin_return_address(0));
-+		if (!cpu_addr)
- 			goto out_unmap;
+ 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
+ 				VM_USERMAP, prot, __builtin_return_address(0));
+ 		if (!cpu_addr)
+-			goto out_unmap;
++			goto out_free_pages;
  
  		if (!coherent)
--			arch_dma_prep_coherent(page, iosize);
-+			arch_dma_prep_coherent(page, size);
+ 			arch_dma_prep_coherent(page, size);
  	} else {
--		addr = page_address(page);
-+		cpu_addr = page_address(page);
+ 		cpu_addr = page_address(page);
  	}
--	memset(addr, 0, size);
--	return addr;
-+	memset(cpu_addr, 0, alloc_size);
-+	return cpu_addr;
- out_unmap:
--	__iommu_dma_unmap(dev, *handle, iosize);
-+	__iommu_dma_unmap(dev, *handle, size);
++
++	*pagep = page;
+ 	memset(cpu_addr, 0, alloc_size);
+ 	return cpu_addr;
+-out_unmap:
+-	__iommu_dma_unmap(dev, *handle, size);
  out_free_pages:
--	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
--		__free_pages(page, get_order(size));
-+	if (!dma_release_from_contiguous(dev, page, alloc_size >> PAGE_SHIFT))
-+		__free_pages(page, get_order(alloc_size));
+ 	if (!dma_release_from_contiguous(dev, page, alloc_size >> PAGE_SHIFT))
+ 		__free_pages(page, get_order(alloc_size));
  	return NULL;
  }
  
++static void *iommu_dma_alloc(struct device *dev, size_t size,
++		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
++{
++	bool coherent = dev_is_dma_coherent(dev);
++	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
++	struct page *page = NULL;
++	void *cpu_addr;
++
++	gfp |= __GFP_ZERO;
++
++	if (gfpflags_allow_blocking(gfp) &&
++	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
++		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
++
++	if (!gfpflags_allow_blocking(gfp) && !coherent)
++		cpu_addr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
++	else
++		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
++	if (!cpu_addr)
++		return NULL;
++
++	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
++	if (*handle == DMA_MAPPING_ERROR) {
++		__iommu_dma_free(dev, size, cpu_addr);
++		return NULL;
++	}
++
++	return cpu_addr;
++}
++
+ static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
+ 			      unsigned long pfn, size_t size)
+ {
 -- 
 2.20.1
 
