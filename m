@@ -1,113 +1,63 @@
-Return-Path: <SRS0=kOFq=SY=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EDFC282E1
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 22:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDF0C10F11
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 02:09:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8CF21205F4
-	for <iommu@archiver.kernel.org>; Mon, 22 Apr 2019 22:23:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="Vl0fYQ0U"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8CF21205F4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id E385220643
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 02:09:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E385220643
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 36C08CAF;
-	Mon, 22 Apr 2019 22:23:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AC497BA0;
+	Tue, 23 Apr 2019 02:09:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D59DFCAD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 629A8AE0
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 22:23:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-vk1-f193.google.com (mail-vk1-f193.google.com
-	[209.85.221.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 49CAFF4
+	Tue, 23 Apr 2019 02:09:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 29582F4
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 22:23:46 +0000 (UTC)
-Received: by mail-vk1-f193.google.com with SMTP id x194so2767223vke.0
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 22 Apr 2019 15:23:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=Apsh13b43ex5kM603MFVFBzVRJeAAR6IMS53yCHVuRM=;
-	b=Vl0fYQ0UCHGtndl0jafErZw5vqbDAq4DrFX3SfBAIMhEhneL9rXawPTcud8fgV5g3D
-	W/sHE49ARVD9KYD5FloU01n2RfA2pTgnKMthR4SE5EVifhT+Zv7f89iMoQqyLkH17UHR
-	Ufjeoo3iZe8A1ywqY/dQX9OJ6hQY+RdFMicuSiIFmS2kjW0kxDgF0PQchZJoFDeQwLJ4
-	Bu9iNZw8/m1h5Vvq6bsIi0oFDRabTh4fUKE/VXZ1BpEeHCWZiVc862ytrlz+nAaTR+Cp
-	kF/vZydc6r2yg2X0nSiZbBoPzLhOuIzzabOzb88ffPr/VLLo66HUZNIe7JxAbYTKUz7T
-	O38g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=Apsh13b43ex5kM603MFVFBzVRJeAAR6IMS53yCHVuRM=;
-	b=In44Fqthg6QId2znFeE9X+xIprmxzJf9b3cTTy47QnATb/f3KFO+qOAvvyx6/zBwY2
-	DAxB2klT443nA6hbUE8AbAkAL5eOv6w6aB17zDsrM+JuphInZ1c99HpqaSBSaTz7OHWe
-	smcdCb+jBEcNqswoRLMA2nWxkjxWjRwkyQ26PUONCfI0LLpJYX4Z3rh0MGQxKfvCG6A/
-	405+KgzXcpqS9Pw2zS/+KZyZk0godHt0xdnaKKq3zwIbOtWjgf9YQaKL/ZyWz4D0tRdp
-	nPmacTFR8H9h80DXeIiN1549jLM0qg7rw6CFzoNwd8wMOBLtoLaHWm13k1n2t2E06X19
-	HB+g==
-X-Gm-Message-State: APjAAAVDX98HfsVPwSWyphX8nJlV/FAX6mwOKdnMkXwCcKACPvbWY5ld
-	uXX93b7A3GAznPhHCWznnd8ZiW1NjEK+l7s72wePUQ==
-X-Google-Smtp-Source: APXvYqxiq50qJu8wanUuH+yOCTaJNMUpHEhGXVEwCujnFscJAmlLegU3s6VeZj+61I7iVGG+tUCCywSMlxsTtse/mUo=
-X-Received: by 2002:a1f:2e07:: with SMTP id u7mr11692664vku.44.1555971825052; 
-	Mon, 22 Apr 2019 15:23:45 -0700 (PDT)
+	Tue, 23 Apr 2019 02:09:32 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	22 Apr 2019 19:09:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,384,1549958400"; d="scan'208";a="339872623"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by fmsmga006.fm.intel.com with ESMTP; 22 Apr 2019 19:04:28 -0700
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+To: Christoph Hellwig <hch@lst.de>
+References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
+	<20190421011719.14909-3-baolu.lu@linux.intel.com>
+	<20190422164555.GA31181@lst.de>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
+Date: Tue, 23 Apr 2019 09:58:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
-	<f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
-	<20190417161042.GA43453@gmail.com>
-	<e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
-	<20190417170918.GA68678@gmail.com>
-	<56A175F6-E5DA-4BBD-B244-53B786F27B7F@gmail.com>
-	<20190417172632.GA95485@gmail.com>
-	<063753CC-5D83-4789-B594-019048DE22D9@gmail.com>
-	<alpine.DEB.2.21.1904172317460.3174@nanos.tec.linutronix.de>
-	<CAHk-=wgBMg9P-nYQR2pS0XwVdikPCBqLsMFqR9nk=wSmAd4_5g@mail.gmail.com>
-	<alpine.DEB.2.21.1904180129000.3174@nanos.tec.linutronix.de>
-	<CAHk-=whUwOjFW6RjHVM8kNOv1QVLJuHj2Dda0=mpLPdJ1UyatQ@mail.gmail.com>
-	<CALCETrXm9PuUTEEmzA8bQJmg=PHC_2XSywECittVhXbMJS1rSA@mail.gmail.com>
-	<CAGXu5jL-qJtW7eH8S2yhqciE+J+FWz8HHzTrGJTgVUbd55n6dQ@mail.gmail.com>
-	<8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
-In-Reply-To: <8f9d059d-e720-cd24-faa6-45493fc012e0@oracle.com>
-Date: Mon, 22 Apr 2019 15:23:32 -0700
-Message-ID:
- <CAGXu5jLPkD_6BL1m2=13KVTfZ7znr-xAyz+CB23eoeboFgCSOg@mail.gmail.com>
-Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
-	Ownership (XPFO)
-To: Khalid Aziz <khalid.aziz@oracle.com>
-Cc: Dave Hansen <dave@sr71.net>,
-	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-	Linux-MM <linux-mm@kvack.org>, deepa.srinivasan@oracle.com,
-	"H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Tycho Andersen <tycho@tycho.ws>, X86 ML <x86@kernel.org>,
-	LSM List <linux-security-module@vger.kernel.org>,
-	Ingo Molnar <mingo@kernel.org>, Julian Stecklina <jsteckli@amazon.de>,
-	Arjan van de Ven <arjan@infradead.org>,
-	Peter Zijlstra <a.p.zijlstra@chello.nl>,
+In-Reply-To: <20190422164555.GA31181@lst.de>
+Content-Language: en-US
+Cc: kevin.tian@intel.com, mika.westerberg@linux.intel.com, ashok.raj@intel.com,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Jon Masters <jcm@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Andy Lutomirski <luto@kernel.org>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	chris hyser <chris.hyser@oracle.com>,
-	"linux-alpha@vger.kernel.org" <linux-arm-kernel@lists.infradead.org>,
-	Khalid Aziz <khalid@gonehiking.org>, Juerg Haefliger <juergh@gmail.com>,
-	Andrew Cooper <andrew.cooper3@citrix.com>,
-	Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-	Tyler Hicks <tyhicks@canonical.com>,
-	iommu <iommu@lists.linux-foundation.org>,
-	Juerg Haefliger <juerg.haefliger@canonical.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	David Woodhouse <dwmw@amazon.co.uk>
+	alan.cox@intel.com, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	pengfei.xu@intel.com, jacob.jun.pan@intel.com,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -120,62 +70,459 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Kees Cook via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Kees Cook <keescook@google.com>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190422222332.COQaj6dLNF4scPERHWieGx2fFstcpMxQRhUV-mODLHg@z>
+Message-ID: <20190423015819.Qt2H5NEpzWLDA5SKOhNtgWNZhi8D9Yq3UeAl-_bKIn8@z>
 
-On Thu, Apr 18, 2019 at 7:35 AM Khalid Aziz <khalid.aziz@oracle.com> wrote:
->
-> On 4/17/19 11:41 PM, Kees Cook wrote:
-> > On Wed, Apr 17, 2019 at 11:41 PM Andy Lutomirski <luto@kernel.org> wrote:
-> >> I don't think this type of NX goof was ever the argument for XPFO.
-> >> The main argument I've heard is that a malicious user program writes a
-> >> ROP payload into user memory (regular anonymous user memory) and then
-> >> gets the kernel to erroneously set RSP (*not* RIP) to point there.
-> >
-> > Well, more than just ROP. Any of the various attack primitives. The NX
-> > stuff is about moving RIP: SMEP-bypassing. But there is still basic
-> > SMAP-bypassing for putting a malicious structure in userspace and
-> > having the kernel access it via the linear mapping, etc.
-> >
-> >> I find this argument fairly weak for a couple reasons.  First, if
-> >> we're worried about this, let's do in-kernel CFI, not XPFO, to
-> >
-> > CFI is getting much closer. Getting the kernel happy under Clang, LTO,
-> > and CFI is under active development. (It's functional for arm64
-> > already, and pieces have been getting upstreamed.)
-> >
->
-> CFI theoretically offers protection with fairly low overhead. I have not
-> played much with CFI in clang. I agree with Linus that probability of
-> bugs in XPFO implementation itself is a cause of concern. If CFI in
-> Clang can provide us the same level of protection as XPFO does, I
-> wouldn't want to push for an expensive change like XPFO.
->
-> If Clang/CFI can't get us there for extended period of time, does it
-> make sense to continue to poke at XPFO?
+Hi Christoph,
 
-Well, I think CFI will certainly vastly narrow the execution paths
-available to an attacker, but what I continue to see XPFO useful for
-is stopping attacks that need to locate something in memory. (i.e. not
-ret2dir but, like, read2dir.) It's arguable that such attacks would
-just use heap, stack, etc to hold such things, but the linear map
-remains relatively easy to find/target. But I agree: the protection is
-getting more and more narrow (especially with CFI coming down the
-pipe), and if it's still a 28% hit, that's not going to be tenable for
-anyone but the truly paranoid. :)
+Thanks for reviewing my patches.
 
-All that said, there isn't a very good backward-edge CFI protection
-(i.e. ROP defense) on x86 in Clang. The forward-edge looks decent, but
-requires LTO, etc. My point is there is still a long path to gaining
-CFI in upstream.
+On 4/23/19 12:45 AM, Christoph Hellwig wrote:
+> I looked over your swiotlb modification and I don't think we really need
+> them.  The only thing we really need is to split the size parameter to
+> swiotlb_tbl_map_single and swiotlb_tbl_unmap_single into an alloc_size
+> and a mapping_size paramter, where the latter one is rounded up to the
+> iommu page size.  Below is an untested patch on top of your series to
+> show what I mean. 
 
--- 
-Kees Cook
+Good suggestion. The only problem as far as I can see is:
+
+442 phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+443                 dma_addr_t tbl_dma_addr, phys_addr_t orig_addr,
+444                 size_t mapping_size, size_t alloc_size,
+445                 enum dma_data_direction dir, unsigned long attrs)
+446 {
+447         unsigned long flags;
+448         phys_addr_t tlb_addr;
+449         unsigned int nslots, stride, index, wrap;
+450         int i;
+451         unsigned long mask;
+452         unsigned long offset_slots;
+453         unsigned long max_slots;
+
+[--->o<----]
+
+545 found:
+546         io_tlb_used += nslots;
+547         spin_unlock_irqrestore(&io_tlb_lock, flags);
+548
+549         /*
+550          * Save away the mapping from the original address to the 
+DMA address.
+551          * This is needed when we sync the memory.  Then we sync the 
+buffer if
+552          * needed.
+553          */
+554         for (i = 0; i < nslots; i++)
+555                 io_tlb_orig_addr[index+i] = orig_addr + (i << 
+IO_TLB_SHIFT);
+
+Could the tlb orig address set to PAGE_ALIGN_DOWN(orig_addr)? We
+couldn't assume the bounce buffer just starts from the beginning of the
+slot. Or anything I missed?
+
+
+556         if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+557             (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+558                 swiotlb_bounce(orig_addr, tlb_addr, mapping_size,
+559                                 DMA_TO_DEVICE);
+
+Same here. We should sync from the place where the bounce buffer starts
+from.
+
+
+560
+561         return tlb_addr;
+562 }
+
+
+> That being said - both the current series and the one
+> with my patch will still leak the content of the swiotlb buffer
+> allocated but not used to the untrusted external device.  Is that
+> acceptable?  If not we need to clear that part, at which point you don't
+> need swiotlb changes.
+
+Good catch. I think the allocated buffer should be cleared, otherwise,
+the untrusted device still has a chance to access the data belonging to
+other swiotlb consumers.
+
+>  Another implication is that for untrusted devices
+> the size of the dma coherent allocations needs to be rounded up to the
+> iommu page size (if that can ever be larger than the host page size).
+
+Agreed.
+
+Intel iommu driver has already aligned the dma coherent allocation size
+to PAGE_SIZE. And alloc_coherent is equal to alloc plus map. Hence, it
+eventually goes into bounce_map().
+
+Best regards,
+Lu Baolu
+
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 8c4a078fb041..eb5c32ad4443 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2151,10 +2151,13 @@ static int bounce_map(struct device *dev, struct iommu_domain *domain,
+>   		      void *data)
+>   {
+>   	const struct iommu_ops *ops = domain->ops;
+> +	unsigned long page_size = domain_minimal_pgsize(domain);
+>   	phys_addr_t tlb_addr;
+>   	int prot = 0;
+>   	int ret;
+>   
+> +	if (WARN_ON_ONCE(size > page_size))
+> +		return -EINVAL;
+>   	if (unlikely(!ops->map || domain->pgsize_bitmap == 0UL))
+>   		return -ENODEV;
+>   
+> @@ -2164,16 +2167,16 @@ static int bounce_map(struct device *dev, struct iommu_domain *domain,
+>   	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
+>   		prot |= IOMMU_WRITE;
+>   
+> -	tlb_addr = phys_to_dma(dev, paddr);
+> -	if (!swiotlb_map(dev, &paddr, &tlb_addr, size,
+> -			 dir, attrs | DMA_ATTR_BOUNCE_PAGE))
+> +	tlb_addr = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
+> +			paddr, size, page_size, dir, attrs);
+> +	if (tlb_addr == DMA_MAPPING_ERROR)
+>   		return -ENOMEM;
+>   
+>   	ret = ops->map(domain, addr, tlb_addr, size, prot);
+> -	if (ret)
+> -		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
+> -					 dir, attrs | DMA_ATTR_BOUNCE_PAGE);
+> -
+> +	if (ret) {
+> +		swiotlb_tbl_unmap_single(dev, tlb_addr, size, page_size,
+> +					 dir, attrs);
+> +	}
+>   	return ret;
+>   }
+>   
+> @@ -2194,11 +2197,12 @@ static int bounce_unmap(struct device *dev, struct iommu_domain *domain,
+>   
+>   	if (unlikely(!ops->unmap))
+>   		return -ENODEV;
+> -	ops->unmap(domain, ALIGN_DOWN(addr, page_size), page_size);
+> +	ops->unmap(domain, addr, page_size);
+>   
+> -	if (tlb_addr)
+> -		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
+> -					 dir, attrs | DMA_ATTR_BOUNCE_PAGE);
+> +	if (tlb_addr) {
+> +		swiotlb_tbl_unmap_single(dev, tlb_addr, size, page_size,
+> +					 dir, attrs);
+> +	}
+>   
+>   	return 0;
+>   }
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 877baf2a94f4..3b6ce643bffa 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -404,7 +404,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>   	 */
+>   	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
+>   
+> -	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
+> +	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, size, dir,
+>   				     attrs);
+>   	if (map == DMA_MAPPING_ERROR)
+>   		return DMA_MAPPING_ERROR;
+> @@ -420,7 +420,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>   		return dev_addr;
+>   
+>   	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+> -	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
+> +	swiotlb_tbl_unmap_single(dev, map, size, size, dir, attrs);
+>   
+>   	return DMA_MAPPING_ERROR;
+>   }
+> @@ -445,7 +445,7 @@ static void xen_unmap_single(struct device *hwdev, dma_addr_t dev_addr,
+>   
+>   	/* NOTE: We use dev_addr here, not paddr! */
+>   	if (is_xen_swiotlb_buffer(dev_addr))
+> -		swiotlb_tbl_unmap_single(hwdev, paddr, size, dir, attrs);
+> +		swiotlb_tbl_unmap_single(hwdev, paddr, size, size, dir, attrs);
+>   }
+>   
+>   static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+> @@ -556,6 +556,7 @@ xen_swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+>   								 start_dma_addr,
+>   								 sg_phys(sg),
+>   								 sg->length,
+> +								 sg->length,
+>   								 dir, attrs);
+>   			if (map == DMA_MAPPING_ERROR) {
+>   				dev_warn(hwdev, "swiotlb buffer is full\n");
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 26e506e5b04c..75e60be91e5f 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -70,12 +70,6 @@
+>    */
+>   #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+>   
+> -/*
+> - * DMA_ATTR_BOUNCE_PAGE: used by the IOMMU sub-system to indicate that
+> - * the buffer is used as a bounce page in the DMA remapping page table.
+> - */
+> -#define DMA_ATTR_BOUNCE_PAGE		(1UL << 10)
+> -
+>   /*
+>    * A dma_addr_t can hold any valid DMA or bus address for the platform.
+>    * It can be given to a device to use as a DMA source or target.  A CPU cannot
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 361f62bb4a8e..e1c738eb5baf 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -44,16 +44,13 @@ enum dma_sync_target {
+>   	SYNC_FOR_DEVICE = 1,
+>   };
+>   
+> -extern phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+> -					  dma_addr_t tbl_dma_addr,
+> -					  phys_addr_t phys, size_t size,
+> -					  enum dma_data_direction dir,
+> -					  unsigned long attrs);
+> -
+> -extern void swiotlb_tbl_unmap_single(struct device *hwdev,
+> -				     phys_addr_t tlb_addr,
+> -				     size_t size, enum dma_data_direction dir,
+> -				     unsigned long attrs);
+> +phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+> +		dma_addr_t tbl_dma_addr, phys_addr_t phys, size_t mapping_size,
+> +		size_t alloc_size, enum dma_data_direction dir,
+> +		unsigned long attrs);
+> +void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+> +		size_t mapping_size, size_t alloc_size,
+> +		enum dma_data_direction dir, unsigned long attrs);
+>   
+>   extern void swiotlb_tbl_sync_single(struct device *hwdev,
+>   				    phys_addr_t tlb_addr,
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index fcdb23e8d2fc..0edc0bf80207 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -290,7 +290,7 @@ void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
+>   		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+>   
+>   	if (unlikely(is_swiotlb_buffer(phys)))
+> -		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
+> +		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
+>   }
+>   EXPORT_SYMBOL(dma_direct_unmap_page);
+>   
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 96b87a11dee1..feec87196cc8 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -34,7 +34,6 @@
+>   #include <linux/scatterlist.h>
+>   #include <linux/mem_encrypt.h>
+>   #include <linux/set_memory.h>
+> -#include <linux/iommu.h>
+>   #ifdef CONFIG_DEBUG_FS
+>   #include <linux/debugfs.h>
+>   #endif
+> @@ -440,9 +439,10 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+>   	}
+>   }
+>   
+> -static phys_addr_t
+> -swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+> -		      phys_addr_t orig_addr, size_t size)
+> +phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+> +		dma_addr_t tbl_dma_addr, phys_addr_t orig_addr,
+> +		size_t mapping_size, size_t alloc_size,
+> +		enum dma_data_direction dir, unsigned long attrs)
+>   {
+>   	unsigned long flags;
+>   	phys_addr_t tlb_addr;
+> @@ -476,8 +476,8 @@ swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+>   	 * For mappings greater than or equal to a page, we limit the stride
+>   	 * (and hence alignment) to a page size.
+>   	 */
+> -	nslots = ALIGN(size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+> -	if (size >= PAGE_SIZE)
+> +	nslots = ALIGN(alloc_size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+> +	if (alloc_size >= PAGE_SIZE)
+>   		stride = (1 << (PAGE_SHIFT - IO_TLB_SHIFT));
+>   	else
+>   		stride = 1;
+> @@ -538,6 +538,9 @@ swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+>   
+>   not_found:
+>   	spin_unlock_irqrestore(&io_tlb_lock, flags);
+> +	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
+> +		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n",
+> +				alloc_size);
+>   	return DMA_MAPPING_ERROR;
+>   found:
+>   	io_tlb_used += nslots;
+> @@ -550,21 +553,34 @@ swiotlb_tbl_alloc_tlb(struct device *hwdev, dma_addr_t tbl_dma_addr,
+>   	 */
+>   	for (i = 0; i < nslots; i++)
+>   		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
+> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> +	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+> +		swiotlb_bounce(orig_addr, tlb_addr, mapping_size,
+> +				DMA_TO_DEVICE);
+>   
+>   	return tlb_addr;
+>   }
+>   
+> -static void
+> -swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
+> +/*
+> + * tlb_addr is the physical address of the bounce buffer to unmap.
+> + */
+> +void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+> +		size_t mapping_size, size_t alloc_size,
+> +		enum dma_data_direction dir, unsigned long attrs)
+>   {
+>   	unsigned long flags;
+> -	int i, count, nslots = ALIGN(size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+> +	int i, count, nslots;
+>   	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
+> +	phys_addr_t orig_addr = io_tlb_orig_addr[index];
+>   
+> -	/* Return directly if the tlb address is out of slot pool. */
+> -	if (tlb_addr < io_tlb_start || tlb_addr + size > io_tlb_end) {
+> -		dev_warn(hwdev, "invalid tlb address\n");
+> -		return;
+> +	/*
+> +	 * First, sync the memory before unmapping the entry
+> +	 */
+> +	if (orig_addr != INVALID_PHYS_ADDR &&
+> +	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> +	    (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)) {
+> +		swiotlb_bounce(orig_addr, tlb_addr, mapping_size,
+> +				DMA_FROM_DEVICE);
+>   	}
+>   
+>   	/*
+> @@ -573,6 +589,7 @@ swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
+>   	 * While returning the entries to the free list, we merge the entries
+>   	 * with slots below and above the pool being returned.
+>   	 */
+> +	nslots = ALIGN(alloc_size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+>   	spin_lock_irqsave(&io_tlb_lock, flags);
+>   	{
+>   		count = ((index + nslots) < ALIGN(index + 1, IO_TLB_SEGSIZE) ?
+> @@ -597,88 +614,6 @@ swiotlb_tbl_free_tlb(struct device *hwdev, phys_addr_t tlb_addr, size_t size)
+>   	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>   }
+>   
+> -static unsigned long
+> -get_iommu_pgsize(struct device *dev, phys_addr_t phys, size_t size)
+> -{
+> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> -
+> -	return domain_minimal_pgsize(domain);
+> -}
+> -
+> -phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+> -				   dma_addr_t tbl_dma_addr,
+> -				   phys_addr_t orig_addr, size_t size,
+> -				   enum dma_data_direction dir,
+> -				   unsigned long attrs)
+> -{
+> -	phys_addr_t tlb_addr;
+> -	unsigned long offset = 0;
+> -
+> -	if (attrs & DMA_ATTR_BOUNCE_PAGE) {
+> -		unsigned long pgsize = get_iommu_pgsize(hwdev, orig_addr, size);
+> -
+> -		offset = orig_addr & (pgsize - 1);
+> -
+> -		/* Don't allow the buffer to cross page boundary. */
+> -		if (offset + size > pgsize)
+> -			return DMA_MAPPING_ERROR;
+> -
+> -		tlb_addr = swiotlb_tbl_alloc_tlb(hwdev,
+> -				__phys_to_dma(hwdev, io_tlb_start),
+> -				ALIGN_DOWN(orig_addr, pgsize), pgsize);
+> -	} else {
+> -		tlb_addr = swiotlb_tbl_alloc_tlb(hwdev,
+> -				tbl_dma_addr, orig_addr, size);
+> -	}
+> -
+> -	if (tlb_addr == DMA_MAPPING_ERROR) {
+> -		if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
+> -			dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n",
+> -				 size);
+> -		return DMA_MAPPING_ERROR;
+> -	}
+> -
+> -	tlb_addr += offset;
+> -	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> -	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+> -		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+> -
+> -	return tlb_addr;
+> -}
+> -
+> -/*
+> - * tlb_addr is the physical address of the bounce buffer to unmap.
+> - */
+> -void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+> -			      size_t size, enum dma_data_direction dir,
+> -			      unsigned long attrs)
+> -{
+> -	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
+> -	phys_addr_t orig_addr = io_tlb_orig_addr[index];
+> -	unsigned long offset = 0;
+> -
+> -	if (attrs & DMA_ATTR_BOUNCE_PAGE)
+> -		offset = tlb_addr & ((1 << IO_TLB_SHIFT) - 1);
+> -
+> -	/*
+> -	 * First, sync the memory before unmapping the entry
+> -	 */
+> -	if (orig_addr != INVALID_PHYS_ADDR &&
+> -	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> -	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
+> -		swiotlb_bounce(orig_addr + offset,
+> -			       tlb_addr, size, DMA_FROM_DEVICE);
+> -
+> -	if (attrs & DMA_ATTR_BOUNCE_PAGE) {
+> -		unsigned long pgsize = get_iommu_pgsize(hwdev, tlb_addr, size);
+> -
+> -		swiotlb_tbl_free_tlb(hwdev,
+> -				     ALIGN_DOWN(tlb_addr, pgsize), pgsize);
+> -	} else {
+> -		swiotlb_tbl_free_tlb(hwdev, tlb_addr, size);
+> -	}
+> -}
+> -
+>   void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
+>   			     size_t size, enum dma_data_direction dir,
+>   			     enum dma_sync_target target)
+> @@ -727,14 +662,14 @@ bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
+>   
+>   	/* Oh well, have to allocate and map a bounce buffer. */
+>   	*phys = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
+> -			*phys, size, dir, attrs);
+> +			*phys, size, size, dir, attrs);
+>   	if (*phys == DMA_MAPPING_ERROR)
+>   		return false;
+>   
+>   	/* Ensure that the address returned is DMA'ble */
+>   	*dma_addr = __phys_to_dma(dev, *phys);
+>   	if (unlikely(!dma_capable(dev, *dma_addr, size))) {
+> -		swiotlb_tbl_unmap_single(dev, *phys, size, dir,
+> +		swiotlb_tbl_unmap_single(dev, *phys, size, size, dir,
+>   			attrs | DMA_ATTR_SKIP_CPU_SYNC);
+>   		return false;
+>   	}
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
