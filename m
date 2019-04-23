@@ -4,29 +4,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25140C10F03
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 23:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E525CC282E1
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 23:29:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E870F218D2
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 23:29:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E870F218D2
+	by mail.kernel.org (Postfix) with ESMTPS id BB059218D2
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 23:29:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB059218D2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 342B3EAF;
-	Tue, 23 Apr 2019 23:28:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5D2E5EF4;
+	Tue, 23 Apr 2019 23:28:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2D2F3E9D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C4753CB0
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 23 Apr 2019 23:28:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BD007F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F177982B
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 23 Apr 2019 23:28:39 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
@@ -35,7 +35,7 @@ Received: from orsmga004.jf.intel.com ([10.7.209.38])
 	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
 	23 Apr 2019 16:28:38 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,387,1549958400"; d="scan'208";a="293981249"
+X-IronPort-AV: E=Sophos;i="5.60,387,1549958400"; d="scan'208";a="293981252"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
 	by orsmga004.jf.intel.com with ESMTP; 23 Apr 2019 16:28:38 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -44,13 +44,15 @@ To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Eric Auger <eric.auger@redhat.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v2 01/19] driver core: add per device iommu param
-Date: Tue, 23 Apr 2019 16:31:01 -0700
-Message-Id: <1556062279-64135-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 02/19] iommu: introduce device fault data
+Date: Tue, 23 Apr 2019 16:31:02 -0700
+Message-Id: <1556062279-64135-3-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+Cc: Yi L <yi.l.liu@linux.intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Raj Ashok <ashok.raj@intel.com>, Liu@mail.linuxfoundation.org,
 	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -69,57 +71,249 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423233101.wzy4qR2dcp3Jj0GSFyYCIm9TI-SCRYuaRf5qm4Iq7xI@z>
+Message-ID: <20190423233102.yKtpIQJ07bsM6CTbBw-dUZlYAUR3cl9SHfaYAUU7Ddc@z>
 
-DMA faults can be detected by IOMMU at device level. Adding a pointer
-to struct device allows IOMMU subsystem to report relevant faults
-back to the device driver for further handling.
-For direct assigned device (or user space drivers), guest OS holds
-responsibility to handle and respond per device IOMMU fault.
-Therefore we need fault reporting mechanism to propagate faults beyond
-IOMMU subsystem.
+Device faults detected by IOMMU can be reported outside the IOMMU
+subsystem for further processing. This patch introduces
+a generic device fault data structure.
 
-There are two other IOMMU data pointers under struct device today, here
-we introduce iommu_param as a parent pointer such that all device IOMMU
-data can be consolidated here. The idea was suggested here by Greg KH
-and Joerg. The name iommu_param is chosen here since iommu_data has been used.
+The fault can be either an unrecoverable fault or a page request,
+also referred to as a recoverable fault.
 
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+We only care about non internal faults that are likely to be reported
+to an external subsystem.
+
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Link: https://lkml.org/lkml/2017/10/6/81
----
- include/linux/device.h | 3 +++
- 1 file changed, 3 insertions(+)
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 4e6987e..2cd48a6 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -42,6 +42,7 @@ struct iommu_ops;
- struct iommu_group;
- struct iommu_fwspec;
- struct dev_pin_info;
-+struct iommu_param;
+---
+v4 -> v5:
+- simplified struct iommu_fault_event comment
+- Moved IOMMU_FAULT_PERM outside of the struct
+- Removed IOMMU_FAULT_PERM_INST
+- s/IOMMU_FAULT_PAGE_REQUEST_PASID_PRESENT/
+  IOMMU_FAULT_PAGE_REQUEST_PASID_VALID
+
+v3 -> v4:
+- use a union containing aither an unrecoverable fault or a page
+  request message. Move the device private data in the page request
+  structure. Reshuffle the fields and use flags.
+- move fault perm attributes to the uapi
+- remove a bunch of iommu_fault_reason enum values that were related
+  to internal errors
+---
+ include/linux/iommu.h      |  44 +++++++++++++++++
+ include/uapi/linux/iommu.h | 115 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 159 insertions(+)
+ create mode 100644 include/uapi/linux/iommu.h
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 480921d..810bde2 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -25,6 +25,7 @@
+ #include <linux/errno.h>
+ #include <linux/err.h>
+ #include <linux/of.h>
++#include <uapi/linux/iommu.h>
  
- struct bus_attribute {
- 	struct attribute	attr;
-@@ -959,6 +960,7 @@ struct dev_links_info {
-  * 		device (i.e. the bus driver that discovered the device).
-  * @iommu_group: IOMMU group the device belongs to.
-  * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
-+ * @iommu_param: Per device generic IOMMU runtime data
-  *
-  * @offline_disabled: If set, the device is permanently online.
-  * @offline:	Set after successful invocation of bus type's .offline().
-@@ -1052,6 +1054,7 @@ struct device {
- 	void	(*release)(struct device *dev);
- 	struct iommu_group	*iommu_group;
- 	struct iommu_fwspec	*iommu_fwspec;
-+	struct iommu_param	*iommu_param;
+ #define IOMMU_READ	(1 << 0)
+ #define IOMMU_WRITE	(1 << 1)
+@@ -49,6 +50,7 @@ struct device;
+ struct iommu_domain;
+ struct notifier_block;
+ struct iommu_sva;
++struct iommu_fault_event;
  
- 	bool			offline_disabled:1;
- 	bool			offline:1;
+ /* iommu fault flags */
+ #define IOMMU_FAULT_READ	0x0
+@@ -58,6 +60,7 @@ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
+ typedef int (*iommu_mm_exit_handler_t)(struct device *dev, struct iommu_sva *,
+ 				       void *);
++typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
+ 
+ struct iommu_domain_geometry {
+ 	dma_addr_t aperture_start; /* First address that can be mapped    */
+@@ -301,6 +304,46 @@ struct iommu_device {
+ 	struct device *dev;
+ };
+ 
++/**
++ * struct iommu_fault_event - Generic fault event
++ *
++ * Can represent recoverable faults such as a page requests or
++ * unrecoverable faults such as DMA or IRQ remapping faults.
++ *
++ * @fault: fault descriptor
++ * @iommu_private: used by the IOMMU driver for storing fault-specific
++ *                 data. Users should not modify this field before
++ *                 sending the fault response.
++ */
++struct iommu_fault_event {
++	struct iommu_fault fault;
++	u64 iommu_private;
++};
++
++/**
++ * struct iommu_fault_param - per-device IOMMU fault data
++ * @dev_fault_handler: Callback function to handle IOMMU faults at device level
++ * @data: handler private data
++ *
++ */
++struct iommu_fault_param {
++	iommu_dev_fault_handler_t handler;
++	void *data;
++};
++
++/**
++ * struct iommu_param - collection of per-device IOMMU data
++ *
++ * @fault_param: IOMMU detected device fault reporting data
++ *
++ * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
++ *	struct iommu_group	*iommu_group;
++ *	struct iommu_fwspec	*iommu_fwspec;
++ */
++struct iommu_param {
++	struct iommu_fault_param *fault_param;
++};
++
+ int  iommu_device_register(struct iommu_device *iommu);
+ void iommu_device_unregister(struct iommu_device *iommu);
+ int  iommu_device_sysfs_add(struct iommu_device *iommu,
+@@ -500,6 +543,7 @@ struct iommu_ops {};
+ struct iommu_group {};
+ struct iommu_fwspec {};
+ struct iommu_device {};
++struct iommu_fault_param {};
+ 
+ static inline bool iommu_present(struct bus_type *bus)
+ {
+diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+new file mode 100644
+index 0000000..edcc0dd
+--- /dev/null
++++ b/include/uapi/linux/iommu.h
+@@ -0,0 +1,115 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * IOMMU user API definitions
++ */
++
++#ifndef _UAPI_IOMMU_H
++#define _UAPI_IOMMU_H
++
++#include <linux/types.h>
++
++#define IOMMU_FAULT_PERM_WRITE	(1 << 0) /* write */
++#define IOMMU_FAULT_PERM_EXEC	(1 << 1) /* exec */
++#define IOMMU_FAULT_PERM_PRIV	(1 << 2) /* privileged */
++
++/*  Generic fault types, can be expanded IRQ remapping fault */
++enum iommu_fault_type {
++	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
++	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
++};
++
++enum iommu_fault_reason {
++	IOMMU_FAULT_REASON_UNKNOWN = 0,
++
++	/* Could not access the PASID table (fetch caused external abort) */
++	IOMMU_FAULT_REASON_PASID_FETCH,
++
++	/* pasid entry is invalid or has configuration errors */
++	IOMMU_FAULT_REASON_BAD_PASID_ENTRY,
++
++	/*
++	 * PASID is out of range (e.g. exceeds the maximum PASID
++	 * supported by the IOMMU) or disabled.
++	 */
++	IOMMU_FAULT_REASON_PASID_INVALID,
++
++	/*
++	 * An external abort occurred fetching (or updating) a translation
++	 * table descriptor
++	 */
++	IOMMU_FAULT_REASON_WALK_EABT,
++
++	/*
++	 * Could not access the page table entry (Bad address),
++	 * actual translation fault
++	 */
++	IOMMU_FAULT_REASON_PTE_FETCH,
++
++	/* Protection flag check failed */
++	IOMMU_FAULT_REASON_PERMISSION,
++
++	/* access flag check failed */
++	IOMMU_FAULT_REASON_ACCESS,
++
++	/* Output address of a translation stage caused Address Size fault */
++	IOMMU_FAULT_REASON_OOR_ADDRESS,
++};
++
++/**
++ * Unrecoverable fault data
++ * @reason: reason of the fault
++ * @addr: offending page address
++ * @fetch_addr: address that caused a fetch abort, if any
++ * @pasid: contains process address space ID, used in shared virtual memory
++ * @perm: Requested permission access using by the incoming transaction
++ * (IOMMU_FAULT_PERM_* values)
++ */
++struct iommu_fault_unrecoverable {
++	__u32	reason; /* enum iommu_fault_reason */
++#define IOMMU_FAULT_UNRECOV_PASID_VALID		(1 << 0)
++#define IOMMU_FAULT_UNRECOV_PERM_VALID		(1 << 1)
++#define IOMMU_FAULT_UNRECOV_ADDR_VALID		(1 << 2)
++#define IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID	(1 << 3)
++	__u32	flags;
++	__u32	pasid;
++	__u32	perm;
++	__u64	addr;
++	__u64	fetch_addr;
++};
++
++/*
++ * Page Request data (aka. recoverable fault data)
++ * @flags : encodes whether the pasid is valid and whether this
++ * is the last page in group
++ * @pasid: pasid
++ * @grpid: page request group index
++ * @perm: requested page permissions (IOMMU_FAULT_PERM_* values)
++ * @addr: page address
++ */
++struct iommu_fault_page_request {
++#define IOMMU_FAULT_PAGE_REQUEST_PASID_VALID	(1 << 0)
++#define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
++#define IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA	(1 << 2)
++	__u32   flags;
++	__u32	pasid;
++	__u32	grpid;
++	__u32	perm;
++	__u64	addr;
++	__u64	private_data[2];
++};
++
++/**
++ * struct iommu_fault - Generic fault data
++ *
++ * @type contains fault type
++ */
++
++struct iommu_fault {
++	__u32	type;   /* enum iommu_fault_type */
++	__u32	reserved;
++	union {
++		struct iommu_fault_unrecoverable event;
++		struct iommu_fault_page_request prm;
++	};
++};
++#endif /* _UAPI_IOMMU_H */
 -- 
 2.7.4
 
