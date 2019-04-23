@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 11/19] iommu/vt-d: Replace Intel specific PASID allocator with IOASID
-Date: Tue, 23 Apr 2019 16:31:11 -0700
-Message-ID: <1556062279-64135-12-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 16/19] iommu/vtd: Clean up for SVM device list
+Date: Tue, 23 Apr 2019 16:31:16 -0700
+Message-ID: <1556062279-64135-17-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -10,226 +10,110 @@ To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg
 Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Make use of generic IOASID code to manage PASID allocation,
-free, and lookup.
+Use combined macro for_each_svm_dev() to simplify SVM device iteration.
 
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/Kconfig       |  1 +
- drivers/iommu/intel-iommu.c |  9 ++++-----
- drivers/iommu/intel-pasid.c | 36 ------------------------------------
- drivers/iommu/intel-svm.c   | 41 ++++++++++++++++++++++++-----------------
- 4 files changed, 29 insertions(+), 58 deletions(-)
+ drivers/iommu/intel-svm.c | 76 ++++++++++++++++++++++-------------------------
+ 1 file changed, 36 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6f07f3b..7f92009 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -204,6 +204,7 @@ config INTEL_IOMMU_SVM
- 	bool "Support for Shared Virtual Memory with Intel IOMMU"
- 	depends on INTEL_IOMMU && X86
- 	select PCI_PASID
-+	select IOASID
- 	select MMU_NOTIFIER
- 	help
- 	  Shared Virtual Memory (SVM) provides a facility for devices
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ec6f22d..785330a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5153,7 +5153,7 @@ static void auxiliary_unlink_device(struct dmar_domain *domain,
- 	domain->auxd_refcnt--;
- 
- 	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		intel_pasid_free_id(domain->default_pasid);
-+		ioasid_free(domain->default_pasid);
- }
- 
- static int aux_domain_add_dev(struct dmar_domain *domain,
-@@ -5171,9 +5171,8 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- 	if (domain->default_pasid <= 0) {
- 		int pasid;
- 
--		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
--					     pci_max_pasids(to_pci_dev(dev)),
--					     GFP_KERNEL);
-+		pasid = ioasid_alloc(NULL, PASID_MIN, pci_max_pasids(to_pci_dev(dev)) - 1,
-+				domain);
- 		if (pasid <= 0) {
- 			pr_err("Can't allocate default pasid\n");
- 			return -ENODEV;
-@@ -5210,7 +5209,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- 	spin_unlock(&iommu->lock);
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		intel_pasid_free_id(domain->default_pasid);
-+		ioasid_free(domain->default_pasid);
- 
- 	return ret;
- }
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 5b1d3be..d339e8f 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -26,42 +26,6 @@
-  */
- static DEFINE_SPINLOCK(pasid_lock);
- u32 intel_pasid_max_id = PASID_MAX;
--static DEFINE_IDR(pasid_idr);
--
--int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp)
--{
--	int ret, min, max;
--
--	min = max_t(int, start, PASID_MIN);
--	max = min_t(int, end, intel_pasid_max_id);
--
--	WARN_ON(in_interrupt());
--	idr_preload(gfp);
--	spin_lock(&pasid_lock);
--	ret = idr_alloc(&pasid_idr, ptr, min, max, GFP_ATOMIC);
--	spin_unlock(&pasid_lock);
--	idr_preload_end();
--
--	return ret;
--}
--
--void intel_pasid_free_id(int pasid)
--{
--	spin_lock(&pasid_lock);
--	idr_remove(&pasid_idr, pasid);
--	spin_unlock(&pasid_lock);
--}
--
--void *intel_pasid_lookup_id(int pasid)
--{
--	void *p;
--
--	spin_lock(&pasid_lock);
--	p = idr_find(&pasid_idr, pasid);
--	spin_unlock(&pasid_lock);
--
--	return p;
--}
- 
- int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
- {
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 8f87304..8fff212 100644
+index 0a973c2..39dfb2e 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -25,6 +25,7 @@
- #include <linux/dmar.h>
- #include <linux/interrupt.h>
- #include <linux/mm_types.h>
-+#include <linux/ioasid.h>
- #include <asm/page.h>
- 
- #include "intel-pasid.h"
-@@ -211,7 +212,9 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(sdev, &svm->devs, list) {
- 		intel_pasid_tear_down_entry(svm->iommu, sdev->dev, svm->pasid);
--		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
-+		/* for emulated iommu, PASID cache invalidation implies IOTLB/DTLB */
-+		if (!cap_caching_mode(svm->iommu->cap))
-+			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
- 	}
- 	rcu_read_unlock();
- 
-@@ -332,16 +335,15 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (pasid_max > intel_pasid_max_id)
- 			pasid_max = intel_pasid_max_id;
- 
--		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
--		ret = intel_pasid_alloc_id(svm,
--					   !!cap_caching_mode(iommu->cap),
--					   pasid_max - 1, GFP_KERNEL);
--		if (ret < 0) {
-+		/* Do not use PASID 0, reserved for RID to PASID */
-+		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
-+					pasid_max - 1, svm);
-+		if (svm->pasid == INVALID_IOASID) {
- 			kfree(svm);
- 			kfree(sdev);
-+			ret = ENOSPC;
- 			goto out;
- 		}
--		svm->pasid = ret;
- 		svm->notifier.ops = &intel_mmuops;
- 		svm->mm = mm;
- 		svm->flags = flags;
-@@ -351,7 +353,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (mm) {
- 			ret = mmu_notifier_register(&svm->notifier, mm);
- 			if (ret) {
--				intel_pasid_free_id(svm->pasid);
-+				ioasid_free(svm->pasid);
- 				kfree(svm);
- 				kfree(sdev);
+@@ -447,15 +447,13 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
  				goto out;
-@@ -367,7 +369,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (ret) {
- 			if (mm)
- 				mmu_notifier_unregister(&svm->notifier, mm);
--			intel_pasid_free_id(svm->pasid);
-+			ioasid_free(svm->pasid);
- 			kfree(svm);
- 			kfree(sdev);
- 			goto out;
-@@ -400,7 +402,12 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
+ 			}
  
--	svm = intel_pasid_lookup_id(pasid);
-+	svm = ioasid_find(NULL, pasid, NULL);
-+	if (IS_ERR(svm)) {
-+		ret = PTR_ERR(svm);
-+		goto out;
-+	}
-+
+-			list_for_each_entry(sdev, &svm->devs, list) {
+-				if (dev == sdev->dev) {
+-					if (sdev->ops != ops) {
+-						ret = -EBUSY;
+-						goto out;
+-					}
+-					sdev->users++;
+-					goto success;
++			for_each_svm_dev() {
++				if (sdev->ops != ops) {
++					ret = -EBUSY;
++					goto out;
+ 				}
++				sdev->users++;
++				goto success;
+ 			}
+ 
+ 			break;
+@@ -585,40 +583,38 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
  	if (!svm)
  		goto out;
  
-@@ -422,7 +429,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 				kfree_rcu(sdev, rcu);
- 
- 				if (list_empty(&svm->devs)) {
--					intel_pasid_free_id(svm->pasid);
-+					ioasid_free(svm->pasid);
- 					if (svm->mm)
- 						mmu_notifier_unregister(&svm->notifier, svm->mm);
- 
-@@ -457,10 +464,11 @@ int intel_svm_is_pasid_valid(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
- 
--	svm = intel_pasid_lookup_id(pasid);
--	if (!svm)
-+	svm = ioasid_find(NULL, pasid, NULL);
-+	if (IS_ERR(svm)) {
-+		ret = PTR_ERR(svm);
- 		goto out;
+-	list_for_each_entry(sdev, &svm->devs, list) {
+-		if (dev == sdev->dev) {
+-			ret = 0;
+-			sdev->users--;
+-			if (!sdev->users) {
+-				list_del_rcu(&sdev->list);
+-				/* Flush the PASID cache and IOTLB for this device.
+-				 * Note that we do depend on the hardware *not* using
+-				 * the PASID any more. Just as we depend on other
+-				 * devices never using PASIDs that they have no right
+-				 * to use. We have a *shared* PASID table, because it's
+-				 * large and has to be physically contiguous. So it's
+-				 * hard to be as defensive as we might like. */
+-				intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+-				intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
+-				kfree_rcu(sdev, rcu);
 -
-+	}
- 	/* init_mm is used in this case */
- 	if (!svm->mm)
- 		ret = 1;
-@@ -567,13 +575,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 
- 		if (!svm || svm->pasid != req->pasid) {
- 			rcu_read_lock();
--			svm = intel_pasid_lookup_id(req->pasid);
-+			svm = ioasid_find(NULL, req->pasid, NULL);
- 			/* It *can't* go away, because the driver is not permitted
- 			 * to unbind the mm while any page faults are outstanding.
- 			 * So we only need RCU to protect the internal idr code. */
- 			rcu_read_unlock();
+-				if (list_empty(&svm->devs)) {
+-					ioasid_free(svm->pasid);
+-					if (svm->mm)
+-						mmu_notifier_unregister(&svm->notifier, svm->mm);
 -
--			if (!svm) {
-+			if (IS_ERR(svm) || !svm) {
- 				pr_err("%s: Page request for invalid PASID %d: %08llx %08llx\n",
- 				       iommu->name, req->pasid, ((unsigned long long *)req)[0],
- 				       ((unsigned long long *)req)[1]);
+-					list_del(&svm->list);
+-
+-					/* We mandate that no page faults may be outstanding
+-					 * for the PASID when intel_svm_unbind_mm() is called.
+-					 * If that is not obeyed, subtle errors will happen.
+-					 * Let's make them less subtle... */
+-					memset(svm, 0x6b, sizeof(*svm));
+-					kfree(svm);
+-				}
++	for_each_svm_dev() {
++		ret = 0;
++		sdev->users--;
++		if (!sdev->users) {
++			list_del_rcu(&sdev->list);
++			/* Flush the PASID cache and IOTLB for this device.
++			 * Note that we do depend on the hardware *not* using
++			 * the PASID any more. Just as we depend on other
++			 * devices never using PASIDs that they have no right
++			 * to use. We have a *shared* PASID table, because it's
++			 * large and has to be physically contiguous. So it's
++			 * hard to be as defensive as we might like. */
++			intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
++			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
++			kfree_rcu(sdev, rcu);
++
++			if (list_empty(&svm->devs)) {
++				ioasid_free(svm->pasid);
++				if (svm->mm)
++					mmu_notifier_unregister(&svm->notifier, svm->mm);
++
++				list_del(&svm->list);
++
++				/* We mandate that no page faults may be outstanding
++				 * for the PASID when intel_svm_unbind_mm() is called.
++				 * If that is not obeyed, subtle errors will happen.
++				 * Let's make them less subtle... */
++				memset(svm, 0x6b, sizeof(*svm));
++				kfree(svm);
+ 			}
+-			break;
+ 		}
++		break;
+ 	}
+  out:
+ 	mutex_unlock(&pasid_mutex);
 -- 
 2.7.4
