@@ -2,142 +2,59 @@ Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 976FCC10F14
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27189C282E1
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:52:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 686B920674
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:25:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="tcpRYFEM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 686B920674
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id F1457217D9
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:52:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1457217D9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 505F0B7A;
-	Tue, 23 Apr 2019 14:25:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B1E6DB43;
+	Tue, 23 Apr 2019 14:52:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 243EEB5F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4E6A07F6
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 14:25:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E2A4F4
+	Tue, 23 Apr 2019 14:52:53 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B552A82B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 14:25:28 +0000 (UTC)
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-	by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3NEKLPh123548; Tue, 23 Apr 2019 14:25:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
-	h=subject : to : cc :
-	references : from : message-id : date : mime-version : in-reply-to :
-	content-type : content-transfer-encoding; s=corp-2018-07-02;
-	bh=xr8NNnw/8pHWkOibCVsj81IvPwFpnNxw/FSXcPC7UTE=;
-	b=tcpRYFEMnlImZZPfiZF20MLyJybUKBzaranVUrZCmzo5mXzSZ3DmMCzLlaxY/IJizla4
-	rrwbt8OOqSl7Wf/RlJetc3Qa+BOvbO/EjTeLImOB/kTqzT/r8jd5z/fonLP9bwFbmzmz
-	htc7GSgYBToA0JRIfHNHRbChVT61IWOKgt3aVF9tQC4wr2RdTG8KGjWNnQFIXzz2uE1k
-	WVBxCSekmF+1YbzNwOBrVvRXXrIQdTW11oWx2EwbUo1KsjM1hDFKLx/aWAGKLlqgUCSV
-	/jVdBZ6ddFdt++smC26KxxODW0Vm7qsf8FRZaHchSrv8w+L21DAhb9SJqy83PZB5ry6n
-	rQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-	by userp2120.oracle.com with ESMTP id 2ryv2q4fj9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Apr 2019 14:25:26 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-	by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3NEOOIK139745; Tue, 23 Apr 2019 14:25:25 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-	by aserp3030.oracle.com with ESMTP id 2s0f0vh93p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Apr 2019 14:25:25 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-	by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3NEPNi7014382;
-	Tue, 23 Apr 2019 14:25:24 GMT
-Received: from dhcp-burlington7-2nd-B-east-10-152-55-162.usdhcp.oraclecorp.com
-	(/10.152.32.65) by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Tue, 23 Apr 2019 07:25:23 -0700
-Subject: Re: [PATCH 3/3] xen/swiotlb: remember having called
-	xen_create_contiguous_region()
-To: Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-References: <20190423105457.17502-1-jgross@suse.com>
-	<20190423105457.17502-4-jgross@suse.com>
-From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
-	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
-	Jg6OxFYd01z+a+oL
-Message-ID: <b4917f80-a8ce-d38f-5c59-ef266669cea3@oracle.com>
-Date: Tue, 23 Apr 2019 10:31:49 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Tue, 23 Apr 2019 14:52:52 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id C167F68AFE; Tue, 23 Apr 2019 16:52:36 +0200 (CEST)
+Date: Tue, 23 Apr 2019 16:52:36 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
+	helpers
+Message-ID: <20190423145236.GA22253@lst.de>
+References: <20190327080448.5500-1-hch@lst.de>
+	<20190327080448.5500-13-hch@lst.de>
+	<b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com>
+	<20190410061157.GA5278@lst.de> <20190417063358.GA24139@lst.de>
+	<83615173-a8b4-e0eb-bac3-1a58d61ea4ef@arm.com>
+	<20190418163512.GA25347@lst.de>
+	<228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com>
+	<20190419082348.GA22299@lst.de>
+	<0a6b3f53-79e5-af83-be39-f04c9acd8384@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20190423105457.17502-4-jgross@suse.com>
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9236
-	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2
-	malwarescore=0
-	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
-	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
-	engine=8.0.1-1810050000 definitions=main-1904230097
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9236
-	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
-	priorityscore=1501 malwarescore=0
-	suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
-	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
-	adultscore=0
-	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
-	definitions=main-1904230097
-Cc: sstabellini@kernel.org, konrad.wilk@oracle.com
+Content-Disposition: inline
+In-Reply-To: <0a6b3f53-79e5-af83-be39-f04c9acd8384@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Tom Lendacky <thomas.lendacky@amd.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -154,59 +71,30 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423143149.OSj4NOxHlTCmgDgBoVYjnCChbIaqDRQjBolsO5wkdVs@z>
+Message-ID: <20190423145236.z8Xd57qe38myCKh-1mX8DvEuLeCMBLB1N1KRYbGQdb0@z>
 
-On 4/23/19 6:54 AM, Juergen Gross wrote:
-> Instead of always calling xen_destroy_contiguous_region() in case the
-> memory is DMA-able for the used device, do so only in case it has been
-> made DMA-able via xen_create_contiguous_region() before.
+On Tue, Apr 23, 2019 at 11:01:44AM +0100, Robin Murphy wrote:
+> On 19/04/2019 09:23, Christoph Hellwig wrote:
+>> On Thu, Apr 18, 2019 at 07:15:00PM +0100, Robin Murphy wrote:
+>>> Still, I've worked in the vm_map_pages() stuff pending in MM and given them
+>>> the same treatment to finish the picture. Both x86_64_defconfig and
+>>> i386_defconfig do indeed compile and link fine as I expected, so I really
+>>> would like to understand the concern around #ifdefs better.
+>>
+>> This looks generally fine to me.  One thing I'd like to do is to
+>> generally make use of the fact that __iommu_dma_get_pages returns NULL
+>> for the force contigous case as that cleans up a few things.  Also
+>> for the !DMA_REMAP case we need to try the page allocator when
+>> dma_alloc_from_contiguous does not return a page.  What do you thing
+>> of the following incremental diff?  If that is fine with you I can
+>> fold that in and add back in the remaining patches from my series
+>> not obsoleted by your patches and resend.
 >
-> This will avoid a lot of xen_destroy_contiguous_region() calls for
-> 64-bit capable devices.
->
-> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
-> flag of the first allocated page can be used for remembering.
+> Wouldn't this suffice? Since we also use alloc_pages() in the coherent 
+> atomic case, the free path should already be able to deal with it.
 
-I think a new enum in pageflags would be useful, and be consistent with
-other flag uses.
-
--boris
-
-
->
-> Signed-off-by: Juergen Gross <jgross@suse.com>
-> ---
->  drivers/xen/swiotlb-xen.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index 43b6e65ae256..a72f181d8e20 100644
-> --- a/drivers/xen/swiotlb-xen.c
-> +++ b/drivers/xen/swiotlb-xen.c
-> @@ -321,6 +321,7 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
->  			xen_free_coherent_pages(hwdev, size, ret, (dma_addr_t)phys, attrs);
->  			return NULL;
->  		}
-> +		SetPageOwnerPriv1(virt_to_page(ret));
->  	}
->  	memset(ret, 0, size);
->  	return ret;
-> @@ -344,9 +345,11 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
->  	/* Convert the size to actually allocated. */
->  	size = 1UL << (order + XEN_PAGE_SHIFT);
->  
-> -	if ((dev_addr + size - 1 <= dma_mask) &&
-> -	    !WARN_ON(range_straddles_page_boundary(phys, size)))
-> -		xen_destroy_contiguous_region(phys, order);
-> +	if (PageOwnerPriv1(virt_to_page(vaddr))) {
-> +		if (!WARN_ON(range_straddles_page_boundary(phys, size)))
-> +			xen_destroy_contiguous_region(phys, order);
-> +		ClearPageOwnerPriv1(virt_to_page(vaddr));
-> +	}
->  
->  	xen_free_coherent_pages(hwdev, size, vaddr, (dma_addr_t)phys, attrs);
->  }
-
+Yepp, that is about what I've done in v3, except that I've also folded
+that coherent atomic case in a way very similar to dma-direct.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
