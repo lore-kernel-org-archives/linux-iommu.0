@@ -2,71 +2,73 @@ Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F3C10F14
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 976FCC10F14
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:25:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8FC5214AE
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:18:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 686B920674
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:25:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Xb72Mi0g"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8FC5214AE
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="tcpRYFEM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 686B920674
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8E6D6AF5;
-	Tue, 23 Apr 2019 14:18:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 505F0B7A;
+	Tue, 23 Apr 2019 14:25:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28F9D22
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 243EEB5F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 14:18:46 +0000 (UTC)
+	Tue, 23 Apr 2019 14:25:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C3F29829
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E2A4F4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 14:18:45 +0000 (UTC)
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-	by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3NEDjaY100312; Tue, 23 Apr 2019 14:18:43 GMT
+	Tue, 23 Apr 2019 14:25:28 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+	by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x3NEKLPh123548; Tue, 23 Apr 2019 14:25:26 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
 	h=subject : to : cc :
 	references : from : message-id : date : mime-version : in-reply-to :
 	content-type : content-transfer-encoding; s=corp-2018-07-02;
-	bh=vrfAQ41t67iwFGjNezT2clR4ufo2fkJsUoIM+xMFIjk=;
-	b=Xb72Mi0g7OP0wzTX/gNGq2Pn6VeK/x2HqrTY1DxOy0xwyKKD/6/uRWDvM65zKWPDfWgE
-	HYJAKgZ1ymN1RD0UuUmnF1TmAYfnZTOooitJwD5sUCn7oNRQeTNf7Aazo2KVg6nLlNbN
-	RhGpuW7NsJLXG7G/RUY6U+qj+N+xu+3zIMPcgrYjK07CWOJVIFm9WL69SAhKIdmJM+3J
-	QeSDhZmUERkdOpD79BKzzMWMSvxEKMf1IHQBp9dL0ANBEfGTVc18+PPS/2Nyj7g+h9gF
-	o4nOjZzYDKiacSj8deLnH/fhXt5vJWyhGiABz68j+76ZwL5aFmJRN+vN+lwq5fEcqfu+
-	RA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-	by userp2130.oracle.com with ESMTP id 2rytusvhn0-1
+	bh=xr8NNnw/8pHWkOibCVsj81IvPwFpnNxw/FSXcPC7UTE=;
+	b=tcpRYFEMnlImZZPfiZF20MLyJybUKBzaranVUrZCmzo5mXzSZ3DmMCzLlaxY/IJizla4
+	rrwbt8OOqSl7Wf/RlJetc3Qa+BOvbO/EjTeLImOB/kTqzT/r8jd5z/fonLP9bwFbmzmz
+	htc7GSgYBToA0JRIfHNHRbChVT61IWOKgt3aVF9tQC4wr2RdTG8KGjWNnQFIXzz2uE1k
+	WVBxCSekmF+1YbzNwOBrVvRXXrIQdTW11oWx2EwbUo1KsjM1hDFKLx/aWAGKLlqgUCSV
+	/jVdBZ6ddFdt++smC26KxxODW0Vm7qsf8FRZaHchSrv8w+L21DAhb9SJqy83PZB5ry6n
+	rQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+	by userp2120.oracle.com with ESMTP id 2ryv2q4fj9-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Apr 2019 14:18:43 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-	by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3NEIh7p094727; Tue, 23 Apr 2019 14:18:43 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-	by userp3020.oracle.com with ESMTP id 2s0dwe9ju8-1
+	Tue, 23 Apr 2019 14:25:26 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+	by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x3NEOOIK139745; Tue, 23 Apr 2019 14:25:25 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+	by aserp3030.oracle.com with ESMTP id 2s0f0vh93p-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Apr 2019 14:18:43 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-	by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3NEIcX7004255;
-	Tue, 23 Apr 2019 14:18:38 GMT
+	Tue, 23 Apr 2019 14:25:25 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+	by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3NEPNi7014382;
+	Tue, 23 Apr 2019 14:25:24 GMT
 Received: from dhcp-burlington7-2nd-B-east-10-152-55-162.usdhcp.oraclecorp.com
 	(/10.152.32.65) by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Tue, 23 Apr 2019 07:18:38 -0700
-Subject: Re: [PATCH 2/3] xen/swiotlb: simplify range_straddles_page_boundary()
+	with ESMTP ; Tue, 23 Apr 2019 07:25:23 -0700
+Subject: Re: [PATCH 3/3] xen/swiotlb: remember having called
+	xen_create_contiguous_region()
 To: Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 References: <20190423105457.17502-1-jgross@suse.com>
-	<20190423105457.17502-3-jgross@suse.com>
+	<20190423105457.17502-4-jgross@suse.com>
 From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
@@ -112,25 +114,25 @@ Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
 	Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
 	19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
 	Jg6OxFYd01z+a+oL
-Message-ID: <799ae281-6a06-6a34-3bef-96b9fef8d1c2@oracle.com>
-Date: Tue, 23 Apr 2019 10:25:04 -0400
+Message-ID: <b4917f80-a8ce-d38f-5c59-ef266669cea3@oracle.com>
+Date: Tue, 23 Apr 2019 10:31:49 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20190423105457.17502-3-jgross@suse.com>
+In-Reply-To: <20190423105457.17502-4-jgross@suse.com>
 Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9235
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9236
 	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2
 	malwarescore=0
 	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
 	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
 	engine=8.0.1-1810050000 definitions=main-1904230097
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9235
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9236
 	signatures=668685
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
 	priorityscore=1501 malwarescore=0
-	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+	suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
 	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
 	adultscore=0
 	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
@@ -152,18 +154,58 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423142504.ynYBN2VSjG-VdL52VFSqZ5Tw6b3I8qA-zjGfIyO0FY8@z>
+Message-ID: <20190423143149.OSj4NOxHlTCmgDgBoVYjnCChbIaqDRQjBolsO5wkdVs@z>
 
 On 4/23/19 6:54 AM, Juergen Gross wrote:
-> range_straddles_page_boundary() is open coding several macros from
-> include/xen/page.h. Use those instead. Additionally there is no need
-> to have check_pages_physically_contiguous() as a separate function as
-> it is used only once, so merge it into range_straddles_page_boundary().
+> Instead of always calling xen_destroy_contiguous_region() in case the
+> memory is DMA-able for the used device, do so only in case it has been
+> made DMA-able via xen_create_contiguous_region() before.
+>
+> This will avoid a lot of xen_destroy_contiguous_region() calls for
+> 64-bit capable devices.
+>
+> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
+> flag of the first allocated page can be used for remembering.
+
+I think a new enum in pageflags would be useful, and be consistent with
+other flag uses.
+
+-boris
+
+
 >
 > Signed-off-by: Juergen Gross <jgross@suse.com>
-
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-
+> ---
+>  drivers/xen/swiotlb-xen.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 43b6e65ae256..a72f181d8e20 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -321,6 +321,7 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+>  			xen_free_coherent_pages(hwdev, size, ret, (dma_addr_t)phys, attrs);
+>  			return NULL;
+>  		}
+> +		SetPageOwnerPriv1(virt_to_page(ret));
+>  	}
+>  	memset(ret, 0, size);
+>  	return ret;
+> @@ -344,9 +345,11 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
+>  	/* Convert the size to actually allocated. */
+>  	size = 1UL << (order + XEN_PAGE_SHIFT);
+>  
+> -	if ((dev_addr + size - 1 <= dma_mask) &&
+> -	    !WARN_ON(range_straddles_page_boundary(phys, size)))
+> -		xen_destroy_contiguous_region(phys, order);
+> +	if (PageOwnerPriv1(virt_to_page(vaddr))) {
+> +		if (!WARN_ON(range_straddles_page_boundary(phys, size)))
+> +			xen_destroy_contiguous_region(phys, order);
+> +		ClearPageOwnerPriv1(virt_to_page(vaddr));
+> +	}
+>  
+>  	xen_free_coherent_pages(hwdev, size, vaddr, (dma_addr_t)phys, attrs);
+>  }
 
 _______________________________________________
 iommu mailing list
