@@ -1,17 +1,15 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 08/10] iommu/vt-d: Check whether device requires bounce
-	buffer
-Date: Tue, 23 Apr 2019 10:03:28 +0800
-Message-ID: <76e35340-32c3-ee0d-5232-bd8800248402@linux.intel.com>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-	<20190421011719.14909-9-baolu.lu@linux.intel.com>
-	<20190422164755.GC31181@lst.de>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 1/6] iommu: add generic boot option iommu.dma_mode
+Date: Tue, 23 Apr 2019 10:45:37 +0800
+Message-ID: <5CBE7C51.8070002@huawei.com>
+References: <20190409125308.18304-1-thunder.leizhen@huawei.com>
+	<20190409125308.18304-2-thunder.leizhen@huawei.com>
+	<20190412111649.GK4518@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190422164755.GC31181-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20190412111649.GK4518-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,32 +19,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-ia64 <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sebastian Ott <sebott-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, linux-doc <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Heiko Carstens <heiko.carstens-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-s390 <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86 <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel <linux-kernel-fy+rA21nqHI@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
 
-On 4/23/19 12:47 AM, Christoph Hellwig wrote:
-> On Sun, Apr 21, 2019 at 09:17:17AM +0800, Lu Baolu wrote:
->> +static inline bool device_needs_bounce(struct device *dev)
+
+On 2019/4/12 19:16, Joerg Roedel wrote:
+> On Tue, Apr 09, 2019 at 08:53:03PM +0800, Zhen Lei wrote:
+>> +static int __init iommu_dma_mode_setup(char *str)
 >> +{
->> +	struct pci_dev *pdev = NULL;
+>> +	if (!str)
+>> +		goto fail;
 >> +
->> +	if (intel_no_bounce)
->> +		return false;
+>> +	if (!strncmp(str, "passthrough", 11))
+>> +		iommu_default_dma_mode = IOMMU_DMA_MODE_PASSTHROUGH;
+>> +	else if (!strncmp(str, "lazy", 4))
+>> +		iommu_default_dma_mode = IOMMU_DMA_MODE_LAZY;
+>> +	else if (!strncmp(str, "strict", 6))
+>> +		iommu_default_dma_mode = IOMMU_DMA_MODE_STRICT;
+>> +	else
+>> +		goto fail;
 >> +
->> +	if (dev_is_pci(dev))
->> +		pdev = to_pci_dev(dev);
->> +
->> +	return pdev ? pdev->untrusted : false;
->> +}
+>> +	pr_info("Force dma mode to be %d\n", iommu_default_dma_mode);
 > 
-> Again, this and the option should not be in a specific iommu driver.
+> Printing a number is not very desriptive or helpful to the user. Please
+> print the name of the mode instead.
+
+OK, thanks. I have given up adding iommu.dma_mode boot option according
+to Robin and Will's suggestion. So these codes will be removed in v6.
+
+> 
+> 
+> Regards,
+> 
+> 	Joerg
+> 
+> .
 > 
 
-The option of whether bounce is ignored should be in the specific iommu
-driver. Or any other thought?
-
-Best regards,
-Lu Baolu
+-- 
+Thanks!
+BestRegards
