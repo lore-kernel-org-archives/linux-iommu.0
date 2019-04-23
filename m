@@ -1,32 +1,49 @@
-From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
-	files to *.rst
-Date: Tue, 23 Apr 2019 10:31:35 +0200
-Message-ID: <20190423083135.GA11158@hirez.programming.kicks-ass.net>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
-	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
+From: Julien Grall <julien.grall@arm.com>
+Subject: Re: [PATCH 1/7] genirq/msi: Add a new field in msi_desc to store an
+ IOMMU cookie
+Date: Tue, 23 Apr 2019 10:26:11 +0100
+Message-ID: <943b0907-f2ee-63c1-7134-997ffaf6f348@arm.com>
+References: <20190418172611.21561-1-julien.grall@arm.com>
+ <20190418172611.21561-2-julien.grall@arm.com>
+ <alpine.DEB.2.21.1904182126540.3174@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Farhan Ali <alifm-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, kernel-hardening-ZwoEplunGu1jrUoiu81ncdBPR1lH4CV8@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, Halil Pasic <pasic-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Boqun Feng <boqun.feng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Mackall <mpm-VDJrAJ4Gl5ZBDgjK7y7TUQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sean Paul <sean-p7yTbzM4H96eqtR555YLDQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-wireless@v
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.21.1904182126540.3174@nanos.tec.linutronix.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, logang@deltatee.com, douliyangs@gmail.com, miquel.raynal@bootlin.com, marc.zyngier@arm.com, jason@lakedaemon.net, joro@8bytes.org, robin.murphy@arm.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 22, 2019 at 10:27:45AM -0300, Mauro Carvalho Chehab wrote:
+Hi Thomas,
 
->  .../{atomic_bitops.txt => atomic_bitops.rst}  |  2 +
+On 4/18/19 8:28 PM, Thomas Gleixner wrote:
+> On Thu, 18 Apr 2019, Julien Grall wrote:
+> 
+>> When an MSI doorbell is located downstream of an IOMMU, it is required
+>> to swizzle the physical address with an appropriately-mapped IOVA for any
+>> device attached to one of our DMA ops domain.
+>>
+>> At the moment, the allocation of the mapping may be done when composing
+>> the message. However, the composing may be done in non-preemtible
+>> context while the allocation requires to be called from preemptible
+>> context.
+>>
+>> A follow-up patch will split the current logic in two functions
+>> requiring to keep an IOMMU cookie per MSI.
+>>
+>> This patch introduces a new field in msi_desc to store an IOMMU cookie
+>> when CONFIG_IOMMU_DMA is selected.
+> 
+> # git grep 'This patch' Documentation/process/
+> 
+> Applied to the whole series.
 
-What's happend to atomic_t.txt, also NAK, I still occationally touch
-these files.
+Sorry for that. I will rework all the commit messages and resend the series.
+
+Cheers,
+
+-- 
+Julien Grall
