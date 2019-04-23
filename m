@@ -1,74 +1,41 @@
-From: Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>
-Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
-	files to *.rst
-Date: Tue, 23 Apr 2019 16:06:40 -0600
-Message-ID: <20190423160640.70c9703f@lwn.net>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
-	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
-	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
-	<20190423125519.GA7104@redhat.com>
-	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
-	<20190423103053.07cf2149@lwn.net>
-	<20190423171158.GG12232@hirez.programming.kicks-ass.net>
-	<20190423172006.GD16353@zn.tnic> <20190423170409.7b1370ac@coco.lan>
-	<20190423213816.GE16353@zn.tnic>
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: RE: [RFC PATCH] dma-mapping: create iommu mapping for newly allocated
+ dma coherent mem
+Date: Tue, 23 Apr 2019 22:09:54 +0000
+Message-ID: <VI1PR04MB513407A66107759EC0DFE175EC230@VI1PR04MB5134.eurprd04.prod.outlook.com>
+References: <20190422165125.21704-1-laurentiu.tudor@nxp.com>
+ <20190422181100.GB32490@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190423213816.GE16353-Jj63ApZU6fQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Farhan Ali <alifm-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, Halil Pasic <pasic-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Boqun Feng <boqun.feng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Mackall <mpm-VDJrAJ4Gl5ZBDgjK7y7TUQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sean Paul <sean-p7yTbzM4H96eqtR555YLDQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190422181100.GB32490@lst.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Leo Li <leoyang.li@nxp.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 23 Apr 2019 23:38:16 +0200
-Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org> wrote:
-
-> But exactly this - *having* to do rst formatting would mean a lot of
-> getting used to and people writing something which is not necessarily
-> correct rst and someone else fixing up after them.
-
-Remember that most of our docs are 99% RST even though they were written
-by people who had never even heard of RST.  I really don't think it's a
-big deal - a far smaller cognitive load than trying to keep up with any
-given subsystem's variable-declaration-ordering rules, for example :)
-
-> Another pain point is changing the file paths. Without cscope I would've
-> been cursing each time I'm looking for kernel-parameters.txt, for
-> example. First of all, it is in Documentation/admin-guide/ now and then
-> there's Documentation/admin-guide/kernel-parameters.rst too.
-
-Moving of files has nothing to do with RST, of course.  That you can
-blame entirely on me trying to bring some order to Documentation/.  As a
-predecessor of mine once put it (https://lkml.org/lkml/2007/7/3/422):
-
-	Documentation/* is a gigantic mess, currently organized based on
-	where random passers-by put things down last.
-
-When other parts of the kernel tree turn out to be organized in
-less-than-useful ways, we move things around.  I'm trying to do the same
-in Documentation/, with an attempt to be sympathetic toward our readers,
-sort things by intended audience, and create (someday) a coherent whole.
-I agree that moving docs is a short-term annoyance, but I'm hoping that
-it brings a long-term benefit.
-
-> So* I'd suggest having as less markup in those files as possible and if
-> it is needed, automate adding the needed markup, as Jon suggested.
-
-Minimal markup is the policy (it's even documented :).  Automating stuff
-that can be automated is an area that has definitely not received
-enough attention; hopefully some things can be done there in the very
-near future.
-
-Thanks,
-
-jon
+SGVsbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ2hyaXN0b3Bo
+IEhlbGx3aWcgPGhjaEBsc3QuZGU+DQo+IFNlbnQ6IE1vbmRheSwgQXByaWwgMjIsIDIwMTkgOTox
+MSBQTQ0KPiANCj4gT24gTW9uLCBBcHIgMjIsIDIwMTkgYXQgMDc6NTE6MjVQTSArMDMwMCwgbGF1
+cmVudGl1LnR1ZG9yQG54cC5jb20gd3JvdGU6DQo+ID4gRnJvbTogTGF1cmVudGl1IFR1ZG9yIDxs
+YXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPg0KPiA+IElmIHBvc3NpYmxlIC8gYXZhaWxhYmxl
+IGNhbGwgaW50byB0aGUgRE1BIEFQSSB0byBnZXQgYSBwcm9wZXIgaW9tbXUNCj4gPiBtYXBwaW5n
+IGFuZCBhIGRtYSBhZGRyZXNzIGZvciB0aGUgbmV3bHkgYWxsb2NhdGVkIGNvaGVyZW50IGRtYSBt
+ZW1vcnkuDQo+IA0KPiBJIGRvbid0IHRoaW5rIHRoaXMgaXMgc28gc2ltcGxlLiAgVGhlIG9yaWdp
+bmFsIHVzZSBjYXNlIG9mDQo+IGRtYV9kZWNsYXJlX2NvaGVyZW50X21lbW9yeSB3YXMgbWVtb3J5
+IHRoYXQgaXMgbG9jYWwgdG8gYSBkZXZpY2UsIHdoZXJlDQo+IHdlIGNvcHkgaW4gZGF0YSB0aHJv
+dWdoIGEgTU1JTyBtYXBwaW5nIGFuZCB0aGUgZGV2aWNlIGNhbiB0aGVuIGFjY2Vzcw0KPiBpdC4g
+IFRoaXMgdXNlIGNhc2Ugc3RpbGwgc2VlbXMgdG8gYmUgYWxpdmUgaW4gdGhlIG9oY2ktc201MDEg
+YW5kDQo+IG9oY2ktdG1pbyBkcml2ZXJzLiAgR29pbmcgdGhyb3VnaCB0aGUgaW9tbXUgaW4gdGhv
+c2UgY2FzZXMgd291bGQgYmUNCj4gY291bnRlciBwcm9kdWN0aXZlLg0KDQpJIGhhZCBhIGZlZWxp
+bmcgdGhhdCBJIGRpZG4ndCBnZXQgdGhlIHdob2xlIHN0b3J5IGFuZCBzb21ldGhpbmcgaXNuJ3Qg
+cXVpdGUgcmlnaHQgd2l0aCB0aGlzIHBhdGNoLiDwn5iKIEJ1dCBJJ20gaGFwcHkgdGhhdCB3ZSBo
+YXZlIGEgZGlzY3Vzc2lvbiBzdGFydGVkIG9uIHRoZSB0b3BpYyBhbmQsIEkgbXVzdCBzYXksIEkn
+bSB2ZXJ5IGludGVyZXN0ZWQgaW4gZ2V0dGluZyB0byB0aGUgYm90dG9tIG9mIGl0IChJIGhhdmUg
+c29tZSBwYXRjaGVzIGVuYWJsaW5nIFNNTVUgb24gYSBjb3VwbGUgb2YgTlhQIGNoaXBzIGFuZCBk
+ZXBlbmQgb24gcmVzb2x2aW5nIHRoaXMpLg0KSSdsbCB0cnkgdG8gdW5kZXJzdGFuZCB3aGF0IHlv
+dSdyZSBwbGFubmluZyBidXQgaW4gdGhlIG1lYW50aW1lIHBsZWFzZSBsZXQgbWUga25vdyBpZiB5
+b3UgdGhpbmsgSSBjYW4gYmUgb2YgYW55IGhlbHAuDQoNCi0tLQ0KVGhhbmtzICYgQmVzdCBSZWdh
+cmRzLCBMYXVyZW50aXUNCg==
