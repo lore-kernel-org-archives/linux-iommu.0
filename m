@@ -2,86 +2,77 @@ Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B648FC10F03
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 18:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84872C10F03
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 20:04:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8AFCE20811
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 18:36:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8AFCE20811
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3D2DD217D9
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 20:04:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="mI8yGQTM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D2DD217D9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 56D36D94;
-	Tue, 23 Apr 2019 18:36:18 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0EDC1E50;
+	Tue, 23 Apr 2019 20:04:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77CF9D93
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 811D8E47
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 18:36:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C8381886
+	Tue, 23 Apr 2019 20:04:36 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+	[209.85.208.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 06FDC829
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 18:36:16 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id E5FA8ABAC;
-	Tue, 23 Apr 2019 18:36:14 +0000 (UTC)
-Subject: Re: [PATCH 3/3] xen/swiotlb: remember having called
-	xen_create_contiguous_region()
-To: Stefano Stabellini <sstabellini@kernel.org>
-References: <20190423105457.17502-1-jgross@suse.com>
-	<20190423105457.17502-4-jgross@suse.com>
-	<alpine.DEB.2.10.1904230955190.24598@sstabellini-ThinkPad-X260>
-From: Juergen Gross <jgross@suse.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=jgross@suse.com; prefer-encrypt=mutual; keydata=
-	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
-Message-ID: <e744c7eb-1685-13b6-7ae9-e952f8f53ab0@suse.com>
-Date: Tue, 23 Apr 2019 20:36:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.10.1904230955190.24598@sstabellini-ThinkPad-X260>
-Content-Language: de-DE
-Cc: boris.ostrovsky@oracle.com, xen-devel@lists.xenproject.org,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	konrad.wilk@oracle.com
+	Tue, 23 Apr 2019 20:04:35 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id d55so13837787ede.0
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 23 Apr 2019 13:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=arista.com; s=googlenew;
+	h=from:to:cc:subject:date:message-id;
+	bh=vFjhjgT8J7J/y48rMlFt3N0exp7AnVL6x1jQtFEwJmA=;
+	b=mI8yGQTMJJh7Cn3t53GITJ7AnDAMMH3Gb2+EvEuxbUvz/yvODXcDKLwCkoVfk3Xi1U
+	d+3QlmYt52HZ7SqMCsb5IOvyluTstovnK7WcalvZOCL/dpCx854RM2+qody/rxdiYaeg
+	PRZ905oyROMMLv6teBg61hvKM8bMjuStQWeiSfLPkV2W1KKLs0rk68A7z9mRE08hBF2B
+	Evtau2ZxHslCFl2aaJlixONLIUBiMoEXlgSfng1Bz6R3SaFpxpiMT/Eplda4Y9XtDXC3
+	II/fe0MFVcY7l+nK4XoOtL/PUcwhwV3Ay/RH/O1TfJFXkuRValyvEZ5fTV6XXdqMUqJB
+	o6KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=vFjhjgT8J7J/y48rMlFt3N0exp7AnVL6x1jQtFEwJmA=;
+	b=CD0Xbpf8p15lWlJ0hyhh5oj/hNKx72Dguqp6x4TH+yc35uQlvdqqwN+iWnW5DlwW5g
+	uyGs+U1cE0qDN8wD+2Det6p8VLh69EZrfSNhvDFf+MAbgZceFqSaFFO4kYgbLrAXPJwE
+	D9HN07M6KMZHzu8m7l5buS5zq/GiP2OkjObZlemsKdp3Bx/IjuFANmVCIVl8sIar0f38
+	mjg+NAEZJlKTjVMbDr++PjbOBf3fJPKKy1iDu1QpikxgjoMNLHNDTExPXKKLx2dvkUZK
+	NIMvkhYkE7tdFIhm6CjMeGY1Dqnt4iTlKWldO52a4KwDv32KV5xPniV4Lo8QJ5ETTgqI
+	5Hgg==
+X-Gm-Message-State: APjAAAWZzuAP/deDT4pIAND805iOS+jkMQEoBKjn8t1TBFBBNBIcKRXr
+	2wQ/ESHy+4WrarhfQNo2DS+jIlpL5eBnuA==
+X-Google-Smtp-Source: APXvYqxaAnK6AtYePG+GxF6pAlJM0XJ8IeMly8zDdWCF2/Fo0nOgrbK6yfMwfKMwpIbSiDRpd+YOHQ==
+X-Received: by 2002:a17:906:c389:: with SMTP id
+	t9mr5089629ejz.64.1556049874311; 
+	Tue, 23 Apr 2019 13:04:34 -0700 (PDT)
+Received: from linux-ThinkPad-X1-Carbon-5th.Hitronhub.home ([80.111.101.37])
+	by smtp.gmail.com with ESMTPSA id l10sm3762140eda.8.2019.04.23.13.04.33
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Tue, 23 Apr 2019 13:04:33 -0700 (PDT)
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] Remove old no iommu direct mapping code
+Date: Tue, 23 Apr 2019 21:03:34 +0100
+Message-Id: <20190423200335.3888-1-tmurphy@arista.com>
+X-Mailer: git-send-email 2.17.1
+Cc: Tom Murphy <tmurphy@arista.com>, linux-kernel@vger.kernel.org,
+	murphyt7@tcd.ie
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,42 +85,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tom Murphy via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Murphy <tmurphy@arista.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423183613.sMbzA5W8dHD0bq1qzsuvz8GyPHOt10IGeZjo9hj4Ol8@z>
+Message-ID: <20190423200334.xnqIFUG1xKLticwKs5JBmn678BLuSxenkCrYAn8k2iE@z>
 
-On 23/04/2019 19:05, Stefano Stabellini wrote:
-> On Tue, 23 Apr 2019, Juergen Gross wrote:
->> Instead of always calling xen_destroy_contiguous_region() in case the
->> memory is DMA-able for the used device, do so only in case it has been
->> made DMA-able via xen_create_contiguous_region() before.
->>
->> This will avoid a lot of xen_destroy_contiguous_region() calls for
->> 64-bit capable devices.
->>
->> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
->> flag of the first allocated page can be used for remembering.
-> 
-> Although the patch looks OK, this sentence puzzles me. Why do you say
-> that the memory in question is owned by swiotlb-xen? Because it was
-> returned by xen_alloc_coherent_pages? Both the x86 and the Arm
-> implementation return fresh new memory, hence, it should be safe to set
-> the PageOwnerPriv1 flag?
-> 
-> My concern with this approach is with the semantics of PG_owner_priv_1.
-> Is a page marked with PG_owner_priv_1 only supposed to be used by the
-> owner?
+These checks were intended to handle devices not mapped by the IOMMU.
+Since the AMD IOMMU driver uses per-device dma_ops these functions can
+no longer be called by direct mapped devices. So these checks aren't
+needed anymore.
 
-The owner of the page is free to use the flag.
+Signed-off-by: Tom Murphy <tmurphy@arista.com>
+---
+ drivers/iommu/amd_iommu.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-Like Grant pages are marked by the grant driver using this flag. And
-Xen page tables are using it in PV-guests for indicating a "Pinned"
-page table.
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b319e51c379b..67cdc9e5304b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2503,9 +2503,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+ 	u64 dma_mask;
+ 
+ 	domain = get_domain(dev);
+-	if (PTR_ERR(domain) == -EINVAL)
+-		return (dma_addr_t)paddr;
+-	else if (IS_ERR(domain))
++	if (IS_ERR(domain))
+ 		return DMA_MAPPING_ERROR;
+ 
+ 	dma_mask = *dev->dma_mask;
+@@ -2676,11 +2674,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 	struct page *page;
+ 
+ 	domain = get_domain(dev);
+-	if (PTR_ERR(domain) == -EINVAL) {
+-		page = alloc_pages(flag, get_order(size));
+-		*dma_addr = page_to_phys(page);
+-		return page_address(page);
+-	} else if (IS_ERR(domain))
++	if (IS_ERR(domain))
+ 		return NULL;
+ 
+ 	dma_dom   = to_dma_ops_domain(domain);
+-- 
+2.17.1
 
-
-Juergen
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
