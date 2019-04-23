@@ -1,76 +1,38 @@
-From: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 3/3] xen/swiotlb: remember having called
-	xen_create_contiguous_region()
-Date: Tue, 23 Apr 2019 10:31:49 -0400
-Message-ID: <b4917f80-a8ce-d38f-5c59-ef266669cea3@oracle.com>
-References: <20190423105457.17502-1-jgross@suse.com>
-	<20190423105457.17502-4-jgross@suse.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 12/21] dma-iommu: factor atomic pool allocations into
+ helpers
+Date: Tue, 23 Apr 2019 16:52:36 +0200
+Message-ID: <20190423145236.GA22253@lst.de>
+References: <20190327080448.5500-1-hch@lst.de> <20190327080448.5500-13-hch@lst.de> <b3f80a11-1504-e8f9-4438-92bcd5f3df7f@arm.com> <20190410061157.GA5278@lst.de> <20190417063358.GA24139@lst.de> <83615173-a8b4-e0eb-bac3-1a58d61ea4ef@arm.com> <20190418163512.GA25347@lst.de> <228ee57a-d7b2-48e0-a34e-81d5fba0a090@arm.com> <20190419082348.GA22299@lst.de> <0a6b3f53-79e5-af83-be39-f04c9acd8384@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190423105457.17502-4-jgross-IBi9RG/b67k@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <0a6b3f53-79e5-af83-be39-f04c9acd8384@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/23/19 6:54 AM, Juergen Gross wrote:
-> Instead of always calling xen_destroy_contiguous_region() in case the
-> memory is DMA-able for the used device, do so only in case it has been
-> made DMA-able via xen_create_contiguous_region() before.
+On Tue, Apr 23, 2019 at 11:01:44AM +0100, Robin Murphy wrote:
+> On 19/04/2019 09:23, Christoph Hellwig wrote:
+>> On Thu, Apr 18, 2019 at 07:15:00PM +0100, Robin Murphy wrote:
+>>> Still, I've worked in the vm_map_pages() stuff pending in MM and given them
+>>> the same treatment to finish the picture. Both x86_64_defconfig and
+>>> i386_defconfig do indeed compile and link fine as I expected, so I really
+>>> would like to understand the concern around #ifdefs better.
+>>
+>> This looks generally fine to me.  One thing I'd like to do is to
+>> generally make use of the fact that __iommu_dma_get_pages returns NULL
+>> for the force contigous case as that cleans up a few things.  Also
+>> for the !DMA_REMAP case we need to try the page allocator when
+>> dma_alloc_from_contiguous does not return a page.  What do you thing
+>> of the following incremental diff?  If that is fine with you I can
+>> fold that in and add back in the remaining patches from my series
+>> not obsoleted by your patches and resend.
 >
-> This will avoid a lot of xen_destroy_contiguous_region() calls for
-> 64-bit capable devices.
->
-> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
-> flag of the first allocated page can be used for remembering.
+> Wouldn't this suffice? Since we also use alloc_pages() in the coherent 
+> atomic case, the free path should already be able to deal with it.
 
-I think a new enum in pageflags would be useful, and be consistent with
-other flag uses.
-
--boris
-
-
->
-> Signed-off-by: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>
-> ---
->  drivers/xen/swiotlb-xen.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index 43b6e65ae256..a72f181d8e20 100644
-> --- a/drivers/xen/swiotlb-xen.c
-> +++ b/drivers/xen/swiotlb-xen.c
-> @@ -321,6 +321,7 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
->  			xen_free_coherent_pages(hwdev, size, ret, (dma_addr_t)phys, attrs);
->  			return NULL;
->  		}
-> +		SetPageOwnerPriv1(virt_to_page(ret));
->  	}
->  	memset(ret, 0, size);
->  	return ret;
-> @@ -344,9 +345,11 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
->  	/* Convert the size to actually allocated. */
->  	size = 1UL << (order + XEN_PAGE_SHIFT);
->  
-> -	if ((dev_addr + size - 1 <= dma_mask) &&
-> -	    !WARN_ON(range_straddles_page_boundary(phys, size)))
-> -		xen_destroy_contiguous_region(phys, order);
-> +	if (PageOwnerPriv1(virt_to_page(vaddr))) {
-> +		if (!WARN_ON(range_straddles_page_boundary(phys, size)))
-> +			xen_destroy_contiguous_region(phys, order);
-> +		ClearPageOwnerPriv1(virt_to_page(vaddr));
-> +	}
->  
->  	xen_free_coherent_pages(hwdev, size, vaddr, (dma_addr_t)phys, attrs);
->  }
+Yepp, that is about what I've done in v3, except that I've also folded
+that coherent atomic case in a way very similar to dma-direct.
