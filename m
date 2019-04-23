@@ -2,52 +2,52 @@ Return-Path: <SRS0=cQN6=S2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=DATE_IN_PAST_24_48,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B245C10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 11:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F9FC282CE
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 12:30:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 14B45218B0
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 11:52:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14B45218B0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 864E920811
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 12:30:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 864E920811
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DEF5AF40;
-	Wed, 24 Apr 2019 11:52:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 39DF4FD0;
+	Wed, 24 Apr 2019 12:30:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C7D3EF3E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AF9E9FCF
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 11:52:56 +0000 (UTC)
+	Wed, 24 Apr 2019 12:30:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 52D9EF4
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 88450786
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 11:52:56 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 16C27A78;
-	Wed, 24 Apr 2019 04:52:56 -0700 (PDT)
-Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
-	[10.72.51.249])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 80E8D3F238;
-	Wed, 24 Apr 2019 04:52:54 -0700 (PDT)
-Date: Wed, 24 Apr 2019 12:52:52 +0100
-From: Will Deacon <will.deacon@arm.com>
-To: joro@8bytes.org
-Subject: [GIT PULL] iommu/arm-smmu: Updates for 5.2
-Message-ID: <20190424115252.GB14829@fuggles.cambridge.arm.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-User-Agent: Mutt/1.11.1+86 (6f28e57d73f2) ()
-Cc: marc.w.gonzalez@free.fr, jean-philippe.brucker@arm.com,
-	dianders@chromium.org, iommu@lists.linux-foundation.org,
-	robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
+	Wed, 24 Apr 2019 12:30:56 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	24 Apr 2019 05:30:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,389,1549958400"; d="scan'208";a="167475632"
+Received: from yiliu-dev.bj.intel.com ([10.238.156.125])
+	by fmsmga001.fm.intel.com with ESMTP; 24 Apr 2019 05:30:53 -0700
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: alex.williamson@redhat.com,
+	kwankhede@nvidia.com
+Subject: [RFC v3 0/3] vfio_pci: wrap pci device as a mediated device
+Date: Tue, 23 Apr 2019 20:14:37 +0800
+Message-Id: <1556021680-2911-1-git-send-email-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.7.4
+Cc: kevin.tian@intel.com, kvm@vger.kernel.org, jean-philippe.brucker@arm.com,
+	linux-kernel@vger.kernel.org, yamada.masahiro@socionext.com,
+	yi.y.sun@intel.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,68 +60,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424115252.CyTDEBUUr1Vhyz2dAdBPMSNplea_3qmwpWn2OpJDbIk@z>
+Message-ID: <20190423121437.r-UGYJwKKySUO7QLRSyrYMRO1syMG8c5RZPpqN1vFYU@z>
 
-Hi Joerg,
+This patchset aims to add a vfio-pci-like meta driver as a demo
+user of the vfio changes introduced in "vfio/mdev: IOMMU aware
+mediated device" patchset from Baolu Lu.
 
-Please can you pull these ARM SMMU updates for 5.2? The highlight is ATS
-support in the SMMUv3 driver from Jean-Philippe. I have collected the
-appropriate Acks from the PCI and IORT sides.
+Previous RFC v1 has given two proposals and the discussion could
+be found in following link. Per the comments, this patchset adds
+a separate driver named vfio-mdev-pci. It is a sample driver, but
+loactes in drivers/vfio/pci due to code sharing consideration.
+The corresponding Kconfig definition is in samples/Kconfig.
 
-There is a trivial conflict with your api-features branch due to the diff
-context in linux/iommu.h.
+https://lkml.org/lkml/2019/3/4/529
 
-Cheers,
+Besides the test purpose, per Alex's comments, it could also be a
+good base driver for experimenting with device specific mdev migration.
 
-Will
+Specific interface tested in this proposal:
 
---->8
+*) int mdev_set_iommu_device(struct device *dev,
+				struct device *iommu_device)
+   introduced in the patch as below:
+   "[PATCH v5 6/8] vfio/mdev: Add iommu related member in mdev_device"
 
-The following changes since commit 79a3aaa7b82e3106be97842dedfd8429248896e6:
 
-  Linux 5.1-rc3 (2019-03-31 14:39:29 -0700)
+Links:
+*) Link of "vfio/mdev: IOMMU aware mediated device"
+	https://lwn.net/Articles/780522/
 
-are available in the git repository at:
+Please feel free give your comments.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+Thanks,
+Yi Liu
 
-for you to fetch changes up to bc580b56cb7888d1f09fff8a50270228fb834ae8:
+Change log:
+  v2->v3:
+  - use vfio-mdev-pci instead of vfio-pci-mdev
+  - place the new driver under drivers/vfio/pci while define
+    Kconfig in samples/Kconfig to clarify it is a sample driver
 
-  iommu/arm-smmu: Log CBFRSYNRA register on context fault (2019-04-23 12:23:16 +0100)
+  v1->v2:
+  - instead of adding kernel option to existing vfio-pci
+    module in v1, v2 follows Alex's suggestion to add a
+    separate vfio-pci-mdev module.
+  - new patchset subject: "vfio/pci: wrap pci device as a mediated device"
 
-----------------------------------------------------------------
-Douglas Anderson (1):
-      iommu/arm-smmu: Break insecure users by disabling bypass by default
+Liu, Yi L (3):
+  vfio_pci: split vfio_pci.c into two source files
+  vfio/pci: protect cap/ecap_perm bits alloc/free with atomic op
+  smaples: add vfio-mdev-pci driver
 
-Jean-Philippe Brucker (9):
-      PCI: Move ATS declarations outside of CONFIG_PCI
-      PCI: Add a stub for pci_ats_disabled()
-      ACPI/IORT: Check ATS capability in root complex nodes
-      iommu/arm-smmu-v3: Rename arm_smmu_master_data to arm_smmu_master
-      iommu/arm-smmu-v3: Store SteamIDs in master
-      iommu/arm-smmu-v3: Add a master->domain pointer
-      iommu/arm-smmu-v3: Link domains and devices
-      iommu/arm-smmu-v3: Add support for PCI ATS
-      iommu/arm-smmu-v3: Disable tagged pointers
+ drivers/vfio/pci/Makefile           |    7 +-
+ drivers/vfio/pci/common.c           | 1511 +++++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_mdev_pci.c    |  386 +++++++++
+ drivers/vfio/pci/vfio_pci.c         | 1476 +---------------------------------
+ drivers/vfio/pci/vfio_pci_config.c  |    9 +
+ drivers/vfio/pci/vfio_pci_private.h |   27 +
+ samples/Kconfig                     |   11 +
+ 7 files changed, 1962 insertions(+), 1465 deletions(-)
+ create mode 100644 drivers/vfio/pci/common.c
+ create mode 100644 drivers/vfio/pci/vfio_mdev_pci.c
 
-Vivek Gautam (1):
-      iommu/arm-smmu: Log CBFRSYNRA register on context fault
+-- 
+2.7.4
 
-Will Deacon (1):
-      iommu/arm-smmu-v3: Don't disable SMMU in kdump kernel
-
- drivers/acpi/arm64/iort.c     |  11 ++
- drivers/iommu/Kconfig         |  25 +++
- drivers/iommu/arm-smmu-regs.h |   2 +
- drivers/iommu/arm-smmu-v3.c   | 355 +++++++++++++++++++++++++++++++++---------
- drivers/iommu/arm-smmu.c      |  11 +-
- include/linux/iommu.h         |   4 +
- include/linux/pci.h           |  31 ++--
- 7 files changed, 344 insertions(+), 95 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
