@@ -1,82 +1,48 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 6/6] iommu/ipmmu-vmsa: Add suspend/resume support
-Date: Tue, 23 Apr 2019 17:16:08 +0200
-Message-ID: <CAMuHMdVKr=gbMJzvxe-wRbWxWt8TM8TrVauB8eYaGMz45Ko67w@mail.gmail.com>
-References: <20190403182148.18058-1-geert+renesas@glider.be>
- <20190403182148.18058-7-geert+renesas@glider.be> <20190411083905.fpeicn5ia3ghbphe@verge.net.au>
+From: Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>
+Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
+	files to *.rst
+Date: Tue, 23 Apr 2019 10:30:53 -0600
+Message-ID: <20190423103053.07cf2149@lwn.net>
+References: <cover.1555938375.git.mchehab+samsung@kernel.org>
+	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
+	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
+	<20190423125519.GA7104@redhat.com>
+	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190411083905.fpeicn5ia3ghbphe@verge.net.au>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, Magnus Damm <damm+renesas@opensource.se>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190423130132.GT4038-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Farhan Ali <alifm-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, Halil Pasic <pasic-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Boqun Feng <boqun.feng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Mackall <mpm-VDJrAJ4Gl5ZBDgjK7y7TUQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sean Paul <sean-p7yTbzM4H96eqtR555YLDQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Simon,
+On Tue, 23 Apr 2019 15:01:32 +0200
+Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
 
-On Thu, Apr 11, 2019 at 10:39 AM Simon Horman <horms@verge.net.au> wrote:
-> On Wed, Apr 03, 2019 at 08:21:48PM +0200, Geert Uytterhoeven wrote:
-> > During PSCI system suspend, R-Car Gen3 SoCs are powered down, and all
-> > IPMMU state is lost.  Hence after s2ram, devices wired behind an IPMMU,
-> > and configured to use it, will see their DMA operations hang.
-> >
-> > To fix this, restore all IPMMU contexts, and re-enable all active
-> > micro-TLBs during system resume.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
-> > This patch takes a different approach than the BSP, which implements a
-> > bulk save/restore of all registers during system suspend/resume.
-> >
-> > v2:
-> >   - Drop PSCI checks.
-> > ---
-> >  drivers/iommu/ipmmu-vmsa.c | 47 +++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 46 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index 56e84bcc9532e1ce..408ad0b2591925e0 100644
-> > --- a/drivers/iommu/ipmmu-vmsa.c
-> > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -36,7 +36,10 @@
-> >  #define arm_iommu_detach_device(...) do {} while (0)
-> >  #endif
-> >
-> > -#define IPMMU_CTX_MAX 8U
-> > +#define IPMMU_CTX_MAX                8U
-> > +#define IPMMU_CTX_INVALID    -1
-> > +
-> > +#define IPMMU_UTLB_MAX               48U
-> >
-> >  struct ipmmu_features {
-> >       bool use_ns_alias_offset;
-> > @@ -58,6 +61,7 @@ struct ipmmu_vmsa_device {
-> >       spinlock_t lock;                        /* Protects ctx and domains[] */
-> >       DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-> >       struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
->
-> It might be possible to save a bit of memory on Gen 2 systems by
-> making IPMMU_UTLB_MAX 32 when the driver is compiled for such systems.
+> But yes, I have 0 motivation to learn or abide by rst. It simply doesn't
+> give me anything in return. There is no upside, only worse text files :/
 
-This comment applies to the line below, right?
+So I believe it gives even you one thing in return: documentation that is
+more accessible for both readers and authors.  More readable docs should
+lead to more educated developers who understand the code better.  More
+writable docs will bring more people in to help to improve them.  The
+former effect has been reported in the GPU community, where they say that
+the quality of submissions has improved along with the docs.  The latter
+can be observed in the increased number of people working on the docs
+overall, something that Linus noted in the 5.1-rc1 announcement.
 
-> > +     s8 utlb_ctx[IPMMU_UTLB_MAX];
+Hopefully that's worth something :)
 
-So it's just 16 bytes, not 16 pointers.
+Thanks,
 
-Doing so would reduce struct ipmmu_vmsa_device from 148 to 132 bytes.
-Given that structure is allocated by devm_kzalloc(), and devres alignment
-was increased in commit a66d972465d15b1d ("devres: Align data[] to
-ARCH_KMALLOC_MINALIGN"), I guess it won't make a difference.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+jon
