@@ -1,69 +1,68 @@
-From: Juergen Gross <jgross@suse.com>
-Subject: [PATCH 2/3] xen/swiotlb: simplify range_straddles_page_boundary()
-Date: Tue, 23 Apr 2019 12:54:56 +0200
-Message-ID: <20190423105457.17502-3-jgross@suse.com>
+From: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>
+Subject: [PATCH 3/3] xen/swiotlb: remember having called
+	xen_create_contiguous_region()
+Date: Tue, 23 Apr 2019 12:54:57 +0200
+Message-ID: <20190423105457.17502-4-jgross@suse.com>
 References: <20190423105457.17502-1-jgross@suse.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190423105457.17502-1-jgross@suse.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, sstabellini@kernel.org, Juergen Gross <jgross@suse.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190423105457.17502-1-jgross-IBi9RG/b67k@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-range_straddles_page_boundary() is open coding several macros from
-include/xen/page.h. Use those instead. Additionally there is no need
-to have check_pages_physically_contiguous() as a separate function as
-it is used only once, so merge it into range_straddles_page_boundary().
+Instead of always calling xen_destroy_contiguous_region() in case the
+memory is DMA-able for the used device, do so only in case it has been
+made DMA-able via xen_create_contiguous_region() before.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
+This will avoid a lot of xen_destroy_contiguous_region() calls for
+64-bit capable devices.
+
+As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
+flag of the first allocated page can be used for remembering.
+
+Signed-off-by: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>
 ---
- drivers/xen/swiotlb-xen.c | 28 ++++++----------------------
- 1 file changed, 6 insertions(+), 22 deletions(-)
+ drivers/xen/swiotlb-xen.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 42a3924e6d91..43b6e65ae256 100644
+index 43b6e65ae256..a72f181d8e20 100644
 --- a/drivers/xen/swiotlb-xen.c
 +++ b/drivers/xen/swiotlb-xen.c
-@@ -92,34 +92,18 @@ static inline dma_addr_t xen_virt_to_bus(void *address)
- 	return xen_phys_to_bus(virt_to_phys(address));
+@@ -321,6 +321,7 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+ 			xen_free_coherent_pages(hwdev, size, ret, (dma_addr_t)phys, attrs);
+ 			return NULL;
+ 		}
++		SetPageOwnerPriv1(virt_to_page(ret));
+ 	}
+ 	memset(ret, 0, size);
+ 	return ret;
+@@ -344,9 +345,11 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
+ 	/* Convert the size to actually allocated. */
+ 	size = 1UL << (order + XEN_PAGE_SHIFT);
+ 
+-	if ((dev_addr + size - 1 <= dma_mask) &&
+-	    !WARN_ON(range_straddles_page_boundary(phys, size)))
+-		xen_destroy_contiguous_region(phys, order);
++	if (PageOwnerPriv1(virt_to_page(vaddr))) {
++		if (!WARN_ON(range_straddles_page_boundary(phys, size)))
++			xen_destroy_contiguous_region(phys, order);
++		ClearPageOwnerPriv1(virt_to_page(vaddr));
++	}
+ 
+ 	xen_free_coherent_pages(hwdev, size, vaddr, (dma_addr_t)phys, attrs);
  }
- 
--static int check_pages_physically_contiguous(unsigned long xen_pfn,
--					     unsigned int offset,
--					     size_t length)
-+static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
- {
--	unsigned long next_bfn;
--	int i;
--	int nr_pages;
-+	unsigned long next_bfn, xen_pfn = XEN_PFN_DOWN(p);
-+	unsigned int i, nr_pages = XEN_PFN_UP(xen_offset_in_page(p) + size);
- 
- 	next_bfn = pfn_to_bfn(xen_pfn);
--	nr_pages = (offset + length + XEN_PAGE_SIZE-1) >> XEN_PAGE_SHIFT;
- 
--	for (i = 1; i < nr_pages; i++) {
-+	for (i = 1; i < nr_pages; i++)
- 		if (pfn_to_bfn(++xen_pfn) != ++next_bfn)
--			return 0;
--	}
--	return 1;
--}
-+			return 1;
- 
--static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
--{
--	unsigned long xen_pfn = XEN_PFN_DOWN(p);
--	unsigned int offset = p & ~XEN_PAGE_MASK;
--
--	if (offset + size <= XEN_PAGE_SIZE)
--		return 0;
--	if (check_pages_physically_contiguous(xen_pfn, offset, size))
--		return 0;
--	return 1;
-+	return 0;
- }
- 
- static int is_xen_swiotlb_buffer(dma_addr_t dma_addr)
 -- 
 2.16.4
