@@ -2,71 +2,136 @@ Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7D8C282E1
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 07:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB53C282E3
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 07:36:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2BEC3206BA
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 07:08:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B190520652
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 07:36:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AJKCOfQS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2BEC3206BA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="YVSMCPmN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B190520652
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E1C9AC58;
-	Tue, 23 Apr 2019 07:08:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 58C25C6A;
+	Tue, 23 Apr 2019 07:36:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 47EABC3A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E1A19C37
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 07:08:26 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 05CE6F4
+	Tue, 23 Apr 2019 07:36:31 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CCDDFF4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 07:08:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=VjRQSeCu/MmbgpwmU6TxjyQsYSPXCIK8gZfKVhcf1cU=;
-	b=AJKCOfQSyIEDeMXFpdO2cAYp2
-	oZz0VUyQsTLqRK3AeXuClr5XJSD/0iAjcVpjQtnAWzRxTh8Dadag8yXB2/5Xu/Rw4tlzVd6cyorP8
-	eaVHfMCZZJGRFxsH6/PNsHJwIkxdIVtKomaO3cU6IJXHjB1hY8L2GxE+g0ciNUG6z9iOYO6aWRlnp
-	+YMpH9FnFihhxlEVk6sUCMOLV3+HjDgheYrKRVei6K+BIylDeGwpIxVH80hoAEWPXrQyA+BZTxJfx
-	CXpLxImW2bpxE7H/EF5DOzNxB8+8QRMOAIyKzhqjEpHrFMYQrOt9jEpL/Bpde+C896Jt1w6WsOZ9V
-	D1AaMvgnw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red
-	Hat Linux)) id 1hIpXT-0004qy-DK; Tue, 23 Apr 2019 07:08:23 +0000
-Date: Tue, 23 Apr 2019 00:08:23 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Julien Grall <julien.grall@arm.com>
-Subject: Re: [PATCH 2/7] iommu/dma-iommu: Split iommu_dma_map_msi_msg in two
-	parts
-Message-ID: <20190423070823.GA12114@infradead.org>
-References: <20190418172611.21561-1-julien.grall@arm.com>
-	<20190418172611.21561-3-julien.grall@arm.com>
+	Tue, 23 Apr 2019 07:36:30 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id d55so11712250ede.0
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 23 Apr 2019 00:36:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ffwll.ch; s=google;
+	h=sender:date:from:to:cc:subject:message-id:mail-followup-to
+	:references:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=bKYaajiak7Zq/jXYNZsg7tprgawT9ZLW0GYZ4u8T1/U=;
+	b=YVSMCPmNBiDoDNpcTyNizSQpeFtdskx5nzotOQdI+PM4xCSjWZehbeKERXQ66dUsNf
+	TXHm1tfsqbgr0menNDTyY6pXffkwQK1wj5A4gW69fvoOwQQDYM4lc/5v3tUnIgZJ5xdQ
+	qbZCJtt8BK/ZddIoqnV348CMM9PeIofFwaJu4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+	:mail-followup-to:references:mime-version:content-disposition
+	:in-reply-to:user-agent;
+	bh=bKYaajiak7Zq/jXYNZsg7tprgawT9ZLW0GYZ4u8T1/U=;
+	b=hZl1MKORJ8tZBAg56FBBprZhAJML6X5E8X03dH34fEeGtgnSl5upU7kG5UDFptUhxF
+	m5ODKv28gnpRYWC91molJZUcVGwuVRpqzPlYIZipR2vZHLj2hEzHBAUmQAdMI92ZrVLd
+	4D8SHZ6Uvx8hS6E8D3R1R4KLtbz4caBMmWOYCKCuG+Xli1LizKzL/92I/4fphBPERZ3a
+	0hGP+6h0zZLhAIuokk072y39FvxILEpfcbrXpXJW7WIhwP2/rES/sAhr//ekODILWHAv
+	imco3+TkyhP6JnVlG6GG0MObzE46L1dqjJqM5ZPnOrpIa3CCjEVDlVha/ylE9M1wJyzP
+	uBjw==
+X-Gm-Message-State: APjAAAUGKBZoxaYyd4F70igmw+Ye+HCamHZBnOBVHuv1pq9fiVs3xmoo
+	GSDQTp7Das6ZuGjD1QFqh5il5Q==
+X-Google-Smtp-Source: APXvYqyfiVOQGBzi0xFFlvW7+u0SliHoY3BhrSH7C0jNdR2HDDmW0RiEkJeC4fVSS0YpOwtF9jGgvA==
+X-Received: by 2002:a05:6402:6d9:: with SMTP id
+	n25mr15163695edy.288.1556004989447; 
+	Tue, 23 Apr 2019 00:36:29 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:569e:0:3106:d637:d723:e855])
+	by smtp.gmail.com with ESMTPSA id
+	l18sm1712508edc.33.2019.04.23.00.36.27
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Tue, 23 Apr 2019 00:36:28 -0700 (PDT)
+Date: Tue, 23 Apr 2019 09:36:25 +0200
+From: Daniel Vetter <daniel@ffwll.ch>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch V2 16/29] drm: Simplify stacktrace handling
+Message-ID: <20190423073625.GZ13337@phenom.ffwll.local>
+Mail-Followup-To: Thomas Gleixner <tglx@linutronix.de>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+	Andy Lutomirski <luto@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Alexander Potapenko <glider@google.com>,
+	intel-gfx@lists.freedesktop.org,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Pekka Enberg <penberg@kernel.org>, linux-mm@kvack.org,
+	David Rientjes <rientjes@google.com>,
+	Christoph Lameter <cl@linux.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	kasan-dev@googlegroups.com, Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	iommu@lists.linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
+	Josef Bacik <josef@toxicpanda.com>, linux-btrfs@vger.kernel.org,
+	dm-devel@redhat.com, Mike Snitzer <snitzer@redhat.com>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org
+References: <20190418084119.056416939@linutronix.de>
+	<20190418084254.549410214@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190418172611.21561-3-julien.grall@arm.com>
-User-Agent: Mutt/1.9.2 (2017-12-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: jason@lakedaemon.net, douliyangs@gmail.com, marc.zyngier@arm.com,
-	robin.murphy@arm.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, miquel.raynal@bootlin.com,
-	tglx@linutronix.de, logang@deltatee.com, bigeasy@linutronix.de,
-	linux-rt-users@vger.kernel.org
+In-Reply-To: <20190418084254.549410214@linutronix.de>
+X-Operating-System: Linux phenom 4.19.0-1-amd64 
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
+	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
+	x86@kernel.org, kasan-dev@googlegroups.com,
+	David Rientjes <rientjes@google.com>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Josef Bacik <josef@toxicpanda.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Andy Lutomirski <luto@kernel.org>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, David Sterba <dsterba@suse.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	Josh Poimboeuf <jpoimboe@redhat.com>, Chris Mason <clm@fb.com>,
+	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
+	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,39 +148,165 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423070823.p7IiCsbgQDt-7TJ6wy118kdf2suWmZaTtJMU5MPs37U@z>
+Message-ID: <20190423073625.Org2rRyO_ULEEGqpCZDw9pIq1m0o_zGkrTSN6KrAwMI@z>
 
-On Thu, Apr 18, 2019 at 06:26:06PM +0100, Julien Grall wrote:
-> +int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+On Thu, Apr 18, 2019 at 10:41:35AM +0200, Thomas Gleixner wrote:
+> Replace the indirection through struct stack_trace by using the storage
+> array based interfaces.
+> 
+> The original code in all printing functions is really wrong. It allocates a
+> storage array on stack which is unused because depot_fetch_stack() does not
+> store anything in it. It overwrites the entries pointer in the stack_trace
+> struct so it points to the depot storage.
+
+Thanks for cleaning this up for us!
+
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: intel-gfx@lists.freedesktop.org
+> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+
+for merging through whatever tree is convenient for you (or tell me I
+should pick it up into drm-next when the prep work landed).
+
+Cheers, Daniel
+
+> ---
+>  drivers/gpu/drm/drm_mm.c                |   22 +++++++---------------
+>  drivers/gpu/drm/i915/i915_vma.c         |   11 ++++-------
+>  drivers/gpu/drm/i915/intel_runtime_pm.c |   21 +++++++--------------
+>  3 files changed, 18 insertions(+), 36 deletions(-)
+> 
+> --- a/drivers/gpu/drm/drm_mm.c
+> +++ b/drivers/gpu/drm/drm_mm.c
+> @@ -106,22 +106,19 @@
+>  static noinline void save_stack(struct drm_mm_node *node)
 >  {
-> +	struct device *dev = msi_desc_to_dev(desc);
->  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->  	struct iommu_dma_cookie *cookie;
->  	unsigned long flags;
+>  	unsigned long entries[STACKDEPTH];
+> -	struct stack_trace trace = {
+> -		.entries = entries,
+> -		.max_entries = STACKDEPTH,
+> -		.skip = 1
+> -	};
+> +	unsigned int n;
 >  
-> +	if (!domain || !domain->iova_cookie) {
-> +		desc->iommu_cookie = NULL;
-> +		return 0;
-> +	}
+> -	save_stack_trace(&trace);
+> +	n = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
 >  
->  	cookie = domain->iova_cookie;
+>  	/* May be called under spinlock, so avoid sleeping */
+> -	node->stack = depot_save_stack(&trace, GFP_NOWAIT);
+> +	node->stack = stack_depot_save(entries, n, GFP_NOWAIT);
+>  }
 >  
-> @@ -908,10 +908,33 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
->  	 * of an MSI from within an IPI handler.
->  	 */
->  	spin_lock_irqsave(&cookie->msi_lock, flags);
-> +	desc->iommu_cookie = iommu_dma_get_msi_page(dev, msi_addr, domain);
->  	spin_unlock_irqrestore(&cookie->msi_lock, flags);
+>  static void show_leaks(struct drm_mm *mm)
+>  {
+>  	struct drm_mm_node *node;
+> -	unsigned long entries[STACKDEPTH];
+> +	unsigned long *entries;
+> +	unsigned int nr_entries;
+>  	char *buf;
 >  
-> +	return (desc->iommu_cookie) ? 0 : -ENOMEM;
+>  	buf = kmalloc(BUFSZ, GFP_KERNEL);
+> @@ -129,19 +126,14 @@ static void show_leaks(struct drm_mm *mm
+>  		return;
+>  
+>  	list_for_each_entry(node, drm_mm_nodes(mm), node_list) {
+> -		struct stack_trace trace = {
+> -			.entries = entries,
+> -			.max_entries = STACKDEPTH
+> -		};
+> -
+>  		if (!node->stack) {
+>  			DRM_ERROR("node [%08llx + %08llx]: unknown owner\n",
+>  				  node->start, node->size);
+>  			continue;
+>  		}
+>  
+> -		depot_fetch_stack(node->stack, &trace);
+> -		snprint_stack_trace(buf, BUFSZ, &trace, 0);
+> +		nr_entries = stack_depot_fetch(node->stack, &entries);
+> +		stack_trace_snprint(buf, BUFSZ, entries, nr_entries, 0);
+>  		DRM_ERROR("node [%08llx + %08llx]: inserted at\n%s",
+>  			  node->start, node->size, buf);
+>  	}
+> --- a/drivers/gpu/drm/i915/i915_vma.c
+> +++ b/drivers/gpu/drm/i915/i915_vma.c
+> @@ -36,11 +36,8 @@
+>  
+>  static void vma_print_allocator(struct i915_vma *vma, const char *reason)
+>  {
+> -	unsigned long entries[12];
+> -	struct stack_trace trace = {
+> -		.entries = entries,
+> -		.max_entries = ARRAY_SIZE(entries),
+> -	};
+> +	unsigned long *entries;
+> +	unsigned int nr_entries;
+>  	char buf[512];
+>  
+>  	if (!vma->node.stack) {
+> @@ -49,8 +46,8 @@ static void vma_print_allocator(struct i
+>  		return;
+>  	}
+>  
+> -	depot_fetch_stack(vma->node.stack, &trace);
+> -	snprint_stack_trace(buf, sizeof(buf), &trace, 0);
+> +	nr_entries = stack_depot_fetch(vma->node.stack, &entries);
+> +	stack_trace_snprint(buf, sizeof(buf), entries, nr_entries, 0);
+>  	DRM_DEBUG_DRIVER("vma.node [%08llx + %08llx] %s: inserted at %s\n",
+>  			 vma->node.start, vma->node.size, reason, buf);
+>  }
+> --- a/drivers/gpu/drm/i915/intel_runtime_pm.c
+> +++ b/drivers/gpu/drm/i915/intel_runtime_pm.c
+> @@ -60,27 +60,20 @@
+>  static noinline depot_stack_handle_t __save_depot_stack(void)
+>  {
+>  	unsigned long entries[STACKDEPTH];
+> -	struct stack_trace trace = {
+> -		.entries = entries,
+> -		.max_entries = ARRAY_SIZE(entries),
+> -		.skip = 1,
+> -	};
+> +	unsigned int n;
+>  
+> -	save_stack_trace(&trace);
+> -	return depot_save_stack(&trace, GFP_NOWAIT | __GFP_NOWARN);
+> +	n = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+> +	return stack_depot_save(entries, n, GFP_NOWAIT | __GFP_NOWARN);
+>  }
+>  
+>  static void __print_depot_stack(depot_stack_handle_t stack,
+>  				char *buf, int sz, int indent)
+>  {
+> -	unsigned long entries[STACKDEPTH];
+> -	struct stack_trace trace = {
+> -		.entries = entries,
+> -		.max_entries = ARRAY_SIZE(entries),
+> -	};
+> +	unsigned long *entries;
+> +	unsigned int nr_entries;
+>  
+> -	depot_fetch_stack(stack, &trace);
+> -	snprint_stack_trace(buf, sz, &trace, indent);
+> +	nr_entries = stack_depot_fetch(stack, &entries);
+> +	stack_trace_snprint(buf, sz, entries, nr_entries, indent);
+>  }
+>  
+>  static void init_intel_runtime_pm_wakeref(struct drm_i915_private *i915)
+> 
+> 
 
-No need for the braces.  Also I personally find a:
-
-	if (!desc->iommu_cookie)
-		return -ENOMEM;
-	return 0;
-
-much more readable, but that might just be personal preference.
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
