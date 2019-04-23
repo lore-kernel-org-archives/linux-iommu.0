@@ -2,135 +2,104 @@ Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E06C10F14
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 13:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E46C10F14
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 13:42:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7DDC920693
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 13:21:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7DDC920693
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1AEF120693
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 13:42:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AEF120693
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3E3DD1357;
-	Tue, 23 Apr 2019 13:21:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 105BB136C;
+	Tue, 23 Apr 2019 13:42:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1B8F21352
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4DE041369
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 13:21:15 +0000 (UTC)
+	Tue, 23 Apr 2019 13:42:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7C836786
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D7E38F4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 13:21:14 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
-	[10.5.11.22])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id BD0408830E;
-	Tue, 23 Apr 2019 13:21:12 +0000 (UTC)
-Received: from localhost (unknown [10.18.25.174])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id A27E11001E8C;
-	Tue, 23 Apr 2019 13:21:01 +0000 (UTC)
-Date: Tue, 23 Apr 2019 09:21:00 -0400
-From: Mike Snitzer <snitzer@redhat.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
-	files to *.rst
-Message-ID: <20190423132100.GB7132@redhat.com>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
-	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
-	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
-	<20190423125519.GA7104@redhat.com>
-	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
+	Tue, 23 Apr 2019 13:42:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 73B48A78;
+	Tue, 23 Apr 2019 06:42:25 -0700 (PDT)
+Received: from [10.1.196.92] (usa-sjc-imap-foss1.foss.arm.com [10.72.51.249])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
+	483363F238; Tue, 23 Apr 2019 06:42:20 -0700 (PDT)
+Subject: Re: [PATCH 1/7] genirq/msi: Add a new field in msi_desc to store an
+	IOMMU cookie
+To: Robin Murphy <robin.murphy@arm.com>, Julien Grall <julien.grall@arm.com>, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <20190418172611.21561-1-julien.grall@arm.com>
+	<20190418172611.21561-2-julien.grall@arm.com>
+	<7e77331c-4adf-5bb4-0c23-4d01a6ac5ab4@arm.com>
+	<1bcdb72f-2116-756b-b74d-a48f89870782@arm.com>
+	<48d14d10-0484-a7dd-cd84-a933158906ff@arm.com>
+	<468df11c-fe2a-2584-7306-185531653331@arm.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marc.zyngier@arm.com; prefer-encrypt=mutual; keydata=
+	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
+Organization: ARM Ltd
+Message-ID: <6e9fb7c6-ca24-8790-967e-6e01cb6f81da@arm.com>
+Date: Tue, 23 Apr 2019 14:42:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190423130132.GT4038@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.28]);
-	Tue, 23 Apr 2019 13:21:13 +0000 (UTC)
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
-	Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
-	Jaroslav Kysela <perex@perex.cz>,
-	Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-	linux-sh@vger.kernel.org, James Morris <jmorris@namei.org>,
-	Halil Pasic <pasic@linux.ibm.com>, tboot-devel@lists.sourceforge.net,
-	Alan Stern <stern@rowland.harvard.edu>,
-	openipmi-developer@lists.sourceforge.net,
-	Guenter Roeck <linux@roeck-us.net>, Boqun Feng <boqun.feng@gmail.com>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Matt Mackall <mpm@selenic.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Sean Paul <sean@poorly.run>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-crypto@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>, linux-fbdev@vger.kernel.org,
-	linux-ia64@vger.kernel.org,
-	Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-	David Airlie <airlied@linux.ie>,
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-	dm-devel@redhat.com, Harry Wei <harryxiyou@gmail.com>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Alasdair Kergon <agk@redhat.com>, linux-s390@vger.kernel.org,
-	Alex Shi <alex.shi@linux.alibaba.com>,
-	Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	linux-watchdog@vger.kernel.org, Corey Minyard <minyard@acm.org>,
-	Mauro Carvalho Chehab <mchehab@infradead.org>,
-	linaro-mm-sig@lists.linaro.org, linux-gpio@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
-	Tony Luck <tony.luck@intel.com>, Cornelia Huck <cohuck@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Andrea Parri <andrea.parri@amarulasolutions.com>,
-	linux-pci@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-	Heiko Carstens <heiko.carstens@de.ibm.com>,
-	platform-driver-x86@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@linux.ibm.com>,
-	Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>,
-	Emese Revfy <re.emese@gmail.com>, Darren Hart <dvhart@infradead.org>,
-	Jade Alglave <j.alglave@ucl.ac.uk>, "Serge E. Hallyn" <serge@hallyn.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Ning Sun <ning.sun@intel.com>, Borislav Petkov <bp@alien8.de>,
-	Luc Maranget <luc.maranget@inria.fr>,
-	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-	Guan Xuetao <gxt@pku.edu.cn>, linux-parisc@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Stuart Hayes <stuart.w.hayes@gmail.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-	Rich Felker <dalias@libc.org>, kvm@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@bootlin.com>,
-	Jerry Hoemann <jerry.hoemann@hpe.com>,
-	David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
-	Kirti Wankhede <kwankhede@nvidia.com>, kernel-hardening@lists.openwall.com,
-	"H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>, x86@kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	Ingo Molnar <mingo@redhat.com>, devicetree@vger.kernel.org,
-	Daniel Lustig <dlustig@nvidia.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	linux-block@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
-	linux-security-module@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Robin Murphy <robin.murphy@arm.com>, Andy Shevchenko <andy@infradead.org>
+In-Reply-To: <468df11c-fe2a-2584-7306-185531653331@arm.com>
+Content-Language: en-US
+Cc: jason@lakedaemon.net, douliyangs@gmail.com, miquel.raynal@bootlin.com,
+	tglx@linutronix.de, logang@deltatee.com, bigeasy@linutronix.de,
+	linux-rt-users@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -147,43 +116,79 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423132100.1pgPr3finDzA1yChFSjUqj6-AinBoJV0YCnS7VSx530@z>
+Message-ID: <20190423134217.zSAjWth7gMBuprW6DkZQRPFJIwDKg0WT6JCuw4NBHGc@z>
 
-On Tue, Apr 23 2019 at  9:01am -0400,
-Peter Zijlstra <peterz@infradead.org> wrote:
-
-> On Tue, Apr 23, 2019 at 08:55:19AM -0400, Mike Snitzer wrote:
-> > On Tue, Apr 23 2019 at  4:31am -0400,
-> > Peter Zijlstra <peterz@infradead.org> wrote:
-> > 
-> > > On Mon, Apr 22, 2019 at 10:27:45AM -0300, Mauro Carvalho Chehab wrote:
-> > > 
-> > > >  .../{atomic_bitops.txt => atomic_bitops.rst}  |  2 +
-> > > 
-> > > What's happend to atomic_t.txt, also NAK, I still occationally touch
-> > > these files.
-> > 
-> > Seems Mauro's point is in the future we need to touch these .rst files
-> > in terms of ReST compatible changes.
-> > 
-> > I'm dreading DM documentation changes in the future.. despite Mauro and
-> > Jon Corbet informing me that ReST is simple, etc.
+On 23/04/2019 14:19, Robin Murphy wrote:
+> On 23/04/2019 12:46, Marc Zyngier wrote:
+>> On 23/04/2019 11:51, Julien Grall wrote:
+>>> On 4/23/19 11:23 AM, Marc Zyngier wrote:
+>>>> Hi Julien,
+>>>
+>>> Hi Marc,
+>>>
+>>>> On 18/04/2019 18:26, Julien Grall wrote:
+>>>>> When an MSI doorbell is located downstream of an IOMMU, it is required
+>>>>> to swizzle the physical address with an appropriately-mapped IOVA for any
+>>>>> device attached to one of our DMA ops domain.
+>>>>>
+>>>>> At the moment, the allocation of the mapping may be done when composing
+>>>>> the message. However, the composing may be done in non-preemtible
+>>>>> context while the allocation requires to be called from preemptible
+>>>>> context.
+>>>>>
+>>>>> A follow-up patch will split the current logic in two functions
+>>>>> requiring to keep an IOMMU cookie per MSI.
+>>>>>
+>>>>> This patch introduces a new field in msi_desc to store an IOMMU cookie
+>>>>> when CONFIG_IOMMU_DMA is selected.
+>>>>>
+>>>>> Signed-off-by: Julien Grall <julien.grall@arm.com>
+>>>>> ---
+>>>>>    include/linux/msi.h | 3 +++
+>>>>>    1 file changed, 3 insertions(+)
+>>>>>
+>>>>> diff --git a/include/linux/msi.h b/include/linux/msi.h
+>>>>> index 7e9b81c3b50d..d7907feef1bb 100644
+>>>>> --- a/include/linux/msi.h
+>>>>> +++ b/include/linux/msi.h
+>>>>> @@ -77,6 +77,9 @@ struct msi_desc {
+>>>>>    	struct device			*dev;
+>>>>>    	struct msi_msg			msg;
+>>>>>    	struct irq_affinity_desc	*affinity;
+>>>>> +#ifdef CONFIG_IOMMU_DMA
+>>>>> +	const void			*iommu_cookie;
+>>>>> +#endif
+>>>>>    
+>>>>>    	union {
+>>>>>    		/* PCI MSI/X specific data */
+>>>>>
+>>>>
+>>>> Given that this is the only member in this structure that is dependent
+>>>> on a config option, you could also add a couple of accessors that would
+>>>> do nothing when IOMMU_DMA is not selected (and use that in the DMA code).
+>>>
+>>> I haven't seen any use of the helpers so far because the DMA code is
+>>> also protected by IOMMU_DMA.
+>>>
+>>> I can add the helpers in the next version if you see any use outside of
+>>> the DMA code.
+>>
+>> There may not be any user user yet, but I'd surely like to see the
+>> accessors. This isn't very different from the stub functions you add in
+>> patch #2.
 > 
-> Well, it _can_ be simple, I've seen examples of rst that were not far
-> from generated HTML contents. And I must give Jon credit for not
-> accepting that atrocious crap.
-> 
-> But yes, I have 0 motivation to learn or abide by rst. It simply doesn't
-> give me anything in return. There is no upside, only worse text files :/
+> If you foresee this being useful in general, do you reckon it would be 
+> worth decoupling it under its own irqchip-layer Kconfig which can then 
+> be selected by IOMMU_DMA?
 
-Right, but these changes aren't meant for our benefit.  They are for
-users who get cleaner web accessible Linux kernel docs.  Seems the
-decision has been made that the users' benefit, and broader
-modernization of Linux docs, outweighs the inconvenience for engineers
-who maintain the content of said documentation.
+I think that'd be a useful thing to do, as most architectures do not
+require this dynamic mapping of MSIs.
 
-This kind of thing happens a lot these days: pile on engineers, they can
-take it :/
+Thanks,
+
+	M.
+-- 
+Jazz is not dead. It just smells funny...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
