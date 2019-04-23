@@ -1,12 +1,11 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [GIT PULL] iommu/arm-smmu: Updates for 5.2
-Date: Wed, 24 Apr 2019 12:52:52 +0100
-Message-ID: <20190424115252.GB14829@fuggles.cambridge.arm.com>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [RFC v3 0/3] vfio_pci: wrap pci device as a mediated device
+Date: Tue, 23 Apr 2019 20:14:37 +0800
+Message-ID: <1556021680-2911-1-git-send-email-yi.l.liu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,63 +15,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: marc.w.gonzalez-GANU6spQydw@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+This patchset aims to add a vfio-pci-like meta driver as a demo
+user of the vfio changes introduced in "vfio/mdev: IOMMU aware
+mediated device" patchset from Baolu Lu.
 
-Please can you pull these ARM SMMU updates for 5.2? The highlight is ATS
-support in the SMMUv3 driver from Jean-Philippe. I have collected the
-appropriate Acks from the PCI and IORT sides.
+Previous RFC v1 has given two proposals and the discussion could
+be found in following link. Per the comments, this patchset adds
+a separate driver named vfio-mdev-pci. It is a sample driver, but
+loactes in drivers/vfio/pci due to code sharing consideration.
+The corresponding Kconfig definition is in samples/Kconfig.
 
-There is a trivial conflict with your api-features branch due to the diff
-context in linux/iommu.h.
+https://lkml.org/lkml/2019/3/4/529
 
-Cheers,
+Besides the test purpose, per Alex's comments, it could also be a
+good base driver for experimenting with device specific mdev migration.
 
-Will
+Specific interface tested in this proposal:
 
---->8
+*) int mdev_set_iommu_device(struct device *dev,
+				struct device *iommu_device)
+   introduced in the patch as below:
+   "[PATCH v5 6/8] vfio/mdev: Add iommu related member in mdev_device"
 
-The following changes since commit 79a3aaa7b82e3106be97842dedfd8429248896e6:
 
-  Linux 5.1-rc3 (2019-03-31 14:39:29 -0700)
+Links:
+*) Link of "vfio/mdev: IOMMU aware mediated device"
+	https://lwn.net/Articles/780522/
 
-are available in the git repository at:
+Please feel free give your comments.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+Thanks,
+Yi Liu
 
-for you to fetch changes up to bc580b56cb7888d1f09fff8a50270228fb834ae8:
+Change log:
+  v2->v3:
+  - use vfio-mdev-pci instead of vfio-pci-mdev
+  - place the new driver under drivers/vfio/pci while define
+    Kconfig in samples/Kconfig to clarify it is a sample driver
 
-  iommu/arm-smmu: Log CBFRSYNRA register on context fault (2019-04-23 12:23:16 +0100)
+  v1->v2:
+  - instead of adding kernel option to existing vfio-pci
+    module in v1, v2 follows Alex's suggestion to add a
+    separate vfio-pci-mdev module.
+  - new patchset subject: "vfio/pci: wrap pci device as a mediated device"
 
-----------------------------------------------------------------
-Douglas Anderson (1):
-      iommu/arm-smmu: Break insecure users by disabling bypass by default
+Liu, Yi L (3):
+  vfio_pci: split vfio_pci.c into two source files
+  vfio/pci: protect cap/ecap_perm bits alloc/free with atomic op
+  smaples: add vfio-mdev-pci driver
 
-Jean-Philippe Brucker (9):
-      PCI: Move ATS declarations outside of CONFIG_PCI
-      PCI: Add a stub for pci_ats_disabled()
-      ACPI/IORT: Check ATS capability in root complex nodes
-      iommu/arm-smmu-v3: Rename arm_smmu_master_data to arm_smmu_master
-      iommu/arm-smmu-v3: Store SteamIDs in master
-      iommu/arm-smmu-v3: Add a master->domain pointer
-      iommu/arm-smmu-v3: Link domains and devices
-      iommu/arm-smmu-v3: Add support for PCI ATS
-      iommu/arm-smmu-v3: Disable tagged pointers
+ drivers/vfio/pci/Makefile           |    7 +-
+ drivers/vfio/pci/common.c           | 1511 +++++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_mdev_pci.c    |  386 +++++++++
+ drivers/vfio/pci/vfio_pci.c         | 1476 +---------------------------------
+ drivers/vfio/pci/vfio_pci_config.c  |    9 +
+ drivers/vfio/pci/vfio_pci_private.h |   27 +
+ samples/Kconfig                     |   11 +
+ 7 files changed, 1962 insertions(+), 1465 deletions(-)
+ create mode 100644 drivers/vfio/pci/common.c
+ create mode 100644 drivers/vfio/pci/vfio_mdev_pci.c
 
-Vivek Gautam (1):
-      iommu/arm-smmu: Log CBFRSYNRA register on context fault
-
-Will Deacon (1):
-      iommu/arm-smmu-v3: Don't disable SMMU in kdump kernel
-
- drivers/acpi/arm64/iort.c     |  11 ++
- drivers/iommu/Kconfig         |  25 +++
- drivers/iommu/arm-smmu-regs.h |   2 +
- drivers/iommu/arm-smmu-v3.c   | 355 +++++++++++++++++++++++++++++++++---------
- drivers/iommu/arm-smmu.c      |  11 +-
- include/linux/iommu.h         |   4 +
- include/linux/pci.h           |  31 ++--
- 7 files changed, 344 insertions(+), 95 deletions(-)
+-- 
+2.7.4
