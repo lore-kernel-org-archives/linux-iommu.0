@@ -1,48 +1,38 @@
-From: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH next 13/25] iommu/omap: Use dev_get_drvdata()
-Date: Tue, 23 Apr 2019 15:50:08 +0800
-Message-ID: <20190423075020.173734-14-wangkefeng.wang@huawei.com>
-References: <20190423075020.173734-1-wangkefeng.wang@huawei.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 08/10] iommu/vt-d: Check whether device requires bounce
+ buffer
+Date: Tue, 23 Apr 2019 15:35:51 +0800
+Message-ID: <e11489cf-87cc-a956-7c6c-ffdd26a4e3ec@linux.intel.com>
+References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
+ <20190421011719.14909-9-baolu.lu@linux.intel.com>
+ <20190422164755.GC31181@lst.de>
+ <76e35340-32c3-ee0d-5232-bd8800248402@linux.intel.com>
+ <20190423060858.GA12762@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190423075020.173734-1-wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190423060858.GA12762@lst.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Using dev_get_drvdata directly.
+Hi,
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Signed-off-by: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/omap-iommu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On 4/23/19 2:08 PM, Christoph Hellwig wrote:
+>>> Again, this and the option should not be in a specific iommu driver.
+>>>
+>>
+>> The option of whether bounce is ignored should be in the specific iommu
+>> driver.
+> 
+> Why?  As a user I could not care less which IOMMU driver my particular
+> system uses.
+> 
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index d2fb347aa4ff..b16c711fc5fc 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -38,8 +38,7 @@
- 
- static const struct iommu_ops omap_iommu_ops;
- 
--#define to_iommu(dev)							\
--	((struct omap_iommu *)platform_get_drvdata(to_platform_device(dev)))
-+#define to_iommu(dev)	((struct omap_iommu *)dev_get_drvdata(dev))
- 
- /* bitmap of the page sizes currently supported */
- #define OMAP_IOMMU_PGSIZES	(SZ_4K | SZ_64K | SZ_1M | SZ_16M)
--- 
-2.20.1
+Looks reasonable to me. Let's listen to more opinions.
+
+Best regards,
+Lu Baolu
