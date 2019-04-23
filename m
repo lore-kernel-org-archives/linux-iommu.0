@@ -1,117 +1,96 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [patch V2 16/29] drm: Simplify stacktrace handling
-Date: Tue, 23 Apr 2019 09:36:25 +0200
-Message-ID: <20190423073625.GZ13337@phenom.ffwll.local>
-References: <20190418084119.056416939@linutronix.de>
- <20190418084254.549410214@linutronix.de>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+Date: Tue, 23 Apr 2019 15:32:16 +0800
+Message-ID: <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
+References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
+ <20190421011719.14909-3-baolu.lu@linux.intel.com>
+ <20190422164555.GA31181@lst.de>
+ <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
+ <20190423061232.GB12762@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190418084254.549410214@linutronix.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>, Catalin Marinas <catalin.marinas@arm.com>, dri-devel@lists.freedesktop.org, linux-mm@kvack.org, dm-devel@redhat.com, Alexander Potapenko <glider@google.com>, Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>, Alasdair Kergon <agk@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arch@vger.kernel.org, x86@kernel.org, kasan-dev@googlegroups.com, David Rientjes <rientjes@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org, Johannes Thumshirn <jthumshirn@suse.de>, Akinobu Mita <akinobu.mita@gmail.com>, Josef Bacik <josef@toxicpanda.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Steven Rostedt <rostedt@goodmis.org>, Andy Lutomirski <luto@kernel.org>, David Sterba <dsterba@suse.com>, Dmitry Vyukov <dvyukov@g>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190423061232.GB12762@lst.de>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBBcHIgMTgsIDIwMTkgYXQgMTA6NDE6MzVBTSArMDIwMCwgVGhvbWFzIEdsZWl4bmVy
-IHdyb3RlOgo+IFJlcGxhY2UgdGhlIGluZGlyZWN0aW9uIHRocm91Z2ggc3RydWN0IHN0YWNrX3Ry
-YWNlIGJ5IHVzaW5nIHRoZSBzdG9yYWdlCj4gYXJyYXkgYmFzZWQgaW50ZXJmYWNlcy4KPiAKPiBU
-aGUgb3JpZ2luYWwgY29kZSBpbiBhbGwgcHJpbnRpbmcgZnVuY3Rpb25zIGlzIHJlYWxseSB3cm9u
-Zy4gSXQgYWxsb2NhdGVzIGEKPiBzdG9yYWdlIGFycmF5IG9uIHN0YWNrIHdoaWNoIGlzIHVudXNl
-ZCBiZWNhdXNlIGRlcG90X2ZldGNoX3N0YWNrKCkgZG9lcyBub3QKPiBzdG9yZSBhbnl0aGluZyBp
-biBpdC4gSXQgb3ZlcndyaXRlcyB0aGUgZW50cmllcyBwb2ludGVyIGluIHRoZSBzdGFja190cmFj
-ZQo+IHN0cnVjdCBzbyBpdCBwb2ludHMgdG8gdGhlIGRlcG90IHN0b3JhZ2UuCgpUaGFua3MgZm9y
-IGNsZWFuaW5nIHRoaXMgdXAgZm9yIHVzIQoKPiBTaWduZWQtb2ZmLWJ5OiBUaG9tYXMgR2xlaXhu
-ZXIgPHRnbHhAbGludXRyb25peC5kZT4KPiBDYzogaW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9w
-Lm9yZwo+IENjOiBKb29uYXMgTGFodGluZW4gPGpvb25hcy5sYWh0aW5lbkBsaW51eC5pbnRlbC5j
-b20+Cj4gQ2M6IE1hYXJ0ZW4gTGFua2hvcnN0IDxtYWFydGVuLmxhbmtob3JzdEBsaW51eC5pbnRl
-bC5jb20+Cj4gQ2M6IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKPiBDYzogRGF2aWQg
-QWlybGllIDxhaXJsaWVkQGxpbnV4LmllPgo+IENjOiBKYW5pIE5pa3VsYSA8amFuaS5uaWt1bGFA
-bGludXguaW50ZWwuY29tPgo+IENjOiBEYW5pZWwgVmV0dGVyIDxkYW5pZWxAZmZ3bGwuY2g+Cj4g
-Q2M6IFJvZHJpZ28gVml2aSA8cm9kcmlnby52aXZpQGludGVsLmNvbT4KCkFja2VkLWJ5OiBEYW5p
-ZWwgVmV0dGVyIDxkYW5pZWwudmV0dGVyQGZmd2xsLmNoPgoKZm9yIG1lcmdpbmcgdGhyb3VnaCB3
-aGF0ZXZlciB0cmVlIGlzIGNvbnZlbmllbnQgZm9yIHlvdSAob3IgdGVsbCBtZSBJCnNob3VsZCBw
-aWNrIGl0IHVwIGludG8gZHJtLW5leHQgd2hlbiB0aGUgcHJlcCB3b3JrIGxhbmRlZCkuCgpDaGVl
-cnMsIERhbmllbAoKPiAtLS0KPiAgZHJpdmVycy9ncHUvZHJtL2RybV9tbS5jICAgICAgICAgICAg
-ICAgIHwgICAyMiArKysrKysrLS0tLS0tLS0tLS0tLS0tCj4gIGRyaXZlcnMvZ3B1L2RybS9pOTE1
-L2k5MTVfdm1hLmMgICAgICAgICB8ICAgMTEgKysrKy0tLS0tLS0KPiAgZHJpdmVycy9ncHUvZHJt
-L2k5MTUvaW50ZWxfcnVudGltZV9wbS5jIHwgICAyMSArKysrKysrLS0tLS0tLS0tLS0tLS0KPiAg
-MyBmaWxlcyBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCAzNiBkZWxldGlvbnMoLSkKPiAKPiAt
-LS0gYS9kcml2ZXJzL2dwdS9kcm0vZHJtX21tLmMKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZHJt
-X21tLmMKPiBAQCAtMTA2LDIyICsxMDYsMTkgQEAKPiAgc3RhdGljIG5vaW5saW5lIHZvaWQgc2F2
-ZV9zdGFjayhzdHJ1Y3QgZHJtX21tX25vZGUgKm5vZGUpCj4gIHsKPiAgCXVuc2lnbmVkIGxvbmcg
-ZW50cmllc1tTVEFDS0RFUFRIXTsKPiAtCXN0cnVjdCBzdGFja190cmFjZSB0cmFjZSA9IHsKPiAt
-CQkuZW50cmllcyA9IGVudHJpZXMsCj4gLQkJLm1heF9lbnRyaWVzID0gU1RBQ0tERVBUSCwKPiAt
-CQkuc2tpcCA9IDEKPiAtCX07Cj4gKwl1bnNpZ25lZCBpbnQgbjsKPiAgCj4gLQlzYXZlX3N0YWNr
-X3RyYWNlKCZ0cmFjZSk7Cj4gKwluID0gc3RhY2tfdHJhY2Vfc2F2ZShlbnRyaWVzLCBBUlJBWV9T
-SVpFKGVudHJpZXMpLCAxKTsKPiAgCj4gIAkvKiBNYXkgYmUgY2FsbGVkIHVuZGVyIHNwaW5sb2Nr
-LCBzbyBhdm9pZCBzbGVlcGluZyAqLwo+IC0Jbm9kZS0+c3RhY2sgPSBkZXBvdF9zYXZlX3N0YWNr
-KCZ0cmFjZSwgR0ZQX05PV0FJVCk7Cj4gKwlub2RlLT5zdGFjayA9IHN0YWNrX2RlcG90X3NhdmUo
-ZW50cmllcywgbiwgR0ZQX05PV0FJVCk7Cj4gIH0KPiAgCj4gIHN0YXRpYyB2b2lkIHNob3dfbGVh
-a3Moc3RydWN0IGRybV9tbSAqbW0pCj4gIHsKPiAgCXN0cnVjdCBkcm1fbW1fbm9kZSAqbm9kZTsK
-PiAtCXVuc2lnbmVkIGxvbmcgZW50cmllc1tTVEFDS0RFUFRIXTsKPiArCXVuc2lnbmVkIGxvbmcg
-KmVudHJpZXM7Cj4gKwl1bnNpZ25lZCBpbnQgbnJfZW50cmllczsKPiAgCWNoYXIgKmJ1ZjsKPiAg
-Cj4gIAlidWYgPSBrbWFsbG9jKEJVRlNaLCBHRlBfS0VSTkVMKTsKPiBAQCAtMTI5LDE5ICsxMjYs
-MTQgQEAgc3RhdGljIHZvaWQgc2hvd19sZWFrcyhzdHJ1Y3QgZHJtX21tICptbQo+ICAJCXJldHVy
-bjsKPiAgCj4gIAlsaXN0X2Zvcl9lYWNoX2VudHJ5KG5vZGUsIGRybV9tbV9ub2RlcyhtbSksIG5v
-ZGVfbGlzdCkgewo+IC0JCXN0cnVjdCBzdGFja190cmFjZSB0cmFjZSA9IHsKPiAtCQkJLmVudHJp
-ZXMgPSBlbnRyaWVzLAo+IC0JCQkubWF4X2VudHJpZXMgPSBTVEFDS0RFUFRICj4gLQkJfTsKPiAt
-Cj4gIAkJaWYgKCFub2RlLT5zdGFjaykgewo+ICAJCQlEUk1fRVJST1IoIm5vZGUgWyUwOGxseCAr
-ICUwOGxseF06IHVua25vd24gb3duZXJcbiIsCj4gIAkJCQkgIG5vZGUtPnN0YXJ0LCBub2RlLT5z
-aXplKTsKPiAgCQkJY29udGludWU7Cj4gIAkJfQo+ICAKPiAtCQlkZXBvdF9mZXRjaF9zdGFjayhu
-b2RlLT5zdGFjaywgJnRyYWNlKTsKPiAtCQlzbnByaW50X3N0YWNrX3RyYWNlKGJ1ZiwgQlVGU1os
-ICZ0cmFjZSwgMCk7Cj4gKwkJbnJfZW50cmllcyA9IHN0YWNrX2RlcG90X2ZldGNoKG5vZGUtPnN0
-YWNrLCAmZW50cmllcyk7Cj4gKwkJc3RhY2tfdHJhY2Vfc25wcmludChidWYsIEJVRlNaLCBlbnRy
-aWVzLCBucl9lbnRyaWVzLCAwKTsKPiAgCQlEUk1fRVJST1IoIm5vZGUgWyUwOGxseCArICUwOGxs
-eF06IGluc2VydGVkIGF0XG4lcyIsCj4gIAkJCSAgbm9kZS0+c3RhcnQsIG5vZGUtPnNpemUsIGJ1
-Zik7Cj4gIAl9Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaTkxNV92bWEuYwo+ICsrKyBi
-L2RyaXZlcnMvZ3B1L2RybS9pOTE1L2k5MTVfdm1hLmMKPiBAQCAtMzYsMTEgKzM2LDggQEAKPiAg
-Cj4gIHN0YXRpYyB2b2lkIHZtYV9wcmludF9hbGxvY2F0b3Ioc3RydWN0IGk5MTVfdm1hICp2bWEs
-IGNvbnN0IGNoYXIgKnJlYXNvbikKPiAgewo+IC0JdW5zaWduZWQgbG9uZyBlbnRyaWVzWzEyXTsK
-PiAtCXN0cnVjdCBzdGFja190cmFjZSB0cmFjZSA9IHsKPiAtCQkuZW50cmllcyA9IGVudHJpZXMs
-Cj4gLQkJLm1heF9lbnRyaWVzID0gQVJSQVlfU0laRShlbnRyaWVzKSwKPiAtCX07Cj4gKwl1bnNp
-Z25lZCBsb25nICplbnRyaWVzOwo+ICsJdW5zaWduZWQgaW50IG5yX2VudHJpZXM7Cj4gIAljaGFy
-IGJ1Zls1MTJdOwo+ICAKPiAgCWlmICghdm1hLT5ub2RlLnN0YWNrKSB7Cj4gQEAgLTQ5LDggKzQ2
-LDggQEAgc3RhdGljIHZvaWQgdm1hX3ByaW50X2FsbG9jYXRvcihzdHJ1Y3QgaQo+ICAJCXJldHVy
-bjsKPiAgCX0KPiAgCj4gLQlkZXBvdF9mZXRjaF9zdGFjayh2bWEtPm5vZGUuc3RhY2ssICZ0cmFj
-ZSk7Cj4gLQlzbnByaW50X3N0YWNrX3RyYWNlKGJ1Ziwgc2l6ZW9mKGJ1ZiksICZ0cmFjZSwgMCk7
-Cj4gKwlucl9lbnRyaWVzID0gc3RhY2tfZGVwb3RfZmV0Y2godm1hLT5ub2RlLnN0YWNrLCAmZW50
-cmllcyk7Cj4gKwlzdGFja190cmFjZV9zbnByaW50KGJ1Ziwgc2l6ZW9mKGJ1ZiksIGVudHJpZXMs
-IG5yX2VudHJpZXMsIDApOwo+ICAJRFJNX0RFQlVHX0RSSVZFUigidm1hLm5vZGUgWyUwOGxseCAr
-ICUwOGxseF0gJXM6IGluc2VydGVkIGF0ICVzXG4iLAo+ICAJCQkgdm1hLT5ub2RlLnN0YXJ0LCB2
-bWEtPm5vZGUuc2l6ZSwgcmVhc29uLCBidWYpOwo+ICB9Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJt
-L2k5MTUvaW50ZWxfcnVudGltZV9wbS5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50
-ZWxfcnVudGltZV9wbS5jCj4gQEAgLTYwLDI3ICs2MCwyMCBAQAo+ICBzdGF0aWMgbm9pbmxpbmUg
-ZGVwb3Rfc3RhY2tfaGFuZGxlX3QgX19zYXZlX2RlcG90X3N0YWNrKHZvaWQpCj4gIHsKPiAgCXVu
-c2lnbmVkIGxvbmcgZW50cmllc1tTVEFDS0RFUFRIXTsKPiAtCXN0cnVjdCBzdGFja190cmFjZSB0
-cmFjZSA9IHsKPiAtCQkuZW50cmllcyA9IGVudHJpZXMsCj4gLQkJLm1heF9lbnRyaWVzID0gQVJS
-QVlfU0laRShlbnRyaWVzKSwKPiAtCQkuc2tpcCA9IDEsCj4gLQl9Owo+ICsJdW5zaWduZWQgaW50
-IG47Cj4gIAo+IC0Jc2F2ZV9zdGFja190cmFjZSgmdHJhY2UpOwo+IC0JcmV0dXJuIGRlcG90X3Nh
-dmVfc3RhY2soJnRyYWNlLCBHRlBfTk9XQUlUIHwgX19HRlBfTk9XQVJOKTsKPiArCW4gPSBzdGFj
-a190cmFjZV9zYXZlKGVudHJpZXMsIEFSUkFZX1NJWkUoZW50cmllcyksIDEpOwo+ICsJcmV0dXJu
-IHN0YWNrX2RlcG90X3NhdmUoZW50cmllcywgbiwgR0ZQX05PV0FJVCB8IF9fR0ZQX05PV0FSTik7
-Cj4gIH0KPiAgCj4gIHN0YXRpYyB2b2lkIF9fcHJpbnRfZGVwb3Rfc3RhY2soZGVwb3Rfc3RhY2tf
-aGFuZGxlX3Qgc3RhY2ssCj4gIAkJCQljaGFyICpidWYsIGludCBzeiwgaW50IGluZGVudCkKPiAg
-ewo+IC0JdW5zaWduZWQgbG9uZyBlbnRyaWVzW1NUQUNLREVQVEhdOwo+IC0Jc3RydWN0IHN0YWNr
-X3RyYWNlIHRyYWNlID0gewo+IC0JCS5lbnRyaWVzID0gZW50cmllcywKPiAtCQkubWF4X2VudHJp
-ZXMgPSBBUlJBWV9TSVpFKGVudHJpZXMpLAo+IC0JfTsKPiArCXVuc2lnbmVkIGxvbmcgKmVudHJp
-ZXM7Cj4gKwl1bnNpZ25lZCBpbnQgbnJfZW50cmllczsKPiAgCj4gLQlkZXBvdF9mZXRjaF9zdGFj
-ayhzdGFjaywgJnRyYWNlKTsKPiAtCXNucHJpbnRfc3RhY2tfdHJhY2UoYnVmLCBzeiwgJnRyYWNl
-LCBpbmRlbnQpOwo+ICsJbnJfZW50cmllcyA9IHN0YWNrX2RlcG90X2ZldGNoKHN0YWNrLCAmZW50
-cmllcyk7Cj4gKwlzdGFja190cmFjZV9zbnByaW50KGJ1Ziwgc3osIGVudHJpZXMsIG5yX2VudHJp
-ZXMsIGluZGVudCk7Cj4gIH0KPiAgCj4gIHN0YXRpYyB2b2lkIGluaXRfaW50ZWxfcnVudGltZV9w
-bV93YWtlcmVmKHN0cnVjdCBkcm1faTkxNV9wcml2YXRlICppOTE1KQo+IAo+IAoKLS0gCkRhbmll
-bCBWZXR0ZXIKU29mdHdhcmUgRW5naW5lZXIsIEludGVsIENvcnBvcmF0aW9uCmh0dHA6Ly9ibG9n
-LmZmd2xsLmNoCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
-dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeA==
+Hi Christoph,
+
+On 4/23/19 2:12 PM, Christoph Hellwig wrote:
+> On Tue, Apr 23, 2019 at 09:58:19AM +0800, Lu Baolu wrote:
+>> 554         for (i = 0; i < nslots; i++)
+>> 555                 io_tlb_orig_addr[index+i] = orig_addr + (i <<
+>> IO_TLB_SHIFT);
+>>
+>> Could the tlb orig address set to PAGE_ALIGN_DOWN(orig_addr)? We
+>> couldn't assume the bounce buffer just starts from the beginning of the
+>> slot. Or anything I missed?
+> 
+> I don't see why we need to align the orig_addr.  We only use
+> io_tlb_orig_addr to find the address(es) for the swiotlb_bounce calls,
+> and I don't see a good reason why we'd need to align those.
+> 
+
+Let me show you an example. Normally, if IOMMU is on, the device DMAs
+with an iova. IOMMU takes the responsibility to translate the iova to
+the physical address in paging mode.
+
+                        Physical
+    IOVA                 Buffer
+.---------.          .---------.
+| IOMMU   |          | IOMMU   |
+| PAGE    |          | PAGE    |
+.---------. -------> .---------.
+| Buffer  |          | Buffer  |
+'---------'          '---------'
+|         |          |         |
+|         |          |         |
+'---------'          '---------'
+             .-------.
+             | IOMMU |
+             '-------'
+
+When we add the bounce buffer between IOVA and physical buffer, the
+bounced buffer must starts from the same offset in a page, otherwise,
+IOMMU can't work here.
+
+
+                       Bouce             Physical
+    IOVA               Buffer             Buffer
+.---------.         .---------.       .---------.
+|         | .-----> | Buffer  | <---. |         |
+|         | |       '---------'     | |         |
+.---------. |       |         |     | .---------.
+| Buffer  |    NO   |         |  YES  | Buffer  |
+'---------'         |         |       '---------'
+|         |         |         |       |         |
+|         |         |         |       |         |
+'---------'         '---------'       '---------'
+            .-------.         .---------.
+            | IOMMU |         | swiotlb |
+            '-------'         '---------'
+
+A workable buffer location looks like below.
+
+
+                       Bouce             Physical
+    IOVA               Buffer             Buffer
+.---------.         .---------.       .---------.
+|         |         |         |       |         |
+|         |         |         |       |         |
+.---------. ------->.---------.<----- .---------.
+| Buffer  |    YES  | Buffer  |  YES  | Buffer  |
+'---------'         '---------'       '---------'
+|         |         |         |       |         |
+|         |         |         |       |         |
+'---------'         '---------'       '---------'
+            .-------.         .---------.
+            | IOMMU |         | swiotlb |
+            '-------'         '---------'
+
+Best regards,
+Lu Baolu
