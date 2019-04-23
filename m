@@ -6,68 +6,67 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
 	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A20F5C10F14
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F3C10F14
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:18:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D22E214AE
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:13:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B8FC5214AE
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 14:18:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="1763qcT1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D22E214AE
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Xb72Mi0g"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8FC5214AE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3C02613E6;
-	Tue, 23 Apr 2019 14:13:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8E6D6AF5;
+	Tue, 23 Apr 2019 14:18:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 781BD13E5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28F9D22
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 14:13:50 +0000 (UTC)
+	Tue, 23 Apr 2019 14:18:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1978B786
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C3F29829
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 14:13:49 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-	by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3NEDiZB106106; Tue, 23 Apr 2019 14:13:47 GMT
+	Tue, 23 Apr 2019 14:18:45 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+	by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x3NEDjaY100312; Tue, 23 Apr 2019 14:18:43 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
 	h=subject : to : cc :
 	references : from : message-id : date : mime-version : in-reply-to :
 	content-type : content-transfer-encoding; s=corp-2018-07-02;
-	bh=i8tzDCNAEDOHUED7Hw0LyN0fbjVkx3mIUXrXDX31ePU=;
-	b=1763qcT1nROMeJLKM309rBvtcv/WycfjyoU53nL6T92QzJNVOYUQFTiWt2BqjkPerMCt
-	06S/JXwLnk5rDp17I/kEcmeJhOQ9HV08rmbhC/Ne9v2HT/7auOYkNO+dHF3nX0lQZUkw
-	xHzMovktugjwNJIQIzmgLGX9z2lYi4Cj/NHEcUgR+fSZobWr5Ms7ZwnR4fzpNVYXypwS
-	CK+BLf7tr/g81CvSc2xTcg+CHiOQHmM0t1WMFViBxcLwL3obqojIvIbh46akR17qP127
-	juPFaTd3FhaTiBtNpsKDrLj3oq7sBsNGKiC5/MHNYgWIUBJB9ANaump05dV5WMkkrKxh
-	wA== 
+	bh=vrfAQ41t67iwFGjNezT2clR4ufo2fkJsUoIM+xMFIjk=;
+	b=Xb72Mi0g7OP0wzTX/gNGq2Pn6VeK/x2HqrTY1DxOy0xwyKKD/6/uRWDvM65zKWPDfWgE
+	HYJAKgZ1ymN1RD0UuUmnF1TmAYfnZTOooitJwD5sUCn7oNRQeTNf7Aazo2KVg6nLlNbN
+	RhGpuW7NsJLXG7G/RUY6U+qj+N+xu+3zIMPcgrYjK07CWOJVIFm9WL69SAhKIdmJM+3J
+	QeSDhZmUERkdOpD79BKzzMWMSvxEKMf1IHQBp9dL0ANBEfGTVc18+PPS/2Nyj7g+h9gF
+	o4nOjZzYDKiacSj8deLnH/fhXt5vJWyhGiABz68j+76ZwL5aFmJRN+vN+lwq5fEcqfu+
+	RA== 
 Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-	by aserp2130.oracle.com with ESMTP id 2ryrxcvnxs-1
+	by userp2130.oracle.com with ESMTP id 2rytusvhn0-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Apr 2019 14:13:46 +0000
+	Tue, 23 Apr 2019 14:18:43 +0000
 Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
 	by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3NED22p079881; Tue, 23 Apr 2019 14:13:45 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-	by userp3020.oracle.com with ESMTP id 2s0dwe9g7j-1
+	x3NEIh7p094727; Tue, 23 Apr 2019 14:18:43 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+	by userp3020.oracle.com with ESMTP id 2s0dwe9ju8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Apr 2019 14:13:45 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-	by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x3NEDiNJ022999;
-	Tue, 23 Apr 2019 14:13:44 GMT
+	Tue, 23 Apr 2019 14:18:43 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+	by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x3NEIcX7004255;
+	Tue, 23 Apr 2019 14:18:38 GMT
 Received: from dhcp-burlington7-2nd-B-east-10-152-55-162.usdhcp.oraclecorp.com
 	(/10.152.32.65) by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Tue, 23 Apr 2019 07:13:44 -0700
-Subject: Re: [PATCH 1/3] xen/swiotlb: fix condition for calling
-	xen_destroy_contiguous_region()
+	with ESMTP ; Tue, 23 Apr 2019 07:18:38 -0700
+Subject: Re: [PATCH 2/3] xen/swiotlb: simplify range_straddles_page_boundary()
 To: Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 References: <20190423105457.17502-1-jgross@suse.com>
-	<20190423105457.17502-2-jgross@suse.com>
+	<20190423105457.17502-3-jgross@suse.com>
 From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
@@ -113,16 +112,16 @@ Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
 	Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
 	19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
 	Jg6OxFYd01z+a+oL
-Message-ID: <e49eed35-6cf5-77d9-ba59-e1e021cece83@oracle.com>
-Date: Tue, 23 Apr 2019 10:20:10 -0400
+Message-ID: <799ae281-6a06-6a34-3bef-96b9fef8d1c2@oracle.com>
+Date: Tue, 23 Apr 2019 10:25:04 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20190423105457.17502-2-jgross@suse.com>
+In-Reply-To: <20190423105457.17502-3-jgross@suse.com>
 Content-Language: en-US
 X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9235
 	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
 	malwarescore=0
 	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
 	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
@@ -131,12 +130,12 @@ X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9235
 	signatures=668685
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
 	priorityscore=1501 malwarescore=0
-	suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
 	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
 	adultscore=0
 	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
 	definitions=main-1904230097
-Cc: sstabellini@kernel.org, stable@vger.kernel.org, konrad.wilk@oracle.com
+Cc: sstabellini@kernel.org, konrad.wilk@oracle.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -153,20 +152,14 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423142010.TOipkI83I4tia08lS0jq_2ut8dt4fOGVMH4lbTdbF6U@z>
+Message-ID: <20190423142504.ynYBN2VSjG-VdL52VFSqZ5Tw6b3I8qA-zjGfIyO0FY8@z>
 
 On 4/23/19 6:54 AM, Juergen Gross wrote:
-> The condition in xen_swiotlb_free_coherent() for deciding whether to
-> call xen_destroy_contiguous_region() is wrong: in case the region to
-> be freed is not contiguous calling xen_destroy_contiguous_region() is
-> the wrong thing to do: it would result in inconsistent mappings of
-> multiple PFNs to the same MFN. This will lead to various strange
-> crashes or data corruption.
+> range_straddles_page_boundary() is open coding several macros from
+> include/xen/page.h. Use those instead. Additionally there is no need
+> to have check_pages_physically_contiguous() as a separate function as
+> it is used only once, so merge it into range_straddles_page_boundary().
 >
-> Instead of calling xen_destroy_contiguous_region() in that case a
-> warning should be issued as that situation should never occur.
->
-> Cc: stable@vger.kernel.org
 > Signed-off-by: Juergen Gross <jgross@suse.com>
 
 Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
