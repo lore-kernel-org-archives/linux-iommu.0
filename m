@@ -1,44 +1,44 @@
-From: Thomas Hellstrom <thellstrom@vmware.com>
-Subject: Re: revert dma direct internals abuse
-Date: Tue, 23 Apr 2019 12:26:05 +0000
-Message-ID: <a5643cb106797f7079c70d63f5031bdc01259bb0.camel@vmware.com>
-References: <20190408105525.5493-1-hch@lst.de>
-         <7d5f35da4a6b58639519f0764c7edbfe4dd1ba02.camel@vmware.com>
-         <20190409095740.GE6827@lst.de>
-         <5f0837ffc135560c764c38849eead40269cebb48.camel@vmware.com>
-         <20190409133157.GA10876@lst.de>
-         <466e658c73607fca5112d718972e87c0b78653ad.camel@vmware.com>
-         <20190409152538.GA12816@lst.de>
-         <da06614b308500392c179651ef9c6fb835ee4045.camel@vmware.com>
-         <20190410064359.GC5543@lst.de>
-         <0c897b24b234f8d42ef597dbe31fa8293519a4b2.camel@vmware.com>
-         <20190422175623.GA32411@lst.de>
+From: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
+	files to *.rst
+Date: Tue, 23 Apr 2019 08:55:19 -0400
+Message-ID: <20190423125519.GA7104@redhat.com>
+References: <cover.1555938375.git.mchehab+samsung@kernel.org>
+	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
+	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422175623.GA32411@lst.de>
-Content-Language: en-US
-Content-ID: <115D6E66AC3ABA42801EEC939502B6AF@namprd05.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "hch@lst.de" <hch@lst.de>
-Cc: "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Deepak Singh Rawat <drawat@vmware.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190423083135.GA11158-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Farhan Ali <alifm-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, Halil Pasic <pasic-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Boqun Feng <boqun.feng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Mackall <mpm-VDJrAJ4Gl5ZBDgjK7y7TUQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sean Paul <sean-p7yTbzM4H96eqtR555YLDQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.orglin
 List-Id: iommu@lists.linux-foundation.org
 
-SGksIENocmlzdG9waCwNCg0KT24gTW9uLCAyMDE5LTA0LTIyIGF0IDE5OjU2ICswMjAwLCBoY2hA
-bHN0LmRlIHdyb3RlOg0KPiBPbiBXZWQsIEFwciAxMCwgMjAxOSBhdCAwMzowMToxNFBNICswMDAw
-LCBUaG9tYXMgSGVsbHN0cm9tIHdyb3RlOg0KPiA+ID4gU28gY2FuIHlvdSBwbGVhc2UgcmVzcGlu
-IGEgdmVyc2lvbiBhY2NlcHRhYmxlIHRvIHlvdSBhbmQgc3VibWl0DQo+ID4gPiBpdA0KPiA+ID4g
-Zm9yIDUuMSBBU0FQPyAgT3RoZXJ3aXNlIEknbGwgbmVlZCB0byBtb3ZlIGFoZWFkIHdpdGggdGhl
-IHNpbXBsZQ0KPiA+ID4gcmV2ZXJ0Lg0KPiA+IA0KPiA+IEkgd2lsbC4gDQo+ID4gSSBuZWVkIHRv
-IGRvIHNvbWUgdGVzdGluZyB0byBpbnZlc3RpZ2F0ZSBob3cgdG8gYmVzdCBjaG9vc2UgYmV0d2Vl
-bg0KPiA+IHRoZQ0KPiA+IG9wdGlvbnMsIGJ1dCB3aWxsIGhhdmUgc29tZXRoaW5nIHJlYWR5IGZv
-ciA1LjEuDQo+IA0KPiBJIHN0aWxsIGRvbid0IHNlZSBhbnl0aGluZyBpbiAtcmM2Li4NCg0KQmVl
-biBvbiBlYXN0ZXIgdmFjYXRpb24uIEkgaGF2ZSBhIHBhdGNoIHJlYWR5IGZvciByZXZpZXcsIHRo
-b3VnaCwgd2lsbA0Kc2VuZCBpdCBvdXQgaW4gYSBtb21lbnQuDQoNCkl0IHR1cm5zIG91dCB0aGF0
-IHRvIGRvIHNvbWV0aGluZyB3ZWxsLWJlaGF2ZWQgaW4gY2FzZSBzb21lb25lIHNldHMNCnN3aW90
-bGI9Zm9yY2UsIHRoZSB2YXJpYWJsZSBzd2lvdGxiX2ZvcmNlIHdvdWxkIG5lZWQgdG8gYmUgZXhw
-b3J0ZWQuDQooSSBjYW4ndCByZWx5IG9uIHN3aW90bGJfbnJfdGJsKCkpLg0KDQpUaGF0J3Mgbm90
-IGN1cnJlbnRseSBkb25lIGluIHRoZSBwYXRjaCwgYnV0IGluc3RlYWQgdGhlIGRyaXZlciBqdXN0
-DQptYWxmdW5jdGlvbnMgbGlrZSBtb3N0IG90aGVyIGdyYXBoaWNzIGRyaXZlcnMuDQoNCi9UaG9t
-YXMNCg0K
+On Tue, Apr 23 2019 at  4:31am -0400,
+Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
+
+> On Mon, Apr 22, 2019 at 10:27:45AM -0300, Mauro Carvalho Chehab wrote:
+> 
+> >  .../{atomic_bitops.txt => atomic_bitops.rst}  |  2 +
+> 
+> What's happend to atomic_t.txt, also NAK, I still occationally touch
+> these files.
+
+Seems Mauro's point is in the future we need to touch these .rst files
+in terms of ReST compatible changes.
+
+I'm dreading DM documentation changes in the future.. despite Mauro and
+Jon Corbet informing me that ReST is simple, etc.
+
+Mike
