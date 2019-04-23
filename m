@@ -1,147 +1,309 @@
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 18/19] iommu/vt-d: Support flushing more translation cache types
-Date: Tue, 23 Apr 2019 16:31:18 -0700
-Message-ID: <1556062279-64135-19-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 15/19] iommu/vt-d: Add bind guest PASID support
+Date: Tue, 23 Apr 2019 16:31:15 -0700
+Message-ID: <1556062279-64135-16-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Eric Auger <eric.auger@redhat.com>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org, Yi L <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When Shared Virtual Memory is exposed to a guest via vIOMMU, extended
-IOTLB invalidation may be passed down from outside IOMMU subsystems.
-This patch adds invalidation functions that can be used for additional
-translation cache types.
+When supporting guest SVA with emulated IOMMU, the guest PASID
+table is shadowed in VMM. Updates to guest vIOMMU PASID table
+will result in PASID cache flush which will be passed down to
+the host as bind guest PASID calls.
+
+For the SL page tables, it will be harvested from device's
+default domain (request w/o PASID), or aux domain in case of
+mediated device.
+
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest process CR3, FL only|
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush -
+    '-------------'                       |
+    |             |                       V
+    |             |                CR3 in GPA
+    '-------------'
+Guest
+------| Shadow |--------------------------|--------
+      v        v                          v
+Host
+    .-------------.  .----------------------.
+    |   pIOMMU    |  | Bind FL for GVA-GPA  |
+    |             |  '----------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.------------------------------.
+    |             |   |SL for GPA-HPA, default domain|
+    |             |   '------------------------------'
+    '-------------'
+Where:
+ - FL = First level/stage one page tables
+ - SL = Second level/stage two page tables
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 ---
- drivers/iommu/dmar.c        | 48 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h | 21 ++++++++++++++++----
- 2 files changed, 65 insertions(+), 4 deletions(-)
+ drivers/iommu/intel-iommu.c |   4 +
+ drivers/iommu/intel-svm.c   | 174 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  10 ++-
+ include/linux/intel-svm.h   |   7 ++
+ 4 files changed, 193 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9c49300..680894e 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1357,6 +1357,20 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	qi_submit_sync(&desc, iommu);
- }
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 77bbe1b..89989b5 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5768,6 +5768,10 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+ 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+ 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
++#ifdef CONFIG_INTEL_IOMMU_SVM
++	.sva_bind_gpasid	= intel_svm_bind_gpasid,
++	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
++#endif
+ };
  
-+void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr, u32 pasid,
-+		unsigned int size_order, u64 granu)
-+{
-+	struct qi_desc desc;
-+
-+	desc.qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
-+		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
-+	desc.qw1 = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_IH(0) |
-+		QI_EIOTLB_AM(size_order);
-+	desc.qw2 = 0;
-+	desc.qw3 = 0;
-+	qi_submit_sync(&desc, iommu);
-+}
-+
- void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask)
- {
-@@ -1380,6 +1394,40 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	qi_submit_sync(&desc, iommu);
- }
+ static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 8fff212..0a973c2 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -227,6 +227,180 @@ static const struct mmu_notifier_ops intel_mmuops = {
  
-+void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64 granu)
+ static DEFINE_MUTEX(pasid_mutex);
+ static LIST_HEAD(global_svm_list);
++#define for_each_svm_dev() \
++	list_for_each_entry(sdev, &svm->devs, list)	\
++	if (dev == sdev->dev)				\
++
++int intel_svm_bind_gpasid(struct iommu_domain *domain,
++			struct device *dev,
++			struct gpasid_bind_data *data)
 +{
-+	struct qi_desc desc;
++	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
++	struct intel_svm_dev *sdev;
++	struct intel_svm *svm = NULL;
++	struct dmar_domain *ddomain;
++	int pasid_max;
++	int ret = 0;
 +
-+	desc.qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
-+		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
-+		QI_DEV_IOTLB_PFSID(pfsid);
-+	desc.qw1 |= QI_DEV_EIOTLB_GLOB(granu);
++	if (WARN_ON(!iommu) || !data)
++		return -EINVAL;
 +
-+	/* If S bit is 0, we only flush a single page. If S bit is set,
-+	 * The least significant zero bit indicates the size. VT-d spec
-+	 * 6.5.2.6
++	if (dev_is_pci(dev)) {
++		pasid_max = pci_max_pasids(to_pci_dev(dev));
++		if (pasid_max < 0)
++			return -EINVAL;
++	} else
++		pasid_max = 1 << 20;
++
++	if (data->pasid <= 0 || data->pasid >= pasid_max)
++		return -EINVAL;
++
++	ddomain = to_dmar_domain(domain);
++	/* REVISIT:
++	 * Sanity check adddress width and paging mode support
++	 * width matching in two dimensions:
++	 * 1. paging mode CPU <= IOMMU
++	 * 2. address width Guest <= Host.
 +	 */
-+	if (!size)
-+		desc.qw0 = QI_DEV_EIOTLB_ADDR(addr) & ~QI_DEV_EIOTLB_SIZE;
-+	else {
-+		unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size);
-+
-+		desc.qw1 = QI_DEV_EIOTLB_ADDR(addr & ~mask) | QI_DEV_EIOTLB_SIZE;
++	mutex_lock(&pasid_mutex);
++	svm = ioasid_find(NULL, data->pasid, NULL);
++	if (IS_ERR(svm)) {
++		ret = PTR_ERR(svm);
++		goto out;
 +	}
-+	qi_submit_sync(&desc, iommu);
++	if (svm) {
++		if (list_empty(&svm->devs)) {
++			dev_err(dev, "GPASID %d has no devices bond but SVA is allocated\n",
++				data->pasid);
++			ret = -ENODEV; /*
++					* If we found svm for the PASID, there must be at
++					* least one device bond, otherwise svm should be freed.
++					*/
++			goto out;
++		}
++		for_each_svm_dev() {
++			/* In case of multiple sub-devices of the same pdev assigned, we should
++			 * allow multiple bind calls with the same PASID and pdev.
++			 */
++			sdev->users++;
++			goto out;
++		}
++	} else {
++		/* We come here when PASID has never been bond to a device. */
++		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
++		if (!svm) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		/* REVISIT: upper layer/VFIO can track host process that bind the PASID.
++		 * ioasid_set = mm might be sufficient for vfio to check pasid VMM
++		 * ownership.
++		 */
++		svm->mm = get_task_mm(current);
++		svm->pasid = data->pasid;
++		refcount_set(&svm->refs, 0);
++		ioasid_set_data(data->pasid, svm);
++		INIT_LIST_HEAD_RCU(&svm->devs);
++		INIT_LIST_HEAD(&svm->list);
++
++		mmput(svm->mm);
++	}
++	svm->flags |= SVM_FLAG_GUEST_MODE;
++	sdev = kzalloc(sizeof(*sdev), GFP_KERNEL);
++	if (!sdev) {
++		ret = -ENOMEM;
++		goto out;
++	}
++	sdev->dev = dev;
++	sdev->users = 1;
++
++	/* Set up device context entry for PASID if not enabled already */
++	ret = intel_iommu_enable_pasid(iommu, sdev->dev);
++	if (ret) {
++		dev_err(dev, "Failed to enable PASID capability\n");
++		kfree(sdev);
++		goto out;
++	}
++
++	/*
++	 * For guest bind, we need to set up PASID table entry as follows:
++	 * - FLPM matches guest paging mode
++	 * - turn on nested mode
++	 * - SL guest address width matching
++	 */
++	ret = intel_pasid_setup_nested(iommu,
++				dev,
++				(pgd_t *)data->gcr3,
++				data->pasid,
++				data->flags,
++				ddomain,
++				data->addr_width);
++	if (ret) {
++		dev_err(dev, "Failed to set up PASID %d in nested mode, Err %d\n",
++			data->pasid, ret);
++		kfree(sdev);
++		goto out;
++	}
++
++	init_rcu_head(&sdev->rcu);
++	refcount_inc(&svm->refs);
++	list_add_rcu(&sdev->list, &svm->devs);
++ out:
++	mutex_unlock(&pasid_mutex);
++	return ret;
 +}
 +
-+void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
++int intel_svm_unbind_gpasid(struct device *dev, int pasid)
 +{
-+	struct qi_desc desc;
++	struct intel_svm_dev *sdev;
++	struct intel_iommu *iommu;
++	struct intel_svm *svm;
++	int ret = -EINVAL;
 +
-+	desc.qw0 = QI_PC_TYPE | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_PASID(pasid);
-+	desc.qw1 = 0;
-+	desc.qw2 = 0;
-+	desc.qw3 = 0;
-+	qi_submit_sync(&desc, iommu);
++	mutex_lock(&pasid_mutex);
++	iommu = intel_svm_device_to_iommu(dev);
++	if (!iommu)
++		goto out;
++
++	svm = ioasid_find(NULL, pasid, NULL);
++	if (IS_ERR(svm)) {
++		ret = PTR_ERR(svm);
++		goto out;
++	}
++
++	if (!svm)
++		goto out;
++
++	for_each_svm_dev() {
++		ret = 0;
++		sdev->users--;
++		if (!sdev->users) {
++			list_del_rcu(&sdev->list);
++			intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
++			/* TODO: Drain in flight PRQ for the PASID since it
++			 * may get reused soon, we don't want to
++			 * confuse with its previous live.
++			 * intel_svm_drain_prq(dev, pasid);
++			 */
++			kfree_rcu(sdev, rcu);
++
++			if (list_empty(&svm->devs)) {
++				list_del(&svm->list);
++				kfree(svm);
++				/*
++				 * We do not free PASID here until explicit call
++				 * from the guest to free.
++				 */
++				ioasid_set_data(pasid, NULL);
++			}
++		}
++		break;
++	}
++ out:
++	mutex_unlock(&pasid_mutex);
++
++	return ret;
 +}
- /*
-  * Disable Queued Invalidation interface.
-  */
+ 
+ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
+ {
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 5d67d0d4..38e5efb 100644
+index 48fa164..5d67d0d4 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -339,7 +339,7 @@ enum {
- #define QI_IOTLB_GRAN(gran) 	(((u64)gran) >> (DMA_TLB_FLUSH_GRANU_OFFSET-4))
- #define QI_IOTLB_ADDR(addr)	(((u64)addr) & VTD_PAGE_MASK)
- #define QI_IOTLB_IH(ih)		(((u64)ih) << 6)
--#define QI_IOTLB_AM(am)		(((u8)am))
-+#define QI_IOTLB_AM(am)		(((u8)am) & 0x3f)
+@@ -677,7 +677,9 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
+ int intel_svm_init(struct intel_iommu *iommu);
+ extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+ extern int intel_svm_finish_prq(struct intel_iommu *iommu);
+-
++extern int intel_svm_bind_gpasid(struct iommu_domain *domain,
++		struct device *dev, struct gpasid_bind_data *data);
++extern int intel_svm_unbind_gpasid(struct device *dev, int pasid);
+ struct svm_dev_ops;
  
- #define QI_CC_FM(fm)		(((u64)fm) << 48)
- #define QI_CC_SID(sid)		(((u64)sid) << 32)
-@@ -357,17 +357,22 @@ enum {
- #define QI_PC_DID(did)		(((u64)did) << 16)
- #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
+ struct intel_svm_dev {
+@@ -693,12 +695,16 @@ struct intel_svm_dev {
  
--#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
--#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
-+/* PASID cache invalidation granu */
-+#define QI_PC_ALL_PASIDS	0
-+#define QI_PC_PASID_SEL		1
+ struct intel_svm {
+ 	struct mmu_notifier notifier;
+-	struct mm_struct *mm;
++	union {
++		struct mm_struct *mm;
++		u64 gcr3;
++	};
+ 	struct intel_iommu *iommu;
+ 	int flags;
+ 	int pasid;
+ 	struct list_head devs;
+ 	struct list_head list;
++	refcount_t refs; /* # of devs bond to the PASID */
+ };
  
- #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
- #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
- #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
--#define QI_EIOTLB_AM(am)	(((u64)am))
-+#define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
- #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
- #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
- #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
+ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index e3f7631..34b0a3b 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -52,6 +52,13 @@ struct svm_dev_ops {
+  * do such IOTLB flushes automatically.
+  */
+ #define SVM_FLAG_SUPERVISOR_MODE	(1<<1)
++/*
++ * The SVM_FLAG_GUEST_MODE flag is used when a guest process bind to a device.
++ * In this case the mm_struct is in the guest kernel or userspace, its life
++ * cycle is managed by VMM and VFIO layer. For IOMMU driver, this API provides
++ * means to bind/unbind guest CR3 with PASIDs allocated for a device.
++ */
++#define SVM_FLAG_GUEST_MODE	(1<<2)
  
-+/* QI Dev-IOTLB inv granu */
-+#define QI_DEV_IOTLB_GRAN_ALL		1
-+#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
-+
- #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
- #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
- #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
-@@ -658,8 +663,16 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
- 			     u8 fm, u64 type);
- extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 			  unsigned int size_order, u64 type);
-+extern void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-+			u32 pasid, unsigned int size_order, u64 type);
- extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask);
-+
-+extern void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+			u32 pasid, u16 qdep, u64 addr, unsigned size, u64 granu);
-+
-+extern void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
-+
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+ #ifdef CONFIG_INTEL_IOMMU_SVM
  
- extern int dmar_ir_support(void);
 -- 
 2.7.4
