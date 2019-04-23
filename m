@@ -2,59 +2,69 @@ Return-Path: <SRS0=UFM6=SZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B978AC10F14
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 12:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E901C10F14
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 13:02:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D3F7206A3
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 12:55:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D3F7206A3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id CEC20206A3
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 13:02:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="WVoUkB+u"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEC20206A3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5A3C912D4;
-	Tue, 23 Apr 2019 12:55:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9A396130C;
+	Tue, 23 Apr 2019 13:02:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9A3F612D2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C5A281306
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 12:55:56 +0000 (UTC)
+	Tue, 23 Apr 2019 13:02:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2454CF4
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 243E0786
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 12:55:56 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
-	[10.5.11.11])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 3A70F81E15;
-	Tue, 23 Apr 2019 12:55:39 +0000 (UTC)
-Received: from localhost (unknown [10.18.25.174])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 2F3DE6013B;
-	Tue, 23 Apr 2019 12:55:20 +0000 (UTC)
-Date: Tue, 23 Apr 2019 08:55:19 -0400
-From: Mike Snitzer <snitzer@redhat.com>
-To: Peter Zijlstra <peterz@infradead.org>
+	Tue, 23 Apr 2019 13:02:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=merlin.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=bNrkb+RJEvVECppW3MCB++5skMQE0pDsjh32yrvleKw=;
+	b=WVoUkB+umnQYCnRaiIeFTDR1P
+	kiyrLTncTCAtEGSlhK0om1qqZqC5CJUcRmuyylcGoMEj64UbaBu1wIFAnXnvprKeSbwzC92zqflRg
+	Ait3bOL42fHBCgQO4eX4mQ3ggTR0W5bTAyVpZ9Xy0PgdNlxs4fDI2BfVyEaPIgXAiyqBM6r3ywZy1
+	4EiMiZgCaryqtmsdgqGOlSCm6+BpSRp4lFsNUNcWkEwqtesrIFXstvc6AsUYg+ca7jS/2pX4JW7Dw
+	cwiZZbF6OHyqEREKE5aT4JAwaBcw5s2tIbDhW5tQoTVlL5yuY38Rp4ElJfJTQA3hoThiFG/994qoW
+	T4FZeg/Pw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100]
+	helo=hirez.programming.kicks-ass.net)
+	by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hIv3G-0004LS-4J; Tue, 23 Apr 2019 13:01:34 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id DAD3E29C22227; Tue, 23 Apr 2019 15:01:32 +0200 (CEST)
+Date: Tue, 23 Apr 2019 15:01:32 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Mike Snitzer <snitzer@redhat.com>
 Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
 	files to *.rst
-Message-ID: <20190423125519.GA7104@redhat.com>
+Message-ID: <20190423130132.GT4038@hirez.programming.kicks-ass.net>
 References: <cover.1555938375.git.mchehab+samsung@kernel.org>
 	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
 	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
+	<20190423125519.GA7104@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190423083135.GA11158@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.25]);
-	Tue, 23 Apr 2019 12:55:55 +0000 (UTC)
+In-Reply-To: <20190423125519.GA7104@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
 	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
 	Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
@@ -145,25 +155,31 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423125519.AOpyXl7qKJ5NKDKlkJQxuygF74FJxyAg5osKGSVhvDY@z>
+Message-ID: <20190423130132.RhEGjnOujx8slZRo-DcTwkZG1FNF9KU9IfnMyquzjsU@z>
 
-On Tue, Apr 23 2019 at  4:31am -0400,
-Peter Zijlstra <peterz@infradead.org> wrote:
-
-> On Mon, Apr 22, 2019 at 10:27:45AM -0300, Mauro Carvalho Chehab wrote:
+On Tue, Apr 23, 2019 at 08:55:19AM -0400, Mike Snitzer wrote:
+> On Tue, Apr 23 2019 at  4:31am -0400,
+> Peter Zijlstra <peterz@infradead.org> wrote:
 > 
-> >  .../{atomic_bitops.txt => atomic_bitops.rst}  |  2 +
+> > On Mon, Apr 22, 2019 at 10:27:45AM -0300, Mauro Carvalho Chehab wrote:
+> > 
+> > >  .../{atomic_bitops.txt => atomic_bitops.rst}  |  2 +
+> > 
+> > What's happend to atomic_t.txt, also NAK, I still occationally touch
+> > these files.
 > 
-> What's happend to atomic_t.txt, also NAK, I still occationally touch
-> these files.
+> Seems Mauro's point is in the future we need to touch these .rst files
+> in terms of ReST compatible changes.
+> 
+> I'm dreading DM documentation changes in the future.. despite Mauro and
+> Jon Corbet informing me that ReST is simple, etc.
 
-Seems Mauro's point is in the future we need to touch these .rst files
-in terms of ReST compatible changes.
+Well, it _can_ be simple, I've seen examples of rst that were not far
+from generated HTML contents. And I must give Jon credit for not
+accepting that atrocious crap.
 
-I'm dreading DM documentation changes in the future.. despite Mauro and
-Jon Corbet informing me that ReST is simple, etc.
-
-Mike
+But yes, I have 0 motivation to learn or abide by rst. It simply doesn't
+give me anything in return. There is no upside, only worse text files :/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
