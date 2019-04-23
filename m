@@ -1,49 +1,62 @@
-From: Juergen Gross <jgross@suse.com>
-Subject: Re: [PATCH 3/3] xen/swiotlb: remember having called
- xen_create_contiguous_region()
-Date: Tue, 23 Apr 2019 20:36:13 +0200
-Message-ID: <e744c7eb-1685-13b6-7ae9-e952f8f53ab0@suse.com>
-References: <20190423105457.17502-1-jgross@suse.com>
- <20190423105457.17502-4-jgross@suse.com>
- <alpine.DEB.2.10.1904230955190.24598@sstabellini-ThinkPad-X260>
+From: Tom Murphy via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [PATCH] Remove old no iommu direct mapping code
+Date: Tue, 23 Apr 2019 21:03:34 +0100
+Message-ID: <20190423200335.3888-1-tmurphy@arista.com>
+Reply-To: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.10.1904230955190.24598@sstabellini-ThinkPad-X260>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stefano Stabellini <sstabellini@kernel.org>
-Cc: xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, murphyt7-/Zw1syy4LHg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 23/04/2019 19:05, Stefano Stabellini wrote:
-> On Tue, 23 Apr 2019, Juergen Gross wrote:
->> Instead of always calling xen_destroy_contiguous_region() in case the
->> memory is DMA-able for the used device, do so only in case it has been
->> made DMA-able via xen_create_contiguous_region() before.
->>
->> This will avoid a lot of xen_destroy_contiguous_region() calls for
->> 64-bit capable devices.
->>
->> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
->> flag of the first allocated page can be used for remembering.
-> 
-> Although the patch looks OK, this sentence puzzles me. Why do you say
-> that the memory in question is owned by swiotlb-xen? Because it was
-> returned by xen_alloc_coherent_pages? Both the x86 and the Arm
-> implementation return fresh new memory, hence, it should be safe to set
-> the PageOwnerPriv1 flag?
-> 
-> My concern with this approach is with the semantics of PG_owner_priv_1.
-> Is a page marked with PG_owner_priv_1 only supposed to be used by the
-> owner?
+These checks were intended to handle devices not mapped by the IOMMU.
+Since the AMD IOMMU driver uses per-device dma_ops these functions can
+no longer be called by direct mapped devices. So these checks aren't
+needed anymore.
 
-The owner of the page is free to use the flag.
+Signed-off-by: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-Like Grant pages are marked by the grant driver using this flag. And
-Xen page tables are using it in PV-guests for indicating a "Pinned"
-page table.
-
-
-Juergen
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b319e51c379b..67cdc9e5304b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2503,9 +2503,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+ 	u64 dma_mask;
+ 
+ 	domain = get_domain(dev);
+-	if (PTR_ERR(domain) == -EINVAL)
+-		return (dma_addr_t)paddr;
+-	else if (IS_ERR(domain))
++	if (IS_ERR(domain))
+ 		return DMA_MAPPING_ERROR;
+ 
+ 	dma_mask = *dev->dma_mask;
+@@ -2676,11 +2674,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 	struct page *page;
+ 
+ 	domain = get_domain(dev);
+-	if (PTR_ERR(domain) == -EINVAL) {
+-		page = alloc_pages(flag, get_order(size));
+-		*dma_addr = page_to_phys(page);
+-		return page_address(page);
+-	} else if (IS_ERR(domain))
++	if (IS_ERR(domain))
+ 		return NULL;
+ 
+ 	dma_dom   = to_dma_ops_domain(domain);
+-- 
+2.17.1
