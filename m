@@ -1,41 +1,144 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: RE: [RFC PATCH] dma-mapping: create iommu mapping for newly allocated
- dma coherent mem
-Date: Tue, 23 Apr 2019 22:09:54 +0000
-Message-ID: <VI1PR04MB513407A66107759EC0DFE175EC230@VI1PR04MB5134.eurprd04.prod.outlook.com>
-References: <20190422165125.21704-1-laurentiu.tudor@nxp.com>
- <20190422181100.GB32490@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 00/19] Shared virtual address IOMMU and VT-d support
+Date: Tue, 23 Apr 2019 16:31:00 -0700
+Message-ID: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422181100.GB32490@lst.de>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Leo Li <leoyang.li@nxp.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Eric Auger <eric.auger@redhat.com>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGVsbG8sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ2hyaXN0b3Bo
-IEhlbGx3aWcgPGhjaEBsc3QuZGU+DQo+IFNlbnQ6IE1vbmRheSwgQXByaWwgMjIsIDIwMTkgOTox
-MSBQTQ0KPiANCj4gT24gTW9uLCBBcHIgMjIsIDIwMTkgYXQgMDc6NTE6MjVQTSArMDMwMCwgbGF1
-cmVudGl1LnR1ZG9yQG54cC5jb20gd3JvdGU6DQo+ID4gRnJvbTogTGF1cmVudGl1IFR1ZG9yIDxs
-YXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPg0KPiA+IElmIHBvc3NpYmxlIC8gYXZhaWxhYmxl
-IGNhbGwgaW50byB0aGUgRE1BIEFQSSB0byBnZXQgYSBwcm9wZXIgaW9tbXUNCj4gPiBtYXBwaW5n
-IGFuZCBhIGRtYSBhZGRyZXNzIGZvciB0aGUgbmV3bHkgYWxsb2NhdGVkIGNvaGVyZW50IGRtYSBt
-ZW1vcnkuDQo+IA0KPiBJIGRvbid0IHRoaW5rIHRoaXMgaXMgc28gc2ltcGxlLiAgVGhlIG9yaWdp
-bmFsIHVzZSBjYXNlIG9mDQo+IGRtYV9kZWNsYXJlX2NvaGVyZW50X21lbW9yeSB3YXMgbWVtb3J5
-IHRoYXQgaXMgbG9jYWwgdG8gYSBkZXZpY2UsIHdoZXJlDQo+IHdlIGNvcHkgaW4gZGF0YSB0aHJv
-dWdoIGEgTU1JTyBtYXBwaW5nIGFuZCB0aGUgZGV2aWNlIGNhbiB0aGVuIGFjY2Vzcw0KPiBpdC4g
-IFRoaXMgdXNlIGNhc2Ugc3RpbGwgc2VlbXMgdG8gYmUgYWxpdmUgaW4gdGhlIG9oY2ktc201MDEg
-YW5kDQo+IG9oY2ktdG1pbyBkcml2ZXJzLiAgR29pbmcgdGhyb3VnaCB0aGUgaW9tbXUgaW4gdGhv
-c2UgY2FzZXMgd291bGQgYmUNCj4gY291bnRlciBwcm9kdWN0aXZlLg0KDQpJIGhhZCBhIGZlZWxp
-bmcgdGhhdCBJIGRpZG4ndCBnZXQgdGhlIHdob2xlIHN0b3J5IGFuZCBzb21ldGhpbmcgaXNuJ3Qg
-cXVpdGUgcmlnaHQgd2l0aCB0aGlzIHBhdGNoLiDwn5iKIEJ1dCBJJ20gaGFwcHkgdGhhdCB3ZSBo
-YXZlIGEgZGlzY3Vzc2lvbiBzdGFydGVkIG9uIHRoZSB0b3BpYyBhbmQsIEkgbXVzdCBzYXksIEkn
-bSB2ZXJ5IGludGVyZXN0ZWQgaW4gZ2V0dGluZyB0byB0aGUgYm90dG9tIG9mIGl0IChJIGhhdmUg
-c29tZSBwYXRjaGVzIGVuYWJsaW5nIFNNTVUgb24gYSBjb3VwbGUgb2YgTlhQIGNoaXBzIGFuZCBk
-ZXBlbmQgb24gcmVzb2x2aW5nIHRoaXMpLg0KSSdsbCB0cnkgdG8gdW5kZXJzdGFuZCB3aGF0IHlv
-dSdyZSBwbGFubmluZyBidXQgaW4gdGhlIG1lYW50aW1lIHBsZWFzZSBsZXQgbWUga25vdyBpZiB5
-b3UgdGhpbmsgSSBjYW4gYmUgb2YgYW55IGhlbHAuDQoNCi0tLQ0KVGhhbmtzICYgQmVzdCBSZWdh
-cmRzLCBMYXVyZW50aXUNCg==
+Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on Intel
+platforms allow address space sharing between device DMA and applications.
+SVA can reduce programming complexity and enhance security.
+This series is intended to enable SVA virtualization, i.e. shared guest
+application address space and physical device DMA address. Only IOMMU portion
+of the changes are included in this series. Additional support is needed in
+VFIO and QEMU (will be submitted separately) to complete this functionality.
+
+To make incremental changes and reduce the size of each patchset. This series
+does not inlcude support for page request services.
+
+In VT-d implementation, PASID table is per device and maintained in the host.
+Guest PASID table is shadowed in VMM where virtual IOMMU is emulated.
+
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest process CR3, FL only|
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush -
+    '-------------'                       |
+    |             |                       V
+    |             |                CR3 in GPA
+    '-------------'
+Guest
+------| Shadow |--------------------------|--------
+      v        v                          v
+Host
+    .-------------.  .----------------------.
+    |   pIOMMU    |  | Bind FL for GVA-GPA  |
+    |             |  '----------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.------------------------------.
+    |             |   |SL for GPA-HPA, default domain|
+    |             |   '------------------------------'
+    '-------------'
+Where:
+ - FL = First level/stage one page tables
+ - SL = Second level/stage two page tables
+
+
+This work is based on collaboration with other developers on the IOMMU
+mailing list. Notably,
+
+[1] [PATCH v6 00/22] SMMUv3 Nested Stage Setup by Eric Auger
+https://lkml.org/lkml/2019/3/17/124
+
+[2] [RFC PATCH 2/6] drivers core: Add I/O ASID allocator by Jean-Philippe
+Brucker
+https://www.spinics.net/lists/iommu/msg30639.html
+
+[3] [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation by Lu Baolu
+https://lkml.org/lkml/2018/11/12/1921
+
+[4] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
+    Address (SVA)
+    https://lwn.net/Articles/754331/
+
+There are roughly three parts:
+1. Generic PASID allocator [1] with extension to support custom allocator
+2. IOMMU cache invalidation passdown from guest to host
+3. Guest PASID bind for nested translation
+
+All generic IOMMU APIs are reused from [1], which has a v7 just published with
+no real impact to the patches used here. It is worth noting that unlike sMMU
+nested stage setup, where PASID table is owned by the guest, VT-d PASID table is
+owned by the host, individual PASIDs are bound instead of the PASID table.
+
+This series is based on the new VT-d 3.0 Specification (https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf).
+This is different than the older series in [4] which was based on the older
+specification that does not have scalable mode.
+
+
+ChangeLog:
+	- V2
+	  - Rebased on Joerg's IOMMU x86/vt-d branch v5.1-rc4
+	  - Integrated with Eric Auger's new v7 series for common APIs
+	  (https://github.com/eauger/linux/tree/v5.1-rc3-2stage-v7)
+	  - Addressed review comments from Andy Shevchenko and Alex Williamson on
+	    IOASID custom allocator.
+	  - Support multiple custom IOASID allocators (vIOMMUs) and dynamic
+	    registration.
+
+
+Jacob Pan (16):
+  driver core: add per device iommu param
+  iommu: introduce device fault data
+  iommu: introduce device fault report API
+  iommu: Introduce attach/detach_pasid_table API
+  ioasid: Convert ioasid_idr to XArray
+  ioasid: Add custom IOASID allocator
+  iommu/vt-d: Add custom allocator for IOASID
+  iommu/vt-d: Replace Intel specific PASID allocator with IOASID
+  iommu/vt-d: Move domain helper to header
+  iommu/vt-d: Add nested translation support
+  iommu: Add guest PASID bind function
+  iommu/vt-d: Add bind guest PASID support
+  iommu/vtd: Clean up for SVM device list
+  iommu: Add max num of cache and granu types
+  iommu/vt-d: Support flushing more translation cache types
+  iommu/vt-d: Add svm/sva invalidate function
+
+Jean-Philippe Brucker (1):
+  drivers core: Add I/O ASID allocator
+
+Liu, Yi L (1):
+  iommu: Introduce cache_invalidate API
+
+Lu Baolu (1):
+  iommu/vt-d: Enlightened PASID allocation
+
+ drivers/base/Kconfig        |   6 +
+ drivers/base/Makefile       |   1 +
+ drivers/base/ioasid.c       | 265 ++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/Kconfig       |   1 +
+ drivers/iommu/dmar.c        |  48 ++++++++
+ drivers/iommu/intel-iommu.c | 236 ++++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel-pasid.c | 189 ++++++++++++++++++++++++-----
+ drivers/iommu/intel-pasid.h |  24 +++-
+ drivers/iommu/intel-svm.c   | 289 +++++++++++++++++++++++++++++++++++---------
+ drivers/iommu/iommu.c       | 188 +++++++++++++++++++++++++++-
+ include/linux/device.h      |   3 +
+ include/linux/intel-iommu.h |  41 ++++++-
+ include/linux/intel-svm.h   |   7 ++
+ include/linux/ioasid.h      |  53 ++++++++
+ include/linux/iommu.h       | 121 +++++++++++++++++++
+ include/uapi/linux/iommu.h  | 255 ++++++++++++++++++++++++++++++++++++++
+ 16 files changed, 1625 insertions(+), 102 deletions(-)
+ create mode 100644 drivers/base/ioasid.c
+ create mode 100644 include/linux/ioasid.h
+ create mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.7.4
