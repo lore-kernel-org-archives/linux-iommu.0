@@ -1,132 +1,108 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 10/19] iommu/vt-d: Add custom allocator for IOASID
-Date: Tue, 23 Apr 2019 16:31:10 -0700
-Message-ID: <1556062279-64135-11-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v2 07/19] ioasid: Convert ioasid_idr to XArray
+Date: Tue, 23 Apr 2019 16:31:07 -0700
+Message-ID: <1556062279-64135-8-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Eric Auger <eric.auger@redhat.com>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1556062279-64135-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When VT-d driver runs in the guest, PASID allocation must be
-performed via virtual command interface. This patch register a
-custom IOASID allocator which takes precedence over the default
-IDR based allocator. The resulting IOASID allocation will always
-come from the host. This ensures that PASID namespace is system-
-wide.
+IDR is to be replaced by XArray, keep up with the changes.
+XArray has internal locking for normal APIs used here, also removed
+radix tree related preload.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Suggested-by: Ira Weiny <ira.weiny-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 58 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  2 ++
- 2 files changed, 60 insertions(+)
+ drivers/base/ioasid.c | 29 ++++++++++++-----------------
+ 1 file changed, 12 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d93c4bd..ec6f22d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1711,6 +1711,8 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
- 	}
-+	ioasid_unregister_allocator(&iommu->pasid_allocator);
-+
- #endif
- }
+diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
+index cf122b2..c4012aa 100644
+--- a/drivers/base/ioasid.c
++++ b/drivers/base/ioasid.c
+@@ -4,7 +4,7 @@
+  * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
+  * free IOASIDs with ioasid_alloc and ioasid_free.
+  */
+-#include <linux/idr.h>
++#include <linux/xarray.h>
+ #include <linux/ioasid.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+@@ -16,13 +16,12 @@ struct ioasid_data {
+ 	struct rcu_head rcu;
+ };
  
-@@ -4811,6 +4813,46 @@ static int __init platform_optin_force_iommu(void)
- 	return 1;
- }
+-static DEFINE_IDR(ioasid_idr);
+-
++static DEFINE_XARRAY_ALLOC(ioasid_xa);
+ /**
+  * ioasid_alloc - Allocate an IOASID
+  * @set: the IOASID set
+  * @min: the minimum ID (inclusive)
+- * @max: the maximum ID (exclusive)
++ * @max: the maximum ID (inclusive)
+  * @private: data private to the caller
+  *
+  * Allocate an ID between @min and @max (or %0 and %INT_MAX). Return the
+@@ -41,13 +40,13 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
  
-+static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max, void *data)
-+{
-+	struct intel_iommu *iommu = data;
-+	ioasid_t ioasid;
-+
-+	/*
-+	 * VT-d virtual command interface always uses the full 20 bit
-+	 * PASID range. Host can partition guest PASID range based on
-+	 * policies but it is out of guest's control.
-+	 */
-+	if (min < PASID_MIN || max > PASID_MAX)
-+		return -EINVAL;
-+
-+	if (vcmd_alloc_pasid(iommu, &ioasid))
-+		return INVALID_IOASID;
-+
-+	return ioasid;
-+}
-+
-+static int intel_ioasid_free(ioasid_t ioasid, void *data)
-+{
-+	struct iommu_pasid_alloc_info *svm;
-+	struct intel_iommu *iommu = data;
-+
-+	if (!iommu || !cap_caching_mode(iommu->cap))
-+		return -EINVAL;
-+	/*
-+	 * Sanity check the ioasid owner is done at upper layer, e.g. VFIO
-+	 * We can only free the PASID when all the devices are unbond.
-+	 */
-+	svm = ioasid_find(NULL, ioasid, NULL);
-+	if (!svm) {
-+		pr_warn("Freeing unbond IOASID %d\n", ioasid);
-+		return -EBUSY;
+ 	data->set = set;
+ 	data->private = private;
++	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_KERNEL)) {
++		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
++		goto exit_free;
 +	}
-+	vcmd_free_pasid(iommu, ioasid);
-+
-+	return 0;
-+}
-+
- int __init intel_iommu_init(void)
+ 
+-	idr_preload(GFP_KERNEL);
+-	idr_lock(&ioasid_idr);
+-	data->id = id = idr_alloc(&ioasid_idr, data, min, max, GFP_ATOMIC);
+-	idr_unlock(&ioasid_idr);
+-	idr_preload_end();
+-
++	data->id = id;
++exit_free:
+ 	if (id < 0) {
+ 		kfree(data);
+ 		return INVALID_IOASID;
+@@ -64,12 +63,8 @@ void ioasid_free(ioasid_t ioasid)
  {
- 	int ret = -ENODEV;
-@@ -4912,6 +4954,22 @@ int __init intel_iommu_init(void)
- 				       "%s", iommu->name);
- 		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
- 		iommu_device_register(&iommu->iommu);
-+		if (cap_caching_mode(iommu->cap) && sm_supported(iommu)) {
-+			/*
-+			 * Register a custom ASID allocator if we are running
-+			 * in a guest, the purpose is to have a system wide PASID
-+			 * namespace among all PASID users.
-+			 * There can be multiple vIOMMUs in each guest but only
-+			 * one allocator is active. All vIOMMU allocators will
-+			 * eventually be calling the same host allocator.
-+			 */
-+			iommu->pasid_allocator.alloc = intel_ioasid_alloc;
-+			iommu->pasid_allocator.free = intel_ioasid_free;
-+			iommu->pasid_allocator.pdata = (void *)iommu;
-+			ret = ioasid_register_allocator(&iommu->pasid_allocator);
-+			if (ret)
-+				pr_warn("Custom PASID allocator registeration failed\n");
-+		}
- 	}
+ 	struct ioasid_data *ioasid_data;
  
- 	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index bff907b..c24c8aa 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -31,6 +31,7 @@
- #include <linux/iommu.h>
- #include <linux/io-64-nonatomic-lo-hi.h>
- #include <linux/dmar.h>
-+#include <linux/ioasid.h>
+-	idr_lock(&ioasid_idr);
+-	ioasid_data = idr_remove(&ioasid_idr, ioasid);
+-	idr_unlock(&ioasid_idr);
+-
+-	if (ioasid_data)
+-		kfree_rcu(ioasid_data, rcu);
++	ioasid_data = xa_erase(&ioasid_xa, ioasid);
++	kfree_rcu(ioasid_data, rcu);
+ }
+ EXPORT_SYMBOL_GPL(ioasid_free);
  
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-@@ -549,6 +550,7 @@ struct intel_iommu {
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-+	struct ioasid_allocator pasid_allocator; /* Custom allocator for PASIDs */
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
+@@ -93,7 +88,7 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+ 	struct ioasid_data *ioasid_data;
+ 
+ 	rcu_read_lock();
+-	ioasid_data = idr_find(&ioasid_idr, ioasid);
++	ioasid_data = xa_load(&ioasid_xa, ioasid);
+ 	if (ioasid_data && ioasid_data->set == set) {
+ 		priv = ioasid_data->private;
+ 		if (getter && !getter(priv))
 -- 
 2.7.4
