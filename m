@@ -3,69 +3,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3356C10F03
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 17:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C51ABC282DD
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 17:20:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F57320645
-	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 17:12:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8C0E320835
+	for <iommu@archiver.kernel.org>; Tue, 23 Apr 2019 17:20:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ayQa++Pm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F57320645
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="McGNaf3d"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C0E320835
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 38349CDF;
-	Tue, 23 Apr 2019 17:12:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 61596AC8;
+	Tue, 23 Apr 2019 17:20:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 79A62CCE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8E5A3AC7
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 17:12:26 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ED7A6F4
+	Tue, 23 Apr 2019 17:20:17 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 713F9829
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Apr 2019 17:12:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=merlin.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=51+tu1oIqK3EcVYvR3cWej3B+dgWrl4KsImF/EU0eUQ=;
-	b=ayQa++Pm8jAB/DGkr2mbbcclC
-	/k4tQSII0yLIPTBL48Rqm/D3G2BlwYxE1848ZLySXm+r0JHltH+/oRdelw2cgOhI9ivk5BWyctVEA
-	9v/YOx2w3H8+aTrAuBEce/jseNwLIMGyRmNYa8XN3Q+YurAiW4EU+UdJIfoxFEcy7KZFgBsYiWw21
-	DoBp6lkqkORbhZhYslJhSLqkmg+7NFaAr0c/gOi9+o8DTVLdbjdbBP7Kh7+QfsKF089Vzb+x4Ettb
-	zqm1gPYim/3/Ix7PDdSGvW7D4aqlqPE5ylrrzCnDNUDBXhG5MQu36WrvfmP8jpcnWA5Y/Hr1XmK6l
-	6Zp/EGN+Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100]
-	helo=hirez.programming.kicks-ass.net)
-	by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hIyxd-0007Bk-MI; Tue, 23 Apr 2019 17:12:01 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id D2AC329AC07B5; Tue, 23 Apr 2019 19:11:58 +0200 (CEST)
-Date: Tue, 23 Apr 2019 19:11:58 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Jonathan Corbet <corbet@lwn.net>
+	Tue, 23 Apr 2019 17:20:15 +0000 (UTC)
+Received: from zn.tnic (p200300EC2F10CC005966DC6E23F72562.dip0.t-ipconnect.de
+	[IPv6:2003:ec:2f10:cc00:5966:dc6e:23f7:2562])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id
+	DEF101EC0A7C; Tue, 23 Apr 2019 19:20:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1556040013;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	content-transfer-encoding:in-reply-to:in-reply-to: references:references;
+	bh=mwVTpg13SBC97f2USbPraM4nvtlLOXZnOp5nHcgdKwk=;
+	b=McGNaf3dJr2pnuSgxKLdzHDiUmeuMU1w6Z9Q4i61m49AW2HPRaBzWB8EJBztU2o2umPz9H
+	HwWZFqAdk5Ab8mSBFnzm96ATsTndVAZBVkf/zrEqMSvZhEmuePqwmEhTycRuvsqoFqm39D
+	plTTzIQp0QPM2dINdzvM89Rx4KkUnDs=
+Date: Tue, 23 Apr 2019 19:20:06 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: Peter Zijlstra <peterz@infradead.org>
 Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
 	files to *.rst
-Message-ID: <20190423171158.GG12232@hirez.programming.kicks-ass.net>
+Message-ID: <20190423172006.GD16353@zn.tnic>
 References: <cover.1555938375.git.mchehab+samsung@kernel.org>
 	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
 	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
 	<20190423125519.GA7104@redhat.com>
 	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
 	<20190423103053.07cf2149@lwn.net>
+	<20190423171158.GG12232@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190423103053.07cf2149@lwn.net>
+In-Reply-To: <20190423171158.GG12232@hirez.programming.kicks-ass.net>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
 	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
@@ -110,18 +106,18 @@ Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
 	Heiko Carstens <heiko.carstens@de.ibm.com>,
 	platform-driver-x86@vger.kernel.org,
 	"Paul E. McKenney" <paulmck@linux.ibm.com>,
-	Kishon Vijay Abraham I <kishon@ti.com>, Emese Revfy <re.emese@gmail.com>,
-	Darren Hart <dvhart@infradead.org>, Jade Alglave <j.alglave@ucl.ac.uk>,
-	"Serge E. Hallyn" <serge@hallyn.com>, Fenghua Yu <fenghua.yu@intel.com>,
+	Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>,
+	Emese Revfy <re.emese@gmail.com>, Darren Hart <dvhart@infradead.org>,
+	Jade Alglave <j.alglave@ucl.ac.uk>, "Serge E. Hallyn" <serge@hallyn.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
 	Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
 	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Ning Sun <ning.sun@intel.com>, Borislav Petkov <bp@alien8.de>,
-	Luc Maranget <luc.maranget@inria.fr>,
+	Ning Sun <ning.sun@intel.com>, Luc Maranget <luc.maranget@inria.fr>,
 	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
 	Guan Xuetao <gxt@pku.edu.cn>, linux-parisc@vger.kernel.org,
 	iommu@lists.linux-foundation.org, Stuart Hayes <stuart.w.hayes@gmail.com>,
 	Logan Gunthorpe <logang@deltatee.com>,
-	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+	Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
 	Rich Felker <dalias@libc.org>, kvm@vger.kernel.org,
 	Maxime Ripard <maxime.ripard@bootlin.com>,
 	Jerry Hoemann <jerry.hoemann@hpe.com>,
@@ -156,43 +152,32 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190423171158.-Q2lDDAQcVegyMn5-NmH2LmgMYAe-9EBpaIhCG0AAI4@z>
+Message-ID: <20190423172006.3gW6hSnQxtK2C1KyHwji-RA9yhc3zEbQ18cgBKfuC90@z>
 
-On Tue, Apr 23, 2019 at 10:30:53AM -0600, Jonathan Corbet wrote:
-> On Tue, 23 Apr 2019 15:01:32 +0200
-> Peter Zijlstra <peterz@infradead.org> wrote:
-> 
-> > But yes, I have 0 motivation to learn or abide by rst. It simply doesn't
-> > give me anything in return. There is no upside, only worse text files :/
-> 
-> So I believe it gives even you one thing in return: documentation that is
-> more accessible for both readers and authors.
+On Tue, Apr 23, 2019 at 07:11:58PM +0200, Peter Zijlstra wrote:
+> I know I'm an odd duck; but no. They're _less_ accessible for me, as
+> both a reader and author. They look 'funny' when read as a text file
+> (the only way it makes sense to read them; I spend 99% of my time on a
+> computer looking at monospace text interfaces; mutt, vim and console, in
+> that approximate order).
 
-I know I'm an odd duck; but no. They're _less_ accessible for me, as
-both a reader and author. They look 'funny' when read as a text file
-(the only way it makes sense to read them; I spend 99% of my time on a
-computer looking at monospace text interfaces; mutt, vim and console, in
-that approximate order).
++1
 
-When writing, I now have to be bothered about this format crap over just
-trying to write a coherent document.
+It is probably fine to stare at them here
+https://www.kernel.org/doc/html/latest/ and the end result is good
+for showing them in browsers but after this conversion, it is
+getting more and more painful to work with those files. For example,
+Documentation/x86/x86_64/mm.txt we use a lot. I'd hate it if I had to go
+sort out rest muck first just so that I can read it.
 
-Look at crap like this:
+I think we can simply leave some text files be text files and be done
+with it.
 
-"The memory allocations via :c:func:`kmalloc`, :c:func:`vmalloc`,
-:c:func:`kmem_cache_alloc` and"
+-- 
+Regards/Gruss,
+    Boris.
 
-That should've been written like:
-
-"The memory allocations via kmalloc(), vmalloc(), kmem_cache_alloc()
-and"
-
-Heck, that paragraph isn't even properly flowed.
-
-Then there's the endless stuck ':' key, and the mysterious "''" because
-\" isn't a character, oh wait.
-
-Bah..
+Good mailing practices for 400: avoid top-posting and trim the reply.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
