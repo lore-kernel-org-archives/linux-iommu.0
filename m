@@ -1,38 +1,32 @@
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 6/9] iommu/amd: use helper pci_dev_id
-Date: Wed, 24 Apr 2019 21:15:25 +0200
-Message-ID: <f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
-References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 RFC/RFT 1/5] ARM: dma-mapping: Add fallback normal
+ page allocations
+Date: Wed, 24 Apr 2019 21:26:52 +0200
+Message-ID: <20190424192652.GA29032@lst.de>
+References: <20190326230131.16275-1-nicoleotsuka@gmail.com> <20190326230131.16275-2-nicoleotsuka@gmail.com> <20190424150638.GA22191@lst.de> <20190424183310.GA6168@Asurada-Nvidia.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190424183310.GA6168@Asurada-Nvidia.nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Oded Gabbay <oded.gabbay@gmail.com>, Alex Deucher <alexander.deucher@amd.com>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, "David (ChunMing) Zhou" <David1.Zhou@amd.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Realtek linux nic maintainers <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, Alexandre Torgue <alexandre.torgue@st.com>, Jose Abreu <joabreu@synopsys.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Benson Leung <bleung@chromium.org>
-Cc: open list <linux-kernel@vger.kernel.org>, "open list:AMD KFD" <dri-devel@lists.freedesktop.org>, "open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" <netdev@vger.kernel.org>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>, robin.murphy@arm.com, vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, joro@8bytes.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, tony@atomide.com
 List-Id: iommu@lists.linux-foundation.org
 
-Use new helper pci_dev_id() to simplify the code.
+On Wed, Apr 24, 2019 at 11:33:11AM -0700, Nicolin Chen wrote:
+> I feel it's similar to my previous set, which did most of these
+> internally except the renaming part. But Catalin had a concern
+> that some platforms might have limits on CMA range [1]. Will it
+> be still okay to do the fallback internally?
+> 
+> [1: https://www.spinics.net/lists/arm-kernel/msg714295.html ]
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index f467cc4b4..5cb201422 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -165,7 +165,7 @@ static inline u16 get_pci_device_id(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 
--	return PCI_DEVID(pdev->bus->number, pdev->devfn);
-+	return pci_dev_id(pdev);
- }
- 
- static inline int get_acpihid_device_id(struct device *dev,
--- 
-2.21.0
+Catalins statement is correct, but I don't see how it applies to
+your patch.  Your patch just ensures that the fallback we have
+in most callers is uniformly applied everywhere.  The non-iommu
+callers will still need to select a specific zone and/or retry
+just the page allocator with other flags if the CMA (or fallback)
+page doesn't match what they need.  dma-direct does this correctly
+and I think the arm32 allocator does as well, although it is a bit
+hard to follow sometimes.
