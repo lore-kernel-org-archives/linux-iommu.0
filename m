@@ -2,143 +2,153 @@ Return-Path: <SRS0=cQN6=S2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8257FC10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 16:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B58C6C10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 16:43:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 53E45218B0
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 16:40:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="FX4M3XHt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 53E45218B0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8E8CE218FE
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 16:43:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E8CE218FE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 14AEFEFB;
-	Wed, 24 Apr 2019 16:40:11 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5E5D811DD;
+	Wed, 24 Apr 2019 16:43:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D3A8EF6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ECA9DF39
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 16:40:09 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [85.118.1.10])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 98A1682B
+	Wed, 24 Apr 2019 16:42:59 +0000 (UTC)
+X-Greylist: delayed 00:20:01 by SQLgrey-1.7.6
+Received: from smtp.nue.novell.com (smtp.nue.novell.com [195.135.221.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C947982B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 16:40:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209;
-	h=Content-Transfer-Encoding:Content-Type:
-	MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=0E7wdaZs32is+RNrw+6LDoFobePvr9hfp+PKbemCQas=;
-	b=FX4M3XHtvp1F/NRbMcVk3c3BdV
-	z122ZxjTx8gj/utsZPfhmKsR03lvVXy1QOAH/6e0h+BbFrIY7RfV525T3w8P59s1RaIIGxIYcPBjQ
-	kfHew2dGue0jOQJpe5KOtUITBZNAfrzd/mhDAq0DESD+MEPJFZyTNt9nUeZkxJT8DDnBsNar2pCbo
-	rdre8KGJh7aEXYU3u6zl0NXYh2laBOI0GkU+Q/KG3slCdSR/ZsYOWHeb+gxqioawbobWdGCwppCW6
-	utSwuIQ+n8zhJ6aRBs0+4QMNot2mkAXQ0yEX1HKViF4YSsHkbEC9pbu2pHze97rQq5QcCwCVu5Bug
-	bs2trXPg==;
-Received: from 177.17.136.231.dynamic.adsl.gvt.net.br ([177.17.136.231]
-	helo=coco.lan)
-	by casper.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hJKtK-0004wn-0w; Wed, 24 Apr 2019 16:37:02 +0000
-Date: Wed, 24 Apr 2019 13:36:27 -0300
-From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
-	files to *.rst
-Message-ID: <20190424133627.63d7beed@coco.lan>
-In-Reply-To: <20190424145410.GE30142@zn.tnic>
-References: <cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
-	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
-	<20190423125519.GA7104@redhat.com>
-	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
-	<20190423103053.07cf2149@lwn.net>
-	<20190423171158.GG12232@hirez.programming.kicks-ass.net>
-	<20190423172006.GD16353@zn.tnic> <20190423170409.7b1370ac@coco.lan>
-	<20190423213816.GE16353@zn.tnic> <20190423232325.679c100b@coco.lan>
-	<20190424145410.GE30142@zn.tnic>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+	Wed, 24 Apr 2019 16:42:58 +0000 (UTC)
+Received: from emea4-mta.ukb.novell.com ([10.120.13.87])
+	by smtp.nue.novell.com with ESMTP (TLS encrypted);
+	Wed, 24 Apr 2019 18:22:55 +0200
+Received: from ziggy.stardust (nwb-a10-snat.microfocus.com [10.120.13.201])
+	by emea4-mta.ukb.novell.com with ESMTP (TLS encrypted);
+	Wed, 24 Apr 2019 17:22:31 +0100
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: make sure the kdump kernel can
+	work well when smmu is enabled
+To: Will Deacon <will.deacon@arm.com>,
+	"Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+References: <20190318131243.20716-1-thunder.leizhen@huawei.com>
+	<20190404153031.GE27558@fuggles.cambridge.arm.com>
+	<5CAAB293.3080600@huawei.com>
+	<20190416091410.GC31579@fuggles.cambridge.arm.com>
+From: Matthias Brugger <mbrugger@suse.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mbrugger@suse.com; prefer-encrypt=mutual; keydata=
+	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
+Message-ID: <8302e13d-2a9d-ab28-8883-1748848c36d9@suse.com>
+Date: Wed, 24 Apr 2019 18:22:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
-	Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
-	Jaroslav Kysela <perex@perex.cz>, kernel-hardening@lists.openwall.com,
-	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-	linux-sh@vger.kernel.org, James Morris <jmorris@namei.org>,
-	Halil Pasic <pasic@linux.ibm.com>, tboot-devel@lists.sourceforge.net,
-	Alan Stern <stern@rowland.harvard.edu>,
-	openipmi-developer@lists.sourceforge.net,
-	Guenter Roeck <linux@roeck-us.net>, Boqun Feng <boqun.feng@gmail.com>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Matt Mackall <mpm@selenic.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Sean Paul <sean@poorly.run>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-crypto@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>, linux-fbdev@vger.kernel.org,
-	linux-ia64@vger.kernel.org,
-	Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-	David Airlie <airlied@linux.ie>, "James E.J.
-	Bottomley" <James.Bottomley@HansenPartnership.com>, dm-devel@redhat.com,
-	Harry Wei <harryxiyou@gmail.com>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Alasdair Kergon <agk@redhat.com>, linux-s390@vger.kernel.org,
-	Alex Shi <alex.shi@linux.alibaba.com>,
-	Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-	Changbin Du <changbin.du@gmail.com>, Eric Farman <farman@linux.ibm.com>,
-	linux-watchdog@vger.kernel.org, Corey Minyard <minyard@acm.org>,
-	Mauro Carvalho Chehab <mchehab@infradead.org>,
-	linaro-mm-sig@lists.linaro.org, linux-gpio@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
-	Tony Luck <tony.luck@intel.com>, Cornelia Huck <cohuck@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Andrea Parri <andrea.parri@amarulasolutions.com>,
-	linux-pci@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-	Heiko Carstens <heiko.carstens@de.ibm.com>,
-	platform-driver-x86@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@linux.ibm.com>,
-	Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>,
-	Peter Zijlstra <peterz@infradead.org>, Emese Revfy <re.emese@gmail.com>,
-	Darren Hart <dvhart@infradead.org>,
-	Jade Alglave <j.alglave@ucl.ac.uk>, "Serge
-	E. Hallyn" <serge@hallyn.com>, Fenghua Yu <fenghua.yu@intel.com>,
-	Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Ning Sun <ning.sun@intel.com>, Luc Maranget <luc.maranget@inria.fr>,
-	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-	Guan Xuetao <gxt@pku.edu.cn>, linux-parisc@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Stuart Hayes <stuart.w.hayes@gmail.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Andreas =?UTF-8?B?RsOkcmJlcg==?= <afaerber@suse.de>,
-	Rich Felker <dalias@libc.org>, kvm@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@bootlin.com>,
-	Jerry Hoemann <jerry.hoemann@hpe.com>,
-	David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
-	Kirti Wankhede <kwankhede@nvidia.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>, x86@kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	Ingo Molnar <mingo@redhat.com>, devicetree@vger.kernel.org,
-	Daniel Lustig <dlustig@nvidia.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	linux-block@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
-	linux-security-module@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Robin Murphy <robin.murphy@arm.com>, Andy Shevchenko <andy@infradead.org>
+In-Reply-To: <20190416091410.GC31579@fuggles.cambridge.arm.com>
+Content-Language: en-US
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -155,57 +165,84 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424163627.QRuKZM280Fa8ODuGkk4xy5qtKB4mNdWk3WNzhuX5Zvc@z>
+Message-ID: <20190424162230.gPp87AoPPoolrZlVR_xhjw5UWzra9uHQGLJ34DlueZE@z>
 
-Em Wed, 24 Apr 2019 16:54:10 +0200
-Borislav Petkov <bp@alien8.de> escreveu:
 
-> On Wed, Apr 24, 2019 at 07:40:07AM -0300, Mauro Carvalho Chehab wrote:
-> > Personally, I don't care much with monospaced fonts on this table. After
-> > all, if I want to see it monospaced, I can simply click at the
-> > "View page source" at the browser, and it will display the file as a
-> > plain old monospaced text file.  
+
+On 16/04/2019 11:14, Will Deacon wrote:
+> On Mon, Apr 08, 2019 at 10:31:47AM +0800, Leizhen (ThunderTown) wrote:
+>> On 2019/4/4 23:30, Will Deacon wrote:
+>>> On Mon, Mar 18, 2019 at 09:12:41PM +0800, Zhen Lei wrote:
+>>>> v1 --> v2:
+>>>> 1. Drop part2. Now, we only use the SMMUv3 hardware feature STE.config=0b000
+>>>> (Report abort to device, no event recorded) to suppress the event messages
+>>>> caused by the unexpected devices.
+>>>> 2. rewrite the patch description.
+>>>
+>>> This issue came up a while back:
+>>>
+>>> https://lore.kernel.org/linux-pci/20180302103032.GB19323@arm.com/
+>>>
+>>> and I'd still prefer to solve it using the disable_bypass logic which we
+>>> already have. Something along the lines of the diff below?
+>>
+>> Yes, my patches also use disable_bypass=1(set ste.config=0b000). If
+>> SMMU_IDR0.ST_LEVEL=0(Linear Stream table supported), then all STE entries
+>> are allocated and initialized(set ste.config=0b000). But if SMMU_IDR0.ST_LEVEL=1
+>> (2-level Stream Table), we only allocated and initialized the first level tables,
+>> but leave level 2 tables dynamic allocated. That means, C_BAD_STREAMID(eventid=0x2)
+>> will be reported, if an unexpeted device access memory without reinitialized in
+>> kdump kernel.
 > 
-> Goes to show why kernel people wouldn't want to look at that in
-> the browser. Long hex numbers are hard to read as it is - that's
-> why there's even the 4-digit separator in some docs, for example:
-> 0xffff_ffff_8100_0000.
-
-IMHO, even the 0x and _ would make it harder to read. This is a way
-more easy for my eyes:
-
-	ffff ffff 8100 0000
-
-> Not having it monospaced makes the whole thing even less readable.
-
-Yeah, I see your point and agree with it.
-
-Just saying that, if all I want is to check if addresses that start
-with ffff80 belongs to the guard hole, or just to copy a value from 
-a table into some C code, the font doesn't matter much, and, if
-I care, a simple click would show it in monospaced fonts.
-
-Looking from your PoV, something like:
-
-
-|ffffffff80000000 |   -2    GB | ffffffff9fffffff |  512 MB | kernel text mapping, mapped to physical address 0         |
-
-
-is very hard to be parsed by a human eye, even with monospaced fonts.
-In order to make it easier, I would replace it by:
-
-|ffff ffff 8000 0000 |   -2    GB | ffff ffff 9fff ffff |  512 MB | kernel text mapping, mapped to physical address 0         |
-
-
+> So is your problem just that the C_BAD_STREAMID events are noisy? If so,
+> perhaps we should be disabling fault reporting entirely in the kdump kernel.
 > 
-> That's why it is important for the markup not to get in the way of
-> people looking at those files in an editor.
+> How about the update diff below? I'm keen to have this as simple as
+> possible, so we don't end up introducing rarely tested, complex code on
+> the crash path.
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index d3880010c6cf..d8b73da6447d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2454,13 +2454,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  	/* Clear CR0 and sync (disables SMMU and queue processing) */
+>  	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+>  	if (reg & CR0_SMMUEN) {
+> -		if (is_kdump_kernel()) {
+> -			arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+> -			arm_smmu_device_disable(smmu);
+> -			return -EBUSY;
+> -		}
+> -
+>  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
+> +		WARN_ON(is_kdump_kernel() && !disable_bypass);
+> +		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
+>  	}
+>  
+>  	ret = arm_smmu_device_disable(smmu);
+> @@ -2553,6 +2549,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  		return ret;
+>  	}
+>  
+> +	if (is_kdump_kernel())
+> +		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+>  
+>  	/* Enable the SMMU interface, or ensure bypass */
+>  	if (!bypass || disable_bypass) {
+> 
 
-Fully agreed. the markups should make things easier and not
-harder for people to read its contents.
+Same here I tested the patch and it works for me.
 
-Thanks,
-Mauro
+Feel free to add:
+Tested-by: Matthias Brugger <mbrugger@suse.com>
+
+Regards,
+Matthias
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
