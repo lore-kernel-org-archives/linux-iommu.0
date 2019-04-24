@@ -1,7 +1,7 @@
 From: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 8/9] stmmac: pci: use helper pci_dev_id
-Date: Wed, 24 Apr 2019 21:16:41 +0200
-Message-ID: <82febf42-5f1e-a5d1-5c38-40dcaefdf700@gmail.com>
+Subject: [PATCH v2 6/9] iommu/amd: use helper pci_dev_id
+Date: Wed, 24 Apr 2019 21:15:25 +0200
+Message-ID: <f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -18,21 +18,21 @@ Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 2 +-
+ drivers/iommu/amd_iommu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index cc1e887e4..0e87a9596 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -208,7 +208,7 @@ static int quark_default_data(struct pci_dev *pdev,
- 		ret = 1;
- 	}
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f467cc4b4..5cb201422 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -165,7 +165,7 @@ static inline u16 get_pci_device_id(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
  
--	plat->bus_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
-+	plat->bus_id = pci_dev_id(pdev);
- 	plat->phy_addr = ret;
- 	plat->interface = PHY_INTERFACE_MODE_RMII;
+-	return PCI_DEVID(pdev->bus->number, pdev->devfn);
++	return pci_dev_id(pdev);
+ }
  
+ static inline int get_acpihid_device_id(struct device *dev,
 -- 
 2.21.0
