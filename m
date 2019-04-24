@@ -1,11 +1,13 @@
 From: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 0/9] PCI: add help pci_dev_id
-Date: Wed, 24 Apr 2019 21:10:21 +0200
-Message-ID: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
+Subject: [PATCH v2 1/9] PCI: add helper pci_dev_id
+Date: Wed, 24 Apr 2019 21:11:58 +0200
+Message-ID: <a7980450-4ae2-9a18-4068-7463fb0190bd@gmail.com>
+References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Oded Gabbay <oded.gabbay@gmail.com>, Alex Deucher <alexander.deucher@amd.com>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, "David (ChunMing) Zhou" <David1.Zhou@amd.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Realtek linux nic maintainers <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, Alexandre Torgue <alexandre.torgue@st.com>, Jose Abreu <joabreu@synopsys.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Benson Leung <bleung@chromium.org>
@@ -16,32 +18,26 @@ In several places in the kernel we find PCI_DEVID used like this:
 PCI_DEVID(dev->bus->number, dev->devfn) Therefore create a helper
 for it.
 
-v2:
-- apply the change to all affected places in the kernel
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ include/linux/pci.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Heiner Kallweit (9):
-  PCI: add helper pci_dev_id
-  PCI: use helper pci_dev_id
-  r8169: use new helper pci_dev_id
-  powerpc/powernv/npu: use helper pci_dev_id
-  drm/amdkfd: use helper pci_dev_id
-  iommu/amd: use helper pci_dev_id
-  iommu/vt-d: use helper pci_dev_id
-  stmmac: pci: use helper pci_dev_id
-  platform/chrome: chromeos_laptop: use helper pci_dev_id
-
- arch/powerpc/platforms/powernv/npu-dma.c         | 14 ++++++--------
- drivers/gpu/drm/amd/amdkfd/kfd_topology.c        |  3 +--
- drivers/iommu/amd_iommu.c                        |  2 +-
- drivers/iommu/intel-iommu.c                      |  2 +-
- drivers/iommu/intel_irq_remapping.c              |  2 +-
- drivers/net/ethernet/realtek/r8169.c             |  3 +--
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  2 +-
- drivers/pci/msi.c                                |  6 +++---
- drivers/pci/search.c                             | 10 +++-------
- drivers/platform/chrome/chromeos_laptop.c        |  2 +-
- include/linux/pci.h                              |  5 +++++
- 11 files changed, 24 insertions(+), 27 deletions(-)
-
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 2c056a7a7..28d0313a3 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -598,6 +598,11 @@ struct pci_bus {
+ 
+ #define to_pci_bus(n)	container_of(n, struct pci_bus, dev)
+ 
++static inline u16 pci_dev_id(struct pci_dev *dev)
++{
++	return PCI_DEVID(dev->bus->number, dev->devfn);
++}
++
+ /*
+  * Returns true if the PCI bus is root (behind host-PCI bridge),
+  * false otherwise
 -- 
 2.21.0
