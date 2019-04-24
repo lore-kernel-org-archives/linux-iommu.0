@@ -1,50 +1,53 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 08/10] iommu/vt-d: Check whether device requires
-	bounce buffer
-Date: Wed, 24 Apr 2019 14:27:30 -0400
-Message-ID: <20190424182730.GA17505@char.us.oracle.com>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-	<20190421011719.14909-9-baolu.lu@linux.intel.com>
-	<20190422164755.GC31181@lst.de>
-	<76e35340-32c3-ee0d-5232-bd8800248402@linux.intel.com>
-	<20190423060858.GA12762@lst.de>
-	<e11489cf-87cc-a956-7c6c-ffdd26a4e3ec@linux.intel.com>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: Re: [PATCH v2 RFC/RFT 1/5] ARM: dma-mapping: Add fallback normal
+ page allocations
+Date: Wed, 24 Apr 2019 11:33:11 -0700
+Message-ID: <20190424183310.GA6168@Asurada-Nvidia.nvidia.com>
+References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
+ <20190326230131.16275-2-nicoleotsuka@gmail.com>
+ <20190424150638.GA22191@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <e11489cf-87cc-a956-7c6c-ffdd26a4e3ec-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alan.cox-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pengfei.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20190424150638.GA22191@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: robin.murphy@arm.com, vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, joro@8bytes.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, tony@atomide.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 23, 2019 at 03:35:51PM +0800, Lu Baolu wrote:
-> Hi,
-> 
-> On 4/23/19 2:08 PM, Christoph Hellwig wrote:
-> > > > Again, this and the option should not be in a specific iommu driver.
-> > > > 
-> > > 
-> > > The option of whether bounce is ignored should be in the specific iommu
-> > > driver.
-> > 
-> > Why?  As a user I could not care less which IOMMU driver my particular
-> > system uses.
-> > 
-> 
-> Looks reasonable to me. Let's listen to more opinions.
+Hi Christoph,
 
-I agree with Christoph here.
+On Wed, Apr 24, 2019 at 05:06:38PM +0200, Christoph Hellwig wrote:
+> On Tue, Mar 26, 2019 at 04:01:27PM -0700, Nicolin Chen wrote:
+> >  	page = dma_alloc_from_contiguous(dev, count, order, gfp & __GFP_NOWARN);
+> > +	if (!page)
+> > +		page = alloc_pages(gfp, order);
 > 
-> Best regards,
-> Lu Baolu
+> We have this fallback in most callers already.  And with me adding
+> it to the dma-iommu code in one series, and you to arm here I think
+> we really need to take a step back and think of a better way
+> to handle this, and the general mess that dma_alloc_from_contiguous.
+> 
+> So what about:
+
+Thanks for the suggestion!
+
+>  (1) change the dma_alloc_from_contiguous prototype to be:
+> 
+> struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
+> 
+>      that is: calculate order and count internally, pass the full gfp_t
+>      and mask it internally, and drop the pointless from in the name.
+>      I'd also use the oppurtunity to forbid a NULL dev argument and
+>      opencode those uses.
+>  
+>  (2) handle the alloc_pages fallback internally.  Note that we should
+>      use alloc_pages_node as we do in dma-direct.
+
+I feel it's similar to my previous set, which did most of these
+internally except the renaming part. But Catalin had a concern
+that some platforms might have limits on CMA range [1]. Will it
+be still okay to do the fallback internally?
+
+[1: https://www.spinics.net/lists/arm-kernel/msg714295.html ]
