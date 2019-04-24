@@ -6,63 +6,61 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C617FC282CE
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 296DFC10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:46:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 96F8320652
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:45:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EB9CB20652
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:46:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jnXyb2lO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96F8320652
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AmuSwOyL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB9CB20652
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 68F791634;
-	Wed, 24 Apr 2019 19:45:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C32A51642;
+	Wed, 24 Apr 2019 19:46:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B7A6C12AD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EEA961634
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:45:25 +0000 (UTC)
+	Wed, 24 Apr 2019 19:46:26 +0000 (UTC)
 X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 635D0870;
-	Wed, 24 Apr 2019 19:45:25 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AC3EA870;
+	Wed, 24 Apr 2019 19:46:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	d=infradead.org; s=merlin.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
 	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=nXNCzgXPp/MC/y/PJgs7pmMKbFnjx8a6N8WFYhwtNcs=;
-	b=jnXyb2lOVttIJoTmHH09wDdgf
-	n8NwsMb9Q8EZ9BhZYTUEmA/PHtyPiQZOmqBu9mXa6yS7FNimIsZTp3th5+3stcuYygHbNmLLYqBGT
-	QahsATylTqjWyQwmQWDXx0qU89AA6/OXLd2NCoPGpUOZ+2qhJ4st3eHGbksMYs7v8Vz1EtlVHBU/V
-	0d2uWTvtE1ut2NEV0rW9PoEWWmPOPkZ6B4Ll/v8YqCWjQwzFWcsIDvwui3aaYqTf72W1WXM1j/0xM
-	JpCvyP3P7MY/egBVMNbkcye19upsSYlZcw08/CLq5k4oepPII8zRfmSr6JNXtPbV5jb8VqzdiXZp7
-	XpWmu0naw==;
+	bh=4eVIy3czAn23vobeXz8xHXFrh4HunqErlYisbzn2mkA=;
+	b=AmuSwOyLbSNnfdXnlzatsx9qY
+	etKIJrLorbJq3EXK61vUd8O6UjB1tDm59T91RkmblHQHYL9kVvFLXBB4NDqQJ3e8J6cQsFpQ6RQPg
+	x/0jl79kRahYdX1mB1OT1NUGOwigYBklCJuAC3e6Nf0kYdorKNltiBd3Mg+w2CdVUNE05cBwdHkkK
+	93Ang+dOQJKq9RTFsMGIn1cJW44e8nUljTFZ34DeOmrCGMmUDz8DUDDvmxZPIBsaPUPbpNvhM3TYc
+	S2sKs+5OOdj/eYDuOG6AvUfkGGsXC4DpfB0HcAgZAVEGWjd3kUZOzbB8LQ7ix9rfzhcBf1ceye29i
+	ZUIRYwwWw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100]
 	helo=hirez.programming.kicks-ass.net)
-	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hJNpM-0005aH-OA; Wed, 24 Apr 2019 19:45:08 +0000
+	by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hJNq6-0000yX-Cu; Wed, 24 Apr 2019 19:45:54 +0000
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id E5F80203E8871; Wed, 24 Apr 2019 21:45:05 +0200 (CEST)
-Date: Wed, 24 Apr 2019 21:45:05 +0200
+	id 553DD203E8871; Wed, 24 Apr 2019 21:45:52 +0200 (CEST)
+Date: Wed, 24 Apr 2019 21:45:52 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 18/29] lockdep: Move stack trace logic into
-	check_prev_add()
-Message-ID: <20190424194505.GR11158@hirez.programming.kicks-ass.net>
+Subject: Re: [patch V2 19/29] lockdep: Simplify stack trace handling
+Message-ID: <20190424194552.GS11158@hirez.programming.kicks-ass.net>
 References: <20190418084119.056416939@linutronix.de>
-	<20190418084254.729689921@linutronix.de>
+	<20190418084254.819500258@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190418084254.729689921@linutronix.de>
+In-Reply-To: <20190418084254.819500258@linutronix.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Catalin Marinas <catalin.marinas@arm.com>,
@@ -105,34 +103,15 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424194505.AdRLxbEYEv14D2loFulbrE4oZYOezHKtELiBYlmfHko@z>
+Message-ID: <20190424194552.Uwru_YhD1_v2-8O4jnwCAMnu3Vx_eG15WjZeOOasJWQ@z>
 
-On Thu, Apr 18, 2019 at 10:41:37AM +0200, Thomas Gleixner wrote:
-> There is only one caller of check_prev_add() which hands in a zeroed struct
-> stack trace and a function pointer to save_stack(). Inside check_prev_add()
-> the stack_trace struct is checked for being empty, which is always
-> true. Based on that one code path stores a stack trace which is unused. The
-> comment there does not make sense either. It's all leftovers from
-> historical lockdep code (cross release).
+On Thu, Apr 18, 2019 at 10:41:38AM +0200, Thomas Gleixner wrote:
+> Replace the indirection through struct stack_trace by using the storage
+> array based interfaces and storing the information is a small lockdep
+> specific data structure.
+> 
 
-I was more or less expecting a revert of:
-
-ce07a9415f26 ("locking/lockdep: Make check_prev_add() able to handle external stack_trace")
-
-And then I read the comment that went with the "static struct
-stack_trace trace" that got removed (in the above commit) and realized
-that your patch will consume more stack entries.
-
-The problem is when the held lock stack in check_prevs_add() has multple
-trylock entries on top, in that case we call check_prev_add() multiple
-times, and this patch will then save the exact same stack-trace multiple
-times, consuming static resources.
-
-Possibly we should copy what stackdepot does (but we cannot use it
-directly because stackdepot uses locks; but possible we can share bits),
-but that is a patch for another day I think.
-
-So while convoluted, perhaps we should retain this code for now.
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
