@@ -1,23 +1,72 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
-Date: Wed, 24 Apr 2019 16:45:32 +0200
-Message-ID: <20190424144532.GA21480@lst.de>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com> <20190421011719.14909-3-baolu.lu@linux.intel.com> <20190422164555.GA31181@lst.de> <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com> <20190423061232.GB12762@lst.de> <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
+From: Tom Murphy via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: flush not present cache in iommu_map_page
+Date: Wed, 24 Apr 2019 15:47:39 +0100
+Message-ID: <CAPL0++7w0wR+hid=0XkGtH2wR0qvL1oNheEMQOM=8CtyhNLmag@mail.gmail.com>
+References: <20190424141900.8883-1-tmurphy@arista.com>
+	<20190424143246.GA24079@infradead.org>
+Reply-To: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190424143246.GA24079-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tom Murphy <murphyt7-/Zw1syy4LHg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 23, 2019 at 03:32:16PM +0800, Lu Baolu wrote:
-> When we add the bounce buffer between IOVA and physical buffer, the
-> bounced buffer must starts from the same offset in a page, otherwise,
-> IOMMU can't work here.
+>The two conditions can go into one if statement to make this a little
+>more clear.
+Ah, yeah of course
 
-Why?  Even with the odd hardware descriptors typical in Intel land that
-only allow offsets in the first page, not the following ones, having
-a zero offset where we previously had one should be fine.
+>And I'd really like to understand the unlikely - amd_iommu_np_cache
+>is set based on a hardware capability, so it seems rather odd to mark
+>it unlikely.  Dynamic branch prediction really should do the right thing
+>here usually.
+
+Here is the commit which added it without any explanation:
+https://github.com/torvalds/linux/commit/270cab2426cdc6307725e4f1f46ecf8ab8e69193
+
+should we remove it seen as there's no explanation given ?
+
+
+On Wed, Apr 24, 2019 at 3:32 PM Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
+>
+> On Wed, Apr 24, 2019 at 03:18:59PM +0100, Tom Murphy via iommu wrote:
+> > check if there is a not-present cache present and flush it if there is.
+> >
+> > Signed-off-by: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/amd_iommu.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > index f7cdd2ab7f11..8ef43224aae0 100644
+> > --- a/drivers/iommu/amd_iommu.c
+> > +++ b/drivers/iommu/amd_iommu.c
+> > @@ -1636,6 +1636,12 @@ static int iommu_map_page(struct protection_domain *dom,
+> >               pte[i] = __pte;
+> >
+> >       update_domain(dom);
+> > +     if (!dom->updated) {
+> > +             if (unlikely(amd_iommu_np_cache)) {
+> > +                     domain_flush_pages(dom, bus_addr, page_size);
+> > +                     domain_flush_complete(dom);
+> > +             }
+> > +     }
+>
+> The two conditions can go into one if statement to make this a little
+> more clear.
+>
+> And I'd really like to understand the unlikely - amd_iommu_np_cache
+> is set based on a hardware capability, so it seems rather odd to mark
+> it unlikely.  Dynamic branch prediction really should do the right thing
+> here usually.
