@@ -2,90 +2,93 @@ Return-Path: <SRS0=cQN6=S2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03824C10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C617FC282CE
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:45:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6A032175B
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:38:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 96F8320652
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 19:45:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PPlQwqKk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6A032175B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jnXyb2lO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96F8320652
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 72A1E15F2;
-	Wed, 24 Apr 2019 19:38:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 68F791634;
+	Wed, 24 Apr 2019 19:45:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 964351545
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B7A6C12AD
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:38:47 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
-	[209.85.215.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2C7DC870
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:38:47 +0000 (UTC)
-Received: by mail-pg1-f194.google.com with SMTP id z16so5265519pgv.11
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 12:38:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=gt37LcZrQPa+TVFY3hiGvxib7Pgjtqj0YnN2XvJD4vw=;
-	b=PPlQwqKk9Cano+RcLs4BXcQoNOMDz0ZTmEbFr3Dph4+TWcEyF2lHobLKPfUPc0guCL
-	VuJKbYTLqPa6lUXqZqO9qqg/+dSBWdLiDcnCdnQs4V8O3pZm2cQ56dkRIJ4869w+znU+
-	WGmPyIF/Gp7jO/KTOgVz5N2S7d9dv7nEAaV3iCzx+Hl9wYMuutYcHVomADdaofVr0tMl
-	L8uDBWNLQ8TqxeKFsOppbGjDol51x5tT18wHHKdn0MmSzaMgLN/eMgdx0mRBuCDvFaNp
-	zBcWBA3bKUc6ZZ6fkGQhdQIIvCiu4+aJXgu2RRb9V6gqz19DC6vWy1nkONy9VrPJYmD/
-	614g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=gt37LcZrQPa+TVFY3hiGvxib7Pgjtqj0YnN2XvJD4vw=;
-	b=avZJVPf3Xj7DvifFz9OzXvfTW2HguezESbNdO82C7r10rBAkvs2l2G4QywiPRj8GmI
-	xh0+d0D39yuw69yjdh/r3JvmXk8AM5BkZxFQ2opU9pYziKgBpB9pbdlwAVIraivFCav1
-	+0XNr/U5IUMCzPkJXaL9XoNRrS49cClZAtBU/5B5IP3RGtuXpWOVpN+7uG4Q40QZrZWU
-	K6EdJArRIAyRjkKcKUTntVPr69W54zlawTTQhAhXaofNhaYhi0HOCP3sq25tNjzW3ZXI
-	FhoX5l040Au/o7AwA10SvJaUVxNzK1qmi4W7gx6TQvdbmWmGx1x633lGpZnhAnKpxnQ/
-	ngJQ==
-X-Gm-Message-State: APjAAAVbW8XSlPqwZC8yTV6K0FUN2xFGYIKRIsm3cgUXuy7ucv7gL6/z
-	Y51Z0GGd7YuaaAD+w6DlRpI=
-X-Google-Smtp-Source: APXvYqy6dfj/Q7qcYcnC9q8nuVjXxrC9oFUtPdUS8oVrD9JdpSnWzoVJDDsr+eYqSVRCowjtUkZvvA==
-X-Received: by 2002:a65:6201:: with SMTP id d1mr15539968pgv.28.1556134726459; 
-	Wed, 24 Apr 2019 12:38:46 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
-	[216.228.112.22]) by smtp.gmail.com with ESMTPSA id
-	f87sm32296503pff.56.2019.04.24.12.38.45
-	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-	Wed, 24 Apr 2019 12:38:45 -0700 (PDT)
-Date: Wed, 24 Apr 2019 12:38:41 -0700
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 RFC/RFT 1/5] ARM: dma-mapping: Add fallback normal
-	page allocations
-Message-ID: <20190424193840.GA30240@Asurada-Nvidia.nvidia.com>
-References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
-	<20190326230131.16275-2-nicoleotsuka@gmail.com>
-	<20190424150638.GA22191@lst.de>
-	<20190424183310.GA6168@Asurada-Nvidia.nvidia.com>
-	<20190424192652.GA29032@lst.de>
+	Wed, 24 Apr 2019 19:45:25 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 635D0870;
+	Wed, 24 Apr 2019 19:45:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=nXNCzgXPp/MC/y/PJgs7pmMKbFnjx8a6N8WFYhwtNcs=;
+	b=jnXyb2lOVttIJoTmHH09wDdgf
+	n8NwsMb9Q8EZ9BhZYTUEmA/PHtyPiQZOmqBu9mXa6yS7FNimIsZTp3th5+3stcuYygHbNmLLYqBGT
+	QahsATylTqjWyQwmQWDXx0qU89AA6/OXLd2NCoPGpUOZ+2qhJ4st3eHGbksMYs7v8Vz1EtlVHBU/V
+	0d2uWTvtE1ut2NEV0rW9PoEWWmPOPkZ6B4Ll/v8YqCWjQwzFWcsIDvwui3aaYqTf72W1WXM1j/0xM
+	JpCvyP3P7MY/egBVMNbkcye19upsSYlZcw08/CLq5k4oepPII8zRfmSr6JNXtPbV5jb8VqzdiXZp7
+	XpWmu0naw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100]
+	helo=hirez.programming.kicks-ass.net)
+	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hJNpM-0005aH-OA; Wed, 24 Apr 2019 19:45:08 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id E5F80203E8871; Wed, 24 Apr 2019 21:45:05 +0200 (CEST)
+Date: Wed, 24 Apr 2019 21:45:05 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch V2 18/29] lockdep: Move stack trace logic into
+	check_prev_add()
+Message-ID: <20190424194505.GR11158@hirez.programming.kicks-ass.net>
+References: <20190418084119.056416939@linutronix.de>
+	<20190418084254.729689921@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190424192652.GA29032@lst.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: tony@atomide.com, catalin.marinas@arm.com, will.deacon@arm.com,
-	linux@armlinux.org.uk, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190418084254.729689921@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
+	Christoph Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
+	x86@kernel.org, kasan-dev@googlegroups.com,
+	David Rientjes <rientjes@google.com>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+	David Sterba <dsterba@suse.com>,
+	Dmitry Vyukov <dvyukov@google.com>, Chris Mason <clm@fb.com>,
+	LKML <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>,
+	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -102,30 +105,34 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424193841.klmAGs0nR2MePC1vDHtUaxyPLXOxguw-ZplP-J-d4M8@z>
+Message-ID: <20190424194505.AdRLxbEYEv14D2loFulbrE4oZYOezHKtELiBYlmfHko@z>
 
-On Wed, Apr 24, 2019 at 09:26:52PM +0200, Christoph Hellwig wrote:
-> On Wed, Apr 24, 2019 at 11:33:11AM -0700, Nicolin Chen wrote:
-> > I feel it's similar to my previous set, which did most of these
-> > internally except the renaming part. But Catalin had a concern
-> > that some platforms might have limits on CMA range [1]. Will it
-> > be still okay to do the fallback internally?
-> > 
-> > [1: https://www.spinics.net/lists/arm-kernel/msg714295.html ]
-> 
-> Catalins statement is correct, but I don't see how it applies to
-> your patch.  Your patch just ensures that the fallback we have
-> in most callers is uniformly applied everywhere.  The non-iommu
-> callers will still need to select a specific zone and/or retry
-> just the page allocator with other flags if the CMA (or fallback)
-> page doesn't match what they need.  dma-direct does this correctly
-> and I think the arm32 allocator does as well, although it is a bit
-> hard to follow sometimes.
+On Thu, Apr 18, 2019 at 10:41:37AM +0200, Thomas Gleixner wrote:
+> There is only one caller of check_prev_add() which hands in a zeroed struct
+> stack trace and a function pointer to save_stack(). Inside check_prev_add()
+> the stack_trace struct is checked for being empty, which is always
+> true. Based on that one code path stores a stack trace which is unused. The
+> comment there does not make sense either. It's all leftovers from
+> historical lockdep code (cross release).
 
-Okay. I will revise and submit the patches then. I think we
-can still discuss on this topic once we have the changes.
+I was more or less expecting a revert of:
 
-Thanks
+ce07a9415f26 ("locking/lockdep: Make check_prev_add() able to handle external stack_trace")
+
+And then I read the comment that went with the "static struct
+stack_trace trace" that got removed (in the above commit) and realized
+that your patch will consume more stack entries.
+
+The problem is when the held lock stack in check_prevs_add() has multple
+trylock entries on top, in that case we call check_prev_add() multiple
+times, and this patch will then save the exact same stack-trace multiple
+times, consuming static resources.
+
+Possibly we should copy what stackdepot does (but we cannot use it
+directly because stackdepot uses locks; but possible we can share bits),
+but that is a patch for another day I think.
+
+So while convoluted, perhaps we should retain this code for now.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
