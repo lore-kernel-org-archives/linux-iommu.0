@@ -2,77 +2,140 @@ Return-Path: <SRS0=cQN6=S2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF67C282E1
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 14:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25915C10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 14:54:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA304218FD
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 14:47:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E50AB206BA
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 14:54:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="d0x1GTdS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA304218FD
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="qKxgnEDk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E50AB206BA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B2E2511F7;
-	Wed, 24 Apr 2019 14:47:53 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AB1FE13BB;
+	Wed, 24 Apr 2019 14:54:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B448C109C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 49FE9138D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 14:47:52 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
-	[209.85.221.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2FD0282B
+	Wed, 24 Apr 2019 14:54:20 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4D1BD786
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 14:47:52 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id b1so14227451wru.3
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 07:47:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=arista.com; s=googlenew;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=XEa6rgZnUyAXDzw6k5Wm7RfYfnHAGNjNhYDmbAFVjBc=;
-	b=d0x1GTdScmTi/VkiE0XNzsl/xx34iXYLR6LOxCKLsTXf+xKgooxCZ2Xyd8J8W86ncJ
-	vKseDrctWz4KkIRGBf0ExMi26sVrdk7SnFZgrv4RRSsaVETnvp43d8M8tp/viyukTj+N
-	MRlu6ZmZEZo1ZDzwWkG77AETW1r0ukTgnI8fDtumDz5z3Avf9SIGQPvGwh1Xd5KnGmXd
-	jZHtvBnQjh33rlWdCP/1Z9O0+GiDh0yQHhB0gsbhD7Hv8JszATRIDEM7PBfPlxLYzKYn
-	oTxCBZpjLoVcaf+9vcdNLLqdFnGjedTg73Fnk3NLEWKm+yYFin02gfFGpNQCabirPemr
-	SOxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=XEa6rgZnUyAXDzw6k5Wm7RfYfnHAGNjNhYDmbAFVjBc=;
-	b=fUO5h7btb86S5uQ6rMjqUjeTJOxOwzPxANbJsXylGKjlpIY4kSiJVQcYWEH8GvQG7c
-	vHNyuO4okVy0rKLgIAXaKcQduexbnkdAhOn0WhVHaf9BjN6WnAEoBbcG+yoRqBim/C9n
-	QbDVZ7yvH4KPTIDD2V/FgRB0hoAh3frONATEKWB3OSPyDwZgHA+eAfqMYkXUBOHEXNDP
-	a1+sRMXEdoCh1lkJsK12lsEwfZIlTUlGAylqGgFmrlny1bDNBsc18GslWOPUUQFNCpk7
-	od0O0lGVxvt1l2LrObPkiEcN4DZJnEygTbHYOg06r2WSstO/Zfj4tut4JMnEVkgTXkY/
-	NVfg==
-X-Gm-Message-State: APjAAAXFZpUen3wTMdgA0q3mB0uHxIfiHHNJWfztqc5OBu0oypnhDvSR
-	STJzKTQqpriMe2+0S8tB5hcTNGDUhRqRrqps20ZJuA==
-X-Google-Smtp-Source: APXvYqy+tNCx4ErCwE6WOvxEyVsF30tF7ipxrjOJfD3cHRqiIutbxkuJzuyVN13jSPde5CZ0RstcCD6CBu9IyH/PGwk=
-X-Received: by 2002:adf:fb4a:: with SMTP id c10mr6821472wrs.309.1556117270817; 
-	Wed, 24 Apr 2019 07:47:50 -0700 (PDT)
+	Wed, 24 Apr 2019 14:54:18 +0000 (UTC)
+Received: from zn.tnic (p200300EC2F08C60081A661A9BBF504F3.dip0.t-ipconnect.de
+	[IPv6:2003:ec:2f08:c600:81a6:61a9:bbf5:4f3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id
+	4EE471EC0380; Wed, 24 Apr 2019 16:54:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1556117656;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	content-transfer-encoding:in-reply-to:in-reply-to: references:references;
+	bh=89OdQPInwLe4QK8dv7tOmloa6VT5WcdecRwUM+c60No=;
+	b=qKxgnEDkcRQypgIiTbl3C8ZeaWpp9iNSmd6z2CWWyO2AJHrAns0um83TTU2BYmz+kKSaKo
+	1x+WXacu4gfcY0XJn7H/sXOVOZSs3UXpRYWOqtTqnPqFZn8LJLKHlPUJNPsdK/hcLbAB9x
+	5/TSQWRWEjk2SKwR9cJJ+fVYieYN6tY=
+Date: Wed, 24 Apr 2019 16:54:10 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
+	files to *.rst
+Message-ID: <20190424145410.GE30142@zn.tnic>
+References: <cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
+	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
+	<20190423125519.GA7104@redhat.com>
+	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
+	<20190423103053.07cf2149@lwn.net>
+	<20190423171158.GG12232@hirez.programming.kicks-ass.net>
+	<20190423172006.GD16353@zn.tnic> <20190423170409.7b1370ac@coco.lan>
+	<20190423213816.GE16353@zn.tnic> <20190423232325.679c100b@coco.lan>
 MIME-Version: 1.0
-References: <20190424141900.8883-1-tmurphy@arista.com>
-	<20190424143246.GA24079@infradead.org>
-In-Reply-To: <20190424143246.GA24079@infradead.org>
-Date: Wed, 24 Apr 2019 15:47:39 +0100
-Message-ID:
- <CAPL0++7w0wR+hid=0XkGtH2wR0qvL1oNheEMQOM=8CtyhNLmag@mail.gmail.com>
-Subject: Re: [PATCH] iommu/amd: flush not present cache in iommu_map_page
-To: Christoph Hellwig <hch@infradead.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	Tom Murphy <murphyt7@tcd.ie>
+Content-Disposition: inline
+In-Reply-To: <20190423232325.679c100b@coco.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
+	Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
+	Jaroslav Kysela <perex@perex.cz>, kernel-hardening@lists.openwall.com,
+	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
+	linux-sh@vger.kernel.org, James Morris <jmorris@namei.org>,
+	Halil Pasic <pasic@linux.ibm.com>, tboot-devel@lists.sourceforge.net,
+	Alan Stern <stern@rowland.harvard.edu>,
+	openipmi-developer@lists.sourceforge.net,
+	Guenter Roeck <linux@roeck-us.net>, Boqun Feng <boqun.feng@gmail.com>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Matt Mackall <mpm@selenic.com>, Thomas Gleixner <tglx@linutronix.de>,
+	Sean Paul <sean@poorly.run>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	Mark Rutland <mark.rutland@arm.com>, linux-fbdev@vger.kernel.org,
+	linux-ia64@vger.kernel.org,
+	Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+	David Airlie <airlied@linux.ie>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	dm-devel@redhat.com, Harry Wei <harryxiyou@gmail.com>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Alasdair Kergon <agk@redhat.com>, linux-s390@vger.kernel.org,
+	Alex Shi <alex.shi@linux.alibaba.com>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+	Changbin Du <changbin.du@gmail.com>, Eric Farman <farman@linux.ibm.com>,
+	linux-watchdog@vger.kernel.org, Corey Minyard <minyard@acm.org>,
+	Mauro Carvalho Chehab <mchehab@infradead.org>,
+	linaro-mm-sig@lists.linaro.org, linux-gpio@vger.kernel.org,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
+	Tony Luck <tony.luck@intel.com>, Cornelia Huck <cohuck@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Andrea Parri <andrea.parri@amarulasolutions.com>,
+	linux-pci@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+	Heiko Carstens <heiko.carstens@de.ibm.com>,
+	platform-driver-x86@vger.kernel.org,
+	"Paul E. McKenney" <paulmck@linux.ibm.com>,
+	Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>,
+	Peter Zijlstra <peterz@infradead.org>, Emese Revfy <re.emese@gmail.com>,
+	Darren Hart <dvhart@infradead.org>, Jade Alglave <j.alglave@ucl.ac.uk>,
+	"Serge E. Hallyn" <serge@hallyn.com>, Fenghua Yu <fenghua.yu@intel.com>,
+	Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Ning Sun <ning.sun@intel.com>, Luc Maranget <luc.maranget@inria.fr>,
+	Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+	Guan Xuetao <gxt@pku.edu.cn>, linux-parisc@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Stuart Hayes <stuart.w.hayes@gmail.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
+	Rich Felker <dalias@libc.org>, kvm@vger.kernel.org,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Jerry Hoemann <jerry.hoemann@hpe.com>,
+	David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
+	Kirti Wankhede <kwankhede@nvidia.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
+	Steffen Klassert <steffen.klassert@secunet.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>, x86@kernel.org,
+	Russell King <linux@armlinux.org.uk>,
+	Ingo Molnar <mingo@redhat.com>, devicetree@vger.kernel.org,
+	Daniel Lustig <dlustig@nvidia.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	linux-block@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
+	linux-security-module@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Robin Murphy <robin.murphy@arm.com>, Andy Shevchenko <andy@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -85,61 +148,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tom Murphy via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tom Murphy <tmurphy@arista.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424144739.rmvb-7CGj4GEBv-VFhb_I2P8KL1ORLaezD6REf2tsqU@z>
+Message-ID: <20190424145410.8JaD7d0pjg0sN7GORxlrvgeVCfvOk1-onNWR10AdOZ4@z>
 
->The two conditions can go into one if statement to make this a little
->more clear.
-Ah, yeah of course
+On Wed, Apr 24, 2019 at 07:40:07AM -0300, Mauro Carvalho Chehab wrote:
+> Personally, I don't care much with monospaced fonts on this table. After
+> all, if I want to see it monospaced, I can simply click at the
+> "View page source" at the browser, and it will display the file as a
+> plain old monospaced text file.
 
->And I'd really like to understand the unlikely - amd_iommu_np_cache
->is set based on a hardware capability, so it seems rather odd to mark
->it unlikely.  Dynamic branch prediction really should do the right thing
->here usually.
+Goes to show why kernel people wouldn't want to look at that in
+the browser. Long hex numbers are hard to read as it is - that's
+why there's even the 4-digit separator in some docs, for example:
+0xffff_ffff_8100_0000.
 
-Here is the commit which added it without any explanation:
-https://github.com/torvalds/linux/commit/270cab2426cdc6307725e4f1f46ecf8ab8e69193
+Not having it monospaced makes the whole thing even less readable.
 
-should we remove it seen as there's no explanation given ?
+That's why it is important for the markup not to get in the way of
+people looking at those files in an editor.
 
+-- 
+Regards/Gruss,
+    Boris.
 
-On Wed, Apr 24, 2019 at 3:32 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Wed, Apr 24, 2019 at 03:18:59PM +0100, Tom Murphy via iommu wrote:
-> > check if there is a not-present cache present and flush it if there is.
-> >
-> > Signed-off-by: Tom Murphy <tmurphy@arista.com>
-> > ---
-> >  drivers/iommu/amd_iommu.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index f7cdd2ab7f11..8ef43224aae0 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -1636,6 +1636,12 @@ static int iommu_map_page(struct protection_domain *dom,
-> >               pte[i] = __pte;
-> >
-> >       update_domain(dom);
-> > +     if (!dom->updated) {
-> > +             if (unlikely(amd_iommu_np_cache)) {
-> > +                     domain_flush_pages(dom, bus_addr, page_size);
-> > +                     domain_flush_complete(dom);
-> > +             }
-> > +     }
->
-> The two conditions can go into one if statement to make this a little
-> more clear.
->
-> And I'd really like to understand the unlikely - amd_iommu_np_cache
-> is set based on a hardware capability, so it seems rather odd to mark
-> it unlikely.  Dynamic branch prediction really should do the right thing
-> here usually.
+Good mailing practices for 400: avoid top-posting and trim the reply.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
