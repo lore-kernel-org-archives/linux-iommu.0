@@ -1,53 +1,47 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH v2 RFC/RFT 1/5] ARM: dma-mapping: Add fallback normal
- page allocations
-Date: Wed, 24 Apr 2019 11:33:11 -0700
-Message-ID: <20190424183310.GA6168@Asurada-Nvidia.nvidia.com>
-References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
- <20190326230131.16275-2-nicoleotsuka@gmail.com>
- <20190424150638.GA22191@lst.de>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH v2 0/9] PCI: add help pci_dev_id
+Date: Wed, 24 Apr 2019 21:10:21 +0200
+Message-ID: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190424150638.GA22191@lst.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: robin.murphy@arm.com, vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, joro@8bytes.org, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, tony@atomide.com
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Oded Gabbay <oded.gabbay@gmail.com>, Alex Deucher <alexander.deucher@amd.com>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, "David (ChunMing) Zhou" <David1.Zhou@amd.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Realtek linux nic maintainers <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, Alexandre Torgue <alexandre.torgue@st.com>, Jose Abreu <joabreu@synopsys.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Benson Leung <bleung@chromium.org>
+Cc: open list <linux-kernel@vger.kernel.org>, "open list:AMD KFD" <dri-devel@lists.freedesktop.org>, "open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" <netdev@vger.kernel.org>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+In several places in the kernel we find PCI_DEVID used like this:
+PCI_DEVID(dev->bus->number, dev->devfn) Therefore create a helper
+for it.
 
-On Wed, Apr 24, 2019 at 05:06:38PM +0200, Christoph Hellwig wrote:
-> On Tue, Mar 26, 2019 at 04:01:27PM -0700, Nicolin Chen wrote:
-> >  	page = dma_alloc_from_contiguous(dev, count, order, gfp & __GFP_NOWARN);
-> > +	if (!page)
-> > +		page = alloc_pages(gfp, order);
-> 
-> We have this fallback in most callers already.  And with me adding
-> it to the dma-iommu code in one series, and you to arm here I think
-> we really need to take a step back and think of a better way
-> to handle this, and the general mess that dma_alloc_from_contiguous.
-> 
-> So what about:
+v2:
+- apply the change to all affected places in the kernel
 
-Thanks for the suggestion!
+Heiner Kallweit (9):
+  PCI: add helper pci_dev_id
+  PCI: use helper pci_dev_id
+  r8169: use new helper pci_dev_id
+  powerpc/powernv/npu: use helper pci_dev_id
+  drm/amdkfd: use helper pci_dev_id
+  iommu/amd: use helper pci_dev_id
+  iommu/vt-d: use helper pci_dev_id
+  stmmac: pci: use helper pci_dev_id
+  platform/chrome: chromeos_laptop: use helper pci_dev_id
 
->  (1) change the dma_alloc_from_contiguous prototype to be:
-> 
-> struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
-> 
->      that is: calculate order and count internally, pass the full gfp_t
->      and mask it internally, and drop the pointless from in the name.
->      I'd also use the oppurtunity to forbid a NULL dev argument and
->      opencode those uses.
->  
->  (2) handle the alloc_pages fallback internally.  Note that we should
->      use alloc_pages_node as we do in dma-direct.
+ arch/powerpc/platforms/powernv/npu-dma.c         | 14 ++++++--------
+ drivers/gpu/drm/amd/amdkfd/kfd_topology.c        |  3 +--
+ drivers/iommu/amd_iommu.c                        |  2 +-
+ drivers/iommu/intel-iommu.c                      |  2 +-
+ drivers/iommu/intel_irq_remapping.c              |  2 +-
+ drivers/net/ethernet/realtek/r8169.c             |  3 +--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  2 +-
+ drivers/pci/msi.c                                |  6 +++---
+ drivers/pci/search.c                             | 10 +++-------
+ drivers/platform/chrome/chromeos_laptop.c        |  2 +-
+ include/linux/pci.h                              |  5 +++++
+ 11 files changed, 24 insertions(+), 27 deletions(-)
 
-I feel it's similar to my previous set, which did most of these
-internally except the renaming part. But Catalin had a concern
-that some platforms might have limits on CMA range [1]. Will it
-be still okay to do the fallback internally?
-
-[1: https://www.spinics.net/lists/arm-kernel/msg714295.html ]
+-- 
+2.21.0
