@@ -2,53 +2,77 @@ Return-Path: <SRS0=cQN6=S2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25749C282E3
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 13:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C10C282CE
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 14:20:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 01F83218FD
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 13:55:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01F83218FD
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
+	by mail.kernel.org (Postfix) with ESMTPS id C9EAC218FE
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 14:20:06 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="MZCe//Am"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9EAC218FE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DFA8A122D;
-	Wed, 24 Apr 2019 13:55:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9C66B137D;
+	Wed, 24 Apr 2019 14:20:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2AB9B11F3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DAF961378
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 13:55:27 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [195.130.137.90])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 636A282B
+	Wed, 24 Apr 2019 14:20:04 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
+	[209.85.208.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 578CAF4
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 13:55:24 +0000 (UTC)
-Received: from ramsan ([84.194.111.163]) by albert.telenet-ops.be with bizsmtp
-	id 4DvM2000P3XaVaC06DvMpb; Wed, 24 Apr 2019 15:55:22 +0200
-Received: from rox.of.borg ([192.168.97.57]) by ramsan with esmtp (Exim 4.90_1)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1hJIMr-000885-N5; Wed, 24 Apr 2019 15:55:21 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1hJIMr-0006Yb-LC; Wed, 24 Apr 2019 15:55:21 +0200
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Joerg Roedel <joro@8bytes.org>,
-	Magnus Damm <damm+renesas@opensource.se>
-Subject: [PATCH v3 3/6] iommu/ipmmu-vmsa: Make IPMMU_CTX_MAX unsigned
-Date: Wed, 24 Apr 2019 15:55:15 +0200
-Message-Id: <20190424135518.25150-4-geert+renesas@glider.be>
+	Wed, 24 Apr 2019 14:20:04 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id k45so16091837edb.6
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 24 Apr 2019 07:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=arista.com; s=googlenew;
+	h=from:to:cc:subject:date:message-id;
+	bh=GEXaBMD3U4sWuwXoHlsxPa0R20Q7P10dRF3KDQL2tvo=;
+	b=MZCe//Am5X21XLFVYlr3pytX7fCBJ/q1M912/aF3gzt4UqSFUTgrB26DmfRZYqceQg
+	ygy/yVUZWBxf8ANuZE1PuNElLSzIaZbCIEpWYbP06zULQ4fX5tKg2wOTL0a1fwJ3qUW3
+	ok/Zr+2hDDlnIP+y1tFT51fKLh1DCYiw59PETX6diQDrGd8nKeveMN016v/vbZFXqWML
+	BSTQVwx0kDW7Ma0T9wVtKm7GiNxNScSDGYfHxZVm1U6aqFLgbIqYoayPy66QFWxaMc2j
+	I0r0NSmw29K0e7nY06nyM0Ja5ZATnurmdkCgnNWs/gn32j3oOqpIXitKVpuU+EF1xZmc
+	t63w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=GEXaBMD3U4sWuwXoHlsxPa0R20Q7P10dRF3KDQL2tvo=;
+	b=IDIDwkbnD00CL6tfQMUA3c9xANxFhZfN7f2Yz84NtmqwqftG55dhaakZqgfhLkMANe
+	BWgwwbr6SzIO1pSj44OYBhlnKXWfn70MR0tsgWyV6ttlfilY7FwV62hXY2YoQDkXMFbC
+	ZkGx9H3upYrOhmOvcy8kRSXstLztZ8nPrL56fnRh5tH6E9j1ABr0mNBrWGw0Hv3DVDeJ
+	gkjVQxZk1eqaTqGB7l2X2vLsSCEpnpMWkYoQgWEXyRbmcRPS1aBROsuH4KAQkn3F+/w3
+	wzxsLuZ+qej8gfbo7XxuSviZsTOJ4uzmfq95/7VFBBofyLq2q4vitybxJPZ8Z3EN76Uq
+	z0ew==
+X-Gm-Message-State: APjAAAUEQkFz2FPULYQA5pe5ONfQQBz36Ukkl2EjWC7Z5uG5h8dgexTS
+	D4CKo+TwSld+IRkQdKWsRmGhqzxy+bGbig==
+X-Google-Smtp-Source: APXvYqxQoWkEWkvX0AnpeUvXGVH2qnp8HAFlWH0AjCbnHDYypkrpxh2W0ZiM0+baEcssjpVT7UdWEA==
+X-Received: by 2002:aa7:d50a:: with SMTP id y10mr20113750edq.261.1556115602709;
+	Wed, 24 Apr 2019 07:20:02 -0700 (PDT)
+Received: from linux-ThinkPad-X1-Carbon-5th.Hitronhub.home ([89.100.89.87])
+	by smtp.gmail.com with ESMTPSA id
+	r24sm1582159ejo.84.2019.04.24.07.20.01
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 24 Apr 2019 07:20:02 -0700 (PDT)
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/amd: flush not present cache in iommu_map_page
+Date: Wed, 24 Apr 2019 15:18:59 +0100
+Message-Id: <20190424141900.8883-1-tmurphy@arista.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190424135518.25150-1-geert+renesas@glider.be>
-References: <20190424135518.25150-1-geert+renesas@glider.be>
-Cc: linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Tom Murphy <tmurphy@arista.com>, linux-kernel@vger.kernel.org,
+	murphyt7@tcd.ie
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,54 +85,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tom Murphy via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Murphy <tmurphy@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424135515.lriCGhYEZsdg3FdxFpJEDL31zQz8wk3x2IURY0kTqYE@z>
+Message-ID: <20190424141859.vdbFTNvRrwzEkOUqV1gtm0OocC0ojeoatkxJbpnVU84@z>
 
-Make the IPMMU_CTX_MAX constant unsigned, to match the type of
-ipmmu_features.number_of_contexts.
+check if there is a not-present cache present and flush it if there is.
 
-This allows to use plain min() instead of type-casting min_t().
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Signed-off-by: Tom Murphy <tmurphy@arista.com>
 ---
-v3:
-  - Add Reviewed-by,
+ drivers/iommu/amd_iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-v2:
-  - Add Reviewed-by.
----
- drivers/iommu/ipmmu-vmsa.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index f2061bd1dc7b8852..87acf86f295fac0d 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -36,7 +36,7 @@
- #define arm_iommu_detach_device(...)	do {} while (0)
- #endif
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f7cdd2ab7f11..8ef43224aae0 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1636,6 +1636,12 @@ static int iommu_map_page(struct protection_domain *dom,
+ 		pte[i] = __pte;
  
--#define IPMMU_CTX_MAX 8
-+#define IPMMU_CTX_MAX 8U
+ 	update_domain(dom);
++	if (!dom->updated) {
++		if (unlikely(amd_iommu_np_cache)) {
++			domain_flush_pages(dom, bus_addr, page_size);
++			domain_flush_complete(dom);
++		}
++	}
  
- struct ipmmu_features {
- 	bool use_ns_alias_offset;
-@@ -1060,8 +1060,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	if (mmu->features->use_ns_alias_offset)
- 		mmu->base += IM_NS_ALIAS_OFFSET;
- 
--	mmu->num_ctx = min_t(unsigned int, IPMMU_CTX_MAX,
--			     mmu->features->number_of_contexts);
-+	mmu->num_ctx = min(IPMMU_CTX_MAX, mmu->features->number_of_contexts);
- 
- 	irq = platform_get_irq(pdev, 0);
- 
+ 	/* Everything flushed out, free pages now */
+ 	free_page_list(freelist);
 -- 
 2.17.1
 
