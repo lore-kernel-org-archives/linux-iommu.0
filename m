@@ -7,70 +7,70 @@ X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9019C10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2417DC282CE
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B69B7208E4
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E56C1208E4
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f9/VNW2z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B69B7208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AIXRJwuB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E56C1208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C92BC16E9;
-	Wed, 24 Apr 2019 21:15:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0DCB516EC;
+	Wed, 24 Apr 2019 21:15:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A4F2B1606
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 216F01606
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:55 +0000 (UTC)
+	Wed, 24 Apr 2019 19:17:58 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
 	[209.85.128.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 39B1782D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B4A5F82E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:55 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id r186so130575wmf.1
+	Wed, 24 Apr 2019 19:17:57 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id 10so6097897wmk.0
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 12:17:55 -0700 (PDT)
+	Wed, 24 Apr 2019 12:17:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:from:to:cc:references:message-id:date:user-agent
 	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=L7OMDqn053nsdqraX4ZA3guqlyVTDUsFXQaouF1/Gos=;
-	b=f9/VNW2zxOMYFkwIrmd9gbXTTDyAPJldpW0jlqhc9ddqz/XExcnPvUBW2cuC7iHYM3
-	X8sWEHPyq9nl5S69NEsfykmeiFCZbevHNdIJJgmHPsizhhWl3oiNih/U1mpX9mO9RGFS
-	KM259Aqjr8WT/9cB8GP0T95XxV9rqSCvyVkiuYo4c3RfkmvfNBiLbt/GpLG7igafuNss
-	0UqWwQWIKRUnf6Oj2yQ1TbESq80ZDjagj7yMKikfjntdayHK1k3hrrzsjj3j3M7dIK3l
-	pEEm3SCuep4hIm6x/NT02bJpFetnVPIX1ICUNx0+JawhL4nuIXclauj3K/iR0qSrEfle
-	NQMw==
+	bh=SAbbSQG37YeApBp0oyHaMCbtBHNMxP+2zNJpk+CsD/M=;
+	b=AIXRJwuB+H8CUQQMeS5qlpm0mA9MRtCpnvd55esAPnP4ZWf8RvpdvE922lJmqnVIpB
+	3WTSTa1p1xLB/UPdSXHtSdMm3TwK0Ijnw5bZfpyK0oWvEVW3C09vKa1Q2aYpH2hWevRC
+	LzFsybDvUKqNfYk+TG/LaBrmNyzjfxLPOoWGgrjG+moMF94/PiKjNMdt7AGAj8dA59K4
+	1/Eg3DgVYvKL5GLVCx68IVgAiK56Pb2bmSAxMnuMtfO32YoCnamKsq6gqu71j44UcOgv
+	4GZRg98MJRc10wCTTm84P0cCLZbrQhwuPU/OgImeBXnr5lQkDyGgHFjzV90i9GpJdHs7
+	kLQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:from:to:cc:references:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=L7OMDqn053nsdqraX4ZA3guqlyVTDUsFXQaouF1/Gos=;
-	b=CZpxIBzKV/FVP+c3cCtnmxFeJrtq+TIQnlB6elhKlZO0FbLl241UcwCtE70OY0LeJw
-	9eogzl38lSd5rB+80sqgqCpBNCwKVEZFZ94IsnILF/hcTUUXWDM8LC7OF+mio6a+oOX0
-	dMAmGvgFyEb2ASNk26FFlRAAZvGcc0sTRYViEaLpXuxfZ3LxpfKGFIFdFe4vgeMETtzT
-	C6fUFn0beRKwX6gfQ9/p4I+sAX1S14+7A7K+/6GfogBtXy3+YvJicPZC4tWjonsrqu0C
-	Mv38uJRE4/vYduJL/loVnWNsUMLSbi1/KbHB6TCIgtyuqRxbfA5ly+4ixp85TUwaTYxr
-	ttJA==
-X-Gm-Message-State: APjAAAW3oxdwf0s9d9shvKYOObKggKx/3iHcpu6v9TbTK5WgVi9BbNZJ
-	M0xKZ61+KTKCucwTfXO5VB0=
-X-Google-Smtp-Source: APXvYqwx9IkvpF+W2lsA3mJH7M+n+CqCAXpBhPx/pthS51v7A1zJHA2H9Ks26cyCm8y+AFp3wsoEFA==
-X-Received: by 2002:a7b:c446:: with SMTP id l6mr489308wmi.80.1556133473878;
-	Wed, 24 Apr 2019 12:17:53 -0700 (PDT)
+	bh=SAbbSQG37YeApBp0oyHaMCbtBHNMxP+2zNJpk+CsD/M=;
+	b=f/ziFs7cmUtvx47IozZ0Tb2EVdqhdW1B6BR1RYGnVv0T9ohMcNixjWGHdAneco4Q2a
+	xP1TnuZ1OH1Tf6ZPWMxqlp+kX5EoOQp0yuM4Wu0Yju9q7yc9fEwdAsMassic/dZXPEfq
+	Qs+BjMZZ3imoK63Y8Y8sTUYhU6uDSLp3n/fIHqe0tQCxscfs4jE/c2UMRXGnemckWRXB
+	mQhdxvXMEY6+I9TlAbNwShYvaSCaZpPAWSQjelfkl022Y4d5zoGUeJnxu1xiOIxPSQor
+	3QYukcBQ43B1uZNohdKH6nddx/Ch06Kx/PU6SwXZ2Zu/8Xx+wMw4L7dVk0Ip66Daozcy
+	8DBA==
+X-Gm-Message-State: APjAAAXygNBNC/rgOzN9l8xSSJLsOvswOCwFdRa6LH0LFuUgg/htdMa2
+	XEYoOlzCURoKUd1DxGgSP6g=
+X-Google-Smtp-Source: APXvYqz1FxREHsjxcSzzKYBRZR1hyc+jklGgIQJ7OMGK1qrzBngr1H8WAm880vG55Y8yYFtfRLfERA==
+X-Received: by 2002:a1c:f50a:: with SMTP id t10mr473319wmh.86.1556133476436;
+	Wed, 24 Apr 2019 12:17:56 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5?
 	(p200300EA8BD45700C498EE8FFF0A13E5.dip0.t-ipconnect.de.
 	[2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5])
 	by smtp.googlemail.com with ESMTPSA id
-	u17sm37513417wmu.36.2019.04.24.12.17.52
+	q202sm4917605wme.9.2019.04.24.12.17.54
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 24 Apr 2019 12:17:53 -0700 (PDT)
-Subject: [PATCH v2 7/9] iommu/vt-d: use helper pci_dev_id
+	Wed, 24 Apr 2019 12:17:55 -0700 (PDT)
+Subject: [PATCH v2 8/9] stmmac: pci: use helper pci_dev_id
 From: Heiner Kallweit <hkallweit1@gmail.com>
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Michael Ellerman <mpe@ellerman.id.au>,
@@ -89,8 +89,8 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	Stephen Rothwell <sfr@canb.auug.org.au>, Paul Mackerras <paulus@samba.org>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-Message-ID: <0889204c-18aa-8a5f-1781-aaf32ee5beba@gmail.com>
-Date: Wed, 24 Apr 2019 21:16:10 +0200
+Message-ID: <82febf42-5f1e-a5d1-5c38-40dcaefdf700@gmail.com>
+Date: Wed, 24 Apr 2019 21:16:41 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
@@ -123,42 +123,28 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424191610.7JaGbfU9hkmBnPjl26ML_9k8LIg9-5vmLVbFZHQi-vM@z>
+Message-ID: <20190424191641.RgUCPL0XnYY7VpdLCFV--SQsrp2O25a7Qw6vrOLiVb8@z>
 
 Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/iommu/intel-iommu.c         | 2 +-
- drivers/iommu/intel_irq_remapping.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d93c4bd7d..3f475a23a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1391,7 +1391,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 
- 		/* pdev will be returned if device is not a vf */
- 		pf_pdev = pci_physfn(pdev);
--		info->pfsid = PCI_DEVID(pf_pdev->bus->number, pf_pdev->devfn);
-+		info->pfsid = pci_dev_id(pf_pdev);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index cc1e887e4..0e87a9596 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -208,7 +208,7 @@ static int quark_default_data(struct pci_dev *pdev,
+ 		ret = 1;
  	}
  
- #ifdef CONFIG_INTEL_IOMMU_SVM
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 634d8f059..4160aa9f3 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -424,7 +424,7 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, data.alias);
- 	else
- 		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16,
--			     PCI_DEVID(dev->bus->number, dev->devfn));
-+			     pci_dev_id(dev));
+-	plat->bus_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
++	plat->bus_id = pci_dev_id(pdev);
+ 	plat->phy_addr = ret;
+ 	plat->interface = PHY_INTERFACE_MODE_RMII;
  
- 	return 0;
- }
 -- 
 2.21.0
 
