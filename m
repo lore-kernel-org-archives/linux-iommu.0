@@ -5,72 +5,72 @@ X-Spam-Level:
 X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1FEC10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5D2C10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5ABE2208E4
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0E668208E4
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CTBInYBe"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5ABE2208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KK4njm5c"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E668208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7A54016DA;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BB6E116DE;
 	Wed, 24 Apr 2019 21:15:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 57EDB1606
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9AD531606
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:43 +0000 (UTC)
+	Wed, 24 Apr 2019 19:17:45 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
-	[209.85.128.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C1BA9786
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+	[209.85.221.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 35698786
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:42 +0000 (UTC)
-Received: by mail-wm1-f67.google.com with SMTP id j13so6093526wmh.2
+	Wed, 24 Apr 2019 19:17:45 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id h4so26687523wre.7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 12:17:42 -0700 (PDT)
+	Wed, 24 Apr 2019 12:17:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:from:to:cc:references:message-id:date:user-agent
 	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=kB/xsYXQ3pDchMWCMlizuJaQAcde2gxIfDs80kGqcvg=;
-	b=CTBInYBeuOjwDz9xKf2KWhzfLNI5mxAnUPPI4BWhAfkSOE+IcGDVUG/LTdlVKn0Ey3
-	kXb11SNQiqB+f2tzvApgE3K75ekW4vp4F4rKo2tfq2976kcwUhHVdM3czRnkLPBeL6j5
-	fdW4sKALm8HMDXeA4HSw9r/5mjk7UzIUoGIP/nv52R1glLBQr7mNguwP52EfgA+EyV2y
-	UwEmJLPtOAif4lWOA8h/nDGbj6w+XyJdLKMvrB4c3zYVVXyhWbkJC4hJRXUZS/KfsJKR
-	V6GztvWZ9hBzwOPVfQYlkGM8eQYmznplt3VVqTmyEvx37Zhusc47WL3zc9FIPbwplUOL
-	lGcw==
+	bh=+k7fklQVC1wXNkIsXxuBFFgxierE2Y58VYjajnqTX8M=;
+	b=KK4njm5c66wApJlm8WGtcK3eINA7bZzqf9jpF/xDcoCSdcuGWR7ygTnW7CxGOT7Zpb
+	ClJa1zpkc0LnLQ3Y9FSdXrMwgQvpBYbm2h61pKGsBRYXBFkHEnXr7h2wDgkaAsAj6P04
+	n+Zhe79BzllwSlP7qQcQ1oNHfpi5n4yGvzSir6Qil6I+8IfT0AGlMW1C3bfb7hbIOrnv
+	/TQKg5FQRX19gB+eGsG3WBIFJCSsQmuhe604FqNiT/pZUC4DClEWV5U3gwAbTgI70ma+
+	+jCLa9iSGj52KBjpTWMg0o/2CwQGRZzVKsI7N71kUDVC8rL8yE29inQ1qfO+L+vf3GA3
+	Zx2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:from:to:cc:references:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=kB/xsYXQ3pDchMWCMlizuJaQAcde2gxIfDs80kGqcvg=;
-	b=lolW28PDQyZi3LKs3cHWVv9krDVb9ED0iLjht/d4uhGGqitCT/ftkl+JusxRugh3LE
-	Yt4xF+WRFD1se2oJoqrMItsiD8AcDjiHmeATndjX2LK0ILkZMV2IM1j0xi85hoy3pnhi
-	gAEph4RpZ9kkL3BJDRQFPMdFEfMSN+vCpflEjDbz09MsHWLGkyeJZmI1rGQfPkY7TdXG
-	HCroj+ETmNe7fKfsU489kZADP5AHmkWEJ4+lydeH/OGCPqvDAhVlY1HQq3quhaex3Vus
-	qPYm0xC5xTwlWEZzIY8cUqTOKSJVHQs+gP9zQLkqbtQzdeVEGg60NOifr7Uzxs7BVmmh
-	xZsQ==
-X-Gm-Message-State: APjAAAXZv25dDJQz8hRkfNylEQjZTQfgWlBLzN8i6TBziUQy4aIK263o
-	9S3nbILbGldfu/U3hX7RG98=
-X-Google-Smtp-Source: APXvYqwLnC7/zIBsNJ0PEohfeeMVDSaWpOxoU/IBtJ5vk+4XlNCYrRJFKHauDYKLq545t4gZsrwWgA==
-X-Received: by 2002:a1c:2087:: with SMTP id g129mr517222wmg.114.1556133461454; 
-	Wed, 24 Apr 2019 12:17:41 -0700 (PDT)
+	bh=+k7fklQVC1wXNkIsXxuBFFgxierE2Y58VYjajnqTX8M=;
+	b=ec1wsNFrgpcKLGxS2Dt9y8FMzaC6/lR09+HxyDbbBeUbcKIOiP+PPdFjx3Y5ry/HD8
+	pDlutdfcM5RlE4YSkz/0GCPwTKm1gTvL432o73n6xvA5tv74S20jAXbb652uUAL8cjed
+	GzUea2wZvT8Iu9w24YK+AT6En7cwnt3sXKh0pCSbnEmsYUjUGv+uRQZCLJG5qOuN3MRN
+	jM1P9vnOA+TbWSFnIbBbvMk9I2hFA/PfC8gyyODz8suEfeLgtYnqkXqB7DoPpgZ5ZmvT
+	SotryJ3Td2VWQaq7hWDubziF2FLxrB8rcmRDbVSHhbEVxU6aXAMCNXapyJUT5qsJrIiq
+	u7vg==
+X-Gm-Message-State: APjAAAUl8Wn16c9c1Zp65+P7rVSQ+ycqn8m3Po+hdFShSNSOOTDCc4bt
+	xW+6yCmqWQHPSd/75Jb8vI8=
+X-Google-Smtp-Source: APXvYqwDmKBVeUMPZVGyJTnitTfK6cM0z/PsKemtuUUK1m2YTTQaoqWzBVErwIt/ROAiTYboFRIU3w==
+X-Received: by 2002:a5d:5485:: with SMTP id h5mr377002wrv.315.1556133463901;
+	Wed, 24 Apr 2019 12:17:43 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5?
 	(p200300EA8BD45700C498EE8FFF0A13E5.dip0.t-ipconnect.de.
 	[2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5])
 	by smtp.googlemail.com with ESMTPSA id
-	x192sm30686484wmf.48.2019.04.24.12.17.39
+	u1sm2183653wrp.69.2019.04.24.12.17.42
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 24 Apr 2019 12:17:40 -0700 (PDT)
-Subject: [PATCH v2 2/9] PCI: use helper pci_dev_id
+	Wed, 24 Apr 2019 12:17:43 -0700 (PDT)
+Subject: [PATCH v2 3/9] r8169: use new helper pci_dev_id
 From: Heiner Kallweit <hkallweit1@gmail.com>
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Michael Ellerman <mpe@ellerman.id.au>,
@@ -89,8 +89,8 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	Stephen Rothwell <sfr@canb.auug.org.au>, Paul Mackerras <paulus@samba.org>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-Message-ID: <9cc03738-f664-3896-d8eb-48146772a655@gmail.com>
-Date: Wed, 24 Apr 2019 21:12:45 +0200
+Message-ID: <fec3960e-5e65-3f62-0922-736f26db095f@gmail.com>
+Date: Wed, 24 Apr 2019 21:13:25 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
@@ -123,82 +123,29 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424191245.EtlnTruO1P88qWxDz_5_A3ngRyNBImxu0gKg5MwTUtA@z>
+Message-ID: <20190424191325.ZyPG9EF_WGALOLpjW2GB1JUhQghw0X_SPQDWL71pX-U@z>
 
 Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/pci/msi.c    |  6 +++---
- drivers/pci/search.c | 10 +++-------
- 2 files changed, 6 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/realtek/r8169.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index 73986825d..e039b740f 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1338,7 +1338,7 @@ irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
- 					  struct msi_desc *desc)
- {
- 	return (irq_hw_number_t)desc->msi_attrib.entry_nr |
--		PCI_DEVID(dev->bus->number, dev->devfn) << 11 |
-+		pci_dev_id(dev) << 11 |
- 		(pci_domain_nr(dev->bus) & 0xFFFFFFFF) << 27;
- }
+diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
+index efaea1a0a..ae476fe8d 100644
+--- a/drivers/net/ethernet/realtek/r8169.c
++++ b/drivers/net/ethernet/realtek/r8169.c
+@@ -7020,8 +7020,7 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+ 	new_bus->priv = tp;
+ 	new_bus->parent = &pdev->dev;
+ 	new_bus->irq[0] = PHY_IGNORE_INTERRUPT;
+-	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x",
+-		 PCI_DEVID(pdev->bus->number, pdev->devfn));
++	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
  
-@@ -1508,7 +1508,7 @@ static int get_msi_id_cb(struct pci_dev *pdev, u16 alias, void *data)
- u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev)
- {
- 	struct device_node *of_node;
--	u32 rid = PCI_DEVID(pdev->bus->number, pdev->devfn);
-+	u32 rid = pci_dev_id(pdev);
- 
- 	pci_for_each_dma_alias(pdev, get_msi_id_cb, &rid);
- 
-@@ -1531,7 +1531,7 @@ u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev)
- struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
- {
- 	struct irq_domain *dom;
--	u32 rid = PCI_DEVID(pdev->bus->number, pdev->devfn);
-+	u32 rid = pci_dev_id(pdev);
- 
- 	pci_for_each_dma_alias(pdev, get_msi_id_cb, &rid);
- 	dom = of_msi_map_get_device_domain(&pdev->dev, rid);
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index 2b5f72086..5c7922612 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -33,7 +33,7 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 	struct pci_bus *bus;
- 	int ret;
- 
--	ret = fn(pdev, PCI_DEVID(pdev->bus->number, pdev->devfn), data);
-+	ret = fn(pdev, pci_dev_id(pdev), data);
- 	if (ret)
- 		return ret;
- 
-@@ -88,9 +88,7 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 					return ret;
- 				continue;
- 			case PCI_EXP_TYPE_PCIE_BRIDGE:
--				ret = fn(tmp,
--					 PCI_DEVID(tmp->bus->number,
--						   tmp->devfn), data);
-+				ret = fn(tmp, pci_dev_id(tmp), data);
- 				if (ret)
- 					return ret;
- 				continue;
-@@ -101,9 +99,7 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 					 PCI_DEVID(tmp->subordinate->number,
- 						   PCI_DEVFN(0, 0)), data);
- 			else
--				ret = fn(tmp,
--					 PCI_DEVID(tmp->bus->number,
--						   tmp->devfn), data);
-+				ret = fn(tmp, pci_dev_id(tmp), data);
- 			if (ret)
- 				return ret;
- 		}
+ 	new_bus->read = r8169_mdio_read_reg;
+ 	new_bus->write = r8169_mdio_write_reg;
 -- 
 2.21.0
 
