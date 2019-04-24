@@ -1,167 +1,105 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 09/19] iommu/vt-d: Enlightened PASID allocation
-Date: Tue, 23 Apr 2019 16:31:09 -0700
-Message-ID: <1556062279-64135-10-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Eric Auger <eric.auger@redhat.com>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: dann frazier <dann.frazier-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+Subject: Re: [RFC] arm64: swiotlb: cma_alloc error spew
+Date: Tue, 23 Apr 2019 18:39:50 -0600
+Message-ID: <CALdTtnvUzoPLmgghRHb+gNOkivi3H7rhAaL96gLhkwOyK-ycWA@mail.gmail.com>
+References: <20190417204817.GA28897@xps13.dannf>
+	<fa287dc4-59e9-0500-70ee-e96c2920d5a9@arm.com>
+	<CALdTtnsHxwTjzw1asO886jYWB4LOY=UT_UGeco=f1SZzVNo7fw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CALdTtnsHxwTjzw1asO886jYWB4LOY=UT_UGeco=f1SZzVNo7fw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Xinwei Kong <kong.kongxinwei-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+On Tue, Apr 23, 2019 at 12:03 PM dann frazier
+<dann.frazier-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org> wrote:
+>
+> On Tue, Apr 23, 2019 at 5:32 AM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> >
+> > On 17/04/2019 21:48, dann frazier wrote:
+> > > hey,
+> > >    I'm seeing an issue on a couple of arm64 systems[*] where they spew
+> > > ~10K "cma: cma_alloc: alloc failed" messages at boot. The errors are
+> > > non-fatal, and bumping up cma to a large enough size (~128M) gets rid
+> > > of them - but that seems suboptimal. Bisection shows that this started
+> > > after commit fafadcd16595 ("swiotlb: don't dip into swiotlb pool for
+> > > coherent allocations"). It looks like __dma_direct_alloc_pages()
+> > > is opportunistically using CMA memory but falls back to non-CMA if CMA
+> > > disabled or unavailable. I've demonstrated that this fallback is
+> > > indeed returning a valid pointer. So perhaps the issue is really just
+> > > the warning emission.
+> >
+> > The CMA area being full isn't necessarily an ignorable non-problem,
+> > since it means you won't be able to allocate the kind of large buffers
+> > for which CMA was intended. The question is, is it actually filling up
+> > with allocations that deserve to be there, or is this the same as I've
+> > seen on a log from a ThunderX2 system where it's getting exhausted by
+> > thousands upon thousands of trivial single page allocations? If it's the
+> > latter (CONFIG_CMA_DEBUG should help shed some light if necessary),
+>
+> Appears so. Here's a histogram of count/size w/ a cma= large enough to
+> avoid failures:
+>
+> $ dmesg | grep "cma: cma_alloc(cma" | sed -r 's/.*count
+> ([0-9]+)\,.*/\1/' | sort -n | uniq -c
+>    2062 1
+>      32 2
+>     266 8
+>       2 24
+>       4 32
+>     256 33
 
-If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the
-IOMMU driver should rely on the emulation software to allocate
-and free PASID IDs. The Intel vt-d spec revision 3.0 defines a
-register set to support this. This includes a capability register,
-a virtual command register and a virtual response register. Refer
-to section 10.4.42, 10.4.43, 10.4.44 for more information.
+And IIUC, this is also a big culprit. The debugfs bitmap seems to show
+that the alignment of each of these leaves 31 pages unused, which adds
+up to 31MB!
 
-This patch adds the enlightened PASID allocation/free interfaces
-via the virtual command register.
+  -dann
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel-pasid.c | 70 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h | 13 ++++++++-
- include/linux/intel-iommu.h |  2 ++
- 3 files changed, 84 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 03b12d2..5b1d3be 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -63,6 +63,76 @@ void *intel_pasid_lookup_id(int pasid)
- 	return p;
- }
- 
-+int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
-+{
-+	u64 res;
-+	u64 cap;
-+	u8 err_code;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (!ecap_vcs(iommu->ecap)) {
-+		pr_warn("IOMMU: %s: Hardware doesn't support virtual command\n",
-+			iommu->name);
-+		return -ENODEV;
-+	}
-+
-+	cap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
-+	if (!(cap & DMA_VCS_PAS)) {
-+		pr_warn("IOMMU: %s: Emulation software doesn't support PASID allocation\n",
-+			iommu->name);
-+		return -ENODEV;
-+	}
-+
-+	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-+	dmar_writeq(iommu->reg + DMAR_VCMD_REG, VCMD_CMD_ALLOC);
-+	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-+		      !(res & VCMD_VRSP_IP), res);
-+	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-+
-+	err_code = VCMD_VRSP_EC(res);
-+	switch (err_code) {
-+	case VCMD_VRSP_EC_SUCCESS:
-+		*pasid = VCMD_VRSP_RESULE(res);
-+		break;
-+	case VCMD_VRSP_EC_UNAVAIL:
-+		pr_info("IOMMU: %s: No PASID available\n", iommu->name);
-+		ret = -ENOMEM;
-+		break;
-+	default:
-+		ret = -ENODEV;
-+		pr_warn("IOMMU: %s: Unkonwn error code %d\n",
-+			iommu->name, err_code);
-+	}
-+
-+	return ret;
-+}
-+
-+void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
-+{
-+	u64 res;
-+	u8 err_code;
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-+	dmar_writeq(iommu->reg + DMAR_VCMD_REG, (pasid << 8) | VCMD_CMD_FREE);
-+	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-+		      !(res & VCMD_VRSP_IP), res);
-+	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-+
-+	err_code = VCMD_VRSP_EC(res);
-+	switch (err_code) {
-+	case VCMD_VRSP_EC_SUCCESS:
-+		break;
-+	case VCMD_VRSP_EC_INVAL:
-+		pr_info("IOMMU: %s: Invalid PASID\n", iommu->name);
-+		break;
-+	default:
-+		pr_warn("IOMMU: %s: Unkonwn error code %d\n",
-+			iommu->name, err_code);
-+	}
-+}
-+
- /*
-  * Per device pasid table management:
-  */
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 23537b3..0999dfe 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -19,6 +19,16 @@
- #define PASID_PDE_SHIFT			6
- #define MAX_NR_PASID_BITS		20
- 
-+/* Virtual command interface for enlightened pasid management. */
-+#define VCMD_CMD_ALLOC			0x1
-+#define VCMD_CMD_FREE			0x2
-+#define VCMD_VRSP_IP			0x1
-+#define VCMD_VRSP_EC(e)			(((e) >> 1) & 0x3)
-+#define VCMD_VRSP_EC_SUCCESS		0
-+#define VCMD_VRSP_EC_UNAVAIL		1
-+#define VCMD_VRSP_EC_INVAL		1
-+#define VCMD_VRSP_RESULE(e)		(((e) >> 8) & 0xfffff)
-+
- /*
-  * Domain ID reserved for pasid entries programmed for first-level
-  * only and pass-through transfer modes.
-@@ -69,5 +79,6 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 				   struct device *dev, int pasid);
- void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 				 struct device *dev, int pasid);
--
-+int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
-+void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid);
- #endif /* __INTEL_PASID_H */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 6925a18..bff907b 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -173,6 +173,7 @@
- #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
- #define ecap_flts(e)		(((e) >> 47) & 0x1)
- #define ecap_slts(e)		(((e) >> 46) & 0x1)
-+#define ecap_vcs(e)		(((e) >> 44) & 0x1)
- #define ecap_smts(e)		(((e) >> 43) & 0x1)
- #define ecap_dit(e)		((e >> 41) & 0x1)
- #define ecap_pasid(e)		((e >> 40) & 0x1)
-@@ -289,6 +290,7 @@
- 
- /* PRS_REG */
- #define DMA_PRS_PPR	((u32)1)
-+#define DMA_VCS_PAS	((u64)1)
- 
- #define IOMMU_WAIT_OP(iommu, offset, op, cond, sts)			\
- do {									\
--- 
-2.7.4
+>       7 64
+>       2 128
+>       2 1024
+>
+>   -dann
+>
+> > then
+> > that does lean towards spending a bit more effort on this idea:
+> >
+> > https://lore.kernel.org/lkml/20190327080821.GB20336-jcswGhMUV9g@public.gmane.org/
+> >
+> > Robin.
+> >
+> > > The following naive patch solves the problem for me - just silence the
+> > > cma errors, since it looks like a soft error. But is there a better
+> > > approach?
+> > >
+> > > [*] APM X-Gene & HiSilicon Hi1620 w/ SMMU disabled
+> > >
+> > > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > > index 6310ad01f915b..0324aa606c173 100644
+> > > --- a/kernel/dma/direct.c
+> > > +++ b/kernel/dma/direct.c
+> > > @@ -112,7 +112,7 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+> > >          /* CMA can be used only in the context which permits sleeping */
+> > >          if (gfpflags_allow_blocking(gfp)) {
+> > >                  page = dma_alloc_from_contiguous(dev, count, page_order,
+> > > -                                                gfp & __GFP_NOWARN);
+> > > +                                                true);
+> > >                  if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> > >                          dma_release_from_contiguous(dev, page, count);
+> > >                          page = NULL;
+> > >
+> > >
+> > >
+> > >
