@@ -7,70 +7,70 @@ X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FDFC10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3090C10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66645208E4
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B2E72208E4
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N+WDYEss"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66645208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TUzhCOH2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2E72208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 51D5416E4;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8C41216E6;
 	Wed, 24 Apr 2019 21:15:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A41DF1606
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 384741606
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:50 +0000 (UTC)
+	Wed, 24 Apr 2019 19:17:53 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
-	[209.85.221.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 353FA82E
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+	[209.85.128.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BDE0982D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:50 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id c6so20999745wrm.1
+	Wed, 24 Apr 2019 19:17:52 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id h18so6654429wml.1
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 12:17:50 -0700 (PDT)
+	Wed, 24 Apr 2019 12:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:from:to:cc:references:message-id:date:user-agent
 	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=JGOU3ia6g6f+mcCeqoj5rUs2fETF3ERMMj8iqSjiOI4=;
-	b=N+WDYEss0BjujrTkoVQFmlZMauTQnxRdnQZfZb7Pj5loUGC4okCuuv16tnp3aMqup9
-	iAjLrSNm+TMJmHj3YYK9T/bwzZxTQKmGcK/m44oWL5evBfcPwpv2eoAi9aqBLRf40l7b
-	ZsYLe15al+e+C0axyxR8ts7wuFEGb5+V5SLcItizyuxglNbmNpn9ZJIUpYxtl2BnxfHM
-	cMMEPrEFkthMa9Qfs8gl42cjef5Z4uJaPHZZ7LyHX/GXlTmyzP2/mOIFXaU55f72KVC6
-	ZxazwPCP9QGXRTy/D2w8I7pZ0CJEwXBPsTEPewxOtZegukdlOLsrv1x21Y+4zxQftilz
-	SuZQ==
+	bh=IeRjLmIo3+zL+ngn2z6PfEn9LxaA8z9ME0E/GMbJl4A=;
+	b=TUzhCOH2F7RvxialpvgaUFfNbsBpgDv13m50OH+yCHXNzbKgkQ3+3J9fmVotTjHhZ+
+	nT72Tzc880/U6F/39r2rOLBXumQ/j5RU5NezTirLrIrK8HKif6onpzxPkeL9+3b1vQq2
+	1DjaR7ZH62jNLmGYqQQPFRrk8RastcZUjByEctXZYR9dDWVH50TBAdTissGRPJJFAaku
+	yTmszbRe7C6g/MQlgrFC4qFKTUqOyA0NfxLlCq1xXJvcaq0cajMvWvopZxIRGurM8C5w
+	Ky8/X9fshxb+9fnIfYrOG+f4N+cBIWfqByuQioMYFAZ1K6Xx48p3R+XHvkUnajpJttNi
+	B/0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:from:to:cc:references:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=JGOU3ia6g6f+mcCeqoj5rUs2fETF3ERMMj8iqSjiOI4=;
-	b=hBTpbgqjnhMSxK13a54Uq6lYKrP/ZV4lzCvM6plUCOffQIwXc4jecz7tTyfmdSpq7P
-	6nPc2ltr5YQaEWyul+77Ntz0eK+amwmn5B1F03+xWX1s4+jWpAozlsa6egSHzJSG2+LD
-	JhF6Zo3Ch19ZxIEgnAc7pLu3oY5lbyYkMp10+IX5uwjwREUUK1l3S6EEeaZEQpKKRVXn
-	41PwYZJzb/CORKcBnJLxbWuV8eoz3UYkxMqzKa9+LkmUvJte+4R6KdsS0bQU0tj/aind
-	ALIotnlJDJY7RA0bdXfHTuCu3812jZxElk+yEYEhSUp2ymWDrcUhPMUgou+HALZ2GfbQ
-	lTsg==
-X-Gm-Message-State: APjAAAVMwF/4jYk9MxfVt+tNUo7XbaPdsuEvzWr7OmsgeNJow3Rnx5m8
-	ZhPiWBib/MquHbGdYRHxZvg=
-X-Google-Smtp-Source: APXvYqyys0p4vzH3+QBE8b2LeEy6eALBMG3KHgepXOv8RrEgFJw4q6sOt683Zhup+UYIuSsIl60E9Q==
-X-Received: by 2002:a5d:52ce:: with SMTP id r14mr23877569wrv.224.1556133468924;
-	Wed, 24 Apr 2019 12:17:48 -0700 (PDT)
+	bh=IeRjLmIo3+zL+ngn2z6PfEn9LxaA8z9ME0E/GMbJl4A=;
+	b=ONPMEVX6m2Rgs1PqHBsJq3fwRx3lq+WB+XUlMwZZBvuGso5zmWr9s/I+/n4or0p27P
+	dY0YFEz7+nGx8Szg7BN0VBimRgKWFYWoJiPv2RBEHkZA+cTw1UGvzbaYwBLmasS2bbKa
+	abCoiUL9QdKzmwJ9/zewviHgSY6WBN8IUyMKpMhjFNwi/gov4zcY4v4GVI8RnFrTQe1L
+	gUDoigANzucC5BpBPWgHnEDq3nv6CjipWggK0n7tzqB49U44jFibVXNrnd0hy+4t8//8
+	G1kLnx68I5n6aKGwYIo3Xu4lCaEEouBWJO9eb5LEXjZ393obIqvhqg0fudwLcH3rZ7FL
+	o2zQ==
+X-Gm-Message-State: APjAAAXSRJuMnettYeJqU4zzPLHbe2qOAx0/tYfKDBuywLb5AwRuM4J/
+	Edt52jxbqIq3MWuJEuWzNuQ=
+X-Google-Smtp-Source: APXvYqwLwnDZWORI7BhpqSdPQhydSnH4TJiDh5p2OFwPcJ1S0/zRXEp6j1rg2GAjg1ue7Rb470bFqw==
+X-Received: by 2002:a1c:4c1a:: with SMTP id z26mr474306wmf.73.1556133471446;
+	Wed, 24 Apr 2019 12:17:51 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5?
 	(p200300EA8BD45700C498EE8FFF0A13E5.dip0.t-ipconnect.de.
 	[2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5])
 	by smtp.googlemail.com with ESMTPSA id
-	s7sm3419954wrn.84.2019.04.24.12.17.47
+	a11sm16605685wrx.5.2019.04.24.12.17.49
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 24 Apr 2019 12:17:48 -0700 (PDT)
-Subject: [PATCH v2 5/9] drm/amdkfd: use helper pci_dev_id
+	Wed, 24 Apr 2019 12:17:50 -0700 (PDT)
+Subject: [PATCH v2 6/9] iommu/amd: use helper pci_dev_id
 From: Heiner Kallweit <hkallweit1@gmail.com>
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Michael Ellerman <mpe@ellerman.id.au>,
@@ -89,8 +89,8 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	Stephen Rothwell <sfr@canb.auug.org.au>, Paul Mackerras <paulus@samba.org>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-Message-ID: <50613002-d5a2-2522-b183-4ab156686fce@gmail.com>
-Date: Wed, 24 Apr 2019 21:14:55 +0200
+Message-ID: <f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
+Date: Wed, 24 Apr 2019 21:15:25 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
@@ -123,29 +123,28 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424191455.frFh0i4samfj3Yfl20IWG3whbUOGLvRUPCZVhM4VCX4@z>
+Message-ID: <20190424191525.1PrGOYQH_9EbUg3Zl_RYUri9Q-P3lvFe3mScfFt9Wpk@z>
 
 Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_topology.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_topology.c b/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
-index 2cb09e088..769dbc7be 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
-@@ -1272,8 +1272,7 @@ int kfd_topology_add_device(struct kfd_dev *gpu)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f467cc4b4..5cb201422 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -165,7 +165,7 @@ static inline u16 get_pci_device_id(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
  
- 	dev->node_props.vendor_id = gpu->pdev->vendor;
- 	dev->node_props.device_id = gpu->pdev->device;
--	dev->node_props.location_id = PCI_DEVID(gpu->pdev->bus->number,
--		gpu->pdev->devfn);
-+	dev->node_props.location_id = pci_dev_id(gpu->pdev);
- 	dev->node_props.max_engine_clk_fcompute =
- 		amdgpu_amdkfd_get_max_engine_clock_in_mhz(dev->gpu->kgd);
- 	dev->node_props.max_engine_clk_ccompute =
+-	return PCI_DEVID(pdev->bus->number, pdev->devfn);
++	return pci_dev_id(pdev);
+ }
+ 
+ static inline int get_acpihid_device_id(struct device *dev,
 -- 
 2.21.0
 
