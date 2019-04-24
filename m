@@ -1,7 +1,8 @@
 From: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 7/9] iommu/vt-d: use helper pci_dev_id
-Date: Wed, 24 Apr 2019 21:16:10 +0200
-Message-ID: <0889204c-18aa-8a5f-1781-aaf32ee5beba@gmail.com>
+Subject: [PATCH v2 9/9] platform/chrome: chromeos_laptop: use helper
+ pci_dev_id
+Date: Wed, 24 Apr 2019 21:17:19 +0200
+Message-ID: <e882f58b-0808-952e-d293-5e8cc3f04c97@gmail.com>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -18,35 +19,21 @@ Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/iommu/intel-iommu.c         | 2 +-
- drivers/iommu/intel_irq_remapping.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/chrome/chromeos_laptop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d93c4bd7d..3f475a23a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1391,7 +1391,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+diff --git a/drivers/platform/chrome/chromeos_laptop.c b/drivers/platform/chrome/chromeos_laptop.c
+index 24326eecd..7abbb6167 100644
+--- a/drivers/platform/chrome/chromeos_laptop.c
++++ b/drivers/platform/chrome/chromeos_laptop.c
+@@ -125,7 +125,7 @@ static bool chromeos_laptop_match_adapter_devid(struct device *dev, u32 devid)
+ 		return false;
  
- 		/* pdev will be returned if device is not a vf */
- 		pf_pdev = pci_physfn(pdev);
--		info->pfsid = PCI_DEVID(pf_pdev->bus->number, pf_pdev->devfn);
-+		info->pfsid = pci_dev_id(pf_pdev);
- 	}
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 634d8f059..4160aa9f3 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -424,7 +424,7 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
- 		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, data.alias);
- 	else
- 		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16,
--			     PCI_DEVID(dev->bus->number, dev->devfn));
-+			     pci_dev_id(dev));
- 
- 	return 0;
+ 	pdev = to_pci_dev(dev);
+-	return devid == PCI_DEVID(pdev->bus->number, pdev->devfn);
++	return devid == pci_dev_id(pdev);
  }
+ 
+ static void chromeos_laptop_check_adapter(struct i2c_adapter *adapter)
 -- 
 2.21.0
