@@ -6,69 +6,63 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 124A5C10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 06:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27D3C10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 09:19:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF77B20656
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 06:52:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 79FD720656
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 09:19:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="eJvziEWJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF77B20656
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="Ei42rzht"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79FD720656
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 730BBC86;
-	Wed, 24 Apr 2019 06:52:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 43717E9F;
+	Wed, 24 Apr 2019 09:19:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 16026AC7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 02A14E1D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 06:52:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 09AFF786
+	Wed, 24 Apr 2019 09:19:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5FEAB854
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 06:52:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=merlin.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=1KPoJCIfs6fqTAxuQbxPOY0l4/t0enIQVgGfcgr2oSU=;
-	b=eJvziEWJvx0ruHktwuMd6F6Kq
-	0/tdm6Ehir4VUqLRDn3cIvPLanh1Cr9wF74jNy+e2MbqBFZ3JblD1aiBU++5dODsyW668XmY24VeB
-	RWzzAm+dFXmy7Xvh7t72CdpoQ4hqmOzNGwq15jwo0tGRsCOBHx0fmQ09IBaf6di4eJU0lItLa0sOh
-	wRN7LSvXkNF5c938QlIJ1YQ2+MLytu7EQg7VTcAro1DmsZbC7l1BzIn4SW/z3DpPnMfrM+yfUH5zK
-	tjxgSpOrkOWeVRkz+KCI4d0d2szIVIXrimRKPtb8g1/1w3z0r9UO5vPVn3r1SIaEwVh7rz5lbJvBS
-	kgkRTuprw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100]
-	helo=hirez.programming.kicks-ass.net)
-	by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hJBlM-0000J5-C6; Wed, 24 Apr 2019 06:52:12 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id BEC7E29BC277F; Wed, 24 Apr 2019 08:52:09 +0200 (CEST)
-Date: Wed, 24 Apr 2019 08:52:09 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Borislav Petkov <bp@alien8.de>
+	Wed, 24 Apr 2019 09:19:14 +0000 (UTC)
+Received: from zn.tnic (p200300EC2F08C6006C678EE1EA32B98E.dip0.t-ipconnect.de
+	[IPv6:2003:ec:2f08:c600:6c67:8ee1:ea32:b98e])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id
+	2ED4A1EC014A; Wed, 24 Apr 2019 11:19:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1556097552;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	content-transfer-encoding:in-reply-to:in-reply-to: references:references;
+	bh=0DT3NDwjIa6Nrop5oRSsomxzlHjeCba/JmIt5NV/McI=;
+	b=Ei42rzhthErmuvIOEmomE+7zabhOEhgGYMknaVUMWQxxT06vYHAI/BHnYR5aIm0BHugAQA
+	6+1YiQxNpZcUHJRDKCeuh0sU9I5M64yaM6N3a6M0vZQzlDe/bfP2MoaWyrfbHzUlTQs8fF
+	jF4xv4ugBurDAXUT4wyuZ/sMHEkH5j8=
+Date: Wed, 24 Apr 2019 11:19:06 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: Jonathan Corbet <corbet@lwn.net>
 Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
 	files to *.rst
-Message-ID: <20190424065209.GC4038@hirez.programming.kicks-ass.net>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
-	<cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
+Message-ID: <20190424091906.GA30142@zn.tnic>
+References: <cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
 	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
 	<20190423125519.GA7104@redhat.com>
 	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
 	<20190423103053.07cf2149@lwn.net>
 	<20190423171158.GG12232@hirez.programming.kicks-ass.net>
 	<20190423172006.GD16353@zn.tnic> <20190423170409.7b1370ac@coco.lan>
-	<20190423213816.GE16353@zn.tnic>
+	<20190423213816.GE16353@zn.tnic> <20190423160640.70c9703f@lwn.net>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190423213816.GE16353@zn.tnic>
+In-Reply-To: <20190423160640.70c9703f@lwn.net>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
 	Linus Walleij <linus.walleij@linaro.org>, Farhan Ali <alifm@linux.ibm.com>,
@@ -113,10 +107,10 @@ Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
 	Heiko Carstens <heiko.carstens@de.ibm.com>,
 	platform-driver-x86@vger.kernel.org,
 	"Paul E. McKenney" <paulmck@linux.ibm.com>,
-	Jonathan Corbet <corbet@lwn.net>, Kishon Vijay Abraham I <kishon@ti.com>,
-	Emese Revfy <re.emese@gmail.com>, Darren Hart <dvhart@infradead.org>,
-	Jade Alglave <j.alglave@ucl.ac.uk>, "Serge E. Hallyn" <serge@hallyn.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
+	Kishon Vijay Abraham I <kishon@ti.com>,
+	Peter Zijlstra <peterz@infradead.org>, Emese Revfy <re.emese@gmail.com>,
+	Darren Hart <dvhart@infradead.org>, Jade Alglave <j.alglave@ucl.ac.uk>,
+	"Serge E. Hallyn" <serge@hallyn.com>, Fenghua Yu <fenghua.yu@intel.com>,
 	Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
 	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
 	Ning Sun <ning.sun@intel.com>, Luc Maranget <luc.maranget@inria.fr>,
@@ -124,7 +118,7 @@ Cc: Mike Snitzer <snitzer@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
 	Guan Xuetao <gxt@pku.edu.cn>, linux-parisc@vger.kernel.org,
 	iommu@lists.linux-foundation.org, Stuart Hayes <stuart.w.hayes@gmail.com>,
 	Logan Gunthorpe <logang@deltatee.com>,
-	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+	Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
 	Rich Felker <dalias@libc.org>, kvm@vger.kernel.org,
 	Maxime Ripard <maxime.ripard@bootlin.com>,
 	Jerry Hoemann <jerry.hoemann@hpe.com>,
@@ -159,131 +153,41 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424065209.xOgFPULEOgDU9S6y1-oEinlYeepvtvpoJprQnU143TY@z>
+Message-ID: <20190424091906.2FFfanECcQkbqn72iFqGreEAAPdZoplc6-IF7Wmm9ZU@z>
 
-On Tue, Apr 23, 2019 at 11:38:16PM +0200, Borislav Petkov wrote:
-> If that is all the changes it would need, then I guess that's ok. Btw,
-> those rst-conversion patches don't really show what got changed. Dunno
-> if git can even show that properly. I diffed the two files by hand to
-> see what got changed, see end of mail.
+On Tue, Apr 23, 2019 at 04:06:40PM -0600, Jonathan Corbet wrote:
+> Remember that most of our docs are 99% RST even though they were written
+> by people who had never even heard of RST.  I really don't think it's a
+> big deal - a far smaller cognitive load than trying to keep up with any
+> given subsystem's variable-declaration-ordering rules, for example :)
 
-That is not a happy diff; that table has gotten waay worse to read due
-to all that extra table crap.
+Tztztz, this thing seems to have hit a nerve with people. Which means, I
+will enforce that even more now so that I annoy submitters more! :-P
 
-> ---
-> --- mm.old	2019-04-23 23:18:55.954335784 +0200
-> +++ mm.new	2019-04-23 23:18:48.122335821 +0200
-> @@ -18,51 +18,68 @@ Notes:
->     notation than "16 EB", which few will recognize at first sight as 16 exabytes.
->     It also shows it nicely how incredibly large 64-bit address space is.
->  
-> -========================================================================================================================
-> -    Start addr    |   Offset   |     End addr     |  Size   | VM area description
-> -========================================================================================================================
-> -                  |            |                  |         |
-> - 0000000000000000 |    0       | 00007fffffffffff |  128 TB | user-space virtual memory, different per mm
-> -__________________|____________|__________________|_________|___________________________________________________________
-> -                  |            |                  |         |
-> - 0000800000000000 | +128    TB | ffff7fffffffffff | ~16M TB | ... huge, almost 64 bits wide hole of non-canonical
-> -                  |            |                  |         |     virtual memory addresses up to the -128 TB
-> -                  |            |                  |         |     starting offset of kernel mappings.
-> -__________________|____________|__________________|_________|___________________________________________________________
-> -                                                            |
-> -                                                            | Kernel-space virtual memory, shared between all processes:
-> -____________________________________________________________|___________________________________________________________
-> -                  |            |                  |         |
-> - ffff800000000000 | -128    TB | ffff87ffffffffff |    8 TB | ... guard hole, also reserved for hypervisor
-> - ffff880000000000 | -120    TB | ffff887fffffffff |  0.5 TB | LDT remap for PTI
-> - ffff888000000000 | -119.5  TB | ffffc87fffffffff |   64 TB | direct mapping of all physical memory (page_offset_base)
-> - ffffc88000000000 |  -55.5  TB | ffffc8ffffffffff |  0.5 TB | ... unused hole
-> - ffffc90000000000 |  -55    TB | ffffe8ffffffffff |   32 TB | vmalloc/ioremap space (vmalloc_base)
-> - ffffe90000000000 |  -23    TB | ffffe9ffffffffff |    1 TB | ... unused hole
-> - ffffea0000000000 |  -22    TB | ffffeaffffffffff |    1 TB | virtual memory map (vmemmap_base)
-> - ffffeb0000000000 |  -21    TB | ffffebffffffffff |    1 TB | ... unused hole
-> - ffffec0000000000 |  -20    TB | fffffbffffffffff |   16 TB | KASAN shadow memory
-> -__________________|____________|__________________|_________|____________________________________________________________
-> -                                                            |
-> -                                                            | Identical layout to the 56-bit one from here on:
-> -____________________________________________________________|____________________________________________________________
-> -                  |            |                  |         |
-> - fffffc0000000000 |   -4    TB | fffffdffffffffff |    2 TB | ... unused hole
-> -                  |            |                  |         | vaddr_end for KASLR
-> - fffffe0000000000 |   -2    TB | fffffe7fffffffff |  0.5 TB | cpu_entry_area mapping
-> - fffffe8000000000 |   -1.5  TB | fffffeffffffffff |  0.5 TB | ... unused hole
-> - ffffff0000000000 |   -1    TB | ffffff7fffffffff |  0.5 TB | %esp fixup stacks
-> - ffffff8000000000 | -512    GB | ffffffeeffffffff |  444 GB | ... unused hole
-> - ffffffef00000000 |  -68    GB | fffffffeffffffff |   64 GB | EFI region mapping space
-> - ffffffff00000000 |   -4    GB | ffffffff7fffffff |    2 GB | ... unused hole
-> - ffffffff80000000 |   -2    GB | ffffffff9fffffff |  512 MB | kernel text mapping, mapped to physical address 0
-> - ffffffff80000000 |-2048    MB |                  |         |
-> - ffffffffa0000000 |-1536    MB | fffffffffeffffff | 1520 MB | module mapping space
-> - ffffffffff000000 |  -16    MB |                  |         |
-> -    FIXADDR_START | ~-11    MB | ffffffffff5fffff | ~0.5 MB | kernel-internal fixmap range, variable size and offset
-> - ffffffffff600000 |  -10    MB | ffffffffff600fff |    4 kB | legacy vsyscall ABI
-> - ffffffffffe00000 |   -2    MB | ffffffffffffffff |    2 MB | ... unused hole
-> -__________________|____________|__________________|_________|___________________________________________________________
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|   Start addr    |   Offset   |     End addr     |  Size   | VM area description                                       |
-> ++=================+============+==================+=========+===========================================================+
-> +|                 |            |                  |         |                                                           |
-> +|0000000000000000 |    0       | 00007fffffffffff |  128 TB | user-space virtual memory, different per mm               |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|                 |            |                  |         |                                                           |
-> +|0000800000000000 | +128    TB | ffff7fffffffffff | ~16M TB | ... huge, almost 64 bits wide hole of non-canonical       |
-> +|                 |            |                  |         | virtual memory addresses up to the -128 TB                |
-> +|                 |            |                  |         | starting offset of kernel mappings.                       |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|                      **Kernel-space virtual memory, shared between all processes:**                                   |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffff800000000000 | -128    TB | ffff87ffffffffff |    8 TB | ... guard hole, also reserved for hypervisor              |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffff880000000000 | -120    TB | ffff887fffffffff |  0.5 TB | LDT remap for PTI                                         |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffff888000000000 | -119.5  TB | ffffc87fffffffff |   64 TB | direct mapping of all physical memory (page_offset_base)  |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffc88000000000 |  -55.5  TB | ffffc8ffffffffff |  0.5 TB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffc90000000000 |  -55    TB | ffffe8ffffffffff |   32 TB | vmalloc/ioremap space (vmalloc_base)                      |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffe90000000000 |  -23    TB | ffffe9ffffffffff |    1 TB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffea0000000000 |  -22    TB | ffffeaffffffffff |    1 TB | virtual memory map (vmemmap_base)                         |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffeb0000000000 |  -21    TB | ffffebffffffffff |    1 TB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffec0000000000 |  -20    TB | fffffbffffffffff |   16 TB | KASAN shadow memory                                       |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|                         **Identical layout to the 56-bit one from here on:**                                          |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|fffffc0000000000 |   -4    TB | fffffdffffffffff |    2 TB | ... unused hole                                           |
-> +|                 |            |                  |         | vaddr_end for KASLR                                       |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|fffffe0000000000 |   -2    TB | fffffe7fffffffff |  0.5 TB | cpu_entry_area mapping                                    |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|fffffe8000000000 |   -1.5  TB | fffffeffffffffff |  0.5 TB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffff0000000000 |   -1    TB | ffffff7fffffffff |  0.5 TB | %esp fixup stacks                                         |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffff8000000000 | -512    GB | ffffffeeffffffff |  444 GB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffef00000000 |  -68    GB | fffffffeffffffff |   64 GB | EFI region mapping space                                  |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffff00000000 |   -4    GB | ffffffff7fffffff |    2 GB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffff80000000 |   -2    GB | ffffffff9fffffff |  512 MB | kernel text mapping, mapped to physical address 0         |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffff80000000 |-2048    MB |                  |         |                                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffffa0000000 |-1536    MB | fffffffffeffffff | 1520 MB | module mapping space                                      |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffffff000000 |  -16    MB |                  |         |                                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|   FIXADDR_START | ~-11    MB | ffffffffff5fffff | ~0.5 MB | kernel-internal fixmap range, variable size and offset    |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffffff600000 |  -10    MB | ffffffffff600fff |    4 kB | legacy vsyscall ABI                                       |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
-> +|ffffffffffe00000 |   -2    MB | ffffffffffffffff |    2 MB | ... unused hole                                           |
-> ++-----------------+------------+------------------+---------+-----------------------------------------------------------+
+See, I can do my own "RST" too. :-P
+
+Srsly: ok, good. Sounds like we're on the same page then.
+
+>  I'm trying to do the same in Documentation/, with an attempt to be
+> sympathetic toward our readers, sort things by intended audience,
+> and create (someday) a coherent whole. I agree that moving docs is
+> a short-term annoyance, but I'm hoping that it brings a long-term
+> benefit.
+
+Ok, that's fair. I've been moving files too, in the past.
+
+> Minimal markup is the policy (it's even documented :).  Automating stuff
+> that can be automated is an area that has definitely not received
+> enough attention; hopefully some things can be done there in the very
+> near future.
+
+Sounds nice, thanks Jon!
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
