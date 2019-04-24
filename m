@@ -7,70 +7,70 @@ X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2417DC282CE
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF6FC10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E56C1208E4
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D1054208E4
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:16:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AIXRJwuB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E56C1208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mWGOnKfd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D1054208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0DCB516EC;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 450FB16EE;
 	Wed, 24 Apr 2019 21:15:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 216F01606
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8DD871606
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:58 +0000 (UTC)
+	Wed, 24 Apr 2019 19:18:00 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
-	[209.85.128.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B4A5F82E
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+	[209.85.128.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2985C786
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:57 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id 10so6097897wmk.0
+	Wed, 24 Apr 2019 19:18:00 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id r186so130717wmf.1
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 12:17:57 -0700 (PDT)
+	Wed, 24 Apr 2019 12:18:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:from:to:cc:references:message-id:date:user-agent
 	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=SAbbSQG37YeApBp0oyHaMCbtBHNMxP+2zNJpk+CsD/M=;
-	b=AIXRJwuB+H8CUQQMeS5qlpm0mA9MRtCpnvd55esAPnP4ZWf8RvpdvE922lJmqnVIpB
-	3WTSTa1p1xLB/UPdSXHtSdMm3TwK0Ijnw5bZfpyK0oWvEVW3C09vKa1Q2aYpH2hWevRC
-	LzFsybDvUKqNfYk+TG/LaBrmNyzjfxLPOoWGgrjG+moMF94/PiKjNMdt7AGAj8dA59K4
-	1/Eg3DgVYvKL5GLVCx68IVgAiK56Pb2bmSAxMnuMtfO32YoCnamKsq6gqu71j44UcOgv
-	4GZRg98MJRc10wCTTm84P0cCLZbrQhwuPU/OgImeBXnr5lQkDyGgHFjzV90i9GpJdHs7
-	kLQw==
+	bh=HyUIjv1ZcTz3BJRhp2dFVjFVc8FZkCvFMerRUJk35rs=;
+	b=mWGOnKfdu64PXdK4VkEsSESr1A3fAGLATh3SgnROHhCWvMZgDNu3SbfVQoPybvG9pK
+	eigLrw6HkNx5eSa60OFNw6I6AzBlh0qp0v52mQi8APrNqu/ZnNdmaA+iKPOVsqt2sCoO
+	UOUnXM4kOp9PKJ9lKXwfABww/PaNtFz+94XxKPe2LJODsi37G30Gy73vot5PxxNWqeiU
+	hxNThydhzbWKbCUtL5M5CZw60KzQgBVKTQSh5IWajOiiGVoJwP0oDJwDu0qP8ZACVfS0
+	vA0rmAJ6uWd6gloEFSDqu1PVRiB4HPHDDZoCDdJeh3wY72Eu3UBBlWTKHV+DIA2o1TxV
+	vjqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:from:to:cc:references:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=SAbbSQG37YeApBp0oyHaMCbtBHNMxP+2zNJpk+CsD/M=;
-	b=f/ziFs7cmUtvx47IozZ0Tb2EVdqhdW1B6BR1RYGnVv0T9ohMcNixjWGHdAneco4Q2a
-	xP1TnuZ1OH1Tf6ZPWMxqlp+kX5EoOQp0yuM4Wu0Yju9q7yc9fEwdAsMassic/dZXPEfq
-	Qs+BjMZZ3imoK63Y8Y8sTUYhU6uDSLp3n/fIHqe0tQCxscfs4jE/c2UMRXGnemckWRXB
-	mQhdxvXMEY6+I9TlAbNwShYvaSCaZpPAWSQjelfkl022Y4d5zoGUeJnxu1xiOIxPSQor
-	3QYukcBQ43B1uZNohdKH6nddx/Ch06Kx/PU6SwXZ2Zu/8Xx+wMw4L7dVk0Ip66Daozcy
-	8DBA==
-X-Gm-Message-State: APjAAAXygNBNC/rgOzN9l8xSSJLsOvswOCwFdRa6LH0LFuUgg/htdMa2
-	XEYoOlzCURoKUd1DxGgSP6g=
-X-Google-Smtp-Source: APXvYqz1FxREHsjxcSzzKYBRZR1hyc+jklGgIQJ7OMGK1qrzBngr1H8WAm880vG55Y8yYFtfRLfERA==
-X-Received: by 2002:a1c:f50a:: with SMTP id t10mr473319wmh.86.1556133476436;
-	Wed, 24 Apr 2019 12:17:56 -0700 (PDT)
+	bh=HyUIjv1ZcTz3BJRhp2dFVjFVc8FZkCvFMerRUJk35rs=;
+	b=Ldn5+N3EnNAVM6U7robn7vsFFpOuCIba+GpaHexbKPtE5vOikUW3GcBUMuwgiK0tSz
+	Mbm5nakt9WNEG83uEqlXiMl/i5ToBMQ04IM09XNlh2WhFG8LdIx/dU8K285xjyTW72vT
+	jZHMWZjbxfwln5V9dDe0QiwIaAFIsbqw5hCOUghlsIUI+uj14EvZEpfH2X4DLV6XqcJs
+	zpPSlxV0mPYb70CGWsHJHnPtpAPzcZmGlcipmiGR+X2hPeAc3MmcskoQnyBLCztvf8NW
+	11P/+v97BEolxQEVOPL3lgqlaJeD2wvi2to0hJ6UloUaY/YN8dlS3YGYRZ4CY4ISX7fV
+	rtOg==
+X-Gm-Message-State: APjAAAWvKj+1bF0grax++ljKMvYPPRp4TSUy8Kpxg74nGcJ+Kdvxe7BP
+	n/QdpDUflvtZds7AaNDft5s=
+X-Google-Smtp-Source: APXvYqwh3CNfCKJTs9MOTu4bXqWdzGeM/Qp5h/VOnaJHwwOVsZkGf5/cSOBP+OP8er+qIAMJlFmteg==
+X-Received: by 2002:a1c:9c03:: with SMTP id f3mr478703wme.67.1556133478847;
+	Wed, 24 Apr 2019 12:17:58 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5?
 	(p200300EA8BD45700C498EE8FFF0A13E5.dip0.t-ipconnect.de.
 	[2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5])
 	by smtp.googlemail.com with ESMTPSA id
-	q202sm4917605wme.9.2019.04.24.12.17.54
+	t17sm17033907wrr.26.2019.04.24.12.17.57
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 24 Apr 2019 12:17:55 -0700 (PDT)
-Subject: [PATCH v2 8/9] stmmac: pci: use helper pci_dev_id
+	Wed, 24 Apr 2019 12:17:58 -0700 (PDT)
+Subject: [PATCH v2 9/9] platform/chrome: chromeos_laptop: use helper pci_dev_id
 From: Heiner Kallweit <hkallweit1@gmail.com>
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Michael Ellerman <mpe@ellerman.id.au>,
@@ -89,8 +89,8 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	Stephen Rothwell <sfr@canb.auug.org.au>, Paul Mackerras <paulus@samba.org>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-Message-ID: <82febf42-5f1e-a5d1-5c38-40dcaefdf700@gmail.com>
-Date: Wed, 24 Apr 2019 21:16:41 +0200
+Message-ID: <e882f58b-0808-952e-d293-5e8cc3f04c97@gmail.com>
+Date: Wed, 24 Apr 2019 21:17:19 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
@@ -123,28 +123,28 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424191641.RgUCPL0XnYY7VpdLCFV--SQsrp2O25a7Qw6vrOLiVb8@z>
+Message-ID: <20190424191719.-I2ZHV2Q2hCl4g9dONaFGNeOSptRHvQ39n5CR7b3mfY@z>
 
 Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 2 +-
+ drivers/platform/chrome/chromeos_laptop.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index cc1e887e4..0e87a9596 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -208,7 +208,7 @@ static int quark_default_data(struct pci_dev *pdev,
- 		ret = 1;
- 	}
+diff --git a/drivers/platform/chrome/chromeos_laptop.c b/drivers/platform/chrome/chromeos_laptop.c
+index 24326eecd..7abbb6167 100644
+--- a/drivers/platform/chrome/chromeos_laptop.c
++++ b/drivers/platform/chrome/chromeos_laptop.c
+@@ -125,7 +125,7 @@ static bool chromeos_laptop_match_adapter_devid(struct device *dev, u32 devid)
+ 		return false;
  
--	plat->bus_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
-+	plat->bus_id = pci_dev_id(pdev);
- 	plat->phy_addr = ret;
- 	plat->interface = PHY_INTERFACE_MODE_RMII;
+ 	pdev = to_pci_dev(dev);
+-	return devid == PCI_DEVID(pdev->bus->number, pdev->devfn);
++	return devid == pci_dev_id(pdev);
+ }
  
+ static void chromeos_laptop_check_adapter(struct i2c_adapter *adapter)
 -- 
 2.21.0
 
