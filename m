@@ -6,48 +6,46 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758A2C282E1
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 15:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0A6C282E1
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 15:55:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4C1BA2089F
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 15:08:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C1BA2089F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 72ED8218B0
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 15:55:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 72ED8218B0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 12BAE102C;
-	Wed, 24 Apr 2019 15:08:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 334DAE59;
+	Wed, 24 Apr 2019 15:55:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EFDF81029
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 133FEE51
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 15:08:48 +0000 (UTC)
+	Wed, 24 Apr 2019 15:55:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9AB8D82E
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8232D786
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 15:08:48 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 558F767358; Wed, 24 Apr 2019 17:08:32 +0200 (CEST)
-Date: Wed, 24 Apr 2019 17:08:32 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH v2 RFC/RFT 1/5] ARM: dma-mapping: Add fallback normal
-	page allocations
-Message-ID: <20190424150832.GA22474@lst.de>
-References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
-	<20190326230131.16275-2-nicoleotsuka@gmail.com>
-	<20190424150638.GA22191@lst.de>
+	Wed, 24 Apr 2019 15:55:08 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 4A77C78F; Wed, 24 Apr 2019 17:55:06 +0200 (CEST)
+Date: Wed, 24 Apr 2019 17:55:06 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH] iommu/amd: flush not present cache in iommu_map_page
+Message-ID: <20190424155505.GA6731@8bytes.org>
+References: <20190424141900.8883-1-tmurphy@arista.com>
+	<20190424143246.GA24079@infradead.org>
+	<CAPL0++7w0wR+hid=0XkGtH2wR0qvL1oNheEMQOM=8CtyhNLmag@mail.gmail.com>
+	<20190424145819.GA16141@infradead.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190424150638.GA22191@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: tony@atomide.com, catalin.marinas@arm.com, will.deacon@arm.com,
-	linux@armlinux.org.uk, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, hch@lst.de,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190424145819.GA16141@infradead.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Tom Murphy <tmurphy@arista.com>, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, Tom Murphy <murphyt7@tcd.ie>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,14 +62,22 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424150832.DhBc3NlAnFd0O5Gz7W6Ro9MQpfqtm1EpFa1tDOREKbI@z>
+Message-ID: <20190424155506.sGHjpr7aLtjNqciPrdOzwnFc0_pXaWMvWWTV2IA-S7A@z>
 
-On Wed, Apr 24, 2019 at 05:06:38PM +0200, Christoph Hellwig wrote:
->      I'd also use the oppurtunity to forbid a NULL dev argument and
->      opencode those uses.
+On Wed, Apr 24, 2019 at 07:58:19AM -0700, Christoph Hellwig wrote:
+> I'd be tempted to do that.  But lets just ask Joerg if he has
+> any opinion..
 
-Actually, looking at your last patch again the NULL argument might
-still fit in ok, so maybe we should keep it.
+The reason was that it is an unlikely path, as hardware implementations
+are not allowed to set this bit. It is purely for emulated AMD IOMMUs.
+I have not measured whether this annotation has any performance
+benefit, but I find it more readable at least.
+
+Regards,
+
+	Joerg
+
+PS: Why did you drop me from the Cc list of the previous replies?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
