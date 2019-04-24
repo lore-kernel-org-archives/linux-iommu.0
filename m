@@ -1,55 +1,152 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [patch V2 18/29] lockdep: Move stack trace logic into
-	check_prev_add()
-Date: Wed, 24 Apr 2019 21:51:05 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1904242148480.1762@nanos.tec.linutronix.de>
-References: <20190418084119.056416939@linutronix.de>
-	<20190418084254.729689921@linutronix.de>
-	<20190424194505.GR11158@hirez.programming.kicks-ass.net>
+From: Tom Murphy <tmurphy@arista.com>
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via iommu_get_resv_regions
+Date: Thu, 25 Apr 2019 00:47:32 +0100
+Message-ID: <CAPL0++4w6TDf38fh6LwAADR1w3b+nO5G7rZFM3LjDE-B20zbow@mail.gmail.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+ <83B82113-8AE5-4B0C-A079-F389520525BD@arista.com> <F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+ <b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com> <A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+ <fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com> <445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+ <cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com> <6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
+ <8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com> <ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
+ <9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com> <abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
+ <1D51CB31-089A-4D71-A9C1-E54E50A56C46@arista.com> <1b7d37da-5660-f635-cd2f-619e5573d35a@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190424194505.GR11158-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Joonas Lahtinen <joonas.lahtinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, dm-devel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Alasdair Kergon <agk-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Alexey Dobriyan <adobriyan-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Johannes Thumshirn <jthumshirn-l3A5Bk7waGM@public.gmane.org>, Maarten Lankhorst <maarten.lankhorst-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Akinobu Mita <akinobu.mita-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, Josef Bacik <josef-DigfWCa+lFGyeJad7bwFQA@public.gmane.org>, Rodrigo Vivi <rodrigo.vivi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmKsTnJN9+BGXg@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1b7d37da-5660-f635-cd2f-619e5573d35a@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: James Sewart <jamessewart@arista.com>, iommu@lists.linux-foundation.org, Dmitry Safonov <dima@arista.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 24 Apr 2019, Peter Zijlstra wrote:
-> On Thu, Apr 18, 2019 at 10:41:37AM +0200, Thomas Gleixner wrote:
-> > There is only one caller of check_prev_add() which hands in a zeroed struct
-> > stack trace and a function pointer to save_stack(). Inside check_prev_add()
-> > the stack_trace struct is checked for being empty, which is always
-> > true. Based on that one code path stores a stack trace which is unused. The
-> > comment there does not make sense either. It's all leftovers from
-> > historical lockdep code (cross release).
-> 
-> I was more or less expecting a revert of:
-> 
-> ce07a9415f26 ("locking/lockdep: Make check_prev_add() able to handle external stack_trace")
-> 
-> And then I read the comment that went with the "static struct
-> stack_trace trace" that got removed (in the above commit) and realized
-> that your patch will consume more stack entries.
-> 
-> The problem is when the held lock stack in check_prevs_add() has multple
-> trylock entries on top, in that case we call check_prev_add() multiple
-> times, and this patch will then save the exact same stack-trace multiple
-> times, consuming static resources.
-> 
-> Possibly we should copy what stackdepot does (but we cannot use it
-> directly because stackdepot uses locks; but possible we can share bits),
-> but that is a patch for another day I think.
-> 
-> So while convoluted, perhaps we should retain this code for now.
+I can see two potential problems with these patches that should be addresse=
+d:
 
-Uurg, what a mess.
+The default domain of a group can be changed to type
+IOMMU_DOMAIN_IDENTITY via the command line. With these patches we are
+returning the si_domain for type IOMMU_DOMAIN_IDENTITY. There's a
+chance the shared si_domain could be freed while it is still being
+used when a group is freed. For example here in the
+iommu_group_release:
+https://github.com/torvalds/linux/blob/cd8dead0c39457e58ec1d36db93aedca811d=
+48f1/drivers/iommu/iommu.c#L376
+"if (group->default_domain)
+    iommu_domain_free(group->default_domain);"
+
+Also now that a domain is attached to a device earlier we should
+implement the is_attach_deferred call-back and use it to defer the
+domain attach from iommu driver init to device driver init when iommu
+is pre-enabled in kdump kernel. like in this commit:
+https://github.com/torvalds/linux/commit/df3f7a6e8e855e4ff533508807cd7c3723=
+faa51f
+
+
+On Tue, Apr 16, 2019 at 3:24 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>
+> Hi James,
+>
+> On 4/15/19 10:16 PM, James Sewart wrote:
+> > Hey Lu,
+> >
+> >> On 10 Apr 2019, at 06:22, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> >>
+> >> Hi James,
+> >>
+> >> On 4/6/19 2:02 AM, James Sewart wrote:
+> >>> Hey Lu,
+> >>> My bad, did some debugging on my end. The issue was swapping out
+> >>> find_domain for iommu_get_domain_for_dev. It seems in some situations=
+ the
+> >>> domain is not attached to the group but the device is expected to hav=
+e the
+> >>> domain still stored in its archdata.
+> >>> I=E2=80=99ve attached the final patch with find_domain unremoved whic=
+h seems to
+> >>> work in my testing.
+> >>
+> >> Just looked into your v3 patch set and some thoughts from my end poste=
+d
+> >> here just for your information.
+> >>
+> >> Let me post the problems we want to address.
+> >>
+> >> 1. When allocating a new group for a device, how should we determine t=
+he
+> >> type of the default domain?
+> >>
+> >> 2. If we need to put a device into an existing group which uses a
+> >> different type of domain from what the device desires to use, we might
+> >> break the functionality of the device.
+> >>
+> >> My new thought is letting the iommu generic code to determine the
+> >> default domain type (hence my proposed vendor specific default domain
+> >> type patches could be dropped).
+> >>
+> >> If the default domain type is dynamical mapping, and later in iommu_no=
+_mapping(), we determines that we must use an identity domain,
+> >> we then call iommu_request_dm_for_dev(dev).
+> >>
+> >> If the default domain type is identity mapping, and later in
+> >> iommu_no_mapping(), we determined that we must use a dynamical domain,
+> >> we then call iommu_request_dma_domain_for_dev(dev).
+> >>
+> >> We already have iommu_request_dm_for_dev() in iommu.c. We only need to
+> >> implement iommu_request_dma_domain_for_dev().
+> >>
+> >> With this done, your patch titled "Create an IOMMU group for devices
+> >> that require an identity map" could also be dropped.
+> >>
+> >> Any thoughts?
+> >
+> > Theres a couple issues I can think of. iommu_request_dm_for_dev changes
+> > the domain for all devices within the devices group, if we may have
+> > devices with different domain requirements in the same group then only =
+the
+> > last initialised device will get the domain it wants. If we want to add
+> > iommu_request_dma_domain_for_dev then we would still need another IOMMU
+> > group for identity domain devices.
+>
+> Current solution (a.k.a. v3) for this is to assign a new group to the
+> device which requires an identity mapped domain. This will break the
+> functionality of device direct pass-through (to user level). The iommu
+> group represents the minimum granularity of iommu isolation and
+> protection. The requirement of identity mapped domain should not be a
+> factor for a new group.
+>
+> Both iomm_request_dma_domain_for_dev() or iommu_request_dm_for_dev()
+> only support groups with a single device in it.
+>
+> The users could choose between domains of DMA type or IDENTITY type for
+> a group. If multiple devices share a single group and both don't work
+> for them, they have to disable the IOMMU. This isn't a valid
+> configuration from IOMMU's point of view.
+>
+> >
+> > Both with v3 and the proposed method here, iommu_should_identity_map is
+> > determining whether the device requires an identity map. In v3 this is
+> > called once up front by the generic code to determine for the IOMMU gro=
+up
+> > which domain type to use. In the proposed method I think this would hap=
+pen
+> > after initial domain allocation and would trigger the domain to be
+> > replaced with a different domain.
+> >
+> > I prefer the solution in v3. What do you think?
+>
+> The only concern of solution in v3 from my point of view is some kind of
+> duplication. Even we can ask the Intel IOMMU driver to tell the default
+> domain type, we might change it after boot up. For example, for 32-bit
+> pci devices, we don't know whether it's 64-bit or 32-bit capable during
+> IOMMU initialization, so we might tell iommu.c to use identity mapped
+> domain. After boot up, we check it again, and find out that it's only
+> 32-bit capable (hence only can access physical memory below 4G) and the
+> default identity domain doesn't work. And we have to change it to DMA
+> domain via iommu_request_dma_domain_for_dev().
+>
+> So to make it simple and straight-forward, we can just let iommu.c to
+> determine the default domain type and after that the Intel IOMMU driver
+> could tweak it according to the quirk bits in the driver.
+>
+> Best regards,
+> Lu Baolu
