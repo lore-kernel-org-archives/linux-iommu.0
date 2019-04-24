@@ -6,44 +6,43 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B1EC282CE
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 13:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C45C282E3
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 13:55:41 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 60EC7218FD
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 13:55:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60EC7218FD
+	by mail.kernel.org (Postfix) with ESMTPS id A019E21902
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 13:55:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A019E21902
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F23501209;
-	Wed, 24 Apr 2019 13:55:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3A2D01219;
+	Wed, 24 Apr 2019 13:55:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2974F11D7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6481411D7
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 24 Apr 2019 13:55:26 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [195.130.137.89])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 681BB82E
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [195.130.137.88])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5FFD774A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 13:55:23 +0000 (UTC)
-Received: from ramsan ([84.194.111.163]) by laurent.telenet-ops.be with bizsmtp
-	id 4DvM2000L3XaVaC01DvMAC; Wed, 24 Apr 2019 15:55:21 +0200
+	Wed, 24 Apr 2019 13:55:24 +0000 (UTC)
+Received: from ramsan ([84.194.111.163]) by michel.telenet-ops.be with bizsmtp
+	id 4DvM2000z3XaVaC06DvMJB; Wed, 24 Apr 2019 15:55:22 +0200
 Received: from rox.of.borg ([192.168.97.57]) by ramsan with esmtp (Exim 4.90_1)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1hJIMr-000882-LY; Wed, 24 Apr 2019 15:55:21 +0200
+	id 1hJIMr-00088D-QA; Wed, 24 Apr 2019 15:55:21 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1hJIMr-0006YY-JY; Wed, 24 Apr 2019 15:55:21 +0200
+	id 1hJIMr-0006Yk-Oi; Wed, 24 Apr 2019 15:55:21 +0200
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Joerg Roedel <joro@8bytes.org>,
 	Magnus Damm <damm+renesas@opensource.se>
-Subject: [PATCH v3 2/6] iommu/ipmmu-vmsa: Prepare to handle 40-bit error
-	addresses
-Date: Wed, 24 Apr 2019 15:55:14 +0200
-Message-Id: <20190424135518.25150-3-geert+renesas@glider.be>
+Subject: [PATCH v3 6/6] iommu/ipmmu-vmsa: Add suspend/resume support
+Date: Wed, 24 Apr 2019 15:55:18 +0200
+Message-Id: <20190424135518.25150-7-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190424135518.25150-1-geert+renesas@glider.be>
 References: <20190424135518.25150-1-geert+renesas@glider.be>
@@ -67,81 +66,126 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424135514.IyZAd7sInhWXboalZOTbcF4Hy2XyAC1VyjBuHd0CLvQ@z>
+Message-ID: <20190424135518.4mwlYu5ULEe43xxy4rpbrDALoK98jI2KNePr_qTjz8E@z>
 
-On R-Car Gen3, the faulting virtual address is a 40-bit address, and
-comprised of two registers.  Read the upper address part, and combine
-both parts, when running on a 64-bit system.
+During PSCI system suspend, R-Car Gen3 SoCs are powered down, and all
+IPMMU state is lost.  Hence after s2ram, devices wired behind an IPMMU,
+and configured to use it, will see their DMA operations hang.
+
+To fix this, restore all IPMMU contexts, and re-enable all active
+micro-TLBs during system resume.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
 ---
-Apart from this, the driver doesn't support 40-bit IOVA addresses yet.
+This patch takes a different approach than the BSP, which implements a
+bulk save/restore of all registers during system suspend/resume.
 
 v3:
-  - Add Reviewed-by,
+  - No changes,
 
 v2:
-  - Merge IMEAR/IMELAR.
+  - Drop PSCI checks.
 ---
- drivers/iommu/ipmmu-vmsa.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 47 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9f2b781e20a0eba6..f2061bd1dc7b8852 100644
+index 56e84bcc9532e1ce..408ad0b2591925e0 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -186,7 +186,8 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
- #define IMMAIR_ATTR_IDX_WBRWA		1
- #define IMMAIR_ATTR_IDX_DEV		2
+@@ -36,7 +36,10 @@
+ #define arm_iommu_detach_device(...)	do {} while (0)
+ #endif
  
--#define IMEAR				0x0030
-+#define IMELAR				0x0030	/* IMEAR on R-Car Gen2 */
-+#define IMEUAR				0x0034	/* R-Car Gen3 only */
+-#define IPMMU_CTX_MAX 8U
++#define IPMMU_CTX_MAX		8U
++#define IPMMU_CTX_INVALID	-1
++
++#define IPMMU_UTLB_MAX		48U
  
- #define IMPCTR				0x0200
- #define IMPSTR				0x0208
-@@ -522,14 +523,16 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
- {
- 	const u32 err_mask = IMSTR_MHIT | IMSTR_ABORT | IMSTR_PF | IMSTR_TF;
+ struct ipmmu_features {
+ 	bool use_ns_alias_offset;
+@@ -58,6 +61,7 @@ struct ipmmu_vmsa_device {
+ 	spinlock_t lock;			/* Protects ctx and domains[] */
+ 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+ 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
++	s8 utlb_ctx[IPMMU_UTLB_MAX];
+ 
+ 	struct iommu_group *group;
+ 	struct dma_iommu_mapping *mapping;
+@@ -335,6 +339,7 @@ static void ipmmu_utlb_enable(struct ipmmu_vmsa_domain *domain,
+ 	ipmmu_write(mmu, IMUCTR(utlb),
+ 		    IMUCTR_TTSEL_MMU(domain->context_id) | IMUCTR_FLUSH |
+ 		    IMUCTR_MMUEN);
++	mmu->utlb_ctx[utlb] = domain->context_id;
+ }
+ 
+ /*
+@@ -346,6 +351,7 @@ static void ipmmu_utlb_disable(struct ipmmu_vmsa_domain *domain,
  	struct ipmmu_vmsa_device *mmu = domain->mmu;
-+	unsigned long iova;
- 	u32 status;
--	u32 iova;
  
- 	status = ipmmu_ctx_read_root(domain, IMSTR);
- 	if (!(status & err_mask))
- 		return IRQ_NONE;
+ 	ipmmu_write(mmu, IMUCTR(utlb), 0);
++	mmu->utlb_ctx[utlb] = IPMMU_CTX_INVALID;
+ }
  
--	iova = ipmmu_ctx_read_root(domain, IMEAR);
-+	iova = ipmmu_ctx_read_root(domain, IMELAR);
-+	if (IS_ENABLED(CONFIG_64BIT))
-+		iova |= (u64)ipmmu_ctx_read_root(domain, IMEUAR) << 32;
+ static void ipmmu_tlb_flush_all(void *cookie)
+@@ -1043,6 +1049,7 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	spin_lock_init(&mmu->lock);
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 	mmu->features = of_device_get_match_data(&pdev->dev);
++	memset(mmu->utlb_ctx, IPMMU_CTX_INVALID, mmu->features->num_utlbs);
+ 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
  
- 	/*
- 	 * Clear the error status flags. Unlike traditional interrupt flag
-@@ -541,10 +544,10 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
+ 	/* Map I/O memory and request IRQ. */
+@@ -1158,10 +1165,48 @@ static int ipmmu_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
- 	/* Log fatal errors. */
- 	if (status & IMSTR_MHIT)
--		dev_err_ratelimited(mmu->dev, "Multiple TLB hits @0x%08x\n",
-+		dev_err_ratelimited(mmu->dev, "Multiple TLB hits @0x%lx\n",
- 				    iova);
- 	if (status & IMSTR_ABORT)
--		dev_err_ratelimited(mmu->dev, "Page Table Walk Abort @0x%08x\n",
-+		dev_err_ratelimited(mmu->dev, "Page Table Walk Abort @0x%lx\n",
- 				    iova);
- 
- 	if (!(status & (IMSTR_PF | IMSTR_TF)))
-@@ -560,7 +563,7 @@ static irqreturn_t ipmmu_domain_irq(struct ipmmu_vmsa_domain *domain)
- 		return IRQ_HANDLED;
- 
- 	dev_err_ratelimited(mmu->dev,
--			    "Unhandled fault: status 0x%08x iova 0x%08x\n",
-+			    "Unhandled fault: status 0x%08x iova 0x%lx\n",
- 			    status, iova);
- 
- 	return IRQ_HANDLED;
++#ifdef CONFIG_PM_SLEEP
++static int ipmmu_resume_noirq(struct device *dev)
++{
++	struct ipmmu_vmsa_device *mmu = dev_get_drvdata(dev);
++	unsigned int i;
++
++	/* Reset root MMU and restore contexts */
++	if (ipmmu_is_root(mmu)) {
++		ipmmu_device_reset(mmu);
++
++		for (i = 0; i < mmu->num_ctx; i++) {
++			if (!mmu->domains[i])
++				continue;
++
++			ipmmu_domain_setup_context(mmu->domains[i]);
++		}
++	}
++
++	/* Re-enable active micro-TLBs */
++	for (i = 0; i < mmu->features->num_utlbs; i++) {
++		if (mmu->utlb_ctx[i] == IPMMU_CTX_INVALID)
++			continue;
++
++		ipmmu_utlb_enable(mmu->root->domains[mmu->utlb_ctx[i]], i);
++	}
++
++	return 0;
++}
++
++static const struct dev_pm_ops ipmmu_pm  = {
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, ipmmu_resume_noirq)
++};
++#define DEV_PM_OPS	&ipmmu_pm
++#else
++#define DEV_PM_OPS	NULL
++#endif /* CONFIG_PM_SLEEP */
++
+ static struct platform_driver ipmmu_driver = {
+ 	.driver = {
+ 		.name = "ipmmu-vmsa",
+ 		.of_match_table = of_match_ptr(ipmmu_of_ids),
++		.pm = DEV_PM_OPS,
+ 	},
+ 	.probe = ipmmu_probe,
+ 	.remove	= ipmmu_remove,
 -- 
 2.17.1
 
