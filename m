@@ -1,8 +1,7 @@
 From: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 9/9] platform/chrome: chromeos_laptop: use helper
- pci_dev_id
-Date: Wed, 24 Apr 2019 21:17:19 +0200
-Message-ID: <e882f58b-0808-952e-d293-5e8cc3f04c97@gmail.com>
+Subject: [PATCH v2 8/9] stmmac: pci: use helper pci_dev_id
+Date: Wed, 24 Apr 2019 21:16:41 +0200
+Message-ID: <82febf42-5f1e-a5d1-5c38-40dcaefdf700@gmail.com>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -19,21 +18,21 @@ Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/platform/chrome/chromeos_laptop.c | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/chrome/chromeos_laptop.c b/drivers/platform/chrome/chromeos_laptop.c
-index 24326eecd..7abbb6167 100644
---- a/drivers/platform/chrome/chromeos_laptop.c
-+++ b/drivers/platform/chrome/chromeos_laptop.c
-@@ -125,7 +125,7 @@ static bool chromeos_laptop_match_adapter_devid(struct device *dev, u32 devid)
- 		return false;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index cc1e887e4..0e87a9596 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -208,7 +208,7 @@ static int quark_default_data(struct pci_dev *pdev,
+ 		ret = 1;
+ 	}
  
- 	pdev = to_pci_dev(dev);
--	return devid == PCI_DEVID(pdev->bus->number, pdev->devfn);
-+	return devid == pci_dev_id(pdev);
- }
+-	plat->bus_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
++	plat->bus_id = pci_dev_id(pdev);
+ 	plat->phy_addr = ret;
+ 	plat->interface = PHY_INTERFACE_MODE_RMII;
  
- static void chromeos_laptop_check_adapter(struct i2c_adapter *adapter)
 -- 
 2.21.0
