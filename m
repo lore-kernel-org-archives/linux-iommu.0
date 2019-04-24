@@ -1,15 +1,22 @@
-From: Tom Murphy via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: flush not present cache in iommu_map_page
-Date: Wed, 24 Apr 2019 15:47:39 +0100
-Message-ID: <CAPL0++7w0wR+hid=0XkGtH2wR0qvL1oNheEMQOM=8CtyhNLmag@mail.gmail.com>
-References: <20190424141900.8883-1-tmurphy@arista.com>
-	<20190424143246.GA24079@infradead.org>
-Reply-To: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v2 56/79] docs: Documentation/*.txt: rename all ReST
+	files to *.rst
+Date: Wed, 24 Apr 2019 16:54:10 +0200
+Message-ID: <20190424145410.GE30142@zn.tnic>
+References: <cda57849a6462ccc72dcd360b30068ab6a1021c4.1555938376.git.mchehab+samsung@kernel.org>
+	<20190423083135.GA11158@hirez.programming.kicks-ass.net>
+	<20190423125519.GA7104@redhat.com>
+	<20190423130132.GT4038@hirez.programming.kicks-ass.net>
+	<20190423103053.07cf2149@lwn.net>
+	<20190423171158.GG12232@hirez.programming.kicks-ass.net>
+	<20190423172006.GD16353@zn.tnic> <20190423170409.7b1370ac@coco.lan>
+	<20190423213816.GE16353@zn.tnic> <20190423232325.679c100b@coco.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190424143246.GA24079-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190423232325.679c100b-qA1ZUp+OV9c@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,54 +26,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tom Murphy <murphyt7-/Zw1syy4LHg@public.gmane.org>
+To: Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Mike Snitzer <snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Farhan Ali <alifm-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jaroslav Kysela <perex-/Fr2/VpizcU@public.gmane.org>, kernel-hardening-ZwoEplunGu1jrUoiu81ncdBPR1lH4CV8@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, James Morris <jmorris-gx6/JNMH7DfYtjvyW6yDsg@public.gmane.org>, Halil Pasic <pasic-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Boqun Feng <boqun.feng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Mackall <mpm-VDJrAJ4Gl5ZBDgjK7y7TUQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Sean Paul <sean-p7yTbzM4H96eqtR555YLDQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-wireless@v
 List-Id: iommu@lists.linux-foundation.org
 
->The two conditions can go into one if statement to make this a little
->more clear.
-Ah, yeah of course
+On Wed, Apr 24, 2019 at 07:40:07AM -0300, Mauro Carvalho Chehab wrote:
+> Personally, I don't care much with monospaced fonts on this table. After
+> all, if I want to see it monospaced, I can simply click at the
+> "View page source" at the browser, and it will display the file as a
+> plain old monospaced text file.
 
->And I'd really like to understand the unlikely - amd_iommu_np_cache
->is set based on a hardware capability, so it seems rather odd to mark
->it unlikely.  Dynamic branch prediction really should do the right thing
->here usually.
+Goes to show why kernel people wouldn't want to look at that in
+the browser. Long hex numbers are hard to read as it is - that's
+why there's even the 4-digit separator in some docs, for example:
+0xffff_ffff_8100_0000.
 
-Here is the commit which added it without any explanation:
-https://github.com/torvalds/linux/commit/270cab2426cdc6307725e4f1f46ecf8ab8e69193
+Not having it monospaced makes the whole thing even less readable.
 
-should we remove it seen as there's no explanation given ?
+That's why it is important for the markup not to get in the way of
+people looking at those files in an editor.
 
+-- 
+Regards/Gruss,
+    Boris.
 
-On Wed, Apr 24, 2019 at 3:32 PM Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> On Wed, Apr 24, 2019 at 03:18:59PM +0100, Tom Murphy via iommu wrote:
-> > check if there is a not-present cache present and flush it if there is.
-> >
-> > Signed-off-by: Tom Murphy <tmurphy-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/amd_iommu.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index f7cdd2ab7f11..8ef43224aae0 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -1636,6 +1636,12 @@ static int iommu_map_page(struct protection_domain *dom,
-> >               pte[i] = __pte;
-> >
-> >       update_domain(dom);
-> > +     if (!dom->updated) {
-> > +             if (unlikely(amd_iommu_np_cache)) {
-> > +                     domain_flush_pages(dom, bus_addr, page_size);
-> > +                     domain_flush_complete(dom);
-> > +             }
-> > +     }
->
-> The two conditions can go into one if statement to make this a little
-> more clear.
->
-> And I'd really like to understand the unlikely - amd_iommu_np_cache
-> is set based on a hardware capability, so it seems rather odd to mark
-> it unlikely.  Dynamic branch prediction really should do the right thing
-> here usually.
+Good mailing practices for 400: avoid top-posting and trim the reply.
