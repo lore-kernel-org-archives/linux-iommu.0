@@ -5,72 +5,72 @@ X-Spam-Level:
 X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5D2C10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D43E1C10F11
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0E668208E4
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9CD44208E4
+	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 21:15:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KK4njm5c"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E668208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IBX0KuQh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CD44208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BB6E116DE;
-	Wed, 24 Apr 2019 21:15:38 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 070DD16E1;
+	Wed, 24 Apr 2019 21:15:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9AD531606
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4403E1606
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:45 +0000 (UTC)
+	Wed, 24 Apr 2019 19:17:48 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
-	[209.85.221.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 35698786
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+	[209.85.221.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B5F2F82D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 19:17:45 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id h4so26687523wre.7
+	Wed, 24 Apr 2019 19:17:47 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id c5so17814233wrs.11
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 12:17:45 -0700 (PDT)
+	Wed, 24 Apr 2019 12:17:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:from:to:cc:references:message-id:date:user-agent
 	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=+k7fklQVC1wXNkIsXxuBFFgxierE2Y58VYjajnqTX8M=;
-	b=KK4njm5c66wApJlm8WGtcK3eINA7bZzqf9jpF/xDcoCSdcuGWR7ygTnW7CxGOT7Zpb
-	ClJa1zpkc0LnLQ3Y9FSdXrMwgQvpBYbm2h61pKGsBRYXBFkHEnXr7h2wDgkaAsAj6P04
-	n+Zhe79BzllwSlP7qQcQ1oNHfpi5n4yGvzSir6Qil6I+8IfT0AGlMW1C3bfb7hbIOrnv
-	/TQKg5FQRX19gB+eGsG3WBIFJCSsQmuhe604FqNiT/pZUC4DClEWV5U3gwAbTgI70ma+
-	+jCLa9iSGj52KBjpTWMg0o/2CwQGRZzVKsI7N71kUDVC8rL8yE29inQ1qfO+L+vf3GA3
-	Zx2g==
+	bh=hab7qAz6lzS7ZRowBkQ/f/HEdXNfdhNCdKWF0/BVKmE=;
+	b=IBX0KuQhIHPofugi8VbvuAnaDQlqeZ9svo7oPOlRq9Nl+c4hfx7GC4G6FUzkUJubse
+	wiLJj/sOBCAdP1NhfNYrPK8BsSVeCk2cAA9eP+HTjzeXBPDI3xwU9YjRDKxu7BUkh9Qy
+	ARW/rPtI4IpoC3x2CibtLLT839KW5Gqd98nS+2DFcQq+T+/e7v1mCfxpxSvQXhLRtDMs
+	OI5Y+gnOsn5tFiln6JJbcNGlizY5/JYmaoqck6PjX5tjV488YO+0nhW8BLltqBNP29iS
+	aIYrY8Al7ib3uqnETxszQ99kc8ZoQ/z7edNx0J2Z7OwrxHfOrSpfu23Pmg27nR0v1NZi
+	ReGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:from:to:cc:references:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=+k7fklQVC1wXNkIsXxuBFFgxierE2Y58VYjajnqTX8M=;
-	b=ec1wsNFrgpcKLGxS2Dt9y8FMzaC6/lR09+HxyDbbBeUbcKIOiP+PPdFjx3Y5ry/HD8
-	pDlutdfcM5RlE4YSkz/0GCPwTKm1gTvL432o73n6xvA5tv74S20jAXbb652uUAL8cjed
-	GzUea2wZvT8Iu9w24YK+AT6En7cwnt3sXKh0pCSbnEmsYUjUGv+uRQZCLJG5qOuN3MRN
-	jM1P9vnOA+TbWSFnIbBbvMk9I2hFA/PfC8gyyODz8suEfeLgtYnqkXqB7DoPpgZ5ZmvT
-	SotryJ3Td2VWQaq7hWDubziF2FLxrB8rcmRDbVSHhbEVxU6aXAMCNXapyJUT5qsJrIiq
-	u7vg==
-X-Gm-Message-State: APjAAAUl8Wn16c9c1Zp65+P7rVSQ+ycqn8m3Po+hdFShSNSOOTDCc4bt
-	xW+6yCmqWQHPSd/75Jb8vI8=
-X-Google-Smtp-Source: APXvYqwDmKBVeUMPZVGyJTnitTfK6cM0z/PsKemtuUUK1m2YTTQaoqWzBVErwIt/ROAiTYboFRIU3w==
-X-Received: by 2002:a5d:5485:: with SMTP id h5mr377002wrv.315.1556133463901;
-	Wed, 24 Apr 2019 12:17:43 -0700 (PDT)
+	bh=hab7qAz6lzS7ZRowBkQ/f/HEdXNfdhNCdKWF0/BVKmE=;
+	b=mrzc6h739V8cNxSnTOoc2/O/J0RlrX8uODizPfbuvv6HMeLMCceTgu8wKc/jdziJhH
+	NWDkIeDFwpcbBEtqc0wVzImsJL8FicCZrMMZ+k11xdxOMQT53QVdUz7EOLT/PvWY+a8u
+	P81RmOcE1FhaIxbpPbfrwlpKN8aOk7QbHTb0RO38XcK9pNS+yYtXpJTq/WC170iAGryB
+	g5nbGw+jsuNMU40VqpWBk4CuR7VF6FLiIs4uVoPdoRHrSOHWpq8HxqLgyaXlnY3Iltvm
+	P0stjzGgCU1uX6heNPs02tOQUqyWx8+pUMA6dDhIQd/FoJqBj0B3S/8kKLs3ahqYuZkn
+	OIzg==
+X-Gm-Message-State: APjAAAXjugKhWP7s5D7jWbThstVv/hskF0CTzbXxTrmsblStjAdRY64L
+	0ZZPOGk9GdwUrWBNirESQoQ=
+X-Google-Smtp-Source: APXvYqy3cqzUuKRDBnCN6u4ytA6IsqF8dbo/CC+cpZ/NjBgj06qGIEA9zqzusRK5xh+DIv6B8gl90A==
+X-Received: by 2002:a5d:4b4e:: with SMTP id w14mr18245461wrs.15.1556133466411; 
+	Wed, 24 Apr 2019 12:17:46 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5?
 	(p200300EA8BD45700C498EE8FFF0A13E5.dip0.t-ipconnect.de.
 	[2003:ea:8bd4:5700:c498:ee8f:ff0a:13e5])
 	by smtp.googlemail.com with ESMTPSA id
-	u1sm2183653wrp.69.2019.04.24.12.17.42
+	p6sm18060129wrs.6.2019.04.24.12.17.44
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 24 Apr 2019 12:17:43 -0700 (PDT)
-Subject: [PATCH v2 3/9] r8169: use new helper pci_dev_id
+	Wed, 24 Apr 2019 12:17:45 -0700 (PDT)
+Subject: [PATCH v2 4/9] powerpc/powernv/npu: use helper pci_dev_id
 From: Heiner Kallweit <hkallweit1@gmail.com>
 To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Michael Ellerman <mpe@ellerman.id.au>,
@@ -89,8 +89,8 @@ To: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	Stephen Rothwell <sfr@canb.auug.org.au>, Paul Mackerras <paulus@samba.org>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-Message-ID: <fec3960e-5e65-3f62-0922-736f26db095f@gmail.com>
-Date: Wed, 24 Apr 2019 21:13:25 +0200
+Message-ID: <8ed5b4ee-3226-6786-eb96-886826e180cd@gmail.com>
+Date: Wed, 24 Apr 2019 21:14:25 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
@@ -123,33 +123,63 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424191325.ZyPG9EF_WGALOLpjW2GB1JUhQghw0X_SPQDWL71pX-U@z>
+Message-ID: <20190424191425.1xZTwOhRWTWJbfsO2E8dRqtc2aXKL3By5Q-SNoEEoTA@z>
 
 Use new helper pci_dev_id() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/powerpc/platforms/powernv/npu-dma.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169.c b/drivers/net/ethernet/realtek/r8169.c
-index efaea1a0a..ae476fe8d 100644
---- a/drivers/net/ethernet/realtek/r8169.c
-+++ b/drivers/net/ethernet/realtek/r8169.c
-@@ -7020,8 +7020,7 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 	new_bus->priv = tp;
- 	new_bus->parent = &pdev->dev;
- 	new_bus->irq[0] = PHY_IGNORE_INTERRUPT;
--	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x",
--		 PCI_DEVID(pdev->bus->number, pdev->devfn));
-+	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
+diff --git a/arch/powerpc/platforms/powernv/npu-dma.c b/arch/powerpc/platforms/powernv/npu-dma.c
+index dc23d9d2a..495550432 100644
+--- a/arch/powerpc/platforms/powernv/npu-dma.c
++++ b/arch/powerpc/platforms/powernv/npu-dma.c
+@@ -1213,9 +1213,8 @@ int pnv_npu2_map_lpar_dev(struct pci_dev *gpdev, unsigned int lparid,
+ 	 * Currently we only support radix and non-zero LPCR only makes sense
+ 	 * for hash tables so skiboot expects the LPCR parameter to be a zero.
+ 	 */
+-	ret = opal_npu_map_lpar(nphb->opal_id,
+-			PCI_DEVID(gpdev->bus->number, gpdev->devfn), lparid,
+-			0 /* LPCR bits */);
++	ret = opal_npu_map_lpar(nphb->opal_id, pci_dev_id(gpdev), lparid,
++				0 /* LPCR bits */);
+ 	if (ret) {
+ 		dev_err(&gpdev->dev, "Error %d mapping device to LPAR\n", ret);
+ 		return ret;
+@@ -1224,7 +1223,7 @@ int pnv_npu2_map_lpar_dev(struct pci_dev *gpdev, unsigned int lparid,
+ 	dev_dbg(&gpdev->dev, "init context opalid=%llu msr=%lx\n",
+ 			nphb->opal_id, msr);
+ 	ret = opal_npu_init_context(nphb->opal_id, 0/*__unused*/, msr,
+-			PCI_DEVID(gpdev->bus->number, gpdev->devfn));
++				    pci_dev_id(gpdev));
+ 	if (ret < 0)
+ 		dev_err(&gpdev->dev, "Failed to init context: %d\n", ret);
+ 	else
+@@ -1258,7 +1257,7 @@ int pnv_npu2_unmap_lpar_dev(struct pci_dev *gpdev)
+ 	dev_dbg(&gpdev->dev, "destroy context opalid=%llu\n",
+ 			nphb->opal_id);
+ 	ret = opal_npu_destroy_context(nphb->opal_id, 0/*__unused*/,
+-			PCI_DEVID(gpdev->bus->number, gpdev->devfn));
++				       pci_dev_id(gpdev));
+ 	if (ret < 0) {
+ 		dev_err(&gpdev->dev, "Failed to destroy context: %d\n", ret);
+ 		return ret;
+@@ -1266,9 +1265,8 @@ int pnv_npu2_unmap_lpar_dev(struct pci_dev *gpdev)
  
- 	new_bus->read = r8169_mdio_read_reg;
- 	new_bus->write = r8169_mdio_write_reg;
+ 	/* Set LPID to 0 anyway, just to be safe */
+ 	dev_dbg(&gpdev->dev, "Map LPAR opalid=%llu lparid=0\n", nphb->opal_id);
+-	ret = opal_npu_map_lpar(nphb->opal_id,
+-			PCI_DEVID(gpdev->bus->number, gpdev->devfn), 0 /*LPID*/,
+-			0 /* LPCR bits */);
++	ret = opal_npu_map_lpar(nphb->opal_id, pci_dev_id(gpdev), 0 /*LPID*/,
++				0 /* LPCR bits */);
+ 	if (ret)
+ 		dev_err(&gpdev->dev, "Error %d mapping device to LPAR\n", ret);
+ 
 -- 
 2.21.0
-
-
 
 
 _______________________________________________
