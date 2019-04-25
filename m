@@ -1,93 +1,114 @@
-Return-Path: <SRS0=cQN6=S2=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=4mi1=S3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB9BC10F11
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 23:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FB0C10F11
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 01:02:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B7E842089F
-	for <iommu@archiver.kernel.org>; Wed, 24 Apr 2019 23:47:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="FpoVLMQK"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7E842089F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id CCBF0206BA
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 01:02:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CCBF0206BA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 381FC1803;
-	Wed, 24 Apr 2019 23:47:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 647CE16A8;
+	Thu, 25 Apr 2019 01:02:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 75FD917FE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54C571646
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 23:47:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
-	[209.85.128.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A494EF4
+	Thu, 25 Apr 2019 01:02:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7517582A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 23:47:45 +0000 (UTC)
-Received: by mail-wm1-f67.google.com with SMTP id v14so7563771wmf.2
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 16:47:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=arista.com; s=googlenew;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc:content-transfer-encoding;
-	bh=PAHlGIM7St+qsV1Ngem2RwsCdlI4NRZiuOUVgp1sGdk=;
-	b=FpoVLMQK+VVllxzrjL9cEBeQvupZXpmhffXl1TpTughf8jhUJbo6rqD478eJ+/XCbQ
-	FKzmOGPMHhzvXRV72838CDN1bbdcm6uS8xP23DWBLqODRbNJjae3x/ip2DaY1MWVL0ki
-	48jER4l2UFSDVsbxb3Nlp/oMm8phIeddlNrg4917CjvuenN6DH1Q1B+f3LZV+7ja+iqm
-	oOp5mImzFTMJIyVtrhnZMwRrNGM6lK9Pl01w6MCv9EtdAaMLYUFvexv1PeFHOB9YnWRL
-	8sqYwZxfoBumyhN6csDPsR4sOpCzwFvtsDWvbTESLOBE3n746XlTRDmSUR2BYOZNxtqV
-	0itg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc:content-transfer-encoding;
-	bh=PAHlGIM7St+qsV1Ngem2RwsCdlI4NRZiuOUVgp1sGdk=;
-	b=n9t9s2rtZ4A/ekjV+Iivi/5vN/rqJi5k7Pf1ByL3T7U6N32aHHJafdMWHw3XmRDl5w
-	vjETb65uUnW7tmVZUD2gtC/rJ2pBmDxF79K9jS/VAVvdjcfD1dB+59yoYq4okKsojcCS
-	xbUPmHpgqGUsUSUeTAM2Hk/0VM2Emu8AvbsGCwZBBBkETJ7L/UTHPEanjKmWqvkmjZgP
-	FhZsr64LOgwYO+qa63Ru7EnxTL0vZY87gXOYvOqS+Cc8mKtfdeeof67ufZWunLSGWRBl
-	RUl4EsLMLvstnjhS32K7EakZ7bUAF5sckWluJXIQBsRVxj5efvNWub1SbduSzScpRQGt
-	QzfA==
-X-Gm-Message-State: APjAAAVYk7RxO5zayM4wMgq9p22KQbL+eR3oOTFDyDjZdgOuDFCc286I
-	fzZ5KMwtbsOpd47qW39RmlygNIlFqSAGTp7Uchay9w==
-X-Google-Smtp-Source: APXvYqw1VPdNaBoCLhHvyqzKyGnZwK7uYkl26K02RGzlwxvdtdWo8AJCP8ROeaTfvaxvpZIHA/eqiLDJ54Z7MfZvXek=
-X-Received: by 2002:a1c:7d92:: with SMTP id y140mr1108963wmc.54.1556149664151; 
-	Wed, 24 Apr 2019 16:47:44 -0700 (PDT)
+	Thu, 25 Apr 2019 01:02:24 +0000 (UTC)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x3P0rbsq123817
+	for <iommu@lists.linux-foundation.org>; Wed, 24 Apr 2019 21:02:23 -0400
+Received: from e31.co.us.ibm.com (e31.co.us.ibm.com [32.97.110.149])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2s32151srs-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Wed, 24 Apr 2019 21:02:23 -0400
+Received: from localhost
+	by e31.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+	Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
+	Thu, 25 Apr 2019 02:02:22 +0100
+Received: from b03cxnp08025.gho.boulder.ibm.com (9.17.130.17)
+	by e31.co.us.ibm.com (192.168.1.131) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Thu, 25 Apr 2019 02:02:18 +0100
+Received: from b03ledav004.gho.boulder.ibm.com
+	(b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x3P12GT328311574
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Thu, 25 Apr 2019 01:02:16 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1B130780B1;
+	Thu, 25 Apr 2019 01:02:16 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AAED578080;
+	Thu, 25 Apr 2019 01:02:03 +0000 (GMT)
+Received: from morokweng.localdomain (unknown [9.80.232.248])
+	by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTPS;
+	Thu, 25 Apr 2019 01:02:02 +0000 (GMT)
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+	<87womn8inf.fsf@morokweng.localdomain>
+	<20190129134750-mutt-send-email-mst@kernel.org>
+	<877eefxvyb.fsf@morokweng.localdomain>
+	<20190204144048-mutt-send-email-mst@kernel.org>
+	<87ef71seve.fsf@morokweng.localdomain>
+	<20190320171027-mutt-send-email-mst@kernel.org>
+	<87tvfvbwpb.fsf@morokweng.localdomain>
+	<20190323165456-mutt-send-email-mst@kernel.org>
+	<87a7go71hz.fsf@morokweng.localdomain>
+	<20190419190258-mutt-send-email-mst@kernel.org>
+User-agent: mu4e 1.0; emacs 26.1
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+In-reply-to: <20190419190258-mutt-send-email-mst@kernel.org>
+Date: Wed, 24 Apr 2019 22:01:56 -0300
 MIME-Version: 1.0
-References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
-	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
-	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
-	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
-	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
-	<fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
-	<445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
-	<cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
-	<6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
-	<8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
-	<ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
-	<9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
-	<abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
-	<1D51CB31-089A-4D71-A9C1-E54E50A56C46@arista.com>
-	<1b7d37da-5660-f635-cd2f-619e5573d35a@linux.intel.com>
-In-Reply-To: <1b7d37da-5660-f635-cd2f-619e5573d35a@linux.intel.com>
-Date: Thu, 25 Apr 2019 00:47:32 +0100
-Message-ID:
- <CAPL0++4w6TDf38fh6LwAADR1w3b+nO5G7rZFM3LjDE-B20zbow@mail.gmail.com>
-Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
-	iommu_get_resv_regions
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
+X-TM-AS-GCONF: 00
+x-cbid: 19042501-8235-0000-0000-00000E869D0D
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00010990; HX=3.00000242; KW=3.00000007;
+	PH=3.00000004; SC=3.00000285; SDB=6.01193942; UDB=6.00625930;
+	IPR=6.00974766; 
+	MB=3.00026582; MTD=3.00000008; XFM=3.00000015; UTC=2019-04-25 01:02:21
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19042501-8236-0000-0000-00004547C62A
+Message-Id: <875zr228zf.fsf@morokweng.localdomain>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-04-25_01:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1904250004
+Cc: Mike Anderson <andmike@linux.ibm.com>,
+	Michael Roth <mdroth@linux.vnet.ibm.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	Paul Mackerras <paulus@ozlabs.org>,
+	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+	Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -100,111 +121,154 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tom Murphy via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tom Murphy <tmurphy@arista.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190424234732.LfZ_hbRJcTpCASOiQFOrUdBFvnodPPSksuhrl-qcDR4@z>
+Message-ID: <20190425010156.SDLIrzapvFeTmIFWK2_U3usaqCb2FRAA65zcNedUyew@z>
 
-SSBjYW4gc2VlIHR3byBwb3RlbnRpYWwgcHJvYmxlbXMgd2l0aCB0aGVzZSBwYXRjaGVzIHRoYXQg
-c2hvdWxkIGJlIGFkZHJlc3NlZDoKClRoZSBkZWZhdWx0IGRvbWFpbiBvZiBhIGdyb3VwIGNhbiBi
-ZSBjaGFuZ2VkIHRvIHR5cGUKSU9NTVVfRE9NQUlOX0lERU5USVRZIHZpYSB0aGUgY29tbWFuZCBs
-aW5lLiBXaXRoIHRoZXNlIHBhdGNoZXMgd2UgYXJlCnJldHVybmluZyB0aGUgc2lfZG9tYWluIGZv
-ciB0eXBlIElPTU1VX0RPTUFJTl9JREVOVElUWS4gVGhlcmUncyBhCmNoYW5jZSB0aGUgc2hhcmVk
-IHNpX2RvbWFpbiBjb3VsZCBiZSBmcmVlZCB3aGlsZSBpdCBpcyBzdGlsbCBiZWluZwp1c2VkIHdo
-ZW4gYSBncm91cCBpcyBmcmVlZC4gRm9yIGV4YW1wbGUgaGVyZSBpbiB0aGUKaW9tbXVfZ3JvdXBf
-cmVsZWFzZToKaHR0cHM6Ly9naXRodWIuY29tL3RvcnZhbGRzL2xpbnV4L2Jsb2IvY2Q4ZGVhZDBj
-Mzk0NTdlNThlYzFkMzZkYjkzYWVkY2E4MTFkNDhmMS9kcml2ZXJzL2lvbW11L2lvbW11LmMjTDM3
-NgoiaWYgKGdyb3VwLT5kZWZhdWx0X2RvbWFpbikKICAgIGlvbW11X2RvbWFpbl9mcmVlKGdyb3Vw
-LT5kZWZhdWx0X2RvbWFpbik7IgoKQWxzbyBub3cgdGhhdCBhIGRvbWFpbiBpcyBhdHRhY2hlZCB0
-byBhIGRldmljZSBlYXJsaWVyIHdlIHNob3VsZAppbXBsZW1lbnQgdGhlIGlzX2F0dGFjaF9kZWZl
-cnJlZCBjYWxsLWJhY2sgYW5kIHVzZSBpdCB0byBkZWZlciB0aGUKZG9tYWluIGF0dGFjaCBmcm9t
-IGlvbW11IGRyaXZlciBpbml0IHRvIGRldmljZSBkcml2ZXIgaW5pdCB3aGVuIGlvbW11CmlzIHBy
-ZS1lbmFibGVkIGluIGtkdW1wIGtlcm5lbC4gbGlrZSBpbiB0aGlzIGNvbW1pdDoKaHR0cHM6Ly9n
-aXRodWIuY29tL3RvcnZhbGRzL2xpbnV4L2NvbW1pdC9kZjNmN2E2ZThlODU1ZTRmZjUzMzUwODgw
-N2NkN2MzNzIzZmFhNTFmCgoKT24gVHVlLCBBcHIgMTYsIDIwMTkgYXQgMzoyNCBBTSBMdSBCYW9s
-dSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPiB3cm90ZToKPgo+IEhpIEphbWVzLAo+Cj4gT24g
-NC8xNS8xOSAxMDoxNiBQTSwgSmFtZXMgU2V3YXJ0IHdyb3RlOgo+ID4gSGV5IEx1LAo+ID4KPiA+
-PiBPbiAxMCBBcHIgMjAxOSwgYXQgMDY6MjIsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+IHdyb3RlOgo+ID4+Cj4gPj4gSGkgSmFtZXMsCj4gPj4KPiA+PiBPbiA0LzYvMTkgMjow
-MiBBTSwgSmFtZXMgU2V3YXJ0IHdyb3RlOgo+ID4+PiBIZXkgTHUsCj4gPj4+IE15IGJhZCwgZGlk
-IHNvbWUgZGVidWdnaW5nIG9uIG15IGVuZC4gVGhlIGlzc3VlIHdhcyBzd2FwcGluZyBvdXQKPiA+
-Pj4gZmluZF9kb21haW4gZm9yIGlvbW11X2dldF9kb21haW5fZm9yX2Rldi4gSXQgc2VlbXMgaW4g
-c29tZSBzaXR1YXRpb25zIHRoZQo+ID4+PiBkb21haW4gaXMgbm90IGF0dGFjaGVkIHRvIHRoZSBn
-cm91cCBidXQgdGhlIGRldmljZSBpcyBleHBlY3RlZCB0byBoYXZlIHRoZQo+ID4+PiBkb21haW4g
-c3RpbGwgc3RvcmVkIGluIGl0cyBhcmNoZGF0YS4KPiA+Pj4gSeKAmXZlIGF0dGFjaGVkIHRoZSBm
-aW5hbCBwYXRjaCB3aXRoIGZpbmRfZG9tYWluIHVucmVtb3ZlZCB3aGljaCBzZWVtcyB0bwo+ID4+
-PiB3b3JrIGluIG15IHRlc3RpbmcuCj4gPj4KPiA+PiBKdXN0IGxvb2tlZCBpbnRvIHlvdXIgdjMg
-cGF0Y2ggc2V0IGFuZCBzb21lIHRob3VnaHRzIGZyb20gbXkgZW5kIHBvc3RlZAo+ID4+IGhlcmUg
-anVzdCBmb3IgeW91ciBpbmZvcm1hdGlvbi4KPiA+Pgo+ID4+IExldCBtZSBwb3N0IHRoZSBwcm9i
-bGVtcyB3ZSB3YW50IHRvIGFkZHJlc3MuCj4gPj4KPiA+PiAxLiBXaGVuIGFsbG9jYXRpbmcgYSBu
-ZXcgZ3JvdXAgZm9yIGEgZGV2aWNlLCBob3cgc2hvdWxkIHdlIGRldGVybWluZSB0aGUKPiA+PiB0
-eXBlIG9mIHRoZSBkZWZhdWx0IGRvbWFpbj8KPiA+Pgo+ID4+IDIuIElmIHdlIG5lZWQgdG8gcHV0
-IGEgZGV2aWNlIGludG8gYW4gZXhpc3RpbmcgZ3JvdXAgd2hpY2ggdXNlcyBhCj4gPj4gZGlmZmVy
-ZW50IHR5cGUgb2YgZG9tYWluIGZyb20gd2hhdCB0aGUgZGV2aWNlIGRlc2lyZXMgdG8gdXNlLCB3
-ZSBtaWdodAo+ID4+IGJyZWFrIHRoZSBmdW5jdGlvbmFsaXR5IG9mIHRoZSBkZXZpY2UuCj4gPj4K
-PiA+PiBNeSBuZXcgdGhvdWdodCBpcyBsZXR0aW5nIHRoZSBpb21tdSBnZW5lcmljIGNvZGUgdG8g
-ZGV0ZXJtaW5lIHRoZQo+ID4+IGRlZmF1bHQgZG9tYWluIHR5cGUgKGhlbmNlIG15IHByb3Bvc2Vk
-IHZlbmRvciBzcGVjaWZpYyBkZWZhdWx0IGRvbWFpbgo+ID4+IHR5cGUgcGF0Y2hlcyBjb3VsZCBi
-ZSBkcm9wcGVkKS4KPiA+Pgo+ID4+IElmIHRoZSBkZWZhdWx0IGRvbWFpbiB0eXBlIGlzIGR5bmFt
-aWNhbCBtYXBwaW5nLCBhbmQgbGF0ZXIgaW4gaW9tbXVfbm9fbWFwcGluZygpLCB3ZSBkZXRlcm1p
-bmVzIHRoYXQgd2UgbXVzdCB1c2UgYW4gaWRlbnRpdHkgZG9tYWluLAo+ID4+IHdlIHRoZW4gY2Fs
-bCBpb21tdV9yZXF1ZXN0X2RtX2Zvcl9kZXYoZGV2KS4KPiA+Pgo+ID4+IElmIHRoZSBkZWZhdWx0
-IGRvbWFpbiB0eXBlIGlzIGlkZW50aXR5IG1hcHBpbmcsIGFuZCBsYXRlciBpbgo+ID4+IGlvbW11
-X25vX21hcHBpbmcoKSwgd2UgZGV0ZXJtaW5lZCB0aGF0IHdlIG11c3QgdXNlIGEgZHluYW1pY2Fs
-IGRvbWFpbiwKPiA+PiB3ZSB0aGVuIGNhbGwgaW9tbXVfcmVxdWVzdF9kbWFfZG9tYWluX2Zvcl9k
-ZXYoZGV2KS4KPiA+Pgo+ID4+IFdlIGFscmVhZHkgaGF2ZSBpb21tdV9yZXF1ZXN0X2RtX2Zvcl9k
-ZXYoKSBpbiBpb21tdS5jLiBXZSBvbmx5IG5lZWQgdG8KPiA+PiBpbXBsZW1lbnQgaW9tbXVfcmVx
-dWVzdF9kbWFfZG9tYWluX2Zvcl9kZXYoKS4KPiA+Pgo+ID4+IFdpdGggdGhpcyBkb25lLCB5b3Vy
-IHBhdGNoIHRpdGxlZCAiQ3JlYXRlIGFuIElPTU1VIGdyb3VwIGZvciBkZXZpY2VzCj4gPj4gdGhh
-dCByZXF1aXJlIGFuIGlkZW50aXR5IG1hcCIgY291bGQgYWxzbyBiZSBkcm9wcGVkLgo+ID4+Cj4g
-Pj4gQW55IHRob3VnaHRzPwo+ID4KPiA+IFRoZXJlcyBhIGNvdXBsZSBpc3N1ZXMgSSBjYW4gdGhp
-bmsgb2YuIGlvbW11X3JlcXVlc3RfZG1fZm9yX2RldiBjaGFuZ2VzCj4gPiB0aGUgZG9tYWluIGZv
-ciBhbGwgZGV2aWNlcyB3aXRoaW4gdGhlIGRldmljZXMgZ3JvdXAsIGlmIHdlIG1heSBoYXZlCj4g
-PiBkZXZpY2VzIHdpdGggZGlmZmVyZW50IGRvbWFpbiByZXF1aXJlbWVudHMgaW4gdGhlIHNhbWUg
-Z3JvdXAgdGhlbiBvbmx5IHRoZQo+ID4gbGFzdCBpbml0aWFsaXNlZCBkZXZpY2Ugd2lsbCBnZXQg
-dGhlIGRvbWFpbiBpdCB3YW50cy4gSWYgd2Ugd2FudCB0byBhZGQKPiA+IGlvbW11X3JlcXVlc3Rf
-ZG1hX2RvbWFpbl9mb3JfZGV2IHRoZW4gd2Ugd291bGQgc3RpbGwgbmVlZCBhbm90aGVyIElPTU1V
-Cj4gPiBncm91cCBmb3IgaWRlbnRpdHkgZG9tYWluIGRldmljZXMuCj4KPiBDdXJyZW50IHNvbHV0
-aW9uIChhLmsuYS4gdjMpIGZvciB0aGlzIGlzIHRvIGFzc2lnbiBhIG5ldyBncm91cCB0byB0aGUK
-PiBkZXZpY2Ugd2hpY2ggcmVxdWlyZXMgYW4gaWRlbnRpdHkgbWFwcGVkIGRvbWFpbi4gVGhpcyB3
-aWxsIGJyZWFrIHRoZQo+IGZ1bmN0aW9uYWxpdHkgb2YgZGV2aWNlIGRpcmVjdCBwYXNzLXRocm91
-Z2ggKHRvIHVzZXIgbGV2ZWwpLiBUaGUgaW9tbXUKPiBncm91cCByZXByZXNlbnRzIHRoZSBtaW5p
-bXVtIGdyYW51bGFyaXR5IG9mIGlvbW11IGlzb2xhdGlvbiBhbmQKPiBwcm90ZWN0aW9uLiBUaGUg
-cmVxdWlyZW1lbnQgb2YgaWRlbnRpdHkgbWFwcGVkIGRvbWFpbiBzaG91bGQgbm90IGJlIGEKPiBm
-YWN0b3IgZm9yIGEgbmV3IGdyb3VwLgo+Cj4gQm90aCBpb21tX3JlcXVlc3RfZG1hX2RvbWFpbl9m
-b3JfZGV2KCkgb3IgaW9tbXVfcmVxdWVzdF9kbV9mb3JfZGV2KCkKPiBvbmx5IHN1cHBvcnQgZ3Jv
-dXBzIHdpdGggYSBzaW5nbGUgZGV2aWNlIGluIGl0Lgo+Cj4gVGhlIHVzZXJzIGNvdWxkIGNob29z
-ZSBiZXR3ZWVuIGRvbWFpbnMgb2YgRE1BIHR5cGUgb3IgSURFTlRJVFkgdHlwZSBmb3IKPiBhIGdy
-b3VwLiBJZiBtdWx0aXBsZSBkZXZpY2VzIHNoYXJlIGEgc2luZ2xlIGdyb3VwIGFuZCBib3RoIGRv
-bid0IHdvcmsKPiBmb3IgdGhlbSwgdGhleSBoYXZlIHRvIGRpc2FibGUgdGhlIElPTU1VLiBUaGlz
-IGlzbid0IGEgdmFsaWQKPiBjb25maWd1cmF0aW9uIGZyb20gSU9NTVUncyBwb2ludCBvZiB2aWV3
-Lgo+Cj4gPgo+ID4gQm90aCB3aXRoIHYzIGFuZCB0aGUgcHJvcG9zZWQgbWV0aG9kIGhlcmUsIGlv
-bW11X3Nob3VsZF9pZGVudGl0eV9tYXAgaXMKPiA+IGRldGVybWluaW5nIHdoZXRoZXIgdGhlIGRl
-dmljZSByZXF1aXJlcyBhbiBpZGVudGl0eSBtYXAuIEluIHYzIHRoaXMgaXMKPiA+IGNhbGxlZCBv
-bmNlIHVwIGZyb250IGJ5IHRoZSBnZW5lcmljIGNvZGUgdG8gZGV0ZXJtaW5lIGZvciB0aGUgSU9N
-TVUgZ3JvdXAKPiA+IHdoaWNoIGRvbWFpbiB0eXBlIHRvIHVzZS4gSW4gdGhlIHByb3Bvc2VkIG1l
-dGhvZCBJIHRoaW5rIHRoaXMgd291bGQgaGFwcGVuCj4gPiBhZnRlciBpbml0aWFsIGRvbWFpbiBh
-bGxvY2F0aW9uIGFuZCB3b3VsZCB0cmlnZ2VyIHRoZSBkb21haW4gdG8gYmUKPiA+IHJlcGxhY2Vk
-IHdpdGggYSBkaWZmZXJlbnQgZG9tYWluLgo+ID4KPiA+IEkgcHJlZmVyIHRoZSBzb2x1dGlvbiBp
-biB2My4gV2hhdCBkbyB5b3UgdGhpbms/Cj4KPiBUaGUgb25seSBjb25jZXJuIG9mIHNvbHV0aW9u
-IGluIHYzIGZyb20gbXkgcG9pbnQgb2YgdmlldyBpcyBzb21lIGtpbmQgb2YKPiBkdXBsaWNhdGlv
-bi4gRXZlbiB3ZSBjYW4gYXNrIHRoZSBJbnRlbCBJT01NVSBkcml2ZXIgdG8gdGVsbCB0aGUgZGVm
-YXVsdAo+IGRvbWFpbiB0eXBlLCB3ZSBtaWdodCBjaGFuZ2UgaXQgYWZ0ZXIgYm9vdCB1cC4gRm9y
-IGV4YW1wbGUsIGZvciAzMi1iaXQKPiBwY2kgZGV2aWNlcywgd2UgZG9uJ3Qga25vdyB3aGV0aGVy
-IGl0J3MgNjQtYml0IG9yIDMyLWJpdCBjYXBhYmxlIGR1cmluZwo+IElPTU1VIGluaXRpYWxpemF0
-aW9uLCBzbyB3ZSBtaWdodCB0ZWxsIGlvbW11LmMgdG8gdXNlIGlkZW50aXR5IG1hcHBlZAo+IGRv
-bWFpbi4gQWZ0ZXIgYm9vdCB1cCwgd2UgY2hlY2sgaXQgYWdhaW4sIGFuZCBmaW5kIG91dCB0aGF0
-IGl0J3Mgb25seQo+IDMyLWJpdCBjYXBhYmxlIChoZW5jZSBvbmx5IGNhbiBhY2Nlc3MgcGh5c2lj
-YWwgbWVtb3J5IGJlbG93IDRHKSBhbmQgdGhlCj4gZGVmYXVsdCBpZGVudGl0eSBkb21haW4gZG9l
-c24ndCB3b3JrLiBBbmQgd2UgaGF2ZSB0byBjaGFuZ2UgaXQgdG8gRE1BCj4gZG9tYWluIHZpYSBp
-b21tdV9yZXF1ZXN0X2RtYV9kb21haW5fZm9yX2RldigpLgo+Cj4gU28gdG8gbWFrZSBpdCBzaW1w
-bGUgYW5kIHN0cmFpZ2h0LWZvcndhcmQsIHdlIGNhbiBqdXN0IGxldCBpb21tdS5jIHRvCj4gZGV0
-ZXJtaW5lIHRoZSBkZWZhdWx0IGRvbWFpbiB0eXBlIGFuZCBhZnRlciB0aGF0IHRoZSBJbnRlbCBJ
-T01NVSBkcml2ZXIKPiBjb3VsZCB0d2VhayBpdCBhY2NvcmRpbmcgdG8gdGhlIHF1aXJrIGJpdHMg
-aW4gdGhlIGRyaXZlci4KPgo+IEJlc3QgcmVnYXJkcywKPiBMdSBCYW9sdQpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
-b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+Michael S. Tsirkin <mst@redhat.com> writes:
+
+> On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
+>>
+>> Michael S. Tsirkin <mst@redhat.com> writes:
+>>
+>> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
+>> >>
+>> >> Michael S. Tsirkin <mst@redhat.com> writes:
+>> >>
+>> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
+>> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
+>> >> >> only ever try to access memory addresses that are supplied to it by the
+>> >> >> guest, so all of the secure guest memory that the host cares about is
+>> >> >> accessible:
+>> >> >>
+>> >> >>     If this feature bit is set to 0, then the device has same access to
+>> >> >>     memory addresses supplied to it as the driver has. In particular,
+>> >> >>     the device will always use physical addresses matching addresses
+>> >> >>     used by the driver (typically meaning physical addresses used by the
+>> >> >>     CPU) and not translated further, and can access any address supplied
+>> >> >>     to it by the driver. When clear, this overrides any
+>> >> >>     platform-specific description of whether device access is limited or
+>> >> >>     translated in any way, e.g. whether an IOMMU may be present.
+>> >> >>
+>> >> >> All of the above is true for POWER guests, whether they are secure
+>> >> >> guests or not.
+>> >> >>
+>> >> >> Or are you saying that a virtio device may want to access memory
+>> >> >> addresses that weren't supplied to it by the driver?
+>> >> >
+>> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
+>> >> > specific encrypted memory regions that driver has access to but device
+>> >> > does not. that seems to violate the constraint.
+>> >>
+>> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
+>> >> the device can ignore the IOMMU for all practical purposes I would
+>> >> indeed say that the logic would apply to IOMMUs as well. :-)
+>> >>
+>> >> I guess I'm still struggling with the purpose of signalling to the
+>> >> driver that the host may not have access to memory addresses that it
+>> >> will never try to access.
+>> >
+>> > For example, one of the benefits is to signal to host that driver does
+>> > not expect ability to access all memory. If it does, host can
+>> > fail initialization gracefully.
+>>
+>> But why would the ability to access all memory be necessary or even
+>> useful? When would the host access memory that the driver didn't tell it
+>> to access?
+>
+> When I say all memory I mean even memory not allowed by the IOMMU.
+
+Yes, but why? How is that memory relevant?
+
+>> >> >> >> > But the name "sev_active" makes me scared because at least AMD guys who
+>> >> >> >> > were doing the sensible thing and setting ACCESS_PLATFORM
+>> >> >> >>
+>> >> >> >> My understanding is, AMD guest-platform knows in advance that their
+>> >> >> >> guest will run in secure mode and hence sets the flag at the time of VM
+>> >> >> >> instantiation. Unfortunately we dont have that luxury on our platforms.
+>> >> >> >
+>> >> >> > Well you do have that luxury. It looks like that there are existing
+>> >> >> > guests that already acknowledge ACCESS_PLATFORM and you are not happy
+>> >> >> > with how that path is slow. So you are trying to optimize for
+>> >> >> > them by clearing ACCESS_PLATFORM and then you have lost ability
+>> >> >> > to invoke DMA API.
+>> >> >> >
+>> >> >> > For example if there was another flag just like ACCESS_PLATFORM
+>> >> >> > just not yet used by anyone, you would be all fine using that right?
+>> >> >>
+>> >> >> Yes, a new flag sounds like a great idea. What about the definition
+>> >> >> below?
+>> >> >>
+>> >> >> VIRTIO_F_ACCESS_PLATFORM_NO_IOMMU This feature has the same meaning as
+>> >> >>     VIRTIO_F_ACCESS_PLATFORM both when set and when not set, with the
+>> >> >>     exception that the IOMMU is explicitly defined to be off or bypassed
+>> >> >>     when accessing memory addresses supplied to the device by the
+>> >> >>     driver. This flag should be set by the guest if offered, but to
+>> >> >>     allow for backward-compatibility device implementations allow for it
+>> >> >>     to be left unset by the guest. It is an error to set both this flag
+>> >> >>     and VIRTIO_F_ACCESS_PLATFORM.
+>> >> >
+>> >> > It looks kind of narrow but it's an option.
+>> >>
+>> >> Great!
+>> >>
+>> >> > I wonder how we'll define what's an iommu though.
+>> >>
+>> >> Hm, it didn't occur to me it could be an issue. I'll try.
+>>
+>> I rephrased it in terms of address translation. What do you think of
+>> this version? The flag name is slightly different too:
+>>
+>>
+>> VIRTIO_F_ACCESS_PLATFORM_NO_TRANSLATION This feature has the same
+>>     meaning as VIRTIO_F_ACCESS_PLATFORM both when set and when not set,
+>>     with the exception that address translation is guaranteed to be
+>>     unnecessary when accessing memory addresses supplied to the device
+>>     by the driver. Which is to say, the device will always use physical
+>>     addresses matching addresses used by the driver (typically meaning
+>>     physical addresses used by the CPU) and not translated further. This
+>>     flag should be set by the guest if offered, but to allow for
+>>     backward-compatibility device implementations allow for it to be
+>>     left unset by the guest. It is an error to set both this flag and
+>>     VIRTIO_F_ACCESS_PLATFORM.
+>
+> Thanks, I'll think about this approach. Will respond next week.
+
+Thanks!
+
+>> >> > Another idea is maybe something like virtio-iommu?
+>> >>
+>> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
+>> >> bypass? If so, it's an interesting idea for new guests but it doesn't
+>> >> help with guests that are out today in the field, which don't have A
+>> >> virtio-iommu driver.
+>> >
+>> > I presume legacy guests don't use encrypted memory so why do we
+>> > worry about them at all?
+>>
+>> They don't use encrypted memory, but a host machine will run a mix of
+>> secure and legacy guests. And since the hypervisor doesn't know whether
+>> a guest will be secure or not at the time it is launched, legacy guests
+>> will have to be launched with the same configuration as secure guests.
+>
+> OK and so I think the issue is that hosts generally fail if they set
+> ACCESS_PLATFORM and guests do not negotiate it.
+> So you can not just set ACCESS_PLATFORM for everyone.
+> Is that the issue here?
+
+Yes, that is one half of the issue. The other is that even if hosts
+didn't fail, existing legacy guests wouldn't "take the initiative" of
+not negotiating ACCESS_PLATFORM to get the improved performance. They'd
+have to be modified to do that.
+
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
