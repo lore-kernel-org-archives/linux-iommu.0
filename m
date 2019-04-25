@@ -1,63 +1,61 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 09/19] iommu/vt-d: Enlightened PASID allocation
-Date: Thu, 25 Apr 2019 09:40:31 +0200
-Message-ID: <c847182b-6e5c-5344-a162-29e273a489fb@redhat.com>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1556062279-64135-10-git-send-email-jacob.jun.pan@linux.intel.com>
- <143adac1-d58b-dde6-593b-74ea71da73c8@redhat.com>
- <A2975661238FB949B60364EF0F2C257439E840F5@SHSMSX104.ccr.corp.intel.com>
+From: "Jan Beulich" <JBeulich@suse.com>
+Subject: Re: [Xen-devel] [PATCH 1/3] xen/swiotlb: fix condition for
+ calling xen_destroy_contiguous_region()
+Date: Thu, 25 Apr 2019 02:53:41 -0600
+Message-ID: <5CC175950200007800228E80@prv1-mh.provo.novell.com>
+References: <20190423105457.17502-1-jgross@suse.com>
+ <20190423105457.17502-2-jgross@suse.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439E840F5@SHSMSX104.ccr.corp.intel.com>
-Content-Language: en-US
+In-Reply-To: <20190423105457.17502-2-jgross@suse.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Juergen Gross <jgross@suse.com>
+Cc: Stefano Stabellini <sstabellini@kernel.org>, iommu@lists.linux-foundation.org, xen-devel <xen-devel@lists.xenproject.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Liu,
+>>> On 23.04.19 at 12:54, <jgross@suse.com> wrote:
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -360,8 +360,8 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
+>  	/* Convert the size to actually allocated. */
+>  	size = 1UL << (order + XEN_PAGE_SHIFT);
+>  
+> -	if (((dev_addr + size - 1 <= dma_mask)) ||
+> -	    range_straddles_page_boundary(phys, size))
+> +	if ((dev_addr + size - 1 <= dma_mask) &&
+> +	    !WARN_ON(range_straddles_page_boundary(phys, size)))
+>  		xen_destroy_contiguous_region(phys, order);
 
-On 4/25/19 9:12 AM, Liu, Yi L wrote:
-> Hi Eric,
-> 
->> From: Auger Eric [mailto:eric.auger@redhat.com]
->> Sent: Thursday, April 25, 2019 1:28 AM
->> To: Jacob Pan <jacob.jun.pan@linux.intel.com>; iommu@lists.linux-foundation.org;
->> Subject: Re: [PATCH v2 09/19] iommu/vt-d: Enlightened PASID allocation
->>
->> Hi Jacob,
->>
->> On 4/24/19 1:31 AM, Jacob Pan wrote:
->>> From: Lu Baolu <baolu.lu@linux.intel.com>
->>>
->>> If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the IOMMU
->>> driver should rely on the emulation software to allocate and free
->>> PASID IDs.
->> Do we make the decision depending on the CM or depending on the VCCAP_REG?
->>
->> VCCAP_REG description says:
->>
->> If Set, software must use Virtual Command Register interface to allocate and free
->> PASIDs.
-> 
-> The answer is it depends on the ECAP.VCS and then the PASID allocation bit in
-> VCCAP_REG. But VCS bit implies the iommu is a software implementation
-> (vIOMMU) of vt-d architecture. Pls refer to the descriptions of "Virtual
-> Command Support" in vt-d 3.0 spec.
-> 
-> "Hardware implementations of this architecture report a value of 0
-> in this field. Software implementations (emulation) of this
-> architecture may report VCS=1."
+On the allocation side we have
 
-OK I understand. But strictly speaking a vIOMMU may not implement CM.
-But that's nitpicking ;-)
+	if (((dev_addr + size - 1 <= dma_mask)) &&
+	    !range_straddles_page_boundary(phys, size))
+		*dma_handle = dev_addr;
+	else {
+		if (xen_create_contiguous_region(phys, order,
+						 fls64(dma_mask), dma_handle) != 0) {
+			xen_free_coherent_pages(hwdev, size, ret, (dma_addr_t)phys, attrs);
+			return NULL;
+		}
+	}
 
-Thanks
+which is (as far as the function call is concerned)
 
-Eric
-> 
-> Thanks,
-> Yi Liu
-> 
+	if ((dev_addr + size - 1 > dma_mask) ||
+	    range_straddles_page_boundary(phys, size))
+		xen_create_contiguous_region(...);
+
+So I don't think your transformation is correct. Even worse, both
+parts of the condition in xen_swiotlb_free_coherent() act on an
+address that is the _result_ of the prior
+xen_create_contiguous_region(), i.e. the address should always
+match _both_ criteria anyway. Whereas what you really want is
+undo the xen_create_contiguous_region() only when it actually
+was called. Otherwise you also shatter contiguous allocations
+that were contiguous already for other reasons (perhaps just
+luck).
+
+Jan
