@@ -2,64 +2,72 @@ Return-Path: <SRS0=4mi1=S3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A36AC10F03
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76E7C10F03
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7192A214AE
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:18:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7192A214AE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A44C22084B
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A44C22084B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1BA781CA3;
-	Thu, 25 Apr 2019 10:18:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 528F01D3E;
+	Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CB3091C98
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 96EBE1D27
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:17:59 +0000 (UTC)
+	Thu, 25 Apr 2019 10:33:22 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 19E8582B
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:17:59 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
-	[10.5.11.23])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 8F084C0AF7B5;
-	Thu, 25 Apr 2019 10:17:58 +0000 (UTC)
-Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 1B72E272A3;
-	Thu, 25 Apr 2019 10:17:52 +0000 (UTC)
-Subject: Re: [PATCH v2 06/19] drivers core: Add I/O ASID allocator
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <4550408f-39ff-7bf9-0072-a0898c6c2f60@redhat.com>
-Date: Thu, 25 Apr 2019 12:17:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E9FE182B;
+	Thu, 25 Apr 2019 10:33:21 +0000 (UTC)
+Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
+	by Galois.linutronix.de with esmtp (Exim 4.80)
+	(envelope-from <tglx@linutronix.de>)
+	id 1hJbAF-0001xP-E1; Thu, 25 Apr 2019 11:59:35 +0200
+Message-Id: <20190425094803.162400595@linutronix.de>
+User-Agent: quilt/0.65
+Date: Thu, 25 Apr 2019 11:45:15 +0200
+From: Thomas Gleixner <tglx@linutronix.de>
+To: LKML <linux-kernel@vger.kernel.org>
+Subject: [patch V3 22/29] tracing: Make ftrace_trace_userstack() static and
+	conditional
+References: <20190425094453.875139013@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.31]);
-	Thu, 25 Apr 2019 10:17:58 +0000 (UTC)
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
+	Christoph Lameter <cl@linux.com>,
+	Miroslav Benes <mbenes@suse.cz>, Christoph Hellwig <hch@lst.de>,
+	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
+	x86@kernel.org, kasan-dev@googlegroups.com,
+	Johannes Thumshirn <jthumshirn@suse.de>,
+	Andrey Ryabinin <aryabinin@virtuozzo.com>,
+	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
+	David Rientjes <rientjes@google.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Mike Rapoport <rppt@linux.vnet.ibm.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+	David Sterba <dsterba@suse.com>, Dmitry Vyukov <dvyukov@google.com>,
+	Tom Zanussi <tom.zanussi@linux.intel.com>,
+	Chris Mason <clm@fb.com>, Pekka Enberg <penberg@kernel.org>,
+	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,235 +84,81 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425101751.oaocACx-tqMNdQs_DYjLX1VtioJegCfc1kZGCGFwgaM@z>
+Message-ID: <20190425094515.gCq23kDhY1rm9QRm2dRFfsyhX1SkBR4nsQLba8fxoNE@z>
 
-Hi Jean-Philippe, Jacob,
-On 4/24/19 1:31 AM, Jacob Pan wrote:
-> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> 
-> Some devices might support multiple DMA address spaces, in particular
-> those that have the PCI PASID feature. PASID (Process Address Space ID)
-> allows to share process address spaces with devices (SVA), partition a
-> device into VM-assignable entities (VFIO mdev) or simply provide
-> multiple DMA address space to kernel drivers. Add a global PASID
-> allocator usable by different drivers at the same time. Name it I/O ASID
-> to avoid confusion with ASIDs allocated by arch code, which are usually
-> a separate ID space.
-> 
-> The IOASID space is global. Each device can have its own PASID space,
-> but by convention the IOMMU ended up having a global PASID space, so
-> that with SVA, each mm_struct is associated to a single PASID.
-> 
-> The allocator doesn't really belong in drivers/iommu because some
-> drivers would like to allocate PASIDs for devices that aren't managed by
-> an IOMMU, using the same ID space as IOMMU. It doesn't really belong in
-> drivers/pci either since platform device also support PASID. Add the
-> allocator in drivers/base.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->  drivers/base/Kconfig   |   6 +++
->  drivers/base/Makefile  |   1 +
->  drivers/base/ioasid.c  | 106 +++++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/ioasid.h |  40 +++++++++++++++++++
->  4 files changed, 153 insertions(+)
->  create mode 100644 drivers/base/ioasid.c
->  create mode 100644 include/linux/ioasid.h
-> 
-> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
-> index 059700e..47c1348 100644
-> --- a/drivers/base/Kconfig
-> +++ b/drivers/base/Kconfig
-> @@ -182,6 +182,12 @@ config DMA_SHARED_BUFFER
->  	  APIs extension; the file's descriptor can then be passed on to other
->  	  driver.
->  
-> +config IOASID
-> +	bool
-> +	help
-> +	  Enable the I/O Address Space ID allocator. A single ID space shared
-> +	  between different users.
-> +
->  config DMA_FENCE_TRACE
->  	bool "Enable verbose DMA_FENCE_TRACE messages"
->  	depends on DMA_SHARED_BUFFER
-> diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-> index 1574520..aafa2ac 100644
-> --- a/drivers/base/Makefile
-> +++ b/drivers/base/Makefile
-> @@ -23,6 +23,7 @@ obj-$(CONFIG_PINCTRL) += pinctrl.o
->  obj-$(CONFIG_DEV_COREDUMP) += devcoredump.o
->  obj-$(CONFIG_GENERIC_MSI_IRQ_DOMAIN) += platform-msi.o
->  obj-$(CONFIG_GENERIC_ARCH_TOPOLOGY) += arch_topology.o
-> +obj-$(CONFIG_IOASID) += ioasid.o
->  
->  obj-y			+= test/
->  
-> diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
-> new file mode 100644
-> index 0000000..cf122b2
-> --- /dev/null
-> +++ b/drivers/base/ioasid.c
-> @@ -0,0 +1,106 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * I/O Address Space ID allocator. There is one global IOASID space, split into
-> + * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-> + * free IOASIDs with ioasid_alloc and ioasid_free.
-> + */
-> +#include <linux/idr.h>
-> +#include <linux/ioasid.h>
-> +#include <linux/slab.h>
-> +#include <linux/spinlock.h>
-> +
-> +struct ioasid_data {
-> +	ioasid_t id;
-> +	struct ioasid_set *set;
-> +	void *private;
-> +	struct rcu_head rcu;
-> +};
-> +
-> +static DEFINE_IDR(ioasid_idr);
-> +
-> +/**
-> + * ioasid_alloc - Allocate an IOASID
-> + * @set: the IOASID set
-> + * @min: the minimum ID (inclusive)
-> + * @max: the maximum ID (exclusive)
-> + * @private: data private to the caller
-> + *
-> + * Allocate an ID between @min and @max (or %0 and %INT_MAX). Return the
-I would remove "(or %0 and %INT_MAX)".
-> + * allocated ID on success, or INVALID_IOASID on failure. The @private pointer
-> + * is stored internally and can be retrieved with ioasid_find().
-> + */
-> +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
-> +		      void *private)
-> +{
-> +	int id = -1;
-> +	struct ioasid_data *data;
-> +
-> +	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return INVALID_IOASID;
-> +
-> +	data->set = set;
-> +	data->private = private;
-> +
-> +	idr_preload(GFP_KERNEL);
-> +	idr_lock(&ioasid_idr);
-> +	data->id = id = idr_alloc(&ioasid_idr, data, min, max, GFP_ATOMIC);
-> +	idr_unlock(&ioasid_idr);
-> +	idr_preload_end();
-> +
-> +	if (id < 0) {
-> +		kfree(data);
-> +		return INVALID_IOASID;
-> +	}
-> +	return id;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_alloc);
-> +
-> +/**
-> + * ioasid_free - Free an IOASID
-> + * @ioasid: the ID to remove
-> + */
-> +void ioasid_free(ioasid_t ioasid)
-> +{
-> +	struct ioasid_data *ioasid_data;
-> +
-> +	idr_lock(&ioasid_idr);
-> +	ioasid_data = idr_remove(&ioasid_idr, ioasid);
-> +	idr_unlock(&ioasid_idr);
-> +
-> +	if (ioasid_data)
-> +		kfree_rcu(ioasid_data, rcu);
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_free);
-> +
-> +/**
-> + * ioasid_find - Find IOASID data
-> + * @set: the IOASID set
-> + * @ioasid: the IOASID to find
-> + * @getter: function to call on the found object
-> + *
-> + * The optional getter function allows to take a reference to the found object
-> + * under the rcu lock. The function can also check if the object is still valid:
-> + * if @getter returns false, then the object is invalid and NULL is returned.
-> + *
-> + * If the IOASID has been allocated for this set, return the private pointer
-> + * passed to ioasid_alloc. Otherwise return NULL.
-> + */
-> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> +		  bool (*getter)(void *))
-> +{
-> +	void *priv = NULL;
-> +	struct ioasid_data *ioasid_data;
-> +
-> +	rcu_read_lock();
-> +	ioasid_data = idr_find(&ioasid_idr, ioasid);
-> +	if (ioasid_data && ioasid_data->set == set) {
-> +		priv = ioasid_data->private;
-> +		if (getter && !getter(priv))
-> +			priv = NULL;
-> +	}
-> +	rcu_read_unlock();
-> +
-> +	return priv;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_find);
-> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> new file mode 100644
-> index 0000000..6f3655a
-> --- /dev/null
-> +++ b/include/linux/ioasid.h
-> @@ -0,0 +1,40 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef __LINUX_IOASID_H
-> +#define __LINUX_IOASID_H
-> +
-> +#define INVALID_IOASID ((ioasid_t)-1)
-> +typedef unsigned int ioasid_t;
-> +typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
-I don't see it used in this series.
-> +
-> +struct ioasid_set {
-> +	int dummy;
-> +};
-> +
-> +#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
-> +
-> +#ifdef CONFIG_IOASID
-> +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
-> +		      void *private);
-> +void ioasid_free(ioasid_t ioasid);
-> +
-> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> +		  bool (*getter)(void *));
-> +
-> +#else /* !CONFIG_IOASID */
-> +static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-> +				    ioasid_t max, void *private)
-> +{
-> +	return INVALID_IOASID;
-> +}
-> +
-> +static inline void ioasid_free(ioasid_t ioasid)
-> +{
-> +}
-> +
-> +static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> +				bool (*getter)(void *))
-> +{
-> +	return NULL;
-> +}
-> +#endif /* CONFIG_IOASID */
-> +#endif /* __LINUX_IOASID_H */
-> 
+It's only used in trace.c and there is absolutely no point in compiling it
+in when user space stack traces are not supported.
 
-Thanks
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Steven Rostedt <rostedt@goodmis.org>
+---
+ kernel/trace/trace.c |   14 ++++++++------
+ kernel/trace/trace.h |    8 --------
+ 2 files changed, 8 insertions(+), 14 deletions(-)
 
-Eric
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -159,6 +159,8 @@ static union trace_eval_map_item *trace_
+ #endif /* CONFIG_TRACE_EVAL_MAP_FILE */
+ 
+ static int tracing_set_tracer(struct trace_array *tr, const char *buf);
++static void ftrace_trace_userstack(struct ring_buffer *buffer,
++				   unsigned long flags, int pc);
+ 
+ #define MAX_TRACER_SIZE		100
+ static char bootup_tracer_buf[MAX_TRACER_SIZE] __initdata;
+@@ -2905,9 +2907,10 @@ void trace_dump_stack(int skip)
+ }
+ EXPORT_SYMBOL_GPL(trace_dump_stack);
+ 
++#ifdef CONFIG_USER_STACKTRACE_SUPPORT
+ static DEFINE_PER_CPU(int, user_stack_count);
+ 
+-void
++static void
+ ftrace_trace_userstack(struct ring_buffer *buffer, unsigned long flags, int pc)
+ {
+ 	struct trace_event_call *call = &event_user_stack;
+@@ -2958,13 +2961,12 @@ ftrace_trace_userstack(struct ring_buffe
+  out:
+ 	preempt_enable();
+ }
+-
+-#ifdef UNUSED
+-static void __trace_userstack(struct trace_array *tr, unsigned long flags)
++#else /* CONFIG_USER_STACKTRACE_SUPPORT */
++static void ftrace_trace_userstack(struct ring_buffer *buffer,
++				   unsigned long flags, int pc)
+ {
+-	ftrace_trace_userstack(tr, flags, preempt_count());
+ }
+-#endif /* UNUSED */
++#endif /* !CONFIG_USER_STACKTRACE_SUPPORT */
+ 
+ #endif /* CONFIG_STACKTRACE */
+ 
+--- a/kernel/trace/trace.h
++++ b/kernel/trace/trace.h
+@@ -782,17 +782,9 @@ void update_max_tr_single(struct trace_a
+ #endif /* CONFIG_TRACER_MAX_TRACE */
+ 
+ #ifdef CONFIG_STACKTRACE
+-void ftrace_trace_userstack(struct ring_buffer *buffer, unsigned long flags,
+-			    int pc);
+-
+ void __trace_stack(struct trace_array *tr, unsigned long flags, int skip,
+ 		   int pc);
+ #else
+-static inline void ftrace_trace_userstack(struct ring_buffer *buffer,
+-					  unsigned long flags, int pc)
+-{
+-}
+-
+ static inline void __trace_stack(struct trace_array *tr, unsigned long flags,
+ 				 int skip, int pc)
+ {
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
