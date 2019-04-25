@@ -1,66 +1,103 @@
-From: Juergen Gross <jgross@suse.com>
-Subject: Re: [Xen-devel] [PATCH 3/3] xen/swiotlb: remember having called
- xen_create_contiguous_region()
-Date: Thu, 25 Apr 2019 11:07:11 +0200
-Message-ID: <a1203397-9704-192a-c157-442dbeee62c5@suse.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: [patch V3 16/29] drm: Simplify stacktrace handling
+Date: Thu, 25 Apr 2019 11:45:09 +0200
+Message-ID: <20190425094802.622094226@linutronix.de>
+References: <20190425094453.875139013@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-References: =?UTF-8?B?PDIwMTkwNDIzMTA1NDU3LjE3NTAy77+9Me+/vWpncm9zc0BzdXNl?=
- =?UTF-8?B?LmNvbT4gPDIwMTkwNDIzMTA1NDU3LjE3NTAy77+9NO+/vWpncm9zc0BzdXNlLmNv?=
- =?UTF-8?Q?m=3e_=3calpine=2eDEB=2e2=2e10=2e1904230955190=2e24598=40sstabelli?=
- =?UTF-8?Q?ni=ef=bf=bdThinkPad=ef=bf=bdX260=3e_=3ce744c7eb-1685-13b6-7ae9-e9?=
- =?UTF-8?Q?52f8f53ab0=40suse=2ecom=3e_=3c5CC177740200007800228EB2=40suse=2ec?=
- =?UTF-8?B?b20+?=
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Beulich <JBeulich@suse.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>, iommu@lists.linux-foundation.org, xen-devel <xen-devel@lists.xenproject.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>, Catalin Marinas <catalin.marinas@arm.com>, dri-devel@lists.freedesktop.org, linux-mm@kvack.org, dm-devel@redhat.com, Alexander Potapenko <glider@google.com>, Christoph Lameter <cl@linux.com>, Miroslav Benes <mbenes@suse.cz>, Christoph Hellwig <hch@lst.de>, Alasdair Kergon <agk@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arch@vger.kernel.org, x86@kernel.org, kasan-dev@googlegroups.com, David Rientjes <rientjes@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org, Johannes Thumshirn <jthumshirn@suse.de>, Akinobu Mita <akinobu.mita@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>, David Sterba <dsterba@su>
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/04/2019 11:01, Jan Beulich wrote:
->>>> On 23.04.19 at 20:36, <jgross@suse.com> wrote:
->> On 23/04/2019 19:05, Stefano Stabellini wrote:
->>> On Tue, 23 Apr 2019, Juergen Gross wrote:
->>>> Instead of always calling xen_destroy_contiguous_region() in case the
->>>> memory is DMA-able for the used device, do so only in case it has been
->>>> made DMA-able via xen_create_contiguous_region() before.
->>>>
->>>> This will avoid a lot of xen_destroy_contiguous_region() calls for
->>>> 64-bit capable devices.
->>>>
->>>> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
->>>> flag of the first allocated page can be used for remembering.
->>>
->>> Although the patch looks OK, this sentence puzzles me. Why do you say
->>> that the memory in question is owned by swiotlb-xen? Because it was
->>> returned by xen_alloc_coherent_pages? Both the x86 and the Arm
->>> implementation return fresh new memory, hence, it should be safe to set
->>> the PageOwnerPriv1 flag?
->>>
->>> My concern with this approach is with the semantics of PG_owner_priv_1.
->>> Is a page marked with PG_owner_priv_1 only supposed to be used by the
->>> owner?
->>
->> The owner of the page is free to use the flag.
->>
->> Like Grant pages are marked by the grant driver using this flag. And
->> Xen page tables are using it in PV-guests for indicating a "Pinned"
->> page table.
-> 
-> Considering the background of the series, isn't such multi-purpose use
-> of the flag a possible problem? You're already suspecting a wrong call
-> into here. The function finding the flag set (but for another reason)
-> might add to the confusion. But I realize there are only so many page
-> flags available.
-
-Right.
-
-> Perhaps the freeing function should, first thing, check the handed
-> space actually matches the criteria (within dma_mask and contiguous)?
-
-Yes, I think this is a good idea.
-
-
-Juergen
+UmVwbGFjZSB0aGUgaW5kaXJlY3Rpb24gdGhyb3VnaCBzdHJ1Y3Qgc3RhY2tfdHJhY2UgYnkgdXNp
+bmcgdGhlIHN0b3JhZ2UKYXJyYXkgYmFzZWQgaW50ZXJmYWNlcy4KClRoZSBvcmlnaW5hbCBjb2Rl
+IGluIGFsbCBwcmludGluZyBmdW5jdGlvbnMgaXMgcmVhbGx5IHdyb25nLiBJdCBhbGxvY2F0ZXMg
+YQpzdG9yYWdlIGFycmF5IG9uIHN0YWNrIHdoaWNoIGlzIHVudXNlZCBiZWNhdXNlIGRlcG90X2Zl
+dGNoX3N0YWNrKCkgZG9lcyBub3QKc3RvcmUgYW55dGhpbmcgaW4gaXQuIEl0IG92ZXJ3cml0ZXMg
+dGhlIGVudHJpZXMgcG9pbnRlciBpbiB0aGUgc3RhY2tfdHJhY2UKc3RydWN0IHNvIGl0IHBvaW50
+cyB0byB0aGUgZGVwb3Qgc3RvcmFnZS4KClNpZ25lZC1vZmYtYnk6IFRob21hcyBHbGVpeG5lciA8
+dGdseEBsaW51dHJvbml4LmRlPgpBY2tlZC1ieTogRGFuaWVsIFZldHRlciA8ZGFuaWVsQGZmd2xs
+LmNoPgpDYzogaW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpDYzogSm9vbmFzIExhaHRp
+bmVuIDxqb29uYXMubGFodGluZW5AbGludXguaW50ZWwuY29tPgpDYzogTWFhcnRlbiBMYW5raG9y
+c3QgPG1hYXJ0ZW4ubGFua2hvcnN0QGxpbnV4LmludGVsLmNvbT4KQ2M6IGRyaS1kZXZlbEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKQ2M6IERhdmlkIEFpcmxpZSA8YWlybGllZEBsaW51eC5pZT4KQ2M6
+IEphbmkgTmlrdWxhIDxqYW5pLm5pa3VsYUBsaW51eC5pbnRlbC5jb20+CkNjOiBSb2RyaWdvIFZp
+dmkgPHJvZHJpZ28udml2aUBpbnRlbC5jb20+Ci0tLQogZHJpdmVycy9ncHUvZHJtL2RybV9tbS5j
+ICAgICAgICAgICAgICAgIHwgICAyMiArKysrKysrLS0tLS0tLS0tLS0tLS0tCiBkcml2ZXJzL2dw
+dS9kcm0vaTkxNS9pOTE1X3ZtYS5jICAgICAgICAgfCAgIDExICsrKystLS0tLS0tCiBkcml2ZXJz
+L2dwdS9kcm0vaTkxNS9pbnRlbF9ydW50aW1lX3BtLmMgfCAgIDIxICsrKysrKystLS0tLS0tLS0t
+LS0tLQogMyBmaWxlcyBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCAzNiBkZWxldGlvbnMoLSkK
+Ci0tLSBhL2RyaXZlcnMvZ3B1L2RybS9kcm1fbW0uYworKysgYi9kcml2ZXJzL2dwdS9kcm0vZHJt
+X21tLmMKQEAgLTEwNiwyMiArMTA2LDE5IEBACiBzdGF0aWMgbm9pbmxpbmUgdm9pZCBzYXZlX3N0
+YWNrKHN0cnVjdCBkcm1fbW1fbm9kZSAqbm9kZSkKIHsKIAl1bnNpZ25lZCBsb25nIGVudHJpZXNb
+U1RBQ0tERVBUSF07Ci0Jc3RydWN0IHN0YWNrX3RyYWNlIHRyYWNlID0gewotCQkuZW50cmllcyA9
+IGVudHJpZXMsCi0JCS5tYXhfZW50cmllcyA9IFNUQUNLREVQVEgsCi0JCS5za2lwID0gMQotCX07
+CisJdW5zaWduZWQgaW50IG47CiAKLQlzYXZlX3N0YWNrX3RyYWNlKCZ0cmFjZSk7CisJbiA9IHN0
+YWNrX3RyYWNlX3NhdmUoZW50cmllcywgQVJSQVlfU0laRShlbnRyaWVzKSwgMSk7CiAKIAkvKiBN
+YXkgYmUgY2FsbGVkIHVuZGVyIHNwaW5sb2NrLCBzbyBhdm9pZCBzbGVlcGluZyAqLwotCW5vZGUt
+PnN0YWNrID0gZGVwb3Rfc2F2ZV9zdGFjaygmdHJhY2UsIEdGUF9OT1dBSVQpOworCW5vZGUtPnN0
+YWNrID0gc3RhY2tfZGVwb3Rfc2F2ZShlbnRyaWVzLCBuLCBHRlBfTk9XQUlUKTsKIH0KIAogc3Rh
+dGljIHZvaWQgc2hvd19sZWFrcyhzdHJ1Y3QgZHJtX21tICptbSkKIHsKIAlzdHJ1Y3QgZHJtX21t
+X25vZGUgKm5vZGU7Ci0JdW5zaWduZWQgbG9uZyBlbnRyaWVzW1NUQUNLREVQVEhdOworCXVuc2ln
+bmVkIGxvbmcgKmVudHJpZXM7CisJdW5zaWduZWQgaW50IG5yX2VudHJpZXM7CiAJY2hhciAqYnVm
+OwogCiAJYnVmID0ga21hbGxvYyhCVUZTWiwgR0ZQX0tFUk5FTCk7CkBAIC0xMjksMTkgKzEyNiwx
+NCBAQCBzdGF0aWMgdm9pZCBzaG93X2xlYWtzKHN0cnVjdCBkcm1fbW0gKm1tCiAJCXJldHVybjsK
+IAogCWxpc3RfZm9yX2VhY2hfZW50cnkobm9kZSwgZHJtX21tX25vZGVzKG1tKSwgbm9kZV9saXN0
+KSB7Ci0JCXN0cnVjdCBzdGFja190cmFjZSB0cmFjZSA9IHsKLQkJCS5lbnRyaWVzID0gZW50cmll
+cywKLQkJCS5tYXhfZW50cmllcyA9IFNUQUNLREVQVEgKLQkJfTsKLQogCQlpZiAoIW5vZGUtPnN0
+YWNrKSB7CiAJCQlEUk1fRVJST1IoIm5vZGUgWyUwOGxseCArICUwOGxseF06IHVua25vd24gb3du
+ZXJcbiIsCiAJCQkJICBub2RlLT5zdGFydCwgbm9kZS0+c2l6ZSk7CiAJCQljb250aW51ZTsKIAkJ
+fQogCi0JCWRlcG90X2ZldGNoX3N0YWNrKG5vZGUtPnN0YWNrLCAmdHJhY2UpOwotCQlzbnByaW50
+X3N0YWNrX3RyYWNlKGJ1ZiwgQlVGU1osICZ0cmFjZSwgMCk7CisJCW5yX2VudHJpZXMgPSBzdGFj
+a19kZXBvdF9mZXRjaChub2RlLT5zdGFjaywgJmVudHJpZXMpOworCQlzdGFja190cmFjZV9zbnBy
+aW50KGJ1ZiwgQlVGU1osIGVudHJpZXMsIG5yX2VudHJpZXMsIDApOwogCQlEUk1fRVJST1IoIm5v
+ZGUgWyUwOGxseCArICUwOGxseF06IGluc2VydGVkIGF0XG4lcyIsCiAJCQkgIG5vZGUtPnN0YXJ0
+LCBub2RlLT5zaXplLCBidWYpOwogCX0KLS0tIGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaTkxNV92
+bWEuYworKysgYi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pOTE1X3ZtYS5jCkBAIC0zNiwxMSArMzYs
+OCBAQAogCiBzdGF0aWMgdm9pZCB2bWFfcHJpbnRfYWxsb2NhdG9yKHN0cnVjdCBpOTE1X3ZtYSAq
+dm1hLCBjb25zdCBjaGFyICpyZWFzb24pCiB7Ci0JdW5zaWduZWQgbG9uZyBlbnRyaWVzWzEyXTsK
+LQlzdHJ1Y3Qgc3RhY2tfdHJhY2UgdHJhY2UgPSB7Ci0JCS5lbnRyaWVzID0gZW50cmllcywKLQkJ
+Lm1heF9lbnRyaWVzID0gQVJSQVlfU0laRShlbnRyaWVzKSwKLQl9OworCXVuc2lnbmVkIGxvbmcg
+KmVudHJpZXM7CisJdW5zaWduZWQgaW50IG5yX2VudHJpZXM7CiAJY2hhciBidWZbNTEyXTsKIAog
+CWlmICghdm1hLT5ub2RlLnN0YWNrKSB7CkBAIC00OSw4ICs0Niw4IEBAIHN0YXRpYyB2b2lkIHZt
+YV9wcmludF9hbGxvY2F0b3Ioc3RydWN0IGkKIAkJcmV0dXJuOwogCX0KIAotCWRlcG90X2ZldGNo
+X3N0YWNrKHZtYS0+bm9kZS5zdGFjaywgJnRyYWNlKTsKLQlzbnByaW50X3N0YWNrX3RyYWNlKGJ1
+Ziwgc2l6ZW9mKGJ1ZiksICZ0cmFjZSwgMCk7CisJbnJfZW50cmllcyA9IHN0YWNrX2RlcG90X2Zl
+dGNoKHZtYS0+bm9kZS5zdGFjaywgJmVudHJpZXMpOworCXN0YWNrX3RyYWNlX3NucHJpbnQoYnVm
+LCBzaXplb2YoYnVmKSwgZW50cmllcywgbnJfZW50cmllcywgMCk7CiAJRFJNX0RFQlVHX0RSSVZF
+Uigidm1hLm5vZGUgWyUwOGxseCArICUwOGxseF0gJXM6IGluc2VydGVkIGF0ICVzXG4iLAogCQkJ
+IHZtYS0+bm9kZS5zdGFydCwgdm1hLT5ub2RlLnNpemUsIHJlYXNvbiwgYnVmKTsKIH0KLS0tIGEv
+ZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcnVudGltZV9wbS5jCisrKyBiL2RyaXZlcnMvZ3B1
+L2RybS9pOTE1L2ludGVsX3J1bnRpbWVfcG0uYwpAQCAtNjAsMjcgKzYwLDIwIEBACiBzdGF0aWMg
+bm9pbmxpbmUgZGVwb3Rfc3RhY2tfaGFuZGxlX3QgX19zYXZlX2RlcG90X3N0YWNrKHZvaWQpCiB7
+CiAJdW5zaWduZWQgbG9uZyBlbnRyaWVzW1NUQUNLREVQVEhdOwotCXN0cnVjdCBzdGFja190cmFj
+ZSB0cmFjZSA9IHsKLQkJLmVudHJpZXMgPSBlbnRyaWVzLAotCQkubWF4X2VudHJpZXMgPSBBUlJB
+WV9TSVpFKGVudHJpZXMpLAotCQkuc2tpcCA9IDEsCi0JfTsKKwl1bnNpZ25lZCBpbnQgbjsKIAot
+CXNhdmVfc3RhY2tfdHJhY2UoJnRyYWNlKTsKLQlyZXR1cm4gZGVwb3Rfc2F2ZV9zdGFjaygmdHJh
+Y2UsIEdGUF9OT1dBSVQgfCBfX0dGUF9OT1dBUk4pOworCW4gPSBzdGFja190cmFjZV9zYXZlKGVu
+dHJpZXMsIEFSUkFZX1NJWkUoZW50cmllcyksIDEpOworCXJldHVybiBzdGFja19kZXBvdF9zYXZl
+KGVudHJpZXMsIG4sIEdGUF9OT1dBSVQgfCBfX0dGUF9OT1dBUk4pOwogfQogCiBzdGF0aWMgdm9p
+ZCBfX3ByaW50X2RlcG90X3N0YWNrKGRlcG90X3N0YWNrX2hhbmRsZV90IHN0YWNrLAogCQkJCWNo
+YXIgKmJ1ZiwgaW50IHN6LCBpbnQgaW5kZW50KQogewotCXVuc2lnbmVkIGxvbmcgZW50cmllc1tT
+VEFDS0RFUFRIXTsKLQlzdHJ1Y3Qgc3RhY2tfdHJhY2UgdHJhY2UgPSB7Ci0JCS5lbnRyaWVzID0g
+ZW50cmllcywKLQkJLm1heF9lbnRyaWVzID0gQVJSQVlfU0laRShlbnRyaWVzKSwKLQl9OworCXVu
+c2lnbmVkIGxvbmcgKmVudHJpZXM7CisJdW5zaWduZWQgaW50IG5yX2VudHJpZXM7CiAKLQlkZXBv
+dF9mZXRjaF9zdGFjayhzdGFjaywgJnRyYWNlKTsKLQlzbnByaW50X3N0YWNrX3RyYWNlKGJ1Ziwg
+c3osICZ0cmFjZSwgaW5kZW50KTsKKwlucl9lbnRyaWVzID0gc3RhY2tfZGVwb3RfZmV0Y2goc3Rh
+Y2ssICZlbnRyaWVzKTsKKwlzdGFja190cmFjZV9zbnByaW50KGJ1Ziwgc3osIGVudHJpZXMsIG5y
+X2VudHJpZXMsIGluZGVudCk7CiB9CiAKIHN0YXRpYyB2b2lkIGluaXRfaW50ZWxfcnVudGltZV9w
+bV93YWtlcmVmKHN0cnVjdCBkcm1faTkxNV9wcml2YXRlICppOTE1KQoKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QK
+SW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9w
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeA==
