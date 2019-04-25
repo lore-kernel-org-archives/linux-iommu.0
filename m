@@ -6,40 +6,39 @@ X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76E7C10F03
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 268FEC282E1
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A44C22084B
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A44C22084B
+	by mail.kernel.org (Postfix) with ESMTPS id F23F02084B
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F23F02084B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 528F01D3E;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A1AF61D41;
 	Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 96EBE1D27
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E7C001D27
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:33:22 +0000 (UTC)
+	Thu, 25 Apr 2019 10:33:24 +0000 (UTC)
 X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E9FE182B;
-	Thu, 25 Apr 2019 10:33:21 +0000 (UTC)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 66FF8854;
+	Thu, 25 Apr 2019 10:33:24 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hJbAF-0001xP-E1; Thu, 25 Apr 2019 11:59:35 +0200
-Message-Id: <20190425094803.162400595@linutronix.de>
+	id 1hJbAI-0001yH-Jz; Thu, 25 Apr 2019 11:59:38 +0200
+Message-Id: <20190425094803.340000461@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 25 Apr 2019 11:45:15 +0200
+Date: Thu, 25 Apr 2019 11:45:17 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 22/29] tracing: Make ftrace_trace_userstack() static and
-	conditional
+Subject: [patch V3 24/29] tracing: Remove the last struct stack_trace usage
 References: <20190425094453.875139013@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -84,79 +83,129 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425094515.gCq23kDhY1rm9QRm2dRFfsyhX1SkBR4nsQLba8fxoNE@z>
+Message-ID: <20190425094517.KOutepIkdkUXIqXR07Lz4g1_Ei4CTbICPcVPGOj2-sw@z>
 
-It's only used in trace.c and there is absolutely no point in compiling it
-in when user space stack traces are not supported.
+Simplify the stack retrieval code by using the storage array based
+interface.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Steven Rostedt <rostedt@goodmis.org>
+Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 ---
- kernel/trace/trace.c |   14 ++++++++------
- kernel/trace/trace.h |    8 --------
- 2 files changed, 8 insertions(+), 14 deletions(-)
+ kernel/trace/trace_stack.c |   37 ++++++++++++++++---------------------
+ 1 file changed, 16 insertions(+), 21 deletions(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -159,6 +159,8 @@ static union trace_eval_map_item *trace_
- #endif /* CONFIG_TRACE_EVAL_MAP_FILE */
+--- a/kernel/trace/trace_stack.c
++++ b/kernel/trace/trace_stack.c
+@@ -23,11 +23,7 @@
+ static unsigned long stack_dump_trace[STACK_TRACE_ENTRIES];
+ static unsigned stack_trace_index[STACK_TRACE_ENTRIES];
  
- static int tracing_set_tracer(struct trace_array *tr, const char *buf);
-+static void ftrace_trace_userstack(struct ring_buffer *buffer,
-+				   unsigned long flags, int pc);
- 
- #define MAX_TRACER_SIZE		100
- static char bootup_tracer_buf[MAX_TRACER_SIZE] __initdata;
-@@ -2905,9 +2907,10 @@ void trace_dump_stack(int skip)
- }
- EXPORT_SYMBOL_GPL(trace_dump_stack);
- 
-+#ifdef CONFIG_USER_STACKTRACE_SUPPORT
- static DEFINE_PER_CPU(int, user_stack_count);
- 
--void
-+static void
- ftrace_trace_userstack(struct ring_buffer *buffer, unsigned long flags, int pc)
- {
- 	struct trace_event_call *call = &event_user_stack;
-@@ -2958,13 +2961,12 @@ ftrace_trace_userstack(struct ring_buffe
-  out:
- 	preempt_enable();
- }
+-struct stack_trace stack_trace_max = {
+-	.max_entries		= STACK_TRACE_ENTRIES,
+-	.entries		= &stack_dump_trace[0],
+-};
 -
--#ifdef UNUSED
--static void __trace_userstack(struct trace_array *tr, unsigned long flags)
-+#else /* CONFIG_USER_STACKTRACE_SUPPORT */
-+static void ftrace_trace_userstack(struct ring_buffer *buffer,
-+				   unsigned long flags, int pc)
- {
--	ftrace_trace_userstack(tr, flags, preempt_count());
- }
--#endif /* UNUSED */
-+#endif /* !CONFIG_USER_STACKTRACE_SUPPORT */
++static unsigned int stack_trace_entries;
+ static unsigned long stack_trace_max_size;
+ static arch_spinlock_t stack_trace_max_lock =
+ 	(arch_spinlock_t)__ARCH_SPIN_LOCK_UNLOCKED;
+@@ -44,10 +40,10 @@ static void print_max_stack(void)
  
- #endif /* CONFIG_STACKTRACE */
+ 	pr_emerg("        Depth    Size   Location    (%d entries)\n"
+ 			   "        -----    ----   --------\n",
+-			   stack_trace_max.nr_entries);
++			   stack_trace_entries);
  
---- a/kernel/trace/trace.h
-+++ b/kernel/trace/trace.h
-@@ -782,17 +782,9 @@ void update_max_tr_single(struct trace_a
- #endif /* CONFIG_TRACER_MAX_TRACE */
+-	for (i = 0; i < stack_trace_max.nr_entries; i++) {
+-		if (i + 1 == stack_trace_max.nr_entries)
++	for (i = 0; i < stack_trace_entries; i++) {
++		if (i + 1 == stack_trace_entries)
+ 			size = stack_trace_index[i];
+ 		else
+ 			size = stack_trace_index[i] - stack_trace_index[i+1];
+@@ -93,13 +89,12 @@ static void check_stack(unsigned long ip
  
- #ifdef CONFIG_STACKTRACE
--void ftrace_trace_userstack(struct ring_buffer *buffer, unsigned long flags,
--			    int pc);
+ 	stack_trace_max_size = this_size;
+ 
+-	stack_trace_max.nr_entries = 0;
+-	stack_trace_max.skip = 0;
 -
- void __trace_stack(struct trace_array *tr, unsigned long flags, int skip,
- 		   int pc);
- #else
--static inline void ftrace_trace_userstack(struct ring_buffer *buffer,
--					  unsigned long flags, int pc)
--{
--}
--
- static inline void __trace_stack(struct trace_array *tr, unsigned long flags,
- 				 int skip, int pc)
+-	save_stack_trace(&stack_trace_max);
++	stack_trace_entries = stack_trace_save(stack_dump_trace,
++					       ARRAY_SIZE(stack_dump_trace) - 1,
++					       0);
+ 
+ 	/* Skip over the overhead of the stack tracer itself */
+-	for (i = 0; i < stack_trace_max.nr_entries; i++) {
++	for (i = 0; i < stack_trace_entries; i++) {
+ 		if (stack_dump_trace[i] == ip)
+ 			break;
+ 	}
+@@ -108,7 +103,7 @@ static void check_stack(unsigned long ip
+ 	 * Some archs may not have the passed in ip in the dump.
+ 	 * If that happens, we need to show everything.
+ 	 */
+-	if (i == stack_trace_max.nr_entries)
++	if (i == stack_trace_entries)
+ 		i = 0;
+ 
+ 	/*
+@@ -126,13 +121,13 @@ static void check_stack(unsigned long ip
+ 	 * loop will only happen once. This code only takes place
+ 	 * on a new max, so it is far from a fast path.
+ 	 */
+-	while (i < stack_trace_max.nr_entries) {
++	while (i < stack_trace_entries) {
+ 		int found = 0;
+ 
+ 		stack_trace_index[x] = this_size;
+ 		p = start;
+ 
+-		for (; p < top && i < stack_trace_max.nr_entries; p++) {
++		for (; p < top && i < stack_trace_entries; p++) {
+ 			/*
+ 			 * The READ_ONCE_NOCHECK is used to let KASAN know that
+ 			 * this is not a stack-out-of-bounds error.
+@@ -163,7 +158,7 @@ static void check_stack(unsigned long ip
+ 			i++;
+ 	}
+ 
+-	stack_trace_max.nr_entries = x;
++	stack_trace_entries = x;
+ 
+ 	if (task_stack_end_corrupted(current)) {
+ 		print_max_stack();
+@@ -265,7 +260,7 @@ static void *
  {
+ 	long n = *pos - 1;
+ 
+-	if (n >= stack_trace_max.nr_entries)
++	if (n >= stack_trace_entries)
+ 		return NULL;
+ 
+ 	m->private = (void *)n;
+@@ -329,7 +324,7 @@ static int t_show(struct seq_file *m, vo
+ 		seq_printf(m, "        Depth    Size   Location"
+ 			   "    (%d entries)\n"
+ 			   "        -----    ----   --------\n",
+-			   stack_trace_max.nr_entries);
++			   stack_trace_entries);
+ 
+ 		if (!stack_tracer_enabled && !stack_trace_max_size)
+ 			print_disabled(m);
+@@ -339,10 +334,10 @@ static int t_show(struct seq_file *m, vo
+ 
+ 	i = *(long *)v;
+ 
+-	if (i >= stack_trace_max.nr_entries)
++	if (i >= stack_trace_entries)
+ 		return 0;
+ 
+-	if (i + 1 == stack_trace_max.nr_entries)
++	if (i + 1 == stack_trace_entries)
+ 		size = stack_trace_index[i];
+ 	else
+ 		size = stack_trace_index[i] - stack_trace_index[i+1];
 
 
 _______________________________________________
