@@ -6,40 +6,39 @@ X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78169C282E1
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD928C10F03
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:35:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4F8DB217D7
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:35:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F8DB217D7
+	by mail.kernel.org (Postfix) with ESMTPS id A8B592084B
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:35:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8B592084B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 78EEE1D64;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AC29D1D68;
 	Thu, 25 Apr 2019 10:34:49 +0000 (UTC)
 Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
 	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 81C151D27
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C6BC61D27
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:34:23 +0000 (UTC)
+	Thu, 25 Apr 2019 10:34:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id 87D7F1DD44
+	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id 33DF11DD44
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:34:22 +0000 (UTC)
+	Thu, 25 Apr 2019 10:34:25 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hJb9l-0001qa-F3; Thu, 25 Apr 2019 11:59:05 +0200
-Message-Id: <20190425094801.324810708@linutronix.de>
+	id 1hJb9k-0001qX-9I; Thu, 25 Apr 2019 11:59:04 +0200
+Message-Id: <20190425094801.230654524@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 25 Apr 2019 11:44:55 +0200
+Date: Thu, 25 Apr 2019 11:44:54 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 02/29] stacktrace: Provide helpers for common stack trace
-	operations
+Subject: [patch V3 01/29] tracing: Cleanup stack trace code
 References: <20190425094453.875139013@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -84,277 +83,162 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425094455.gz1l_k72qE6o8DqSUZyEKGxGYUxXCOfQ79tMXwg9x00@z>
+Message-ID: <20190425094454.eqDbI7Ramqk2CDHO2OhKRLZ-m7O_XWHh1tJtAHCdr7M@z>
 
-All operations with stack traces are based on struct stack_trace. That's a
-horrible construct as the struct is a kitchen sink for input and
-output. Quite some usage sites embed it into their own data structures
-which creates weird indirections.
+- Remove the extra array member of stack_dump_trace[] along with the
+  ARRAY_SIZE - 1 initialization for struct stack_trace :: max_entries.
 
-There is absolutely no point in doing so. For all use cases a storage array
-and the number of valid stack trace entries in the array is sufficient.
+  Both are historical leftovers of no value. The stack tracer never exceeds
+  the array and there is no extra storage requirement either.
 
-Provide helper functions which avoid the struct stack_trace indirection so
-the usage sites can be cleaned up.
+- Make variables which are only used in trace_stack.c static.
+
+- Simplify the enable/disable logic.
+
+- Rename stack_trace_print() as it's using the stack_trace_ namespace. Free
+  the name up for stack trace related functions.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Steven Rostedt <rostedt@goodmis.org>
 ---
-V3: Fix kernel doc.
+V3: Remove the -1 init and split the variable declaration as requested by Steven.
+V2: Add more cleanups and use print_max_stack() as requested by Steven.
 ---
- include/linux/stacktrace.h |   27 +++++++
- kernel/stacktrace.c        |  170 +++++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 182 insertions(+), 15 deletions(-)
+ include/linux/ftrace.h     |   18 ++++--------------
+ kernel/trace/trace_stack.c |   42 +++++++++++++-----------------------------
+ 2 files changed, 17 insertions(+), 43 deletions(-)
 
---- a/include/linux/stacktrace.h
-+++ b/include/linux/stacktrace.h
-@@ -3,11 +3,26 @@
- #define __LINUX_STACKTRACE_H
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -241,21 +241,11 @@ static inline void ftrace_free_mem(struc
  
- #include <linux/types.h>
-+#include <asm/errno.h>
+ #ifdef CONFIG_STACK_TRACER
  
- struct task_struct;
- struct pt_regs;
- 
- #ifdef CONFIG_STACKTRACE
-+void stack_trace_print(unsigned long *trace, unsigned int nr_entries,
-+		       int spaces);
-+int stack_trace_snprint(char *buf, size_t size, unsigned long *entries,
-+			unsigned int nr_entries, int spaces);
-+unsigned int stack_trace_save(unsigned long *store, unsigned int size,
-+			      unsigned int skipnr);
-+unsigned int stack_trace_save_tsk(struct task_struct *task,
-+				  unsigned long *store, unsigned int size,
-+				  unsigned int skipnr);
-+unsigned int stack_trace_save_regs(struct pt_regs *regs, unsigned long *store,
-+				   unsigned int size, unsigned int skipnr);
-+unsigned int stack_trace_save_user(unsigned long *store, unsigned int size);
-+
-+/* Internal interfaces. Do not use in generic code */
- struct stack_trace {
- 	unsigned int nr_entries, max_entries;
- 	unsigned long *entries;
-@@ -41,4 +56,16 @@ extern void save_stack_trace_user(struct
- # define save_stack_trace_tsk_reliable(tsk, trace)	({ -ENOSYS; })
- #endif /* CONFIG_STACKTRACE */
- 
-+#if defined(CONFIG_STACKTRACE) && defined(CONFIG_HAVE_RELIABLE_STACKTRACE)
-+int stack_trace_save_tsk_reliable(struct task_struct *tsk, unsigned long *store,
-+				  unsigned int size);
-+#else
-+static inline int stack_trace_save_tsk_reliable(struct task_struct *tsk,
-+						unsigned long *store,
-+						unsigned int size)
-+{
-+	return -ENOSYS;
-+}
-+#endif
-+
- #endif /* __LINUX_STACKTRACE_H */
---- a/kernel/stacktrace.c
-+++ b/kernel/stacktrace.c
-@@ -11,35 +11,54 @@
- #include <linux/kallsyms.h>
- #include <linux/stacktrace.h>
- 
--void print_stack_trace(struct stack_trace *trace, int spaces)
-+/**
-+ * stack_trace_print - Print the entries in the stack trace
-+ * @entries:	Pointer to storage array
-+ * @nr_entries:	Number of entries in the storage array
-+ * @spaces:	Number of leading spaces to print
-+ */
-+void stack_trace_print(unsigned long *entries, unsigned int nr_entries,
-+		       int spaces)
- {
--	int i;
-+	unsigned int i;
- 
--	if (WARN_ON(!trace->entries))
-+	if (WARN_ON(!entries))
- 		return;
- 
--	for (i = 0; i < trace->nr_entries; i++)
--		printk("%*c%pS\n", 1 + spaces, ' ', (void *)trace->entries[i]);
-+	for (i = 0; i < nr_entries; i++)
-+		printk("%*c%pS\n", 1 + spaces, ' ', (void *)entries[i]);
-+}
-+EXPORT_SYMBOL_GPL(stack_trace_print);
-+
-+void print_stack_trace(struct stack_trace *trace, int spaces)
-+{
-+	stack_trace_print(trace->entries, trace->nr_entries, spaces);
- }
- EXPORT_SYMBOL_GPL(print_stack_trace);
- 
--int snprint_stack_trace(char *buf, size_t size,
--			struct stack_trace *trace, int spaces)
-+/**
-+ * stack_trace_snprint - Print the entries in the stack trace into a buffer
-+ * @buf:	Pointer to the print buffer
-+ * @size:	Size of the print buffer
-+ * @entries:	Pointer to storage array
-+ * @nr_entries:	Number of entries in the storage array
-+ * @spaces:	Number of leading spaces to print
-+ *
-+ * Return: Number of bytes printed.
-+ */
-+int stack_trace_snprint(char *buf, size_t size, unsigned long *entries,
-+			unsigned int nr_entries, int spaces)
- {
--	int i;
--	int generated;
--	int total = 0;
-+	unsigned int generated, i, total = 0;
- 
--	if (WARN_ON(!trace->entries))
-+	if (WARN_ON(!entries))
- 		return 0;
- 
--	for (i = 0; i < trace->nr_entries; i++) {
-+	for (i = 0; i < nr_entries && size; i++) {
- 		generated = snprintf(buf, size, "%*c%pS\n", 1 + spaces, ' ',
--				     (void *)trace->entries[i]);
-+				     (void *)entries[i]);
- 
- 		total += generated;
+-#define STACK_TRACE_ENTRIES 500
 -
--		/* Assume that generated isn't a negative number */
- 		if (generated >= size) {
- 			buf += size;
- 			size = 0;
-@@ -51,6 +70,14 @@ int snprint_stack_trace(char *buf, size_
+-struct stack_trace;
+-
+-extern unsigned stack_trace_index[];
+-extern struct stack_trace stack_trace_max;
+-extern unsigned long stack_trace_max_size;
+-extern arch_spinlock_t stack_trace_max_lock;
+-
+ extern int stack_tracer_enabled;
+-void stack_trace_print(void);
+-int
+-stack_trace_sysctl(struct ctl_table *table, int write,
+-		   void __user *buffer, size_t *lenp,
+-		   loff_t *ppos);
++
++int stack_trace_sysctl(struct ctl_table *table, int write,
++		       void __user *buffer, size_t *lenp,
++		       loff_t *ppos);
  
- 	return total;
- }
-+EXPORT_SYMBOL_GPL(stack_trace_snprint);
-+
-+int snprint_stack_trace(char *buf, size_t size,
-+			struct stack_trace *trace, int spaces)
-+{
-+	return stack_trace_snprint(buf, size, trace->entries,
-+				   trace->nr_entries, spaces);
-+}
- EXPORT_SYMBOL_GPL(snprint_stack_trace);
+ /* DO NOT MODIFY THIS VARIABLE DIRECTLY! */
+ DECLARE_PER_CPU(int, disable_stack_tracer);
+--- a/kernel/trace/trace_stack.c
++++ b/kernel/trace/trace_stack.c
+@@ -18,30 +18,26 @@
  
- /*
-@@ -77,3 +104,116 @@ save_stack_trace_tsk_reliable(struct tas
- 	WARN_ONCE(1, KERN_INFO "save_stack_tsk_reliable() not implemented yet.\n");
- 	return -ENOSYS;
+ #include "trace.h"
+ 
+-static unsigned long stack_dump_trace[STACK_TRACE_ENTRIES + 1];
+-unsigned stack_trace_index[STACK_TRACE_ENTRIES];
++#define STACK_TRACE_ENTRIES 500
++
++static unsigned long stack_dump_trace[STACK_TRACE_ENTRIES];
++static unsigned stack_trace_index[STACK_TRACE_ENTRIES];
+ 
+-/*
+- * Reserve one entry for the passed in ip. This will allow
+- * us to remove most or all of the stack size overhead
+- * added by the stack tracer itself.
+- */
+ struct stack_trace stack_trace_max = {
+-	.max_entries		= STACK_TRACE_ENTRIES - 1,
++	.max_entries		= STACK_TRACE_ENTRIES,
+ 	.entries		= &stack_dump_trace[0],
+ };
+ 
+-unsigned long stack_trace_max_size;
+-arch_spinlock_t stack_trace_max_lock =
++static unsigned long stack_trace_max_size;
++static arch_spinlock_t stack_trace_max_lock =
+ 	(arch_spinlock_t)__ARCH_SPIN_LOCK_UNLOCKED;
+ 
+ DEFINE_PER_CPU(int, disable_stack_tracer);
+ static DEFINE_MUTEX(stack_sysctl_mutex);
+ 
+ int stack_tracer_enabled;
+-static int last_stack_tracer_enabled;
+ 
+-void stack_trace_print(void)
++static void print_max_stack(void)
+ {
+ 	long i;
+ 	int size;
+@@ -61,16 +57,7 @@ void stack_trace_print(void)
+ 	}
  }
-+
-+/**
-+ * stack_trace_save - Save a stack trace into a storage array
-+ * @store:	Pointer to storage array
-+ * @size:	Size of the storage array
-+ * @skipnr:	Number of entries to skip at the start of the stack trace
-+ *
-+ * Return: Number of trace entries stored
-+ */
-+unsigned int stack_trace_save(unsigned long *store, unsigned int size,
-+			      unsigned int skipnr)
-+{
-+	struct stack_trace trace = {
-+		.entries	= store,
-+		.max_entries	= size,
-+		.skip		= skipnr + 1,
-+	};
-+
-+	save_stack_trace(&trace);
-+	return trace.nr_entries;
-+}
-+EXPORT_SYMBOL_GPL(stack_trace_save);
-+
-+/**
-+ * stack_trace_save_tsk - Save a task stack trace into a storage array
-+ * @task:	The task to examine
-+ * @store:	Pointer to storage array
-+ * @size:	Size of the storage array
-+ * @skipnr:	Number of entries to skip at the start of the stack trace
-+ *
-+ * Return: Number of trace entries stored
-+ */
-+unsigned int stack_trace_save_tsk(struct task_struct *task,
-+				  unsigned long *store, unsigned int size,
-+				  unsigned int skipnr)
-+{
-+	struct stack_trace trace = {
-+		.entries	= store,
-+		.max_entries	= size,
-+		.skip		= skipnr + 1,
-+	};
-+
-+	save_stack_trace_tsk(task, &trace);
-+	return trace.nr_entries;
-+}
-+
-+/**
-+ * stack_trace_save_regs - Save a stack trace based on pt_regs into a storage array
-+ * @regs:	Pointer to pt_regs to examine
-+ * @store:	Pointer to storage array
-+ * @size:	Size of the storage array
-+ * @skipnr:	Number of entries to skip at the start of the stack trace
-+ *
-+ * Return: Number of trace entries stored
-+ */
-+unsigned int stack_trace_save_regs(struct pt_regs *regs, unsigned long *store,
-+				   unsigned int size, unsigned int skipnr)
-+{
-+	struct stack_trace trace = {
-+		.entries	= store,
-+		.max_entries	= size,
-+		.skip		= skipnr,
-+	};
-+
-+	save_stack_trace_regs(regs, &trace);
-+	return trace.nr_entries;
-+}
-+
-+#ifdef CONFIG_HAVE_RELIABLE_STACKTRACE
-+/**
-+ * stack_trace_save_tsk_reliable - Save task stack with verification
-+ * @tsk:	Pointer to the task to examine
-+ * @store:	Pointer to storage array
-+ * @size:	Size of the storage array
-+ *
-+ * Return:	An error if it detects any unreliable features of the
-+ *		stack. Otherwise it guarantees that the stack trace is
-+ *		reliable and returns the number of entries stored.
-+ *
-+ * If the task is not 'current', the caller *must* ensure the task is inactive.
-+ */
-+int stack_trace_save_tsk_reliable(struct task_struct *tsk, unsigned long *store,
-+				  unsigned int size)
-+{
-+	struct stack_trace trace = {
-+		.entries	= store,
-+		.max_entries	= size,
-+	};
-+	int ret = save_stack_trace_tsk_reliable(tsk, &trace);
-+
-+	return ret ? ret : trace.nr_entries;
-+}
-+#endif
-+
-+#ifdef CONFIG_USER_STACKTRACE_SUPPORT
-+/**
-+ * stack_trace_save_user - Save a user space stack trace into a storage array
-+ * @store:	Pointer to storage array
-+ * @size:	Size of the storage array
-+ *
-+ * Return: Number of trace entries stored
-+ */
-+unsigned int stack_trace_save_user(unsigned long *store, unsigned int size)
-+{
-+	struct stack_trace trace = {
-+		.entries	= store,
-+		.max_entries	= size,
-+	};
-+
-+	save_stack_trace_user(&trace);
-+	return trace.nr_entries;
-+}
-+#endif /* CONFIG_USER_STACKTRACE_SUPPORT */
+ 
+-/*
+- * When arch-specific code overrides this function, the following
+- * data should be filled up, assuming stack_trace_max_lock is held to
+- * prevent concurrent updates.
+- *     stack_trace_index[]
+- *     stack_trace_max
+- *     stack_trace_max_size
+- */
+-void __weak
+-check_stack(unsigned long ip, unsigned long *stack)
++static void check_stack(unsigned long ip, unsigned long *stack)
+ {
+ 	unsigned long this_size, flags; unsigned long *p, *top, *start;
+ 	static int tracer_frame;
+@@ -179,7 +166,7 @@ check_stack(unsigned long ip, unsigned l
+ 	stack_trace_max.nr_entries = x;
+ 
+ 	if (task_stack_end_corrupted(current)) {
+-		stack_trace_print();
++		print_max_stack();
+ 		BUG();
+ 	}
+ 
+@@ -412,23 +399,21 @@ stack_trace_sysctl(struct ctl_table *tab
+ 		   void __user *buffer, size_t *lenp,
+ 		   loff_t *ppos)
+ {
++	int was_enabled;
+ 	int ret;
+ 
+ 	mutex_lock(&stack_sysctl_mutex);
++	was_enabled = !!stack_tracer_enabled;
+ 
+ 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+ 
+-	if (ret || !write ||
+-	    (last_stack_tracer_enabled == !!stack_tracer_enabled))
++	if (ret || !write || (was_enabled == !!stack_tracer_enabled))
+ 		goto out;
+ 
+-	last_stack_tracer_enabled = !!stack_tracer_enabled;
+-
+ 	if (stack_tracer_enabled)
+ 		register_ftrace_function(&trace_ops);
+ 	else
+ 		unregister_ftrace_function(&trace_ops);
+-
+  out:
+ 	mutex_unlock(&stack_sysctl_mutex);
+ 	return ret;
+@@ -444,7 +429,6 @@ static __init int enable_stacktrace(char
+ 		strncpy(stack_trace_filter_buf, str + len, COMMAND_LINE_SIZE);
+ 
+ 	stack_tracer_enabled = 1;
+-	last_stack_tracer_enabled = 1;
+ 	return 1;
+ }
+ __setup("stacktrace", enable_stacktrace);
 
 
 _______________________________________________
