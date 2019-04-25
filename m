@@ -3,42 +3,44 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B34DC10F03
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 09:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1F1C10F03
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 09:07:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DAEBE214C6
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 09:03:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAEBE214C6
+	by mail.kernel.org (Postfix) with ESMTPS id A42FE214C6
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 09:07:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A42FE214C6
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C13481BB1;
-	Thu, 25 Apr 2019 09:03:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D1BE1BB2;
+	Thu, 25 Apr 2019 09:07:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 30E9E1BAA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F39221BAA
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 09:03:05 +0000 (UTC)
+	Thu, 25 Apr 2019 09:07:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 847B782A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 465AB74A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 09:03:04 +0000 (UTC)
+	Thu, 25 Apr 2019 09:07:13 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id A35BCAE9A;
-	Thu, 25 Apr 2019 09:03:02 +0000 (UTC)
-Subject: Re: [Xen-devel] [PATCH 1/3] xen/swiotlb: fix condition for calling
-	xen_destroy_contiguous_region()
+	by mx1.suse.de (Postfix) with ESMTP id 93AFFACA5;
+	Thu, 25 Apr 2019 09:07:11 +0000 (UTC)
+Subject: Re: [Xen-devel] [PATCH 3/3] xen/swiotlb: remember having called
+	xen_create_contiguous_region()
 To: Jan Beulich <JBeulich@suse.com>
 References: =?UTF-8?B?PDIwMTkwNDIzMTA1NDU3LjE3NTAy77+9Me+/vWpncm9zc0BzdXNl?=
-	=?UTF-8?Q?=2ecom=3e_=3c20190423105457=2e17502-2-jgross=40suse=2ecom=3e_=3c5?=
-	=?UTF-8?Q?CC175950200007800228E80=40suse=2ecom=3e?=
+	=?UTF-8?B?LmNvbT4gPDIwMTkwNDIzMTA1NDU3LjE3NTAy77+9NO+/vWpncm9zc0BzdXNlLmNv?=
+	=?UTF-8?Q?m=3e_=3calpine=2eDEB=2e2=2e10=2e1904230955190=2e24598=40sstabelli?=
+	=?UTF-8?Q?ni=ef=bf=bdThinkPad=ef=bf=bdX260=3e_=3ce744c7eb-1685-13b6-7ae9-e9?=
+	=?UTF-8?Q?52f8f53ab0=40suse=2ecom=3e_=3c5CC177740200007800228EB2=40suse=2ec?=
+	=?UTF-8?B?b20+?=
 From: Juergen Gross <jgross@suse.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=jgross@suse.com; prefer-encrypt=mutual; keydata=
@@ -72,16 +74,15 @@ Autocrypt: addr=jgross@suse.com; prefer-encrypt=mutual; keydata=
 	1KQHe2uwXbKlguKPhk5ubZxqwsg/uIHw0qZDk+d0vxjTtO2JD5Jv/CeDgaBX4Emgp0NYs8IC
 	UIyKXBtnzwiNv4cX9qKlz2Gyq9b+GdcLYZqMlIBjdCz0yJvgeb3WPNsCOanvbjelDhskx9gd
 	6YUUFFqgsLtrKpCNyy203a58g2WosU9k9H+LcheS37Ph2vMVTISMszW9W8gyORSgmw==
-Message-ID: <32d173a2-4b8c-909e-89fc-68ed9fb2fa02@suse.com>
-Date: Thu, 25 Apr 2019 11:03:02 +0200
+Message-ID: <a1203397-9704-192a-c157-442dbeee62c5@suse.com>
+Date: Thu, 25 Apr 2019 11:07:11 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Language: de-DE
+Content-Language: en-US
 Cc: Stefano Stabellini <sstabellini@kernel.org>,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	lkml <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-	iommu@lists.linux-foundation.org,
+	lkml <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
 	xen-devel <xen-devel@lists.xenproject.org>,
 	Boris Ostrovsky <boris.ostrovsky@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -100,48 +101,50 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425090302.-FRq5FT6pbbct6jKl5rHT_X-Wv9Qbl9DCntOsX1m2AI@z>
+Message-ID: <20190425090711.cK5EAyRKHZunyDXqqejQGyZrqXb4QQpJwBMo9Lxc-uA@z>
 
-On 25/04/2019 10:53, Jan Beulich wrote:
->>>> On 23.04.19 at 12:54, <jgross@suse.com> wrote:
->> --- a/drivers/xen/swiotlb-xen.c
->> +++ b/drivers/xen/swiotlb-xen.c
->> @@ -360,8 +360,8 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
->>  	/* Convert the size to actually allocated. */
->>  	size = 1UL << (order + XEN_PAGE_SHIFT);
->>  
->> -	if (((dev_addr + size - 1 <= dma_mask)) ||
->> -	    range_straddles_page_boundary(phys, size))
->> +	if ((dev_addr + size - 1 <= dma_mask) &&
->> +	    !WARN_ON(range_straddles_page_boundary(phys, size)))
->>  		xen_destroy_contiguous_region(phys, order);
+On 25/04/2019 11:01, Jan Beulich wrote:
+>>>> On 23.04.19 at 20:36, <jgross@suse.com> wrote:
+>> On 23/04/2019 19:05, Stefano Stabellini wrote:
+>>> On Tue, 23 Apr 2019, Juergen Gross wrote:
+>>>> Instead of always calling xen_destroy_contiguous_region() in case the
+>>>> memory is DMA-able for the used device, do so only in case it has been
+>>>> made DMA-able via xen_create_contiguous_region() before.
+>>>>
+>>>> This will avoid a lot of xen_destroy_contiguous_region() calls for
+>>>> 64-bit capable devices.
+>>>>
+>>>> As the memory in question is owned by swiotlb-xen the PG_owner_priv_1
+>>>> flag of the first allocated page can be used for remembering.
+>>>
+>>> Although the patch looks OK, this sentence puzzles me. Why do you say
+>>> that the memory in question is owned by swiotlb-xen? Because it was
+>>> returned by xen_alloc_coherent_pages? Both the x86 and the Arm
+>>> implementation return fresh new memory, hence, it should be safe to set
+>>> the PageOwnerPriv1 flag?
+>>>
+>>> My concern with this approach is with the semantics of PG_owner_priv_1.
+>>> Is a page marked with PG_owner_priv_1 only supposed to be used by the
+>>> owner?
+>>
+>> The owner of the page is free to use the flag.
+>>
+>> Like Grant pages are marked by the grant driver using this flag. And
+>> Xen page tables are using it in PV-guests for indicating a "Pinned"
+>> page table.
 > 
-> On the allocation side we have
-> 
-> 	if (((dev_addr + size - 1 <= dma_mask)) &&
-> 	    !range_straddles_page_boundary(phys, size))
-> 		*dma_handle = dev_addr;
-> 	else {
-> 		if (xen_create_contiguous_region(phys, order,
-> 						 fls64(dma_mask), dma_handle) != 0) {
-> 			xen_free_coherent_pages(hwdev, size, ret, (dma_addr_t)phys, attrs);
-> 			return NULL;
-> 		}
-> 	}
-> 
-> which is (as far as the function call is concerned)
-> 
-> 	if ((dev_addr + size - 1 > dma_mask) ||
-> 	    range_straddles_page_boundary(phys, size))
-> 		xen_create_contiguous_region(...);
-> 
-> So I don't think your transformation is correct.
+> Considering the background of the series, isn't such multi-purpose use
+> of the flag a possible problem? You're already suspecting a wrong call
+> into here. The function finding the flag set (but for another reason)
+> might add to the confusion. But I realize there are only so many page
+> flags available.
 
-I know that I modified the condition. Calling
-xen_destroy_contiguous_region() for a non-contiguous region is
-destructive, so we have to avoid it in any case.
+Right.
 
-I could be talked into moving both tests into the WARN_ON(), however.
+> Perhaps the freeing function should, first thing, check the handed
+> space actually matches the criteria (within dma_mask and contiguous)?
+
+Yes, I think this is a good idea.
 
 
 Juergen
