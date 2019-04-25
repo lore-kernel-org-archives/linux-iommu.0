@@ -2,56 +2,67 @@ Return-Path: <SRS0=4mi1=S3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DC1C43219
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F43C43219
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:37:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66F83212F5
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:31:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66F83212F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4BDF3206BF
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:37:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Gg0uxuaD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BDF3206BF
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 52BB91E9C;
-	Thu, 25 Apr 2019 13:31:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1CCAB1E9C;
+	Thu, 25 Apr 2019 13:37:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EFB391E98
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 477A31E8A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 13:31:16 +0000 (UTC)
+	Thu, 25 Apr 2019 13:36:47 +0000 (UTC)
+X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AC69574A
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 13:31:16 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id E5D545944C;
-	Thu, 25 Apr 2019 13:31:15 +0000 (UTC)
-Received: from treble (ovpn-123-99.rdu2.redhat.com [10.10.123.99])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DABB5C652;
-	Thu, 25 Apr 2019 13:31:07 +0000 (UTC)
-Date: Thu, 25 Apr 2019 08:31:05 -0500
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0503082A;
+	Thu, 25 Apr 2019 13:36:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=merlin.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=cilSacm49Yfv3yMpgdaQhWv20ykDrXiN3MsGcQ6O+1Q=;
+	b=Gg0uxuaDkYyw6kLrTrmTd2Sw6
+	n+aNn/QLc2hEIkZ+/ND8NCAnx6RF3fW2lY+PUWBDA2fBhd0RhUhI1eEXKmbrCpT9ft93CfFlCkdyS
+	RsNaDcB8XRunkoMdHJa/Htvyj8Px3d27BsqqbESaKXlrlD/+2rF7pc+ifo1QfuYavEJnvemrFz+Jv
+	dKAF+mzv+IFtIpqqc3hyRPwsKByzhFVdMmp+5/96EfVNDqR+LsVcYmUtPdvbtBtw3S0CnVr7FSuAZ
+	N3A+tBtSgyIwKYztPEjfIl8x/ClV/RJt6CmRi1SRp+JXV9A53CkNFOQ58LOdj1ON937bDh3YmgcWm
+	dM4fhMzaA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100]
+	helo=hirez.programming.kicks-ass.net)
+	by merlin.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hJeXY-0004TE-0R; Thu, 25 Apr 2019 13:35:52 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 147B82395002B; Thu, 25 Apr 2019 15:35:49 +0200 (CEST)
+Date: Thu, 25 Apr 2019 15:35:49 +0200
+From: Peter Zijlstra <peterz@infradead.org>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V3 00/29] stacktrace: Consolidate stack trace usage
-Message-ID: <20190425133105.54uyebwcdkxx5trg@treble>
+Subject: Re: [patch V3 18/29] lockdep: Remove save argument from
+	check_prev_add()
+Message-ID: <20190425133549.GW4038@hirez.programming.kicks-ass.net>
 References: <20190425094453.875139013@linutronix.de>
+	<20190425094802.803362058@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190425094453.875139013@linutronix.de>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.39]);
-	Thu, 25 Apr 2019 13:31:16 +0000 (UTC)
+In-Reply-To: <20190425094802.803362058@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Catalin Marinas <catalin.marinas@arm.com>,
 	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -61,16 +72,17 @@ Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Miroslav Benes <mbenes@suse.cz>, Christoph Hellwig <hch@lst.de>,
 	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
 	x86@kernel.org, kasan-dev@googlegroups.com,
-	Johannes Thumshirn <jthumshirn@suse.de>,
+	David Rientjes <rientjes@google.com>,
 	Andrey Ryabinin <aryabinin@virtuozzo.com>,
 	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	David Rientjes <rientjes@google.com>,
+	Johannes Thumshirn <jthumshirn@suse.de>,
 	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Akinobu Mita <akinobu.mita@gmail.com>,
 	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
 	Mike Rapoport <rppt@linux.vnet.ibm.com>,
 	Jani Nikula <jani.nikula@linux.intel.com>,
-	Andy Lutomirski <luto@kernel.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
 	David Sterba <dsterba@suse.com>, Dmitry Vyukov <dvyukov@google.com>,
 	Tom Zanussi <tom.zanussi@linux.intel.com>,
 	Chris Mason <clm@fb.com>, LKML <linux-kernel@vger.kernel.org>,
@@ -93,33 +105,14 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425133105.CDb-uJvwUrHEUlHiDEIgRTlrLjZD9YX2gD-A7LrzIk4@z>
+Message-ID: <20190425133549._sq7SwP_FJpZwATs2pwSV1EfZ45pfhqRSrjvcEF4Hf8@z>
 
-On Thu, Apr 25, 2019 at 11:44:53AM +0200, Thomas Gleixner wrote:
-> This is an update to V2 which can be found here:
+On Thu, Apr 25, 2019 at 11:45:11AM +0200, Thomas Gleixner wrote:
+> There is only one caller which hands in save_trace as function pointer.
 > 
->   https://lkml.kernel.org/r/20190418084119.056416939@linutronix.de
-> 
-> Changes vs. V2:
-> 
->   - Fixed the kernel-doc issue pointed out by Mike
-> 
->   - Removed the '-1' oddity from the tracer
-> 
->   - Restricted the tracer nesting to 4
-> 
->   - Restored the lockdep magic to prevent redundant stack traces
-> 
->   - Addressed the small nitpicks here and there
-> 
->   - Picked up Acked/Reviewed tags
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
-Other than the 2 minor nits:
-
-Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-
--- 
-Josh
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
