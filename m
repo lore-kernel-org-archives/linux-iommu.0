@@ -1,34 +1,42 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [patch V3 18/29] lockdep: Remove save argument from
- check_prev_add()
-Date: Thu, 25 Apr 2019 15:35:49 +0200
-Message-ID: <20190425133549.GW4038@hirez.programming.kicks-ass.net>
-References: <20190425094453.875139013@linutronix.de>
- <20190425094802.803362058@linutronix.de>
+From: Ian Abbott <abbotti@mev.co.uk>
+Subject: Re: [PATCH] dma-mapping: remove an unnecessary NULL check
+Date: Thu, 25 Apr 2019 15:13:49 +0100
+Message-ID: <3142dc82-1d4c-5f01-678e-628038d86bd6@mev.co.uk>
+References: <20190424142437.GA29490@mwanda> <20190424142743.GC20974@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20190425094802.803362058@linutronix.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>, Catalin Marinas <catalin.marinas@arm.com>, dri-devel@lists.freedesktop.org, linux-mm@kvack.org, dm-devel@redhat.com, Alexander Potapenko <glider@google.com>, Christoph Lameter <cl@linux.com>, Miroslav Benes <mbenes@suse.cz>, Christoph Hellwig <hch@lst.de>, Alasdair Kergon <agk@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arch@vger.kernel.org, x86@kernel.org, kasan-dev@googlegroups.com, David Rientjes <rientjes@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org, Johannes Thumshirn <jthumshirn@suse.de>, Akinobu Mita <akinobu.mita@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190424142743.GC20974@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Jiri Slaby <jslaby@suse.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, "kernel-janitors@vger.kernel.org H Hartley Sweeten" <hsweeten@visionengravers.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBBcHIgMjUsIDIwMTkgYXQgMTE6NDU6MTFBTSArMDIwMCwgVGhvbWFzIEdsZWl4bmVy
-IHdyb3RlOgo+IFRoZXJlIGlzIG9ubHkgb25lIGNhbGxlciB3aGljaCBoYW5kcyBpbiBzYXZlX3Ry
-YWNlIGFzIGZ1bmN0aW9uIHBvaW50ZXIuCj4gCj4gU2lnbmVkLW9mZi1ieTogVGhvbWFzIEdsZWl4
-bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+CgpBY2tlZC1ieTogUGV0ZXIgWmlqbHN0cmEgKEludGVs
-KSA8cGV0ZXJ6QGluZnJhZGVhZC5vcmc+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZy
-ZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2ludGVsLWdmeA==
+On 24/04/2019 15:27, Christoph Hellwig wrote:
+> On Wed, Apr 24, 2019 at 05:24:37PM +0300, Dan Carpenter wrote:
+>> We already dereferenced "dev" when we called get_dma_ops() so this NULL
+>> check is too late.  We're not supposed to pass NULL "dev" pointers to
+>> dma_alloc_attrs().
+> 
+> Thanks, applied to the dma-mapping for-next tree.
+> 
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> ---
+>> There are still at least two drivers which do pass a NULL unfortunately.
+>>
+>> drivers/staging/comedi/drivers/comedi_isadma.c:195 comedi_isadma_alloc() error: NULL dereference inside function 'dma_alloc_coherent()'
+>> drivers/staging/comedi/drivers/comedi_isadma.c:227 comedi_isadma_free() error: NULL dereference inside function 'dma_free_coherent()'
+> 
+> This is staging code.  Per official decree from Linus we can just
+> ignore it, and I tend to do so to keep my sanity.
+
+So for comedi_isadma, we can just replace the NULL with a pointer to a 
+static dummy device with a 24-bit coherent mask?
+
+-- 
+-=( Ian Abbott <abbotti@mev.co.uk> || Web: www.mev.co.uk )=-
+-=( MEV Ltd. is a company registered in England & Wales. )=-
+-=( Registered number: 02862268.  Registered address:    )=-
+-=( 15 West Park Road, Bramhall, STOCKPORT, SK7 3JZ, UK. )=-
