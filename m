@@ -3,57 +3,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B28C43219
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 526B0C43219
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:31:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C660C212F5
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:30:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C660C212F5
+	by mail.kernel.org (Postfix) with ESMTPS id 15D63212F5
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 13:31:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15D63212F5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B0EF81E9B;
-	Thu, 25 Apr 2019 13:30:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 124D41E9E;
+	Thu, 25 Apr 2019 13:31:25 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 70C391E93
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 768991E98
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 13:29:53 +0000 (UTC)
+	Thu, 25 Apr 2019 13:30:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B1BAC82B
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E9FA282B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 13:29:51 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
-	[10.5.11.11])
+	Thu, 25 Apr 2019 13:30:46 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+	[10.5.11.13])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 4B577307B4B0;
-	Thu, 25 Apr 2019 13:29:50 +0000 (UTC)
+	by mx1.redhat.com (Postfix) with ESMTPS id 1C46B30BCE5A;
+	Thu, 25 Apr 2019 13:30:46 +0000 (UTC)
 Received: from treble (ovpn-123-99.rdu2.redhat.com [10.10.123.99])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 390A060141;
-	Thu, 25 Apr 2019 13:29:39 +0000 (UTC)
-Date: Thu, 25 Apr 2019 08:29:35 -0500
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 73C7760923;
+	Thu, 25 Apr 2019 13:30:34 +0000 (UTC)
+Date: Thu, 25 Apr 2019 08:30:32 -0500
 From: Josh Poimboeuf <jpoimboe@redhat.com>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V3 21/29] tracing: Use percpu stack trace buffer more
-	intelligently
-Message-ID: <20190425132935.ae35l5oybby5ddgl@treble>
+Subject: Re: [patch V3 24/29] tracing: Remove the last struct stack_trace usage
+Message-ID: <20190425133032.ds27oje6nxswvdji@treble>
 References: <20190425094453.875139013@linutronix.de>
-	<20190425094803.066064076@linutronix.de>
+	<20190425094803.340000461@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190425094803.066064076@linutronix.de>
+In-Reply-To: <20190425094803.340000461@linutronix.de>
 User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.46]);
-	Thu, 25 Apr 2019 13:29:51 +0000 (UTC)
+	(mx1.redhat.com [10.5.110.43]);
+	Thu, 25 Apr 2019 13:30:46 +0000 (UTC)
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
 	Catalin Marinas <catalin.marinas@arm.com>,
 	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -95,78 +94,35 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425132935.RQ0g0srPg2-Sf0rfq3Kr0xvOqkIIhtbuLPn_s02EEHU@z>
+Message-ID: <20190425133032.VHJlEYlvot2Q6fSrMUd3GhYTp56osz3IUMDRv3Sh5rc@z>
 
-On Thu, Apr 25, 2019 at 11:45:14AM +0200, Thomas Gleixner wrote:
-> @@ -2788,29 +2798,32 @@ static void __ftrace_trace_stack(struct
->  	 */
->  	preempt_disable_notrace();
+On Thu, Apr 25, 2019 at 11:45:17AM +0200, Thomas Gleixner wrote:
+> Simplify the stack retrieval code by using the storage array based
+> interface.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> ---
+>  kernel/trace/trace_stack.c |   37 ++++++++++++++++---------------------
+>  1 file changed, 16 insertions(+), 21 deletions(-)
+> 
+> --- a/kernel/trace/trace_stack.c
+> +++ b/kernel/trace/trace_stack.c
+> @@ -23,11 +23,7 @@
+>  static unsigned long stack_dump_trace[STACK_TRACE_ENTRIES];
+>  static unsigned stack_trace_index[STACK_TRACE_ENTRIES];
 >  
-> -	use_stack = __this_cpu_inc_return(ftrace_stack_reserve);
-> +	stackidx = __this_cpu_inc_return(ftrace_stack_reserve);
-> +
-> +	/* This should never happen. If it does, yell once and skip */
-> +	if (WARN_ON_ONCE(stackidx >= FTRACE_KSTACK_NESTING))
-> +		goto out;
-> +
->  	/*
-> -	 * We don't need any atomic variables, just a barrier.
-> -	 * If an interrupt comes in, we don't care, because it would
-> -	 * have exited and put the counter back to what we want.
-> -	 * We just need a barrier to keep gcc from moving things
-> -	 * around.
-> +	 * The above __this_cpu_inc_return() is 'atomic' cpu local. An
-> +	 * interrupt will either see the value pre increment or post
-> +	 * increment. If the interrupt happens pre increment it will have
-> +	 * restored the counter when it returns.  We just need a barrier to
-> +	 * keep gcc from moving things around.
->  	 */
->  	barrier();
-> -	if (use_stack == 1) {
-> -		trace.entries		= this_cpu_ptr(ftrace_stack.calls);
-> -		trace.max_entries	= FTRACE_STACK_MAX_ENTRIES;
+> -struct stack_trace stack_trace_max = {
+> -	.max_entries		= STACK_TRACE_ENTRIES,
+> -	.entries		= &stack_dump_trace[0],
+> -};
 > -
-> -		if (regs)
-> -			save_stack_trace_regs(regs, &trace);
-> -		else
-> -			save_stack_trace(&trace);
-> -
-> -		if (trace.nr_entries > size)
-> -			size = trace.nr_entries;
-> -	} else
-> -		/* From now on, use_stack is a boolean */
-> -		use_stack = 0;
-> +
-> +	fstack = this_cpu_ptr(ftrace_stacks.stacks) + (stackidx - 1);
+> +static unsigned int stack_trace_entries;
 
-nit: it would be slightly less surprising if stackidx were 0-based:
+"stack_trace_entries" -> "nr_stack_trace_entries"
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index d3f6ec7eb729..4fc93004feab 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -2798,10 +2798,10 @@ static void __ftrace_trace_stack(struct ring_buffer *buffer,
- 	 */
- 	preempt_disable_notrace();
- 
--	stackidx = __this_cpu_inc_return(ftrace_stack_reserve);
-+	stackidx = __this_cpu_inc_return(ftrace_stack_reserve) - 1;
- 
- 	/* This should never happen. If it does, yell once and skip */
--	if (WARN_ON_ONCE(stackidx >= FTRACE_KSTACK_NESTING))
-+	if (WARN_ON_ONCE(stackidx > FTRACE_KSTACK_NESTING))
- 		goto out;
- 
- 	/*
-@@ -2813,7 +2813,7 @@ static void __ftrace_trace_stack(struct ring_buffer *buffer,
- 	 */
- 	barrier();
- 
--	fstack = this_cpu_ptr(ftrace_stacks.stacks) + (stackidx - 1);
-+	fstack = this_cpu_ptr(ftrace_stacks.stacks) + stackidx;
- 	trace.entries		= fstack->calls;
- 	trace.max_entries	= FTRACE_KSTACK_ENTRIES;
- 
+-- 
+Josh
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
