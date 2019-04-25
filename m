@@ -1,14 +1,15 @@
 From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 08/19] ioasid: Add custom IOASID allocator
-Date: Thu, 25 Apr 2019 12:03:42 +0200
-Message-ID: <4ef22c62-0947-8de5-3288-2835ce5fa7a9@redhat.com>
+Subject: Re: [PATCH v2 11/19] iommu/vt-d: Replace Intel specific PASID
+ allocator with IOASID
+Date: Thu, 25 Apr 2019 12:04:01 +0200
+Message-ID: <e542fd95-acbe-05e9-e441-27dff752c21a@redhat.com>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1556062279-64135-9-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1556062279-64135-12-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556062279-64135-9-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1556062279-64135-12-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
@@ -18,332 +19,237 @@ List-Id: iommu@lists.linux-foundation.org
 Hi Jacob,
 
 On 4/24/19 1:31 AM, Jacob Pan wrote:
-> Sometimes, IOASID allocation must be handled by platform specific
-> code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs need
-> to be allocated by the host via enlightened or paravirt interfaces.
-> 
-> This patch adds an extension to the IOASID allocator APIs such that
-> platform drivers can register a custom allocator, possibly at boot
-> time, to take over the allocation. Xarray is still used for tracking
-> and searching purposes internal to the IOASID code. Private data of
-> an IOASID can also be set after the allocation.
-> 
-> There can be multiple custom allocators registered but only one is
-> used at a time. In case of hot removal of devices that provides the
-> allocator, all IOASIDs must be freed prior to unregistering the
-> allocator. Default XArray based allocator cannot be mixed with
-> custom allocators, i.e. custom allocators will not be used if there
-> are outstanding IOASIDs allocated by the default XA allocator.
-
-What's the exact use case behind allowing several custom IOASID
-allocators to be registered?
+> Make use of generic IOASID code to manage PASID allocation,
+> free, and lookup.
 > 
 > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > ---
->  drivers/base/ioasid.c  | 182 ++++++++++++++++++++++++++++++++++++++++++++++---
->  include/linux/ioasid.h |  15 +++-
->  2 files changed, 187 insertions(+), 10 deletions(-)
+>  drivers/iommu/Kconfig       |  1 +
+>  drivers/iommu/intel-iommu.c |  9 ++++-----
+>  drivers/iommu/intel-pasid.c | 36 ------------------------------------
+>  drivers/iommu/intel-svm.c   | 41 ++++++++++++++++++++++++-----------------
+>  4 files changed, 29 insertions(+), 58 deletions(-)
 > 
-> diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
-> index c4012aa..5cb36a4 100644
-> --- a/drivers/base/ioasid.c
-> +++ b/drivers/base/ioasid.c
-> @@ -17,6 +17,120 @@ struct ioasid_data {
->  };
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 6f07f3b..7f92009 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -204,6 +204,7 @@ config INTEL_IOMMU_SVM
+>  	bool "Support for Shared Virtual Memory with Intel IOMMU"
+>  	depends on INTEL_IOMMU && X86
+>  	select PCI_PASID
+> +	select IOASID
+>  	select MMU_NOTIFIER
+>  	help
+>  	  Shared Virtual Memory (SVM) provides a facility for devices
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index ec6f22d..785330a 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5153,7 +5153,7 @@ static void auxiliary_unlink_device(struct dmar_domain *domain,
+>  	domain->auxd_refcnt--;
 >  
->  static DEFINE_XARRAY_ALLOC(ioasid_xa);
-> +static DEFINE_MUTEX(ioasid_allocator_lock);
-> +static struct ioasid_allocator *ioasid_allocator;
-A more explicit name may be chosen. If I understand correctly that's the
-active_custom_allocator
-> +
-> +static LIST_HEAD(custom_allocators);
-> +/*
-> + * A flag to track if ioasid default allocator already been used, this will
-is already in use?
-> + * prevent custom allocator from being used. The reason is that custom allocator
-s/The reason is that custom allocator/The reason is that custom allocators
-> + * must have unadulterated space to track private data with xarray, there cannot
-> + * be a mix been default and custom allocated IOASIDs.
-> + */
-> +static int default_allocator_used;
-> +
-> +/**
-> + * ioasid_register_allocator - register a custom allocator
-> + * @allocator: the custom allocator to be registered
-> + *
-> + * Custom allocator take precedence over the default xarray based allocator.
-> + * Private data associated with the ASID are managed by ASID common code
-> + * similar to data stored in xa.
-> + *
-> + * There can be multiple allocators registered but only one is active. In case
-> + * of runtime removal of an custom allocator, the next one is activated based
-> + * on the registration ordering.
-This last sentence may be moved to the unregister() kerneldoc
-> + */
-> +int ioasid_register_allocator(struct ioasid_allocator *allocator)
-> +{
-> +	struct ioasid_allocator *pallocator;
-> +	int ret = 0;
-> +
-> +	if (!allocator)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&ioasid_allocator_lock);
-> +	if (list_empty(&custom_allocators))
-> +		ioasid_allocator = allocator;
-The fact the first registered custom allocator gets automatically active
-was not obvious to me and may deserve a comment.
-> +	else {
-> +		/* Check if the allocator is already registered */
-> +		list_for_each_entry(pallocator, &custom_allocators, list) {
-> +			if (pallocator == allocator) {
-> +				pr_err("IOASID allocator already exist\n");
-s/exist/registered?
-> +				ret = -EEXIST;
-> +				goto out_unlock;
-> +			}
-> +		}
-> +	}
-> +	list_add_tail(&allocator->list, &custom_allocators);
-> +
-> +out_unlock:
-> +	mutex_unlock(&ioasid_allocator_lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_register_allocator);
-> +
-> +/**
-> + * ioasid_unregister_allocator - Remove a custom IOASID allocator
-> + * @allocator: the custom allocator to be removed
-> + *
-> + * Remove an allocator from the list, activate the next allocator in
-> + * the order it was  registration.
-> + */
-> +void ioasid_unregister_allocator(struct ioasid_allocator *allocator)
-> +{
-> +	if (!allocator)
-> +		return;
-> +
-> +	if (list_empty(&custom_allocators)) {
-> +		pr_warn("No custom IOASID allocators active!\n");
-s/active/registered?
-> +		return;
-> +	}
-> +
-> +	mutex_lock(&ioasid_allocator_lock);
-> +	list_del(&allocator->list);
-> +	if (list_empty(&custom_allocators)) {
-> +		pr_info("No custom IOASID allocators\n");
-> +		/*
-> +		 * All IOASIDs should have been freed before the last allocator
-> +		 * is unregistered.
-> +		 */
-> +		BUG_ON(!xa_empty(&ioasid_xa));
-At this stage it is difficult to assess whether using a BUG_ON() is safe
-here. Who is responsible for freeing the IOASIDs?
-> +		ioasid_allocator = NULL;
-> +	} else if (allocator == ioasid_allocator) {
-> +		ioasid_allocator = list_entry(&custom_allocators, struct ioasid_allocator, list);
-> +		pr_info("IOASID allocator changed");
-> +	}
-> +	mutex_unlock(&ioasid_allocator_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
-> +
-> +/**
-> + * ioasid_set_data - Set private data for an allocated ioasid
-> + * @ioasid: the ID to set data
-> + * @data:   the private data
-> + *
-> + * For IOASID that is already allocated, private data can be set
-> + * via this API. Future lookup can be done via ioasid_find.
-> + */
-> +int ioasid_set_data(ioasid_t ioasid, void *data)
-> +{
-> +	struct ioasid_data *ioasid_data;
-> +	int ret = 0;
-> +
-> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
-> +	if (ioasid_data)
-> +		ioasid_data->private = data;
-> +	else
-> +		ret = -ENOENT;
-> +
-> +	/* getter may use the private data */
-> +	synchronize_rcu();
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_set_data);
-> +
->  /**
->   * ioasid_alloc - Allocate an IOASID
->   * @set: the IOASID set
-> @@ -31,7 +145,7 @@ static DEFINE_XARRAY_ALLOC(ioasid_xa);
->  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
->  		      void *private)
->  {
-> -	int id = -1;
-> +	int id = INVALID_IOASID;
->  	struct ioasid_data *data;
->  
->  	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> @@ -40,14 +154,37 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
->  
->  	data->set = set;
->  	data->private = private;
-> +
-> +	/*
-> +	 * Use custom allocator if available, otherwise use default.
-> +	 * However, if there are active IOASIDs already been allocated by default
-> +	 * allocator, custom allocator cannot be used.
-> +	 */
-> +	if (!default_allocator_used && ioasid_allocator) {
-> +		mutex_lock(&ioasid_allocator_lock);
-> +		id = ioasid_allocator->alloc(min, max, ioasid_allocator->pdata);
-> +		mutex_unlock(&ioasid_allocator_lock);
-> +		if (id == INVALID_IOASID) {
-> +			pr_err("Failed ASID allocation by custom allocator\n");
-> +			goto exit_free;
-> +		}
-> +		/*
-> +		 * Use XA to manage private data also sanitiy check custom> +		 * allocator for duplicates.
-s/data also sanitiy check/data, also sanity check
-> +		 */
-> +		min = id;
-> +		max = id + 1;
-> +	} else
-> +		default_allocator_used = 1;
-shouldn't default_allocator_used be protected as well?
-> +
->  	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_KERNEL)) {
->  		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
->  		goto exit_free;
->  	}
-> -
->  	data->id = id;
-wouldn't it be possible to integrate the default io asid allocator as
-any custom allocator, ie. implement an alloc callback using xa_alloc.
-Then the active io allocator could be either a custom or a default one.
-> +
->  exit_free:
-> -	if (id < 0) {
-> +	if (id < 0 || id == INVALID_IOASID) {
->  		kfree(data);
->  		return INVALID_IOASID;
->  	}
-> @@ -59,12 +196,29 @@ EXPORT_SYMBOL_GPL(ioasid_alloc);
->   * ioasid_free - Free an IOASID
->   * @ioasid: the ID to remove
->   */
-> -void ioasid_free(ioasid_t ioasid)
-> +int ioasid_free(ioasid_t ioasid)
->  {
->  	struct ioasid_data *ioasid_data;
-> +	int ret = 0;
-> +
-> +	if (ioasid_allocator) {
-> +		mutex_lock(&ioasid_allocator_lock);
-> +		ret = ioasid_allocator->free(ioasid, ioasid_allocator->pdata);
-> +		mutex_unlock(&ioasid_allocator_lock);
-> +	}
-> +	if (ret) {
-> +		pr_err("ioasid %d custom allocator free failed\n", ioasid);
-> +		return ret;
-> +	}
->  
->  	ioasid_data = xa_erase(&ioasid_xa, ioasid);
-> +
->  	kfree_rcu(ioasid_data, rcu);
-> +
-> +	if (xa_empty(&ioasid_xa))
-> +		default_allocator_used = 0;
-> +
-> +	return ret;
+>  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+> -		intel_pasid_free_id(domain->default_pasid);
+> +		ioasid_free(domain->default_pasid);
 >  }
->  EXPORT_SYMBOL_GPL(ioasid_free);
 >  
-> @@ -79,7 +233,8 @@ EXPORT_SYMBOL_GPL(ioasid_free);
->   * if @getter returns false, then the object is invalid and NULL is returned.
->   *
->   * If the IOASID has been allocated for this set, return the private pointer
-> - * passed to ioasid_alloc. Otherwise return NULL.
-> + * passed to ioasid_alloc. Private data can be NULL if not set. Return an error
-> + * if the IOASID is not found or not belong to the set.
-s/not belong/does not belong
+>  static int aux_domain_add_dev(struct dmar_domain *domain,
+> @@ -5171,9 +5171,8 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
+>  	if (domain->default_pasid <= 0) {
+>  		int pasid;
+>  
+> -		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
+> -					     pci_max_pasids(to_pci_dev(dev)),
+> -					     GFP_KERNEL);
+> +		pasid = ioasid_alloc(NULL, PASID_MIN, pci_max_pasids(to_pci_dev(dev)) - 1,
+> +				domain);
+>  		if (pasid <= 0) {
+ioasid_t is a uint and returns INVALID_IOASID on error. Wouldn't it be
+simpler to make ioasid_alloc return an int?
+>  			pr_err("Can't allocate default pasid\n");
+>  			return -ENODEV;
+> @@ -5210,7 +5209,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
+>  	spin_unlock(&iommu->lock);
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+> -		intel_pasid_free_id(domain->default_pasid);
+> +		ioasid_free(domain->default_pasid);
+>  
+>  	return ret;
+>  }
+> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+> index 5b1d3be..d339e8f 100644
+> --- a/drivers/iommu/intel-pasid.c
+> +++ b/drivers/iommu/intel-pasid.c
+> @@ -26,42 +26,6 @@
 >   */
->  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
->  		  bool (*getter)(void *))
-> @@ -89,11 +244,20 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  static DEFINE_SPINLOCK(pasid_lock);
+>  u32 intel_pasid_max_id = PASID_MAX;
+> -static DEFINE_IDR(pasid_idr);
+> -
+> -int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp)
+> -{
+> -	int ret, min, max;
+> -
+> -	min = max_t(int, start, PASID_MIN);
+> -	max = min_t(int, end, intel_pasid_max_id);
+> -
+> -	WARN_ON(in_interrupt());
+> -	idr_preload(gfp);
+> -	spin_lock(&pasid_lock);
+> -	ret = idr_alloc(&pasid_idr, ptr, min, max, GFP_ATOMIC);
+> -	spin_unlock(&pasid_lock);
+> -	idr_preload_end();
+> -
+> -	return ret;
+> -}
+> -
+> -void intel_pasid_free_id(int pasid)
+> -{
+> -	spin_lock(&pasid_lock);
+> -	idr_remove(&pasid_idr, pasid);
+> -	spin_unlock(&pasid_lock);
+> -}
+> -
+> -void *intel_pasid_lookup_id(int pasid)
+> -{
+> -	void *p;
+> -
+> -	spin_lock(&pasid_lock);
+> -	p = idr_find(&pasid_idr, pasid);
+> -	spin_unlock(&pasid_lock);
+> -
+> -	return p;
+> -}
 >  
+>  int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
+>  {
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 8f87304..8fff212 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -25,6 +25,7 @@
+>  #include <linux/dmar.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/mm_types.h>
+> +#include <linux/ioasid.h>
+>  #include <asm/page.h>
+>  
+>  #include "intel-pasid.h"
+> @@ -211,7 +212,9 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
 >  	rcu_read_lock();
->  	ioasid_data = xa_load(&ioasid_xa, ioasid);
-> -	if (ioasid_data && ioasid_data->set == set) {
-> -		priv = ioasid_data->private;
-> -		if (getter && !getter(priv))
-> -			priv = NULL;
-> +	if (!ioasid_data) {
-> +		priv = ERR_PTR(-ENOENT);
-> +		goto unlock;
-> +	}
-> +	if (set && ioasid_data->set != set) {
-> +		/* data found but does not belong to the set */
-> +		priv = ERR_PTR(-EACCES);
-> +		goto unlock;
+>  	list_for_each_entry_rcu(sdev, &svm->devs, list) {
+>  		intel_pasid_tear_down_entry(svm->iommu, sdev->dev, svm->pasid);
+> -		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm)> +		/* for emulated iommu, PASID cache invalidation implies IOTLB/DTLB */
+> +		if (!cap_caching_mode(svm->iommu->cap))
+> +			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
+This change is not documented in the commit message. Isn't it a separate
+fix?
 >  	}
-> +	/* Now IOASID and its set is verified, we can return the private data */
-> +	priv = ioasid_data->private;
-> +	if (getter && !getter(priv))
-> +		priv = NULL;
-> +unlock:
 >  	rcu_read_unlock();
 >  
->  	return priv;
-> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> index 6f3655a..e773c13 100644
-> --- a/include/linux/ioasid.h
-> +++ b/include/linux/ioasid.h
-> @@ -5,20 +5,33 @@
->  #define INVALID_IOASID ((ioasid_t)-1)
->  typedef unsigned int ioasid_t;
->  typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
-> +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
-> +typedef int (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
+> @@ -332,16 +335,15 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+>  		if (pasid_max > intel_pasid_max_id)
+>  			pasid_max = intel_pasid_max_id;
 >  
->  struct ioasid_set {
->  	int dummy;
->  };
+> -		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
+> -		ret = intel_pasid_alloc_id(svm,
+> -					   !!cap_caching_mode(iommu->cap),
+> -					   pasid_max - 1, GFP_KERNEL);
+> -		if (ret < 0) {
+> +		/* Do not use PASID 0, reserved for RID to PASID */
+> +		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
+> +					pasid_max - 1, svm);
+the fact the max is not decremented compared to intel_pasid_alloc_id
+looks suspicious to me (exclusive to inclusive move). I guess it is a
+fix in which case this may be documented in the commit msg?
+> +		if (svm->pasid == INVALID_IOASID) {
+>  			kfree(svm);
+>  			kfree(sdev);
+> +			ret = ENOSPC;
+-ENOSPC
+>  			goto out;
+>  		}
+> -		svm->pasid = ret;
+>  		svm->notifier.ops = &intel_mmuops;
+>  		svm->mm = mm;
+>  		svm->flags = flags;
+> @@ -351,7 +353,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+>  		if (mm) {
+>  			ret = mmu_notifier_register(&svm->notifier, mm);
+>  			if (ret) {
+> -				intel_pasid_free_id(svm->pasid);
+> +				ioasid_free(svm->pasid);
+>  				kfree(svm);
+>  				kfree(sdev);
+>  				goto out;
+> @@ -367,7 +369,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+>  		if (ret) {
+>  			if (mm)
+>  				mmu_notifier_unregister(&svm->notifier, mm);
+> -			intel_pasid_free_id(svm->pasid);
+> +			ioasid_free(svm->pasid);
+the ioasid_free returned value never is tested. Is it useful?
+>  			kfree(svm);
+>  			kfree(sdev);
+>  			goto out;
+> @@ -400,7 +402,12 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+>  	if (!iommu)
+>  		goto out;
 >  
-> +struct ioasid_allocator {
-> +	ioasid_alloc_fn_t alloc;
-> +	ioasid_free_fn_t free;
-> +	void *pdata;
-> +	struct list_head list;
-> +};
+> -	svm = intel_pasid_lookup_id(pasid);
+> +	svm = ioasid_find(NULL, pasid, NULL);
+> +	if (IS_ERR(svm)) {
+> +		ret = PTR_ERR(svm);
+> +		goto out;
+> +	}
 > +
->  #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
+>  	if (!svm)
+>  		goto out;
 >  
->  #ifdef CONFIG_IOASID
->  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
->  		      void *private);
-> -void ioasid_free(ioasid_t ioasid);
-> +int ioasid_free(ioasid_t ioasid);
-you need to change the definition for the !CONFIG_IOASID case too
+> @@ -422,7 +429,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+>  				kfree_rcu(sdev, rcu);
 >  
->  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
->  		  bool (*getter)(void *));
-> +int ioasid_register_allocator(struct ioasid_allocator *allocator);
-> +void ioasid_unregister_allocator(struct ioasid_allocator *allocator);
-> +
-> +int ioasid_set_data(ioasid_t ioasid, void *data);
+>  				if (list_empty(&svm->devs)) {
+> -					intel_pasid_free_id(svm->pasid);
+> +					ioasid_free(svm->pasid);
+>  					if (svm->mm)
+>  						mmu_notifier_unregister(&svm->notifier, svm->mm);
 >  
->  #else /* !CONFIG_IOASID */
->  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-Just to make sure, don't you need to define the new functions if
-!CONFIG_IOASID?
+> @@ -457,10 +464,11 @@ int intel_svm_is_pasid_valid(struct device *dev, int pasid)
+>  	if (!iommu)
+>  		goto out;
+>  
+> -	svm = intel_pasid_lookup_id(pasid);
+> -	if (!svm)
+> +	svm = ioasid_find(NULL, pasid, NULL);
+> +	if (IS_ERR(svm)) {
+> +		ret = PTR_ERR(svm);
+>  		goto out;
+> -
+> +	}
+>  	/* init_mm is used in this case */
+>  	if (!svm->mm)
+>  		ret = 1;
+> @@ -567,13 +575,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+>  
+>  		if (!svm || svm->pasid != req->pasid) {
+>  			rcu_read_lock();
+> -			svm = intel_pasid_lookup_id(req->pasid);
+> +			svm = ioasid_find(NULL, req->pasid, NULL);
+>  			/* It *can't* go away, because the driver is not permitted
+>  			 * to unbind the mm while any page faults are outstanding.
+>  			 * So we only need RCU to protect the internal idr code. */
+>  			rcu_read_unlock();
+> -
+> -			if (!svm) {
+> +			if (IS_ERR(svm) || !svm) {
+>  				pr_err("%s: Page request for invalid PASID %d: %08llx %08llx\n",
+>  				       iommu->name, req->pasid, ((unsigned long long *)req)[0],
+>  				       ((unsigned long long *)req)[1]);
+> 
 
 Thanks
 
 Eric
-> 
