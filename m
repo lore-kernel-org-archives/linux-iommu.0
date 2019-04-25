@@ -6,39 +6,39 @@ X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8977BC10F03
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D43ADC282E1
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:00:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 65DD0206BA
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:00:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 65DD0206BA
+	by mail.kernel.org (Postfix) with ESMTPS id ACF9A206BA
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:00:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACF9A206BA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 49EA01C33;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 95AFA1C37;
 	Thu, 25 Apr 2019 09:59:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7C02A1C16
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E78481C16
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 09:59:21 +0000 (UTC)
+	Thu, 25 Apr 2019 09:59:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BBF8274A;
-	Thu, 25 Apr 2019 09:59:20 +0000 (UTC)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 842B582B
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 25 Apr 2019 09:59:22 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hJb9y-0001sB-TT; Thu, 25 Apr 2019 11:59:19 +0200
-Message-Id: <20190425094802.248658135@linutronix.de>
+	id 1hJb9r-0001rD-Kz; Thu, 25 Apr 2019 11:59:11 +0200
+Message-Id: <20190425094801.771410441@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 25 Apr 2019 11:45:05 +0200
+Date: Thu, 25 Apr 2019 11:45:00 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 12/29] dma/debug: Simplify stracktrace retrieval
+Subject: [patch V3 07/29] mm/slub: Simplify stack trace retrieval
 References: <20190425094453.875139013@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -83,58 +83,46 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425094505.cyZfOwwkTsYcfpEmny7UjJOpw_L6fTN4OXk8Fg94vnQ@z>
+Message-ID: <20190425094500.gh2_m_MKGjoXqi2IzxeG635_5IcjF5TBDbhXa45Yzac@z>
 
 Replace the indirection through struct stack_trace with an invocation of
 the storage array based interface.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Christoph Lameter <cl@linux.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Pekka Enberg <penberg@kernel.org>
+Cc: linux-mm@kvack.org
+Cc: David Rientjes <rientjes@google.com>
 ---
- kernel/dma/debug.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ mm/slub.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -89,8 +89,8 @@ struct dma_debug_entry {
- 	int		 sg_mapped_ents;
- 	enum map_err_types  map_err_type;
- #ifdef CONFIG_STACKTRACE
--	struct		 stack_trace stacktrace;
--	unsigned long	 st_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
-+	unsigned int	stack_len;
-+	unsigned long	stack_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
- #endif
- };
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -552,18 +552,14 @@ static void set_track(struct kmem_cache
  
-@@ -174,7 +174,7 @@ static inline void dump_entry_trace(stru
+ 	if (addr) {
  #ifdef CONFIG_STACKTRACE
- 	if (entry) {
- 		pr_warning("Mapped at:\n");
--		print_stack_trace(&entry->stacktrace, 0);
-+		stack_trace_print(entry->stack_entries, entry->stack_len, 0);
- 	}
- #endif
- }
-@@ -704,12 +704,10 @@ static struct dma_debug_entry *dma_entry
- 	spin_unlock_irqrestore(&free_entries_lock, flags);
+-		struct stack_trace trace;
++		unsigned int nr_entries;
  
- #ifdef CONFIG_STACKTRACE
--	entry->stacktrace.max_entries = DMA_DEBUG_STACKTRACE_ENTRIES;
--	entry->stacktrace.entries = entry->st_entries;
--	entry->stacktrace.skip = 1;
--	save_stack_trace(&entry->stacktrace);
-+	entry->stack_len = stack_trace_save(entry->stack_entries,
-+					    ARRAY_SIZE(entry->stack_entries),
-+					    1);
- #endif
--
- 	return entry;
- }
+-		trace.nr_entries = 0;
+-		trace.max_entries = TRACK_ADDRS_COUNT;
+-		trace.entries = p->addrs;
+-		trace.skip = 3;
+ 		metadata_access_enable();
+-		save_stack_trace(&trace);
++		nr_entries = stack_trace_save(p->addrs, TRACK_ADDRS_COUNT, 3);
+ 		metadata_access_disable();
  
+-		if (trace.nr_entries < TRACK_ADDRS_COUNT)
+-			p->addrs[trace.nr_entries] = 0;
++		if (nr_entries < TRACK_ADDRS_COUNT)
++			p->addrs[nr_entries] = 0;
+ #endif
+ 		p->addr = addr;
+ 		p->cpu = smp_processor_id();
 
 
 _______________________________________________
