@@ -1,208 +1,349 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: [patch V3 29/29] x86/stacktrace: Use common infrastructure
-Date: Thu, 25 Apr 2019 11:45:22 +0200
-Message-ID: <20190425094803.816485461@linutronix.de>
-References: <20190425094453.875139013@linutronix.de>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v2 08/19] ioasid: Add custom IOASID allocator
+Date: Thu, 25 Apr 2019 12:03:42 +0200
+Message-ID: <4ef22c62-0947-8de5-3288-2835ce5fa7a9@redhat.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1556062279-64135-9-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1556062279-64135-9-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org, Andy Lutomirski <luto@kernel.org>, linux-arch@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Alexander Potapenko <glider@google.com>, Alexey Dobriyan <adobriyan@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, linux-mm@kvack.org, David Rientjes <rientjes@google.com>, Catalin Marinas <catalin.marinas@arm.com>, Dmitry Vyukov <dvyukov@google.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, kasan-dev@googlegroups.com, Mike Rapoport <rppt@linux.vnet.ibm.com>, Akinobu Mita <akinobu.mita@gmail.com>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Marek
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Replace the stack_trace_save*() functions with the new arch_stack_walk()
-interfaces.
+Hi Jacob,
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-arch@vger.kernel.org
----
- arch/x86/Kconfig             |    1 
- arch/x86/kernel/stacktrace.c |  116 +++++++------------------------------------
- 2 files changed, 20 insertions(+), 97 deletions(-)
+On 4/24/19 1:31 AM, Jacob Pan wrote:
+> Sometimes, IOASID allocation must be handled by platform specific
+> code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs need
+> to be allocated by the host via enlightened or paravirt interfaces.
+> 
+> This patch adds an extension to the IOASID allocator APIs such that
+> platform drivers can register a custom allocator, possibly at boot
+> time, to take over the allocation. Xarray is still used for tracking
+> and searching purposes internal to the IOASID code. Private data of
+> an IOASID can also be set after the allocation.
+> 
+> There can be multiple custom allocators registered but only one is
+> used at a time. In case of hot removal of devices that provides the
+> allocator, all IOASIDs must be freed prior to unregistering the
+> allocator. Default XArray based allocator cannot be mixed with
+> custom allocators, i.e. custom allocators will not be used if there
+> are outstanding IOASIDs allocated by the default XA allocator.
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -74,6 +74,7 @@ config X86
- 	select ARCH_MIGHT_HAVE_ACPI_PDC		if ACPI
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_MIGHT_HAVE_PC_SERIO
-+	select ARCH_STACKWALK
- 	select ARCH_SUPPORTS_ACPI
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_NUMA_BALANCING	if X86_64
---- a/arch/x86/kernel/stacktrace.c
-+++ b/arch/x86/kernel/stacktrace.c
-@@ -12,75 +12,31 @@
- #include <asm/stacktrace.h>
- #include <asm/unwind.h>
- 
--static int save_stack_address(struct stack_trace *trace, unsigned long addr,
--			      bool nosched)
--{
--	if (nosched && in_sched_functions(addr))
--		return 0;
--
--	if (trace->skip > 0) {
--		trace->skip--;
--		return 0;
--	}
--
--	if (trace->nr_entries >= trace->max_entries)
--		return -1;
--
--	trace->entries[trace->nr_entries++] = addr;
--	return 0;
--}
--
--static void noinline __save_stack_trace(struct stack_trace *trace,
--			       struct task_struct *task, struct pt_regs *regs,
--			       bool nosched)
-+void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
-+		     struct task_struct *task, struct pt_regs *regs)
- {
- 	struct unwind_state state;
- 	unsigned long addr;
- 
--	if (regs)
--		save_stack_address(trace, regs->ip, nosched);
-+	if (regs && !consume_entry(cookie, regs->ip, false))
-+		return;
- 
- 	for (unwind_start(&state, task, regs, NULL); !unwind_done(&state);
- 	     unwind_next_frame(&state)) {
- 		addr = unwind_get_return_address(&state);
--		if (!addr || save_stack_address(trace, addr, nosched))
-+		if (!addr || !consume_entry(cookie, addr, false))
- 			break;
- 	}
- }
- 
- /*
-- * Save stack-backtrace addresses into a stack_trace buffer.
-+ * This function returns an error if it detects any unreliable features of the
-+ * stack.  Otherwise it guarantees that the stack trace is reliable.
-+ *
-+ * If the task is not 'current', the caller *must* ensure the task is inactive.
-  */
--void save_stack_trace(struct stack_trace *trace)
--{
--	trace->skip++;
--	__save_stack_trace(trace, current, NULL, false);
--}
--EXPORT_SYMBOL_GPL(save_stack_trace);
--
--void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
--{
--	__save_stack_trace(trace, current, regs, false);
--}
--
--void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
--{
--	if (!try_get_task_stack(tsk))
--		return;
--
--	if (tsk == current)
--		trace->skip++;
--	__save_stack_trace(trace, tsk, NULL, true);
--
--	put_task_stack(tsk);
--}
--EXPORT_SYMBOL_GPL(save_stack_trace_tsk);
--
--#ifdef CONFIG_HAVE_RELIABLE_STACKTRACE
--
--static int __always_inline
--__save_stack_trace_reliable(struct stack_trace *trace,
--			    struct task_struct *task)
-+int arch_stack_walk_reliable(stack_trace_consume_fn consume_entry,
-+			     void *cookie, struct task_struct *task)
- {
- 	struct unwind_state state;
- 	struct pt_regs *regs;
-@@ -117,7 +73,7 @@ static int __always_inline
- 		if (!addr)
- 			return -EINVAL;
- 
--		if (save_stack_address(trace, addr, false))
-+		if (!consume_entry(cookie, addr, false))
- 			return -EINVAL;
- 	}
- 
-@@ -132,32 +88,6 @@ static int __always_inline
- 	return 0;
- }
- 
--/*
-- * This function returns an error if it detects any unreliable features of the
-- * stack.  Otherwise it guarantees that the stack trace is reliable.
-- *
-- * If the task is not 'current', the caller *must* ensure the task is inactive.
-- */
--int save_stack_trace_tsk_reliable(struct task_struct *tsk,
--				  struct stack_trace *trace)
--{
--	int ret;
--
--	/*
--	 * If the task doesn't have a stack (e.g., a zombie), the stack is
--	 * "reliably" empty.
--	 */
--	if (!try_get_task_stack(tsk))
--		return 0;
--
--	ret = __save_stack_trace_reliable(trace, tsk);
--
--	put_task_stack(tsk);
--
--	return ret;
--}
--#endif /* CONFIG_HAVE_RELIABLE_STACKTRACE */
--
- /* Userspace stacktrace - based on kernel/trace/trace_sysprof.c */
- 
- struct stack_frame_user {
-@@ -182,15 +112,15 @@ copy_stack_frame(const void __user *fp,
- 	return ret;
- }
- 
--static inline void __save_stack_trace_user(struct stack_trace *trace)
-+void arch_stack_walk_user(stack_trace_consume_fn consume_entry, void *cookie,
-+			  const struct pt_regs *regs)
- {
--	const struct pt_regs *regs = task_pt_regs(current);
- 	const void __user *fp = (const void __user *)regs->bp;
- 
--	if (trace->nr_entries < trace->max_entries)
--		trace->entries[trace->nr_entries++] = regs->ip;
-+	if (!consume_entry(cookie, regs->ip, false))
-+		return;
- 
--	while (trace->nr_entries < trace->max_entries) {
-+	while (1) {
- 		struct stack_frame_user frame;
- 
- 		frame.next_fp = NULL;
-@@ -200,8 +130,8 @@ static inline void __save_stack_trace_us
- 		if ((unsigned long)fp < regs->sp)
- 			break;
- 		if (frame.ret_addr) {
--			trace->entries[trace->nr_entries++] =
--				frame.ret_addr;
-+			if (!consume_entry(cookie, frame.ret_addr, false))
-+				return;
- 		}
- 		if (fp == frame.next_fp)
- 			break;
-@@ -209,11 +139,3 @@ static inline void __save_stack_trace_us
- 	}
- }
- 
--void save_stack_trace_user(struct stack_trace *trace)
--{
--	/*
--	 * Trace user stack if we are not a kernel thread
--	 */
--	if (current->mm)
--		__save_stack_trace_user(trace);
--}
+What's the exact use case behind allowing several custom IOASID
+allocators to be registered?
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/base/ioasid.c  | 182 ++++++++++++++++++++++++++++++++++++++++++++++---
+>  include/linux/ioasid.h |  15 +++-
+>  2 files changed, 187 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
+> index c4012aa..5cb36a4 100644
+> --- a/drivers/base/ioasid.c
+> +++ b/drivers/base/ioasid.c
+> @@ -17,6 +17,120 @@ struct ioasid_data {
+>  };
+>  
+>  static DEFINE_XARRAY_ALLOC(ioasid_xa);
+> +static DEFINE_MUTEX(ioasid_allocator_lock);
+> +static struct ioasid_allocator *ioasid_allocator;
+A more explicit name may be chosen. If I understand correctly that's the
+active_custom_allocator
+> +
+> +static LIST_HEAD(custom_allocators);
+> +/*
+> + * A flag to track if ioasid default allocator already been used, this will
+is already in use?
+> + * prevent custom allocator from being used. The reason is that custom allocator
+s/The reason is that custom allocator/The reason is that custom allocators
+> + * must have unadulterated space to track private data with xarray, there cannot
+> + * be a mix been default and custom allocated IOASIDs.
+> + */
+> +static int default_allocator_used;
+> +
+> +/**
+> + * ioasid_register_allocator - register a custom allocator
+> + * @allocator: the custom allocator to be registered
+> + *
+> + * Custom allocator take precedence over the default xarray based allocator.
+> + * Private data associated with the ASID are managed by ASID common code
+> + * similar to data stored in xa.
+> + *
+> + * There can be multiple allocators registered but only one is active. In case
+> + * of runtime removal of an custom allocator, the next one is activated based
+> + * on the registration ordering.
+This last sentence may be moved to the unregister() kerneldoc
+> + */
+> +int ioasid_register_allocator(struct ioasid_allocator *allocator)
+> +{
+> +	struct ioasid_allocator *pallocator;
+> +	int ret = 0;
+> +
+> +	if (!allocator)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&ioasid_allocator_lock);
+> +	if (list_empty(&custom_allocators))
+> +		ioasid_allocator = allocator;
+The fact the first registered custom allocator gets automatically active
+was not obvious to me and may deserve a comment.
+> +	else {
+> +		/* Check if the allocator is already registered */
+> +		list_for_each_entry(pallocator, &custom_allocators, list) {
+> +			if (pallocator == allocator) {
+> +				pr_err("IOASID allocator already exist\n");
+s/exist/registered?
+> +				ret = -EEXIST;
+> +				goto out_unlock;
+> +			}
+> +		}
+> +	}
+> +	list_add_tail(&allocator->list, &custom_allocators);
+> +
+> +out_unlock:
+> +	mutex_unlock(&ioasid_allocator_lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_register_allocator);
+> +
+> +/**
+> + * ioasid_unregister_allocator - Remove a custom IOASID allocator
+> + * @allocator: the custom allocator to be removed
+> + *
+> + * Remove an allocator from the list, activate the next allocator in
+> + * the order it was  registration.
+> + */
+> +void ioasid_unregister_allocator(struct ioasid_allocator *allocator)
+> +{
+> +	if (!allocator)
+> +		return;
+> +
+> +	if (list_empty(&custom_allocators)) {
+> +		pr_warn("No custom IOASID allocators active!\n");
+s/active/registered?
+> +		return;
+> +	}
+> +
+> +	mutex_lock(&ioasid_allocator_lock);
+> +	list_del(&allocator->list);
+> +	if (list_empty(&custom_allocators)) {
+> +		pr_info("No custom IOASID allocators\n");
+> +		/*
+> +		 * All IOASIDs should have been freed before the last allocator
+> +		 * is unregistered.
+> +		 */
+> +		BUG_ON(!xa_empty(&ioasid_xa));
+At this stage it is difficult to assess whether using a BUG_ON() is safe
+here. Who is responsible for freeing the IOASIDs?
+> +		ioasid_allocator = NULL;
+> +	} else if (allocator == ioasid_allocator) {
+> +		ioasid_allocator = list_entry(&custom_allocators, struct ioasid_allocator, list);
+> +		pr_info("IOASID allocator changed");
+> +	}
+> +	mutex_unlock(&ioasid_allocator_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
+> +
+> +/**
+> + * ioasid_set_data - Set private data for an allocated ioasid
+> + * @ioasid: the ID to set data
+> + * @data:   the private data
+> + *
+> + * For IOASID that is already allocated, private data can be set
+> + * via this API. Future lookup can be done via ioasid_find.
+> + */
+> +int ioasid_set_data(ioasid_t ioasid, void *data)
+> +{
+> +	struct ioasid_data *ioasid_data;
+> +	int ret = 0;
+> +
+> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
+> +	if (ioasid_data)
+> +		ioasid_data->private = data;
+> +	else
+> +		ret = -ENOENT;
+> +
+> +	/* getter may use the private data */
+> +	synchronize_rcu();
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_data);
+> +
+>  /**
+>   * ioasid_alloc - Allocate an IOASID
+>   * @set: the IOASID set
+> @@ -31,7 +145,7 @@ static DEFINE_XARRAY_ALLOC(ioasid_xa);
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private)
+>  {
+> -	int id = -1;
+> +	int id = INVALID_IOASID;
+>  	struct ioasid_data *data;
+>  
+>  	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> @@ -40,14 +154,37 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  
+>  	data->set = set;
+>  	data->private = private;
+> +
+> +	/*
+> +	 * Use custom allocator if available, otherwise use default.
+> +	 * However, if there are active IOASIDs already been allocated by default
+> +	 * allocator, custom allocator cannot be used.
+> +	 */
+> +	if (!default_allocator_used && ioasid_allocator) {
+> +		mutex_lock(&ioasid_allocator_lock);
+> +		id = ioasid_allocator->alloc(min, max, ioasid_allocator->pdata);
+> +		mutex_unlock(&ioasid_allocator_lock);
+> +		if (id == INVALID_IOASID) {
+> +			pr_err("Failed ASID allocation by custom allocator\n");
+> +			goto exit_free;
+> +		}
+> +		/*
+> +		 * Use XA to manage private data also sanitiy check custom> +		 * allocator for duplicates.
+s/data also sanitiy check/data, also sanity check
+> +		 */
+> +		min = id;
+> +		max = id + 1;
+> +	} else
+> +		default_allocator_used = 1;
+shouldn't default_allocator_used be protected as well?
+> +
+>  	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_KERNEL)) {
+>  		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
+>  		goto exit_free;
+>  	}
+> -
+>  	data->id = id;
+wouldn't it be possible to integrate the default io asid allocator as
+any custom allocator, ie. implement an alloc callback using xa_alloc.
+Then the active io allocator could be either a custom or a default one.
+> +
+>  exit_free:
+> -	if (id < 0) {
+> +	if (id < 0 || id == INVALID_IOASID) {
+>  		kfree(data);
+>  		return INVALID_IOASID;
+>  	}
+> @@ -59,12 +196,29 @@ EXPORT_SYMBOL_GPL(ioasid_alloc);
+>   * ioasid_free - Free an IOASID
+>   * @ioasid: the ID to remove
+>   */
+> -void ioasid_free(ioasid_t ioasid)
+> +int ioasid_free(ioasid_t ioasid)
+>  {
+>  	struct ioasid_data *ioasid_data;
+> +	int ret = 0;
+> +
+> +	if (ioasid_allocator) {
+> +		mutex_lock(&ioasid_allocator_lock);
+> +		ret = ioasid_allocator->free(ioasid, ioasid_allocator->pdata);
+> +		mutex_unlock(&ioasid_allocator_lock);
+> +	}
+> +	if (ret) {
+> +		pr_err("ioasid %d custom allocator free failed\n", ioasid);
+> +		return ret;
+> +	}
+>  
+>  	ioasid_data = xa_erase(&ioasid_xa, ioasid);
+> +
+>  	kfree_rcu(ioasid_data, rcu);
+> +
+> +	if (xa_empty(&ioasid_xa))
+> +		default_allocator_used = 0;
+> +
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(ioasid_free);
+>  
+> @@ -79,7 +233,8 @@ EXPORT_SYMBOL_GPL(ioasid_free);
+>   * if @getter returns false, then the object is invalid and NULL is returned.
+>   *
+>   * If the IOASID has been allocated for this set, return the private pointer
+> - * passed to ioasid_alloc. Otherwise return NULL.
+> + * passed to ioasid_alloc. Private data can be NULL if not set. Return an error
+> + * if the IOASID is not found or not belong to the set.
+s/not belong/does not belong
+>   */
+>  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  		  bool (*getter)(void *))
+> @@ -89,11 +244,20 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  
+>  	rcu_read_lock();
+>  	ioasid_data = xa_load(&ioasid_xa, ioasid);
+> -	if (ioasid_data && ioasid_data->set == set) {
+> -		priv = ioasid_data->private;
+> -		if (getter && !getter(priv))
+> -			priv = NULL;
+> +	if (!ioasid_data) {
+> +		priv = ERR_PTR(-ENOENT);
+> +		goto unlock;
+> +	}
+> +	if (set && ioasid_data->set != set) {
+> +		/* data found but does not belong to the set */
+> +		priv = ERR_PTR(-EACCES);
+> +		goto unlock;
+>  	}
+> +	/* Now IOASID and its set is verified, we can return the private data */
+> +	priv = ioasid_data->private;
+> +	if (getter && !getter(priv))
+> +		priv = NULL;
+> +unlock:
+>  	rcu_read_unlock();
+>  
+>  	return priv;
+> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+> index 6f3655a..e773c13 100644
+> --- a/include/linux/ioasid.h
+> +++ b/include/linux/ioasid.h
+> @@ -5,20 +5,33 @@
+>  #define INVALID_IOASID ((ioasid_t)-1)
+>  typedef unsigned int ioasid_t;
+>  typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
+> +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
+> +typedef int (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
+>  
+>  struct ioasid_set {
+>  	int dummy;
+>  };
+>  
+> +struct ioasid_allocator {
+> +	ioasid_alloc_fn_t alloc;
+> +	ioasid_free_fn_t free;
+> +	void *pdata;
+> +	struct list_head list;
+> +};
+> +
+>  #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
+>  
+>  #ifdef CONFIG_IOASID
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private);
+> -void ioasid_free(ioasid_t ioasid);
+> +int ioasid_free(ioasid_t ioasid);
+you need to change the definition for the !CONFIG_IOASID case too
+>  
+>  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  		  bool (*getter)(void *));
+> +int ioasid_register_allocator(struct ioasid_allocator *allocator);
+> +void ioasid_unregister_allocator(struct ioasid_allocator *allocator);
+> +
+> +int ioasid_set_data(ioasid_t ioasid, void *data);
+>  
+>  #else /* !CONFIG_IOASID */
+>  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+Just to make sure, don't you need to define the new functions if
+!CONFIG_IOASID?
+
+Thanks
+
+Eric
+> 
