@@ -2,71 +2,60 @@ Return-Path: <SRS0=4mi1=S3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA2AC10F03
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A702CC10F03
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:41:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 858DD2084B
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:36:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 858DD2084B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id 7F50C2084B
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:41:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F50C2084B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 560071D43;
-	Thu, 25 Apr 2019 10:35:10 +0000 (UTC)
-Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
-	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E23DF1D27
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 57A751D2A;
+	Thu, 25 Apr 2019 10:41:57 +0000 (UTC)
+Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
+	[172.17.192.35])
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 630AB1D01
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:34:33 +0000 (UTC)
+	Thu, 25 Apr 2019 10:41:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id 71C8C1DD47
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 22D4274A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:34:33 +0000 (UTC)
-Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
-	by Galois.linutronix.de with esmtp (Exim 4.80)
-	(envelope-from <tglx@linutronix.de>)
-	id 1hJbA3-0001t5-BV; Thu, 25 Apr 2019 11:59:23 +0200
-Message-Id: <20190425094802.533968922@linutronix.de>
-User-Agent: quilt/0.65
-Date: Thu, 25 Apr 2019 11:45:08 +0200
-From: Thomas Gleixner <tglx@linutronix.de>
-To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 15/29] dm persistent data: Simplify stack trace handling
-References: <20190425094453.875139013@linutronix.de>
+	Thu, 25 Apr 2019 10:41:27 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B87F1374;
+	Thu, 25 Apr 2019 03:41:25 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E70893F5C1;
+	Thu, 25 Apr 2019 03:41:23 -0700 (PDT)
+Subject: Re: [PATCH v2 06/19] drivers core: Add I/O ASID allocator
+To: Auger Eric <eric.auger@redhat.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux-foundation.org, 
+	LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Alex Williamson <alex.williamson@redhat.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
+	<4550408f-39ff-7bf9-0072-a0898c6c2f60@redhat.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <fd5b8c6c-05f0-307b-aaa2-0938337014a8@arm.com>
+Date: Thu, 25 Apr 2019 11:41:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-	dm-devel@redhat.com, Alexander Potapenko <glider@google.com>,
-	Christoph Lameter <cl@linux.com>,
-	Miroslav Benes <mbenes@suse.cz>, Christoph Hellwig <hch@lst.de>,
-	Alasdair Kergon <agk@redhat.com>, linux-arch@vger.kernel.org,
-	x86@kernel.org, kasan-dev@googlegroups.com,
-	David Rientjes <rientjes@google.com>,
-	Andrey Ryabinin <aryabinin@virtuozzo.com>,
-	Alexey Dobriyan <adobriyan@gmail.com>, intel-gfx@lists.freedesktop.org,
-	Johannes Thumshirn <jthumshirn@suse.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>, Josef Bacik <josef@toxicpanda.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Mike Rapoport <rppt@linux.vnet.ibm.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
-	David Sterba <dsterba@suse.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Tom Zanussi <tom.zanussi@linux.intel.com>,
-	Chris Mason <clm@fb.com>, Pekka Enberg <penberg@kernel.org>,
-	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-btrfs@vger.kernel.org
+In-Reply-To: <4550408f-39ff-7bf9-0072-a0898c6c2f60@redhat.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Raj Ashok <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,78 +72,31 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425094508.nmPcBsyjFT6IEoFMgVBDP6MvLyNafENvBLq7TCB7aCc@z>
+Message-ID: <20190425104105.KvWKFE4ommFiD2G61JogABL7LW9S-I4PUeSXwt2BcqE@z>
 
-Replace the indirection through struct stack_trace with an invocation of
-the storage array based interface. This results in less storage space and
-indirection.
+On 25/04/2019 11:17, Auger Eric wrote:
+>> +/**
+>> + * ioasid_alloc - Allocate an IOASID
+>> + * @set: the IOASID set
+>> + * @min: the minimum ID (inclusive)
+>> + * @max: the maximum ID (exclusive)
+>> + * @private: data private to the caller
+>> + *
+>> + * Allocate an ID between @min and @max (or %0 and %INT_MAX). Return the
+> I would remove "(or %0 and %INT_MAX)".
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: dm-devel@redhat.com
-Cc: Mike Snitzer <snitzer@redhat.com>
-Cc: Alasdair Kergon <agk@redhat.com>
----
- drivers/md/persistent-data/dm-block-manager.c |   19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+Agreed, those where the default values of idr, but the xarray doesn't
+define a default max value. By the way, I do think squashing patches 6
+and 7 would be better (keeping my SOB but you can change the author).
 
---- a/drivers/md/persistent-data/dm-block-manager.c
-+++ b/drivers/md/persistent-data/dm-block-manager.c
-@@ -35,7 +35,10 @@
- #define MAX_HOLDERS 4
- #define MAX_STACK 10
- 
--typedef unsigned long stack_entries[MAX_STACK];
-+struct stack_store {
-+	unsigned int	nr_entries;
-+	unsigned long	entries[MAX_STACK];
-+};
- 
- struct block_lock {
- 	spinlock_t lock;
-@@ -44,8 +47,7 @@ struct block_lock {
- 	struct task_struct *holders[MAX_HOLDERS];
- 
- #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
--	struct stack_trace traces[MAX_HOLDERS];
--	stack_entries entries[MAX_HOLDERS];
-+	struct stack_store traces[MAX_HOLDERS];
- #endif
- };
- 
-@@ -73,7 +75,7 @@ static void __add_holder(struct block_lo
- {
- 	unsigned h = __find_holder(lock, NULL);
- #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
--	struct stack_trace *t;
-+	struct stack_store *t;
- #endif
- 
- 	get_task_struct(task);
-@@ -81,11 +83,7 @@ static void __add_holder(struct block_lo
- 
- #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
- 	t = lock->traces + h;
--	t->nr_entries = 0;
--	t->max_entries = MAX_STACK;
--	t->entries = lock->entries[h];
--	t->skip = 2;
--	save_stack_trace(t);
-+	t->nr_entries = stack_trace_save(t->entries, MAX_STACK, 2);
- #endif
- }
- 
-@@ -106,7 +104,8 @@ static int __check_holder(struct block_l
- 			DMERR("recursive lock detected in metadata");
- #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
- 			DMERR("previously held here:");
--			print_stack_trace(lock->traces + i, 4);
-+			stack_trace_print(lock->traces[i].entries,
-+					  lock->traces[i].nr_entries, 4);
- 
- 			DMERR("subsequent acquisition attempted here:");
- 			dump_stack();
+>> +typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
+> I don't see it used in this series.
 
+There used to be a "ioasid_for_each()", which isn't needed by anyone at
+the moment. This can be removed.
 
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
