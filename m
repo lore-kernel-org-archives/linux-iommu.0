@@ -3,42 +3,42 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268FEC282E1
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A74C10F03
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F23F02084B
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F23F02084B
+	by mail.kernel.org (Postfix) with ESMTPS id 9D45D217D7
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 10:34:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D45D217D7
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A1AF61D41;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E0FBA1D44;
 	Thu, 25 Apr 2019 10:34:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E7C001D27
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 07D3D1D27
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 10:33:24 +0000 (UTC)
-X-Greylist: greylisting inactive for cl@linux.com in SQLgrey-1.7.6
+	Thu, 25 Apr 2019 10:33:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 66FF8854;
-	Thu, 25 Apr 2019 10:33:24 +0000 (UTC)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9D87B74A
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 25 Apr 2019 10:33:26 +0000 (UTC)
 Received: from localhost ([127.0.0.1] helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtp (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hJbAI-0001yH-Jz; Thu, 25 Apr 2019 11:59:38 +0200
-Message-Id: <20190425094803.340000461@linutronix.de>
+	id 1hJb9x-0001s1-P6; Thu, 25 Apr 2019 11:59:17 +0200
+Message-Id: <20190425094802.158306076@linutronix.de>
 User-Agent: quilt/0.65
-Date: Thu, 25 Apr 2019 11:45:17 +0200
+Date: Thu, 25 Apr 2019 11:45:04 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 24/29] tracing: Remove the last struct stack_trace usage
+Subject: [patch V3 11/29] fault-inject: Simplify stacktrace retrieval
 References: <20190425094453.875139013@linutronix.de>
 MIME-Version: 1.0
 Cc: Mike Snitzer <snitzer@redhat.com>, David Airlie <airlied@linux.ie>,
@@ -83,129 +83,45 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425094517.KOutepIkdkUXIqXR07Lz4g1_Ei4CTbICPcVPGOj2-sw@z>
+Message-ID: <20190425094504.b5zidLxdQoUXM2r2zL9MQILOtb6ERCU-GUaD6gB7DNA@z>
 
-Simplify the stack retrieval code by using the storage array based
-interface.
+Replace the indirection through struct stack_trace with an invocation of
+the storage array based interface.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>
 ---
- kernel/trace/trace_stack.c |   37 ++++++++++++++++---------------------
- 1 file changed, 16 insertions(+), 21 deletions(-)
+ lib/fault-inject.c |   12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
---- a/kernel/trace/trace_stack.c
-+++ b/kernel/trace/trace_stack.c
-@@ -23,11 +23,7 @@
- static unsigned long stack_dump_trace[STACK_TRACE_ENTRIES];
- static unsigned stack_trace_index[STACK_TRACE_ENTRIES];
+--- a/lib/fault-inject.c
++++ b/lib/fault-inject.c
+@@ -65,22 +65,16 @@ static bool fail_task(struct fault_attr
  
--struct stack_trace stack_trace_max = {
--	.max_entries		= STACK_TRACE_ENTRIES,
--	.entries		= &stack_dump_trace[0],
--};
--
-+static unsigned int stack_trace_entries;
- static unsigned long stack_trace_max_size;
- static arch_spinlock_t stack_trace_max_lock =
- 	(arch_spinlock_t)__ARCH_SPIN_LOCK_UNLOCKED;
-@@ -44,10 +40,10 @@ static void print_max_stack(void)
- 
- 	pr_emerg("        Depth    Size   Location    (%d entries)\n"
- 			   "        -----    ----   --------\n",
--			   stack_trace_max.nr_entries);
-+			   stack_trace_entries);
- 
--	for (i = 0; i < stack_trace_max.nr_entries; i++) {
--		if (i + 1 == stack_trace_max.nr_entries)
-+	for (i = 0; i < stack_trace_entries; i++) {
-+		if (i + 1 == stack_trace_entries)
- 			size = stack_trace_index[i];
- 		else
- 			size = stack_trace_index[i] - stack_trace_index[i+1];
-@@ -93,13 +89,12 @@ static void check_stack(unsigned long ip
- 
- 	stack_trace_max_size = this_size;
- 
--	stack_trace_max.nr_entries = 0;
--	stack_trace_max.skip = 0;
--
--	save_stack_trace(&stack_trace_max);
-+	stack_trace_entries = stack_trace_save(stack_dump_trace,
-+					       ARRAY_SIZE(stack_dump_trace) - 1,
-+					       0);
- 
- 	/* Skip over the overhead of the stack tracer itself */
--	for (i = 0; i < stack_trace_max.nr_entries; i++) {
-+	for (i = 0; i < stack_trace_entries; i++) {
- 		if (stack_dump_trace[i] == ip)
- 			break;
- 	}
-@@ -108,7 +103,7 @@ static void check_stack(unsigned long ip
- 	 * Some archs may not have the passed in ip in the dump.
- 	 * If that happens, we need to show everything.
- 	 */
--	if (i == stack_trace_max.nr_entries)
-+	if (i == stack_trace_entries)
- 		i = 0;
- 
- 	/*
-@@ -126,13 +121,13 @@ static void check_stack(unsigned long ip
- 	 * loop will only happen once. This code only takes place
- 	 * on a new max, so it is far from a fast path.
- 	 */
--	while (i < stack_trace_max.nr_entries) {
-+	while (i < stack_trace_entries) {
- 		int found = 0;
- 
- 		stack_trace_index[x] = this_size;
- 		p = start;
- 
--		for (; p < top && i < stack_trace_max.nr_entries; p++) {
-+		for (; p < top && i < stack_trace_entries; p++) {
- 			/*
- 			 * The READ_ONCE_NOCHECK is used to let KASAN know that
- 			 * this is not a stack-out-of-bounds error.
-@@ -163,7 +158,7 @@ static void check_stack(unsigned long ip
- 			i++;
- 	}
- 
--	stack_trace_max.nr_entries = x;
-+	stack_trace_entries = x;
- 
- 	if (task_stack_end_corrupted(current)) {
- 		print_max_stack();
-@@ -265,7 +260,7 @@ static void *
+ static bool fail_stacktrace(struct fault_attr *attr)
  {
- 	long n = *pos - 1;
+-	struct stack_trace trace;
+ 	int depth = attr->stacktrace_depth;
+ 	unsigned long entries[MAX_STACK_TRACE_DEPTH];
+-	int n;
++	int n, nr_entries;
+ 	bool found = (attr->require_start == 0 && attr->require_end == ULONG_MAX);
  
--	if (n >= stack_trace_max.nr_entries)
-+	if (n >= stack_trace_entries)
- 		return NULL;
+ 	if (depth == 0)
+ 		return found;
  
- 	m->private = (void *)n;
-@@ -329,7 +324,7 @@ static int t_show(struct seq_file *m, vo
- 		seq_printf(m, "        Depth    Size   Location"
- 			   "    (%d entries)\n"
- 			   "        -----    ----   --------\n",
--			   stack_trace_max.nr_entries);
-+			   stack_trace_entries);
- 
- 		if (!stack_tracer_enabled && !stack_trace_max_size)
- 			print_disabled(m);
-@@ -339,10 +334,10 @@ static int t_show(struct seq_file *m, vo
- 
- 	i = *(long *)v;
- 
--	if (i >= stack_trace_max.nr_entries)
-+	if (i >= stack_trace_entries)
- 		return 0;
- 
--	if (i + 1 == stack_trace_max.nr_entries)
-+	if (i + 1 == stack_trace_entries)
- 		size = stack_trace_index[i];
- 	else
- 		size = stack_trace_index[i] - stack_trace_index[i+1];
+-	trace.nr_entries = 0;
+-	trace.entries = entries;
+-	trace.max_entries = depth;
+-	trace.skip = 1;
+-
+-	save_stack_trace(&trace);
+-	for (n = 0; n < trace.nr_entries; n++) {
++	nr_entries = stack_trace_save(entries, depth, 1);
++	for (n = 0; n < nr_entries; n++) {
+ 		if (attr->reject_start <= entries[n] &&
+ 			       entries[n] < attr->reject_end)
+ 			return false;
 
 
 _______________________________________________
