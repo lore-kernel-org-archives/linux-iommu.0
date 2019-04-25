@@ -2,86 +2,73 @@ Return-Path: <SRS0=4mi1=S3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8E4C282CE
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 01:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA2ADC10F11
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 01:21:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 039B4214C6
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 01:19:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 039B4214C6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id BB4A5214C6
+	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 01:21:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB4A5214C6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AEF9618D2;
-	Thu, 25 Apr 2019 01:19:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9149118AF;
+	Thu, 25 Apr 2019 01:21:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 264E9183E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8AD941864
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 01:19:00 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
-	[209.85.160.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1F59182E
+	Thu, 25 Apr 2019 01:21:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B9E6682D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 01:18:59 +0000 (UTC)
-Received: by mail-qt1-f196.google.com with SMTP id w26so15855915qto.13
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Apr 2019 18:18:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to;
-	bh=gSdbl7tiCDChVFi/egk34T6hGKLdbLIMT0F6PPP6KJk=;
-	b=B71IHbZnFJt1BQD5fwpt6ZMmJV+55ZflSwgij3tSnZ1nnSoOlVsFnLpeINoCPgAHah
-	6LIuDepGPnYGZaJC7B3bnUMYTuzhlaB2DK0j6W5b0/AozIlzogDyS9DHx9JM6t8E2kjP
-	iWqJAZVV0YWjClLEp3kxAfe3ASGkBbCC5Wtzp4uQ7MiOmaDWdDW7ZtuUnGzaF/yCYm/U
-	4BwnZxZO8+dK5PPa2Ah4/XAw53NjlanqCbtv1JzY2O2ptipt/Irzjmszb2aiXxjlUAx+
-	sh567YqTX8EVFlNyJ45ofynaKXYv+NfXirzstLSousRY3XBhprJR7OPnOnSJfG+OdxWj
-	Xg7w==
-X-Gm-Message-State: APjAAAVQsPqKhy9LPm0HIfNvYBHwcgX3W3xwMgT/SF/HccFfvekSBDvr
-	qtOHbUNml4DYrIqu2q+dRlKQAA==
-X-Google-Smtp-Source: APXvYqxKlHSNlPqQN4XmzYneFKkJ/mvtPnQ1lM7Bwy+vkifcs/0Fs/s/gpyQh6mYewhWVUy9oqbl+w==
-X-Received: by 2002:aed:20c4:: with SMTP id 62mr26929160qtb.256.1556155138200; 
-	Wed, 24 Apr 2019 18:18:58 -0700 (PDT)
-Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net.
-	[173.76.105.71])
-	by smtp.gmail.com with ESMTPSA id e6sm9930128qtr.56.2019.04.24.18.18.55
-	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-	Wed, 24 Apr 2019 18:18:56 -0700 (PDT)
-Date: Wed, 24 Apr 2019 21:18:54 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Message-ID: <20190424210813-mutt-send-email-mst@kernel.org>
-References: <20190129134750-mutt-send-email-mst@kernel.org>
-	<877eefxvyb.fsf@morokweng.localdomain>
-	<20190204144048-mutt-send-email-mst@kernel.org>
-	<87ef71seve.fsf@morokweng.localdomain>
-	<20190320171027-mutt-send-email-mst@kernel.org>
-	<87tvfvbwpb.fsf@morokweng.localdomain>
-	<20190323165456-mutt-send-email-mst@kernel.org>
-	<87a7go71hz.fsf@morokweng.localdomain>
-	<20190419190258-mutt-send-email-mst@kernel.org>
-	<875zr228zf.fsf@morokweng.localdomain>
+	Thu, 25 Apr 2019 01:21:37 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	24 Apr 2019 18:21:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,391,1549958400"; d="scan'208";a="340564573"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by fmsmga006.fm.intel.com with ESMTP; 24 Apr 2019 18:21:35 -0700
+Subject: Re: [PATCH v2 3/7] iommu/vt-d: Expose ISA direct mapping region via
+	iommu_get_resv_regions
+To: Tom Murphy <tmurphy@arista.com>
+References: <0F0C82BE-86E5-4BAC-938C-6F7629E18D27@arista.com>
+	<83B82113-8AE5-4B0C-A079-F389520525BD@arista.com>
+	<F531CABB-FFDA-4E0A-A3D5-095FF338DD5A@arista.com>
+	<b6b3dda7-31e3-c1e8-16cb-07feb7d5431d@linux.intel.com>
+	<A489539F-4DD4-438A-AD9A-1A2F50404DB9@arista.com>
+	<fb1565dc-d991-acf9-e275-c0090f69f47e@linux.intel.com>
+	<445F31EA-20F3-481C-B1DF-8B163791FF8C@arista.com>
+	<cf43d26b-f1ee-8469-c17a-e5c412dcfeab@linux.intel.com>
+	<6C211BF1-B5A0-4821-AB42-092B573DE667@arista.com>
+	<8B1FC0C7-9BAC-498D-B1F0-0138EACF75C2@arista.com>
+	<ddcaa472-7bff-ddd3-0518-f2ba694b3279@linux.intel.com>
+	<9AECB54A-2DA7-4ABD-A9B5-0549E108D1AF@arista.com>
+	<abbfecda-8990-315c-ac7a-7f571e86aba2@linux.intel.com>
+	<1D51CB31-089A-4D71-A9C1-E54E50A56C46@arista.com>
+	<1b7d37da-5660-f635-cd2f-619e5573d35a@linux.intel.com>
+	<CAPL0++4w6TDf38fh6LwAADR1w3b+nO5G7rZFM3LjDE-B20zbow@mail.gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7faf596b-146a-465c-0837-7ed9595e5f0f@linux.intel.com>
+Date: Thu, 25 Apr 2019 09:15:24 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <875zr228zf.fsf@morokweng.localdomain>
-Cc: Mike Anderson <andmike@linux.ibm.com>,
-	Michael Roth <mdroth@linux.vnet.ibm.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
-	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	Paul Mackerras <paulus@ozlabs.org>,
-	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-	Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>
+In-Reply-To: <CAPL0++4w6TDf38fh6LwAADR1w3b+nO5G7rZFM3LjDE-B20zbow@mail.gmail.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,173 +81,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425011854.-JWkJjRWRStTvaKDv4n063kLAblUsr2VvJ5o-HfTXP4@z>
+Message-ID: <20190425011524.LJK1hiwo2b35QigyGtq4xksTcnMefxoqm84IDFbh53I@z>
 
-On Wed, Apr 24, 2019 at 10:01:56PM -0300, Thiago Jung Bauermann wrote:
-> 
-> Michael S. Tsirkin <mst@redhat.com> writes:
-> 
-> > On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
-> >>
-> >> Michael S. Tsirkin <mst@redhat.com> writes:
-> >>
-> >> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
-> >> >>
-> >> >> Michael S. Tsirkin <mst@redhat.com> writes:
-> >> >>
-> >> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
-> >> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
-> >> >> >> only ever try to access memory addresses that are supplied to it by the
-> >> >> >> guest, so all of the secure guest memory that the host cares about is
-> >> >> >> accessible:
-> >> >> >>
-> >> >> >>     If this feature bit is set to 0, then the device has same access to
-> >> >> >>     memory addresses supplied to it as the driver has. In particular,
-> >> >> >>     the device will always use physical addresses matching addresses
-> >> >> >>     used by the driver (typically meaning physical addresses used by the
-> >> >> >>     CPU) and not translated further, and can access any address supplied
-> >> >> >>     to it by the driver. When clear, this overrides any
-> >> >> >>     platform-specific description of whether device access is limited or
-> >> >> >>     translated in any way, e.g. whether an IOMMU may be present.
-> >> >> >>
-> >> >> >> All of the above is true for POWER guests, whether they are secure
-> >> >> >> guests or not.
-> >> >> >>
-> >> >> >> Or are you saying that a virtio device may want to access memory
-> >> >> >> addresses that weren't supplied to it by the driver?
-> >> >> >
-> >> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
-> >> >> > specific encrypted memory regions that driver has access to but device
-> >> >> > does not. that seems to violate the constraint.
-> >> >>
-> >> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
-> >> >> the device can ignore the IOMMU for all practical purposes I would
-> >> >> indeed say that the logic would apply to IOMMUs as well. :-)
-> >> >>
-> >> >> I guess I'm still struggling with the purpose of signalling to the
-> >> >> driver that the host may not have access to memory addresses that it
-> >> >> will never try to access.
-> >> >
-> >> > For example, one of the benefits is to signal to host that driver does
-> >> > not expect ability to access all memory. If it does, host can
-> >> > fail initialization gracefully.
-> >>
-> >> But why would the ability to access all memory be necessary or even
-> >> useful? When would the host access memory that the driver didn't tell it
-> >> to access?
-> >
-> > When I say all memory I mean even memory not allowed by the IOMMU.
-> 
-> Yes, but why? How is that memory relevant?
-
-It's relevant when driver is not trusted to only supply correct
-addresses. The feature was originally designed to support userspace
-drivers within guests.
-
-> >> >> >> >> > But the name "sev_active" makes me scared because at least AMD guys who
-> >> >> >> >> > were doing the sensible thing and setting ACCESS_PLATFORM
-> >> >> >> >>
-> >> >> >> >> My understanding is, AMD guest-platform knows in advance that their
-> >> >> >> >> guest will run in secure mode and hence sets the flag at the time of VM
-> >> >> >> >> instantiation. Unfortunately we dont have that luxury on our platforms.
-> >> >> >> >
-> >> >> >> > Well you do have that luxury. It looks like that there are existing
-> >> >> >> > guests that already acknowledge ACCESS_PLATFORM and you are not happy
-> >> >> >> > with how that path is slow. So you are trying to optimize for
-> >> >> >> > them by clearing ACCESS_PLATFORM and then you have lost ability
-> >> >> >> > to invoke DMA API.
-> >> >> >> >
-> >> >> >> > For example if there was another flag just like ACCESS_PLATFORM
-> >> >> >> > just not yet used by anyone, you would be all fine using that right?
-> >> >> >>
-> >> >> >> Yes, a new flag sounds like a great idea. What about the definition
-> >> >> >> below?
-> >> >> >>
-> >> >> >> VIRTIO_F_ACCESS_PLATFORM_NO_IOMMU This feature has the same meaning as
-> >> >> >>     VIRTIO_F_ACCESS_PLATFORM both when set and when not set, with the
-> >> >> >>     exception that the IOMMU is explicitly defined to be off or bypassed
-> >> >> >>     when accessing memory addresses supplied to the device by the
-> >> >> >>     driver. This flag should be set by the guest if offered, but to
-> >> >> >>     allow for backward-compatibility device implementations allow for it
-> >> >> >>     to be left unset by the guest. It is an error to set both this flag
-> >> >> >>     and VIRTIO_F_ACCESS_PLATFORM.
-> >> >> >
-> >> >> > It looks kind of narrow but it's an option.
-> >> >>
-> >> >> Great!
-> >> >>
-> >> >> > I wonder how we'll define what's an iommu though.
-> >> >>
-> >> >> Hm, it didn't occur to me it could be an issue. I'll try.
-> >>
-> >> I rephrased it in terms of address translation. What do you think of
-> >> this version? The flag name is slightly different too:
-> >>
-> >>
-> >> VIRTIO_F_ACCESS_PLATFORM_NO_TRANSLATION This feature has the same
-> >>     meaning as VIRTIO_F_ACCESS_PLATFORM both when set and when not set,
-> >>     with the exception that address translation is guaranteed to be
-> >>     unnecessary when accessing memory addresses supplied to the device
-> >>     by the driver. Which is to say, the device will always use physical
-> >>     addresses matching addresses used by the driver (typically meaning
-> >>     physical addresses used by the CPU) and not translated further. This
-> >>     flag should be set by the guest if offered, but to allow for
-> >>     backward-compatibility device implementations allow for it to be
-> >>     left unset by the guest. It is an error to set both this flag and
-> >>     VIRTIO_F_ACCESS_PLATFORM.
-> >
-> > Thanks, I'll think about this approach. Will respond next week.
-> 
-> Thanks!
-> 
-> >> >> > Another idea is maybe something like virtio-iommu?
-> >> >>
-> >> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
-> >> >> bypass? If so, it's an interesting idea for new guests but it doesn't
-> >> >> help with guests that are out today in the field, which don't have A
-> >> >> virtio-iommu driver.
-> >> >
-> >> > I presume legacy guests don't use encrypted memory so why do we
-> >> > worry about them at all?
-> >>
-> >> They don't use encrypted memory, but a host machine will run a mix of
-> >> secure and legacy guests. And since the hypervisor doesn't know whether
-> >> a guest will be secure or not at the time it is launched, legacy guests
-> >> will have to be launched with the same configuration as secure guests.
-> >
-> > OK and so I think the issue is that hosts generally fail if they set
-> > ACCESS_PLATFORM and guests do not negotiate it.
-> > So you can not just set ACCESS_PLATFORM for everyone.
-> > Is that the issue here?
-> 
-> Yes, that is one half of the issue. The other is that even if hosts
-> didn't fail, existing legacy guests wouldn't "take the initiative" of
-> not negotiating ACCESS_PLATFORM to get the improved performance. They'd
-> have to be modified to do that.
-
-So there's a non-encrypted guest, hypervisor wants to set
-ACCESS_PLATFORM to allow encrypted guests but that will slow down legacy
-guests since their vIOMMU emulation is very slow.
-
-So enabling support for encryption slows down non-encrypted guests. Not
-great but not the end of the world, considering even older guests that
-don't support ACCESS_PLATFORM are completely broken and you do not seem
-to be too worried by that.
-
-For future non-encrypted guests, bypassing the emulated IOMMU for when
-that emulated IOMMU is very slow might be solvable in some other way,
-e.g. with virtio-iommu. Which reminds me, could you look at
-virtio-iommu as a solution for some of the issues?
-Review of that patchset from that POV would be appreciated.
-
-> --
-> Thiago Jung Bauermann
-> IBM Linux Technology Center
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgVG9tLAoKT24gNC8yNS8xOSA3OjQ3IEFNLCBUb20gTXVycGh5IHdyb3RlOgo+IEkgY2FuIHNl
+ZSB0d28gcG90ZW50aWFsIHByb2JsZW1zIHdpdGggdGhlc2UgcGF0Y2hlcyB0aGF0IHNob3VsZCBi
+ZSBhZGRyZXNzZWQ6Cj4gCj4gVGhlIGRlZmF1bHQgZG9tYWluIG9mIGEgZ3JvdXAgY2FuIGJlIGNo
+YW5nZWQgdG8gdHlwZQo+IElPTU1VX0RPTUFJTl9JREVOVElUWSB2aWEgdGhlIGNvbW1hbmQgbGlu
+ZS4gV2l0aCB0aGVzZSBwYXRjaGVzIHdlIGFyZQo+IHJldHVybmluZyB0aGUgc2lfZG9tYWluIGZv
+ciB0eXBlIElPTU1VX0RPTUFJTl9JREVOVElUWS4gVGhlcmUncyBhCj4gY2hhbmNlIHRoZSBzaGFy
+ZWQgc2lfZG9tYWluIGNvdWxkIGJlIGZyZWVkIHdoaWxlIGl0IGlzIHN0aWxsIGJlaW5nCj4gdXNl
+ZCB3aGVuIGEgZ3JvdXAgaXMgZnJlZWQuIEZvciBleGFtcGxlIGhlcmUgaW4gdGhlCj4gaW9tbXVf
+Z3JvdXBfcmVsZWFzZToKPiBodHRwczovL2dpdGh1Yi5jb20vdG9ydmFsZHMvbGludXgvYmxvYi9j
+ZDhkZWFkMGMzOTQ1N2U1OGVjMWQzNmRiOTNhZWRjYTgxMWQ0OGYxL2RyaXZlcnMvaW9tbXUvaW9t
+bXUuYyNMMzc2Cj4gImlmIChncm91cC0+ZGVmYXVsdF9kb21haW4pCj4gICAgICBpb21tdV9kb21h
+aW5fZnJlZShncm91cC0+ZGVmYXVsdF9kb21haW4pOyIKPiAKPiBBbHNvIG5vdyB0aGF0IGEgZG9t
+YWluIGlzIGF0dGFjaGVkIHRvIGEgZGV2aWNlIGVhcmxpZXIgd2Ugc2hvdWxkCj4gaW1wbGVtZW50
+IHRoZSBpc19hdHRhY2hfZGVmZXJyZWQgY2FsbC1iYWNrIGFuZCB1c2UgaXQgdG8gZGVmZXIgdGhl
+Cj4gZG9tYWluIGF0dGFjaCBmcm9tIGlvbW11IGRyaXZlciBpbml0IHRvIGRldmljZSBkcml2ZXIg
+aW5pdCB3aGVuIGlvbW11Cj4gaXMgcHJlLWVuYWJsZWQgaW4ga2R1bXAga2VybmVsLiBsaWtlIGlu
+IHRoaXMgY29tbWl0Ogo+IGh0dHBzOi8vZ2l0aHViLmNvbS90b3J2YWxkcy9saW51eC9jb21taXQv
+ZGYzZjdhNmU4ZTg1NWU0ZmY1MzM1MDg4MDdjZDdjMzcyM2ZhYTUxZgo+IAoKQm90aCBhZ3JlZWQg
+YW5kIHNob3VsZCBiZSBjb25zaWRlcmVkIGR1cmluZyBkZXZlbG9wbWVudC4KCkJlc3QgcmVnYXJk
+cywKTHUgQmFvbHUKCj4gCj4gT24gVHVlLCBBcHIgMTYsIDIwMTkgYXQgMzoyNCBBTSBMdSBCYW9s
+dSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPiB3cm90ZToKPj4KPj4gSGkgSmFtZXMsCj4+Cj4+
+IE9uIDQvMTUvMTkgMTA6MTYgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPj4+IEhleSBMdSwKPj4+
+Cj4+Pj4gT24gMTAgQXByIDIwMTksIGF0IDA2OjIyLCBMdSBCYW9sdSA8YmFvbHUubHVAbGludXgu
+aW50ZWwuY29tPiB3cm90ZToKPj4+Pgo+Pj4+IEhpIEphbWVzLAo+Pj4+Cj4+Pj4gT24gNC82LzE5
+IDI6MDIgQU0sIEphbWVzIFNld2FydCB3cm90ZToKPj4+Pj4gSGV5IEx1LAo+Pj4+PiBNeSBiYWQs
+IGRpZCBzb21lIGRlYnVnZ2luZyBvbiBteSBlbmQuIFRoZSBpc3N1ZSB3YXMgc3dhcHBpbmcgb3V0
+Cj4+Pj4+IGZpbmRfZG9tYWluIGZvciBpb21tdV9nZXRfZG9tYWluX2Zvcl9kZXYuIEl0IHNlZW1z
+IGluIHNvbWUgc2l0dWF0aW9ucyB0aGUKPj4+Pj4gZG9tYWluIGlzIG5vdCBhdHRhY2hlZCB0byB0
+aGUgZ3JvdXAgYnV0IHRoZSBkZXZpY2UgaXMgZXhwZWN0ZWQgdG8gaGF2ZSB0aGUKPj4+Pj4gZG9t
+YWluIHN0aWxsIHN0b3JlZCBpbiBpdHMgYXJjaGRhdGEuCj4+Pj4+IEnigJl2ZSBhdHRhY2hlZCB0
+aGUgZmluYWwgcGF0Y2ggd2l0aCBmaW5kX2RvbWFpbiB1bnJlbW92ZWQgd2hpY2ggc2VlbXMgdG8K
+Pj4+Pj4gd29yayBpbiBteSB0ZXN0aW5nLgo+Pj4+Cj4+Pj4gSnVzdCBsb29rZWQgaW50byB5b3Vy
+IHYzIHBhdGNoIHNldCBhbmQgc29tZSB0aG91Z2h0cyBmcm9tIG15IGVuZCBwb3N0ZWQKPj4+PiBo
+ZXJlIGp1c3QgZm9yIHlvdXIgaW5mb3JtYXRpb24uCj4+Pj4KPj4+PiBMZXQgbWUgcG9zdCB0aGUg
+cHJvYmxlbXMgd2Ugd2FudCB0byBhZGRyZXNzLgo+Pj4+Cj4+Pj4gMS4gV2hlbiBhbGxvY2F0aW5n
+IGEgbmV3IGdyb3VwIGZvciBhIGRldmljZSwgaG93IHNob3VsZCB3ZSBkZXRlcm1pbmUgdGhlCj4+
+Pj4gdHlwZSBvZiB0aGUgZGVmYXVsdCBkb21haW4/Cj4+Pj4KPj4+PiAyLiBJZiB3ZSBuZWVkIHRv
+IHB1dCBhIGRldmljZSBpbnRvIGFuIGV4aXN0aW5nIGdyb3VwIHdoaWNoIHVzZXMgYQo+Pj4+IGRp
+ZmZlcmVudCB0eXBlIG9mIGRvbWFpbiBmcm9tIHdoYXQgdGhlIGRldmljZSBkZXNpcmVzIHRvIHVz
+ZSwgd2UgbWlnaHQKPj4+PiBicmVhayB0aGUgZnVuY3Rpb25hbGl0eSBvZiB0aGUgZGV2aWNlLgo+
+Pj4+Cj4+Pj4gTXkgbmV3IHRob3VnaHQgaXMgbGV0dGluZyB0aGUgaW9tbXUgZ2VuZXJpYyBjb2Rl
+IHRvIGRldGVybWluZSB0aGUKPj4+PiBkZWZhdWx0IGRvbWFpbiB0eXBlIChoZW5jZSBteSBwcm9w
+b3NlZCB2ZW5kb3Igc3BlY2lmaWMgZGVmYXVsdCBkb21haW4KPj4+PiB0eXBlIHBhdGNoZXMgY291
+bGQgYmUgZHJvcHBlZCkuCj4+Pj4KPj4+PiBJZiB0aGUgZGVmYXVsdCBkb21haW4gdHlwZSBpcyBk
+eW5hbWljYWwgbWFwcGluZywgYW5kIGxhdGVyIGluIGlvbW11X25vX21hcHBpbmcoKSwgd2UgZGV0
+ZXJtaW5lcyB0aGF0IHdlIG11c3QgdXNlIGFuIGlkZW50aXR5IGRvbWFpbiwKPj4+PiB3ZSB0aGVu
+IGNhbGwgaW9tbXVfcmVxdWVzdF9kbV9mb3JfZGV2KGRldikuCj4+Pj4KPj4+PiBJZiB0aGUgZGVm
+YXVsdCBkb21haW4gdHlwZSBpcyBpZGVudGl0eSBtYXBwaW5nLCBhbmQgbGF0ZXIgaW4KPj4+PiBp
+b21tdV9ub19tYXBwaW5nKCksIHdlIGRldGVybWluZWQgdGhhdCB3ZSBtdXN0IHVzZSBhIGR5bmFt
+aWNhbCBkb21haW4sCj4+Pj4gd2UgdGhlbiBjYWxsIGlvbW11X3JlcXVlc3RfZG1hX2RvbWFpbl9m
+b3JfZGV2KGRldikuCj4+Pj4KPj4+PiBXZSBhbHJlYWR5IGhhdmUgaW9tbXVfcmVxdWVzdF9kbV9m
+b3JfZGV2KCkgaW4gaW9tbXUuYy4gV2Ugb25seSBuZWVkIHRvCj4+Pj4gaW1wbGVtZW50IGlvbW11
+X3JlcXVlc3RfZG1hX2RvbWFpbl9mb3JfZGV2KCkuCj4+Pj4KPj4+PiBXaXRoIHRoaXMgZG9uZSwg
+eW91ciBwYXRjaCB0aXRsZWQgIkNyZWF0ZSBhbiBJT01NVSBncm91cCBmb3IgZGV2aWNlcwo+Pj4+
+IHRoYXQgcmVxdWlyZSBhbiBpZGVudGl0eSBtYXAiIGNvdWxkIGFsc28gYmUgZHJvcHBlZC4KPj4+
+Pgo+Pj4+IEFueSB0aG91Z2h0cz8KPj4+Cj4+PiBUaGVyZXMgYSBjb3VwbGUgaXNzdWVzIEkgY2Fu
+IHRoaW5rIG9mLiBpb21tdV9yZXF1ZXN0X2RtX2Zvcl9kZXYgY2hhbmdlcwo+Pj4gdGhlIGRvbWFp
+biBmb3IgYWxsIGRldmljZXMgd2l0aGluIHRoZSBkZXZpY2VzIGdyb3VwLCBpZiB3ZSBtYXkgaGF2
+ZQo+Pj4gZGV2aWNlcyB3aXRoIGRpZmZlcmVudCBkb21haW4gcmVxdWlyZW1lbnRzIGluIHRoZSBz
+YW1lIGdyb3VwIHRoZW4gb25seSB0aGUKPj4+IGxhc3QgaW5pdGlhbGlzZWQgZGV2aWNlIHdpbGwg
+Z2V0IHRoZSBkb21haW4gaXQgd2FudHMuIElmIHdlIHdhbnQgdG8gYWRkCj4+PiBpb21tdV9yZXF1
+ZXN0X2RtYV9kb21haW5fZm9yX2RldiB0aGVuIHdlIHdvdWxkIHN0aWxsIG5lZWQgYW5vdGhlciBJ
+T01NVQo+Pj4gZ3JvdXAgZm9yIGlkZW50aXR5IGRvbWFpbiBkZXZpY2VzLgo+Pgo+PiBDdXJyZW50
+IHNvbHV0aW9uIChhLmsuYS4gdjMpIGZvciB0aGlzIGlzIHRvIGFzc2lnbiBhIG5ldyBncm91cCB0
+byB0aGUKPj4gZGV2aWNlIHdoaWNoIHJlcXVpcmVzIGFuIGlkZW50aXR5IG1hcHBlZCBkb21haW4u
+IFRoaXMgd2lsbCBicmVhayB0aGUKPj4gZnVuY3Rpb25hbGl0eSBvZiBkZXZpY2UgZGlyZWN0IHBh
+c3MtdGhyb3VnaCAodG8gdXNlciBsZXZlbCkuIFRoZSBpb21tdQo+PiBncm91cCByZXByZXNlbnRz
+IHRoZSBtaW5pbXVtIGdyYW51bGFyaXR5IG9mIGlvbW11IGlzb2xhdGlvbiBhbmQKPj4gcHJvdGVj
+dGlvbi4gVGhlIHJlcXVpcmVtZW50IG9mIGlkZW50aXR5IG1hcHBlZCBkb21haW4gc2hvdWxkIG5v
+dCBiZSBhCj4+IGZhY3RvciBmb3IgYSBuZXcgZ3JvdXAuCj4+Cj4+IEJvdGggaW9tbV9yZXF1ZXN0
+X2RtYV9kb21haW5fZm9yX2RldigpIG9yIGlvbW11X3JlcXVlc3RfZG1fZm9yX2RldigpCj4+IG9u
+bHkgc3VwcG9ydCBncm91cHMgd2l0aCBhIHNpbmdsZSBkZXZpY2UgaW4gaXQuCj4+Cj4+IFRoZSB1
+c2VycyBjb3VsZCBjaG9vc2UgYmV0d2VlbiBkb21haW5zIG9mIERNQSB0eXBlIG9yIElERU5USVRZ
+IHR5cGUgZm9yCj4+IGEgZ3JvdXAuIElmIG11bHRpcGxlIGRldmljZXMgc2hhcmUgYSBzaW5nbGUg
+Z3JvdXAgYW5kIGJvdGggZG9uJ3Qgd29yawo+PiBmb3IgdGhlbSwgdGhleSBoYXZlIHRvIGRpc2Fi
+bGUgdGhlIElPTU1VLiBUaGlzIGlzbid0IGEgdmFsaWQKPj4gY29uZmlndXJhdGlvbiBmcm9tIElP
+TU1VJ3MgcG9pbnQgb2Ygdmlldy4KPj4KPj4+Cj4+PiBCb3RoIHdpdGggdjMgYW5kIHRoZSBwcm9w
+b3NlZCBtZXRob2QgaGVyZSwgaW9tbXVfc2hvdWxkX2lkZW50aXR5X21hcCBpcwo+Pj4gZGV0ZXJt
+aW5pbmcgd2hldGhlciB0aGUgZGV2aWNlIHJlcXVpcmVzIGFuIGlkZW50aXR5IG1hcC4gSW4gdjMg
+dGhpcyBpcwo+Pj4gY2FsbGVkIG9uY2UgdXAgZnJvbnQgYnkgdGhlIGdlbmVyaWMgY29kZSB0byBk
+ZXRlcm1pbmUgZm9yIHRoZSBJT01NVSBncm91cAo+Pj4gd2hpY2ggZG9tYWluIHR5cGUgdG8gdXNl
+LiBJbiB0aGUgcHJvcG9zZWQgbWV0aG9kIEkgdGhpbmsgdGhpcyB3b3VsZCBoYXBwZW4KPj4+IGFm
+dGVyIGluaXRpYWwgZG9tYWluIGFsbG9jYXRpb24gYW5kIHdvdWxkIHRyaWdnZXIgdGhlIGRvbWFp
+biB0byBiZQo+Pj4gcmVwbGFjZWQgd2l0aCBhIGRpZmZlcmVudCBkb21haW4uCj4+Pgo+Pj4gSSBw
+cmVmZXIgdGhlIHNvbHV0aW9uIGluIHYzLiBXaGF0IGRvIHlvdSB0aGluaz8KPj4KPj4gVGhlIG9u
+bHkgY29uY2VybiBvZiBzb2x1dGlvbiBpbiB2MyBmcm9tIG15IHBvaW50IG9mIHZpZXcgaXMgc29t
+ZSBraW5kIG9mCj4+IGR1cGxpY2F0aW9uLiBFdmVuIHdlIGNhbiBhc2sgdGhlIEludGVsIElPTU1V
+IGRyaXZlciB0byB0ZWxsIHRoZSBkZWZhdWx0Cj4+IGRvbWFpbiB0eXBlLCB3ZSBtaWdodCBjaGFu
+Z2UgaXQgYWZ0ZXIgYm9vdCB1cC4gRm9yIGV4YW1wbGUsIGZvciAzMi1iaXQKPj4gcGNpIGRldmlj
+ZXMsIHdlIGRvbid0IGtub3cgd2hldGhlciBpdCdzIDY0LWJpdCBvciAzMi1iaXQgY2FwYWJsZSBk
+dXJpbmcKPj4gSU9NTVUgaW5pdGlhbGl6YXRpb24sIHNvIHdlIG1pZ2h0IHRlbGwgaW9tbXUuYyB0
+byB1c2UgaWRlbnRpdHkgbWFwcGVkCj4+IGRvbWFpbi4gQWZ0ZXIgYm9vdCB1cCwgd2UgY2hlY2sg
+aXQgYWdhaW4sIGFuZCBmaW5kIG91dCB0aGF0IGl0J3Mgb25seQo+PiAzMi1iaXQgY2FwYWJsZSAo
+aGVuY2Ugb25seSBjYW4gYWNjZXNzIHBoeXNpY2FsIG1lbW9yeSBiZWxvdyA0RykgYW5kIHRoZQo+
+PiBkZWZhdWx0IGlkZW50aXR5IGRvbWFpbiBkb2Vzbid0IHdvcmsuIEFuZCB3ZSBoYXZlIHRvIGNo
+YW5nZSBpdCB0byBETUEKPj4gZG9tYWluIHZpYSBpb21tdV9yZXF1ZXN0X2RtYV9kb21haW5fZm9y
+X2RldigpLgo+Pgo+PiBTbyB0byBtYWtlIGl0IHNpbXBsZSBhbmQgc3RyYWlnaHQtZm9yd2FyZCwg
+d2UgY2FuIGp1c3QgbGV0IGlvbW11LmMgdG8KPj4gZGV0ZXJtaW5lIHRoZSBkZWZhdWx0IGRvbWFp
+biB0eXBlIGFuZCBhZnRlciB0aGF0IHRoZSBJbnRlbCBJT01NVSBkcml2ZXIKPj4gY291bGQgdHdl
+YWsgaXQgYWNjb3JkaW5nIHRvIHRoZSBxdWlyayBiaXRzIGluIHRoZSBkcml2ZXIuCj4+Cj4+IEJl
+c3QgcmVnYXJkcywKPj4gTHUgQmFvbHUKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2lvbW11
