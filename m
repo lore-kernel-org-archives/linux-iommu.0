@@ -1,40 +1,53 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: Re: [RFC PATCH] dma-mapping: create iommu mapping for newly allocated
- dma coherent mem
-Date: Thu, 25 Apr 2019 11:30:54 +0000
-Message-ID: <b9f2b425-dde9-f9a1-b8fa-b7710e764b16@nxp.com>
-References: <20190422165125.21704-1-laurentiu.tudor@nxp.com>
- <20190422181100.GB32490@lst.de>
- <VI1PR04MB513407A66107759EC0DFE175EC230@VI1PR04MB5134.eurprd04.prod.outlook.com>
- <20190424145705.GB21480@lst.de>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v2 02/19] iommu: introduce device fault data
+Date: Thu, 25 Apr 2019 13:46:43 +0100
+Message-ID: <f444a689-4941-524e-1d4b-c090390d5b5d@arm.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1556062279-64135-3-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190424145705.GB21480@lst.de>
+In-Reply-To: <1556062279-64135-3-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Language: en-US
-Content-ID: <C3DAFF8A2E6710478B0D4E110DCF3AE3@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Leo Li <leoyang.li@nxp.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Eric Auger <eric.auger@redhat.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Yi L <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQ2hyaXN0b3BoLA0KDQpPbiAyNC4wNC4yMDE5IDE3OjU3LCBDaHJpc3RvcGggSGVsbHdpZyB3
-cm90ZToNCj4gSSdkIGJlIGhhcHB5IHRvIG9mZmxvYWQgYWxsIG9mIHRoZSBtZW50aW9uZWQgdGFz
-a3MgdG8geW91IGlmIHlvdQ0KPiB2b2x1bnRlZXIuDQoNCkFscmlnaHQsIEkgdGhpbmsgSSBtb3N0
-bHkgZ290IGl0IGFuZCBjYW4gc3RhcnQgd2l0aCB0aGUgdHdvIHVzYiBkcml2ZXJzIA0KeW91IG1l
-bnRpb25lZC4gSnVzdCBuZWVkIGEgZmV3IGNsYXJpZmljYXRpb25zLCBwbGVhc2Ugc2VlIGlubGlu
-ZS4NCg0KPiBJIHRoaW5rIHRoZSBmaXJzdCBzdGVwIGlzIHRvIG1vdmUgdGhlIHR3byBVU0IgY29u
-dHJvbGxlciB0aGF0IGNhbiBvbmx5DQo+IERNQSB0byB0aGVpciBvd24gQkFSIG9mZiB0aGUgZXhp
-c3RpbmcgRE1BIGNvaGVyZW50IGluZnJhc3RydWN0dXJlLiAgVGhlDQo+IGNvbnRyb2xsZXJzIGFy
-ZSBhbHJlYWR5IGlkZW50aWZpZWQgdXNpbmcgdGhlIEhDRF9MT0NBTF9NRU0gZmxhZywgc28gd2UN
-Cj4ganVzdCBuZWVkIHRvIGtleSBvZmYgdGhhdCBpbiB0aGUgaGNkX2J1ZmZlcl8qIHJvdXRpbmVz
-IGFuZCBjYWxsIGludG8gYQ0KDQpTbyBpZiBIQ0RfTE9DQUxfTUVNIGlzIHNldCBJIHNob3VsZCBj
-YWxsIGludG8gdGhlIGdlbl9wb29sIGFwaSBpbnN0ZWFkIA0Kb2YgZXhpc3RpbmcgZG1hX3thbGxv
-YyxmcmVlfV9jb2hlcmVudCgpLg0KDQo+IGdlbmFsbG9jIHRoYXQgaGFzIGJlZW4gZmVkIHVzaW5n
-IHRoZSBiYXIsIHJlcGxhY2luZyB0aGUgY3VycmVudA0KPiBkbWFfZGVjbGFyZV9jb2hlcmVudCB1
-c2FnZS4gIFRha2UgYSBsb29rIGF0IGRyaXZlcnMvcGNpL3AycGRtYS5jDQo+IGZvciBhbm90aGVy
-IGV4YW1wbGUgb2YgYWxsb2NhdGluZyBiaXRzIG9mIGEgQkFSIHVzaW5nIGdlbmFsbG9jLg0KDQpX
-aGVyZSBzaG91bGQgSSBwbGFjZSB0aGUgcmVmZXJlbmNlIHRvIHRoZSBnZW5fcG9vbD8gSG93IGRv
-ZXMgbG9jYWxfcG9vbCANCmluICdzdHJ1Y3QgaGNkX3VzYicgc291bmQ/DQoNCi0tLQ0KVGhhbmtz
-ICYgQmVzdCBSZWdhcmRzLCBMYXVyZW50aXU=
+On 24/04/2019 00:31, Jacob Pan wrote:
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> new file mode 100644
+> index 0000000..edcc0dd
+> --- /dev/null
+> +++ b/include/uapi/linux/iommu.h
+> @@ -0,0 +1,115 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +/*
+> + * IOMMU user API definitions
+> + */
+> +
+> +#ifndef _UAPI_IOMMU_H
+> +#define _UAPI_IOMMU_H
+> +
+> +#include <linux/types.h>
+> +
+> +#define IOMMU_FAULT_PERM_WRITE	(1 << 0) /* write */
+> +#define IOMMU_FAULT_PERM_EXEC	(1 << 1) /* exec */
+> +#define IOMMU_FAULT_PERM_PRIV	(1 << 2) /* privileged */
+
+Could we add IOMMU_FAULT_PERM_READ back? The PRI Page Request has both R
+and W fields, and R=W=0 encodes the PASID Stop Markers. Even though the
+IOMMU drivers currently filter out the Stop Markers, we may want to
+inject them into guests at some point in the future, which wouldn't be
+possible with the current API. We could add a
+IOMMU_FAULT_PAGE_REQUEST_PERM_VALID bit instead, but I still find it
+weird to denote the validity of a bitfield using a separate bit.
+
+Given that three different series now rely on this, how about we send
+the fault patches separately for v5.2? I pushed the recoverable fault
+support applied on top of this, with the PERM_READ bit and cleaned up
+kernel doc, to git://linux-arm.org/linux-jpb.git sva/api
+
+Thanks,
+Jean
