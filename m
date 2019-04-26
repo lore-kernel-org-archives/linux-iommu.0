@@ -1,192 +1,142 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 14/19] iommu: Add guest PASID bind function
-Date: Fri, 26 Apr 2019 15:11:22 -0700
-Message-ID: <20190426151122.528101b6@jacob-builder>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1556062279-64135-15-git-send-email-jacob.jun.pan@linux.intel.com>
-        <35194a94-ed09-d086-8725-f7e1bdfbb877@redhat.com>
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Date: Fri, 26 Apr 2019 20:56:43 -0300
+Message-ID: <871s1o1ft0.fsf@morokweng.localdomain>
+References: <20190129134750-mutt-send-email-mst@kernel.org> <877eefxvyb.fsf@morokweng.localdomain> <20190204144048-mutt-send-email-mst@kernel.org> <87ef71seve.fsf@morokweng.localdomain> <20190320171027-mutt-send-email-mst@kernel.org> <87tvfvbwpb.fsf@morokweng.localdomain> <20190323165456-mutt-send-email-mst@kernel.org> <87a7go71hz.fsf@morokweng.localdomain> <20190419190258-mutt-send-email-mst@kernel.org> <875zr228zf.fsf@morokweng.localdomain> <20190424210813-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <35194a94-ed09-d086-8725-f7e1bdfbb877@redhat.com>
+In-reply-to: <20190424210813-mutt-send-email-mst@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Michael Roth <mdroth@linux.vnet.ibm.com>, Mike Anderson <andmike@linux.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 26 Apr 2019 17:53:43 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
 
-> Hi Jacob,
-> 
-> On 4/24/19 1:31 AM, Jacob Pan wrote:
-> > Guest shared virtual address (SVA) may require host to shadow guest
-> > PASID tables. Guest PASID can also be allocated from the host via
-> > enlightened interfaces. In this case, guest needs to bind the guest
-> > mm, i.e. cr3 in guest phisical address to the actual PASID table
-> > in  
-> physical
-got it
+Michael S. Tsirkin <mst@redhat.com> writes:
 
-> > the host IOMMU. Nesting will be turned on such that guest virtual
-> > address can go through a two level translation:
-> > - 1st level translates GVA to GPA
-> > - 2nd level translates GPA to HPA
-> > This patch introduces APIs to bind guest PASID data to the assigned
-> > device entry in the physical IOMMU. See the diagram below for usage
-> > explaination.
-> > 
-> >     .-------------.  .---------------------------.
-> >     |   vIOMMU    |  | Guest process mm, FL only |
-> >     |             |  '---------------------------'
-> >     .----------------/
-> >     | PASID Entry |--- PASID cache flush -
-> >     '-------------'                       |
-> >     |             |                       V
-> >     |             |
-> >     '-------------'
-> > Guest
-> > ------| Shadow |--------------------------|------------
-> >       v        v                          v
-> > Host
-> >     .-------------.  .----------------------.
-> >     |   pIOMMU    |  | Bind FL for GVA-GPA  |
-> >     |             |  '----------------------'
-> >     .----------------/  |
-> >     | PASID Entry |     V (Nested xlate)
-> >     '----------------\.---------------------.
-> >     |             |   |Set SL to GPA-HPA    |
-> >     |             |   '---------------------'
-> >     '-------------'
-> > 
-> > Where:
-> >  - FL = First level/stage one page tables
-> >  - SL = Second level/stage two page tables
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > ---
-> >  drivers/iommu/iommu.c      | 20 ++++++++++++++++++++
-> >  include/linux/iommu.h      | 10 ++++++++++
-> >  include/uapi/linux/iommu.h | 15 ++++++++++++++-
-> >  3 files changed, 44 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 498c28a..072f8f3 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -1561,6 +1561,26 @@ int iommu_cache_invalidate(struct
-> > iommu_domain *domain, struct device *dev, }
-> >  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
-> >  
-> > +int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-> > +			struct device *dev, struct
-> > gpasid_bind_data *data) +{
-> > +	if (unlikely(!domain->ops->sva_bind_gpasid))
-> > +		return -ENODEV;
-> > +
-> > +	return domain->ops->sva_bind_gpasid(domain, dev, data);
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
-> > +
-> > +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct
-> > device *dev,
-> > +			int pasid)
-> > +{
-> > +	if (unlikely(!domain->ops->sva_unbind_gpasid))
-> > +		return -ENODEV;
-> > +
-> > +	return domain->ops->sva_unbind_gpasid(dev, pasid);
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
-> > +
-> >  static void __iommu_detach_device(struct iommu_domain *domain,
-> >  				  struct device *dev)
-> >  {
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index 4b92e4b..611388e 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -231,6 +231,8 @@ struct iommu_sva_ops {
-> >   * @detach_pasid_table: detach the pasid table
-> >   * @cache_invalidate: invalidate translation caches
-> >   * @pgsize_bitmap: bitmap of all possible supported page sizes
-> > + * @sva_bind_gpasid: bind guest pasid and mm
-> > + * @sva_unbind_gpasid: unbind guest pasid and mm
-> >   */
-> >  struct iommu_ops {
-> >  	bool (*capable)(enum iommu_cap);
-> > @@ -295,6 +297,10 @@ struct iommu_ops {
-> >  
-> >  	int (*cache_invalidate)(struct iommu_domain *domain,
-> > struct device *dev, struct iommu_cache_invalidate_info *inv_info);
-> > +	int (*sva_bind_gpasid)(struct iommu_domain *domain,
-> > +			struct device *dev, struct
-> > gpasid_bind_data *data); +
-> > +	int (*sva_unbind_gpasid)(struct device *dev, int pasid);  
-> So I am confused now. As the scalable mode PASID table entry contains
-> both the FL and SL PT pointers, will you ever use the
-> attach/detach_pasid_table or are we the only known users on ARM?
-> 
-In scalable mode, we will not use attach pasid table. So ARM will be
-the only user for now.
-Guest PASID table is shadowed, PASID cache flush in the guest will
-trigger sva_bind_gpasid.
-I introduced bind PASID table for the previous VT-d spec that has
-extend context mode (deprecated), where SL is shared by all PASIDs on 
-the same device.
-> >  
-> >  	unsigned long pgsize_bitmap;
-> >  };
-> > @@ -409,6 +415,10 @@ extern void iommu_detach_pasid_table(struct
-> > iommu_domain *domain); extern int iommu_cache_invalidate(struct
-> > iommu_domain *domain, struct device *dev,
-> >  				  struct
-> > iommu_cache_invalidate_info *inv_info); +extern int
-> > iommu_sva_bind_gpasid(struct iommu_domain *domain,
-> > +		struct device *dev, struct gpasid_bind_data *data);
-> > +extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> > +				struct device *dev, int pasid);  
-> definition in !CONFIG_IOMMU_API case?
-right
+> On Wed, Apr 24, 2019 at 10:01:56PM -0300, Thiago Jung Bauermann wrote:
+>>
+>> Michael S. Tsirkin <mst@redhat.com> writes:
+>>
+>> > On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
+>> >>
+>> >> Michael S. Tsirkin <mst@redhat.com> writes:
+>> >>
+>> >> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
+>> >> >>
+>> >> >> Michael S. Tsirkin <mst@redhat.com> writes:
+>> >> >>
+>> >> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
+>> >> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
+>> >> >> >> only ever try to access memory addresses that are supplied to it by the
+>> >> >> >> guest, so all of the secure guest memory that the host cares about is
+>> >> >> >> accessible:
+>> >> >> >>
+>> >> >> >>     If this feature bit is set to 0, then the device has same access to
+>> >> >> >>     memory addresses supplied to it as the driver has. In particular,
+>> >> >> >>     the device will always use physical addresses matching addresses
+>> >> >> >>     used by the driver (typically meaning physical addresses used by the
+>> >> >> >>     CPU) and not translated further, and can access any address supplied
+>> >> >> >>     to it by the driver. When clear, this overrides any
+>> >> >> >>     platform-specific description of whether device access is limited or
+>> >> >> >>     translated in any way, e.g. whether an IOMMU may be present.
+>> >> >> >>
+>> >> >> >> All of the above is true for POWER guests, whether they are secure
+>> >> >> >> guests or not.
+>> >> >> >>
+>> >> >> >> Or are you saying that a virtio device may want to access memory
+>> >> >> >> addresses that weren't supplied to it by the driver?
+>> >> >> >
+>> >> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
+>> >> >> > specific encrypted memory regions that driver has access to but device
+>> >> >> > does not. that seems to violate the constraint.
+>> >> >>
+>> >> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
+>> >> >> the device can ignore the IOMMU for all practical purposes I would
+>> >> >> indeed say that the logic would apply to IOMMUs as well. :-)
+>> >> >>
+>> >> >> I guess I'm still struggling with the purpose of signalling to the
+>> >> >> driver that the host may not have access to memory addresses that it
+>> >> >> will never try to access.
+>> >> >
+>> >> > For example, one of the benefits is to signal to host that driver does
+>> >> > not expect ability to access all memory. If it does, host can
+>> >> > fail initialization gracefully.
+>> >>
+>> >> But why would the ability to access all memory be necessary or even
+>> >> useful? When would the host access memory that the driver didn't tell it
+>> >> to access?
+>> >
+>> > When I say all memory I mean even memory not allowed by the IOMMU.
+>>
+>> Yes, but why? How is that memory relevant?
+>
+> It's relevant when driver is not trusted to only supply correct
+> addresses. The feature was originally designed to support userspace
+> drivers within guests.
 
-> >  extern struct iommu_domain *iommu_get_domain_for_dev(struct device
-> > *dev); extern struct iommu_domain *iommu_get_dma_domain(struct
-> > device *dev); extern int iommu_map(struct iommu_domain *domain,
-> > unsigned long iova, diff --git a/include/uapi/linux/iommu.h
-> > b/include/uapi/linux/iommu.h index 61a3fb7..5c95905 100644
-> > --- a/include/uapi/linux/iommu.h
-> > +++ b/include/uapi/linux/iommu.h
-> > @@ -235,6 +235,19 @@ struct iommu_cache_invalidate_info {
-> >  		struct iommu_inv_addr_info addr_info;
-> >  	};
-> >  };
-> > -
-> > +/**
-> > + * struct gpasid_bind_data - Information about device and guest
-> > PASID binding
-> > + * @gcr3:	Guest CR3 value from guest mm
-> > + * @pasid:	Process address space ID used for the guest mm
-> > + * @addr_width:	Guest address width. Paging mode can also
-> > be derived.
-> > + */
-> > +struct gpasid_bind_data {
-> > +	__u64 gcr3;
-> > +	__u32 pasid;
-> > +	__u32 addr_width;
-> > +	__u32 flags;
-> > +#define	IOMMU_SVA_GPASID_SRE	BIT(0) /* supervisor
-> > request */
-> > +	__u8 padding[4];
-> > +};  
-> 
-> 
-> Thanks
-> 
-> Eric
-> >  
-> >  #endif /* _UAPI_IOMMU_H */
-> >   
+Ah, thanks for clarifying. I don't think that's a problem in our case.
+If the guest provides an incorrect address, the hardware simply won't
+allow the host to access it.
 
-[Jacob Pan]
+>> >> >> > Another idea is maybe something like virtio-iommu?
+>> >> >>
+>> >> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
+>> >> >> bypass? If so, it's an interesting idea for new guests but it doesn't
+>> >> >> help with guests that are out today in the field, which don't have A
+>> >> >> virtio-iommu driver.
+>> >> >
+>> >> > I presume legacy guests don't use encrypted memory so why do we
+>> >> > worry about them at all?
+>> >>
+>> >> They don't use encrypted memory, but a host machine will run a mix of
+>> >> secure and legacy guests. And since the hypervisor doesn't know whether
+>> >> a guest will be secure or not at the time it is launched, legacy guests
+>> >> will have to be launched with the same configuration as secure guests.
+>> >
+>> > OK and so I think the issue is that hosts generally fail if they set
+>> > ACCESS_PLATFORM and guests do not negotiate it.
+>> > So you can not just set ACCESS_PLATFORM for everyone.
+>> > Is that the issue here?
+>>
+>> Yes, that is one half of the issue. The other is that even if hosts
+>> didn't fail, existing legacy guests wouldn't "take the initiative" of
+>> not negotiating ACCESS_PLATFORM to get the improved performance. They'd
+>> have to be modified to do that.
+>
+> So there's a non-encrypted guest, hypervisor wants to set
+> ACCESS_PLATFORM to allow encrypted guests but that will slow down legacy
+> guests since their vIOMMU emulation is very slow.
+
+Yes.
+
+> So enabling support for encryption slows down non-encrypted guests. Not
+> great but not the end of the world, considering even older guests that
+> don't support ACCESS_PLATFORM are completely broken and you do not seem
+> to be too worried by that.
+
+Well, I guess that would be the third half of the issue. :-)
+
+> For future non-encrypted guests, bypassing the emulated IOMMU for when
+> that emulated IOMMU is very slow might be solvable in some other way,
+> e.g. with virtio-iommu. Which reminds me, could you look at
+> virtio-iommu as a solution for some of the issues?
+> Review of that patchset from that POV would be appreciated.
+
+Yes, I will have a look. As you mentioned already, virtio-iommu doesn't
+define a way to request iommu bypass for a device so that would have to
+be added.
+
+Though to be honest in practice I don't think such a feature in
+virtio-iommu would make things easier for us, at least in the short
+term. It would take the same effort to define a powerpc-specific
+hypercall to accomplish the same thing (easier, in fact since we
+wouldn't have to implement the rest of virtio-iommu). In fact, there
+already is such hypercall, but it is only defined for VIO devices
+(RTAS_IBM_SET_TCE_BYPASS in QEMU). We would have to make it work on
+virtio devices as well.
+
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
