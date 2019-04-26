@@ -1,28 +1,55 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 5.2
-Date: Fri, 26 Apr 2019 15:50:11 +0200
-Message-ID: <20190426135011.GF24576@8bytes.org>
-References: <20190424115252.GB14829@fuggles.cambridge.arm.com>
+Subject: Re: [PATCH v1] iommu/amd: flush not present cache in iommu_map_page
+Date: Fri, 26 Apr 2019 16:04:29 +0200
+Message-ID: <20190426140429.GG24576@8bytes.org>
+References: <20190424165051.13614-1-tmurphy@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190424115252.GB14829@fuggles.cambridge.arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: marc.w.gonzalez@free.fr, jean-philippe.brucker@arm.com, dianders@chromium.org, iommu@lists.linux-foundation.org, vivek.gautam@codeaurora.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190424165051.13614-1-tmurphy@arista.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tom Murphy <tmurphy@arista.com>
+Cc: iommu@lists.linux-foundation.org, murphyt7@tcd.ie, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 24, 2019 at 12:52:52PM +0100, Will Deacon wrote:
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+On Wed, Apr 24, 2019 at 05:50:51PM +0100, Tom Murphy wrote:
+> check if there is a not-present cache present and flush it if there is.
+> 
+> Signed-off-by: Tom Murphy <tmurphy@arista.com>
+> ---
+>  drivers/iommu/amd_iommu.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index f7cdd2ab7f11..91fe5cb10f50 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -1637,6 +1637,11 @@ static int iommu_map_page(struct protection_domain *dom,
+>  
+>  	update_domain(dom);
+>  
+> +	if (unlikely(amd_iommu_np_cache && !dom->updated)) {
+> +		domain_flush_pages(dom, bus_addr, page_size);
+> +		domain_flush_complete(dom);
+> +	}
+> +
 
-Pulled, thanks Will.
+The iommu_map_page function is called once per physical page that is
+mapped, so in the worst case for every 4k mapping established. So it is
+not the right place to put this check in.
+
+>From a quick glance this check belongs into the map_sg() and the
+amd_iommu_map() function, but without the dom->updated check.
+
+Besides, to really support systems with np-cache in a way that doesn't
+destroy all performance, the driver also needs range-flushes for IOTLBs.
+Currently it can only flush a 4k page of the full address space of a
+domain. But that doesn't mean we shouldn't fix the missing flushes now.
+
+So please re-send the patch with the check at the two places I pointed
+out above.
+
+Thanks,
+
+	Joerg
