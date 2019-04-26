@@ -2,48 +2,61 @@ Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3828C43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 506EFC43219
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:06:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9856206E0
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:04:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9856206E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2AD09206E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:06:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2AD09206E0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7DA6C27F0;
-	Fri, 26 Apr 2019 15:04:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E325F27F3;
+	Fri, 26 Apr 2019 15:06:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F418727E6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6E81127E6
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 15:02:45 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9566282A
+	Fri, 26 Apr 2019 15:03:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 643BA74A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 15:02:45 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id E1FA7D91; Fri, 26 Apr 2019 17:02:43 +0200 (CEST)
-Date: Fri, 26 Apr 2019 17:02:42 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Tom Murphy <tmurphy@arista.com>
-Subject: Re: [PATCH] Remove old no iommu direct mapping code
-Message-ID: <20190426150242.GL24576@8bytes.org>
-References: <20190423200335.3888-1-tmurphy@arista.com>
+	Fri, 26 Apr 2019 15:03:02 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	26 Apr 2019 08:03:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,397,1549958400"; d="scan'208";a="134637354"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga007.jf.intel.com with ESMTP; 26 Apr 2019 08:03:01 -0700
+Date: Fri, 26 Apr 2019 08:05:45 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v2 09/19] iommu/vt-d: Enlightened PASID allocation
+Message-ID: <20190426080545.485a4124@jacob-builder>
+In-Reply-To: <8e063ce8-e5bb-5de8-f243-852c7a692c98@redhat.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556062279-64135-10-git-send-email-jacob.jun.pan@linux.intel.com>
+	<143adac1-d58b-dde6-593b-74ea71da73c8@redhat.com>
+	<20190425164017.6aed942e@jacob-builder>
+	<8e063ce8-e5bb-5de8-f243-852c7a692c98@redhat.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190423200335.3888-1-tmurphy@arista.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	murphyt7@tcd.ie
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,26 +73,24 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426150242.LCfdyR0WTKqxs4Y3X7e3RC0OqTlXpzV43egsc74VXTc@z>
+Message-ID: <20190426150545.TmZbp9-eYyuQ6llW42H7ArMniPqYxn4ZipMl3vKoquc@z>
 
-On Tue, Apr 23, 2019 at 09:03:34PM +0100, Tom Murphy wrote:
-> These checks were intended to handle devices not mapped by the IOMMU.
-> Since the AMD IOMMU driver uses per-device dma_ops these functions can
-> no longer be called by direct mapped devices. So these checks aren't
-> needed anymore.
-> 
-> Signed-off-by: Tom Murphy <tmurphy@arista.com>
-> ---
->  drivers/iommu/amd_iommu.c | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
+On Fri, 26 Apr 2019 09:24:29 +0200
+Auger Eric <eric.auger@redhat.com> wrote:
 
-This has already been done by Christoph, see
+> > Agreed  
+> >>> +#define VCMD_VRSP_RESULE(e)		(((e) >> 8) &
+> >>> 0xfffff)    
+> >> nit: s/RESULE/RSLT?  
+> > yes. Also the mask bits should be 8 to 63
+> > s/0xfffff/GENMASK_ULL(63, 8))/  
+> Well the macro definition looks correct as 63:28 is RsvdZ
 
-	https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/commit/?id=7a5dbf3ab2f04905cf8468c66fcdbfb643068bcb
+you are right, I misread the spec.
 
-Regards,
+Thanks,
 
-	Joerg
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
