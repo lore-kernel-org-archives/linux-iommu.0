@@ -2,47 +2,43 @@ Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0107C43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B0BDC43218
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:25:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A3DCF2077B
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:18:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3DCF2077B
+	by mail.kernel.org (Postfix) with ESMTPS id 665B12084F
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:25:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 665B12084F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 64D6127CE;
-	Fri, 26 Apr 2019 13:18:58 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3C74127D2;
+	Fri, 26 Apr 2019 13:25:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 12ABD27B4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0719B27B4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 13:17:07 +0000 (UTC)
+	Fri, 26 Apr 2019 13:22:14 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 263C874A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 38D6974A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 13:17:06 +0000 (UTC)
+	Fri, 26 Apr 2019 13:22:13 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id C951E447; Fri, 26 Apr 2019 15:17:03 +0200 (CEST)
-Date: Fri, 26 Apr 2019 15:16:58 +0200
+	id 8710C447; Fri, 26 Apr 2019 15:22:11 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
-To: Tom Murphy <tmurphy@arista.com>
-Subject: Re: [PATCH] iommu/amd: Add allocated domain to global list earlier
-Message-ID: <20190426131658.GA24576@8bytes.org>
-References: <20190415180556.5018-1-tmurphy@arista.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190415180556.5018-1-tmurphy@arista.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	murphyt7@tcd.ie, dima@arista.com
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu/amd: Remove amd_iommu_pd_list
+Date: Fri, 26 Apr 2019 15:22:02 +0200
+Message-Id: <20190426132202.11096-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.17.1
+Cc: Tom Murphy <tmurphy@arista.com>, iommu@lists.linux-foundation.org,
+	Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -55,28 +51,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426131658.F6mmsD9KPy6FL9h3AMb12n7fkrW2fVhqHNTH9zozQWE@z>
+Message-ID: <20190426132202.n8dwau1OgHwW_v--NRqAIzTomFIBlgBXw4eUEPlb6jg@z>
 
-Hi Tom,
+From: Joerg Roedel <jroedel@suse.de>
 
-On Mon, Apr 15, 2019 at 07:05:56PM +0100, Tom Murphy wrote:
-> dma_ops_domain_free() expects domain to be in a global list.
-> Arguably, could be called before protection_domain_init().
+This variable hold a global list of allocated protection
+domains in the AMD IOMMU driver. By now this list is never
+traversed anymore, so the list and the lock protecting it
+can be removed.
 
-This could in theory create new races because a not fully initialized
-domain becomes visible in the global list. In practice this never
-happens because that global list is unused by now.
-
-So it is better to remove this global list like the attached diff does.
-I'll send out a patch separatly and put it into the iommu-tree.
-
-Regards,
-
-	Joerg
+Cc: Tom Murphy <tmurphy@arista.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu.c       | 33 ---------------------------------
+ drivers/iommu/amd_iommu_init.c  |  8 --------
+ drivers/iommu/amd_iommu_types.h |  6 ------
+ 3 files changed, 47 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
 index f467cc4b498e..3e0696cf965c 100644
@@ -193,6 +188,9 @@ index 87965e4d9647..85c488b8daea 100644
  /*
   * Structure defining one entry in the device table
   */
+-- 
+2.16.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
