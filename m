@@ -1,34 +1,27 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/amd: Add allocated domain to global list earlier
-Date: Fri, 26 Apr 2019 15:16:58 +0200
-Message-ID: <20190426131658.GA24576@8bytes.org>
-References: <20190415180556.5018-1-tmurphy@arista.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH] iommu/amd: Remove amd_iommu_pd_list
+Date: Fri, 26 Apr 2019 15:22:02 +0200
+Message-ID: <20190426132202.11096-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190415180556.5018-1-tmurphy@arista.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Murphy <tmurphy@arista.com>
-Cc: iommu@lists.linux-foundation.org, dima@arista.com, jamessewart@arista.com, murphyt7@tcd.ie, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Tom Murphy <tmurphy@arista.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tom,
+From: Joerg Roedel <jroedel@suse.de>
 
-On Mon, Apr 15, 2019 at 07:05:56PM +0100, Tom Murphy wrote:
-> dma_ops_domain_free() expects domain to be in a global list.
-> Arguably, could be called before protection_domain_init().
+This variable hold a global list of allocated protection
+domains in the AMD IOMMU driver. By now this list is never
+traversed anymore, so the list and the lock protecting it
+can be removed.
 
-This could in theory create new races because a not fully initialized
-domain becomes visible in the global list. In practice this never
-happens because that global list is unused by now.
-
-So it is better to remove this global list like the attached diff does.
-I'll send out a patch separatly and put it into the iommu-tree.
-
-Regards,
-
-	Joerg
+Cc: Tom Murphy <tmurphy@arista.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu.c       | 33 ---------------------------------
+ drivers/iommu/amd_iommu_init.c  |  8 --------
+ drivers/iommu/amd_iommu_types.h |  6 ------
+ 3 files changed, 47 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
 index f467cc4b498e..3e0696cf965c 100644
@@ -145,3 +138,5 @@ index 87965e4d9647..85c488b8daea 100644
  /*
   * Structure defining one entry in the device table
   */
+-- 
+2.16.4
