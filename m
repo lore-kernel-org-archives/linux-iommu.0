@@ -2,64 +2,81 @@ Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013CBC43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E930C43218
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:57:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB6762077B
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:55:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB6762077B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id F04262077B
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:57:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="S0wsh0Vn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F04262077B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 673B42901;
-	Fri, 26 Apr 2019 15:55:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C471F293A;
+	Fri, 26 Apr 2019 15:57:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2A1DE2731
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 135572714
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 15:53:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 875BE860
+	Fri, 26 Apr 2019 15:55:16 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f196.google.com (mail-qk1-f196.google.com
+	[209.85.222.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 76B0B2D4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 15:53:49 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
-	[10.5.11.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id CF4AD308A11E;
-	Fri, 26 Apr 2019 15:53:48 +0000 (UTC)
-Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id AD71C691A6;
-	Fri, 26 Apr 2019 15:53:45 +0000 (UTC)
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 14/19] iommu: Add guest PASID bind function
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556062279-64135-15-git-send-email-jacob.jun.pan@linux.intel.com>
-Message-ID: <35194a94-ed09-d086-8725-f7e1bdfbb877@redhat.com>
-Date: Fri, 26 Apr 2019 17:53:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <1556062279-64135-15-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.44]);
-	Fri, 26 Apr 2019 15:53:49 +0000 (UTC)
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+	Fri, 26 Apr 2019 15:55:15 +0000 (UTC)
+Received: by mail-qk1-f196.google.com with SMTP id w73so2126615qkb.13
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 26 Apr 2019 08:55:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+	h=message-id:subject:from:to:cc:date:in-reply-to:references
+	:mime-version:content-transfer-encoding;
+	bh=M1KaF+DSCnWN8ZthCrAegiw+U4FUrxW5sRpTIk7RM0M=;
+	b=S0wsh0VnxEBNrOgR+67oYarfPiEP7S7R+Sdd8KeHAAaJIk49JL0RiKgjzFiz0J+Z7P
+	7FyyVZ9J20UFX5rkf3W3JyYfD9Oqty0UN6WBfZf6i+hhUYGUte42+trt6sUJdYAZcA9O
+	DN0i3LDJsYWLfhWZwrVLHEbcWi7a6Iv6D6YzvKE7Jzg4PnVPEpMZ1+P9Qbi0jEEJabEO
+	CvL2kW60B2OVjW02WR4zlVFQW7LQEuCDRq88jKt24rEkLL6LQbHLIcVBFTSFoGlio/Zm
+	GX0l53jp62D1xByx7mB7GZ7ramo+jiLQtdLZ7mgjMU+Hj8OPNDPphbWu0ixWlR4QfFxb
+	l/8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+	:references:mime-version:content-transfer-encoding;
+	bh=M1KaF+DSCnWN8ZthCrAegiw+U4FUrxW5sRpTIk7RM0M=;
+	b=fOo3+2T7qQSSNKbd9tEg3kP1I7/8WOj8yTdIIU5Q1hOEGvmaQ2/TisRZAg0HpAvaQf
+	A+rY05dNd5EThAQG20xHtpmkv3Qv+BD6Fx5514RgCOhP321jCkuq6k6jziB/DeP1DjcS
+	mhTKu3bgmgr+pZWi4pKvHJR6+iDc2Ze/u6WHuyfelAP7MuepoYFvh6JLUnCiYJ+eoJ4m
+	9zsrs6ywvjzu3anbw4O/5oAXBs18T1uxlk8j1HqYmOKgvtN8gOkYNKSVZROuyCRB5z8d
+	OWW4WCN5H9FeazE8V3QVQZOanLp07EeNzVEPIOK6UumXmmVDOzPMGolzPlPWzpyeGyD5
+	5lvA==
+X-Gm-Message-State: APjAAAV7i0JOoKAGpbAZUh/IpxRmdzOcPDTBTxPsECHh0eRhXictbqZP
+	p7LvZmmzI3rW9+MUDMZw+c0jQQ==
+X-Google-Smtp-Source: APXvYqx0B6IxCHYVAJC79ZkHE7/H1twzINBweRC6BFRaN13IwzSa46wZ5jQHJLliIdFBcUh2sVD2uQ==
+X-Received: by 2002:a37:484c:: with SMTP id v73mr35618564qka.37.1556294114426; 
+	Fri, 26 Apr 2019 08:55:14 -0700 (PDT)
+Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
+	[66.187.233.206])
+	by smtp.gmail.com with ESMTPSA id a1sm5063373qkn.58.2019.04.26.08.55.13
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Fri, 26 Apr 2019 08:55:13 -0700 (PDT)
+Message-ID: <1556294112.6132.7.camel@lca.pw>
+Subject: Re: "iommu/amd: Set exclusion range correctly" causes smartpqi offline
+From: Qian Cai <cai@lca.pw>
+To: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 26 Apr 2019 11:55:12 -0400
+In-Reply-To: <20190426152632.GC3173@suse.de>
+References: <1556290348.6132.6.camel@lca.pw> <20190426152632.GC3173@suse.de>
+X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
+Mime-Version: 1.0
+Cc: iommu@lists.linux-foundation.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,165 +90,38 @@ List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426155343.ONgbHmiDXOJLub-n3IRtaDmblhVMytGI2YPxBozlwt4@z>
+Message-ID: <20190426155512.ZhjpoBMgP7qPI10XMpDkaTzztYodETY9R3vTTtODQXE@z>
 
-Hi Jacob,
-
-On 4/24/19 1:31 AM, Jacob Pan wrote:
-> Guest shared virtual address (SVA) may require host to shadow guest
-> PASID tables. Guest PASID can also be allocated from the host via
-> enlightened interfaces. In this case, guest needs to bind the guest
-> mm, i.e. cr3 in guest phisical address to the actual PASID table in
-physical
-> the host IOMMU. Nesting will be turned on such that guest virtual
-> address can go through a two level translation:
-> - 1st level translates GVA to GPA
-> - 2nd level translates GPA to HPA
-> This patch introduces APIs to bind guest PASID data to the assigned
-> device entry in the physical IOMMU. See the diagram below for usage
-> explaination.
-> 
->     .-------------.  .---------------------------.
->     |   vIOMMU    |  | Guest process mm, FL only |
->     |             |  '---------------------------'
->     .----------------/
->     | PASID Entry |--- PASID cache flush -
->     '-------------'                       |
->     |             |                       V
->     |             |
->     '-------------'
-> Guest
-> ------| Shadow |--------------------------|------------
->       v        v                          v
-> Host
->     .-------------.  .----------------------.
->     |   pIOMMU    |  | Bind FL for GVA-GPA  |
->     |             |  '----------------------'
->     .----------------/  |
->     | PASID Entry |     V (Nested xlate)
->     '----------------\.---------------------.
->     |             |   |Set SL to GPA-HPA    |
->     |             |   '---------------------'
->     '-------------'
-> 
-> Where:
->  - FL = First level/stage one page tables
->  - SL = Second level/stage two page tables
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> ---
->  drivers/iommu/iommu.c      | 20 ++++++++++++++++++++
->  include/linux/iommu.h      | 10 ++++++++++
->  include/uapi/linux/iommu.h | 15 ++++++++++++++-
->  3 files changed, 44 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 498c28a..072f8f3 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1561,6 +1561,26 @@ int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
->  }
->  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
->  
-> +int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-> +			struct device *dev, struct gpasid_bind_data *data)
-> +{
-> +	if (unlikely(!domain->ops->sva_bind_gpasid))
-> +		return -ENODEV;
-> +
-> +	return domain->ops->sva_bind_gpasid(domain, dev, data);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
-> +
-> +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +			int pasid)
-> +{
-> +	if (unlikely(!domain->ops->sva_unbind_gpasid))
-> +		return -ENODEV;
-> +
-> +	return domain->ops->sva_unbind_gpasid(dev, pasid);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
-> +
->  static void __iommu_detach_device(struct iommu_domain *domain,
->  				  struct device *dev)
->  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 4b92e4b..611388e 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -231,6 +231,8 @@ struct iommu_sva_ops {
->   * @detach_pasid_table: detach the pasid table
->   * @cache_invalidate: invalidate translation caches
->   * @pgsize_bitmap: bitmap of all possible supported page sizes
-> + * @sva_bind_gpasid: bind guest pasid and mm
-> + * @sva_unbind_gpasid: unbind guest pasid and mm
->   */
->  struct iommu_ops {
->  	bool (*capable)(enum iommu_cap);
-> @@ -295,6 +297,10 @@ struct iommu_ops {
->  
->  	int (*cache_invalidate)(struct iommu_domain *domain, struct device *dev,
->  				struct iommu_cache_invalidate_info *inv_info);
-> +	int (*sva_bind_gpasid)(struct iommu_domain *domain,
-> +			struct device *dev, struct gpasid_bind_data *data);
-> +
-> +	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
-So I am confused now. As the scalable mode PASID table entry contains
-both the FL and SL PT pointers, will you ever use the
-attach/detach_pasid_table or are we the only known users on ARM?
-
->  
->  	unsigned long pgsize_bitmap;
->  };
-> @@ -409,6 +415,10 @@ extern void iommu_detach_pasid_table(struct iommu_domain *domain);
->  extern int iommu_cache_invalidate(struct iommu_domain *domain,
->  				  struct device *dev,
->  				  struct iommu_cache_invalidate_info *inv_info);
-> +extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-> +		struct device *dev, struct gpasid_bind_data *data);
-> +extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> +				struct device *dev, int pasid);
-definition in !CONFIG_IOMMU_API case?
->  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index 61a3fb7..5c95905 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -235,6 +235,19 @@ struct iommu_cache_invalidate_info {
->  		struct iommu_inv_addr_info addr_info;
->  	};
->  };
-> -
-> +/**
-> + * struct gpasid_bind_data - Information about device and guest PASID binding
-> + * @gcr3:	Guest CR3 value from guest mm
-> + * @pasid:	Process address space ID used for the guest mm
-> + * @addr_width:	Guest address width. Paging mode can also be derived.
-> + */
-> +struct gpasid_bind_data {
-> +	__u64 gcr3;
-> +	__u32 pasid;
-> +	__u32 addr_width;
-> +	__u32 flags;
-> +#define	IOMMU_SVA_GPASID_SRE	BIT(0) /* supervisor request */
-> +	__u8 padding[4];
-> +};
-
-
-Thanks
-
-Eric
->  
->  #endif /* _UAPI_IOMMU_H */
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gRnJpLCAyMDE5LTA0LTI2IGF0IDE3OjI2ICswMjAwLCBKb2VyZyBSb2VkZWwgd3JvdGU6Cj4g
+T24gRnJpLCBBcHIgMjYsIDIwMTkgYXQgMTA6NTI6MjhBTSAtMDQwMCwgUWlhbiBDYWkgd3JvdGU6
+Cj4gPiBBcHBseWluZyBzb21lIG1lbW9yeSBwcmVzc3VyZSB3b3VsZCBjYXVzZXMgc21hcnRwcWkg
+b2ZmbGluZSBldmVuIGluIHRvZGF5J3MKPiA+IGxpbnV4LW5leHQuIFRoaXMgY2FuIGFsd2F5cyBi
+ZSByZXByb2R1Y2VkIGJ5IGEgTFRQIHRlc3QgY2FzZXMgWzFdIG9yCj4gPiBzb21ldGltZXMKPiA+
+IGp1c3QgY29tcGlsaW5nIGtlcm5lbHMuCj4gPiAKPiA+IFJldmVydGluZyB0aGUgY29tbWl0ICJp
+b21tdS9hbWQ6IFNldCBleGNsdXNpb24gcmFuZ2UgY29ycmVjdGx5IsKgZml4ZWQgdGhlCj4gPiBp
+c3N1ZS4KPiA+IAo+ID4gW8KgwqAyMTMuNDM3MTEyXSBzbWFydHBxaSAwMDAwOjIzOjAwLjA6IEFN
+RC1WaTogRXZlbnQgbG9nZ2VkIFtJT19QQUdFX0ZBVUxUCj4gPiBkb21haW49MHgwMDAwIGFkZHJl
+c3M9MHgxMDAwIGZsYWdzPTB4MDAwMF0KPiA+IFvCoMKgMjEzLjQ0NzY1OV0gc21hcnRwcWkgMDAw
+MDoyMzowMC4wOiBBTUQtVmk6IEV2ZW50IGxvZ2dlZCBbSU9fUEFHRV9GQVVMVAo+ID4gZG9tYWlu
+PTB4MDAwMCBhZGRyZXNzPTB4MTgwMCBmbGFncz0weDAwMDBdCj4gPiBbwqDCoDIzMy4zNjIwMTNd
+IHNtYXJ0cHFpIDAwMDA6MjM6MDAuMDogY29udHJvbGxlciBpcyBvZmZsaW5lOiBzdGF0dXMgY29k
+ZQo+ID4gMHgxNDgwMwo+ID4gW8KgwqAyMzMuMzY5MzU5XSBzbWFydHBxaSAwMDAwOjIzOjAwLjA6
+IGNvbnRyb2xsZXIgb2ZmbGluZQo+ID4gW8KgwqAyMzMuMzg4OTE1XSBwcmludF9yZXFfZXJyb3I6
+IEkvTyBlcnJvciwgZGV2IHNkYiwgc2VjdG9yIDMzMTczNTIgZmxhZ3MKPiA+IDIwMDAwMDEKPiA+
+IFvCoMKgMjMzLjM4ODkyMV0gc2QgMDowOjA6MDogW3NkYl0gdGFnIzk1IFVOS05PV04oMHgyMDAz
+KSBSZXN1bHQ6Cj4gPiBob3N0Ynl0ZT0weDAxCj4gPiBkcml2ZXJieXRlPTB4MDAKPiA+IFvCoMKg
+MjMzLjM4ODkzMV0gc2QgMDowOjA6MDogW3NkYl0gdGFnIzk1IENEQjogb3Bjb2RlPTB4MmEgMmEg
+MDAgMDAgNTUgODkgMDAKPiA+IDAwIDAxCj4gPiAwOCAwMAo+ID4gW8KgwqAyMzMuMzg5MDAzXSBX
+cml0ZS1lcnJvciBvbiBzd2FwLWRldmljZSAoMjU0OjE6NDQ3NDY0MCkKPiA+IFvCoMKgMjMzLjM4
+OTAxNV0gV3JpdGUtZXJyb3Igb24gc3dhcC1kZXZpY2UgKDI1NDoxOjIxOTA3NzYpCj4gPiBbwqDC
+oDIzMy4zODkwMjNdIFdyaXRlLWVycm9yIG9uIHN3YXAtZGV2aWNlICgyNTQ6MTo4MzUxOTM2KQo+
+ID4gCj4gPiBbMV0gL29wdC9sdHAvdGVzdGNhc2VzL2Jpbi9tdGVzdDAxIC1wODAgLXcKPiAKPiBJ
+IGNhbid0IGV4cGxhaW4gdGhhdCwgY2FuIHlvdSBwbGVhc2UgYm9vdCB3aXRoICdhbWRfaW9tbXVf
+ZHVtcCcgb24gdGhlCj4ga2VybmVsIGNvbW1hbmQgbGluZSBhbmQgc2VuZCBtZSBkbWVzZyBhZnRl
+ciBib290PwoKaHR0cHM6Ly9naXQuc3IuaHQvfmNhaS9saW51eC1kZWJ1Zy9ibG9iL21hc3Rlci9k
+bWVzZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
+dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
