@@ -1,226 +1,83 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 09/19] iommu/vt-d: Enlightened PASID allocation
-Date: Thu, 25 Apr 2019 16:40:17 -0700
-Message-ID: <20190425164017.6aed942e@jacob-builder>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1556062279-64135-10-git-send-email-jacob.jun.pan@linux.intel.com>
-        <143adac1-d58b-dde6-593b-74ea71da73c8@redhat.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: [PATCH v2 4/9] powerpc/powernv/npu: use helper pci_dev_id
+Date: Fri, 26 Apr 2019 13:44:35 +1000
+Message-ID: <e0ca28bd-dfd8-cf73-dfce-a11557ecd346@ozlabs.ru>
+References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
+ <8ed5b4ee-3226-6786-eb96-886826e180cd@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <143adac1-d58b-dde6-593b-74ea71da73c8@redhat.com>
+In-Reply-To: <8ed5b4ee-3226-6786-eb96-886826e180cd@gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: Heiner Kallweit <hkallweit1@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Oded Gabbay <oded.gabbay@gmail.com>, Alex Deucher <alexander.deucher@amd.com>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, "David (ChunMing) Zhou" <David1.Zhou@amd.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Realtek linux nic maintainers <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, Alexandre Torgue <alexandre.torgue@st.com>, Jose Abreu <joabreu@synopsys.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: open list <linux-kernel@vger.kernel.org>, "open list:AMD KFD" <dri-devel@lists.freedesktop.org>, "open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" <netdev@vger.kernel.org>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>, "moderated list:ARM/STM32 ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 24 Apr 2019 19:27:52 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
 
-> Hi Jacob,
+
+On 25/04/2019 05:14, Heiner Kallweit wrote:
+> Use new helper pci_dev_id() to simplify the code.
 > 
-> On 4/24/19 1:31 AM, Jacob Pan wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > 
-> > If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the
-> > IOMMU driver should rely on the emulation software to allocate
-> > and free PASID IDs.  
-> Do we make the decision depending on the CM or depending on the
-> VCCAP_REG?
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+
+
+
+Reviewed-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+
+
+> ---
+>  arch/powerpc/platforms/powernv/npu-dma.c | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
 > 
-> VCCAP_REG description says:
-> 
-> If Set, software must use Virtual Command Register interface to
-> allocate and free PASIDs.
-> 
->  The Intel vt-d spec revision 3.0 defines a
-> > register set to support this. This includes a capability register,
-> > a virtual command register and a virtual response register. Refer
-> > to section 10.4.42, 10.4.43, 10.4.44 for more information.
-> > 
-> > This patch adds the enlightened PASID allocation/free interfaces  
-> For mu curiosity why is it called "enlightened"?
-I don't know the origin but "enlightened" means guest is tipped with
-information that it is not running on real HW.
-
-> > via the virtual command register.
-> > 
-> > Cc: Ashok Raj <ashok.raj@intel.com>
-> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-pasid.c | 70
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > drivers/iommu/intel-pasid.h | 13 ++++++++-
-> > include/linux/intel-iommu.h |  2 ++ 3 files changed, 84
-> > insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/intel-pasid.c
-> > b/drivers/iommu/intel-pasid.c index 03b12d2..5b1d3be 100644
-> > --- a/drivers/iommu/intel-pasid.c
-> > +++ b/drivers/iommu/intel-pasid.c
-> > @@ -63,6 +63,76 @@ void *intel_pasid_lookup_id(int pasid)
-> >  	return p;
-> >  }
-> >  
-> > +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid) +{
-> > +	u64 res;
-> > +	u64 cap;
-> > +	u8 err_code;
-> > +	unsigned long flags;
-> > +	int ret = 0;
-> > +
-> > +	if (!ecap_vcs(iommu->ecap)) {
-> > +		pr_warn("IOMMU: %s: Hardware doesn't support
-> > virtual command\n",
-> > +			iommu->name);  
-> nit: other pr_* messages don't have the "IOMMU: %s:" prefix.
-Are you suggesting just use the prefix defined in pr_fmt? I guess i can
-remove "IOMMU" if Allen is OK with it :).
-
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	cap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
-> > +	if (!(cap & DMA_VCS_PAS)) {
-> > +		pr_warn("IOMMU: %s: Emulation software doesn't
-> > support PASID allocation\n",
-> > +			iommu->name);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-> > +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, VCMD_CMD_ALLOC);
-> > +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-> > +		      !(res & VCMD_VRSP_IP), res);
-> > +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-> > +
-> > +	err_code = VCMD_VRSP_EC(res);
-> > +	switch (err_code) {
-> > +	case VCMD_VRSP_EC_SUCCESS:
-> > +		*pasid = VCMD_VRSP_RESULE(res);
-> > +		break;
-> > +	case VCMD_VRSP_EC_UNAVAIL:
-> > +		pr_info("IOMMU: %s: No PASID available\n",
-> > iommu->name);
-> > +		ret = -ENOMEM;
-> > +		break;
-> > +	default:
-> > +		ret = -ENODEV;
-> > +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",  
-> unknown
-> > +			iommu->name, err_code);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
-> > +{
-> > +	u64 res;
-> > +	u8 err_code;
-> > +	unsigned long flags;  
-> Shall we check as well the cap is set?
-yes, good point.
-
-> > +
-> > +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-> > +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, (pasid << 8) |
-> > VCMD_CMD_FREE);
-> > +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-> > +		      !(res & VCMD_VRSP_IP), res);
-> > +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-> > +
-> > +	err_code = VCMD_VRSP_EC(res);
-> > +	switch (err_code) {
-> > +	case VCMD_VRSP_EC_SUCCESS:
-> > +		break;
-> > +	case VCMD_VRSP_EC_INVAL:
-> > +		pr_info("IOMMU: %s: Invalid PASID\n", iommu->name);
-> > +		break;
-> > +	default:
-> > +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",  
-> unknown
-> > +			iommu->name, err_code);
-> > +	}
-> > +}
-> > +
-> >  /*
-> >   * Per device pasid table management:
-> >   */
-> > diff --git a/drivers/iommu/intel-pasid.h
-> > b/drivers/iommu/intel-pasid.h index 23537b3..0999dfe 100644
-> > --- a/drivers/iommu/intel-pasid.h
-> > +++ b/drivers/iommu/intel-pasid.h
-> > @@ -19,6 +19,16 @@
-> >  #define PASID_PDE_SHIFT			6
-> >  #define MAX_NR_PASID_BITS		20
-> >  
-> > +/* Virtual command interface for enlightened pasid management. */
-> > +#define VCMD_CMD_ALLOC			0x1
-> > +#define VCMD_CMD_FREE			0x2
-> > +#define VCMD_VRSP_IP			0x1
-> > +#define VCMD_VRSP_EC(e)			(((e) >> 1) & 0x3)  
-> s/EC/SC? for Status Code and below
-Good, that would match the spec.
-
-> > +#define VCMD_VRSP_EC_SUCCESS		0
-> > +#define VCMD_VRSP_EC_UNAVAIL		1  
-> nit: _NO_VALID_PASID
-Other than SUCCESS, these codes are PASID command specific. I think it
-can be called _NO_PASID_AVAIL to match Spec. Fig 10-87 "No PASID
-Available"
-
-> > +#define VCMD_VRSP_EC_INVAL		1  
-> nit: _INVALID_PASID
-Agreed
-> > +#define VCMD_VRSP_RESULE(e)		(((e) >> 8) & 0xfffff)  
-> nit: s/RESULE/RSLT?
-yes. Also the mask bits should be 8 to 63
-s/0xfffff/GENMASK_ULL(63, 8))/
-
-> > +
-> >  /*
-> >   * Domain ID reserved for pasid entries programmed for first-level
-> >   * only and pass-through transfer modes.
-> > @@ -69,5 +79,6 @@ int intel_pasid_setup_pass_through(struct
-> > intel_iommu *iommu, struct device *dev, int pasid);
-> >  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
-> >  				 struct device *dev, int pasid);
-> > -
-> > +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid); +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned
-> > int pasid); #endif /* __INTEL_PASID_H */
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 6925a18..bff907b 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -173,6 +173,7 @@
-> >  #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
-> >  #define ecap_flts(e)		(((e) >> 47) & 0x1)
-> >  #define ecap_slts(e)		(((e) >> 46) & 0x1)
-> > +#define ecap_vcs(e)		(((e) >> 44) & 0x1)
-> >  #define ecap_smts(e)		(((e) >> 43) & 0x1)
-> >  #define ecap_dit(e)		((e >> 41) & 0x1)
-> >  #define ecap_pasid(e)		((e >> 40) & 0x1)
-> > @@ -289,6 +290,7 @@
-> >  
-> >  /* PRS_REG */
-> >  #define DMA_PRS_PPR	((u32)1)
-> > +#define DMA_VCS_PAS	((u64)1)
-> >  
-> >  #define IOMMU_WAIT_OP(iommu, offset, op, cond,
-> > sts)			\ do
-> > {
-> > \ 
-> 
-> Thanks
-> 
-> Eric
+> diff --git a/arch/powerpc/platforms/powernv/npu-dma.c b/arch/powerpc/platforms/powernv/npu-dma.c
+> index dc23d9d2a..495550432 100644
+> --- a/arch/powerpc/platforms/powernv/npu-dma.c
+> +++ b/arch/powerpc/platforms/powernv/npu-dma.c
+> @@ -1213,9 +1213,8 @@ int pnv_npu2_map_lpar_dev(struct pci_dev *gpdev, unsigned int lparid,
+>  	 * Currently we only support radix and non-zero LPCR only makes sense
+>  	 * for hash tables so skiboot expects the LPCR parameter to be a zero.
+>  	 */
+> -	ret = opal_npu_map_lpar(nphb->opal_id,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn), lparid,
+> -			0 /* LPCR bits */);
+> +	ret = opal_npu_map_lpar(nphb->opal_id, pci_dev_id(gpdev), lparid,
+> +				0 /* LPCR bits */);
+>  	if (ret) {
+>  		dev_err(&gpdev->dev, "Error %d mapping device to LPAR\n", ret);
+>  		return ret;
+> @@ -1224,7 +1223,7 @@ int pnv_npu2_map_lpar_dev(struct pci_dev *gpdev, unsigned int lparid,
+>  	dev_dbg(&gpdev->dev, "init context opalid=%llu msr=%lx\n",
+>  			nphb->opal_id, msr);
+>  	ret = opal_npu_init_context(nphb->opal_id, 0/*__unused*/, msr,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn));
+> +				    pci_dev_id(gpdev));
+>  	if (ret < 0)
+>  		dev_err(&gpdev->dev, "Failed to init context: %d\n", ret);
+>  	else
+> @@ -1258,7 +1257,7 @@ int pnv_npu2_unmap_lpar_dev(struct pci_dev *gpdev)
+>  	dev_dbg(&gpdev->dev, "destroy context opalid=%llu\n",
+>  			nphb->opal_id);
+>  	ret = opal_npu_destroy_context(nphb->opal_id, 0/*__unused*/,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn));
+> +				       pci_dev_id(gpdev));
+>  	if (ret < 0) {
+>  		dev_err(&gpdev->dev, "Failed to destroy context: %d\n", ret);
+>  		return ret;
+> @@ -1266,9 +1265,8 @@ int pnv_npu2_unmap_lpar_dev(struct pci_dev *gpdev)
+>  
+>  	/* Set LPID to 0 anyway, just to be safe */
+>  	dev_dbg(&gpdev->dev, "Map LPAR opalid=%llu lparid=0\n", nphb->opal_id);
+> -	ret = opal_npu_map_lpar(nphb->opal_id,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn), 0 /*LPID*/,
+> -			0 /* LPCR bits */);
+> +	ret = opal_npu_map_lpar(nphb->opal_id, pci_dev_id(gpdev), 0 /*LPID*/,
+> +				0 /* LPCR bits */);
+>  	if (ret)
+>  		dev_err(&gpdev->dev, "Error %d mapping device to LPAR\n", ret);
+>  
 > 
 
-[Jacob Pan]
+-- 
+Alexey
