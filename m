@@ -1,27 +1,36 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
-Date: Fri, 26 Apr 2019 17:04:33 +0200
-Message-ID: <20190426150433.GA19930@lst.de>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com> <20190421011719.14909-3-baolu.lu@linux.intel.com> <20190422164555.GA31181@lst.de> <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com> <20190423061232.GB12762@lst.de> <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com> <20190424144532.GA21480@lst.de> <a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
+Subject: Re: [RFC PATCH] dma-mapping: create iommu mapping for newly
+ allocated dma coherent mem
+Date: Fri, 26 Apr 2019 17:13:30 +0200
+Message-ID: <20190426151330.GC20438@lst.de>
+References: <20190422165125.21704-1-laurentiu.tudor@nxp.com> <20190422181100.GB32490@lst.de> <VI1PR04MB513407A66107759EC0DFE175EC230@VI1PR04MB5134.eurprd04.prod.outlook.com> <20190424145705.GB21480@lst.de> <b9f2b425-dde9-f9a1-b8fa-b7710e764b16@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
+In-Reply-To: <b9f2b425-dde9-f9a1-b8fa-b7710e764b16@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: Christoph Hellwig <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Leo Li <leoyang.li@nxp.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
-> This is not VT-d specific. It's just how generic IOMMU works.
->
-> Normally, IOMMU works in paging mode. So if a driver issues DMA with
-> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 0xBBBB0123.
-> But we should never expect IOMMU to remap 0xAAAA0123 with physical
-> address of 0xBBBB0000. That's the reason why I said that IOMMU will not
-> work there.
+On Thu, Apr 25, 2019 at 11:30:54AM +0000, Laurentiu Tudor wrote:
+> > I think the first step is to move the two USB controller that can only
+> > DMA to their own BAR off the existing DMA coherent infrastructure.  The
+> > controllers are already identified using the HCD_LOCAL_MEM flag, so we
+> > just need to key off that in the hcd_buffer_* routines and call into a
+> 
+> So if HCD_LOCAL_MEM is set I should call into the gen_pool api instead 
+> of existing dma_{alloc,free}_coherent().
 
-Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
-can happen, so drivers are fine with it.  Why would that suddenly
-become an issue when swiotlb is called from the iommu code?
+Yes.
+
+> > genalloc that has been fed using the bar, replacing the current
+> > dma_declare_coherent usage.  Take a look at drivers/pci/p2pdma.c
+> > for another example of allocating bits of a BAR using genalloc.
+> 
+> Where should I place the reference to the gen_pool? How does local_pool 
+> in 'struct hcd_usb' sound?
+
+Sounds fine to me, but in the end the usb maintainers will have
+to decide.
