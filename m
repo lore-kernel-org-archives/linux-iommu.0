@@ -1,61 +1,185 @@
-Return-Path: <SRS0=4mi1=S3=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EF0C43218
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 23:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC64C43219
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 03:45:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A092E206C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Apr 2019 23:38:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A092E206C1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CA001206C1
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 03:45:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="kUmRjVP7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CA001206C1
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 18167256F;
-	Thu, 25 Apr 2019 23:38:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 847712293;
+	Fri, 26 Apr 2019 03:45:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1780A24CD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B2574227B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 23:37:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 62EFA786
+	Fri, 26 Apr 2019 03:44:48 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+	[209.85.210.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E788D854
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Apr 2019 23:37:35 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	25 Apr 2019 16:37:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,395,1549958400"; d="scan'208";a="319046234"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga005.jf.intel.com with ESMTP; 25 Apr 2019 16:37:34 -0700
-Date: Thu, 25 Apr 2019 16:40:17 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 09/19] iommu/vt-d: Enlightened PASID allocation
-Message-ID: <20190425164017.6aed942e@jacob-builder>
-In-Reply-To: <143adac1-d58b-dde6-593b-74ea71da73c8@redhat.com>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556062279-64135-10-git-send-email-jacob.jun.pan@linux.intel.com>
-	<143adac1-d58b-dde6-593b-74ea71da73c8@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Fri, 26 Apr 2019 03:44:47 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id t21so980953pfh.2
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 25 Apr 2019 20:44:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
+	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+	:user-agent:mime-version:in-reply-to:content-language
+	:content-transfer-encoding;
+	bh=fckgf0V9VNeNANjF5MDVD0OpMM0gwYIj2heYO9wtBdU=;
+	b=kUmRjVP75njz0okqBUTA/u6anuZ/BmiiUiYlwNKYvqOuMDcGhrdDGY3SQQ5fauX7aL
+	DTVR76WXEa3Y0AfjYgDt4l9DagHGXTqX3iH+/XPXkMWJ8DNRBjuDHNqrWMqFlgMLDnxU
+	SDY/uIQKd8G/hZJNPw827hQNmSikY2wcHvePxfK6rB+xtPmwzbZH0nZynJNfW0dB3WW8
+	MuBURSPWe2dUcPo38L+etSnXz5o26ic0mqhRL7I9y5zm1Ene+zQg357NiRQuMijQMWTW
+	CU36QOeZ2qrgffZmTQ2J87mGcvIMCr/KAF0wjb1yLirAzNJJk4vsumks+O1emj8YVk5W
+	kPzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+	:message-id:date:user-agent:mime-version:in-reply-to
+	:content-language:content-transfer-encoding;
+	bh=fckgf0V9VNeNANjF5MDVD0OpMM0gwYIj2heYO9wtBdU=;
+	b=RVPhLlJDy3Qj6iIX94tGxOxjQfIxxJ2Tm5hpKM698eSpKJkYF1HQ/8UZ5SZC0SAAzs
+	JFvha7vrXj6VPb+6d7FISrbG3A54oF1qBnhSMtKZw670r+5X/xc+cXakRd0e62G50P/g
+	+It6eDz0AYJ3heetDJ5xoaU8AtQYIF6drTVRQQjaga8WXLYurZYms3/0uTjzanrQQT1C
+	/9oOdPsy14LLeF4zzlFOxWfeT5FJ7xbxA+TEJVfZy8THfR9ZeUsfNiMeNNa7ZH/fiLRk
+	Ms8KXFRLUyDO60vp3OdEcMyabKBnCSbzKJoLQj58LKVH87DNJDr0OI80ZN2xD8ut8V3/
+	8Jbg==
+X-Gm-Message-State: APjAAAVRXbbv/r4okUvwDjBedR1cHmre08NSHAFhfmPUtV/5KsWo2Ltr
+	+dP6jOhKi45mvghCIFl74kpkMw==
+X-Google-Smtp-Source: APXvYqxVWqMY5ViPXxdKDU/75fLW5qWakzcxg6PEZQYYWBwJTKjYL6aLJIZm25iqESWNygp76ggWMg==
+X-Received: by 2002:a63:2b4c:: with SMTP id r73mr42317568pgr.181.1556250286796;
+	Thu, 25 Apr 2019 20:44:46 -0700 (PDT)
+Received: from [10.61.2.175] ([122.99.82.10]) by smtp.gmail.com with ESMTPSA id
+	f22sm33704859pgv.45.2019.04.25.20.44.37
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Thu, 25 Apr 2019 20:44:45 -0700 (PDT)
+Subject: Re: [PATCH v2 4/9] powerpc/powernv/npu: use helper pci_dev_id
+To: Heiner Kallweit <hkallweit1@gmail.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Oded Gabbay <oded.gabbay@gmail.com>, 
+	Alex Deucher <alexander.deucher@amd.com>,
+	=?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+	"David (ChunMing) Zhou" <David1.Zhou@amd.com>,
+	David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
+	Realtek linux nic maintainers <nic_swsd@realtek.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Alexandre Torgue <alexandre.torgue@st.com>, Jose Abreu
+	<joabreu@synopsys.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Benson Leung <bleung@chromium.org>,
+	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>, Paul Mackerras <paulus@samba.org>
+References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
+	<8ed5b4ee-3226-6786-eb96-886826e180cd@gmail.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Openpgp: preference=signencrypt
+Autocrypt: addr=aik@ozlabs.ru; keydata=
+	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
+Message-ID: <e0ca28bd-dfd8-cf73-dfce-a11557ecd346@ozlabs.ru>
+Date: Fri, 26 Apr 2019 13:44:35 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <8ed5b4ee-3226-6786-eb96-886826e180cd@gmail.com>
+Content-Language: en-US
+Cc: "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER"
+	<netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+	"open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>,
+	"open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+	"open list:AMD KFD" <dri-devel@lists.freedesktop.org>,
+	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+	"moderated list:ARM/STM32 ARCHITECTURE"
+	<linux-stm32@st-md-mailman.stormreply.com>,
+	"moderated list:ARM/STM32 ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,217 +196,74 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190425234017.-4SVvD-SlUCvrtAfIztM61LJfbT0XkpcOZDZgmyMob8@z>
+Message-ID: <20190426034435.k8uAAGXqVRU80ODskDeA4F1W2fBNbD5DIhF4A_Bw63c@z>
 
-On Wed, 24 Apr 2019 19:27:52 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
 
-> Hi Jacob,
+
+On 25/04/2019 05:14, Heiner Kallweit wrote:
+> Use new helper pci_dev_id() to simplify the code.
 > 
-> On 4/24/19 1:31 AM, Jacob Pan wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > 
-> > If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the
-> > IOMMU driver should rely on the emulation software to allocate
-> > and free PASID IDs.  
-> Do we make the decision depending on the CM or depending on the
-> VCCAP_REG?
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+
+
+
+Reviewed-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+
+
+> ---
+>  arch/powerpc/platforms/powernv/npu-dma.c | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
 > 
-> VCCAP_REG description says:
-> 
-> If Set, software must use Virtual Command Register interface to
-> allocate and free PASIDs.
-> 
->  The Intel vt-d spec revision 3.0 defines a
-> > register set to support this. This includes a capability register,
-> > a virtual command register and a virtual response register. Refer
-> > to section 10.4.42, 10.4.43, 10.4.44 for more information.
-> > 
-> > This patch adds the enlightened PASID allocation/free interfaces  
-> For mu curiosity why is it called "enlightened"?
-I don't know the origin but "enlightened" means guest is tipped with
-information that it is not running on real HW.
-
-> > via the virtual command register.
-> > 
-> > Cc: Ashok Raj <ashok.raj@intel.com>
-> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-pasid.c | 70
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > drivers/iommu/intel-pasid.h | 13 ++++++++-
-> > include/linux/intel-iommu.h |  2 ++ 3 files changed, 84
-> > insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/intel-pasid.c
-> > b/drivers/iommu/intel-pasid.c index 03b12d2..5b1d3be 100644
-> > --- a/drivers/iommu/intel-pasid.c
-> > +++ b/drivers/iommu/intel-pasid.c
-> > @@ -63,6 +63,76 @@ void *intel_pasid_lookup_id(int pasid)
-> >  	return p;
-> >  }
-> >  
-> > +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid) +{
-> > +	u64 res;
-> > +	u64 cap;
-> > +	u8 err_code;
-> > +	unsigned long flags;
-> > +	int ret = 0;
-> > +
-> > +	if (!ecap_vcs(iommu->ecap)) {
-> > +		pr_warn("IOMMU: %s: Hardware doesn't support
-> > virtual command\n",
-> > +			iommu->name);  
-> nit: other pr_* messages don't have the "IOMMU: %s:" prefix.
-Are you suggesting just use the prefix defined in pr_fmt? I guess i can
-remove "IOMMU" if Allen is OK with it :).
-
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	cap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
-> > +	if (!(cap & DMA_VCS_PAS)) {
-> > +		pr_warn("IOMMU: %s: Emulation software doesn't
-> > support PASID allocation\n",
-> > +			iommu->name);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-> > +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, VCMD_CMD_ALLOC);
-> > +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-> > +		      !(res & VCMD_VRSP_IP), res);
-> > +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-> > +
-> > +	err_code = VCMD_VRSP_EC(res);
-> > +	switch (err_code) {
-> > +	case VCMD_VRSP_EC_SUCCESS:
-> > +		*pasid = VCMD_VRSP_RESULE(res);
-> > +		break;
-> > +	case VCMD_VRSP_EC_UNAVAIL:
-> > +		pr_info("IOMMU: %s: No PASID available\n",
-> > iommu->name);
-> > +		ret = -ENOMEM;
-> > +		break;
-> > +	default:
-> > +		ret = -ENODEV;
-> > +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",  
-> unknown
-> > +			iommu->name, err_code);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
-> > +{
-> > +	u64 res;
-> > +	u8 err_code;
-> > +	unsigned long flags;  
-> Shall we check as well the cap is set?
-yes, good point.
-
-> > +
-> > +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-> > +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, (pasid << 8) |
-> > VCMD_CMD_FREE);
-> > +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-> > +		      !(res & VCMD_VRSP_IP), res);
-> > +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-> > +
-> > +	err_code = VCMD_VRSP_EC(res);
-> > +	switch (err_code) {
-> > +	case VCMD_VRSP_EC_SUCCESS:
-> > +		break;
-> > +	case VCMD_VRSP_EC_INVAL:
-> > +		pr_info("IOMMU: %s: Invalid PASID\n", iommu->name);
-> > +		break;
-> > +	default:
-> > +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",  
-> unknown
-> > +			iommu->name, err_code);
-> > +	}
-> > +}
-> > +
-> >  /*
-> >   * Per device pasid table management:
-> >   */
-> > diff --git a/drivers/iommu/intel-pasid.h
-> > b/drivers/iommu/intel-pasid.h index 23537b3..0999dfe 100644
-> > --- a/drivers/iommu/intel-pasid.h
-> > +++ b/drivers/iommu/intel-pasid.h
-> > @@ -19,6 +19,16 @@
-> >  #define PASID_PDE_SHIFT			6
-> >  #define MAX_NR_PASID_BITS		20
-> >  
-> > +/* Virtual command interface for enlightened pasid management. */
-> > +#define VCMD_CMD_ALLOC			0x1
-> > +#define VCMD_CMD_FREE			0x2
-> > +#define VCMD_VRSP_IP			0x1
-> > +#define VCMD_VRSP_EC(e)			(((e) >> 1) & 0x3)  
-> s/EC/SC? for Status Code and below
-Good, that would match the spec.
-
-> > +#define VCMD_VRSP_EC_SUCCESS		0
-> > +#define VCMD_VRSP_EC_UNAVAIL		1  
-> nit: _NO_VALID_PASID
-Other than SUCCESS, these codes are PASID command specific. I think it
-can be called _NO_PASID_AVAIL to match Spec. Fig 10-87 "No PASID
-Available"
-
-> > +#define VCMD_VRSP_EC_INVAL		1  
-> nit: _INVALID_PASID
-Agreed
-> > +#define VCMD_VRSP_RESULE(e)		(((e) >> 8) & 0xfffff)  
-> nit: s/RESULE/RSLT?
-yes. Also the mask bits should be 8 to 63
-s/0xfffff/GENMASK_ULL(63, 8))/
-
-> > +
-> >  /*
-> >   * Domain ID reserved for pasid entries programmed for first-level
-> >   * only and pass-through transfer modes.
-> > @@ -69,5 +79,6 @@ int intel_pasid_setup_pass_through(struct
-> > intel_iommu *iommu, struct device *dev, int pasid);
-> >  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
-> >  				 struct device *dev, int pasid);
-> > -
-> > +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid); +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned
-> > int pasid); #endif /* __INTEL_PASID_H */
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 6925a18..bff907b 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -173,6 +173,7 @@
-> >  #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
-> >  #define ecap_flts(e)		(((e) >> 47) & 0x1)
-> >  #define ecap_slts(e)		(((e) >> 46) & 0x1)
-> > +#define ecap_vcs(e)		(((e) >> 44) & 0x1)
-> >  #define ecap_smts(e)		(((e) >> 43) & 0x1)
-> >  #define ecap_dit(e)		((e >> 41) & 0x1)
-> >  #define ecap_pasid(e)		((e >> 40) & 0x1)
-> > @@ -289,6 +290,7 @@
-> >  
-> >  /* PRS_REG */
-> >  #define DMA_PRS_PPR	((u32)1)
-> > +#define DMA_VCS_PAS	((u64)1)
-> >  
-> >  #define IOMMU_WAIT_OP(iommu, offset, op, cond,
-> > sts)			\ do
-> > {
-> > \ 
-> 
-> Thanks
-> 
-> Eric
+> diff --git a/arch/powerpc/platforms/powernv/npu-dma.c b/arch/powerpc/platforms/powernv/npu-dma.c
+> index dc23d9d2a..495550432 100644
+> --- a/arch/powerpc/platforms/powernv/npu-dma.c
+> +++ b/arch/powerpc/platforms/powernv/npu-dma.c
+> @@ -1213,9 +1213,8 @@ int pnv_npu2_map_lpar_dev(struct pci_dev *gpdev, unsigned int lparid,
+>  	 * Currently we only support radix and non-zero LPCR only makes sense
+>  	 * for hash tables so skiboot expects the LPCR parameter to be a zero.
+>  	 */
+> -	ret = opal_npu_map_lpar(nphb->opal_id,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn), lparid,
+> -			0 /* LPCR bits */);
+> +	ret = opal_npu_map_lpar(nphb->opal_id, pci_dev_id(gpdev), lparid,
+> +				0 /* LPCR bits */);
+>  	if (ret) {
+>  		dev_err(&gpdev->dev, "Error %d mapping device to LPAR\n", ret);
+>  		return ret;
+> @@ -1224,7 +1223,7 @@ int pnv_npu2_map_lpar_dev(struct pci_dev *gpdev, unsigned int lparid,
+>  	dev_dbg(&gpdev->dev, "init context opalid=%llu msr=%lx\n",
+>  			nphb->opal_id, msr);
+>  	ret = opal_npu_init_context(nphb->opal_id, 0/*__unused*/, msr,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn));
+> +				    pci_dev_id(gpdev));
+>  	if (ret < 0)
+>  		dev_err(&gpdev->dev, "Failed to init context: %d\n", ret);
+>  	else
+> @@ -1258,7 +1257,7 @@ int pnv_npu2_unmap_lpar_dev(struct pci_dev *gpdev)
+>  	dev_dbg(&gpdev->dev, "destroy context opalid=%llu\n",
+>  			nphb->opal_id);
+>  	ret = opal_npu_destroy_context(nphb->opal_id, 0/*__unused*/,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn));
+> +				       pci_dev_id(gpdev));
+>  	if (ret < 0) {
+>  		dev_err(&gpdev->dev, "Failed to destroy context: %d\n", ret);
+>  		return ret;
+> @@ -1266,9 +1265,8 @@ int pnv_npu2_unmap_lpar_dev(struct pci_dev *gpdev)
+>  
+>  	/* Set LPID to 0 anyway, just to be safe */
+>  	dev_dbg(&gpdev->dev, "Map LPAR opalid=%llu lparid=0\n", nphb->opal_id);
+> -	ret = opal_npu_map_lpar(nphb->opal_id,
+> -			PCI_DEVID(gpdev->bus->number, gpdev->devfn), 0 /*LPID*/,
+> -			0 /* LPCR bits */);
+> +	ret = opal_npu_map_lpar(nphb->opal_id, pci_dev_id(gpdev), 0 /*LPID*/,
+> +				0 /* LPCR bits */);
+>  	if (ret)
+>  		dev_err(&gpdev->dev, "Error %d mapping device to LPAR\n", ret);
+>  
 > 
 
-[Jacob Pan]
+-- 
+Alexey
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
