@@ -1,214 +1,192 @@
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 13/19] iommu/vt-d: Add nested translation support
-Date: Fri, 26 Apr 2019 14:57:07 -0700
-Message-ID: <20190426145707.50ddb8f5@jacob-builder>
+Subject: Re: [PATCH v2 14/19] iommu: Add guest PASID bind function
+Date: Fri, 26 Apr 2019 15:11:22 -0700
+Message-ID: <20190426151122.528101b6@jacob-builder>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1556062279-64135-14-git-send-email-jacob.jun.pan@linux.intel.com>
-        <b567b35b-4547-89db-fd88-4cef526e2e72@redhat.com>
+        <1556062279-64135-15-git-send-email-jacob.jun.pan@linux.intel.com>
+        <35194a94-ed09-d086-8725-f7e1bdfbb877@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b567b35b-4547-89db-fd88-4cef526e2e72@redhat.com>
+In-Reply-To: <35194a94-ed09-d086-8725-f7e1bdfbb877@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Auger Eric <eric.auger@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, Yi L <yi.l.liu@linux.intel.com>, jacob.jun.pan@linux.intel.com
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 26 Apr 2019 17:42:05 +0200
+On Fri, 26 Apr 2019 17:53:43 +0200
 Auger Eric <eric.auger@redhat.com> wrote:
 
 > Hi Jacob,
 > 
 > On 4/24/19 1:31 AM, Jacob Pan wrote:
-> > Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
-> > With PASID granular translation type set to 0x11b, translation
-> > result from the first level(FL) also subject to a second level(SL)
-> > page table translation. This mode is used for SVA virtualization,
-> > where FL performs guest virtual to guest physical translation and
-> > SL performs guest physical to host physical translation.  
-> 
-> The title of the patch sounds a bit misleading to me as this patch
-> "just" adds a helper to set the PASID table entry in nested mode.
-> There is no caller yet.
-right, will rename to "Add nested translation helper function"
+> > Guest shared virtual address (SVA) may require host to shadow guest
+> > PASID tables. Guest PASID can also be allocated from the host via
+> > enlightened interfaces. In this case, guest needs to bind the guest
+> > mm, i.e. cr3 in guest phisical address to the actual PASID table
+> > in  
+> physical
+got it
+
+> > the host IOMMU. Nesting will be turned on such that guest virtual
+> > address can go through a two level translation:
+> > - 1st level translates GVA to GPA
+> > - 2nd level translates GPA to HPA
+> > This patch introduces APIs to bind guest PASID data to the assigned
+> > device entry in the physical IOMMU. See the diagram below for usage
+> > explaination.
+> > 
+> >     .-------------.  .---------------------------.
+> >     |   vIOMMU    |  | Guest process mm, FL only |
+> >     |             |  '---------------------------'
+> >     .----------------/
+> >     | PASID Entry |--- PASID cache flush -
+> >     '-------------'                       |
+> >     |             |                       V
+> >     |             |
+> >     '-------------'
+> > Guest
+> > ------| Shadow |--------------------------|------------
+> >       v        v                          v
+> > Host
+> >     .-------------.  .----------------------.
+> >     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+> >     |             |  '----------------------'
+> >     .----------------/  |
+> >     | PASID Entry |     V (Nested xlate)
+> >     '----------------\.---------------------.
+> >     |             |   |Set SL to GPA-HPA    |
+> >     |             |   '---------------------'
+> >     '-------------'
+> > 
+> > Where:
+> >  - FL = First level/stage one page tables
+> >  - SL = Second level/stage two page tables
 > > 
 > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 > > ---
-> >  drivers/iommu/intel-pasid.c | 101
-> > ++++++++++++++++++++++++++++++++++++++++++++
-> > drivers/iommu/intel-pasid.h |  11 +++++ 2 files changed, 112
-> > insertions(+)
+> >  drivers/iommu/iommu.c      | 20 ++++++++++++++++++++
+> >  include/linux/iommu.h      | 10 ++++++++++
+> >  include/uapi/linux/iommu.h | 15 ++++++++++++++-
+> >  3 files changed, 44 insertions(+), 1 deletion(-)
 > > 
-> > diff --git a/drivers/iommu/intel-pasid.c
-> > b/drivers/iommu/intel-pasid.c index d339e8f..04127cf 100644
-> > --- a/drivers/iommu/intel-pasid.c
-> > +++ b/drivers/iommu/intel-pasid.c
-> > @@ -688,3 +688,104 @@ int intel_pasid_setup_pass_through(struct
-> > intel_iommu *iommu, 
-> >  	return 0;
-> >  }
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 498c28a..072f8f3 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -1561,6 +1561,26 @@ int iommu_cache_invalidate(struct
+> > iommu_domain *domain, struct device *dev, }
+> >  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+> >  
+> > +int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> > +			struct device *dev, struct
+> > gpasid_bind_data *data) +{
+> > +	if (unlikely(!domain->ops->sva_bind_gpasid))
+> > +		return -ENODEV;
 > > +
-> > +/**
-> > + * intel_pasid_setup_nested() - Set up PASID entry for nested
-> > translation
-> > + * which is used for vSVA. The first level page tables are used for
-> > + * GVA-GPA translation in the guest, second level page tables are
-> > used
-> > + * for GPA to HPA translation.
-> > + *
-> > + * @iommu:      Iommu which the device belong to
-> > + * @dev:        Device to be set up for translation
-> > + * @pgd:        First level PGD, treated as GPA  
-> nit: @gpgd
-> 
-> spec naming could be used as well: FLPTPTR: First Level Page
-> Translation Pointer
-more precise. sounds good
-
-> > + * @pasid:      PASID to be programmed in the device PASID table
-> > + * @flags:      Additional info such as supervisor PASID
-> > + * @domain:     Domain info for setting up second level page tables
-> > + * @addr_width: Address width of the first level (guest)
-> > + */
-> > +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> > +			struct device *dev, pgd_t *gpgd,
-> > +			int pasid, int flags,
-> > +			struct dmar_domain *domain,
-> > +			int addr_width)
+> > +	return domain->ops->sva_bind_gpasid(domain, dev, data);
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
+> > +
+> > +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct
+> > device *dev,
+> > +			int pasid)
 > > +{
-> > +	struct pasid_entry *pte;
-> > +	struct dma_pte *pgd;
-> > +	u64 pgd_val;
-> > +	int agaw;
-> > +	u16 did;
+> > +	if (unlikely(!domain->ops->sva_unbind_gpasid))
+> > +		return -ENODEV;
 > > +
-> > +	if (!ecap_nest(iommu->ecap)) {
-> > +		pr_err("No nested translation support on %s\n",
-> > +		       iommu->name);  
-> IOMMU: %s: ;-)
-will do
-
-> > +		return -EINVAL;
-> > +	}
+> > +	return domain->ops->sva_unbind_gpasid(dev, pasid);
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
 > > +
-> > +	pte = intel_pasid_get_entry(dev, pasid);
-> > +	if (WARN_ON(!pte))
-> > +		return -EINVAL;
-> > +
-> > +	pasid_clear_entry(pte);
-> > +
-> > +	/* Sanity checking performed by caller to make sure address
-> > +	 * width matching in two dimensions:
-> > +	 * 1. CPU vs. IOMMU
-> > +	 * 2. Guest vs. Host.
-> > +	 */
-> > +	switch (addr_width) {
-> > +	case 57:
-> > +		pasid_set_flpm(pte, 1);
-> > +		break;
-> > +	case 48:
-> > +		pasid_set_flpm(pte, 0);
-> > +		break;
-> > +	default:
-> > +		dev_err(dev, "Invalid paging mode %d\n",
-> > addr_width);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	/* Setup the first level page table pointer in GPA */
-> > +	pasid_set_flptr(pte, (u64)gpgd);
-> > +	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
-> > +		if (!ecap_srs(iommu->ecap)) {
-> > +			pr_err("No supervisor request support on
-> > %s\n",
-> > +			       iommu->name);
-> > +			return -EINVAL;
-> > +		}
-> > +		pasid_set_sre(pte);
-> > +	}
-> > +
-> > +	/* Setup the second level based on the given domain */
-> > +	pgd = domain->pgd;
-> > +
-> > +	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-> > +		pgd = phys_to_virt(dma_pte_addr(pgd));
-> > +		if (!dma_pte_present(pgd)) {
-> > +			dev_err(dev, "Invalid domain page
-> > table\n");
-> > +			return -EINVAL;
-> > +		}
-> > +	}
-> > +	pgd_val = virt_to_phys(pgd);
-> > +	pasid_set_slptr(pte, pgd_val);
-> > +	pasid_set_fault_enable(pte);
-> > +
-> > +	did = domain->iommu_did[iommu->seq_id];
-> > +	pasid_set_domain_id(pte, did);
-> > +
-> > +	pasid_set_address_width(pte, agaw);
-> > +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-> > +
-> > +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-> > +	pasid_set_present(pte);
-> > +
-> > +	if (!ecap_coherent(iommu->ecap))
-> > +		clflush_cache_range(pte, sizeof(*pte));
-> > +
-> > +	if (cap_caching_mode(iommu->cap)) {
-> > +		pasid_cache_invalidation_with_pasid(iommu, did,
-> > pasid);
-> > +		iotlb_invalidation_with_pasid(iommu, did, pasid);
-> > +	} else
-> > +		iommu_flush_write_buffer(iommu);  
-> a bunch of that code is duplicated from
-> intel_pasid_setup_second_level(). I wonder if you could devise a
-> common helper function?
+> >  static void __iommu_detach_device(struct iommu_domain *domain,
+> >  				  struct device *dev)
+> >  {
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 4b92e4b..611388e 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -231,6 +231,8 @@ struct iommu_sva_ops {
+> >   * @detach_pasid_table: detach the pasid table
+> >   * @cache_invalidate: invalidate translation caches
+> >   * @pgsize_bitmap: bitmap of all possible supported page sizes
+> > + * @sva_bind_gpasid: bind guest pasid and mm
+> > + * @sva_unbind_gpasid: unbind guest pasid and mm
+> >   */
+> >  struct iommu_ops {
+> >  	bool (*capable)(enum iommu_cap);
+> > @@ -295,6 +297,10 @@ struct iommu_ops {
+> >  
+> >  	int (*cache_invalidate)(struct iommu_domain *domain,
+> > struct device *dev, struct iommu_cache_invalidate_info *inv_info);
+> > +	int (*sva_bind_gpasid)(struct iommu_domain *domain,
+> > +			struct device *dev, struct
+> > gpasid_bind_data *data); +
+> > +	int (*sva_unbind_gpasid)(struct device *dev, int pasid);  
+> So I am confused now. As the scalable mode PASID table entry contains
+> both the FL and SL PT pointers, will you ever use the
+> attach/detach_pasid_table or are we the only known users on ARM?
 > 
-indeed, duplicated code. will do.
+In scalable mode, we will not use attach pasid table. So ARM will be
+the only user for now.
+Guest PASID table is shadowed, PASID cache flush in the guest will
+trigger sva_bind_gpasid.
+I introduced bind PASID table for the previous VT-d spec that has
+extend context mode (deprecated), where SL is shared by all PASIDs on 
+the same device.
+> >  
+> >  	unsigned long pgsize_bitmap;
+> >  };
+> > @@ -409,6 +415,10 @@ extern void iommu_detach_pasid_table(struct
+> > iommu_domain *domain); extern int iommu_cache_invalidate(struct
+> > iommu_domain *domain, struct device *dev,
+> >  				  struct
+> > iommu_cache_invalidate_info *inv_info); +extern int
+> > iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> > +		struct device *dev, struct gpasid_bind_data *data);
+> > +extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> > +				struct device *dev, int pasid);  
+> definition in !CONFIG_IOMMU_API case?
+right
+
+> >  extern struct iommu_domain *iommu_get_domain_for_dev(struct device
+> > *dev); extern struct iommu_domain *iommu_get_dma_domain(struct
+> > device *dev); extern int iommu_map(struct iommu_domain *domain,
+> > unsigned long iova, diff --git a/include/uapi/linux/iommu.h
+> > b/include/uapi/linux/iommu.h index 61a3fb7..5c95905 100644
+> > --- a/include/uapi/linux/iommu.h
+> > +++ b/include/uapi/linux/iommu.h
+> > @@ -235,6 +235,19 @@ struct iommu_cache_invalidate_info {
+> >  		struct iommu_inv_addr_info addr_info;
+> >  	};
+> >  };
+> > -
+> > +/**
+> > + * struct gpasid_bind_data - Information about device and guest
+> > PASID binding
+> > + * @gcr3:	Guest CR3 value from guest mm
+> > + * @pasid:	Process address space ID used for the guest mm
+> > + * @addr_width:	Guest address width. Paging mode can also
+> > be derived.
+> > + */
+> > +struct gpasid_bind_data {
+> > +	__u64 gcr3;
+> > +	__u32 pasid;
+> > +	__u32 addr_width;
+> > +	__u32 flags;
+> > +#define	IOMMU_SVA_GPASID_SRE	BIT(0) /* supervisor
+> > request */
+> > +	__u8 padding[4];
+> > +};  
+> 
+> 
 > Thanks
 > 
 > Eric
-> > +
-> > +	return 0;
-> > +}
-> > diff --git a/drivers/iommu/intel-pasid.h
-> > b/drivers/iommu/intel-pasid.h index 0999dfe..c4fc1af 100644
-> > --- a/drivers/iommu/intel-pasid.h
-> > +++ b/drivers/iommu/intel-pasid.h
-> > @@ -42,6 +42,7 @@
-> >   * to vmalloc or even module mappings.
-> >   */
-> >  #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-> > +#define PASID_FLAG_NESTED		BIT(1)
 > >  
-> >  struct pasid_dir_entry {
-> >  	u64 val;
-> > @@ -51,6 +52,11 @@ struct pasid_entry {
-> >  	u64 val[8];
-> >  };
-> >  
-> > +#define PASID_ENTRY_PGTT_FL_ONLY	(1)
-> > +#define PASID_ENTRY_PGTT_SL_ONLY	(2)
-> > +#define PASID_ENTRY_PGTT_NESTED		(3)
-> > +#define PASID_ENTRY_PGTT_PT		(4)
-> > +
-> >  /* The representative of a PASID table */
-> >  struct pasid_table {
-> >  	void			*table;		/*
-> > pasid table pointer */ @@ -77,6 +83,11 @@ int
-> > intel_pasid_setup_second_level(struct intel_iommu *iommu, int
-> > intel_pasid_setup_pass_through(struct intel_iommu *iommu, struct
-> > dmar_domain *domain, struct device *dev, int pasid);
-> > +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> > +			struct device *dev, pgd_t *pgd,
-> > +			int pasid, int flags,
-> > +			struct dmar_domain *domain,
-> > +			int addr_width);
-> >  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
-> >  				 struct device *dev, int pasid);
-> >  int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid); 
+> >  #endif /* _UAPI_IOMMU_H */
+> >   
 
 [Jacob Pan]
