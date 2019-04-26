@@ -2,80 +2,65 @@ Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F24BC43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4056AC43219
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:44:43 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 58B0C2084F
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:36:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="Xs33s452"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58B0C2084F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	by mail.kernel.org (Postfix) with ESMTPS id 1B1D6208CA
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:44:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B1D6208CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F042B28CD;
-	Fri, 26 Apr 2019 15:36:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 43F9628D1;
+	Fri, 26 Apr 2019 15:44:41 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A19BF27DF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E0BF12653
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 14:52:31 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com
-	[209.85.160.178])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 30F64860
+	Fri, 26 Apr 2019 15:42:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 26ADD74A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 14:52:31 +0000 (UTC)
-Received: by mail-qt1-f178.google.com with SMTP id g7so4431013qtc.0
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 07:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
-	h=message-id:subject:from:to:cc:date:mime-version
-	:content-transfer-encoding;
-	bh=48zgZZm9rHvCEp1pEqUhC0U3faF4KPhZf7qiHf9zYg0=;
-	b=Xs33s452X6QtzPCMCAtjr0M4pj8fZRIA6lwgvpWwu/cIIYP/lUyae2OIpm6XQLNdKy
-	AWQNsXk+6JWuzUrg6GKOlETU9g2B2AU1vA9bKtiXGdfReOwebMl/ppTKXW2J8Y0dZfke
-	eXBK663QRdQNjUz8h+GoZlZb4zEddEdwng4Y8hUmXSOolJ+rYVzC/OUPSxbF7azdFHa2
-	jR8sYQsEZbSj2OPxHczSLv61il9kWCTO6EAk8jXPZSFIpt8wchRUjbcNC9jGaPa+dPmX
-	v0FQsMmlG4Ik/Tdpqotn/UGz+LGzLLbCmARjsbXN2GOBlVoLTRsehiLvaHRSNtZ+t8XP
-	qa1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:message-id:subject:from:to:cc:date:mime-version
-	:content-transfer-encoding;
-	bh=48zgZZm9rHvCEp1pEqUhC0U3faF4KPhZf7qiHf9zYg0=;
-	b=ChTahcpRN2cC4/6/Aph0XOfyifC3lpcLABn0FuQfI3A56DS0Wr1LJDQJI961xLZ9Wx
-	5Uy2iucdq+F345xCKvMO3DfHsrPRlV90nH8w+CwUAcrvG4Cz/OwA6s/+SJo2CyEM5Awl
-	0IxKmCJlyPP+5RZJdXfzH83Tww9k4YscPRzvtvPSSaeLW+7kHlpx/XPCcag7uZrXiQqZ
-	Bb2iGqra59bEor2xip1303Vc4DCbBrlioSwZOxtH+2HcyL5Ow5ziFZvwD958LoiWoZZm
-	/+69Qgy7i5JWxxBaUiC5BzLGZ7FjbXCIDga3nCPekYA2gRc78j6xQ1KlnJynjaw1rkeN
-	t2fQ==
-X-Gm-Message-State: APjAAAUkzmYJa4PdIPgcqB5xC+cE8998atI2BJDygXHMLZ7JeAAJE2tB
-	p3NaVQNMrn7kfYlHrPnVMjnnWA==
-X-Google-Smtp-Source: APXvYqwAVI9GU8elWrhSomD5TS/PfqIKCx0Zk29tTGQeDfrgZtmKz7RRurmUfZ4VHuVfmHrwY153mw==
-X-Received: by 2002:ac8:379c:: with SMTP id d28mr24803403qtc.91.1556290350226; 
-	Fri, 26 Apr 2019 07:52:30 -0700 (PDT)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
-	[66.187.233.206]) by smtp.gmail.com with ESMTPSA id
-	g24sm3642158qkm.25.2019.04.26.07.52.29
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Fri, 26 Apr 2019 07:52:29 -0700 (PDT)
-Message-ID: <1556290348.6132.6.camel@lca.pw>
-Subject: "iommu/amd: Set exclusion range correctly" causes smartpqi offline
-From: Qian Cai <cai@lca.pw>
-To: jroedel@suse.de
-Date: Fri, 26 Apr 2019 10:52:28 -0400
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-X-Mailman-Approved-At: Fri, 26 Apr 2019 15:34:13 +0000
-Cc: iommu@lists.linux-foundation.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+	Fri, 26 Apr 2019 15:42:13 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+	[10.5.11.16])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 8DF1C3134338;
+	Fri, 26 Apr 2019 15:42:12 +0000 (UTC)
+Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 18C9F5C221;
+	Fri, 26 Apr 2019 15:42:06 +0000 (UTC)
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v2 13/19] iommu/vt-d: Add nested translation support
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556062279-64135-14-git-send-email-jacob.jun.pan@linux.intel.com>
+Message-ID: <b567b35b-4547-89db-fd88-4cef526e2e72@redhat.com>
+Date: Fri, 26 Apr 2019 17:42:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
+MIME-Version: 1.0
+In-Reply-To: <1556062279-64135-14-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.49]);
+	Fri, 26 Apr 2019 15:42:12 +0000 (UTC)
+Cc: Yi L <yi.l.liu@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	Raj Ashok <ashok.raj@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -89,31 +74,191 @@ List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426145228.8ZT-2l9kk5ETjKatBzirzr_5E5nKbogDEWtc5TPFrJo@z>
+Message-ID: <20190426154205.XsoFic3JXxUAkZJXW3IVvcaz_BXTuglhnyT_PRmL86s@z>
 
-QXBwbHlpbmcgc29tZSBtZW1vcnkgcHJlc3N1cmUgd291bGQgY2F1c2VzIHNtYXJ0cHFpIG9mZmxp
-bmUgZXZlbiBpbiB0b2RheSdzCmxpbnV4LW5leHQuIFRoaXMgY2FuIGFsd2F5cyBiZSByZXByb2R1
-Y2VkIGJ5IGEgTFRQIHRlc3QgY2FzZXMgWzFdIG9yIHNvbWV0aW1lcwpqdXN0IGNvbXBpbGluZyBr
-ZXJuZWxzLgoKUmV2ZXJ0aW5nIHRoZSBjb21taXQgImlvbW11L2FtZDogU2V0IGV4Y2x1c2lvbiBy
-YW5nZSBjb3JyZWN0bHkiwqBmaXhlZCB0aGUgaXNzdWUuCgpbwqDCoDIxMy40MzcxMTJdIHNtYXJ0
-cHFpIDAwMDA6MjM6MDAuMDogQU1ELVZpOiBFdmVudCBsb2dnZWQgW0lPX1BBR0VfRkFVTFQKZG9t
-YWluPTB4MDAwMCBhZGRyZXNzPTB4MTAwMCBmbGFncz0weDAwMDBdClvCoMKgMjEzLjQ0NzY1OV0g
-c21hcnRwcWkgMDAwMDoyMzowMC4wOiBBTUQtVmk6IEV2ZW50IGxvZ2dlZCBbSU9fUEFHRV9GQVVM
-VApkb21haW49MHgwMDAwIGFkZHJlc3M9MHgxODAwIGZsYWdzPTB4MDAwMF0KW8KgwqAyMzMuMzYy
-MDEzXSBzbWFydHBxaSAwMDAwOjIzOjAwLjA6IGNvbnRyb2xsZXIgaXMgb2ZmbGluZTogc3RhdHVz
-IGNvZGUgMHgxNDgwMwpbwqDCoDIzMy4zNjkzNTldIHNtYXJ0cHFpIDAwMDA6MjM6MDAuMDogY29u
-dHJvbGxlciBvZmZsaW5lClvCoMKgMjMzLjM4ODkxNV0gcHJpbnRfcmVxX2Vycm9yOiBJL08gZXJy
-b3IsIGRldiBzZGIsIHNlY3RvciAzMzE3MzUyIGZsYWdzIDIwMDAwMDEKW8KgwqAyMzMuMzg4OTIx
-XSBzZCAwOjA6MDowOiBbc2RiXSB0YWcjOTUgVU5LTk9XTigweDIwMDMpIFJlc3VsdDogaG9zdGJ5
-dGU9MHgwMQpkcml2ZXJieXRlPTB4MDAKW8KgwqAyMzMuMzg4OTMxXSBzZCAwOjA6MDowOiBbc2Ri
-XSB0YWcjOTUgQ0RCOiBvcGNvZGU9MHgyYSAyYSAwMCAwMCA1NSA4OSAwMCAwMCAwMQowOCAwMApb
-wqDCoDIzMy4zODkwMDNdIFdyaXRlLWVycm9yIG9uIHN3YXAtZGV2aWNlICgyNTQ6MTo0NDc0NjQw
-KQpbwqDCoDIzMy4zODkwMTVdIFdyaXRlLWVycm9yIG9uIHN3YXAtZGV2aWNlICgyNTQ6MToyMTkw
-Nzc2KQpbwqDCoDIzMy4zODkwMjNdIFdyaXRlLWVycm9yIG9uIHN3YXAtZGV2aWNlICgyNTQ6MTo4
-MzUxOTM2KQoKWzFdIC9vcHQvbHRwL3Rlc3RjYXNlcy9iaW4vbXRlc3QwMSAtcDgwIC13Cl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
-bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Jacob,
+
+On 4/24/19 1:31 AM, Jacob Pan wrote:
+> Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
+> With PASID granular translation type set to 0x11b, translation
+> result from the first level(FL) also subject to a second level(SL)
+> page table translation. This mode is used for SVA virtualization,
+> where FL performs guest virtual to guest physical translation and
+> SL performs guest physical to host physical translation.
+
+The title of the patch sounds a bit misleading to me as this patch
+"just" adds a helper to set the PASID table entry in nested mode. There
+is no caller yet.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> ---
+>  drivers/iommu/intel-pasid.c | 101 ++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/intel-pasid.h |  11 +++++
+>  2 files changed, 112 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+> index d339e8f..04127cf 100644
+> --- a/drivers/iommu/intel-pasid.c
+> +++ b/drivers/iommu/intel-pasid.c
+> @@ -688,3 +688,104 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+>  
+>  	return 0;
+>  }
+> +
+> +/**
+> + * intel_pasid_setup_nested() - Set up PASID entry for nested translation
+> + * which is used for vSVA. The first level page tables are used for
+> + * GVA-GPA translation in the guest, second level page tables are used
+> + * for GPA to HPA translation.
+> + *
+> + * @iommu:      Iommu which the device belong to
+> + * @dev:        Device to be set up for translation
+> + * @pgd:        First level PGD, treated as GPA
+nit: @gpgd
+
+spec naming could be used as well: FLPTPTR: First Level Page
+Translation Pointer
+> + * @pasid:      PASID to be programmed in the device PASID table
+> + * @flags:      Additional info such as supervisor PASID
+> + * @domain:     Domain info for setting up second level page tables
+> + * @addr_width: Address width of the first level (guest)
+> + */
+> +int intel_pasid_setup_nested(struct intel_iommu *iommu,
+> +			struct device *dev, pgd_t *gpgd,
+> +			int pasid, int flags,
+> +			struct dmar_domain *domain,
+> +			int addr_width)
+> +{
+> +	struct pasid_entry *pte;
+> +	struct dma_pte *pgd;
+> +	u64 pgd_val;
+> +	int agaw;
+> +	u16 did;
+> +
+> +	if (!ecap_nest(iommu->ecap)) {
+> +		pr_err("No nested translation support on %s\n",
+> +		       iommu->name);
+IOMMU: %s: ;-)
+> +		return -EINVAL;
+> +	}
+> +
+> +	pte = intel_pasid_get_entry(dev, pasid);
+> +	if (WARN_ON(!pte))
+> +		return -EINVAL;
+> +
+> +	pasid_clear_entry(pte);
+> +
+> +	/* Sanity checking performed by caller to make sure address
+> +	 * width matching in two dimensions:
+> +	 * 1. CPU vs. IOMMU
+> +	 * 2. Guest vs. Host.
+> +	 */
+> +	switch (addr_width) {
+> +	case 57:
+> +		pasid_set_flpm(pte, 1);
+> +		break;
+> +	case 48:
+> +		pasid_set_flpm(pte, 0);
+> +		break;
+> +	default:
+> +		dev_err(dev, "Invalid paging mode %d\n", addr_width);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Setup the first level page table pointer in GPA */
+> +	pasid_set_flptr(pte, (u64)gpgd);
+> +	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
+> +		if (!ecap_srs(iommu->ecap)) {
+> +			pr_err("No supervisor request support on %s\n",
+> +			       iommu->name);
+> +			return -EINVAL;
+> +		}
+> +		pasid_set_sre(pte);
+> +	}
+> +
+> +	/* Setup the second level based on the given domain */
+> +	pgd = domain->pgd;
+> +
+> +	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
+> +		pgd = phys_to_virt(dma_pte_addr(pgd));
+> +		if (!dma_pte_present(pgd)) {
+> +			dev_err(dev, "Invalid domain page table\n");
+> +			return -EINVAL;
+> +		}
+> +	}
+> +	pgd_val = virt_to_phys(pgd);
+> +	pasid_set_slptr(pte, pgd_val);
+> +	pasid_set_fault_enable(pte);
+> +
+> +	did = domain->iommu_did[iommu->seq_id];
+> +	pasid_set_domain_id(pte, did);
+> +
+> +	pasid_set_address_width(pte, agaw);
+> +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+> +
+> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
+> +	pasid_set_present(pte);
+> +
+> +	if (!ecap_coherent(iommu->ecap))
+> +		clflush_cache_range(pte, sizeof(*pte));
+> +
+> +	if (cap_caching_mode(iommu->cap)) {
+> +		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
+> +		iotlb_invalidation_with_pasid(iommu, did, pasid);
+> +	} else
+> +		iommu_flush_write_buffer(iommu);
+a bunch of that code is duplicated from
+intel_pasid_setup_second_level(). I wonder if you could devise a common
+helper function?
+
+Thanks
+
+Eric
+> +
+> +	return 0;
+> +}
+> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+> index 0999dfe..c4fc1af 100644
+> --- a/drivers/iommu/intel-pasid.h
+> +++ b/drivers/iommu/intel-pasid.h
+> @@ -42,6 +42,7 @@
+>   * to vmalloc or even module mappings.
+>   */
+>  #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
+> +#define PASID_FLAG_NESTED		BIT(1)
+>  
+>  struct pasid_dir_entry {
+>  	u64 val;
+> @@ -51,6 +52,11 @@ struct pasid_entry {
+>  	u64 val[8];
+>  };
+>  
+> +#define PASID_ENTRY_PGTT_FL_ONLY	(1)
+> +#define PASID_ENTRY_PGTT_SL_ONLY	(2)
+> +#define PASID_ENTRY_PGTT_NESTED		(3)
+> +#define PASID_ENTRY_PGTT_PT		(4)
+> +
+>  /* The representative of a PASID table */
+>  struct pasid_table {
+>  	void			*table;		/* pasid table pointer */
+> @@ -77,6 +83,11 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+>  int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+>  				   struct dmar_domain *domain,
+>  				   struct device *dev, int pasid);
+> +int intel_pasid_setup_nested(struct intel_iommu *iommu,
+> +			struct device *dev, pgd_t *pgd,
+> +			int pasid, int flags,
+> +			struct dmar_domain *domain,
+> +			int addr_width);
+>  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+>  				 struct device *dev, int pasid);
+>  int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
