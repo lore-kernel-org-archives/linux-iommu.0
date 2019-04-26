@@ -6,45 +6,44 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9EFC43219
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 14:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E9B8C43219
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 14:51:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 373C52077B
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 14:47:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 373C52077B
+	by mail.kernel.org (Postfix) with ESMTPS id 17C592077B
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 14:51:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17C592077B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2ED5227F4;
-	Fri, 26 Apr 2019 14:47:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E0C5327E9;
+	Fri, 26 Apr 2019 14:51:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B60D827E6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D5D1327DF
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 14:45:24 +0000 (UTC)
+	Fri, 26 Apr 2019 14:49:30 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 49841865
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8374982E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 14:45:24 +0000 (UTC)
+	Fri, 26 Apr 2019 14:49:30 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id AD67ED91; Fri, 26 Apr 2019 16:45:22 +0200 (CEST)
-Date: Fri, 26 Apr 2019 16:45:21 +0200
+	id C7C23D91; Fri, 26 Apr 2019 16:49:28 +0200 (CEST)
+Date: Fri, 26 Apr 2019 16:49:27 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Don't request page request irq under
-	dmar_global_lock
-Message-ID: <20190426144521.GI24576@8bytes.org>
-References: <20190419064329.17946-1-baolu.lu@linux.intel.com>
+To: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH next 13/25] iommu/omap: Use dev_get_drvdata()
+Message-ID: <20190426144927.GJ24576@8bytes.org>
+References: <20190423075020.173734-1-wangkefeng.wang@huawei.com>
+	<20190423075020.173734-14-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190419064329.17946-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20190423075020.173734-14-wangkefeng.wang@huawei.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	David Woodhouse <dwmw2@infradead.org>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,11 +60,11 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426144521.B0CrAnQ3FbS-72By552yxX7N0K0OZzB1aOkGy47b0lQ@z>
+Message-ID: <20190426144927.aKMq6FYec8feHrPg5AURmdGwqYvwZN88_Tt5C5VWhpk@z>
 
-On Fri, Apr 19, 2019 at 02:43:29PM +0800, Lu Baolu wrote:
->  drivers/iommu/intel-iommu.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+On Tue, Apr 23, 2019 at 03:50:08PM +0800, Kefeng Wang wrote:
+>  drivers/iommu/omap-iommu.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
 Applied, thanks.
 _______________________________________________
