@@ -6,60 +6,56 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD143C43219
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 17:25:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4953C43218
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 20:10:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 974E92146E
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 17:25:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 974E92146E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9F1AD20693
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 20:10:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F1AD20693
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 74BD12A14;
-	Fri, 26 Apr 2019 17:25:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2F6DE1461;
+	Fri, 26 Apr 2019 20:10:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D967729F3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 85EF7144F
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 17:23:11 +0000 (UTC)
+	Fri, 26 Apr 2019 20:08:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EFDFC87C
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F128686E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 17:23:10 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
-	[10.5.11.15])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 49BC830B4795;
-	Fri, 26 Apr 2019 17:23:10 +0000 (UTC)
-Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id A02295D71A;
-	Fri, 26 Apr 2019 17:23:04 +0000 (UTC)
-Subject: Re: [PATCH v2 19/19] iommu/vt-d: Add svm/sva invalidate function
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+	Fri, 26 Apr 2019 20:08:45 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	26 Apr 2019 13:08:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.60,398,1549958400"; d="scan'208";a="139153816"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga006.jf.intel.com with ESMTP; 26 Apr 2019 13:08:38 -0700
+Date: Fri, 26 Apr 2019 13:11:22 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v2 10/19] iommu/vt-d: Add custom allocator for IOASID
+Message-ID: <20190426131122.2093e3ba@jacob-builder>
+In-Reply-To: <7a79c1cd-eef2-2233-3b31-4d93a6c3b48d@redhat.com>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556062279-64135-20-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <26398960-f484-d5dd-eff5-c44810528194@redhat.com>
-Date: Fri, 26 Apr 2019 19:23:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	<1556062279-64135-11-git-send-email-jacob.jun.pan@linux.intel.com>
+	<7a79c1cd-eef2-2233-3b31-4d93a6c3b48d@redhat.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <1556062279-64135-20-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.46]);
-	Fri, 26 Apr 2019 17:23:10 +0000 (UTC)
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,222 +72,171 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426172303.p0cc26iRpIsGVPB9Qkw6bGFKKDEX3g_gZKFsd8C3o_g@z>
+Message-ID: <20190426201122.lxVeSIZNk-QZjAKSopO-cHgQaytvVhq_elI2kkfsgwY@z>
 
-Hi Jacob,
-On 4/24/19 1:31 AM, Jacob Pan wrote:
-> When Shared Virtual Address (SVA) is enabled for a guest OS via
-> vIOMMU, we need to provide invalidation support at IOMMU API and driver
-> level. This patch adds Intel VT-d specific function to implement
-> iommu passdown invalidate API for shared virtual address.
-> 
-> The use case is for supporting caching structure invalidation
-> of assigned SVM capable devices. Emulated IOMMU exposes queue
-> invalidation capability and passes down all descriptors from the guest
-> to the physical IOMMU.
-> 
-> The assumption is that guest to host device ID mapping should be
-> resolved prior to calling IOMMU driver. Based on the device handle,
-> host IOMMU driver can replace certain fields before submit to the
-> invalidation queue.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> ---
->  drivers/iommu/intel-iommu.c | 159 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 159 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 89989b5..54a3d22 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5338,6 +5338,164 @@ static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
->  	aux_domain_remove_dev(to_dmar_domain(domain), dev);
->  }
->  
-> +/*
-> + * 2D array for converting and sanitizing IOMMU generic TLB granularity to
-> + * VT-d granularity. Invalidation is typically included in the unmap operation
-> + * as a result of DMA or VFIO unmap. However, for assigned device where guest
-> + * could own the first level page tables without being shadowed by QEMU. In
-> + * this case there is no pass down unmap to the host IOMMU as a result of unmap
-> + * in the guest. Only invalidations are trapped and passed down.
-> + * In all cases, only first level TLB invalidation (request with PASID) can be
-> + * passed down, therefore we do not include IOTLB granularity for request
-> + * without PASID (second level).
-> + *
-> + * For an example, to find the VT-d granularity encoding for IOTLB
-> + * type and page selective granularity within PASID:
-> + * X: indexed by iommu cache type
-> + * Y: indexed by enum iommu_inv_granularity
-> + * [IOMMU_INV_TYPE_TLB][IOMMU_INV_GRANU_PAGE_PASID]
-> + *
-> + * Granu_map array indicates validity of the table. 1: valid, 0: invalid
-> + *
-> + */
-> +const static int inv_type_granu_map[NR_IOMMU_CACHE_TYPE][NR_IOMMU_CACHE_INVAL_GRANU] = {
-The size is frozen for a given uapi version so I guess you can hardcode
-the limits for a given version.
-> +	/* PASID based IOTLB, support PASID selective and page selective */
-> +	{0, 1, 1},
-> +	/* PASID based dev TLBs, only support all PASIDs or single PASID */
-> +	{1, 1, 0},
-> +	/* PASID cache */
-> +	{1, 1, 0}
-> +};
-> +
-> +const static u64 inv_type_granu_table[NR_IOMMU_CACHE_TYPE][NR_IOMMU_CACHE_INVAL_GRANU] = {
-> +	/* PASID based IOTLB */
-> +	{0, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID},
-> +	/* PASID based dev TLBs */
-> +	{QI_DEV_IOTLB_GRAN_ALL, QI_DEV_IOTLB_GRAN_PASID_SEL, 0},
-> +	/* PASID cache */
-> +	{QI_PC_ALL_PASIDS, QI_PC_PASID_SEL, 0},
-> +};
-Can't you use a single matrix instead, ie. inv_type_granu_table
+On Wed, 24 Apr 2019 19:27:26 +0200
+Auger Eric <eric.auger@redhat.com> wrote:
 
-> +
-> +static inline int to_vtd_granularity(int type, int granu, u64 *vtd_granu)
-> +{
-> +	if (type >= NR_IOMMU_CACHE_TYPE || granu >= NR_IOMMU_CACHE_INVAL_GRANU ||
-> +		!inv_type_granu_map[type][granu])
-> +		return -EINVAL;
-> +
-> +	*vtd_granu = inv_type_granu_table[type][granu];
-> +
-> +	return 0;
-> +}
-> +
-> +static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules)
-> +{
-> +	u64 nr_pages;
-direct initialization?
-> +	/* VT-d size is encoded as 2^size of 4K pages, 0 for 4k, 9 for 2MB, etc.
-> +	 * IOMMU cache invalidate API passes granu_size in bytes, and number of
-> +	 * granu size in contiguous memory.
-> +	 */
-> +
-> +	nr_pages = (granu_size * nr_granules) >> VTD_PAGE_SHIFT;
-> +	return order_base_2(nr_pages);
-> +}
-> +
-> +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
-> +		struct device *dev, struct iommu_cache_invalidate_info *inv_info)
-> +{
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct device_domain_info *info;
-> +	struct intel_iommu *iommu;
-> +	unsigned long flags;
-> +	int cache_type;
-> +	u8 bus, devfn;
-> +	u16 did, sid;
-> +	int ret = 0;
-> +	u64 granu;
-> +	u64 size;
-> +
-> +	if (!inv_info || !dmar_domain ||
-> +		inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	if (!dev || !dev_is_pci(dev))
-> +		return -ENODEV;
-> +
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +
-> +	spin_lock(&iommu->lock);
-> +	spin_lock_irqsave(&device_domain_lock, flags);
-mix of _irqsave and non _irqsave looks suspicious to me.
-> +	info = iommu_support_dev_iotlb(dmar_domain, iommu, bus, devfn);
-> +	if (!info) {
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +	did = dmar_domain->iommu_did[iommu->seq_id];
-> +	sid = PCI_DEVID(bus, devfn);
-> +	size = to_vtd_size(inv_info->addr_info.granule_size, inv_info->addr_info.nb_granules);
-> +
-> +	for_each_set_bit(cache_type, (unsigned long *)&inv_info->cache, NR_IOMMU_CACHE_TYPE) {
-> +
-> +		ret = to_vtd_granularity(cache_type, inv_info->granularity, &granu);
-> +		if (ret) {
-> +			pr_err("Invalid range type %d, granu %d\n", cache_type,
-s/Invalid range type %d, granu %d/Invalid cache type/granu combination
-(%d/%d)
-> +				inv_info->granularity);
-> +			break;
-> +		}
-> +
-> +		switch (BIT(cache_type)) {
-> +		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> +			if (size && (inv_info->addr_info.addr & ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
-> +				pr_err("Address out of range, 0x%llx, size order %llu\n",
-> +					inv_info->addr_info.addr, size);
-> +				ret = -ERANGE;
-> +				goto out_unlock;
-> +			}
-> +
-> +			qi_flush_piotlb(iommu, did, mm_to_dma_pfn(inv_info->addr_info.addr),
-> +					inv_info->addr_info.pasid,
-> +					size, granu);
-> +
-> +			/*
-> +			 * Always flush device IOTLB if ATS is enabled since guest
-> +			 * vIOMMU exposes CM = 1, no device IOTLB flush will be passed
-> +			 * down. REVISIT: cannot assume Linux guest
-> +			 */
-> +			if (info->ats_enabled) {
-> +				qi_flush_dev_piotlb(iommu, sid, info->pfsid,
-> +						inv_info->addr_info.pasid, info->ats_qdep,
-> +						inv_info->addr_info.addr, size,
-> +						granu);
-> +			}
-> +			break;
-> +		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
-> +			if (info->ats_enabled) {
-> +				qi_flush_dev_piotlb(iommu, sid, info->pfsid,
-> +						inv_info->addr_info.pasid, info->ats_qdep,
-> +						inv_info->addr_info.addr, size,
-> +						granu);
-> +			} else
-> +				pr_warn("Passdown device IOTLB flush w/o ATS!\n");
-> +
-> +			break;
-> +		case IOMMU_CACHE_INV_TYPE_PASID:
-> +			qi_flush_pasid_cache(iommu, did, granu, inv_info->pasid);
-> +
-> +			break;
-> +		default:
-> +			dev_err(dev, "Unsupported IOMMU invalidation type %d\n",
-> +				cache_type);
-> +			ret = -EINVAL;
-> +		}
-> +	}
-> +out_unlock:
-> +	spin_unlock(&iommu->lock);
-> +	spin_unlock_irqrestore(&device_domain_lock, flags);
-I would expect the opposite order
-> +
-> +	return ret;
-> +}
-> +
->  static int intel_iommu_map(struct iommu_domain *domain,
->  			   unsigned long iova, phys_addr_t hpa,
->  			   size_t size, int iommu_prot)
-> @@ -5769,6 +5927,7 @@ const struct iommu_ops intel_iommu_ops = {
->  	.dev_disable_feat	= intel_iommu_dev_disable_feat,
->  	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
->  #ifdef CONFIG_INTEL_IOMMU_SVM
-> +	.cache_invalidate	= intel_iommu_sva_invalidate,
->  	.sva_bind_gpasid	= intel_svm_bind_gpasid,
->  	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
->  #endif
+> Hi Jacob,
 > 
-Thanks
+> On 4/24/19 1:31 AM, Jacob Pan wrote:
+> > When VT-d driver runs in the guest, PASID allocation must be
+> > performed via virtual command interface. This patch register a  
+> registers
+will fix
+> > custom IOASID allocator which takes precedence over the default
+> > IDR based allocator.  
+> nit: s/IDR based// . It is xarray based now.
+right, changed code but not commit message :)
+>  The resulting IOASID allocation will always
+> > come from the host. This ensures that PASID namespace is system-
+> > wide.
+> > 
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/intel-iommu.c | 58
+> > +++++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/intel-iommu.h |  2 ++ 2 files changed, 60
+> > insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index d93c4bd..ec6f22d 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -1711,6 +1711,8 @@ static void free_dmar_iommu(struct
+> > intel_iommu *iommu) if (ecap_prs(iommu->ecap))
+> >  			intel_svm_finish_prq(iommu);
+> >  	}
+> > +	ioasid_unregister_allocator(&iommu->pasid_allocator);
+> > +
+> >  #endif
+> >  }
+> >  
+> > @@ -4811,6 +4813,46 @@ static int __init
+> > platform_optin_force_iommu(void) return 1;
+> >  }
+> >  
+> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
+> > void *data) +{
+> > +	struct intel_iommu *iommu = data;
+> > +	ioasid_t ioasid;
+> > +
+> > +	/*
+> > +	 * VT-d virtual command interface always uses the full 20
+> > bit
+> > +	 * PASID range. Host can partition guest PASID range based
+> > on
+> > +	 * policies but it is out of guest's control.
+> > +	 */  
+> The above comment does not exactly relate to the check below
+> > +	if (min < PASID_MIN || max > PASID_MAX)
+> > +		return -EINVAL;
+> > +
+> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
+> > +		return INVALID_IOASID;
+> > +
+> > +	return ioasid;
+> > +}
+> > +
+> > +static int intel_ioasid_free(ioasid_t ioasid, void *data)
+> > +{
+> > +	struct iommu_pasid_alloc_info *svm;
+> > +	struct intel_iommu *iommu = data;
+> > +
+> > +	if (!iommu || !cap_caching_mode(iommu->cap))
+> > +		return -EINVAL;  
+> can !cap_caching_mode(iommu->cap) be true as the allocator only is set
+> if CM?
+right, should never happen.
+> > +	/*
+> > +	 * Sanity check the ioasid owner is done at upper layer,
+> > e.g. VFIO
+> > +	 * We can only free the PASID when all the devices are
+> > unbond.
+> > +	 */
+> > +	svm = ioasid_find(NULL, ioasid, NULL);
+> > +	if (!svm) {  
+> you can avoid using the local svm variable.
+> > +		pr_warn("Freeing unbond IOASID %d\n", ioasid);  
+> unbound
+> > +		return -EBUSY;  
+> -EINVAL?
+It meant the PASID is still being used, bond to a device doing DMA etc.
+thus -EBUSY. But I will make the free a void function.
+> > +	}
+> > +	vcmd_free_pasid(iommu, ioasid);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  int __init intel_iommu_init(void)
+> >  {
+> >  	int ret = -ENODEV;
+> > @@ -4912,6 +4954,22 @@ int __init intel_iommu_init(void)
+> >  				       "%s", iommu->name);
+> >  		iommu_device_set_ops(&iommu->iommu,
+> > &intel_iommu_ops); iommu_device_register(&iommu->iommu);
+> > +		if (cap_caching_mode(iommu->cap) &&
+> > sm_supported(iommu)) {  
+> so shouldn't you test VCCAP_REG as well?
+> > +			/*
+> > +			 * Register a custom ASID allocator if we
+> > are running
+> > +			 * in a guest, the purpose is to have a
+> > system wide PASID
+> > +			 * namespace among all PASID users.
+> > +			 * There can be multiple vIOMMUs in each
+> > guest but only
+> > +			 * one allocator is active. All vIOMMU
+> > allocators will
+> > +			 * eventually be calling the same host
+> > allocator.
+> > +			 */
+> > +			iommu->pasid_allocator.alloc =
+> > intel_ioasid_alloc;
+> > +			iommu->pasid_allocator.free =
+> > intel_ioasid_free;
+> > +			iommu->pasid_allocator.pdata = (void
+> > *)iommu;
+> > +			ret =
+> > ioasid_register_allocator(&iommu->pasid_allocator);
+> > +			if (ret)
+> > +				pr_warn("Custom PASID allocator
+> > registeration failed\n");  
+> registration
+> > +		}
+> >  	}
+> >  
+> >  	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+> > diff --git a/include/linux/intel-iommu.h
+> > b/include/linux/intel-iommu.h index bff907b..c24c8aa 100644
+> > --- a/include/linux/intel-iommu.h
+> > +++ b/include/linux/intel-iommu.h
+> > @@ -31,6 +31,7 @@
+> >  #include <linux/iommu.h>
+> >  #include <linux/io-64-nonatomic-lo-hi.h>
+> >  #include <linux/dmar.h>
+> > +#include <linux/ioasid.h>
+> >  
+> >  #include <asm/cacheflush.h>
+> >  #include <asm/iommu.h>
+> > @@ -549,6 +550,7 @@ struct intel_iommu {
+> >  #ifdef CONFIG_INTEL_IOMMU_SVM
+> >  	struct page_req_dsc *prq;
+> >  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+> > +	struct ioasid_allocator pasid_allocator; /* Custom
+> > allocator for PASIDs */ #endif
+> >  	struct q_inval  *qi;            /* Queued invalidation
+> > info */ u32 *iommu_state; /* Store iommu states between suspend and
+> > resume.*/ 
+> 
+> Thanks
+> 
+> Eric
 
-Eric
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
