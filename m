@@ -1,21 +1,21 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Don't request page request irq under
- dmar_global_lock
-Date: Fri, 26 Apr 2019 16:45:21 +0200
-Message-ID: <20190426144521.GI24576@8bytes.org>
-References: <20190419064329.17946-1-baolu.lu@linux.intel.com>
+Subject: Re: [PATCH next 13/25] iommu/omap: Use dev_get_drvdata()
+Date: Fri, 26 Apr 2019 16:49:27 +0200
+Message-ID: <20190426144927.GJ24576@8bytes.org>
+References: <20190423075020.173734-1-wangkefeng.wang@huawei.com>
+ <20190423075020.173734-14-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190419064329.17946-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20190423075020.173734-14-wangkefeng.wang@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <yamada.masahiro@socionext.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 19, 2019 at 02:43:29PM +0800, Lu Baolu wrote:
->  drivers/iommu/intel-iommu.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+On Tue, Apr 23, 2019 at 03:50:08PM +0800, Kefeng Wang wrote:
+>  drivers/iommu/omap-iommu.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
 Applied, thanks.
