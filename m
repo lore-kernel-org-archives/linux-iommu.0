@@ -2,81 +2,64 @@ Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E930C43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE71C43219
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 16:18:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F04262077B
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 15:57:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="S0wsh0Vn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F04262077B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	by mail.kernel.org (Postfix) with ESMTPS id 015232053B
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 16:18:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 015232053B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C471F293A;
-	Fri, 26 Apr 2019 15:57:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C9098295F;
+	Fri, 26 Apr 2019 16:18:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 135572714
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EE5622941
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 15:55:16 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f196.google.com (mail-qk1-f196.google.com
-	[209.85.222.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 76B0B2D4
+	Fri, 26 Apr 2019 16:15:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0C5528FA
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 15:55:15 +0000 (UTC)
-Received: by mail-qk1-f196.google.com with SMTP id w73so2126615qkb.13
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 08:55:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
-	h=message-id:subject:from:to:cc:date:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=M1KaF+DSCnWN8ZthCrAegiw+U4FUrxW5sRpTIk7RM0M=;
-	b=S0wsh0VnxEBNrOgR+67oYarfPiEP7S7R+Sdd8KeHAAaJIk49JL0RiKgjzFiz0J+Z7P
-	7FyyVZ9J20UFX5rkf3W3JyYfD9Oqty0UN6WBfZf6i+hhUYGUte42+trt6sUJdYAZcA9O
-	DN0i3LDJsYWLfhWZwrVLHEbcWi7a6Iv6D6YzvKE7Jzg4PnVPEpMZ1+P9Qbi0jEEJabEO
-	CvL2kW60B2OVjW02WR4zlVFQW7LQEuCDRq88jKt24rEkLL6LQbHLIcVBFTSFoGlio/Zm
-	GX0l53jp62D1xByx7mB7GZ7ramo+jiLQtdLZ7mgjMU+Hj8OPNDPphbWu0ixWlR4QfFxb
-	l/8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=M1KaF+DSCnWN8ZthCrAegiw+U4FUrxW5sRpTIk7RM0M=;
-	b=fOo3+2T7qQSSNKbd9tEg3kP1I7/8WOj8yTdIIU5Q1hOEGvmaQ2/TisRZAg0HpAvaQf
-	A+rY05dNd5EThAQG20xHtpmkv3Qv+BD6Fx5514RgCOhP321jCkuq6k6jziB/DeP1DjcS
-	mhTKu3bgmgr+pZWi4pKvHJR6+iDc2Ze/u6WHuyfelAP7MuepoYFvh6JLUnCiYJ+eoJ4m
-	9zsrs6ywvjzu3anbw4O/5oAXBs18T1uxlk8j1HqYmOKgvtN8gOkYNKSVZROuyCRB5z8d
-	OWW4WCN5H9FeazE8V3QVQZOanLp07EeNzVEPIOK6UumXmmVDOzPMGolzPlPWzpyeGyD5
-	5lvA==
-X-Gm-Message-State: APjAAAV7i0JOoKAGpbAZUh/IpxRmdzOcPDTBTxPsECHh0eRhXictbqZP
-	p7LvZmmzI3rW9+MUDMZw+c0jQQ==
-X-Google-Smtp-Source: APXvYqx0B6IxCHYVAJC79ZkHE7/H1twzINBweRC6BFRaN13IwzSa46wZ5jQHJLliIdFBcUh2sVD2uQ==
-X-Received: by 2002:a37:484c:: with SMTP id v73mr35618564qka.37.1556294114426; 
-	Fri, 26 Apr 2019 08:55:14 -0700 (PDT)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
-	[66.187.233.206])
-	by smtp.gmail.com with ESMTPSA id a1sm5063373qkn.58.2019.04.26.08.55.13
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Fri, 26 Apr 2019 08:55:13 -0700 (PDT)
-Message-ID: <1556294112.6132.7.camel@lca.pw>
-Subject: Re: "iommu/amd: Set exclusion range correctly" causes smartpqi offline
-From: Qian Cai <cai@lca.pw>
-To: Joerg Roedel <jroedel@suse.de>
-Date: Fri, 26 Apr 2019 11:55:12 -0400
-In-Reply-To: <20190426152632.GC3173@suse.de>
-References: <1556290348.6132.6.camel@lca.pw> <20190426152632.GC3173@suse.de>
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Cc: iommu@lists.linux-foundation.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+	Fri, 26 Apr 2019 16:15:35 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+	[10.5.11.11])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 8BC3E59467;
+	Fri, 26 Apr 2019 16:15:34 +0000 (UTC)
+Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 8BD4D600C5;
+	Fri, 26 Apr 2019 16:15:28 +0000 (UTC)
+Subject: Re: [PATCH v2 15/19] iommu/vt-d: Add bind guest PASID support
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556062279-64135-16-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <66758de4-2b76-7380-3636-7da1c0a6dc65@redhat.com>
+Date: Fri, 26 Apr 2019 18:15:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
+MIME-Version: 1.0
+In-Reply-To: <1556062279-64135-16-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.39]);
+	Fri, 26 Apr 2019 16:15:34 +0000 (UTC)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -90,38 +73,323 @@ List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426155512.ZhjpoBMgP7qPI10XMpDkaTzztYodETY9R3vTTtODQXE@z>
+Message-ID: <20190426161527.-snFXKYh6fcdo7Za9nkG9n5luRbstf-Khw9oCYew0MQ@z>
 
-T24gRnJpLCAyMDE5LTA0LTI2IGF0IDE3OjI2ICswMjAwLCBKb2VyZyBSb2VkZWwgd3JvdGU6Cj4g
-T24gRnJpLCBBcHIgMjYsIDIwMTkgYXQgMTA6NTI6MjhBTSAtMDQwMCwgUWlhbiBDYWkgd3JvdGU6
-Cj4gPiBBcHBseWluZyBzb21lIG1lbW9yeSBwcmVzc3VyZSB3b3VsZCBjYXVzZXMgc21hcnRwcWkg
-b2ZmbGluZSBldmVuIGluIHRvZGF5J3MKPiA+IGxpbnV4LW5leHQuIFRoaXMgY2FuIGFsd2F5cyBi
-ZSByZXByb2R1Y2VkIGJ5IGEgTFRQIHRlc3QgY2FzZXMgWzFdIG9yCj4gPiBzb21ldGltZXMKPiA+
-IGp1c3QgY29tcGlsaW5nIGtlcm5lbHMuCj4gPiAKPiA+IFJldmVydGluZyB0aGUgY29tbWl0ICJp
-b21tdS9hbWQ6IFNldCBleGNsdXNpb24gcmFuZ2UgY29ycmVjdGx5IsKgZml4ZWQgdGhlCj4gPiBp
-c3N1ZS4KPiA+IAo+ID4gW8KgwqAyMTMuNDM3MTEyXSBzbWFydHBxaSAwMDAwOjIzOjAwLjA6IEFN
-RC1WaTogRXZlbnQgbG9nZ2VkIFtJT19QQUdFX0ZBVUxUCj4gPiBkb21haW49MHgwMDAwIGFkZHJl
-c3M9MHgxMDAwIGZsYWdzPTB4MDAwMF0KPiA+IFvCoMKgMjEzLjQ0NzY1OV0gc21hcnRwcWkgMDAw
-MDoyMzowMC4wOiBBTUQtVmk6IEV2ZW50IGxvZ2dlZCBbSU9fUEFHRV9GQVVMVAo+ID4gZG9tYWlu
-PTB4MDAwMCBhZGRyZXNzPTB4MTgwMCBmbGFncz0weDAwMDBdCj4gPiBbwqDCoDIzMy4zNjIwMTNd
-IHNtYXJ0cHFpIDAwMDA6MjM6MDAuMDogY29udHJvbGxlciBpcyBvZmZsaW5lOiBzdGF0dXMgY29k
-ZQo+ID4gMHgxNDgwMwo+ID4gW8KgwqAyMzMuMzY5MzU5XSBzbWFydHBxaSAwMDAwOjIzOjAwLjA6
-IGNvbnRyb2xsZXIgb2ZmbGluZQo+ID4gW8KgwqAyMzMuMzg4OTE1XSBwcmludF9yZXFfZXJyb3I6
-IEkvTyBlcnJvciwgZGV2IHNkYiwgc2VjdG9yIDMzMTczNTIgZmxhZ3MKPiA+IDIwMDAwMDEKPiA+
-IFvCoMKgMjMzLjM4ODkyMV0gc2QgMDowOjA6MDogW3NkYl0gdGFnIzk1IFVOS05PV04oMHgyMDAz
-KSBSZXN1bHQ6Cj4gPiBob3N0Ynl0ZT0weDAxCj4gPiBkcml2ZXJieXRlPTB4MDAKPiA+IFvCoMKg
-MjMzLjM4ODkzMV0gc2QgMDowOjA6MDogW3NkYl0gdGFnIzk1IENEQjogb3Bjb2RlPTB4MmEgMmEg
-MDAgMDAgNTUgODkgMDAKPiA+IDAwIDAxCj4gPiAwOCAwMAo+ID4gW8KgwqAyMzMuMzg5MDAzXSBX
-cml0ZS1lcnJvciBvbiBzd2FwLWRldmljZSAoMjU0OjE6NDQ3NDY0MCkKPiA+IFvCoMKgMjMzLjM4
-OTAxNV0gV3JpdGUtZXJyb3Igb24gc3dhcC1kZXZpY2UgKDI1NDoxOjIxOTA3NzYpCj4gPiBbwqDC
-oDIzMy4zODkwMjNdIFdyaXRlLWVycm9yIG9uIHN3YXAtZGV2aWNlICgyNTQ6MTo4MzUxOTM2KQo+
-ID4gCj4gPiBbMV0gL29wdC9sdHAvdGVzdGNhc2VzL2Jpbi9tdGVzdDAxIC1wODAgLXcKPiAKPiBJ
-IGNhbid0IGV4cGxhaW4gdGhhdCwgY2FuIHlvdSBwbGVhc2UgYm9vdCB3aXRoICdhbWRfaW9tbXVf
-ZHVtcCcgb24gdGhlCj4ga2VybmVsIGNvbW1hbmQgbGluZSBhbmQgc2VuZCBtZSBkbWVzZyBhZnRl
-ciBib290PwoKaHR0cHM6Ly9naXQuc3IuaHQvfmNhaS9saW51eC1kZWJ1Zy9ibG9iL21hc3Rlci9k
-bWVzZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
-dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
-aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi Jacob,
+
+On 4/24/19 1:31 AM, Jacob Pan wrote:
+> When supporting guest SVA with emulated IOMMU, the guest PASID
+> table is shadowed in VMM. Updates to guest vIOMMU PASID table
+> will result in PASID cache flush which will be passed down to
+> the host as bind guest PASID calls.
+> 
+> For the SL page tables, it will be harvested from device's
+> default domain (request w/o PASID), or aux domain in case of
+> mediated device.
+> 
+>     .-------------.  .---------------------------.
+>     |   vIOMMU    |  | Guest process CR3, FL only|
+>     |             |  '---------------------------'
+>     .----------------/
+>     | PASID Entry |--- PASID cache flush -
+>     '-------------'                       |
+>     |             |                       V
+>     |             |                CR3 in GPA
+>     '-------------'
+> Guest
+> ------| Shadow |--------------------------|--------
+>       v        v                          v
+> Host
+>     .-------------.  .----------------------.
+>     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+>     |             |  '----------------------'
+>     .----------------/  |
+>     | PASID Entry |     V (Nested xlate)
+>     '----------------\.------------------------------.
+>     |             |   |SL for GPA-HPA, default domain|
+>     |             |   '------------------------------'
+>     '-------------'
+> Where:
+>  - FL = First level/stage one page tables
+>  - SL = Second level/stage two page tables
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> ---
+>  drivers/iommu/intel-iommu.c |   4 +
+>  drivers/iommu/intel-svm.c   | 174 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/intel-iommu.h |  10 ++-
+>  include/linux/intel-svm.h   |   7 ++
+>  4 files changed, 193 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 77bbe1b..89989b5 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5768,6 +5768,10 @@ const struct iommu_ops intel_iommu_ops = {
+>  	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+>  	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+>  	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
+> +#ifdef CONFIG_INTEL_IOMMU_SVM
+> +	.sva_bind_gpasid	= intel_svm_bind_gpasid,
+> +	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
+> +#endif
+>  };
+>  
+>  static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 8fff212..0a973c2 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -227,6 +227,180 @@ static const struct mmu_notifier_ops intel_mmuops = {
+>  
+>  static DEFINE_MUTEX(pasid_mutex);
+>  static LIST_HEAD(global_svm_list);
+> +#define for_each_svm_dev() \
+> +	list_for_each_entry(sdev, &svm->devs, list)	\
+> +	if (dev == sdev->dev)				\
+> +
+> +int intel_svm_bind_gpasid(struct iommu_domain *domain,
+> +			struct device *dev,
+> +			struct gpasid_bind_data *data)
+> +{
+> +	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+> +	struct intel_svm_dev *sdev;
+> +	struct intel_svm *svm = NULL;
+> +	struct dmar_domain *ddomain;
+> +	int pasid_max;
+> +	int ret = 0;
+> +
+> +	if (WARN_ON(!iommu) || !data)
+> +		return -EINVAL;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		pasid_max = pci_max_pasids(to_pci_dev(dev));
+> +		if (pasid_max < 0)
+> +			return -EINVAL;
+> +	} else
+> +		pasid_max = 1 << 20;
+> +
+> +	if (data->pasid <= 0 || data->pasid >= pasid_max)
+> +		return -EINVAL;
+> +
+> +	ddomain = to_dmar_domain(domain);
+> +	/* REVISIT:
+> +	 * Sanity check adddress width and paging mode support
+> +	 * width matching in two dimensions:
+> +	 * 1. paging mode CPU <= IOMMU
+> +	 * 2. address width Guest <= Host.
+> +	 */
+> +	mutex_lock(&pasid_mutex);
+> +	svm = ioasid_find(NULL, data->pasid, NULL);
+> +	if (IS_ERR(svm)) {
+> +		ret = PTR_ERR(svm);
+> +		goto out;
+> +	}
+> +	if (svm) {
+> +		if (list_empty(&svm->devs)) {
+> +			dev_err(dev, "GPASID %d has no devices bond but SVA is allocated\n",
+> +				data->pasid);
+> +			ret = -ENODEV; /*
+> +					* If we found svm for the PASID, there must be at
+> +					* least one device bond, otherwise svm should be freed.
+> +					*/
+comment should be put after list_empty I think. In which circumstances
+can it happen, I mean, isn't it a BUG_ON case?
+> +			goto out;
+> +		}
+> +		for_each_svm_dev() {
+> +			/* In case of multiple sub-devices of the same pdev assigned, we should
+> +			 * allow multiple bind calls with the same PASID and pdev.
+> +			 */
+> +			sdev->users++;
+> +			goto out;
+> +		}
+> +	} else {
+> +		/* We come here when PASID has never been bond to a device. */
+> +		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
+> +		if (!svm) {
+> +			ret = -ENOMEM;
+> +			goto out;
+> +		}
+> +		/* REVISIT: upper layer/VFIO can track host process that bind the PASID.
+> +		 * ioasid_set = mm might be sufficient for vfio to check pasid VMM
+> +		 * ownership.
+> +		 */
+> +		svm->mm = get_task_mm(current);
+> +		svm->pasid = data->pasid;
+> +		refcount_set(&svm->refs, 0);
+> +		ioasid_set_data(data->pasid, svm);
+> +		INIT_LIST_HEAD_RCU(&svm->devs);
+> +		INIT_LIST_HEAD(&svm->list);
+> +
+> +		mmput(svm->mm);
+> +	}
+> +	svm->flags |= SVM_FLAG_GUEST_MODE;
+> +	sdev = kzalloc(sizeof(*sdev), GFP_KERNEL);
+> +	if (!sdev) {
+> +		ret = -ENOMEM;
+in case of failure what is the state of svm (you added the
+SVM_FLAG_GUEST_MODE bit typically, is it safe to leave it?)
+> +		goto out;
+> +	}
+> +	sdev->dev = dev;
+> +	sdev->users = 1;
+> +
+> +	/* Set up device context entry for PASID if not enabled already */
+> +	ret = intel_iommu_enable_pasid(iommu, sdev->dev);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to enable PASID capability\n");
+> +		kfree(sdev);
+same here
+> +		goto out;
+> +	}
+> +
+> +	/*
+> +	 * For guest bind, we need to set up PASID table entry as follows:
+> +	 * - FLPM matches guest paging mode
+> +	 * - turn on nested mode
+> +	 * - SL guest address width matching
+> +	 */
+> +	ret = intel_pasid_setup_nested(iommu,
+> +				dev,
+> +				(pgd_t *)data->gcr3,
+> +				data->pasid,
+> +				data->flags,
+> +				ddomain,
+> +				data->addr_width);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to set up PASID %d in nested mode, Err %d\n",
+> +			data->pasid, ret);
+> +		kfree(sdev);
+> +		goto out;
+> +	}
+> +
+> +	init_rcu_head(&sdev->rcu);
+> +	refcount_inc(&svm->refs);
+> +	list_add_rcu(&sdev->list, &svm->devs);
+> + out:
+> +	mutex_unlock(&pasid_mutex);
+> +	return ret;
+> +}
+> +
+> +int intel_svm_unbind_gpasid(struct device *dev, int pasid)
+> +{
+> +	struct intel_svm_dev *sdev;
+> +	struct intel_iommu *iommu;
+> +	struct intel_svm *svm;
+> +	int ret = -EINVAL;
+> +
+> +	mutex_lock(&pasid_mutex);
+> +	iommu = intel_svm_device_to_iommu(dev);
+> +	if (!iommu)
+> +		goto out;
+> +
+> +	svm = ioasid_find(NULL, pasid, NULL);
+> +	if (IS_ERR(svm)) {
+> +		ret = PTR_ERR(svm);
+> +		goto out;
+> +	}
+> +
+> +	if (!svm)
+> +		goto out;
+> +
+> +	for_each_svm_dev() {
+> +		ret = 0;
+> +		sdev->users--;
+> +		if (!sdev->users) {
+> +			list_del_rcu(&sdev->list);
+> +			intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+> +			/* TODO: Drain in flight PRQ for the PASID since it
+> +			 * may get reused soon, we don't want to
+> +			 * confuse with its previous live.
+> +			 * intel_svm_drain_prq(dev, pasid);
+> +			 */
+> +			kfree_rcu(sdev, rcu);
+> +
+> +			if (list_empty(&svm->devs)) {
+> +				list_del(&svm->list);
+> +				kfree(svm);
+> +				/*
+> +				 * We do not free PASID here until explicit call
+> +				 * from the guest to free.
+can you be confident in the guest?
+> +				 */
+> +				ioasid_set_data(pasid, NULL);
+> +			}
+> +		}
+> +		break;
+> +	}
+> + out:
+> +	mutex_unlock(&pasid_mutex);
+> +
+> +	return ret;
+> +}
+>  
+>  int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
+>  {
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 48fa164..5d67d0d4 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -677,7 +677,9 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
+>  int intel_svm_init(struct intel_iommu *iommu);
+>  extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+>  extern int intel_svm_finish_prq(struct intel_iommu *iommu);
+> -
+> +extern int intel_svm_bind_gpasid(struct iommu_domain *domain,
+> +		struct device *dev, struct gpasid_bind_data *data);
+> +extern int intel_svm_unbind_gpasid(struct device *dev, int pasid);
+>  struct svm_dev_ops;
+>  
+>  struct intel_svm_dev {
+> @@ -693,12 +695,16 @@ struct intel_svm_dev {
+>  
+>  struct intel_svm {
+>  	struct mmu_notifier notifier;
+> -	struct mm_struct *mm;
+> +	union {
+> +		struct mm_struct *mm;
+> +		u64 gcr3;
+> +	};
+>  	struct intel_iommu *iommu;
+>  	int flags;
+>  	int pasid;
+>  	struct list_head devs;
+>  	struct list_head list;
+> +	refcount_t refs; /* # of devs bond to the PASID */
+number of devices sharing the same PASID?
+>  };
+>  
+>  extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+> diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+> index e3f7631..34b0a3b 100644
+> --- a/include/linux/intel-svm.h
+> +++ b/include/linux/intel-svm.h
+> @@ -52,6 +52,13 @@ struct svm_dev_ops {
+>   * do such IOTLB flushes automatically.
+>   */
+>  #define SVM_FLAG_SUPERVISOR_MODE	(1<<1)
+> +/*
+> + * The SVM_FLAG_GUEST_MODE flag is used when a guest process bind to a device.
+binds
+> + * In this case the mm_struct is in the guest kernel or userspace, its life
+> + * cycle is managed by VMM and VFIO layer. For IOMMU driver, this API provides
+> + * means to bind/unbind guest CR3 with PASIDs allocated for a device.
+> + */
+> +#define SVM_FLAG_GUEST_MODE	(1<<2)
+>  
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>  
+> 
+
+Thanks
+
+Eric
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
