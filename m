@@ -1,120 +1,47 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 08/19] ioasid: Add custom IOASID allocator
-Date: Fri, 26 Apr 2019 08:19:03 -0700
-Message-ID: <20190426081903.164dcff3@jacob-builder>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1556062279-64135-9-git-send-email-jacob.jun.pan@linux.intel.com>
-        <4ef22c62-0947-8de5-3288-2835ce5fa7a9@redhat.com>
-        <20190425142944.40661941@jacob-builder>
-        <01fe1710-4022-0bf2-b2ff-307b15b9fabb@redhat.com>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: "iommu/amd: Set exclusion range correctly" causes smartpqi
+ offline
+Date: Fri, 26 Apr 2019 17:26:32 +0200
+Message-ID: <20190426152632.GC3173@suse.de>
+References: <1556290348.6132.6.camel@lca.pw>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <01fe1710-4022-0bf2-b2ff-307b15b9fabb@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <1556290348.6132.6.camel@lca.pw>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: Qian Cai <cai@lca.pw>
+Cc: iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 26 Apr 2019 11:06:54 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+On Fri, Apr 26, 2019 at 10:52:28AM -0400, Qian Cai wrote:
+> Applying some memory pressure would causes smartpqi offline even in today's
+> linux-next. This can always be reproduced by a LTP test cases [1] or sometimes
+> just compiling kernels.
+> 
+> Reverting the commit "iommu/amd: Set exclusion range correctly" fixed the issue.
+> 
+> [  213.437112] smartpqi 0000:23:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT
+> domain=0x0000 address=0x1000 flags=0x0000]
+> [  213.447659] smartpqi 0000:23:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT
+> domain=0x0000 address=0x1800 flags=0x0000]
+> [  233.362013] smartpqi 0000:23:00.0: controller is offline: status code 0x14803
+> [  233.369359] smartpqi 0000:23:00.0: controller offline
+> [  233.388915] print_req_error: I/O error, dev sdb, sector 3317352 flags 2000001
+> [  233.388921] sd 0:0:0:0: [sdb] tag#95 UNKNOWN(0x2003) Result: hostbyte=0x01
+> driverbyte=0x00
+> [  233.388931] sd 0:0:0:0: [sdb] tag#95 CDB: opcode=0x2a 2a 00 00 55 89 00 00 01
+> 08 00
+> [  233.389003] Write-error on swap-device (254:1:4474640)
+> [  233.389015] Write-error on swap-device (254:1:2190776)
+> [  233.389023] Write-error on swap-device (254:1:8351936)
+> 
+> [1] /opt/ltp/testcases/bin/mtest01 -p80 -w
 
-> Hi Jacob,
-> 
-> On 4/25/19 11:29 PM, Jacob Pan wrote:
-> > Hi Eric,
-> > 
-> > Thanks for the review.
-> > 
-> > On Thu, 25 Apr 2019 12:03:42 +0200
-> > Auger Eric <eric.auger@redhat.com> wrote:
-> >   
-> >> Hi Jacob,
-> >>
-> >> On 4/24/19 1:31 AM, Jacob Pan wrote:  
-> >>> Sometimes, IOASID allocation must be handled by platform specific
-> >>> code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs
-> >>> need to be allocated by the host via enlightened or paravirt
-> >>> interfaces.
-> >>>
-> >>> This patch adds an extension to the IOASID allocator APIs such
-> >>> that platform drivers can register a custom allocator, possibly
-> >>> at boot time, to take over the allocation. Xarray is still used
-> >>> for tracking and searching purposes internal to the IOASID code.
-> >>> Private data of an IOASID can also be set after the allocation.
-> >>>
-> >>> There can be multiple custom allocators registered but only one is
-> >>> used at a time. In case of hot removal of devices that provides
-> >>> the allocator, all IOASIDs must be freed prior to unregistering
-> >>> the allocator. Default XArray based allocator cannot be mixed with
-> >>> custom allocators, i.e. custom allocators will not be used if
-> >>> there are outstanding IOASIDs allocated by the default XA
-> >>> allocator.    
-> >>
-> >> What's the exact use case behind allowing several custom IOASID
-> >> allocators to be registered?  
-> > It is mainly for supporting multiple PCI segments thus multiple
-> > vIOMMUs. Even though, all allocators will end up calling the host to
-> > allocate PASIDs.  
-> 
-> Yes that was my understanding actually.
-> 
-> Another question is how do you handle the reserved RID_PASID
-> requirement?
-> 
-We always use PASID 0 for request w/o PASID, so it does not go through
-the allocator.
- #define PASID_RID2PASID			0x0
+I can't explain that, can you please boot with 'amd_iommu_dump' on the
+kernel command line and send me dmesg after boot?
 
->  QEMU does not support multiple PCI segments/domains
-> > afaik but others might.  
->  [...]  
->  [...]  
-> > Yes, more clear this way.
-> >   
->  [...]  
-> >> is already in use?  
->  [...]  
-> >> s/The reason is that custom allocator/The reason is that custom
-> >> allocators  
->  [...]  
-> >> This last sentence may be moved to the unregister() kerneldoc  
->  [...]  
-> >> The fact the first registered custom allocator gets automatically
-> >> active was not obvious to me and may deserve a comment.  
->  [...]  
->  [...]  
->  [...]  
->  [...]  
->  [...]  
->  [...]  
->  [...]  
-> >> At this stage it is difficult to assess whether using a BUG_ON() is
-> >> safe here. Who is responsible for freeing the IOASIDs?  
->  [...]  
->  [...]  
-> >> s/data also sanitiy check/data, also sanity check  
-> >>> +		 */
-> >>> +		min = id;
-> >>> +		max = id + 1;
-> >>> +	} else
-> >>> +		default_allocator_used = 1;    
-> >> shouldn't default_allocator_used be protected as well?  
->  [...]  
-> >> wouldn't it be possible to integrate the default io asid allocator
-> >> as any custom allocator, ie. implement an alloc callback using
-> >> xa_alloc. Then the active io allocator could be either a custom or
-> >> a default one.  
-> > That is an interesting idea. I think it is possible.
-> > But since default xa allocator is internal to ioasid infrastructure,
-> > why implement it as a callback?  
-> 
-> I mean your could directly define a static const default_allocator in
-> ioasid.c and assign it by default. Do I miss something?
-> 
-got it, seems cleaner. let me give it a try.
+Thanks,
 
-Thanks
-
-Jacob
+	Joerg
