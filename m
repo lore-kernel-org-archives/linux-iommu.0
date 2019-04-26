@@ -1,78 +1,43 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: iommu/vt-d: drop mm use count if address is not canonical
-Date: Fri, 26 Apr 2019 15:38:46 +0200
-Message-ID: <20190426133846.GC24576@8bytes.org>
-References: <1555492377-79859-1-git-send-email-bianpan2016@163.com>
+Subject: Re: [PATCH v2 6/9] iommu/amd: use helper pci_dev_id
+Date: Fri, 26 Apr 2019 15:47:10 +0200
+Message-ID: <20190426134710.GD24576@8bytes.org>
+References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
+ <f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1555492377-79859-1-git-send-email-bianpan2016@163.com>
+In-Reply-To: <f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pan Bian <bianpan2016@163.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
+To: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Oded Gabbay <oded.gabbay@gmail.com>, Alex Deucher <alexander.deucher@amd.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "David (ChunMing) Zhou" <David1.Zhou@amd.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, David Woodhouse <dwmw2@infradead.org>, Realtek linux nic maintainers <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, Alexandre Torgue <alexandre.torgue@st.com>, Jose Abreu <joabreu@synopsys.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo i Serra <enric.balletbo@>
 List-Id: iommu@lists.linux-foundation.org
 
-[ Adding more people. ]
+On Wed, Apr 24, 2019 at 09:15:25PM +0200, Heiner Kallweit wrote:
+> Use new helper pci_dev_id() to simplify the code.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-On Wed, Apr 17, 2019 at 05:12:57PM +0800, Pan Bian wrote:
-> The use count of svm->mm is incremented by mmget_not_zero. However, it
-> is not dropped when the address is not canonical. This patch fixes the
-> bug.
-> 
-> Fixes: 9d8c3af31607("iommu/vt-d: IOMMU Page Request needs to check if
-> address is canonical.")
-> 
-> Signed-off-by: Pan Bian <bianpan2016@163.com>
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+
 > ---
->  drivers/iommu/intel-svm.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/iommu/amd_iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> index 3a4b09a..2630d2e 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -574,8 +574,10 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  			goto bad_req;
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index f467cc4b4..5cb201422 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -165,7 +165,7 @@ static inline u16 get_pci_device_id(struct device *dev)
+>  {
+>  	struct pci_dev *pdev = to_pci_dev(dev);
 >  
->  		/* If address is not canonical, return invalid response */
-> -		if (!is_canonical_address(address))
-> +		if (!is_canonical_address(address)) {
-> +			mmput(svm->mm);
->  			goto bad_req;
-> +		}
+> -	return PCI_DEVID(pdev->bus->number, pdev->devfn);
+> +	return pci_dev_id(pdev);
+>  }
 >  
->  		down_read(&svm->mm->mmap_sem);
->  		vma = find_extend_vma(svm->mm, address);
-
-I think it is better to move the canonical address check before
-mmget_not_zero() like in the diff below. But I let David and Jacob
-comment on this.
-
-Regards,
-
-	Joerg
-
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 8f87304f915c..5e9e1eee8336 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -586,14 +586,15 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		 * any faults on kernel addresses. */
- 		if (!svm->mm)
- 			goto bad_req;
--		/* If the mm is already defunct, don't handle faults. */
--		if (!mmget_not_zero(svm->mm))
--			goto bad_req;
- 
- 		/* If address is not canonical, return invalid response */
- 		if (!is_canonical_address(address))
- 			goto bad_req;
- 
-+		/* If the mm is already defunct, don't handle faults. */
-+		if (!mmget_not_zero(svm->mm))
-+			goto bad_req;
-+
- 		down_read(&svm->mm->mmap_sem);
- 		vma = find_extend_vma(svm->mm, address);
- 		if (!vma || address < vma->vm_start)
+>  static inline int get_acpihid_device_id(struct device *dev,
+> -- 
+> 2.21.0
+> 
