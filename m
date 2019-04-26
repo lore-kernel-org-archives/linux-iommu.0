@@ -1,57 +1,46 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 17/19] iommu: Add max num of cache and granu types
-Date: Fri, 26 Apr 2019 18:22:46 +0200
-Message-ID: <a9f2c804-24a8-03fb-96ac-0c4661870dd5@redhat.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v2 06/19] drivers core: Add I/O ASID allocator
+Date: Fri, 26 Apr 2019 09:58:46 -0700
+Message-ID: <20190426095846.76a68f1f@jacob-builder>
 References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1556062279-64135-18-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
+        <20190424061903.GB30717@infradead.org>
+        <20190425111912.0e15eb7d@jacob-builder>
+        <856b0457-bd2f-c2af-fdeb-45fe0bd3136b@arm.com>
+        <20190426122115.GA29449@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556062279-64135-18-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
+In-Reply-To: <20190426122115.GA29449@infradead.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Alex Williamson <alex.williamson@redhat.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, "christian.koenig@amd.com" <christian.koenig@amd.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
+On Fri, 26 Apr 2019 05:21:15 -0700
+Christoph Hellwig <hch@infradead.org> wrote:
 
-On 4/24/19 1:31 AM, Jacob Pan wrote:
-> To convert to/from cache types and granularities between generic and
-> VT-d specific counterparts, a 2D arrary is used. Introduce the limits
-array
-> to help define the converstion array size.
-conversion
+> On Fri, Apr 26, 2019 at 12:47:43PM +0100, Jean-Philippe Brucker wrote:
+> > >> On Tue, Apr 23, 2019 at 04:31:06PM -0700, Jacob Pan wrote:  
+> > >>> The allocator doesn't really belong in drivers/iommu because
+> > >>> some drivers would like to allocate PASIDs for devices that
+> > >>> aren't managed by an IOMMU, using the same ID space as IOMMU.
+> > >>> It doesn't really belong in drivers/pci either since platform
+> > >>> device also support PASID. Add the allocator in
+> > >>> drivers/base.    
+> > >>
+> > >> I'd still add it to drivers/iommu, just selectable separately
+> > >> from the core iommu code..  
+> > > Perhaps I misunderstood. If a driver wants to use IOASIDs w/o
+> > > iommu subsystem even turned on, how could selecting from the core
+> > > iommu code help? Could you elaborate on "selectable"?  
+> > 
+> > How about doing the same as CONFIG_IOMMU_IOVA? The code is in
+> > drivers/iommu but can be selected by non-IOMMU_API users,
+> > independently of CONFIG_IOMMU_SUPPORT. It's true that this
+> > allocator will mostly be used by IOMMU drivers.  
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  include/uapi/linux/iommu.h | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index 5c95905..2d8fac8 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -197,6 +197,7 @@ struct iommu_inv_addr_info {
->  	__u64	granule_size;
->  	__u64	nb_granules;
->  };
-> +#define NR_IOMMU_CACHE_INVAL_GRANU	(3)
->  
->  /**
->   * First level/stage invalidation information
-> @@ -235,6 +236,7 @@ struct iommu_cache_invalidate_info {
->  		struct iommu_inv_addr_info addr_info;
->  	};
->  };
-> +#define NR_IOMMU_CACHE_TYPE		(3)
->  /**
->   * struct gpasid_bind_data - Information about device and guest PASID binding
->   * @gcr3:	Guest CR3 value from guest mm
-> 
-Is it really something that needs to be exposed in the uapi?
+> That is exactly what I meant!
 
-Thanks
-
-Eric
+Make sense, will do that in the next round. Thanks!
