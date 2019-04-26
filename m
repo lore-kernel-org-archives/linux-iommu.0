@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F2DC43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6411AC43218
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:50:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0B5C1206E0
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:49:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B5C1206E0
+	by mail.kernel.org (Postfix) with ESMTPS id 3D290206E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 13:50:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D290206E0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 943F027E0;
-	Fri, 26 Apr 2019 13:49:18 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0AC0027DD;
+	Fri, 26 Apr 2019 13:50:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D326527D5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7670E27DC
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 13:47:14 +0000 (UTC)
+	Fri, 26 Apr 2019 13:47:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6669274A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4F331875
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 13:47:14 +0000 (UTC)
+	Fri, 26 Apr 2019 13:47:31 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 11282447; Fri, 26 Apr 2019 15:47:11 +0200 (CEST)
-Date: Fri, 26 Apr 2019 15:47:10 +0200
+	id 590925F7; Fri, 26 Apr 2019 15:47:29 +0200 (CEST)
+Date: Fri, 26 Apr 2019 15:47:28 +0200
 From: Joerg Roedel <joro@8bytes.org>
 To: Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 6/9] iommu/amd: use helper pci_dev_id
-Message-ID: <20190426134710.GD24576@8bytes.org>
+Subject: Re: [PATCH v2 7/9] iommu/vt-d: use helper pci_dev_id
+Message-ID: <20190426134727.GE24576@8bytes.org>
 References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
-	<f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
+	<0889204c-18aa-8a5f-1781-aaf32ee5beba@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <f673e8ac-cc9a-75a6-09b8-35b94bfc868b@gmail.com>
+In-Reply-To: <0889204c-18aa-8a5f-1781-aaf32ee5beba@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: David Airlie <airlied@linux.ie>,
 	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -85,9 +85,9 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426134710.9HxKT61YHN7lxwCISmq9AgBWTBO9CnKVtRipcbbnd-4@z>
+Message-ID: <20190426134728.m7hKiVCysMupb1y3kQaadt7L5ARZaA20W5BNV4wVv-g@z>
 
-On Wed, Apr 24, 2019 at 09:15:25PM +0200, Heiner Kallweit wrote:
+On Wed, Apr 24, 2019 at 09:16:10PM +0200, Heiner Kallweit wrote:
 > Use new helper pci_dev_id() to simplify the code.
 > 
 > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
@@ -95,22 +95,36 @@ On Wed, Apr 24, 2019 at 09:15:25PM +0200, Heiner Kallweit wrote:
 Reviewed-by: Joerg Roedel <jroedel@suse.de>
 
 > ---
->  drivers/iommu/amd_iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iommu/intel-iommu.c         | 2 +-
+>  drivers/iommu/intel_irq_remapping.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index f467cc4b4..5cb201422 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -165,7 +165,7 @@ static inline u16 get_pci_device_id(struct device *dev)
->  {
->  	struct pci_dev *pdev = to_pci_dev(dev);
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index d93c4bd7d..3f475a23a 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1391,7 +1391,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
 >  
-> -	return PCI_DEVID(pdev->bus->number, pdev->devfn);
-> +	return pci_dev_id(pdev);
+>  		/* pdev will be returned if device is not a vf */
+>  		pf_pdev = pci_physfn(pdev);
+> -		info->pfsid = PCI_DEVID(pf_pdev->bus->number, pf_pdev->devfn);
+> +		info->pfsid = pci_dev_id(pf_pdev);
+>  	}
+>  
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+> index 634d8f059..4160aa9f3 100644
+> --- a/drivers/iommu/intel_irq_remapping.c
+> +++ b/drivers/iommu/intel_irq_remapping.c
+> @@ -424,7 +424,7 @@ static int set_msi_sid(struct irte *irte, struct pci_dev *dev)
+>  		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16, data.alias);
+>  	else
+>  		set_irte_sid(irte, SVT_VERIFY_SID_SQ, SQ_ALL_16,
+> -			     PCI_DEVID(dev->bus->number, dev->devfn));
+> +			     pci_dev_id(dev));
+>  
+>  	return 0;
 >  }
->  
->  static inline int get_acpihid_device_id(struct device *dev,
 > -- 
 > 2.21.0
 > 
