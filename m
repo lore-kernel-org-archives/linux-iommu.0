@@ -4,49 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37101C43219
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB2FC43219
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C5822067D
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C5822067D
+	by mail.kernel.org (Postfix) with ESMTPS id B6F072067D
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6F072067D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 80A0E1993;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C1B221996;
 	Sat, 27 Apr 2019 07:13:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A12AD1986
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C2A0B1986
 	for <iommu@lists.linux-foundation.org>;
 	Sat, 27 Apr 2019 07:10:39 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CF0933D0
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2A600854
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 07:10:37 +0000 (UTC)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-	by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7B7EC1A0099;
-	Sat, 27 Apr 2019 09:10:36 +0200 (CEST)
+	Sat, 27 Apr 2019 07:10:39 +0000 (UTC)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+	by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A964820005D;
+	Sat, 27 Apr 2019 09:10:37 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com
 	[134.27.226.22])
-	by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6D9111A000B;
-	Sat, 27 Apr 2019 09:10:36 +0200 (CEST)
+	by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 99BD7200055;
+	Sat, 27 Apr 2019 09:10:37 +0200 (CEST)
 Received: from fsr-ub1864-101.ea.freescale.net
 	(fsr-ub1864-101.ea.freescale.net [10.171.82.13])
-	by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E1EA5205ED;
-	Sat, 27 Apr 2019 09:10:35 +0200 (CEST)
+	by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 19B0A205ED;
+	Sat, 27 Apr 2019 09:10:37 +0200 (CEST)
 From: laurentiu.tudor@nxp.com
 To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com,
 	camelia.groza@nxp.com, leoyang.li@nxp.com
-Subject: [PATCH v2 2/9] soc/fsl/qbman_portals: add APIs to retrieve the
-	probing status
-Date: Sat, 27 Apr 2019 10:10:24 +0300
-Message-Id: <20190427071031.6563-3-laurentiu.tudor@nxp.com>
+Subject: [PATCH v2 4/9] fsl/fman: add API to get the device behind a fman port
+Date: Sat, 27 Apr 2019 10:10:26 +0300
+Message-Id: <20190427071031.6563-5-laurentiu.tudor@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
 References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
@@ -71,240 +70,57 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190427071024.0IGX5exvKx8jFCich_J_9y-iLAn02TwMjyBz7hpg90Y@z>
+Message-ID: <20190427071026.FYIs9r_gZWl9427UNDwV55iUXA1lgm739NVfoJnioX8@z>
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-Add a couple of new APIs to check the probing status of the required
-cpu bound qman and bman portals:
- 'int bman_portals_probed()' and 'int qman_portals_probed()'.
-They return the following values.
- *  1 if qman/bman portals were all probed correctly
- *  0 if qman/bman portals were not yet probed
- * -1 if probing of qman/bman portals failed
-Portals are considered successful probed if no error occurred during
-the probing of any of the portals and if enough portals were probed
-to have one available for each cpu.
-The error handling paths were slightly rearranged in order to fit this
-new functionality without being too intrusive.
-Drivers that use qman/bman portal driver services are required to use
-these APIs before calling any functions exported by these drivers or
-otherwise they will crash the kernel.
-First user will be the dpaa1 ethernet driver, coming in a subsequent
-patch.
+Add an API that retrieves the 'struct device' that the specified fman
+port probed against. The new API will be used in a subsequent iommu
+enablement related patch.
 
 Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/soc/fsl/qbman/bman_portal.c | 20 ++++++++++++++++----
- drivers/soc/fsl/qbman/qman_portal.c | 21 +++++++++++++++++----
- include/soc/fsl/bman.h              |  8 ++++++++
- include/soc/fsl/qman.h              |  9 +++++++++
- 4 files changed, 50 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/freescale/fman/fman_port.c | 14 ++++++++++++++
+ drivers/net/ethernet/freescale/fman/fman_port.h |  2 ++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/drivers/soc/fsl/qbman/bman_portal.c b/drivers/soc/fsl/qbman/bman_portal.c
-index 2c95cf59f3e7..cf4f10d6f590 100644
---- a/drivers/soc/fsl/qbman/bman_portal.c
-+++ b/drivers/soc/fsl/qbman/bman_portal.c
-@@ -32,6 +32,7 @@
- 
- static struct bman_portal *affine_bportals[NR_CPUS];
- static struct cpumask portal_cpus;
-+static int __bman_portals_probed;
- /* protect bman global registers and global data shared among portals */
- static DEFINE_SPINLOCK(bman_lock);
- 
-@@ -87,6 +88,12 @@ static int bman_online_cpu(unsigned int cpu)
- 	return 0;
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
+index ee82ee1384eb..bd76c9730692 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.c
++++ b/drivers/net/ethernet/freescale/fman/fman_port.c
+@@ -1728,6 +1728,20 @@ u32 fman_port_get_qman_channel_id(struct fman_port *port)
  }
- 
-+int bman_portals_probed(void)
-+{
-+	return __bman_portals_probed;
-+}
-+EXPORT_SYMBOL_GPL(bman_portals_probed);
-+
- static int bman_portal_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -104,8 +111,10 @@ static int bman_portal_probe(struct platform_device *pdev)
- 	}
- 
- 	pcfg = devm_kmalloc(dev, sizeof(*pcfg), GFP_KERNEL);
--	if (!pcfg)
-+	if (!pcfg) {
-+		__bman_portals_probed = -1;
- 		return -ENOMEM;
-+	}
- 
- 	pcfg->dev = dev;
- 
-@@ -113,14 +122,14 @@ static int bman_portal_probe(struct platform_device *pdev)
- 					     DPAA_PORTAL_CE);
- 	if (!addr_phys[0]) {
- 		dev_err(dev, "Can't get %pOF property 'reg::CE'\n", node);
--		return -ENXIO;
-+		goto err_ioremap1;
- 	}
- 
- 	addr_phys[1] = platform_get_resource(pdev, IORESOURCE_MEM,
- 					     DPAA_PORTAL_CI);
- 	if (!addr_phys[1]) {
- 		dev_err(dev, "Can't get %pOF property 'reg::CI'\n", node);
--		return -ENXIO;
-+		goto err_ioremap1;
- 	}
- 
- 	pcfg->cpu = -1;
-@@ -128,7 +137,7 @@ static int bman_portal_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq <= 0) {
- 		dev_err(dev, "Can't get %pOF IRQ'\n", node);
--		return -ENXIO;
-+		goto err_ioremap1;
- 	}
- 	pcfg->irq = irq;
- 
-@@ -150,6 +159,7 @@ static int bman_portal_probe(struct platform_device *pdev)
- 	spin_lock(&bman_lock);
- 	cpu = cpumask_next_zero(-1, &portal_cpus);
- 	if (cpu >= nr_cpu_ids) {
-+		__bman_portals_probed = 1;
- 		/* unassigned portal, skip init */
- 		spin_unlock(&bman_lock);
- 		return 0;
-@@ -175,6 +185,8 @@ static int bman_portal_probe(struct platform_device *pdev)
- err_ioremap2:
- 	memunmap(pcfg->addr_virt_ce);
- err_ioremap1:
-+	 __bman_portals_probed = -1;
-+
- 	return -ENXIO;
- }
- 
-diff --git a/drivers/soc/fsl/qbman/qman_portal.c b/drivers/soc/fsl/qbman/qman_portal.c
-index 661c9b234d32..e2186b681d87 100644
---- a/drivers/soc/fsl/qbman/qman_portal.c
-+++ b/drivers/soc/fsl/qbman/qman_portal.c
-@@ -38,6 +38,7 @@ EXPORT_SYMBOL(qman_dma_portal);
- #define CONFIG_FSL_DPA_PIRQ_FAST  1
- 
- static struct cpumask portal_cpus;
-+static int __qman_portals_probed;
- /* protect qman global registers and global data shared among portals */
- static DEFINE_SPINLOCK(qman_lock);
- 
-@@ -220,6 +221,12 @@ static int qman_online_cpu(unsigned int cpu)
- 	return 0;
- }
- 
-+int qman_portals_probed(void)
-+{
-+	return __qman_portals_probed;
-+}
-+EXPORT_SYMBOL_GPL(qman_portals_probed);
-+
- static int qman_portal_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -238,8 +245,10 @@ static int qman_portal_probe(struct platform_device *pdev)
- 	}
- 
- 	pcfg = devm_kmalloc(dev, sizeof(*pcfg), GFP_KERNEL);
--	if (!pcfg)
-+	if (!pcfg) {
-+		__qman_portals_probed = -1;
- 		return -ENOMEM;
-+	}
- 
- 	pcfg->dev = dev;
- 
-@@ -247,19 +256,20 @@ static int qman_portal_probe(struct platform_device *pdev)
- 					     DPAA_PORTAL_CE);
- 	if (!addr_phys[0]) {
- 		dev_err(dev, "Can't get %pOF property 'reg::CE'\n", node);
--		return -ENXIO;
-+		goto err_ioremap1;
- 	}
- 
- 	addr_phys[1] = platform_get_resource(pdev, IORESOURCE_MEM,
- 					     DPAA_PORTAL_CI);
- 	if (!addr_phys[1]) {
- 		dev_err(dev, "Can't get %pOF property 'reg::CI'\n", node);
--		return -ENXIO;
-+		goto err_ioremap1;
- 	}
- 
- 	err = of_property_read_u32(node, "cell-index", &val);
- 	if (err) {
- 		dev_err(dev, "Can't get %pOF property 'cell-index'\n", node);
-+		__qman_portals_probed = -1;
- 		return err;
- 	}
- 	pcfg->channel = val;
-@@ -267,7 +277,7 @@ static int qman_portal_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq <= 0) {
- 		dev_err(dev, "Can't get %pOF IRQ\n", node);
--		return -ENXIO;
-+		goto err_ioremap1;
- 	}
- 	pcfg->irq = irq;
- 
-@@ -291,6 +301,7 @@ static int qman_portal_probe(struct platform_device *pdev)
- 	spin_lock(&qman_lock);
- 	cpu = cpumask_next_zero(-1, &portal_cpus);
- 	if (cpu >= nr_cpu_ids) {
-+		__qman_portals_probed = 1;
- 		/* unassigned portal, skip init */
- 		spin_unlock(&qman_lock);
- 		return 0;
-@@ -321,6 +332,8 @@ static int qman_portal_probe(struct platform_device *pdev)
- err_ioremap2:
- 	memunmap(pcfg->addr_virt_ce);
- err_ioremap1:
-+	__qman_portals_probed = -1;
-+
- 	return -ENXIO;
- }
- 
-diff --git a/include/soc/fsl/bman.h b/include/soc/fsl/bman.h
-index 5b99cb2ea5ef..173e4049d963 100644
---- a/include/soc/fsl/bman.h
-+++ b/include/soc/fsl/bman.h
-@@ -133,5 +133,13 @@ int bman_acquire(struct bman_pool *pool, struct bm_buffer *bufs, u8 num);
-  * failed to probe or 0 if the bman driver did not probed yet.
-  */
- int bman_is_probed(void);
-+/**
-+ * bman_portals_probed - Check if all cpu bound bman portals are probed
-+ *
-+ * Returns 1 if all the required cpu bound bman portals successfully probed,
-+ * -1 if probe errors appeared or 0 if the bman portals did not yet finished
-+ * probing.
-+ */
-+int bman_portals_probed(void);
- 
- #endif	/* __FSL_BMAN_H */
-diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
-index 5cc7af06c1ba..aa31c05a103a 100644
---- a/include/soc/fsl/qman.h
-+++ b/include/soc/fsl/qman.h
-@@ -1194,6 +1194,15 @@ int qman_release_cgrid(u32 id);
-  */
- int qman_is_probed(void);
+ EXPORT_SYMBOL(fman_port_get_qman_channel_id);
  
 +/**
-+ * qman_portals_probed - Check if all cpu bound qman portals are probed
++ * fman_port_get_device
++ * port:	Pointer to the FMan port device
 + *
-+ * Returns 1 if all the required cpu bound qman portals successfully probed,
-+ * -1 if probe errors appeared or 0 if the qman portals did not yet finished
-+ * probing.
++ * Get the 'struct device' associated to the specified FMan port device
++ *
++ * Return: pointer to associated 'struct device'
 + */
-+int qman_portals_probed(void);
++struct device *fman_port_get_device(struct fman_port *port)
++{
++	return port->dev;
++}
++EXPORT_SYMBOL(fman_port_get_device);
 +
- /**
-  * qman_dqrr_get_ithresh - Get coalesce interrupt threshold
-  * @portal: portal to get the value for
+ int fman_port_get_hash_result_offset(struct fman_port *port, u32 *offset)
+ {
+ 	if (port->buffer_offsets.hash_result_offset == ILLEGAL_BASE)
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.h b/drivers/net/ethernet/freescale/fman/fman_port.h
+index 9dbb69f40121..82f12661a46d 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.h
++++ b/drivers/net/ethernet/freescale/fman/fman_port.h
+@@ -157,4 +157,6 @@ int fman_port_get_tstamp(struct fman_port *port, const void *data, u64 *tstamp);
+ 
+ struct fman_port *fman_port_bind(struct device *dev);
+ 
++struct device *fman_port_get_device(struct fman_port *port);
++
+ #endif /* __FMAN_PORT_H */
 -- 
 2.17.1
 
