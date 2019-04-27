@@ -2,57 +2,66 @@ Return-Path: <SRS0=j+PZ=S5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA6BC43218
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F07C43218
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 08:39:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB46F2067D
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB46F2067D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	by mail.kernel.org (Postfix) with ESMTPS id B101B206A3
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 08:39:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B101B206A3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F41C19A8;
-	Sat, 27 Apr 2019 07:13:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 58A8E1994;
+	Sat, 27 Apr 2019 08:39:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 72360198C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5F454198E
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 07:10:42 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 113DD786
+	Sat, 27 Apr 2019 08:37:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A43DC3D0
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 07:10:42 +0000 (UTC)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-	by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id AB7272000C5;
-	Sat, 27 Apr 2019 09:10:40 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com
-	[134.27.226.22])
-	by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9D5CE200004;
-	Sat, 27 Apr 2019 09:10:40 +0200 (CEST)
-Received: from fsr-ub1864-101.ea.freescale.net
-	(fsr-ub1864-101.ea.freescale.net [10.171.82.13])
-	by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 142B3205ED;
-	Sat, 27 Apr 2019 09:10:40 +0200 (CEST)
-From: laurentiu.tudor@nxp.com
-To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com,
-	camelia.groza@nxp.com, leoyang.li@nxp.com
-Subject: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
-Date: Sat, 27 Apr 2019 10:10:31 +0300
-Message-Id: <20190427071031.6563-10-laurentiu.tudor@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	linuxppc-dev@lists.ozlabs.org, davem@davemloft.net,
-	linux-arm-kernel@lists.infradead.org
+	Sat, 27 Apr 2019 08:37:40 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+	[10.5.11.23])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 0052730BD2A7;
+	Sat, 27 Apr 2019 08:37:40 +0000 (UTC)
+Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 8855527C25;
+	Sat, 27 Apr 2019 08:37:34 +0000 (UTC)
+Subject: Re: [PATCH v2 14/19] iommu: Add guest PASID bind function
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556062279-64135-15-git-send-email-jacob.jun.pan@linux.intel.com>
+	<35194a94-ed09-d086-8725-f7e1bdfbb877@redhat.com>
+	<20190426151122.528101b6@jacob-builder>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <cf4ab148-44ba-638e-e531-db0a188ba884@redhat.com>
+Date: Sat, 27 Apr 2019 10:37:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
+MIME-Version: 1.0
+In-Reply-To: <20190426151122.528101b6@jacob-builder>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.45]);
+	Sat, 27 Apr 2019 08:37:40 +0000 (UTC)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,41 +74,197 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190427071031.H-UtgpnVcn9IAw4qDpYBGCa29_uuGZjdydbv5UIfjzI@z>
+Message-ID: <20190427083732.RARaglUFekckUhTvQnt15GFw9sTxlIIHyqP-BLg56JU@z>
 
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Hi Jacob,
 
-Fix issue with the entry indexing in the sg frame cleanup code being
-off-by-1. This problem showed up when doing some basic iperf tests and
-manifested in traffic coming to a halt.
+On 4/27/19 12:11 AM, Jacob Pan wrote:
+> On Fri, 26 Apr 2019 17:53:43 +0200
+> Auger Eric <eric.auger@redhat.com> wrote:
+> 
+>> Hi Jacob,
+>>
+>> On 4/24/19 1:31 AM, Jacob Pan wrote:
+>>> Guest shared virtual address (SVA) may require host to shadow guest
+>>> PASID tables. Guest PASID can also be allocated from the host via
+>>> enlightened interfaces. In this case, guest needs to bind the guest
+>>> mm, i.e. cr3 in guest phisical address to the actual PASID table
+>>> in  
+>> physical
+> got it
+> 
+>>> the host IOMMU. Nesting will be turned on such that guest virtual
+>>> address can go through a two level translation:
+>>> - 1st level translates GVA to GPA
+>>> - 2nd level translates GPA to HPA
+>>> This patch introduces APIs to bind guest PASID data to the assigned
+>>> device entry in the physical IOMMU. See the diagram below for usage
+>>> explaination.
+>>>
+>>>     .-------------.  .---------------------------.
+>>>     |   vIOMMU    |  | Guest process mm, FL only |
+>>>     |             |  '---------------------------'
+>>>     .----------------/
+>>>     | PASID Entry |--- PASID cache flush -
+>>>     '-------------'                       |
+>>>     |             |                       V
+>>>     |             |
+>>>     '-------------'
+>>> Guest
+>>> ------| Shadow |--------------------------|------------
+>>>       v        v                          v
+>>> Host
+>>>     .-------------.  .----------------------.
+>>>     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+>>>     |             |  '----------------------'
+>>>     .----------------/  |
+>>>     | PASID Entry |     V (Nested xlate)
+>>>     '----------------\.---------------------.
+>>>     |             |   |Set SL to GPA-HPA    |
+>>>     |             |   '---------------------'
+>>>     '-------------'
+>>>
+>>> Where:
+>>>  - FL = First level/stage one page tables
+>>>  - SL = Second level/stage two page tables
+>>>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+>>> ---
+>>>  drivers/iommu/iommu.c      | 20 ++++++++++++++++++++
+>>>  include/linux/iommu.h      | 10 ++++++++++
+>>>  include/uapi/linux/iommu.h | 15 ++++++++++++++-
+>>>  3 files changed, 44 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index 498c28a..072f8f3 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -1561,6 +1561,26 @@ int iommu_cache_invalidate(struct
+>>> iommu_domain *domain, struct device *dev, }
+>>>  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+>>>  
+>>> +int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+>>> +			struct device *dev, struct
+>>> gpasid_bind_data *data) +{
+>>> +	if (unlikely(!domain->ops->sva_bind_gpasid))
+>>> +		return -ENODEV;
+>>> +
+>>> +	return domain->ops->sva_bind_gpasid(domain, dev, data);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
+>>> +
+>>> +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct
+>>> device *dev,
+>>> +			int pasid)
+>>> +{
+>>> +	if (unlikely(!domain->ops->sva_unbind_gpasid))
+>>> +		return -ENODEV;
+>>> +
+>>> +	return domain->ops->sva_unbind_gpasid(dev, pasid);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
+>>> +
+>>>  static void __iommu_detach_device(struct iommu_domain *domain,
+>>>  				  struct device *dev)
+>>>  {
+>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>>> index 4b92e4b..611388e 100644
+>>> --- a/include/linux/iommu.h
+>>> +++ b/include/linux/iommu.h
+>>> @@ -231,6 +231,8 @@ struct iommu_sva_ops {
+>>>   * @detach_pasid_table: detach the pasid table
+>>>   * @cache_invalidate: invalidate translation caches
+>>>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+>>> + * @sva_bind_gpasid: bind guest pasid and mm
+>>> + * @sva_unbind_gpasid: unbind guest pasid and mm
+>>>   */
+>>>  struct iommu_ops {
+>>>  	bool (*capable)(enum iommu_cap);
+>>> @@ -295,6 +297,10 @@ struct iommu_ops {
+>>>  
+>>>  	int (*cache_invalidate)(struct iommu_domain *domain,
+>>> struct device *dev, struct iommu_cache_invalidate_info *inv_info);
+>>> +	int (*sva_bind_gpasid)(struct iommu_domain *domain,
+>>> +			struct device *dev, struct
+>>> gpasid_bind_data *data); +
+>>> +	int (*sva_unbind_gpasid)(struct device *dev, int pasid);  
+>> So I am confused now. As the scalable mode PASID table entry contains
+>> both the FL and SL PT pointers, will you ever use the
+>> attach/detach_pasid_table or are we the only known users on ARM?
+>>
+> In scalable mode, we will not use attach pasid table. So ARM will be
+> the only user for now.
+> Guest PASID table is shadowed, PASID cache flush in the guest will
+> trigger sva_bind_gpasid.
+> I introduced bind PASID table for the previous VT-d spec that has
+> extend context mode (deprecated), where SL is shared by all PASIDs on 
+> the same device.
+OK. Thank you for the confirmation.
 
-Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index daede7272768..40420edc9ce6 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -1663,7 +1663,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
- 				 qm_sg_entry_get_len(&sgt[0]), dma_dir);
- 
- 		/* remaining pages were mapped with skb_frag_dma_map() */
--		for (i = 1; i < nr_frags; i++) {
-+		for (i = 1; i <= nr_frags; i++) {
- 			WARN_ON(qm_sg_entry_is_ext(&sgt[i]));
- 
- 			dma_unmap_page(dev, qm_sg_addr(&sgt[i]),
--- 
-2.17.1
+Eric
 
+>>>  
+>>>  	unsigned long pgsize_bitmap;
+>>>  };
+>>> @@ -409,6 +415,10 @@ extern void iommu_detach_pasid_table(struct
+>>> iommu_domain *domain); extern int iommu_cache_invalidate(struct
+>>> iommu_domain *domain, struct device *dev,
+>>>  				  struct
+>>> iommu_cache_invalidate_info *inv_info); +extern int
+>>> iommu_sva_bind_gpasid(struct iommu_domain *domain,
+>>> +		struct device *dev, struct gpasid_bind_data *data);
+>>> +extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+>>> +				struct device *dev, int pasid);  
+>> definition in !CONFIG_IOMMU_API case?
+> right
+> 
+>>>  extern struct iommu_domain *iommu_get_domain_for_dev(struct device
+>>> *dev); extern struct iommu_domain *iommu_get_dma_domain(struct
+>>> device *dev); extern int iommu_map(struct iommu_domain *domain,
+>>> unsigned long iova, diff --git a/include/uapi/linux/iommu.h
+>>> b/include/uapi/linux/iommu.h index 61a3fb7..5c95905 100644
+>>> --- a/include/uapi/linux/iommu.h
+>>> +++ b/include/uapi/linux/iommu.h
+>>> @@ -235,6 +235,19 @@ struct iommu_cache_invalidate_info {
+>>>  		struct iommu_inv_addr_info addr_info;
+>>>  	};
+>>>  };
+>>> -
+>>> +/**
+>>> + * struct gpasid_bind_data - Information about device and guest
+>>> PASID binding
+>>> + * @gcr3:	Guest CR3 value from guest mm
+>>> + * @pasid:	Process address space ID used for the guest mm
+>>> + * @addr_width:	Guest address width. Paging mode can also
+>>> be derived.
+>>> + */
+>>> +struct gpasid_bind_data {
+>>> +	__u64 gcr3;
+>>> +	__u32 pasid;
+>>> +	__u32 addr_width;
+>>> +	__u32 flags;
+>>> +#define	IOMMU_SVA_GPASID_SRE	BIT(0) /* supervisor
+>>> request */
+>>> +	__u8 padding[4];
+>>> +};  
+>>
+>>
+>> Thanks
+>>
+>> Eric
+>>>  
+>>>  #endif /* _UAPI_IOMMU_H */
+>>>   
+> 
+> [Jacob Pan]
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
