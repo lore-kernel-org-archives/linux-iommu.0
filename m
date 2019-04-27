@@ -1,73 +1,70 @@
 From: laurentiu.tudor@nxp.com
-Subject: [PATCH v2 6/9] dpaa_eth: base dma mappings on the fman rx port
-Date: Sat, 27 Apr 2019 10:10:28 +0300
-Message-ID: <20190427071031.6563-7-laurentiu.tudor@nxp.com>
+Subject: [PATCH v2 1/9] soc/fsl/qman: fixup liodns only on ppc targets
+Date: Sat, 27 Apr 2019 10:10:23 +0300
+Message-ID: <20190427071031.6563-2-laurentiu.tudor@nxp.com>
 References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com, camelia.groza@nxp.com, leoyang.li@nxp.com
-Cc: davem@davemloft.net, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net, linux-arm-kernel@lists.infradead.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-The dma transactions initiator is the rx fman port so that's the device
-that the dma mappings should be done. Previously the mappings were done
-through the MAC device which makes no sense because it's neither dma-able
-nor connected in any way to smmu.
+ARM SoCs use SMMU so the liodn fixup done in the qman driver is no
+longer making sense and it also breaks the ICID settings inherited
+from u-boot. Do the fixups only for PPC targets.
 
 Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/soc/fsl/qbman/qman_ccsr.c | 2 +-
+ drivers/soc/fsl/qbman/qman_priv.h | 9 ++++++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 647e90e7434f..cdc7e6d83f77 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2805,8 +2805,15 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	mac_dev = dpaa_mac_dev_get(pdev);
-+	if (IS_ERR(mac_dev)) {
-+		dev_err(&pdev->dev, "dpaa_mac_dev_get() failed\n");
-+		err = PTR_ERR(mac_dev);
-+		goto probe_err;
-+	}
-+
- 	/* device used for DMA mapping */
--	dev = pdev->dev.parent;
-+	dev = fman_port_get_device(mac_dev->port[RX]);
- 	err = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(40));
- 	if (err) {
- 		dev_err(dev, "dma_coerce_mask_and_coherent() failed\n");
-@@ -2831,13 +2838,6 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 
- 	priv->msg_enable = netif_msg_init(debug, DPAA_MSG_DEFAULT);
- 
--	mac_dev = dpaa_mac_dev_get(pdev);
--	if (IS_ERR(mac_dev)) {
--		dev_err(dev, "dpaa_mac_dev_get() failed\n");
--		err = PTR_ERR(mac_dev);
--		goto free_netdev;
--	}
--
- 	/* If fsl_fm_max_frm is set to a higher value than the all-common 1500,
- 	 * we choose conservatively and let the user explicitly set a higher
- 	 * MTU via ifconfig. Otherwise, the user may end up with different MTUs
-@@ -2973,9 +2973,9 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 	qman_release_cgrid(priv->cgr_data.cgr.cgrid);
- free_dpaa_bps:
- 	dpaa_bps_free(priv);
--free_netdev:
- 	dev_set_drvdata(dev, NULL);
- 	free_netdev(net_dev);
-+probe_err:
- 
- 	return err;
+diff --git a/drivers/soc/fsl/qbman/qman_ccsr.c b/drivers/soc/fsl/qbman/qman_ccsr.c
+index 109b38de3176..a6bb43007d03 100644
+--- a/drivers/soc/fsl/qbman/qman_ccsr.c
++++ b/drivers/soc/fsl/qbman/qman_ccsr.c
+@@ -596,7 +596,7 @@ static int qman_init_ccsr(struct device *dev)
  }
+ 
+ #define LIO_CFG_LIODN_MASK 0x0fff0000
+-void qman_liodn_fixup(u16 channel)
++void __qman_liodn_fixup(u16 channel)
+ {
+ 	static int done;
+ 	static u32 liodn_offset;
+diff --git a/drivers/soc/fsl/qbman/qman_priv.h b/drivers/soc/fsl/qbman/qman_priv.h
+index 75a8f905f8f7..04515718cfd9 100644
+--- a/drivers/soc/fsl/qbman/qman_priv.h
++++ b/drivers/soc/fsl/qbman/qman_priv.h
+@@ -193,7 +193,14 @@ extern struct gen_pool *qm_cgralloc; /* CGR ID allocator */
+ u32 qm_get_pools_sdqcr(void);
+ 
+ int qman_wq_alloc(void);
+-void qman_liodn_fixup(u16 channel);
++#ifdef CONFIG_FSL_PAMU
++#define qman_liodn_fixup __qman_liodn_fixup
++#else
++static inline void qman_liodn_fixup(u16 channel)
++{
++}
++#endif
++void __qman_liodn_fixup(u16 channel);
+ void qman_set_sdest(u16 channel, unsigned int cpu_idx);
+ 
+ struct qman_portal *qman_create_affine_portal(
 -- 
 2.17.1
