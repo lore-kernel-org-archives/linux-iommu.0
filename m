@@ -6,53 +6,53 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DEA8C43218
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 01:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE116C43219
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 01:45:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31ADE215EA
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 01:45:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C3D41208CB
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 01:45:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZ953/9P"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31ADE215EA
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="cnp4kITl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3D41208CB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 90AC9194E;
-	Sat, 27 Apr 2019 01:44:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C08821958;
+	Sat, 27 Apr 2019 01:44:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 257BA12DE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DDDE112DE
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 01:42:15 +0000 (UTC)
+	Sat, 27 Apr 2019 01:43:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D453E3D0
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9EBED3D0
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 01:42:14 +0000 (UTC)
+	Sat, 27 Apr 2019 01:43:18 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
 	[73.47.72.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 13961208CB;
-	Sat, 27 Apr 2019 01:42:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id D90912168B;
+	Sat, 27 Apr 2019 01:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556329334;
-	bh=NAoD3QM4sVU+r7UMxQfw72fpHDaYZHg12F1FhLYAurs=;
+	s=default; t=1556329398;
+	bh=PK+mpmAm7MUkBeFcoMfzY206FIHmnQKT5jAUS2yrLkI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lZ953/9PrO+p4GqrAxaaXtATdb1cvGuo7BbvVCgbYUrj9BBKBLLOQwiUal50mHu8e
-	5ljAGg/worwAkpKwz7/h85/b8YJvq1X+trXCXwPBjLPSsSCNJZTfNLWfFKzmHH4lKb
-	9YrMULXQHIIkVApdKmRfL+f9VY2AiyoLod3lppvk=
+	b=cnp4kITlg75W5ifoCgKzSY4YjP4ampfIGxKYeC7MB7arWFtqE0LxOl6mFOluDnilg
+	IUxBo3Z8cg+S9/NvbK1u1lHt/ln3uFVWlGYRNqnYrAeRnEE1FpBcMlkwM0IJr4FSgb
+	bo6WLW3a6RFPfQ3vZAWoCOwbuXbBXawxE+Dm3b3Y=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 50/53] iommu/amd: Set exclusion range correctly
-Date: Fri, 26 Apr 2019 21:40:47 -0400
-Message-Id: <20190427014051.7522-50-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 30/32] iommu/amd: Set exclusion range correctly
+Date: Fri, 26 Apr 2019 21:42:21 -0400
+Message-Id: <20190427014224.8274-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190427014051.7522-1-sashal@kernel.org>
-References: <20190427014051.7522-1-sashal@kernel.org>
+In-Reply-To: <20190427014224.8274-1-sashal@kernel.org>
+References: <20190427014224.8274-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -74,7 +74,7 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190427014047.X0EXo88DVfahVfIGi_xqPBCakcVcOLakkCkZ3phfM5E@z>
+Message-ID: <20190427014221.NvcJP_2jKyB5ykkeBadAIyuWUvNTwAD2d8IMh0J3gko@z>
 
 From: Joerg Roedel <jroedel@suse.de>
 
@@ -96,10 +96,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e062ab9687c7..5689e07799e3 100644
+index b97984a5ddad..9b3d8fd5f7c1 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -356,7 +356,7 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
+@@ -355,7 +355,7 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
  static void iommu_set_exclusion_range(struct amd_iommu *iommu)
  {
  	u64 start = iommu->exclusion_start & PAGE_MASK;
