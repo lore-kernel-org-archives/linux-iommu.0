@@ -1,142 +1,57 @@
-From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Date: Fri, 26 Apr 2019 20:56:43 -0300
-Message-ID: <871s1o1ft0.fsf@morokweng.localdomain>
-References: <20190129134750-mutt-send-email-mst@kernel.org> <877eefxvyb.fsf@morokweng.localdomain> <20190204144048-mutt-send-email-mst@kernel.org> <87ef71seve.fsf@morokweng.localdomain> <20190320171027-mutt-send-email-mst@kernel.org> <87tvfvbwpb.fsf@morokweng.localdomain> <20190323165456-mutt-send-email-mst@kernel.org> <87a7go71hz.fsf@morokweng.localdomain> <20190419190258-mutt-send-email-mst@kernel.org> <875zr228zf.fsf@morokweng.localdomain> <20190424210813-mutt-send-email-mst@kernel.org>
+From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH AUTOSEL 5.0 75/79] iommu/amd: Set exclusion range correctly
+Date: Fri, 26 Apr 2019 21:38:34 -0400
+Message-ID: <20190427013838.6596-75-sashal@kernel.org>
+References: <20190427013838.6596-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20190424210813-mutt-send-email-mst@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>, Alexey Kardashevskiy <aik@linux.ibm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ram Pai <linuxram@us.ibm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Michael Roth <mdroth@linux.vnet.ibm.com>, Mike Anderson <andmike@linux.ibm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190427013838.6596-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Michael S. Tsirkin <mst@redhat.com> writes:
+[ Upstream commit 3c677d206210f53a4be972211066c0f1cd47fe12 ]
 
-> On Wed, Apr 24, 2019 at 10:01:56PM -0300, Thiago Jung Bauermann wrote:
->>
->> Michael S. Tsirkin <mst@redhat.com> writes:
->>
->> > On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
->> >>
->> >> Michael S. Tsirkin <mst@redhat.com> writes:
->> >>
->> >> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
->> >> >>
->> >> >> Michael S. Tsirkin <mst@redhat.com> writes:
->> >> >>
->> >> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
->> >> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
->> >> >> >> only ever try to access memory addresses that are supplied to it by the
->> >> >> >> guest, so all of the secure guest memory that the host cares about is
->> >> >> >> accessible:
->> >> >> >>
->> >> >> >>     If this feature bit is set to 0, then the device has same access to
->> >> >> >>     memory addresses supplied to it as the driver has. In particular,
->> >> >> >>     the device will always use physical addresses matching addresses
->> >> >> >>     used by the driver (typically meaning physical addresses used by the
->> >> >> >>     CPU) and not translated further, and can access any address supplied
->> >> >> >>     to it by the driver. When clear, this overrides any
->> >> >> >>     platform-specific description of whether device access is limited or
->> >> >> >>     translated in any way, e.g. whether an IOMMU may be present.
->> >> >> >>
->> >> >> >> All of the above is true for POWER guests, whether they are secure
->> >> >> >> guests or not.
->> >> >> >>
->> >> >> >> Or are you saying that a virtio device may want to access memory
->> >> >> >> addresses that weren't supplied to it by the driver?
->> >> >> >
->> >> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
->> >> >> > specific encrypted memory regions that driver has access to but device
->> >> >> > does not. that seems to violate the constraint.
->> >> >>
->> >> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
->> >> >> the device can ignore the IOMMU for all practical purposes I would
->> >> >> indeed say that the logic would apply to IOMMUs as well. :-)
->> >> >>
->> >> >> I guess I'm still struggling with the purpose of signalling to the
->> >> >> driver that the host may not have access to memory addresses that it
->> >> >> will never try to access.
->> >> >
->> >> > For example, one of the benefits is to signal to host that driver does
->> >> > not expect ability to access all memory. If it does, host can
->> >> > fail initialization gracefully.
->> >>
->> >> But why would the ability to access all memory be necessary or even
->> >> useful? When would the host access memory that the driver didn't tell it
->> >> to access?
->> >
->> > When I say all memory I mean even memory not allowed by the IOMMU.
->>
->> Yes, but why? How is that memory relevant?
->
-> It's relevant when driver is not trusted to only supply correct
-> addresses. The feature was originally designed to support userspace
-> drivers within guests.
+The exlcusion range limit register needs to contain the
+base-address of the last page that is part of the range, as
+bits 0-11 of this register are treated as 0xfff by the
+hardware for comparisons.
 
-Ah, thanks for clarifying. I don't think that's a problem in our case.
-If the guest provides an incorrect address, the hardware simply won't
-allow the host to access it.
+So correctly set the exclusion range in the hardware to the
+last page which is _in_ the range.
 
->> >> >> > Another idea is maybe something like virtio-iommu?
->> >> >>
->> >> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
->> >> >> bypass? If so, it's an interesting idea for new guests but it doesn't
->> >> >> help with guests that are out today in the field, which don't have A
->> >> >> virtio-iommu driver.
->> >> >
->> >> > I presume legacy guests don't use encrypted memory so why do we
->> >> > worry about them at all?
->> >>
->> >> They don't use encrypted memory, but a host machine will run a mix of
->> >> secure and legacy guests. And since the hypervisor doesn't know whether
->> >> a guest will be secure or not at the time it is launched, legacy guests
->> >> will have to be launched with the same configuration as secure guests.
->> >
->> > OK and so I think the issue is that hosts generally fail if they set
->> > ACCESS_PLATFORM and guests do not negotiate it.
->> > So you can not just set ACCESS_PLATFORM for everyone.
->> > Is that the issue here?
->>
->> Yes, that is one half of the issue. The other is that even if hosts
->> didn't fail, existing legacy guests wouldn't "take the initiative" of
->> not negotiating ACCESS_PLATFORM to get the improved performance. They'd
->> have to be modified to do that.
->
-> So there's a non-encrypted guest, hypervisor wants to set
-> ACCESS_PLATFORM to allow encrypted guests but that will slow down legacy
-> guests since their vIOMMU emulation is very slow.
+Fixes: b2026aa2dce44 ('x86, AMD IOMMU: add functions for programming IOMMU MMIO space')
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes.
-
-> So enabling support for encryption slows down non-encrypted guests. Not
-> great but not the end of the world, considering even older guests that
-> don't support ACCESS_PLATFORM are completely broken and you do not seem
-> to be too worried by that.
-
-Well, I guess that would be the third half of the issue. :-)
-
-> For future non-encrypted guests, bypassing the emulated IOMMU for when
-> that emulated IOMMU is very slow might be solvable in some other way,
-> e.g. with virtio-iommu. Which reminds me, could you look at
-> virtio-iommu as a solution for some of the issues?
-> Review of that patchset from that POV would be appreciated.
-
-Yes, I will have a look. As you mentioned already, virtio-iommu doesn't
-define a way to request iommu bypass for a device so that would have to
-be added.
-
-Though to be honest in practice I don't think such a feature in
-virtio-iommu would make things easier for us, at least in the short
-term. It would take the same effort to define a powerpc-specific
-hypercall to accomplish the same thing (easier, in fact since we
-wouldn't have to implement the rest of virtio-iommu). In fact, there
-already is such hypercall, but it is only defined for VIO devices
-(RTAS_IBM_SET_TCE_BYPASS in QEMU). We would have to make it work on
-virtio devices as well.
-
---
-Thiago Jung Bauermann
-IBM Linux Technology Center
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 66123b911ec8..8ae6b350e64c 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -358,7 +358,7 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
+ static void iommu_set_exclusion_range(struct amd_iommu *iommu)
+ {
+ 	u64 start = iommu->exclusion_start & PAGE_MASK;
+-	u64 limit = (start + iommu->exclusion_length) & PAGE_MASK;
++	u64 limit = (start + iommu->exclusion_length - 1) & PAGE_MASK;
+ 	u64 entry;
+ 
+ 	if (!iommu->exclusion_start)
+-- 
+2.19.1
