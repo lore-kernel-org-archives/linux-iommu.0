@@ -1,57 +1,54 @@
-From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.14 30/32] iommu/amd: Set exclusion range correctly
-Date: Fri, 26 Apr 2019 21:42:21 -0400
-Message-ID: <20190427014224.8274-30-sashal@kernel.org>
-References: <20190427014224.8274-1-sashal@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190427014224.8274-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: laurentiu.tudor@nxp.com
+Subject: [PATCH v2 0/9] Prerequisites for NXP LS104xA SMMU enablement
+Date: Sat, 27 Apr 2019 10:10:22 +0300
+Message-ID: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com, camelia.groza@nxp.com, leoyang.li@nxp.com
+Cc: davem@davemloft.net, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-[ Upstream commit 3c677d206210f53a4be972211066c0f1cd47fe12 ]
+This patch series contains several fixes in preparation for SMMU
+support on NXP LS1043A and LS1046A chips. Once these get picked up,
+I'll submit the actual SMMU enablement patches consisting in the
+required device tree changes.
 
-The exlcusion range limit register needs to contain the
-base-address of the last page that is part of the range, as
-bits 0-11 of this register are treated as 0xfff by the
-hardware for comparisons.
+This patch series contains only part of the previously submitted one,
+(including also the device tree changes) available here:
 
-So correctly set the exclusion range in the hardware to the
-last page which is _in_ the range.
+    https://patchwork.kernel.org/cover/10634443/
 
-Fixes: b2026aa2dce44 ('x86, AMD IOMMU: add functions for programming IOMMU MMIO space')
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+ - dropped patches dealing with mapping reserved memory in iommu
+ - changed logic for qman portal probe status (Leo)
+ - moved "#ifdef CONFIG_PAMU" in header file (Leo)
+ - rebased on v5.1.0-rc5
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index b97984a5ddad..9b3d8fd5f7c1 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -355,7 +355,7 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
- static void iommu_set_exclusion_range(struct amd_iommu *iommu)
- {
- 	u64 start = iommu->exclusion_start & PAGE_MASK;
--	u64 limit = (start + iommu->exclusion_length) & PAGE_MASK;
-+	u64 limit = (start + iommu->exclusion_length - 1) & PAGE_MASK;
- 	u64 entry;
- 
- 	if (!iommu->exclusion_start)
+Laurentiu Tudor (9):
+  soc/fsl/qman: fixup liodns only on ppc targets
+  soc/fsl/qbman_portals: add APIs to retrieve the probing status
+  fsl/fman: backup and restore ICID registers
+  fsl/fman: add API to get the device behind a fman port
+  dpaa_eth: defer probing after qbman
+  dpaa_eth: base dma mappings on the fman rx port
+  dpaa_eth: fix iova handling for contiguous frames
+  dpaa_eth: fix iova handling for sg frames
+  dpaa_eth: fix SG frame cleanup
+
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 136 ++++++++++++------
+ drivers/net/ethernet/freescale/fman/fman.c    |  35 ++++-
+ drivers/net/ethernet/freescale/fman/fman.h    |   4 +
+ .../net/ethernet/freescale/fman/fman_port.c   |  14 ++
+ .../net/ethernet/freescale/fman/fman_port.h   |   2 +
+ drivers/soc/fsl/qbman/bman_portal.c           |  20 ++-
+ drivers/soc/fsl/qbman/qman_ccsr.c             |   2 +-
+ drivers/soc/fsl/qbman/qman_portal.c           |  21 ++-
+ drivers/soc/fsl/qbman/qman_priv.h             |   9 +-
+ include/soc/fsl/bman.h                        |   8 ++
+ include/soc/fsl/qman.h                        |   9 ++
+ 11 files changed, 202 insertions(+), 58 deletions(-)
+
 -- 
-2.19.1
+2.17.1
