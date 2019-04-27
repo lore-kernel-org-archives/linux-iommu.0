@@ -1,114 +1,63 @@
-Return-Path: <SRS0=codQ=S4=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=j+PZ=S5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E52C43218
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 23:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BD9C43218
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 01:43:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7DC4220869
-	for <iommu@archiver.kernel.org>; Fri, 26 Apr 2019 23:59:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7DC4220869
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6382E208CB
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 01:43:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCGz59xo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6382E208CB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F370E18B3;
-	Fri, 26 Apr 2019 23:59:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 52D091941;
+	Sat, 27 Apr 2019 01:43:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B830AF03
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CBD8018CB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 23:57:02 +0000 (UTC)
+	Sat, 27 Apr 2019 01:40:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
-	[148.163.158.5])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BFABD3D0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 832A7786
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Apr 2019 23:57:00 +0000 (UTC)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x3QNiGe4045436
-	for <iommu@lists.linux-foundation.org>; Fri, 26 Apr 2019 19:56:59 -0400
-Received: from e32.co.us.ibm.com (e32.co.us.ibm.com [32.97.110.150])
-	by mx0b-001b2d01.pphosted.com with ESMTP id 2s49t4vu2k-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Fri, 26 Apr 2019 19:56:59 -0400
-Received: from localhost
-	by e32.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
-	Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
-	Sat, 27 Apr 2019 00:56:58 +0100
-Received: from b03cxnp08026.gho.boulder.ibm.com (9.17.130.18)
-	by e32.co.us.ibm.com (192.168.1.132) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Sat, 27 Apr 2019 00:56:53 +0100
-Received: from b03ledav006.gho.boulder.ibm.com
-	(b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-	by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x3QNupCu10879282
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Fri, 26 Apr 2019 23:56:51 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A725DC6057;
-	Fri, 26 Apr 2019 23:56:51 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 17FABC6055;
-	Fri, 26 Apr 2019 23:56:48 +0000 (GMT)
-Received: from morokweng.localdomain (unknown [9.85.148.98])
-	by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTPS;
-	Fri, 26 Apr 2019 23:56:47 +0000 (GMT)
-References: <20190129134750-mutt-send-email-mst@kernel.org>
-	<877eefxvyb.fsf@morokweng.localdomain>
-	<20190204144048-mutt-send-email-mst@kernel.org>
-	<87ef71seve.fsf@morokweng.localdomain>
-	<20190320171027-mutt-send-email-mst@kernel.org>
-	<87tvfvbwpb.fsf@morokweng.localdomain>
-	<20190323165456-mutt-send-email-mst@kernel.org>
-	<87a7go71hz.fsf@morokweng.localdomain>
-	<20190419190258-mutt-send-email-mst@kernel.org>
-	<875zr228zf.fsf@morokweng.localdomain>
-	<20190424210813-mutt-send-email-mst@kernel.org>
-User-agent: mu4e 1.0; emacs 26.1
-From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-In-reply-to: <20190424210813-mutt-send-email-mst@kernel.org>
-Date: Fri, 26 Apr 2019 20:56:43 -0300
+	Sat, 27 Apr 2019 01:40:39 +0000 (UTC)
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
+	[73.47.72.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id A20B920B7C;
+	Sat, 27 Apr 2019 01:40:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1556329239;
+	bh=UVA3yvFV5tH9vDh/RCEbwMXNGKInmZ2GkF6zR1ML0YE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=fCGz59xos6ng4bPVf3e89p9DxjioNkaHH8jAi5mVi9Hm1zQQ5q3x/Iz06nc/6q/Bv
+	bb4X2pg0yGoS6YjOKNP0UX2qfBcjhK1FqLXQplRVKJMiVITZqoFXHUgHazHgVNkW32
+	UfWwBAkjetI+TMMEFqcpWHB6hnBckbQZWKvgtjkI=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.0 75/79] iommu/amd: Set exclusion range correctly
+Date: Fri, 26 Apr 2019 21:38:34 -0400
+Message-Id: <20190427013838.6596-75-sashal@kernel.org>
+X-Mailer: git-send-email 2.19.1
+In-Reply-To: <20190427013838.6596-1-sashal@kernel.org>
+References: <20190427013838.6596-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-x-cbid: 19042623-0004-0000-0000-000015048871
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011001; HX=3.00000242; KW=3.00000007;
-	PH=3.00000004; SC=3.00000285; SDB=6.01194867; UDB=6.00626493;
-	IPR=6.00975701; 
-	MB=3.00026613; MTD=3.00000008; XFM=3.00000015; UTC=2019-04-26 23:56:56
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19042623-0005-0000-0000-00008B6B307A
-Message-Id: <871s1o1ft0.fsf@morokweng.localdomain>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-04-26_16:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1904260151
-Cc: Mike Anderson <andmike@linux.ibm.com>,
-	Michael Roth <mdroth@linux.vnet.ibm.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
-	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	Paul Mackerras <paulus@ozlabs.org>,
-	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
-	Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+	Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -125,136 +74,42 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190426235643.jUEof2wsd_zgZ2pK_bUfutM4dJpukpJX4fOEFRl1A2w@z>
+Message-ID: <20190427013834.MAW8vq34ACVQ0cB30VuYykptz_7-nrPuXI31cfUtbE8@z>
 
+From: Joerg Roedel <jroedel@suse.de>
 
-Michael S. Tsirkin <mst@redhat.com> writes:
+[ Upstream commit 3c677d206210f53a4be972211066c0f1cd47fe12 ]
 
-> On Wed, Apr 24, 2019 at 10:01:56PM -0300, Thiago Jung Bauermann wrote:
->>
->> Michael S. Tsirkin <mst@redhat.com> writes:
->>
->> > On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
->> >>
->> >> Michael S. Tsirkin <mst@redhat.com> writes:
->> >>
->> >> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
->> >> >>
->> >> >> Michael S. Tsirkin <mst@redhat.com> writes:
->> >> >>
->> >> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
->> >> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
->> >> >> >> only ever try to access memory addresses that are supplied to it by the
->> >> >> >> guest, so all of the secure guest memory that the host cares about is
->> >> >> >> accessible:
->> >> >> >>
->> >> >> >>     If this feature bit is set to 0, then the device has same access to
->> >> >> >>     memory addresses supplied to it as the driver has. In particular,
->> >> >> >>     the device will always use physical addresses matching addresses
->> >> >> >>     used by the driver (typically meaning physical addresses used by the
->> >> >> >>     CPU) and not translated further, and can access any address supplied
->> >> >> >>     to it by the driver. When clear, this overrides any
->> >> >> >>     platform-specific description of whether device access is limited or
->> >> >> >>     translated in any way, e.g. whether an IOMMU may be present.
->> >> >> >>
->> >> >> >> All of the above is true for POWER guests, whether they are secure
->> >> >> >> guests or not.
->> >> >> >>
->> >> >> >> Or are you saying that a virtio device may want to access memory
->> >> >> >> addresses that weren't supplied to it by the driver?
->> >> >> >
->> >> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
->> >> >> > specific encrypted memory regions that driver has access to but device
->> >> >> > does not. that seems to violate the constraint.
->> >> >>
->> >> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
->> >> >> the device can ignore the IOMMU for all practical purposes I would
->> >> >> indeed say that the logic would apply to IOMMUs as well. :-)
->> >> >>
->> >> >> I guess I'm still struggling with the purpose of signalling to the
->> >> >> driver that the host may not have access to memory addresses that it
->> >> >> will never try to access.
->> >> >
->> >> > For example, one of the benefits is to signal to host that driver does
->> >> > not expect ability to access all memory. If it does, host can
->> >> > fail initialization gracefully.
->> >>
->> >> But why would the ability to access all memory be necessary or even
->> >> useful? When would the host access memory that the driver didn't tell it
->> >> to access?
->> >
->> > When I say all memory I mean even memory not allowed by the IOMMU.
->>
->> Yes, but why? How is that memory relevant?
->
-> It's relevant when driver is not trusted to only supply correct
-> addresses. The feature was originally designed to support userspace
-> drivers within guests.
+The exlcusion range limit register needs to contain the
+base-address of the last page that is part of the range, as
+bits 0-11 of this register are treated as 0xfff by the
+hardware for comparisons.
 
-Ah, thanks for clarifying. I don't think that's a problem in our case.
-If the guest provides an incorrect address, the hardware simply won't
-allow the host to access it.
+So correctly set the exclusion range in the hardware to the
+last page which is _in_ the range.
 
->> >> >> > Another idea is maybe something like virtio-iommu?
->> >> >>
->> >> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
->> >> >> bypass? If so, it's an interesting idea for new guests but it doesn't
->> >> >> help with guests that are out today in the field, which don't have A
->> >> >> virtio-iommu driver.
->> >> >
->> >> > I presume legacy guests don't use encrypted memory so why do we
->> >> > worry about them at all?
->> >>
->> >> They don't use encrypted memory, but a host machine will run a mix of
->> >> secure and legacy guests. And since the hypervisor doesn't know whether
->> >> a guest will be secure or not at the time it is launched, legacy guests
->> >> will have to be launched with the same configuration as secure guests.
->> >
->> > OK and so I think the issue is that hosts generally fail if they set
->> > ACCESS_PLATFORM and guests do not negotiate it.
->> > So you can not just set ACCESS_PLATFORM for everyone.
->> > Is that the issue here?
->>
->> Yes, that is one half of the issue. The other is that even if hosts
->> didn't fail, existing legacy guests wouldn't "take the initiative" of
->> not negotiating ACCESS_PLATFORM to get the improved performance. They'd
->> have to be modified to do that.
->
-> So there's a non-encrypted guest, hypervisor wants to set
-> ACCESS_PLATFORM to allow encrypted guests but that will slow down legacy
-> guests since their vIOMMU emulation is very slow.
+Fixes: b2026aa2dce44 ('x86, AMD IOMMU: add functions for programming IOMMU MMIO space')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes.
-
-> So enabling support for encryption slows down non-encrypted guests. Not
-> great but not the end of the world, considering even older guests that
-> don't support ACCESS_PLATFORM are completely broken and you do not seem
-> to be too worried by that.
-
-Well, I guess that would be the third half of the issue. :-)
-
-> For future non-encrypted guests, bypassing the emulated IOMMU for when
-> that emulated IOMMU is very slow might be solvable in some other way,
-> e.g. with virtio-iommu. Which reminds me, could you look at
-> virtio-iommu as a solution for some of the issues?
-> Review of that patchset from that POV would be appreciated.
-
-Yes, I will have a look. As you mentioned already, virtio-iommu doesn't
-define a way to request iommu bypass for a device so that would have to
-be added.
-
-Though to be honest in practice I don't think such a feature in
-virtio-iommu would make things easier for us, at least in the short
-term. It would take the same effort to define a powerpc-specific
-hypercall to accomplish the same thing (easier, in fact since we
-wouldn't have to implement the rest of virtio-iommu). In fact, there
-already is such hypercall, but it is only defined for VIO devices
-(RTAS_IBM_SET_TCE_BYPASS in QEMU). We would have to make it work on
-virtio devices as well.
-
---
-Thiago Jung Bauermann
-IBM Linux Technology Center
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 66123b911ec8..8ae6b350e64c 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -358,7 +358,7 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
+ static void iommu_set_exclusion_range(struct amd_iommu *iommu)
+ {
+ 	u64 start = iommu->exclusion_start & PAGE_MASK;
+-	u64 limit = (start + iommu->exclusion_length) & PAGE_MASK;
++	u64 limit = (start + iommu->exclusion_length - 1) & PAGE_MASK;
+ 	u64 entry;
+ 
+ 	if (!iommu->exclusion_start)
+-- 
+2.19.1
 
 _______________________________________________
 iommu mailing list
