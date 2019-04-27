@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6B2C43218
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F8DC43219
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ECD972067D
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECD972067D
+	by mail.kernel.org (Postfix) with ESMTPS id 6EE9C2067D
+	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 07:13:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EE9C2067D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1092C19A4;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 562D619A6;
 	Sat, 27 Apr 2019 07:13:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E63F2198C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 50AA3198C
+	for <iommu@lists.linux-foundation.org>;
+	Sat, 27 Apr 2019 07:10:42 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 812103D0
 	for <iommu@lists.linux-foundation.org>;
 	Sat, 27 Apr 2019 07:10:41 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7602782B
-	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 07:10:38 +0000 (UTC)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-	by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 16FBD1A009D;
-	Sat, 27 Apr 2019 09:10:37 +0200 (CEST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+	by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 11F8B2000A7;
+	Sat, 27 Apr 2019 09:10:40 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com
 	[134.27.226.22])
-	by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 097C41A000B;
-	Sat, 27 Apr 2019 09:10:37 +0200 (CEST)
+	by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0443D20005A;
+	Sat, 27 Apr 2019 09:10:40 +0200 (CEST)
 Received: from fsr-ub1864-101.ea.freescale.net
 	(fsr-ub1864-101.ea.freescale.net [10.171.82.13])
-	by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 7DD72205ED;
-	Sat, 27 Apr 2019 09:10:36 +0200 (CEST)
+	by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 77D9A205ED;
+	Sat, 27 Apr 2019 09:10:39 +0200 (CEST)
 From: laurentiu.tudor@nxp.com
 To: netdev@vger.kernel.org, madalin.bucur@nxp.com, roy.pledge@nxp.com,
 	camelia.groza@nxp.com, leoyang.li@nxp.com
-Subject: [PATCH v2 3/9] fsl/fman: backup and restore ICID registers
-Date: Sat, 27 Apr 2019 10:10:25 +0300
-Message-Id: <20190427071031.6563-4-laurentiu.tudor@nxp.com>
+Subject: [PATCH v2 8/9] dpaa_eth: fix iova handling for sg frames
+Date: Sat, 27 Apr 2019 10:10:30 +0300
+Message-Id: <20190427071031.6563-9-laurentiu.tudor@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
 References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
@@ -70,125 +70,131 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190427071025.DML3hEJ3qBcRyj_uEZkMijdWgG_wtLQrQH_kJm3ddtI@z>
+Message-ID: <20190427071030.NhE85cfF4qggNVH4lSVjKbIrIokC5Rcb66oa0a-oCGI@z>
 
 From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-During probing, FMAN is reset thus losing all its register
-settings. Backup port ICID registers before reset and restore
-them after, similarly to how it's done on powerpc / PAMU based
-platforms.
-This also has the side effect of disabling the old code path
-(liodn backup/restore handling) that obviously make no sense
-in the context of SMMU on ARMs.
+The driver relies on the no longer valid assumption that dma addresses
+(iovas) are identical to physical addressees and uses phys_to_virt() to
+make iova -> vaddr conversions. Fix this also for scatter-gather frames
+using the iova -> phys conversion function added in the previous patch.
+While at it, clean-up a redundant dpaa_bpid2pool() and pass the bp
+as parameter.
 
 Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/fman/fman.c | 35 +++++++++++++++++++++-
- drivers/net/ethernet/freescale/fman/fman.h |  4 +++
- 2 files changed, 38 insertions(+), 1 deletion(-)
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 41 +++++++++++--------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
-index e80fedb27cee..ae833e215b74 100644
---- a/drivers/net/ethernet/freescale/fman/fman.c
-+++ b/drivers/net/ethernet/freescale/fman/fman.c
-@@ -629,6 +629,7 @@ static void set_port_order_restoration(struct fman_fpm_regs __iomem *fpm_rg,
- 	iowrite32be(tmp, &fpm_rg->fmfp_prc);
- }
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index f17edc80dc37..daede7272768 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -1646,14 +1646,17 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
  
-+#ifdef CONFIG_PPC
- static void set_port_liodn(struct fman *fman, u8 port_id,
- 			   u32 liodn_base, u32 liodn_ofst)
- {
-@@ -646,6 +647,27 @@ static void set_port_liodn(struct fman *fman, u8 port_id,
- 	iowrite32be(tmp, &fman->dma_regs->fmdmplr[port_id / 2]);
- 	iowrite32be(liodn_ofst, &fman->bmi_regs->fmbm_spliodn[port_id - 1]);
- }
-+#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+static void save_restore_port_icids(struct fman *fman, bool save)
-+{
-+	int port_idxes[] = {
-+		0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc,
-+		0xd, 0xe, 0xf, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
-+		0x10, 0x11, 0x30, 0x31
-+	};
-+	int idx, i;
+ 	if (unlikely(qm_fd_get_format(fd) == qm_fd_sg)) {
+ 		nr_frags = skb_shinfo(skb)->nr_frags;
+-		dma_unmap_single(dev, addr,
+-				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
+-				 dma_dir);
+ 
+ 		/* The sgt buffer has been allocated with netdev_alloc_frag(),
+ 		 * it's from lowmem.
+ 		 */
+-		sgt = phys_to_virt(addr + qm_fd_get_offset(fd));
++		sgt = phys_to_virt(dpaa_iova_to_phys(dev,
++						     addr +
++						     qm_fd_get_offset(fd)));
 +
-+	for (i = 0; i < ARRAY_SIZE(port_idxes); i++) {
-+		idx = port_idxes[i];
-+		if (save)
-+			fman->sp_icids[idx] =
-+				ioread32be(&fman->bmi_regs->fmbm_spliodn[idx]);
-+		else
-+			iowrite32be(fman->sp_icids[idx],
-+				    &fman->bmi_regs->fmbm_spliodn[idx]);
-+	}
-+}
-+#endif
++		dma_unmap_single(dev, addr,
++				 qm_fd_get_offset(fd) + DPAA_SGT_SIZE,
++				 dma_dir);
  
- static void enable_rams_ecc(struct fman_fpm_regs __iomem *fpm_rg)
- {
-@@ -1914,7 +1936,10 @@ static int fman_reset(struct fman *fman)
- static int fman_init(struct fman *fman)
- {
- 	struct fman_cfg *cfg = NULL;
--	int err = 0, i, count;
-+	int err = 0, count;
-+#ifdef CONFIG_PPC
-+	int i;
-+#endif
- 
- 	if (is_init_done(fman->cfg))
- 		return -EINVAL;
-@@ -1934,6 +1959,7 @@ static int fman_init(struct fman *fman)
- 	memset_io((void __iomem *)(fman->base_addr + CGP_OFFSET), 0,
- 		  fman->state->fm_port_num_of_cg);
- 
-+#ifdef CONFIG_PPC
- 	/* Save LIODN info before FMan reset
- 	 * Skipping non-existent port 0 (i = 1)
- 	 */
-@@ -1953,6 +1979,9 @@ static int fman_init(struct fman *fman)
+ 		/* sgt[0] is from lowmem, was dma_map_single()-ed */
+ 		dma_unmap_single(dev, qm_sg_addr(&sgt[0]),
+@@ -1668,7 +1671,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
  		}
- 		fman->liodn_base[i] = liodn_base;
- 	}
-+#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+	save_restore_port_icids(fman, true);
-+#endif
  
- 	err = fman_reset(fman);
- 	if (err)
-@@ -2181,8 +2210,12 @@ int fman_set_port_params(struct fman *fman,
- 	if (err)
- 		goto return_err;
+ 		/* Free the page frag that we allocated on Tx */
+-		skb_free_frag(phys_to_virt(addr));
++		skb_free_frag(skbh);
+ 	} else {
+ 		dma_unmap_single(dev, addr,
+ 				 skb_tail_pointer(skb) - (u8 *)skbh, dma_dir);
+@@ -1729,14 +1732,14 @@ static struct sk_buff *contig_fd_to_skb(const struct dpaa_priv *priv,
+  * The page fragment holding the S/G Table is recycled here.
+  */
+ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+-				    const struct qm_fd *fd)
++				    const struct qm_fd *fd,
++				    struct dpaa_bp *dpaa_bp,
++				    void *vaddr)
+ {
+ 	ssize_t fd_off = qm_fd_get_offset(fd);
+-	dma_addr_t addr = qm_fd_addr(fd);
+ 	const struct qm_sg_entry *sgt;
+ 	struct page *page, *head_page;
+-	struct dpaa_bp *dpaa_bp;
+-	void *vaddr, *sg_vaddr;
++	void *sg_vaddr;
+ 	int frag_off, frag_len;
+ 	struct sk_buff *skb;
+ 	dma_addr_t sg_addr;
+@@ -1745,7 +1748,6 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+ 	int *count_ptr;
+ 	int i;
  
-+#ifdef CONFIG_PPC
- 	set_port_liodn(fman, port_id, fman->liodn_base[port_id],
- 		       fman->liodn_offset[port_id]);
-+#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+	save_restore_port_icids(fman, false);
-+#endif
+-	vaddr = phys_to_virt(addr);
+ 	WARN_ON(!IS_ALIGNED((unsigned long)vaddr, SMP_CACHE_BYTES));
  
- 	if (fman->state->rev_info.major < 6)
- 		set_port_order_restoration(fman->fpm_regs, port_id);
-diff --git a/drivers/net/ethernet/freescale/fman/fman.h b/drivers/net/ethernet/freescale/fman/fman.h
-index 935c317fa696..19f20fa58053 100644
---- a/drivers/net/ethernet/freescale/fman/fman.h
-+++ b/drivers/net/ethernet/freescale/fman/fman.h
-@@ -346,8 +346,12 @@ struct fman {
- 	unsigned long fifo_offset;
- 	size_t fifo_size;
+ 	/* Iterate through the SGT entries and add data buffers to the skb */
+@@ -1756,14 +1758,18 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+ 		WARN_ON(qm_sg_entry_is_ext(&sgt[i]));
  
-+#ifdef CONFIG_PPC
- 	u32 liodn_base[64];
- 	u32 liodn_offset[64];
-+#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+	u32 sp_icids[64];
-+#endif
+ 		sg_addr = qm_sg_addr(&sgt[i]);
+-		sg_vaddr = phys_to_virt(sg_addr);
+-		WARN_ON(!IS_ALIGNED((unsigned long)sg_vaddr,
+-				    SMP_CACHE_BYTES));
  
- 	struct fman_dts_params dts_params;
- };
+ 		/* We may use multiple Rx pools */
+ 		dpaa_bp = dpaa_bpid2pool(sgt[i].bpid);
+-		if (!dpaa_bp)
++		if (!dpaa_bp) {
++			pr_info("%s: fail to get dpaa_bp for sg bpid %d\n",
++				__func__, sgt[i].bpid);
+ 			goto free_buffers;
++		}
++		sg_vaddr = phys_to_virt(dpaa_iova_to_phys(dpaa_bp->dev,
++							  sg_addr));
++		WARN_ON(!IS_ALIGNED((unsigned long)sg_vaddr,
++				    SMP_CACHE_BYTES));
+ 
+ 		count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
+ 		dma_unmap_single(dpaa_bp->dev, sg_addr, dpaa_bp->size,
+@@ -1835,10 +1841,11 @@ static struct sk_buff *sg_fd_to_skb(const struct dpaa_priv *priv,
+ 	/* free all the SG entries */
+ 	for (i = 0; i < DPAA_SGT_MAX_ENTRIES ; i++) {
+ 		sg_addr = qm_sg_addr(&sgt[i]);
+-		sg_vaddr = phys_to_virt(sg_addr);
+-		skb_free_frag(sg_vaddr);
+ 		dpaa_bp = dpaa_bpid2pool(sgt[i].bpid);
+ 		if (dpaa_bp) {
++			sg_addr = dpaa_iova_to_phys(dpaa_bp->dev, sg_addr);
++			sg_vaddr = phys_to_virt(sg_addr);
++			skb_free_frag(sg_vaddr);
+ 			count_ptr = this_cpu_ptr(dpaa_bp->percpu_count);
+ 			(*count_ptr)--;
+ 		}
+@@ -2331,7 +2338,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+ 	if (likely(fd_format == qm_fd_contig))
+ 		skb = contig_fd_to_skb(priv, fd, dpaa_bp, vaddr);
+ 	else
+-		skb = sg_fd_to_skb(priv, fd);
++		skb = sg_fd_to_skb(priv, fd, dpaa_bp, vaddr);
+ 	if (!skb)
+ 		return qman_cb_dqrr_consume;
+ 
 -- 
 2.17.1
 
