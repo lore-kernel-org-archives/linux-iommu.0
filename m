@@ -1,105 +1,77 @@
-Return-Path: <SRS0=j+PZ=S5=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=dQVb=S6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8910C43219
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 17:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02050C4321A
+	for <iommu@archiver.kernel.org>; Sun, 28 Apr 2019 23:50:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B7EE220693
-	for <iommu@archiver.kernel.org>; Sat, 27 Apr 2019 17:13:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BDAC920675
+	for <iommu@archiver.kernel.org>; Sun, 28 Apr 2019 23:50:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=infinera.com header.i=@infinera.com header.b="TCzeSQ/v"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7EE220693
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=infinera.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="D9YnoNnd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BDAC920675
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 58AA81A74;
-	Sat, 27 Apr 2019 17:13:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7687E1DAC;
+	Sun, 28 Apr 2019 23:50:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B30371A70
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1BD221DA6
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 17:10:57 +0000 (UTC)
+	Sun, 28 Apr 2019 23:47:47 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com
-	(mail-eopbgr800043.outbound.protection.outlook.com [40.107.80.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D2EF8786
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
+	[209.85.208.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7A022619
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 27 Apr 2019 17:10:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infinera.com;
-	s=selector1;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=FQtJl4bY1DuoaHrUkMBL7N6xDJZq7S7FIB5cMjqNewg=;
-	b=TCzeSQ/vHhbIDdZwDmat/CNk2Nks6JGOkm4QXPM87FOppZvRCHQjbYBMhIoga/95SmoZZe3o+XIWSWjHb2csURwpMV7Ophuzvy0KG8330XDsPJfORWGB2YXkfHEz0uGGb+ydgnHuCdarrxrH6YORUBT3MNQ9VUxdSlkxVZBpATA=
-Received: from BN8PR10MB3540.namprd10.prod.outlook.com (20.179.78.205) by
-	BN8PR10MB3490.namprd10.prod.outlook.com (20.179.78.20) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1835.13; Sat, 27 Apr 2019 17:10:53 +0000
-Received: from BN8PR10MB3540.namprd10.prod.outlook.com
-	([fe80::51e7:a757:afa8:f4cf]) by
-	BN8PR10MB3540.namprd10.prod.outlook.com
-	([fe80::51e7:a757:afa8:f4cf%7]) with mapi id 15.20.1835.010;
-	Sat, 27 Apr 2019 17:10:53 +0000
-From: Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "madalin.bucur@nxp.com"
-	<madalin.bucur@nxp.com>, "leoyang.li@nxp.com" <leoyang.li@nxp.com>,
-	"laurentiu.tudor@nxp.com" <laurentiu.tudor@nxp.com>, "roy.pledge@nxp.com"
-	<roy.pledge@nxp.com>, "camelia.groza@nxp.com" <camelia.groza@nxp.com>
-Subject: Re: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
-Thread-Topic: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
-Thread-Index: AQHU/MpTw42IuR0fykCaI1+07jqDiqZQPr+A
-Date: Sat, 27 Apr 2019 17:10:53 +0000
-Message-ID: <2c6f5d170edab346e0a87b1dfeb12e2f65801685.camel@infinera.com>
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-	<20190427071031.6563-10-laurentiu.tudor@nxp.com>
-In-Reply-To: <20190427071031.6563-10-laurentiu.tudor@nxp.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=Joakim.Tjernlund@infinera.com; 
-x-originating-ip: [88.131.87.201]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9a2bf90b-4bf3-4692-cb14-08d6cb334df7
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);
-	SRVR:BN8PR10MB3490; 
-x-ms-traffictypediagnostic: BN8PR10MB3490:
-x-microsoft-antispam-prvs: <BN8PR10MB34905036363513E5A4F02C68F43F0@BN8PR10MB3490.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 0020414413
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(39860400002)(136003)(396003)(346002)(376002)(366004)(189003)(199004)(3846002)(6116002)(2201001)(68736007)(256004)(81166006)(6512007)(54906003)(8676002)(2906002)(8936002)(110136005)(81156014)(36756003)(6246003)(66476007)(64756008)(66556008)(66446008)(316002)(86362001)(229853002)(102836004)(66066001)(53936002)(6486002)(2501003)(14444005)(91956017)(66946007)(73956011)(76116006)(6436002)(2616005)(305945005)(486006)(6506007)(97736004)(71190400001)(478600001)(4326008)(7736002)(5660300002)(476003)(76176011)(14454004)(118296001)(72206003)(99286004)(7416002)(186003)(26005)(25786009)(446003)(11346002)(71200400001);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:BN8PR10MB3490;
-	H:BN8PR10MB3540.namprd10.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: infinera.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: h1A6YhzC8ddJWf79OUo4YI/37lwKzz8kkCAzI+Wvbmn5Qx4PsFp4nPg9K3eOvMV+EDsPamR4VQJR1EOLDeiY9zZhWvyGuaFoosGt3gwvF6z+mrcgvbEAv7j2fhNpdEAzxvlACB47/r5G3aLx5Tmd2ojN4flnheSHbj6XMYpfXs0X30YArUPatOeeApeZ/ubrqp1Z2tFm/eXA6VEHTKq0mBvGV/M2fzdrUK3D0FFK3GG/fPoflzEEM3j2KR/C1zlboXh33rBFaBbUtYurndgwBd8/0ALu2EkTZUve+x7T05sYy0WXkBqzoMX0aKm/0jXsuXcyJhucTTKg3CdzN0718JJb0p8zuVJ3mfIi/Q4wg2VON6ws+1QgQ/nUBeIYRChn8NNw2h3pZtKqS8lcTv7Hb7M/6Z4FmqcBqMFuYkwNRnE=
-Content-ID: <4A981E3F453F6540BDBD9A24364D128E@namprd10.prod.outlook.com>
-MIME-Version: 1.0
-X-OriginatorOrg: infinera.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a2bf90b-4bf3-4692-cb14-08d6cb334df7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2019 17:10:53.0418 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 285643de-5f5b-4b03-a153-0ae2dc8aaf77
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR10MB3490
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>
+	Sun, 28 Apr 2019 23:47:46 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id y67so7636247ede.2
+	for <iommu@lists.linux-foundation.org>;
+	Sun, 28 Apr 2019 16:47:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=arista.com; s=googlenew;
+	h=from:to:cc:subject:date:message-id;
+	bh=bXeviVN/ZLMlwpdgsgv+FliQqyuSE4iSxUS5o6dbCfo=;
+	b=D9YnoNndfaQcnsCQdsyY3nJ6b8HcYhha7zzeQlvqDnrDQo+0v61hKiHYppvNtj38D9
+	Se/83ut/iOtHQXlukQZdR/26XukjBlApoF8Akjh5aJP6Qj6NJXqD9WrYqvoyxIJVGk0/
+	HwgHzJ4KEtGIdUvYgNGQRgeOcyTqf9dTSc/Aqd8es1dv8BZ7Ayknegb135B7Uun+bcVJ
+	IB6Q2XLNYUJsODpHOU7l+uPiMMo1L5P7MMgDdxm98UO8r65/aXNW3NLP8dQyPPQQAbCF
+	EAn2pqqkTpewU4/07j5fRPAJfJjt7PifUGQlRqKIl9gEQ0iGEfr51iW0guu1e7znLoDP
+	lx7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=bXeviVN/ZLMlwpdgsgv+FliQqyuSE4iSxUS5o6dbCfo=;
+	b=ghApU7w2nLT2M9eSlHJ94K7nBkQaKtbcdcTa/VTacfgMl9qSW9xsPjZ25Lyt/HWPTB
+	Nwaj5/fltagsVOF8Xa0Hwb4S3BEVa39L65qNZFd6JRarP+/3tSHO8b6PDgo6GDSW+FOr
+	NEHpoT3xeedbQnTt0QQ++ig5jVccI5HmQvpWIObX4y+oxpbGyalwfYv/AUTw8tQ+qjxs
+	P89FTBem8uKBaphmxanYIIDFyT35I7VpcmHZEG/HLYkGd+WKzBgOoBaB32SKspLRJa6O
+	qz9DGCQ1szj9hBb5Gdfl5tRI5x+JsvjcFFpapv/5sLx8cePoZQK/RjdZt5/wzWS78YFk
+	gfDA==
+X-Gm-Message-State: APjAAAWD7+eJXMx+fUI6E7jd4E052Z2pAMCUEdctxFBSK0J+LN7OB+ZR
+	xJUMvmtWPMadoGrjTHgoLSn62ZaoD/E=
+X-Google-Smtp-Source: APXvYqyCVyX7ZF3yL+6Y/e7edBMF4Ntj2BSdISS4KMOP0HAb7eCMCQ94iY/HEDZuwaY39z8KvKj6iQ==
+X-Received: by 2002:a50:8a8b:: with SMTP id j11mr21628737edj.212.1556495264804;
+	Sun, 28 Apr 2019 16:47:44 -0700 (PDT)
+Received: from localhost.localdomain ([37.228.251.87])
+	by smtp.gmail.com with ESMTPSA id p18sm5513219ejm.4.2019.04.28.16.47.44
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Sun, 28 Apr 2019 16:47:44 -0700 (PDT)
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v2] iommu/amd: flush not present cache in iommu_map_page
+Date: Mon, 29 Apr 2019 00:47:02 +0100
+Message-Id: <20190428234703.13697-1-tmurphy@arista.com>
+X-Mailer: git-send-email 2.17.1
+Cc: Tom Murphy <tmurphy@arista.com>, linux-kernel@vger.kernel.org,
+	murphyt7@tcd.ie
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -112,44 +84,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tom Murphy via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Murphy <tmurphy@arista.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190427171053.m08uagbsIPJtIKOejavyJFx2fw6mgB0N1ClL7QaYqbs@z>
+Message-ID: <20190428234702.6EX-BnBcXdyyzvRPjYe2ni7UGeael_bkONF5ctslVOs@z>
 
-On Sat, 2019-04-27 at 10:10 +0300, laurentiu.tudor@nxp.com wrote:
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> 
-> Fix issue with the entry indexing in the sg frame cleanup code being
-> off-by-1. This problem showed up when doing some basic iperf tests and
-> manifested in traffic coming to a halt.
-> 
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> Acked-by: Madalin Bucur <madalin.bucur@nxp.com>
+check if there is a not-present cache present and flush it if there is.
 
-Wasn't this a stable candidate too?
+Signed-off-by: Tom Murphy <tmurphy@arista.com>
+---
+ drivers/iommu/amd_iommu.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-> ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index daede7272768..40420edc9ce6 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -1663,7 +1663,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
->                                  qm_sg_entry_get_len(&sgt[0]), dma_dir);
-> 
->                 /* remaining pages were mapped with skb_frag_dma_map() */
-> -               for (i = 1; i < nr_frags; i++) {
-> +               for (i = 1; i <= nr_frags; i++) {
->                         WARN_ON(qm_sg_entry_is_ext(&sgt[i]));
-> 
->                         dma_unmap_page(dev, qm_sg_addr(&sgt[i]),
-> --
-> 2.17.1
-> 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f7cdd2ab7f11..ebd062522cf5 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1307,6 +1307,16 @@ static void domain_flush_complete(struct protection_domain *domain)
+ 	}
+ }
+ 
++/* Flush the not present cache if it exists */
++static void domain_flush_np_cache(struct protection_domain *domain,
++		dma_addr_t iova, size_t size)
++{
++	if (unlikely(amd_iommu_np_cache)) {
++		domain_flush_pages(domain, iova, size);
++		domain_flush_complete(domain);
++	}
++}
++
+ 
+ /*
+  * This function flushes the DTEs for all devices in domain
+@@ -2435,10 +2445,7 @@ static dma_addr_t __map_single(struct device *dev,
+ 	}
+ 	address += offset;
+ 
+-	if (unlikely(amd_iommu_np_cache)) {
+-		domain_flush_pages(&dma_dom->domain, address, size);
+-		domain_flush_complete(&dma_dom->domain);
+-	}
++	domain_flush_np_cache(&dma_dom->domain, address, size);
+ 
+ out:
+ 	return address;
+@@ -2617,6 +2624,8 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+ 		s->dma_length   = s->length;
+ 	}
+ 
++	domain_flush_np_cache(domain, s->dma_address, s->dma_length);
++
+ 	return nelems;
+ 
+ out_unmap:
+@@ -3101,6 +3110,8 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 	ret = iommu_map_page(domain, iova, paddr, page_size, prot, GFP_KERNEL);
+ 	mutex_unlock(&domain->api_lock);
+ 
++	domain_flush_np_cache(domain, iova, page_size);
++
+ 	return ret;
+ }
+ 
+-- 
+2.17.1
 
 _______________________________________________
 iommu mailing list
