@@ -1,45 +1,62 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
-Date: Mon, 29 Apr 2019 13:10:17 +0800
-Message-ID: <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
- <20190421011719.14909-3-baolu.lu@linux.intel.com>
- <20190422164555.GA31181@lst.de>
- <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
- <20190423061232.GB12762@lst.de>
- <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
- <20190424144532.GA21480@lst.de>
- <a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
- <20190426150433.GA19930@lst.de>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v2 11/19] iommu/vt-d: Replace Intel specific PASID
+ allocator with IOASID
+Date: Mon, 29 Apr 2019 11:00:51 +0100
+Message-ID: <7529f2ca-167b-5e65-9330-9093638e9f91@arm.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1556062279-64135-12-git-send-email-jacob.jun.pan@linux.intel.com>
+ <e542fd95-acbe-05e9-e441-27dff752c21a@redhat.com>
+ <20190426140133.6d445315@jacob-builder>
+ <f06a9675-278f-51db-f385-e1305b3795d6@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190426150433.GA19930@lst.de>
+In-Reply-To: <f06a9675-278f-51db-f385-e1305b3795d6@redhat.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Auger Eric <eric.auger@redhat.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+On 27/04/2019 09:38, Auger Eric wrote:
+>>>> --- a/drivers/iommu/intel-iommu.c
+>>>> +++ b/drivers/iommu/intel-iommu.c
+>>>> @@ -5153,7 +5153,7 @@ static void auxiliary_unlink_device(struct
+>>>> dmar_domain *domain, domain->auxd_refcnt--;
+>>>>  
+>>>>  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+>>>> -		intel_pasid_free_id(domain->default_pasid);
+>>>> +		ioasid_free(domain->default_pasid);
+>>>>  }
+>>>>  
+>>>>  static int aux_domain_add_dev(struct dmar_domain *domain,
+>>>> @@ -5171,9 +5171,8 @@ static int aux_domain_add_dev(struct
+>>>> dmar_domain *domain, if (domain->default_pasid <= 0) {
+>>>>  		int pasid;
+>>>>  
+>>>> -		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
+>>>> -
+>>>> pci_max_pasids(to_pci_dev(dev)),
+>>>> -					     GFP_KERNEL);
+>>>> +		pasid = ioasid_alloc(NULL, PASID_MIN,
+>>>> pci_max_pasids(to_pci_dev(dev)) - 1,
+>>>> +				domain);
+>>>>  		if (pasid <= 0) {  
+>>> ioasid_t is a uint and returns INVALID_IOASID on error. Wouldn't it be
+>>> simpler to make ioasid_alloc return an int?
+>> Well, I think we still want the full uint range - 1(INVALID_IOASID).
+>> Intel uses 20bit but I think SMMUs use 32 bits for streamID? I
+>> should just check 
+>> 	if (pasid == INVALID_IOASID) {
+> Jean-Philippe may correct me but SMMU uses 20b SubstreamId which is a
+> superset of PASIDs. StreamId is 32b.
 
-On 4/26/19 11:04 PM, Christoph Hellwig wrote:
-> On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
->> This is not VT-d specific. It's just how generic IOMMU works.
->>
->> Normally, IOMMU works in paging mode. So if a driver issues DMA with
->> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 0xBBBB0123.
->> But we should never expect IOMMU to remap 0xAAAA0123 with physical
->> address of 0xBBBB0000. That's the reason why I said that IOMMU will not
->> work there.
-> 
-> Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
-> can happen, so drivers are fine with it.  Why would that suddenly
-> become an issue when swiotlb is called from the iommu code?
-> 
+Right, we use 20 bits for PASIDs (== SubstreamID really). Given the
+choices that vendors are making for PASIDs (a global namespace rather
+than per-VM), I wouldn't be surprised if they extend the size of PASIDs
+in a couple of years, so I added the typedef ioasid_t to ease a possible
+change from 32-bit to 64 in the future.
 
-I would say IOMMU is DMA remapping, not DMA engine. :-)
-
-Best regards,
-Lu Baolu
+Thanks,
+Jean
