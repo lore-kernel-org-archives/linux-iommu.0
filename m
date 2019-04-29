@@ -1,14 +1,14 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 22/26] iommu/dma: Refactor iommu_dma_mmap
-Date: Mon, 29 Apr 2019 15:04:08 +0100
-Message-ID: <a185d782-acf4-2a29-a84f-d912de13c09c@arm.com>
+Subject: Re: [PATCH 21/26] iommu/dma: Refactor iommu_dma_get_sgtable
+Date: Mon, 29 Apr 2019 15:08:58 +0100
+Message-ID: <10b0710c-b2b4-7647-6846-71d9df4bd038@arm.com>
 References: <20190422175942.18788-1-hch@lst.de>
- <20190422175942.18788-23-hch@lst.de>
+ <20190422175942.18788-22-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422175942.18788-23-hch@lst.de>
+In-Reply-To: <20190422175942.18788-22-hch@lst.de>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
@@ -16,54 +16,51 @@ Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, W
 List-Id: iommu@lists.linux-foundation.org
 
 On 22/04/2019 18:59, Christoph Hellwig wrote:
-> Inline __iommu_dma_mmap_pfn into the main function, and use the
+> Inline __iommu_dma_get_sgtable_page into the main function, and use the
 > fact that __iommu_dma_get_pages return NULL for remapped contigous
 > allocations to simplify the code flow a bit.
 
-...and later we can squash __iommu_dma_mmap() once the dust settles on 
-vm_map_pages() - seems good to me.
+Yeah, even I was a bit dubious about the readability of "if (page)... 
+else if (pages)..." that my attempt ended up with, so I don't really 
+have anything to complain about here.
 
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->   drivers/iommu/dma-iommu.c | 36 +++++++++++-------------------------
->   1 file changed, 11 insertions(+), 25 deletions(-)
+>   drivers/iommu/dma-iommu.c | 45 +++++++++++++++------------------------
+>   1 file changed, 17 insertions(+), 28 deletions(-)
 > 
 > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 138b85e675c8..8fc6098c1eeb 100644
+> index acdfe866cb29..138b85e675c8 100644
 > --- a/drivers/iommu/dma-iommu.c
 > +++ b/drivers/iommu/dma-iommu.c
-> @@ -1025,21 +1025,12 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
->   	return cpu_addr;
+> @@ -1070,42 +1070,31 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+>   	return __iommu_dma_mmap(pages, size, vma);
 >   }
 >   
-> -static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
-> -			      unsigned long pfn, size_t size)
+> -static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
+> -		size_t size)
 > -{
-> -	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
-> -			       vma->vm_end - vma->vm_start,
-> -			       vma->vm_page_prot);
+> -	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> -
+> -	if (!ret)
+> -		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+> -	return ret;
 > -}
 > -
->   static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+>   static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 >   		void *cpu_addr, dma_addr_t dma_addr, size_t size,
 >   		unsigned long attrs)
 >   {
->   	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	unsigned long off = vma->vm_pgoff;
+> -	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
 > -	struct page **pages;
-> +	unsigned long pfn, off = vma->vm_pgoff;
->   	int ret;
->   
->   	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-> @@ -1050,24 +1041,19 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->   	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
->   		return -ENXIO;
+> +	struct page *page;
+> +	int ret;
 >   
 > -	if (!is_vmalloc_addr(cpu_addr)) {
-> -		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
-> -		return __iommu_dma_mmap_pfn(vma, pfn, size);
+> -		struct page *page = virt_to_page(cpu_addr);
+> -		return __iommu_dma_get_sgtable_page(sgt, page, size);
 > -	}
 > +	if (is_vmalloc_addr(cpu_addr)) {
 > +		struct page **pages = __iommu_dma_get_pages(cpu_addr);
@@ -73,23 +70,29 @@ Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 > -		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
 > -		 * hence in the vmalloc space.
 > -		 */
-> -		unsigned long pfn = vmalloc_to_pfn(cpu_addr);
-> -		return __iommu_dma_mmap_pfn(vma, pfn, size);
-> +		if (pages)
-> +			return __iommu_dma_mmap(pages, size, vma);
-> +		pfn = vmalloc_to_pfn(cpu_addr);
+> -		struct page *page = vmalloc_to_page(cpu_addr);
+> -		return __iommu_dma_get_sgtable_page(sgt, page, size);
+> +		if (pages) {
+> +			return sg_alloc_table_from_pages(sgt, pages,
+> +					PAGE_ALIGN(size) >> PAGE_SHIFT,
+> +					0, size, GFP_KERNEL);
+> +		}
+> +
+> +		page = vmalloc_to_page(cpu_addr);
 > +	} else {
-> +		pfn = page_to_pfn(virt_to_page(cpu_addr));
+> +		page = virt_to_page(cpu_addr);
 >   	}
 >   
 > -	pages = __iommu_dma_get_pages(cpu_addr);
 > -	if (WARN_ON_ONCE(!pages))
 > -		return -ENXIO;
-> -	return __iommu_dma_mmap(pages, size, vma);
-> +	return remap_pfn_range(vma, vma->vm_start, pfn + off,
-> +			       vma->vm_end - vma->vm_start,
-> +			       vma->vm_page_prot);
+> -	return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
+> -					 GFP_KERNEL);
+> +	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> +	if (!ret)
+> +		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+> +	return ret;
 >   }
 >   
->   static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+>   static const struct dma_map_ops iommu_dma_ops = {
 > 
