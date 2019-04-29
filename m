@@ -6,45 +6,44 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E04B8C43219
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E67C43219
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B904820675
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B904820675
+	by mail.kernel.org (Postfix) with ESMTPS id 1945820675
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1945820675
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C733A1DEA;
-	Mon, 29 Apr 2019 02:18:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 124B21DED;
+	Mon, 29 Apr 2019 02:18:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB3B31D35
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0F5261D35
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 02:16:12 +0000 (UTC)
+	Mon, 29 Apr 2019 02:16:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2253A608
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1DD59608
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 02:16:12 +0000 (UTC)
+	Mon, 29 Apr 2019 02:16:14 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Apr 2019 19:16:11 -0700
+	28 Apr 2019 19:16:13 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="146537869"
+X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="146537874"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga003.jf.intel.com with ESMTP; 28 Apr 2019 19:16:09 -0700
+	by orsmga003.jf.intel.com with ESMTP; 28 Apr 2019 19:16:11 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: David Woodhouse <dwmw2@infradead.org>,
 	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 6/8] iommu/vt-d: Allow DMA domains to be allocated by iommu
-	ops
-Date: Mon, 29 Apr 2019 10:09:23 +0800
-Message-Id: <20190429020925.18136-7-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 7/8] iommu/vt-d: Remove lazy allocation of domains
+Date: Mon, 29 Apr 2019 10:09:24 +0800
+Message-Id: <20190429020925.18136-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190429020925.18136-1-baolu.lu@linux.intel.com>
 References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
@@ -68,229 +67,462 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429020923.4XvkCVv-1kE_YYajQCZYMviviEXOXpTPBEKVrtaqdDA@z>
+Message-ID: <20190429020924.qSBL0-WHKH_sAq52Ss04n8HqzlPXJel9QKaeUhnCkRc@z>
 
 From: James Sewart <jamessewart@arista.com>
 
-Allowing IOMMU_DOMAIN_DMA and IOMMU_DOMAIN_IDENTITY types of
-domains to be allocated through iommu ops allows the default
-domain of an iommu_group to be set. This delegates domains of
-Intel IOMMU driver to the generic IOMMU layer.
+The generic IOMMU code will manage the life cycle of a default
+domain for each device that comes online. This patch removes the
+lazy domain allocation and early reserved region mapping that is
+now redundant.
 
 Signed-off-by: James Sewart <jamessewart@arista.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 124 ++++++++++++++++++++++++++----------
- 1 file changed, 90 insertions(+), 34 deletions(-)
+ drivers/iommu/intel-iommu.c | 356 +-----------------------------------
+ 1 file changed, 5 insertions(+), 351 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d2b51e045603..ec6ac39827ab 100644
+index ec6ac39827ab..dd6abd554804 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -311,6 +311,12 @@ static int hw_pass_through = 1;
- /* si_domain contains mulitple devices */
- #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
- 
-+/*
-+ * Domain managed externally, don't cleanup if it isn't attached
-+ * to any devices.
-+ */
-+#define DOMAIN_FLAG_MANAGED_EXTERNALLY	(1 << 2)
-+
- #define for_each_domain_iommu(idx, domain)			\
- 	for (idx = 0; idx < g_num_of_iommus; idx++)		\
- 		if (domain->iommu_refcnt[idx])
-@@ -561,6 +567,11 @@ static inline int domain_type_is_vm_or_si(struct dmar_domain *domain)
- 				DOMAIN_FLAG_STATIC_IDENTITY);
+@@ -1862,63 +1862,6 @@ static inline int guestwidth_to_adjustwidth(int gaw)
+ 	return agaw;
  }
  
-+static inline int domain_managed_externally(struct dmar_domain *domain)
-+{
-+	return domain->flags & DOMAIN_FLAG_MANAGED_EXTERNALLY;
-+}
-+
- static inline int domain_pfn_supported(struct dmar_domain *domain,
- 				       unsigned long pfn)
+-static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
+-		       int guest_width)
+-{
+-	int adjust_width, agaw;
+-	unsigned long sagaw;
+-	int err;
+-
+-	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
+-
+-	err = init_iova_flush_queue(&domain->iovad,
+-				    iommu_flush_iova, iova_entry_free);
+-	if (err)
+-		return err;
+-
+-	domain_reserve_special_ranges(domain);
+-
+-	/* calculate AGAW */
+-	if (guest_width > cap_mgaw(iommu->cap))
+-		guest_width = cap_mgaw(iommu->cap);
+-	domain->gaw = guest_width;
+-	adjust_width = guestwidth_to_adjustwidth(guest_width);
+-	agaw = width_to_agaw(adjust_width);
+-	sagaw = cap_sagaw(iommu->cap);
+-	if (!test_bit(agaw, &sagaw)) {
+-		/* hardware doesn't support it, choose a bigger one */
+-		pr_debug("Hardware doesn't support agaw %d\n", agaw);
+-		agaw = find_next_bit(&sagaw, 5, agaw);
+-		if (agaw >= 5)
+-			return -ENODEV;
+-	}
+-	domain->agaw = agaw;
+-
+-	if (ecap_coherent(iommu->ecap))
+-		domain->iommu_coherency = 1;
+-	else
+-		domain->iommu_coherency = 0;
+-
+-	if (ecap_sc_support(iommu->ecap))
+-		domain->iommu_snooping = 1;
+-	else
+-		domain->iommu_snooping = 0;
+-
+-	if (intel_iommu_superpage)
+-		domain->iommu_superpage = fls(cap_super_page_val(iommu->cap));
+-	else
+-		domain->iommu_superpage = 0;
+-
+-	domain->nid = iommu->node;
+-
+-	/* always allocate the top pgd */
+-	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
+-	if (!domain->pgd)
+-		return -ENOMEM;
+-	__iommu_flush_cache(iommu, domain->pgd, PAGE_SIZE);
+-	return 0;
+-}
+-
+ static void domain_exit(struct dmar_domain *domain)
  {
-@@ -1671,7 +1682,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ 	struct page *freelist;
+@@ -2600,118 +2543,6 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	return domain;
+ }
  
- 		__dmar_remove_one_dev_info(info);
- 
--		if (!domain_type_is_vm_or_si(domain)) {
-+		if (!domain_managed_externally(domain)) {
- 			/*
- 			 * The domain_exit() function  can't be called under
- 			 * device_domain_lock, as it takes this lock itself.
-@@ -2366,7 +2377,12 @@ static int domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	} else {
- 		/* General domains only have one IOMMU */
- 		iommu = domain_get_iommu(domain);
--		__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
-+		/*
-+		 * There's no associated iommu if domain hasn't been attached
-+		 * to any device yet.
-+		 */
-+		if (iommu)
-+			__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
- 	}
- 
- 	return 0;
-@@ -3406,12 +3422,9 @@ static int __init init_dmars(void)
- 
- 	check_tylersburg_isoch();
- 
--	if (iommu_identity_mapping) {
--		ret = si_domain_init(hw_pass_through);
--		if (ret)
--			goto free_iommu;
+-static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+-{
+-	*(u16 *)opaque = alias;
+-	return 0;
+-}
+-
+-static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
+-{
+-	struct device_domain_info *info;
+-	struct dmar_domain *domain = NULL;
+-	struct intel_iommu *iommu;
+-	u16 dma_alias;
+-	unsigned long flags;
+-	u8 bus, devfn;
+-
+-	iommu = device_to_iommu(dev, &bus, &devfn);
+-	if (!iommu)
+-		return NULL;
+-
+-	if (dev_is_pci(dev)) {
+-		struct pci_dev *pdev = to_pci_dev(dev);
+-
+-		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
+-
+-		spin_lock_irqsave(&device_domain_lock, flags);
+-		info = dmar_search_domain_by_dev_info(pci_domain_nr(pdev->bus),
+-						      PCI_BUS_NUM(dma_alias),
+-						      dma_alias & 0xff);
+-		if (info) {
+-			iommu = info->iommu;
+-			domain = info->domain;
+-		}
+-		spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-		/* DMA alias already has a domain, use it */
+-		if (info)
+-			goto out;
 -	}
 -
-+	ret = si_domain_init(hw_pass_through);
-+	if (ret)
-+		goto free_iommu;
+-	/* Allocate and initialize new domain for the device */
+-	domain = alloc_domain(0);
+-	if (!domain)
+-		return NULL;
+-	if (domain_init(domain, iommu, gaw)) {
+-		domain_exit(domain);
+-		return NULL;
+-	}
+-
+-out:
+-
+-	return domain;
+-}
+-
+-static struct dmar_domain *set_domain_for_dev(struct device *dev,
+-					      struct dmar_domain *domain)
+-{
+-	struct intel_iommu *iommu;
+-	struct dmar_domain *tmp;
+-	u16 req_id, dma_alias;
+-	u8 bus, devfn;
+-
+-	iommu = device_to_iommu(dev, &bus, &devfn);
+-	if (!iommu)
+-		return NULL;
+-
+-	req_id = ((u16)bus << 8) | devfn;
+-
+-	if (dev_is_pci(dev)) {
+-		struct pci_dev *pdev = to_pci_dev(dev);
+-
+-		pci_for_each_dma_alias(pdev, get_last_alias, &dma_alias);
+-
+-		/* register PCI DMA alias device */
+-		if (req_id != dma_alias) {
+-			tmp = dmar_insert_one_dev_info(iommu, PCI_BUS_NUM(dma_alias),
+-					dma_alias & 0xff, NULL, domain);
+-
+-			if (!tmp || tmp != domain)
+-				return tmp;
+-		}
+-	}
+-
+-	tmp = dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
+-	if (!tmp || tmp != domain)
+-		return tmp;
+-
+-	return domain;
+-}
+-
+-static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+-{
+-	struct dmar_domain *domain, *tmp;
+-
+-	domain = find_domain(dev);
+-	if (domain)
+-		goto out;
+-
+-	domain = find_or_alloc_domain(dev, gaw);
+-	if (!domain)
+-		goto out;
+-
+-	tmp = set_domain_for_dev(dev, domain);
+-	if (!tmp || domain != tmp) {
+-		domain_exit(domain);
+-		domain = tmp;
+-	}
+-
+-out:
+-
+-	return domain;
+-}
+-
+ static int iommu_domain_identity_map(struct dmar_domain *domain,
+ 				     unsigned long long start,
+ 				     unsigned long long end)
+@@ -2737,72 +2568,6 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
+ 				DMA_PTE_READ|DMA_PTE_WRITE);
+ }
+ 
+-static int domain_prepare_identity_map(struct device *dev,
+-				       struct dmar_domain *domain,
+-				       unsigned long long start,
+-				       unsigned long long end)
+-{
+-	/* For _hardware_ passthrough, don't bother. But for software
+-	   passthrough, we do it anyway -- it may indicate a memory
+-	   range which is reserved in E820, so which didn't get set
+-	   up to start with in si_domain */
+-	if (domain == si_domain && hw_pass_through) {
+-		dev_warn(dev, "Ignoring identity map for HW passthrough [0x%Lx - 0x%Lx]\n",
+-			 start, end);
+-		return 0;
+-	}
+-
+-	dev_info(dev, "Setting identity map [0x%Lx - 0x%Lx]\n", start, end);
+-
+-	if (end < start) {
+-		WARN(1, "Your BIOS is broken; RMRR ends before it starts!\n"
+-			"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+-			dmi_get_system_info(DMI_BIOS_VENDOR),
+-			dmi_get_system_info(DMI_BIOS_VERSION),
+-		     dmi_get_system_info(DMI_PRODUCT_VERSION));
+-		return -EIO;
+-	}
+-
+-	if (end >> agaw_to_width(domain->agaw)) {
+-		WARN(1, "Your BIOS is broken; RMRR exceeds permitted address width (%d bits)\n"
+-		     "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+-		     agaw_to_width(domain->agaw),
+-		     dmi_get_system_info(DMI_BIOS_VENDOR),
+-		     dmi_get_system_info(DMI_BIOS_VERSION),
+-		     dmi_get_system_info(DMI_PRODUCT_VERSION));
+-		return -EIO;
+-	}
+-
+-	return iommu_domain_identity_map(domain, start, end);
+-}
+-
+-static int iommu_prepare_identity_map(struct device *dev,
+-				      unsigned long long start,
+-				      unsigned long long end)
+-{
+-	struct dmar_domain *domain;
+-	int ret;
+-
+-	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+-	if (!domain)
+-		return -ENOMEM;
+-
+-	ret = domain_prepare_identity_map(dev, domain, start, end);
+-	if (ret)
+-		domain_exit(domain);
+-
+-	return ret;
+-}
+-
+-static inline int iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
+-					 struct device *dev)
+-{
+-	if (dev->archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO)
+-		return 0;
+-	return iommu_prepare_identity_map(dev, rmrr->base_address,
+-					  rmrr->end_address);
+-}
+-
+ static inline struct iommu_resv_region *iommu_get_isa_resv_region(void)
+ {
+ 	if (!isa_resv_region)
+@@ -2812,29 +2577,6 @@ static inline struct iommu_resv_region *iommu_get_isa_resv_region(void)
+ 	return isa_resv_region;
+ }
+ 
+-#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+-static inline void iommu_prepare_isa(struct pci_dev *pdev)
+-{
+-	int ret;
+-	struct iommu_resv_region *reg = iommu_get_isa_resv_region();
+-
+-	if (!reg)
+-		return;
+-
+-	pr_info("Prepare 0-16MiB unity mapping for LPC\n");
+-	ret = iommu_prepare_identity_map(&pdev->dev, reg->start,
+-					 reg->start + reg->length - 1);
+-
+-	if (ret)
+-		pr_err("Failed to create 0-16MiB identity map - floppy might not work\n");
+-}
+-#else
+-static inline void iommu_prepare_isa(struct pci_dev *pdev)
+-{
+-	return;
+-}
+-#endif /* !CONFIG_INTEL_IOMMU_FLPY_WA */
+-
+ static int md_domain_init(struct dmar_domain *domain, int guest_width);
+ 
+ static int __init si_domain_init(int hw)
+@@ -3033,18 +2775,10 @@ static int __init dev_prepare_static_identity_mapping(struct device *dev, int hw
+ 
+ static int __init iommu_prepare_static_identity_mapping(int hw)
+ {
+-	struct pci_dev *pdev = NULL;
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+ 	struct device *dev;
+-	int i;
+-	int ret = 0;
+-
+-	for_each_pci_dev(pdev) {
+-		ret = dev_prepare_static_identity_mapping(&pdev->dev, hw);
+-		if (ret)
+-			return ret;
+-	}
++	int i, ret = 0;
+ 
+ 	for_each_active_iommu(iommu, drhd)
+ 		for_each_active_dev_scope(drhd->devices, drhd->devices_cnt, i, dev) {
+@@ -3291,12 +3025,9 @@ static int copy_translation_tables(struct intel_iommu *iommu)
+ static int __init init_dmars(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+-	struct dmar_rmrr_unit *rmrr;
+ 	bool copied_tables = false;
+-	struct device *dev;
+-	struct pci_dev *pdev;
+ 	struct intel_iommu *iommu;
+-	int i, ret;
++	int ret;
  
  	/*
- 	 * If we copied translations from a previous kernel in the kdump
-@@ -4572,7 +4585,7 @@ static int device_notifier(struct notifier_block *nb,
- 			return 0;
- 
- 		dmar_remove_one_dev_info(dev);
--		if (!domain_type_is_vm_or_si(domain) &&
-+		if (!domain_managed_externally(domain) &&
- 		    list_empty(&domain->devices))
- 			domain_exit(domain);
- 	} else if (action == BUS_NOTIFY_ADD_DEVICE) {
-@@ -5038,33 +5051,52 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- {
- 	struct dmar_domain *dmar_domain;
- 	struct iommu_domain *domain;
-+	int flags = DOMAIN_FLAG_MANAGED_EXTERNALLY;
- 
--	if (type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
-+	switch (type) {
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		flags |= DOMAIN_FLAG_VIRTUAL_MACHINE;
-+		/* fall through */
-+	case IOMMU_DOMAIN_DMA:
-+		dmar_domain = alloc_domain(flags);
-+		if (!dmar_domain)
-+			return NULL;
- 
--	dmar_domain = alloc_domain(DOMAIN_FLAG_VIRTUAL_MACHINE);
--	if (!dmar_domain) {
--		pr_err("Can't allocate dmar_domain\n");
--		return NULL;
--	}
--	if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
--		pr_err("Domain initialization failed\n");
--		domain_exit(dmar_domain);
-+		if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
-+			pr_err("Domain initialization failed\n");
-+			domain_exit(dmar_domain);
-+			return NULL;
-+		}
-+
-+		if (type == IOMMU_DOMAIN_DMA &&
-+		    init_iova_flush_queue(&dmar_domain->iovad,
-+					  iommu_flush_iova, iova_entry_free)) {
-+			pr_warn("iova flush queue initialization failed\n");
-+			intel_iommu_strict = 1;
-+		}
-+
-+		domain_update_iommu_cap(dmar_domain);
-+		domain = &dmar_domain->domain;
-+		domain->geometry.aperture_start = 0;
-+		domain->geometry.aperture_end =
-+			__DOMAIN_MAX_ADDR(dmar_domain->gaw);
-+		domain->geometry.force_aperture = true;
-+		break;
-+	case IOMMU_DOMAIN_IDENTITY:
-+		return &si_domain->domain;
-+	default:
- 		return NULL;
- 	}
--	domain_update_iommu_cap(dmar_domain);
--
--	domain = &dmar_domain->domain;
--	domain->geometry.aperture_start = 0;
--	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
--	domain->geometry.force_aperture = true;
- 
--	return domain;
-+	return &dmar_domain->domain;
- }
- 
- static void intel_iommu_domain_free(struct iommu_domain *domain)
- {
--	domain_exit(to_dmar_domain(domain));
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+
-+	if (domain_managed_externally(dmar_domain))
-+		domain_exit(dmar_domain);
- }
- 
- /*
-@@ -5240,13 +5272,33 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- {
- 	int ret;
- 
--	if (device_is_rmrr_locked(dev)) {
--		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
--		return -EPERM;
--	}
-+	switch (domain->type) {
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		if (device_is_rmrr_locked(dev)) {
-+			dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement. Contact your platform vendor.\n");
-+			return -EPERM;
-+		}
- 
--	if (is_aux_domain(dev, domain))
--		return -EPERM;
-+		if (is_aux_domain(dev, domain))
-+			return -EPERM;
-+
-+		break;
-+	case IOMMU_DOMAIN_DMA:
-+		if (intel_iommu_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
-+			dev_warn(dev, "Device requires identity domain\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	case IOMMU_DOMAIN_IDENTITY:
-+		if (intel_iommu_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
-+			dev_warn(dev, "Device requires non-identity domain\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		dev_warn(dev, "Invalid domain type %u\n", domain->type);
-+		return -EINVAL;
-+	}
- 
- 	/* normally dev is not mapped */
- 	if (unlikely(domain_context_mapped(dev))) {
-@@ -5258,7 +5310,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 			dmar_remove_one_dev_info(dev);
- 			rcu_read_unlock();
- 
--			if (!domain_type_is_vm_or_si(old_domain) &&
-+			if (!domain_managed_externally(old_domain) &&
- 			    list_empty(&old_domain->devices))
- 				domain_exit(old_domain);
+ 	 * for each drhd
+@@ -3447,36 +3178,6 @@ static int __init init_dmars(void)
+ 			goto free_iommu;
  		}
-@@ -5307,6 +5359,10 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 	int prot = 0;
+ 	}
+-	/*
+-	 * For each rmrr
+-	 *   for each dev attached to rmrr
+-	 *   do
+-	 *     locate drhd for dev, alloc domain for dev
+-	 *     allocate free domain
+-	 *     allocate page table entries for rmrr
+-	 *     if context not allocated for bus
+-	 *           allocate and init context
+-	 *           set present in root table for this bus
+-	 *     init context with domain, translation etc
+-	 *    endfor
+-	 * endfor
+-	 */
+-	pr_info("Setting RMRR:\n");
+-	for_each_rmrr_units(rmrr) {
+-		/* some BIOS lists non-exist devices in DMAR table. */
+-		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+-					  i, dev) {
+-			ret = iommu_prepare_rmrr_dev(rmrr, dev);
+-			if (ret)
+-				pr_err("Mapping reserved region failed\n");
+-		}
+-	}
+-
+-	pdev = pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
+-	if (pdev) {
+-		iommu_prepare_isa(pdev);
+-		pci_dev_put(pdev);
+-	}
+ 
+ domains_done:
+ 
+@@ -3565,53 +3266,6 @@ static unsigned long intel_alloc_iova(struct device *dev,
+ 	return iova_pfn;
+ }
+ 
+-struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
+-{
+-	struct dmar_domain *domain, *tmp;
+-	struct dmar_rmrr_unit *rmrr;
+-	struct device *i_dev;
+-	int i, ret;
+-
+-	domain = find_domain(dev);
+-	if (domain)
+-		goto out;
+-
+-	domain = find_or_alloc_domain(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
+-	if (!domain)
+-		goto out;
+-
+-	/* We have a new domain - setup possible RMRRs for the device */
+-	rcu_read_lock();
+-	for_each_rmrr_units(rmrr) {
+-		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+-					  i, i_dev) {
+-			if (i_dev != dev)
+-				continue;
+-
+-			ret = domain_prepare_identity_map(dev, domain,
+-							  rmrr->base_address,
+-							  rmrr->end_address);
+-			if (ret)
+-				dev_err(dev, "Mapping reserved region failed\n");
+-		}
+-	}
+-	rcu_read_unlock();
+-
+-	tmp = set_domain_for_dev(dev, domain);
+-	if (!tmp || domain != tmp) {
+-		domain_exit(domain);
+-		domain = tmp;
+-	}
+-
+-out:
+-
+-	if (!domain)
+-		dev_err(dev, "Allocating domain failed\n");
+-
+-
+-	return domain;
+-}
+-
+ /* Check if the dev needs to go through non-identity map and unmap process.*/
+ static int iommu_no_mapping(struct device *dev)
+ {
+@@ -3665,7 +3319,7 @@ static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
+ 	if (iommu_no_mapping(dev))
+ 		return paddr;
+ 
+-	domain = get_valid_domain_for_dev(dev);
++	domain = find_domain(dev);
+ 	if (!domain)
+ 		return DMA_MAPPING_ERROR;
+ 
+@@ -3887,7 +3541,7 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
+ 	if (iommu_no_mapping(dev))
+ 		return intel_nontranslate_map_sg(dev, sglist, nelems, dir);
+ 
+-	domain = get_valid_domain_for_dev(dev);
++	domain = find_domain(dev);
+ 	if (!domain)
+ 		return 0;
+ 
+@@ -5582,7 +5236,7 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
+ 	u64 ctx_lo;
  	int ret;
  
-+	/* Don't bother if hardware passthrough used. */
-+	if (dmar_domain == si_domain && hw_pass_through)
-+		return 0;
-+
- 	if (iommu_prot & IOMMU_READ)
- 		prot |= DMA_PTE_READ;
- 	if (iommu_prot & IOMMU_WRITE)
+-	domain = get_valid_domain_for_dev(dev);
++	domain = find_domain(dev);
+ 	if (!domain)
+ 		return -EINVAL;
+ 
 -- 
 2.17.1
 
