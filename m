@@ -1,73 +1,64 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 01/10] iommu: Add helper to get minimal page size of
- domain
-Date: Mon, 29 Apr 2019 11:55:54 +0100
-Message-ID: <05eca601-0264-8141-ceeb-7ef7ad5d5650@arm.com>
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+Date: Mon, 29 Apr 2019 12:06:52 +0100
+Message-ID: <90182d27-5764-7676-8ca6-b2773a40cfe1@arm.com>
 References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
- <20190421011719.14909-2-baolu.lu@linux.intel.com>
+ <20190421011719.14909-3-baolu.lu@linux.intel.com>
+ <20190422164555.GA31181@lst.de>
+ <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
+ <20190423061232.GB12762@lst.de>
+ <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
+ <20190424144532.GA21480@lst.de>
+ <a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
+ <20190426150433.GA19930@lst.de>
+ <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190421011719.14909-2-baolu.lu@linux.intel.com>
+In-Reply-To: <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>
+Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/04/2019 02:17, Lu Baolu wrote:
-> This makes it possible for other modules to know the minimal
-> page size supported by a domain without the knowledge of the
-> structure details.
+On 29/04/2019 06:10, Lu Baolu wrote:
+> Hi Christoph,
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->   include/linux/iommu.h | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
+> On 4/26/19 11:04 PM, Christoph Hellwig wrote:
+>> On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
+>>> This is not VT-d specific. It's just how generic IOMMU works.
+>>>
+>>> Normally, IOMMU works in paging mode. So if a driver issues DMA with
+>>> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 0xBBBB0123.
+>>> But we should never expect IOMMU to remap 0xAAAA0123 with physical
+>>> address of 0xBBBB0000. That's the reason why I said that IOMMU will not
+>>> work there.
+>>
+>> Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
+>> can happen, so drivers are fine with it.  Why would that suddenly
+>> become an issue when swiotlb is called from the iommu code?
+>>
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a5007d035218..46679ef19b7e 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -377,6 +377,14 @@ static inline void iommu_tlb_sync(struct iommu_domain *domain)
->   		domain->ops->iotlb_sync(domain);
->   }
->   
-> +static inline unsigned long domain_minimal_pgsize(struct iommu_domain *domain)
-> +{
-> +	if (domain && domain->pgsize_bitmap)
-> +		return 1 << __ffs(domain->pgsize_bitmap);
+> I would say IOMMU is DMA remapping, not DMA engine. :-)
 
-Nit: this would probably be more efficient on most architectures as:
+I'm not sure I really follow the issue here - if we're copying the 
+buffer to the bounce page(s) there's no conceptual difference from 
+copying it to SWIOTLB slot(s), so there should be no need to worry about 
+the original in-page offset.
 
-	if (domain)
-		return domain->pgsize_bitmap & -domain->pgsize_bitmap;
+ From the reply up-thread I guess you're trying to include an 
+optimisation to only copy the head and tail of the buffer if it spans 
+multiple pages, and directly map the ones in the middle, but AFAICS 
+that's going to tie you to also using strict mode for TLB maintenance, 
+which may not be a win overall depending on the balance between 
+invalidation bandwidth vs. memcpy bandwidth. At least if we use standard 
+SWIOTLB logic to always copy the whole thing, we should be able to 
+release the bounce pages via the flush queue to allow 'safe' lazy unmaps.
 
-
-I'd also suggest s/minimal/min/ in the name, just to stop it getting too 
-long. Otherwise, though, I like the idea, and there's at least one other 
-place (in iommu-dma) that can make use of it straight away.
+Either way I think it would be worth just implementing the 
+straightforward version first, then coming back to consider 
+optimisations later.
 
 Robin.
-
-> +
-> +	return 0;
-> +}
-> +
->   /* PCI device grouping function */
->   extern struct iommu_group *pci_device_group(struct device *dev);
->   /* Generic device grouping function */
-> @@ -704,6 +712,11 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->   	return NULL;
->   }
->   
-> +static inline unsigned long domain_minimal_pgsize(struct iommu_domain *domain)
-> +{
-> +	return 0;
-> +}
-> +
->   #endif /* CONFIG_IOMMU_API */
->   
->   #ifdef CONFIG_IOMMU_DEBUGFS
-> 
