@@ -1,55 +1,111 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: implement generic dma_map_ops for IOMMUs v3
-Date: Mon, 29 Apr 2019 16:03:29 +0100
-Message-ID: <9ae8ce99-65a8-711d-b17d-165df7e280d4@arm.com>
-References: <20190422175942.18788-1-hch@lst.de>
+Subject: Re: [PATCH v2 1/7] genirq/msi: Add a new field in msi_desc to store
+ an IOMMU cookie
+Date: Mon, 29 Apr 2019 16:12:03 +0100
+Message-ID: <df16760f-b5fe-5af4-18a1-fbb450d772a4@arm.com>
+References: <20190429144428.29254-1-julien.grall@arm.com>
+ <20190429144428.29254-2-julien.grall@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422175942.18788-1-hch@lst.de>
+In-Reply-To: <20190429144428.29254-2-julien.grall@arm.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Julien Grall <julien.grall@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: logang@deltatee.com, douliyangs@gmail.com, miquel.raynal@bootlin.com, marc.zyngier@arm.com, jason@lakedaemon.net, tglx@linutronix.de, joro@8bytes.org, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/04/2019 18:59, Christoph Hellwig wrote:
-> Hi Robin,
+On 29/04/2019 15:44, Julien Grall wrote:
+> When an MSI doorbell is located downstream of an IOMMU, it is required
+> to swizzle the physical address with an appropriately-mapped IOVA for any
+> device attached to one of our DMA ops domain.
 > 
-> please take a look at this series, which implements a completely generic
-> set of dma_map_ops for IOMMU drivers.  This is done by taking the
-> existing arm64 code, moving it to drivers/iommu and then massaging it
-> so that it can also work for architectures with DMA remapping.  This
-> should help future ports to support IOMMUs more easily, and also allow
-> to remove various custom IOMMU dma_map_ops implementations, like Tom
-> was planning to for the AMD one.
+> At the moment, the allocation of the mapping may be done when composing
+> the message. However, the composing may be done in non-preemtible
+> context while the allocation requires to be called from preemptible
+> context.
+> 
+> A follow-up change will split the current logic in two functions
+> requiring to keep an IOMMU cookie per MSI.
+> 
+> A new field is introduced in msi_desc to store an IOMMU cookie. As the
+> cookie may not be required in some configuration, the field is protected
+> under a new config CONFIG_IRQ_MSI_IOMMU.
+> 
+> A pair of helpers has also been introduced to access the field.
 
-Modulo a few nits, I think this looks pretty much good to go, and it 
-would certainly be good to get as much as reasonable queued soon for the 
-sake of progress elsewhere.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Catalin, Will, I think the arm64 parts are all OK but please take a look 
-to confirm.
-
-Thanks,
-Robin.
-
+> Signed-off-by: Julien Grall <julien.grall@arm.com>
 > 
-> A git tree is also available at:
+> ---
+>      Changes in v2:
+>          - Update the commit message to use imperative mood
+>          - Protect the field with a new config that will be selected by
+>          IOMMU_DMA later on
+>          - Add a set of helpers to access the new field
+> ---
+>   include/linux/msi.h | 26 ++++++++++++++++++++++++++
+>   kernel/irq/Kconfig  |  3 +++
+>   2 files changed, 29 insertions(+)
 > 
->      git://git.infradead.org/users/hch/misc.git dma-iommu-ops.3
-> 
-> Gitweb:
-> 
->      http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops.3
-> 
-> Changes since v2:
->   - address various review comments and include patches from Robin
-> 
-> Changes since v1:
->   - only include other headers in dma-iommu.h if CONFIG_DMA_IOMMU is enabled
->   - keep using a scatterlist in iommu_dma_alloc
->   - split out mmap/sgtable fixes and move them early in the series
->   - updated a few commit logs
+> diff --git a/include/linux/msi.h b/include/linux/msi.h
+> index 7e9b81c3b50d..82a308c19222 100644
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -77,6 +77,9 @@ struct msi_desc {
+>   	struct device			*dev;
+>   	struct msi_msg			msg;
+>   	struct irq_affinity_desc	*affinity;
+> +#ifdef CONFIG_IRQ_MSI_IOMMU
+> +	const void			*iommu_cookie;
+> +#endif
+>   
+>   	union {
+>   		/* PCI MSI/X specific data */
+> @@ -119,6 +122,29 @@ struct msi_desc {
+>   #define for_each_msi_entry_safe(desc, tmp, dev)	\
+>   	list_for_each_entry_safe((desc), (tmp), dev_to_msi_list((dev)), list)
+>   
+> +#ifdef CONFIG_IRQ_MSI_IOMMU
+> +static inline const void *msi_desc_get_iommu_cookie(struct msi_desc *desc)
+> +{
+> +	return desc->iommu_cookie;
+> +}
+> +
+> +static inline void msi_desc_set_iommu_cookie(struct msi_desc *desc,
+> +					     const void *iommu_cookie)
+> +{
+> +	desc->iommu_cookie = iommu_cookie;
+> +}
+> +#else
+> +static inline const void *msi_desc_get_iommu_cookie(struct msi_desc *desc)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void msi_desc_set_iommu_cookie(struct msi_desc *desc,
+> +					     const void *iommu_cookie)
+> +{
+> +}
+> +#endif
+> +
+>   #ifdef CONFIG_PCI_MSI
+>   #define first_pci_msi_entry(pdev)	first_msi_entry(&(pdev)->dev)
+>   #define for_each_pci_msi_entry(desc, pdev)	\
+> diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+> index 5f3e2baefca9..8fee06625c37 100644
+> --- a/kernel/irq/Kconfig
+> +++ b/kernel/irq/Kconfig
+> @@ -91,6 +91,9 @@ config GENERIC_MSI_IRQ_DOMAIN
+>   	select IRQ_DOMAIN_HIERARCHY
+>   	select GENERIC_MSI_IRQ
+>   
+> +config IRQ_MSI_IOMMU
+> +	bool
+> +
+>   config HANDLE_DOMAIN_IRQ
+>   	bool
+>   
 > 
