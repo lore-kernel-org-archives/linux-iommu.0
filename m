@@ -2,71 +2,83 @@ Return-Path: <SRS0=wClR=S7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E111BC04AA6
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 20:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76327C04AA6
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 21:15:00 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ADD0C21670
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 20:03:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 44FDB21655
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 21:15:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TN1+azQl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADD0C21670
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="YxHibykQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44FDB21655
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 871121CA0;
-	Mon, 29 Apr 2019 20:03:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0A0FD1DF1;
+	Mon, 29 Apr 2019 21:15:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8CDE81A8A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8AEAE1D7B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 20:03:48 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3A5AF876
+	Mon, 29 Apr 2019 21:14:48 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3D274876
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 20:03:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=gXBZVUg4jQbTWNl/rOtvrBvT8zt4gzjmR4Rn7XZccXU=;
-	b=TN1+azQlisq62Mso/YE6137jh
-	dstuCHzj9XfNBJXgcAAm+Heqp8Vrft4jW4co4zD6xNMZt1YpgbG84RFfEunMIJxDVi86SaXtJJMCN
-	IdUGN3+vF9/1ap56HXZq206cDipNDutppFbktg705F5ZdiuIGqR27GlLTOTTVM1cPqyP3De7MThCi
-	En/BcrH3CglsKGIkLWiKGsVMyBqNik4jODOTi2TjxPJcVUy0mpKMFniparDi3tb919wEfIdpfGIaC
-	4nrqM+FZGig2pP0yXHPcISAgCR8JBUGSYR/ZdpcdjgRvf3Xllvu3x4FVn2PGQ62+7bKTtZfaZhC3T
-	zS+K+Q3XQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red
-	Hat Linux)) id 1hLCV0-0005Qy-Ty; Mon, 29 Apr 2019 20:03:38 +0000
-Date: Mon, 29 Apr 2019 13:03:38 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 5/8] iommu/vt-d: Implement def_domain_type iommu ops
-	entry
-Message-ID: <20190429200338.GA8412@infradead.org>
-References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
-	<20190429020925.18136-6-baolu.lu@linux.intel.com>
+	Mon, 29 Apr 2019 21:14:48 +0000 (UTC)
+Received: from localhost (odyssey.drury.edu [64.22.249.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 95338215EA;
+	Mon, 29 Apr 2019 21:14:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1556572487;
+	bh=XX0aTJglLKQg7dsZbY4eNn1vqzsBT3b0Sj+xLrzx0yk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YxHibykQtphUqTaLCrPFMVUnoPuwdK1iYO2VrtH44UQZDBpPNEIgM+EQM+ho0ajOH
+	U7bQco5v19ubB1D43u2lfNBs8KvFl6/Tbwn+o5UIMte+7mdc6Euc/IXTI8nadeZc+Z
+	9qxqwwsQIbuhid6oF/FqEvGGNc8TC6PpId9D37hU=
+Date: Mon, 29 Apr 2019 16:14:46 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2 0/9] PCI: add help pci_dev_id
+Message-ID: <20190429211446.GA145057@google.com>
+References: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190429020925.18136-6-baolu.lu@linux.intel.com>
-User-Agent: Mutt/1.9.2 (2017-12-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, dima@arista.com,
-	tmurphy@arista.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <2e1f9a57-6d08-d017-24da-3e6b97fa2449@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: David Airlie <airlied@linux.ie>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	"open list:AMD KFD" <dri-devel@lists.freedesktop.org>,
+	Paul Mackerras <paulus@samba.org>, "moderated list:ARM/STM32 ARCHITECTURE"
+	<linux-stm32@st-md-mailman.stormreply.com>,
+	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>,
+	Jose Abreu <joabreu@synopsys.com>,
+	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+	Realtek linux nic maintainers <nic_swsd@realtek.com>,
+	Alexandre Torgue <alexandre.torgue@st.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+	Benson Leung <bleung@chromium.org>, "moderated list:ARM/STM32 ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	"open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER"
+	<netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	"open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,51 +95,42 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429200338.mxaBN8YdIdfAhrvlM2nq5SUqI2W6-qf5ip6xE9zChPk@z>
+Message-ID: <20190429211446.BCcOXxFoI3UQkba3uALk35CK3a8tL_juIj4cSfJGaBQ@z>
 
-> @@ -3631,35 +3607,30 @@ static int iommu_no_mapping(struct device *dev)
->  	if (iommu_dummy(dev))
->  		return 1;
->  
-> -	if (!iommu_identity_mapping)
-> -		return 0;
-> -
+On Wed, Apr 24, 2019 at 09:10:21PM +0200, Heiner Kallweit wrote:
+> In several places in the kernel we find PCI_DEVID used like this:
+> PCI_DEVID(dev->bus->number, dev->devfn) Therefore create a helper
+> for it.
+> 
+> v2:
+> - apply the change to all affected places in the kernel
+> 
+> Heiner Kallweit (9):
+>   PCI: add helper pci_dev_id
+>   PCI: use helper pci_dev_id
+>   r8169: use new helper pci_dev_id
+>   powerpc/powernv/npu: use helper pci_dev_id
+>   drm/amdkfd: use helper pci_dev_id
+>   iommu/amd: use helper pci_dev_id
+>   iommu/vt-d: use helper pci_dev_id
+>   stmmac: pci: use helper pci_dev_id
+>   platform/chrome: chromeos_laptop: use helper pci_dev_id
+> 
+>  arch/powerpc/platforms/powernv/npu-dma.c         | 14 ++++++--------
+>  drivers/gpu/drm/amd/amdkfd/kfd_topology.c        |  3 +--
+>  drivers/iommu/amd_iommu.c                        |  2 +-
+>  drivers/iommu/intel-iommu.c                      |  2 +-
+>  drivers/iommu/intel_irq_remapping.c              |  2 +-
+>  drivers/net/ethernet/realtek/r8169.c             |  3 +--
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  2 +-
+>  drivers/pci/msi.c                                |  6 +++---
+>  drivers/pci/search.c                             | 10 +++-------
+>  drivers/platform/chrome/chromeos_laptop.c        |  2 +-
+>  include/linux/pci.h                              |  5 +++++
+>  11 files changed, 24 insertions(+), 27 deletions(-)
 
-FYI, iommu_no_mapping has been refactored in for-next:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/commit/?h=x86/vt-d&id=48b2c937ea37a3bece0094b46450ed5267525289
-
->  	found = identity_mapping(dev);
->  	if (found) {
-> +		/*
-> +		 * If the device's dma_mask is less than the system's memory
-> +		 * size then this is not a candidate for identity mapping.
-> +		 */
-> +		u64 dma_mask = *dev->dma_mask;
-> +
-> +		if (dev->coherent_dma_mask &&
-> +		    dev->coherent_dma_mask < dma_mask)
-> +			dma_mask = dev->coherent_dma_mask;
-> +
-> +		if (dma_mask < dma_get_required_mask(dev)) {
-
-I know this is mostly existing code moved around, but it really needs
-some fixing.  For one dma_get_required_mask is supposed to return the
-required to not bounce mask for the given device.  E.g. for a device
-behind an iommu it should always just return 32-bit.  If you really
-want to check vs system memory please call dma_direct_get_required_mask
-without the dma_ops indirection.
-
-Second I don't even think we need to check the coherent_dma_mask,
-dma_direct is pretty good at always finding memory even without
-an iommu.
-
-Third this doesn't take take the bus_dma_mask into account.
-
-This probably should just be:
-
-		if (min(*dev->dma_mask, dev->bus_dma_mask) <
-		    dma_direct_get_required_mask(dev)) {
+Applied with acks/reviewed-by from Benson, Joerg, Christian, Alexey, and
+David to pci/misc for v5.2, thanks!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
