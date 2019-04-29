@@ -4,50 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B38BFC43218
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E04B8C43219
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8CA8E20675
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8CA8E20675
+	by mail.kernel.org (Postfix) with ESMTPS id B904820675
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B904820675
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 80CBE1DE7;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C733A1DEA;
 	Mon, 29 Apr 2019 02:18:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5D0DC1D35
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB3B31D35
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 02:16:10 +0000 (UTC)
+	Mon, 29 Apr 2019 02:16:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D52B3608
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2253A608
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 02:16:09 +0000 (UTC)
+	Mon, 29 Apr 2019 02:16:12 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Apr 2019 19:16:09 -0700
+	28 Apr 2019 19:16:11 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="146537863"
+X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="146537869"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga003.jf.intel.com with ESMTP; 28 Apr 2019 19:16:07 -0700
+	by orsmga003.jf.intel.com with ESMTP; 28 Apr 2019 19:16:09 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: David Woodhouse <dwmw2@infradead.org>,
 	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 5/8] iommu/vt-d: Implement def_domain_type iommu ops entry
-Date: Mon, 29 Apr 2019 10:09:22 +0800
-Message-Id: <20190429020925.18136-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 6/8] iommu/vt-d: Allow DMA domains to be allocated by iommu
+	ops
+Date: Mon, 29 Apr 2019 10:09:23 +0800
+Message-Id: <20190429020925.18136-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190429020925.18136-1-baolu.lu@linux.intel.com>
 References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
-MIME-Version: 1.0
 Cc: kevin.tian@intel.com, ashok.raj@intel.com, dima@arista.com,
 	tmurphy@arista.com, linux-kernel@vger.kernel.org,
 	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
@@ -63,108 +63,238 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429020922.1xfjMUDy8Qa44Q7-eDAGiTXzwlWry9b8ydvdQylnWcI@z>
+Message-ID: <20190429020923.4XvkCVv-1kE_YYajQCZYMviviEXOXpTPBEKVrtaqdDA@z>
 
-SXQgd2lsbCBiZSB1c2VkIGJ5IHRoZSBpb21tdSBnZW5lcmljIGZyYW1ld29yayB0byBjaGVjayB0
-aGUKZGVmYXVsdCBkb21haW4gdHlwZXMgdGhhdCBJbnRlbCBJT01NVSBkcml2ZXIgc3VwcG9ydHMg
-Zm9yIGEKc3BlY2lmaWMgZGV2aWNlLiBSZXR1cm4gSU9NTVVfRE9NQUlOX0RNQSBpZiBkZXZpY2Ug
-cmVxdWlyZXMKYSBub24taWRlbnRpdHkgZG9tYWluOyAgUmV0dXJuIElPTU1VX0RPTUFJTl9JREVO
-VElUWSBpZiB0aGUKZGV2aWNlIHJlcXVpcmVzIHRvIHVzZSBhbiBpZGVudGl0eSBkb21haW4uIE90
-aGVyd2lzZSByZXR1cm4KSU9NTVVfRE9NQUlOX0FOWSB3aGljaCBpbmRpY2F0ZXMgdGhhdCBib3Ro
-IGRvbWFpbiB0eXBlcyBhcmUKc3VwcG9ydGVkLCBoZW5jZSB0aGUgc3RhdGljIGRlZmF1bHQgZG9t
-YWluIHR5cGUgZGVmaW5lZCBpbgppb21tdSBnZW5lcmljIGxheWVyIHdpbGwgYmUgdXNlZC4KClNp
-Z25lZC1vZmYtYnk6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+Ci0tLQogZHJp
-dmVycy9pb21tdS9pbnRlbC1pb21tdS5jIHwgODYgKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDI5IGluc2VydGlvbnMoKyksIDU3IGRlbGV0aW9u
-cygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMv
-aW9tbXUvaW50ZWwtaW9tbXUuYwppbmRleCA4NDdlNGEzMjZkMjkuLmQyYjUxZTA0NTYwMyAxMDA2
-NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUv
-aW50ZWwtaW9tbXUuYwpAQCAtMjg1OCw5ICsyODU4LDYgQEAgc3RhdGljIGludCBpZGVudGl0eV9t
-YXBwaW5nKHN0cnVjdCBkZXZpY2UgKmRldikKIHsKIAlzdHJ1Y3QgZGV2aWNlX2RvbWFpbl9pbmZv
-ICppbmZvOwogCi0JaWYgKGxpa2VseSghaW9tbXVfaWRlbnRpdHlfbWFwcGluZykpCi0JCXJldHVy
-biAwOwotCiAJaW5mbyA9IGRldi0+YXJjaGRhdGEuaW9tbXU7CiAJaWYgKGluZm8gJiYgaW5mbyAh
-PSBEVU1NWV9ERVZJQ0VfRE9NQUlOX0lORk8pCiAJCXJldHVybiAoaW5mby0+ZG9tYWluID09IHNp
-X2RvbWFpbik7CkBAIC0yOTQ1LDI5ICsyOTQyLDI2IEBAIHN0YXRpYyBib29sIGRldmljZV9pc19y
-bXJyX2xvY2tlZChzdHJ1Y3QgZGV2aWNlICpkZXYpCiAJcmV0dXJuIHRydWU7CiB9CiAKLXN0YXRp
-YyBpbnQgaW9tbXVfc2hvdWxkX2lkZW50aXR5X21hcChzdHJ1Y3QgZGV2aWNlICpkZXYsIGludCBz
-dGFydHVwKQorc3RhdGljIGludCBpbnRlbF9pb21tdV9kZWZfZG9tYWluX3R5cGUoc3RydWN0IGRl
-dmljZSAqZGV2KQogewogCWlmIChkZXZfaXNfcGNpKGRldikpIHsKIAkJc3RydWN0IHBjaV9kZXYg
-KnBkZXYgPSB0b19wY2lfZGV2KGRldik7CiAKIAkJaWYgKGRldmljZV9pc19ybXJyX2xvY2tlZChk
-ZXYpKQotCQkJcmV0dXJuIDA7CisJCQlyZXR1cm4gSU9NTVVfRE9NQUlOX0RNQTsKIAogCQkvKgog
-CQkgKiBQcmV2ZW50IGFueSBkZXZpY2UgbWFya2VkIGFzIHVudHJ1c3RlZCBmcm9tIGdldHRpbmcK
-IAkJICogcGxhY2VkIGludG8gdGhlIHN0YXRpY2FsbHkgaWRlbnRpdHkgbWFwcGluZyBkb21haW4u
-CiAJCSAqLwogCQlpZiAocGRldi0+dW50cnVzdGVkKQotCQkJcmV0dXJuIDA7CisJCQlyZXR1cm4g
-SU9NTVVfRE9NQUlOX0RNQTsKIAogCQlpZiAoKGlvbW11X2lkZW50aXR5X21hcHBpbmcgJiBJREVO
-VE1BUF9BWkFMSUEpICYmIElTX0FaQUxJQShwZGV2KSkKLQkJCXJldHVybiAxOworCQkJcmV0dXJu
-IElPTU1VX0RPTUFJTl9JREVOVElUWTsKIAogCQlpZiAoKGlvbW11X2lkZW50aXR5X21hcHBpbmcg
-JiBJREVOVE1BUF9HRlgpICYmIElTX0dGWF9ERVZJQ0UocGRldikpCi0JCQlyZXR1cm4gMTsKLQot
-CQlpZiAoIShpb21tdV9pZGVudGl0eV9tYXBwaW5nICYgSURFTlRNQVBfQUxMKSkKLQkJCXJldHVy
-biAwOworCQkJcmV0dXJuIElPTU1VX0RPTUFJTl9JREVOVElUWTsKIAogCQkvKgogCQkgKiBXZSB3
-YW50IHRvIHN0YXJ0IG9mZiB3aXRoIGFsbCBkZXZpY2VzIGluIHRoZSAxOjEgZG9tYWluLCBhbmQK
-QEAgLTI5ODgsNDMgKzI5ODIsMjUgQEAgc3RhdGljIGludCBpb21tdV9zaG91bGRfaWRlbnRpdHlf
-bWFwKHN0cnVjdCBkZXZpY2UgKmRldiwgaW50IHN0YXJ0dXApCiAJCSAqLwogCQlpZiAoIXBjaV9p
-c19wY2llKHBkZXYpKSB7CiAJCQlpZiAoIXBjaV9pc19yb290X2J1cyhwZGV2LT5idXMpKQotCQkJ
-CXJldHVybiAwOworCQkJCXJldHVybiBJT01NVV9ET01BSU5fRE1BOwogCQkJaWYgKHBkZXYtPmNs
-YXNzID4+IDggPT0gUENJX0NMQVNTX0JSSURHRV9QQ0kpCi0JCQkJcmV0dXJuIDA7CisJCQkJcmV0
-dXJuIElPTU1VX0RPTUFJTl9ETUE7CiAJCX0gZWxzZSBpZiAocGNpX3BjaWVfdHlwZShwZGV2KSA9
-PSBQQ0lfRVhQX1RZUEVfUENJX0JSSURHRSkKLQkJCXJldHVybiAwOworCQkJcmV0dXJuIElPTU1V
-X0RPTUFJTl9ETUE7CiAJfSBlbHNlIHsKIAkJaWYgKGRldmljZV9oYXNfcm1ycihkZXYpKQotCQkJ
-cmV0dXJuIDA7Ci0JfQotCi0JLyoKLQkgKiBBdCBib290IHRpbWUsIHdlIGRvbid0IHlldCBrbm93
-IGlmIGRldmljZXMgd2lsbCBiZSA2NC1iaXQgY2FwYWJsZS4KLQkgKiBBc3N1bWUgdGhhdCB0aGV5
-IHdpbGwg4oCUIGlmIHRoZXkgdHVybiBvdXQgbm90IHRvIGJlLCB0aGVuIHdlIGNhbgotCSAqIHRh
-a2UgdGhlbSBvdXQgb2YgdGhlIDE6MSBkb21haW4gbGF0ZXIuCi0JICovCi0JaWYgKCFzdGFydHVw
-KSB7Ci0JCS8qCi0JCSAqIElmIHRoZSBkZXZpY2UncyBkbWFfbWFzayBpcyBsZXNzIHRoYW4gdGhl
-IHN5c3RlbSdzIG1lbW9yeQotCQkgKiBzaXplIHRoZW4gdGhpcyBpcyBub3QgYSBjYW5kaWRhdGUg
-Zm9yIGlkZW50aXR5IG1hcHBpbmcuCi0JCSAqLwotCQl1NjQgZG1hX21hc2sgPSAqZGV2LT5kbWFf
-bWFzazsKLQotCQlpZiAoZGV2LT5jb2hlcmVudF9kbWFfbWFzayAmJgotCQkgICAgZGV2LT5jb2hl
-cmVudF9kbWFfbWFzayA8IGRtYV9tYXNrKQotCQkJZG1hX21hc2sgPSBkZXYtPmNvaGVyZW50X2Rt
-YV9tYXNrOwotCi0JCXJldHVybiBkbWFfbWFzayA+PSBkbWFfZ2V0X3JlcXVpcmVkX21hc2soZGV2
-KTsKKwkJCXJldHVybiBJT01NVV9ET01BSU5fRE1BOwogCX0KIAotCXJldHVybiAxOworCXJldHVy
-biAoaW9tbXVfaWRlbnRpdHlfbWFwcGluZyAmIElERU5UTUFQX0FMTCkgPworCQkJSU9NTVVfRE9N
-QUlOX0lERU5USVRZIDogSU9NTVVfRE9NQUlOX0FOWTsKIH0KIAogc3RhdGljIGludCBfX2luaXQg
-ZGV2X3ByZXBhcmVfc3RhdGljX2lkZW50aXR5X21hcHBpbmcoc3RydWN0IGRldmljZSAqZGV2LCBp
-bnQgaHcpCiB7CiAJaW50IHJldDsKIAotCWlmICghaW9tbXVfc2hvdWxkX2lkZW50aXR5X21hcChk
-ZXYsIDEpKQorCWlmIChpbnRlbF9pb21tdV9kZWZfZG9tYWluX3R5cGUoZGV2KSAhPSBJT01NVV9E
-T01BSU5fSURFTlRJVFkpCiAJCXJldHVybiAwOwogCiAJcmV0ID0gZG9tYWluX2FkZF9kZXZfaW5m
-byhzaV9kb21haW4sIGRldik7CkBAIC0zNjMxLDM1ICszNjA3LDMwIEBAIHN0YXRpYyBpbnQgaW9t
-bXVfbm9fbWFwcGluZyhzdHJ1Y3QgZGV2aWNlICpkZXYpCiAJaWYgKGlvbW11X2R1bW15KGRldikp
-CiAJCXJldHVybiAxOwogCi0JaWYgKCFpb21tdV9pZGVudGl0eV9tYXBwaW5nKQotCQlyZXR1cm4g
-MDsKLQogCWZvdW5kID0gaWRlbnRpdHlfbWFwcGluZyhkZXYpOwogCWlmIChmb3VuZCkgewotCQlp
-ZiAoaW9tbXVfc2hvdWxkX2lkZW50aXR5X21hcChkZXYsIDApKQotCQkJcmV0dXJuIDE7Ci0JCWVs
-c2UgeworCQkvKgorCQkgKiBJZiB0aGUgZGV2aWNlJ3MgZG1hX21hc2sgaXMgbGVzcyB0aGFuIHRo
-ZSBzeXN0ZW0ncyBtZW1vcnkKKwkJICogc2l6ZSB0aGVuIHRoaXMgaXMgbm90IGEgY2FuZGlkYXRl
-IGZvciBpZGVudGl0eSBtYXBwaW5nLgorCQkgKi8KKwkJdTY0IGRtYV9tYXNrID0gKmRldi0+ZG1h
-X21hc2s7CisKKwkJaWYgKGRldi0+Y29oZXJlbnRfZG1hX21hc2sgJiYKKwkJICAgIGRldi0+Y29o
-ZXJlbnRfZG1hX21hc2sgPCBkbWFfbWFzaykKKwkJCWRtYV9tYXNrID0gZGV2LT5jb2hlcmVudF9k
-bWFfbWFzazsKKworCQlpZiAoZG1hX21hc2sgPCBkbWFfZ2V0X3JlcXVpcmVkX21hc2soZGV2KSkg
-ewogCQkJLyoKIAkJCSAqIDMyIGJpdCBETUEgaXMgcmVtb3ZlZCBmcm9tIHNpX2RvbWFpbiBhbmQg
-ZmFsbCBiYWNrCiAJCQkgKiB0byBub24taWRlbnRpdHkgbWFwcGluZy4KIAkJCSAqLwogCQkJZG1h
-cl9yZW1vdmVfb25lX2Rldl9pbmZvKGRldik7Ci0JCQlkZXZfaW5mbyhkZXYsICIzMmJpdCBETUEg
-dXNlcyBub24taWRlbnRpdHkgbWFwcGluZ1xuIik7CisJCQlkZXZfd2FybihkZXYsICIzMmJpdCBE
-TUEgdXNlcyBub24taWRlbnRpdHkgbWFwcGluZ1xuIik7CisKIAkJCXJldHVybiAwOwogCQl9Ci0J
-fSBlbHNlIHsKLQkJLyoKLQkJICogSW4gY2FzZSBvZiBhIGRldGFjaGVkIDY0IGJpdCBETUEgZGV2
-aWNlIGZyb20gdm0sIHRoZSBkZXZpY2UKLQkJICogaXMgcHV0IGludG8gc2lfZG9tYWluIGZvciBp
-ZGVudGl0eSBtYXBwaW5nLgotCQkgKi8KLQkJaWYgKGlvbW11X3Nob3VsZF9pZGVudGl0eV9tYXAo
-ZGV2LCAwKSkgewotCQkJaW50IHJldDsKLQkJCXJldCA9IGRvbWFpbl9hZGRfZGV2X2luZm8oc2lf
-ZG9tYWluLCBkZXYpOwotCQkJaWYgKCFyZXQpIHsKLQkJCQlkZXZfaW5mbyhkZXYsICI2NGJpdCBE
-TUEgdXNlcyBpZGVudGl0eSBtYXBwaW5nXG4iKTsKLQkJCQlyZXR1cm4gMTsKLQkJCX0KLQkJfQor
-CisJCXJldHVybiAxOwogCX0KIAogCXJldHVybiAwOwpAQCAtNDYwNSw3ICs0NTc2LDcgQEAgc3Rh
-dGljIGludCBkZXZpY2Vfbm90aWZpZXIoc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpuYiwKIAkJICAg
-IGxpc3RfZW1wdHkoJmRvbWFpbi0+ZGV2aWNlcykpCiAJCQlkb21haW5fZXhpdChkb21haW4pOwog
-CX0gZWxzZSBpZiAoYWN0aW9uID09IEJVU19OT1RJRllfQUREX0RFVklDRSkgewotCQlpZiAoaW9t
-bXVfc2hvdWxkX2lkZW50aXR5X21hcChkZXYsIDEpKQorCQlpZiAoaW50ZWxfaW9tbXVfZGVmX2Rv
-bWFpbl90eXBlKGRldikgPT0gSU9NTVVfRE9NQUlOX0lERU5USVRZKQogCQkJZG9tYWluX2FkZF9k
-ZXZfaW5mbyhzaV9kb21haW4sIGRldik7CiAJfQogCkBAIC01NzgxLDYgKzU3NTIsNyBAQCBjb25z
-dCBzdHJ1Y3QgaW9tbXVfb3BzIGludGVsX2lvbW11X29wcyA9IHsKIAkuZGV2X2ZlYXRfZW5hYmxl
-ZAk9IGludGVsX2lvbW11X2Rldl9mZWF0X2VuYWJsZWQsCiAJLmRldl9lbmFibGVfZmVhdAk9IGlu
-dGVsX2lvbW11X2Rldl9lbmFibGVfZmVhdCwKIAkuZGV2X2Rpc2FibGVfZmVhdAk9IGludGVsX2lv
-bW11X2Rldl9kaXNhYmxlX2ZlYXQsCisJLmRlZl9kb21haW5fdHlwZQk9IGludGVsX2lvbW11X2Rl
-Zl9kb21haW5fdHlwZSwKIAkucGdzaXplX2JpdG1hcAkJPSBJTlRFTF9JT01NVV9QR1NJWkVTLAog
-fTsKIAotLSAKMi4xNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
-cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
-bXU=
+From: James Sewart <jamessewart@arista.com>
+
+Allowing IOMMU_DOMAIN_DMA and IOMMU_DOMAIN_IDENTITY types of
+domains to be allocated through iommu ops allows the default
+domain of an iommu_group to be set. This delegates domains of
+Intel IOMMU driver to the generic IOMMU layer.
+
+Signed-off-by: James Sewart <jamessewart@arista.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel-iommu.c | 124 ++++++++++++++++++++++++++----------
+ 1 file changed, 90 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d2b51e045603..ec6ac39827ab 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -311,6 +311,12 @@ static int hw_pass_through = 1;
+ /* si_domain contains mulitple devices */
+ #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
+ 
++/*
++ * Domain managed externally, don't cleanup if it isn't attached
++ * to any devices.
++ */
++#define DOMAIN_FLAG_MANAGED_EXTERNALLY	(1 << 2)
++
+ #define for_each_domain_iommu(idx, domain)			\
+ 	for (idx = 0; idx < g_num_of_iommus; idx++)		\
+ 		if (domain->iommu_refcnt[idx])
+@@ -561,6 +567,11 @@ static inline int domain_type_is_vm_or_si(struct dmar_domain *domain)
+ 				DOMAIN_FLAG_STATIC_IDENTITY);
+ }
+ 
++static inline int domain_managed_externally(struct dmar_domain *domain)
++{
++	return domain->flags & DOMAIN_FLAG_MANAGED_EXTERNALLY;
++}
++
+ static inline int domain_pfn_supported(struct dmar_domain *domain,
+ 				       unsigned long pfn)
+ {
+@@ -1671,7 +1682,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ 
+ 		__dmar_remove_one_dev_info(info);
+ 
+-		if (!domain_type_is_vm_or_si(domain)) {
++		if (!domain_managed_externally(domain)) {
+ 			/*
+ 			 * The domain_exit() function  can't be called under
+ 			 * device_domain_lock, as it takes this lock itself.
+@@ -2366,7 +2377,12 @@ static int domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	} else {
+ 		/* General domains only have one IOMMU */
+ 		iommu = domain_get_iommu(domain);
+-		__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
++		/*
++		 * There's no associated iommu if domain hasn't been attached
++		 * to any device yet.
++		 */
++		if (iommu)
++			__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
+ 	}
+ 
+ 	return 0;
+@@ -3406,12 +3422,9 @@ static int __init init_dmars(void)
+ 
+ 	check_tylersburg_isoch();
+ 
+-	if (iommu_identity_mapping) {
+-		ret = si_domain_init(hw_pass_through);
+-		if (ret)
+-			goto free_iommu;
+-	}
+-
++	ret = si_domain_init(hw_pass_through);
++	if (ret)
++		goto free_iommu;
+ 
+ 	/*
+ 	 * If we copied translations from a previous kernel in the kdump
+@@ -4572,7 +4585,7 @@ static int device_notifier(struct notifier_block *nb,
+ 			return 0;
+ 
+ 		dmar_remove_one_dev_info(dev);
+-		if (!domain_type_is_vm_or_si(domain) &&
++		if (!domain_managed_externally(domain) &&
+ 		    list_empty(&domain->devices))
+ 			domain_exit(domain);
+ 	} else if (action == BUS_NOTIFY_ADD_DEVICE) {
+@@ -5038,33 +5051,52 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ {
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
++	int flags = DOMAIN_FLAG_MANAGED_EXTERNALLY;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
+-		return NULL;
++	switch (type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		flags |= DOMAIN_FLAG_VIRTUAL_MACHINE;
++		/* fall through */
++	case IOMMU_DOMAIN_DMA:
++		dmar_domain = alloc_domain(flags);
++		if (!dmar_domain)
++			return NULL;
+ 
+-	dmar_domain = alloc_domain(DOMAIN_FLAG_VIRTUAL_MACHINE);
+-	if (!dmar_domain) {
+-		pr_err("Can't allocate dmar_domain\n");
+-		return NULL;
+-	}
+-	if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
+-		pr_err("Domain initialization failed\n");
+-		domain_exit(dmar_domain);
++		if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
++			pr_err("Domain initialization failed\n");
++			domain_exit(dmar_domain);
++			return NULL;
++		}
++
++		if (type == IOMMU_DOMAIN_DMA &&
++		    init_iova_flush_queue(&dmar_domain->iovad,
++					  iommu_flush_iova, iova_entry_free)) {
++			pr_warn("iova flush queue initialization failed\n");
++			intel_iommu_strict = 1;
++		}
++
++		domain_update_iommu_cap(dmar_domain);
++		domain = &dmar_domain->domain;
++		domain->geometry.aperture_start = 0;
++		domain->geometry.aperture_end =
++			__DOMAIN_MAX_ADDR(dmar_domain->gaw);
++		domain->geometry.force_aperture = true;
++		break;
++	case IOMMU_DOMAIN_IDENTITY:
++		return &si_domain->domain;
++	default:
+ 		return NULL;
+ 	}
+-	domain_update_iommu_cap(dmar_domain);
+-
+-	domain = &dmar_domain->domain;
+-	domain->geometry.aperture_start = 0;
+-	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
+-	domain->geometry.force_aperture = true;
+ 
+-	return domain;
++	return &dmar_domain->domain;
+ }
+ 
+ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ {
+-	domain_exit(to_dmar_domain(domain));
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++
++	if (domain_managed_externally(dmar_domain))
++		domain_exit(dmar_domain);
+ }
+ 
+ /*
+@@ -5240,13 +5272,33 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	int ret;
+ 
+-	if (device_is_rmrr_locked(dev)) {
+-		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
+-		return -EPERM;
+-	}
++	switch (domain->type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		if (device_is_rmrr_locked(dev)) {
++			dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement. Contact your platform vendor.\n");
++			return -EPERM;
++		}
+ 
+-	if (is_aux_domain(dev, domain))
+-		return -EPERM;
++		if (is_aux_domain(dev, domain))
++			return -EPERM;
++
++		break;
++	case IOMMU_DOMAIN_DMA:
++		if (intel_iommu_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
++			dev_warn(dev, "Device requires identity domain\n");
++			return -EINVAL;
++		}
++		break;
++	case IOMMU_DOMAIN_IDENTITY:
++		if (intel_iommu_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
++			dev_warn(dev, "Device requires non-identity domain\n");
++			return -EINVAL;
++		}
++		break;
++	default:
++		dev_warn(dev, "Invalid domain type %u\n", domain->type);
++		return -EINVAL;
++	}
+ 
+ 	/* normally dev is not mapped */
+ 	if (unlikely(domain_context_mapped(dev))) {
+@@ -5258,7 +5310,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 			dmar_remove_one_dev_info(dev);
+ 			rcu_read_unlock();
+ 
+-			if (!domain_type_is_vm_or_si(old_domain) &&
++			if (!domain_managed_externally(old_domain) &&
+ 			    list_empty(&old_domain->devices))
+ 				domain_exit(old_domain);
+ 		}
+@@ -5307,6 +5359,10 @@ static int intel_iommu_map(struct iommu_domain *domain,
+ 	int prot = 0;
+ 	int ret;
+ 
++	/* Don't bother if hardware passthrough used. */
++	if (dmar_domain == si_domain && hw_pass_through)
++		return 0;
++
+ 	if (iommu_prot & IOMMU_READ)
+ 		prot |= DMA_PTE_READ;
+ 	if (iommu_prot & IOMMU_WRITE)
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
