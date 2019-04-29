@@ -1,82 +1,163 @@
-From: Julien Grall <julien.grall@arm.com>
-Subject: [PATCH v2 7/7] iommu/dma-iommu: Remove iommu_dma_map_msi_msg()
-Date: Mon, 29 Apr 2019 15:44:28 +0100
-Message-ID: <20190429144428.29254-8-julien.grall@arm.com>
-References: <20190429144428.29254-1-julien.grall@arm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190429144428.29254-1-julien.grall@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: logang@deltatee.com, douliyangs@gmail.com, miquel.raynal@bootlin.com, marc.zyngier@arm.com, jason@lakedaemon.net, tglx@linutronix.de, joro@8bytes.org, robin.murphy@arm.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org, Julien Grall <julien.grall@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 20/26] iommu/dma: Refactor iommu_dma_alloc, part 2
+Date: Mon, 29 Apr 2019 15:45:16 +0100
+Message-ID: <9412baed-0d13-dab7-0bdc-90cfdf8e92f0@arm.com>
+References: <20190422175942.18788-1-hch@lst.de>
+ <20190422175942.18788-21-hch@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190422175942.18788-21-hch@lst.de>
+Content-Language: en-GB
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-A recent change split iommu_dma_map_msi_msg() in two new functions. The
-function was still implemented to avoid modifying all the callers at
-once.
+On 22/04/2019 18:59, Christoph Hellwig wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
 
-Now that all the callers have been reworked, iommu_dma_map_msi_msg() can
-be removed.
+Honestly I don't think anything left of my patch here...
 
-Signed-off-by: Julien Grall <julien.grall@arm.com>
+> Apart from the iommu_dma_alloc_remap() case which remains sufficiently
+> different that it's better off being self-contained, the rest of the
+> logic can now be consolidated into a single flow which separates the
+> logcially-distinct steps of allocating pages, getting the CPU address,
+> and finally getting the IOMMU address.
 
----
-    Changes in v2:
-        - Rework the commit message
----
- drivers/iommu/dma-iommu.c | 20 --------------------
- include/linux/dma-iommu.h |  5 -----
- 2 files changed, 25 deletions(-)
+...and it certainly doesn't do that any more.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 2309f59cefa4..12f4464828a4 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -936,23 +936,3 @@ void iommu_dma_compose_msi_msg(struct msi_desc *desc,
- 	msg->address_lo &= cookie_msi_granule(domain->iova_cookie) - 1;
- 	msg->address_lo += lower_32_bits(msi_page->iova);
- }
--
--void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
--{
--	struct msi_desc *desc = irq_get_msi_desc(irq);
--	phys_addr_t msi_addr = (u64)msg->address_hi << 32 | msg->address_lo;
--
--	if (WARN_ON(iommu_dma_prepare_msi(desc, msi_addr))) {
--		/*
--		 * We're called from a void callback, so the best we can do is
--		 * 'fail' by filling the message with obviously bogus values.
--		 * Since we got this far due to an IOMMU being present, it's
--		 * not like the existing address would have worked anyway...
--		 */
--		msg->address_hi = ~0U;
--		msg->address_lo = ~0U;
--		msg->data = ~0U;
--	} else {
--		iommu_dma_compose_msi_msg(desc, msg);
--	}
--}
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 3fc48fbd6f63..ddd217c197df 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -82,7 +82,6 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr);
- void iommu_dma_compose_msi_msg(struct msi_desc *desc,
- 			       struct msi_msg *msg);
- 
--void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
- 
- #else
-@@ -122,10 +121,6 @@ static inline void iommu_dma_compose_msi_msg(struct msi_desc *desc,
- {
- }
- 
--static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
--{
--}
--
- static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
- {
- }
--- 
-2.11.0
+It's clear that we have fundamentally different ways of reading code, so 
+I don't think it's productive to keep arguing personal preference - I 
+still find the end result here a fair bit more tolerable than before, so 
+if you update the commit message to reflect the actual change (at which 
+point there's really nothing left of my authorship) I can live with it.
+
+Robin.
+
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> [hch: split the page allocation into a new helper to simplify the flow]
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++------------------
+>   1 file changed, 35 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 9b269f0792f3..acdfe866cb29 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -955,35 +955,14 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+>   	__iommu_dma_free(dev, size, cpu_addr);
+>   }
+>   
+> -static void *iommu_dma_alloc(struct device *dev, size_t size,
+> -		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
+> +static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+> +		struct page **pagep, gfp_t gfp, unsigned long attrs)
+>   {
+>   	bool coherent = dev_is_dma_coherent(dev);
+> -	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+>   	size_t alloc_size = PAGE_ALIGN(size);
+>   	struct page *page = NULL;
+>   	void *cpu_addr;
+>   
+> -	gfp |= __GFP_ZERO;
+> -
+> -	if (gfpflags_allow_blocking(gfp) &&
+> -	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+> -		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
+> -
+> -	if (!gfpflags_allow_blocking(gfp) && !coherent) {
+> -		cpu_addr = dma_alloc_from_pool(alloc_size, &page, gfp);
+> -		if (!cpu_addr)
+> -			return NULL;
+> -
+> -		*handle = __iommu_dma_map(dev, page_to_phys(page), size,
+> -					  ioprot);
+> -		if (*handle == DMA_MAPPING_ERROR) {
+> -			dma_free_from_pool(cpu_addr, alloc_size);
+> -			return NULL;
+> -		}
+> -		return cpu_addr;
+> -	}
+> -
+>   	if (gfpflags_allow_blocking(gfp))
+>   		page = dma_alloc_from_contiguous(dev, alloc_size >> PAGE_SHIFT,
+>   						 get_order(alloc_size),
+> @@ -993,33 +972,59 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+>   	if (!page)
+>   		return NULL;
+>   
+> -	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
+> -	if (*handle == DMA_MAPPING_ERROR)
+> -		goto out_free_pages;
+> -
+>   	if (!coherent || PageHighMem(page)) {
+>   		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
+>   
+>   		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
+>   				VM_USERMAP, prot, __builtin_return_address(0));
+>   		if (!cpu_addr)
+> -			goto out_unmap;
+> +			goto out_free_pages;
+>   
+>   		if (!coherent)
+>   			arch_dma_prep_coherent(page, size);
+>   	} else {
+>   		cpu_addr = page_address(page);
+>   	}
+> +
+> +	*pagep = page;
+>   	memset(cpu_addr, 0, alloc_size);
+>   	return cpu_addr;
+> -out_unmap:
+> -	__iommu_dma_unmap(dev, *handle, size);
+>   out_free_pages:
+>   	if (!dma_release_from_contiguous(dev, page, alloc_size >> PAGE_SHIFT))
+>   		__free_pages(page, get_order(alloc_size));
+>   	return NULL;
+>   }
+>   
+> +static void *iommu_dma_alloc(struct device *dev, size_t size,
+> +		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
+> +{
+> +	bool coherent = dev_is_dma_coherent(dev);
+> +	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+> +	struct page *page = NULL;
+> +	void *cpu_addr;
+> +
+> +	gfp |= __GFP_ZERO;
+> +
+> +	if (gfpflags_allow_blocking(gfp) &&
+> +	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
+> +		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
+> +
+> +	if (!gfpflags_allow_blocking(gfp) && !coherent)
+> +		cpu_addr = dma_alloc_from_pool(PAGE_ALIGN(size), &page, gfp);
+> +	else
+> +		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
+> +	if (!cpu_addr)
+> +		return NULL;
+> +
+> +	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
+> +	if (*handle == DMA_MAPPING_ERROR) {
+> +		__iommu_dma_free(dev, size, cpu_addr);
+> +		return NULL;
+> +	}
+> +
+> +	return cpu_addr;
+> +}
+> +
+>   static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
+>   			      unsigned long pfn, size_t size)
+>   {
+> 
