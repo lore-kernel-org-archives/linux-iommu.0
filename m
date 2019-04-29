@@ -1,119 +1,235 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 3/8] iommu/vt-d: Expose ISA direct mapping region via iommu_get_resv_regions
-Date: Mon, 29 Apr 2019 10:09:20 +0800
-Message-ID: <20190429020925.18136-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 6/8] iommu/vt-d: Allow DMA domains to be allocated by iommu ops
+Date: Mon, 29 Apr 2019 10:09:23 +0800
+Message-ID: <20190429020925.18136-7-baolu.lu@linux.intel.com>
 References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190429020925.18136-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, jamessewart@arista.com, tmurphy@arista.com, dima@arista.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, jamessewart@arista.com, tmurphy@arista.com, dima@arista.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: James Sewart <jamessewart@arista.com>
 
-To support mapping ISA region via iommu_group_create_direct_mappings,
-make sure its exposed by iommu_get_resv_regions. This allows
-deduplication of reserved region mappings.
+Allowing IOMMU_DOMAIN_DMA and IOMMU_DOMAIN_IDENTITY types of
+domains to be allocated through iommu ops allows the default
+domain of an iommu_group to be set. This delegates domains of
+Intel IOMMU driver to the generic IOMMU layer.
 
 Signed-off-by: James Sewart <jamessewart@arista.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 43 +++++++++++++++++++++++++++++--------
- 1 file changed, 34 insertions(+), 9 deletions(-)
+ drivers/iommu/intel-iommu.c | 124 ++++++++++++++++++++++++++----------
+ 1 file changed, 90 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index af025955f1bc..e9f31b062305 100644
+index d2b51e045603..ec6ac39827ab 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -339,6 +339,8 @@ static LIST_HEAD(dmar_rmrr_units);
- #define for_each_rmrr_units(rmrr) \
- 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+@@ -311,6 +311,12 @@ static int hw_pass_through = 1;
+ /* si_domain contains mulitple devices */
+ #define DOMAIN_FLAG_STATIC_IDENTITY	(1 << 1)
  
-+static struct iommu_resv_region *isa_resv_region;
++/*
++ * Domain managed externally, don't cleanup if it isn't attached
++ * to any devices.
++ */
++#define DOMAIN_FLAG_MANAGED_EXTERNALLY	(1 << 2)
 +
- /* bitmap for indexing intel_iommus */
- static int g_num_of_iommus;
- 
-@@ -2785,26 +2787,33 @@ static inline int iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
- 					  rmrr->end_address);
+ #define for_each_domain_iommu(idx, domain)			\
+ 	for (idx = 0; idx < g_num_of_iommus; idx++)		\
+ 		if (domain->iommu_refcnt[idx])
+@@ -561,6 +567,11 @@ static inline int domain_type_is_vm_or_si(struct dmar_domain *domain)
+ 				DOMAIN_FLAG_STATIC_IDENTITY);
  }
  
-+static inline struct iommu_resv_region *iommu_get_isa_resv_region(void)
++static inline int domain_managed_externally(struct dmar_domain *domain)
 +{
-+	if (!isa_resv_region)
-+		isa_resv_region = iommu_alloc_resv_region(0, 1UL << 24, 0,
-+							  IOMMU_RESV_DIRECT);
-+
-+	return isa_resv_region;
++	return domain->flags & DOMAIN_FLAG_MANAGED_EXTERNALLY;
 +}
 +
- #ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
--static inline void iommu_prepare_isa(void)
-+static inline void iommu_prepare_isa(struct pci_dev *pdev)
+ static inline int domain_pfn_supported(struct dmar_domain *domain,
+ 				       unsigned long pfn)
  {
--	struct pci_dev *pdev;
- 	int ret;
-+	struct iommu_resv_region *reg = iommu_get_isa_resv_region();
+@@ -1671,7 +1682,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
  
--	pdev = pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
--	if (!pdev)
-+	if (!reg)
- 		return;
+ 		__dmar_remove_one_dev_info(info);
  
- 	pr_info("Prepare 0-16MiB unity mapping for LPC\n");
--	ret = iommu_prepare_identity_map(&pdev->dev, 0, 16*1024*1024 - 1);
-+	ret = iommu_prepare_identity_map(&pdev->dev, reg->start,
-+					 reg->start + reg->length - 1);
+-		if (!domain_type_is_vm_or_si(domain)) {
++		if (!domain_managed_externally(domain)) {
+ 			/*
+ 			 * The domain_exit() function  can't be called under
+ 			 * device_domain_lock, as it takes this lock itself.
+@@ -2366,7 +2377,12 @@ static int domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	} else {
+ 		/* General domains only have one IOMMU */
+ 		iommu = domain_get_iommu(domain);
+-		__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
++		/*
++		 * There's no associated iommu if domain hasn't been attached
++		 * to any device yet.
++		 */
++		if (iommu)
++			__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
+ 	}
  
- 	if (ret)
- 		pr_err("Failed to create 0-16MiB identity map - floppy might not work\n");
+ 	return 0;
+@@ -3406,12 +3422,9 @@ static int __init init_dmars(void)
+ 
+ 	check_tylersburg_isoch();
+ 
+-	if (iommu_identity_mapping) {
+-		ret = si_domain_init(hw_pass_through);
+-		if (ret)
+-			goto free_iommu;
+-	}
 -
--	pci_dev_put(pdev);
- }
- #else
--static inline void iommu_prepare_isa(void)
-+static inline void iommu_prepare_isa(struct pci_dev *pdev)
++	ret = si_domain_init(hw_pass_through);
++	if (ret)
++		goto free_iommu;
+ 
+ 	/*
+ 	 * If we copied translations from a previous kernel in the kdump
+@@ -4572,7 +4585,7 @@ static int device_notifier(struct notifier_block *nb,
+ 			return 0;
+ 
+ 		dmar_remove_one_dev_info(dev);
+-		if (!domain_type_is_vm_or_si(domain) &&
++		if (!domain_managed_externally(domain) &&
+ 		    list_empty(&domain->devices))
+ 			domain_exit(domain);
+ 	} else if (action == BUS_NOTIFY_ADD_DEVICE) {
+@@ -5038,33 +5051,52 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
  {
- 	return;
- }
-@@ -3293,6 +3302,7 @@ static int __init init_dmars(void)
- 	struct dmar_rmrr_unit *rmrr;
- 	bool copied_tables = false;
- 	struct device *dev;
-+	struct pci_dev *pdev;
- 	struct intel_iommu *iommu;
- 	int i, ret;
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
++	int flags = DOMAIN_FLAG_MANAGED_EXTERNALLY;
  
-@@ -3473,7 +3483,11 @@ static int __init init_dmars(void)
- 		}
- 	}
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
+-		return NULL;
++	switch (type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		flags |= DOMAIN_FLAG_VIRTUAL_MACHINE;
++		/* fall through */
++	case IOMMU_DOMAIN_DMA:
++		dmar_domain = alloc_domain(flags);
++		if (!dmar_domain)
++			return NULL;
  
--	iommu_prepare_isa();
-+	pdev = pci_get_class(PCI_CLASS_BRIDGE_ISA << 8, NULL);
-+	if (pdev) {
-+		iommu_prepare_isa(pdev);
-+		pci_dev_put(pdev);
-+	}
- 
- domains_done:
- 
-@@ -5498,6 +5512,17 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 	}
- 	rcu_read_unlock();
- 
-+#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
-+	if (dev_is_pci(device)) {
-+		struct pci_dev *pdev = to_pci_dev(device);
-+
-+		if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
-+			reg = iommu_get_isa_resv_region();
-+			list_add_tail(&reg->list, head);
+-	dmar_domain = alloc_domain(DOMAIN_FLAG_VIRTUAL_MACHINE);
+-	if (!dmar_domain) {
+-		pr_err("Can't allocate dmar_domain\n");
+-		return NULL;
+-	}
+-	if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
+-		pr_err("Domain initialization failed\n");
+-		domain_exit(dmar_domain);
++		if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
++			pr_err("Domain initialization failed\n");
++			domain_exit(dmar_domain);
++			return NULL;
 +		}
-+	}
-+#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
 +
- 	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
- 				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
- 				      0, IOMMU_RESV_MSI);
++		if (type == IOMMU_DOMAIN_DMA &&
++		    init_iova_flush_queue(&dmar_domain->iovad,
++					  iommu_flush_iova, iova_entry_free)) {
++			pr_warn("iova flush queue initialization failed\n");
++			intel_iommu_strict = 1;
++		}
++
++		domain_update_iommu_cap(dmar_domain);
++		domain = &dmar_domain->domain;
++		domain->geometry.aperture_start = 0;
++		domain->geometry.aperture_end =
++			__DOMAIN_MAX_ADDR(dmar_domain->gaw);
++		domain->geometry.force_aperture = true;
++		break;
++	case IOMMU_DOMAIN_IDENTITY:
++		return &si_domain->domain;
++	default:
+ 		return NULL;
+ 	}
+-	domain_update_iommu_cap(dmar_domain);
+-
+-	domain = &dmar_domain->domain;
+-	domain->geometry.aperture_start = 0;
+-	domain->geometry.aperture_end   = __DOMAIN_MAX_ADDR(dmar_domain->gaw);
+-	domain->geometry.force_aperture = true;
+ 
+-	return domain;
++	return &dmar_domain->domain;
+ }
+ 
+ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ {
+-	domain_exit(to_dmar_domain(domain));
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++
++	if (domain_managed_externally(dmar_domain))
++		domain_exit(dmar_domain);
+ }
+ 
+ /*
+@@ -5240,13 +5272,33 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	int ret;
+ 
+-	if (device_is_rmrr_locked(dev)) {
+-		dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement.  Contact your platform vendor.\n");
+-		return -EPERM;
+-	}
++	switch (domain->type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		if (device_is_rmrr_locked(dev)) {
++			dev_warn(dev, "Device is ineligible for IOMMU domain attach due to platform RMRR requirement. Contact your platform vendor.\n");
++			return -EPERM;
++		}
+ 
+-	if (is_aux_domain(dev, domain))
+-		return -EPERM;
++		if (is_aux_domain(dev, domain))
++			return -EPERM;
++
++		break;
++	case IOMMU_DOMAIN_DMA:
++		if (intel_iommu_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
++			dev_warn(dev, "Device requires identity domain\n");
++			return -EINVAL;
++		}
++		break;
++	case IOMMU_DOMAIN_IDENTITY:
++		if (intel_iommu_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
++			dev_warn(dev, "Device requires non-identity domain\n");
++			return -EINVAL;
++		}
++		break;
++	default:
++		dev_warn(dev, "Invalid domain type %u\n", domain->type);
++		return -EINVAL;
++	}
+ 
+ 	/* normally dev is not mapped */
+ 	if (unlikely(domain_context_mapped(dev))) {
+@@ -5258,7 +5310,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 			dmar_remove_one_dev_info(dev);
+ 			rcu_read_unlock();
+ 
+-			if (!domain_type_is_vm_or_si(old_domain) &&
++			if (!domain_managed_externally(old_domain) &&
+ 			    list_empty(&old_domain->devices))
+ 				domain_exit(old_domain);
+ 		}
+@@ -5307,6 +5359,10 @@ static int intel_iommu_map(struct iommu_domain *domain,
+ 	int prot = 0;
+ 	int ret;
+ 
++	/* Don't bother if hardware passthrough used. */
++	if (dmar_domain == si_domain && hw_pass_through)
++		return 0;
++
+ 	if (iommu_prot & IOMMU_READ)
+ 		prot |= DMA_PTE_READ;
+ 	if (iommu_prot & IOMMU_WRITE)
 -- 
 2.17.1
