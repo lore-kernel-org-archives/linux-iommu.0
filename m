@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268A3C43219
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 14:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C61DBC43219
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 14:11:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE00D2063F
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 14:07:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE00D2063F
+	by mail.kernel.org (Postfix) with ESMTPS id A1CCC2084B
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 14:11:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1CCC2084B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id ACED31E09;
-	Mon, 29 Apr 2019 14:07:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 674ED2167;
+	Mon, 29 Apr 2019 14:11:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8A9971DEF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CA0561E57
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 14:04:12 +0000 (UTC)
+	Mon, 29 Apr 2019 14:09:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 15DC3711
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 62700608
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 14:04:12 +0000 (UTC)
+	Mon, 29 Apr 2019 14:09:01 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B1D4CA78;
-	Mon, 29 Apr 2019 07:04:11 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3072FA78;
+	Mon, 29 Apr 2019 07:09:01 -0700 (PDT)
 Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4BC9D3F5C1;
-	Mon, 29 Apr 2019 07:04:10 -0700 (PDT)
-Subject: Re: [PATCH 22/26] iommu/dma: Refactor iommu_dma_mmap
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BBEE43F5C1;
+	Mon, 29 Apr 2019 07:08:59 -0700 (PDT)
+Subject: Re: [PATCH 21/26] iommu/dma: Refactor iommu_dma_get_sgtable
 To: Christoph Hellwig <hch@lst.de>
 References: <20190422175942.18788-1-hch@lst.de>
-	<20190422175942.18788-23-hch@lst.de>
+	<20190422175942.18788-22-hch@lst.de>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a185d782-acf4-2a29-a84f-d912de13c09c@arm.com>
-Date: Mon, 29 Apr 2019 15:04:08 +0100
+Message-ID: <10b0710c-b2b4-7647-6846-71d9df4bd038@arm.com>
+Date: Mon, 29 Apr 2019 15:08:58 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190422175942.18788-23-hch@lst.de>
+In-Reply-To: <20190422175942.18788-22-hch@lst.de>
 Content-Language: en-GB
 Cc: Tom Lendacky <thomas.lendacky@amd.com>,
 	Catalin Marinas <catalin.marinas@arm.com>,
@@ -67,57 +67,54 @@ Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429140408.v7eFNtfoOoRey1wEC7m1JSZu8annC3Gf4ssewFIkOeE@z>
+Message-ID: <20190429140858.1Al_nS9AgHc6DXHgRgJwYK8SNNl9hQohMzeAauz3_1A@z>
 
 On 22/04/2019 18:59, Christoph Hellwig wrote:
-> Inline __iommu_dma_mmap_pfn into the main function, and use the
+> Inline __iommu_dma_get_sgtable_page into the main function, and use the
 > fact that __iommu_dma_get_pages return NULL for remapped contigous
 > allocations to simplify the code flow a bit.
 
-...and later we can squash __iommu_dma_mmap() once the dust settles on 
-vm_map_pages() - seems good to me.
+Yeah, even I was a bit dubious about the readability of "if (page)... 
+else if (pages)..." that my attempt ended up with, so I don't really 
+have anything to complain about here.
 
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->   drivers/iommu/dma-iommu.c | 36 +++++++++++-------------------------
->   1 file changed, 11 insertions(+), 25 deletions(-)
+>   drivers/iommu/dma-iommu.c | 45 +++++++++++++++------------------------
+>   1 file changed, 17 insertions(+), 28 deletions(-)
 > 
 > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 138b85e675c8..8fc6098c1eeb 100644
+> index acdfe866cb29..138b85e675c8 100644
 > --- a/drivers/iommu/dma-iommu.c
 > +++ b/drivers/iommu/dma-iommu.c
-> @@ -1025,21 +1025,12 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
->   	return cpu_addr;
+> @@ -1070,42 +1070,31 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+>   	return __iommu_dma_mmap(pages, size, vma);
 >   }
 >   
-> -static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
-> -			      unsigned long pfn, size_t size)
+> -static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
+> -		size_t size)
 > -{
-> -	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
-> -			       vma->vm_end - vma->vm_start,
-> -			       vma->vm_page_prot);
+> -	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> -
+> -	if (!ret)
+> -		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+> -	return ret;
 > -}
 > -
->   static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+>   static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
 >   		void *cpu_addr, dma_addr_t dma_addr, size_t size,
 >   		unsigned long attrs)
 >   {
->   	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	unsigned long off = vma->vm_pgoff;
+> -	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
 > -	struct page **pages;
-> +	unsigned long pfn, off = vma->vm_pgoff;
->   	int ret;
->   
->   	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-> @@ -1050,24 +1041,19 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->   	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
->   		return -ENXIO;
+> +	struct page *page;
+> +	int ret;
 >   
 > -	if (!is_vmalloc_addr(cpu_addr)) {
-> -		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
-> -		return __iommu_dma_mmap_pfn(vma, pfn, size);
+> -		struct page *page = virt_to_page(cpu_addr);
+> -		return __iommu_dma_get_sgtable_page(sgt, page, size);
 > -	}
 > +	if (is_vmalloc_addr(cpu_addr)) {
 > +		struct page **pages = __iommu_dma_get_pages(cpu_addr);
@@ -127,25 +124,31 @@ Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 > -		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
 > -		 * hence in the vmalloc space.
 > -		 */
-> -		unsigned long pfn = vmalloc_to_pfn(cpu_addr);
-> -		return __iommu_dma_mmap_pfn(vma, pfn, size);
-> +		if (pages)
-> +			return __iommu_dma_mmap(pages, size, vma);
-> +		pfn = vmalloc_to_pfn(cpu_addr);
+> -		struct page *page = vmalloc_to_page(cpu_addr);
+> -		return __iommu_dma_get_sgtable_page(sgt, page, size);
+> +		if (pages) {
+> +			return sg_alloc_table_from_pages(sgt, pages,
+> +					PAGE_ALIGN(size) >> PAGE_SHIFT,
+> +					0, size, GFP_KERNEL);
+> +		}
+> +
+> +		page = vmalloc_to_page(cpu_addr);
 > +	} else {
-> +		pfn = page_to_pfn(virt_to_page(cpu_addr));
+> +		page = virt_to_page(cpu_addr);
 >   	}
 >   
 > -	pages = __iommu_dma_get_pages(cpu_addr);
 > -	if (WARN_ON_ONCE(!pages))
 > -		return -ENXIO;
-> -	return __iommu_dma_mmap(pages, size, vma);
-> +	return remap_pfn_range(vma, vma->vm_start, pfn + off,
-> +			       vma->vm_end - vma->vm_start,
-> +			       vma->vm_page_prot);
+> -	return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
+> -					 GFP_KERNEL);
+> +	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> +	if (!ret)
+> +		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+> +	return ret;
 >   }
 >   
->   static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+>   static const struct dma_map_ops iommu_dma_ops = {
 > 
 _______________________________________________
 iommu mailing list
