@@ -2,99 +2,57 @@ Return-Path: <SRS0=wClR=S7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237C2C43219
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 15:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556C9C43219
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 16:12:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ECAE52064A
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 15:59:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECAE52064A
+	by mail.kernel.org (Postfix) with ESMTPS id 2C67720673
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 16:12:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C67720673
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5264E22A9;
-	Mon, 29 Apr 2019 15:59:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 018CB22AA;
+	Mon, 29 Apr 2019 16:12:25 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 85EBA227E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1545622AC
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 15:57:25 +0000 (UTC)
+	Mon, 29 Apr 2019 16:09:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 032CE875
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id AAB3287D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 15:57:24 +0000 (UTC)
+	Mon, 29 Apr 2019 16:09:41 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA33A80D;
-	Mon, 29 Apr 2019 08:57:24 -0700 (PDT)
-Received: from [10.1.196.92] (usa-sjc-imap-foss1.foss.arm.com [10.72.51.249])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
-	8DE933F5C1; Mon, 29 Apr 2019 08:57:22 -0700 (PDT)
-Subject: Re: [PATCH v2 0/7] iommu/dma-iommu: Split iommu_dma_map_msi_msg in
-	two parts
-To: Julien Grall <julien.grall@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
-References: <20190429144428.29254-1-julien.grall@arm.com>
-From: Marc Zyngier <marc.zyngier@arm.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=marc.zyngier@arm.com; prefer-encrypt=mutual; keydata=
-	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
-Organization: ARM Ltd
-Message-ID: <646d035d-e160-a19d-8c3a-e1935cf691b5@arm.com>
-Date: Mon, 29 Apr 2019 16:57:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6DC65EBD;
+	Mon, 29 Apr 2019 09:09:41 -0700 (PDT)
+Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B1EA13F5C1;
+	Mon, 29 Apr 2019 09:09:39 -0700 (PDT)
+Subject: Re: [PATCH v4 2/3] iommu/dma: Reserve IOVA for PCIe inaccessible DMA
+	address
+To: Srinath Mannam <srinath.mannam@broadcom.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org,
+	Ray Jui <rjui@broadcom.com>
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+	<1555038815-31916-3-git-send-email-srinath.mannam@broadcom.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <e6c812d6-0cad-4cfd-defd-d7ec427a6538@arm.com>
+Date: Mon, 29 Apr 2019 17:09:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190429144428.29254-1-julien.grall@arm.com>
-Content-Language: en-US
-Cc: jason@lakedaemon.net, douliyangs@gmail.com, robin.murphy@arm.com,
-	miquel.raynal@bootlin.com, tglx@linutronix.de,
-	logang@deltatee.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org
+In-Reply-To: <1555038815-31916-3-git-send-email-srinath.mannam@broadcom.com>
+Content-Language: en-GB
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+	bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -107,111 +65,73 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429155720.DMceopUB2haMiZakwNqSsuSe49DkTAte_aj2eDi9v6c@z>
+Message-ID: <20190429160938.UjJvNQqkadCaKCaHSQhhbHx8k8bnpAjEPcJJvIHZa30@z>
 
-Hi Julien,
+On 12/04/2019 04:13, Srinath Mannam wrote:
+> dma_ranges field of PCI host bridge structure has resource entries in
+> sorted order of address range given through dma-ranges DT property. This
+> list is the accessible DMA address range. So that this resource list will
+> be processed and reserve IOVA address to the inaccessible address holes in
+> the list.
+> 
+> This method is similar to PCI IO resources address ranges reserving in
+> IOMMU for each EP connected to host bridge.
+> 
+> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
+> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
+> ---
+>   drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
+>   1 file changed, 19 insertions(+)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index d19f3d6..fb42d7c 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -212,6 +212,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>   	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+>   	struct resource_entry *window;
+>   	unsigned long lo, hi;
+> +	phys_addr_t start = 0, end;
+>   
+>   	resource_list_for_each_entry(window, &bridge->windows) {
+>   		if (resource_type(window->res) != IORESOURCE_MEM)
+> @@ -221,6 +222,24 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>   		hi = iova_pfn(iovad, window->res->end - window->offset);
+>   		reserve_iova(iovad, lo, hi);
+>   	}
+> +
+> +	/* Get reserved DMA windows from host bridge */
+> +	resource_list_for_each_entry(window, &bridge->dma_ranges) {
+> +		end = window->res->start - window->offset;
+> +resv_iova:
+> +		if (end - start) {
+> +			lo = iova_pfn(iovad, start);
+> +			hi = iova_pfn(iovad, end);
+> +			reserve_iova(iovad, lo, hi);
+> +		}
+> +		start = window->res->end - window->offset + 1;
+> +		/* If window is last entry */
+> +		if (window->node.next == &bridge->dma_ranges &&
+> +		    end != DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE)) {
 
-On 29/04/2019 15:44, Julien Grall wrote:
-> Hi all,
-> 
-> On RT, the function iommu_dma_map_msi_msg expects to be called from preemptible
-> context. However, this is not always the case resulting a splat with
-> !CONFIG_DEBUG_ATOMIC_SLEEP:
-> 
-> [   48.875777] BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:974
-> [   48.875779] in_atomic(): 1, irqs_disabled(): 128, pid: 2103, name: ip
-> [   48.875782] INFO: lockdep is turned off.
-> [   48.875784] irq event stamp: 10684
-> [   48.875786] hardirqs last  enabled at (10683): [<ffff0000110c8d70>] _raw_spin_unlock_irqrestore+0x88/0x90
-> [   48.875791] hardirqs last disabled at (10684): [<ffff0000110c8b2c>] _raw_spin_lock_irqsave+0x24/0x68
-> [   48.875796] softirqs last  enabled at (0): [<ffff0000100ec590>] copy_process.isra.1.part.2+0x8d8/0x1970
-> [   48.875801] softirqs last disabled at (0): [<0000000000000000>]           (null)
-> [   48.875805] Preemption disabled at:
-> [   48.875805] [<ffff000010189ae8>] __setup_irq+0xd8/0x6c0
-> [   48.875811] CPU: 2 PID: 2103 Comm: ip Not tainted 5.0.3-rt1-00007-g42ede9a0fed6 #45
-> [   48.875815] Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development Platform, BIOS EDK II Jan 23 2017
-> [   48.875817] Call trace:
-> [   48.875818]  dump_backtrace+0x0/0x140
-> [   48.875821]  show_stack+0x14/0x20
-> [   48.875823]  dump_stack+0xa0/0xd4
-> [   48.875827]  ___might_sleep+0x16c/0x1f8
-> [   48.875831]  rt_spin_lock+0x5c/0x70
-> [   48.875835]  iommu_dma_map_msi_msg+0x5c/0x1d8
-> [   48.875839]  gicv2m_compose_msi_msg+0x3c/0x48
-> [   48.875843]  irq_chip_compose_msi_msg+0x40/0x58
-> [   48.875846]  msi_domain_activate+0x38/0x98
-> [   48.875849]  __irq_domain_activate_irq+0x58/0xa0
-> [   48.875852]  irq_domain_activate_irq+0x34/0x58
-> [   48.875855]  irq_activate+0x28/0x30
-> [   48.875858]  __setup_irq+0x2b0/0x6c0
-> [   48.875861]  request_threaded_irq+0xdc/0x188
-> [   48.875865]  sky2_setup_irq+0x44/0xf8
-> [   48.875868]  sky2_open+0x1a4/0x240
-> [   48.875871]  __dev_open+0xd8/0x188
-> [   48.875874]  __dev_change_flags+0x164/0x1f0
-> [   48.875877]  dev_change_flags+0x20/0x60
-> [   48.875879]  do_setlink+0x2a0/0xd30
-> [   48.875882]  __rtnl_newlink+0x5b4/0x6d8
-> [   48.875885]  rtnl_newlink+0x50/0x78
-> [   48.875888]  rtnetlink_rcv_msg+0x178/0x640
-> [   48.875891]  netlink_rcv_skb+0x58/0x118
-> [   48.875893]  rtnetlink_rcv+0x14/0x20
-> [   48.875896]  netlink_unicast+0x188/0x200
-> [   48.875898]  netlink_sendmsg+0x248/0x3d8
-> [   48.875900]  sock_sendmsg+0x18/0x40
-> [   48.875904]  ___sys_sendmsg+0x294/0x2d0
-> [   48.875908]  __sys_sendmsg+0x68/0xb8
-> [   48.875911]  __arm64_sys_sendmsg+0x20/0x28
-> [   48.875914]  el0_svc_common+0x90/0x118
-> [   48.875918]  el0_svc_handler+0x2c/0x80
-> [   48.875922]  el0_svc+0x8/0xc
-> 
-> This series is a first attempt to rework how MSI are mapped and composed
-> when an IOMMU is present.
-> 
-> I was able to test the changes in GICv2m and GICv3 ITS. I don't have
-> hardware for the other interrupt controllers.
-> 
-> Cheers,
-> 
-> Julien Grall (7):
->   genirq/msi: Add a new field in msi_desc to store an IOMMU cookie
->   iommu/dma-iommu: Split iommu_dma_map_msi_msg() in two parts
->   irqchip/gicv2m: Don't map the MSI page in gicv2m_compose_msi_msg()
->   irqchip/gic-v3-its: Don't map the MSI page in
->     its_irq_compose_msi_msg()
->   irqchip/ls-scfg-msi: Don't map the MSI page in
->     ls_scfg_msi_compose_msg()
->   irqchip/gic-v3-mbi: Don't map the MSI page in mbi_compose_m{b,
->     s}i_msg()
->   iommu/dma-iommu: Remove iommu_dma_map_msi_msg()
-> 
->  drivers/iommu/Kconfig             |  1 +
->  drivers/iommu/dma-iommu.c         | 49 +++++++++++++++++++++++----------------
->  drivers/irqchip/irq-gic-v2m.c     |  8 ++++++-
->  drivers/irqchip/irq-gic-v3-its.c  |  5 +++-
->  drivers/irqchip/irq-gic-v3-mbi.c  | 15 ++++++++++--
->  drivers/irqchip/irq-ls-scfg-msi.c |  7 +++++-
->  include/linux/dma-iommu.h         | 22 ++++++++++++++++--
->  include/linux/msi.h               | 26 +++++++++++++++++++++
->  kernel/irq/Kconfig                |  3 +++
->  9 files changed, 109 insertions(+), 27 deletions(-)
+I still think that's a very silly way to write "~(dma_addr_t)0", but 
+otherwise,
 
-Thanks for having reworked this. I'm quite happy with the way this looks
-now (modulo the couple of nits Robin and I mentioned, which I'm to
-address myself).
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-Jorg: are you OK with this going via the irq tree?
-
-Thanks,
-
-	M.
--- 
-Jazz is not dead. It just smells funny...
+> +			end = DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE);
+> +			goto resv_iova;
+> +		}
+> +	}
+>   }
+>   
+>   static int iova_reserve_iommu_regions(struct device *dev,
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
