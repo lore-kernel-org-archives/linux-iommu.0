@@ -1,60 +1,55 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 26/26] arm64: trim includes in dma-mapping.c
-Date: Mon, 29 Apr 2019 16:00:22 +0100
-Message-ID: <8d257026-870c-c183-4c34-48b9f8bc6872@arm.com>
+Subject: Re: implement generic dma_map_ops for IOMMUs v3
+Date: Mon, 29 Apr 2019 16:03:29 +0100
+Message-ID: <9ae8ce99-65a8-711d-b17d-165df7e280d4@arm.com>
 References: <20190422175942.18788-1-hch@lst.de>
- <20190422175942.18788-27-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422175942.18788-27-hch@lst.de>
+In-Reply-To: <20190422175942.18788-1-hch@lst.de>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 22/04/2019 18:59, Christoph Hellwig wrote:
-> With most of the previous functionality now elsewhere a lot of the
-> headers included in this file are not needed.
+> Hi Robin,
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/arm64/mm/dma-mapping.c | 11 -----------
->   1 file changed, 11 deletions(-)
+> please take a look at this series, which implements a completely generic
+> set of dma_map_ops for IOMMU drivers.  This is done by taking the
+> existing arm64 code, moving it to drivers/iommu and then massaging it
+> so that it can also work for architectures with DMA remapping.  This
+> should help future ports to support IOMMUs more easily, and also allow
+> to remove various custom IOMMU dma_map_ops implementations, like Tom
+> was planning to for the AMD one.
+
+Modulo a few nits, I think this looks pretty much good to go, and it 
+would certainly be good to get as much as reasonable queued soon for the 
+sake of progress elsewhere.
+
+Catalin, Will, I think the arm64 parts are all OK but please take a look 
+to confirm.
+
+Thanks,
+Robin.
+
 > 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 184ef9ccd69d..15bd768ceb7e 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -5,20 +5,9 @@
->    */
->   
->   #include <linux/gfp.h>
-> -#include <linux/acpi.h>
-> -#include <linux/memblock.h>
->   #include <linux/cache.h>
-> -#include <linux/export.h>
-> -#include <linux/slab.h>
-> -#include <linux/genalloc.h>
-> -#include <linux/dma-direct.h>
->   #include <linux/dma-noncoherent.h>
-> -#include <linux/dma-contiguous.h>
->   #include <linux/dma-iommu.h>
-> -#include <linux/vmalloc.h>
-> -#include <linux/swiotlb.h>
-> -#include <linux/pci.h>
-> -
-
-Nit: please keep the blank line between linux/ and asm/ include blocks 
-to match the predominant local style.
-
-With that,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
->   #include <asm/cacheflush.h>
->   
->   pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
+> A git tree is also available at:
+> 
+>      git://git.infradead.org/users/hch/misc.git dma-iommu-ops.3
+> 
+> Gitweb:
+> 
+>      http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops.3
+> 
+> Changes since v2:
+>   - address various review comments and include patches from Robin
+> 
+> Changes since v1:
+>   - only include other headers in dma-iommu.h if CONFIG_DMA_IOMMU is enabled
+>   - keep using a scatterlist in iommu_dma_alloc
+>   - split out mmap/sgtable fixes and move them early in the series
+>   - updated a few commit logs
 > 
