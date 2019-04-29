@@ -6,63 +6,57 @@ X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A615C43219
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 05:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF373C43219
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 10:03:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5FCD42075E
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 05:18:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5FCD42075E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id B321E20644
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 10:03:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B321E20644
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1171B1DED;
-	Mon, 29 Apr 2019 05:18:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 59DAF1EEE;
+	Mon, 29 Apr 2019 10:03:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9E2CB1DE7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A4B561EEA
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 05:16:38 +0000 (UTC)
+	Mon, 29 Apr 2019 10:01:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 24E05608
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5341B608
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 05:16:38 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Apr 2019 22:16:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="295363562"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga004.jf.intel.com with ESMTP; 28 Apr 2019 22:16:34 -0700
-Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
-To: Christoph Hellwig <hch@lst.de>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-	<20190421011719.14909-3-baolu.lu@linux.intel.com>
-	<20190422164555.GA31181@lst.de>
-	<0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
-	<20190423061232.GB12762@lst.de>
-	<dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
-	<20190424144532.GA21480@lst.de>
-	<a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
-	<20190426150433.GA19930@lst.de>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
-Date: Mon, 29 Apr 2019 13:10:17 +0800
+	Mon, 29 Apr 2019 10:01:12 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A1DBF80D;
+	Mon, 29 Apr 2019 03:01:11 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 74FFC3F5AF;
+	Mon, 29 Apr 2019 03:01:09 -0700 (PDT)
+Subject: Re: [PATCH v2 11/19] iommu/vt-d: Replace Intel specific PASID
+	allocator with IOASID
+To: Auger Eric <eric.auger@redhat.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556062279-64135-12-git-send-email-jacob.jun.pan@linux.intel.com>
+	<e542fd95-acbe-05e9-e441-27dff752c21a@redhat.com>
+	<20190426140133.6d445315@jacob-builder>
+	<f06a9675-278f-51db-f385-e1305b3795d6@redhat.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <7529f2ca-167b-5e65-9330-9093638e9f91@arm.com>
+Date: Mon, 29 Apr 2019 11:00:51 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190426150433.GA19930@lst.de>
+In-Reply-To: <f06a9675-278f-51db-f385-e1305b3795d6@redhat.com>
 Content-Language: en-US
-Cc: kevin.tian@intel.com, mika.westerberg@linux.intel.com, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	pengfei.xu@intel.com, jacob.jun.pan@intel.com,
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -76,33 +70,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429051017._D5YTuRjhzfKEKNHcUVys6qIec9p8q3kTxDEEntel2w@z>
+Message-ID: <20190429100051.x4X7ImMjmB4_irOI83fJoQIhARi9oOUGYZFFpBVW8h8@z>
 
-Hi Christoph,
+On 27/04/2019 09:38, Auger Eric wrote:
+>>>> --- a/drivers/iommu/intel-iommu.c
+>>>> +++ b/drivers/iommu/intel-iommu.c
+>>>> @@ -5153,7 +5153,7 @@ static void auxiliary_unlink_device(struct
+>>>> dmar_domain *domain, domain->auxd_refcnt--;
+>>>>  
+>>>>  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+>>>> -		intel_pasid_free_id(domain->default_pasid);
+>>>> +		ioasid_free(domain->default_pasid);
+>>>>  }
+>>>>  
+>>>>  static int aux_domain_add_dev(struct dmar_domain *domain,
+>>>> @@ -5171,9 +5171,8 @@ static int aux_domain_add_dev(struct
+>>>> dmar_domain *domain, if (domain->default_pasid <= 0) {
+>>>>  		int pasid;
+>>>>  
+>>>> -		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
+>>>> -
+>>>> pci_max_pasids(to_pci_dev(dev)),
+>>>> -					     GFP_KERNEL);
+>>>> +		pasid = ioasid_alloc(NULL, PASID_MIN,
+>>>> pci_max_pasids(to_pci_dev(dev)) - 1,
+>>>> +				domain);
+>>>>  		if (pasid <= 0) {  
+>>> ioasid_t is a uint and returns INVALID_IOASID on error. Wouldn't it be
+>>> simpler to make ioasid_alloc return an int?
+>> Well, I think we still want the full uint range - 1(INVALID_IOASID).
+>> Intel uses 20bit but I think SMMUs use 32 bits for streamID? I
+>> should just check 
+>> 	if (pasid == INVALID_IOASID) {
+> Jean-Philippe may correct me but SMMU uses 20b SubstreamId which is a
+> superset of PASIDs. StreamId is 32b.
 
-On 4/26/19 11:04 PM, Christoph Hellwig wrote:
-> On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
->> This is not VT-d specific. It's just how generic IOMMU works.
->>
->> Normally, IOMMU works in paging mode. So if a driver issues DMA with
->> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 0xBBBB0123.
->> But we should never expect IOMMU to remap 0xAAAA0123 with physical
->> address of 0xBBBB0000. That's the reason why I said that IOMMU will not
->> work there.
-> 
-> Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
-> can happen, so drivers are fine with it.  Why would that suddenly
-> become an issue when swiotlb is called from the iommu code?
-> 
+Right, we use 20 bits for PASIDs (== SubstreamID really). Given the
+choices that vendors are making for PASIDs (a global namespace rather
+than per-VM), I wouldn't be surprised if they extend the size of PASIDs
+in a couple of years, so I added the typedef ioasid_t to ease a possible
+change from 32-bit to 64 in the future.
 
-I would say IOMMU is DMA remapping, not DMA engine. :-)
-
-Best regards,
-Lu Baolu
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
