@@ -2,56 +2,68 @@ Return-Path: <SRS0=wClR=S7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6558C43219
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A615C43219
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 05:18:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BF3D220675
-	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 02:19:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF3D220675
+	by mail.kernel.org (Postfix) with ESMTPS id 5FCD42075E
+	for <iommu@archiver.kernel.org>; Mon, 29 Apr 2019 05:18:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5FCD42075E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 55C0F1DEF;
-	Mon, 29 Apr 2019 02:18:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1171B1DED;
+	Mon, 29 Apr 2019 05:18:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A185D1D35
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9E2CB1DE7
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 02:16:16 +0000 (UTC)
+	Mon, 29 Apr 2019 05:16:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 467FE608
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 24E05608
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Apr 2019 02:16:16 +0000 (UTC)
+	Mon, 29 Apr 2019 05:16:38 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Apr 2019 19:16:15 -0700
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	28 Apr 2019 22:16:37 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="146537881"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga003.jf.intel.com with ESMTP; 28 Apr 2019 19:16:14 -0700
+X-IronPort-AV: E=Sophos;i="5.60,408,1549958400"; d="scan'208";a="295363562"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga004.jf.intel.com with ESMTP; 28 Apr 2019 22:16:34 -0700
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+To: Christoph Hellwig <hch@lst.de>
+References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
+	<20190421011719.14909-3-baolu.lu@linux.intel.com>
+	<20190422164555.GA31181@lst.de>
+	<0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
+	<20190423061232.GB12762@lst.de>
+	<dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
+	<20190424144532.GA21480@lst.de>
+	<a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
+	<20190426150433.GA19930@lst.de>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 8/8] iommu/vt-d: Implement is_attach_deferred iommu ops
-	entry
-Date: Mon, 29 Apr 2019 10:09:25 +0800
-Message-Id: <20190429020925.18136-9-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190429020925.18136-1-baolu.lu@linux.intel.com>
-References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, dima@arista.com,
-	tmurphy@arista.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
+Message-ID: <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
+Date: Mon, 29 Apr 2019 13:10:17 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190426150433.GA19930@lst.de>
+Content-Language: en-US
+Cc: kevin.tian@intel.com, mika.westerberg@linux.intel.com, ashok.raj@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	alan.cox@intel.com, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	pengfei.xu@intel.com, jacob.jun.pan@intel.com,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,98 +76,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190429020925.aMt83nakxX35t03ykJ58LEgoGgeP4omlVcbTbTwLoHQ@z>
+Message-ID: <20190429051017._D5YTuRjhzfKEKNHcUVys6qIec9p8q3kTxDEEntel2w@z>
 
-As a domain is now attached to a device earlier, we should
-implement the is_attach_deferred call-back and use it to
-defer the domain attach from iommu driver init to device
-driver init when iommu is pre-enabled in kdump kernel.
+Hi Christoph,
 
-Suggested-by: Tom Murphy <tmurphy@arista.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel-iommu.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+On 4/26/19 11:04 PM, Christoph Hellwig wrote:
+> On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
+>> This is not VT-d specific. It's just how generic IOMMU works.
+>>
+>> Normally, IOMMU works in paging mode. So if a driver issues DMA with
+>> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 0xBBBB0123.
+>> But we should never expect IOMMU to remap 0xAAAA0123 with physical
+>> address of 0xBBBB0000. That's the reason why I said that IOMMU will not
+>> work there.
+> 
+> Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
+> can happen, so drivers are fine with it.  Why would that suddenly
+> become an issue when swiotlb is called from the iommu code?
+> 
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index dd6abd554804..7e24f025f7a9 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -358,6 +358,8 @@ static void domain_context_clear(struct intel_iommu *iommu,
- 				 struct device *dev);
- static int domain_detach_iommu(struct dmar_domain *domain,
- 			       struct intel_iommu *iommu);
-+static int intel_iommu_attach_device(struct iommu_domain *domain,
-+				     struct device *dev);
- 
- #ifdef CONFIG_INTEL_IOMMU_DEFAULT_ON
- int dmar_disabled = 0;
-@@ -387,6 +389,7 @@ int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
- 
- #define DUMMY_DEVICE_DOMAIN_INFO ((struct device_domain_info *)(-1))
-+#define DEFER_DEVICE_DOMAIN_INFO ((struct device_domain_info *)(-2))
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
- 
-@@ -2404,8 +2407,18 @@ static struct dmar_domain *find_domain(struct device *dev)
- {
- 	struct device_domain_info *info;
- 
-+	if (unlikely(dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO)) {
-+		struct iommu_domain *domain;
-+
-+		dev->archdata.iommu = NULL;
-+		domain = iommu_get_domain_for_dev(dev);
-+		if (domain)
-+			intel_iommu_attach_device(domain, dev);
-+	}
-+
- 	/* No lock here, assumes no domain exit in normal case */
- 	info = dev->archdata.iommu;
-+
- 	if (likely(info))
- 		return info->domain;
- 	return NULL;
-@@ -5154,6 +5167,9 @@ static int intel_iommu_add_device(struct device *dev)
- 
- 	iommu_device_link(&iommu->iommu, dev);
- 
-+	if (translation_pre_enabled(iommu))
-+		dev->archdata.iommu = DEFER_DEVICE_DOMAIN_INFO;
-+
- 	group = iommu_group_get_for_dev(dev);
- 
- 	if (IS_ERR(group))
-@@ -5440,6 +5456,12 @@ intel_iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
- 			dmar_domain->default_pasid : -EINVAL;
- }
- 
-+static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
-+					   struct device *dev)
-+{
-+	return dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO;
-+}
-+
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -5463,6 +5485,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
- 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
- 	.def_domain_type	= intel_iommu_def_domain_type,
-+	.is_attach_deferred	= intel_iommu_is_attach_deferred,
- 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
- };
- 
--- 
-2.17.1
+I would say IOMMU is DMA remapping, not DMA engine. :-)
 
+Best regards,
+Lu Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
