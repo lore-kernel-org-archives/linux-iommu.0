@@ -1,89 +1,47 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 01/10] iommu: Add helper to get minimal page size of
- domain
-Date: Tue, 30 Apr 2019 08:40:20 +0800
-Message-ID: <48ac694e-4551-40e2-f914-6942da810489@linux.intel.com>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
- <20190421011719.14909-2-baolu.lu@linux.intel.com>
- <05eca601-0264-8141-ceeb-7ef7ad5d5650@arm.com>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: [RFC/RFT PATCH 0/2] Optimize dma_*_from_contiguous calls
+Date: Mon, 29 Apr 2019 18:55:19 -0700
+Message-ID: <20190430015521.27734-1-nicoleotsuka@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <05eca601-0264-8141-ceeb-7ef7ad5d5650@arm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: baolu.lu@linux.intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: hch@lst.de, robin.murphy@arm.com, m.szyprowski@samsung.com
+Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org, sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com, joro@8bytes.org, will.deacon@arm.com, linux@armlinux.org.uk, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com, akpm@linux-foundation.org, treding@nvidia.com, dwmw2@infradead.org, iamjoonsoo.kim@lge.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+This series of patches try to optimize dma_*_from_contiguous calls:
+PATCH-1 does some abstraction and cleanup.
+PATCH-2 saves single pages and reduce fragmentations from CMA area.
 
-On 4/29/19 6:55 PM, Robin Murphy wrote:
-> On 21/04/2019 02:17, Lu Baolu wrote:
->> This makes it possible for other modules to know the minimal
->> page size supported by a domain without the knowledge of the
->> structure details.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h | 13 +++++++++++++
->>   1 file changed, 13 insertions(+)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index a5007d035218..46679ef19b7e 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -377,6 +377,14 @@ static inline void iommu_tlb_sync(struct 
->> iommu_domain *domain)
->>           domain->ops->iotlb_sync(domain);
->>   }
->> +static inline unsigned long domain_minimal_pgsize(struct iommu_domain 
->> *domain)
->> +{
->> +    if (domain && domain->pgsize_bitmap)
->> +        return 1 << __ffs(domain->pgsize_bitmap);
-> 
-> Nit: this would probably be more efficient on most architectures as:
-> 
->      if (domain)
->          return domain->pgsize_bitmap & -domain->pgsize_bitmap;
-> 
+Both two patches may impact the source of pages (CMA or normal)
+depending on the use cases, so are being tagged with "RFC/RFT".
 
-It looks reasonable to me.
+Please check their commit messages for detail.
 
-> 
-> I'd also suggest s/minimal/min/ in the name, just to stop it getting too 
-> long. Otherwise, though, I like the idea, and there's at least one other 
-> place (in iommu-dma) that can make use of it straight away.
+Nicolin Chen (2):
+  dma-contiguous: Simplify dma_*_from_contiguous() function calls
+  dma-contiguous: Use fallback alloc_pages for single pages
 
-Okay, I will change the name to domain_min_pgsize().
+ arch/arm/mm/dma-mapping.c      | 14 +++-----
+ arch/arm64/mm/dma-mapping.c    | 11 +++---
+ arch/xtensa/kernel/pci-dma.c   | 19 +++-------
+ drivers/iommu/amd_iommu.c      | 20 +++--------
+ drivers/iommu/intel-iommu.c    | 20 ++---------
+ include/linux/dma-contiguous.h | 15 +++-----
+ kernel/dma/contiguous.c        | 64 ++++++++++++++++++++++------------
+ kernel/dma/direct.c            | 24 +++----------
+ kernel/dma/remap.c             | 11 ++----
+ 9 files changed, 73 insertions(+), 125 deletions(-)
 
-> 
-> Robin.
-> 
-
-Best regards,
-Lu Baolu
-
->> +
->> +    return 0;
->> +}
->> +
->>   /* PCI device grouping function */
->>   extern struct iommu_group *pci_device_group(struct device *dev);
->>   /* Generic device grouping function */
->> @@ -704,6 +712,11 @@ const struct iommu_ops 
->> *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->>       return NULL;
->>   }
->> +static inline unsigned long domain_minimal_pgsize(struct iommu_domain 
->> *domain)
->> +{
->> +    return 0;
->> +}
->> +
->>   #endif /* CONFIG_IOMMU_API */
->>   #ifdef CONFIG_IOMMU_DEBUGFS
->>
-> 
+-- 
+2.17.1
