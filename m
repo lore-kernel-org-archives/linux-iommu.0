@@ -1,61 +1,65 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 17/25] iommu/dma: Split iommu_dma_free
-Date: Tue, 30 Apr 2019 06:52:06 -0400
-Message-ID: <20190430105214.24628-18-hch@lst.de>
+Subject: [PATCH 03/25] iommu/dma: Cleanup dma-iommu.h
+Date: Tue, 30 Apr 2019 06:51:52 -0400
+Message-ID: <20190430105214.24628-4-hch@lst.de>
 References: <20190430105214.24628-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20190430105214.24628-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+No need for a __KERNEL__ guard outside uapi and add a missing comment
+describing the #else cpp statement.  Last but not least include
+<linux/errno.h> instead of the asm version, which is frowned upon.
 
-Most of it can double up to serve the failure cleanup path for
-iommu_dma_alloc().
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/dma-iommu.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ include/linux/dma-iommu.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 99dd82d8ae21..9ba35b98506c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -916,15 +916,12 @@ static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- 	__iommu_dma_unmap(dev, handle, size);
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index e760dc5d1fa8..8741637941ca 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -16,9 +16,8 @@
+ #ifndef __DMA_IOMMU_H
+ #define __DMA_IOMMU_H
+ 
+-#ifdef __KERNEL__
++#include <linux/errno.h>
+ #include <linux/types.h>
+-#include <asm/errno.h>
+ 
+ #ifdef CONFIG_IOMMU_DMA
+ #include <linux/dma-mapping.h>
+@@ -74,7 +73,7 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 
+-#else
++#else /* CONFIG_IOMMU_DMA */
+ 
+ struct iommu_domain;
+ struct msi_msg;
+@@ -108,5 +107,4 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
  }
  
--static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
--		dma_addr_t handle, unsigned long attrs)
-+static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
- {
- 	size_t alloc_size = PAGE_ALIGN(size);
- 	int count = alloc_size >> PAGE_SHIFT;
- 	struct page *page = NULL, **pages = NULL;
- 
--	__iommu_dma_unmap(dev, handle, size);
--
- 	/* Non-coherent atomic allocation? Easy */
- 	if (dma_free_from_pool(cpu_addr, alloc_size))
- 		return;
-@@ -949,6 +946,13 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
- 		__free_pages(page, get_order(alloc_size));
- }
- 
-+static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
-+		dma_addr_t handle, unsigned long attrs)
-+{
-+	__iommu_dma_unmap(dev, handle, size);
-+	__iommu_dma_free(dev, size, cpu_addr);
-+}
-+
- static void *iommu_dma_alloc(struct device *dev, size_t size,
- 		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
- {
+ #endif	/* CONFIG_IOMMU_DMA */
+-#endif	/* __KERNEL__ */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 2.20.1
