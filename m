@@ -2,66 +2,65 @@ Return-Path: <SRS0=Kg+4=TA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0534DC43219
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 09:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44839C43219
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 10:20:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CEDA520652
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 09:54:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEDA520652
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1DD9521670
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 10:20:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DD9521670
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 72F6EF11;
-	Tue, 30 Apr 2019 09:54:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D256CF12;
+	Tue, 30 Apr 2019 10:20:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EE7A1EFF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E50F3F0A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 09:53:52 +0000 (UTC)
+	Tue, 30 Apr 2019 10:19:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 855E15F4
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3E516711
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 09:53:52 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1579D80D;
-	Tue, 30 Apr 2019 02:53:52 -0700 (PDT)
-Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B97DC3F5C1;
-	Tue, 30 Apr 2019 02:53:49 -0700 (PDT)
-Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
-To: Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-	<20190421011719.14909-3-baolu.lu@linux.intel.com>
-	<20190422164555.GA31181@lst.de>
-	<0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
-	<20190423061232.GB12762@lst.de>
-	<dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
-	<20190424144532.GA21480@lst.de>
-	<a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
-	<20190426150433.GA19930@lst.de>
-	<93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
-	<90182d27-5764-7676-8ca6-b2773a40cfe1@arm.com>
-	<1361b6ab-c3cf-d8ab-5f6b-9d9b7797bf02@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c044c51a-d348-ca37-3eaa-5475e3fec6c9@arm.com>
-Date: Tue, 30 Apr 2019 10:53:48 +0100
+	Tue, 30 Apr 2019 10:19:52 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+	[10.5.11.15])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 678E185360;
+	Tue, 30 Apr 2019 10:19:52 +0000 (UTC)
+Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id A57386152B;
+	Tue, 30 Apr 2019 10:19:48 +0000 (UTC)
+Subject: Re: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource entries
+	to host bridge
+To: Srinath Mannam <srinath.mannam@broadcom.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi
+	<lorenzo.pieralisi@arm.com>, poza@codeaurora.org,
+	Ray Jui <rjui@broadcom.com>
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+	<1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <53a7463f-0b31-42ad-96a1-a3f40f02b119@redhat.com>
+Date: Tue, 30 Apr 2019 12:19:47 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <1361b6ab-c3cf-d8ab-5f6b-9d9b7797bf02@linux.intel.com>
-Content-Language: en-GB
-Cc: kevin.tian@intel.com, mika.westerberg@linux.intel.com, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, pengfei.xu@intel.com,
-	jacob.jun.pan@intel.com, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.25]);
+	Tue, 30 Apr 2019 10:19:52 +0000 (UTC)
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+	bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,58 +73,132 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430095348.z89OFWBIuZskaioM_dWCW4Bed0CF22AeEvNBUDkSxS8@z>
+Message-ID: <20190430101947.kVO7ZLT32ua0hNqMNBgm-7CtnItd-LVN7BdZKd-XXYo@z>
 
-T24gMzAvMDQvMjAxOSAwMzowMiwgTHUgQmFvbHUgd3JvdGU6Cj4gSGkgUm9iaW4sCj4gCj4gT24g
-NC8yOS8xOSA3OjA2IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDI5LzA0LzIwMTkgMDY6
-MTAsIEx1IEJhb2x1IHdyb3RlOgo+Pj4gSGkgQ2hyaXN0b3BoLAo+Pj4KPj4+IE9uIDQvMjYvMTkg
-MTE6MDQgUE0sIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOgo+Pj4+IE9uIFRodSwgQXByIDI1LCAy
-MDE5IGF0IDEwOjA3OjE5QU0gKzA4MDAsIEx1IEJhb2x1IHdyb3RlOgo+Pj4+PiBUaGlzIGlzIG5v
-dCBWVC1kIHNwZWNpZmljLiBJdCdzIGp1c3QgaG93IGdlbmVyaWMgSU9NTVUgd29ya3MuCj4+Pj4+
-Cj4+Pj4+IE5vcm1hbGx5LCBJT01NVSB3b3JrcyBpbiBwYWdpbmcgbW9kZS4gU28gaWYgYSBkcml2
-ZXIgaXNzdWVzIERNQSB3aXRoCj4+Pj4+IElPVkHCoCAweEFBQUEwMTIzLCBJT01NVSBjYW4gcmVt
-YXAgaXQgd2l0aCBhIHBoeXNpY2FsIGFkZHJlc3MgCj4+Pj4+IDB4QkJCQjAxMjMuCj4+Pj4+IEJ1
-dCB3ZSBzaG91bGQgbmV2ZXIgZXhwZWN0IElPTU1VIHRvIHJlbWFwIDB4QUFBQTAxMjMgd2l0aCBw
-aHlzaWNhbAo+Pj4+PiBhZGRyZXNzIG9mIDB4QkJCQjAwMDAuIFRoYXQncyB0aGUgcmVhc29uIHdo
-eSBJIHNhaWQgdGhhdCBJT01NVSB3aWxsIAo+Pj4+PiBub3QKPj4+Pj4gd29yayB0aGVyZS4KPj4+
-Pgo+Pj4+IFdlbGwsIHdpdGggdGhlIGlvbW11IGl0IGRvZXNuJ3QgaGFwcGVuLsKgIFdpdGggc3dp
-b3RsYiBpdCBvYnZpb3N1bHkKPj4+PiBjYW4gaGFwcGVuLCBzbyBkcml2ZXJzIGFyZSBmaW5lIHdp
-dGggaXQuwqAgV2h5IHdvdWxkIHRoYXQgc3VkZGVubHkKPj4+PiBiZWNvbWUgYW4gaXNzdWUgd2hl
-biBzd2lvdGxiIGlzIGNhbGxlZCBmcm9tIHRoZSBpb21tdSBjb2RlPwo+Pj4+Cj4+Pgo+Pj4gSSB3
-b3VsZCBzYXkgSU9NTVUgaXMgRE1BIHJlbWFwcGluZywgbm90IERNQSBlbmdpbmUuIDotKQo+Pgo+
-PiBJJ20gbm90IHN1cmUgSSByZWFsbHkgZm9sbG93IHRoZSBpc3N1ZSBoZXJlIC0gaWYgd2UncmUg
-Y29weWluZyB0aGUgCj4+IGJ1ZmZlciB0byB0aGUgYm91bmNlIHBhZ2UocykgdGhlcmUncyBubyBj
-b25jZXB0dWFsIGRpZmZlcmVuY2UgZnJvbSAKPj4gY29weWluZyBpdCB0byBTV0lPVExCIHNsb3Qo
-cyksIHNvIHRoZXJlIHNob3VsZCBiZSBubyBuZWVkIHRvIHdvcnJ5IAo+PiBhYm91dCB0aGUgb3Jp
-Z2luYWwgaW4tcGFnZSBvZmZzZXQuCj4+Cj4+IMKgRnJvbSB0aGUgcmVwbHkgdXAtdGhyZWFkIEkg
-Z3Vlc3MgeW91J3JlIHRyeWluZyB0byBpbmNsdWRlIGFuIAo+PiBvcHRpbWlzYXRpb24gdG8gb25s
-eSBjb3B5IHRoZSBoZWFkIGFuZCB0YWlsIG9mIHRoZSBidWZmZXIgaWYgaXQgc3BhbnMgCj4+IG11
-bHRpcGxlIHBhZ2VzLCBhbmQgZGlyZWN0bHkgbWFwIHRoZSBvbmVzIGluIHRoZSBtaWRkbGUsIGJ1
-dCBBRkFJQ1MgCj4+IHRoYXQncyBnb2luZyB0byB0aWUgeW91IHRvIGFsc28gdXNpbmcgc3RyaWN0
-IG1vZGUgZm9yIFRMQiBtYWludGVuYW5jZSwgCj4+IHdoaWNoIG1heSBub3QgYmUgYSB3aW4gb3Zl
-cmFsbCBkZXBlbmRpbmcgb24gdGhlIGJhbGFuY2UgYmV0d2VlbiAKPj4gaW52YWxpZGF0aW9uIGJh
-bmR3aWR0aCB2cy4gbWVtY3B5IGJhbmR3aWR0aC4gQXQgbGVhc3QgaWYgd2UgdXNlIAo+PiBzdGFu
-ZGFyZCBTV0lPVExCIGxvZ2ljIHRvIGFsd2F5cyBjb3B5IHRoZSB3aG9sZSB0aGluZywgd2Ugc2hv
-dWxkIGJlIAo+PiBhYmxlIHRvIHJlbGVhc2UgdGhlIGJvdW5jZSBwYWdlcyB2aWEgdGhlIGZsdXNo
-IHF1ZXVlIHRvIGFsbG93ICdzYWZlJyAKPj4gbGF6eSB1bm1hcHMuCj4+Cj4gCj4gV2l0aCByZXNw
-ZWN0LCBldmVuIHdlIHVzZSB0aGUgc3RhbmRhcmQgU1dJT1RMQiBsb2dpYywgd2UgbmVlZCB0byB1
-c2UKPiB0aGUgc3RyaWN0IG1vZGUgZm9yIFRMQiBtYWludGVuYW5jZS4KPiAKPiBTYXksIHNvbWUg
-c3dpb3RibCBzbG90cyBhcmUgdXNlZCBieSB1bnRydXN0ZWQgZGV2aWNlIGZvciBib3VuY2UgcGFn
-ZQo+IHB1cnBvc2UuIFdoZW4gdGhlIGRldmljZSBkcml2ZXIgdW5tYXBzIHRoZSBJT1ZBLCB0aGUg
-c2xvdHMgYXJlIGZyZWVkIGJ1dAo+IHRoZSBtYXBwaW5nIGlzIHN0aWxsIGNhY2hlZCBpbiBJT1RM
-QiwgaGVuY2UgdGhlIHVudHJ1c3RlZCBkZXZpY2UgaXMgCj4gc3RpbGwgYWJsZSB0byBhY2Nlc3Mg
-dGhlIHNsb3RzLiBUaGVuIHRoZSBzbG90cyBhcmUgYWxsb2NhdGVkIHRvIG90aGVyCj4gZGV2aWNl
-cy4gVGhpcyBtYWtlcyBpdCBwb3NzaWJsZSBmb3IgdGhlIHVudHJ1c3RlZCBkZXZpY2UgdG8gYWNj
-ZXNzCj4gdGhlIGRhdGEgYnVmZmVyIG9mIG90aGVyIGRldmljZXMuCgpTdXJlLCB0aGF0J3MgaW5k
-ZWVkIGhvdyBpdCB3b3VsZCB3b3JrIHJpZ2h0IG5vdyAtIGhvd2V2ZXIgc2luY2UgdGhlIApib3Vu
-Y2UgcGFnZXMgd2lsbCBiZSBmcmVlZCBhbmQgcmV1c2VkIGJ5IHRoZSBETUEgQVBJIGxheWVyIGl0
-c2VsZiAoYXQgCnRoZSBzYW1lIGxldmVsIGFzIHRoZSBJT1ZBcykgSSBzZWUgbm8gdGVjaG5pY2Fs
-IHJlYXNvbiB3aHkgd2UgY291bGRuJ3QgCmludmVzdGlnYXRlIGRlZmVycmVkIGZyZWVpbmcgYXMg
-YSBmdXR1cmUgb3B0aW1pc2F0aW9uLgoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+Hi Srinath,
+
+On 4/12/19 5:13 AM, Srinath Mannam wrote:
+> IPROC host has the limitation that it can use only those address ranges
+> given by dma-ranges property as inbound address. So that the memory
+> address holes in dma-ranges should be reserved to allocate as DMA address.
+> 
+> Inbound address of host accessed by PCIe devices will not be translated
+> before it comes to IOMMU or directly to PE. But the limitation of this
+> host is, access to few address ranges are ignored. So that IOVA ranges
+> for these address ranges have to be reserved.
+> 
+> All allowed address ranges are listed in dma-ranges DT parameter. These
+> address ranges are converted as resource entries and listed in sorted
+> order add added to dma_ranges list of PCI host bridge structure.
+s/add added/and added
+> 
+> Ex:
+> dma-ranges = < \
+>   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
+>   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+>   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+> 
+> In the above example of dma-ranges, memory address from
+> 0x0 - 0x80000000,
+> 0x100000000 - 0x800000000,
+> 0x1000000000 - 0x8000000000 and
+> 0x10000000000 - 0xffffffffffffffff.
+> are not allowed to use as inbound addresses.
+s/to use/to be used
+> 
+> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
+> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
+
+
+> ---
+>  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 43 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
+> index c20fd6b..94ba5c0 100644
+> --- a/drivers/pci/controller/pcie-iproc.c
+> +++ b/drivers/pci/controller/pcie-iproc.c
+> @@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
+>  	return ret;
+>  }
+>  
+> +static int
+> +iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
+> +			 struct of_pci_range *range)
+> +{
+> +	struct resource *res;
+> +	struct resource_entry *entry, *tmp;
+> +	struct list_head *head = resources;
+> +
+> +	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
+> +	if (!res)
+> +		return -ENOMEM;
+> +
+> +	resource_list_for_each_entry(tmp, resources) {
+> +		if (tmp->res->start < range->cpu_addr)
+> +			head = &tmp->node;
+> +	}
+> +
+> +	res->start = range->cpu_addr;
+> +	res->end = res->start + range->size - 1;
+> +
+> +	entry = resource_list_create_entry(res, 0);
+> +	if (!entry)
+> +		return -ENOMEM;
+> +
+> +	entry->offset = res->start - range->cpu_addr;
+> +	resource_list_add(entry, head);
+> +
+> +	return 0;
+> +}
+> +
+>  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+>  {
+> +	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
+>  	struct of_pci_range range;
+>  	struct of_pci_range_parser parser;
+>  	int ret;
+> +	LIST_HEAD(resources);
+>  
+>  	/* Get the dma-ranges from DT */
+>  	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
+> @@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+>  		return ret;
+>  
+>  	for_each_of_pci_range(&parser, &range) {
+> +		ret = iproc_pcie_add_dma_range(pcie->dev,
+> +					       &resources,
+> +					       &range);
+> +		if (ret)
+> +			goto out;
+>  		/* Each range entry corresponds to an inbound mapping region */
+>  		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
+>  		if (ret)
+> -			return ret;
+> +			goto out;
+>  	}
+>  
+> +	list_splice_init(&resources, &host->dma_ranges);
+> +
+>  	return 0;
+> +out:
+> +	pci_free_resource_list(&resources);
+> +	return ret;
+>  }
+>  
+>  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
+> 
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+
+Thanks
+
+Eric
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
