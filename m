@@ -1,60 +1,90 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 05/25] iommu/dma: Use for_each_sg in iommu_dma_alloc
-Date: Tue, 30 Apr 2019 06:51:54 -0400
-Message-ID: <20190430105214.24628-6-hch@lst.de>
+Subject: [PATCH 20/25] iommu/dma: Refactor iommu_dma_get_sgtable
+Date: Tue, 30 Apr 2019 06:52:09 -0400
+Message-ID: <20190430105214.24628-21-hch@lst.de>
 References: <20190430105214.24628-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190430105214.24628-1-hch@lst.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-arch_dma_prep_coherent can handle physically contiguous ranges larger
-than PAGE_SIZE just fine, which means we don't need a page-based
-iterator.
+Inline __iommu_dma_get_sgtable_page into the main function, and use the
+fact that __iommu_dma_get_pages return NULL for remapped contigous
+allocations to simplify the code flow a bit.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/dma-iommu.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/iommu/dma-iommu.c | 45 +++++++++++++++------------------------
+ 1 file changed, 17 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 77d704c8f565..f915cb7c46e6 100644
+index dc4bf41d0349..5d4013ffd068 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -577,15 +577,11 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 		goto out_free_iova;
+@@ -1078,42 +1078,31 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	return __iommu_dma_mmap(pages, size, vma);
+ }
  
- 	if (!(prot & IOMMU_CACHE)) {
--		struct sg_mapping_iter miter;
+-static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
+-		size_t size)
+-{
+-	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+-
+-	if (!ret)
+-		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+-	return ret;
+-}
+-
+ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+ 		unsigned long attrs)
+ {
+-	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	struct page **pages;
++	struct page *page;
++	int ret;
+ 
+-	if (!is_vmalloc_addr(cpu_addr)) {
+-		struct page *page = virt_to_page(cpu_addr);
+-		return __iommu_dma_get_sgtable_page(sgt, page, size);
+-	}
++	if (is_vmalloc_addr(cpu_addr)) {
++		struct page **pages = __iommu_dma_get_pages(cpu_addr);
+ 
+-	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
 -		/*
--		 * The CPU-centric flushing implied by SG_MITER_TO_SG isn't
--		 * sufficient here, so skip it by using the "wrong" direction.
+-		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+-		 * hence in the vmalloc space.
 -		 */
--		sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
--		while (sg_miter_next(&miter))
--			arch_dma_prep_coherent(miter.page, PAGE_SIZE);
--		sg_miter_stop(&miter);
-+		struct scatterlist *sg;
-+		int i;
+-		struct page *page = vmalloc_to_page(cpu_addr);
+-		return __iommu_dma_get_sgtable_page(sgt, page, size);
++		if (pages) {
++			return sg_alloc_table_from_pages(sgt, pages,
++					PAGE_ALIGN(size) >> PAGE_SHIFT,
++					0, size, GFP_KERNEL);
++		}
 +
-+		for_each_sg(sgt.sgl, sg, sgt.orig_nents, i)
-+			arch_dma_prep_coherent(sg_page(sg), sg->length);
++		page = vmalloc_to_page(cpu_addr);
++	} else {
++		page = virt_to_page(cpu_addr);
  	}
  
- 	if (iommu_map_sg(domain, iova, sgt.sgl, sgt.orig_nents, prot)
+-	pages = __iommu_dma_get_pages(cpu_addr);
+-	if (!pages)
+-		return -ENXIO;
+-	return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
+-					 GFP_KERNEL);
++	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
++	if (!ret)
++		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
++	return ret;
+ }
+ 
+ static const struct dma_map_ops iommu_dma_ops = {
 -- 
 2.20.1
