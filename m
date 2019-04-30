@@ -1,120 +1,98 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 18/25] iommu/dma: Cleanup variable naming in iommu_dma_alloc
-Date: Tue, 30 Apr 2019 06:52:07 -0400
-Message-ID: <20190430105214.24628-19-hch@lst.de>
+Subject: [PATCH 07/25] iommu/dma: Move __iommu_dma_map
+Date: Tue, 30 Apr 2019 06:51:56 -0400
+Message-ID: <20190430105214.24628-8-hch@lst.de>
 References: <20190430105214.24628-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20190430105214.24628-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+Moving this function up to its unmap counterpart helps to keep related
+code together for the following changes.
 
-Most importantly clear up the size / iosize confusion.  Also rename addr
-to cpu_addr to match the surrounding code and make the intention a little
-more clear.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-[hch: split from a larger patch]
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/dma-iommu.c | 45 +++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 23 deletions(-)
+ drivers/iommu/dma-iommu.c | 46 +++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9ba35b98506c..2b4f6dd93116 100644
+index 089a13db919c..930398d3351a 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -958,64 +958,63 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- {
- 	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
--	size_t iosize = size;
-+	size_t alloc_size = PAGE_ALIGN(size);
- 	struct page *page = NULL;
--	void *addr;
-+	void *cpu_addr;
- 
--	size = PAGE_ALIGN(size);
- 	gfp |= __GFP_ZERO;
- 
- 	if (gfpflags_allow_blocking(gfp) &&
- 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
--		return iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
-+		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
- 
- 	if (!gfpflags_allow_blocking(gfp) && !coherent) {
--		addr = dma_alloc_from_pool(size, &page, gfp);
--		if (!addr)
-+		cpu_addr = dma_alloc_from_pool(alloc_size, &page, gfp);
-+		if (!cpu_addr)
- 			return NULL;
- 
--		*handle = __iommu_dma_map(dev, page_to_phys(page), iosize,
-+		*handle = __iommu_dma_map(dev, page_to_phys(page), size,
- 					  ioprot);
- 		if (*handle == DMA_MAPPING_ERROR) {
--			dma_free_from_pool(addr, size);
-+			dma_free_from_pool(cpu_addr, alloc_size);
- 			return NULL;
- 		}
--		return addr;
-+		return cpu_addr;
- 	}
- 
- 	if (gfpflags_allow_blocking(gfp))
--		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
--						 get_order(size),
-+		page = dma_alloc_from_contiguous(dev, alloc_size >> PAGE_SHIFT,
-+						 get_order(alloc_size),
- 						 gfp & __GFP_NOWARN);
- 	if (!page)
--		page = alloc_pages(gfp, get_order(size));
-+		page = alloc_pages(gfp, get_order(alloc_size));
- 	if (!page)
- 		return NULL;
- 
--	*handle = __iommu_dma_map(dev, page_to_phys(page), iosize, ioprot);
-+	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot);
- 	if (*handle == DMA_MAPPING_ERROR)
- 		goto out_free_pages;
- 
- 	if (!coherent || PageHighMem(page)) {
- 		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 
--		addr = dma_common_contiguous_remap(page, size, VM_USERMAP, prot,
--				__builtin_return_address(0));
--		if (!addr)
-+		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
-+				VM_USERMAP, prot, __builtin_return_address(0));
-+		if (!cpu_addr)
- 			goto out_unmap;
- 
- 		if (!coherent)
--			arch_dma_prep_coherent(page, iosize);
-+			arch_dma_prep_coherent(page, size);
- 	} else {
--		addr = page_address(page);
-+		cpu_addr = page_address(page);
- 	}
--	memset(addr, 0, size);
--	return addr;
-+	memset(cpu_addr, 0, alloc_size);
-+	return cpu_addr;
- out_unmap:
--	__iommu_dma_unmap(dev, *handle, iosize);
-+	__iommu_dma_unmap(dev, *handle, size);
- out_free_pages:
--	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
--		__free_pages(page, get_order(size));
-+	if (!dma_release_from_contiguous(dev, page, alloc_size >> PAGE_SHIFT))
-+		__free_pages(page, get_order(alloc_size));
- 	return NULL;
+@@ -435,6 +435,29 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+ 	iommu_dma_free_iova(cookie, dma_addr, size);
  }
  
++static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
++		size_t size, int prot, struct iommu_domain *domain)
++{
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	size_t iova_off = 0;
++	dma_addr_t iova;
++
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
++		iova_off = iova_offset(&cookie->iovad, phys);
++		size = iova_align(&cookie->iovad, size + iova_off);
++	}
++
++	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
++	if (!iova)
++		return DMA_MAPPING_ERROR;
++
++	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
++		iommu_dma_free_iova(cookie, iova, size);
++		return DMA_MAPPING_ERROR;
++	}
++	return iova + iova_off;
++}
++
+ static void __iommu_dma_free_pages(struct page **pages, int count)
+ {
+ 	while (count--)
+@@ -673,29 +696,6 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+ 		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
+ }
+ 
+-static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+-		size_t size, int prot, struct iommu_domain *domain)
+-{
+-	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	size_t iova_off = 0;
+-	dma_addr_t iova;
+-
+-	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+-		iova_off = iova_offset(&cookie->iovad, phys);
+-		size = iova_align(&cookie->iovad, size + iova_off);
+-	}
+-
+-	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+-	if (!iova)
+-		return DMA_MAPPING_ERROR;
+-
+-	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
+-		iommu_dma_free_iova(cookie, iova, size);
+-		return DMA_MAPPING_ERROR;
+-	}
+-	return iova + iova_off;
+-}
+-
+ static dma_addr_t __iommu_dma_map_page(struct device *dev, struct page *page,
+ 		unsigned long offset, size_t size, int prot)
+ {
 -- 
 2.20.1
