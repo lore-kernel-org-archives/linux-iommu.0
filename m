@@ -1,85 +1,137 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
-Date: Tue, 30 Apr 2019 10:53:48 +0100
-Message-ID: <c044c51a-d348-ca37-3eaa-5475e3fec6c9@arm.com>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
- <20190421011719.14909-3-baolu.lu@linux.intel.com>
- <20190422164555.GA31181@lst.de>
- <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
- <20190423061232.GB12762@lst.de>
- <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
- <20190424144532.GA21480@lst.de>
- <a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
- <20190426150433.GA19930@lst.de>
- <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
- <90182d27-5764-7676-8ca6-b2773a40cfe1@arm.com>
- <1361b6ab-c3cf-d8ab-5f6b-9d9b7797bf02@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource entries
+ to host bridge
+Date: Tue, 30 Apr 2019 12:19:47 +0200
+Message-ID: <53a7463f-0b31-42ad-96a1-a3f40f02b119@redhat.com>
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+ <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1361b6ab-c3cf-d8ab-5f6b-9d9b7797bf02@linux.intel.com>
-Content-Language: en-GB
+In-Reply-To: <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>
-Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Srinath Mannam <srinath.mannam@broadcom.com>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>
+Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/04/2019 03:02, Lu Baolu wrote:
-> Hi Robin,
-> 
-> On 4/29/19 7:06 PM, Robin Murphy wrote:
->> On 29/04/2019 06:10, Lu Baolu wrote:
->>> Hi Christoph,
->>>
->>> On 4/26/19 11:04 PM, Christoph Hellwig wrote:
->>>> On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
->>>>> This is not VT-d specific. It's just how generic IOMMU works.
->>>>>
->>>>> Normally, IOMMU works in paging mode. So if a driver issues DMA with
->>>>> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 
->>>>> 0xBBBB0123.
->>>>> But we should never expect IOMMU to remap 0xAAAA0123 with physical
->>>>> address of 0xBBBB0000. That's the reason why I said that IOMMU will 
->>>>> not
->>>>> work there.
->>>>
->>>> Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
->>>> can happen, so drivers are fine with it.  Why would that suddenly
->>>> become an issue when swiotlb is called from the iommu code?
->>>>
->>>
->>> I would say IOMMU is DMA remapping, not DMA engine. :-)
->>
->> I'm not sure I really follow the issue here - if we're copying the 
->> buffer to the bounce page(s) there's no conceptual difference from 
->> copying it to SWIOTLB slot(s), so there should be no need to worry 
->> about the original in-page offset.
->>
->>  From the reply up-thread I guess you're trying to include an 
->> optimisation to only copy the head and tail of the buffer if it spans 
->> multiple pages, and directly map the ones in the middle, but AFAICS 
->> that's going to tie you to also using strict mode for TLB maintenance, 
->> which may not be a win overall depending on the balance between 
->> invalidation bandwidth vs. memcpy bandwidth. At least if we use 
->> standard SWIOTLB logic to always copy the whole thing, we should be 
->> able to release the bounce pages via the flush queue to allow 'safe' 
->> lazy unmaps.
->>
-> 
-> With respect, even we use the standard SWIOTLB logic, we need to use
-> the strict mode for TLB maintenance.
-> 
-> Say, some swiotbl slots are used by untrusted device for bounce page
-> purpose. When the device driver unmaps the IOVA, the slots are freed but
-> the mapping is still cached in IOTLB, hence the untrusted device is 
-> still able to access the slots. Then the slots are allocated to other
-> devices. This makes it possible for the untrusted device to access
-> the data buffer of other devices.
+Hi Srinath,
 
-Sure, that's indeed how it would work right now - however since the 
-bounce pages will be freed and reused by the DMA API layer itself (at 
-the same level as the IOVAs) I see no technical reason why we couldn't 
-investigate deferred freeing as a future optimisation.
+On 4/12/19 5:13 AM, Srinath Mannam wrote:
+> IPROC host has the limitation that it can use only those address ranges
+> given by dma-ranges property as inbound address. So that the memory
+> address holes in dma-ranges should be reserved to allocate as DMA address.
+> 
+> Inbound address of host accessed by PCIe devices will not be translated
+> before it comes to IOMMU or directly to PE. But the limitation of this
+> host is, access to few address ranges are ignored. So that IOVA ranges
+> for these address ranges have to be reserved.
+> 
+> All allowed address ranges are listed in dma-ranges DT parameter. These
+> address ranges are converted as resource entries and listed in sorted
+> order add added to dma_ranges list of PCI host bridge structure.
+s/add added/and added
+> 
+> Ex:
+> dma-ranges = < \
+>   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
+>   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+>   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+> 
+> In the above example of dma-ranges, memory address from
+> 0x0 - 0x80000000,
+> 0x100000000 - 0x800000000,
+> 0x1000000000 - 0x8000000000 and
+> 0x10000000000 - 0xffffffffffffffff.
+> are not allowed to use as inbound addresses.
+s/to use/to be used
+> 
+> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
+> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
 
-Robin.
+
+> ---
+>  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 43 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
+> index c20fd6b..94ba5c0 100644
+> --- a/drivers/pci/controller/pcie-iproc.c
+> +++ b/drivers/pci/controller/pcie-iproc.c
+> @@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
+>  	return ret;
+>  }
+>  
+> +static int
+> +iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
+> +			 struct of_pci_range *range)
+> +{
+> +	struct resource *res;
+> +	struct resource_entry *entry, *tmp;
+> +	struct list_head *head = resources;
+> +
+> +	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
+> +	if (!res)
+> +		return -ENOMEM;
+> +
+> +	resource_list_for_each_entry(tmp, resources) {
+> +		if (tmp->res->start < range->cpu_addr)
+> +			head = &tmp->node;
+> +	}
+> +
+> +	res->start = range->cpu_addr;
+> +	res->end = res->start + range->size - 1;
+> +
+> +	entry = resource_list_create_entry(res, 0);
+> +	if (!entry)
+> +		return -ENOMEM;
+> +
+> +	entry->offset = res->start - range->cpu_addr;
+> +	resource_list_add(entry, head);
+> +
+> +	return 0;
+> +}
+> +
+>  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+>  {
+> +	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
+>  	struct of_pci_range range;
+>  	struct of_pci_range_parser parser;
+>  	int ret;
+> +	LIST_HEAD(resources);
+>  
+>  	/* Get the dma-ranges from DT */
+>  	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
+> @@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+>  		return ret;
+>  
+>  	for_each_of_pci_range(&parser, &range) {
+> +		ret = iproc_pcie_add_dma_range(pcie->dev,
+> +					       &resources,
+> +					       &range);
+> +		if (ret)
+> +			goto out;
+>  		/* Each range entry corresponds to an inbound mapping region */
+>  		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
+>  		if (ret)
+> -			return ret;
+> +			goto out;
+>  	}
+>  
+> +	list_splice_init(&resources, &host->dma_ranges);
+> +
+>  	return 0;
+> +out:
+> +	pci_free_resource_list(&resources);
+> +	return ret;
+>  }
+>  
+>  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
+> 
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+
+Thanks
+
+Eric
