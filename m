@@ -1,67 +1,56 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [RFC/RFT PATCH 1/2] dma-contiguous: Simplify
- dma_*_from_contiguous() function calls
-Date: Tue, 30 Apr 2019 12:46:13 -0700
-Message-ID: <20190430194612.GA31543@Asurada-Nvidia.nvidia.com>
-References: <20190430015521.27734-1-nicoleotsuka@gmail.com>
- <20190430015521.27734-2-nicoleotsuka@gmail.com>
- <20190430105640.GA20021@lst.de>
- <0e3e6d8b-de44-d23e-a039-8d11b578ec5c@arm.com>
- <20190430151833.GB25447@lst.de>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH 5/7] MIPS: use the generic uncached segment support in
+ dma-direct
+Date: Tue, 30 Apr 2019 20:10:43 +0000
+Message-ID: <20190430201041.536amvinrcvd2wua@pburton-laptop>
+References: <20190430110032.25301-1-hch@lst.de>
+ <20190430110032.25301-6-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190430151833.GB25447@lst.de>
+In-Reply-To: <20190430110032.25301-6-hch@lst.de>
+Content-Language: en-US
+Content-ID: <D2BEEA2D04956B49845701064D9E0881@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
-Cc: m.szyprowski@samsung.com, vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, tony@atomide.com, akpm@linux-foundation.org, sfr@canb.auug.org.au, treding@nvidia.com, keescook@chromium.org, iamjoonsoo.kim@lge.com, wsa+renesas@sang-engineering.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 30, 2019 at 05:18:33PM +0200, Christoph Hellwig wrote:
-> On Tue, Apr 30, 2019 at 01:37:54PM +0100, Robin Murphy wrote:
-> > On 30/04/2019 11:56, Christoph Hellwig wrote:
-> >> So while I really, really like this cleanup it turns out it isn't
-> >> actually safe for arm :(  arm remaps the CMA allocation in place
-> >> instead of using a new mapping, which can be done because they don't
-> >> share PMDs with the kernel.
-> >>
-> >> So we'll probably need a __dma_alloc_from_contiguous version with
-> >> an additional bool fallback argument - everyone but arms uses
-> >> dma_alloc_from_contiguous as in your patch, just arm will get the
-> >> non-fallback one.
-> >
-> > Or we even just implement dma_{alloc,free}_contiguous() as a wrapper around 
-> > the existing APIs so that users can be thoroughly checked and converted 
-> > one-by-one.
-> 
-> Yeah.  Actually given all the contention I wonder if the easiest solution
-> for now is to just open code the cma_alloc/cma_free calls in dma-direct
-> and dma-iommu, with the hopes that everyone is going to migrate to those
-> implementations in the mid-term anyway and dma_alloc_from_contiguous /
-> dma_release_from_contiguous just go away..
+Hi Christoph,
 
-Thanks for the comments.
+On Tue, Apr 30, 2019 at 07:00:30AM -0400, Christoph Hellwig wrote:
+> diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoheren=
+t.c
+> index f9549d2fbea3..f739f42c9d3c 100644
+> --- a/arch/mips/mm/dma-noncoherent.c
+> +++ b/arch/mips/mm/dma-noncoherent.c
+> @@ -44,33 +44,26 @@ static inline bool cpu_needs_post_dma_flush(struct de=
+vice *dev)
+>  	}
+>  }
+> =20
+> -void *arch_dma_alloc(struct device *dev, size_t size,
+> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+> +void arch_dma_prep_coherent(struct page *page, size_t size)
+>  {
+> -	void *ret;
+> -
+> -	ret =3D dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
+> -	if (ret && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
+> -		dma_cache_wback_inv((unsigned long) ret, size);
+> -		ret =3D (void *)UNCAC_ADDR(ret);
+> -	}
+> +	if (!PageHighMem(page))
+> +		dma_cache_wback_inv((unsigned long)page_address(page), size);
+> +}
 
-Listing all the solutions as a summary:
-A) Add "bool fallback" to dma_{alloc,free}_contiguous, and let
-   ARM use fallback=false.
-B) Continue replacing "_from" with dma_{alloc,free}_contiguous
-   but let callers like ARM use cma_alloc/free() directly.
-C) Have both new dma_{alloc,free}_contiguous and "_from" funcs.
-   Implement the new one to dma-direct only as an initial step
-   and change others one-by-one in the future.
+This series looks like a nice cleanup to me - the one thing that puzzles
+me is the !PageHighMem check above.
 
-Combining the comments at alloc_pages_node(), I guess that the
-Solution C would be a better (cleaner) one?
+As far as I can see arch_dma_prep_coherent() should never be called with
+a highmem page, so would it make more sense to either drop this check or
+perhaps wrap it in a WARN_ON()?
 
-List of to-change callers for Solution C:
- kernel/dma/direct.c
-
-List of to-exclude-for-now callers for Solution C:
- arch/arm64/mm/dma-mapping.c
- drivers/iommu/amd_iommu.c
- drivers/iommu/intel-iommu.c
- arch/arm/mm/dma-mapping.c
- arch/xtensa/kernel/pci-dma.c
- kernel/dma/remap.c
+Thanks,
+    Paul
