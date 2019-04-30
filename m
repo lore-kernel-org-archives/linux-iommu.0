@@ -1,62 +1,45 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix intel_pasid_max_id
-Date: Tue, 30 Apr 2019 22:37:53 +0200
-Message-ID: <1f71902d-28c6-4e63-b4b8-dafbb8881694@redhat.com>
-References: <20190430072940.10467-1-eric.auger@redhat.com>
- <20190430110108.7c751195@jacob-builder>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH 5/7] MIPS: use the generic uncached segment support in
+ dma-direct
+Date: Tue, 30 Apr 2019 21:11:07 +0000
+Message-ID: <20190430211105.ielntedm46uqamca@pburton-laptop>
+References: <20190430110032.25301-1-hch@lst.de>
+ <20190430110032.25301-6-hch@lst.de>
+ <20190430201041.536amvinrcvd2wua@pburton-laptop>
+ <20190430202947.GA30262@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190430110108.7c751195@jacob-builder>
+In-Reply-To: <20190430202947.GA30262@lst.de>
 Content-Language: en-US
+Content-ID: <BE61B5D62A760A468D987D7B2CA91D7A@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: eric.auger.pro@gmail.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dwmw2@infradead.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
+Hi Christoph,
 
-On 4/30/19 8:01 PM, Jacob Pan wrote:
-> On Tue, 30 Apr 2019 09:29:40 +0200
-> Eric Auger <eric.auger@redhat.com> wrote:
-> 
->> Extended Capability Register PSS field (PASID Size Supported)
->> corresponds to the PASID bit size -1.
->>
->> "A value of N in this field indicates hardware supports PASID
->> field of N+1 bits (For example, value of 7 in this field,
->> indicates 8-bit PASIDs are supported)".
->>
->> Fix the computation of intel_pasid_max_id accordingly.
->>
->> Fixes: 562831747f62 ("iommu/vt-d: Global PASID name space")
->>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->> ---
->>  drivers/iommu/intel-iommu.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 28cb713d728c..c3f1bfc81d2e 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -3331,7 +3331,7 @@ static int __init init_dmars(void)
->>  		 * than the smallest supported.
->>  		 */
->>  		if (pasid_supported(iommu)) {
->> -			u32 temp = 2 << ecap_pss(iommu->ecap);
->> +			u32 temp = 2 << (ecap_pss(iommu->ecap) + 1);
-> here it is "2 << bits" not "1 << bits", so the original code is correct.
-> 
-> But I agree it would be more clear to the spec. if we do:
-> 1 << (ecap_pss(iommu->ecap) + 1);
-Oups OK, my eyes. Forget it :-(
+On Tue, Apr 30, 2019 at 10:29:47PM +0200, Christoph Hellwig wrote:
+> On Tue, Apr 30, 2019 at 08:10:43PM +0000, Paul Burton wrote:
+> > This series looks like a nice cleanup to me - the one thing that puzzle=
+s
+> > me is the !PageHighMem check above.
+> >=20
+> > As far as I can see arch_dma_prep_coherent() should never be called wit=
+h
+> > a highmem page, so would it make more sense to either drop this check o=
+r
+> > perhaps wrap it in a WARN_ON()?
+>=20
+> dma_alloc_from_contigous can return highmem pages depending on where
+> the CMA area is located.  But given that these pages don't have a
+> direct kernel mapping we also shouldn't have to flush the caches
+> for them.
 
-Thanks
+Right but dma_direct_alloc_pages() already checks for the PageHighMem
+case & returns before ever calling arch_dma_prep_coherent(), no?
 
-Eric
->>  
->>  			intel_pasid_max_id = min_t(u32, temp,
->>  						   intel_pasid_max_id);
-> 
+Thanks,
+    Paul
