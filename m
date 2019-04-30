@@ -1,56 +1,39 @@
-From: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH 5/7] MIPS: use the generic uncached segment support in
- dma-direct
-Date: Tue, 30 Apr 2019 20:10:43 +0000
-Message-ID: <20190430201041.536amvinrcvd2wua@pburton-laptop>
-References: <20190430110032.25301-1-hch@lst.de>
- <20190430110032.25301-6-hch@lst.de>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v2 06/19] drivers core: Add I/O ASID allocator
+Date: Tue, 30 Apr 2019 13:24:05 -0700
+Message-ID: <20190430132405.62902350@jacob-builder>
+References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
+        <4550408f-39ff-7bf9-0072-a0898c6c2f60@redhat.com>
+        <fd5b8c6c-05f0-307b-aaa2-0938337014a8@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190430110032.25301-6-hch@lst.de>
-Content-Language: en-US
-Content-ID: <D2BEEA2D04956B49845701064D9E0881@namprd22.prod.outlook.com>
+In-Reply-To: <fd5b8c6c-05f0-307b-aaa2-0938337014a8@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Auger Eric <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+On Thu, 25 Apr 2019 11:41:05 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-On Tue, Apr 30, 2019 at 07:00:30AM -0400, Christoph Hellwig wrote:
-> diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoheren=
-t.c
-> index f9549d2fbea3..f739f42c9d3c 100644
-> --- a/arch/mips/mm/dma-noncoherent.c
-> +++ b/arch/mips/mm/dma-noncoherent.c
-> @@ -44,33 +44,26 @@ static inline bool cpu_needs_post_dma_flush(struct de=
-vice *dev)
->  	}
->  }
-> =20
-> -void *arch_dma_alloc(struct device *dev, size_t size,
-> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-> +void arch_dma_prep_coherent(struct page *page, size_t size)
->  {
-> -	void *ret;
-> -
-> -	ret =3D dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
-> -	if (ret && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
-> -		dma_cache_wback_inv((unsigned long) ret, size);
-> -		ret =3D (void *)UNCAC_ADDR(ret);
-> -	}
-> +	if (!PageHighMem(page))
-> +		dma_cache_wback_inv((unsigned long)page_address(page), size);
-> +}
-
-This series looks like a nice cleanup to me - the one thing that puzzles
-me is the !PageHighMem check above.
-
-As far as I can see arch_dma_prep_coherent() should never be called with
-a highmem page, so would it make more sense to either drop this check or
-perhaps wrap it in a WARN_ON()?
-
-Thanks,
-    Paul
+> On 25/04/2019 11:17, Auger Eric wrote:
+> >> +/**
+> >> + * ioasid_alloc - Allocate an IOASID
+> >> + * @set: the IOASID set
+> >> + * @min: the minimum ID (inclusive)
+> >> + * @max: the maximum ID (exclusive)
+> >> + * @private: data private to the caller
+> >> + *
+> >> + * Allocate an ID between @min and @max (or %0 and %INT_MAX).
+> >> Return the  
+> > I would remove "(or %0 and %INT_MAX)".  
+> 
+> Agreed, those where the default values of idr, but the xarray doesn't
+> define a default max value. By the way, I do think squashing patches 6
+> and 7 would be better (keeping my SOB but you can change the author).
+> 
+I will squash 6 and 7 in v3. I will just add my SOB but keep the
+author if that is OK.
