@@ -6,48 +6,47 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B12C43219
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 15:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E811C43219
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 15:21:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D15A520835
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 15:19:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D15A520835
+	by mail.kernel.org (Postfix) with ESMTPS id 5ABF420835
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 15:21:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5ABF420835
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 93BC71AA3;
-	Tue, 30 Apr 2019 15:19:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1CF9B1AEC;
+	Tue, 30 Apr 2019 15:21:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 139781A01
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 509201A8D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 15:18:54 +0000 (UTC)
+	Tue, 30 Apr 2019 15:21:18 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7260687D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DE51E879
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 15:18:53 +0000 (UTC)
+	Tue, 30 Apr 2019 15:21:17 +0000 (UTC)
 Received: by newverein.lst.de (Postfix, from userid 2407)
-	id D457F67358; Tue, 30 Apr 2019 17:18:33 +0200 (CEST)
-Date: Tue, 30 Apr 2019 17:18:33 +0200
+	id 18DE167358; Tue, 30 Apr 2019 17:20:59 +0200 (CEST)
+Date: Tue, 30 Apr 2019 17:20:58 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [RFC/RFT PATCH 1/2] dma-contiguous: Simplify
 	dma_*_from_contiguous() function calls
-Message-ID: <20190430151833.GB25447@lst.de>
+Message-ID: <20190430152058.GC25447@lst.de>
 References: <20190430015521.27734-1-nicoleotsuka@gmail.com>
 	<20190430015521.27734-2-nicoleotsuka@gmail.com>
-	<20190430105640.GA20021@lst.de>
-	<0e3e6d8b-de44-d23e-a039-8d11b578ec5c@arm.com>
+	<d43e1cfe-1d12-c0c6-d76b-81330918d9ab@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <0e3e6d8b-de44-d23e-a039-8d11b578ec5c@arm.com>
+In-Reply-To: <d43e1cfe-1d12-c0c6-d76b-81330918d9ab@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: tony@atomide.com, catalin.marinas@arm.com, will.deacon@arm.com,
-	jcmvbkbc@gmail.com, Christoph Hellwig <hch@lst.de>,
-	sfr@canb.auug.org.au, linux@armlinux.org.uk, treding@nvidia.com,
+	jcmvbkbc@gmail.com, hch@lst.de, sfr@canb.auug.org.au,
+	linux@armlinux.org.uk, treding@nvidia.com,
 	linux-xtensa@linux-xtensa.org, keescook@chromium.org,
 	Nicolin Chen <nicoleotsuka@gmail.com>, akpm@linux-foundation.org,
 	linux-arm-kernel@lists.infradead.org, chris@zankel.net,
@@ -70,29 +69,23 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430151833.ZW1mJxB7WMaJDsi9Nqc4CDttqg5lizvv2YPYdJOlGTU@z>
+Message-ID: <20190430152058.4QwM2BzaanDM1V6hitCV8JXloxJHuufIzlAbHyIqpPk@z>
 
-On Tue, Apr 30, 2019 at 01:37:54PM +0100, Robin Murphy wrote:
-> On 30/04/2019 11:56, Christoph Hellwig wrote:
->> So while I really, really like this cleanup it turns out it isn't
->> actually safe for arm :(  arm remaps the CMA allocation in place
->> instead of using a new mapping, which can be done because they don't
->> share PMDs with the kernel.
->>
->> So we'll probably need a __dma_alloc_from_contiguous version with
->> an additional bool fallback argument - everyone but arms uses
->> dma_alloc_from_contiguous as in your patch, just arm will get the
->> non-fallback one.
->
-> Or we even just implement dma_{alloc,free}_contiguous() as a wrapper around 
-> the existing APIs so that users can be thoroughly checked and converted 
-> one-by-one.
+On Tue, Apr 30, 2019 at 01:52:26PM +0100, Robin Murphy wrote:
+> As Catalin pointed out before, many of the users above may still have 
+> implicit assumptions about the default CMA area, i.e. that this won't 
+> return something above the limit they originally passed to 
+> dma_contiguous_reserve(). I'm not sure how straightforward that is to 
+> resolve - at the very least we may have to monkey around with GFP_DMA{32} 
+> flags based on where dma_contiguous_default_area lies :(
 
-Yeah.  Actually given all the contention I wonder if the easiest solution
-for now is to just open code the cma_alloc/cma_free calls in dma-direct
-and dma-iommu, with the hopes that everyone is going to migrate to those
-implementations in the mid-term anyway and dma_alloc_from_contiguous /
-dma_release_from_contiguous just go away..
+Or just convert the callers one by one.  The two most interesting ones
+are dma-direct which always check addressability after the allocation,
+and dma-iommu, which doesn't care.  dma-iommu.c and intel-iommu.c also
+don't care, but should use dma-iommu by next merge window anyway,
+which leaves arm which is so complicated that we better don't touch
+it for now, and xtensa, which I hope to switch to dma-direct in the
+next merge window or two.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
