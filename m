@@ -4,33 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76989C43219
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72E6C43219
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:10:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4746E2080C
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:10:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 746452080C
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:10:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="dzEQb2Am"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4746E2080C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ShPZGbXb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 746452080C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 13625F18;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 57601F29;
 	Tue, 30 Apr 2019 11:10:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A82D5E20
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7786DE20
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 11:09:59 +0000 (UTC)
+	Tue, 30 Apr 2019 11:10:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 684435F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D427F5F4
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 30 Apr 2019 11:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -39,31 +39,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=ikNUbjQ0GO+lUn7LT2QVkiEmKgcbEKJuyyeALELjhgg=;
-	b=dzEQb2AmEQuufRP2l8lfhWFQE7
-	x9p8BrwNZdvArmeOZ7HYcmZmBnLK2BrZtf37zAqRsTmqMhaofb3ToDqg5pMmSdjB2vZW5y8ut82N8
-	g3ya5LIPtpiE6jew4t2Q7p02PSO17GoyElNEcykWjAF9RnjeJu72hzQZiquvtO0HjuJtpUXqBdxYq
-	SF65IctMOjKdyRe4yWVAUB0Cf2GpevkVIfas7kxKc7W68GozUcmNQGET+89ogve7WizQqmYywXy+m
-	KrFGKgn+xrOEeSBYhQyK/jDyoJdPXJB+WTH505xlB/ULJdlA5DPBtEnhMKXtp+TBppAd/4kxt9lFm
-	4AcbbFGg==;
+	bh=1uDQiyuanTaEF0z9gH8IFpxzSHOrkWGsatE5ngJ5mVA=;
+	b=ShPZGbXbWQyT3Y+WO6lJQJ9GqA
+	mlhP6wO/l2YflA+E8uxtq3aWEZebPTCu71T/zs4bhKc9q8rXA7a0dohHA9T8EBF+XS3ibe2mC9bt4
+	/7YEc6LbFD0d0eL3SGKt0qlQZXJxLH7yq+c/HKYxHqTQQnTrQ/g3LxbgEue2B0/Sm3STejrbv69OW
+	WhH/7v3urUFORpB7EwopFHKD0so0aHPsozcRxwR3FzfBuKn6FZ1YsnncVWWDor3lHLvEA+2Qsc/0l
+	X0DvJwR2UcKHzxHc49CPDBLT76mYAPFJ1ARseYjktu7bW4OgauhSHDBiC8TkqYxmTmzlVssqLIwau
+	HbWYxgNA==;
 Received: from adsl-173-228-226-134.prtc.net ([173.228.226.134] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hLQOA-0008Ft-PN; Tue, 30 Apr 2019 10:53:31 +0000
+	id 1hLQVm-0000IF-E0; Tue, 30 Apr 2019 11:01:22 +0000
 From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 25/25] arm64: trim includes in dma-mapping.c
-Date: Tue, 30 Apr 2019 06:52:14 -0400
-Message-Id: <20190430105214.24628-26-hch@lst.de>
+To: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>,
+	James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>,
+	Michal Simek <monstr@monstr.eu>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: [PATCH 7/7] microblaze: use the generic uncached segment support in
+	dma-direct
+Date: Tue, 30 Apr 2019 07:00:32 -0400
+Message-Id: <20190430110032.25301-8-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190430105214.24628-1-hch@lst.de>
-References: <20190430105214.24628-1-hch@lst.de>
+In-Reply-To: <20190430110032.25301-1-hch@lst.de>
+References: <20190430110032.25301-1-hch@lst.de>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
 	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Tom Lendacky <thomas.lendacky@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, linux-mips@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,40 +82,205 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430105214.4ML4tH6FdxdtoHGUfLDeBsOc9hO1ctypZw2p1WaNQdM@z>
+Message-ID: <20190430110032.qi2nSaH9Y7NYCyutHWYgEKlQRz22Y2qYbYUHJvZt04k@z>
 
-With most of the previous functionality now elsewhere a lot of the
-headers included in this file are not needed.
+Stop providing our own arch alloc/free hooks for nommu platforms and
+just expose the segment offset and use the generic dma-direct
+allocator.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm64/mm/dma-mapping.c | 10 ----------
- 1 file changed, 10 deletions(-)
+ arch/microblaze/Kconfig         |  2 +
+ arch/microblaze/mm/consistent.c | 97 +++++++++++++++------------------
+ 2 files changed, 47 insertions(+), 52 deletions(-)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 184ef9ccd69d..1669618db08a 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -5,19 +5,9 @@
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index a51b965b3b82..b0df6b53e2bf 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -3,9 +3,11 @@ config MICROBLAZE
+ 	select ARCH_32BIT_OFF_T
+ 	select ARCH_NO_SWAP
+ 	select ARCH_HAS_DMA_COHERENT_TO_PFN if MMU
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select ARCH_HAS_UNCACHED_SEGMENT if !MMU
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+diff --git a/arch/microblaze/mm/consistent.c b/arch/microblaze/mm/consistent.c
+index 3002cbca3059..a525194a754e 100644
+--- a/arch/microblaze/mm/consistent.c
++++ b/arch/microblaze/mm/consistent.c
+@@ -45,21 +45,52 @@
+ #include <asm/cpuinfo.h>
+ #include <asm/tlbflush.h>
+ 
+-#ifndef CONFIG_MMU
+-/* I have to use dcache values because I can't relate on ram size */
+-# define UNCACHED_SHADOW_MASK (cpuinfo.dcache_high - cpuinfo.dcache_base + 1)
+-#endif
++void arch_dma_prep_coherent(struct page *page, size_t size)
++{
++	phys_addr_t paddr = page_to_phys(page);
++
++	flush_dcache_range(paddr, paddr + size);
++}
+ 
++#ifndef CONFIG_MMU
+ /*
+- * Consistent memory allocators. Used for DMA devices that want to
+- * share uncached memory with the processor core.
+- * My crufty no-MMU approach is simple. In the HW platform we can optionally
+- * mirror the DDR up above the processor cacheable region.  So, memory accessed
+- * in this mirror region will not be cached.  It's alloced from the same
+- * pool as normal memory, but the handle we return is shifted up into the
+- * uncached region.  This will no doubt cause big problems if memory allocated
+- * here is not also freed properly. -- JW
++ * Consistent memory allocators. Used for DMA devices that want to share
++ * uncached memory with the processor core.  My crufty no-MMU approach is
++ * simple.  In the HW platform we can optionally mirror the DDR up above the
++ * processor cacheable region.  So, memory accessed in this mirror region will
++ * not be cached.  It's alloced from the same pool as normal memory, but the
++ * handle we return is shifted up into the uncached region.  This will no doubt
++ * cause big problems if memory allocated here is not also freed properly. -- JW
++ *
++ * I have to use dcache values because I can't relate on ram size:
   */
++#ifdef CONFIG_XILINX_UNCACHED_SHADOW
++#define UNCACHED_SHADOW_MASK (cpuinfo.dcache_high - cpuinfo.dcache_base + 1)
++#else
++#define UNCACHED_SHADOW_MASK 0
++#endif /* CONFIG_XILINX_UNCACHED_SHADOW */
++
++void *uncached_kernel_address(void *ptr)
++{
++	unsigned long addr = (unsigned long)ptr;
++	
++	addr |= UNCACHED_SHADOW_MASK;
++	if (addr > cpuinfo.dcache_base && addr < cpuinfo.dcache_high)
++		pr_warn("ERROR: Your cache coherent area is CACHED!!!\n");
++	return (void *)addr;
++}
++
++void *cached_kernel_address(void *ptr)
++{
++	unsigned long addr = (unsigned long)ptr;
++
++	addr &= ~UNCACHED_SHADOW_MASK;
++
++	return (void *)addr;
++}
++
++#else /* CONFIG_MMU */
++
+ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		gfp_t gfp, unsigned long attrs)
+ {
+@@ -67,12 +98,9 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	void *ret;
+ 	unsigned int i, err = 0;
+ 	struct page *page, *end;
+-
+-#ifdef CONFIG_MMU
+ 	phys_addr_t pa;
+ 	struct vm_struct *area;
+ 	unsigned long va;
+-#endif
  
- #include <linux/gfp.h>
--#include <linux/acpi.h>
--#include <linux/memblock.h>
- #include <linux/cache.h>
--#include <linux/export.h>
--#include <linux/slab.h>
--#include <linux/genalloc.h>
--#include <linux/dma-direct.h>
- #include <linux/dma-noncoherent.h>
--#include <linux/dma-contiguous.h>
- #include <linux/dma-iommu.h>
--#include <linux/vmalloc.h>
--#include <linux/swiotlb.h>
--#include <linux/pci.h>
+ 	if (in_interrupt())
+ 		BUG();
+@@ -89,26 +117,8 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	 * we need to ensure that there are no cachelines in use,
+ 	 * or worse dirty in this area.
+ 	 */
+-	flush_dcache_range(virt_to_phys((void *)vaddr),
+-					virt_to_phys((void *)vaddr) + size);
+-
+-#ifndef CONFIG_MMU
+-	ret = (void *)vaddr;
+-	/*
+-	 * Here's the magic!  Note if the uncached shadow is not implemented,
+-	 * it's up to the calling code to also test that condition and make
+-	 * other arranegments, such as manually flushing the cache and so on.
+-	 */
+-# ifdef CONFIG_XILINX_UNCACHED_SHADOW
+-	ret = (void *)((unsigned) ret | UNCACHED_SHADOW_MASK);
+-# endif
+-	if ((unsigned int)ret > cpuinfo.dcache_base &&
+-				(unsigned int)ret < cpuinfo.dcache_high)
+-		pr_warn("ERROR: Your cache coherent area is CACHED!!!\n");
++	arch_dma_prep_coherent(virt_to_page((unsigned long)vaddr), size);
  
- #include <asm/cacheflush.h>
+-	/* dma_handle is same as physical (shadowed) address */
+-	*dma_handle = (dma_addr_t)ret;
+-#else
+ 	/* Allocate some common virtual space to map the new pages. */
+ 	area = get_vm_area(size, VM_ALLOC);
+ 	if (!area) {
+@@ -120,7 +130,6 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
  
+ 	/* This gives us the real physical address of the first page. */
+ 	*dma_handle = pa = __virt_to_phys(vaddr);
+-#endif
+ 
+ 	/*
+ 	 * free wasted pages.  We skip the first page since we know
+@@ -134,10 +143,8 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	split_page(page, order);
+ 
+ 	for (i = 0; i < size && err == 0; i += PAGE_SIZE) {
+-#ifdef CONFIG_MMU
+ 		/* MS: This is the whole magic - use cache inhibit pages */
+ 		err = map_page(va + i, pa + i, _PAGE_KERNEL | _PAGE_NO_CACHE);
+-#endif
+ 
+ 		SetPageReserved(page);
+ 		page++;
+@@ -157,7 +164,6 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	return ret;
+ }
+ 
+-#ifdef CONFIG_MMU
+ static pte_t *consistent_virt_to_pte(void *vaddr)
+ {
+ 	unsigned long addr = (unsigned long)vaddr;
+@@ -175,7 +181,6 @@ long arch_dma_coherent_to_pfn(struct device *dev, void *vaddr,
+ 
+ 	return pte_pfn(*ptep);
+ }
+-#endif
+ 
+ /*
+  * free page(s) as defined by the above mapping.
+@@ -190,18 +195,6 @@ void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 
+ 	size = PAGE_ALIGN(size);
+ 
+-#ifndef CONFIG_MMU
+-	/* Clear SHADOW_MASK bit in address, and free as per usual */
+-# ifdef CONFIG_XILINX_UNCACHED_SHADOW
+-	vaddr = (void *)((unsigned)vaddr & ~UNCACHED_SHADOW_MASK);
+-# endif
+-	page = virt_to_page(vaddr);
+-
+-	do {
+-		__free_reserved_page(page);
+-		page++;
+-	} while (size -= PAGE_SIZE);
+-#else
+ 	do {
+ 		pte_t *ptep = consistent_virt_to_pte(vaddr);
+ 		unsigned long pfn;
+@@ -219,5 +212,5 @@ void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 
+ 	/* flush tlb */
+ 	flush_tlb_all();
+-#endif
+ }
++#endif /* CONFIG_MMU */
 -- 
 2.20.1
 
