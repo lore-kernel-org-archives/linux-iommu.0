@@ -2,62 +2,65 @@ Return-Path: <SRS0=Kg+4=TA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBF6C43219
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DB6C43219
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:27:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BDC4B2080C
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:16:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="R52KnTYK"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BDC4B2080C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 4D6E820651
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 11:27:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D6E820651
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7389AE36;
-	Tue, 30 Apr 2019 11:16:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CB4FBF21;
+	Tue, 30 Apr 2019 11:27:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 569D9E20
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 43D3EF1C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 11:15:56 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 09FED5F4
+	Tue, 30 Apr 2019 11:27:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BC54C879
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 11:15:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=9k4nQZPif7ndSOFrX9noMGAIl+nulGOO2bXKPiEFONo=;
-	b=R52KnTYK39v9DYmdZt0znCKz+
-	6+GdQmFsPQBixVC5Ubs/WZ3negqJs6tLT6oN6cb99ptdIgFyunyiX/69KRF08ExBNBOIV900gYmS+
-	knnmMgSKloFzuv6VmQHAxzLWEoSr+z3Iz7oT6rhpOPBmHmIMTJleXgeGQ1U3A+yXLlzwnhczP+qAA
-	F+tuiVUhm2lALsuqj5YyIOc8Y0tAKyp80I2M2l3FC8/aVZYvQai9AII361GVgXKMCuzQxee7v3lU4
-	egYoCFBjgxk1Sobkk9S2YOT7qO6e/2I7U+0kHhlIVuPRDkk7wvq9goAf0/lz20leSwzjujQyIpuC6
-	a1aP4pnlA==;
-Received: from adsl-173-228-226-134.prtc.net ([173.228.226.134] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hLQjr-0007ZN-DV; Tue, 30 Apr 2019 11:15:55 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: robdclark@gmail.com
-Subject: [PATCH] qcom_iommu: fix a config symbol typo
-Date: Tue, 30 Apr 2019 07:15:18 -0400
-Message-Id: <20190430111518.27569-1-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
+	Tue, 30 Apr 2019 11:27:07 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 70BD380D;
+	Tue, 30 Apr 2019 04:27:07 -0700 (PDT)
+Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B9CB03F5C1;
+	Tue, 30 Apr 2019 04:27:03 -0700 (PDT)
+Subject: Re: [PATCH v2 3/4] iommu/dma-iommu: Use the dev->coherent_dma_mask
+To: Christoph Hellwig <hch@infradead.org>, Tom Murphy <tmurphy@arista.com>
+References: <20190430002952.18909-1-tmurphy@arista.com>
+	<20190430002952.18909-4-tmurphy@arista.com>
+	<20190430111222.GA3191@infradead.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <da835ce2-f73e-3035-e1d7-d3028cc1a838@arm.com>
+Date: Tue, 30 Apr 2019 12:27:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org
+In-Reply-To: <20190430111222.GA3191@infradead.org>
+Content-Language: en-GB
+Cc: linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	David Brown <david.brown@linaro.org>, iommu@lists.linux-foundation.org,
+	Thierry Reding <thierry.reding@gmail.com>,
+	linux-mediatek@lists.infradead.org, Kukjin Kim <kgene@kernel.org>,
+	Andy Gross <andy.gross@linaro.org>, murphyt7@tcd.ie,
+	David Woodhouse <dwmw2@infradead.org>,
+	Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,36 +73,132 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430111518.bDn6vlHBXvuFWHearBr-7Z4yFylobfpCuum9jAyeR9s@z>
+Message-ID: <20190430112702.oUMHJKOWI7ZU_i5txqXFAVDhas7l-rRALfFzeoDUkh4@z>
 
-The arm/arm64 symbol for big endian builds is CONFIG_CPU_BIG_ENDIAN,
-not CONFIG_BIG_ENDIAN.
+On 30/04/2019 12:12, Christoph Hellwig wrote:
+>>   static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>> -		size_t size, int prot, struct iommu_domain *domain)
+>> +		size_t size, int prot, struct iommu_domain *domain,
+>> +		dma_addr_t dma_limit)
+> 
+> Can we just call this dma_mask?
+> 
+>>   static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+>> @@ -1250,7 +1251,8 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>>   	if (!msi_page)
+>>   		return NULL;
+>>   
+>> -	iova = __iommu_dma_map(dev, msi_addr, size, prot, domain);
+>> +	iova = __iommu_dma_map(dev, msi_addr, size, prot, domain,
+>> +			dma_get_mask(dev));
+> 
+> Hmm, I don't think we need the DMA mask for the MSI mapping, this
+> should probably always use a 64-bit mask.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/iommu/qcom_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If that were true then we wouldn't need DMA masks for regular mappings 
+either. If we have to map the MSI doorbell at all, then we certainly 
+have to place it at an IOVA that the relevant device is actually capable 
+of addressing.
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 8cdd3f059513..69f58b633f9d 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -280,7 +280,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE |
- 			SCTLR_M | SCTLR_S1_ASIDPNE | SCTLR_CFCFG;
- 
--		if (IS_ENABLED(CONFIG_BIG_ENDIAN))
-+		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 			reg |= SCTLR_E;
- 
- 		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, reg);
--- 
-2.20.1
+Robin.
 
+>  Or we could just untangle
+> it from the DMA mapping fast path entire, something like:
+> 
+> ---
+>  From 0debafc85174ca830f2e371ff8e8f7465bde3ad8 Mon Sep 17 00:00:00 2001
+> From: Christoph Hellwig <hch@lst.de>
+> Date: Tue, 30 Apr 2019 07:06:23 -0400
+> Subject: iommu/dma: opencode __iommu_dma_map in iommu_dma_get_msi_page
+> 
+> The MSI page mapping really is a little different from the normal DMA
+> mappings and doesn't need to look at the DMA mask.  Just open code
+> it instead of trying to squeeze the behavior into the DMA path helpers.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   drivers/iommu/dma-iommu.c | 27 +++++++--------------------
+>   1 file changed, 7 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 58c35bab7626..2ac0df0879d7 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -358,11 +358,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>   	struct iova_domain *iovad = &cookie->iovad;
+>   	unsigned long shift, iova_len, iova = 0;
+>   
+> -	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+> -		cookie->msi_iova += size;
+> -		return cookie->msi_iova - size;
+> -	}
+> -
+>   	shift = iova_shift(iovad);
+>   	iova_len = size >> shift;
+>   	/*
+> @@ -397,10 +392,7 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+>   {
+>   	struct iova_domain *iovad = &cookie->iovad;
+>   
+> -	/* The MSI case is only ever cleaning up its most recent allocation */
+> -	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
+> -		cookie->msi_iova -= size;
+> -	else if (cookie->fq_domain)	/* non-strict mode */
+> +	if (cookie->fq_domain)	/* non-strict mode */
+>   		queue_iova(iovad, iova_pfn(iovad, iova),
+>   				size >> iova_shift(iovad), 0);
+>   	else
+> @@ -430,14 +422,10 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>   {
+>   	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> -	size_t iova_off = 0;
+> +	size_t iova_off = iova_offset(&cookie->iovad, phys);
+>   	dma_addr_t iova;
+>   
+> -	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+> -		iova_off = iova_offset(&cookie->iovad, phys);
+> -		size = iova_align(&cookie->iovad, size + iova_off);
+> -	}
+> -
+> +	size = iova_align(&cookie->iovad, size + iova_off);
+>   	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+>   	if (!iova)
+>   		return DMA_MAPPING_ERROR;
+> @@ -1121,7 +1109,6 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   {
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>   	struct iommu_dma_msi_page *msi_page;
+> -	dma_addr_t iova;
+>   	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>   	size_t size = cookie_msi_granule(cookie);
+>   
+> @@ -1134,16 +1121,16 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   	if (!msi_page)
+>   		return NULL;
+>   
+> -	iova = __iommu_dma_map(dev, msi_addr, size, prot);
+> -	if (iova == DMA_MAPPING_ERROR)
+> +	if (iommu_map(domain, cookie->msi_iova, msi_addr, size, prot))
+>   		goto out_free_page;
+>   
+>   	INIT_LIST_HEAD(&msi_page->list);
+>   	msi_page->phys = msi_addr;
+> -	msi_page->iova = iova;
+> +	msi_page->iova = cookie->msi_iova;
+>   	list_add(&msi_page->list, &cookie->msi_page_list);
+> -	return msi_page;
+>   
+> +	cookie->msi_iova += size;
+> +	return msi_page;
+>   out_free_page:
+>   	kfree(msi_page);
+>   	return NULL;
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
