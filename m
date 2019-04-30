@@ -1,110 +1,27 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 10/25] iommu/dma: Factor out remapped pages lookup
-Date: Tue, 30 Apr 2019 06:51:59 -0400
-Message-ID: <20190430105214.24628-11-hch@lst.de>
-References: <20190430105214.24628-1-hch@lst.de>
+Subject: Re: [RFC/RFT PATCH 1/2] dma-contiguous: Simplify
+ dma_*_from_contiguous() function calls
+Date: Tue, 30 Apr 2019 12:56:40 +0200
+Message-ID: <20190430105640.GA20021@lst.de>
+References: <20190430015521.27734-1-nicoleotsuka@gmail.com> <20190430015521.27734-2-nicoleotsuka@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190430105214.24628-1-hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20190430015521.27734-2-nicoleotsuka@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Cc: hch@lst.de, robin.murphy@arm.com, m.szyprowski@samsung.com, vdumpa@nvidia.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, chris@zankel.net, jcmvbkbc@gmail.com, joro@8bytes.org, dwmw2@infradead.org, tony@atomide.com, akpm@linux-foundation.org, sfr@canb.auug.org.au, treding@nvidia.com, keescook@chromium.org, iamjoonsoo.kim@lge.com, wsa+renesas@sang-engineering.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+So while I really, really like this cleanup it turns out it isn't
+actually safe for arm :(  arm remaps the CMA allocation in place
+instead of using a new mapping, which can be done because they don't
+share PMDs with the kernel.
 
-Since we duplicate the find_vm_area() logic a few times in places where
-we only care aboute the pages, factor out a helper to abstract it.
+So we'll probably need a __dma_alloc_from_contiguous version with
+an additional bool fallback argument - everyone but arms uses
+dma_alloc_from_contiguous as in your patch, just arm will get the
+non-fallback one.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-[hch: don't warn when not finding a region, as we'll rely on that later]
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/iommu/dma-iommu.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 82fb208017fb..84fe9a9eb0bb 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -525,6 +525,15 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
- 	return pages;
- }
- 
-+static struct page **__iommu_dma_get_pages(void *cpu_addr)
-+{
-+	struct vm_struct *area = find_vm_area(cpu_addr);
-+
-+	if (!area || !area->pages)
-+		return NULL;
-+	return area->pages;
-+}
-+
- /**
-  * iommu_dma_free - Free a buffer allocated by __iommu_dma_alloc()
-  * @dev: Device which owns this buffer
-@@ -1023,11 +1032,11 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
- 		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
- 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
- 	} else if (is_vmalloc_addr(cpu_addr)){
--		struct vm_struct *area = find_vm_area(cpu_addr);
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
- 
--		if (WARN_ON(!area || !area->pages))
-+		if (!pages)
- 			return;
--		__iommu_dma_free(dev, area->pages, iosize, &handle);
-+		__iommu_dma_free(dev, pages, iosize, &handle);
- 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
- 	} else {
- 		__iommu_dma_unmap(dev, handle, iosize);
-@@ -1059,7 +1068,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- {
- 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	unsigned long off = vma->vm_pgoff;
--	struct vm_struct *area;
-+	struct page **pages;
- 	int ret;
- 
- 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-@@ -1084,11 +1093,10 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 		return __iommu_dma_mmap_pfn(vma, pfn, size);
- 	}
- 
--	area = find_vm_area(cpu_addr);
--	if (WARN_ON(!area || !area->pages))
-+	pages = __iommu_dma_get_pages(cpu_addr);
-+	if (!pages)
- 		return -ENXIO;
--
--	return __iommu_dma_mmap(area->pages, size, vma);
-+	return __iommu_dma_mmap(pages, size, vma);
- }
- 
- static int __iommu_dma_get_sgtable_page(struct sg_table *sgt, struct page *page,
-@@ -1106,7 +1114,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		unsigned long attrs)
- {
- 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	struct vm_struct *area = find_vm_area(cpu_addr);
-+	struct page **pages;
- 
- 	if (!is_vmalloc_addr(cpu_addr)) {
- 		struct page *page = virt_to_page(cpu_addr);
-@@ -1122,10 +1130,10 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		return __iommu_dma_get_sgtable_page(sgt, page, size);
- 	}
- 
--	if (WARN_ON(!area || !area->pages))
-+	pages = __iommu_dma_get_pages(cpu_addr);
-+	if (!pages)
- 		return -ENXIO;
--
--	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
-+	return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
- 					 GFP_KERNEL);
- }
- 
--- 
-2.20.1
+Sorry for not sorting this our earlier.
