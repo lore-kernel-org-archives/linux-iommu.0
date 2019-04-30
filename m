@@ -2,64 +2,85 @@ Return-Path: <SRS0=Kg+4=TA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43B9C43219
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 00:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD796C43219
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 01:57:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99F4B21655
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 00:47:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99F4B21655
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 78BC02147A
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 01:57:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XqwSqFIM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78BC02147A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5680AD7D;
-	Tue, 30 Apr 2019 00:47:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 48BC4DA3;
+	Tue, 30 Apr 2019 01:57:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 373F8D7A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1C04FD83
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 00:46:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C338E87B
+	Tue, 30 Apr 2019 01:57:02 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+	[209.85.210.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C74C5756
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 00:46:40 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	29 Apr 2019 17:46:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,411,1549958400"; d="scan'208";a="295632067"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga004.jf.intel.com with ESMTP; 29 Apr 2019 17:46:37 -0700
-Subject: Re: [PATCH v3 01/10] iommu: Add helper to get minimal page size of
-	domain
-To: Robin Murphy <robin.murphy@arm.com>, David Woodhouse
-	<dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
-	<20190421011719.14909-2-baolu.lu@linux.intel.com>
-	<05eca601-0264-8141-ceeb-7ef7ad5d5650@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <48ac694e-4551-40e2-f914-6942da810489@linux.intel.com>
-Date: Tue, 30 Apr 2019 08:40:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <05eca601-0264-8141-ceeb-7ef7ad5d5650@arm.com>
-Content-Language: en-US
-Cc: kevin.tian@intel.com, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, pengfei.xu@intel.com,
-	jacob.jun.pan@intel.com, mika.westerberg@linux.intel.com,
-	Christoph Hellwig <hch@lst.de>
+	Tue, 30 Apr 2019 01:57:01 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id 10so6262943pfo.5
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 29 Apr 2019 18:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id;
+	bh=B3NugZ9TINdI1OI3FrmhQJTknBH3QXdWgtcaMz1fRrE=;
+	b=XqwSqFIMy+BpZ4efc1taHt162C2WW2p4uw8J3gjvFeVMRGG0jSzSMC5xmLrNbcacwb
+	kSZK6xHoUI8DOw1Rn0IJi7pOnOguOGYDs8nJd3/pYhhpJJwIX6AAhvP7U4ZCk5HucW0r
+	wEtLypFJNVjRAy0V9h8rcEzU+AlOskOxc5qdwH4IyW+8UGKIB9ngyPx+R4jnN5B8bab9
+	XlN+auwr8kV1zdzjaoNJyFMm3Xx9Q+BC1M2cEeEGlsJvt8oBRNxj3ngpNGKtqvXP2k/E
+	geSlyyKH2M3Bblfe4P/DuWJYKIY4xHFOGq6pauv+9acGM3EgEuE6IMCqxFKdOvSxs2pL
+	Y4Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=B3NugZ9TINdI1OI3FrmhQJTknBH3QXdWgtcaMz1fRrE=;
+	b=W+oBbvbN8pafVfHDpuweEoXRrXhhNEcDAoWwPDiUKPyOBW9cL8zH+Y2X/4+6fcIqA2
+	VhzMap6pf2UeOOLTnaJszObwQu1ddL9H+ldzJc3phi2fm8HNT2uNHqkBwkaBSeTypoZN
+	ySQ76scf6qblDatsqSmCZZfOoKtmvBopTkVPd5sPNuvvtopB+GGN6jGlrxKOxMtta6UZ
+	8BBjOG+3dtTKoTl3ibbowUmnFrRSUxPKqJ2I3PkUPqmLl8cBV+8vXbCchneVEjY1LyoM
+	DLQbCk/HrlgVjfI+PAFfbVRFBBGH7JQolO36LxG1sBHjVHybfqNOUM42vnZGmk7Hw4U6
+	/E7Q==
+X-Gm-Message-State: APjAAAXlzEnd/ZK2hvJ+T16Eqs56husoB942UzM+rvqO5jYOADVTL/Fr
+	qihM9tpbhp2rO4Jdh1AbNV4=
+X-Google-Smtp-Source: APXvYqyq/ePAJdQfrFoIyaNhBIEKmUwzsYwFbKt20m93i9o3xKFFhfZk/XcMS+4PRI8PvCEezew/dA==
+X-Received: by 2002:a65:4247:: with SMTP id d7mr18565472pgq.114.1556589421204; 
+	Mon, 29 Apr 2019 18:57:01 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
+	[216.228.112.22]) by smtp.gmail.com with ESMTPSA id
+	a12sm36918995pgq.21.2019.04.29.18.56.59
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Mon, 29 Apr 2019 18:57:00 -0700 (PDT)
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: hch@lst.de,
+	robin.murphy@arm.com,
+	m.szyprowski@samsung.com
+Subject: [RFC/RFT PATCH 0/2] Optimize dma_*_from_contiguous calls
+Date: Mon, 29 Apr 2019 18:55:19 -0700
+Message-Id: <20190430015521.27734-1-nicoleotsuka@gmail.com>
+X-Mailer: git-send-email 2.17.1
+Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org,
+	sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com,
+	will.deacon@arm.com, linux@armlinux.org.uk,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com,
+	akpm@linux-foundation.org, treding@nvidia.com,
+	dwmw2@infradead.org, iamjoonsoo.kim@lge.com,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,47 +93,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430004020.UvNwvJiRjnnMT8GMSwfyiCzLGJYnwk4Ek-r2WeQ2g2I@z>
+Message-ID: <20190430015519.ksqtCpbTA5IpABImNOWHPL8gz2kA9fgopMyUV15ORN4@z>
 
-SGkgUm9iaW4sCgpPbiA0LzI5LzE5IDY6NTUgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAy
-MS8wNC8yMDE5IDAyOjE3LCBMdSBCYW9sdSB3cm90ZToKPj4gVGhpcyBtYWtlcyBpdCBwb3NzaWJs
-ZSBmb3Igb3RoZXIgbW9kdWxlcyB0byBrbm93IHRoZSBtaW5pbWFsCj4+IHBhZ2Ugc2l6ZSBzdXBw
-b3J0ZWQgYnkgYSBkb21haW4gd2l0aG91dCB0aGUga25vd2xlZGdlIG9mIHRoZQo+PiBzdHJ1Y3R1
-cmUgZGV0YWlscy4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4
-LmludGVsLmNvbT4KPj4gLS0tCj4+IMKgIGluY2x1ZGUvbGludXgvaW9tbXUuaCB8IDEzICsrKysr
-KysrKysrKysKPj4gwqAgMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKykKPj4KPj4gZGlm
-ZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvaW9tbXUuaAo+
-PiBpbmRleCBhNTAwN2QwMzUyMTguLjQ2Njc5ZWYxOWI3ZSAxMDA2NDQKPj4gLS0tIGEvaW5jbHVk
-ZS9saW51eC9pb21tdS5oCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvaW9tbXUuaAo+PiBAQCAtMzc3
-LDYgKzM3NywxNCBAQCBzdGF0aWMgaW5saW5lIHZvaWQgaW9tbXVfdGxiX3N5bmMoc3RydWN0IAo+
-PiBpb21tdV9kb21haW4gKmRvbWFpbikKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGRvbWFpbi0+b3Bz
-LT5pb3RsYl9zeW5jKGRvbWFpbik7Cj4+IMKgIH0KPj4gK3N0YXRpYyBpbmxpbmUgdW5zaWduZWQg
-bG9uZyBkb21haW5fbWluaW1hbF9wZ3NpemUoc3RydWN0IGlvbW11X2RvbWFpbiAKPj4gKmRvbWFp
-bikKPj4gK3sKPj4gK8KgwqDCoCBpZiAoZG9tYWluICYmIGRvbWFpbi0+cGdzaXplX2JpdG1hcCkK
-Pj4gK8KgwqDCoMKgwqDCoMKgIHJldHVybiAxIDw8IF9fZmZzKGRvbWFpbi0+cGdzaXplX2JpdG1h
-cCk7Cj4gCj4gTml0OiB0aGlzIHdvdWxkIHByb2JhYmx5IGJlIG1vcmUgZWZmaWNpZW50IG9uIG1v
-c3QgYXJjaGl0ZWN0dXJlcyBhczoKPiAKPiAgwqDCoMKgwqBpZiAoZG9tYWluKQo+ICDCoMKgwqDC
-oMKgwqDCoCByZXR1cm4gZG9tYWluLT5wZ3NpemVfYml0bWFwICYgLWRvbWFpbi0+cGdzaXplX2Jp
-dG1hcDsKPiAKCkl0IGxvb2tzIHJlYXNvbmFibGUgdG8gbWUuCgo+IAo+IEknZCBhbHNvIHN1Z2dl
-c3Qgcy9taW5pbWFsL21pbi8gaW4gdGhlIG5hbWUsIGp1c3QgdG8gc3RvcCBpdCBnZXR0aW5nIHRv
-byAKPiBsb25nLiBPdGhlcndpc2UsIHRob3VnaCwgSSBsaWtlIHRoZSBpZGVhLCBhbmQgdGhlcmUn
-cyBhdCBsZWFzdCBvbmUgb3RoZXIgCj4gcGxhY2UgKGluIGlvbW11LWRtYSkgdGhhdCBjYW4gbWFr
-ZSB1c2Ugb2YgaXQgc3RyYWlnaHQgYXdheS4KCk9rYXksIEkgd2lsbCBjaGFuZ2UgdGhlIG5hbWUg
-dG8gZG9tYWluX21pbl9wZ3NpemUoKS4KCj4gCj4gUm9iaW4uCj4gCgpCZXN0IHJlZ2FyZHMsCkx1
-IEJhb2x1Cgo+PiArCj4+ICvCoMKgwqAgcmV0dXJuIDA7Cj4+ICt9Cj4+ICsKPj4gwqAgLyogUENJ
-IGRldmljZSBncm91cGluZyBmdW5jdGlvbiAqLwo+PiDCoCBleHRlcm4gc3RydWN0IGlvbW11X2dy
-b3VwICpwY2lfZGV2aWNlX2dyb3VwKHN0cnVjdCBkZXZpY2UgKmRldik7Cj4+IMKgIC8qIEdlbmVy
-aWMgZGV2aWNlIGdyb3VwaW5nIGZ1bmN0aW9uICovCj4+IEBAIC03MDQsNiArNzEyLDExIEBAIGNv
-bnN0IHN0cnVjdCBpb21tdV9vcHMgCj4+ICppb21tdV9vcHNfZnJvbV9md25vZGUoc3RydWN0IGZ3
-bm9kZV9oYW5kbGUgKmZ3bm9kZSkKPj4gwqDCoMKgwqDCoCByZXR1cm4gTlVMTDsKPj4gwqAgfQo+
-PiArc3RhdGljIGlubGluZSB1bnNpZ25lZCBsb25nIGRvbWFpbl9taW5pbWFsX3Bnc2l6ZShzdHJ1
-Y3QgaW9tbXVfZG9tYWluIAo+PiAqZG9tYWluKQo+PiArewo+PiArwqDCoMKgIHJldHVybiAwOwo+
-PiArfQo+PiArCj4+IMKgICNlbmRpZiAvKiBDT05GSUdfSU9NTVVfQVBJICovCj4+IMKgICNpZmRl
-ZiBDT05GSUdfSU9NTVVfREVCVUdGUwo+Pgo+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+This series of patches try to optimize dma_*_from_contiguous calls:
+PATCH-1 does some abstraction and cleanup.
+PATCH-2 saves single pages and reduce fragmentations from CMA area.
+
+Both two patches may impact the source of pages (CMA or normal)
+depending on the use cases, so are being tagged with "RFC/RFT".
+
+Please check their commit messages for detail.
+
+Nicolin Chen (2):
+  dma-contiguous: Simplify dma_*_from_contiguous() function calls
+  dma-contiguous: Use fallback alloc_pages for single pages
+
+ arch/arm/mm/dma-mapping.c      | 14 +++-----
+ arch/arm64/mm/dma-mapping.c    | 11 +++---
+ arch/xtensa/kernel/pci-dma.c   | 19 +++-------
+ drivers/iommu/amd_iommu.c      | 20 +++--------
+ drivers/iommu/intel-iommu.c    | 20 ++---------
+ include/linux/dma-contiguous.h | 15 +++-----
+ kernel/dma/contiguous.c        | 64 ++++++++++++++++++++++------------
+ kernel/dma/direct.c            | 24 +++----------
+ kernel/dma/remap.c             | 11 ++----
+ 9 files changed, 73 insertions(+), 125 deletions(-)
+
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
