@@ -1,37 +1,45 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 02/26] arm64/iommu: improve mmap bounds checking
-Date: Tue, 30 Apr 2019 12:38:19 +0100
-Message-ID: <a96caa67-ac59-9ce8-aabc-2601c9a10203@arm.com>
-References: <20190422175942.18788-1-hch@lst.de>
- <20190422175942.18788-3-hch@lst.de>
- <306b7a19-4eb5-d1d8-5250-40f3ba9bca16@arm.com> <20190429190120.GA5637@lst.de>
+Subject: Re: [PATCH v2 3/4] iommu/dma-iommu: Use the dev->coherent_dma_mask
+Date: Tue, 30 Apr 2019 13:04:55 +0100
+Message-ID: <96ebb6fc-a889-fa94-09ba-65d505b85724@arm.com>
+References: <20190430002952.18909-1-tmurphy@arista.com>
+ <20190430002952.18909-4-tmurphy@arista.com>
+ <20190430111222.GA3191@infradead.org>
+ <da835ce2-f73e-3035-e1d7-d3028cc1a838@arm.com>
+ <20190430113253.GA23210@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190429190120.GA5637@lst.de>
+In-Reply-To: <20190430113253.GA23210@infradead.org>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Tom Murphy <tmurphy@arista.com>, iommu@lists.linux-foundation.org, Heiko Stuebner <heiko@sntech.de>, Will Deacon <will.deacon@arm.com>, David Brown <david.brown@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org, Kukjin Kim <kgene@kernel.org>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Andy Gross <andy.gross@linaro.org>, linux-tegra@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, murphyt7@tcd.ie, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 29/04/2019 20:01, Christoph Hellwig wrote:
-> On Mon, Apr 29, 2019 at 01:35:46PM +0100, Robin Murphy wrote:
->> On 22/04/2019 18:59, Christoph Hellwig wrote:
->>> The nr_pages checks should be done for all mmap requests, not just those
->>> using remap_pfn_range.
+On 30/04/2019 12:32, Christoph Hellwig wrote:
+> On Tue, Apr 30, 2019 at 12:27:02PM +0100, Robin Murphy wrote:
+>>> Hmm, I don't think we need the DMA mask for the MSI mapping, this
+>>> should probably always use a 64-bit mask.
 >>
->> I think it probably makes sense now to just squash this with #22 one way or
->> the other, but if you really really still want to keep it as a separate
->> patch with a misleading commit message then I'm willing to keep my
->> complaints to myself :)
+>> If that were true then we wouldn't need DMA masks for regular mappings
+>> either. If we have to map the MSI doorbell at all, then we certainly have to
+>> place it at an IOVA that the relevant device is actually capable of
+>> addressing.
 > 
-> Well, I split this out in response to your earlier comments, so if you
-> prefer it squasheѕ back in I can do that..
+> Well, as shown by the patch below we don't even look at the DMA mask
+> for the MSI page - we just allocate from bottom to top.
 
-AFAICS I only ever suggested splitting the original "fix and refactor" 
-commit into the fix (patch #1) and the refactor - I think we've just 
-ended up adding more "refactor" on top in the evolution of the series :)
+In the trivial cookie for unmanaged domains, yes, but in that case the 
+responsibility is on VFIO to provide a suitable (i.e. sub-32-bit) 
+address range for that cookie in the first place. In the managed case, 
+allocation uses the streaming mask via iommu_dma_get_msi_page() calling 
+__iommu_dma_map(). Admittedly the mask can then get overlooked when 
+reusing an existing mapping, which strictly could pose a problem if you 
+have multiple devices with incompatible masks in the same group (and 
+such that the PCI stuff doesn't already mitigate it), but that's such an 
+obscure corner case that I'm reticent to introduce the complication to 
+handle it until it's actually proven necessary.
 
 Robin.
