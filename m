@@ -1,76 +1,81 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [RFC/RFT PATCH 2/2] dma-contiguous: Use fallback alloc_pages for
- single pages
-Date: Mon, 29 Apr 2019 18:55:21 -0700
-Message-ID: <20190430015521.27734-3-nicoleotsuka@gmail.com>
-References: <20190430015521.27734-1-nicoleotsuka@gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+Date: Tue, 30 Apr 2019 10:02:00 +0800
+Message-ID: <1361b6ab-c3cf-d8ab-5f6b-9d9b7797bf02@linux.intel.com>
+References: <20190421011719.14909-1-baolu.lu@linux.intel.com>
+ <20190421011719.14909-3-baolu.lu@linux.intel.com>
+ <20190422164555.GA31181@lst.de>
+ <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
+ <20190423061232.GB12762@lst.de>
+ <dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
+ <20190424144532.GA21480@lst.de>
+ <a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
+ <20190426150433.GA19930@lst.de>
+ <93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
+ <90182d27-5764-7676-8ca6-b2773a40cfe1@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190430015521.27734-1-nicoleotsuka@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: hch@lst.de, robin.murphy@arm.com, m.szyprowski@samsung.com
-Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org, sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com, joro@8bytes.org, will.deacon@arm.com, linux@armlinux.org.uk, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com, akpm@linux-foundation.org, treding@nvidia.com, dwmw2@infradead.org, iamjoonsoo.kim@lge.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <90182d27-5764-7676-8ca6-b2773a40cfe1@arm.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, ashok.raj@intel.com, jacob.jun.pan@intel.com, alan.cox@intel.com, kevin.tian@intel.com, mika.westerberg@linux.intel.com, pengfei.xu@intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The addresses within a single page are always contiguous, so it's
-not so necessary to always allocate one single page from CMA area.
-Since the CMA area has a limited predefined size of space, it may
-run out of space in heavy use cases, where there might be quite a
-lot CMA pages being allocated for single pages.
+Hi Robin,
 
-However, there is also a concern that a device might care where a
-page comes from -- it might expect the page from CMA area and act
-differently if the page doesn't.
+On 4/29/19 7:06 PM, Robin Murphy wrote:
+> On 29/04/2019 06:10, Lu Baolu wrote:
+>> Hi Christoph,
+>>
+>> On 4/26/19 11:04 PM, Christoph Hellwig wrote:
+>>> On Thu, Apr 25, 2019 at 10:07:19AM +0800, Lu Baolu wrote:
+>>>> This is not VT-d specific. It's just how generic IOMMU works.
+>>>>
+>>>> Normally, IOMMU works in paging mode. So if a driver issues DMA with
+>>>> IOVA  0xAAAA0123, IOMMU can remap it with a physical address 
+>>>> 0xBBBB0123.
+>>>> But we should never expect IOMMU to remap 0xAAAA0123 with physical
+>>>> address of 0xBBBB0000. That's the reason why I said that IOMMU will not
+>>>> work there.
+>>>
+>>> Well, with the iommu it doesn't happen.  With swiotlb it obviosuly
+>>> can happen, so drivers are fine with it.  Why would that suddenly
+>>> become an issue when swiotlb is called from the iommu code?
+>>>
+>>
+>> I would say IOMMU is DMA remapping, not DMA engine. :-)
+> 
+> I'm not sure I really follow the issue here - if we're copying the 
+> buffer to the bounce page(s) there's no conceptual difference from 
+> copying it to SWIOTLB slot(s), so there should be no need to worry about 
+> the original in-page offset.
+> 
+>  From the reply up-thread I guess you're trying to include an 
+> optimisation to only copy the head and tail of the buffer if it spans 
+> multiple pages, and directly map the ones in the middle, but AFAICS 
+> that's going to tie you to also using strict mode for TLB maintenance, 
+> which may not be a win overall depending on the balance between 
+> invalidation bandwidth vs. memcpy bandwidth. At least if we use standard 
+> SWIOTLB logic to always copy the whole thing, we should be able to 
+> release the bounce pages via the flush queue to allow 'safe' lazy unmaps.
+>
 
-This patch tries to use the fallback alloc_pages path, instead of
-one-page size allocations from the global CMA area in case that a
-device does not have its own CMA area. This'd save resources from
-the CMA global area for more CMA allocations, and also reduce CMA
-fragmentations resulted from trivial allocations.
+With respect, even we use the standard SWIOTLB logic, we need to use
+the strict mode for TLB maintenance.
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- kernel/dma/contiguous.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Say, some swiotbl slots are used by untrusted device for bounce page
+purpose. When the device driver unmaps the IOVA, the slots are freed but
+the mapping is still cached in IOTLB, hence the untrusted device is 
+still able to access the slots. Then the slots are allocated to other
+devices. This makes it possible for the untrusted device to access
+the data buffer of other devices.
 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index afe5a673668e..71aba1551275 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -186,14 +186,23 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
-  * This function allocates contiguous memory buffer for specified device. It
-  * first tries to use device specific contiguous memory area if available or
-  * the default global one, then tries a fallback allocation of normal pages.
-+ *
-+ * Note that it byapss one-page size of allocations from the global area as
-+ * the addresses within one page are always contiguous, so there is no need
-+ * to waste CMA pages for that kind; it also helps reduce fragmentations.
-  */
- struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
- {
- 	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
- 	size_t count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	size_t align = get_order(PAGE_ALIGN(size));
--	struct cma *cma = dev_get_cma_area(dev);
- 	struct page *page = NULL;
-+	struct cma *cma = NULL;
-+
-+	if (dev && dev->cma_area)
-+		cma = dev->cma_area;
-+	else if (count > 1)
-+		cma = dma_contiguous_default_area;
- 
- 	/* CMA can be used only in the context which permits sleeping */
- 	if (cma && gfpflags_allow_blocking(gfp)) {
--- 
-2.17.1
+Best regards,
+Lu Baolu
+
+> Either way I think it would be worth just implementing the 
+> straightforward version first, then coming back to consider 
+> optimisations later.
