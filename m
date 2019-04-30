@@ -1,39 +1,28 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 06/19] drivers core: Add I/O ASID allocator
-Date: Tue, 30 Apr 2019 13:24:05 -0700
-Message-ID: <20190430132405.62902350@jacob-builder>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
-        <4550408f-39ff-7bf9-0072-a0898c6c2f60@redhat.com>
-        <fd5b8c6c-05f0-307b-aaa2-0938337014a8@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 5/7] MIPS: use the generic uncached segment support in
+ dma-direct
+Date: Tue, 30 Apr 2019 22:29:47 +0200
+Message-ID: <20190430202947.GA30262@lst.de>
+References: <20190430110032.25301-1-hch@lst.de> <20190430110032.25301-6-hch@lst.de> <20190430201041.536amvinrcvd2wua@pburton-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <fd5b8c6c-05f0-307b-aaa2-0938337014a8@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20190430201041.536amvinrcvd2wua@pburton-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Auger Eric <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: Paul Burton <paul.burton@mips.com>
+Cc: Christoph Hellwig <hch@lst.de>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 25 Apr 2019 11:41:05 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+On Tue, Apr 30, 2019 at 08:10:43PM +0000, Paul Burton wrote:
+> This series looks like a nice cleanup to me - the one thing that puzzles
+> me is the !PageHighMem check above.
+> 
+> As far as I can see arch_dma_prep_coherent() should never be called with
+> a highmem page, so would it make more sense to either drop this check or
+> perhaps wrap it in a WARN_ON()?
 
-> On 25/04/2019 11:17, Auger Eric wrote:
-> >> +/**
-> >> + * ioasid_alloc - Allocate an IOASID
-> >> + * @set: the IOASID set
-> >> + * @min: the minimum ID (inclusive)
-> >> + * @max: the maximum ID (exclusive)
-> >> + * @private: data private to the caller
-> >> + *
-> >> + * Allocate an ID between @min and @max (or %0 and %INT_MAX).
-> >> Return the  
-> > I would remove "(or %0 and %INT_MAX)".  
-> 
-> Agreed, those where the default values of idr, but the xarray doesn't
-> define a default max value. By the way, I do think squashing patches 6
-> and 7 would be better (keeping my SOB but you can change the author).
-> 
-I will squash 6 and 7 in v3. I will just add my SOB but keep the
-author if that is OK.
+dma_alloc_from_contigous can return highmem pages depending on where
+the CMA area is located.  But given that these pages don't have a
+direct kernel mapping we also shouldn't have to flush the caches
+for them.
