@@ -2,65 +2,69 @@ Return-Path: <SRS0=Kg+4=TA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44839C43219
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 10:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D86C43219
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 10:53:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1DD9521670
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 10:20:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DD9521670
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9F24B21707
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 10:53:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="dcKSxgNt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F24B21707
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D256CF12;
-	Tue, 30 Apr 2019 10:20:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4394CF46;
+	Tue, 30 Apr 2019 10:53:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E50F3F0A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E11ABF09
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 10:19:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3E516711
+	Tue, 30 Apr 2019 10:52:57 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 88CA15F4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 10:19:52 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
-	[10.5.11.15])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 678E185360;
-	Tue, 30 Apr 2019 10:19:52 +0000 (UTC)
-Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id A57386152B;
-	Tue, 30 Apr 2019 10:19:48 +0000 (UTC)
-Subject: Re: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource entries
-	to host bridge
-To: Srinath Mannam <srinath.mannam@broadcom.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi
-	<lorenzo.pieralisi@arm.com>, poza@codeaurora.org,
-	Ray Jui <rjui@broadcom.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
-	<1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <53a7463f-0b31-42ad-96a1-a3f40f02b119@redhat.com>
-Date: Tue, 30 Apr 2019 12:19:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Tue, 30 Apr 2019 10:52:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=jHO4QKebr4nW7rEKUksDM8kg9jAX/dS0i99h/BNfNOQ=;
+	b=dcKSxgNtvGttkJo9UKNMw2A3OM
+	ubJj9v//Tjc+Aa4Q8zlSm/hUgnOLGiEW3LT40WGRboHRNwnlg7iC1lYNHuw81S1mqokAZ3VKEvOaU
+	NocRGzY3s6QobDmvphSbHNpEyIveTeCHr8C5meI8KZCe6+1y/dXMagcIqHbwgiuGwOgGesOI7uH/r
+	z6WW0Z1ubLGeSbpNGme1NsvpZLvdHTuhb6vv2Wm3uudMtsGPGuauq4ifW4k9goc482uuQhMQlDG1s
+	h9CqAeqqvMv16u8VIeu72PmAeC1amYO/9IVeEGWwu7HLSalRVZ3TSCg20LtUKgkc6+GqakQ2JLaAq
+	aMpc2eLA==;
+Received: from adsl-173-228-226-134.prtc.net ([173.228.226.134] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
+	id 1hLQNZ-0007Jb-GU; Tue, 30 Apr 2019 10:52:53 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH 01/25] arm64/iommu: handle non-remapped addresses in ->mmap
+	and ->get_sgtable
+Date: Tue, 30 Apr 2019 06:51:50 -0400
+Message-Id: <20190430105214.24628-2-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190430105214.24628-1-hch@lst.de>
+References: <20190430105214.24628-1-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.25]);
-	Tue, 30 Apr 2019 10:19:52 +0000 (UTC)
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
-	bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Tom Lendacky <thomas.lendacky@amd.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,127 +81,50 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430101947.kVO7ZLT32ua0hNqMNBgm-7CtnItd-LVN7BdZKd-XXYo@z>
+Message-ID: <20190430105150.5j9BuN5tp8TzJSWn7IvIF2HJK8zXT479JYEpkE54Ay4@z>
 
-Hi Srinath,
+DMA allocations that can't sleep may return non-remapped addresses, but
+we do not properly handle them in the mmap and get_sgtable methods.
+Resolve non-vmalloc addresses using virt_to_page to handle this corner
+case.
 
-On 4/12/19 5:13 AM, Srinath Mannam wrote:
-> IPROC host has the limitation that it can use only those address ranges
-> given by dma-ranges property as inbound address. So that the memory
-> address holes in dma-ranges should be reserved to allocate as DMA address.
-> 
-> Inbound address of host accessed by PCIe devices will not be translated
-> before it comes to IOMMU or directly to PE. But the limitation of this
-> host is, access to few address ranges are ignored. So that IOVA ranges
-> for these address ranges have to be reserved.
-> 
-> All allowed address ranges are listed in dma-ranges DT parameter. These
-> address ranges are converted as resource entries and listed in sorted
-> order add added to dma_ranges list of PCI host bridge structure.
-s/add added/and added
-> 
-> Ex:
-> dma-ranges = < \
->   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
->   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
->   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
-> 
-> In the above example of dma-ranges, memory address from
-> 0x0 - 0x80000000,
-> 0x100000000 - 0x800000000,
-> 0x1000000000 - 0x8000000000 and
-> 0x10000000000 - 0xffffffffffffffff.
-> are not allowed to use as inbound addresses.
-s/to use/to be used
-> 
-> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
-> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+---
+ arch/arm64/mm/dma-mapping.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 78c0a72f822c..674860e3e478 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -249,6 +249,11 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+ 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+ 		return ret;
+ 
++	if (!is_vmalloc_addr(cpu_addr)) {
++		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
++		return __swiotlb_mmap_pfn(vma, pfn, size);
++	}
++
+ 	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+ 		/*
+ 		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+@@ -272,6 +277,11 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	struct vm_struct *area = find_vm_area(cpu_addr);
+ 
++	if (!is_vmalloc_addr(cpu_addr)) {
++		struct page *page = virt_to_page(cpu_addr);
++		return __swiotlb_get_sgtable_page(sgt, page, size);
++	}
++
+ 	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+ 		/*
+ 		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+-- 
+2.20.1
 
-> ---
->  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
->  1 file changed, 43 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-> index c20fd6b..94ba5c0 100644
-> --- a/drivers/pci/controller/pcie-iproc.c
-> +++ b/drivers/pci/controller/pcie-iproc.c
-> @@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
->  	return ret;
->  }
->  
-> +static int
-> +iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
-> +			 struct of_pci_range *range)
-> +{
-> +	struct resource *res;
-> +	struct resource_entry *entry, *tmp;
-> +	struct list_head *head = resources;
-> +
-> +	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-> +	if (!res)
-> +		return -ENOMEM;
-> +
-> +	resource_list_for_each_entry(tmp, resources) {
-> +		if (tmp->res->start < range->cpu_addr)
-> +			head = &tmp->node;
-> +	}
-> +
-> +	res->start = range->cpu_addr;
-> +	res->end = res->start + range->size - 1;
-> +
-> +	entry = resource_list_create_entry(res, 0);
-> +	if (!entry)
-> +		return -ENOMEM;
-> +
-> +	entry->offset = res->start - range->cpu_addr;
-> +	resource_list_add(entry, head);
-> +
-> +	return 0;
-> +}
-> +
->  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
->  {
-> +	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
->  	struct of_pci_range range;
->  	struct of_pci_range_parser parser;
->  	int ret;
-> +	LIST_HEAD(resources);
->  
->  	/* Get the dma-ranges from DT */
->  	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
-> @@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
->  		return ret;
->  
->  	for_each_of_pci_range(&parser, &range) {
-> +		ret = iproc_pcie_add_dma_range(pcie->dev,
-> +					       &resources,
-> +					       &range);
-> +		if (ret)
-> +			goto out;
->  		/* Each range entry corresponds to an inbound mapping region */
->  		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
->  		if (ret)
-> -			return ret;
-> +			goto out;
->  	}
->  
-> +	list_splice_init(&resources, &host->dma_ranges);
-> +
->  	return 0;
-> +out:
-> +	pci_free_resource_list(&resources);
-> +	return ret;
->  }
->  
->  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
-> 
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Thanks
-
-Eric
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
