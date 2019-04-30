@@ -2,63 +2,54 @@ Return-Path: <SRS0=Kg+4=TA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3B3C46470
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 07:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B08BC04AA6
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 07:30:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E449F21743
-	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 07:10:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E449F21743
+	by mail.kernel.org (Postfix) with ESMTPS id 414902080C
+	for <iommu@archiver.kernel.org>; Tue, 30 Apr 2019 07:30:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 414902080C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A753DE5A;
-	Tue, 30 Apr 2019 07:10:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E08C5E6E;
+	Tue, 30 Apr 2019 07:30:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B3240E4D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D533AE5A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 07:10:00 +0000 (UTC)
+	Tue, 30 Apr 2019 07:29:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D92995F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 94B4771C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Apr 2019 07:09:59 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
-	[10.5.11.22])
+	Tue, 30 Apr 2019 07:29:52 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+	[10.5.11.15])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 0E89681DF4;
-	Tue, 30 Apr 2019 07:09:59 +0000 (UTC)
-Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id E30C51001DD2;
-	Tue, 30 Apr 2019 07:09:52 +0000 (UTC)
-Subject: Re: [PATCH v7 00/23] SMMUv3 Nested Stage Setup
-To: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, 
-	jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com,
-	jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com
-References: <20190408121911.24103-1-eric.auger@redhat.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <d9967a8c-cd3b-6994-c5ef-c4341aaaf0fd@redhat.com>
-Date: Tue, 30 Apr 2019 09:09:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	by mx1.redhat.com (Postfix) with ESMTPS id 08E7C821E5;
+	Tue, 30 Apr 2019 07:29:52 +0000 (UTC)
+Received: from laptop.redhat.com (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 2F72B61525;
+	Tue, 30 Apr 2019 07:29:46 +0000 (UTC)
+From: Eric Auger <eric.auger@redhat.com>
+To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/vt-d: Fix intel_pasid_max_id
+Date: Tue, 30 Apr 2019 09:29:40 +0200
+Message-Id: <20190430072940.10467-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190408121911.24103-1-eric.auger@redhat.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.25]);
-	Tue, 30 Apr 2019 07:09:59 +0000 (UTC)
-Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
-	ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
+	(mx1.redhat.com [10.5.110.28]);
+	Tue, 30 Apr 2019 07:29:52 +0000 (UTC)
+Cc: dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,164 +66,40 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190430070950._GJEdZlp5foVi4I6XBWyhCG9dVba1q09UhYHGAjQJoE@z>
+Message-ID: <20190430072940.t7DeyE3SdafObToPJhEqaGkRQXTgJ7fEJBwKcoy_f30@z>
 
-Hi Robin,
+Extended Capability Register PSS field (PASID Size Supported)
+corresponds to the PASID bit size -1.
 
-On 4/8/19 2:18 PM, Eric Auger wrote:
-> This series allows a virtualizer to program the nested stage mode.
-> This is useful when both the host and the guest are exposed with
-> an SMMUv3 and a PCI device is assigned to the guest using VFIO.
-> 
-> In this mode, the physical IOMMU must be programmed to translate
-> the two stages: the one set up by the guest (IOVA -> GPA) and the
-> one set up by the host VFIO driver as part of the assignment process
-> (GPA -> HPA).
-> 
-> On Intel, this is traditionnaly achieved by combining the 2 stages
-> into a single physical stage. However this relies on the capability
-> to trap on each guest translation structure update. This is possible
-> by using the VTD Caching Mode. Unfortunately the ARM SMMUv3 does
-> not offer a similar mechanism.
-> 
-> However, the ARM SMMUv3 architecture supports 2 physical stages! Those
-> were devised exactly with that use case in mind. Assuming the HW
-> implements both stages (optional), the guest now can use stage 1
-> while the host uses stage 2.
-> 
-> This assumes the virtualizer has means to propagate guest settings
-> to the host SMMUv3 driver. This series brings this VFIO/IOMMU
-> infrastructure.  Those services are:
-> - bind the guest stage 1 configuration to the stream table entry
-> - propagate guest TLB invalidations
-> - bind MSI IOVAs
-> - propagate faults collected at physical level up to the virtualizer
-> 
-> This series largely reuses the user API and infrastructure originally
-> devised for SVA/SVM and patches submitted by Jacob, Yi Liu, Tianyu in
-> [1-2] and Jean-Philippe [3-4].
+"A value of N in this field indicates hardware supports PASID
+field of N+1 bits (For example, value of 7 in this field,
+indicates 8-bit PASIDs are supported)".
 
-I am going to respin on top of latest Jean-Philippe's 5.2 changes in
-arm-smmu-v3.c. Do you have some comments on changes done since your last
-review? Does it go towards the good direction from the iommu API pov and
-smmuv3 implementation?
+Fix the computation of intel_pasid_max_id accordingly.
 
-Thanks
+Fixes: 562831747f62 ("iommu/vt-d: Global PASID name space")
 
-Eric
-> 
-> Best Regards
-> 
-> Eric
-> 
-> This series can be found at:
-> https://github.com/eauger/linux/tree/v5.1-rc3-2stage-v7
-> 
-> References:
-> [1] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
->     Address (SVA)
->     https://lwn.net/Articles/754331/
-> [2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
->     (VFIO part)
->     https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
-> [3] [v2,00/40] Shared Virtual Addressing for the IOMMU
->     https://patchwork.ozlabs.org/cover/912129/
-> [4] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
->     https://patchwork.kernel.org/cover/10608299/
-> 
-> History:
-> v6 -> v7:
-> - removed device handle from bind/unbind_guest_msi
-> - added "iommu/smmuv3: Nested mode single MSI doorbell per domain
->   enforcement"
-> - added few uapi comments as suggested by Jean, Jacop and Alex
-> 
-> v5 -> v6:
-> - Fix compilation issue when CONFIG_IOMMU_API is unset
-> 
-> v4 -> v5:
-> - fix bug reported by Vincent: fault handler unregistration now happens in
->   vfio_pci_release
-> - IOMMU_FAULT_PERM_* moved outside of struct definition + small
->   uapi changes suggested by Kean-Philippe (except fetch_addr)
-> - iommu: introduce device fault report API: removed the PRI part.
-> - see individual logs for more details
-> - reset the ste abort flag on detach
-> 
-> v3 -> v4:
-> - took into account Alex, jean-Philippe and Robin's comments on v3
-> - rework of the smmuv3 driver integration
-> - add tear down ops for msi binding and PASID table binding
-> - fix S1 fault propagation
-> - put fault reporting patches at the beginning of the series following
->   Jean-Philippe's request
-> - update of the cache invalidate and fault API uapis
-> - VFIO fault reporting rework with 2 separate regions and one mmappable
->   segment for the fault queue
-> - moved to PATCH
-> 
-> v2 -> v3:
-> - When registering the S1 MSI binding we now store the device handle. This
->   addresses Robin's comment about discimination of devices beonging to
->   different S1 groups and using different physical MSI doorbells.
-> - Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
->   set the eventfd and expose the faults through an mmappable fault region
-> 
-> v1 -> v2:
-> - Added the fault reporting capability
-> - asid properly passed on invalidation (fix assignment of multiple
->   devices)
-> - see individual change logs for more info
-> 
-> 
-> Eric Auger (14):
->   iommu: Introduce bind/unbind_guest_msi
->   vfio: VFIO_IOMMU_BIND/UNBIND_MSI
->   iommu/smmuv3: Get prepared for nested stage support
->   iommu/smmuv3: Implement attach/detach_pasid_table
->   iommu/smmuv3: Implement cache_invalidate
->   dma-iommu: Implement NESTED_MSI cookie
->   iommu/smmuv3: Nested mode single MSI doorbell per domain enforcement
->   iommu/smmuv3: Implement bind/unbind_guest_msi
->   iommu/smmuv3: Report non recoverable faults
->   vfio-pci: Add a new VFIO_REGION_TYPE_NESTED region type
->   vfio-pci: Register an iommu fault handler
->   vfio_pci: Allow to mmap the fault queue
->   vfio-pci: Add VFIO_PCI_DMA_FAULT_IRQ_INDEX
->   vfio: Document nested stage control
-> 
-> Jacob Pan (4):
->   driver core: add per device iommu param
->   iommu: introduce device fault data
->   iommu: introduce device fault report API
->   iommu: Introduce attach/detach_pasid_table API
-> 
-> Jean-Philippe Brucker (2):
->   iommu/arm-smmu-v3: Link domains and devices
->   iommu/arm-smmu-v3: Maintain a SID->device structure
-> 
-> Liu, Yi L (3):
->   iommu: Introduce cache_invalidate API
->   vfio: VFIO_IOMMU_ATTACH/DETACH_PASID_TABLE
->   vfio: VFIO_IOMMU_CACHE_INVALIDATE
-> 
->  Documentation/vfio.txt              |  83 ++++
->  drivers/iommu/arm-smmu-v3.c         | 631 ++++++++++++++++++++++++++--
->  drivers/iommu/dma-iommu.c           | 129 +++++-
->  drivers/iommu/iommu.c               | 205 ++++++++-
->  drivers/vfio/pci/vfio_pci.c         | 214 ++++++++++
->  drivers/vfio/pci/vfio_pci_intrs.c   |  19 +
->  drivers/vfio/pci/vfio_pci_private.h |  18 +
->  drivers/vfio/pci/vfio_pci_rdwr.c    |  73 ++++
->  drivers/vfio/vfio_iommu_type1.c     | 172 ++++++++
->  include/linux/device.h              |   3 +
->  include/linux/dma-iommu.h           |  17 +
->  include/linux/iommu.h               | 135 ++++++
->  include/uapi/linux/iommu.h          | 240 +++++++++++
->  include/uapi/linux/vfio.h           | 107 +++++
->  14 files changed, 2013 insertions(+), 33 deletions(-)
->  create mode 100644 include/uapi/linux/iommu.h
-> 
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+---
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 28cb713d728c..c3f1bfc81d2e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3331,7 +3331,7 @@ static int __init init_dmars(void)
+ 		 * than the smallest supported.
+ 		 */
+ 		if (pasid_supported(iommu)) {
+-			u32 temp = 2 << ecap_pss(iommu->ecap);
++			u32 temp = 2 << (ecap_pss(iommu->ecap) + 1);
+ 
+ 			intel_pasid_max_id = min_t(u32, temp,
+ 						   intel_pasid_max_id);
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
