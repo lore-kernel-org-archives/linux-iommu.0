@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 21/25] iommu/dma: Refactor iommu_dma_mmap
-Date: Tue, 30 Apr 2019 06:52:10 -0400
-Message-ID: <20190430105214.24628-22-hch@lst.de>
+Subject: [PATCH 23/25] iommu/dma: Switch copyright boilerplace to SPDX
+Date: Tue, 30 Apr 2019 06:52:12 -0400
+Message-ID: <20190430105214.24628-24-hch@lst.de>
 References: <20190430105214.24628-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,87 +12,63 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Inline __iommu_dma_mmap_pfn into the main function, and use the
-fact that __iommu_dma_get_pages return NULL for remapped contigous
-allocations to simplify the code flow a bit.
-
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/dma-iommu.c | 46 ++++++++++-----------------------------
- 1 file changed, 11 insertions(+), 35 deletions(-)
+ drivers/iommu/dma-iommu.c | 13 +------------
+ include/linux/dma-iommu.h | 13 +------------
+ 2 files changed, 2 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 5d4013ffd068..9ace9ad73e10 100644
+index bbd475be567a..58c35bab7626 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -1023,31 +1023,12 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 	return cpu_addr;
- }
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * A fairly generic DMA-API to IOMMU-API glue layer.
+  *
+@@ -5,18 +6,6 @@
+  *
+  * based in part on arch/arm/mm/dma-mapping.c:
+  * Copyright (C) 2000-2004 Russell King
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
  
--static int __iommu_dma_mmap_pfn(struct vm_area_struct *vma,
--			      unsigned long pfn, size_t size)
--{
--	int ret = -ENXIO;
--	unsigned long nr_vma_pages = vma_pages(vma);
--	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	unsigned long off = vma->vm_pgoff;
--
--	if (off < nr_pages && nr_vma_pages <= (nr_pages - off)) {
--		ret = remap_pfn_range(vma, vma->vm_start,
--				      pfn + off,
--				      vma->vm_end - vma->vm_start,
--				      vma->vm_page_prot);
--	}
--
--	return ret;
--}
--
- static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs)
- {
- 	unsigned long nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	unsigned long off = vma->vm_pgoff;
--	struct page **pages;
-+	unsigned long pfn, off = vma->vm_pgoff;
- 	int ret;
- 
- 	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-@@ -1058,24 +1039,19 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
- 		return -ENXIO;
- 
--	if (!is_vmalloc_addr(cpu_addr)) {
--		unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
--		return __iommu_dma_mmap_pfn(vma, pfn, size);
--	}
-+	if (is_vmalloc_addr(cpu_addr)) {
-+		struct page **pages = __iommu_dma_get_pages(cpu_addr);
- 
--	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
--		/*
--		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
--		 * hence in the vmalloc space.
--		 */
--		unsigned long pfn = vmalloc_to_pfn(cpu_addr);
--		return __iommu_dma_mmap_pfn(vma, pfn, size);
-+		if (pages)
-+			return __iommu_dma_mmap(pages, size, vma);
-+		pfn = vmalloc_to_pfn(cpu_addr);
-+	} else {
-+		pfn = page_to_pfn(virt_to_page(cpu_addr));
- 	}
- 
--	pages = __iommu_dma_get_pages(cpu_addr);
--	if (!pages)
--		return -ENXIO;
--	return __iommu_dma_mmap(pages, size, vma);
-+	return remap_pfn_range(vma, vma->vm_start, pfn + off,
-+			       vma->vm_end - vma->vm_start,
-+			       vma->vm_page_prot);
- }
- 
- static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ #include <linux/acpi_iort.h>
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index dadf4383f555..3fc76918e9bf 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -1,17 +1,6 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) 2014-2015 ARM Ltd.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __DMA_IOMMU_H
+ #define __DMA_IOMMU_H
 -- 
 2.20.1
