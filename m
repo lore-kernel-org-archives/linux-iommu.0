@@ -2,58 +2,76 @@ Return-Path: <SRS0=GORt=TB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E79C004C9
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCE5C43219
+	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:37:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6138920866
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:30:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6138920866
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 6CA282081C
+	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:37:23 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="CEjb4MdJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6CA282081C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2BF692AB4;
-	Wed,  1 May 2019 17:30:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 417912A9B;
+	Wed,  1 May 2019 17:37:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A30CF2B35
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CA5422781
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 17:29:32 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D86D7711
+	Wed,  1 May 2019 17:36:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4AB9B711
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 17:29:31 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 09DA468AFE; Wed,  1 May 2019 19:29:12 +0200 (CEST)
-Date: Wed, 1 May 2019 19:29:12 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH 4/7] dma-direct: provide generic support for uncached
-	kernel segments
-Message-ID: <20190501172912.GA19375@lst.de>
-References: <20190430110032.25301-1-hch@lst.de>
-	<20190430110032.25301-5-hch@lst.de>
-	<20190501171857.chfxqntvm6r4xrr4@pburton-laptop>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="ew6BAiZeqk4r7MaW"
-Content-Disposition: inline
-In-Reply-To: <20190501171857.chfxqntvm6r4xrr4@pburton-laptop>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Michal Simek <monstr@monstr.eu>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	James Hogan <jhogan@kernel.org>,
-	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-	Ralf Baechle <ralf@linux-mips.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-	Ley Foon Tan <lftan@altera.com>, Christoph Hellwig <hch@lst.de>
+	Wed,  1 May 2019 17:36:59 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id p26so1958593edr.2
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 01 May 2019 10:36:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+	h=from:to:cc:subject:date:message-id;
+	bh=WQh6+iJ1c5LV37hewjiOUJ2VVaJB8K0iqnjk0rOcMbE=;
+	b=CEjb4MdJxi08K/sHDaK0eh5tzCmNnbKo8l7lks3hzoghFBcg/r6yFxaG++ZgfgWdOW
+	yhDjocgFxXdRp2TXI0xdQdK5/myMxON+Mu0JLn+NQ1dTx8bFetH/46D3fX3SPvCsbFnq
+	MJg+fKzdyXBskAw+hqszBABaL0ctbb+ffQuas=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=WQh6+iJ1c5LV37hewjiOUJ2VVaJB8K0iqnjk0rOcMbE=;
+	b=GhfNpGw5SlgnyY/0Qf+Zpd10KOJulfjHbxDRfkzvesJiSyONePrgLo6vezMZlT2H/K
+	hh8Oz9JF5eOx9PaC3TUHUGQjSn5VaN5GzCEl2D3ALHTCzkGC8CuwyaEHFqXBZCvaJQsL
+	gjkCaANSQVri9iz0wgKLMxpOw03XCNe2dAXWIy+U9fYYc/hX4pDYAyVtmUBAfWzzY+70
+	Mw4gJ1DxqUnUmjX+knLbIOmBYchV3F/wAl9pog+Tk2MaBTAOEZsAS6lQJEq83K9MiCLh
+	hsUqKX15vdMZCZ0vOf72kyVhKUe+1tZd2o5JXj/KLq0UrAg4NcFW0w5311InMUxnyKKE
+	hNGg==
+X-Gm-Message-State: APjAAAWxOEhkOGp+jrMgIby9H0zfr6p8uunZo8a6W/sLxr88FYdOprO6
+	5tGwHZmRN89bmK/7UfO5FTKohQ==
+X-Google-Smtp-Source: APXvYqyT8CYAd7eurrFrFI8PfzHJPMcWdZ7fq9QHDpPRgQBgROfDRCybBxqF9//b4tm21qJoRt4Byg==
+X-Received: by 2002:a17:906:e10e:: with SMTP id
+	gj14mr15158656ejb.285.1556732217818; 
+	Wed, 01 May 2019 10:36:57 -0700 (PDT)
+Received: from mannams-OptiPlex-7010.dhcp.broadcom.net ([192.19.234.250])
+	by smtp.gmail.com with ESMTPSA id s6sm2462671eji.13.2019.05.01.10.36.51
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+	Wed, 01 May 2019 10:36:56 -0700 (PDT)
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
+	Eric Auger <eric.auger@redhat.com>, Joerg Roedel <joro@8bytes.org>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, poza@codeaurora.org,
+	Ray Jui <rjui@broadcom.com>
+Subject: [PATCH v5 0/3] PCIe Host request to reserve IOVA
+Date: Wed,  1 May 2019 23:06:23 +0530
+Message-Id: <1556732186-21630-1-git-send-email-srinath.mannam@broadcom.com>
+X-Mailer: git-send-email 2.7.4
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Srinath Mannam <srinath.mannam@broadcom.com>,
+	bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,142 +84,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Srinath Mannam via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Srinath Mannam <srinath.mannam@broadcom.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190501172912.-H26Q-cABZyjUmpqEXO4z7tFX8Ta9OSKoB-ovbT38fc@z>
+Message-ID: <20190501173623.y9PjR_LvYqUfp11k_pD22hpdpGrjxluuYDMblNh_mr0@z>
 
+Few SOCs have limitation that their PCIe host can't allow few inbound
+address ranges. Allowed inbound address ranges are listed in dma-ranges
+DT property and this address ranges are required to do IOVA mapping.
+Remaining address ranges have to be reserved in IOVA mapping.
 
---ew6BAiZeqk4r7MaW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+PCIe Host driver of those SOCs has to list resource entries of allowed
+address ranges given in dma-ranges DT property in sorted order. This
+sorted list of resources will be processed and reserve IOVA address for
+inaccessible address holes while initializing IOMMU domain.
 
-On Wed, May 01, 2019 at 05:18:59PM +0000, Paul Burton wrote:
-> I'm not so sure about this part though.
-> 
-> On MIPS we currently don't clear the allocated memory with memset. Is
-> doing that really necessary?
+This patch set is based on Linux-5.1-rc3.
 
-We are clearling it on mips, it is inside dma_direct_alloc_pages.
+Changes from v4:
+  - Addressed Bjorn, Robin Murphy and Auger Eric review comments.
+    - Commit message modification.
+    - Change DMA_BIT_MASK to "~(dma_addr_t)0".
 
-> If it is necessary then as-is this code will clear the allocated memory
-> using uncached writes which will be pretty slow. It would be much more
-> efficient to perform the memset before arch_dma_prep_coherent() & before
-> converting ret to an uncached address.
+Changes from v3:
+  - Addressed Robin Murphy review comments.
+    - pcie-iproc: parse dma-ranges and make sorted resource list.
+    - dma-iommu: process list and reserve gaps between entries
 
-Yes, we could do that.
+Changes from v2:
+  - Patch set rebased to Linux-5.0-rc2
 
---ew6BAiZeqk4r7MaW
-Content-Type: text/x-patch; charset=us-ascii
-Content-Disposition: attachment; filename="0001-dma-direct-provide-generic-support-for-uncached-kern.patch"
+Changes from v1:
+  - Addressed Oza review comments.
 
-From 247ca658ebeb7c8d04918747ec8a0da45c36bcb8 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Sun, 28 Apr 2019 13:23:26 -0500
-Subject: dma-direct: provide generic support for uncached kernel segments
+Srinath Mannam (3):
+  PCI: Add dma_ranges window list
+  iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
+  PCI: iproc: Add sorted dma ranges resource entries to host bridge
 
-A few architectures support uncached kernel segments.  In that case we get
-an uncached mapping for a given physica address by using an offset in the
-uncached segement.  Implement support for this scheme in the generic
-dma-direct code instead of duplicating it in arch hooks.
+ drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
+ drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+ drivers/pci/probe.c                 |  3 +++
+ include/linux/pci.h                 |  1 +
+ 4 files changed, 66 insertions(+), 1 deletion(-)
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/Kconfig                    |  8 ++++++++
- include/linux/dma-noncoherent.h |  3 +++
- kernel/dma/direct.c             | 17 +++++++++++++++--
- 3 files changed, 26 insertions(+), 2 deletions(-)
-
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 33687dddd86a..ea22a8c894ec 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -249,6 +249,14 @@ config ARCH_HAS_FORTIFY_SOURCE
- config ARCH_HAS_SET_MEMORY
- 	bool
- 
-+#
-+# Select if arch has an uncached kernel segment and provides the
-+# uncached_kernel_address / cached_kernel_address symbols to use it
-+#
-+config ARCH_HAS_UNCACHED_SEGMENT
-+	select ARCH_HAS_DMA_PREP_COHERENT
-+	bool
-+
- # Select if arch init_task must go in the __init_task_data section
- config ARCH_TASK_STRUCT_ON_STACK
-        bool
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index 9741767e400f..7e0126a04e02 100644
---- a/include/linux/dma-noncoherent.h
-+++ b/include/linux/dma-noncoherent.h
-@@ -80,4 +80,7 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
- }
- #endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
- 
-+void *uncached_kernel_address(void *addr);
-+void *cached_kernel_address(void *addr);
-+
- #endif /* _LINUX_DMA_NONCOHERENT_H */
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 2c2772e9702a..6688e1cee7d1 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -171,6 +171,13 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
- 		*dma_handle = phys_to_dma(dev, page_to_phys(page));
- 	}
- 	memset(ret, 0, size);
-+
-+	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
-+	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
-+		arch_dma_prep_coherent(page, size);
-+		ret = uncached_kernel_address(ret);
-+	}
-+
- 	return ret;
- }
- 
-@@ -189,13 +196,18 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
- 
- 	if (force_dma_unencrypted())
- 		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
-+
-+	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
-+	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT))
-+		cpu_addr = cached_kernel_address(cpu_addr);
- 	__dma_direct_free_pages(dev, size, virt_to_page(cpu_addr));
- }
- 
- void *dma_direct_alloc(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
--	if (!dev_is_dma_coherent(dev))
-+	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
-+	    !dev_is_dma_coherent(dev))
- 		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
- 	return dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
- }
-@@ -203,7 +215,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- void dma_direct_free(struct device *dev, size_t size,
- 		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
- {
--	if (!dev_is_dma_coherent(dev))
-+	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
-+	    !dev_is_dma_coherent(dev))
- 		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
- 	else
- 		dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
 -- 
-2.20.1
-
-
---ew6BAiZeqk4r7MaW
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+2.7.4
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---ew6BAiZeqk4r7MaW--
