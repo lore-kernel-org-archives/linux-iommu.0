@@ -2,78 +2,116 @@ Return-Path: <SRS0=GORt=TB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 373D3C43219
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 15:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACF4C43219
+	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:14:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 04AD8205ED
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 15:44:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 94A7820835
+	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:14:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="gNkzwNiA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04AD8205ED
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=wavesemi.onmicrosoft.com header.i=@wavesemi.onmicrosoft.com header.b="mCxlssX/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 94A7820835
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mips.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8BDBB27D6;
-	Wed,  1 May 2019 15:44:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5B24D2AA3;
+	Wed,  1 May 2019 17:14:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3375727CC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8C6DB2A83
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 15:44:20 +0000 (UTC)
+	Wed,  1 May 2019 17:14:00 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
-	[209.85.221.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7A10A880
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com
+	(mail-eopbgr820094.outbound.protection.outlook.com [40.107.82.94])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 025AC876
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 15:44:19 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id k23so2058823wrd.4
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 01 May 2019 08:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=ihqeIyGh+Y0PhIVYUkh50s+LpirgFvDtjhB/Se6zeC8=;
-	b=gNkzwNiArWy5yewD/+hCc/NoNCTC4qqIVgOLD0Em21KOQs330a4EVeaHeS52tSmWif
-	zhUZJP4XmgDWOwMejTM0kSJpYHbwQJPL8hEKaH7qArPj7UoNmCoPoeXBGsx5gYT4a5wl
-	9i57NGYnzfI6HOk9fkB/GcNW1pbqu40Ii6kHk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=ihqeIyGh+Y0PhIVYUkh50s+LpirgFvDtjhB/Se6zeC8=;
-	b=J6HuO/5H8ORHZ2xEVovkVnmnRRhIGE+CHoRZ48dydJMa3yxglLF16GmrFXqGaEzmHM
-	8IIJahC97VmY34UkoSHoRlUubMqAB5y36CEUWgvm5qakiiUl3Qy8GMlWSAWFV6cz/8lr
-	cokCdGc8Ra9KugUoREkOaDigpYGrfCj+VPZylbMJCP4O4+lgJ254pMrrP2xeosJVNr09
-	cUf3s+X5xBDYCshlp1iTd83Pa/78z/CzqMYdQe5zVYbLrS5eJ1O25tkB0a26IuB/Zua8
-	fNBeosx+yVwykTgom08OWTC91bvbhX26jW4M+Ndq+xwe5clbgmKtn9S9GIByOT2d8JCF
-	t1zg==
-X-Gm-Message-State: APjAAAWojGgFB3c4JyvSwKclP5tn3Gq/yz5bGDtdtJ6XMoNg7+6n5SCM
-	dPRc0GGBY+BRyaBte2V2mLnwNk24ZMQaFgzbHr6XFw==
-X-Google-Smtp-Source: APXvYqxXc5jGnGaJFZyfJ2rjjTdiDutg0T5xSEPxqrkoHXM+EaLYQMJpSL5Z/eCSoYW68v9gMTV6cUYlNz/ZT9sBNR0=
-X-Received: by 2002:a5d:4fc3:: with SMTP id h3mr8375115wrw.54.1556725458010;
-	Wed, 01 May 2019 08:44:18 -0700 (PDT)
+	Wed,  1 May 2019 17:13:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=HABJON+PUwKKspjD9/5rvoUoFvtxnRJTtI3uP9m84jA=;
+	b=mCxlssX/fSUbWEVb2VVYdxuzP6WTJXUoID7oXybpmZtZVwXaaUwA6oDPteNnndFZnjcms3WVbEk0dOF3DlZqKIX7AfYJZP4sJmCbYRtdw60uIVrSxajoSw9KnZsTqvAgS57jzMC7IzyRbPDt9Kp6+5jrtJIrn0lz0wT4pi/eiYQ=
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.174.162.17) by
+	MWHPR2201MB1360.namprd22.prod.outlook.com (10.174.162.150) with
+	Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1856.11; Wed, 1 May 2019 17:13:57 +0000
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
+	([fe80::b9d6:bf19:ec58:2765]) by
+	MWHPR2201MB1277.namprd22.prod.outlook.com
+	([fe80::b9d6:bf19:ec58:2765%7]) with mapi id 15.20.1835.018;
+	Wed, 1 May 2019 17:13:57 +0000
+From: Paul Burton <paul.burton@mips.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 5/7 v2] MIPS: use the generic uncached segment support in
+	dma-direct
+Thread-Topic: [PATCH 5/7 v2] MIPS: use the generic uncached segment support in
+	dma-direct
+Thread-Index: AQHVAB+93knDJH4MwEqQLib+MMfMNKZWgkOA
+Date: Wed, 1 May 2019 17:13:57 +0000
+Message-ID: <20190501171355.7wnrutfnax5djkpx@pburton-laptop>
+References: <20190430110032.25301-1-hch@lst.de>
+	<20190430110032.25301-6-hch@lst.de>
+	<20190430201041.536amvinrcvd2wua@pburton-laptop>
+	<20190430202947.GA30262@lst.de>
+	<20190430211105.ielntedm46uqamca@pburton-laptop>
+	<20190501131339.GA890@lst.de>
+In-Reply-To: <20190501131339.GA890@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR02CA0050.namprd02.prod.outlook.com
+	(2603:10b6:a03:54::27) To MWHPR2201MB1277.namprd22.prod.outlook.com
+	(2603:10b6:301:24::17)
+user-agent: NeoMutt/20180716
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=pburton@wavecomp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [12.94.197.246]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 11d33d32-661c-4be2-e2ef-08d6ce586500
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);
+	SRVR:MWHPR2201MB1360; 
+x-ms-traffictypediagnostic: MWHPR2201MB1360:
+x-microsoft-antispam-prvs: <MWHPR2201MB1360446168387E44DE27414AC13B0@MWHPR2201MB1360.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1148;
+x-forefront-prvs: 00246AB517
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10019020)(7916004)(39840400004)(366004)(136003)(396003)(346002)(376002)(199004)(189003)(44832011)(71190400001)(71200400001)(486006)(4744005)(6436002)(6486002)(1076003)(476003)(11346002)(6506007)(386003)(8676002)(73956011)(102836004)(26005)(81166006)(81156014)(478600001)(6116002)(3846002)(66946007)(229853002)(305945005)(2906002)(7736002)(446003)(256004)(66476007)(64756008)(66446008)(66556008)(7416002)(6916009)(8936002)(4326008)(68736007)(33716001)(6512007)(52116002)(76176011)(99286004)(53936002)(42882007)(6246003)(9686003)(5660300002)(66066001)(316002)(186003)(58126008)(54906003)(14454004)(25786009)(41533002);
+	DIR:OUT; SFP:1102; SCL:1; SRVR:MWHPR2201MB1360;
+	H:MWHPR2201MB1277.namprd22.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: wavecomp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: RyJnvgB3VbpTL1lCiqOR1TUJLbWECPHaCuWA4fJ4a25biAZrmmqnIY/y4PaIgDe+k9ZqYq6Kue008thEQ7/ViQ0msPhX/yfaRI4Lu1LwY0MUXoN9ZHu0fWjLG1cN53DkiOjeJ17ykF8TOzIYyWDCnhN4AwRHESAlxD5kGqKCkJjiKX4wqU41M9uxtrB6pNYbmBe1478S51AbWB0ZceRXxMX0lpP5EuF1C9GJYOlvXvGVIlEinM4Y8iyJpdQk6FQwXM4TzOSuWZwBO4GjFt4f6MSKj6bhnToCXk4jvAzHre8aQFrce1x0zNCKn80ju95fNSN1mhqRloSJxq8uPM+Ty44XPZeB+xEbJ/YCDZlPhjPnwsS3J70XuYQV9KemHV8BNMyOOZY3IuIzSL7FdDWmRWrv2vEECO89rI8SxzaLvZ8=
+Content-ID: <F14412FE76975045800B7CCED7EAD807@namprd22.prod.outlook.com>
 MIME-Version: 1.0
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
-	<1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
-	<20190501143742.GA13089@e121166-lin.cambridge.arm.com>
-In-Reply-To: <20190501143742.GA13089@e121166-lin.cambridge.arm.com>
-Date: Wed, 1 May 2019 21:14:06 +0530
-Message-ID:
- <CABe79T58F+xikMGthd4wc19qQzC3=Q4znaaf6qDMjBXn+PBpfw@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource entries
-	to host bridge
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: poza@codeaurora.org, Ray Jui <rjui@broadcom.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux-foundation.org,
-	BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
-	linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-	Robin Murphy <robin.murphy@arm.com>
+X-OriginatorOrg: mips.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11d33d32-661c-4be2-e2ef-08d6ce586500
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2019 17:13:57.6422 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1360
+Cc: Michal Simek <monstr@monstr.eu>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	James Hogan <jhogan@kernel.org>,
+	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+	Ralf Baechle <ralf@linux-mips.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+	Ley Foon Tan <lftan@altera.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -86,149 +124,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Srinath Mannam via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Srinath Mannam <srinath.mannam@broadcom.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190501154406.vD-t7-rNzzKmRu1MHmRnrU7AdD6Lo7i4H_igDoHh46c@z>
+Message-ID: <20190501171357.z7smeWGMlidtHduaiLcQRxAP0vkivtnZFjq01bQN-5M@z>
 
-Hi Lorenzo,
+Hi Christoph,
 
-Please see my reply below.
+On Wed, May 01, 2019 at 03:13:39PM +0200, Christoph Hellwig wrote:
+> Stop providing our arch alloc/free hooks and just expose the segment
+> offset instead.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/mips/Kconfig              |  1 +
+>  arch/mips/include/asm/page.h   |  3 ---
+>  arch/mips/jazz/jazzdma.c       |  6 ------
+>  arch/mips/mm/dma-noncoherent.c | 26 +++++++++-----------------
+>  4 files changed, 10 insertions(+), 26 deletions(-)
 
-On Wed, May 1, 2019 at 8:07 PM Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
->
-> On Fri, Apr 12, 2019 at 08:43:35AM +0530, Srinath Mannam wrote:
-> > IPROC host has the limitation that it can use only those address ranges
-> > given by dma-ranges property as inbound address. So that the memory
-> > address holes in dma-ranges should be reserved to allocate as DMA address.
-> >
-> > Inbound address of host accessed by PCIe devices will not be translated
-> > before it comes to IOMMU or directly to PE.
->
-> What does that mean "directly to PE" ?
-In general, with IOMMU enable case, inbound address access of endpoint
-will come to IOMMU.
-If IOMMU disable then it comes to PE (processing element - ARM).
->
-> IIUC all you want to say is that there is no entity translating
-> PCI memory transactions addresses before they it the PCI host
-> controller inbound regions address decoder.
-In our SOC we have an entity (Inside PCIe RC) which will translate
-inbound address before it goes to
-IOMMU or PE. In other SOCs this will not be the case, all inbound
-address access will go to IOMMU or
-PE.
-Regards,
-Srinath.
->
-> > But the limitation of this host is, access to few address ranges are
-> > ignored. So that IOVA ranges for these address ranges have to be
-> > reserved.
-> >
-> > All allowed address ranges are listed in dma-ranges DT parameter. These
-> > address ranges are converted as resource entries and listed in sorted
-> > order add added to dma_ranges list of PCI host bridge structure.
-> >
-> > Ex:
-> > dma-ranges = < \
-> >   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
-> >   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
-> >   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
-> >
-> > In the above example of dma-ranges, memory address from
-> > 0x0 - 0x80000000,
-> > 0x100000000 - 0x800000000,
-> > 0x1000000000 - 0x8000000000 and
-> > 0x10000000000 - 0xffffffffffffffff.
-> > are not allowed to use as inbound addresses.
-> >
-> > Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> > Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
-> > Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
-> > ---
-> >  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 43 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-> > index c20fd6b..94ba5c0 100644
-> > --- a/drivers/pci/controller/pcie-iproc.c
-> > +++ b/drivers/pci/controller/pcie-iproc.c
-> > @@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
-> >       return ret;
-> >  }
-> >
-> > +static int
-> > +iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
-> > +                      struct of_pci_range *range)
-> > +{
-> > +     struct resource *res;
-> > +     struct resource_entry *entry, *tmp;
-> > +     struct list_head *head = resources;
-> > +
-> > +     res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-> > +     if (!res)
-> > +             return -ENOMEM;
-> > +
-> > +     resource_list_for_each_entry(tmp, resources) {
-> > +             if (tmp->res->start < range->cpu_addr)
-> > +                     head = &tmp->node;
-> > +     }
-> > +
-> > +     res->start = range->cpu_addr;
-> > +     res->end = res->start + range->size - 1;
-> > +
-> > +     entry = resource_list_create_entry(res, 0);
-> > +     if (!entry)
-> > +             return -ENOMEM;
-> > +
-> > +     entry->offset = res->start - range->cpu_addr;
-> > +     resource_list_add(entry, head);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
-> >  {
-> > +     struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
-> >       struct of_pci_range range;
-> >       struct of_pci_range_parser parser;
-> >       int ret;
-> > +     LIST_HEAD(resources);
-> >
-> >       /* Get the dma-ranges from DT */
-> >       ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
-> > @@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
-> >               return ret;
-> >
-> >       for_each_of_pci_range(&parser, &range) {
-> > +             ret = iproc_pcie_add_dma_range(pcie->dev,
-> > +                                            &resources,
-> > +                                            &range);
-> > +             if (ret)
-> > +                     goto out;
-> >               /* Each range entry corresponds to an inbound mapping region */
-> >               ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
-> >               if (ret)
-> > -                     return ret;
-> > +                     goto out;
-> >       }
-> >
-> > +     list_splice_init(&resources, &host->dma_ranges);
-> > +
-> >       return 0;
-> > +out:
-> > +     pci_free_resource_list(&resources);
-> > +     return ret;
-> >  }
-> >
-> >  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
-> > --
-> > 2.7.4
-> >
+This one looks good to me now, for patches 1 & 5:
+
+  Acked-by: Paul Burton <paul.burton@mips.com>
+
+Thanks,
+    Paul
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
