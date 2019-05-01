@@ -1,135 +1,47 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v4 3/3] PCI: iproc: Add sorted dma ranges resource
- entries to host bridge
-Date: Wed, 1 May 2019 15:37:42 +0100
-Message-ID: <20190501143742.GA13089@e121166-lin.cambridge.arm.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
- <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
+From: Waiman Long <longman@redhat.com>
+Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
+ Ownership (XPFO)
+Date: Wed, 1 May 2019 10:49:44 -0400
+Message-ID: <35c4635e-8214-7dde-b4ec-4cb266b2ea10@redhat.com>
+References: <cover.1554248001.git.khalid.aziz@oracle.com>
+ <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
+ <20190417161042.GA43453@gmail.com>
+ <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1555038815-31916-4-git-send-email-srinath.mannam@broadcom.com>
+In-Reply-To: <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Srinath Mannam <srinath.mannam@broadcom.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Khalid Aziz <khalid.aziz@oracle.com>, Ingo Molnar <mingo@kernel.org>
+Cc: juergh@gmail.com, tycho@tycho.ws, jsteckli@amazon.de, keescook@google.com, konrad.wilk@oracle.com, Juerg Haefliger <juerg.haefliger@canonical.com>, deepa.srinivasan@oracle.com, chris.hyser@oracle.com, tyhicks@canonical.com, dwmw@amazon.co.uk, andrew.cooper3@citrix.com, jcm@redhat.com, boris.ostrovsky@oracle.com, iommu@lists.linux-foundation.org, x86@kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-security-module@vger.kernel.org, Khalid Aziz <khalid@gonehiking.org>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Thomas Gleixner <tglx@linutronix.de>, Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Dave
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 12, 2019 at 08:43:35AM +0530, Srinath Mannam wrote:
-> IPROC host has the limitation that it can use only those address ranges
-> given by dma-ranges property as inbound address. So that the memory
-> address holes in dma-ranges should be reserved to allocate as DMA address.
-> 
-> Inbound address of host accessed by PCIe devices will not be translated
-> before it comes to IOMMU or directly to PE.
+On Wed, Apr 03, 2019 at 11:34:04AM -0600, Khalid Aziz wrote:
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt
+b/Documentation/admin-guide/kernel-parameters.txt
 
-What does that mean "directly to PE" ?
+> index 858b6c0b9a15..9b36da94760e 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -2997,6 +2997,12 @@
+>
+>      nox2apic    [X86-64,APIC] Do not enable x2APIC mode.
+>
+> +    noxpfo        [XPFO] Disable eXclusive Page Frame Ownership (XPFO)
+> +            when CONFIG_XPFO is on. Physical pages mapped into
+> +            user applications will also be mapped in the
+> +            kernel's address space as if CONFIG_XPFO was not
+> +            enabled.
+> +
+>      cpu0_hotplug    [X86] Turn on CPU0 hotplug feature when
+>              CONFIG_BO OTPARAM_HOTPLUG_CPU0 is off.
+>              Some features depend on CPU0. Known dependencies are:
 
-IIUC all you want to say is that there is no entity translating
-PCI memory transactions addresses before they it the PCI host
-controller inbound regions address decoder.
+Given the big performance impact that XPFO can have. It should be off by
+default when configured. Instead, the xpfo option should be used to
+enable it.
 
-> But the limitation of this host is, access to few address ranges are
-> ignored. So that IOVA ranges for these address ranges have to be
-> reserved.
-> 
-> All allowed address ranges are listed in dma-ranges DT parameter. These
-> address ranges are converted as resource entries and listed in sorted
-> order add added to dma_ranges list of PCI host bridge structure.
-> 
-> Ex:
-> dma-ranges = < \
->   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
->   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
->   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
-> 
-> In the above example of dma-ranges, memory address from
-> 0x0 - 0x80000000,
-> 0x100000000 - 0x800000000,
-> 0x1000000000 - 0x8000000000 and
-> 0x10000000000 - 0xffffffffffffffff.
-> are not allowed to use as inbound addresses.
-> 
-> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
-> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
-> ---
->  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
->  1 file changed, 43 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-> index c20fd6b..94ba5c0 100644
-> --- a/drivers/pci/controller/pcie-iproc.c
-> +++ b/drivers/pci/controller/pcie-iproc.c
-> @@ -1146,11 +1146,43 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
->  	return ret;
->  }
->  
-> +static int
-> +iproc_pcie_add_dma_range(struct device *dev, struct list_head *resources,
-> +			 struct of_pci_range *range)
-> +{
-> +	struct resource *res;
-> +	struct resource_entry *entry, *tmp;
-> +	struct list_head *head = resources;
-> +
-> +	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-> +	if (!res)
-> +		return -ENOMEM;
-> +
-> +	resource_list_for_each_entry(tmp, resources) {
-> +		if (tmp->res->start < range->cpu_addr)
-> +			head = &tmp->node;
-> +	}
-> +
-> +	res->start = range->cpu_addr;
-> +	res->end = res->start + range->size - 1;
-> +
-> +	entry = resource_list_create_entry(res, 0);
-> +	if (!entry)
-> +		return -ENOMEM;
-> +
-> +	entry->offset = res->start - range->cpu_addr;
-> +	resource_list_add(entry, head);
-> +
-> +	return 0;
-> +}
-> +
->  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
->  {
-> +	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
->  	struct of_pci_range range;
->  	struct of_pci_range_parser parser;
->  	int ret;
-> +	LIST_HEAD(resources);
->  
->  	/* Get the dma-ranges from DT */
->  	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
-> @@ -1158,13 +1190,23 @@ static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
->  		return ret;
->  
->  	for_each_of_pci_range(&parser, &range) {
-> +		ret = iproc_pcie_add_dma_range(pcie->dev,
-> +					       &resources,
-> +					       &range);
-> +		if (ret)
-> +			goto out;
->  		/* Each range entry corresponds to an inbound mapping region */
->  		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
->  		if (ret)
-> -			return ret;
-> +			goto out;
->  	}
->  
-> +	list_splice_init(&resources, &host->dma_ranges);
-> +
->  	return 0;
-> +out:
-> +	pci_free_resource_list(&resources);
-> +	return ret;
->  }
->  
->  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
-> -- 
-> 2.7.4
-> 
+Cheers,
+Longman
