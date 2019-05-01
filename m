@@ -3,73 +3,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CACF4C43219
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E8BC43219
+	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:19:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 94A7820835
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:14:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 040362085A
+	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 17:19:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=wavesemi.onmicrosoft.com header.i=@wavesemi.onmicrosoft.com header.b="mCxlssX/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 94A7820835
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=wavesemi.onmicrosoft.com header.i=@wavesemi.onmicrosoft.com header.b="jCPOVE/Z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 040362085A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mips.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5B24D2AA3;
-	Wed,  1 May 2019 17:14:38 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D42C52B29;
+	Wed,  1 May 2019 17:19:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8C6DB2A83
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C86CA2AE0
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 17:14:00 +0000 (UTC)
+	Wed,  1 May 2019 17:19:01 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com
-	(mail-eopbgr820094.outbound.protection.outlook.com [40.107.82.94])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 025AC876
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com
+	(mail-eopbgr700136.outbound.protection.outlook.com [40.107.70.136])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 530CD87C
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 17:13:59 +0000 (UTC)
+	Wed,  1 May 2019 17:19:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
 	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=HABJON+PUwKKspjD9/5rvoUoFvtxnRJTtI3uP9m84jA=;
-	b=mCxlssX/fSUbWEVb2VVYdxuzP6WTJXUoID7oXybpmZtZVwXaaUwA6oDPteNnndFZnjcms3WVbEk0dOF3DlZqKIX7AfYJZP4sJmCbYRtdw60uIVrSxajoSw9KnZsTqvAgS57jzMC7IzyRbPDt9Kp6+5jrtJIrn0lz0wT4pi/eiYQ=
+	bh=KS6/d+4+IXnKcBtYuGKMIYeMAKopB22B+uUclECs8fI=;
+	b=jCPOVE/ZeOC61qH4NX0GpnHgszZLyMY4sX4JSmpn3ZuWtFCqOlSX2w+m5hiP7cQTu7u6mfCc5xwqg1VE5MxM8ab7cD/yiZ9FI6E+lXJtx/trtOnZ3LEHGWPHg68ju8TTN5Js6O7USPQ/tYcIH0S7GtVyxK7WXbzKo4/4VWJ3Fnc=
 Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.174.162.17) by
-	MWHPR2201MB1360.namprd22.prod.outlook.com (10.174.162.150) with
-	Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1856.11; Wed, 1 May 2019 17:13:57 +0000
+	MWHPR2201MB1021.namprd22.prod.outlook.com (10.174.167.22) with
+	Microsoft SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1856.10; Wed, 1 May 2019 17:18:59 +0000
 Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
 	([fe80::b9d6:bf19:ec58:2765]) by
 	MWHPR2201MB1277.namprd22.prod.outlook.com
 	([fe80::b9d6:bf19:ec58:2765%7]) with mapi id 15.20.1835.018;
-	Wed, 1 May 2019 17:13:57 +0000
+	Wed, 1 May 2019 17:18:59 +0000
 From: Paul Burton <paul.burton@mips.com>
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 5/7 v2] MIPS: use the generic uncached segment support in
-	dma-direct
-Thread-Topic: [PATCH 5/7 v2] MIPS: use the generic uncached segment support in
-	dma-direct
-Thread-Index: AQHVAB+93knDJH4MwEqQLib+MMfMNKZWgkOA
-Date: Wed, 1 May 2019 17:13:57 +0000
-Message-ID: <20190501171355.7wnrutfnax5djkpx@pburton-laptop>
+Subject: Re: [PATCH 4/7] dma-direct: provide generic support for uncached
+	kernel segments
+Thread-Topic: [PATCH 4/7] dma-direct: provide generic support for uncached
+	kernel segments
+Thread-Index: AQHU/0QKKKiJlPSrw0CLkNp0FmAaxqZWhWOA
+Date: Wed, 1 May 2019 17:18:59 +0000
+Message-ID: <20190501171857.chfxqntvm6r4xrr4@pburton-laptop>
 References: <20190430110032.25301-1-hch@lst.de>
-	<20190430110032.25301-6-hch@lst.de>
-	<20190430201041.536amvinrcvd2wua@pburton-laptop>
-	<20190430202947.GA30262@lst.de>
-	<20190430211105.ielntedm46uqamca@pburton-laptop>
-	<20190501131339.GA890@lst.de>
-In-Reply-To: <20190501131339.GA890@lst.de>
+	<20190430110032.25301-5-hch@lst.de>
+In-Reply-To: <20190430110032.25301-5-hch@lst.de>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR02CA0050.namprd02.prod.outlook.com
-	(2603:10b6:a03:54::27) To MWHPR2201MB1277.namprd22.prod.outlook.com
+x-clientproxiedby: BYAPR02CA0064.namprd02.prod.outlook.com
+	(2603:10b6:a03:54::41) To MWHPR2201MB1277.namprd22.prod.outlook.com
 	(2603:10b6:301:24::17)
 user-agent: NeoMutt/20180716
 authentication-results: spf=none (sender IP is )
@@ -77,32 +73,32 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [12.94.197.246]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 11d33d32-661c-4be2-e2ef-08d6ce586500
+x-ms-office365-filtering-correlation-id: 6c8e4522-e224-4b80-ccd8-08d6ce59191e
 x-microsoft-antispam: BCL:0; PCL:0;
 	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);
-	SRVR:MWHPR2201MB1360; 
-x-ms-traffictypediagnostic: MWHPR2201MB1360:
-x-microsoft-antispam-prvs: <MWHPR2201MB1360446168387E44DE27414AC13B0@MWHPR2201MB1360.namprd22.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1148;
+	SRVR:MWHPR2201MB1021; 
+x-ms-traffictypediagnostic: MWHPR2201MB1021:
+x-microsoft-antispam-prvs: <MWHPR2201MB102130E0DCDA14F861D1BE55C13B0@MWHPR2201MB1021.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 00246AB517
 x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(7916004)(39840400004)(366004)(136003)(396003)(346002)(376002)(199004)(189003)(44832011)(71190400001)(71200400001)(486006)(4744005)(6436002)(6486002)(1076003)(476003)(11346002)(6506007)(386003)(8676002)(73956011)(102836004)(26005)(81166006)(81156014)(478600001)(6116002)(3846002)(66946007)(229853002)(305945005)(2906002)(7736002)(446003)(256004)(66476007)(64756008)(66446008)(66556008)(7416002)(6916009)(8936002)(4326008)(68736007)(33716001)(6512007)(52116002)(76176011)(99286004)(53936002)(42882007)(6246003)(9686003)(5660300002)(66066001)(316002)(186003)(58126008)(54906003)(14454004)(25786009)(41533002);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:MWHPR2201MB1360;
+	SFS:(10019020)(7916004)(346002)(396003)(39840400004)(376002)(136003)(366004)(189003)(199004)(6486002)(486006)(476003)(54906003)(68736007)(229853002)(8936002)(53936002)(1076003)(316002)(42882007)(6506007)(66946007)(11346002)(76176011)(4326008)(44832011)(71200400001)(8676002)(6436002)(66476007)(102836004)(66556008)(33716001)(66446008)(6916009)(73956011)(71190400001)(81166006)(14444005)(81156014)(446003)(386003)(256004)(52116002)(5660300002)(26005)(6116002)(25786009)(64756008)(14454004)(99286004)(3846002)(478600001)(66066001)(186003)(7416002)(58126008)(305945005)(7736002)(2906002)(6246003)(6512007)(9686003)(41533002);
+	DIR:OUT; SFP:1102; SCL:1; SRVR:MWHPR2201MB1021;
 	H:MWHPR2201MB1277.namprd22.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
 received-spf: None (protection.outlook.com: wavecomp.com does not designate
 	permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: RyJnvgB3VbpTL1lCiqOR1TUJLbWECPHaCuWA4fJ4a25biAZrmmqnIY/y4PaIgDe+k9ZqYq6Kue008thEQ7/ViQ0msPhX/yfaRI4Lu1LwY0MUXoN9ZHu0fWjLG1cN53DkiOjeJ17ykF8TOzIYyWDCnhN4AwRHESAlxD5kGqKCkJjiKX4wqU41M9uxtrB6pNYbmBe1478S51AbWB0ZceRXxMX0lpP5EuF1C9GJYOlvXvGVIlEinM4Y8iyJpdQk6FQwXM4TzOSuWZwBO4GjFt4f6MSKj6bhnToCXk4jvAzHre8aQFrce1x0zNCKn80ju95fNSN1mhqRloSJxq8uPM+Ty44XPZeB+xEbJ/YCDZlPhjPnwsS3J70XuYQV9KemHV8BNMyOOZY3IuIzSL7FdDWmRWrv2vEECO89rI8SxzaLvZ8=
-Content-ID: <F14412FE76975045800B7CCED7EAD807@namprd22.prod.outlook.com>
+x-microsoft-antispam-message-info: ntzWWyOYuaRBf5WE4m6wkrUq087GSxTKBz0aQPbdDkCgoUPDuuHVlhs9NYhW19DgGvrmgMtGgfeOoWfqhyl7kR+cmE/2GrKR9u6r3sDTDbPUuq9qGtQ8OBkYrwQgIsYJmpp3eNFzmD7k/a6lJ+CbTVeX8SZHfRI8JPlKSt3JI78gtG79wpYhn44v/zkT+5ndWJ2B3DquAYGMd7rTvr/7Swu3OQc1kwi/9IVnCYyCjnMHBlxrqASJ0SmLuaQs/CIYjMOcy6nP0WulKc47Q8L3Tj5TttJZtLOSTRBkrMY/GRjm9FVuzYOjl6JbuDBxwxUlq4uOC4OZ2z68ZQtDi18cw9OOIxy+MZl4hLlM5A0gSlw4eMdBiTy3er4qhrVgUmqQ9tBDcsjiZ63Hye6IH19MGRwXRC8TlfnplH8URb2mURA=
+Content-ID: <D027B3DE25938644AE5DFE1EA5806D28@namprd22.prod.outlook.com>
 MIME-Version: 1.0
 X-OriginatorOrg: mips.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11d33d32-661c-4be2-e2ef-08d6ce586500
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2019 17:13:57.6422 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c8e4522-e224-4b80-ccd8-08d6ce59191e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2019 17:18:59.1556 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1360
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1021
 Cc: Michal Simek <monstr@monstr.eu>,
 	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
 	James Hogan <jhogan@kernel.org>,
@@ -128,25 +124,46 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190501171357.z7smeWGMlidtHduaiLcQRxAP0vkivtnZFjq01bQN-5M@z>
+Message-ID: <20190501171859.UKD3YisM6bXL4PdqzphwHG55qEZkUsbZGSp4iWuPh7c@z>
 
 Hi Christoph,
 
-On Wed, May 01, 2019 at 03:13:39PM +0200, Christoph Hellwig wrote:
-> Stop providing our arch alloc/free hooks and just expose the segment
-> offset instead.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/mips/Kconfig              |  1 +
->  arch/mips/include/asm/page.h   |  3 ---
->  arch/mips/jazz/jazzdma.c       |  6 ------
->  arch/mips/mm/dma-noncoherent.c | 26 +++++++++-----------------
->  4 files changed, 10 insertions(+), 26 deletions(-)
+On Tue, Apr 30, 2019 at 07:00:29AM -0400, Christoph Hellwig wrote:
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 2c2772e9702a..d15a535c3e67 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -164,6 +164,13 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+>  	}
+>  
+>  	ret = page_address(page);
+> +
+> +	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+> +	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
+> +		arch_dma_prep_coherent(page, size);
+> +		ret = uncached_kernel_address(ret);
+> +	}
+> +
+>  	if (force_dma_unencrypted()) {
+>  		set_memory_decrypted((unsigned long)ret, 1 << get_order(size));
+>  		*dma_handle = __phys_to_dma(dev, page_to_phys(page));
+> @@ -171,6 +178,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+>  		*dma_handle = phys_to_dma(dev, page_to_phys(page));
+>  	}
+>  	memset(ret, 0, size);
+> +
+>  	return ret;
+>  }
 
-This one looks good to me now, for patches 1 & 5:
+I'm not so sure about this part though.
 
-  Acked-by: Paul Burton <paul.burton@mips.com>
+On MIPS we currently don't clear the allocated memory with memset. Is
+doing that really necessary?
+
+If it is necessary then as-is this code will clear the allocated memory
+using uncached writes which will be pretty slow. It would be much more
+efficient to perform the memset before arch_dma_prep_coherent() & before
+converting ret to an uncached address.
 
 Thanks,
     Paul
