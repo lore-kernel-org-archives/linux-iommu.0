@@ -1,24 +1,35 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 5/7] MIPS: use the generic uncached segment support in
- dma-direct
-Date: Tue, 30 Apr 2019 23:15:54 +0200
-Message-ID: <20190430211553.GA31109@lst.de>
-References: <20190430110032.25301-1-hch@lst.de> <20190430110032.25301-6-hch@lst.de> <20190430201041.536amvinrcvd2wua@pburton-laptop> <20190430202947.GA30262@lst.de> <20190430211105.ielntedm46uqamca@pburton-laptop>
+From: Qian Cai <cai@lca.pw>
+Subject: Re: "iommu/amd: Set exclusion range correctly" causes smartpqi
+ offline
+Date: Tue, 30 Apr 2019 21:41:56 -0400
+Message-ID: <61d3a8d6-48b0-0ec4-82e0-10c67ad9dcd7@lca.pw>
+References: <1556290348.6132.6.camel@lca.pw> <20190426152632.GC3173@suse.de>
+ <1556294112.6132.7.camel@lca.pw> <20190429142326.GA4678@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190430211105.ielntedm46uqamca@pburton-laptop>
+In-Reply-To: <20190429142326.GA4678@suse.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Burton <paul.burton@mips.com>
-Cc: Christoph Hellwig <hch@lst.de>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
+To: Joerg Roedel <jroedel@suse.de>
+Cc: iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 30, 2019 at 09:11:07PM +0000, Paul Burton wrote:
-> Right but dma_direct_alloc_pages() already checks for the PageHighMem
-> case & returns before ever calling arch_dma_prep_coherent(), no?
 
-True.  And of course it can't be remapped into the uncached segment
-anyway.  So yes, we should drop it.  Eventually I want to add generic
-support for DMA_ATTR_NO_KERNEL_MAPPING, but that'll involved auditing
-all instances anyway.
+
+On 4/29/19 10:23 AM, Joerg Roedel wrote:
+> On Fri, Apr 26, 2019 at 11:55:12AM -0400, Qian Cai wrote:
+>> https://git.sr.ht/~cai/linux-debug/blob/master/dmesg
+> 
+> Thanks, I can't see any definitions for unity ranges or exclusion ranges
+> in the IVRS table dump, which makes it even more weird.
+> 
+> Can you please send me the output of
+> 
+> 	for f in `ls -1 /sys/kernel/iommu_groups/*/reserved_regions`; do echo "---$f"; cat $f;done
+> 
+> to double-check?
+
+It is going to take a while to reserve that system again to gather the
+information. BTW, this is only reproducible on linux-next but not mainline.
