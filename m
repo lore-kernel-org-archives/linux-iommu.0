@@ -1,80 +1,126 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v4 0/3] PCIe Host request to reserve IOVA
-Date: Wed, 1 May 2019 07:55:31 -0500
-Message-ID: <20190501125530.GA15590@google.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
- <20190501113038.GA7961@e121166-lin.cambridge.arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5/7 v2] MIPS: use the generic uncached segment support in
+ dma-direct
+Date: Wed, 1 May 2019 15:13:39 +0200
+Message-ID: <20190501131339.GA890@lst.de>
+References: <20190430110032.25301-1-hch@lst.de> <20190430110032.25301-6-hch@lst.de> <20190430201041.536amvinrcvd2wua@pburton-laptop> <20190430202947.GA30262@lst.de> <20190430211105.ielntedm46uqamca@pburton-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190501113038.GA7961@e121166-lin.cambridge.arm.com>
+In-Reply-To: <20190430211105.ielntedm46uqamca@pburton-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Srinath Mannam <srinath.mannam@broadcom.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Paul Burton <paul.burton@mips.com>
+Cc: Christoph Hellwig <hch@lst.de>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 01, 2019 at 12:30:38PM +0100, Lorenzo Pieralisi wrote:
-> On Fri, Apr 12, 2019 at 08:43:32AM +0530, Srinath Mannam wrote:
-> > Few SOCs have limitation that their PCIe host can't allow few inbound
-> > address ranges. Allowed inbound address ranges are listed in dma-ranges
-> > DT property and this address ranges are required to do IOVA mapping.
-> > Remaining address ranges have to be reserved in IOVA mapping.
-> > 
-> > PCIe Host driver of those SOCs has to list resource entries of allowed
-> > address ranges given in dma-ranges DT property in sorted order. This
-> > sorted list of resources will be processed and reserve IOVA address for
-> > inaccessible address holes while initializing IOMMU domain.
-> > 
-> > This patch set is based on Linux-5.0-rc2.
-> > 
-> > Changes from v3:
-> >   - Addressed Robin Murphy review comments.
-> >     - pcie-iproc: parse dma-ranges and make sorted resource list.
-> >     - dma-iommu: process list and reserve gaps between entries
-> > 
-> > Changes from v2:
-> >   - Patch set rebased to Linux-5.0-rc2
-> > 
-> > Changes from v1:
-> >   - Addressed Oza review comments.
-> > 
-> > Srinath Mannam (3):
-> >   PCI: Add dma_ranges window list
-> >   iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
-> >   PCI: iproc: Add sorted dma ranges resource entries to host bridge
-> > 
-> >  drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
-> >  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
-> >  drivers/pci/probe.c                 |  3 +++
-> >  include/linux/pci.h                 |  1 +
-> >  4 files changed, 66 insertions(+), 1 deletion(-)
-> 
-> Bjorn, Joerg,
-> 
-> this series should not affect anything in the mainline other than its
-> consumer (ie patch 3); if that's the case should we consider it for v5.2
-> and if yes how are we going to merge it ?
+Stop providing our arch alloc/free hooks and just expose the segment
+offset instead.
 
-I acked the first one
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/mips/Kconfig              |  1 +
+ arch/mips/include/asm/page.h   |  3 ---
+ arch/mips/jazz/jazzdma.c       |  6 ------
+ arch/mips/mm/dma-noncoherent.c | 26 +++++++++-----------------
+ 4 files changed, 10 insertions(+), 26 deletions(-)
 
-Robin reviewed the second
-(https://lore.kernel.org/lkml/e6c812d6-0cad-4cfd-defd-d7ec427a6538@arm.com)
-(though I do agree with his comment about DMA_BIT_MASK()), Joerg was OK
-with it if Robin was
-(https://lore.kernel.org/lkml/20190423145721.GH29810@8bytes.org).
-
-Eric reviewed the third (and pointed out a typo).
-
-My Kconfiggery never got fully answered -- it looks to me as though it's
-possible to build pcie-iproc without the DMA hole support, and I thought
-the whole point of this series was to deal with those holes
-(https://lore.kernel.org/lkml/20190418234241.GF126710@google.com).  I would
-have expected something like making pcie-iproc depend on IOMMU_SUPPORT.
-But Srinath didn't respond to that, so maybe it's not an issue and it
-should only affect pcie-iproc anyway.
-
-So bottom line, I'm fine with merging it for v5.2.  Do you want to merge
-it, Lorenzo, or ...?
-
-Bjorn
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 4a5f5b0ee9a9..cde4b490f3c7 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -9,6 +9,7 @@ config MIPS
+ 	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
++	select ARCH_HAS_UNCACHED_SEGMENT
+ 	select ARCH_SUPPORTS_UPROBES
+ 	select ARCH_USE_BUILTIN_BSWAP
+ 	select ARCH_USE_CMPXCHG_LOCKREF if 64BIT
+diff --git a/arch/mips/include/asm/page.h b/arch/mips/include/asm/page.h
+index 6b31c93b5eaa..23e0f1386e04 100644
+--- a/arch/mips/include/asm/page.h
++++ b/arch/mips/include/asm/page.h
+@@ -258,9 +258,6 @@ extern int __virt_addr_valid(const volatile void *kaddr);
+ 	 ((current->personality & READ_IMPLIES_EXEC) ? VM_EXEC : 0) | \
+ 	 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+ 
+-#define UNCAC_ADDR(addr)	(UNCAC_BASE + __pa(addr))
+-#define CAC_ADDR(addr)		((unsigned long)__va((addr) - UNCAC_BASE))
+-
+ #include <asm-generic/memory_model.h>
+ #include <asm-generic/getorder.h>
+ 
+diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
+index bedb5047aff3..1804dc9d8136 100644
+--- a/arch/mips/jazz/jazzdma.c
++++ b/arch/mips/jazz/jazzdma.c
+@@ -575,10 +575,6 @@ static void *jazz_dma_alloc(struct device *dev, size_t size,
+ 		return NULL;
+ 	}
+ 
+-	if (!(attrs & DMA_ATTR_NON_CONSISTENT)) {
+-		dma_cache_wback_inv((unsigned long)ret, size);
+-		ret = (void *)UNCAC_ADDR(ret);
+-	}
+ 	return ret;
+ }
+ 
+@@ -586,8 +582,6 @@ static void jazz_dma_free(struct device *dev, size_t size, void *vaddr,
+ 		dma_addr_t dma_handle, unsigned long attrs)
+ {
+ 	vdma_free(dma_handle);
+-	if (!(attrs & DMA_ATTR_NON_CONSISTENT))
+-		vaddr = (void *)CAC_ADDR((unsigned long)vaddr);
+ 	dma_direct_free_pages(dev, size, vaddr, dma_handle, attrs);
+ }
+ 
+diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
+index f9549d2fbea3..ed56c6fa7be2 100644
+--- a/arch/mips/mm/dma-noncoherent.c
++++ b/arch/mips/mm/dma-noncoherent.c
+@@ -44,33 +44,25 @@ static inline bool cpu_needs_post_dma_flush(struct device *dev)
+ 	}
+ }
+ 
+-void *arch_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
++void arch_dma_prep_coherent(struct page *page, size_t size)
+ {
+-	void *ret;
+-
+-	ret = dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
+-	if (ret && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
+-		dma_cache_wback_inv((unsigned long) ret, size);
+-		ret = (void *)UNCAC_ADDR(ret);
+-	}
++	dma_cache_wback_inv((unsigned long)page_address(page), size);
++}
+ 
+-	return ret;
++void *uncached_kernel_address(void *addr)
++{
++	return (void *)(__pa(addr) + UNCAC_BASE);
+ }
+ 
+-void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+-		dma_addr_t dma_addr, unsigned long attrs)
++void *cached_kernel_address(void *addr)
+ {
+-	if (!(attrs & DMA_ATTR_NON_CONSISTENT))
+-		cpu_addr = (void *)CAC_ADDR((unsigned long)cpu_addr);
+-	dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
++	return __va(addr) - UNCAC_BASE;
+ }
+ 
+ long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
+ 		dma_addr_t dma_addr)
+ {
+-	unsigned long addr = CAC_ADDR((unsigned long)cpu_addr);
+-	return page_to_pfn(virt_to_page((void *)addr));
++	return page_to_pfn(virt_to_page(cached_kernel_address(cpu_addr)));
+ }
+ 
+ pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
+-- 
+2.20.1
