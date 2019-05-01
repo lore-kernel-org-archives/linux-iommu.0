@@ -1,35 +1,84 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v7 05/23] iommu: Introduce cache_invalidate API
-Date: Wed, 1 May 2019 11:38:13 +0100
-Message-ID: <a9745aef-8686-c761-e3d0-dd0e98a1f5b2@arm.com>
-References: <20190408121911.24103-1-eric.auger@redhat.com>
- <20190408121911.24103-6-eric.auger@redhat.com>
+From: Julien Grall <julien.grall@arm.com>
+Subject: Re: [PATCH v2 4/7] irqchip/gic-v3-its: Don't map the MSI page in
+ its_irq_compose_msi_msg()
+Date: Wed, 1 May 2019 12:14:29 +0100
+Message-ID: <59ff2eda-74d4-6925-6ed0-8d40e8a892fa@arm.com>
+References: <20190429144428.29254-1-julien.grall@arm.com>
+ <20190429144428.29254-5-julien.grall@arm.com>
+ <17855fd3-7f7b-a962-e2bd-c9a0c2dbf765@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190408121911.24103-6-eric.auger@redhat.com>
+In-Reply-To: <17855fd3-7f7b-a962-e2bd-c9a0c2dbf765@redhat.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, will.deacon@arm.com, robin.murphy@arm.com
-Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
+To: Auger Eric <eric.auger@redhat.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: jason@lakedaemon.net, douliyangs@gmail.com, marc.zyngier@arm.com, robin.murphy@arm.com, miquel.raynal@bootlin.com, tglx@linutronix.de, logang@deltatee.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/04/2019 13:18, Eric Auger wrote:
-> +int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
-> +			   struct iommu_cache_invalidate_info *inv_info)
-> +{
-> +	int ret = 0;
-> +
-> +	if (unlikely(!domain->ops->cache_invalidate))
-> +		return -ENODEV;
-> +
-> +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
-> +
-> +	return ret;
+On 30/04/2019 13:34, Auger Eric wrote:
+> Hi Julien,
 
-Nit: you don't really need ret
+Hi Eric,
 
-The UAPI looks good to me, so
+Thank you for the review!
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> 
+> On 4/29/19 4:44 PM, Julien Grall wrote:
+>> its_irq_compose_msi_msg() may be called from non-preemptible context.
+>> However, on RT, iommu_dma_map_msi_msg requires to be called from a
+>> preemptible context.
+>>
+>> A recent change split iommu_dma_map_msi_msg() in two new functions:
+>> one that should be called in preemptible context, the other does
+>> not have any requirement.
+>>
+>> The GICv3 ITS driver is reworked to avoid executing preemptible code in
+>> non-preemptible context. This can be achieved by preparing the MSI
+>> maping when allocating the MSI interrupt.
+> mapping
+>>
+>> Signed-off-by: Julien Grall <julien.grall@arm.com>
+>>
+>> ---
+>>      Changes in v2:
+>>          - Rework the commit message to use imperative mood
+>> ---
+>>   drivers/irqchip/irq-gic-v3-its.c | 5 ++++-
+>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+>> index 7577755bdcf4..12ddbcfe1b1e 100644
+>> --- a/drivers/irqchip/irq-gic-v3-its.c
+>> +++ b/drivers/irqchip/irq-gic-v3-its.c
+>> @@ -1179,7 +1179,7 @@ static void its_irq_compose_msi_msg(struct irq_data *d, struct msi_msg *msg)
+>>   	msg->address_hi		= upper_32_bits(addr);
+>>   	msg->data		= its_get_event_id(d);
+>>   
+>> -	iommu_dma_map_msi_msg(d->irq, msg);
+>> +	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(d), msg);
+>>   }
+>>   
+>>   static int its_irq_set_irqchip_state(struct irq_data *d,
+>> @@ -2566,6 +2566,7 @@ static int its_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
+>>   {
+>>   	msi_alloc_info_t *info = args;
+>>   	struct its_device *its_dev = info->scratchpad[0].ptr;
+>> +	struct its_node *its = its_dev->its;
+>>   	irq_hw_number_t hwirq;
+>>   	int err;
+>>   	int i;
+>> @@ -2574,6 +2575,8 @@ static int its_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
+>>   	if (err)
+>>   		return err;
+>>   
+>> +	err = iommu_dma_prepare_msi(info->desc, its->get_msi_base(its_dev));
+> Test err as in gicv2m driver?
+
+Hmmm yes. Marc, do you want me to respin the patch?
+
+Cheers,
+
+-- 
+Julien Grall
