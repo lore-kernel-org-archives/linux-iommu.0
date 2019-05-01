@@ -1,21 +1,17 @@
 From: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH 5/7 v2] MIPS: use the generic uncached segment support in
- dma-direct
-Date: Wed, 1 May 2019 17:13:57 +0000
-Message-ID: <20190501171355.7wnrutfnax5djkpx@pburton-laptop>
+Subject: Re: [PATCH 4/7] dma-direct: provide generic support for uncached
+ kernel segments
+Date: Wed, 1 May 2019 17:18:59 +0000
+Message-ID: <20190501171857.chfxqntvm6r4xrr4@pburton-laptop>
 References: <20190430110032.25301-1-hch@lst.de>
- <20190430110032.25301-6-hch@lst.de>
- <20190430201041.536amvinrcvd2wua@pburton-laptop>
- <20190430202947.GA30262@lst.de>
- <20190430211105.ielntedm46uqamca@pburton-laptop>
- <20190501131339.GA890@lst.de>
+ <20190430110032.25301-5-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190501131339.GA890@lst.de>
+In-Reply-To: <20190430110032.25301-5-hch@lst.de>
 Content-Language: en-US
-Content-ID: <F14412FE76975045800B7CCED7EAD807@namprd22.prod.outlook.com>
+Content-ID: <D027B3DE25938644AE5DFE1EA5806D28@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
 Cc: Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
@@ -23,21 +19,44 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Christoph,
 
-On Wed, May 01, 2019 at 03:13:39PM +0200, Christoph Hellwig wrote:
-> Stop providing our arch alloc/free hooks and just expose the segment
-> offset instead.
->=20
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/mips/Kconfig              |  1 +
->  arch/mips/include/asm/page.h   |  3 ---
->  arch/mips/jazz/jazzdma.c       |  6 ------
->  arch/mips/mm/dma-noncoherent.c | 26 +++++++++-----------------
->  4 files changed, 10 insertions(+), 26 deletions(-)
+On Tue, Apr 30, 2019 at 07:00:29AM -0400, Christoph Hellwig wrote:
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 2c2772e9702a..d15a535c3e67 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -164,6 +164,13 @@ void *dma_direct_alloc_pages(struct device *dev, siz=
+e_t size,
+>  	}
+> =20
+>  	ret =3D page_address(page);
+> +
+> +	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+> +	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
+> +		arch_dma_prep_coherent(page, size);
+> +		ret =3D uncached_kernel_address(ret);
+> +	}
+> +
+>  	if (force_dma_unencrypted()) {
+>  		set_memory_decrypted((unsigned long)ret, 1 << get_order(size));
+>  		*dma_handle =3D __phys_to_dma(dev, page_to_phys(page));
+> @@ -171,6 +178,7 @@ void *dma_direct_alloc_pages(struct device *dev, size=
+_t size,
+>  		*dma_handle =3D phys_to_dma(dev, page_to_phys(page));
+>  	}
+>  	memset(ret, 0, size);
+> +
+>  	return ret;
+>  }
 
-This one looks good to me now, for patches 1 & 5:
+I'm not so sure about this part though.
 
-  Acked-by: Paul Burton <paul.burton@mips.com>
+On MIPS we currently don't clear the allocated memory with memset. Is
+doing that really necessary?
+
+If it is necessary then as-is this code will clear the allocated memory
+using uncached writes which will be pretty slow. It would be much more
+efficient to perform the memset before arch_dma_prep_coherent() & before
+converting ret to an uncached address.
 
 Thanks,
     Paul
