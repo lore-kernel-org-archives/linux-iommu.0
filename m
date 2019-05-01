@@ -1,47 +1,29 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v2 06/19] drivers core: Add I/O ASID allocator
-Date: Wed, 1 May 2019 18:40:34 +0100
-Message-ID: <e3f1d619-1421-fd19-72ce-dadb56b07aaa@arm.com>
-References: <1556062279-64135-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1556062279-64135-7-git-send-email-jacob.jun.pan@linux.intel.com>
- <4550408f-39ff-7bf9-0072-a0898c6c2f60@redhat.com>
- <fd5b8c6c-05f0-307b-aaa2-0938337014a8@arm.com>
- <20190430132405.62902350@jacob-builder>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 4/7] dma-direct: provide generic support for uncached
+ kernel segments
+Date: Wed, 1 May 2019 19:49:05 +0200
+Message-ID: <20190501174905.GA20458@lst.de>
+References: <20190430110032.25301-1-hch@lst.de> <20190430110032.25301-5-hch@lst.de> <20190501171857.chfxqntvm6r4xrr4@pburton-laptop> <20190501172912.GA19375@lst.de> <20190501174033.6rj5aiopdeo4uqpw@pburton-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190430132405.62902350@jacob-builder>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190501174033.6rj5aiopdeo4uqpw@pburton-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Paul Burton <paul.burton@mips.com>
+Cc: Christoph Hellwig <hch@lst.de>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/04/2019 21:24, Jacob Pan wrote:
-> On Thu, 25 Apr 2019 11:41:05 +0100
-> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+On Wed, May 01, 2019 at 05:40:34PM +0000, Paul Burton wrote:
+> > > If it is necessary then as-is this code will clear the allocated memory
+> > > using uncached writes which will be pretty slow. It would be much more
+> > > efficient to perform the memset before arch_dma_prep_coherent() & before
+> > > converting ret to an uncached address.
+> > 
+> > Yes, we could do that.
 > 
->> On 25/04/2019 11:17, Auger Eric wrote:
->>>> +/**
->>>> + * ioasid_alloc - Allocate an IOASID
->>>> + * @set: the IOASID set
->>>> + * @min: the minimum ID (inclusive)
->>>> + * @max: the maximum ID (exclusive)
->>>> + * @private: data private to the caller
->>>> + *
->>>> + * Allocate an ID between @min and @max (or %0 and %INT_MAX).
->>>> Return the  
->>> I would remove "(or %0 and %INT_MAX)".  
->>
->> Agreed, those where the default values of idr, but the xarray doesn't
->> define a default max value. By the way, I do think squashing patches 6
->> and 7 would be better (keeping my SOB but you can change the author).
->>
-> I will squash 6 and 7 in v3. I will just add my SOB but keep the
-> author if that is OK.
+> Great; using cached writes would match the existing MIPS behavior.
 
-Sure, that works
-
-Thanks,
-Jean
+Can you test the stack with the two updated patches and ack them if
+they are fine?  That would allow getting at least the infrastructure
+and mips in for this merge window.
