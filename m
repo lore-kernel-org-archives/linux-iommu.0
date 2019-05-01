@@ -1,7 +1,7 @@
 From: Julien Grall <julien.grall@arm.com>
-Subject: [PATCH v3 3/7] irqchip/gicv2m: Don't map the MSI page in gicv2m_compose_msi_msg()
-Date: Wed,  1 May 2019 14:58:20 +0100
-Message-ID: <20190501135824.25586-4-julien.grall@arm.com>
+Subject: [PATCH v3 1/7] genirq/msi: Add a new field in msi_desc to store an IOMMU cookie
+Date: Wed,  1 May 2019 14:58:18 +0100
+Message-ID: <20190501135824.25586-2-julien.grall@arm.com>
 References: <20190501135824.25586-1-julien.grall@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190501135824.25586-1-julien.grall@arm.com>
@@ -10,63 +10,99 @@ To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 Cc: logang@deltatee.com, douliyangs@gmail.com, miquel.raynal@bootlin.com, marc.zyngier@arm.com, jason@lakedaemon.net, tglx@linutronix.de, joro@8bytes.org, robin.murphy@arm.com, bigeasy@linutronix.de, linux-rt-users@vger.kernel.org, Julien Grall <julien.grall@arm.com>, Eric Auger <eric.auger@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-gicv2m_compose_msi_msg() may be called from non-preemptible context.
-However, on RT, iommu_dma_map_msi_msg() requires to be called from a
-preemptible context.
+When an MSI doorbell is located downstream of an IOMMU, it is required
+to swizzle the physical address with an appropriately-mapped IOVA for any
+device attached to one of our DMA ops domain.
 
-A recent change split iommu_dma_map_msi_msg() in two new functions:
-one that should be called in preemptible context, the other does
-not have any requirement.
+At the moment, the allocation of the mapping may be done when composing
+the message. However, the composing may be done in non-preemtible
+context while the allocation requires to be called from preemptible
+context.
 
-The GICv2m driver is reworked to avoid executing preemptible code in
-non-preemptible context. This can be achieved by preparing the MSI
-mapping when allocating the MSI interrupt.
+A follow-up change will split the current logic in two functions
+requiring to keep an IOMMU cookie per MSI.
+
+A new field is introduced in msi_desc to store an IOMMU cookie. As the
+cookie may not be required in some configuration, the field is protected
+under a new config CONFIG_IRQ_MSI_IOMMU.
+
+A pair of helpers has also been introduced to access the field.
 
 Signed-off-by: Julien Grall <julien.grall@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
 ---
     Changes in v3:
-        - Add Eric's reviewed-by
+        - Add Robin's and Eric's reviewed-by
 
     Changes in v2:
-        - Rework the commit message to use imperative mood
+        - Update the commit message to use imperative mood
+        - Protect the field with a new config that will be selected by
+        IOMMU_DMA later on
+        - Add a set of helpers to access the new field
 ---
- drivers/irqchip/irq-gic-v2m.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ include/linux/msi.h | 26 ++++++++++++++++++++++++++
+ kernel/irq/Kconfig  |  3 +++
+ 2 files changed, 29 insertions(+)
 
-diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
-index f5fe0100f9ff..4359f0583377 100644
---- a/drivers/irqchip/irq-gic-v2m.c
-+++ b/drivers/irqchip/irq-gic-v2m.c
-@@ -110,7 +110,7 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 	if (v2m->flags & GICV2M_NEEDS_SPI_OFFSET)
- 		msg->data -= v2m->spi_offset;
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 7e9b81c3b50d..82a308c19222 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -77,6 +77,9 @@ struct msi_desc {
+ 	struct device			*dev;
+ 	struct msi_msg			msg;
+ 	struct irq_affinity_desc	*affinity;
++#ifdef CONFIG_IRQ_MSI_IOMMU
++	const void			*iommu_cookie;
++#endif
  
--	iommu_dma_map_msi_msg(data->irq, msg);
-+	iommu_dma_compose_msi_msg(irq_data_get_msi_desc(data), msg);
- }
+ 	union {
+ 		/* PCI MSI/X specific data */
+@@ -119,6 +122,29 @@ struct msi_desc {
+ #define for_each_msi_entry_safe(desc, tmp, dev)	\
+ 	list_for_each_entry_safe((desc), (tmp), dev_to_msi_list((dev)), list)
  
- static struct irq_chip gicv2m_irq_chip = {
-@@ -167,6 +167,7 @@ static void gicv2m_unalloc_msi(struct v2m_data *v2m, unsigned int hwirq,
- static int gicv2m_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
- 				   unsigned int nr_irqs, void *args)
- {
-+	msi_alloc_info_t *info = args;
- 	struct v2m_data *v2m = NULL, *tmp;
- 	int hwirq, offset, i, err = 0;
- 
-@@ -186,6 +187,11 @@ static int gicv2m_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
- 
- 	hwirq = v2m->spi_start + offset;
- 
-+	err = iommu_dma_prepare_msi(info->desc,
-+				    v2m->res.start + V2M_MSI_SETSPI_NS);
-+	if (err)
-+		return err;
++#ifdef CONFIG_IRQ_MSI_IOMMU
++static inline const void *msi_desc_get_iommu_cookie(struct msi_desc *desc)
++{
++	return desc->iommu_cookie;
++}
 +
- 	for (i = 0; i < nr_irqs; i++) {
- 		err = gicv2m_irq_gic_domain_alloc(domain, virq + i, hwirq + i);
- 		if (err)
++static inline void msi_desc_set_iommu_cookie(struct msi_desc *desc,
++					     const void *iommu_cookie)
++{
++	desc->iommu_cookie = iommu_cookie;
++}
++#else
++static inline const void *msi_desc_get_iommu_cookie(struct msi_desc *desc)
++{
++	return NULL;
++}
++
++static inline void msi_desc_set_iommu_cookie(struct msi_desc *desc,
++					     const void *iommu_cookie)
++{
++}
++#endif
++
+ #ifdef CONFIG_PCI_MSI
+ #define first_pci_msi_entry(pdev)	first_msi_entry(&(pdev)->dev)
+ #define for_each_pci_msi_entry(desc, pdev)	\
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index 5f3e2baefca9..8fee06625c37 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -91,6 +91,9 @@ config GENERIC_MSI_IRQ_DOMAIN
+ 	select IRQ_DOMAIN_HIERARCHY
+ 	select GENERIC_MSI_IRQ
+ 
++config IRQ_MSI_IOMMU
++	bool
++
+ config HANDLE_DOMAIN_IRQ
+ 	bool
+ 
 -- 
 2.11.0
