@@ -1,58 +1,100 @@
-From: Khalid Aziz <khalid.aziz@oracle.com>
-Subject: Re: [RFC PATCH v9 03/13] mm: Add support for eXclusive Page Frame
- Ownership (XPFO)
-Date: Wed, 1 May 2019 09:18:41 -0600
-Message-ID: <4a47cf86-a05d-3de5-0320-eda06101cc75@oracle.com>
-References: <cover.1554248001.git.khalid.aziz@oracle.com>
- <f1ac3700970365fb979533294774af0b0dd84b3b.1554248002.git.khalid.aziz@oracle.com>
- <20190417161042.GA43453@gmail.com>
- <e16c1d73-d361-d9c7-5b8e-c495318c2509@oracle.com>
- <35c4635e-8214-7dde-b4ec-4cb266b2ea10@redhat.com>
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: Re: [PATCH v4 0/3] PCIe Host request to reserve IOVA
+Date: Wed, 1 May 2019 20:52:58 +0530
+Message-ID: <CABe79T5w4hb572KHUhyrwAN7+Xxnz2jF9OGLpfTmAdHuLuO2Fw@mail.gmail.com>
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+ <20190501113038.GA7961@e121166-lin.cambridge.arm.com> <20190501125530.GA15590@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <35c4635e-8214-7dde-b4ec-4cb266b2ea10@redhat.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Waiman Long <longman@redhat.com>, Ingo Molnar <mingo@kernel.org>
-Cc: Dave Hansen <dave@sr71.net>, linux-doc@vger.kernel.org, linux-mm@kvack.org, deepa.srinivasan@oracle.com, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, tycho@tycho.ws, x86@kernel.org, iommu@lists.linux-foundation.org, jsteckli@amazon.de, Arjan van de Ven <arjan@infradead.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>, konrad.wilk@oracle.com, jcm@redhat.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, boris.ostrovsky@oracle.com, chris.hyser@oracle.com, linux-arm-kernel@lists.infradead.org, Khalid Aziz <khalid@gonehiking.org>, juergh@gmail.com, andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org, tyhicks@canonical.com, linux-security-module@vger.kernel.org, Juerg Haefliger <juerg.haefliger@canonical.com>, keescook@google.com, Andrew Morton <akpm@linux-foundation.org>, Linus
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190501125530.GA15590@google.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gNS8xLzE5IDg6NDkgQU0sIFdhaW1hbiBMb25nIHdyb3RlOgo+IE9uIFdlZCwgQXByIDAzLCAy
-MDE5IGF0IDExOjM0OjA0QU0gLTA2MDAsIEtoYWxpZCBBeml6IHdyb3RlOgo+PiBkaWZmIC0tZ2l0
-IGEvRG9jdW1lbnRhdGlvbi9hZG1pbi1ndWlkZS9rZXJuZWwtcGFyYW1ldGVycy50eHQKPiBiL0Rv
-Y3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0Cj4gCj4+IGluZGV4
-IDg1OGI2YzBiOWExNS4uOWIzNmRhOTQ3NjBlIDEwMDY0NAo+PiAtLS0gYS9Eb2N1bWVudGF0aW9u
-L2FkbWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dAo+PiArKysgYi9Eb2N1bWVudGF0aW9u
-L2FkbWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dAo+PiBAQCAtMjk5Nyw2ICsyOTk3LDEy
-IEBACj4+Cj4+IMKgwqDCoMKgwqAgbm94MmFwaWPCoMKgwqAgW1g4Ni02NCxBUElDXSBEbyBub3Qg
-ZW5hYmxlIHgyQVBJQyBtb2RlLgo+Pgo+PiArwqDCoMKgIG5veHBmb8KgwqDCoMKgwqDCoMKgIFtY
-UEZPXSBEaXNhYmxlIGVYY2x1c2l2ZSBQYWdlIEZyYW1lIE93bmVyc2hpcCAoWFBGTykKPj4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgd2hlbiBDT05GSUdfWFBGTyBpcyBvbi4gUGh5c2ljYWwgcGFn
-ZXMgbWFwcGVkIGludG8KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdXNlciBhcHBsaWNhdGlv
-bnMgd2lsbCBhbHNvIGJlIG1hcHBlZCBpbiB0aGUKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-a2VybmVsJ3MgYWRkcmVzcyBzcGFjZSBhcyBpZiBDT05GSUdfWFBGTyB3YXMgbm90Cj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIGVuYWJsZWQuCj4+ICsKPj4gwqDCoMKgwqDCoCBjcHUwX2hvdHBs
-dWfCoMKgwqAgW1g4Nl0gVHVybiBvbiBDUFUwIGhvdHBsdWcgZmVhdHVyZSB3aGVuCj4+IMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIENPTkZJR19CTyBPVFBBUkFNX0hPVFBMVUdfQ1BVMCBpcyBv
-ZmYuCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIFNvbWUgZmVhdHVyZXMgZGVwZW5kIG9u
-IENQVTAuIEtub3duIGRlcGVuZGVuY2llcyBhcmU6Cj4gCj4gR2l2ZW4gdGhlIGJpZyBwZXJmb3Jt
-YW5jZSBpbXBhY3QgdGhhdCBYUEZPIGNhbiBoYXZlLiBJdCBzaG91bGQgYmUgb2ZmIGJ5Cj4gZGVm
-YXVsdCB3aGVuIGNvbmZpZ3VyZWQuIEluc3RlYWQsIHRoZSB4cGZvIG9wdGlvbiBzaG91bGQgYmUg
-dXNlZCB0bwo+IGVuYWJsZSBpdC4KCkFncmVlZC4gSSBwbGFuIHRvIGRpc2FibGUgaXQgYnkgZGVm
-YXVsdCBpbiB0aGUgbmV4dCB2ZXJzaW9uIG9mIHRoZQpwYXRjaC4gVGhpcyBpcyBsaWtlbHkgdG8g
-ZW5kIHVwIGJlaW5nIGEgZmVhdHVyZSBmb3IgZXh0cmVtZSBzZWN1cml0eQpjb25zY2lvdXMgZm9s
-a3Mgb25seSwgdW5sZXNzIEkgb3Igc29tZW9uZSBlbHNlIGNvbWVzIHVwIHdpdGggZnVydGhlcgpz
-aWduaWZpY2FudCBwZXJmb3JtYW5jZSBib29zdC4KClRoYW5rcywKS2hhbGlkCgoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
-YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
-aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Hi Bjorn,
+
+Thank you. Please find my reply below.
+
+On Wed, May 1, 2019 at 6:25 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Wed, May 01, 2019 at 12:30:38PM +0100, Lorenzo Pieralisi wrote:
+> > On Fri, Apr 12, 2019 at 08:43:32AM +0530, Srinath Mannam wrote:
+> > > Few SOCs have limitation that their PCIe host can't allow few inbound
+> > > address ranges. Allowed inbound address ranges are listed in dma-ranges
+> > > DT property and this address ranges are required to do IOVA mapping.
+> > > Remaining address ranges have to be reserved in IOVA mapping.
+> > >
+> > > PCIe Host driver of those SOCs has to list resource entries of allowed
+> > > address ranges given in dma-ranges DT property in sorted order. This
+> > > sorted list of resources will be processed and reserve IOVA address for
+> > > inaccessible address holes while initializing IOMMU domain.
+> > >
+> > > This patch set is based on Linux-5.0-rc2.
+> > >
+> > > Changes from v3:
+> > >   - Addressed Robin Murphy review comments.
+> > >     - pcie-iproc: parse dma-ranges and make sorted resource list.
+> > >     - dma-iommu: process list and reserve gaps between entries
+> > >
+> > > Changes from v2:
+> > >   - Patch set rebased to Linux-5.0-rc2
+> > >
+> > > Changes from v1:
+> > >   - Addressed Oza review comments.
+> > >
+> > > Srinath Mannam (3):
+> > >   PCI: Add dma_ranges window list
+> > >   iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
+> > >   PCI: iproc: Add sorted dma ranges resource entries to host bridge
+> > >
+> > >  drivers/iommu/dma-iommu.c           | 19 ++++++++++++++++
+> > >  drivers/pci/controller/pcie-iproc.c | 44 ++++++++++++++++++++++++++++++++++++-
+> > >  drivers/pci/probe.c                 |  3 +++
+> > >  include/linux/pci.h                 |  1 +
+> > >  4 files changed, 66 insertions(+), 1 deletion(-)
+> >
+> > Bjorn, Joerg,
+> >
+> > this series should not affect anything in the mainline other than its
+> > consumer (ie patch 3); if that's the case should we consider it for v5.2
+> > and if yes how are we going to merge it ?
+>
+> I acked the first one
+I will send new patch with change in commit message as per your comment.
+"s/bridge This list/bridge, this list/"
+
+>
+> Robin reviewed the second
+> (https://lore.kernel.org/lkml/e6c812d6-0cad-4cfd-defd-d7ec427a6538@arm.com)
+> (though I do agree with his comment about DMA_BIT_MASK()), Joerg was OK
+> with it if Robin was
+> (https://lore.kernel.org/lkml/20190423145721.GH29810@8bytes.org).
+>
+I will send patch, for "DMA_BIT_MASK(sizeof(dma_addr_t) *
+BITS_PER_BYTE)" change to "~(dma_addr_t)0".
+> Eric reviewed the third (and pointed out a typo).
+I will send a new patch to address this typo.
+>
+> My Kconfiggery never got fully answered -- it looks to me as though it's
+> possible to build pcie-iproc without the DMA hole support, and I thought
+> the whole point of this series was to deal with those holes
+> (https://lore.kernel.org/lkml/20190418234241.GF126710@google.com).  I would
+> have expected something like making pcie-iproc depend on IOMMU_SUPPORT.
+> But Srinath didn't respond to that, so maybe it's not an issue and it
+> should only affect pcie-iproc anyway.
+I am sorry to miss to respond..
+In NO-IOMMU case, All inbound addresses allocated from dma APIs are
+physical addresses of DDR.
+All DDR physical addresses are fall inside given dma-ranges. so that,
+without IOMMU_SUPPORT, will not
+be any issue.
+
+Regards,
+Srinath.
+>
+> So bottom line, I'm fine with merging it for v5.2.  Do you want to merge
+> it, Lorenzo, or ...?
+>
+> Bjorn
