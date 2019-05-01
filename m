@@ -1,7 +1,7 @@
 From: Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: [PATCH v5 1/3] PCI: Add dma_ranges window list
-Date: Wed,  1 May 2019 23:06:24 +0530
-Message-ID: <1556732186-21630-2-git-send-email-srinath.mannam@broadcom.com>
+Subject: [PATCH v5 2/3] iommu/dma: Reserve IOVA for PCIe inaccessible DMA address
+Date: Wed,  1 May 2019 23:06:25 +0530
+Message-ID: <1556732186-21630-3-git-send-email-srinath.mannam@broadcom.com>
 References: <1556732186-21630-1-git-send-email-srinath.mannam@broadcom.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556732186-21630-1-git-send-email-srinath.mannam@broadcom.com>
@@ -10,62 +10,59 @@ To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Er
 Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Srinath Mannam <srinath.mannam@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a dma_ranges field in PCI host bridge structure to hold resource
-entries list of memory regions in sorted order given through dma-ranges
-DT property.
+dma_ranges field of PCI host bridge structure has resource entries in
+sorted order of address range given through dma-ranges DT property. This
+list is the accessible DMA address range. So that this resource list will
+be processed and reserve IOVA address to the inaccessible address holes in
+the list.
 
-While initializing IOMMU domain of PCI EPs connected to that host bridge,
-this list of resources will be processed and IOVAs for the address holes
-will be reserved.
+This method is similar to PCI IO resources address ranges reserving in
+IOMMU for each EP connected to host bridge.
 
 Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
 Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
 Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/pci/probe.c | 3 +++
- include/linux/pci.h | 1 +
- 2 files changed, 4 insertions(+)
+ drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 7e12d01..72563c1 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -595,6 +595,7 @@ struct pci_host_bridge *pci_alloc_host_bridge(size_t priv)
- 		return NULL;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 77aabe6..da94844 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -212,6 +212,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+ 	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+ 	struct resource_entry *window;
+ 	unsigned long lo, hi;
++	phys_addr_t start = 0, end;
  
- 	INIT_LIST_HEAD(&bridge->windows);
-+	INIT_LIST_HEAD(&bridge->dma_ranges);
- 	bridge->dev.release = pci_release_host_bridge_dev;
- 
- 	/*
-@@ -623,6 +624,7 @@ struct pci_host_bridge *devm_pci_alloc_host_bridge(struct device *dev,
- 		return NULL;
- 
- 	INIT_LIST_HEAD(&bridge->windows);
-+	INIT_LIST_HEAD(&bridge->dma_ranges);
- 	bridge->dev.release = devm_pci_release_host_bridge_dev;
- 
- 	return bridge;
-@@ -632,6 +634,7 @@ EXPORT_SYMBOL(devm_pci_alloc_host_bridge);
- void pci_free_host_bridge(struct pci_host_bridge *bridge)
- {
- 	pci_free_resource_list(&bridge->windows);
-+	pci_free_resource_list(&bridge->dma_ranges);
- 
- 	kfree(bridge);
+ 	resource_list_for_each_entry(window, &bridge->windows) {
+ 		if (resource_type(window->res) != IORESOURCE_MEM)
+@@ -221,6 +222,24 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+ 		hi = iova_pfn(iovad, window->res->end - window->offset);
+ 		reserve_iova(iovad, lo, hi);
+ 	}
++
++	/* Get reserved DMA windows from host bridge */
++	resource_list_for_each_entry(window, &bridge->dma_ranges) {
++		end = window->res->start - window->offset;
++resv_iova:
++		if (end - start) {
++			lo = iova_pfn(iovad, start);
++			hi = iova_pfn(iovad, end);
++			reserve_iova(iovad, lo, hi);
++		}
++		start = window->res->end - window->offset + 1;
++		/* If window is last entry */
++		if (window->node.next == &bridge->dma_ranges &&
++		    end != ~(dma_addr_t)0) {
++			end = ~(dma_addr_t)0;
++			goto resv_iova;
++		}
++	}
  }
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 7744821..bba0a29 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -490,6 +490,7 @@ struct pci_host_bridge {
- 	void		*sysdata;
- 	int		busnr;
- 	struct list_head windows;	/* resource_entry */
-+	struct list_head dma_ranges;	/* dma ranges resource list */
- 	u8 (*swizzle_irq)(struct pci_dev *, u8 *); /* Platform IRQ swizzler */
- 	int (*map_irq)(const struct pci_dev *, u8, u8);
- 	void (*release_fn)(struct pci_host_bridge *);
+ 
+ static int iova_reserve_iommu_regions(struct device *dev,
 -- 
 2.7.4
