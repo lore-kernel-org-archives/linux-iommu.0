@@ -1,83 +1,116 @@
-Return-Path: <SRS0=GORt=TB=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=NDwq=TC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFD8C43219
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 20:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D61C43219
+	for <iommu@archiver.kernel.org>; Thu,  2 May 2019 00:08:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9484920578
-	for <iommu@archiver.kernel.org>; Wed,  1 May 2019 20:09:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9484920578
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3AFB72081C
+	for <iommu@archiver.kernel.org>; Thu,  2 May 2019 00:08:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=wavesemi.onmicrosoft.com header.i=@wavesemi.onmicrosoft.com header.b="dKxbxnvg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AFB72081C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mips.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 364AD2B70;
-	Wed,  1 May 2019 20:09:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ED55C2BCF;
+	Thu,  2 May 2019 00:08:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CD2C12B69
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B6A852BB1
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 20:08:52 +0000 (UTC)
+	Thu,  2 May 2019 00:08:04 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
-	[209.85.167.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 997B0775
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com
+	(mail-eopbgr750137.outbound.protection.outlook.com [40.107.75.137])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0254487
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  1 May 2019 20:08:51 +0000 (UTC)
-Received: by mail-oi1-f196.google.com with SMTP id k9so11648033oig.9
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 01 May 2019 13:08:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=MhhNnHbahaGD1ttZfVO4EhM/RU7xN3mKfU+xr7R87yk=;
-	b=ZdtqPw1fxB1HTEb1JeguNfaFPnHUJNp2WJ0s++mLq7JC+D0XlXfheun3FhBiuJvu6D
-	opQLsKqqSqV7r5zzbAq77kT2Kuk04ysxsviXkmq/Xo26AvZvR1fKpKhqn7zR+WVrC8rq
-	1stCbw1NYc6rahiK02FePEUTtjT/f+xiqqNWsQowXJf1fyJBjpk5PzI1I5u+5eAt8VIq
-	mnImK9HFHyWOBp5q1ZMtIAucO78ZM0KO7ptVI9e2E4mT6RpcckrZeoJdO+TR1tVHmvYq
-	yOMkHtFZ50yIwOb0yw31J4j5gwXxbWuZE13PEYKYSsDhlIH5hm8vxIMNhw06Zc45c71H
-	8Whg==
-X-Gm-Message-State: APjAAAUoPGM11PRAJiQNk/ZPsRX0qbH5NFvGdfhnLNXLGPPaIjioEqJp
-	I+aWNeC8aZZPkv/N6RuZk4ZVCmc6PUE=
-X-Google-Smtp-Source: APXvYqxxuBA+o/64bKbtn57dSkxXX2vMf2mMb9X9x4kDh8mXMqhhKIy0U8bzwseST8HiVrailiyFow==
-X-Received: by 2002:aca:dcc4:: with SMTP id t187mr71236oig.3.1556741330399;
-	Wed, 01 May 2019 13:08:50 -0700 (PDT)
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com.
-	[209.85.167.182])
-	by smtp.gmail.com with ESMTPSA id o11sm55178oti.69.2019.05.01.13.08.49
-	for <iommu@lists.linux-foundation.org>
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 01 May 2019 13:08:49 -0700 (PDT)
-Received: by mail-oi1-f182.google.com with SMTP id k9so11647992oig.9
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 01 May 2019 13:08:49 -0700 (PDT)
-X-Received: by 2002:aca:4e83:: with SMTP id c125mr62690oib.13.1556741329634;
-	Wed, 01 May 2019 13:08:49 -0700 (PDT)
+	Thu,  2 May 2019 00:08:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=uLSfH8x/RaKbCYJMKJuh0gz6DmjqQInRzKBgH/uBHBM=;
+	b=dKxbxnvgBVggLQBhJpQGzKQuZPbPwQw+XbSrH53K9rZv90frfbyOh1N4mUrIthgE2J7RoTELnrmhD7SlumAM/XguoU3ZXBrVG0lvasOQPlb6tmsx8++ZO7FQJbdhiy4Fq4kf9lNc5TaiRnzuYIjOXGGAa5k1aK+r1E94VzPuC2E=
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.174.162.17) by
+	MWHPR2201MB1375.namprd22.prod.outlook.com (10.174.160.150) with
+	Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1835.14; Thu, 2 May 2019 00:08:01 +0000
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
+	([fe80::b9d6:bf19:ec58:2765]) by
+	MWHPR2201MB1277.namprd22.prod.outlook.com
+	([fe80::b9d6:bf19:ec58:2765%7]) with mapi id 15.20.1835.018;
+	Thu, 2 May 2019 00:08:01 +0000
+From: Paul Burton <paul.burton@mips.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 4/7] dma-direct: provide generic support for uncached
+	kernel segments
+Thread-Topic: [PATCH 4/7] dma-direct: provide generic support for uncached
+	kernel segments
+Thread-Index: AQHU/0QKKKiJlPSrw0CLkNp0FmAaxqZWhWOAgAAC3QCAAAMrgIAAAmOAgABp3gA=
+Date: Thu, 2 May 2019 00:08:01 +0000
+Message-ID: <20190502000759.4ii2wuogc6fuc3jh@pburton-laptop>
+References: <20190430110032.25301-1-hch@lst.de>
+	<20190430110032.25301-5-hch@lst.de>
+	<20190501171857.chfxqntvm6r4xrr4@pburton-laptop>
+	<20190501172912.GA19375@lst.de>
+	<20190501174033.6rj5aiopdeo4uqpw@pburton-laptop>
+	<20190501174905.GA20458@lst.de>
+In-Reply-To: <20190501174905.GA20458@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR08CA0051.namprd08.prod.outlook.com
+	(2603:10b6:a03:117::28) To MWHPR2201MB1277.namprd22.prod.outlook.com
+	(2603:10b6:301:24::17)
+user-agent: NeoMutt/20180716
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=pburton@wavecomp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [12.94.197.246]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b504cc96-7aff-4810-be5c-08d6ce923d64
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);
+	SRVR:MWHPR2201MB1375; 
+x-ms-traffictypediagnostic: MWHPR2201MB1375:
+x-microsoft-antispam-prvs: <MWHPR2201MB137538ADE64992C9B0DF2EBEC1340@MWHPR2201MB1375.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0025434D2D
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10019020)(979002)(7916004)(39840400004)(136003)(346002)(366004)(376002)(396003)(199004)(189003)(52116002)(53936002)(478600001)(8936002)(486006)(3846002)(229853002)(66066001)(256004)(66446008)(6116002)(305945005)(4744005)(44832011)(6512007)(6486002)(9686003)(1076003)(7416002)(58126008)(6436002)(446003)(11346002)(25786009)(66556008)(6916009)(42882007)(6246003)(66946007)(476003)(7736002)(73956011)(4326008)(64756008)(81156014)(81166006)(386003)(71200400001)(71190400001)(5660300002)(8676002)(102836004)(6506007)(76176011)(316002)(66476007)(99286004)(33716001)(14454004)(186003)(68736007)(26005)(54906003)(2906002)(41533002)(969003)(989001)(999001)(1009001)(1019001);
+	DIR:OUT; SFP:1102; SCL:1; SRVR:MWHPR2201MB1375;
+	H:MWHPR2201MB1277.namprd22.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: wavecomp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 7e9f1kF25wdsNQ9/CuQt2ehBF+d6+QmjUTC33TqugsnTLOsifqJZxCUlWe/KCplZvVZzfFYohCwtBrLFRSzcUNU0VLhQrUOIRdaFZZn1wc9/aqqNKkCreOBjVfcSxOjtKbyuyTMkSXyTiK4SHi9Cu/MFUXSaOlr8WRe7mNzLz94gBbhRhE1E8gudNcz0ZmlqQfoJfMN1uohm3M4WTCXrdTIyD1OM7Hj7DgWykgr1A8+6pC1aePwkXlNPO90hTBO7li9iOrEqlzC50Idd/2Ce/S4q3h+K5/Ww0HrD2Eop/ody3xmLCgTLY8llzw1KwU+TIGoStj5Mdp7bQqEbiQqr1ng08Jtp31vngBwXojmtmMpRIo1nKn11/xOeG/NsTZ0dodjUqDBimH3M24kXXMQsJ9xu45cMTIHg3hm7Iu9mIJY=
+Content-ID: <C63A3FF604C2164B8DDA0238C881F03D@namprd22.prod.outlook.com>
 MIME-Version: 1.0
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-	<20190427071031.6563-2-laurentiu.tudor@nxp.com>
-In-Reply-To: <20190427071031.6563-2-laurentiu.tudor@nxp.com>
-From: Li Yang <leoyang.li@nxp.com>
-Date: Wed, 1 May 2019 15:08:38 -0500
-X-Gmail-Original-Message-ID: <CADRPPNRGxEz_YXhzrJPCZrz_Xc-9Fh21tgbjERoOazMMQmiVbA@mail.gmail.com>
-Message-ID:
- <CADRPPNRGxEz_YXhzrJPCZrz_Xc-9Fh21tgbjERoOazMMQmiVbA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] soc/fsl/qman: fixup liodns only on ppc targets
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc: madalin.bucur@nxp.com, Netdev <netdev@vger.kernel.org>,
-	Roy Pledge <roy.pledge@nxp.com>, lkml <linux-kernel@vger.kernel.org>,
-	Linux IOMMU <iommu@lists.linux-foundation.org>, camelia.groza@nxp.com,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-	David Miller <davem@davemloft.net>,
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
-	<linux-arm-kernel@lists.infradead.org>
+X-OriginatorOrg: mips.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b504cc96-7aff-4810-be5c-08d6ce923d64
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2019 00:08:01.3216 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1375
+Cc: Michal Simek <monstr@monstr.eu>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	James Hogan <jhogan@kernel.org>,
+	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+	Ralf Baechle <ralf@linux-mips.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+	Ley Foon Tan <lftan@altera.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,62 +127,32 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190501200838.8gv41fv2AKcvhKFBB1N_qAUUgKmTz68KfCcybLGX_-A@z>
+Message-ID: <20190502000801.BcNuLr7pYekza25a5c67Xagf2M1GtEdqGv6olv9EPzI@z>
 
-On Sat, Apr 27, 2019 at 2:14 AM <laurentiu.tudor@nxp.com> wrote:
->
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
->
-> ARM SoCs use SMMU so the liodn fixup done in the qman driver is no
-> longer making sense and it also breaks the ICID settings inherited
-> from u-boot. Do the fixups only for PPC targets.
->
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Hi Christoph,
 
-Applied for next.  Thanks.
+On Wed, May 01, 2019 at 07:49:05PM +0200, Christoph Hellwig wrote:
+> On Wed, May 01, 2019 at 05:40:34PM +0000, Paul Burton wrote:
+> > > > If it is necessary then as-is this code will clear the allocated memory
+> > > > using uncached writes which will be pretty slow. It would be much more
+> > > > efficient to perform the memset before arch_dma_prep_coherent() & before
+> > > > converting ret to an uncached address.
+> > > 
+> > > Yes, we could do that.
+> > 
+> > Great; using cached writes would match the existing MIPS behavior.
+> 
+> Can you test the stack with the two updated patches and ack them if
+> they are fine?  That would allow getting at least the infrastructure
+> and mips in for this merge window.
 
-Leo
-> ---
->  drivers/soc/fsl/qbman/qman_ccsr.c | 2 +-
->  drivers/soc/fsl/qbman/qman_priv.h | 9 ++++++++-
->  2 files changed, 9 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/soc/fsl/qbman/qman_ccsr.c b/drivers/soc/fsl/qbman/qman_ccsr.c
-> index 109b38de3176..a6bb43007d03 100644
-> --- a/drivers/soc/fsl/qbman/qman_ccsr.c
-> +++ b/drivers/soc/fsl/qbman/qman_ccsr.c
-> @@ -596,7 +596,7 @@ static int qman_init_ccsr(struct device *dev)
->  }
->
->  #define LIO_CFG_LIODN_MASK 0x0fff0000
-> -void qman_liodn_fixup(u16 channel)
-> +void __qman_liodn_fixup(u16 channel)
->  {
->         static int done;
->         static u32 liodn_offset;
-> diff --git a/drivers/soc/fsl/qbman/qman_priv.h b/drivers/soc/fsl/qbman/qman_priv.h
-> index 75a8f905f8f7..04515718cfd9 100644
-> --- a/drivers/soc/fsl/qbman/qman_priv.h
-> +++ b/drivers/soc/fsl/qbman/qman_priv.h
-> @@ -193,7 +193,14 @@ extern struct gen_pool *qm_cgralloc; /* CGR ID allocator */
->  u32 qm_get_pools_sdqcr(void);
->
->  int qman_wq_alloc(void);
-> -void qman_liodn_fixup(u16 channel);
-> +#ifdef CONFIG_FSL_PAMU
-> +#define qman_liodn_fixup __qman_liodn_fixup
-> +#else
-> +static inline void qman_liodn_fixup(u16 channel)
-> +{
-> +}
-> +#endif
-> +void __qman_liodn_fixup(u16 channel);
->  void qman_set_sdest(u16 channel, unsigned int cpu_idx);
->
->  struct qman_portal *qman_create_affine_portal(
-> --
-> 2.17.1
->
+Did you send a v2 of this patch?
+
+If so it hasn't showed up in my inbox, nor on the linux-mips archive on
+lore.kernel.org.
+
+Thanks,
+    Paul
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
