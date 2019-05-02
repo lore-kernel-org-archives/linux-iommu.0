@@ -1,117 +1,64 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v5 2/3] iommu/dma: Reserve IOVA for PCIe inaccessible DMA
- address
-Date: Thu, 2 May 2019 12:27:02 +0100
-Message-ID: <2f4b9492-0caf-d6e3-e727-e3c869eefb58@arm.com>
-References: <1556732186-21630-1-git-send-email-srinath.mannam@broadcom.com>
- <1556732186-21630-3-git-send-email-srinath.mannam@broadcom.com>
- <20190502110152.GA7313@e121166-lin.cambridge.arm.com>
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: RE: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
+Date: Thu, 2 May 2019 12:58:04 +0000
+Message-ID: <VI1PR04MB5134872815E02B053B383C08EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
+References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
+         <20190427071031.6563-10-laurentiu.tudor@nxp.com>
+         <2c6f5d170edab346e0a87b1dfeb12e2f65801685.camel@infinera.com>
+         <VI1PR04MB5134C0D6707E78D674B96898EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
+ <728fe477849debcc14bb1af01e35bc7b184a0a03.camel@infinera.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190502110152.GA7313@e121166-lin.cambridge.arm.com>
-Content-Language: en-GB
+In-Reply-To: <728fe477849debcc14bb1af01e35bc7b184a0a03.camel@infinera.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Srinath Mannam <srinath.mannam@broadcom.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Eric Auger <eric.auger@redhat.com>, Joerg Roedel <joro@8bytes.org>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: "jocke@infinera.com" <joakim.tjernlund@infinera.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Madalin-cristian Bucur <madalin.bucur@nxp.com>, Leo Li <leoyang.li@nxp.com>, Roy Pledge <roy.pledge@nxp.com>, Camelia Alexandra Groza <camelia.groza@nxp.com>
+Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lorenzo,
-
-On 02/05/2019 12:01, Lorenzo Pieralisi wrote:
-> On Wed, May 01, 2019 at 11:06:25PM +0530, Srinath Mannam wrote:
->> dma_ranges field of PCI host bridge structure has resource entries in
->> sorted order of address range given through dma-ranges DT property. This
->> list is the accessible DMA address range. So that this resource list will
->> be processed and reserve IOVA address to the inaccessible address holes in
->> the list.
->>
->> This method is similar to PCI IO resources address ranges reserving in
->> IOMMU for each EP connected to host bridge.
->>
->> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
->> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
->> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
->> Acked-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
->>   1 file changed, 19 insertions(+)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 77aabe6..da94844 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -212,6 +212,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
->>   	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
->>   	struct resource_entry *window;
->>   	unsigned long lo, hi;
->> +	phys_addr_t start = 0, end;
->>   
->>   	resource_list_for_each_entry(window, &bridge->windows) {
->>   		if (resource_type(window->res) != IORESOURCE_MEM)
->> @@ -221,6 +222,24 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
->>   		hi = iova_pfn(iovad, window->res->end - window->offset);
->>   		reserve_iova(iovad, lo, hi);
->>   	}
->> +
->> +	/* Get reserved DMA windows from host bridge */
->> +	resource_list_for_each_entry(window, &bridge->dma_ranges) {
-> 
-> If this list is not sorted it seems to me the logic in this loop is
-> broken and you can't rely on callers to sort it because it is not a
-> written requirement and it is not enforced (you know because you
-> wrote the code but any other developer is not supposed to guess
-> it).
-> 
-> Can't we rewrite this loop so that it does not rely on list
-> entries order ?
-
-The original idea was that callers should be required to provide a 
-sorted list, since it keeps things nice and simple...
-
-> I won't merge this series unless you sort it, no pun intended.
-> 
-> Lorenzo
-> 
->> +		end = window->res->start - window->offset;
-
-...so would you consider it sufficient to add
-
-		if (end < start)
-			dev_err(...);
-
-here, plus commenting the definition of pci_host_bridge::dma_ranges that 
-it must be sorted in ascending order?
-
-[ I guess it might even make sense to factor out the parsing and list 
-construction from patch #3 into an of_pci core helper from the 
-beginning, so that there's even less chance of another driver 
-reimplementing it incorrectly in future. ]
-
-Failing that, although I do prefer the "simple by construction" 
-approach, I'd have no objection to just sticking a list_sort() call in 
-here instead, if you'd rather it be entirely bulletproof.
-
-Robin.
-
->> +resv_iova:
->> +		if (end - start) {
->> +			lo = iova_pfn(iovad, start);
->> +			hi = iova_pfn(iovad, end);
->> +			reserve_iova(iovad, lo, hi);
->> +		}
->> +		start = window->res->end - window->offset + 1;
->> +		/* If window is last entry */
->> +		if (window->node.next == &bridge->dma_ranges &&
->> +		    end != ~(dma_addr_t)0) {
->> +			end = ~(dma_addr_t)0;
->> +			goto resv_iova;
->> +		}
->> +	}
->>   }
->>   
->>   static int iova_reserve_iommu_regions(struct device *dev,
->> -- 
->> 2.7.4
->>
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9ha2ltIFRqZXJubHVu
+ZCA8Sm9ha2ltLlRqZXJubHVuZEBpbmZpbmVyYS5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBNYXkg
+MiwgMjAxOSAxOjM3IFBNDQo+IA0KPiBPbiBUaHUsIDIwMTktMDUtMDIgYXQgMDk6MDUgKzAwMDAs
+IExhdXJlbnRpdSBUdWRvciB3cm90ZToNCj4gPiBIaSBKb2FraW0sDQo+ID4NCj4gPiA+IC0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBKb2FraW0gVGplcm5sdW5kIDxKb2Fr
+aW0uVGplcm5sdW5kQGluZmluZXJhLmNvbT4NCj4gPiA+IFNlbnQ6IFNhdHVyZGF5LCBBcHJpbCAy
+NywgMjAxOSA4OjExIFBNDQo+ID4gPg0KPiA+ID4gT24gU2F0LCAyMDE5LTA0LTI3IGF0IDEwOjEw
+ICswMzAwLCBsYXVyZW50aXUudHVkb3JAbnhwLmNvbSB3cm90ZToNCj4gPiA+ID4gRnJvbTogTGF1
+cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPiA+ID4NCj4gPiA+ID4g
+Rml4IGlzc3VlIHdpdGggdGhlIGVudHJ5IGluZGV4aW5nIGluIHRoZSBzZyBmcmFtZSBjbGVhbnVw
+IGNvZGUgYmVpbmcNCj4gPiA+ID4gb2ZmLWJ5LTEuIFRoaXMgcHJvYmxlbSBzaG93ZWQgdXAgd2hl
+biBkb2luZyBzb21lIGJhc2ljIGlwZXJmIHRlc3RzDQo+IGFuZA0KPiA+ID4gPiBtYW5pZmVzdGVk
+IGluIHRyYWZmaWMgY29taW5nIHRvIGEgaGFsdC4NCj4gPiA+ID4NCj4gPiA+ID4gU2lnbmVkLW9m
+Zi1ieTogTGF1cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4NCj4gPiA+ID4g
+QWNrZWQtYnk6IE1hZGFsaW4gQnVjdXIgPG1hZGFsaW4uYnVjdXJAbnhwLmNvbT4NCj4gPiA+DQo+
+ID4gPiBXYXNuJ3QgdGhpcyBhIHN0YWJsZSBjYW5kaWRhdGUgdG9vPw0KPiA+DQo+ID4gWWVzLCBp
+dCBpcy4gSSBmb3Jnb3QgdG8gYWRkIHRoZSBjYzpzdGFibGUgdGFnLCBzb3JyeSBhYm91dCB0aGF0
+Lg0KPiANCj4gVGhlbiB0aGlzIGlzIGEgYnVnIGZpeCB0aGF0IHNob3VsZCBnbyBkaXJlY3RseSB0
+byBsaW51cy9zdGFibGUuDQo+IA0KPiBJIG5vdGUgdGhhdA0KPiBodHRwczovL2dpdC5rZXJuZWwu
+b3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9zdGFibGUvbGludXguZ2l0L2xvZy9kcml2ZXJz
+L25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYT9oPWxpbnV4LTQuMTkueQ0KDQpOb3Qgc3VyZSBJ
+IHVuZGVyc3RhbmQgLi4uIEkgZG9uJ3Qgc2VlIHRoZSBwYXRjaCBpbiB0aGUgbGluay4NCg0KPiBp
+cyBpbiA0LjE5IGJ1dCBub3QgaW4gNC4xNCAsIGlzIGl0IG5vdCBhcHByb3ByaWF0ZSBmb3IgNC4x
+ND8NCg0KSSB0aGluayBpdCBtYWtlcyBzZW5zZSB0byBnbyBpbiBib3RoIHN0YWJsZSB0cmVlcy4N
+Cg0KLS0tDQpCZXN0IFJlZ2FyZHMsIExhdXJlbnRpdQ0KDQo+ID4NCj4gPiA+ID4gLS0tDQo+ID4g
+PiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jIHwgMiAr
+LQ0KPiA+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0p
+DQo+ID4gPiA+DQo+ID4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVl
+c2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+ID4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVz
+Y2FsZS9kcGFhL2RwYWFfZXRoLmMNCj4gPiA+ID4gaW5kZXggZGFlZGU3MjcyNzY4Li40MDQyMGVk
+YzljZTYgMTAwNjQ0DQo+ID4gPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2Fs
+ZS9kcGFhL2RwYWFfZXRoLmMNCj4gPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJl
+ZXNjYWxlL2RwYWEvZHBhYV9ldGguYw0KPiA+ID4gPiBAQCAtMTY2Myw3ICsxNjYzLDcgQEAgc3Rh
+dGljIHN0cnVjdCBza19idWZmDQo+ICpkcGFhX2NsZWFudXBfdHhfZmQoY29uc3QNCj4gPiA+IHN0
+cnVjdCBkcGFhX3ByaXYgKnByaXYsDQo+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHFtX3NnX2VudHJ5X2dldF9sZW4oJnNndFswXSksDQo+IGRtYV9kaXIpOw0KPiA+ID4g
+Pg0KPiA+ID4gPiAgICAgICAgICAgICAgICAgLyogcmVtYWluaW5nIHBhZ2VzIHdlcmUgbWFwcGVk
+IHdpdGgNCj4gc2tiX2ZyYWdfZG1hX21hcCgpDQo+ID4gPiAqLw0KPiA+ID4gPiAtICAgICAgICAg
+ICAgICAgZm9yIChpID0gMTsgaSA8IG5yX2ZyYWdzOyBpKyspIHsNCj4gPiA+ID4gKyAgICAgICAg
+ICAgICAgIGZvciAoaSA9IDE7IGkgPD0gbnJfZnJhZ3M7IGkrKykgew0KPiA+ID4gPiAgICAgICAg
+ICAgICAgICAgICAgICAgICBXQVJOX09OKHFtX3NnX2VudHJ5X2lzX2V4dCgmc2d0W2ldKSk7DQo+
+ID4gPiA+DQo+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV91bm1hcF9wYWdlKGRl
+diwgcW1fc2dfYWRkcigmc2d0W2ldKSwNCj4gPiA+ID4gLS0NCj4gPiA+ID4gMi4xNy4xDQo+ID4g
+PiA+DQo=
