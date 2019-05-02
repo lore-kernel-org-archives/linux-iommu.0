@@ -1,58 +1,53 @@
-From: Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-Subject: Re: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
-Date: Thu, 2 May 2019 10:36:30 +0000
-Message-ID: <728fe477849debcc14bb1af01e35bc7b184a0a03.camel@infinera.com>
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
-         <20190427071031.6563-10-laurentiu.tudor@nxp.com>
-         <2c6f5d170edab346e0a87b1dfeb12e2f65801685.camel@infinera.com>
-         <VI1PR04MB5134C0D6707E78D674B96898EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v7 05/23] iommu: Introduce cache_invalidate API
+Date: Thu, 2 May 2019 11:53:34 +0100
+Message-ID: <6af5ddb7-75ad-7d3f-b303-f6f06adb1bf0@arm.com>
+References: <20190408121911.24103-1-eric.auger@redhat.com>
+ <20190408121911.24103-6-eric.auger@redhat.com>
+ <a9745aef-8686-c761-e3d0-dd0e98a1f5b2@arm.com>
+ <e5d2fdd6-4ce1-863e-5198-0b05d727a5b6@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <VI1PR04MB5134C0D6707E78D674B96898EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
+In-Reply-To: <e5d2fdd6-4ce1-863e-5198-0b05d727a5b6@redhat.com>
 Content-Language: en-US
-Content-ID: <1F9602CDEA854A469D9C83B5DEC64BBA@namprd10.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "madalin.bucur@nxp.com" <madalin.bucur@nxp.com>, "leoyang.li@nxp.com" <leoyang.li@nxp.com>, "laurentiu.tudor@nxp.com" <laurentiu.tudor@nxp.com>, "roy.pledge@nxp.com" <roy.pledge@nxp.com>, "camelia.groza@nxp.com" <camelia.groza@nxp.com>
-Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Auger Eric <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
+Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>, "kevin.tian@intel.com" <kevin.tian@intel.com>, Vincent Stehle <Vincent.Stehle@arm.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Christoffer Dall <Christoffer.Dall@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAyMDE5LTA1LTAyIGF0IDA5OjA1ICswMDAwLCBMYXVyZW50aXUgVHVkb3Igd3JvdGU6
-DQo+IEhpIEpvYWtpbSwNCj4gDQo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiBG
-cm9tOiBKb2FraW0gVGplcm5sdW5kIDxKb2FraW0uVGplcm5sdW5kQGluZmluZXJhLmNvbT4NCj4g
-PiBTZW50OiBTYXR1cmRheSwgQXByaWwgMjcsIDIwMTkgODoxMSBQTQ0KPiA+IA0KPiA+IE9uIFNh
-dCwgMjAxOS0wNC0yNyBhdCAxMDoxMCArMDMwMCwgbGF1cmVudGl1LnR1ZG9yQG54cC5jb20gd3Jv
-dGU6DQo+ID4gPiBGcm9tOiBMYXVyZW50aXUgVHVkb3IgPGxhdXJlbnRpdS50dWRvckBueHAuY29t
-Pg0KPiA+ID4gDQo+ID4gPiBGaXggaXNzdWUgd2l0aCB0aGUgZW50cnkgaW5kZXhpbmcgaW4gdGhl
-IHNnIGZyYW1lIGNsZWFudXAgY29kZSBiZWluZw0KPiA+ID4gb2ZmLWJ5LTEuIFRoaXMgcHJvYmxl
-bSBzaG93ZWQgdXAgd2hlbiBkb2luZyBzb21lIGJhc2ljIGlwZXJmIHRlc3RzIGFuZA0KPiA+ID4g
-bWFuaWZlc3RlZCBpbiB0cmFmZmljIGNvbWluZyB0byBhIGhhbHQuDQo+ID4gPiANCj4gPiA+IFNp
-Z25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+
-ID4gPiBBY2tlZC1ieTogTWFkYWxpbiBCdWN1ciA8bWFkYWxpbi5idWN1ckBueHAuY29tPg0KPiA+
-IA0KPiA+IFdhc24ndCB0aGlzIGEgc3RhYmxlIGNhbmRpZGF0ZSB0b28/DQo+IA0KPiBZZXMsIGl0
-IGlzLiBJIGZvcmdvdCB0byBhZGQgdGhlIGNjOnN0YWJsZSB0YWcsIHNvcnJ5IGFib3V0IHRoYXQu
-DQoNClRoZW4gdGhpcyBpcyBhIGJ1ZyBmaXggdGhhdCBzaG91bGQgZ28gZGlyZWN0bHkgdG8gbGlu
-dXMvc3RhYmxlLg0KDQpJIG5vdGUgdGhhdCBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20v
-bGludXgva2VybmVsL2dpdC9zdGFibGUvbGludXguZ2l0L2xvZy9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9mcmVlc2NhbGUvZHBhYT9oPWxpbnV4LTQuMTkueQ0KaXMgaW4gNC4xOSBidXQgbm90IGluIDQu
-MTQgLCBpcyBpdCBub3QgYXBwcm9wcmlhdGUgZm9yIDQuMTQ/DQoNCiBKb2NrZQ0KDQo+IA0KPiAt
-LS0NCj4gQmVzdCBSZWdhcmRzLCBMYXVyZW50aXUNCj4gDQo+ID4gPiAtLS0NCj4gPiA+ICBkcml2
-ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jIHwgMiArLQ0KPiA+ID4g
-IDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiA+ID4gDQo+
-ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBh
-YV9ldGguYw0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBhYV9l
-dGguYw0KPiA+ID4gaW5kZXggZGFlZGU3MjcyNzY4Li40MDQyMGVkYzljZTYgMTAwNjQ0DQo+ID4g
-PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+
-ID4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5j
-DQo+ID4gPiBAQCAtMTY2Myw3ICsxNjYzLDcgQEAgc3RhdGljIHN0cnVjdCBza19idWZmICpkcGFh
-X2NsZWFudXBfdHhfZmQoY29uc3QNCj4gPiBzdHJ1Y3QgZHBhYV9wcml2ICpwcml2LA0KPiA+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcW1fc2dfZW50cnlfZ2V0X2xlbigmc2d0
-WzBdKSwgZG1hX2Rpcik7DQo+ID4gPiANCj4gPiA+ICAgICAgICAgICAgICAgICAvKiByZW1haW5p
-bmcgcGFnZXMgd2VyZSBtYXBwZWQgd2l0aCBza2JfZnJhZ19kbWFfbWFwKCkNCj4gPiAqLw0KPiA+
-ID4gLSAgICAgICAgICAgICAgIGZvciAoaSA9IDE7IGkgPCBucl9mcmFnczsgaSsrKSB7DQo+ID4g
-PiArICAgICAgICAgICAgICAgZm9yIChpID0gMTsgaSA8PSBucl9mcmFnczsgaSsrKSB7DQo+ID4g
-PiAgICAgICAgICAgICAgICAgICAgICAgICBXQVJOX09OKHFtX3NnX2VudHJ5X2lzX2V4dCgmc2d0
-W2ldKSk7DQo+ID4gPiANCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV91bm1hcF9w
-YWdlKGRldiwgcW1fc2dfYWRkcigmc2d0W2ldKSwNCj4gPiA+IC0tDQo+ID4gPiAyLjE3LjENCj4g
-PiA+IA0K
+On 02/05/2019 07:58, Auger Eric wrote:
+> Hi Jean-Philippe,
+> 
+> On 5/1/19 12:38 PM, Jean-Philippe Brucker wrote:
+>> On 08/04/2019 13:18, Eric Auger wrote:
+>>> +int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+>>> +			   struct iommu_cache_invalidate_info *inv_info)
+>>> +{
+>>> +	int ret = 0;
+>>> +
+>>> +	if (unlikely(!domain->ops->cache_invalidate))
+>>> +		return -ENODEV;
+>>> +
+>>> +	ret = domain->ops->cache_invalidate(domain, dev, inv_info);
+>>> +
+>>> +	return ret;
+>>
+>> Nit: you don't really need ret
+>>
+>> The UAPI looks good to me, so
+>>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Just to make sure, do you accept changes proposed by Jacob in
+> https://lkml.org/lkml/2019/4/29/659 ie.
+> - the addition of NR_IOMMU_INVAL_GRANU in enum iommu_inv_granularity and
+> - the addition of NR_IOMMU_CACHE_TYPE
+
+Ah sorry, I forgot about that, I'll review the next version. Yes they
+can be useful (maybe call them IOMMU_INV_GRANU_NR and
+IOMMU_CACHE_INV_TYPE_NR?). I guess it's legal to export in UAPI values
+that will change over time, as VFIO also does it in its enums.
+
+Thanks,
+Jean
