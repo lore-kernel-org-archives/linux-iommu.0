@@ -1,140 +1,127 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v5 2/3] iommu/dma: Reserve IOVA for PCIe inaccessible DMA
- address
-Date: Thu, 2 May 2019 14:06:24 +0100
-Message-ID: <20190502130624.GA10470@e121166-lin.cambridge.arm.com>
-References: <1556732186-21630-1-git-send-email-srinath.mannam@broadcom.com>
- <1556732186-21630-3-git-send-email-srinath.mannam@broadcom.com>
- <20190502110152.GA7313@e121166-lin.cambridge.arm.com>
- <2f4b9492-0caf-d6e3-e727-e3c869eefb58@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 4/7] dma-direct: provide generic support for uncached
+ kernel segments
+Date: Thu, 2 May 2019 15:11:19 +0200
+Message-ID: <20190502131119.GA2859@lst.de>
+References: <20190430110032.25301-1-hch@lst.de> <20190430110032.25301-5-hch@lst.de> <20190501171857.chfxqntvm6r4xrr4@pburton-laptop> <20190501172912.GA19375@lst.de> <20190501174033.6rj5aiopdeo4uqpw@pburton-laptop> <20190501174905.GA20458@lst.de> <20190502000759.4ii2wuogc6fuc3jh@pburton-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <2f4b9492-0caf-d6e3-e727-e3c869eefb58@arm.com>
+In-Reply-To: <20190502000759.4ii2wuogc6fuc3jh@pburton-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Srinath Mannam <srinath.mannam@broadcom.com>, Bjorn Helgaas <bhelgaas@google.com>, Eric Auger <eric.auger@redhat.com>, Joerg Roedel <joro@8bytes.org>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Paul Burton <paul.burton@mips.com>
+Cc: Christoph Hellwig <hch@lst.de>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Ley Foon Tan <lftan@altera.com>, Michal Simek <monstr@monstr.eu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 02, 2019 at 12:27:02PM +0100, Robin Murphy wrote:
-> Hi Lorenzo,
+On Thu, May 02, 2019 at 12:08:01AM +0000, Paul Burton wrote:
+> > Can you test the stack with the two updated patches and ack them if
+> > they are fine?  That would allow getting at least the infrastructure
+> > and mips in for this merge window.
 > 
-> On 02/05/2019 12:01, Lorenzo Pieralisi wrote:
-> > On Wed, May 01, 2019 at 11:06:25PM +0530, Srinath Mannam wrote:
-> > > dma_ranges field of PCI host bridge structure has resource entries in
-> > > sorted order of address range given through dma-ranges DT property. This
-> > > list is the accessible DMA address range. So that this resource list will
-> > > be processed and reserve IOVA address to the inaccessible address holes in
-> > > the list.
-> > > 
-> > > This method is similar to PCI IO resources address ranges reserving in
-> > > IOMMU for each EP connected to host bridge.
-> > > 
-> > > Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> > > Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
-> > > Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
-> > > Acked-by: Robin Murphy <robin.murphy@arm.com>
-> > > ---
-> > >   drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
-> > >   1 file changed, 19 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > > index 77aabe6..da94844 100644
-> > > --- a/drivers/iommu/dma-iommu.c
-> > > +++ b/drivers/iommu/dma-iommu.c
-> > > @@ -212,6 +212,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
-> > >   	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-> > >   	struct resource_entry *window;
-> > >   	unsigned long lo, hi;
-> > > +	phys_addr_t start = 0, end;
-> > >   	resource_list_for_each_entry(window, &bridge->windows) {
-> > >   		if (resource_type(window->res) != IORESOURCE_MEM)
-> > > @@ -221,6 +222,24 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
-> > >   		hi = iova_pfn(iovad, window->res->end - window->offset);
-> > >   		reserve_iova(iovad, lo, hi);
-> > >   	}
-> > > +
-> > > +	/* Get reserved DMA windows from host bridge */
-> > > +	resource_list_for_each_entry(window, &bridge->dma_ranges) {
-> > 
-> > If this list is not sorted it seems to me the logic in this loop is
-> > broken and you can't rely on callers to sort it because it is not a
-> > written requirement and it is not enforced (you know because you
-> > wrote the code but any other developer is not supposed to guess
-> > it).
-> > 
-> > Can't we rewrite this loop so that it does not rely on list
-> > entries order ?
+> Did you send a v2 of this patch?
 > 
-> The original idea was that callers should be required to provide a sorted
-> list, since it keeps things nice and simple...
+> If so it hasn't showed up in my inbox, nor on the linux-mips archive on
+> lore.kernel.org.
 
-I understand, if it was self-contained in driver code that would be fine
-but in core code with possible multiple consumers this must be
-documented/enforced, somehow.
+I did earlier in this thread.  Here it is again:
 
-> > I won't merge this series unless you sort it, no pun intended.
-> > 
-> > Lorenzo
-> > 
-> > > +		end = window->res->start - window->offset;
-> 
-> ...so would you consider it sufficient to add
-> 
-> 		if (end < start)
-> 			dev_err(...);
+---
+>From 247ca658ebeb7c8d04918747ec8a0da45c36bcb8 Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch@lst.de>
+Date: Sun, 28 Apr 2019 13:23:26 -0500
+Subject: dma-direct: provide generic support for uncached kernel segments
 
-We should also revert any IOVA reservation we did prior to this
-error, right ?
+A few architectures support uncached kernel segments.  In that case we get
+an uncached mapping for a given physica address by using an offset in the
+uncached segement.  Implement support for this scheme in the generic
+dma-direct code instead of duplicating it in arch hooks.
 
-Anyway, I think it is best to ensure it *is* sorted.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/Kconfig                    |  8 ++++++++
+ include/linux/dma-noncoherent.h |  3 +++
+ kernel/dma/direct.c             | 17 +++++++++++++++--
+ 3 files changed, 26 insertions(+), 2 deletions(-)
 
-> here, plus commenting the definition of pci_host_bridge::dma_ranges
-> that it must be sorted in ascending order?
-
-I don't think that commenting dma_ranges would help much, I am more
-keen on making it work by construction.
-
-> [ I guess it might even make sense to factor out the parsing and list
-> construction from patch #3 into an of_pci core helper from the beginning, so
-> that there's even less chance of another driver reimplementing it
-> incorrectly in future. ]
-
-This makes sense IMO and I would like to take this approach if you
-don't mind.
-
-Either this or we move the whole IOVA reservation and dma-ranges
-parsing into PCI IProc.
-
-> Failing that, although I do prefer the "simple by construction"
-> approach, I'd have no objection to just sticking a list_sort() call in
-> here instead, if you'd rather it be entirely bulletproof.
-
-I think what you outline above is a sensible way forward - if we
-miss the merge window so be it.
-
-Thanks,
-Lorenzo
-
-> Robin.
-> 
-> > > +resv_iova:
-> > > +		if (end - start) {
-> > > +			lo = iova_pfn(iovad, start);
-> > > +			hi = iova_pfn(iovad, end);
-> > > +			reserve_iova(iovad, lo, hi);
-> > > +		}
-> > > +		start = window->res->end - window->offset + 1;
-> > > +		/* If window is last entry */
-> > > +		if (window->node.next == &bridge->dma_ranges &&
-> > > +		    end != ~(dma_addr_t)0) {
-> > > +			end = ~(dma_addr_t)0;
-> > > +			goto resv_iova;
-> > > +		}
-> > > +	}
-> > >   }
-> > >   static int iova_reserve_iommu_regions(struct device *dev,
-> > > -- 
-> > > 2.7.4
-> > > 
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 33687dddd86a..ea22a8c894ec 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -249,6 +249,14 @@ config ARCH_HAS_FORTIFY_SOURCE
+ config ARCH_HAS_SET_MEMORY
+ 	bool
+ 
++#
++# Select if arch has an uncached kernel segment and provides the
++# uncached_kernel_address / cached_kernel_address symbols to use it
++#
++config ARCH_HAS_UNCACHED_SEGMENT
++	select ARCH_HAS_DMA_PREP_COHERENT
++	bool
++
+ # Select if arch init_task must go in the __init_task_data section
+ config ARCH_TASK_STRUCT_ON_STACK
+        bool
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index 9741767e400f..7e0126a04e02 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -80,4 +80,7 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
+ }
+ #endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
+ 
++void *uncached_kernel_address(void *addr);
++void *cached_kernel_address(void *addr);
++
+ #endif /* _LINUX_DMA_NONCOHERENT_H */
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 2c2772e9702a..6688e1cee7d1 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -171,6 +171,13 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		*dma_handle = phys_to_dma(dev, page_to_phys(page));
+ 	}
+ 	memset(ret, 0, size);
++
++	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
++		arch_dma_prep_coherent(page, size);
++		ret = uncached_kernel_address(ret);
++	}
++
+ 	return ret;
+ }
+ 
+@@ -189,13 +196,18 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ 
+ 	if (force_dma_unencrypted())
+ 		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
++
++	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT))
++		cpu_addr = cached_kernel_address(cpu_addr);
+ 	__dma_direct_free_pages(dev, size, virt_to_page(cpu_addr));
+ }
+ 
+ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+ {
+-	if (!dev_is_dma_coherent(dev))
++	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	    !dev_is_dma_coherent(dev))
+ 		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
+ 	return dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
+ }
+@@ -203,7 +215,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ void dma_direct_free(struct device *dev, size_t size,
+ 		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+ {
+-	if (!dev_is_dma_coherent(dev))
++	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	    !dev_is_dma_coherent(dev))
+ 		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
+ 	else
+ 		dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
+-- 
+2.20.1
