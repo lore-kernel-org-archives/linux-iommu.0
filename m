@@ -1,50 +1,31 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: RE: [PATCH v2 7/9] dpaa_eth: fix iova handling for contiguous frames
-Date: Thu, 2 May 2019 09:10:38 +0000
-Message-ID: <VI1PR04MB513490961A52D86E46C02B49EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
-References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
- <20190427071031.6563-8-laurentiu.tudor@nxp.com>
- <20190427164612.GA12450@infradead.org>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH v4 0/3] PCIe Host request to reserve IOVA
+Date: Thu, 2 May 2019 09:54:50 +0000
+Message-ID: <7c44526aebb6403890bab8e252c16375@AcuMS.aculab.com>
+References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
+ <20190501113038.GA7961@e121166-lin.cambridge.arm.com>
+ <20190501125530.GA15590@google.com>
+ <CABe79T5w4hb572KHUhyrwAN7+Xxnz2jF9OGLpfTmAdHuLuO2Fw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190427164612.GA12450@infradead.org>
+In-Reply-To: <CABe79T5w4hb572KHUhyrwAN7+Xxnz2jF9OGLpfTmAdHuLuO2Fw@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Madalin-cristian Bucur <madalin.bucur@nxp.com>, Roy Pledge <roy.pledge@nxp.com>, Camelia Alexandra Groza <camelia.groza@nxp.com>, Leo Li <leoyang.li@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "davem@davemloft.net" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: 'Srinath Mannam' <srinath.mannam@broadcom.com>, Bjorn Helgaas <helgaas@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "poza@codeaurora.org" <poza@codeaurora.org>, Ray Jui <rjui@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Christoph Hellwig <hch@infradead.org>
-> Sent: Saturday, April 27, 2019 7:46 PM
->=20
-> On Sat, Apr 27, 2019 at 10:10:29AM +0300, laurentiu.tudor@nxp.com wrote:
-> > From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> >
-> > The driver relies on the no longer valid assumption that dma addresses
-> > (iovas) are identical to physical addressees and uses phys_to_virt() to
-> > make iova -> vaddr conversions. Fix this by adding a function that does
-> > proper iova -> phys conversions using the iommu api and update the code
-> > to use it.
-> > Also, a dma_unmap_single() call had to be moved further down the code
-> > because iova -> vaddr conversions were required before the unmap.
-> > For now only the contiguous frame case is handled and the SG case is
-> > split in a following patch.
-> > While at it, clean-up a redundant dpaa_bpid2pool() and pass the bp
-> > as parameter.
->=20
-> Err, this is broken.  A driver using the DMA API has no business
-> call IOMMU APIs.  Just save the _virtual_ address used for the mapping
-> away and use that again.  We should not go through crazy gymnastics
-> like this.
-
-I think that due to the particularity of this hardware we don't have a way =
-of saving the VA, but I'd let my colleagues maintaining this driver to comm=
-ent more on why we need to do this.
-
----
-Best Regards, Laurentiu
+RnJvbTogU3JpbmF0aCBNYW5uYW0NCj4gU2VudDogMDEgTWF5IDIwMTkgMTY6MjMNCi4uLg0KPiA+
+ID4gT24gRnJpLCBBcHIgMTIsIDIwMTkgYXQgMDg6NDM6MzJBTSArMDUzMCwgU3JpbmF0aCBNYW5u
+YW0gd3JvdGU6DQo+ID4gPiA+IEZldyBTT0NzIGhhdmUgbGltaXRhdGlvbiB0aGF0IHRoZWlyIFBD
+SWUgaG9zdCBjYW4ndCBhbGxvdyBmZXcgaW5ib3VuZA0KPiA+ID4gPiBhZGRyZXNzIHJhbmdlcy4g
+QWxsb3dlZCBpbmJvdW5kIGFkZHJlc3MgcmFuZ2VzIGFyZSBsaXN0ZWQgaW4gZG1hLXJhbmdlcw0K
+PiA+ID4gPiBEVCBwcm9wZXJ0eSBhbmQgdGhpcyBhZGRyZXNzIHJhbmdlcyBhcmUgcmVxdWlyZWQg
+dG8gZG8gSU9WQSBtYXBwaW5nLg0KPiA+ID4gPiBSZW1haW5pbmcgYWRkcmVzcyByYW5nZXMgaGF2
+ZSB0byBiZSByZXNlcnZlZCBpbiBJT1ZBIG1hcHBpbmcuDQoNCllvdSBwcm9iYWJseSB3YW50IHRv
+IGZpeCB0aGUgZW5nbGlzaCBpbiB0aGUgZmlyc3Qgc2VudGVuY2UuDQpUaGUgc2Vuc2UgaXMgcmV2
+ZXJzZWQuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1s
+ZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJh
+dGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
