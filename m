@@ -1,46 +1,159 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 RFC/RFT 1/5] ARM: dma-mapping: Add fallback normal
- page allocations
-Date: Thu, 2 May 2019 15:26:10 +0200
-Message-ID: <20190502132610.GA3107@lst.de>
-References: <20190326230131.16275-1-nicoleotsuka@gmail.com>
- <20190326230131.16275-2-nicoleotsuka@gmail.com>
- <20190424150638.GA22191@lst.de>
- <20190424183310.GA6168@Asurada-Nvidia.nvidia.com>
- <20190424192652.GA29032@lst.de> <20190430152421.GE29799@arrakis.emea.arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v5 2/3] iommu/dma: Reserve IOVA for PCIe inaccessible DMA
+ address
+Date: Thu, 2 May 2019 15:15:17 +0100
+Message-ID: <b4420901-60d4-69ab-6ed0-5d2fa9449595@arm.com>
+References: <1556732186-21630-1-git-send-email-srinath.mannam@broadcom.com>
+ <1556732186-21630-3-git-send-email-srinath.mannam@broadcom.com>
+ <20190502110152.GA7313@e121166-lin.cambridge.arm.com>
+ <2f4b9492-0caf-d6e3-e727-e3c869eefb58@arm.com>
+ <20190502130624.GA10470@e121166-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20190430152421.GE29799@arrakis.emea.arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: tony@atomide.com, joro@8bytes.org, will.deacon@arm.com, linux@armlinux.org.uk, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Nicolin Chen <nicoleotsuka@gmail.com>, robin.murphy@arm.com, Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190502130624.GA10470@e121166-lin.cambridge.arm.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Srinath Mannam <srinath.mannam@broadcom.com>, Bjorn Helgaas <bhelgaas@google.com>, Eric Auger <eric.auger@redhat.com>, Joerg Roedel <joro@8bytes.org>, poza@codeaurora.org, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 30, 2019 at 04:24:21PM +0100, Catalin Marinas wrote:
-> My reading of the arm32 __dma_alloc() is that if the conditions are
-> right for the CMA allocator (allows blocking) and there is a default CMA
-> area or a per-device one, the call ends up in cma_alloc() without any
-> fallback if such allocation fails. Whether this is on purpose, I'm not
-> entirely sure. There are a couple of arm32 SoCs which call
-> dma_declare_contiguous() or dma_contiguous_reserve_area() and a few DT
-> files describing a specific CMA range (e.g. arch/arm/boot/dts/sun5i.dtsi
-> with a comment that address must be kept in the lower 256MB).
+On 02/05/2019 14:06, Lorenzo Pieralisi wrote:
+> On Thu, May 02, 2019 at 12:27:02PM +0100, Robin Murphy wrote:
+>> Hi Lorenzo,
+>>
+>> On 02/05/2019 12:01, Lorenzo Pieralisi wrote:
+>>> On Wed, May 01, 2019 at 11:06:25PM +0530, Srinath Mannam wrote:
+>>>> dma_ranges field of PCI host bridge structure has resource entries in
+>>>> sorted order of address range given through dma-ranges DT property. This
+>>>> list is the accessible DMA address range. So that this resource list will
+>>>> be processed and reserve IOVA address to the inaccessible address holes in
+>>>> the list.
+>>>>
+>>>> This method is similar to PCI IO resources address ranges reserving in
+>>>> IOMMU for each EP connected to host bridge.
+>>>>
+>>>> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+>>>> Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
+>>>> Reviewed-by: Oza Pawandeep <poza@codeaurora.org>
+>>>> Acked-by: Robin Murphy <robin.murphy@arm.com>
+>>>> ---
+>>>>    drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
+>>>>    1 file changed, 19 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>>> index 77aabe6..da94844 100644
+>>>> --- a/drivers/iommu/dma-iommu.c
+>>>> +++ b/drivers/iommu/dma-iommu.c
+>>>> @@ -212,6 +212,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>>>>    	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+>>>>    	struct resource_entry *window;
+>>>>    	unsigned long lo, hi;
+>>>> +	phys_addr_t start = 0, end;
+>>>>    	resource_list_for_each_entry(window, &bridge->windows) {
+>>>>    		if (resource_type(window->res) != IORESOURCE_MEM)
+>>>> @@ -221,6 +222,24 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>>>>    		hi = iova_pfn(iovad, window->res->end - window->offset);
+>>>>    		reserve_iova(iovad, lo, hi);
+>>>>    	}
+>>>> +
+>>>> +	/* Get reserved DMA windows from host bridge */
+>>>> +	resource_list_for_each_entry(window, &bridge->dma_ranges) {
+>>>
+>>> If this list is not sorted it seems to me the logic in this loop is
+>>> broken and you can't rely on callers to sort it because it is not a
+>>> written requirement and it is not enforced (you know because you
+>>> wrote the code but any other developer is not supposed to guess
+>>> it).
+>>>
+>>> Can't we rewrite this loop so that it does not rely on list
+>>> entries order ?
+>>
+>> The original idea was that callers should be required to provide a sorted
+>> list, since it keeps things nice and simple...
 > 
-> If ZONE_DMA is set up correctly so that cma_alloc() is (or can be made)
-> interchangeable with alloc_pages(GFP_DMA) from a device DMA capability
-> perspective , I think it should be fine to have such fallback.
+> I understand, if it was self-contained in driver code that would be fine
+> but in core code with possible multiple consumers this must be
+> documented/enforced, somehow.
+> 
+>>> I won't merge this series unless you sort it, no pun intended.
+>>>
+>>> Lorenzo
+>>>
+>>>> +		end = window->res->start - window->offset;
+>>
+>> ...so would you consider it sufficient to add
+>>
+>> 		if (end < start)
+>> 			dev_err(...);
+> 
+> We should also revert any IOVA reservation we did prior to this
+> error, right ?
 
-Indeed.  I missed arm32 being different from everyone else, but we
-already addresses that in another thread.  Sorry for misleading
-everyone.
+I think it would be enough to propagate an error code back out through 
+iommu_dma_init_domain(), which should then end up aborting the whole 
+IOMMU setup - reserve_iova() isn't really designed to be undoable, but 
+since this is the kind of error that should only ever be hit during 
+driver or DT development, as long as we continue booting such that the 
+developer can clearly see what's gone wrong, I don't think we need 
+bother spending too much effort tidying up inside the unused domain.
+
+> Anyway, I think it is best to ensure it *is* sorted.
+> 
+>> here, plus commenting the definition of pci_host_bridge::dma_ranges
+>> that it must be sorted in ascending order?
+> 
+> I don't think that commenting dma_ranges would help much, I am more
+> keen on making it work by construction.
+> 
+>> [ I guess it might even make sense to factor out the parsing and list
+>> construction from patch #3 into an of_pci core helper from the beginning, so
+>> that there's even less chance of another driver reimplementing it
+>> incorrectly in future. ]
+> 
+> This makes sense IMO and I would like to take this approach if you
+> don't mind.
+
+Sure - at some point it would be nice to wire this up to 
+pci-host-generic for Juno as well (with a parallel version for ACPI 
+_DMA), so from that viewpoint, the more groundwork in place the better :)
+
+Thanks,
+Robin.
+
+> 
+> Either this or we move the whole IOVA reservation and dma-ranges
+> parsing into PCI IProc.
+> 
+>> Failing that, although I do prefer the "simple by construction"
+>> approach, I'd have no objection to just sticking a list_sort() call in
+>> here instead, if you'd rather it be entirely bulletproof.
+> 
+> I think what you outline above is a sensible way forward - if we
+> miss the merge window so be it.
+> 
+> Thanks,
+> Lorenzo
+> 
+>> Robin.
+>>
+>>>> +resv_iova:
+>>>> +		if (end - start) {
+>>>> +			lo = iova_pfn(iovad, start);
+>>>> +			hi = iova_pfn(iovad, end);
+>>>> +			reserve_iova(iovad, lo, hi);
+>>>> +		}
+>>>> +		start = window->res->end - window->offset + 1;
+>>>> +		/* If window is last entry */
+>>>> +		if (window->node.next == &bridge->dma_ranges &&
+>>>> +		    end != ~(dma_addr_t)0) {
+>>>> +			end = ~(dma_addr_t)0;
+>>>> +			goto resv_iova;
+>>>> +		}
+>>>> +	}
+>>>>    }
+>>>>    static int iova_reserve_iommu_regions(struct device *dev,
+>>>> -- 
+>>>> 2.7.4
+>>>>
