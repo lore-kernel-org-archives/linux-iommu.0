@@ -1,31 +1,58 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH v4 0/3] PCIe Host request to reserve IOVA
-Date: Thu, 2 May 2019 09:54:50 +0000
-Message-ID: <7c44526aebb6403890bab8e252c16375@AcuMS.aculab.com>
-References: <1555038815-31916-1-git-send-email-srinath.mannam@broadcom.com>
- <20190501113038.GA7961@e121166-lin.cambridge.arm.com>
- <20190501125530.GA15590@google.com>
- <CABe79T5w4hb572KHUhyrwAN7+Xxnz2jF9OGLpfTmAdHuLuO2Fw@mail.gmail.com>
+From: Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+Subject: Re: [PATCH v2 9/9] dpaa_eth: fix SG frame cleanup
+Date: Thu, 2 May 2019 10:36:30 +0000
+Message-ID: <728fe477849debcc14bb1af01e35bc7b184a0a03.camel@infinera.com>
+References: <20190427071031.6563-1-laurentiu.tudor@nxp.com>
+         <20190427071031.6563-10-laurentiu.tudor@nxp.com>
+         <2c6f5d170edab346e0a87b1dfeb12e2f65801685.camel@infinera.com>
+         <VI1PR04MB5134C0D6707E78D674B96898EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABe79T5w4hb572KHUhyrwAN7+Xxnz2jF9OGLpfTmAdHuLuO2Fw@mail.gmail.com>
+In-Reply-To: <VI1PR04MB5134C0D6707E78D674B96898EC340@VI1PR04MB5134.eurprd04.prod.outlook.com>
 Content-Language: en-US
+Content-ID: <1F9602CDEA854A469D9C83B5DEC64BBA@namprd10.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: 'Srinath Mannam' <srinath.mannam@broadcom.com>, Bjorn Helgaas <helgaas@kernel.org>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "poza@codeaurora.org" <poza@codeaurora.org>, Ray Jui <rjui@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "madalin.bucur@nxp.com" <madalin.bucur@nxp.com>, "leoyang.li@nxp.com" <leoyang.li@nxp.com>, "laurentiu.tudor@nxp.com" <laurentiu.tudor@nxp.com>, "roy.pledge@nxp.com" <roy.pledge@nxp.com>, "camelia.groza@nxp.com" <camelia.groza@nxp.com>
+Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "davem@davemloft.net" <davem@davemloft.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogU3JpbmF0aCBNYW5uYW0NCj4gU2VudDogMDEgTWF5IDIwMTkgMTY6MjMNCi4uLg0KPiA+
-ID4gT24gRnJpLCBBcHIgMTIsIDIwMTkgYXQgMDg6NDM6MzJBTSArMDUzMCwgU3JpbmF0aCBNYW5u
-YW0gd3JvdGU6DQo+ID4gPiA+IEZldyBTT0NzIGhhdmUgbGltaXRhdGlvbiB0aGF0IHRoZWlyIFBD
-SWUgaG9zdCBjYW4ndCBhbGxvdyBmZXcgaW5ib3VuZA0KPiA+ID4gPiBhZGRyZXNzIHJhbmdlcy4g
-QWxsb3dlZCBpbmJvdW5kIGFkZHJlc3MgcmFuZ2VzIGFyZSBsaXN0ZWQgaW4gZG1hLXJhbmdlcw0K
-PiA+ID4gPiBEVCBwcm9wZXJ0eSBhbmQgdGhpcyBhZGRyZXNzIHJhbmdlcyBhcmUgcmVxdWlyZWQg
-dG8gZG8gSU9WQSBtYXBwaW5nLg0KPiA+ID4gPiBSZW1haW5pbmcgYWRkcmVzcyByYW5nZXMgaGF2
-ZSB0byBiZSByZXNlcnZlZCBpbiBJT1ZBIG1hcHBpbmcuDQoNCllvdSBwcm9iYWJseSB3YW50IHRv
-IGZpeCB0aGUgZW5nbGlzaCBpbiB0aGUgZmlyc3Qgc2VudGVuY2UuDQpUaGUgc2Vuc2UgaXMgcmV2
-ZXJzZWQuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1s
-ZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJh
-dGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+T24gVGh1LCAyMDE5LTA1LTAyIGF0IDA5OjA1ICswMDAwLCBMYXVyZW50aXUgVHVkb3Igd3JvdGU6
+DQo+IEhpIEpvYWtpbSwNCj4gDQo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiBG
+cm9tOiBKb2FraW0gVGplcm5sdW5kIDxKb2FraW0uVGplcm5sdW5kQGluZmluZXJhLmNvbT4NCj4g
+PiBTZW50OiBTYXR1cmRheSwgQXByaWwgMjcsIDIwMTkgODoxMSBQTQ0KPiA+IA0KPiA+IE9uIFNh
+dCwgMjAxOS0wNC0yNyBhdCAxMDoxMCArMDMwMCwgbGF1cmVudGl1LnR1ZG9yQG54cC5jb20gd3Jv
+dGU6DQo+ID4gPiBGcm9tOiBMYXVyZW50aXUgVHVkb3IgPGxhdXJlbnRpdS50dWRvckBueHAuY29t
+Pg0KPiA+ID4gDQo+ID4gPiBGaXggaXNzdWUgd2l0aCB0aGUgZW50cnkgaW5kZXhpbmcgaW4gdGhl
+IHNnIGZyYW1lIGNsZWFudXAgY29kZSBiZWluZw0KPiA+ID4gb2ZmLWJ5LTEuIFRoaXMgcHJvYmxl
+bSBzaG93ZWQgdXAgd2hlbiBkb2luZyBzb21lIGJhc2ljIGlwZXJmIHRlc3RzIGFuZA0KPiA+ID4g
+bWFuaWZlc3RlZCBpbiB0cmFmZmljIGNvbWluZyB0byBhIGhhbHQuDQo+ID4gPiANCj4gPiA+IFNp
+Z25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+
+ID4gPiBBY2tlZC1ieTogTWFkYWxpbiBCdWN1ciA8bWFkYWxpbi5idWN1ckBueHAuY29tPg0KPiA+
+IA0KPiA+IFdhc24ndCB0aGlzIGEgc3RhYmxlIGNhbmRpZGF0ZSB0b28/DQo+IA0KPiBZZXMsIGl0
+IGlzLiBJIGZvcmdvdCB0byBhZGQgdGhlIGNjOnN0YWJsZSB0YWcsIHNvcnJ5IGFib3V0IHRoYXQu
+DQoNClRoZW4gdGhpcyBpcyBhIGJ1ZyBmaXggdGhhdCBzaG91bGQgZ28gZGlyZWN0bHkgdG8gbGlu
+dXMvc3RhYmxlLg0KDQpJIG5vdGUgdGhhdCBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20v
+bGludXgva2VybmVsL2dpdC9zdGFibGUvbGludXguZ2l0L2xvZy9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9mcmVlc2NhbGUvZHBhYT9oPWxpbnV4LTQuMTkueQ0KaXMgaW4gNC4xOSBidXQgbm90IGluIDQu
+MTQgLCBpcyBpdCBub3QgYXBwcm9wcmlhdGUgZm9yIDQuMTQ/DQoNCiBKb2NrZQ0KDQo+IA0KPiAt
+LS0NCj4gQmVzdCBSZWdhcmRzLCBMYXVyZW50aXUNCj4gDQo+ID4gPiAtLS0NCj4gPiA+ICBkcml2
+ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jIHwgMiArLQ0KPiA+ID4g
+IDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiA+ID4gDQo+
+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBh
+YV9ldGguYw0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBhYV9l
+dGguYw0KPiA+ID4gaW5kZXggZGFlZGU3MjcyNzY4Li40MDQyMGVkYzljZTYgMTAwNjQ0DQo+ID4g
+PiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+
+ID4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5j
+DQo+ID4gPiBAQCAtMTY2Myw3ICsxNjYzLDcgQEAgc3RhdGljIHN0cnVjdCBza19idWZmICpkcGFh
+X2NsZWFudXBfdHhfZmQoY29uc3QNCj4gPiBzdHJ1Y3QgZHBhYV9wcml2ICpwcml2LA0KPiA+ID4g
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcW1fc2dfZW50cnlfZ2V0X2xlbigmc2d0
+WzBdKSwgZG1hX2Rpcik7DQo+ID4gPiANCj4gPiA+ICAgICAgICAgICAgICAgICAvKiByZW1haW5p
+bmcgcGFnZXMgd2VyZSBtYXBwZWQgd2l0aCBza2JfZnJhZ19kbWFfbWFwKCkNCj4gPiAqLw0KPiA+
+ID4gLSAgICAgICAgICAgICAgIGZvciAoaSA9IDE7IGkgPCBucl9mcmFnczsgaSsrKSB7DQo+ID4g
+PiArICAgICAgICAgICAgICAgZm9yIChpID0gMTsgaSA8PSBucl9mcmFnczsgaSsrKSB7DQo+ID4g
+PiAgICAgICAgICAgICAgICAgICAgICAgICBXQVJOX09OKHFtX3NnX2VudHJ5X2lzX2V4dCgmc2d0
+W2ldKSk7DQo+ID4gPiANCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV91bm1hcF9w
+YWdlKGRldiwgcW1fc2dfYWRkcigmc2d0W2ldKSwNCj4gPiA+IC0tDQo+ID4gPiAyLjE3LjENCj4g
+PiA+IA0K
