@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C67CC43219
-	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 11:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38C3C43219
+	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 11:37:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4692C2075C
-	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 11:34:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4692C2075C
+	by mail.kernel.org (Postfix) with ESMTPS id CD6CC2075E
+	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 11:37:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD6CC2075E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 015013930;
-	Fri,  3 May 2019 11:34:44 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 945893934;
+	Fri,  3 May 2019 11:37:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0C7803917
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2E6D23932
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  3 May 2019 11:33:58 +0000 (UTC)
+	Fri,  3 May 2019 11:37:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id C0A8987
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D1C1587
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  3 May 2019 11:33:57 +0000 (UTC)
+	Fri,  3 May 2019 11:36:59 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B750374;
-	Fri,  3 May 2019 04:33:57 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97E58374;
+	Fri,  3 May 2019 04:36:59 -0700 (PDT)
 Received: from arrakis.emea.arm.com (arrakis.cambridge.arm.com [10.1.196.78])
 	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
-	C3E1B3F220; Fri,  3 May 2019 04:33:55 -0700 (PDT)
-Date: Fri, 3 May 2019 12:33:53 +0100
+	0DF6F3F220; Fri,  3 May 2019 04:36:57 -0700 (PDT)
+Date: Fri, 3 May 2019 12:36:55 +0100
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 01/25] arm64/iommu: handle non-remapped addresses in
-	->mmap and ->get_sgtable
-Message-ID: <20190503113352.GA55449@arrakis.emea.arm.com>
+Subject: Re: [PATCH 02/25] dma-mapping: add a Kconfig symbol to indicated
+	arch_dma_prep_coherent presence
+Message-ID: <20190503113655.GB55449@arrakis.emea.arm.com>
 References: <20190430105214.24628-1-hch@lst.de>
-	<20190430105214.24628-2-hch@lst.de>
+	<20190430105214.24628-3-hch@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190430105214.24628-2-hch@lst.de>
+In-Reply-To: <20190430105214.24628-3-hch@lst.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Tom Lendacky <thomas.lendacky@amd.com>, Will Deacon <will.deacon@arm.com>,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
@@ -67,11 +67,12 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Apr 30, 2019 at 06:51:50AM -0400, Christoph Hellwig wrote:
-> DMA allocations that can't sleep may return non-remapped addresses, but
-> we do not properly handle them in the mmap and get_sgtable methods.
-> Resolve non-vmalloc addresses using virt_to_page to handle this corner
-> case.
+On Tue, Apr 30, 2019 at 06:51:51AM -0400, Christoph Hellwig wrote:
+> Add a Kconfig symbol that indicates an architecture provides a
+> arch_dma_prep_coherent implementation, and provide a stub otherwise.
+> 
+> This will allow the generic dma-iommu code to use it while still
+> allowing to be built for cache coherent architectures.
 > 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > Reviewed-by: Robin Murphy <robin.murphy@arm.com>
