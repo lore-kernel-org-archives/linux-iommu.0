@@ -2,48 +2,50 @@ Return-Path: <SRS0=zl4V=TD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3840C43219
-	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 15:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D70C43219
+	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 15:38:00 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F0BB2075E
-	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 15:35:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F0BB2075E
+	by mail.kernel.org (Postfix) with ESMTPS id AC1E02081C
+	for <iommu@archiver.kernel.org>; Fri,  3 May 2019 15:38:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC1E02081C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4AC423A06;
-	Fri,  3 May 2019 15:35:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7692039E0;
+	Fri,  3 May 2019 15:38:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D2B4393A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A22043946
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  3 May 2019 15:34:46 +0000 (UTC)
+	Fri,  3 May 2019 15:37:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4618C71C
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 39A44756
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  3 May 2019 15:34:46 +0000 (UTC)
+	Fri,  3 May 2019 15:37:19 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id A604B580; Fri,  3 May 2019 17:34:44 +0200 (CEST)
-Date: Fri, 3 May 2019 17:34:43 +0200
+	id 9260E580; Fri,  3 May 2019 17:37:17 +0200 (CEST)
+Date: Fri, 3 May 2019 17:37:16 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Eric Auger <eric.auger@redhat.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix leak in intel_pasid_alloc_table on error
-	path
-Message-ID: <20190503153443.GD11605@8bytes.org>
-References: <20190430073004.10528-1-eric.auger@redhat.com>
+To: Johan Hovold <johan@kernel.org>
+Subject: Re: Linux crash when using FTDI FT232R USB to serial converter on
+	AMD boards.
+Message-ID: <20190503153716.GE11605@8bytes.org>
+References: <04503197-a0a9-8b35-6c65-c10f296aab57@gmail.com>
+	<20190429094847.GI26546@localhost>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190430073004.10528-1-eric.auger@redhat.com>
+In-Reply-To: <20190429094847.GI26546@localhost>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org,
-	linux-kernel@vger.kernel.org, eric.auger.pro@gmail.com
+Cc: iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+	Mathias Nyman <mathias.nyman@intel.com>,
+	"StarostaCZ@gmail.com" <starostacz@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,17 +63,22 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Apr 30, 2019 at 09:30:04AM +0200, Eric Auger wrote:
-> If alloc_pages_node() fails, pasid_table is leaked. Free it.
+On Mon, Apr 29, 2019 at 11:48:47AM +0200, Johan Hovold wrote:
+> So this is a debian 4.18 kernel seemingly crashing due to a xhci or
+> iommu issue.
 > 
-> Fixes: cc580e41260db ("iommu/vt-d: Per PCI device pasid table interfaces")
+> Can you reproduce this on a mainline kernel?
 > 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> ---
->  drivers/iommu/intel-pasid.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> If so, please post the corresponding logs to the lists and CC the xhci
+> and iommu maintainers (added to CC).
 
-Applied, thanks.
+Your kernel is probably missing this upstream fix:
+
+	4e50ce03976f iommu/amd: fix sg->dma_address for sg->offset bigger than PAGE_SIZE
+
+Regards,
+
+	Joerg
 
 _______________________________________________
 iommu mailing list
