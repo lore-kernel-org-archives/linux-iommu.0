@@ -2,53 +2,123 @@ Return-Path: <SRS0=Zlue=TG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6E6C04A6B
-	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 12:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 066F5C04A6B
+	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 13:50:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64140206A3
-	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 12:30:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64140206A3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id CAC2320675
+	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 13:50:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="PuOjunm9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CAC2320675
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 001324629;
-	Mon,  6 May 2019 12:30:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 82FA24674;
+	Mon,  6 May 2019 13:50:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A97E64556
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 310794567
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  6 May 2019 12:29:21 +0000 (UTC)
+	Mon,  6 May 2019 13:49:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B071E878
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+	[210.118.77.11])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B9C797DB
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  6 May 2019 12:29:20 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id CCF4BAE12;
-	Mon,  6 May 2019 12:29:18 +0000 (UTC)
-Date: Mon, 6 May 2019 14:29:16 +0200
-From: Joerg Roedel <jroedel@suse.de>
-To: Qian Cai <cai@lca.pw>
-Subject: Re: "iommu/amd: Set exclusion range correctly" causes smartpqi offline
-Message-ID: <20190506122916.GB3486@suse.de>
-References: <1556290348.6132.6.camel@lca.pw>
-	<ca40e139-3b0e-01db-b3c8-df0c1a04f9e6@lca.pw>
+	Mon,  6 May 2019 13:49:39 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+	20190506134937euoutp01c26474bba6ba93ec3607da48c385b092~cHDNNa0CT0837508375euoutp01r
+	for <iommu@lists.linux-foundation.org>;
+	Mon,  6 May 2019 13:49:37 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+	20190506134937euoutp01c26474bba6ba93ec3607da48c385b092~cHDNNa0CT0837508375euoutp01r
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1557150577;
+	bh=P7VhdfKau4WWhvUvStqz4ZpxoPa4I41d5iy+2lZ2Xkg=;
+	h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+	b=PuOjunm988K37iwCo4rMbtDeQPRdGj/VY29pgrBON62b5jyl/cS055dsqc+sZbEd9
+	ZKzi1jd7mHne31xOUpIuPqj84X63iM7VcU+/F/he0ListBbjmWGblCtygcUTCJABRK
+	AQAD0/kbOtf/5+eNGBG36KZTClSrKrZjJfnsCBNg=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20190506134937eucas1p29e237a8ab0f697f175a0afa018f1909b~cHDM2ZcY_2976629766eucas1p2t;
+	Mon,  6 May 2019 13:49:37 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 8D.28.04298.17B30DC5;
+	Mon,  6 May 2019 14:49:37 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20190506134936eucas1p2bc1a530cb7ec454d489f04c1d17a1747~cHDMInob-1945619456eucas1p2f;
+	Mon,  6 May 2019 13:49:36 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20190506134936eusmtrp216ef39ffea283ca81041002d4039c9ff~cHDL6UHf62143621436eusmtrp2D;
+	Mon,  6 May 2019 13:49:36 +0000 (GMT)
+X-AuditID: cbfec7f2-f2dff700000010ca-06-5cd03b71f187
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 34.02.04140.07B30DC5;
+	Mon,  6 May 2019 14:49:36 +0100 (BST)
+Received: from [106.120.51.71] (unknown [106.120.51.71]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20190506134935eusmtip2dd0c9c67ac2900917d7e4ab75aabb56e~cHDLbjmJb1830718307eusmtip2W;
+	Mon,  6 May 2019 13:49:35 +0000 (GMT)
+Subject: Re: [PATCH 2/7] au1100fb: fix DMA API abuse
+To: Christoph Hellwig <hch@lst.de>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Message-ID: <7a63eeae-4ec3-c82e-c497-8adc7bcb3cea@samsung.com>
+Date: Mon, 6 May 2019 15:49:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <ca40e139-3b0e-01db-b3c8-df0c1a04f9e6@lca.pw>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: don.brace@microsemi.com, linux-scsi@vger.kernel.org,
-	martin.petersen@oracle.com, kevin.barnett@microsemi.com,
-	jejb@linux.ibm.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, scott.teel@microsemi.com,
-	david.carroll@microsemi.com, hch@lst.de
+In-Reply-To: <20190430110032.25301-3-hch@lst.de>
+X-Brightmail-Tracker: H4sIAAAAAAAAA01SbUhTYRjt3d3u7oaT69R8UDEclhBpChHXDLGQuNWfsD9hUq28qOQ223Wa
+	FeWPLJ0wv/qwYWiCmotU5rdl5pxT8Ss1TNNIUUuUqamRRbPc7gT/ned5znnPOfASmPSdwJtI
+	VKYwaqU8SYaL+Y2W34NBN8I/xIbM6MVU1asuHlXaHk7l96zxqfm8KZzq0a0KqNHWYpzKNjYg
+	au5HH5/SLVkwauRtQKSYzmzLw2mjIRunu6pe8+jC8UpEv5nIwOkl8wyftmkfYfS60e8cESM+
+	HsckJaYy6sMRV8QJQ4XlWPIX7GZ2bYMwA+VgWiQigDwC3ZkdSIvEhJR8iUA3bMO4YQOB2fgC
+	54Z1BA35Y2hHMlm0IeQOlQj6LctOiRXB/WUDz85y32Y1Fm86FB6kDOYXBxwmGFnNA52uwHHA
+	yWOQ/9DgwBIyAuYraoR2zCcD4Ilet/0qQXiSFyC3P5CjuEHvszm+HYvIEChvNgnsGNvG5rJi
+	J94HTdZiRyAgB4XwuE0n5GJHQVO93tnaHRa76517X/jXUsLjBNUIbFkLTnUTgsrCLZxjhUNn
+	97CAwyfgY2cubk8HpCuMW904Z1coaHyKcWsJZD2QcuwDUFtRi+94aVuqnBloaF+14HnIX7+r
+	m35XH/2uPqUIMyAvRsMq4hk2VMmkBbNyBatRxgdfUymMaPtX9W11rzWjnyNXTYgkkMxFQsuG
+	YqUCeSqbrjAhIDCZh0T+bTBWKomTp99i1KrLak0Sw5qQD8GXeUlu75m+KCXj5SnMdYZJZtQ7
+	Vx4h8s5Ap7UTM12ncqyW53H5nr6rQUWj/X+ss6k8ZB5pvZOoEb03hbXaPvkrL9kCzTAW0VO2
+	d2tlUVpEbqoUX3tZ3hwznZVWM5F1MsHlrndUmI/qlzRvtrpSbfz+OW2/nzJacL76TMzkvbMr
+	qZF/ZVMLqujpuoWOAYXKfMgMJeV1RzUyPpsgDz2IqVn5f8RVZkNRAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrEIsWRmVeSWpSXmKPExsVy+t/xe7oF1hdiDD5/FbFYufook8WC/dYW
+	E098YrF4OuEOm8WJvg+sFpd3zWGz6Ny0ldHiycfTLBZ9r48xW1zao+LA5dG6dwKbx6ZVnWwe
+	R1euZfKYfGM5o8fumw1sHq+PPGTx+Ns1hdnj8ya5AI4oPZui/NKSVIWM/OISW6VoQwsjPUNL
+	Cz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYzzk5cyF9xlrujcsJW9gbGbuYuRk0NCwETi
+	9owv7F2MXBxCAksZJU5vPcTWxcgBlJCROL6+DKJGWOLPtS42iJrXjBJv921mBEkIAzVvm/MD
+	zBYRUJJ4+uosI0TRSkaJxf/OsIA4zALrmCRaTs0Bq2ITsJKY2L4KzOYVsJN4umw9O4jNIqAi
+	MW1WH9hJogIRErcedrBA1AhKnJz5BMzmFDCQWLrjECuIzSygJ7Hj+i8oW15i+9s5zBMYBWch
+	aZmFpGwWkrIFjMyrGEVSS4tz03OLjfSKE3OLS/PS9ZLzczcxAuNv27GfW3Ywdr0LPsQowMGo
+	xMProXQ+Rog1say4MvcQowQHs5IIb+KzczFCvCmJlVWpRfnxRaU5qcWHGE2BnpjILCWanA9M
+	DXkl8YamhuYWlobmxubGZhZK4rwdAgdjhATSE0tSs1NTC1KLYPqYODilGhhTCi9XsvsLf3Ps
+	dAw7oqGvrl3fYZuq4P5NL/XZV/U/S69P3vzomrDV3/mRZUUGj3n+v44/uT4l8Pf0T3FlT05O
+	f+t3+VVL561lPI9/5LP9PHx6XfP8I7d+MW9rXMMZf0rqrvzt6cdZpPZG86jnmt/wYa8025MX
+	9MTuV80qE6n2F48NZFoDufcqsRRnJBpqMRcVJwIAhi4zqNUCAAA=
+X-CMS-MailID: 20190506134936eucas1p2bc1a530cb7ec454d489f04c1d17a1747
+X-Msg-Generator: CA
+X-RootMTR: 20190430110118epcas2p24019c7551331cc6390e5b5e07b381dd9
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190430110118epcas2p24019c7551331cc6390e5b5e07b381dd9
+References: <20190430110032.25301-1-hch@lst.de>
+	<CGME20190430110118epcas2p24019c7551331cc6390e5b5e07b381dd9@epcas2p2.samsung.com>
+	<20190430110032.25301-3-hch@lst.de>
+Cc: Michal Simek <monstr@monstr.eu>, James Hogan <jhogan@kernel.org>,
+	linux-mips@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>,
+	linux-kernel@vger.kernel.org, Paul Burton <paul.burton@mips.com>,
+	iommu@lists.linux-foundation.org, linux-fbdev@vger.kernel.org,
+	Ley Foon Tan <lftan@altera.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,185 +136,21 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sun, May 05, 2019 at 10:56:28PM -0400, Qian Cai wrote:
-> It turned out another linux-next commit is needed to reproduce this, i.e.,
-> 7a5dbf3ab2f0 ("iommu/amd: Remove the leftover of bypass support"). Specifically,
-> the chunks for map_sg() and unmap_sg(). This has been reproduced on 3 different
-> HPE ProLiant DL385 Gen10 systems so far.
+
+On 04/30/2019 01:00 PM, Christoph Hellwig wrote:
+> Virtual addresses return from dma(m)_alloc_coherent are opaque in what
+> backs then, and drivers must not poke into them.  Switch the driver
+> to use the generic DMA API mmap helper to avoid these games.
 > 
-> Either reverted the chunks (map_sg() and unmap_sg()) on the top of the latest
-> linux-next fixed the issue or applied them on the top of the mainline v5.1
-> reproduced it immediately.
-> 
-> Lots of time it triggered this BUG_ON(!iova) in iova_magazine_free_pfns()
-> instead of the smartpqi offline.
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Thanks a lot for tracking this down further. I queued a revert of the
-above patch, as it does some questionable things I missed during review.
-We should revisit the patch during the next cycle, but for now it is
-better to just revert it. Revert attached.
+Acked-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 
-From 89736a0ee81d14439d085c8d4653bc1d86fe64d8 Mon Sep 17 00:00:00 2001
-From: Joerg Roedel <jroedel@suse.de>
-Date: Mon, 6 May 2019 14:24:18 +0200
-Subject: [PATCH] Revert "iommu/amd: Remove the leftover of bypass support"
-
-This reverts commit 7a5dbf3ab2f04905cf8468c66fcdbfb643068bcb.
-
-This commit not only removes the leftovers of bypass
-support, it also mostly removes the checking of the return
-value of the get_domain() function. This can lead to silent
-data corruption bugs when a device is not attached to its
-dma_ops domain and a DMA-API function is called for that
-device.
-
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/amd_iommu.c | 80 +++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 63 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index bc98de5fa867..23c1a7eebb06 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2459,10 +2459,20 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
- 			   unsigned long attrs)
- {
- 	phys_addr_t paddr = page_to_phys(page) + offset;
--	struct protection_domain *domain = get_domain(dev);
--	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
-+	struct protection_domain *domain;
-+	struct dma_ops_domain *dma_dom;
-+	u64 dma_mask;
-+
-+	domain = get_domain(dev);
-+	if (PTR_ERR(domain) == -EINVAL)
-+		return (dma_addr_t)paddr;
-+	else if (IS_ERR(domain))
-+		return DMA_MAPPING_ERROR;
-+
-+	dma_mask = *dev->dma_mask;
-+	dma_dom = to_dma_ops_domain(domain);
- 
--	return __map_single(dev, dma_dom, paddr, size, dir, *dev->dma_mask);
-+	return __map_single(dev, dma_dom, paddr, size, dir, dma_mask);
- }
- 
- /*
-@@ -2471,8 +2481,14 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
- static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
- 		       enum dma_data_direction dir, unsigned long attrs)
- {
--	struct protection_domain *domain = get_domain(dev);
--	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
-+	struct protection_domain *domain;
-+	struct dma_ops_domain *dma_dom;
-+
-+	domain = get_domain(dev);
-+	if (IS_ERR(domain))
-+		return;
-+
-+	dma_dom = to_dma_ops_domain(domain);
- 
- 	__unmap_single(dma_dom, dma_addr, size, dir);
- }
-@@ -2512,13 +2528,20 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 		  unsigned long attrs)
- {
- 	int mapped_pages = 0, npages = 0, prot = 0, i;
--	struct protection_domain *domain = get_domain(dev);
--	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
-+	struct protection_domain *domain;
-+	struct dma_ops_domain *dma_dom;
- 	struct scatterlist *s;
- 	unsigned long address;
--	u64 dma_mask = *dev->dma_mask;
-+	u64 dma_mask;
- 	int ret;
- 
-+	domain = get_domain(dev);
-+	if (IS_ERR(domain))
-+		return 0;
-+
-+	dma_dom  = to_dma_ops_domain(domain);
-+	dma_mask = *dev->dma_mask;
-+
- 	npages = sg_num_pages(dev, sglist, nelems);
- 
- 	address = dma_ops_alloc_iova(dev, dma_dom, npages, dma_mask);
-@@ -2592,11 +2615,20 @@ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
- 		     int nelems, enum dma_data_direction dir,
- 		     unsigned long attrs)
- {
--	struct protection_domain *domain = get_domain(dev);
--	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
-+	struct protection_domain *domain;
-+	struct dma_ops_domain *dma_dom;
-+	unsigned long startaddr;
-+	int npages = 2;
-+
-+	domain = get_domain(dev);
-+	if (IS_ERR(domain))
-+		return;
-+
-+	startaddr = sg_dma_address(sglist) & PAGE_MASK;
-+	dma_dom   = to_dma_ops_domain(domain);
-+	npages    = sg_num_pages(dev, sglist, nelems);
- 
--	__unmap_single(dma_dom, sg_dma_address(sglist) & PAGE_MASK,
--			sg_num_pages(dev, sglist, nelems) << PAGE_SHIFT, dir);
-+	__unmap_single(dma_dom, startaddr, npages << PAGE_SHIFT, dir);
- }
- 
- /*
-@@ -2607,11 +2639,16 @@ static void *alloc_coherent(struct device *dev, size_t size,
- 			    unsigned long attrs)
- {
- 	u64 dma_mask = dev->coherent_dma_mask;
--	struct protection_domain *domain = get_domain(dev);
-+	struct protection_domain *domain;
- 	struct dma_ops_domain *dma_dom;
- 	struct page *page;
- 
--	if (IS_ERR(domain))
-+	domain = get_domain(dev);
-+	if (PTR_ERR(domain) == -EINVAL) {
-+		page = alloc_pages(flag, get_order(size));
-+		*dma_addr = page_to_phys(page);
-+		return page_address(page);
-+	} else if (IS_ERR(domain))
- 		return NULL;
- 
- 	dma_dom   = to_dma_ops_domain(domain);
-@@ -2657,13 +2694,22 @@ static void free_coherent(struct device *dev, size_t size,
- 			  void *virt_addr, dma_addr_t dma_addr,
- 			  unsigned long attrs)
- {
--	struct protection_domain *domain = get_domain(dev);
--	struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
--	struct page *page = virt_to_page(virt_addr);
-+	struct protection_domain *domain;
-+	struct dma_ops_domain *dma_dom;
-+	struct page *page;
- 
-+	page = virt_to_page(virt_addr);
- 	size = PAGE_ALIGN(size);
- 
-+	domain = get_domain(dev);
-+	if (IS_ERR(domain))
-+		goto free_mem;
-+
-+	dma_dom = to_dma_ops_domain(domain);
-+
- 	__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
-+
-+free_mem:
- 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
- 		__free_pages(page, get_order(size));
- }
--- 
-2.16.4
-
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
