@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA1EC04AAD
-	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 07:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FDB5C04AAC
+	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 07:12:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D659A20830
-	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 07:12:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2A82B20830
+	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 07:12:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XDdYIzrk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D659A20830
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PmJsfoyx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A82B20830
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8CCA644FB;
-	Mon,  6 May 2019 07:12:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DFFA144F8;
+	Mon,  6 May 2019 07:12:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D228944F6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2CF4144F6
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  6 May 2019 07:10:44 +0000 (UTC)
+	Mon,  6 May 2019 07:11:45 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com
-	[209.85.128.47])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5649E196
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+	[209.85.221.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A9780836
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  6 May 2019 07:10:43 +0000 (UTC)
-Received: by mail-wm1-f47.google.com with SMTP id p21so14341501wmc.0
+	Mon,  6 May 2019 07:11:43 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id o4so15825841wra.3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 06 May 2019 00:10:43 -0700 (PDT)
+	Mon, 06 May 2019 00:11:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=from:subject:to:cc:references:message-id:date:user-agent
 	:mime-version:in-reply-to:content-language;
-	bh=BS8tUNus4E39vYlZR/uTFGRp1H/VCzByRzl03BhHpqg=;
-	b=XDdYIzrkj+zFOqf55pPqJknKpi0l1cr2tC1smtbhs0M2LsblzlGGqWRYQX98r8SPIU
-	QzVVu0PkXT4ujFYrDy+vxcq0btv9o+acHPrZ781ATw/+X2NYx9iw98i0aoCxUzJWxF+H
-	9mjYAzqiKN+EsMcrg7RRcZYwV/sZMgyNV7wHF4NJZZqKLJY8qaxFFBy29kd5WJkG3T/z
-	GUALy0oX6zC1+E6w6J9UlACwUhJtOAspaK67xNj2+4V/HmOxRxB+55kSwyo0S6JplExc
-	IerfKtwsBpphQCv5XCbgxQ83n5o/4UYdFlkwaB7O33JKbKidzUVklkjfJjsvkTjMxmou
-	C7VA==
+	bh=PYcGHYejom3YaJRFG+vdIcIcyzTu+RPad3rfQ5D25Zo=;
+	b=PmJsfoyxYE5tO0ZxAHgXqWLHEozunIB1VttG9iWgaw0BfZIGWyiR91K8D9Yw+Ic6YV
+	eazL9GqE5htk8n9MuLxmIb+0MbtItGa6/aSWAxnIf2ncgkCAcFcNdCp8VacMjiiVQGKp
+	9HoUbon0xRc1HL5Ol5xgFv4U3qoOsowmuRr5+MBSgqhpqkFyNrjsszTWlp+chSrdZGng
+	BEMm1SdxcosZaoGOQ4nd8jECIesBb00FstTBmBk9/zJkhW0olcCxQMhEfXDaM2PXzFGf
+	GoX2vALWRrxs0aYICkM47u44wwPVXRw3mqSKW4Jaunf2v+pUyl0CCwX9Z+S3mNoipWko
+	aTWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:subject:to:cc:references:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language;
-	bh=BS8tUNus4E39vYlZR/uTFGRp1H/VCzByRzl03BhHpqg=;
-	b=fUsXqLCuGfTJ+eoVo8lsuigQfZtBHUOG8RdU7ACIqNeRLUxxljDroK6P9Z8R+xuUkY
-	/E+ps63+zDtgcvPb8eU1MUPM7TOVW44LsOxivKSK1fPqibQ+9CnMb016DYCoOR67mTcU
-	OaITIr7zq0c2IiuuMhHAKXuaLOFbOYd271s3RTfYS1qBqEv7a6ba+dwdJo/kHZqrwOV4
-	XE4rYXXeQk27sa8D8EMhMF6W+qirtY/ZoZBawaDnc+mqh9/3Em9wWgeajitpkclBdiqV
-	o4mVHPfGhZozZgZozzTxFnqCWOdBXp2Q3SBIxuUNtJJc4Vz9Xg6ZuCe1g4UvW3Qpq2Be
-	kS3Q==
-X-Gm-Message-State: APjAAAUz7i+eTV0lvo2HdwVzeF0ovHAqPdKWx5NW+AUEcQzrj5bpsyif
-	PFNjTFivgxszX+8h1yI+FlWtNZVm
-X-Google-Smtp-Source: APXvYqyehkWmol0ivWChlksn5ijT4UXv5ZbJMmdw57x9RWCGeZH605DuWDyhnn77BR9OvLSmrN8jxg==
-X-Received: by 2002:a1c:a008:: with SMTP id j8mr15710504wme.73.1557126641344; 
-	Mon, 06 May 2019 00:10:41 -0700 (PDT)
+	bh=PYcGHYejom3YaJRFG+vdIcIcyzTu+RPad3rfQ5D25Zo=;
+	b=c+FNEsF7WLCif7QkpbcGofQATvv5Xqned80IIvmNtmtbBBQkQCyggKGLzhF+GltIn7
+	KPLr61lPdJKbG1Xj/rBdx4+wMmaMla20icchZ+2euFIltC8caOBLV6sUzKeyN454roGw
+	20YyPi8XODsFd/B23Er+fQUQnWAO3xhEWWl9fh18TzmvHCDpiMeu/YE6ql0bA9Ucw7z8
+	AzgDa8TYaJpVMyahhWMEAtUTRpnAB/iLrzN94aIDZ4yBKYyudlv5qxdE+wJtLoOHXUXg
+	joiqQIUdhv/IpPX7lwspXWDwweEf+riXH3bV1j6VQ3GFohvhBW8RLDw5JiiHfW8tp/TL
+	pjHA==
+X-Gm-Message-State: APjAAAXhoXCflT78VgLVGi/esmcLyI0aj2oypWJN65cyN/SyVc/6oI12
+	MhYQyV0UpbL6w256FkRbiEd9UmeE2vc=
+X-Google-Smtp-Source: APXvYqxiI4+3WJn7efB+arm6Sy90nhNAAA+xUM/5+GX56yd6HJlTu2u6+X+UMO1hr3Sbju/MId+Ttg==
+X-Received: by 2002:a5d:67cb:: with SMTP id n11mr16712690wrw.3.1557126702004; 
+	Mon, 06 May 2019 00:11:42 -0700 (PDT)
 Received: from [192.168.99.70] (mail.unidataz.cz. [193.165.148.130])
 	by smtp.googlemail.com with ESMTPSA id
-	z4sm7818740wmk.5.2019.05.06.00.10.38
+	z14sm1202793wrr.34.2019.05.06.00.11.40
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Mon, 06 May 2019 00:10:39 -0700 (PDT)
+	Mon, 06 May 2019 00:11:40 -0700 (PDT)
 From: "StarostaCZ@gmail.com" <starostacz@gmail.com>
 X-Google-Original-From: "StarostaCZ@gmail.com" <StarostaCZ@gmail.com>
 Subject: Re: Linux crash when using FTDI FT232R USB to serial converter on AMD
@@ -74,13 +74,13 @@ Subject: Re: Linux crash when using FTDI FT232R USB to serial converter on AMD
 To: Joerg Roedel <joro@8bytes.org>, Johan Hovold <johan@kernel.org>
 References: <04503197-a0a9-8b35-6c65-c10f296aab57@gmail.com>
 	<20190429094847.GI26546@localhost> <20190503153716.GE11605@8bytes.org>
-Message-ID: <5428432e-01cd-e831-0a55-b8e7a291a91d@gmail.com>
-Date: Mon, 6 May 2019 09:09:31 +0200
+Message-ID: <8748125e-f360-ff0e-ea15-699bce9e7747@gmail.com>
+Date: Mon, 6 May 2019 09:10:33 +0200
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
 In-Reply-To: <20190503153716.GE11605@8bytes.org>
-Content-Type: multipart/mixed; boundary="------------FB944440033B245101AF374D"
+Content-Type: multipart/mixed; boundary="------------ED2EC226B656C966A979755E"
 Content-Language: cs
 Cc: iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
 	Mathias Nyman <mathias.nyman@intel.com>
@@ -100,53 +100,37 @@ Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 This is a multi-part message in MIME format.
---------------FB944440033B245101AF374D
-Content-Type: text/html; charset=iso-8859-2
+--------------ED2EC226B656C966A979755E
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
 Content-Transfer-Encoding: 7bit
 
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html;
-      charset=ISO-8859-2">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    New test on kernel Linux version 5.1.0-050100-generic. Same problem,
-    system crash after a few seconds.<br>
-    Full kern.log: <a class="moz-txt-link-freetext" href="https://paste.ee/p/EmLsw">https://paste.ee/p/EmLsw</a><br>
-    I can do access to my pc through SSH if useful.<br>
-    <pre class="moz-signature" cols="72">starosta</pre>
-    <div class="moz-cite-prefix">Dne 3.5.2019 v 17:37 Joerg Roedel
-      napsal(a):<br>
-    </div>
-    <blockquote type="cite" cite="mid:20190503153716.GE11605@8bytes.org">
-      <pre class="moz-quote-pre" wrap="">On Mon, Apr 29, 2019 at 11:48:47AM +0200, Johan Hovold wrote:
-</pre>
-      <blockquote type="cite">
-        <pre class="moz-quote-pre" wrap="">So this is a debian 4.18 kernel seemingly crashing due to a xhci or
-iommu issue.
+New test on kernel Linux version 5.1.0-050100-generic. Same problem, 
+system crash after a few seconds.
+Full kern.log: https://paste.ee/p/EmLsw
+I can do access to my pc through SSH if useful.
 
-Can you reproduce this on a mainline kernel?
+starosta
 
-If so, please post the corresponding logs to the lists and CC the xhci
-and iommu maintainers (added to CC).
-</pre>
-      </blockquote>
-      <pre class="moz-quote-pre" wrap="">
-Your kernel is probably missing this upstream fix:
+Dne 3.5.2019 v 17:37 Joerg Roedel napsal(a):
+> On Mon, Apr 29, 2019 at 11:48:47AM +0200, Johan Hovold wrote:
+>> So this is a debian 4.18 kernel seemingly crashing due to a xhci or
+>> iommu issue.
+>>
+>> Can you reproduce this on a mainline kernel?
+>>
+>> If so, please post the corresponding logs to the lists and CC the xhci
+>> and iommu maintainers (added to CC).
+> Your kernel is probably missing this upstream fix:
+>
+> 	4e50ce03976f iommu/amd: fix sg->dma_address for sg->offset bigger than PAGE_SIZE
+>
+> Regards,
+>
+> 	Joerg
+>
 
-	4e50ce03976f iommu/amd: fix sg-&gt;dma_address for sg-&gt;offset bigger than PAGE_SIZE
 
-Regards,
-
-	Joerg
-
-</pre>
-    </blockquote>
-    <br>
-  </body>
-</html>
-
---------------FB944440033B245101AF374D
+--------------ED2EC226B656C966A979755E
 Content-Type: text/plain; charset=UTF-8;
  name="kern.log"
 Content-Transfer-Encoding: quoted-printable
@@ -340,7 +324,8 @@ May  6 08:38:08 test-ubnt kernel: [  161.631335] CS:  0010 DS: 002b ES: 0=
 May  6 08:38:08 test-ubnt kernel: [  161.633289] CR2: 00000000ff82280c CR=
 3: 00000000b59ec000 CR4: 00000000003406f0
 
---------------FB944440033B245101AF374D
+
+--------------ED2EC226B656C966A979755E
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -350,4 +335,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---------------FB944440033B245101AF374D--
+--------------ED2EC226B656C966A979755E--
