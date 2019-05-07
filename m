@@ -1,90 +1,58 @@
-Return-Path: <SRS0=Zlue=TG=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=4fho=TH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1C4C04A6B
-	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 22:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CC4C004C9
+	for <iommu@archiver.kernel.org>; Tue,  7 May 2019 10:33:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F7C8206BF
-	for <iommu@archiver.kernel.org>; Mon,  6 May 2019 22:35:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UPA6SoQY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F7C8206BF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D0C9920825
+	for <iommu@archiver.kernel.org>; Tue,  7 May 2019 10:33:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D0C9920825
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 565DF54AF;
-	Mon,  6 May 2019 22:35:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6EFB23170;
+	Tue,  7 May 2019 10:33:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 30EFF528E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 239003123
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  6 May 2019 22:35:18 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
-	[209.85.215.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3C4427DB
+	Tue,  7 May 2019 10:33:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 4AEBA8F5
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  6 May 2019 22:35:16 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id d31so7173598pgl.7
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 06 May 2019 15:35:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references;
-	bh=Ej/Ro/6MoIBqWhxs/bm5kdLDOFr0cOwCG34qRqhI9Dc=;
-	b=UPA6SoQYsSPvTylk1dQZ1L0t3hqYf8CMFgWp7WrrySREH4BXXS6CrosQyhYUxq6bzu
-	0/auwEgH13pqwb88QCnI494RFvGSpdsh5ZsdoBk7ahVJF4k9yg8TUfwj2vcUYXRfdUkG
-	X2eI1T0tAk6QpGuxNLfxbJyeDGQ/q9u7v5QBC3ggMYbrmLcdJ+5H6ZTVSd0qLbV4VhVb
-	o5Icz83S/8nHIpj33SkFQH4XKYf05SRNqVWjpRglrGTupccHvJydIXKDY7NhBBKpxkAM
-	Hh7rOspNjtP60Xq+iCpyecPwcmLwq+kKF9RstBjx6zkbMaEEHlc0IWgZMxxtGQFIu4VH
-	n+8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references;
-	bh=Ej/Ro/6MoIBqWhxs/bm5kdLDOFr0cOwCG34qRqhI9Dc=;
-	b=PPgwh3c4qhn7GZgBuDiiqeK1+xXV8SRUMG9brVe6GWCQlXgbrO0V2cqVzv2IrszdVc
-	YAtP2vQbJqdX9ipvX6PME/UHMA7y2BxluOtsrPufkWwiTyKQCp5z/Q867FY+8gbpeWH5
-	JKiWnXTKVOGDya7AAQheCOpQ7DA6+1wJTovK4l5RTfri3pqogpyPjNz3AAkJ39HvKiNN
-	xlEoNH2Pf78ySPARNg0IsWdw9jSHvPvW2aAZrF2oojjxn9ybmXUQXVr6LWjO3RNPMhlK
-	qjqDb6BFkkQ0HfZaCHHf7c7miN5GU+uoPJUtsnb/VPHsmCdQnIWIcD/AJH+JLfiSTEKT
-	sM1Q==
-X-Gm-Message-State: APjAAAUFV4AoBMa9tRJEWJqPyLRm7SNq2IDLwlJb8DyujkaphlBzm6SR
-	5HgbYaOZpdMSIsHAQq1UyEk=
-X-Google-Smtp-Source: APXvYqwsKimZ9Q/0xbHPsNmrVpLZSdGARiXYhvF8TmpC5VJvQmzT9/PzK0TAk5oLAz87VaTu0/1l7g==
-X-Received: by 2002:aa7:99c7:: with SMTP id v7mr37336357pfi.103.1557182115662; 
-	Mon, 06 May 2019 15:35:15 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
-	[216.228.112.22]) by smtp.gmail.com with ESMTPSA id
-	c19sm14254976pgi.42.2019.05.06.15.35.14
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Mon, 06 May 2019 15:35:15 -0700 (PDT)
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: hch@lst.de,
-	robin.murphy@arm.com,
-	m.szyprowski@samsung.com
-Subject: [PATCH v2 1/2] dma-contiguous: Abstract dma_{alloc, free}_contiguous()
-Date: Mon,  6 May 2019 15:33:33 -0700
-Message-Id: <20190506223334.1834-2-nicoleotsuka@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190506223334.1834-1-nicoleotsuka@gmail.com>
-References: <20190506223334.1834-1-nicoleotsuka@gmail.com>
-Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org,
-	sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com,
-	will.deacon@arm.com, linux@armlinux.org.uk,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com,
-	akpm@linux-foundation.org, treding@nvidia.com,
-	dwmw2@infradead.org, iamjoonsoo.kim@lge.com,
-	linux-arm-kernel@lists.infradead.org
+	Tue,  7 May 2019 10:28:28 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8428374;
+	Tue,  7 May 2019 03:28:27 -0700 (PDT)
+Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5B4703F5AF;
+	Tue,  7 May 2019 03:28:26 -0700 (PDT)
+Subject: Re: [PATCH v3 1/8] iommu: Add ops entry for supported default domain
+	type
+To: Tom Murphy <tmurphy@arista.com>, Lu Baolu <baolu.lu@linux.intel.com>
+References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
+	<20190429020925.18136-2-baolu.lu@linux.intel.com>
+	<CAPL0++4Q7p7gWRUF5vG5sazLNCmSR--Px-=OEtj6vm_gEpB_ng@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <bba1f327-21b7-ed3c-8fd4-217ad97a6a7c@arm.com>
+Date: Tue, 7 May 2019 11:28:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <CAPL0++4Q7p7gWRUF5vG5sazLNCmSR--Px-=OEtj6vm_gEpB_ng@mail.gmail.com>
+Content-Language: en-GB
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -97,206 +65,129 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Both dma_alloc_from_contiguous() and dma_release_from_contiguous()
-are very simply implemented, but requiring callers to pass certain
-parameters like count and align, and taking a boolean parameter to
-check __GFP_NOWARN in the allocation flags. So every function call
-duplicates similar work:
-  /* A piece of example */
-  unsigned long order = get_order(size);
-  size_t count = size >> PAGE_SHIFT;
-  page = dma_alloc_from_contiguous(dev, count, order, gfp & __GFP_NOWARN);
-  [...]
-  dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
+On 06/05/2019 16:32, Tom Murphy via iommu wrote:
+> The AMD driver already solves this problem and uses the generic
+> iommu_request_dm_for_dev function. It seems like both drivers have the
+> same problem and could use the same solution. Is there any reason we
+> can't have use the same solution for the intel and amd driver?
+> 
+> Could we just  copy the implementation of the AMD driver? It would be
+> nice to have the same behavior across both drivers especially as we
+> move to make both drivers use more generic code.
 
-Additionally, as CMA can be used only in the context which permits
-sleeping, most of callers do a gfpflags_allow_blocking() check and
-a corresponding fallback allocation of normal pages upon any false
-result:
-  /* A piece of example */
-  if (gfpflags_allow_blocking(flag))
-      page = dma_alloc_from_contiguous();
-  if (!page)
-      page = alloc_pages();
-  [...]
-  if (!dma_release_from_contiguous(dev, page, count))
-      __free_pages(page, get_order(size));
+TBH I don't think the API really needs to be involved at all here. 
+Drivers can already not provide the requested default domain type if 
+they don't support it, so as long as the driver can ensure that the 
+device ends up with IOMMU or direct DMA ops as appropriate, I don't see 
+any great problem with drivers just returning a passthrough domain when 
+a DMA domain was requested, or vice versa (and logging a message that 
+the requested type was overridden). The only type that we really do have 
+to honour strictly is non-default (i.e. unmanaged) domains.
 
-So this patch simplifies those function calls by abstracting these
-operations into the two new functions: dma_{alloc,free}_contiguous.
+Robin.
 
-As some callers of dma_{alloc,release}_from_contiguous() might be
-complicated, this patch just implements these two new functions to
-kernel/dma/direct.c only as an initial step.
-
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
-Changelog
-v1->v2:
- * Added new functions beside the old ones so we can replace callers
-   one by one later.
- * Applied new functions to dma/direct.c only, because it's the best
-   example caller to apply and should be safe with the new functions.
-
- include/linux/dma-contiguous.h | 10 +++++++
- kernel/dma/contiguous.c        | 48 ++++++++++++++++++++++++++++++++++
- kernel/dma/direct.c            | 24 +++--------------
- 3 files changed, 62 insertions(+), 20 deletions(-)
-
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index f247e8aa5e3d..dacbdcb91a89 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -115,6 +115,8 @@ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
- 				       unsigned int order, bool no_warn);
- bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 				 int count);
-+struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
-+void dma_free_contiguous(struct device *dev, struct page *page, size_t size);
- 
- #else
- 
-@@ -157,6 +159,14 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 	return false;
- }
- 
-+struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-+{
-+	return NULL;
-+}
-+
-+static inline
-+void dma_free_contiguous(struct device *dev, struct page *page, size_t size) { }
-+
- #endif
- 
- #endif
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index b2a87905846d..21f39a6cb04f 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -214,6 +214,54 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 	return cma_release(dev_get_cma_area(dev), pages, count);
- }
- 
-+/**
-+ * dma_alloc_contiguous() - allocate contiguous pages
-+ * @dev:   Pointer to device for which the allocation is performed.
-+ * @size:  Requested allocation size.
-+ * @gfp:   Allocation flags.
-+ *
-+ * This function allocates contiguous memory buffer for specified device. It
-+ * first tries to use device specific contiguous memory area if available or
-+ * the default global one, then tries a fallback allocation of normal pages.
-+ */
-+struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-+{
-+	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-+	size_t count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+	size_t align = get_order(PAGE_ALIGN(size));
-+	struct cma *cma = dev_get_cma_area(dev);
-+	struct page *page = NULL;
-+
-+	/* CMA can be used only in the context which permits sleeping */
-+	if (cma && gfpflags_allow_blocking(gfp)) {
-+		align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
-+		page = cma_alloc(cma, count, align, gfp & __GFP_NOWARN);
-+	}
-+
-+	/* Fallback allocation of normal pages */
-+	if (!page)
-+		page = alloc_pages_node(node, gfp, align);
-+
-+	return page;
-+}
-+
-+/**
-+ * dma_free_contiguous() - release allocated pages
-+ * @dev:   Pointer to device for which the pages were allocated.
-+ * @page:  Pointer to the allocated pages.
-+ * @size:  Size of allocated pages.
-+ *
-+ * This function releases memory allocated by dma_alloc_contiguous(). As the
-+ * cma_release returns false when provided pages do not belong to contiguous
-+ * area and true otherwise, this function then does a fallback __free_pages()
-+ * upon a false-return.
-+ */
-+void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
-+{
-+	if (!cma_release(dev_get_cma_area(dev), page, size >> PAGE_SHIFT))
-+		__free_pages(page, get_order(size));
-+}
-+
- /*
-  * Support for reserved memory regions defined in device tree
-  */
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 2c2772e9702a..0816c1e8b05a 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -96,8 +96,6 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
--	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	int page_order = get_order(size);
- 	struct page *page = NULL;
- 	u64 phys_mask;
- 
-@@ -109,20 +107,9 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
- 			&phys_mask);
- again:
--	/* CMA can be used only in the context which permits sleeping */
--	if (gfpflags_allow_blocking(gfp)) {
--		page = dma_alloc_from_contiguous(dev, count, page_order,
--						 gfp & __GFP_NOWARN);
--		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
--			dma_release_from_contiguous(dev, page, count);
--			page = NULL;
--		}
--	}
--	if (!page)
--		page = alloc_pages_node(dev_to_node(dev), gfp, page_order);
--
-+	page = dma_alloc_contiguous(dev, size, gfp);
- 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
--		__free_pages(page, page_order);
-+		dma_free_contiguous(dev, page, size);
- 		page = NULL;
- 
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
-@@ -154,7 +141,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	if (PageHighMem(page)) {
- 		/*
- 		 * Depending on the cma= arguments and per-arch setup
--		 * dma_alloc_from_contiguous could return highmem pages.
-+		 * dma_alloc_contiguous could return highmem pages.
- 		 * Without remapping there is no way to return them here,
- 		 * so log an error and fail.
- 		 */
-@@ -176,10 +163,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
- 
- void __dma_direct_free_pages(struct device *dev, size_t size, struct page *page)
- {
--	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--
--	if (!dma_release_from_contiguous(dev, page, count))
--		__free_pages(page, get_order(size));
-+	dma_free_contiguous(dev, page, size);
- }
- 
- void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
--- 
-2.17.1
-
+> On Mon, Apr 29, 2019 at 3:16 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> This adds an optional ops entry to query the default domain
+>> types supported by the iommu driver for  a specific device.
+>> This is necessary in cases where the iommu driver can only
+>> support a specific type of default domain for a device. In
+>> normal cases, this ops will return IOMMU_DOMAIN_ANY which
+>> indicates that the iommu driver supports both IOMMU_DOMAIN_DMA
+>> and IOMMU_DOMAIN_IDENTITY, hence the static default domain
+>> type will be used.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/iommu.c | 13 ++++++++++---
+>>   include/linux/iommu.h | 11 +++++++++++
+>>   2 files changed, 21 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index acd6830e6e9b..1ad9a1f2e078 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1097,15 +1097,22 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+>>           * IOMMU driver.
+>>           */
+>>          if (!group->default_domain) {
+>> +               unsigned int domain_type = IOMMU_DOMAIN_ANY;
+>>                  struct iommu_domain *dom;
+>>
+>> -               dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
+>> -               if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
+>> +               if (ops->def_domain_type)
+>> +                       domain_type = ops->def_domain_type(dev);
+>> +
+>> +               if (domain_type == IOMMU_DOMAIN_ANY)
+>> +                       domain_type = iommu_def_domain_type;
+>> +
+>> +               dom = __iommu_domain_alloc(dev->bus, domain_type);
+>> +               if (!dom && domain_type != IOMMU_DOMAIN_DMA) {
+>>                          dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
+>>                          if (dom) {
+>>                                  dev_warn(dev,
+>>                                           "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
+>> -                                        iommu_def_domain_type);
+>> +                                        domain_type);
+>>                          }
+>>                  }
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 8239ece9fdfc..ba9a5b996a63 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -79,12 +79,16 @@ struct iommu_domain_geometry {
+>>    *     IOMMU_DOMAIN_DMA        - Internally used for DMA-API implementations.
+>>    *                               This flag allows IOMMU drivers to implement
+>>    *                               certain optimizations for these domains
+>> + *     IOMMU_DOMAIN_ANY        - All domain types defined here
+>>    */
+>>   #define IOMMU_DOMAIN_BLOCKED   (0U)
+>>   #define IOMMU_DOMAIN_IDENTITY  (__IOMMU_DOMAIN_PT)
+>>   #define IOMMU_DOMAIN_UNMANAGED (__IOMMU_DOMAIN_PAGING)
+>>   #define IOMMU_DOMAIN_DMA       (__IOMMU_DOMAIN_PAGING |        \
+>>                                   __IOMMU_DOMAIN_DMA_API)
+>> +#define IOMMU_DOMAIN_ANY       (IOMMU_DOMAIN_IDENTITY |        \
+>> +                                IOMMU_DOMAIN_UNMANAGED |       \
+>> +                                IOMMU_DOMAIN_DMA)
+>>
+>>   struct iommu_domain {
+>>          unsigned type;
+>> @@ -196,6 +200,11 @@ enum iommu_dev_features {
+>>    * @dev_feat_enabled: check enabled feature
+>>    * @aux_attach/detach_dev: aux-domain specific attach/detach entries.
+>>    * @aux_get_pasid: get the pasid given an aux-domain
+>> + * @def_domain_type: get per-device default domain type that the IOMMU
+>> + *             driver is able to support. Valid returns values:
+>> + *             - IOMMU_DOMAIN_DMA: only suports non-identity domain
+>> + *             - IOMMU_DOMAIN_IDENTITY: only supports identity domain
+>> + *             - IOMMU_DOMAIN_ANY: supports all
+>>    * @pgsize_bitmap: bitmap of all possible supported page sizes
+>>    */
+>>   struct iommu_ops {
+>> @@ -251,6 +260,8 @@ struct iommu_ops {
+>>          void (*aux_detach_dev)(struct iommu_domain *domain, struct device *dev);
+>>          int (*aux_get_pasid)(struct iommu_domain *domain, struct device *dev);
+>>
+>> +       int (*def_domain_type)(struct device *dev);
+>> +
+>>          unsigned long pgsize_bitmap;
+>>   };
+>>
+>> --
+>> 2.17.1
+>>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
