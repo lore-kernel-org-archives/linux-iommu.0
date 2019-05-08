@@ -2,91 +2,59 @@ Return-Path: <SRS0=jTem=TI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B806C04A6B
-	for <iommu@archiver.kernel.org>; Wed,  8 May 2019 18:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F5EC04AAB
+	for <iommu@archiver.kernel.org>; Wed,  8 May 2019 18:31:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6CFB220850
-	for <iommu@archiver.kernel.org>; Wed,  8 May 2019 18:11:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tm2N3nQ5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6CFB220850
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id BBC86216C4
+	for <iommu@archiver.kernel.org>; Wed,  8 May 2019 18:31:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BBC86216C4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6CF3CEB9;
-	Wed,  8 May 2019 18:10:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 907ABE34;
+	Wed,  8 May 2019 18:31:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0FFC5E75
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5C382DB9
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  8 May 2019 18:10:25 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
-	[209.85.214.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B739187B
+	Wed,  8 May 2019 18:31:43 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 47C7B87B
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  8 May 2019 18:10:24 +0000 (UTC)
-Received: by mail-pl1-f196.google.com with SMTP id y3so10309446plp.0
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 08 May 2019 11:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=5zLWZfJCoIg5TeUT0Jt2rwSpfAhD7R9q7eCYI7YHf40=;
-	b=Tm2N3nQ5R4MhS+8rDGVu/boYYfOVT9eIZUs60lgVugsa12xyjFshqIWhczZyFQwzYF
-	Ym9H3mmMhQzLUib+TUxO5mS0LpNapV2Zy81WXsYoFwNV+rdA6rOEnixV+TXKtAggW5lK
-	QDSEMsjaxPVnY6u3e/z7047pG6rP96Ay9RL1uwxSRF/22zO+7kd1MqxLXfdrrhPThSRA
-	mY7VHAWoPNgVv22UCIzmgaNRexxreIebf/jobba8vTVTF9A1vGdOTUvINtIZ8Ly5Xsib
-	JDr4j9KfbpUyW4/2fktvOOqSl8/YIGfpKUC/87WCEwPw7Dh3+HZrmyWQrHn3UotZRAP4
-	vOjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=5zLWZfJCoIg5TeUT0Jt2rwSpfAhD7R9q7eCYI7YHf40=;
-	b=qXKr0FmMDLy8j9HeIwhdL+Mm3apnjORwCmHsA1ylwmQxrO1KueD5JatbcDqHNLDKev
-	1W3gtAZWd5QsMQ0chrRhE/mva3efG+BgUYr36lrsx7W5QedNCIVVdzM/gj0sNG5Hort7
-	evQDwqq6E6B9LdKuKX/uWUqHT1h12wgsu0Bx4c7nYaZHQMvtquCK1o+LXVeAv6v8DyiC
-	fMOjY3I5jLKPZ9s0DlNDfb6vnzkUTf19lFJgIfcarW6odP96T1keVv1KUk4KiOe21/fH
-	BT9VRe8mPXIggArd1fhiGFw2Cq/SM+sLcyrQmTpww8/Ox7whqcr/Wxi10Qg+T40MKaLP
-	/+AQ==
-X-Gm-Message-State: APjAAAWgi/ZzLvNGvtgpkMZN/8Inj+icsvDKS4eB5jJSvWwQpg7lyu+Q
-	/9MDEmOmOpRw0orO+WYEKcQ=
-X-Google-Smtp-Source: APXvYqx2Wb4CB0KCpVy419mUcctEXRtv9dVAdNA+TWZj7LlWHc7EV1/KC6TAZsJVn2A5r991XqqT8A==
-X-Received: by 2002:a17:902:5ac9:: with SMTP id
-	g9mr14087995plm.134.1557339023983; 
-	Wed, 08 May 2019 11:10:23 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
-	[216.228.112.22]) by smtp.gmail.com with ESMTPSA id
-	j189sm31400665pfc.72.2019.05.08.11.10.22
-	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-	Wed, 08 May 2019 11:10:23 -0700 (PDT)
-Date: Wed, 8 May 2019 11:08:53 -0700
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 0/2] Optimize dma_*_from_contiguous calls
-Message-ID: <20190508180852.GA2298@Asurada-Nvidia.nvidia.com>
-References: <20190506223334.1834-1-nicoleotsuka@gmail.com>
-	<20190508125254.GA26785@lst.de>
+	Wed,  8 May 2019 18:31:42 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD66F80D;
+	Wed,  8 May 2019 11:31:41 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A02F23F575;
+	Wed,  8 May 2019 11:31:38 -0700 (PDT)
+Subject: Re: [PATCH v7 11/23] iommu/arm-smmu-v3: Maintain a SID->device
+	structure
+To: Robin Murphy <robin.murphy@arm.com>, Eric Auger <eric.auger@redhat.com>,
+	eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, 
+	jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, will.deacon@arm.com
+References: <20190408121911.24103-1-eric.auger@redhat.com>
+	<20190408121911.24103-12-eric.auger@redhat.com>
+	<e3b417b7-b69f-0121-fb72-6b6450e1b2f2@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <ecb3725c-27c4-944b-b42c-f4e293521f94@arm.com>
+Date: Wed, 8 May 2019 19:31:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190508125254.GA26785@lst.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org,
-	sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com,
-	will.deacon@arm.com, linux@armlinux.org.uk,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com,
-	iamjoonsoo.kim@lge.com, akpm@linux-foundation.org,
-	treding@nvidia.com, robin.murphy@arm.com, dwmw2@infradead.org,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <e3b417b7-b69f-0121-fb72-6b6450e1b2f2@arm.com>
+Content-Language: en-US
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
+	ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -104,13 +72,45 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, May 08, 2019 at 02:52:54PM +0200, Christoph Hellwig wrote:
-> modulo a trivial comment typo I found this looks fine to me.  I plan
-> to apply it with that fixed up around -rc2 time when I open the
-> dma mapping tree opens for the the 5.3 merge window, unless someone
-> finds an issue until then.
+On 08/05/2019 15:05, Robin Murphy wrote:
+> On 08/04/2019 13:18, Eric Auger wrote:
+>> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>>
+>> When handling faults from the event or PRI queue, we need to find the
+>> struct device associated to a SID. Add a rb_tree to keep track of SIDs.
+> 
+> Out of curiosity, have you looked at whether an xarray might now be a
+> more efficient option for this?
 
-Thanks for the help all the way.
+I hadn't looked into it yet, but it's a welcome distraction.
+
+* Searching by SID will be more efficient with xarray (which still is a
+radix tree, with a better API). Rather than O(log2(n)) we walk
+O(log_c(n)) nodes in the worst case, with c = XA_CHUNK_SIZE = 64. We
+don't care about insertion/deletion time.
+
+* Memory consumption is worse than rb-tree, when the SID space is a
+little sparse. For PCI devices the three LSBs (function number) might
+not be in use, meaning that 88% of the leaf slots would be unused. And
+it gets worse if the system has lots of bridges, as each bus number
+requires its own xa slot, ie. 98% unused.
+
+  It's not too bad though, and in general I think the distribution of
+SIDs would be good enough to justify using xarray. Plugging in more
+devices would increase the memory consumption fast, but creating virtual
+functions wouldn't. On one machine (TX2, a few discrete PCI cards) I
+need 16 xa slots to store 42 device IDs. That's 16 * 576 bytes = 9 kB,
+versus 42 * 40 bytes = 1.6 kB for the rb-tree. On another machine (x86,
+lots of RC integrated endpoints) I need 18 slots to store 181 device
+IDs, 10 kB vs. 7 kB with the rb-tree.
+
+* Using xa would make this code a lot nicer.
+
+Shame that we can't store the device pointer directly in the STE though,
+there is already plenty of unused space in there.
+
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
