@@ -3,61 +3,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 699D4C04A6B
-	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 05:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A021C04A6B
+	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 06:46:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 46EB42175B
-	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 05:36:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 46EB42175B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 597E5217D6
+	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 06:46:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 597E5217D6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F2919DB6;
-	Fri, 10 May 2019 05:36:05 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 13CFEC3F;
+	Fri, 10 May 2019 06:46:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 84EC0D8E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 27CF4BE7
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 10 May 2019 05:36:04 +0000 (UTC)
+	Fri, 10 May 2019 06:46:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A4B3F1FB
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C75E31FB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 10 May 2019 05:36:02 +0000 (UTC)
+	Fri, 10 May 2019 06:46:24 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 May 2019 22:36:01 -0700
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	09 May 2019 23:46:23 -0700
 X-ExtLoop1: 1
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by fmsmga008.fm.intel.com with ESMTP; 09 May 2019 22:35:59 -0700
-Subject: Re: [PATCH v3 1/8] iommu: Add ops entry for supported default domain
-	type
-To: Robin Murphy <robin.murphy@arm.com>, Tom Murphy <tmurphy@arista.com>
-References: <20190429020925.18136-1-baolu.lu@linux.intel.com>
-	<20190429020925.18136-2-baolu.lu@linux.intel.com>
-	<CAPL0++4Q7p7gWRUF5vG5sazLNCmSR--Px-=OEtj6vm_gEpB_ng@mail.gmail.com>
-	<bba1f327-21b7-ed3c-8fd4-217ad97a6a7c@arm.com>
-	<3e0da076-4916-1a02-615c-927c1b3528b8@linux.intel.com>
-	<56205a21-c72f-a460-77a2-4bb4f46f6e08@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <6dbbfc10-3247-744c-ae8d-443a336e0c50@linux.intel.com>
-Date: Fri, 10 May 2019 13:29:30 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <56205a21-c72f-a460-77a2-4bb4f46f6e08@arm.com>
+Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
+	by fmsmga006.fm.intel.com with ESMTP; 09 May 2019 23:46:23 -0700
+Received: from orsmsx123.amr.corp.intel.com (10.22.240.116) by
+	ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server
+	(TLS) id 14.3.408.0; Thu, 9 May 2019 23:46:22 -0700
+Received: from orsmsx114.amr.corp.intel.com ([169.254.8.50]) by
+	ORSMSX123.amr.corp.intel.com ([169.254.1.141]) with mapi id
+	14.03.0415.000; Thu, 9 May 2019 23:46:22 -0700
+From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
+	<iommu@lists.linux-foundation.org>
+Subject: RE: [PATCH 0/3] Add debugfs support to show scalable mode DMAR table
+Thread-Topic: [PATCH 0/3] Add debugfs support to show scalable mode DMAR table
+Thread-Index: AQHVBtlNmWzCin5rpU2V9DOnJYfKn6Zj6gww
+Date: Fri, 10 May 2019 06:46:22 +0000
+Message-ID: <FFF73D592F13FD46B8700F0A279B802F48BEB2E1@ORSMSX114.amr.corp.intel.com>
+References: <cover.1556762845.git.sai.praneeth.prakhya@intel.com>
+	<fa685d9b-eab3-4411-0e1c-79a3fb4087fd@linux.intel.com>
+In-Reply-To: <fa685d9b-eab3-4411-0e1c-79a3fb4087fd@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiY2YwMDU4MmMtMjk3NC00OWI4LWI3YzUtYTg4N2FjZDJmN2VjIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZzU1Q0ZZemRHUk8rK2o0WThiK0RpZWc4UFBSUEpHaHNtYWdvMWZmQU1VaElJbzVUN1wvbVo1XC9sZ0dwcFBJTkNOIn0=
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+MIME-Version: 1.0
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, Andy
+	Shevchenko <andriy.shevchenko@linux.intel.com>,
 	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -71,50 +79,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgpPbiA1LzEwLzE5IDEyOjExIEFNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24g
-MDkvMDUvMjAxOSAwMzozMCwgTHUgQmFvbHUgd3JvdGU6Cj4+IEhpIFJvYmluLAo+Pgo+PiBPbiA1
-LzcvMTkgNjoyOCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMDYvMDUvMjAxOSAxNjoz
-MiwgVG9tIE11cnBoeSB2aWEgaW9tbXUgd3JvdGU6Cj4+Pj4gVGhlIEFNRCBkcml2ZXIgYWxyZWFk
-eSBzb2x2ZXMgdGhpcyBwcm9ibGVtIGFuZCB1c2VzIHRoZSBnZW5lcmljCj4+Pj4gaW9tbXVfcmVx
-dWVzdF9kbV9mb3JfZGV2IGZ1bmN0aW9uLiBJdCBzZWVtcyBsaWtlIGJvdGggZHJpdmVycyBoYXZl
-IHRoZQo+Pj4+IHNhbWUgcHJvYmxlbSBhbmQgY291bGQgdXNlIHRoZSBzYW1lIHNvbHV0aW9uLiBJ
-cyB0aGVyZSBhbnkgcmVhc29uIHdlCj4+Pj4gY2FuJ3QgaGF2ZSB1c2UgdGhlIHNhbWUgc29sdXRp
-b24gZm9yIHRoZSBpbnRlbCBhbmQgYW1kIGRyaXZlcj8KPj4+Pgo+Pj4+IENvdWxkIHdlIGp1c3TC
-oCBjb3B5IHRoZSBpbXBsZW1lbnRhdGlvbiBvZiB0aGUgQU1EIGRyaXZlcj8gSXQgd291bGQgYmUK
-Pj4+PiBuaWNlIHRvIGhhdmUgdGhlIHNhbWUgYmVoYXZpb3IgYWNyb3NzIGJvdGggZHJpdmVycyBl
-c3BlY2lhbGx5IGFzIHdlCj4+Pj4gbW92ZSB0byBtYWtlIGJvdGggZHJpdmVycyB1c2UgbW9yZSBn
-ZW5lcmljIGNvZGUuCj4+Pgo+Pj4gVEJIIEkgZG9uJ3QgdGhpbmsgdGhlIEFQSSByZWFsbHkgbmVl
-ZHMgdG8gYmUgaW52b2x2ZWQgYXQgYWxsIGhlcmUuIAo+Pj4gRHJpdmVycyBjYW4gYWxyZWFkeSBu
-b3QgcHJvdmlkZSB0aGUgcmVxdWVzdGVkIGRlZmF1bHQgZG9tYWluIHR5cGUgaWYgCj4+PiB0aGV5
-IGRvbid0IHN1cHBvcnQgaXQsIHNvIGFzIGxvbmcgYXMgdGhlIGRyaXZlciBjYW4gZW5zdXJlIHRo
-YXQgdGhlIAo+Pj4gZGV2aWNlIGVuZHMgdXAgd2l0aCBJT01NVSBvciBkaXJlY3QgRE1BIG9wcyBh
-cyBhcHByb3ByaWF0ZSwgSSBkb24ndCAKPj4+IHNlZSBhbnkgZ3JlYXQgcHJvYmxlbSB3aXRoIGRy
-aXZlcnMganVzdCByZXR1cm5pbmcgYSBwYXNzdGhyb3VnaCAKPj4+IGRvbWFpbiB3aGVuIGEgRE1B
-IGRvbWFpbiB3YXMgcmVxdWVzdGVkLCBvciB2aWNlIHZlcnNhIChhbmQgbG9nZ2luZyBhIAo+Pj4g
-bWVzc2FnZSB0aGF0IHRoZSByZXF1ZXN0ZWQgdHlwZSB3YXMgb3ZlcnJpZGRlbikuIFRoZSBvbmx5
-IHR5cGUgdGhhdCAKPj4+IHdlIHJlYWxseSBkbyBoYXZlIHRvIGhvbm91ciBzdHJpY3RseSBpcyBu
-b24tZGVmYXVsdCAoaS5lLiB1bm1hbmFnZWQpIAo+Pj4gZG9tYWlucy4KPj4KPj4gSSBhZ3JlZSB3
-aXRoIHlvdSB0aGF0IHdlIG9ubHkgaGF2ZSB0byBob25vciBzdHJpY3RseSB0aGUgbm9uLWRlZmF1
-bHQKPj4gZG9tYWlucy4gQnV0IGRvbWFpbiB0eXBlIHNhdmVkIGluIGlvbW11X2RvbWFpbiBpcyBj
-b25zdW1lZCBpbiBpb21tdS5jCj4+IGFuZCBleHBvc2VkIHRvIHVzZXIgdGhyb3VnaCBzeXNmcy4g
-SXQncyBub3QgY2xlYW4gaWYgdGhlIGlvbW11IGRyaXZlcgo+PiBzaWxlbnRseSByZXBsYWNlIHRo
-ZSBkZWZhdWx0IGRvbWFpbi4KPiAKPiBSaWdodCwgSSBkaWQgZ2V0IGEgYml0IGFoZWFkIG9mIG15
-c2VsZiB0aGVyZSAtIHRoZSBpbXBsaWNpdCBzdGVwIGJlZm9yZSAKPiB0aGF0IGlzIHRvIGZpeCBk
-ZWZhdWx0IGRvbWFpbiBhbGxvY2F0aW9uIHNvIHRoYXQgdGhlIGNvcmUgYWN0dWFsbHkgCj4gcGFz
-c2VzIHRoZSByZWxldmFudCBkZXZpY2Ugd2hpY2ggaXQgaGFzIHRvIGhhbmQsIHN1Y2ggdGhhdCB0
-aGUgSU9NTVUgCj4gZHJpdmVycyAqY2FuKiBtYWtlIHRoZSByaWdodCBkZWNpc2lvbiB1cC1mcm9u
-dC4KPiAKClllcywgcGFzc2luZyB0aGUgcmVsZXZhbnQgZGV2aWNlIHdoZW4gYWxsb2NhdGluZyB0
-aGUgZGVmYXVsdCBkb21haW4gc28KdGhhdCB0aGUgSU9NTVUgZHJpdmVyIGNvdWxkIG1ha2Ugcmln
-aHQgZGVjaXNpb24gc2VlbXMgdG8gYmUgYSBiZXR0ZXIKc29sdXRpb24uIFNvbWVib2R5IGNhbiBj
-b21lIHVwIHdpdGggYSBwYXRjaCBzZXQgdG8gYnJpbmcgdGhpcyB1cCBmb3IKZGlzY3Vzc2lvbi4g
-SSB3b24ndCBpbmNsdWRlIHRoaXMgaW4gdGhpcyBwYXRjaCBzZXQgc2luY2UgaXQncyBub3QgZm9y
-CnRoYXQgcHVycG9zZS4gSSB3aWxsIGZvbGxvdyB0aGUgZXhpc3RpbmcgbWVjaGFuaXNtIHRoYXQg
-aXMgdXNpbmcgb24gYW1kCmFuZCBvdGhlciBpb21tdSBkcml2ZXJzLgoKQmVzdCByZWdhcmRzLApM
-dSBCYW9sdQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+> Hi Sai,
+> 
+> On 5/10/19 2:41 AM, Sai Praneeth Prakhya wrote:
+> > From: Sai Praneeth <sai.praneeth.prakhya@intel.com>
+> >
+> > Presently, "/sys/kernel/debug/iommu/intel/dmar_translation_struct"
+> > file dumps only legacy DMAR table which consists of root table and
+> > context table. Scalable mode DMAR table adds PASID directory and PASID
+> > table. Hence, add support to dump these tables as well.
+> >
+> > Directly extending the present dumping format for PASID tables will
+> > make the output look clumsy. Hence, the first patch modifies the
+> > present format to a tabular format. The second patch introduces macros
+> > that are used during PASID table walk and the third patch actually
+> > adds support to dump scalable mode DMAR table.
+> >
+> > Sai Praneeth (3):
+> >    iommu/vt-d: Modify the format of intel DMAR tables dump
+> >    iommu/vt-d: Introduce macros useful for dumping DMAR table
+> >    iommu/vt-d: Add debugfs support to show scalable mode DMAR table
+> >      internals
+> 
+> This patch set looks good to me in general. One minor suggestion is that the
+> author name and signed-of-by name should be consistent for all patches.
+
+Thanks for the suggestion. Sorry! that I missed it.
+Will quickly send a V2 fixing it.
+
+Regards,
+Sai
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
