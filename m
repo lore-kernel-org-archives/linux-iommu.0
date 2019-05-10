@@ -2,57 +2,97 @@ Return-Path: <SRS0=MPmd=TK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D255EC04A6B
-	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 10:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB457C04A6B
+	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 13:17:18 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AC72E20881
-	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 10:21:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC72E20881
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 88D8121479
+	for <iommu@archiver.kernel.org>; Fri, 10 May 2019 13:17:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="hUfz837x"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88D8121479
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 652FCE90;
-	Fri, 10 May 2019 10:21:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5C715E6C;
+	Fri, 10 May 2019 13:17:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2F75BE82
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBF92265
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 10 May 2019 10:21:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 3AAAE1FB
+	Fri, 10 May 2019 12:33:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com
+	(mail-eopbgr30046.outbound.protection.outlook.com [40.107.3.46])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9523F834
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 10 May 2019 10:21:38 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7E7CA78;
-	Fri, 10 May 2019 03:21:37 -0700 (PDT)
-Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AFC863F738;
-	Fri, 10 May 2019 03:21:35 -0700 (PDT)
-Subject: Re: [PATCH 1/4] s390: pci: Exporting access to CLP PCI function and
-	PCI group
-To: Pierre Morel <pmorel@linux.ibm.com>, sebott@linux.vnet.ibm.com
-References: <1557476555-20256-1-git-send-email-pmorel@linux.ibm.com>
-	<1557476555-20256-2-git-send-email-pmorel@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a06ffd83-5fde-8c6e-b25b-bd4163d4cd5f@arm.com>
-Date: Fri, 10 May 2019 11:21:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Fri, 10 May 2019 12:33:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=pXUrqKxKXYpJ9knrQccAiT5FJfTkcq9dCnjv0LZgUZU=;
+	b=hUfz837xgLpvrmo4AoEk+zIFDL0tSK7BhkHaHouMZ4PwEHJWeF+zCOhlSj5L06kHOYjCI+vKSuYvceZ4xWWh4bGV22dto9VyPl4rjReobdUyw3MEAfNY5IdUmDj1yLlBl7Px1L99C91ncL+w278/9Y4kCNzM+7n3mVs4Fh9ESLM=
+Received: from VI1PR0401MB2496.eurprd04.prod.outlook.com (10.168.65.10) by
+	VI1PR0401MB2255.eurprd04.prod.outlook.com (10.169.133.148) with
+	Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1878.21; Fri, 10 May 2019 12:33:55 +0000
+Received: from VI1PR0401MB2496.eurprd04.prod.outlook.com
+	([fe80::5e3:7122:7d0e:7fb7]) by
+	VI1PR0401MB2496.eurprd04.prod.outlook.com
+	([fe80::5e3:7122:7d0e:7fb7%3]) with mapi id 15.20.1878.022;
+	Fri, 10 May 2019 12:33:54 +0000
+From: Pankaj Bansal <pankaj.bansal@nxp.com>
+To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>
+Subject: [ARM SMMU] Dynamic StreamID allocation
+Thread-Topic: [ARM SMMU] Dynamic StreamID allocation
+Thread-Index: AdUHKxeT0UQZA1BdS6SusO/TAZQ/qA==
+Date: Fri, 10 May 2019 12:33:54 +0000
+Message-ID: <VI1PR0401MB24969CE24E4FB91EC8551DEBF10C0@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=pankaj.bansal@nxp.com; 
+x-originating-ip: [92.120.0.4]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4b9b6fd3-8afc-414a-2ae4-08d6d543c428
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);
+	SRVR:VI1PR0401MB2255; 
+x-ms-traffictypediagnostic: VI1PR0401MB2255:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <VI1PR0401MB22552794C48D6F16D903E7EEF10C0@VI1PR0401MB2255.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0033AAD26D
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(346002)(39860400002)(366004)(396003)(136003)(376002)(199004)(189003)(55016002)(6436002)(44832011)(186003)(71190400001)(53936002)(71200400001)(6506007)(68736007)(4744005)(8936002)(102836004)(6116002)(7736002)(4326008)(305945005)(74316002)(26005)(3846002)(25786009)(6306002)(316002)(256004)(14444005)(33656002)(99286004)(76116006)(81166006)(14454004)(81156014)(8676002)(9686003)(7696005)(52536014)(66946007)(486006)(86362001)(2906002)(110136005)(5660300002)(478600001)(66476007)(66066001)(73956011)(476003)(54906003)(66556008)(966005)(66446008)(64756008);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR0401MB2255;
+	H:VI1PR0401MB2496.eurprd04.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: nxp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: v5x2hG19gEvxcs/sZn995NyJLknGB7OIVwN0cg3FU8JiyhLyeVLxSPx1dxpgOk/hj2OFZuarmagTJLaP5oIEVRl7aQ0TBQrukItds9QJZP17chiw99HNp9vSMRDV3vhRYaj3Wfv0SFBvsTQbnOrzE7AQErHiuRFqOOtUDLFbYUN9jpn8X4Xsv74jFBlVoPoWVvfsy3WkglBmiVJO/5muPr22ZwXbmRTMtwBvgzxN7UkHKoW0s9A79qHf2+Svi3xU777O/FAX7xuFd6x93n2rpU2zd4ryUCRiouNdzfiv/DKtsM1WwE0fRLQbduQVf0sdilDZHZJwGJTS+z5VAgnKlPT342N3bou2wmXZ0fnXYRORF1dmEScEqtlzevUNxZlq0In+IuglKMl3lHsFsuum9AFHtA3ngZwBGX4KH0OpM+c=
 MIME-Version: 1.0
-In-Reply-To: <1557476555-20256-2-git-send-email-pmorel@linux.ibm.com>
-Content-Language: en-GB
-Cc: linux-s390@vger.kernel.org, pasic@linux.vnet.ibm.com, kvm@vger.kernel.org,
-	heiko.carstens@de.ibm.com, walling@linux.ibm.com,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	borntraeger@de.ibm.com, alex.williamson@redhat.com,
-	schwidefsky@de.ibm.com, gerald.schaefer@de.ibm.com
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b9b6fd3-8afc-414a-2ae4-08d6d543c428
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2019 12:33:54.8094 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2255
+X-Mailman-Approved-At: Fri, 10 May 2019 13:17:16 +0000
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Varun Sethi <V.Sethi@nxp.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,164 +105,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 10/05/2019 09:22, Pierre Morel wrote:
-> For the generic implementation of VFIO PCI we need to retrieve
-> the hardware configuration for the PCI functions and the
-> PCI function groups.
-> 
-> We modify the internal function using CLP Query PCI function and
-> CLP query PCI function group so that they can be called from
-> outside the S390 architecture PCI code and prefix the two
-> functions with "zdev" to make clear that they can be called
-> knowing only the associated zdevice.
-> 
-> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-> Reviewed-by: Sebastian Ott <sebott@linux.ibm.com>
-> ---
->   arch/s390/include/asm/pci.h |  3 ++
->   arch/s390/pci/pci_clp.c     | 72 ++++++++++++++++++++++++---------------------
->   2 files changed, 41 insertions(+), 34 deletions(-)
-> 
-> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-> index 305befd..e66b246 100644
-> --- a/arch/s390/include/asm/pci.h
-> +++ b/arch/s390/include/asm/pci.h
-> @@ -261,4 +261,7 @@ cpumask_of_pcibus(const struct pci_bus *bus)
->   
->   #endif /* CONFIG_NUMA */
->   
-> +int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-> +			 struct clp_req_rsp_query_pci_grp *rrb);
-> +int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb);
->   #endif
-> diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-> index 3a36b07..4ae5d77 100644
-> --- a/arch/s390/pci/pci_clp.c
-> +++ b/arch/s390/pci/pci_clp.c
-> @@ -113,32 +113,18 @@ static void clp_store_query_pci_fngrp(struct zpci_dev *zdev,
->   	}
->   }
->   
-> -static int clp_query_pci_fngrp(struct zpci_dev *zdev, u8 pfgid)
-> +int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-> +			 struct clp_req_rsp_query_pci_grp *rrb)
->   {
-> -	struct clp_req_rsp_query_pci_grp *rrb;
-> -	int rc;
-> -
-> -	rrb = clp_alloc_block(GFP_KERNEL);
-> -	if (!rrb)
-> -		return -ENOMEM;
-> -
->   	memset(rrb, 0, sizeof(*rrb));
->   	rrb->request.hdr.len = sizeof(rrb->request);
->   	rrb->request.hdr.cmd = CLP_QUERY_PCI_FNGRP;
->   	rrb->response.hdr.len = sizeof(rrb->response);
-> -	rrb->request.pfgid = pfgid;
-> +	rrb->request.pfgid = zdev->pfgid;
->   
-> -	rc = clp_req(rrb, CLP_LPS_PCI);
-> -	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK)
-> -		clp_store_query_pci_fngrp(zdev, &rrb->response);
-> -	else {
-> -		zpci_err("Q PCI FGRP:\n");
-> -		zpci_err_clp(rrb->response.hdr.rsp, rc);
-> -		rc = -EIO;
-> -	}
-> -	clp_free_block(rrb);
-> -	return rc;
-> +	return clp_req(rrb, CLP_LPS_PCI);
->   }
-> +EXPORT_SYMBOL(zdev_query_pci_fngrp);
+Hi Will/Robin/Joerg,
 
-AFAICS it's only the IOMMU driver itself which needs to call these. That 
-can't be built as a module, so you shouldn't need explicit exports - the 
-header declaration is enough.
+I am s/w engineer from NXP India Pvt. Ltd.
+We are using SMMU-V3 in one of NXP SOC.
+I have a question about the SMMU Stream ID allocation in linux.
 
-Robin.
+Right now the Stream IDs allocated to a device are mapped via device tree to the device.
+https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt#L39
 
->   static int clp_store_query_pci_fn(struct zpci_dev *zdev,
->   				  struct clp_rsp_query_pci *response)
-> @@ -174,32 +160,50 @@ static int clp_store_query_pci_fn(struct zpci_dev *zdev,
->   	return 0;
->   }
->   
-> -static int clp_query_pci_fn(struct zpci_dev *zdev, u32 fh)
-> +int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb)
-> +{
-> +
-> +	memset(rrb, 0, sizeof(*rrb));
-> +	rrb->request.hdr.len = sizeof(rrb->request);
-> +	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
-> +	rrb->response.hdr.len = sizeof(rrb->response);
-> +	rrb->request.fh = zdev->fh;
-> +
-> +	return clp_req(rrb, CLP_LPS_PCI);
-> +}
-> +EXPORT_SYMBOL(zdev_query_pci_fn);
-> +
-> +static int clp_query_pci(struct zpci_dev *zdev)
->   {
->   	struct clp_req_rsp_query_pci *rrb;
-> +	struct clp_req_rsp_query_pci_grp *grrb;
->   	int rc;
->   
->   	rrb = clp_alloc_block(GFP_KERNEL);
->   	if (!rrb)
->   		return -ENOMEM;
->   
-> -	memset(rrb, 0, sizeof(*rrb));
-> -	rrb->request.hdr.len = sizeof(rrb->request);
-> -	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
-> -	rrb->response.hdr.len = sizeof(rrb->response);
-> -	rrb->request.fh = fh;
-> -
-> -	rc = clp_req(rrb, CLP_LPS_PCI);
-> -	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK) {
-> -		rc = clp_store_query_pci_fn(zdev, &rrb->response);
-> -		if (rc)
-> -			goto out;
-> -		rc = clp_query_pci_fngrp(zdev, rrb->response.pfgid);
-> -	} else {
-> +	rc = zdev_query_pci_fn(zdev, rrb);
-> +	if (rc || rrb->response.hdr.rsp != CLP_RC_OK) {
->   		zpci_err("Q PCI FN:\n");
->   		zpci_err_clp(rrb->response.hdr.rsp, rc);
->   		rc = -EIO;
-> +		goto out;
->   	}
-> +	rc = clp_store_query_pci_fn(zdev, &rrb->response);
-> +	if (rc)
-> +		goto out;
-> +
-> +	grrb = (struct clp_req_rsp_query_pci_grp *)rrb;
-> +	rc = zdev_query_pci_fngrp(zdev, grrb);
-> +	if (rc || grrb->response.hdr.rsp != CLP_RC_OK) {
-> +		zpci_err("Q PCI FGRP:\n");
-> +		zpci_err_clp(grrb->response.hdr.rsp, rc);
-> +		rc = -EIO;
-> +		goto out;
-> +	}
-> +	clp_store_query_pci_fngrp(zdev, &grrb->response);
-> +
->   out:
->   	clp_free_block(rrb);
->   	return rc;
-> @@ -219,7 +223,7 @@ int clp_add_pci_device(u32 fid, u32 fh, int configured)
->   	zdev->fid = fid;
->   
->   	/* Query function properties and update zdev */
-> -	rc = clp_query_pci_fn(zdev, fh);
-> +	rc = clp_query_pci(zdev);
->   	if (rc)
->   		goto error;
->   
-> 
+As the device tree is passed from bootloader to linux, we detect all the stream IDs needed by a device in bootloader and add their IDs in respective device nodes.
+For each PCIE Endpoint (a unique BDF (Bus Device Function)) on PCIE bus, we are assigning a unique Stream ID in bootloader.
+
+However, this poses an issue with PCIE hot plug.
+If we plug in a pcie device while linux is running, a unique BDF is assigned to the device, for which there is no stream ID in device tree.
+
+How can this problem be solved in linux?
+
+Is there a way to assign (and revoke) stream IDs at run time?
+
+Regards,
+Pankaj Bansal
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
