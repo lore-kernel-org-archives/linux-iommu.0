@@ -2,74 +2,59 @@ Return-Path: <SRS0=HAYh=TN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8623BC04AA7
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 10:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4978DC04AAA
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 11:20:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 56A3C208C2
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 10:04:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="i7IElMER";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="i7IElMER"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56A3C208C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 22EE1208CA
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 11:20:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 22EE1208CA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 20859B9E;
-	Mon, 13 May 2019 10:04:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 321CCC2C;
+	Mon, 13 May 2019 11:20:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8C4A6AF7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 171F2C2A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 10:04:18 +0000 (UTC)
+	Mon, 13 May 2019 11:20:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0954342D
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 77410878
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 10:04:17 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id C6AE560A05; Mon, 13 May 2019 10:04:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1557741857;
-	bh=3XkmslwS7hhd6EdWnGyXu2LiPfgBfYAn/ge7FUSOMio=;
-	h=From:To:Cc:Subject:Date:From;
-	b=i7IElMERGgACywoAZa6u3aWYQd1W5SfUBTXCuSczHQJRbzJfCajsyRsX34fF3own8
-	idNPyJUkg2tXfMWUl4+s3I27EmLz7yw/E1ZIja1BjaViPd/0oXJmqA+sTkbfMay88P
-	WsAHaFrcGS1gd65ifVYanbWp7+vAJX7FgkiIi7Xo=
-Received: from blr-ubuntu-41.ap.qualcomm.com
-	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
-	[103.229.18.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id 4B9EF6032C;
-	Mon, 13 May 2019 10:04:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1557741857;
-	bh=3XkmslwS7hhd6EdWnGyXu2LiPfgBfYAn/ge7FUSOMio=;
-	h=From:To:Cc:Subject:Date:From;
-	b=i7IElMERGgACywoAZa6u3aWYQd1W5SfUBTXCuSczHQJRbzJfCajsyRsX34fF3own8
-	idNPyJUkg2tXfMWUl4+s3I27EmLz7yw/E1ZIja1BjaViPd/0oXJmqA+sTkbfMay88P
-	WsAHaFrcGS1gd65ifVYanbWp7+vAJX7FgkiIi7Xo=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4B9EF6032C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH v4 1/1] iommu/io-pgtable-arm: Add support to use system cache
-Date: Mon, 13 May 2019 15:34:03 +0530
-Message-Id: <20190513100403.18981-1-vivek.gautam@codeaurora.org>
-X-Mailer: git-send-email 2.16.1.72.g5be1f00a9a70
-Cc: pdaly@codeaurora.org, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, pratikp@codeaurora.org
+	Mon, 13 May 2019 11:20:51 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1BDCC374;
+	Mon, 13 May 2019 04:20:51 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 00B7D3F703;
+	Mon, 13 May 2019 04:20:48 -0700 (PDT)
+Subject: Re: [PATCH v3 02/16] iommu: Introduce cache_invalidate API
+To: Auger Eric <eric.auger@redhat.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, 
+	LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Alex Williamson <alex.williamson@redhat.com>
+References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556922737-76313-3-git-send-email-jacob.jun.pan@linux.intel.com>
+	<d32d3d19-11c9-4af9-880b-bb8ebefd4f7f@redhat.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <44d5ba37-a9e9-cc7a-2a3a-d32b840afa29@arm.com>
+Date: Mon, 13 May 2019 12:20:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <d32d3d19-11c9-4af9-880b-bb8ebefd4f7f@redhat.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,126 +67,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Few Qualcomm platforms such as, sdm845 have an additional outer
-cache called as System cache, aka. Last level cache (LLC) that
-allows non-coherent devices to upgrade to using caching.
-This cache sits right before the DDR, and is tightly coupled
-with the memory controller. The clients using this cache request
-their slices from this system cache, make it active, and can then
-start using it.
+Hi Eric,
 
-There is a fundamental assumption that non-coherent devices can't
-access caches. This change adds an exception where they *can* use
-some level of cache despite still being non-coherent overall.
-The coherent devices that use cacheable memory, and CPU make use of
-this system cache by default.
+On 13/05/2019 10:14, Auger Eric wrote:
+> I noticed my qemu integration was currently incorrectly using PASID
+> invalidation for ASID based invalidation (SMMUV3 Stage1 CMD_TLBI_NH_ASID
+> invalidation command). So I think we also need ARCHID invalidation.
+> Sorry for the late notice.
+>>  
+>> +/* defines the granularity of the invalidation */
+>> +enum iommu_inv_granularity {
+>> +	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective invalidation */
+>         IOMMU_INV_GRANU_ARCHID, /* archid-selective invalidation */
+>> +	IOMMU_INV_GRANU_PASID,	/* pasid-selective invalidation */
 
-Looking at memory types, we have following -
-a) Normal uncached :- MAIR 0x44, inner non-cacheable,
-                      outer non-cacheable;
-b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
-                      outer read write-back non-transient;
-                      attribute setting for coherenet I/O devices.
-and, for non-coherent i/o devices that can allocate in system cache
-another type gets added -
-c) Normal sys-cached :- MAIR 0xf4, inner non-cacheable,
-                        outer read write-back non-transient
+In terms of granularity, these values have the same meaning: invalidate
+the whole address space of a context. Then you can communicate two
+things using the same struct:
+* If ATS is enables an Arm host needs to invalidate all ATC entries
+using PASID.
+* If BTM isn't used by the guest, the host needs to invalidate all TLB
+entries using ARCHID.
 
-Coherent I/O devices use system cache by marking the memory as
-normal cached.
-Non-coherent I/O devices should mark the memory as normal
-sys-cached in page tables to use system cache.
+Rather than introducing a new granule here, could we just add an archid
+field to the struct associated with IOMMU_INV_GRANU_PASID? Something like...
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
----
+>> +	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation */
+>> +	IOMMU_INVAL_GRANU_NR,   /* number of invalidation granularities */
+>> +};
+>> +
+>> +/**
+>> + * Address Selective Invalidation Structure
+>> + *
+>> + * @flags indicates the granularity of the address-selective invalidation
+>> + * - if PASID bit is set, @pasid field is populated and the invalidation
+>> + *   relates to cache entries tagged with this PASID and matching the
+>> + *   address range.
+>> + * - if ARCHID bit is set, @archid is populated and the invalidation relates
+>> + *   to cache entries tagged with this architecture specific id and matching
+>> + *   the address range.
+>> + * - Both PASID and ARCHID can be set as they may tag different caches.
+>> + * - if neither PASID or ARCHID is set, global addr invalidation applies
+>> + * - LEAF flag indicates whether only the leaf PTE caching needs to be
+>> + *   invalidated and other paging structure caches can be preserved.
+>> + * @pasid: process address space id
+>> + * @archid: architecture-specific id
+>> + * @addr: first stage/level input address
+>> + * @granule_size: page/block size of the mapping in bytes
+>> + * @nb_granules: number of contiguous granules to be invalidated
+>> + */
+>> +struct iommu_inv_addr_info {
+>> +#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
+>> +#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
+>> +#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
+>> +	__u32	flags;
+>> +	__u32	archid;
+>> +	__u64	pasid;
+>> +	__u64	addr;
+>> +	__u64	granule_size;
+>> +	__u64	nb_granules;
+>> +};
 
-V3 version of this patch and related series can be found at [1].
+struct iommu_inv_pasid_info {
+#define IOMMU_INV_PASID_FLAGS_PASID	(1 << 0)
+#define IOMMU_INV_PASID_FLAGS_ARCHID	(1 << 1)
+	__u32	flags;
+	__u32	archid;
+	__u64	pasid;
+};
 
-This change is a realisation of following changes from downstream msm-4.9:
-iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[2]
+>> +
+>> +/**
+>> + * First level/stage invalidation information
+>> + * @cache: bitfield that allows to select which caches to invalidate
+>> + * @granularity: defines the lowest granularity used for the invalidation:
+>> + *     domain > pasid > addr
+>> + *
+>> + * Not all the combinations of cache/granularity make sense:
+>> + *
+>> + *         type |   DEV_IOTLB   |     IOTLB     |      PASID    |
+>> + * granularity	|		|		|      cache	|
+>> + * -------------+---------------+---------------+---------------+
+>> + * DOMAIN	|	N/A	|       Y	|	Y	|
+>  * ARCHID       |       N/A     |       Y       |       N/A     |
+> 
+>> + * PASID	|	Y	|       Y	|	Y	|
+>> + * ADDR		|       Y	|       Y	|	N/A	|
+>> + *
+>> + * Invalidations by %IOMMU_INV_GRANU_ADDR use field @addr_info.
+>  * Invalidations by %IOMMU_INV_GRANU_ARCHID use field @archid.
+>> + * Invalidations by %IOMMU_INV_GRANU_PASID use field @pasid.
+>> + * Invalidations by %IOMMU_INV_GRANU_DOMAIN don't take any argument.
+>> + *
+>> + * If multiple cache types are invalidated simultaneously, they all
+>> + * must support the used granularity.
+>> + */
+>> +struct iommu_cache_invalidate_info {
+>> +#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
+>> +	__u32	version;
+>> +/* IOMMU paging structure cache */
+>> +#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
+>> +#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
+>> +#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
+>> +#define IOMMU_CACHE_TYPE_NR		(3)
+>> +	__u8	cache;
+>> +	__u8	granularity;
+>> +	__u8	padding[2];
+>> +	union {
+>> +		__u64	pasid;
+>                 __u32   archid;
 
-Changes since v3:
- - Dropping support to cache i/o page tables to system cache. Getting support
-   for data buffers is the first step.
-   Removed io-pgtable quirk and related change to add domain attribute.
+struct iommu_inv_pasid_info pasid_info;
 
-Glmark2 numbers on SDM845 based cheza board:
+Thanks,
+Jean
 
-S.No.|	with LLC support   |	without LLC support
-     |	for data buffers   |
----------------------------------------------------		
-1    |	4480; 72.3fps      |	4042; 65.2fps
-2    |	4500; 72.6fps      |	4039; 65.1fps
-3    |	4523; 72.9fps	   |	4106; 66.2fps
-4    |	4489; 72.4fps	   |	4104; 66.2fps
-5    |	4518; 72.9fps	   |	4072; 65.7fps
-
-[1] https://patchwork.kernel.org/cover/10772629/
-[2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
-
- drivers/iommu/io-pgtable-arm.c | 9 ++++++++-
- include/linux/iommu.h          | 1 +
- 2 files changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index d3700ec15cbd..2dbafe697531 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -167,10 +167,12 @@
- #define ARM_LPAE_MAIR_ATTR_MASK		0xff
- #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
- #define ARM_LPAE_MAIR_ATTR_NC		0x44
-+#define ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE	0xf4
- #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
- #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
- #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
- #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
-+#define ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE	3
- 
- /* IOPTE accessors */
- #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
-@@ -442,6 +444,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 		else if (prot & IOMMU_CACHE)
- 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
- 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-+		else if (prot & IOMMU_QCOM_SYS_CACHE)
-+			pte |= (ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE
-+				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
- 	} else {
- 		pte = ARM_LPAE_PTE_HAP_FAULT;
- 		if (prot & IOMMU_READ)
-@@ -841,7 +846,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	      (ARM_LPAE_MAIR_ATTR_WBRWA
- 	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
- 	      (ARM_LPAE_MAIR_ATTR_DEVICE
--	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
-+	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
-+	      (ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE
-+	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE));
- 
- 	cfg->arm_lpae_s1_cfg.mair[0] = reg;
- 	cfg->arm_lpae_s1_cfg.mair[1] = 0;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a815cf6f6f47..29dd2c624348 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -31,6 +31,7 @@
- #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
- #define IOMMU_NOEXEC	(1 << 3)
- #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
-+#define IOMMU_QCOM_SYS_CACHE	(1 << 6)
- /*
-  * Where the bus hardware includes a privilege level as part of its access type
-  * markings, and certain devices are capable of issuing transactions marked as
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> 
+> Thanks
+> 
+> Eric
+>> +		struct iommu_inv_addr_info addr_info;
+>> +	};
+>> +};
+>> +
+>> +
+>>  #endif /* _UAPI_IOMMU_H */
+>>
 
 _______________________________________________
 iommu mailing list
