@@ -2,67 +2,55 @@ Return-Path: <SRS0=HAYh=TN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 353FCC04AB1
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 12:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F10C04AA7
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 12:42:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D7EB20578
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 12:32:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D7EB20578
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8F2B8208C2
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 12:42:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F2B8208C2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D615DD6A;
-	Mon, 13 May 2019 12:32:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 64F1ED9E;
+	Mon, 13 May 2019 12:42:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 25126D4B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 84E9FD9C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 12:32:27 +0000 (UTC)
+	Mon, 13 May 2019 12:42:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1305C837
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id AEBE2878
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 12:32:25 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
-	[10.5.11.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 089EB30833A6;
-	Mon, 13 May 2019 12:32:25 +0000 (UTC)
-Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 611746B8EA;
-	Mon, 13 May 2019 12:32:17 +0000 (UTC)
-Subject: Re: [PATCH v7 18/23] iommu/smmuv3: Report non recoverable faults
-To: Robin Murphy <robin.murphy@arm.com>, eric.auger.pro@gmail.com,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
-	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
-	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com
-References: <20190408121911.24103-1-eric.auger@redhat.com>
-	<20190408121911.24103-19-eric.auger@redhat.com>
-	<52dd9de0-67a9-0316-cfe1-83d855d26c66@arm.com>
-	<46f39a8e-a909-5493-b1eb-f8f082b0bb20@redhat.com>
-	<3119943e-30f1-823d-c6a2-157b26901a41@arm.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <6a78e67d-cc8b-6564-c122-b13c3a288d46@redhat.com>
-Date: Mon, 13 May 2019 14:32:15 +0200
+	Mon, 13 May 2019 12:42:50 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6B1FAA78;
+	Mon, 13 May 2019 05:42:50 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10CD93F6C4;
+	Mon, 13 May 2019 05:42:48 -0700 (PDT)
+Subject: Re: [ARM SMMU] Dynamic StreamID allocation
+To: Pankaj Bansal <pankaj.bansal@nxp.com>, Will Deacon <will.deacon@arm.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+References: <VI1PR0401MB24969CE24E4FB91EC8551DEBF10C0@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+	<f0c3abd6-7b9f-8b68-14fa-3c6cf393ddc9@arm.com>
+	<VI1PR0401MB249699B9BA183B18997532D0F10F0@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <662f966d-aad9-10a4-7326-374c0bb26020@arm.com>
+Date: Mon, 13 May 2019 13:42:27 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <3119943e-30f1-823d-c6a2-157b26901a41@arm.com>
+In-Reply-To: <VI1PR0401MB249699B9BA183B18997532D0F10F0@VI1PR0401MB2496.eurprd04.prod.outlook.com>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.44]);
-	Mon, 13 May 2019 12:32:25 +0000 (UTC)
-Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
-	ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Varun Sethi <V.Sethi@nxp.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,210 +63,132 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-SGkgUm9iaW4sCk9uIDUvMTMvMTkgMTo1NCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDEz
-LzA1LzIwMTkgMDg6NDYsIEF1Z2VyIEVyaWMgd3JvdGU6Cj4+IEhpIFJvYmluLAo+Pgo+PiBPbiA1
-LzgvMTkgNzoyMCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMDgvMDQvMjAxOSAxMzox
-OSwgRXJpYyBBdWdlciB3cm90ZToKPj4+PiBXaGVuIGEgc3RhZ2UgMSByZWxhdGVkIGZhdWx0IGV2
-ZW50IGlzIHJlYWQgZnJvbSB0aGUgZXZlbnQgcXVldWUsCj4+Pj4gbGV0J3MgcHJvcGFnYXRlIGl0
-IHRvIHBvdGVudGlhbCBleHRlcm5hbCBmYXVsdCBsaXN0ZW5lcnMsIGllLiB1c2Vycwo+Pj4+IHdo
-byByZWdpc3RlcmVkIGEgZmF1bHQgaGFuZGxlci4KPj4+Pgo+Pj4+IFNpZ25lZC1vZmYtYnk6IEVy
-aWMgQXVnZXIgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT4KPj4+Pgo+Pj4+IC0tLQo+Pj4+IHY0IC0+
-IHY1Ogo+Pj4+IC0gcy9JT01NVV9GQVVMVF9QRVJNX0lOU1QvSU9NTVVfRkFVTFRfUEVSTV9FWEVD
-Cj4+Pj4gLS0tCj4+Pj4gwqDCoCBkcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMgfCAxNjkKPj4+
-PiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0KPj4+PiDCoMKgIDEgZmlsZSBj
-aGFuZ2VkLCAxNTggaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pCj4+Pj4KPj4+PiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0t
-c21tdS12My5jCj4+Pj4gaW5kZXggODA0NDQ0NWJjMzJhLi4xZmQzMjA3ODhkY2IgMTAwNjQ0Cj4+
-Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jCj4+Pj4gKysrIGIvZHJpdmVycy9p
-b21tdS9hcm0tc21tdS12My5jCj4+Pj4gQEAgLTE2Nyw2ICsxNjcsMjYgQEAKPj4+PiDCoMKgICNk
-ZWZpbmUgQVJNX1NNTVVfUFJJUV9JUlFfQ0ZHMcKgwqDCoMKgwqDCoMKgIDB4ZDgKPj4+PiDCoMKg
-ICNkZWZpbmUgQVJNX1NNTVVfUFJJUV9JUlFfQ0ZHMsKgwqDCoMKgwqDCoMKgIDB4ZGMKPj4+PiDC
-oMKgICsvKiBFdmVudHMgKi8KPj4+PiArI2RlZmluZSBBUk1fU01NVV9FVlRfRl9VVVTCoMKgwqDC
-oMKgwqDCoCAweDAxCj4+Pj4gKyNkZWZpbmUgQVJNX1NNTVVfRVZUX0NfQkFEX1NUUkVBTUlEwqDC
-oMKgIDB4MDIKPj4+PiArI2RlZmluZSBBUk1fU01NVV9FVlRfRl9TVEVfRkVUQ0jCoMKgwqAgMHgw
-Mwo+Pj4+ICsjZGVmaW5lIEFSTV9TTU1VX0VWVF9DX0JBRF9TVEXCoMKgwqDCoMKgwqDCoCAweDA0
-Cj4+Pj4gKyNkZWZpbmUgQVJNX1NNTVVfRVZUX0ZfQkFEX0FUU19UUkVRwqDCoMKgIDB4MDUKPj4+
-PiArI2RlZmluZSBBUk1fU01NVV9FVlRfRl9TVFJFQU1fRElTQUJMRUTCoMKgwqAgMHgwNgo+Pj4+
-ICsjZGVmaW5lIEFSTV9TTU1VX0VWVF9GX1RSQU5TTF9GT1JCSURERU7CoMKgwqAgMHgwNwo+Pj4+
-ICsjZGVmaW5lIEFSTV9TTU1VX0VWVF9DX0JBRF9TVUJTVFJFQU1JRMKgwqDCoCAweDA4Cj4+Pj4g
-KyNkZWZpbmUgQVJNX1NNTVVfRVZUX0ZfQ0RfRkVUQ0jCoMKgwqDCoMKgwqDCoCAweDA5Cj4+Pj4g
-KyNkZWZpbmUgQVJNX1NNTVVfRVZUX0NfQkFEX0NEwqDCoMKgwqDCoMKgwqAgMHgwYQo+Pj4+ICsj
-ZGVmaW5lIEFSTV9TTU1VX0VWVF9GX1dBTEtfRUFCVMKgwqDCoCAweDBiCj4+Pj4gKyNkZWZpbmUg
-QVJNX1NNTVVfRVZUX0ZfVFJBTlNMQVRJT07CoMKgwqAgMHgxMAo+Pj4+ICsjZGVmaW5lIEFSTV9T
-TU1VX0VWVF9GX0FERFJfU0laRcKgwqDCoCAweDExCj4+Pj4gKyNkZWZpbmUgQVJNX1NNTVVfRVZU
-X0ZfQUNDRVNTwqDCoMKgwqDCoMKgwqAgMHgxMgo+Pj4+ICsjZGVmaW5lIEFSTV9TTU1VX0VWVF9G
-X1BFUk1JU1NJT07CoMKgwqAgMHgxMwo+Pj4+ICsjZGVmaW5lIEFSTV9TTU1VX0VWVF9GX1RMQl9D
-T05GTElDVMKgwqDCoCAweDIwCj4+Pj4gKyNkZWZpbmUgQVJNX1NNTVVfRVZUX0ZfQ0ZHX0NPTkZM
-SUNUwqDCoMKgIDB4MjEKPj4+PiArI2RlZmluZSBBUk1fU01NVV9FVlRfRV9QQUdFX1JFUVVFU1TC
-oMKgwqAgMHgyNAo+Pj4+ICsKPj4+PiDCoMKgIC8qIENvbW1vbiBNU0kgY29uZmlnIGZpZWxkcyAq
-Lwo+Pj4+IMKgwqAgI2RlZmluZSBNU0lfQ0ZHMF9BRERSX01BU0vCoMKgwqDCoMKgwqDCoCBHRU5N
-QVNLX1VMTCg1MSwgMikKPj4+PiDCoMKgICNkZWZpbmUgTVNJX0NGRzJfU0jCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIEdFTk1BU0soNSwgNCkKPj4+PiBAQCAtMzMyLDYgKzM1MiwxNSBAQAo+Pj4+IMKg
-wqAgI2RlZmluZSBFVlRRX01BWF9TWl9TSElGVMKgwqDCoMKgwqDCoMKgIDcKPj4+PiDCoMKgIMKg
-ICNkZWZpbmUgRVZUUV8wX0lEwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBHRU5NQVNLX1VMTCg3LCAw
-KQo+Pj4+ICsjZGVmaW5lIEVWVFFfMF9TU1bCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEdFTk1BU0tf
-VUxMKDExLCAxMSkKPj4+PiArI2RlZmluZSBFVlRRXzBfU1VCU1RSRUFNSUTCoMKgwqDCoMKgwqDC
-oCBHRU5NQVNLX1VMTCgzMSwgMTIpCj4+Pj4gKyNkZWZpbmUgRVZUUV8wX1NUUkVBTUlEwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBHRU5NQVNLX1VMTCg2MywgMzIpCj4+Pj4gKyNkZWZpbmUgRVZUUV8x
-X1BOVcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgR0VOTUFTS19VTEwoMzMsIDMzKQo+Pj4+ICsjZGVm
-aW5lIEVWVFFfMV9JTkTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEdFTk1BU0tfVUxMKDM0LCAzNCkK
-Pj4+PiArI2RlZmluZSBFVlRRXzFfUk5XwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBHRU5NQVNLX1VM
-TCgzNSwgMzUpCj4+Pj4gKyNkZWZpbmUgRVZUUV8xX1MywqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBH
-RU5NQVNLX1VMTCgzOSwgMzkpCj4+Pj4gKyNkZWZpbmUgRVZUUV8xX0NMQVNTwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBHRU5NQVNLX1VMTCg0MCwgNDEpCj4+Pj4gKyNkZWZpbmUgRVZUUV8zX0ZFVENI
-X0FERFLCoMKgwqDCoMKgwqDCoCBHRU5NQVNLX1VMTCg1MSwgMykKPj4+PiDCoMKgIMKgIC8qIFBS
-SSBxdWV1ZSAqLwo+Pj4+IMKgwqAgI2RlZmluZSBQUklRX0VOVF9EV09SRFPCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIDIKPj4+PiBAQCAtNjM5LDYgKzY2OCw2NCBAQCBzdHJ1Y3QgYXJtX3NtbXVfZG9t
-YWluIHsKPj4+PiDCoMKgwqDCoMKgwqAgc3BpbmxvY2tfdMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-ZGV2aWNlc19sb2NrOwo+Pj4+IMKgwqAgfTsKPj4+PiDCoMKgICsvKiBmYXVsdCBwcm9wYWdhdGlv
-biAqLwo+Pj4+ICsKPj4+PiArI2RlZmluZSBJT01NVV9GQVVMVF9GX0ZJRUxEU8KgwqDCoCAoSU9N
-TVVfRkFVTFRfVU5SRUNPVl9QQVNJRF9WQUxJRCB8IFwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgSU9NTVVfRkFVTFRfVU5SRUNPVl9QRVJNX1ZBTElEIHwgXAo+Pj4+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBJT01NVV9GQVVMVF9VTlJFQ09WX0FERFJf
-VkFMSUQpCj4+Pj4gKwo+Pj4+ICtzdHJ1Y3QgYXJtX3NtbXVfZmF1bHRfcHJvcGFnYXRpb25fZGF0
-YSB7Cj4+Pj4gK8KgwqDCoCBlbnVtIGlvbW11X2ZhdWx0X3JlYXNvbiByZWFzb247Cj4+Pj4gK8Kg
-wqDCoCBib29sIHMxX2NoZWNrOwo+Pj4+ICvCoMKgwqAgdTMyIGZpZWxkczsgLyogSU9NTVVfRkFV
-TFRfVU5SRUNPVl8qX1ZBTElEIGJpdHMgKi8KPj4+PiArfTsKPj4+PiArCj4+Pj4gKy8qCj4+Pj4g
-KyAqIERlc2NyaWJlcyBob3cgU01NVSBmYXVsdHMgdHJhbnNsYXRlIGludG8gZ2VuZXJpYyBJT01N
-VSBmYXVsdHMKPj4+PiArICogYW5kIGlmIHRoZXkgbmVlZCB0byBiZSByZXBvcnRlZCBleHRlcm5h
-bGx5Cj4+Pj4gKyAqLwo+Pj4+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGFybV9zbW11X2ZhdWx0X3By
-b3BhZ2F0aW9uX2RhdGEKPj4+PiBmYXVsdF9wcm9wYWdhdGlvbltdID0gewo+Pj4+ICtbQVJNX1NN
-TVVfRVZUX0ZfVVVUXcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPSB7IH0sCj4+Pj4gK1tBUk1fU01N
-VV9FVlRfQ19CQURfU1RSRUFNSURdwqDCoMKgwqDCoMKgwqAgPSB7IH0sCj4+Pj4gK1tBUk1fU01N
-VV9FVlRfRl9TVEVfRkVUQ0hdwqDCoMKgwqDCoMKgwqAgPSB7IH0sCj4+Pj4gK1tBUk1fU01NVV9F
-VlRfQ19CQURfU1RFXcKgwqDCoMKgwqDCoMKgID0geyB9LAo+Pj4+ICtbQVJNX1NNTVVfRVZUX0Zf
-QkFEX0FUU19UUkVRXcKgwqDCoMKgwqDCoMKgID0geyB9LAo+Pj4+ICtbQVJNX1NNTVVfRVZUX0Zf
-U1RSRUFNX0RJU0FCTEVEXcKgwqDCoCA9IHsgfSwKPj4+PiArW0FSTV9TTU1VX0VWVF9GX1RSQU5T
-TF9GT1JCSURERU5dwqDCoMKgID0geyB9LAo+Pj4+ICtbQVJNX1NNTVVfRVZUX0NfQkFEX1NVQlNU
-UkVBTUlEXcKgwqDCoCA9Cj4+Pj4ge0lPTU1VX0ZBVUxUX1JFQVNPTl9QQVNJRF9JTlZBTElELAo+
-Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBmYWxzZSwK
-Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgSU9NTVVf
-RkFVTFRfVU5SRUNPVl9QQVNJRF9WQUxJRAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgfSwKPj4+PiArW0FSTV9TTU1VX0VWVF9GX0NEX0ZFVENIXcKgwqDC
-oMKgwqDCoMKgID0ge0lPTU1VX0ZBVUxUX1JFQVNPTl9QQVNJRF9GRVRDSCwKPj4+PiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZmFsc2UsCj4+Pj4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIElPTU1VX0ZBVUxUX1VOUkVD
-T1ZfUEFTSURfVkFMSUQgfAo+Pj4KPj4+IEl0IGRvZXNuJ3QgbWFrZSBzZW5zZSB0byBwcmVzdW1l
-IHZhbGlkaXR5IGhlcmUsIG9yIGluIGFueSBvZiB0aGUgZmF1bHRzCj4+PiBiZWxvdy4uLgo+Pgo+
-Pgo+Pj4KPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-SU9NTVVfRkFVTFRfVU5SRUNPVl9GRVRDSF9BRERSX1ZBTElECj4+Pj4gK8KgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9LAo+Pj4+ICtbQVJNX1NNTVVfRVZUX0NfQkFE
-X0NEXcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPQo+Pj4+IHtJT01NVV9GQVVMVF9SRUFTT05fQkFE
-X1BBU0lEX0VOVFJZLAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBmYWxzZSwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgSU9NTVVfRkFVTFRfVU5SRUNPVl9QQVNJRF9WQUxJRAo+Pj4+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfSwKPj4+PiArW0FSTV9TTU1VX0VWVF9G
-X1dBTEtfRUFCVF3CoMKgwqDCoMKgwqDCoCA9IHtJT01NVV9GQVVMVF9SRUFTT05fV0FMS19FQUJU
-LAo+Pj4+IHRydWUsCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIElPTU1VX0ZBVUxUX0ZfRklFTERTIHwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgSU9NTVVfRkFVTFRfVU5SRUNPVl9GRVRDSF9BRERSX1ZB
-TElECj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9LAo+
-Pj4+ICtbQVJNX1NNTVVfRVZUX0ZfVFJBTlNMQVRJT05dwqDCoMKgwqDCoMKgwqAgPSB7SU9NTVVf
-RkFVTFRfUkVBU09OX1BURV9GRVRDSCwKPj4+PiB0cnVlLAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBJT01NVV9GQVVMVF9GX0ZJRUxEUwo+Pj4+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfSwKPj4+PiArW0FSTV9T
-TU1VX0VWVF9GX0FERFJfU0laRV3CoMKgwqDCoMKgwqDCoCA9IHtJT01NVV9GQVVMVF9SRUFTT05f
-T09SX0FERFJFU1MsCj4+Pj4gdHJ1ZSwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgSU9NTVVfRkFVTFRfRl9GSUVMRFMKPj4+PiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0sCj4+Pj4gK1tBUk1fU01NVV9FVlRfRl9B
-Q0NFU1NdwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA9IHtJT01NVV9GQVVMVF9SRUFTT05fQUNDRVNT
-LCB0cnVlLAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBJT01NVV9GQVVMVF9GX0ZJRUxEUwo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgfSwKPj4+PiArW0FSTV9TTU1VX0VWVF9GX1BFUk1JU1NJT05dwqDCoMKg
-wqDCoMKgwqAgPSB7SU9NTVVfRkFVTFRfUkVBU09OX1BFUk1JU1NJT04sCj4+Pj4gdHJ1ZSwKPj4+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgSU9NTVVfRkFV
-TFRfRl9GSUVMRFMKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIH0sCj4+Pj4gK1tBUk1fU01NVV9FVlRfRl9UTEJfQ09ORkxJQ1RdwqDCoMKgwqDCoMKgwqAg
-PSB7IH0sCj4+Pj4gK1tBUk1fU01NVV9FVlRfRl9DRkdfQ09ORkxJQ1RdwqDCoMKgwqDCoMKgwqAg
-PSB7IH0sCj4+Pj4gK1tBUk1fU01NVV9FVlRfRV9QQUdFX1JFUVVFU1RdwqDCoMKgwqDCoMKgwqAg
-PSB7IH0sCj4+Pj4gK307Cj4+Pj4gKwo+Pj4+IMKgwqAgc3RydWN0IGFybV9zbW11X29wdGlvbl9w
-cm9wIHsKPj4+PiDCoMKgwqDCoMKgwqAgdTMyIG9wdDsKPj4+PiDCoMKgwqDCoMKgwqAgY29uc3Qg
-Y2hhciAqcHJvcDsKPj4+PiBAQCAtMTI1OCw3ICsxMzQ1LDYgQEAgc3RhdGljIGludCBhcm1fc21t
-dV9pbml0X2wyX3N0cnRhYihzdHJ1Y3QKPj4+PiBhcm1fc21tdV9kZXZpY2UgKnNtbXUsIHUzMiBz
-aWQpCj4+Pj4gwqDCoMKgwqDCoMKgIHJldHVybiAwOwo+Pj4+IMKgwqAgfQo+Pj4+IMKgwqAgLV9f
-bWF5YmVfdW51c2VkCj4+Pj4gwqDCoCBzdGF0aWMgc3RydWN0IGFybV9zbW11X21hc3Rlcl9kYXRh
-ICoKPj4+PiDCoMKgIGFybV9zbW11X2ZpbmRfbWFzdGVyKHN0cnVjdCBhcm1fc21tdV9kZXZpY2Ug
-KnNtbXUsIHUzMiBzaWQpCj4+Pj4gwqDCoCB7Cj4+Pj4gQEAgLTEyODQsMjQgKzEzNzAsODUgQEAg
-YXJtX3NtbXVfZmluZF9tYXN0ZXIoc3RydWN0IGFybV9zbW11X2RldmljZQo+Pj4+ICpzbW11LCB1
-MzIgc2lkKQo+Pj4+IMKgwqDCoMKgwqDCoCByZXR1cm4gbWFzdGVyOwo+Pj4+IMKgwqAgfQo+Pj4+
-IMKgwqAgKy8qIFBvcHVsYXRlcyB0aGUgcmVjb3JkIGZpZWxkcyBhY2NvcmRpbmcgdG8gdGhlIGlu
-cHV0IFNNTVUgZXZlbnQgKi8KPj4+PiArc3RhdGljIGJvb2wgYXJtX3NtbXVfdHJhbnNjb2RlX2Zh
-dWx0KHU2NCAqZXZ0LCB1OCB0eXBlLAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIHN0cnVjdCBpb21tdV9mYXVsdF91bnJlY292ZXJhYmxlICpyZWNvcmQpCj4+
-Pj4gK3sKPj4+PiArwqDCoMKgIGNvbnN0IHN0cnVjdCBhcm1fc21tdV9mYXVsdF9wcm9wYWdhdGlv
-bl9kYXRhICpkYXRhOwo+Pj4+ICvCoMKgwqAgdTMyIGZpZWxkczsKPj4+PiArCj4+Pj4gK8KgwqDC
-oCBpZiAodHlwZSA+PSBBUlJBWV9TSVpFKGZhdWx0X3Byb3BhZ2F0aW9uKSkKPj4+PiArwqDCoMKg
-wqDCoMKgwqAgcmV0dXJuIGZhbHNlOwo+Pj4+ICsKPj4+PiArwqDCoMKgIGRhdGEgPSAmZmF1bHRf
-cHJvcGFnYXRpb25bdHlwZV07Cj4+Pj4gK8KgwqDCoCBpZiAoIWRhdGEtPnJlYXNvbikKPj4+PiAr
-wqDCoMKgwqDCoMKgwqAgcmV0dXJuIGZhbHNlOwo+Pj4+ICsKPj4+PiArwqDCoMKgIGZpZWxkcyA9
-IGRhdGEtPmZpZWxkczsKPj4+PiArCj4+Pj4gK8KgwqDCoCBpZiAoZGF0YS0+czFfY2hlY2sgJiBG
-SUVMRF9HRVQoRVZUUV8xX1MyLCBldnRbMV0pKQo+Pj4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4g
-ZmFsc2U7IC8qIFMyIHJlbGF0ZWQgZmF1bHQsIGRvbid0IHByb3BhZ2F0ZSAqLwo+Pj4+ICsKPj4+
-PiArwqDCoMKgIGlmIChmaWVsZHMgJiBJT01NVV9GQVVMVF9VTlJFQ09WX1BBU0lEX1ZBTElEKSB7
-Cj4+Pj4gK8KgwqDCoMKgwqDCoMKgIGlmIChGSUVMRF9HRVQoRVZUUV8wX1NTViwgZXZ0WzBdKSkK
-Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWNvcmQtPnBhc2lkID0gRklFTERfR0VUKEVW
-VFFfMF9TVUJTVFJFQU1JRCwgZXZ0WzBdKTsKPj4+PiArwqDCoMKgwqDCoMKgwqAgZWxzZQo+Pj4+
-ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZpZWxkcyAmPSB+SU9NTVVfRkFVTFRfVU5SRUNPVl9Q
-QVNJRF9WQUxJRDsKPj4+Cj4+PiAuLi5iZWNhdXNlIHRoaXMgbG9naWMgdGhlbiBicmVha3MgZm9y
-IENfQkFEX1NVQlNUUkVBTUlELCB3aGljaCBlbmRzIHVwCj4+PiBjb21pbmcgb3V0IG9mIGhlcmUg
-KndpdGhvdXQqIHJlcG9ydGluZyB0aGUgb2ZmZW5kaW5nIFBBU0lELgo+PiBDb3JyZWN0Lgo+Pj4K
-Pj4+PiArwqDCoMKgIH0KPj4+PiArwqDCoMKgIGlmIChmaWVsZHMgJiBJT01NVV9GQVVMVF9VTlJF
-Q09WX1BFUk1fVkFMSUQpIHsKPj4+PiArwqDCoMKgwqDCoMKgwqAgaWYgKCFGSUVMRF9HRVQoRVZU
-UV8xX1JOVywgZXZ0WzFdKSkKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWNvcmQtPnBl
-cm0gfD0gSU9NTVVfRkFVTFRfUEVSTV9XUklURTsKPj4+PiArwqDCoMKgwqDCoMKgwqAgaWYgKEZJ
-RUxEX0dFVChFVlRRXzFfUE5VLCBldnRbMV0pKQo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IHJlY29yZC0+cGVybSB8PSBJT01NVV9GQVVMVF9QRVJNX1BSSVY7Cj4+Pj4gK8KgwqDCoMKgwqDC
-oMKgIGlmIChGSUVMRF9HRVQoRVZUUV8xX0lORCwgZXZ0WzFdKSkKPj4+PiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCByZWNvcmQtPnBlcm0gfD0gSU9NTVVfRkFVTFRfUEVSTV9FWEVDOwo+Pj4+ICvC
-oMKgwqAgfQo+Pj4+ICvCoMKgwqAgaWYgKGZpZWxkcyAmIElPTU1VX0ZBVUxUX1VOUkVDT1ZfQURE
-Ul9WQUxJRCkKPj4+PiArwqDCoMKgwqDCoMKgwqAgcmVjb3JkLT5hZGRyID0gZXZ0WzJdOwo+Pj4+
-ICsKPj4+PiArwqDCoMKgIGlmIChmaWVsZHMgJiBJT01NVV9GQVVMVF9VTlJFQ09WX0ZFVENIX0FE
-RFJfVkFMSUQpCj4+Pj4gK8KgwqDCoMKgwqDCoMKgIHJlY29yZC0+ZmV0Y2hfYWRkciA9IEZJRUxE
-X0dFVChFVlRRXzNfRkVUQ0hfQUREUiwgZXZ0WzNdKTsKPj4+PiArCj4+Pj4gK8KgwqDCoCByZWNv
-cmQtPmZsYWdzID0gZmllbGRzOwo+Pj4+ICvCoMKgwqAgcmV0dXJuIHRydWU7Cj4+Pj4gK30KPj4+
-PiArCj4+Pj4gK3N0YXRpYyB2b2lkIGFybV9zbW11X3JlcG9ydF9ldmVudChzdHJ1Y3QgYXJtX3Nt
-bXVfZGV2aWNlICpzbW11LCB1NjQKPj4+PiAqZXZ0KQo+Pj4+ICt7Cj4+Pj4gK8KgwqDCoCB1MzIg
-c2lkID0gRklFTERfR0VUKEVWVFFfMF9TVFJFQU1JRCwgZXZ0WzBdKTsKPj4+PiArwqDCoMKgIHU4
-IHR5cGUgPSBGSUVMRF9HRVQoRVZUUV8wX0lELCBldnRbMF0pOwo+Pj4+ICvCoMKgwqAgc3RydWN0
-IGFybV9zbW11X21hc3Rlcl9kYXRhICptYXN0ZXI7Cj4+Pj4gK8KgwqDCoCBzdHJ1Y3QgaW9tbXVf
-ZmF1bHRfZXZlbnQgZXZlbnQgPSB7fTsKPj4+PiArwqDCoMKgIGludCBpOwo+Pj4+ICsKPj4+PiAr
-wqDCoMKgIG1hc3RlciA9IGFybV9zbW11X2ZpbmRfbWFzdGVyKHNtbXUsIHNpZCk7Cj4+Pj4gK8Kg
-wqDCoCBpZiAoV0FSTl9PTighbWFzdGVyKSkKPj4+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJuOwo+
-Pj4KPj4+IE5BSy4gSWYgSSdtIGdldHRpbmcgZ2xvYmFsIGZhdWx0cyBsaWtlIENfQkFEX1NURSB3
-aGVyZSBhIGRldmljZSBhbG1vc3QKPj4+IGNlcnRhaW5seSAqaXNuJ3QqIGNvbmZpZ3VyZWQgKGJl
-Y2F1c2UgaGV5LCB3ZSB3b3VsZCBoYXZlIGluaXRpYWxpc2VkIGl0cwo+Pj4gU1RFcyBpZiB3ZSBr
-bmV3KSwgdGhlbiBJIHN1cmUgYXMgaGVsbCB3YW50IHRvIHNlZSB0aGUgYWN0dWFsIGZhdWx0cy4K
-Pj4+IFNwYW1taW5nIGEgY29uc3RhbnQgc3RyZWFtIG9mIHN0YWNrIHRyYWNlcyAqaW5zdGVhZCog
-b2Ygc2hvd2luZyB0aGVtIGlzCj4+PiB3b3JzZSB0aGFuIHVzZWxlc3MuCj4+IFN1cmUsIGlmICFt
-YXN0ZXIgSSB3aWxsIG91dHB1dCB0aGUgb3JpZ2luYWwgdHJhY2VzLgo+Pj4KPj4+PiArCj4+Pj4g
-K8KgwqDCoCBldmVudC5mYXVsdC50eXBlID0gSU9NTVVfRkFVTFRfRE1BX1VOUkVDT1Y7Cj4+Pj4g
-Kwo+Pj4+ICvCoMKgwqAgaWYgKGFybV9zbW11X3RyYW5zY29kZV9mYXVsdChldnQsIHR5cGUsICZl
-dmVudC5mYXVsdC5ldmVudCkpIHsKPj4+PiArwqDCoMKgwqDCoMKgwqAgaW9tbXVfcmVwb3J0X2Rl
-dmljZV9mYXVsdChtYXN0ZXItPmRldiwgJmV2ZW50KTsKPj4+PiArwqDCoMKgwqDCoMKgwqAgcmV0
-dXJuOwo+Pj4KPj4+IEFuZCBhZ2FpbiwgdGhlIHZhc3QgbWFqb3JpdHkgb2YgdGhlIHRpbWUsIHRo
-ZXJlIHdvbid0IGJlIGEgZmF1bHQgaGFuZGxlcgo+Pj4gcmVnaXN0ZXJlZCwgc28gdW5jb25kaXRp
-b25hbGx5IHN1cHByZXNzaW5nIHRoZSBtb3N0IGNvbW1vbiBhbmQgdXNlZnVsCj4+PiBzdHVmZiBs
-aWtlIHRyYW5zbGF0aW9uIGFuZCBwZXJtaXNzaW9uIGZhdWx0cyBpcyB2ZXJ5IG11Y2ggbm90IE9L
-Lgo+PiBHb2luZyB0byB0ZXN0IHdoZXRoZXIgd2UgYXJlIGluIG5lc3RlZCBtb2RlIGJlZm9yZSBl
-bnRlcmluZyB0aGF0IHBhdGguCj4gCj4gSSBkb24ndCB0aGluayB0aGlzIGhhcyB0byBiZSBleGNs
-dXNpdmUgdG8gbmVzdGluZyAtIHRoZSBnZW5lcmljCj4gcmVwb3J0aW5nIG1lY2hhbmlzbSBmZWVs
-cyBsaWtlIGl0IG1pZ2h0IHVsdGltYXRlbHkgYmUgZXh0ZW5zaWJsZSB0bwo+IG90aGVyIHRoaW5n
-cyBsaWtlIFJvYidzIGNhc2UgZm9yIGdlbmVyYWxpc2VkIHN0YWxsaW5nLiBJdCdzIGp1c3QgdGhh
-dAo+IGZvciByb2J1c3RuZXNzLCBldmVuIHdoZW4gYSBmYXVsdCBoYW5kbGVyIGlzIHByZXNlbnQs
-IHdlIHN0aWxsIHdhbnQgdGhlCj4gZHJpdmVyIHRvIGJlIGFibGUgdG8gcmVwb3J0IGlmIGl0IGRp
-ZG4ndCBhY3R1YWxseSBoYW5kbGUgYSBmYXVsdC4KCgpKZWFuLVBoaWxpcHBlIHBvaW50ZWQgb3V0
-IGluIGEgcHJldmlvdXMgcmV2aWV3CihodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNo
-LzEwNzUxODAxLyMyMjQyNDA0NykgdGhhdCB0aGUgZ3Vlc3QKY2FuIGZsb29kIHRoZSBob3N0IGxv
-ZyB3aXRoIFMxIHJlbGF0ZWQgZmF1bHRzLiBBdCB0aGUgbW9tZW50IHdlIGRvIG5vdApjaGVjayB0
-aGF0IGEgZmF1bHQgaGFuZGxlciBpcyByZWdpc3RlcmVkIGluIG5lc3RlZCBtb2RlLiBNYXliZSB3
-ZQpzaG91bGQ/IEV2ZW4gaWYgdGhlIGZhdWx0IGhhbmRsZXIgaXMgcmVnaXN0ZXJlZCwgYXMgaXQg
-aXMgYmFzZWQgb24gYQpjaXJjdWxhciBidWZmZXIsIHRoaXMgbGF0dGVyIGNhbiBiZSBmdWxsIGFu
-ZCBsZWFkIHRvIGEgbG9nIGZsb29kLgoKVGhhbmtzCgpFcmljCgo+IAo+IFRoYW5rcywKPiBSb2Jp
-bi4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUg
-bWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlz
-dHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On 13/05/2019 08:09, Pankaj Bansal wrote:
+> Hi Jean,
+> 
+>> -----Original Message-----
+>> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> Sent: Friday, 10 May, 2019 07:07 PM
+>> To: Pankaj Bansal <pankaj.bansal@nxp.com>; Will Deacon
+>> <will.deacon@arm.com>; Robin Murphy <robin.murphy@arm.com>; Joerg
+>> Roedel <joro@8bytes.org>
+>> Cc: iommu@lists.linux-foundation.org; Varun Sethi <V.Sethi@nxp.com>; linux-
+>> arm-kernel@lists.infradead.org; Nipun Gupta <nipun.gupta@nxp.com>
+>> Subject: Re: [ARM SMMU] Dynamic StreamID allocation
+>>
+>> On 10/05/2019 13:33, Pankaj Bansal wrote:
+>>> Hi Will/Robin/Joerg,
+>>>
+>>> I am s/w engineer from NXP India Pvt. Ltd.
+>>> We are using SMMU-V3 in one of NXP SOC.
+>>> I have a question about the SMMU Stream ID allocation in linux.
+>>>
+>>> Right now the Stream IDs allocated to a device are mapped via device tree to
+>> the device.
+>>> https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Felix
+>>> ir.bootlin.com%2Flinux%2Flatest%2Fsource%2FDocumentation%2Fdevicetree%
+>>> 2Fbindings%2Fiommu%2Farm%2Csmmu-
+>> v3.txt%23L39&amp;data=02%7C01%7Cpankaj
+>>> .bansal%40nxp.com%7C3cbe8bd4827e425afd0f08d6d54c925e%7C686ea1d3b
+>> c2b4c6
+>>>
+>> fa92cd99c5c301635%7C0%7C0%7C636930922220665343&amp;sdata=vIG5u5n
+>> XR5iRp
+>>> uuuGjeFxKBtA5f5ohf91znXX0QWm1c%3D&amp;reserved=0
+>>>
+>>> As the device tree is passed from bootloader to linux, we detect all the stream
+>> IDs needed by a device in bootloader and add their IDs in respective device
+>> nodes.
+>>> For each PCIE Endpoint (a unique BDF (Bus Device Function)) on PCIE bus, we
+>> are assigning a unique Stream ID in bootloader.
+>>>
+>>> However, this poses an issue with PCIE hot plug.
+>>> If we plug in a pcie device while linux is running, a unique BDF is assigned to
+>> the device, for which there is no stream ID in device tree.
+>>>
+>>> How can this problem be solved in linux?
+>>
+>> Assuming the streamID associated to a BDF is predictable (streamID = BDF
+>> + constant), using the iommu-map property should just work:
+>>
+>> https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Felixir.boo
+>> tlin.com%2Flinux%2Flatest%2Fsource%2FDocumentation%2Fdevicetree%2Fbind
+>> ings%2Fpci%2Fpci-
+>> iommu.txt&amp;data=02%7C01%7Cpankaj.bansal%40nxp.com%7C3cbe8bd482
+>> 7e425afd0f08d6d54c925e%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0
+>> %7C636930922220665343&amp;sdata=GkkovEnvhd5dN%2BGdh%2FnKCyW5Cd
+>> EnLDP3cWTrk%2B%2FO7EQ%3D&amp;reserved=0
+>>
+>> It describes the streamIDs of all possible BDFs, including hotplugged functions.
+> 
+> You mean that we should increase the "length" parameter (in (rid-base,iommu,iommu-base,length) touple) ?
+> This would cater to any *new* Bus Device Function being detected on PCIE bus?
+> Is that right ?
+
+No, the iommu-map solution only works when you can predict at boot time
+which streamID will correspond to any BDF, for example if the PCIe
+controller or firmware automatically assigns streamID = BDF.
+
+> Right now when we make iommu-map in bootloader, we are giving one RID per BDF:
+> https://elixir.bootlin.com/u-boot/latest/source/drivers/pci/pcie_layerscape_fixup.c#L168
+
+Right, that won't work with hotplug. You can't derive a unique streamID
+from any BDF at boot, if the streamID range is limited to 16 values on
+this hardware.
+
+Maybe you could move this allocator to the Linux Layerscape driver, and
+call iommu_fwspec_add_ids() from there, rather than using iommu-map? Not
+sure how feasible that is, but it might still be the simplest.
+
+Thanks,
+Jean
+
+> 
+> But isn't the better approach to make it dynamic in linux?
+> i.e. as soon as a new device is detected "requester id" is allocated to it from available pool.
+> When device is removed, return the "requester id" to pool.
+> is there any h/w limitation which prevents it?
+> 
+> Regards,
+> Pankaj Bansal
+>>
+>> Thanks,
+>> Jean
+>>
+>>>
+>>> Is there a way to assign (and revoke) stream IDs at run time?
+>>>
+>>> Regards,
+>>> Pankaj Bansal
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-arm-kernel mailing list
+>>> linux-arm-kernel@lists.infradead.org
+>>> https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Flists
+>>> .infradead.org%2Fmailman%2Flistinfo%2Flinux-arm-
+>> kernel&amp;data=02%7C0
+>>>
+>> 1%7Cpankaj.bansal%40nxp.com%7C3cbe8bd4827e425afd0f08d6d54c925e%7C6
+>> 86ea
+>>>
+>> 1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C636930922220665343&amp;sda
+>> ta=2La
+>>> GBHO2%2Bbqk519uJvCatlHyRCtAPPjKO8Gxu1bQHBM%3D&amp;reserved=0
+>>>
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
