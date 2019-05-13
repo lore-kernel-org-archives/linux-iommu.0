@@ -3,69 +3,66 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75409C04AA7
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 14:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD482C04AAA
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 14:05:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50A6A208CA
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 14:04:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 50A6A208CA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8B704208CA
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 14:05:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B704208CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 35896E4A;
-	Mon, 13 May 2019 14:04:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 73EF0E20;
+	Mon, 13 May 2019 14:05:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A8351DAF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 79104DBE
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 14:04:46 +0000 (UTC)
+	Mon, 13 May 2019 14:05:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7B555837
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D959B837
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 14:04:45 +0000 (UTC)
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-	by Forcepoint Email with ESMTP id 8EB74F5C83569CF1B183;
-	Mon, 13 May 2019 22:04:40 +0800 (CST)
-Received: from [127.0.0.1] (10.177.23.164) by DGGEMS411-HUB.china.huawei.com
-	(10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Mon, 13 May 2019
-	22:04:32 +0800
-Subject: Re: [PATCH v6 1/1] iommu: enhance IOMMU dma mode build options
-To: John Garry <john.garry@huawei.com>, Jean-Philippe Brucker
-	<jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Will
-	Deacon" <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan
-	Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>,
-	Sebastian Ott
-	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
-	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
-	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
-	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
-	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
-	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
-	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
-	<iommu@lists.linux-foundation.org>, linux-kernel
-	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
-	linux-ia64 <linux-ia64@vger.kernel.org>
-References: <20190418135701.24668-1-thunder.leizhen@huawei.com>
-	<20190418135701.24668-2-thunder.leizhen@huawei.com>
-	<ca30a698-8047-9a86-a2f1-0b3e1c8692bf@huawei.com>
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <5CD9796E.3040000@huawei.com>
-Date: Mon, 13 May 2019 22:04:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
-	Thunderbird/38.5.1
+	Mon, 13 May 2019 14:05:06 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+	[10.5.11.13])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 6E30E7FD6C;
+	Mon, 13 May 2019 14:05:00 +0000 (UTC)
+Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id C655F608C3;
+	Mon, 13 May 2019 14:04:49 +0000 (UTC)
+Subject: Re: [PATCH v7 14/23] iommu/smmuv3: Implement cache_invalidate
+To: Robin Murphy <robin.murphy@arm.com>, eric.auger.pro@gmail.com,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
+	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
+	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com
+References: <20190408121911.24103-1-eric.auger@redhat.com>
+	<20190408121911.24103-15-eric.auger@redhat.com>
+	<a53d72f5-c8a2-a9e9-eb0b-2fac65964caf@arm.com>
+	<edff2a6f-66e6-6d7e-49ca-3065e93a41a4@redhat.com>
+	<a181689b-94b5-5ff6-9fec-66b3f319cbc4@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <405002b2-5663-7c03-d5df-b9da6499a238@redhat.com>
+Date: Mon, 13 May 2019 16:04:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <ca30a698-8047-9a86-a2f1-0b3e1c8692bf@huawei.com>
-X-Originating-IP: [10.177.23.164]
-X-CFilter-Loop: Reflected
-Cc: Hanjun Guo <guohanjun@huawei.com>
+In-Reply-To: <a181689b-94b5-5ff6-9fec-66b3f319cbc4@arm.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.27]);
+	Mon, 13 May 2019 14:05:06 +0000 (UTC)
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
+	ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,239 +75,131 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-
-
-On 2019/5/8 17:42, John Garry wrote:
-> On 18/04/2019 14:57, Zhen Lei wrote:
->> First, add build option IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
->> opportunity to set {lazy|strict} mode as default at build time. Then put
->> the three config options in an choice, make people can only choose one of
->> the three at a time.
->>
->> The default IOMMU dma modes on each ARCHs have no change.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>  arch/ia64/kernel/pci-dma.c                |  2 +-
->>  arch/powerpc/platforms/powernv/pci-ioda.c |  3 ++-
->>  arch/s390/pci/pci_dma.c                   |  2 +-
->>  arch/x86/kernel/pci-dma.c                 |  7 ++---
->>  drivers/iommu/Kconfig                     | 44 ++++++++++++++++++++++++++-----
->>  drivers/iommu/amd_iommu_init.c            |  3 ++-
->>  drivers/iommu/intel-iommu.c               |  2 +-
->>  drivers/iommu/iommu.c                     |  3 ++-
->>  8 files changed, 48 insertions(+), 18 deletions(-)
->>
->> diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
->> index fe988c49f01ce6a..655511dbf3c3b34 100644
->> --- a/arch/ia64/kernel/pci-dma.c
->> +++ b/arch/ia64/kernel/pci-dma.c
->> @@ -22,7 +22,7 @@
->>  int force_iommu __read_mostly;
->>  #endif
->>
->> -int iommu_pass_through;
->> +int iommu_pass_through = IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
->>
->>  static int __init pci_iommu_init(void)
->>  {
->> diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
->> index 3ead4c237ed0ec9..383e082a9bb985c 100644
->> --- a/arch/powerpc/platforms/powernv/pci-ioda.c
->> +++ b/arch/powerpc/platforms/powernv/pci-ioda.c
->> @@ -85,7 +85,8 @@ void pe_level_printk(const struct pnv_ioda_pe *pe, const char *level,
->>      va_end(args);
->>  }
->>
->> -static bool pnv_iommu_bypass_disabled __read_mostly;
->> +static bool pnv_iommu_bypass_disabled __read_mostly =
->> +            !IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
->>  static bool pci_reset_phbs __read_mostly;
->>
->>  static int __init iommu_setup(char *str)
->> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
->> index 9e52d1527f71495..784ad1e0acecfb1 100644
->> --- a/arch/s390/pci/pci_dma.c
->> +++ b/arch/s390/pci/pci_dma.c
->> @@ -17,7 +17,7 @@
->>
->>  static struct kmem_cache *dma_region_table_cache;
->>  static struct kmem_cache *dma_page_table_cache;
->> -static int s390_iommu_strict;
->> +static int s390_iommu_strict = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->>
->>  static int zpci_refresh_global(struct zpci_dev *zdev)
->>  {
->> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
->> index d460998ae828514..fb2bab42a0a3173 100644
->> --- a/arch/x86/kernel/pci-dma.c
->> +++ b/arch/x86/kernel/pci-dma.c
->> @@ -43,11 +43,8 @@
->>   * It is also possible to disable by default in kernel config, and enable with
->>   * iommu=nopt at boot time.
->>   */
->> -#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
->> -int iommu_pass_through __read_mostly = 1;
->> -#else
->> -int iommu_pass_through __read_mostly;
->> -#endif
->> +int iommu_pass_through __read_mostly =
->> +            IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
->>
->>  extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
->>
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index 6f07f3b21816c64..8a1f1793cde76b4 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -74,17 +74,47 @@ config IOMMU_DEBUGFS
->>        debug/iommu directory, and then populate a subdirectory with
->>        entries as required.
->>
->> -config IOMMU_DEFAULT_PASSTHROUGH
->> -    bool "IOMMU passthrough by default"
->> +choice
->> +    prompt "IOMMU dma mode"
-> 
-> /s/dma/DMA/
-OK
-
-> 
-> And how about add "default", as in "Default IOMMU DMA mode" or "IOMMU default DMA mode"?
-Yes. I prefer "IOMMU default DMA mode".
-
-> 
->>      depends on IOMMU_API
->> -        help
->> -      Enable passthrough by default, removing the need to pass in
->> -      iommu.passthrough=on or iommu=pt through command line. If this
->> -      is enabled, you can still disable with iommu.passthrough=off
->> -      or iommu=nopt depending on the architecture.
->> +    default IOMMU_DEFAULT_PASSTHROUGH if (PPC_POWERNV && PCI)
->> +    default IOMMU_DEFAULT_LAZY if (AMD_IOMMU || INTEL_IOMMU || S390_IOMMU)
->> +    default IOMMU_DEFAULT_STRICT
->> +    help
->> +      This option allows IOMMU dma mode to be chose at build time, to
-> 
-> again, capitalize acronyms, i.e. /s/dma/DMA/ (more of these above and below)
-OK, I will check it all. Thanks.
-
-> 
->> +      override the default dma mode of each ARCHs, removing the need to
->> +      pass in kernel parameters through command line. You can still use
->> +      ARCHs specific boot options to override this option again.
->> +
->> +config IOMMU_DEFAULT_PASSTHROUGH
-> 
-> I think that it may need to be indented, along with the other choices
-There is no problem. I referred to mm/Kconfig.
-
-> 
->> +    bool "passthrough"
->> +    help
->> +      In this mode, the dma access through IOMMU without any addresses
->> +      transformation. That means, the wrong or illegal dma access can not
-> 
-> transformation, or translation?
-I copied from somewhere. OK, "translation" will be more clear.
-
-> 
->> +      be caught, no error information will be reported.
->>
->>        If unsure, say N here.
->>
->> +config IOMMU_DEFAULT_LAZY
->> +    bool "lazy"
->> +    help
->> +      Support lazy mode, where for every IOMMU DMA unmap operation, the
->> +      flush operation of IOTLB and the free operation of IOVA are deferred.
->> +      They are only guaranteed to be done before the related IOVA will be
->> +      reused.
->> +
->> +config IOMMU_DEFAULT_STRICT
->> +    bool "strict"
->> +    help
->> +      For every IOMMU DMA unmap operation, the flush operation of IOTLB and
->> +      the free operation of IOVA are guaranteed to be done in the unmap
->> +      function.
->> +
->> +      This mode is safer than the two above, but it maybe slow in some high
-> 
-> slow, or slower? And passthough is not safe, so anything is implicitly safer.
-OK. I will change it to "slower".
-
-> 
->> +      performace scenarios.
->> +
->> +endchoice
->> +
->>  config OF_IOMMU
->>         def_bool y
->>         depends on OF && IOMMU_API
->> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
->> index ff40ba758cf365e..16c02b08adb4cb2 100644
->> --- a/drivers/iommu/amd_iommu_init.c
->> +++ b/drivers/iommu/amd_iommu_init.c
->> @@ -166,7 +166,8 @@ struct ivmd_header {
->>                         to handle */
->>  LIST_HEAD(amd_iommu_unity_map);        /* a list of required unity mappings
->>                         we find in ACPI */
->> -bool amd_iommu_unmap_flush;        /* if true, flush on every unmap */
->> +bool amd_iommu_unmap_flush = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->> +                    /* if true, flush on every unmap */
->>
->>  LIST_HEAD(amd_iommu_list);        /* list of all AMD IOMMUs in the
->>                         system */
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 28cb713d728ceef..0c3cc716210f35a 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -362,7 +362,7 @@ static int domain_detach_iommu(struct dmar_domain *domain,
->>
->>  static int dmar_map_gfx = 1;
->>  static int dmar_forcedac;
->> -static int intel_iommu_strict;
->> +static int intel_iommu_strict = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->>  static int intel_iommu_superpage = 1;
->>  static int intel_iommu_sm;
->>  static int iommu_identity_mapping;
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 109de67d5d727c2..0ec5952ac60e2a3 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -43,7 +43,8 @@
->>  #else
->>  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
->>  #endif
->> -static bool iommu_dma_strict __read_mostly = true;
->> +static bool iommu_dma_strict __read_mostly =
->> +            IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->>
->>  struct iommu_callback_data {
->>      const struct iommu_ops *ops;
->> -- 
->> 1.8.3
->>
->>
->>
->> .
->>
-> 
-> 
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgUm9iaW4sCgpPbiA1LzEzLzE5IDQ6MDEgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAx
+My8wNS8yMDE5IDEzOjE2LCBBdWdlciBFcmljIHdyb3RlOgo+PiBIaSBSb2JpbiwKPj4gT24gNS84
+LzE5IDU6MDEgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDA4LzA0LzIwMTkgMTM6MTks
+IEVyaWMgQXVnZXIgd3JvdGU6Cj4+Pj4gSW1wbGVtZW50IGRvbWFpbi1zZWxlY3RpdmUgYW5kIHBh
+Z2Utc2VsZWN0aXZlIElPVExCIGludmFsaWRhdGlvbnMuCj4+Pj4KPj4+PiBTaWduZWQtb2ZmLWJ5
+OiBFcmljIEF1Z2VyIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+Cj4+Pj4KPj4+PiAtLS0KPj4+PiB2
+NiAtPiB2Nwo+Pj4+IC0gY2hlY2sgdGhlIHVhcGkgdmVyc2lvbgo+Pj4+Cj4+Pj4gdjMgLT4gdjQ6
+Cj4+Pj4gLSBhZGFwdCB0byBjaGFuZ2VzIGluIHRoZSB1YXBpCj4+Pj4gLSBhZGQgc3VwcG9ydCBm
+b3IgbGVhZiBwYXJhbWV0ZXIKPj4+PiAtIGRvIG5vdCB1c2UgYXJtX3NtbXVfdGxiX2ludl9yYW5n
+ZV9ub3N5bmMgb3IgYXJtX3NtbXVfdGxiX2ludl9jb250ZXh0Cj4+Pj4gwqDCoMKgIGFueW1vcmUK
+Pj4+Pgo+Pj4+IHYyIC0+IHYzOgo+Pj4+IC0gcmVwbGFjZSBfX2FybV9zbW11X3RsYl9zeW5jIGJ5
+IGFybV9zbW11X2NtZHFfaXNzdWVfc3luYwo+Pj4+Cj4+Pj4gdjEgLT4gdjI6Cj4+Pj4gLSBwcm9w
+ZXJseSBwYXNzIHRoZSBhc2lkCj4+Pj4gLS0tCj4+Pj4gwqDCoCBkcml2ZXJzL2lvbW11L2FybS1z
+bW11LXYzLmMgfCA2MAo+Pj4+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysK
+Pj4+PiDCoMKgIDEgZmlsZSBjaGFuZ2VkLCA2MCBpbnNlcnRpb25zKCspCj4+Pj4KPj4+PiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0t
+c21tdS12My5jCj4+Pj4gaW5kZXggMTQ4NmJhZjUzNDI1Li40MzY2OTIxZDgzMTggMTAwNjQ0Cj4+
+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jCj4+Pj4gKysrIGIvZHJpdmVycy9p
+b21tdS9hcm0tc21tdS12My5jCj4+Pj4gQEAgLTIzMjYsNiArMjMyNiw2NSBAQCBzdGF0aWMgdm9p
+ZCBhcm1fc21tdV9kZXRhY2hfcGFzaWRfdGFibGUoc3RydWN0Cj4+Pj4gaW9tbXVfZG9tYWluICpk
+b21haW4pCj4+Pj4gwqDCoMKgwqDCoMKgIG11dGV4X3VubG9jaygmc21tdV9kb21haW4tPmluaXRf
+bXV0ZXgpOwo+Pj4+IMKgwqAgfQo+Pj4+IMKgwqAgK3N0YXRpYyBpbnQKPj4+PiArYXJtX3NtbXVf
+Y2FjaGVfaW52YWxpZGF0ZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHN0cnVjdCBkZXZp
+Y2UKPj4+PiAqZGV2LAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgaW9t
+bXVfY2FjaGVfaW52YWxpZGF0ZV9pbmZvICppbnZfaW5mbykKPj4+PiArewo+Pj4+ICvCoMKgwqAg
+c3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21tdV9kb21haW4gPSB0b19zbW11X2RvbWFpbihkb21h
+aW4pOwo+Pj4+ICvCoMKgwqAgc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSA9IHNtbXVfZG9t
+YWluLT5zbW11Owo+Pj4+ICsKPj4+PiArwqDCoMKgIGlmIChzbW11X2RvbWFpbi0+c3RhZ2UgIT0g
+QVJNX1NNTVVfRE9NQUlOX05FU1RFRCkKPj4+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJuIC1FSU5W
+QUw7Cj4+Pj4gKwo+Pj4+ICvCoMKgwqAgaWYgKCFzbW11KQo+Pj4+ICvCoMKgwqDCoMKgwqDCoCBy
+ZXR1cm4gLUVJTlZBTDsKPj4+PiArCj4+Pj4gK8KgwqDCoCBpZiAoaW52X2luZm8tPnZlcnNpb24g
+IT0gSU9NTVVfQ0FDSEVfSU5WQUxJREFURV9JTkZPX1ZFUlNJT05fMSkKPj4+PiArwqDCoMKgwqDC
+oMKgwqAgcmV0dXJuIC1FSU5WQUw7Cj4+Pj4gKwo+Pj4+ICvCoMKgwqAgaWYgKGludl9pbmZvLT5j
+YWNoZSAmIElPTU1VX0NBQ0hFX0lOVl9UWVBFX0lPVExCKSB7Cj4+Pj4gK8KgwqDCoMKgwqDCoMKg
+IGlmIChpbnZfaW5mby0+Z3JhbnVsYXJpdHkgPT0gSU9NTVVfSU5WX0dSQU5VX1BBU0lEKSB7Cj4+
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGFybV9zbW11X2NtZHFfZW50IGNtZCA9
+IHsKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5vcGNvZGUgPSBDTURRX09Q
+X1RMQklfTkhfQVNJRCwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC50bGJp
+ID0gewo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAudm1pZCA9
+IHNtbXVfZG9tYWluLT5zMl9jZmcudm1pZCwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgLmFzaWQgPSBpbnZfaW5mby0+cGFzaWQsCj4+Pj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCB9LAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH07Cj4+
+Pj4gKwo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFybV9zbW11X2NtZHFfaXNzdWVfY21k
+KHNtbXUsICZjbWQpOwo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFybV9zbW11X2NtZHFf
+aXNzdWVfc3luYyhzbW11KTsKPj4+Cj4+PiBJJ2QgbXVjaCByYXRoZXIgbWFrZSBhcm1fc21tdV90
+bGJfaW52X2NvbnRleHQoKSB1bmRlcnN0YW5kIG5lc3RlZAo+Pj4gZG9tYWlucyB0aGFuIG9wZW4t
+Y29kZSBjb21tYW5kcyBhbGwgb3ZlciB0aGUgcGxhY2UuCj4+Cj4+Cj4+Pgo+Pj4+ICsKPj4+PiAr
+wqDCoMKgwqDCoMKgwqAgfSBlbHNlIGlmIChpbnZfaW5mby0+Z3JhbnVsYXJpdHkgPT0gSU9NTVVf
+SU5WX0dSQU5VX0FERFIpIHsKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgaW9t
+bXVfaW52X2FkZHJfaW5mbyAqaW5mbyA9ICZpbnZfaW5mby0+YWRkcl9pbmZvOwo+Pj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIHNpemVfdCBzaXplID0gaW5mby0+bmJfZ3JhbnVsZXMgKiBpbmZv
+LT5ncmFudWxlX3NpemU7Cj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYm9vbCBsZWFmID0g
+aW5mby0+ZmxhZ3MgJiBJT01NVV9JTlZfQUREUl9GTEFHU19MRUFGOwo+Pj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9jbWRxX2VudCBjbWQgPSB7Cj4+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAub3Bjb2RlID0gQ01EUV9PUF9UTEJJX05IX1ZBLAo+
+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnRsYmkgPSB7Cj4+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5hZGRyID0gaW5mby0+YWRkciwKPj4+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnZtaWQgPSBzbW11X2Rv
+bWFpbi0+czJfY2ZnLnZtaWQsCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIC5hc2lkID0gaW5mby0+cGFzaWQsCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIC5sZWFmID0gbGVhZiwKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIH0sCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfTsKPj4+PiArCj4+Pj4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZG8gewo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgYXJtX3NtbXVfY21kcV9pc3N1ZV9jbWQoc21tdSwgJmNtZCk7Cj4+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS5hZGRyICs9IGluZm8tPmdyYW51bGVf
+c2l6ZTsKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9IHdoaWxlIChzaXplIC09IGluZm8t
+PmdyYW51bGVfc2l6ZSk7Cj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYXJtX3NtbXVfY21k
+cV9pc3N1ZV9zeW5jKHNtbXUpOwo+Pj4KPj4+IEFuIHRoaXMgaW4gcGFydGljdWxhciBJIHdvdWxk
+IHJlYWxseSBsaWtlIHRvIGdvIGFsbCB0aGUgd2F5IHRocm91Z2gKPj4+IGlvX3BndGFibGVfdGxi
+X2FkZF9mbHVzaCgpL2lvX3BndGFibGVfc3luYygpIGlmIGF0IGFsbCBwb3NzaWJsZS4gSG9va2lu
+Zwo+Pj4gdXAgcmFuZ2UtYmFzZWQgaW52YWxpZGF0aW9ucyBpcyBnb2luZyB0byBiZSBhIG1hc3Np
+dmUgaGVhZGFjaGUgaWYgdGhlCj4+PiBhYnN0cmFjdGlvbiBpc24ndCBzb2xpZC4KPj4KPj4gVGhl
+IGNvbmNlcm4gaXMgdGhlIGhvc3QgZG9lcyBub3QgIm93biIgdGhlIHMxIGNvbmZpZyBhc2lkCj4+
+IChzbW11X2RvbWFpbi0+czFfY2ZnLmNkLmFzaWQgaXMgbm90IHNldCwgcHJhY3RpY2FsbHkpLiBJ
+biBvdXIgY2FzZSB0aGUKPj4gYXNpZCBvbmx5IGlzIHBhc3NlZCBieSB0aGUgdXNlcnNwYWNlIG9u
+IENBQ0hFX0lOVkFMSURBVEUgaW9jdGwgY2FsbC4KPj4KPj4gYXJtX3NtbXVfdGxiX2ludl9jb250
+ZXh0IGFuZCBhcm1fc21tdV90bGJfaW52X3JhbmdlX25vc3luYyB1c2UgdGhpcyBmaWVsZAo+IAo+
+IFJpZ2h0LCBidXQgdGhhdCdzIG5vdCBleGFjdGx5IGhhcmQgdG8gc29sdmUuIEV2ZW4ganVzdCBz
+b21ldGhpbmcgbGlrZQo+IHRoZSAodW50ZXN0ZWQsIHB1cmVseSBpbGx1c3RyYXRpdmUpIHJlZmFj
+dG9yaW5nIGJlbG93IHdvdWxkIGJlIGJlbmVmaWNpYWwuClN1cmUgSSBjYW4gZ28gdGhpcyB3YXku
+CgpUaGFuayB5b3UgZm9yIGRldGFpbGluZwoKRXJpYwo+IAo+IFJvYmluLgo+IAo+IC0tLS0tPjgt
+LS0tLQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMgYi9kcml2ZXJz
+L2lvbW11L2FybS1zbW11LXYzLmMKPiBpbmRleCBkMzg4MDAxMGM2Y2YuLjMxZWY3MDNjZjY3MSAx
+MDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPiArKysgYi9kcml2ZXJz
+L2lvbW11L2FybS1zbW11LXYzLmMKPiBAQCAtMTQyMywxMSArMTQyMyw5IEBAIHN0YXRpYyB2b2lk
+IGFybV9zbW11X3RsYl9pbnZfY29udGV4dCh2b2lkICpjb29raWUpCj4gwqDCoMKgwqAgYXJtX3Nt
+bXVfY21kcV9pc3N1ZV9zeW5jKHNtbXUpOwo+IMKgfQo+IAo+IC1zdGF0aWMgdm9pZCBhcm1fc21t
+dV90bGJfaW52X3JhbmdlX25vc3luYyh1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+
+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGdyYW51
+bGUsIGJvb2wgbGVhZiwgdm9pZCAqY29va2llKQo+ICtzdGF0aWMgdm9pZCBfX2FybV9zbW11X3Rs
+Yl9pbnZfcmFuZ2Uoc3RydWN0IGFybV9zbW11X2RvbWFpbgo+ICpzbW11X2RvbWFpbiwgdTE2IGFz
+aWQsCj4gK8KgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUsIHNp
+emVfdCBncmFudWxlLCBib29sIGxlYWYpCj4gwqB7Cj4gLcKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVf
+ZG9tYWluICpzbW11X2RvbWFpbiA9IGNvb2tpZTsKPiAtwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9k
+ZXZpY2UgKnNtbXUgPSBzbW11X2RvbWFpbi0+c21tdTsKPiDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3Nt
+bXVfY21kcV9lbnQgY21kID0gewo+IMKgwqDCoMKgwqDCoMKgwqAgLnRsYmkgPSB7Cj4gwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIC5sZWFmwqDCoMKgID0gbGVhZiwKPiBAQCAtMTQzNywxOCArMTQz
+NSwyNyBAQCBzdGF0aWMgdm9pZAo+IGFybV9zbW11X3RsYl9pbnZfcmFuZ2Vfbm9zeW5jKHVuc2ln
+bmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUsCj4gCj4gwqDCoMKgwqAgaWYgKHNtbXVfZG9tYWlu
+LT5zdGFnZSA9PSBBUk1fU01NVV9ET01BSU5fUzEpIHsKPiDCoMKgwqDCoMKgwqDCoMKgIGNtZC5v
+cGNvZGXCoMKgwqAgPSBDTURRX09QX1RMQklfTkhfVkE7Cj4gLcKgwqDCoMKgwqDCoMKgIGNtZC50
+bGJpLmFzaWTCoMKgwqAgPSBzbW11X2RvbWFpbi0+czFfY2ZnLmNkLmFzaWQ7Cj4gK8KgwqDCoMKg
+wqDCoMKgIGNtZC50bGJpLmFzaWTCoMKgwqAgPSBhc2lkOwo+IMKgwqDCoMKgIH0gZWxzZSB7Cj4g
+wqDCoMKgwqDCoMKgwqDCoCBjbWQub3Bjb2RlwqDCoMKgID0gQ01EUV9PUF9UTEJJX1MyX0lQQTsK
+PiDCoMKgwqDCoMKgwqDCoMKgIGNtZC50bGJpLnZtaWTCoMKgwqAgPSBzbW11X2RvbWFpbi0+czJf
+Y2ZnLnZtaWQ7Cj4gwqDCoMKgwqAgfQo+IAo+IMKgwqDCoMKgIGRvIHsKPiAtwqDCoMKgwqDCoMKg
+wqAgYXJtX3NtbXVfY21kcV9pc3N1ZV9jbWQoc21tdSwgJmNtZCk7Cj4gK8KgwqDCoMKgwqDCoMKg
+IGFybV9zbW11X2NtZHFfaXNzdWVfY21kKHNtbXVfZG9tYWluLT5zbW11LCAmY21kKTsKPiDCoMKg
+wqDCoMKgwqDCoMKgIGNtZC50bGJpLmFkZHIgKz0gZ3JhbnVsZTsKPiDCoMKgwqDCoCB9IHdoaWxl
+IChzaXplIC09IGdyYW51bGUpOwo+IMKgfQo+IAo+ICtzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJf
+aW52X3JhbmdlX25vc3luYyh1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGdyYW51bGUsIGJv
+b2wgbGVhZiwgdm9pZCAqY29va2llKQo+ICt7Cj4gK8KgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZG9t
+YWluICpzbW11X2RvbWFpbiA9IGNvb2tpZTsKPiArCj4gK8KgwqDCoCBfX2FybV9zbW11X3RsYl9p
+bnZfcmFuZ2Uoc21tdV9kb21haW4sIHNtbXVfZG9tYWluLT5zMV9jZmcuY2QuYXNpZCwKPiBpb3Zh
+LAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNpemUsIGdyYW51bGUsIGxlYWYpOwo+ICt9Cj4g
+Kwo+IMKgc3RhdGljIGNvbnN0IHN0cnVjdCBpb21tdV9nYXRoZXJfb3BzIGFybV9zbW11X2dhdGhl
+cl9vcHMgPSB7Cj4gwqDCoMKgwqAgLnRsYl9mbHVzaF9hbGzCoMKgwqAgPSBhcm1fc21tdV90bGJf
+aW52X2NvbnRleHQsCj4gwqDCoMKgwqAgLnRsYl9hZGRfZmx1c2jCoMKgwqAgPSBhcm1fc21tdV90
+bGJfaW52X3JhbmdlX25vc3luYywKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
