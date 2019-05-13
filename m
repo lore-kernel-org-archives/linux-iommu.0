@@ -3,53 +3,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1D5C04AA7
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 11:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4330BC04AA7
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 11:43:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 56016208C2
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 11:32:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56016208C2
+	by mail.kernel.org (Postfix) with ESMTPS id 17CC32070D
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 11:43:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17CC32070D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 29BE5CB6;
-	Mon, 13 May 2019 11:32:07 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E0993D6A;
+	Mon, 13 May 2019 11:43:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 92BA7B9E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 19E49CB6
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 11:32:05 +0000 (UTC)
+	Mon, 13 May 2019 11:43:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D83B287A
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 7130E87A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 11:32:04 +0000 (UTC)
+	Mon, 13 May 2019 11:43:51 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A7EA215AB;
-	Mon, 13 May 2019 04:32:04 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 36B63374;
+	Mon, 13 May 2019 04:43:51 -0700 (PDT)
 Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2480C3F703;
-	Mon, 13 May 2019 04:32:03 -0700 (PDT)
-Subject: Re: [PATCH v4 1/1] iommu/io-pgtable-arm: Add support to use system
-	cache
-To: Vivek Gautam <vivek.gautam@codeaurora.org>, will.deacon@arm.com,
-	joro@8bytes.org, iommu@lists.linux-foundation.org
-References: <20190513100403.18981-1-vivek.gautam@codeaurora.org>
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5A03D3F703;
+	Mon, 13 May 2019 04:43:48 -0700 (PDT)
+Subject: Re: [PATCH v7 12/23] iommu/smmuv3: Get prepared for nested stage
+	support
+To: Auger Eric <eric.auger@redhat.com>, eric.auger.pro@gmail.com,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
+	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
+	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com
+References: <20190408121911.24103-1-eric.auger@redhat.com>
+	<20190408121911.24103-13-eric.auger@redhat.com>
+	<66f873eb-35c0-d1e9-794e-9150dbdb13fe@arm.com>
+	<a1099cec-a8ad-6efa-b7e8-77388814f7e2@redhat.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <dc53456d-027e-0ede-1ce9-1efa476937a9@arm.com>
-Date: Mon, 13 May 2019 12:32:01 +0100
+Message-ID: <424fc9bc-f040-d702-5a04-0faef1125989@arm.com>
+Date: Mon, 13 May 2019 12:43:46 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190513100403.18981-1-vivek.gautam@codeaurora.org>
+In-Reply-To: <a1099cec-a8ad-6efa-b7e8-77388814f7e2@redhat.com>
 Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, pratikp@codeaurora.org,
-	linux-kernel@vger.kernel.org, pdaly@codeaurora.org
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
+	ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,143 +68,135 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 13/05/2019 11:04, Vivek Gautam wrote:
-> Few Qualcomm platforms such as, sdm845 have an additional outer
-> cache called as System cache, aka. Last level cache (LLC) that
-> allows non-coherent devices to upgrade to using caching.
-> This cache sits right before the DDR, and is tightly coupled
-> with the memory controller. The clients using this cache request
-> their slices from this system cache, make it active, and can then
-> start using it.
-> 
-> There is a fundamental assumption that non-coherent devices can't
-> access caches. This change adds an exception where they *can* use
-> some level of cache despite still being non-coherent overall.
-> The coherent devices that use cacheable memory, and CPU make use of
-> this system cache by default.
-> 
-> Looking at memory types, we have following -
-> a) Normal uncached :- MAIR 0x44, inner non-cacheable,
->                        outer non-cacheable;
-> b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
->                        outer read write-back non-transient;
->                        attribute setting for coherenet I/O devices.
-> and, for non-coherent i/o devices that can allocate in system cache
-> another type gets added -
-> c) Normal sys-cached :- MAIR 0xf4, inner non-cacheable,
->                          outer read write-back non-transient
-> 
-> Coherent I/O devices use system cache by marking the memory as
-> normal cached.
-> Non-coherent I/O devices should mark the memory as normal
-> sys-cached in page tables to use system cache.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> ---
-> 
-> V3 version of this patch and related series can be found at [1].
-> 
-> This change is a realisation of following changes from downstream msm-4.9:
-> iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[2]
-> 
-> Changes since v3:
->   - Dropping support to cache i/o page tables to system cache. Getting support
->     for data buffers is the first step.
->     Removed io-pgtable quirk and related change to add domain attribute.
-> 
-> Glmark2 numbers on SDM845 based cheza board:
-> 
-> S.No.|	with LLC support   |	without LLC support
->       |	for data buffers   |
-> ---------------------------------------------------		
-> 1    |	4480; 72.3fps      |	4042; 65.2fps
-> 2    |	4500; 72.6fps      |	4039; 65.1fps
-> 3    |	4523; 72.9fps	   |	4106; 66.2fps
-> 4    |	4489; 72.4fps	   |	4104; 66.2fps
-> 5    |	4518; 72.9fps	   |	4072; 65.7fps
-> 
-> [1] https://patchwork.kernel.org/cover/10772629/
-> [2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
-> 
->   drivers/iommu/io-pgtable-arm.c | 9 ++++++++-
->   include/linux/iommu.h          | 1 +
->   2 files changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index d3700ec15cbd..2dbafe697531 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -167,10 +167,12 @@
->   #define ARM_LPAE_MAIR_ATTR_MASK		0xff
->   #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
->   #define ARM_LPAE_MAIR_ATTR_NC		0x44
-> +#define ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE	0xf4
->   #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
->   #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
->   #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
->   #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
-> +#define ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE	3
-
-Here at the implementation level, I'd rather just call these what they 
-are, i.e. s/QCOM_SYS_CACHE/INC_OWBRWA/.
-
->   
->   /* IOPTE accessors */
->   #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
-> @@ -442,6 +444,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
->   		else if (prot & IOMMU_CACHE)
->   			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->   				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> +		else if (prot & IOMMU_QCOM_SYS_CACHE)
-
-Where in the call stack is this going to be decided? (I don't recall the 
-previous discussions ever really reaching a solid conclusion on how to 
-separate responsibilities).
-
-> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE
-> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
->   	} else {
->   		pte = ARM_LPAE_PTE_HAP_FAULT;
->   		if (prot & IOMMU_READ)
-> @@ -841,7 +846,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
->   	      (ARM_LPAE_MAIR_ATTR_WBRWA
->   	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
->   	      (ARM_LPAE_MAIR_ATTR_DEVICE
-> -	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
-> +	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
-> +	      (ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE
-> +	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE));
->   
->   	cfg->arm_lpae_s1_cfg.mair[0] = reg;
->   	cfg->arm_lpae_s1_cfg.mair[1] = 0;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a815cf6f6f47..29dd2c624348 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -31,6 +31,7 @@
->   #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
->   #define IOMMU_NOEXEC	(1 << 3)
->   #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
-> +#define IOMMU_QCOM_SYS_CACHE	(1 << 6)
-
-Nit: 6 usually comes *after* 5 ;)
-
-Plus although it's fairly self-evident that this value has *something* 
-to do with Qcom system caches and isn't as generic as, say, IOMMU_PRIV, 
-it probably still warrants some degree of comment.
-
-Robin.
-
->   /*
->    * Where the bus hardware includes a privilege level as part of its access type
->    * markings, and certain devices are capable of issuing transactions marked as
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTAvMDUvMjAxOSAxNTozNCwgQXVnZXIgRXJpYyB3cm90ZToKPiBIaSBSb2JpbiwKPiAKPiBP
+biA1LzgvMTkgNDoyNCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbiAwOC8wNC8yMDE5IDEz
+OjE5LCBFcmljIEF1Z2VyIHdyb3RlOgo+Pj4gVG8gYWxsb3cgbmVzdGVkIHN0YWdlIHN1cHBvcnQs
+IHdlIG5lZWQgdG8gc3RvcmUgYm90aAo+Pj4gc3RhZ2UgMSBhbmQgc3RhZ2UgMiBjb25maWd1cmF0
+aW9ucyAoYW5kIHJlbW92ZSB0aGUgZm9ybWVyCj4+PiB1bmlvbikuCj4+Pgo+Pj4gQSBuZXN0ZWQg
+c2V0dXAgaXMgY2hhcmFjdGVyaXplZCBieSBib3RoIHMxX2NmZyBhbmQgczJfY2ZnCj4+PiBzZXQu
+Cj4+Pgo+Pj4gV2UgaW50cm9kdWNlIGEgbmV3IHN0ZS5hYm9ydCBmaWVsZCB0aGF0IHdpbGwgYmUg
+c2V0IHVwb24KPj4+IGd1ZXN0IHN0YWdlMSBjb25maWd1cmF0aW9uIHBhc3NpbmcuIElmIHMxX2Nm
+ZyBpcyBOVUxMIGFuZAo+Pj4gc3RlLmFib3J0IGlzIHNldCwgdHJhZmZpYyBjYW4ndCBwYXNzLiBJ
+ZiBzdGUuYWJvcnQgaXMgbm90IHNldCwKPj4+IFMxIGlzIGJ5cGFzc2VkLgo+Pj4KPj4+IGFybV9z
+bW11X3dyaXRlX3N0cnRhYl9lbnQoKSBpcyBtb2RpZmllZCB0byB3cml0ZSBib3RoIHN0YWdlCj4+
+PiBmaWVsZHMgaW4gdGhlIFNURSBhbmQgZGVhbCB3aXRoIHRoZSBhYm9ydCBmaWVsZC4KPj4+Cj4+
+PiBJbiBuZXN0ZWQgbW9kZSwgb25seSBzdGFnZSAyIGlzICJmaW5hbGl6ZWQiIGFzIHRoZSBob3N0
+IGRvZXMKPj4+IG5vdCBvd24vY29uZmlndXJlIHRoZSBzdGFnZSAxIGNvbnRleHQgZGVzY3JpcHRv
+ciwgZ3Vlc3QgZG9lcy4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBFcmljIEF1Z2VyIDxlcmljLmF1
+Z2VyQHJlZGhhdC5jb20+Cj4+Pgo+Pj4gLS0tCj4+Pgo+Pj4gdjQgLT4gdjU6Cj4+PiAtIHJlc2V0
+IHN0ZS5hYm9ydCBvbiBkZXRhY2gKPj4+Cj4+PiB2MyAtPiB2NDoKPj4+IC0gczFfY2ZnLm5lc3Rl
+ZF9hYm9ydCBhbmQgbmVzdGVkX2J5cGFzcyByZW1vdmVkLgo+Pj4gLSBzL3N0ZS5uZXN0ZWQvc3Rl
+LmFib3J0Cj4+PiAtIGFybV9zbW11X3dyaXRlX3N0cnRhYl9lbnQgbW9kaWZpY2F0aW9ucyB3aXRo
+IGludHJvZHVjdGlvbgo+Pj4gIMKgwqAgb2YgbG9jYWwgYWJvcnQsIGJ5cGFzcyBhbmQgdHJhbnNs
+YXRlIGxvY2FsIHZhcmlhYmxlcwo+Pj4gLSBjb21tZW50IHVwZGF0ZWQKPj4+Cj4+PiB2MSAtPiB2
+MjoKPj4+IC0gaW52YWxpZGF0ZSB0aGUgU1RFIGJlZm9yZSBtb3ZpbmcgZnJvbSBhIGxpdmUgU1RF
+IGNvbmZpZyB0byBhbm90aGVyCj4+PiAtIGFkZCB0aGUgbmVzdGVkX2Fib3J0IGFuZCBuZXN0ZWRf
+YnlwYXNzIGZpZWxkcwo+Pj4gLS0tCj4+PiAgwqAgZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5j
+IHwgMzUgKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0KPj4+ICDCoCAxIGZpbGUg
+Y2hhbmdlZCwgMjAgaW5zZXJ0aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNt
+bXUtdjMuYwo+Pj4gaW5kZXggMjFkMDI3Njk1MTgxLi5lMjJlOTQ0ZmZjMDUgMTAwNjQ0Cj4+PiAt
+LS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUv
+YXJtLXNtbXUtdjMuYwo+Pj4gQEAgLTIxMSw2ICsyMTEsNyBAQAo+Pj4gIMKgICNkZWZpbmUgU1RS
+VEFCX1NURV8wX0NGR19CWVBBU1PCoMKgwqDCoMKgwqDCoCA0Cj4+PiAgwqAgI2RlZmluZSBTVFJU
+QUJfU1RFXzBfQ0ZHX1MxX1RSQU5TwqDCoMKgIDUKPj4+ICDCoCAjZGVmaW5lIFNUUlRBQl9TVEVf
+MF9DRkdfUzJfVFJBTlPCoMKgwqAgNgo+Pj4gKyNkZWZpbmUgU1RSVEFCX1NURV8wX0NGR19ORVNU
+RUTCoMKgwqDCoMKgwqDCoCA3Cj4+PiAgwqAgwqAgI2RlZmluZSBTVFJUQUJfU1RFXzBfUzFGTVTC
+oMKgwqDCoMKgwqDCoCBHRU5NQVNLX1VMTCg1LCA0KQo+Pj4gIMKgICNkZWZpbmUgU1RSVEFCX1NU
+RV8wX1MxRk1UX0xJTkVBUsKgwqDCoCAwCj4+PiBAQCAtNTE0LDYgKzUxNSw3IEBAIHN0cnVjdCBh
+cm1fc21tdV9zdHJ0YWJfZW50IHsKPj4+ICDCoMKgwqDCoMKgwqAgKiBjb25maWd1cmVkIGFjY29y
+ZGluZyB0byB0aGUgZG9tYWluIHR5cGUuCj4+PiAgwqDCoMKgwqDCoMKgICovCj4+PiAgwqDCoMKg
+wqDCoCBib29swqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFzc2lnbmVkOwo+Pj4gK8Kg
+wqDCoCBib29swqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFib3J0Owo+Pj4gIMKgwqDC
+oMKgwqAgc3RydWN0IGFybV9zbW11X3MxX2NmZ8KgwqDCoMKgwqDCoMKgICpzMV9jZmc7Cj4+PiAg
+wqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfczJfY2ZnwqDCoMKgwqDCoMKgwqAgKnMyX2NmZzsK
+Pj4+ICDCoCB9Owo+Pj4gQEAgLTYyOCwxMCArNjMwLDggQEAgc3RydWN0IGFybV9zbW11X2RvbWFp
+biB7Cj4+PiAgwqDCoMKgwqDCoCBib29swqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5v
+bl9zdHJpY3Q7Cj4+PiAgwqAgwqDCoMKgwqDCoCBlbnVtIGFybV9zbW11X2RvbWFpbl9zdGFnZcKg
+wqDCoCBzdGFnZTsKPj4+IC3CoMKgwqAgdW5pb24gewo+Pj4gLcKgwqDCoMKgwqDCoMKgIHN0cnVj
+dCBhcm1fc21tdV9zMV9jZmfCoMKgwqAgczFfY2ZnOwo+Pj4gLcKgwqDCoMKgwqDCoMKgIHN0cnVj
+dCBhcm1fc21tdV9zMl9jZmfCoMKgwqAgczJfY2ZnOwo+Pj4gLcKgwqDCoCB9Owo+Pj4gK8KgwqDC
+oCBzdHJ1Y3QgYXJtX3NtbXVfczFfY2ZnwqDCoMKgIHMxX2NmZzsKPj4+ICvCoMKgwqAgc3RydWN0
+IGFybV9zbW11X3MyX2NmZ8KgwqDCoCBzMl9jZmc7Cj4+PiAgwqAgwqDCoMKgwqDCoCBzdHJ1Y3Qg
+aW9tbXVfZG9tYWluwqDCoMKgwqDCoMKgwqAgZG9tYWluOwo+Pj4gIMKgIEBAIC0xMTA4LDEyICsx
+MTA4LDEzIEBAIHN0YXRpYyB2b2lkIGFybV9zbW11X3dyaXRlX3N0cnRhYl9lbnQoc3RydWN0Cj4+
+PiBhcm1fc21tdV9kZXZpY2UgKnNtbXUsIHUzMiBzaWQsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBfX2xlNjQgKmRzdCwgc3RydWN0IGFybV9zbW11
+X3N0cnRhYl9lbnQgKnN0ZSkKPj4+ICDCoCB7Cj4+PiAgwqDCoMKgwqDCoCAvKgo+Pj4gLcKgwqDC
+oMKgICogVGhpcyBpcyBoaWRlb3VzbHkgY29tcGxpY2F0ZWQsIGJ1dCB3ZSBvbmx5IHJlYWxseSBj
+YXJlIGFib3V0Cj4+PiAtwqDCoMKgwqAgKiB0aHJlZSBjYXNlcyBhdCB0aGUgbW9tZW50Ogo+Pj4g
+K8KgwqDCoMKgICogV2UgY2FyZSBhYm91dCB0aGUgZm9sbG93aW5nIHRyYW5zaXRpb25zOgo+Pj4g
+IMKgwqDCoMKgwqDCoCAqCj4+PiAgwqDCoMKgwqDCoMKgICogMS4gSW52YWxpZCAoYWxsIHplcm8p
+IC0+IGJ5cGFzcy9mYXVsdCAoaW5pdCkKPj4+IC3CoMKgwqDCoCAqIDIuIEJ5cGFzcy9mYXVsdCAt
+PiB0cmFuc2xhdGlvbi9ieXBhc3MgKGF0dGFjaCkKPj4+IC3CoMKgwqDCoCAqIDMuIFRyYW5zbGF0
+aW9uL2J5cGFzcyAtPiBieXBhc3MvZmF1bHQgKGRldGFjaCkKPj4+ICvCoMKgwqDCoCAqIDIuIEJ5
+cGFzcy9mYXVsdCAtPiBzaW5nbGUgc3RhZ2UgdHJhbnNsYXRpb24vYnlwYXNzIChhdHRhY2gpCj4+
+PiArwqDCoMKgwqAgKiAzLiBzaW5nbGUgc3RhZ2UgVHJhbnNsYXRpb24vYnlwYXNzIC0+IGJ5cGFz
+cy9mYXVsdCAoZGV0YWNoKQo+Pj4gK8KgwqDCoMKgICogNC4gUzIgLT4gUzEgKyBTMiAoYXR0YWNo
+X3Bhc2lkX3RhYmxlKQo+Pj4gK8KgwqDCoMKgICogNS4gUzEgKyBTMiAtPiBTMiAoZGV0YWNoX3Bh
+c2lkX3RhYmxlKQo+Pj4gIMKgwqDCoMKgwqDCoCAqCj4+PiAgwqDCoMKgwqDCoMKgICogR2l2ZW4g
+dGhhdCB3ZSBjYW4ndCB1cGRhdGUgdGhlIFNURSBhdG9taWNhbGx5IGFuZCB0aGUgU01NVQo+Pj4g
+IMKgwqDCoMKgwqDCoCAqIGRvZXNuJ3QgcmVhZCB0aGUgdGhpbmcgaW4gYSBkZWZpbmVkIG9yZGVy
+LCB0aGF0IGxlYXZlcyB1cwo+Pj4gQEAgLTExMjQsNyArMTEyNSw3IEBAIHN0YXRpYyB2b2lkIGFy
+bV9zbW11X3dyaXRlX3N0cnRhYl9lbnQoc3RydWN0Cj4+PiBhcm1fc21tdV9kZXZpY2UgKnNtbXUs
+IHUzMiBzaWQsCj4+PiAgwqDCoMKgwqDCoMKgICogMy4gVXBkYXRlIENvbmZpZywgc3luYwo+Pj4g
+IMKgwqDCoMKgwqDCoCAqLwo+Pj4gIMKgwqDCoMKgwqAgdTY0IHZhbCA9IGxlNjRfdG9fY3B1KGRz
+dFswXSk7Cj4+PiAtwqDCoMKgIGJvb2wgc3RlX2xpdmUgPSBmYWxzZTsKPj4+ICvCoMKgwqAgYm9v
+bCBhYm9ydCwgYnlwYXNzLCB0cmFuc2xhdGUsIHN0ZV9saXZlID0gZmFsc2U7Cj4+PiAgwqDCoMKg
+wqDCoCBzdHJ1Y3QgYXJtX3NtbXVfY21kcV9lbnQgcHJlZmV0Y2hfY21kID0gewo+Pj4gIMKgwqDC
+oMKgwqDCoMKgwqDCoCAub3Bjb2RlwqDCoMKgwqDCoMKgwqAgPSBDTURRX09QX1BSRUZFVENIX0NG
+RywKPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAgLnByZWZldGNowqDCoMKgID0gewo+Pj4gQEAgLTEx
+MzgsMTEgKzExMzksMTEgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfd3JpdGVfc3RydGFiX2VudChz
+dHJ1Y3QKPj4+IGFybV9zbW11X2RldmljZSAqc21tdSwgdTMyIHNpZCwKPj4+ICDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBicmVhazsKPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAgY2FzZSBTVFJU
+QUJfU1RFXzBfQ0ZHX1MxX1RSQU5TOgo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoCBjYXNlIFNUUlRB
+Ql9TVEVfMF9DRkdfUzJfVFJBTlM6Cj4+PiArwqDCoMKgwqDCoMKgwqAgY2FzZSBTVFJUQUJfU1RF
+XzBfQ0ZHX05FU1RFRDoKPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdGVfbGl2ZSA9
+IHRydWU7Cj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYnJlYWs7Cj4+PiAgwqDCoMKg
+wqDCoMKgwqDCoMKgIGNhc2UgU1RSVEFCX1NURV8wX0NGR19BQk9SVDoKPj4+IC3CoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIGlmIChkaXNhYmxlX2J5cGFzcykKPj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgYnJlYWs7Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBicmVhazsKPj4+
+ICDCoMKgwqDCoMKgwqDCoMKgwqAgZGVmYXVsdDoKPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBCVUcoKTsgLyogU1RFIGNvcnJ1cHRpb24gKi8KPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAg
+fQo+Pj4gQEAgLTExNTIsOCArMTE1MywxMyBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV93cml0ZV9z
+dHJ0YWJfZW50KHN0cnVjdAo+Pj4gYXJtX3NtbXVfZGV2aWNlICpzbW11LCB1MzIgc2lkLAo+Pj4g
+IMKgwqDCoMKgwqAgdmFsID0gU1RSVEFCX1NURV8wX1Y7Cj4+PiAgwqAgwqDCoMKgwqDCoCAvKiBC
+eXBhc3MvZmF1bHQgKi8KPj4+IC3CoMKgwqAgaWYgKCFzdGUtPmFzc2lnbmVkIHx8ICEoc3RlLT5z
+MV9jZmcgfHwgc3RlLT5zMl9jZmcpKSB7Cj4+PiAtwqDCoMKgwqDCoMKgwqAgaWYgKCFzdGUtPmFz
+c2lnbmVkICYmIGRpc2FibGVfYnlwYXNzKQo+Pj4gKwo+Pj4gK8KgwqDCoCBhYm9ydCA9ICghc3Rl
+LT5hc3NpZ25lZCAmJiBkaXNhYmxlX2J5cGFzcykgfHwgc3RlLT5hYm9ydDsKPj4+ICvCoMKgwqAg
+dHJhbnNsYXRlID0gc3RlLT5zMV9jZmcgfHwgc3RlLT5zMl9jZmc7Cj4+PiArwqDCoMKgIGJ5cGFz
+cyA9ICFhYm9ydCAmJiAhdHJhbnNsYXRlOwo+Pj4gKwo+Pj4gK8KgwqDCoCBpZiAoYWJvcnQgfHwg
+YnlwYXNzKSB7Cj4+PiArwqDCoMKgwqDCoMKgwqAgaWYgKGFib3J0KQo+Pj4gIMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIHZhbCB8PSBGSUVMRF9QUkVQKFNUUlRBQl9TVEVfMF9DRkcsCj4+PiBT
+VFJUQUJfU1RFXzBfQ0ZHX0FCT1JUKTsKPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAgZWxzZQo+Pj4g
+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHZhbCB8PSBGSUVMRF9QUkVQKFNUUlRBQl9TVEVf
+MF9DRkcsCj4+PiBTVFJUQUJfU1RFXzBfQ0ZHX0JZUEFTUyk7Cj4+PiBAQCAtMTE3Miw3ICsxMTc4
+LDYgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfd3JpdGVfc3RydGFiX2VudChzdHJ1Y3QKPj4+IGFy
+bV9zbW11X2RldmljZSAqc21tdSwgdTMyIHNpZCwKPj4+ICDCoMKgwqDCoMKgIH0KPj4+ICDCoCDC
+oMKgwqDCoMKgIGlmIChzdGUtPnMxX2NmZykgewo+Pj4gLcKgwqDCoMKgwqDCoMKgIEJVR19PTihz
+dGVfbGl2ZSk7Cj4+Cj4+IEhtbSwgSSdtIGEgbGl0dGxlIHVuZWFzeSBhYm91dCBqdXN0IHJlbW92
+aW5nIHRoZXNlIGNoZWNrcyBhbHRvZ2V0aGVyLCBhcwo+PiB0aGVyZSBhcmUgc3RpbGwgY2FzZXMg
+d2hlcmUgcmV3cml0aW5nIGEgbGl2ZSBlbnRyeSBpcyBib2d1cywgdGhhdCB3ZSdkCj4+IHJlYWxs
+eSBsaWtlIHRvIGtlZXAgY2F0Y2hpbmcuIElzIHRoZSBwcm9ibGVtIHRoYXQgaXQncyBoYXJkIHRv
+IHRlbGwgd2hlbgo+PiB5b3UncmUgJ3Jld3JpdGluZycgdGhlIFMyIGNvbmZpZyBvZiBhIG5lc3Rl
+ZCBlbnRyeSB3aXRoIHRoZSBzYW1lIHRoaW5nCj4+IG9uIGF0dGFjaGluZy9kZXRhY2hpbmcgaXRz
+IFMxIGNvbnRleHQ/Cj4gTm8sIEkgcmVzdG9yZWQgdGhlIG9yaWdpbmFsIGNoZWNrcyBpbiAhbmVz
+dGVkIG1vZGUgYW5kIGFkZGVkIGEgbmV3IGNoZWNrCj4gdG8gbWFrZSBzdXJlIHdlIG5ldmVyIHVw
+ZGF0ZSBhIGxpdmUgUzEgaW4gbmVzdGVkIG1vZGUuIE9ubHkgUzIgY2FuIGJlIGxpdmUuCgpSaWdo
+dCwgZWl0aGVyIHdheSBpdCdzIGZhaXJseSBlYXN5IHRvIGVuZm9yY2UgIiEoY2ZnLT5zMSAmJiBz
+dGUtPnMxKSIsIApidXQgd2hhdCBJJ20gcmVhbGx5IGNvbmNlcm5lZCBhYm91dCBpcyB0aGF0IGZh
+Y3Qgd2hlcmUgU3RyZWFtIElEcyAob3IgCnBvc3NpYmx5IFBBU0lEUykgZ2V0IG1lc3NlZCB1cCBh
+bmQgd2UgZW5kIHVwIHNpbGVudGx5IHdyaXRpbmcgYSBuZXN0ZWQgCmNvbmZpZyBvdmVyIGFuIFNU
+RSB3aGljaCBoYXBwZW5zIHRvIGFscmVhZHkgaGF2ZSBhbiBTMiBjb25maWd1cmF0aW9uIGZvciAK
+c29tZSBvdGhlciBkb21haW4gKG9yIHZpY2UgdmVyc2EpLgoKSSBndWVzcyBpdCBtaWdodCBzdWZm
+aWNlIHRvIHZlcmlmeSB0aGF0IHRoZSBWVFRCUnMgbWF0Y2ggZm9yIFMyPC0+bmVzdGVkIAp0cmFu
+c2l0aW9ucywgd2hhdCBkbyB5b3UgcmVja29uPwoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
