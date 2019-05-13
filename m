@@ -1,76 +1,62 @@
-Return-Path: <SRS0=YtHD=TM=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=HAYh=TN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB27BC04AB4
-	for <iommu@archiver.kernel.org>; Sun, 12 May 2019 17:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E637C04AB1
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 07:06:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99C7F20C01
-	for <iommu@archiver.kernel.org>; Sun, 12 May 2019 17:15:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99C7F20C01
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 73C8720B7C
+	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 07:06:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73C8720B7C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D169AE19;
-	Sun, 12 May 2019 17:15:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5FD19AB9;
+	Mon, 13 May 2019 07:06:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A1455DAF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 59328AA5
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 12 May 2019 17:15:21 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f196.google.com (mail-qk1-f196.google.com
-	[209.85.222.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0812C42D
+	Mon, 13 May 2019 07:06:04 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E3DA627B
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 12 May 2019 17:15:20 +0000 (UTC)
-Received: by mail-qk1-f196.google.com with SMTP id a64so914260qkg.5
-	for <iommu@lists.linux-foundation.org>;
-	Sun, 12 May 2019 10:15:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to;
-	bh=Sz6oXhk1MUAcDMqhVgJnZ+u8Zwtmv3OV0JGi1Y8CWDw=;
-	b=TjxAXas94yGwBzWaI0ItpOvdUjgXfzGyE4Y1fEweJ9KOlkMg+S1PHkscgnq0eI9Xov
-	5E6w45a5/ZU9Um2GL+J8yaVgozIr3ll/L0ugWBHTBv3yefNeLMdSlUncKQTZmH+Zt2XF
-	3Bv5/2JaoPXCxWo11qHAjnV2HYBpbCFEugpcYpyvomEBUyoO1u0GxXEBiUJ6zG585UhM
-	BYwF+pGlCTQntKOveNTak/sW5lxx+LtxEBwpIZ4Sbv88vvKiBn9IYul8CcSwxtjfNrVq
-	zbphVDEclPvJoyoQAhF3I8oGmsZ10HFEv2CqiYMWYjUId7bMaD3hoBL4+yD5JCfNu+f5
-	0xJA==
-X-Gm-Message-State: APjAAAUMQduLhHUGnWMzaXPxmjRpNja3wq0mcP0Pf6Y0ryWw7lWcgCnK
-	v/aL0WKEpzsGgMzBKTA14PNhiQ==
-X-Google-Smtp-Source: APXvYqxLzieYropX9DXBLnvbsudc9FJW0WQmQVUd/9WRnEbpC2BiYAyAKTnxKUBxw7ns2tMNztADiw==
-X-Received: by 2002:a37:b3c5:: with SMTP id c188mr18807278qkf.97.1557681320186;
-	Sun, 12 May 2019 10:15:20 -0700 (PDT)
-Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net.
-	[173.76.105.71])
-	by smtp.gmail.com with ESMTPSA id c32sm6064980qte.2.2019.05.12.10.15.18
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Sun, 12 May 2019 10:15:19 -0700 (PDT)
-Date: Sun, 12 May 2019 13:15:16 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
-Message-ID: <20190512131500-mutt-send-email-mst@kernel.org>
-References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
+	Mon, 13 May 2019 07:06:03 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id A4EE268AFE; Mon, 13 May 2019 09:05:42 +0200 (CEST)
+Date: Mon, 13 May 2019 09:05:42 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 02/10] swiotlb: Factor out slot allocation and free
+Message-ID: <20190513070542.GA18739@lst.de>
+References: <0c6e5983-312b-0d6b-92f5-64861cd6804d@linux.intel.com>
+	<20190423061232.GB12762@lst.de>
+	<dff50b2c-5e31-8b4a-7fdf-99d17852746b@linux.intel.com>
+	<20190424144532.GA21480@lst.de>
+	<a189444b-15c9-8069-901d-8cdf9af7fc3c@linux.intel.com>
+	<20190426150433.GA19930@lst.de>
+	<93b3d627-782d-cae0-2175-77a5a8b3fe6e@linux.intel.com>
+	<90182d27-5764-7676-8ca6-b2773a40cfe1@arm.com>
+	<20190429114401.GA30333@lst.de>
+	<7033f384-7823-42ec-6bda-ae74ef689f4f@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
-Cc: mark.rutland@arm.com, virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
-	tnowicki@caviumnetworks.com, devicetree@vger.kernel.org,
-	marc.zyngier@arm.com, linux-pci@vger.kernel.org,
-	will.deacon@arm.com, robin.murphy@arm.com,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, robh+dt@kernel.org,
-	kvmarm@lists.cs.columbia.edu, bhelgaas@google.com,
-	frowand.list@gmail.com, jasowang@redhat.com
+In-Reply-To: <7033f384-7823-42ec-6bda-ae74ef689f4f@linux.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: kevin.tian@intel.com, mika.westerberg@linux.intel.com, ashok.raj@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	pengfei.xu@intel.com, jacob.jun.pan@intel.com,
+	alan.cox@intel.com, David Woodhouse <dwmw2@infradead.org>,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,74 +74,15 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Jan 15, 2019 at 12:19:52PM +0000, Jean-Philippe Brucker wrote:
-> Implement the virtio-iommu driver, following specification v0.9 [1].
-> 
-> This is a simple rebase onto Linux v5.0-rc2. We now use the
-> dev_iommu_fwspec_get() helper introduced in v5.0 instead of accessing
-> dev->iommu_fwspec, but there aren't any functional change from v6 [2].
-> 
-> Our current goal for virtio-iommu is to get a paravirtual IOMMU working
-> on Arm, and enable device assignment to guest userspace. In this
-> use-case the mappings are static, and don't require optimal performance,
-> so this series tries to keep things simple. However there is plenty more
-> to do for features and optimizations, and having this base in v5.1 would
-> be good. Given that most of the changes are to drivers/iommu, I believe
-> the driver and future changes should go via the IOMMU tree.
-> 
-> You can find Linux driver and kvmtool device on v0.9.2 branches [3],
-> module and x86 support on virtio-iommu/devel. Also tested with Eric's
-> QEMU device [4]. Please note that the series depends on Robin's
-> probe-deferral fix [5], which will hopefully land in v5.0.
-> 
-> [1] Virtio-iommu specification v0.9, sources and pdf
->     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
->     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
-> 
-> [2] [PATCH v6 0/7] Add virtio-iommu driver
->     https://lists.linuxfoundation.org/pipermail/iommu/2018-December/032127.html
-> 
-> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.2
->     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9.2
-> 
-> [4] [RFC v9 00/17] VIRTIO-IOMMU device
->     https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
-> 
-> [5] [PATCH] iommu/of: Fix probe-deferral
->     https://www.spinics.net/lists/arm-kernel/msg698371.html
+On Mon, May 06, 2019 at 09:54:30AM +0800, Lu Baolu wrote:
+> Agreed. I will prepare the next version simply without the optimization, so 
+> the offset is not required.
+>
+> For your changes in swiotlb, will you formalize them in patches or want
+> me to do this?
 
-For virtio things:
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-
-
-> Jean-Philippe Brucker (7):
->   dt-bindings: virtio-mmio: Add IOMMU description
->   dt-bindings: virtio: Add virtio-pci-iommu node
->   of: Allow the iommu-map property to omit untranslated devices
->   PCI: OF: Initialize dev->fwnode appropriately
->   iommu: Add virtio-iommu driver
->   iommu/virtio: Add probe request
->   iommu/virtio: Add event queue
-> 
->  .../devicetree/bindings/virtio/iommu.txt      |   66 +
->  .../devicetree/bindings/virtio/mmio.txt       |   30 +
->  MAINTAINERS                                   |    7 +
->  drivers/iommu/Kconfig                         |   11 +
->  drivers/iommu/Makefile                        |    1 +
->  drivers/iommu/virtio-iommu.c                  | 1158 +++++++++++++++++
->  drivers/of/base.c                             |   10 +-
->  drivers/pci/of.c                              |    7 +
->  include/uapi/linux/virtio_ids.h               |    1 +
->  include/uapi/linux/virtio_iommu.h             |  161 +++
->  10 files changed, 1449 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
->  create mode 100644 drivers/iommu/virtio-iommu.c
->  create mode 100644 include/uapi/linux/virtio_iommu.h
-> 
-> -- 
-> 2.19.1
+Please do it yourself given that you still need the offset and thus a
+rework of the patches anyway.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
