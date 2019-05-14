@@ -6,64 +6,53 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D78C04AB4
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BF4C04AB4
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF66921537
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF66921537
+	by mail.kernel.org (Postfix) with ESMTPS id 449F021537
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 449F021537
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BADBBE9F;
-	Tue, 14 May 2019 14:03:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 06165EA3;
+	Tue, 14 May 2019 14:03:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2984AC2A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4E046C2A
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 14 May 2019 14:03:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3C17D87C
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 70B0E83A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 14 May 2019 14:03:01 +0000 (UTC)
+	Tue, 14 May 2019 14:03:02 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
 	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	14 May 2019 07:02:59 -0700
+	14 May 2019 07:03:00 -0700
 X-ExtLoop1: 1
 Received: from unknown (HELO luv-build.sc.intel.com) ([172.25.110.25])
-	by fmsmga005.fm.intel.com with ESMTP; 14 May 2019 07:02:59 -0700
+	by fmsmga005.fm.intel.com with ESMTP; 14 May 2019 07:03:00 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>,
 	Borislav Petkov <bp@suse.de>
-Subject: [RFC PATCH v3 13/21] x86/watchdog/hardlockup/hpet: Determine if HPET
-	timer caused NMI
-Date: Tue, 14 May 2019 07:02:06 -0700
-Message-Id: <1557842534-4266-14-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v3 17/21] x86/tsc: Switch to perf-based hardlockup
+	detector if TSC become unstable
+Date: Tue, 14 May 2019 07:02:10 -0700
+Message-Id: <1557842534-4266-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Peter Zijlstra <peterz@infradead.org>, Jan Kiszka <jan.kiszka@siemens.com>,
-	Clemens Ladisch <clemens@ladisch.de>,
-	Ricardo Neri <ricardo.neri@intel.com>, Mimi Zohar <zohar@linux.ibm.com>,
-	Masahiro Yamada <yamada.masahiro@socionext.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Ashok Raj <ashok.raj@intel.com>, x86@kernel.org,
-	Andi Kleen <andi.kleen@intel.com>,
-	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
+Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+	Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
 	Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-	Stephane Eranian <eranian@google.com>, Tony Luck <tony.luck@intel.com>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Philippe Ombredanne <pombredanne@nexb.com>,
-	Nayna Jain <nayna@linux.ibm.com>
+	x86@kernel.org, linux-kernel@vger.kernel.org,
+	Ricardo Neri <ricardo.neri@intel.com>, iommu@lists.linux-foundation.org,
+	Andi Kleen <andi.kleen@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,129 +71,68 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The only direct method to determine whether an HPET timer caused an
-interrupt is to read the Interrupt Status register. Unfortunately,
-reading HPET registers is slow and, therefore, it is not recommended to
-read them while in NMI context. Furthermore, status is not available if
-the interrupt is generated vi the Front Side Bus.
+The HPET-based hardlockup detector relies on the TSC to determine if an
+observed NMI interrupt was originated by HPET timer. Hence, this detector
+can no longer be used with an unstable TSC.
 
-An indirect manner to infer if the non-maskable interrupt we see was
-caused by the HPET timer is to use the time-stamp counter. Compute the
-value that the time-stamp counter should have at the next interrupt of the
-HPET timer. Since the hardlockup detector operates in seconds, high
-precision is not needed. This implementation considers that the HPET
-caused the HMI if the time-stamp counter reads the expected value -/+ 1.5%.
-This value is selected as it is equivalent to 1/64 and the division can be
-performed using a bit shift operation. Experimentally, the error in the
-estimation is consistently less than 1%.
+In such case, permanently stop the HPET-based hardlockup detector and
+start the perf-based detector.
 
-The computation of the expected value of the time-stamp counter must be
-performed in relation to watchdog_thresh divided by the number of
-monitored CPUs. This quantity is stored in tsc_ticks_per_cpu and must be
-updated whenever the number of monitored CPUs changes.
-
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Andi Kleen <andi.kleen@intel.com>
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Clemens Ladisch <clemens@ladisch.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Mimi Zohar <zohar@linux.ibm.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: Nayna Jain <nayna@linux.ibm.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
-Cc: x86@kernel.org
-Suggested-by: Andi Kleen <andi.kleen@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- arch/x86/include/asm/hpet.h         |  2 ++
- arch/x86/kernel/watchdog_hld_hpet.c | 27 ++++++++++++++++++++++++++-
- 2 files changed, 28 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/hpet.h    | 2 ++
+ arch/x86/kernel/tsc.c          | 2 ++
+ arch/x86/kernel/watchdog_hld.c | 7 +++++++
+ 3 files changed, 11 insertions(+)
 
 diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index 64acacce095d..fd99f2390714 100644
+index fd99f2390714..a82cbe17479d 100644
 --- a/arch/x86/include/asm/hpet.h
 +++ b/arch/x86/include/asm/hpet.h
-@@ -115,6 +115,8 @@ struct hpet_hld_data {
- 	u32		num;
- 	u64		ticks_per_second;
- 	u64		ticks_per_cpu;
-+	u64		tsc_next;
-+	u64		tsc_ticks_per_cpu;
- 	u32		handling_cpu;
- 	u32		enabled_cpus;
- 	struct msi_msg	msi_msg;
-diff --git a/arch/x86/kernel/watchdog_hld_hpet.c b/arch/x86/kernel/watchdog_hld_hpet.c
-index 9a3431a54616..6f1f540cfee9 100644
---- a/arch/x86/kernel/watchdog_hld_hpet.c
-+++ b/arch/x86/kernel/watchdog_hld_hpet.c
-@@ -23,6 +23,7 @@
+@@ -128,6 +128,7 @@ extern int hardlockup_detector_hpet_init(void);
+ extern void hardlockup_detector_hpet_stop(void);
+ extern void hardlockup_detector_hpet_enable(unsigned int cpu);
+ extern void hardlockup_detector_hpet_disable(unsigned int cpu);
++extern void hardlockup_detector_switch_to_perf(void);
+ #else
+ static inline struct hpet_hld_data *hpet_hardlockup_detector_assign_timer(void)
+ { return NULL; }
+@@ -136,6 +137,7 @@ static inline int hardlockup_detector_hpet_init(void)
+ static inline void hardlockup_detector_hpet_stop(void) {}
+ static inline void hardlockup_detector_hpet_enable(unsigned int cpu) {}
+ static inline void hardlockup_detector_hpet_disable(unsigned int cpu) {}
++static void harrdlockup_detector_switch_to_perf(void) {}
+ #endif /* CONFIG_X86_HARDLOCKUP_DETECTOR_HPET */
  
- static struct hpet_hld_data *hld_data;
- static bool hardlockup_use_hpet;
-+static u64 tsc_next_error;
+ #else /* CONFIG_HPET_TIMER */
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index 8f47c4862c56..5e4b6d219bec 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -1157,6 +1157,8 @@ void mark_tsc_unstable(char *reason)
  
- /**
-  * kick_timer() - Reprogram timer to expire in the future
-@@ -32,11 +33,22 @@ static bool hardlockup_use_hpet;
-  * Reprogram the timer to expire within watchdog_thresh seconds in the future.
-  * If the timer supports periodic mode, it is not kicked unless @force is
-  * true.
-+ *
-+ * Also, compute the expected value of the time-stamp counter at the time of
-+ * expiration as well as a deviation from the expected value. The maximum
-+ * deviation is of ~1.5%. This deviation can be easily computed by shifting
-+ * by 6 positions the delta between the current and expected time-stamp values.
-  */
- static void kick_timer(struct hpet_hld_data *hdata, bool force)
- {
-+	u64 tsc_curr, tsc_delta, new_compare, count, period = 0;
- 	bool kick_needed = force || !(hdata->has_periodic);
--	u64 new_compare, count, period = 0;
+ 	clocksource_mark_unstable(&clocksource_tsc_early);
+ 	clocksource_mark_unstable(&clocksource_tsc);
 +
-+	tsc_curr = rdtsc();
-+
-+	tsc_delta = (unsigned long)watchdog_thresh * hdata->tsc_ticks_per_cpu;
-+	hdata->tsc_next = tsc_curr + tsc_delta;
-+	tsc_next_error = tsc_delta >> 6;
- 
- 	/*
- 	 * Update the comparator in increments of watch_thresh seconds relative
-@@ -92,6 +104,15 @@ static void enable_timer(struct hpet_hld_data *hdata)
-  */
- static bool is_hpet_wdt_interrupt(struct hpet_hld_data *hdata)
- {
-+	if (smp_processor_id() == hdata->handling_cpu) {
-+		u64 tsc_curr;
-+
-+		tsc_curr = rdtsc();
-+
-+		return (tsc_curr - hdata->tsc_next) + tsc_next_error <
-+		       2 * tsc_next_error;
-+	}
-+
- 	return false;
++	hardlockup_detector_switch_to_perf();
  }
  
-@@ -259,6 +280,10 @@ static void update_ticks_per_cpu(struct hpet_hld_data *hdata)
- 
- 	do_div(temp, hdata->enabled_cpus);
- 	hdata->ticks_per_cpu = temp;
-+
-+	temp = (unsigned long)tsc_khz * 1000L;
-+	do_div(temp, hdata->enabled_cpus);
-+	hdata->tsc_ticks_per_cpu = temp;
+ EXPORT_SYMBOL_GPL(mark_tsc_unstable);
+diff --git a/arch/x86/kernel/watchdog_hld.c b/arch/x86/kernel/watchdog_hld.c
+index c2512d4c79c5..c8547c227a41 100644
+--- a/arch/x86/kernel/watchdog_hld.c
++++ b/arch/x86/kernel/watchdog_hld.c
+@@ -76,3 +76,10 @@ void watchdog_nmi_stop(void)
+ 	if (detector_type == X86_HARDLOCKUP_DETECTOR_HPET)
+ 		hardlockup_detector_hpet_stop();
  }
- 
- /**
++
++void hardlockup_detector_switch_to_perf(void)
++{
++	detector_type = X86_HARDLOCKUP_DETECTOR_PERF;
++	hardlockup_detector_hpet_stop();
++	hardlockup_start_all();
++}
 -- 
 2.17.1
 
