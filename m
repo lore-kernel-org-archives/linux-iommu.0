@@ -6,27 +6,27 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BF4C04AB4
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3FDC04AB4
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 449F021537
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 449F021537
+	by mail.kernel.org (Postfix) with ESMTPS id 7781421537
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:05:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7781421537
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 06165EA3;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3525DEA5;
 	Tue, 14 May 2019 14:03:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4E046C2A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 69775E7F
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 14 May 2019 14:03:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 70B0E83A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CEC1787A
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 14 May 2019 14:03:02 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
@@ -40,19 +40,27 @@ Received: from unknown (HELO luv-build.sc.intel.com) ([172.25.110.25])
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>,
 	Borislav Petkov <bp@suse.de>
-Subject: [RFC PATCH v3 17/21] x86/tsc: Switch to perf-based hardlockup
-	detector if TSC become unstable
-Date: Tue, 14 May 2019 07:02:10 -0700
-Message-Id: <1557842534-4266-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v3 18/21] x86/apic: Add a parameter for the APIC delivery
+	mode
+Date: Tue, 14 May 2019 07:02:11 -0700
+Message-Id: <1557842534-4266-19-git-send-email-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-	Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+	Peter Zijlstra <peterz@infradead.org>, Jan Kiszka <jan.kiszka@siemens.com>,
+	Ricardo Neri <ricardo.neri@intel.com>,
+	Stephane Eranian <eranian@google.com>, Wincy Van <fanwenyi0529@gmail.com>,
+	Ashok Raj <ashok.raj@intel.com>, x86@kernel.org,
+	Andi Kleen <andi.kleen@intel.com>,
+	"Eric W. Biederman" <ebiederm@xmission.com>,
+	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
 	Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	Ricardo Neri <ricardo.neri@intel.com>, iommu@lists.linux-foundation.org,
-	Andi Kleen <andi.kleen@intel.com>
+	Bjorn Helgaas <bhelgaas@google.com>, Juergen Gross <jgross@suse.com>,
+	Dou Liyang <douly.fnst@cn.fujitsu.com>,
+	Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
+	Philippe Ombredanne <pombredanne@nexb.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,68 +79,103 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The HPET-based hardlockup detector relies on the TSC to determine if an
-observed NMI interrupt was originated by HPET timer. Hence, this detector
-can no longer be used with an unstable TSC.
+Until now, the delivery mode of APIC interrupts is set to the default
+mode set in the APIC driver. However, there are no restrictions in hardware
+to configure each interrupt with a different delivery mode. Specifying the
+delivery mode per interrupt is useful when one is interested in changing
+the delivery mode of a particular interrupt. For instance, this can be used
+to deliver an interrupt as non-maskable.
 
-In such case, permanently stop the HPET-based hardlockup detector and
-start the perf-based detector.
+Add a new member, delivery_mode, to struct irq_cfg. This new member, can
+be used to update the configuration of the delivery mode in each interrupt
+domain. Likewise, add equivalent macros to populate MSI messages.
 
+Currently, all interrupt domains set the delivery mode of interrupts using
+the APIC setting. Interrupt domains use an irq_cfg data structure to
+configure their own data structures and hardware resources. Thus, in order
+to keep the current behavior, set the delivery mode of the irq
+configuration that as the APIC setting. In this manner, irq domains can
+obtain the delivery mode from the irq configuration data instead of the
+APIC setting, if needed.
+
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Andi Kleen <andi.kleen@intel.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Jacob Pan <jacob.jun.pan@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Wincy Van <fanwenyi0529@gmail.com>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: Dou Liyang <douly.fnst@cn.fujitsu.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+Cc: x86@kernel.org
+Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- arch/x86/include/asm/hpet.h    | 2 ++
- arch/x86/kernel/tsc.c          | 2 ++
- arch/x86/kernel/watchdog_hld.c | 7 +++++++
- 3 files changed, 11 insertions(+)
+ arch/x86/include/asm/hw_irq.h |  5 +++--
+ arch/x86/include/asm/msidef.h |  3 +++
+ arch/x86/kernel/apic/vector.c | 10 ++++++++++
+ 3 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index fd99f2390714..a82cbe17479d 100644
---- a/arch/x86/include/asm/hpet.h
-+++ b/arch/x86/include/asm/hpet.h
-@@ -128,6 +128,7 @@ extern int hardlockup_detector_hpet_init(void);
- extern void hardlockup_detector_hpet_stop(void);
- extern void hardlockup_detector_hpet_enable(unsigned int cpu);
- extern void hardlockup_detector_hpet_disable(unsigned int cpu);
-+extern void hardlockup_detector_switch_to_perf(void);
- #else
- static inline struct hpet_hld_data *hpet_hardlockup_detector_assign_timer(void)
- { return NULL; }
-@@ -136,6 +137,7 @@ static inline int hardlockup_detector_hpet_init(void)
- static inline void hardlockup_detector_hpet_stop(void) {}
- static inline void hardlockup_detector_hpet_enable(unsigned int cpu) {}
- static inline void hardlockup_detector_hpet_disable(unsigned int cpu) {}
-+static void harrdlockup_detector_switch_to_perf(void) {}
- #endif /* CONFIG_X86_HARDLOCKUP_DETECTOR_HPET */
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index 32e666e1231e..c024e5976b78 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -117,8 +117,9 @@ struct irq_alloc_info {
+ };
  
- #else /* CONFIG_HPET_TIMER */
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index 8f47c4862c56..5e4b6d219bec 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1157,6 +1157,8 @@ void mark_tsc_unstable(char *reason)
+ struct irq_cfg {
+-	unsigned int		dest_apicid;
+-	unsigned int		vector;
++	unsigned int				dest_apicid;
++	unsigned int				vector;
++	enum ioapic_irq_destination_types	delivery_mode;
+ };
  
- 	clocksource_mark_unstable(&clocksource_tsc_early);
- 	clocksource_mark_unstable(&clocksource_tsc);
+ extern struct irq_cfg *irq_cfg(unsigned int irq);
+diff --git a/arch/x86/include/asm/msidef.h b/arch/x86/include/asm/msidef.h
+index 38ccfdc2d96e..6d666c90f057 100644
+--- a/arch/x86/include/asm/msidef.h
++++ b/arch/x86/include/asm/msidef.h
+@@ -16,6 +16,9 @@
+ 					 MSI_DATA_VECTOR_MASK)
+ 
+ #define MSI_DATA_DELIVERY_MODE_SHIFT	8
++#define MSI_DATA_DELIVERY_MODE_MASK	0x00000700
++#define MSI_DATA_DELIVERY_MODE(dm)	(((dm) << MSI_DATA_DELIVERY_MODE_SHIFT) & \
++					 MSI_DATA_DELIVERY_MODE_MASK)
+ #define  MSI_DATA_DELIVERY_FIXED	(0 << MSI_DATA_DELIVERY_MODE_SHIFT)
+ #define  MSI_DATA_DELIVERY_LOWPRI	(1 << MSI_DATA_DELIVERY_MODE_SHIFT)
+ #define  MSI_DATA_DELIVERY_NMI		(4 << MSI_DATA_DELIVERY_MODE_SHIFT)
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 3173e07d3791..99436fe7e932 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -548,6 +548,16 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
+ 		irqd->chip_data = apicd;
+ 		irqd->hwirq = virq + i;
+ 		irqd_set_single_target(irqd);
 +
-+	hardlockup_detector_switch_to_perf();
- }
- 
- EXPORT_SYMBOL_GPL(mark_tsc_unstable);
-diff --git a/arch/x86/kernel/watchdog_hld.c b/arch/x86/kernel/watchdog_hld.c
-index c2512d4c79c5..c8547c227a41 100644
---- a/arch/x86/kernel/watchdog_hld.c
-+++ b/arch/x86/kernel/watchdog_hld.c
-@@ -76,3 +76,10 @@ void watchdog_nmi_stop(void)
- 	if (detector_type == X86_HARDLOCKUP_DETECTOR_HPET)
- 		hardlockup_detector_hpet_stop();
- }
++		/*
++		 * Initialize the delivery mode of this irq to match the
++		 * default delivery mode of the APIC. This is useful for
++		 * children irq domains which want to take the delivery
++		 * mode from the individual irq configuration rather
++		 * than from the APIC.
++		 */
++		 apicd->hw_irq_cfg.delivery_mode = apic->irq_delivery_mode;
 +
-+void hardlockup_detector_switch_to_perf(void)
-+{
-+	detector_type = X86_HARDLOCKUP_DETECTOR_PERF;
-+	hardlockup_detector_hpet_stop();
-+	hardlockup_start_all();
-+}
+ 		/*
+ 		 * Legacy vectors are already assigned when the IOAPIC
+ 		 * takes them over. They stay on the same vector. This is
 -- 
 2.17.1
 
