@@ -1,62 +1,87 @@
-Return-Path: <SRS0=HAYh=TN=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=TkeE=TO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B282FC04AB1
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 22:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C84C04AAA
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 01:54:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F30621473
-	for <iommu@archiver.kernel.org>; Mon, 13 May 2019 22:13:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F30621473
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 425E5214C6
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 01:54:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hf5dvgxb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 425E5214C6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3FFFBB88;
-	Mon, 13 May 2019 22:13:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E9B75DB5;
+	Tue, 14 May 2019 01:54:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 96BDFA95
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 90B5DD56
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 22:13:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2BBA384F
+	Tue, 14 May 2019 01:54:18 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AEECA27B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 22:13:46 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	13 May 2019 15:13:45 -0700
-X-ExtLoop1: 1
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga001.jf.intel.com with ESMTP; 13 May 2019 15:13:44 -0700
-Date: Mon, 13 May 2019 15:16:37 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v3 02/16] iommu: Introduce cache_invalidate API
-Message-ID: <20190513151637.79c273e2@jacob-builder>
-In-Reply-To: <1a5a5fad-ed21-5c79-9a9e-ff21fadfb95f@arm.com>
-References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556922737-76313-3-git-send-email-jacob.jun.pan@linux.intel.com>
-	<d32d3d19-11c9-4af9-880b-bb8ebefd4f7f@redhat.com>
-	<44d5ba37-a9e9-cc7a-2a3a-d32b840afa29@arm.com>
-	<7807afe9-efab-9f48-4ca0-2332a7a54950@redhat.com>
-	<1a5a5fad-ed21-5c79-9a9e-ff21fadfb95f@arm.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Tue, 14 May 2019 01:54:17 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id b8so20358868edm.11
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 13 May 2019 18:54:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=oJTciUBqLw6+VYQPo9LgfDntBzoqnhF9HaeX08QgSPc=;
+	b=Hf5dvgxbzZDy/nUCh6WREXgCdmnsqQqs9yDXE/AMxAnWv5bjbVKxl7vYd17rbAdh6M
+	i7WdnJkAZPR/EGWh9YwlCE8zyTpRv32TC7gse0SVZjdXqaBEB132hWLBEE/dWTR/In4V
+	WoU+N+PEDuHj0jauuIxuLRppu/csxHCT+v4d09Vb/P9XyV5b9dfMwOndZoDI8C2iR9Fn
+	YORL5ggTkGvppRRw8PMdQZUrQC2vySetCcf1fhEgwUy1s2OOc7ZJeYv6r5vMU4g+urD9
+	47+vApdVszVXOsiYDg8G8d8tKw4qNBAVKX32zbETS+Oh3j/vuKTz1crnz6c5jBjUY2Ap
+	kydw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=oJTciUBqLw6+VYQPo9LgfDntBzoqnhF9HaeX08QgSPc=;
+	b=JFoyC7/nOTCfPZDVah3KiLf3yXb6xEH5RQQZ12IZN89RDgCCI3IBUlsxGT0thGzBX6
+	1n86PW5yhnhdFjR5ojZhI4iFcfPJJq1zEeA4arge0J7Jabxkiwe8mfblgD2zTdh9nSYE
+	onc1RSs+7ckUeCkP3CTGoXo1vx4mwvSrsl6TFIaWm6K84XPfulkNXmIjUXe/PRznNLTV
+	6eXQGR7yJbACHf+qRRYPafp6MInumuBr5Gnn068ETQZSm8LuTsebbsM18mnSoTnkn/HC
+	o5vLCuvlE7n+qbbLV0FeU+hEqEGMLGZoV0c6H03ZEHdsjY7eBow2f/uf7DssqD5Ab07o
+	N08g==
+X-Gm-Message-State: APjAAAXfPJ1XYlDC208qGbqce7x4Dq84Q5mIYSWOCOhbX68TKFQLP+ii
+	TpZovDSnVw3B21KlwaaNkltzQD27t8q7/cWXWNA=
+X-Google-Smtp-Source: APXvYqwtjwbA6ugaUY4XzcsNk6VWZorMnP/TGvu7pzPTN7g769c186jM+tAHFc0r++Gvo/m+W7Lbz2AQ3ErPJI2Gyk8=
+X-Received: by 2002:a17:906:4e56:: with SMTP id
+	g22mr17944472ejw.51.1557798856169; 
+	Mon, 13 May 2019 18:54:16 -0700 (PDT)
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+References: <20170914194444.32551-1-robdclark@gmail.com>
+	<20170919123038.GF8398@8bytes.org>
+	<CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
+	<20170922090204.GJ8398@8bytes.org>
+	<32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
+	<CAF6AEGuepdKo1Ob2jW66UhYXOTAqOMc3C-XKsK3Rze1QdLobLw@mail.gmail.com>
+	<571e825d-7f54-2da4-adc0-6b6ac6dae459@arm.com>
+In-Reply-To: <571e825d-7f54-2da4-adc0-6b6ac6dae459@arm.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Mon, 13 May 2019 18:54:03 -0700
+Message-ID: <CAF6AEGtJRYvSLw+Cc6XaHEN58Ne2_StTojN9_e6+aJZSfX_dVg@mail.gmail.com>
+Subject: Re: [RFC] iommu: arm-smmu: stall support
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <Will.Deacon@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,47 +99,148 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, 13 May 2019 18:09:48 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+On Mon, May 13, 2019 at 11:37 AM Jean-Philippe Brucker
+<jean-philippe.brucker@arm.com> wrote:
+>
+> Hi Rob,
+>
+> On 10/05/2019 19:23, Rob Clark wrote:
+> > On Fri, Sep 22, 2017 at 2:58 AM Jean-Philippe Brucker
+> > <jean-philippe.brucker@arm.com> wrote:
+> >>
+> >> On 22/09/17 10:02, Joerg Roedel wrote:
+> >>> On Tue, Sep 19, 2017 at 10:23:43AM -0400, Rob Clark wrote:
+> >>>> I would like to decide in the IRQ whether or not to queue work or not,
+> >>>> because when we get a gpu fault, we tend to get 1000's of gpu faults
+> >>>> all at once (and I really only need to handle the first one).  I
+> >>>> suppose that could also be achieved by having a special return value
+> >>>> from the fault handler to say "call me again from a wq"..
+> >>>>
+> >>>> Note that in the drm driver I already have a suitable wq to queue the
+> >>>> work, so it really doesn't buy me anything to have the iommu driver
+> >>>> toss things off to a wq for me.  Might be a different situation for
+> >>>> other drivers (but I guess mostly other drivers are using iommu API
+> >>>> indirectly via dma-mapping?)
+> >>>
+> >>> Okay, so since you are the only user for now, we don't need a
+> >>> work-queue. But I still want the ->resume call-back to be hidden in the
+> >>> iommu code and not be exposed to users.
+> >>>
+> >>> We already have per-domain fault-handlers, so the best solution for now
+> >>> is to call ->resume from report_iommu_fault() when the fault-handler
+> >>> returns a special value.
+> >>
+> >> The problem is that report_iommu_fault is called from IRQ context by the
+> >> SMMU driver, so the device driver callback cannot sleep.
+> >>
+> >> So if the device driver needs to be able to sleep between fault report and
+> >> resume, as I understand Rob needs for writing debugfs, we can either:
+> >>
+> >> * call report_iommu_fault from higher up, in a thread or workqueue.
+> >> * split the fault reporting as this patch proposes. The exact same
+> >>   mechanism is needed for the vSVM work by Intel: in order to inject fault
+> >>   into the guest, they would like to have an atomic notifier registered by
+> >>   VFIO for passing down the Page Request, and a new function in the IOMMU
+> >>   API to resume/complete the fault.
+> >>
+> >
+> > So I was thinking about this topic again.. I would still like to get
+> > some sort of async resume so that I can wire up GPU cmdstream/state
+> > logging on iommu fault (without locally resurrecting and rebasing this
+> > patch and drm/msm side changes each time I need to debug iommu
+> > faults)..
+>
+> We've been working on the new fault reporting API with Jacob and Eric,
+> and I intend to send it out soon. It is supposed to be used for
+> reporting faults to guests via VFIO, handling page faults via mm, and
+> also reporting events directly to device drivers. Please let us know
+> what works and what doesn't in your case
+>
+> The most recent version of the patches is at
+> http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/api
+> (git://www.linux-arm.org/linux-jpb.git branch sva/api). Hopefully on the
+> list sometimes next week, I'll add you on Cc.
+>
+> In particular, see commits
+>         iommu: Introduce device fault data
+>         iommu: Introduce device fault report API
+>         iommu: Add recoverable fault reporting
+>
+> The device driver calls iommu_register_device_fault_handler(dev, cb,
+> data). To report a fault, the SMMU driver calls
+> iommu_report_device_fault(dev, fault). This calls into the device driver
+> directly, there isn't any workqueue. If the fault is recoverable (the
+> SMMU driver set type IOMMU_FAULT_PAGE_REQ rather than
+> IOMMU_FAULT_DMA_UNRECOV), the device driver calls iommu_page_response()
+> once it has dealt with the fault (after sleeping if it needs to). This
+> invokes the SMMU driver's resume callback.
 
-> On 13/05/2019 17:50, Auger Eric wrote:
-> >> struct iommu_inv_pasid_info {
-> >> #define IOMMU_INV_PASID_FLAGS_PASID	(1 << 0)
-> >> #define IOMMU_INV_PASID_FLAGS_ARCHID	(1 << 1)
-> >> 	__u32	flags;
-> >> 	__u32	archid;
-> >> 	__u64	pasid;
-> >> };  
-> > I agree it does the job now. However it looks a bit strange to do a
-> > PASID based invalidation in my case - SMMUv3 nested stage - where I
-> > don't have any PASID involved.
-> > 
-> > Couldn't we call it context based invalidation then? A context can
-> > be tagged by a PASID or/and an ARCHID.  
-> 
-> I think calling it "context" would be confusing as well (I shouldn't
-> have used it earlier), since VT-d uses that name for device table
-> entries (=STE on Arm SMMU). Maybe "addr_space"?
-> 
-I am still struggling to understand what ARCHID is after scanning
-through SMMUv3.1 spec. It seems to be a constant for a given SMMU. Why
-do you need to pass it down every time? Could you point to me the
-document or explain a little more on ARCHID use cases.
-We have three fileds called pasid under this struct
-iommu_cache_invalidate_info{}
-Gets confusing :)
+Ok, this sounds at a high level similar to my earlier RFC, in that
+resume is split (and that was the main thing I was interested in).
+And it does solve one thing I was struggling with, namely that when
+the domain is created it doesn't know which iommu device it will be
+attached to (given that at least the original arm-smmu.c driver cannot
+support stall in all cases)..
+
+For GPU translation faults, I also don't really need to know if the
+faulting translation is stalled until the callback (I mainly want to
+not bother to snapshot GPU state if it is not stalled, because in that
+case the data we snapshot is unlikely to be related to the fault if
+the translation is not stalled).
+
+> At the moment we use mutexes, so iommu_report_device_fault() can only be
+> called from an IRQ thread, which is incompatible with the current SMMUv2
+> driver. Either we need to switch the SMMUv2 driver to an IRQ thread, or
+> rework the fault handler to be called from an IRQ handler. The reporting
+> also has to be per device rather than per domain, and I'm not sure if
+> the SMMUv2 driver can deal with this.
+
+I'll take a closer look at the branch and try to formulate some plan
+to add v2 support for this.
+
+For my cases, the GPU always has it's own iommu device, while display
+and other blocks share an apps_smmu.. although this sort of
+functionality isn't really required outside of the GPU.. but I'll have
+to think a bit about how we can support both cases in the single v2
+driver.
+
+BR,
+-R
+
+>
+> >
+> > And I do still prefer the fault cb in irq (or not requiring it in
+> > wq)..  but on thinking about it, the two ideas aren't entirely
+> > conflicting, ie. add some flags either when we register handler[1], or
+> > they could be handled thru domain_set_attr, like:
+> >
+> >  _EXPLICIT_RESUME - iommu API user calls iommu_domain_resume(),
+> > potentialy from wq/thread after fault handler returns
+> >  _HANDLER_SLEEPS  - iommu core handles the wq, and calls ops->resume()
+> > internally
+> >
+> > In both cases, from the iommu driver PoV it just implements
+> > iommu_ops::resume().. in first case it is called via iommu user either
+> > from the fault handler or at some point later (ie. wq or thread).
+> >
+> > I don't particularly need the _HANDLER_SLEEPS case (unless I can't
+> > convince anyone that iommu_domamin_resume() called from outside iommu
+> > core is a good idea).. so probably I wouldn't wire up the wq plumbing
+> > for the _HANDLER_SLEEPS case unless someone really wanted me to.
+> >
+> > Since there are more iommu drivers, than places that register fault
+> > handlers, I like the idea that in either case, from the driver PoV, it
+> > is just implementing the resume callback.
+> >
+> > [1] currently I only see a few places where fault handlers are
+> > registered, so changing iommu_set_fault_handler() is really not much
+> > churn
+>
+> At the moment we're keeping the new fault reporting mechanism separate
+> from iommu_set_fault_handler()/report_iommu_fault(), to ease the transition.
+>
 > Thanks,
 > Jean
-> 
-> > 
-> > Domain invalidation would invalidate all the contexts belonging to
-> > that domain.
-> > 
-> > Thanks
-> > 
-> > Eric  
-
-[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
