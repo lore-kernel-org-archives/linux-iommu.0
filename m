@@ -2,86 +2,90 @@ Return-Path: <SRS0=TkeE=TO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C84C04AAA
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 01:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0282C04AB6
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 06:56:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 425E5214C6
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 01:54:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 812A32086A
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 06:56:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hf5dvgxb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 425E5214C6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="dZyWU/AD";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="gZDflyB4"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 812A32086A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E9B75DB5;
-	Tue, 14 May 2019 01:54:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 58C58D7D;
+	Tue, 14 May 2019 06:56:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 90B5DD56
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4A594B88
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 14 May 2019 01:54:18 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
-	[209.85.208.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AEECA27B
+	Tue, 14 May 2019 06:56:45 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9833D27B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 14 May 2019 01:54:17 +0000 (UTC)
-Received: by mail-ed1-f67.google.com with SMTP id b8so20358868edm.11
+	Tue, 14 May 2019 06:56:44 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 5761A6087A; Tue, 14 May 2019 06:56:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1557817004;
+	bh=YbCMg9q9sBLc3fJxn2hqKhzGhuLKnHO2+q9S7K7wCHA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=dZyWU/ADL2RCQyPBCqAxU4A7rz/yRRyARGCk8UuRBILKHiwTw91jvmyc+GQxd0aSk
+	8KYTvZhTGAzESJRBsOyxaZJpcBrEJP3jU+hhFGMog0XTpfDjkiQS5MbRiNMcidXhlw
+	Oouz57Ii9o0G3QebV0Uc/HNVPhiMfqf0mcud+6GM=
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com
+	[209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id A7DAB608A5
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 13 May 2019 18:54:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=oJTciUBqLw6+VYQPo9LgfDntBzoqnhF9HaeX08QgSPc=;
-	b=Hf5dvgxbzZDy/nUCh6WREXgCdmnsqQqs9yDXE/AMxAnWv5bjbVKxl7vYd17rbAdh6M
-	i7WdnJkAZPR/EGWh9YwlCE8zyTpRv32TC7gse0SVZjdXqaBEB132hWLBEE/dWTR/In4V
-	WoU+N+PEDuHj0jauuIxuLRppu/csxHCT+v4d09Vb/P9XyV5b9dfMwOndZoDI8C2iR9Fn
-	YORL5ggTkGvppRRw8PMdQZUrQC2vySetCcf1fhEgwUy1s2OOc7ZJeYv6r5vMU4g+urD9
-	47+vApdVszVXOsiYDg8G8d8tKw4qNBAVKX32zbETS+Oh3j/vuKTz1crnz6c5jBjUY2Ap
-	kydw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=oJTciUBqLw6+VYQPo9LgfDntBzoqnhF9HaeX08QgSPc=;
-	b=JFoyC7/nOTCfPZDVah3KiLf3yXb6xEH5RQQZ12IZN89RDgCCI3IBUlsxGT0thGzBX6
-	1n86PW5yhnhdFjR5ojZhI4iFcfPJJq1zEeA4arge0J7Jabxkiwe8mfblgD2zTdh9nSYE
-	onc1RSs+7ckUeCkP3CTGoXo1vx4mwvSrsl6TFIaWm6K84XPfulkNXmIjUXe/PRznNLTV
-	6eXQGR7yJbACHf+qRRYPafp6MInumuBr5Gnn068ETQZSm8LuTsebbsM18mnSoTnkn/HC
-	o5vLCuvlE7n+qbbLV0FeU+hEqEGMLGZoV0c6H03ZEHdsjY7eBow2f/uf7DssqD5Ab07o
-	N08g==
-X-Gm-Message-State: APjAAAXfPJ1XYlDC208qGbqce7x4Dq84Q5mIYSWOCOhbX68TKFQLP+ii
-	TpZovDSnVw3B21KlwaaNkltzQD27t8q7/cWXWNA=
-X-Google-Smtp-Source: APXvYqwtjwbA6ugaUY4XzcsNk6VWZorMnP/TGvu7pzPTN7g769c186jM+tAHFc0r++Gvo/m+W7Lbz2AQ3ErPJI2Gyk8=
-X-Received: by 2002:a17:906:4e56:: with SMTP id
-	g22mr17944472ejw.51.1557798856169; 
-	Mon, 13 May 2019 18:54:16 -0700 (PDT)
+	Tue, 14 May 2019 06:56:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1557817003;
+	bh=YbCMg9q9sBLc3fJxn2hqKhzGhuLKnHO2+q9S7K7wCHA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=gZDflyB4sz8QNmCF1TST2PdBum6IwkE2DRD1xlKUiKeZxNuEKhaO0foXHjVT0bz9i
+	XVdkMMZoT1d/scVJnMxmFFl4h0nLCOTHyyPpD4oVoV6yWiqkOBrE204Yy3rGSVVaQe
+	xWPn7RSz/ATmoIYXDrgyMWYZlONjE5B9HAmhtvfA=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A7DAB608A5
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
+Received: by mail-ed1-f48.google.com with SMTP id w33so21283495edb.10
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 13 May 2019 23:56:42 -0700 (PDT)
+X-Gm-Message-State: APjAAAXlR06mei/NDaaXY7lflzNvWJn5EZa5+vOBwg4hMvDXXgM3apyc
+	7Esnd4CDj8EGgBYGw56e33Bzz5xKdXYxSTZcac0=
+X-Google-Smtp-Source: APXvYqxdecIIrC9t9SvKavda81uHlDzBZ7FRquT0EGiRV7bOSzF8qWkN9acHi6LQaNpyPTJhBKy5kqxAj3Nt0mkmn64=
+X-Received: by 2002:aa7:d381:: with SMTP id x1mr34647046edq.251.1557817001406; 
+	Mon, 13 May 2019 23:56:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20170914194444.32551-1-robdclark@gmail.com>
-	<20170919123038.GF8398@8bytes.org>
-	<CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
-	<20170922090204.GJ8398@8bytes.org>
-	<32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
-	<CAF6AEGuepdKo1Ob2jW66UhYXOTAqOMc3C-XKsK3Rze1QdLobLw@mail.gmail.com>
-	<571e825d-7f54-2da4-adc0-6b6ac6dae459@arm.com>
-In-Reply-To: <571e825d-7f54-2da4-adc0-6b6ac6dae459@arm.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 13 May 2019 18:54:03 -0700
-Message-ID: <CAF6AEGtJRYvSLw+Cc6XaHEN58Ne2_StTojN9_e6+aJZSfX_dVg@mail.gmail.com>
-Subject: Re: [RFC] iommu: arm-smmu: stall support
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-	Will Deacon <Will.Deacon@arm.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+References: <20190513100403.18981-1-vivek.gautam@codeaurora.org>
+	<dc53456d-027e-0ede-1ce9-1efa476937a9@arm.com>
+In-Reply-To: <dc53456d-027e-0ede-1ce9-1efa476937a9@arm.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Date: Tue, 14 May 2019 12:26:30 +0530
+X-Gmail-Original-Message-ID: <CAFp+6iH0f+uUCWjS738M_W0bW7eF2=DSu9rtEbexCoWio+TZsQ@mail.gmail.com>
+Message-ID: <CAFp+6iH0f+uUCWjS738M_W0bW7eF2=DSu9rtEbexCoWio+TZsQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/1] iommu/io-pgtable-arm: Add support to use system
+	cache
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <will.deacon@arm.com>,
+	open list <linux-kernel@vger.kernel.org>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	" <iommu@lists.linux-foundation.org>, pratikp@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -99,148 +103,181 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, May 13, 2019 at 11:37 AM Jean-Philippe Brucker
-<jean-philippe.brucker@arm.com> wrote:
->
-> Hi Rob,
->
-> On 10/05/2019 19:23, Rob Clark wrote:
-> > On Fri, Sep 22, 2017 at 2:58 AM Jean-Philippe Brucker
-> > <jean-philippe.brucker@arm.com> wrote:
-> >>
-> >> On 22/09/17 10:02, Joerg Roedel wrote:
-> >>> On Tue, Sep 19, 2017 at 10:23:43AM -0400, Rob Clark wrote:
-> >>>> I would like to decide in the IRQ whether or not to queue work or not,
-> >>>> because when we get a gpu fault, we tend to get 1000's of gpu faults
-> >>>> all at once (and I really only need to handle the first one).  I
-> >>>> suppose that could also be achieved by having a special return value
-> >>>> from the fault handler to say "call me again from a wq"..
-> >>>>
-> >>>> Note that in the drm driver I already have a suitable wq to queue the
-> >>>> work, so it really doesn't buy me anything to have the iommu driver
-> >>>> toss things off to a wq for me.  Might be a different situation for
-> >>>> other drivers (but I guess mostly other drivers are using iommu API
-> >>>> indirectly via dma-mapping?)
-> >>>
-> >>> Okay, so since you are the only user for now, we don't need a
-> >>> work-queue. But I still want the ->resume call-back to be hidden in the
-> >>> iommu code and not be exposed to users.
-> >>>
-> >>> We already have per-domain fault-handlers, so the best solution for now
-> >>> is to call ->resume from report_iommu_fault() when the fault-handler
-> >>> returns a special value.
-> >>
-> >> The problem is that report_iommu_fault is called from IRQ context by the
-> >> SMMU driver, so the device driver callback cannot sleep.
-> >>
-> >> So if the device driver needs to be able to sleep between fault report and
-> >> resume, as I understand Rob needs for writing debugfs, we can either:
-> >>
-> >> * call report_iommu_fault from higher up, in a thread or workqueue.
-> >> * split the fault reporting as this patch proposes. The exact same
-> >>   mechanism is needed for the vSVM work by Intel: in order to inject fault
-> >>   into the guest, they would like to have an atomic notifier registered by
-> >>   VFIO for passing down the Page Request, and a new function in the IOMMU
-> >>   API to resume/complete the fault.
-> >>
-> >
-> > So I was thinking about this topic again.. I would still like to get
-> > some sort of async resume so that I can wire up GPU cmdstream/state
-> > logging on iommu fault (without locally resurrecting and rebasing this
-> > patch and drm/msm side changes each time I need to debug iommu
-> > faults)..
->
-> We've been working on the new fault reporting API with Jacob and Eric,
-> and I intend to send it out soon. It is supposed to be used for
-> reporting faults to guests via VFIO, handling page faults via mm, and
-> also reporting events directly to device drivers. Please let us know
-> what works and what doesn't in your case
->
-> The most recent version of the patches is at
-> http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/api
-> (git://www.linux-arm.org/linux-jpb.git branch sva/api). Hopefully on the
-> list sometimes next week, I'll add you on Cc.
->
-> In particular, see commits
->         iommu: Introduce device fault data
->         iommu: Introduce device fault report API
->         iommu: Add recoverable fault reporting
->
-> The device driver calls iommu_register_device_fault_handler(dev, cb,
-> data). To report a fault, the SMMU driver calls
-> iommu_report_device_fault(dev, fault). This calls into the device driver
-> directly, there isn't any workqueue. If the fault is recoverable (the
-> SMMU driver set type IOMMU_FAULT_PAGE_REQ rather than
-> IOMMU_FAULT_DMA_UNRECOV), the device driver calls iommu_page_response()
-> once it has dealt with the fault (after sleeping if it needs to). This
-> invokes the SMMU driver's resume callback.
+Hi Robin,
 
-Ok, this sounds at a high level similar to my earlier RFC, in that
-resume is split (and that was the main thing I was interested in).
-And it does solve one thing I was struggling with, namely that when
-the domain is created it doesn't know which iommu device it will be
-attached to (given that at least the original arm-smmu.c driver cannot
-support stall in all cases)..
 
-For GPU translation faults, I also don't really need to know if the
-faulting translation is stalled until the callback (I mainly want to
-not bother to snapshot GPU state if it is not stalled, because in that
-case the data we snapshot is unlikely to be related to the fault if
-the translation is not stalled).
+On Mon, May 13, 2019 at 5:02 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 13/05/2019 11:04, Vivek Gautam wrote:
+> > Few Qualcomm platforms such as, sdm845 have an additional outer
+> > cache called as System cache, aka. Last level cache (LLC) that
+> > allows non-coherent devices to upgrade to using caching.
+> > This cache sits right before the DDR, and is tightly coupled
+> > with the memory controller. The clients using this cache request
+> > their slices from this system cache, make it active, and can then
+> > start using it.
+> >
+> > There is a fundamental assumption that non-coherent devices can't
+> > access caches. This change adds an exception where they *can* use
+> > some level of cache despite still being non-coherent overall.
+> > The coherent devices that use cacheable memory, and CPU make use of
+> > this system cache by default.
+> >
+> > Looking at memory types, we have following -
+> > a) Normal uncached :- MAIR 0x44, inner non-cacheable,
+> >                        outer non-cacheable;
+> > b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
+> >                        outer read write-back non-transient;
+> >                        attribute setting for coherenet I/O devices.
+> > and, for non-coherent i/o devices that can allocate in system cache
+> > another type gets added -
+> > c) Normal sys-cached :- MAIR 0xf4, inner non-cacheable,
+> >                          outer read write-back non-transient
+> >
+> > Coherent I/O devices use system cache by marking the memory as
+> > normal cached.
+> > Non-coherent I/O devices should mark the memory as normal
+> > sys-cached in page tables to use system cache.
+> >
+> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> > ---
+> >
+> > V3 version of this patch and related series can be found at [1].
+> >
+> > This change is a realisation of following changes from downstream msm-4.9:
+> > iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[2]
+> >
+> > Changes since v3:
+> >   - Dropping support to cache i/o page tables to system cache. Getting support
+> >     for data buffers is the first step.
+> >     Removed io-pgtable quirk and related change to add domain attribute.
+> >
+> > Glmark2 numbers on SDM845 based cheza board:
+> >
+> > S.No.|        with LLC support   |    without LLC support
+> >       |       for data buffers   |
+> > ---------------------------------------------------
+> > 1    |        4480; 72.3fps      |    4042; 65.2fps
+> > 2    |        4500; 72.6fps      |    4039; 65.1fps
+> > 3    |        4523; 72.9fps      |    4106; 66.2fps
+> > 4    |        4489; 72.4fps      |    4104; 66.2fps
+> > 5    |        4518; 72.9fps      |    4072; 65.7fps
+> >
+> > [1] https://patchwork.kernel.org/cover/10772629/
+> > [2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
+> >
+> >   drivers/iommu/io-pgtable-arm.c | 9 ++++++++-
+> >   include/linux/iommu.h          | 1 +
+> >   2 files changed, 9 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index d3700ec15cbd..2dbafe697531 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -167,10 +167,12 @@
+> >   #define ARM_LPAE_MAIR_ATTR_MASK             0xff
+> >   #define ARM_LPAE_MAIR_ATTR_DEVICE   0x04
+> >   #define ARM_LPAE_MAIR_ATTR_NC               0x44
+> > +#define ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE    0xf4
+> >   #define ARM_LPAE_MAIR_ATTR_WBRWA    0xff
+> >   #define ARM_LPAE_MAIR_ATTR_IDX_NC   0
+> >   #define ARM_LPAE_MAIR_ATTR_IDX_CACHE        1
+> >   #define ARM_LPAE_MAIR_ATTR_IDX_DEV  2
+> > +#define ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE        3
+>
+> Here at the implementation level, I'd rather just call these what they
+> are, i.e. s/QCOM_SYS_CACHE/INC_OWBRWA/.
+>
 
-> At the moment we use mutexes, so iommu_report_device_fault() can only be
-> called from an IRQ thread, which is incompatible with the current SMMUv2
-> driver. Either we need to switch the SMMUv2 driver to an IRQ thread, or
-> rework the fault handler to be called from an IRQ handler. The reporting
-> also has to be per device rather than per domain, and I'm not sure if
-> the SMMUv2 driver can deal with this.
+Thanks for the review.
+Sure, will change this as suggested.
 
-I'll take a closer look at the branch and try to formulate some plan
-to add v2 support for this.
+> >
+> >   /* IOPTE accessors */
+> >   #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+> > @@ -442,6 +444,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+> >               else if (prot & IOMMU_CACHE)
+> >                       pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+> >                               << ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> > +             else if (prot & IOMMU_QCOM_SYS_CACHE)
+>
+> Where in the call stack is this going to be decided? (I don't recall the
+> previous discussions ever really reaching a solid conclusion on how to
+> separate responsibilities).
+>
 
-For my cases, the GPU always has it's own iommu device, while display
-and other blocks share an apps_smmu.. although this sort of
-functionality isn't really required outside of the GPU.. but I'll have
-to think a bit about how we can support both cases in the single v2
-driver.
+Based on the last discussion [1], I understood that we may not want to expose
+these cache protections to DMA APIs. So such control would lie with the masters
+that are creating the individual domains. An example [2] of this is
+graphics on sdm845.
+Please ignore the change in naming at [2] IOMMU_UPSTREAM_HINT in [2] is same as
+IOMMU_QCOM_SYS_CACHE here.
 
-BR,
--R
+At that point [1] I also pointed to the fact that video that uses DMA
+APIs to handle
+buffers too uses system cache on sdm845. In this case shouldn't we expose the
+protection controls to DMA APIs? Or would you suggest that such devices get
+iommu domains in the driver, and then update these protection flags?
+
+[1] https://lkml.org/lkml/2018/12/4/790
+[2] https://patchwork.kernel.org/patch/10302791/
+
+> > +                     pte |= (ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE
+> > +                             << ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> >       } else {
+> >               pte = ARM_LPAE_PTE_HAP_FAULT;
+> >               if (prot & IOMMU_READ)
+> > @@ -841,7 +846,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+> >             (ARM_LPAE_MAIR_ATTR_WBRWA
+> >              << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
+> >             (ARM_LPAE_MAIR_ATTR_DEVICE
+> > -            << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
+> > +            << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
+> > +           (ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE
+> > +            << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE));
+> >
+> >       cfg->arm_lpae_s1_cfg.mair[0] = reg;
+> >       cfg->arm_lpae_s1_cfg.mair[1] = 0;
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index a815cf6f6f47..29dd2c624348 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -31,6 +31,7 @@
+> >   #define IOMMU_CACHE (1 << 2) /* DMA cache coherency */
+> >   #define IOMMU_NOEXEC        (1 << 3)
+> >   #define IOMMU_MMIO  (1 << 4) /* e.g. things like MSI doorbells */
+> > +#define IOMMU_QCOM_SYS_CACHE (1 << 6)
+>
+> Nit: 6 usually comes *after* 5 ;)
+
+Sorry, pasting mistake.
 
 >
-> >
-> > And I do still prefer the fault cb in irq (or not requiring it in
-> > wq)..  but on thinking about it, the two ideas aren't entirely
-> > conflicting, ie. add some flags either when we register handler[1], or
-> > they could be handled thru domain_set_attr, like:
-> >
-> >  _EXPLICIT_RESUME - iommu API user calls iommu_domain_resume(),
-> > potentialy from wq/thread after fault handler returns
-> >  _HANDLER_SLEEPS  - iommu core handles the wq, and calls ops->resume()
-> > internally
-> >
-> > In both cases, from the iommu driver PoV it just implements
-> > iommu_ops::resume().. in first case it is called via iommu user either
-> > from the fault handler or at some point later (ie. wq or thread).
-> >
-> > I don't particularly need the _HANDLER_SLEEPS case (unless I can't
-> > convince anyone that iommu_domamin_resume() called from outside iommu
-> > core is a good idea).. so probably I wouldn't wire up the wq plumbing
-> > for the _HANDLER_SLEEPS case unless someone really wanted me to.
-> >
-> > Since there are more iommu drivers, than places that register fault
-> > handlers, I like the idea that in either case, from the driver PoV, it
-> > is just implementing the resume callback.
-> >
-> > [1] currently I only see a few places where fault handlers are
-> > registered, so changing iommu_set_fault_handler() is really not much
-> > churn
+> Plus although it's fairly self-evident that this value has *something*
+> to do with Qcom system caches and isn't as generic as, say, IOMMU_PRIV,
+> it probably still warrants some degree of comment.
+
+I will add the necessary comments.
+
+Best regards
+Vivek
 >
-> At the moment we're keeping the new fault reporting mechanism separate
-> from iommu_set_fault_handler()/report_iommu_fault(), to ease the transition.
+> Robin.
 >
-> Thanks,
-> Jean
+> >   /*
+> >    * Where the bus hardware includes a privilege level as part of its access type
+> >    * markings, and certain devices are capable of issuing transactions marked as
+> >
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
