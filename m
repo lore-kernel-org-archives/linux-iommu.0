@@ -6,59 +6,73 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD280C04AB4
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF275C04AB4
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:04:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9955B21537
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:04:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9955B21537
+	by mail.kernel.org (Postfix) with ESMTPS id CE2A62166E
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 14:04:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE2A62166E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 72FE7E90;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AE592E93;
 	Tue, 14 May 2019 14:03:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 37BB1E60
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9F8F2E70
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 14 May 2019 14:03:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4B464880
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DAEF987A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 14 May 2019 14:02:58 +0000 (UTC)
+	Tue, 14 May 2019 14:03:00 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
 	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	14 May 2019 07:02:57 -0700
+	14 May 2019 07:02:59 -0700
 X-ExtLoop1: 1
 Received: from unknown (HELO luv-build.sc.intel.com) ([172.25.110.25])
-	by fmsmga005.fm.intel.com with ESMTP; 14 May 2019 07:02:57 -0700
+	by fmsmga005.fm.intel.com with ESMTP; 14 May 2019 07:02:59 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>,
 	Borislav Petkov <bp@suse.de>
-Subject: [RFC PATCH v3 05/21] x86/hpet: Reserve timer for the HPET hardlockup
-	detector
-Date: Tue, 14 May 2019 07:01:58 -0700
-Message-Id: <1557842534-4266-6-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v3 12/21] watchdog/hardlockup/hpet: Adjust timer
+	expiration on the number of monitored CPUs
+Date: Tue, 14 May 2019 07:02:05 -0700
+Message-Id: <1557842534-4266-13-git-send-email-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Peter Zijlstra <peterz@infradead.org>, Alexei Starovoitov <ast@kernel.org>,
+	Stephane Eranian <eranian@google.com>,
+	Kai-Heng Feng <kai.heng.feng@canonical.com>,
+	Davidlohr Bueso <dave@stgolabs.net>, Ashok Raj <ashok.raj@intel.com>,
+	Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
+	"Luis R. Rodriguez" <mcgrof@kernel.org>,
+	David Rientjes <rientjes@google.com>, Andi Kleen <andi.kleen@intel.com>,
+	Waiman Long <longman@redhat.com>,
+	"Paul E. McKenney" <paulmck@linux.vnet.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>, Don Zickus <dzickus@redhat.com>,
 	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-	Tony Luck <tony.luck@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Arnd Bergmann <arnd@arndb.de>, Peter Zijlstra <peterz@infradead.org>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Marc Zyngier <marc.zyngier@arm.com>,
 	Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-	x86@kernel.org, Clemens Ladisch <clemens@ladisch.de>,
-	linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-	Ricardo Neri <ricardo.neri@intel.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	iommu@lists.linux-foundation.org,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Nicholas Piggin <npiggin@gmail.com>, Ricardo Neri <ricardo.neri@intel.com>,
+	Byungchul Park <byungchul.park@lge.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Josh Poimboeuf <jpoimboe@redhat.com>, Tony Luck <tony.luck@intel.com>,
+	Babu Moger <babu.moger@oracle.com>, Randy Dunlap <rdunlap@infradead.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Jacob Pan <jacob.jun.pan@intel.com>,
 	Philippe Ombredanne <pombredanne@nexb.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>
+	Colin Ian King <colin.king@canonical.com>,
+	Andrew Morton <akpm@linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,104 +91,163 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-HPET timer 2 will be used to drive the HPET-based hardlockup detector.
-Reserve such timer to ensure it cannot be used by user space programs or
-for clock events.
+Each CPU should be monitored for hardlockups every watchdog_thresh seconds.
+Since all the CPUs in the system are monitored by the same timer and the
+timer interrupt is rotated among the monitored CPUs, the timer must expire
+every watchdog_thresh/N seconds; where N is the number of monitored CPUs.
+Use the new member of struct hld_data, ticks_per_cpu, to store the
+aforementioned quantity.
 
-When looking for MSI-capable timers for clock events, skip timer 2 if
-the HPET hardlockup detector is selected.
+The ticks-per-CPU quantity is updated every time the number of monitored
+CPUs changes: when the watchdog is enabled or disabled for a specific CPU.
+If the timer is used in periodic mode, it needs to be adjusted to reflect
+the new expected expiration.
 
-Cc: "H. Peter Anvin" <hpa@zytor.com>
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
 Cc: Tony Luck <tony.luck@intel.com>
-Cc: Clemens Ladisch <clemens@ladisch.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Jacob Pan <jacob.jun.pan@intel.com>
 Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Don Zickus <dzickus@redhat.com>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Babu Moger <babu.moger@oracle.com>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Colin Ian King <colin.king@canonical.com>
+Cc: Byungchul Park <byungchul.park@lge.com>
+Cc: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Cc: Waiman Long <longman@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: David Rientjes <rientjes@google.com>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: x86@kernel.org
+Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- arch/x86/include/asm/hpet.h |  3 +++
- arch/x86/kernel/hpet.c      | 19 ++++++++++++++++---
- 2 files changed, 19 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/hpet.h         |  1 +
+ arch/x86/kernel/watchdog_hld_hpet.c | 46 +++++++++++++++++++++++++++--
+ 2 files changed, 44 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index e7098740f5ee..6f099e2781ce 100644
+index 31fc27508cf3..64acacce095d 100644
 --- a/arch/x86/include/asm/hpet.h
 +++ b/arch/x86/include/asm/hpet.h
-@@ -61,6 +61,9 @@
-  */
- #define HPET_MIN_PERIOD		100000UL
+@@ -114,6 +114,7 @@ struct hpet_hld_data {
+ 	bool		has_periodic;
+ 	u32		num;
+ 	u64		ticks_per_second;
++	u64		ticks_per_cpu;
+ 	u32		handling_cpu;
+ 	u32		enabled_cpus;
+ 	struct msi_msg	msi_msg;
+diff --git a/arch/x86/kernel/watchdog_hld_hpet.c b/arch/x86/kernel/watchdog_hld_hpet.c
+index c20b378b8c0c..9a3431a54616 100644
+--- a/arch/x86/kernel/watchdog_hld_hpet.c
++++ b/arch/x86/kernel/watchdog_hld_hpet.c
+@@ -44,6 +44,13 @@ static void kick_timer(struct hpet_hld_data *hdata, bool force)
+ 	 * are able to update the comparator before the counter reaches such new
+ 	 * value.
+ 	 *
++	 * Each CPU must be monitored every watch_thresh seconds. Since the
++	 * timer targets one CPU at a time, it must expire every
++	 *
++	 *        ticks_per_cpu = watch_thresh * ticks_per_second /enabled_cpus
++	 *
++	 * as computed in update_ticks_per_cpu().
++	 *
+ 	 * Let it wrap around if needed.
+ 	 */
  
-+/* Timer used for the hardlockup detector */
-+#define HPET_WD_TIMER_NR 2
+@@ -51,10 +58,10 @@ static void kick_timer(struct hpet_hld_data *hdata, bool force)
+ 		return;
+ 
+ 	if (hdata->has_periodic)
+-		period = watchdog_thresh * hdata->ticks_per_second;
++		period = watchdog_thresh * hdata->ticks_per_cpu;
+ 
+ 	count = hpet_readl(HPET_COUNTER);
+-	new_compare = count + watchdog_thresh * hdata->ticks_per_second;
++	new_compare = count + watchdog_thresh * hdata->ticks_per_cpu;
+ 	hpet_set_comparator(hdata->num, (u32)new_compare, (u32)period);
+ }
+ 
+@@ -233,6 +240,27 @@ static int setup_hpet_irq(struct hpet_hld_data *hdata)
+ 	return ret;
+ }
+ 
++/**
++ * update_ticks_per_cpu() - Update the number of HPET ticks per CPU
++ * @hdata:     struct with the timer's the ticks-per-second and CPU mask
++ *
++ * From the overall ticks-per-second of the timer, compute the number of ticks
++ * after which the timer should expire to monitor each CPU every watch_thresh
++ * seconds. The ticks-per-cpu quantity is computed using the number of CPUs that
++ * the watchdog currently monitors.
++ */
++static void update_ticks_per_cpu(struct hpet_hld_data *hdata)
++{
++	u64 temp = hdata->ticks_per_second;
 +
- /* hpet memory map physical address */
- extern unsigned long hpet_address;
- extern unsigned long force_hpet_address;
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index c5c5fc150193..ba0a5cc075d5 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -172,7 +172,8 @@ do {								\
- 
- /*
-  * When the hpet driver (/dev/hpet) is enabled, we need to reserve
-- * timer 0 and timer 1 in case of RTC emulation.
-+ * timer 0 and timer 1 in case of RTC emulation. Timer 2 is reserved in case
-+ * the HPET-based hardlockup detector is used.
-  */
- #ifdef CONFIG_HPET
- 
-@@ -182,7 +183,7 @@ static void hpet_reserve_platform_timers(unsigned int id)
++	/* Only update if there are monitored CPUs. */
++	if (!hdata->enabled_cpus)
++		return;
++
++	do_div(temp, hdata->enabled_cpus);
++	hdata->ticks_per_cpu = temp;
++}
++
+ /**
+  * hardlockup_detector_hpet_enable() - Enable the hardlockup detector
+  * @cpu:	CPU Index in which the watchdog will be enabled.
+@@ -245,13 +273,23 @@ void hardlockup_detector_hpet_enable(unsigned int cpu)
  {
- 	struct hpet __iomem *hpet = hpet_virt_address;
- 	struct hpet_timer __iomem *timer = &hpet->hpet_timers[2];
--	unsigned int nrtimers, i;
-+	unsigned int nrtimers, i, start_timer;
- 	struct hpet_data hd;
+ 	cpumask_set_cpu(cpu, to_cpumask(hld_data->cpu_monitored_mask));
  
- 	nrtimers = ((id & HPET_ID_NUMBER) >> HPET_ID_NUMBER_SHIFT) + 1;
-@@ -197,6 +198,13 @@ static void hpet_reserve_platform_timers(unsigned int id)
- 	hpet_reserve_timer(&hd, 1);
- #endif
- 
-+	if (IS_ENABLED(CONFIG_X86_HARDLOCKUP_DETECTOR_HPET)) {
-+		hpet_reserve_timer(&hd, HPET_WD_TIMER_NR);
-+		start_timer = HPET_WD_TIMER_NR + 1;
-+	} else {
-+		start_timer = HPET_WD_TIMER_NR;
-+	}
+-	if (!hld_data->enabled_cpus++) {
++	hld_data->enabled_cpus++;
++	update_ticks_per_cpu(hld_data);
 +
- 	/*
- 	 * NOTE that hd_irq[] reflects IOAPIC input pins (LEGACY_8254
- 	 * is wrong for i8259!) not the output IRQ.  Many BIOS writers
-@@ -205,7 +213,7 @@ static void hpet_reserve_platform_timers(unsigned int id)
- 	hd.hd_irq[0] = HPET_LEGACY_8254;
- 	hd.hd_irq[1] = HPET_LEGACY_RTC;
- 
--	for (i = 2; i < nrtimers; timer++, i++) {
-+	for (i = start_timer; i < nrtimers; timer++, i++) {
- 		hd.hd_irq[i] = (readl(&timer->hpet_config) &
- 			Tn_INT_ROUTE_CNF_MASK) >> Tn_INT_ROUTE_CNF_SHIFT;
++	if (hld_data->enabled_cpus == 1) {
+ 		hld_data->handling_cpu = cpu;
+ 		update_msi_destid(hld_data);
+ 		/* Force timer kick when detector is just enabled */
+ 		kick_timer(hld_data, true);
+ 		enable_timer(hld_data);
  	}
-@@ -648,6 +656,11 @@ static void hpet_msi_capability_lookup(unsigned int start_timer)
- 		struct hpet_dev *hdev = &hpet_devs[num_timers_used];
- 		unsigned int cfg = hpet_readl(HPET_Tn_CFG(i));
- 
-+		/* Do not use timer reserved for the HPET watchdog. */
-+		if (IS_ENABLED(CONFIG_X86_HARDLOCKUP_DETECTOR_HPET) &&
-+		    i == HPET_WD_TIMER_NR)
-+			continue;
 +
- 		/* Only consider HPET timer with MSI support */
- 		if (!(cfg & HPET_TN_FSB_CAP))
- 			continue;
++	/*
++	 * When in periodic mode, we only kick the timer here. Hence,
++	 * as there are now more CPUs to monitor, we need to adjust the
++	 * periodic expiration.
++	 */
++	kick_timer(hld_data, hld_data->has_periodic);
+ }
+ 
+ /**
+@@ -267,6 +305,8 @@ void hardlockup_detector_hpet_disable(unsigned int cpu)
+ 	cpumask_clear_cpu(cpu, to_cpumask(hld_data->cpu_monitored_mask));
+ 	hld_data->enabled_cpus--;
+ 
++	update_ticks_per_cpu(hld_data);
++
+ 	if (hld_data->handling_cpu != cpu)
+ 		return;
+ 
 -- 
 2.17.1
 
