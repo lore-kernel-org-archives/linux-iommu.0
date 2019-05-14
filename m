@@ -2,60 +2,89 @@ Return-Path: <SRS0=TkeE=TO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1ADC04AB7
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 16:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F2CC04AB6
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 17:17:18 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 58DA120863
-	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 16:21:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58DA120863
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8E14C20578
+	for <iommu@archiver.kernel.org>; Tue, 14 May 2019 17:17:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vw8j1EhC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E14C20578
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 10162DA3;
-	Tue, 14 May 2019 16:21:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5DC6DC3F;
+	Tue, 14 May 2019 17:17:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C04E9D9D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CD01AAA5
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 14 May 2019 16:21:48 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B0B0F42D
+	Tue, 14 May 2019 17:17:17 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
+	[209.85.208.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 649F587A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 14 May 2019 16:21:46 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
-	[10.5.11.11])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 7F317C0624DF;
-	Tue, 14 May 2019 16:21:43 +0000 (UTC)
-Received: from x1.home (ovpn-117-92.phx2.redhat.com [10.3.117.92])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id CB18A600C5;
-	Tue, 14 May 2019 16:21:38 +0000 (UTC)
-Date: Tue, 14 May 2019 10:21:38 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [RFC v3 1/3] vfio_pci: split vfio_pci.c into two source files
-Message-ID: <20190514102138.13bf7de0@x1.home>
-In-Reply-To: <1556021680-2911-2-git-send-email-yi.l.liu@intel.com>
-References: <1556021680-2911-1-git-send-email-yi.l.liu@intel.com>
-	<1556021680-2911-2-git-send-email-yi.l.liu@intel.com>
-Organization: Red Hat
+	Tue, 14 May 2019 17:17:16 +0000 (UTC)
+Received: by mail-ed1-f65.google.com with SMTP id w33so23895424edb.10
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 14 May 2019 10:17:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=+l9zz6eaN2LIJhz1rmWgTZAN4kH+dDR0HBMwscHakxY=;
+	b=Vw8j1EhC/hirGyhd//mhklJ3dK/9R4/rkLaiCq33qN9mZBdK+h9CeuGckVuTAQj4r8
+	Lroza3lMGmp3StHW3eBjXChsbcS6EzT+k4q+eonRhUVGbJfcGNxpvbT9O2BDNZ0+AOX9
+	m4AAe84sX022No4bgqg0cFpzvHd5AN7eSJj3oinlXew9tzYa2COSvYh7cs9sOrhvyivV
+	Io/sNSNXcrdWcax24GCRqP5/Crhy3g3lIl7bs4HUgNiVaFKD/wG2LeXJu7F943s/cwD0
+	HWQdaWMKasSQOWas0lKqMo36mGXP4HzFwMOV/QttYVTHapA6zmuvvFGGuApY99YCJvjT
+	4BWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=+l9zz6eaN2LIJhz1rmWgTZAN4kH+dDR0HBMwscHakxY=;
+	b=uHQQUJpvpYlaknp53O3AShaj0RWcEHcz32JC2aqU5VrbwNV+DO5blQ+NfYfx6hZ+vL
+	ZggRSLI+Ze4jvCc130Xm8vQcQWLQOqXX0J5qDD4dwVJNbNIFTfnEFyNbcUXfuDmotOGz
+	Ko5GQdELkPdAVl0okLG7wfZDau5yWE4hFnaMvH9zz6hrGC7BTjgRec0t7FsU3UhtAfO1
+	TgLyOVo5l6ac9b+dgo6bMubgO149xoxvOM6+EiHcP6qcEGwWgUOIQU9pEcMHlIbMFnnR
+	RbriY387NLGUfEGMXh8hmmzV6+D6VwYy6/oBWNVAFITg7O46IBmZtbSdlsRJ+IoVabAK
+	irrA==
+X-Gm-Message-State: APjAAAWDyzRgCRQD/Fhpopzi5MZd0n8qyaBobqEMYl0VhSuVjS291SRJ
+	L0ZqyLnEwUenQBrUeUp59288Q66W1tJs4BjHToA=
+X-Google-Smtp-Source: APXvYqwmXirTESmlcC78TECRFWo44J6KJt1h6qI1PBjPpoXbbJP1T2BFjs/mfGdnb1QLBUyu3TedlIxXhIoLHR0QlWs=
+X-Received: by 2002:a17:907:20a6:: with SMTP id
+	pw6mr11778381ejb.113.1557854234894; 
+	Tue, 14 May 2019 10:17:14 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.32]);
-	Tue, 14 May 2019 16:21:46 +0000 (UTC)
-Cc: kevin.tian@intel.com, kvm@vger.kernel.org, jean-philippe.brucker@arm.com,
-	kwankhede@nvidia.com, linux-kernel@vger.kernel.org,
-	yamada.masahiro@socionext.com, yi.y.sun@intel.com,
-	iommu@lists.linux-foundation.org
+References: <20170914194444.32551-1-robdclark@gmail.com>
+	<20170919123038.GF8398@8bytes.org>
+	<CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
+	<20170922090204.GJ8398@8bytes.org>
+	<32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
+	<CAF6AEGuepdKo1Ob2jW66UhYXOTAqOMc3C-XKsK3Rze1QdLobLw@mail.gmail.com>
+	<571e825d-7f54-2da4-adc0-6b6ac6dae459@arm.com>
+	<CAF6AEGtJRYvSLw+Cc6XaHEN58Ne2_StTojN9_e6+aJZSfX_dVg@mail.gmail.com>
+	<6f7fb139-5117-d89e-0caa-bd34ea9b6ff3@arm.com>
+In-Reply-To: <6f7fb139-5117-d89e-0caa-bd34ea9b6ff3@arm.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Tue, 14 May 2019 10:17:03 -0700
+Message-ID: <CAF6AEGuxGAjqpZBKQvmyHTr7fPU9yKYLf1CfB_TMzKDiXptjzg@mail.gmail.com>
+Subject: Re: [RFC] iommu: arm-smmu: stall support
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <Will.Deacon@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,155 +97,150 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gVHVlLCAyMyBBcHIgMjAxOSAyMDoxNDozOCArMDgwMAoiTGl1LCBZaSBMIiA8eWkubC5saXVA
-aW50ZWwuY29tPiB3cm90ZToKCj4gVGhpcyBwYXRjaCBzcGxpdHMgdGhlIG5vbi1tb2R1bGUgc3Bl
-Y2lmaWMgY29kZXMgZnJvbSBvcmlnaW5hbAo+IGRyaXZlcnMvdmZpby9wY2kvdmZpb19wY2kuYyBp
-bnRvIGEgY29tbW9uLmMgdW5kZXIgZHJpdmVycy92ZmlvL3BjaS4KPiBUaGlzIGlzIGZvciBwb3Rl
-bnRpYWwgY29kZSBzaGFyaW5nLiBlLmcuIHZmaW8tbWRldi1wY2kgZHJpdmVyCj4gCj4gQ2M6IEtl
-dmluIFRpYW4gPGtldmluLnRpYW5AaW50ZWwuY29tPgo+IENjOiBMdSBCYW9sdSA8YmFvbHUubHVA
-bGludXguaW50ZWwuY29tPgo+IFNpZ25lZC1vZmYtYnk6IExpdSwgWWkgTCA8eWkubC5saXVAaW50
-ZWwuY29tPgo+IC0tLQo+ICBkcml2ZXJzL3ZmaW8vcGNpL01ha2VmaWxlICAgICAgICAgICB8ICAg
-IDIgKy0KPiAgZHJpdmVycy92ZmlvL3BjaS9jb21tb24uYyAgICAgICAgICAgfCAxNTExICsrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gIGRyaXZlcnMvdmZpby9wY2kvdmZpb19w
-Y2kuYyAgICAgICAgIHwgMTQ3NiArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4g
-IGRyaXZlcnMvdmZpby9wY2kvdmZpb19wY2lfcHJpdmF0ZS5oIHwgICAyNyArCj4gIDQgZmlsZXMg
-Y2hhbmdlZCwgMTU1MSBpbnNlcnRpb25zKCspLCAxNDY1IGRlbGV0aW9ucygtKQo+ICBjcmVhdGUg
-bW9kZSAxMDA2NDQgZHJpdmVycy92ZmlvL3BjaS9jb21tb24uYwo+IAo+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL3ZmaW8vcGNpL01ha2VmaWxlIGIvZHJpdmVycy92ZmlvL3BjaS9NYWtlZmlsZQo+IGlu
-ZGV4IDk2NjJjMDYuLjgxM2Y2YjMgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy92ZmlvL3BjaS9NYWtl
-ZmlsZQo+ICsrKyBiL2RyaXZlcnMvdmZpby9wY2kvTWFrZWZpbGUKPiBAQCAtMSw1ICsxLDUgQEAK
-PiAgCj4gLXZmaW8tcGNpLXkgOj0gdmZpb19wY2kubyB2ZmlvX3BjaV9pbnRycy5vIHZmaW9fcGNp
-X3Jkd3IubyB2ZmlvX3BjaV9jb25maWcubwo+ICt2ZmlvLXBjaS15IDo9IHZmaW9fcGNpLm8gY29t
-bW9uLm8gdmZpb19wY2lfaW50cnMubyB2ZmlvX3BjaV9yZHdyLm8gdmZpb19wY2lfY29uZmlnLm8K
-PiAgdmZpby1wY2ktJChDT05GSUdfVkZJT19QQ0lfSUdEKSArPSB2ZmlvX3BjaV9pZ2Qubwo+ICB2
-ZmlvLXBjaS0kKENPTkZJR19WRklPX1BDSV9OVkxJTksyKSArPSB2ZmlvX3BjaV9udmxpbmsyLm8K
-PiAgCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby9wY2kvY29tbW9uLmMgYi9kcml2ZXJzL3Zm
-aW8vcGNpL2NvbW1vbi5jCj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPiBpbmRleCAwMDAwMDAwLi44
-NDdlMmU0Cj4gLS0tIC9kZXYvbnVsbAo+ICsrKyBiL2RyaXZlcnMvdmZpby9wY2kvY29tbW9uLmMK
-Ck5pdCwgSSByZWFsaXplIHRoYXQgb3VyIGZpbGUgbmFtaW5nIHNjaGVtZSBpbmNsdWRlcyBhIGxv
-dCBvZgpyZWR1bmRhbmN5LCBidXQgYmV0dGVyIHRvIGhhdmUgcmVkdW5kYW5jeSB0aGFuIGluY29u
-c2lzdGVuY3kgaW1vLgpQZXJoYXBzIHZmaW9fcGNpX2NvbW1vbi5jLgoKPiBAQCAtMCwwICsxLDE1
-MTEgQEAKPiArLyoKPiArICogQ29weXJpZ2h0IMKpIDIwMTkgSW50ZWwgQ29ycG9yYXRpb24uCj4g
-KyAqICAgICBBdXRob3I6IExpdSwgWWkgTCA8eWkubC5saXVAaW50ZWwuY29tPgo+ICsgKgo+ICsg
-KiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQg
-YW5kL29yIG1vZGlmeQo+ICsgKiBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFs
-IFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcwo+ICsgKiBwdWJsaXNoZWQgYnkgdGhlIEZyZWUg
-U29mdHdhcmUgRm91bmRhdGlvbi4KPiArICoKPiArICogRGVyaXZlZCBmcm9tIG9yaWdpbmFsIHZm
-aW9fcGNpLmM6Cj4gKyAqIENvcHlyaWdodCAoQykgMjAxMiBSZWQgSGF0LCBJbmMuICBBbGwgcmln
-aHRzIHJlc2VydmVkLgo+ICsgKiAgICAgQXV0aG9yOiBBbGV4IFdpbGxpYW1zb24gPGFsZXgud2ls
-bGlhbXNvbkByZWRoYXQuY29tPgo+ICsgKgo+ICsgKiBEZXJpdmVkIGZyb20gb3JpZ2luYWwgdmZp
-bzoKPiArICogQ29weXJpZ2h0IDIwMTAgQ2lzY28gU3lzdGVtcywgSW5jLiAgQWxsIHJpZ2h0cyBy
-ZXNlcnZlZC4KPiArICogQXV0aG9yOiBUb20gTHlvbiwgcHVnc0BjaXNjby5jb20KPiArICovCj4g
-Kwo+ICsjZGVmaW5lIHByX2ZtdChmbXQpIEtCVUlMRF9NT0ROQU1FICI6ICIgZm10Cj4gKwo+ICsj
-aW5jbHVkZSA8bGludXgvZGV2aWNlLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9ldmVudGZkLmg+Cj4g
-KyNpbmNsdWRlIDxsaW51eC9maWxlLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9pbnRlcnJ1cHQuaD4K
-PiArI2luY2x1ZGUgPGxpbnV4L2lvbW11Lmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4K
-PiArI2luY2x1ZGUgPGxpbnV4L211dGV4Lmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9ub3RpZmllci5o
-Pgo+ICsjaW5jbHVkZSA8bGludXgvcGNpLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9wbV9ydW50aW1l
-Lmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC90eXBlcy5o
-Pgo+ICsjaW5jbHVkZSA8bGludXgvdWFjY2Vzcy5oPgo+ICsjaW5jbHVkZSA8bGludXgvdmZpby5o
-Pgo+ICsjaW5jbHVkZSA8bGludXgvdmdhYXJiLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9ub3NwZWMu
-aD4KPiArCj4gKyNpbmNsdWRlICJ2ZmlvX3BjaV9wcml2YXRlLmgiCj4gKwoKW3NuaXAgZmFpdGhm
-dWwgY29kZSBtb3Zlc10KCj4gK3ZvaWQgdmZpb19wY2lfdmdhX3Byb2JlKHN0cnVjdCB2ZmlvX3Bj
-aV9kZXZpY2UgKnZkZXYpCj4gK3sKPiArCXZnYV9jbGllbnRfcmVnaXN0ZXIodmRldi0+cGRldiwg
-dmRldiwgTlVMTCwgdmZpb19wY2lfc2V0X3ZnYV9kZWNvZGUpOwo+ICsJdmdhX3NldF9sZWdhY3lf
-ZGVjb2RpbmcodmRldi0+cGRldiwKPiArCQkJCXZmaW9fcGNpX3NldF92Z2FfZGVjb2RlKHZkZXYs
-IGZhbHNlKSk7Cj4gK30KPiArCj4gK3ZvaWQgdmZpb19wY2lfdmdhX3JlbW92ZShzdHJ1Y3QgdmZp
-b19wY2lfZGV2aWNlICp2ZGV2KQo+ICt7Cj4gKwl2Z2FfY2xpZW50X3JlZ2lzdGVyKHZkZXYtPnBk
-ZXYsIE5VTEwsIE5VTEwsIE5VTEwpOwo+ICsJdmdhX3NldF9sZWdhY3lfZGVjb2RpbmcodmRldi0+
-cGRldiwKPiArCQkJVkdBX1JTUkNfTk9STUFMX0lPIHwgVkdBX1JTUkNfTk9STUFMX01FTSB8Cj4g
-KwkJCVZHQV9SU1JDX0xFR0FDWV9JTyB8IFZHQV9SU1JDX0xFR0FDWV9NRU0pOwo+ICt9CgpUd28g
-bmV3IGZ1bmN0aW9ucywgdGhvdWdoIHRoZSBuYW1lcyBkb24ndCByZWFsbHkgbWF0Y2ggdGhlaXIg
-cHVycG9zZS4KCltzbmlwIG1vcmUgZmFpdGhmdWwgY29kZSBtb3Zlc10KPiArCj4gK3ZvaWQgdmZp
-b19wY2lfcHJvYmVfaWRsZV9kMyhzdHJ1Y3QgdmZpb19wY2lfZGV2aWNlICp2ZGV2KQo+ICt7Cj4g
-Kwo+ICsJLyoKPiArCSAqIHBjaS1jb3JlIHNldHMgdGhlIGRldmljZSBwb3dlciBzdGF0ZSB0byBh
-biB1bmtub3duIHZhbHVlIGF0Cj4gKwkgKiBib290dXAgYW5kIGFmdGVyIGJlaW5nIHJlbW92ZWQg
-ZnJvbSBhIGRyaXZlci4gIFRoZSBvbmx5Cj4gKwkgKiB0cmFuc2l0aW9uIGl0IGFsbG93cyBmcm9t
-IHRoaXMgdW5rbm93biBzdGF0ZSBpcyB0byBEMCwgd2hpY2gKPiArCSAqIHR5cGljYWxseSBoYXBw
-ZW5zIHdoZW4gYSBkcml2ZXIgY2FsbHMgcGNpX2VuYWJsZV9kZXZpY2UoKS4KPiArCSAqIFdlJ3Jl
-IG5vdCByZWFkeSB0byBlbmFibGUgdGhlIGRldmljZSB5ZXQsIGJ1dCB3ZSBkbyB3YW50IHRvCj4g
-KwkgKiBiZSBhYmxlIHRvIGdldCB0byBEMy4gIFRoZXJlZm9yZSBmaXJzdCBkbyBhIEQwIHRyYW5z
-aXRpb24KPiArCSAqIGJlZm9yZSBnb2luZyB0byBEMy4KPiArCSAqLwo+ICsJdmZpb19wY2lfc2V0
-X3Bvd2VyX3N0YXRlKHZkZXYsIFBDSV9EMCk7Cj4gKwl2ZmlvX3BjaV9zZXRfcG93ZXJfc3RhdGUo
-dmRldiwgUENJX0QzaG90KTsKPiArfQoKQW5vdGhlciBuZXcgZnVuY3Rpb24uICBUaGlzIGFsc28g
-ZG9lc24ndCByZWFsbHkgbWF0Y2ggZnVuY3Rpb24gbmFtZSB0bwpwdXJwb3NlLgoKW3NuaXAgbW9y
-ZSBmYWl0aGZ1bCBjb2RlIG1vdmVzXQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vcGNpL3Zm
-aW9fcGNpLmMgYi9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMKPiBpbmRleCAzZmEyMGU5Li42
-Y2UxYTgxIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdmZpby9wY2kvdmZpb19wY2kuYwo+ICsrKyBi
-L2RyaXZlcnMvdmZpby9wY2kvdmZpb19wY2kuYwpbZW4gbWFzc2UgY29kZSBkZWxldGVzXQo+IEBA
-IC0xMzI0LDYgKzE0NywxMSBAQCBzdGF0aWMgaW50IHZmaW9fcGNpX3Byb2JlKHN0cnVjdCBwY2lf
-ZGV2ICpwZGV2LCBjb25zdCBzdHJ1Y3QgcGNpX2RldmljZV9pZCAqaWQpCj4gIAlzcGluX2xvY2tf
-aW5pdCgmdmRldi0+aXJxbG9jayk7Cj4gIAltdXRleF9pbml0KCZ2ZGV2LT5pb2V2ZW50ZmRzX2xv
-Y2spOwo+ICAJSU5JVF9MSVNUX0hFQUQoJnZkZXYtPmlvZXZlbnRmZHNfbGlzdCk7Cj4gKwl2ZGV2
-LT5ub2ludHhtYXNrID0gbm9pbnR4bWFzazsKPiArI2lmZGVmIENPTkZJR19WRklPX1BDSV9WR0EK
-PiArCXZkZXYtPmRpc2FibGVfdmdhID0gZGlzYWJsZV92Z2E7Cj4gKyNlbmRpZgo+ICsJdmRldi0+
-ZGlzYWJsZV9pZGxlX2QzID0gZGlzYWJsZV9pZGxlX2QzOwo+ICAKPiAgCXJldCA9IHZmaW9fYWRk
-X2dyb3VwX2RldigmcGRldi0+ZGV2LCAmdmZpb19wY2lfb3BzLCB2ZGV2KTsKPiAgCWlmIChyZXQp
-IHsKPiBAQCAtMTM0MCwyNyArMTY4LDEzIEBAIHN0YXRpYyBpbnQgdmZpb19wY2lfcHJvYmUoc3Ry
-dWN0IHBjaV9kZXYgKnBkZXYsIGNvbnN0IHN0cnVjdCBwY2lfZGV2aWNlX2lkICppZCkKPiAgCQly
-ZXR1cm4gcmV0Owo+ICAJfQo+ICAKPiAtCWlmICh2ZmlvX3BjaV9pc192Z2EocGRldikpIHsKPiAt
-CQl2Z2FfY2xpZW50X3JlZ2lzdGVyKHBkZXYsIHZkZXYsIE5VTEwsIHZmaW9fcGNpX3NldF92Z2Ff
-ZGVjb2RlKTsKPiAtCQl2Z2Ffc2V0X2xlZ2FjeV9kZWNvZGluZyhwZGV2LAo+IC0JCQkJCXZmaW9f
-cGNpX3NldF92Z2FfZGVjb2RlKHZkZXYsIGZhbHNlKSk7Cj4gLQl9Cj4gKwlpZiAodmZpb19wY2lf
-aXNfdmdhKHBkZXYpKQo+ICsJCXZmaW9fcGNpX3ZnYV9wcm9iZSh2ZGV2KTsKPiAgCj4gIAl2Zmlv
-X3BjaV9wcm9iZV9wb3dlcl9zdGF0ZSh2ZGV2KTsKPiAgCj4gLQlpZiAoIWRpc2FibGVfaWRsZV9k
-Mykgewo+IC0JCS8qCj4gLQkJICogcGNpLWNvcmUgc2V0cyB0aGUgZGV2aWNlIHBvd2VyIHN0YXRl
-IHRvIGFuIHVua25vd24gdmFsdWUgYXQKPiAtCQkgKiBib290dXAgYW5kIGFmdGVyIGJlaW5nIHJl
-bW92ZWQgZnJvbSBhIGRyaXZlci4gIFRoZSBvbmx5Cj4gLQkJICogdHJhbnNpdGlvbiBpdCBhbGxv
-d3MgZnJvbSB0aGlzIHVua25vd24gc3RhdGUgaXMgdG8gRDAsIHdoaWNoCj4gLQkJICogdHlwaWNh
-bGx5IGhhcHBlbnMgd2hlbiBhIGRyaXZlciBjYWxscyBwY2lfZW5hYmxlX2RldmljZSgpLgo+IC0J
-CSAqIFdlJ3JlIG5vdCByZWFkeSB0byBlbmFibGUgdGhlIGRldmljZSB5ZXQsIGJ1dCB3ZSBkbyB3
-YW50IHRvCj4gLQkJICogYmUgYWJsZSB0byBnZXQgdG8gRDMuICBUaGVyZWZvcmUgZmlyc3QgZG8g
-YSBEMCB0cmFuc2l0aW9uCj4gLQkJICogYmVmb3JlIGdvaW5nIHRvIEQzLgo+IC0JCSAqLwo+IC0J
-CXZmaW9fcGNpX3NldF9wb3dlcl9zdGF0ZSh2ZGV2LCBQQ0lfRDApOwo+IC0JCXZmaW9fcGNpX3Nl
-dF9wb3dlcl9zdGF0ZSh2ZGV2LCBQQ0lfRDNob3QpOwo+IC0JfQo+ICsJaWYgKCFkaXNhYmxlX2lk
-bGVfZDMpCj4gKwkJdmZpb19wY2lfcHJvYmVfaWRsZV9kMyh2ZGV2KTsKPiAgCj4gIAlyZXR1cm4g
-cmV0Owo+ICB9Cj4gQEAgLTEzODMsNDggKzE5NywxNCBAQCBzdGF0aWMgdm9pZCB2ZmlvX3BjaV9y
-ZW1vdmUoc3RydWN0IHBjaV9kZXYgKnBkZXYpCj4gIAkJdmZpb19wY2lfc2V0X3Bvd2VyX3N0YXRl
-KHZkZXYsIFBDSV9EMCk7Cj4gIAo+ICAJa2ZyZWUodmRldi0+cG1fc2F2ZSk7Cj4gLQlrZnJlZSh2
-ZGV2KTsKPiAgCj4gIAlpZiAodmZpb19wY2lfaXNfdmdhKHBkZXYpKSB7Cj4gLQkJdmdhX2NsaWVu
-dF9yZWdpc3RlcihwZGV2LCBOVUxMLCBOVUxMLCBOVUxMKTsKPiAtCQl2Z2Ffc2V0X2xlZ2FjeV9k
-ZWNvZGluZyhwZGV2LAo+IC0JCQkJVkdBX1JTUkNfTk9STUFMX0lPIHwgVkdBX1JTUkNfTk9STUFM
-X01FTSB8Cj4gLQkJCQlWR0FfUlNSQ19MRUdBQ1lfSU8gfCBWR0FfUlNSQ19MRUdBQ1lfTUVNKTsK
-PiAtCX0KPiAtfQo+IC0KPiAtc3RhdGljIHBjaV9lcnNfcmVzdWx0X3QgdmZpb19wY2lfYWVyX2Vy
-cl9kZXRlY3RlZChzdHJ1Y3QgcGNpX2RldiAqcGRldiwKPiAtCQkJCQkJICBwY2lfY2hhbm5lbF9z
-dGF0ZV90IHN0YXRlKQo+IC17Cj4gLQlzdHJ1Y3QgdmZpb19wY2lfZGV2aWNlICp2ZGV2Owo+IC0J
-c3RydWN0IHZmaW9fZGV2aWNlICpkZXZpY2U7Cj4gLQo+IC0JZGV2aWNlID0gdmZpb19kZXZpY2Vf
-Z2V0X2Zyb21fZGV2KCZwZGV2LT5kZXYpOwo+IC0JaWYgKGRldmljZSA9PSBOVUxMKQo+IC0JCXJl
-dHVybiBQQ0lfRVJTX1JFU1VMVF9ESVNDT05ORUNUOwo+IC0KPiAtCXZkZXYgPSB2ZmlvX2Rldmlj
-ZV9kYXRhKGRldmljZSk7Cj4gLQlpZiAodmRldiA9PSBOVUxMKSB7Cj4gLQkJdmZpb19kZXZpY2Vf
-cHV0KGRldmljZSk7Cj4gLQkJcmV0dXJuIFBDSV9FUlNfUkVTVUxUX0RJU0NPTk5FQ1Q7Cj4gKwkJ
-dmZpb19wY2lfdmdhX3JlbW92ZSh2ZGV2KTsKPiAgCX0KPiAgCj4gLQltdXRleF9sb2NrKCZ2ZGV2
-LT5pZ2F0ZSk7Cj4gLQo+IC0JaWYgKHZkZXYtPmVycl90cmlnZ2VyKQo+IC0JCWV2ZW50ZmRfc2ln
-bmFsKHZkZXYtPmVycl90cmlnZ2VyLCAxKTsKPiAtCj4gLQltdXRleF91bmxvY2soJnZkZXYtPmln
-YXRlKTsKPiAtCj4gLQl2ZmlvX2RldmljZV9wdXQoZGV2aWNlKTsKPiAtCj4gLQlyZXR1cm4gUENJ
-X0VSU19SRVNVTFRfQ0FOX1JFQ09WRVI7Cj4gKwlrZnJlZSh2ZGV2KTsKPiAgfQoKQWxsIG9mIHRo
-ZSBhYm92ZSByZWZhY3RvcmluZyBzaG91bGQgb2NjdXIgaW4gYSBwcmVjZWRpbmcgcGF0Y2goZXMp
-LgpUaGlzIHBhdGNoIHNob3VsZCBiZSAxMDAlIHVuY2hhbmdlZCBjb2RlIG1vdmVzIHBsdXMgc3Vw
-cG9ydAppbmNsdWRlcy9kZWZpbmVzIGFuZCBjb21tZW50IGhlYWRlciBpbiB0aGUgbmV3IGZpbGUu
-Cgo+IEBAIC0xNjg1LDcgKzIzMyw3IEBAIHN0YXRpYyBpbnQgX19pbml0IHZmaW9fcGNpX2luaXQo
-dm9pZCkKPiAgCWlmIChyZXQpCj4gIAkJZ290byBvdXRfZHJpdmVyOwo+ICAKPiAtCXZmaW9fcGNp
-X2ZpbGxfaWRzKCk7Cj4gKwl2ZmlvX3BjaV9maWxsX2lkcygmaWRzWzBdLCAmdmZpb19wY2lfZHJp
-dmVyKTsKCkZvciBpbnN0YW5jZSBJIG1pc3NlZCB0aGlzIGNoYW5nZS4KCj4gIAo+ICAJcmV0dXJu
-IDA7Cj4gIAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3ByaXZhdGUu
-aCBiL2RyaXZlcnMvdmZpby9wY2kvdmZpb19wY2lfcHJpdmF0ZS5oCj4gaW5kZXggMTgxMmNmMi4u
-OWJiZjIyYyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3ByaXZhdGUu
-aAo+ICsrKyBiL2RyaXZlcnMvdmZpby9wY2kvdmZpb19wY2lfcHJpdmF0ZS5oCj4gQEAgLTEyNSw2
-ICsxMjUsMTEgQEAgc3RydWN0IHZmaW9fcGNpX2RldmljZSB7Cj4gIAlzdHJ1Y3QgbGlzdF9oZWFk
-CWR1bW15X3Jlc291cmNlc19saXN0Owo+ICAJc3RydWN0IG11dGV4CQlpb2V2ZW50ZmRzX2xvY2s7
-Cj4gIAlzdHJ1Y3QgbGlzdF9oZWFkCWlvZXZlbnRmZHNfbGlzdDsKPiArCWJvb2wJCQlub2ludHht
-YXNrOwo+ICsjaWZkZWYgQ09ORklHX1ZGSU9fUENJX1ZHQQo+ICsJYm9vbAkJCWRpc2FibGVfdmdh
-Owo+ICsjZW5kaWYKPiArCWJvb2wJCQlkaXNhYmxlX2lkbGVfZDM7CgpNb3JlIHJlZmFjdG9yaW5n
-LCBkbyB0aGVzZSBzZXBhcmF0ZWx5IHNvIHRoZXkgY2FuIGJlIHByb3Blcmx5IHJldmlld2VkCndp
-dGhvdXQgdHJ5aW5nIHRvIHNwb3QgY2hhbmdlcyBpbiAzMDAwIGxpbmVzIG9mIGRpZmYuICBJIHRo
-aW5rIHdoYXQKeW91J3ZlIGRvbmUgaXMgc291bmQsIGl0IGp1c3QgbmVlZHMgdG8gYmUgcmVmYWN0
-b3JlZCBzZXBhcmF0ZSBmcm9tIHRoZQpjb2RlIG1vdmVzIHNvIHRoYXQgaXQgY2FuIGJlIHJldmll
-d2VkLiAgVGhhbmtzIQoKQWxleApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+On Tue, May 14, 2019 at 3:24 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 14/05/2019 02:54, Rob Clark wrote:
+> > On Mon, May 13, 2019 at 11:37 AM Jean-Philippe Brucker
+> > <jean-philippe.brucker@arm.com> wrote:
+> >>
+> >> Hi Rob,
+> >>
+> >> On 10/05/2019 19:23, Rob Clark wrote:
+> >>> On Fri, Sep 22, 2017 at 2:58 AM Jean-Philippe Brucker
+> >>> <jean-philippe.brucker@arm.com> wrote:
+> >>>>
+> >>>> On 22/09/17 10:02, Joerg Roedel wrote:
+> >>>>> On Tue, Sep 19, 2017 at 10:23:43AM -0400, Rob Clark wrote:
+> >>>>>> I would like to decide in the IRQ whether or not to queue work or not,
+> >>>>>> because when we get a gpu fault, we tend to get 1000's of gpu faults
+> >>>>>> all at once (and I really only need to handle the first one).  I
+> >>>>>> suppose that could also be achieved by having a special return value
+> >>>>>> from the fault handler to say "call me again from a wq"..
+> >>>>>>
+> >>>>>> Note that in the drm driver I already have a suitable wq to queue the
+> >>>>>> work, so it really doesn't buy me anything to have the iommu driver
+> >>>>>> toss things off to a wq for me.  Might be a different situation for
+> >>>>>> other drivers (but I guess mostly other drivers are using iommu API
+> >>>>>> indirectly via dma-mapping?)
+> >>>>>
+> >>>>> Okay, so since you are the only user for now, we don't need a
+> >>>>> work-queue. But I still want the ->resume call-back to be hidden in the
+> >>>>> iommu code and not be exposed to users.
+> >>>>>
+> >>>>> We already have per-domain fault-handlers, so the best solution for now
+> >>>>> is to call ->resume from report_iommu_fault() when the fault-handler
+> >>>>> returns a special value.
+> >>>>
+> >>>> The problem is that report_iommu_fault is called from IRQ context by the
+> >>>> SMMU driver, so the device driver callback cannot sleep.
+> >>>>
+> >>>> So if the device driver needs to be able to sleep between fault report and
+> >>>> resume, as I understand Rob needs for writing debugfs, we can either:
+> >>>>
+> >>>> * call report_iommu_fault from higher up, in a thread or workqueue.
+> >>>> * split the fault reporting as this patch proposes. The exact same
+> >>>>    mechanism is needed for the vSVM work by Intel: in order to inject fault
+> >>>>    into the guest, they would like to have an atomic notifier registered by
+> >>>>    VFIO for passing down the Page Request, and a new function in the IOMMU
+> >>>>    API to resume/complete the fault.
+> >>>>
+> >>>
+> >>> So I was thinking about this topic again.. I would still like to get
+> >>> some sort of async resume so that I can wire up GPU cmdstream/state
+> >>> logging on iommu fault (without locally resurrecting and rebasing this
+> >>> patch and drm/msm side changes each time I need to debug iommu
+> >>> faults)..
+> >>
+> >> We've been working on the new fault reporting API with Jacob and Eric,
+> >> and I intend to send it out soon. It is supposed to be used for
+> >> reporting faults to guests via VFIO, handling page faults via mm, and
+> >> also reporting events directly to device drivers. Please let us know
+> >> what works and what doesn't in your case
+> >>
+> >> The most recent version of the patches is at
+> >> http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/api
+> >> (git://www.linux-arm.org/linux-jpb.git branch sva/api). Hopefully on the
+> >> list sometimes next week, I'll add you on Cc.
+> >>
+> >> In particular, see commits
+> >>          iommu: Introduce device fault data
+> >>          iommu: Introduce device fault report API
+> >>          iommu: Add recoverable fault reporting
+> >>
+> >> The device driver calls iommu_register_device_fault_handler(dev, cb,
+> >> data). To report a fault, the SMMU driver calls
+> >> iommu_report_device_fault(dev, fault). This calls into the device driver
+> >> directly, there isn't any workqueue. If the fault is recoverable (the
+> >> SMMU driver set type IOMMU_FAULT_PAGE_REQ rather than
+> >> IOMMU_FAULT_DMA_UNRECOV), the device driver calls iommu_page_response()
+> >> once it has dealt with the fault (after sleeping if it needs to). This
+> >> invokes the SMMU driver's resume callback.
+> >
+> > Ok, this sounds at a high level similar to my earlier RFC, in that
+> > resume is split (and that was the main thing I was interested in).
+> > And it does solve one thing I was struggling with, namely that when
+> > the domain is created it doesn't know which iommu device it will be
+> > attached to (given that at least the original arm-smmu.c driver cannot
+> > support stall in all cases)..
+> >
+> > For GPU translation faults, I also don't really need to know if the
+> > faulting translation is stalled until the callback (I mainly want to
+> > not bother to snapshot GPU state if it is not stalled, because in that
+> > case the data we snapshot is unlikely to be related to the fault if
+> > the translation is not stalled).
+> >
+> >> At the moment we use mutexes, so iommu_report_device_fault() can only be
+> >> called from an IRQ thread, which is incompatible with the current SMMUv2
+> >> driver. Either we need to switch the SMMUv2 driver to an IRQ thread, or
+> >> rework the fault handler to be called from an IRQ handler. The reporting
+> >> also has to be per device rather than per domain, and I'm not sure if
+> >> the SMMUv2 driver can deal with this.
+> >
+> > I'll take a closer look at the branch and try to formulate some plan
+> > to add v2 support for this.
+>
+> What's fun is that we should be able to identify a stream ID for most
+> context faults *except* translation faults...
+>
+> We've considered threaded IRQs before, and IIRC the problem with doing
+> it at the architectural level is that in some cases the fault interrupt
+> can only be deasserted by actually resuming/terminating the stalled
+> transaction.
+>
+> > For my cases, the GPU always has it's own iommu device, while display
+> > and other blocks share an apps_smmu.. although this sort of
+> > functionality isn't really required outside of the GPU.. but I'll have
+> > to think a bit about how we can support both cases in the single v2
+> > driver.
+>
+> With the above said, I am in the middle of a big refactoring[1] to allow
+> everyone's imp-def stuff to coexist nicely, so ultimately if qcom
+> implementations can guarantee the appropriate hardware behaviour then
+> they can have their own interrupt handlers to accommodate this.
+>
+
+Ok, maybe I'll hold off a bit and work on other things, to avoid feet stomping..
+
+I don't suppose you have thoughts about split pagetables, which is one
+of the things we want for implementing per-context pagetables?  I
+suppose that is less of an impl thing and more an architecture thing,
+but maybe no one on other implementations wants this?
+
+BR,
+-R
+
+
+> Robin.
+>
+> [1]
+> http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/smmu-impl
+> - note that this is very, very WIP right now
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
