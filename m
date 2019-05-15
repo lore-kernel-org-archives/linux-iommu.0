@@ -2,66 +2,68 @@ Return-Path: <SRS0=sIeu=TP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C9A8C04E53
-	for <iommu@archiver.kernel.org>; Wed, 15 May 2019 15:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B90EEC04E53
+	for <iommu@archiver.kernel.org>; Wed, 15 May 2019 15:56:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4CEAA2084E
-	for <iommu@archiver.kernel.org>; Wed, 15 May 2019 15:53:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CEAA2084E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 90DE42084E
+	for <iommu@archiver.kernel.org>; Wed, 15 May 2019 15:56:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 90DE42084E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E4F845AA;
-	Wed, 15 May 2019 15:53:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 686B2AB9;
+	Wed, 15 May 2019 15:56:08 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A0C0E5A8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D1333AA5
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 15 May 2019 15:53:10 +0000 (UTC)
+	Wed, 15 May 2019 15:56:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 663EE8D
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 21F32837
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 15 May 2019 15:53:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 06D34A78;
-	Wed, 15 May 2019 08:53:10 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 594E63F703;
-	Wed, 15 May 2019 08:53:08 -0700 (PDT)
-Subject: Re: [PATCH v3 02/16] iommu: Introduce cache_invalidate API
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Auger Eric <eric.auger@redhat.com>
-References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556922737-76313-3-git-send-email-jacob.jun.pan@linux.intel.com>
-	<d32d3d19-11c9-4af9-880b-bb8ebefd4f7f@redhat.com>
-	<44d5ba37-a9e9-cc7a-2a3a-d32b840afa29@arm.com>
-	<7807afe9-efab-9f48-4ca0-2332a7a54950@redhat.com>
-	<1a5a5fad-ed21-5c79-9a9e-ff21fadfb95f@arm.com>
-	<1edd45e6-4da3-e393-36b2-9e63cd5f7607@redhat.com>
-	<4094baf1-6cf5-a33b-4717-08ced0673c50@arm.com>
-	<5d2c0279-7fa9-3d11-9999-583f9ed329ba@redhat.com>
-	<20190514105509.7865ebc0@jacob-builder>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <d555d96d-a3ec-53e2-2c49-b783bb2d6806@arm.com>
-Date: Wed, 15 May 2019 16:52:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Wed, 15 May 2019 15:56:07 +0000 (UTC)
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	15 May 2019 08:56:06 -0700
+X-ExtLoop1: 1
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+	by orsmga006.jf.intel.com with ESMTP; 15 May 2019 08:56:04 -0700
+Date: Wed, 15 May 2019 08:54:26 -0700
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [RFC PATCH v3 03/21] x86/hpet: Calculate ticks-per-second in a
+	separate function
+Message-ID: <20190515155426.GA10526@ranerica-svr.sc.intel.com>
+References: <1557842534-4266-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1557842534-4266-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<25922025-d551-0865-b364-b53ef34e6b6a@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20190514105509.7865ebc0@jacob-builder>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <25922025-d551-0865-b364-b53ef34e6b6a@infradead.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+	Tony Luck <tony.luck@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+	Clemens Ladisch <clemens@ladisch.de>, linux-kernel@vger.kernel.org,
+	Stephane Eranian <eranian@google.com>,
+	Ricardo Neri <ricardo.neri@intel.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	iommu@lists.linux-foundation.org,
+	Philippe Ombredanne <pombredanne@nexb.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,18 +81,71 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 14/05/2019 18:55, Jacob Pan wrote:
-> Yes, I agree to replace the standalone __64 pasid with this struct.
-> Looks more inline with address selective info., Just to double confirm
-> the new struct.
+On Tue, May 14, 2019 at 07:23:47AM -0700, Randy Dunlap wrote:
+> On 5/14/19 7:01 AM, Ricardo Neri wrote:
+> > It is easier to compute the expiration times of an HPET timer by using
+> > its frequency (i.e., the number of times it ticks in a second) than its
+> > period, as given in the capabilities register.
+> > 
+> > In addition to the HPET char driver, the HPET-based hardlockup detector
+> > will also need to know the timer's frequency. Thus, create a common
+> > function that both can use.
+> > 
+> > Cc: "H. Peter Anvin" <hpa@zytor.com>
+> > Cc: Ashok Raj <ashok.raj@intel.com>
+> > Cc: Andi Kleen <andi.kleen@intel.com>
+> > Cc: Tony Luck <tony.luck@intel.com>
+> > Cc: Clemens Ladisch <clemens@ladisch.de>
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > Cc: Philippe Ombredanne <pombredanne@nexb.com>
+> > Cc: Kate Stewart <kstewart@linuxfoundation.org>
+> > Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> > Cc: Stephane Eranian <eranian@google.com>
+> > Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+> > Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+> > Cc: x86@kernel.org
+> > Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+> > ---
+> >  drivers/char/hpet.c  | 31 ++++++++++++++++++++++++-------
+> >  include/linux/hpet.h |  1 +
+> >  2 files changed, 25 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/char/hpet.c b/drivers/char/hpet.c
+> > index d0ad85900b79..bdcbecfdb858 100644
+> > --- a/drivers/char/hpet.c
+> > +++ b/drivers/char/hpet.c
+> > @@ -836,6 +836,29 @@ static unsigned long hpet_calibrate(struct hpets *hpetp)
+> >  	return ret;
+> >  }
+> >  
+> > +u64 hpet_get_ticks_per_sec(u64 hpet_caps)
+> > +{
+> > +	u64 ticks_per_sec, period;
+> > +
+> > +	period = (hpet_caps & HPET_COUNTER_CLK_PERIOD_MASK) >>
+> > +		 HPET_COUNTER_CLK_PERIOD_SHIFT; /* fs, 10^-15 */
+> > +
+> > +	/*
+> > +	 * The frequency is the reciprocal of the period. The period is given
+> > +	 * femtoseconds per second. Thus, prepare a dividend to obtain the
 > 
-> Jean, will you put this in your sva/api repo?
+> 	 * in femtoseconds per second.
+> 
 
-Yes, I pushed it along with some documentation fixes (mainly getting rid
-of scripts/kernel-doc warnings and outputting valid rst)
+Thanks for your review Randy! I'll fix this grammar issue.
+> > +	 * frequency in ticks per second.
+> > +	 */
+> > +
+> > +	/* 10^15 femtoseconds per second */
+> > +	ticks_per_sec = 1000000000000000uLL;
+> 
+> 	ULL is overwhelmingly used in the kernel.
+> 
 
-Thanks,
-Jean
+Sure, I'll update it.
+
+BR,
+Ricardo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
