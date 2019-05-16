@@ -2,59 +2,76 @@ Return-Path: <SRS0=5HPr=TQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49D2C46460
-	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 08:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBF6C04AB4
+	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 09:30:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 816F9205C9
-	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 08:48:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 816F9205C9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 39676206A3
+	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 09:30:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="BFRH/DYu";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="oba4MSJv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 39676206A3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B3634C2C;
-	Thu, 16 May 2019 08:48:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C0ABEC21;
+	Thu, 16 May 2019 09:30:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C546DC21
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A753DBA9
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 16 May 2019 08:48:18 +0000 (UTC)
+	Thu, 16 May 2019 09:30:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7F5D3878
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 24C9687C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 16 May 2019 08:48:18 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	Thu, 16 May 2019 09:30:33 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 610A360A4E; Thu, 16 May 2019 09:30:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1557999032;
+	bh=BQeF1SghZ/cw9v6x9DZFOORthYlBbnNOG2SlS537v3U=;
+	h=From:To:Cc:Subject:Date:From;
+	b=BFRH/DYu1wXg3QQWrs7g+LzRHUCwO4azI6zhO/c/QseXFWoSu536x+50Ct9Hi8Sc+
+	jURtj1I6iMOxWLBMZ22PsImxlxRKXFYA+itDWEjj6+jEK7urJh3GVWp7BgzBY0B5u+
+	ZaWAZJ8C9vxpI3mmws94cCoGjouLK/PNXDDkmaRA=
+Received: from blr-ubuntu-41.ap.qualcomm.com
+	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
+	[103.229.18.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 14AB430820C9;
-	Thu, 16 May 2019 08:48:18 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id B5A875C205;
-	Thu, 16 May 2019 08:48:13 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	dwmw2@infradead.org, lorenzo.pieralisi@arm.com, robin.murphy@arm.com,
-	will.deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com
-Subject: [PATCH v2 7/7] iommu/vt-d: Differentiate relaxable and non relaxable
-	RMRRs
-Date: Thu, 16 May 2019 10:47:20 +0200
-Message-Id: <20190516084720.10498-8-eric.auger@redhat.com>
-In-Reply-To: <20190516084720.10498-1-eric.auger@redhat.com>
-References: <20190516084720.10498-1-eric.auger@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.47]);
-	Thu, 16 May 2019 08:48:18 +0000 (UTC)
-Cc: alex.williamson@redhat.com
+	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 38E0260A43;
+	Thu, 16 May 2019 09:30:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1557999030;
+	bh=BQeF1SghZ/cw9v6x9DZFOORthYlBbnNOG2SlS537v3U=;
+	h=From:To:Cc:Subject:Date:From;
+	b=oba4MSJvFuLeFSdasc4U5oYTvBGipxJu6XZ/MUkV+RP0S1DkD/+EEg0sBfTYTgr3q
+	c4s51rYoxO5UjSMjWU7Amj2vInP4frGltunoa3Mfoh9v/HKqYqv3JFnfpZ8S4H+LwO
+	u5oY7GHPLQJNLTEUvwfkbwukao23Jg0UCSDhwrME=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 38E0260A43
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org,
+	iommu@lists.linux-foundation.org
+Subject: [PATCH v5 1/1] iommu/io-pgtable-arm: Add support to use system cache
+Date: Thu, 16 May 2019 15:00:20 +0530
+Message-Id: <20190516093020.18028-1-vivek.gautam@codeaurora.org>
+X-Mailer: git-send-email 2.16.1.72.g5be1f00a9a70
+Cc: pdaly@codeaurora.org, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, pratikp@codeaurora.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,57 +84,142 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Now we have a new IOMMU_RESV_DIRECT_RELAXABLE reserved memory
-region type, let's report USB and GFX RMRRs as relaxable ones.
+Few Qualcomm platforms such as, sdm845 have an additional outer
+cache called as System cache, aka. Last level cache (LLC) that
+allows non-coherent devices to upgrade to using caching.
+This cache sits right before the DDR, and is tightly coupled
+with the memory controller. The clients using this cache request
+their slices from this system cache, make it active, and can then
+start using it.
 
-This allows to have a finer reporting at IOMMU API level of
-reserved memory regions. This will be exploitable by VFIO to
-define the usable IOVA range and detect potential conflicts
-between the guest physical address space and host reserved
-regions.
+There is a fundamental assumption that non-coherent devices can't
+access caches. This change adds an exception where they *can* use
+some level of cache despite still being non-coherent overall.
+The coherent devices that use cacheable memory, and CPU make use of
+this system cache by default.
 
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Looking at memory types, we have following -
+a) Normal uncached :- MAIR 0x44, inner non-cacheable,
+                      outer non-cacheable;
+b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
+                      outer read write-back non-transient;
+                      attribute setting for coherenet I/O devices.
+and, for non-coherent i/o devices that can allocate in system cache
+another type gets added -
+c) Normal sys-cached :- MAIR 0xf4, inner non-cacheable,
+                        outer read write-back non-transient
+
+Coherent I/O devices use system cache by marking the memory as
+normal cached.
+Non-coherent I/O devices should mark the memory as normal
+sys-cached in page tables to use system cache.
+
+Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
 ---
- drivers/iommu/intel-iommu.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a36604f4900f..af1d65fdedfc 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5493,7 +5493,9 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 	for_each_rmrr_units(rmrr) {
- 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
- 					  i, i_dev) {
-+			struct pci_dev *pdev = to_pci_dev(device);
- 			struct iommu_resv_region *resv;
-+			enum iommu_resv_type type;
- 			size_t length;
+V3 version of this patch and related series can be found at [1].
+V4 of this patch is available at [2].
+
+The example usage of how a smmu master can make use of this protection
+flag and set the correct memory attributes to start using system cache,
+can be found at [3]; and here at [3] IOMMU_UPSTREAM_HINT is same as
+IOMMU_QCOM_SYS_CACHE.
+
+Changes since v4:
+ - Changed ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE to
+   ARM_LPAE_MAIR_ATTR_INC_OWBRWA.
+ - Changed ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE to
+   ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE.
+ - Added comments to iommu protection flag - IOMMU_QCOM_SYS_CACHE.
+
+Changes since v3:
+ - Dropping support to cache i/o page tables to system cache. Getting support
+   for data buffers is the first step.
+   Removed io-pgtable quirk and related change to add domain attribute.
+
+Glmark2 numbers on SDM845 based cheza board:
+
+S.No.|	with LLC support   |	without LLC support
+     |	for data buffers   |
+---------------------------------------------------		
+1    |	4480; 72.3fps      |	4042; 65.2fps
+2    |	4500; 72.6fps      |	4039; 65.1fps
+3    |	4523; 72.9fps	   |	4106; 66.2fps
+4    |	4489; 72.4fps	   |	4104; 66.2fps
+5    |	4518; 72.9fps	   |	4072; 65.7fps
+
+[1] https://patchwork.kernel.org/cover/10772629/
+[2] https://lore.kernel.org/patchwork/patch/1072936/
+[3] https://patchwork.kernel.org/patch/10302791/
+
+ drivers/iommu/io-pgtable-arm.c | 9 ++++++++-
+ include/linux/iommu.h          | 6 ++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 4e21efbc4459..2454ac11aa97 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -167,10 +167,12 @@
+ #define ARM_LPAE_MAIR_ATTR_MASK		0xff
+ #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
+ #define ARM_LPAE_MAIR_ATTR_NC		0x44
++#define ARM_LPAE_MAIR_ATTR_INC_OWBRWA	0xf4
+ #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
+ #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
+ #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
+ #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
++#define ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE	3
  
- 			if (i_dev != device &&
-@@ -5501,9 +5503,13 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 				continue;
+ #define ARM_MALI_LPAE_TTBR_ADRMODE_TABLE (3u << 0)
+ #define ARM_MALI_LPAE_TTBR_READ_INNER	BIT(2)
+@@ -470,6 +472,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 		else if (prot & IOMMU_CACHE)
+ 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+ 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++		else if (prot & IOMMU_QCOM_SYS_CACHE)
++			pte |= (ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+ 	}
  
- 			length = rmrr->end_address - rmrr->base_address + 1;
-+
-+			type = (pdev &&
-+				(IS_USB_DEVICE(pdev) || IS_GFX_DEVICE(pdev))) ?
-+				IOMMU_RESV_DIRECT_RELAXABLE : IOMMU_RESV_DIRECT;
-+
- 			resv = iommu_alloc_resv_region(rmrr->base_address,
--						       length, prot,
--						       IOMMU_RESV_DIRECT,
-+						       length, prot, type,
- 						       GFP_ATOMIC);
- 			if (!resv)
- 				break;
+ 	if (prot & IOMMU_NOEXEC)
+@@ -857,7 +862,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	      (ARM_LPAE_MAIR_ATTR_WBRWA
+ 	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
+ 	      (ARM_LPAE_MAIR_ATTR_DEVICE
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
++	      (ARM_LPAE_MAIR_ATTR_INC_OWBRWA
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE));
+ 
+ 	cfg->arm_lpae_s1_cfg.mair[0] = reg;
+ 	cfg->arm_lpae_s1_cfg.mair[1] = 0;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a815cf6f6f47..8ee3fbaf5855 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -41,6 +41,12 @@
+  * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
++/*
++ * Non-coherent masters on few Qualcomm SoCs can use this page protection flag
++ * to set correct cacheability attributes to use an outer level of cache -
++ * last level cache, aka system cache.
++ */
++#define IOMMU_QCOM_SYS_CACHE	(1 << 6)
+ 
+ struct iommu_ops;
+ struct iommu_group;
 -- 
-2.20.1
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
 
 _______________________________________________
 iommu mailing list
