@@ -2,59 +2,61 @@ Return-Path: <SRS0=5HPr=TQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955ACC04E84
-	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 08:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 061BDC04AB4
+	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 08:47:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7325F205C9
-	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 08:47:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7325F205C9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id D77AA205C9
+	for <iommu@archiver.kernel.org>; Thu, 16 May 2019 08:47:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D77AA205C9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 79DB0C58;
-	Thu, 16 May 2019 08:47:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AB3CCC37;
+	Thu, 16 May 2019 08:47:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EBBA9BA9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 480C9BA9
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 16 May 2019 08:47:38 +0000 (UTC)
+	Thu, 16 May 2019 08:47:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 78DD6878
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CEBBE878
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 16 May 2019 08:47:38 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id E875830023EB;
-	Thu, 16 May 2019 08:47:37 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-17.ams2.redhat.com [10.36.116.17])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id B5DF05C205;
-	Thu, 16 May 2019 08:47:34 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	dwmw2@infradead.org, lorenzo.pieralisi@arm.com, robin.murphy@arm.com,
-	will.deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com
-Subject: [PATCH v2 2/7] iommu/vt-d: Duplicate iommu_resv_region objects per
-	device list
-Date: Thu, 16 May 2019 10:47:15 +0200
-Message-Id: <20190516084720.10498-3-eric.auger@redhat.com>
-In-Reply-To: <20190516084720.10498-1-eric.auger@redhat.com>
-References: <20190516084720.10498-1-eric.auger@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.44]);
-	Thu, 16 May 2019 08:47:38 +0000 (UTC)
-Cc: alex.williamson@redhat.com
+	Thu, 16 May 2019 08:47:47 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id 05982AEDB;
+	Thu, 16 May 2019 08:47:46 +0000 (UTC)
+Message-ID: <1557995692.14649.2.camel@suse.com>
+Subject: Re: Linux crash when using FTDI FT232R USB to serial converter on
+	AMD boards.
+From: Oliver Neukum <oneukum@suse.com>
+To: "StarostaCZ@gmail.com" <starostacz@gmail.com>, Joerg Roedel
+	<joro@8bytes.org>, Johan Hovold <johan@kernel.org>
+Date: Thu, 16 May 2019 10:34:52 +0200
+In-Reply-To: <b4c3eba7-758d-7951-afd0-d90a261346e8@gmail.com>
+References: <04503197-a0a9-8b35-6c65-c10f296aab57@gmail.com>
+	<20190429094847.GI26546@localhost> <20190503153716.GE11605@8bytes.org>
+	<8748125e-f360-ff0e-ea15-699bce9e7747@gmail.com>
+	<4e7f0267-eba8-81c3-4036-25924ea9df98@gmail.com>
+	<1557911856.2950.10.camel@suse.com>
+	<3e7ec2f2-ac47-a031-96ba-fa2b9f21ed2e@gmail.com>
+	<1557913582.2950.15.camel@suse.com>
+	<c57ccafd-7ad4-63e4-54c1-e1fb136ebeed@gmail.com>
+	<1557928483.2950.18.camel@suse.com>
+	<4a48a017-fbcb-619f-f2d5-4d627a673021@gmail.com>
+	<1557993530.14649.0.camel@suse.com>
+	<b4c3eba7-758d-7951-afd0-d90a261346e8@gmail.com>
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Cc: iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+	Mathias Nyman <mathias.nyman@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,121 +74,31 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-intel_iommu_get_resv_regions() aims to return the list of
-reserved regions accessible by a given @device. However several
-devices can access the same reserved memory region and when
-building the list it is not safe to use a single iommu_resv_region
-object, whose container is the RMRR. This iommu_resv_region must
-be duplicated per device reserved region list.
+On Do, 2019-05-16 at 10:20 +0200,  StarostaCZ@gmail.com  wrote:
+> Dne 16.5.2019 v 9:58 Oliver Neukum napsal(a):
+> > > > 2.Send a new report to the corresponding mailing list
+> > > 
+> > > Which mailing list is correct?
+> > 
+> > In that case linux-usb@vger.kernel.org
+> > 
+> > 	HTH
+> > 		Oliver
+> > 
+> 
+> Is there some rules how to send bug report? Or I can send report with 
+> "my amateur description"?
 
-Let's remove the struct iommu_resv_region from the RMRR unit
-and allocate the iommu_resv_region directly in
-intel_iommu_get_resv_regions().
+Mention
 
-Fixes: 0659b8dc45a6 ("iommu/vt-d: Implement reserved region get/put callbacks")
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
----
- drivers/iommu/intel-iommu.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+1. kernel version
+2. whether this is known to be a regression
+3. include the log with iommu disabled and mention that you disabled
+the IOMMU
+4. Include the output of lsusb
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2be36dff189a..590a0e78d11d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -322,7 +322,6 @@ struct dmar_rmrr_unit {
- 	u64	end_address;		/* reserved end address */
- 	struct dmar_dev_scope *devices;	/* target devices */
- 	int	devices_cnt;		/* target device count */
--	struct iommu_resv_region *resv; /* reserved region handle */
- };
- 
- struct dmar_atsr_unit {
-@@ -4205,7 +4204,6 @@ static inline void init_iommu_pm_ops(void) {}
- int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
- {
- 	struct acpi_dmar_reserved_memory *rmrr;
--	int prot = DMA_PTE_READ|DMA_PTE_WRITE;
- 	struct dmar_rmrr_unit *rmrru;
- 	size_t length;
- 
-@@ -4219,22 +4217,16 @@ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
- 	rmrru->end_address = rmrr->end_address;
- 
- 	length = rmrr->end_address - rmrr->base_address + 1;
--	rmrru->resv = iommu_alloc_resv_region(rmrr->base_address, length, prot,
--					      IOMMU_RESV_DIRECT, GFP_KERNEL);
--	if (!rmrru->resv)
--		goto free_rmrru;
- 
- 	rmrru->devices = dmar_alloc_dev_scope((void *)(rmrr + 1),
- 				((void *)rmrr) + rmrr->header.length,
- 				&rmrru->devices_cnt);
- 	if (rmrru->devices_cnt && rmrru->devices == NULL)
--		goto free_all;
-+		goto free_rmrru;
- 
- 	list_add(&rmrru->list, &dmar_rmrr_units);
- 
- 	return 0;
--free_all:
--	kfree(rmrru->resv);
- free_rmrru:
- 	kfree(rmrru);
- out:
-@@ -4452,7 +4444,6 @@ static void intel_iommu_free_dmars(void)
- 	list_for_each_entry_safe(rmrru, rmrr_n, &dmar_rmrr_units, list) {
- 		list_del(&rmrru->list);
- 		dmar_free_dev_scope(&rmrru->devices, &rmrru->devices_cnt);
--		kfree(rmrru->resv);
- 		kfree(rmrru);
- 	}
- 
-@@ -5470,6 +5461,7 @@ static void intel_iommu_remove_device(struct device *dev)
- static void intel_iommu_get_resv_regions(struct device *device,
- 					 struct list_head *head)
- {
-+	int prot = DMA_PTE_READ|DMA_PTE_WRITE;
- 	struct iommu_resv_region *reg;
- 	struct dmar_rmrr_unit *rmrr;
- 	struct device *i_dev;
-@@ -5479,10 +5471,21 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 	for_each_rmrr_units(rmrr) {
- 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
- 					  i, i_dev) {
-+			struct iommu_resv_region *resv;
-+			size_t length;
-+
- 			if (i_dev != device)
- 				continue;
- 
--			list_add_tail(&rmrr->resv->list, head);
-+			length = rmrr->end_address - rmrr->base_address + 1;
-+			resv = iommu_alloc_resv_region(rmrr->base_address,
-+						       length, prot,
-+						       IOMMU_RESV_DIRECT,
-+						       GFP_ATOMIC);
-+			if (!resv)
-+				break;
-+
-+			list_add_tail(&resv->list, head);
- 		}
- 	}
- 	rcu_read_unlock();
-@@ -5500,10 +5503,8 @@ static void intel_iommu_put_resv_regions(struct device *dev,
- {
- 	struct iommu_resv_region *entry, *next;
- 
--	list_for_each_entry_safe(entry, next, head, list) {
--		if (entry->type == IOMMU_RESV_MSI)
--			kfree(entry);
--	}
-+	list_for_each_entry_safe(entry, next, head, list)
-+		kfree(entry);
- }
- 
- int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
--- 
-2.20.1
+	HTH
+		Oliver
 
 _______________________________________________
 iommu mailing list
