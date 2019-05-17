@@ -4,55 +4,91 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A66AC04E84
-	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 16:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 602DCC04AB4
+	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 18:04:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 169232082E
-	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 16:41:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 169232082E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3F6442168B
+	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 18:04:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F6442168B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C1726A49;
-	Fri, 17 May 2019 16:41:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 02C11B4B;
+	Fri, 17 May 2019 18:04:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBFDE5A8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A297DAEF
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 17 May 2019 16:41:51 +0000 (UTC)
+	Fri, 17 May 2019 18:04:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2CE4D87A
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 98B31836
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 17 May 2019 16:41:51 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
-	[10.5.11.12])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 54D34AC2E5;
-	Fri, 17 May 2019 16:41:48 +0000 (UTC)
-Received: from x1.home (ovpn-117-92.phx2.redhat.com [10.3.117.92])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 83ECD60F9C;
-	Fri, 17 May 2019 16:41:46 +0000 (UTC)
-Date: Fri, 17 May 2019 10:41:43 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Pierre Morel <pmorel@linux.ibm.com>
+	Fri, 17 May 2019 18:04:42 +0000 (UTC)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x4HHw1tB050088
+	for <iommu@lists.linux-foundation.org>; Fri, 17 May 2019 14:04:42 -0400
+Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2shysbw2pq-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Fri, 17 May 2019 14:04:41 -0400
+Received: from localhost
+	by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	Only! Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <pmorel@linux.ibm.com>;
+	Fri, 17 May 2019 19:04:39 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+	by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Fri, 17 May 2019 19:04:36 +0100
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com
+	[9.149.105.62])
+	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x4HI4Y8p47644864
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Fri, 17 May 2019 18:04:34 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AF81FAE051;
+	Fri, 17 May 2019 18:04:34 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0DBA4AE045;
+	Fri, 17 May 2019 18:04:34 +0000 (GMT)
+Received: from [9.145.153.112] (unknown [9.145.153.112])
+	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Fri, 17 May 2019 18:04:33 +0000 (GMT)
 Subject: Re: [PATCH v2 4/4] vfio: vfio_iommu_type1: implement
 	VFIO_IOMMU_INFO_CAPABILITIES
-Message-ID: <20190517104143.240082b5@x1.home>
-In-Reply-To: <1558109810-18683-5-git-send-email-pmorel@linux.ibm.com>
+To: Alex Williamson <alex.williamson@redhat.com>
 References: <1558109810-18683-1-git-send-email-pmorel@linux.ibm.com>
 	<1558109810-18683-5-git-send-email-pmorel@linux.ibm.com>
-Organization: Red Hat
+	<20190517104143.240082b5@x1.home>
+From: Pierre Morel <pmorel@linux.ibm.com>
+Date: Fri, 17 May 2019 20:04:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.38]);
-	Fri, 17 May 2019 16:41:50 +0000 (UTC)
+In-Reply-To: <20190517104143.240082b5@x1.home>
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+x-cbid: 19051718-0028-0000-0000-0000036ED32E
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19051718-0029-0000-0000-0000242E734F
+Message-Id: <92b6ad4e-9a49-636b-9225-acca0bec4bb7@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-05-17_11:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=891 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1905170106
 Cc: linux-s390@vger.kernel.org, pasic@linux.vnet.ibm.com, kvm@vger.kernel.org,
 	heiko.carstens@de.ibm.com, sebott@linux.vnet.ibm.com,
 	walling@linux.ibm.com, linux-kernel@vger.kernel.org,
@@ -70,198 +106,73 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: pmorel@linux.ibm.com
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, 17 May 2019 18:16:50 +0200
-Pierre Morel <pmorel@linux.ibm.com> wrote:
-
-> We implement the capability interface for VFIO_IOMMU_GET_INFO.
-> 
-> When calling the ioctl, the user must specify
-> VFIO_IOMMU_INFO_CAPABILITIES to retrieve the capabilities and
-> must check in the answer if capabilities are supported.
-> 
-> The iommu get_attr callback will be used to retrieve the specific
-> attributes and fill the capabilities.
-> 
-> Currently two Z-PCI specific capabilities will be queried and
-> filled by the underlying Z specific s390_iommu:
-> VFIO_IOMMU_INFO_CAP_QFN for the PCI query function attributes
-> and
-> VFIO_IOMMU_INFO_CAP_QGRP for the PCI query function group.
-> 
-> Other architectures may add new capabilities in the same way
-> after enhancing the architecture specific IOMMU driver.
-> 
-> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 122 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 121 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index d0f731c..9435647 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1658,6 +1658,97 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
->  	return ret;
->  }
->  
-> +static int vfio_iommu_type1_zpci_fn(struct iommu_domain *domain,
-> +				    struct vfio_info_cap *caps, size_t size)
-> +{
-> +	struct vfio_iommu_type1_info_pcifn *info_fn;
-> +	int ret;
-> +
-> +	info_fn = kzalloc(size, GFP_KERNEL);
-> +	if (!info_fn)
-> +		return -ENOMEM;
-> +
-> +	ret = iommu_domain_get_attr(domain, DOMAIN_ATTR_ZPCI_FN,
-> +				    &info_fn->response);
-
-What ensures that the 'struct clp_rsp_query_pci' returned from this
-get_attr remains consistent with a 'struct vfio_iommu_pci_function'?
-Why does the latter contains so many reserved fields (beyond simply
-alignment) for a user API?  What fields of these structures are
-actually useful to userspace?  Should any fields not be exposed to the
-user?  Aren't BAR sizes redundant to what's available through the vfio
-PCI API?  I'm afraid that simply redefining an internal structure as
-the API leaves a lot to be desired too.  Thanks,
-
-Alex
-
-> +	if (ret < 0)
-> +		goto free_fn;
-> +
-> +	info_fn->header.id = VFIO_IOMMU_INFO_CAP_QFN;
-> +	ret = vfio_info_add_capability(caps, &info_fn->header, size);
-> +
-> +free_fn:
-> +	kfree(info_fn);
-> +	return ret;
-> +}
-> +
-> +static int vfio_iommu_type1_zpci_grp(struct iommu_domain *domain,
-> +				     struct vfio_info_cap *caps,
-> +				     size_t grp_size)
-> +{
-> +	struct vfio_iommu_type1_info_pcifg *info_grp;
-> +	int ret;
-> +
-> +	info_grp = kzalloc(grp_size, GFP_KERNEL);
-> +	if (!info_grp)
-> +		return -ENOMEM;
-> +
-> +	ret = iommu_domain_get_attr(domain, DOMAIN_ATTR_ZPCI_GRP,
-> +				    (void *) &info_grp->response);
-> +	if (ret < 0)
-> +		goto free_grp;
-> +	info_grp->header.id = VFIO_IOMMU_INFO_CAP_QGRP;
-> +	ret = vfio_info_add_capability(caps, &info_grp->header, grp_size);
-> +
-> +free_grp:
-> +	kfree(info_grp);
-> +	return ret;
-> +}
-> +
-> +int vfio_iommu_type1_caps(struct vfio_iommu *iommu, struct vfio_info_cap *caps,
-> +			  size_t size)
-> +{
-> +	struct vfio_domain *d;
-> +	unsigned long total_size, fn_size, grp_size;
-> +	int ret;
-> +
-> +	d = list_first_entry(&iommu->domain_list, struct vfio_domain, next);
-> +	if (!d)
-> +		return -ENODEV;
-> +
-> +	/* First compute the size the user must provide */
-> +	total_size = 0;
-> +	fn_size = iommu_domain_get_attr(d->domain,
-> +					DOMAIN_ATTR_ZPCI_FN_SIZE, NULL);
-> +	if (fn_size > 0) {
-> +		fn_size +=  sizeof(struct vfio_info_cap_header);
-> +		total_size += fn_size;
-> +	}
-> +
-> +	grp_size = iommu_domain_get_attr(d->domain,
-> +					 DOMAIN_ATTR_ZPCI_GRP_SIZE, NULL);
-> +	if (grp_size > 0) {
-> +		grp_size +=  sizeof(struct vfio_info_cap_header);
-> +		total_size += grp_size;
-> +	}
-> +
-> +	if (total_size > size) {
-> +		/* Tell caller to call us with a greater buffer */
-> +		caps->size = total_size;
-> +		return 0;
-> +	}
-> +
-> +	if (fn_size) {
-> +		ret = vfio_iommu_type1_zpci_fn(d->domain, caps, fn_size);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	if (grp_size)
-> +		ret = vfio_iommu_type1_zpci_grp(d->domain, caps, grp_size);
-> +
-> +	return ret;
-> +}
-> +
->  static long vfio_iommu_type1_ioctl(void *iommu_data,
->  				   unsigned int cmd, unsigned long arg)
->  {
-> @@ -1679,6 +1770,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  		}
->  	} else if (cmd == VFIO_IOMMU_GET_INFO) {
->  		struct vfio_iommu_type1_info info;
-> +		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
-> +		int ret;
->  
->  		minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
->  
-> @@ -1688,7 +1781,34 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  		if (info.argsz < minsz)
->  			return -EINVAL;
->  
-> -		info.flags = VFIO_IOMMU_INFO_PGSIZES;
-> +		if (info.flags & VFIO_IOMMU_INFO_CAPABILITIES) {
-> +			minsz = offsetofend(struct vfio_iommu_type1_info,
-> +					    cap_offset);
-> +			if (info.argsz < minsz)
-> +				return -EINVAL;
-> +			ret = vfio_iommu_type1_caps(iommu, &caps,
-> +						    info.argsz - sizeof(info));
-> +			if (ret)
-> +				return ret;
-> +		}
-> +		if (caps.size) {
-> +			if (info.argsz < sizeof(info) + caps.size) {
-> +				info.argsz = sizeof(info) + caps.size;
-> +				info.cap_offset = 0;
-> +			} else {
-> +				if (copy_to_user((void __user *)arg +
-> +						 sizeof(info), caps.buf,
-> +						 caps.size)) {
-> +					kfree(caps.buf);
-> +					return -EFAULT;
-> +				}
-> +
-> +				info.cap_offset = sizeof(info);
-> +			}
-> +			kfree(caps.buf);
-> +		}
-> +
-> +		info.flags |= VFIO_IOMMU_INFO_PGSIZES;
->  
->  		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
->  
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTcvMDUvMjAxOSAxODo0MSwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+IE9uIEZyaSwgMTcg
+TWF5IDIwMTkgMTg6MTY6NTAgKzAyMDAKPiBQaWVycmUgTW9yZWwgPHBtb3JlbEBsaW51eC5pYm0u
+Y29tPiB3cm90ZToKPiAKPj4gV2UgaW1wbGVtZW50IHRoZSBjYXBhYmlsaXR5IGludGVyZmFjZSBm
+b3IgVkZJT19JT01NVV9HRVRfSU5GTy4KPj4KPj4gV2hlbiBjYWxsaW5nIHRoZSBpb2N0bCwgdGhl
+IHVzZXIgbXVzdCBzcGVjaWZ5Cj4+IFZGSU9fSU9NTVVfSU5GT19DQVBBQklMSVRJRVMgdG8gcmV0
+cmlldmUgdGhlIGNhcGFiaWxpdGllcyBhbmQKPj4gbXVzdCBjaGVjayBpbiB0aGUgYW5zd2VyIGlm
+IGNhcGFiaWxpdGllcyBhcmUgc3VwcG9ydGVkLgo+Pgo+PiBUaGUgaW9tbXUgZ2V0X2F0dHIgY2Fs
+bGJhY2sgd2lsbCBiZSB1c2VkIHRvIHJldHJpZXZlIHRoZSBzcGVjaWZpYwo+PiBhdHRyaWJ1dGVz
+IGFuZCBmaWxsIHRoZSBjYXBhYmlsaXRpZXMuCj4+Cj4+IEN1cnJlbnRseSB0d28gWi1QQ0kgc3Bl
+Y2lmaWMgY2FwYWJpbGl0aWVzIHdpbGwgYmUgcXVlcmllZCBhbmQKPj4gZmlsbGVkIGJ5IHRoZSB1
+bmRlcmx5aW5nIFogc3BlY2lmaWMgczM5MF9pb21tdToKPj4gVkZJT19JT01NVV9JTkZPX0NBUF9R
+Rk4gZm9yIHRoZSBQQ0kgcXVlcnkgZnVuY3Rpb24gYXR0cmlidXRlcwo+PiBhbmQKPj4gVkZJT19J
+T01NVV9JTkZPX0NBUF9RR1JQIGZvciB0aGUgUENJIHF1ZXJ5IGZ1bmN0aW9uIGdyb3VwLgo+Pgo+
+PiBPdGhlciBhcmNoaXRlY3R1cmVzIG1heSBhZGQgbmV3IGNhcGFiaWxpdGllcyBpbiB0aGUgc2Ft
+ZSB3YXkKPj4gYWZ0ZXIgZW5oYW5jaW5nIHRoZSBhcmNoaXRlY3R1cmUgc3BlY2lmaWMgSU9NTVUg
+ZHJpdmVyLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBQaWVycmUgTW9yZWwgPHBtb3JlbEBsaW51eC5p
+Ym0uY29tPgo+PiAtLS0KPj4gICBkcml2ZXJzL3ZmaW8vdmZpb19pb21tdV90eXBlMS5jIHwgMTIy
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0KPj4gICAxIGZpbGUgY2hh
+bmdlZCwgMTIxIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPj4KPj4gZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMgYi9kcml2ZXJzL3ZmaW8vdmZpb19pb21t
+dV90eXBlMS5jCj4+IGluZGV4IGQwZjczMWMuLjk0MzU2NDcgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZl
+cnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMKPj4gKysrIGIvZHJpdmVycy92ZmlvL3ZmaW9faW9t
+bXVfdHlwZTEuYwo+PiBAQCAtMTY1OCw2ICsxNjU4LDk3IEBAIHN0YXRpYyBpbnQgdmZpb19kb21h
+aW5zX2hhdmVfaW9tbXVfY2FjaGUoc3RydWN0IHZmaW9faW9tbXUgKmlvbW11KQo+PiAgIAlyZXR1
+cm4gcmV0Owo+PiAgIH0KPj4gICAKPj4gK3N0YXRpYyBpbnQgdmZpb19pb21tdV90eXBlMV96cGNp
+X2ZuKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKPj4gKwkJCQkgICAgc3RydWN0IHZmaW9f
+aW5mb19jYXAgKmNhcHMsIHNpemVfdCBzaXplKQo+PiArewo+PiArCXN0cnVjdCB2ZmlvX2lvbW11
+X3R5cGUxX2luZm9fcGNpZm4gKmluZm9fZm47Cj4+ICsJaW50IHJldDsKPj4gKwo+PiArCWluZm9f
+Zm4gPSBremFsbG9jKHNpemUsIEdGUF9LRVJORUwpOwo+PiArCWlmICghaW5mb19mbikKPj4gKwkJ
+cmV0dXJuIC1FTk9NRU07Cj4+ICsKPj4gKwlyZXQgPSBpb21tdV9kb21haW5fZ2V0X2F0dHIoZG9t
+YWluLCBET01BSU5fQVRUUl9aUENJX0ZOLAo+PiArCQkJCSAgICAmaW5mb19mbi0+cmVzcG9uc2Up
+Owo+IAo+IFdoYXQgZW5zdXJlcyB0aGF0IHRoZSAnc3RydWN0IGNscF9yc3BfcXVlcnlfcGNpJyBy
+ZXR1cm5lZCBmcm9tIHRoaXMKPiBnZXRfYXR0ciByZW1haW5zIGNvbnNpc3RlbnQgd2l0aCBhICdz
+dHJ1Y3QgdmZpb19pb21tdV9wY2lfZnVuY3Rpb24nPwo+IFdoeSBkb2VzIHRoZSBsYXR0ZXIgY29u
+dGFpbnMgc28gbWFueSByZXNlcnZlZCBmaWVsZHMgKGJleW9uZCBzaW1wbHkKPiBhbGlnbm1lbnQp
+IGZvciBhIHVzZXIgQVBJPyAgV2hhdCBmaWVsZHMgb2YgdGhlc2Ugc3RydWN0dXJlcyBhcmUKPiBh
+Y3R1YWxseSB1c2VmdWwgdG8gdXNlcnNwYWNlPyAgU2hvdWxkIGFueSBmaWVsZHMgbm90IGJlIGV4
+cG9zZWQgdG8gdGhlCj4gdXNlcj8gIEFyZW4ndCBCQVIgc2l6ZXMgcmVkdW5kYW50IHRvIHdoYXQn
+cyBhdmFpbGFibGUgdGhyb3VnaCB0aGUgdmZpbwo+IFBDSSBBUEk/ICBJJ20gYWZyYWlkIHRoYXQg
+c2ltcGx5IHJlZGVmaW5pbmcgYW4gaW50ZXJuYWwgc3RydWN0dXJlIGFzCj4gdGhlIEFQSSBsZWF2
+ZXMgYSBsb3QgdG8gYmUgZGVzaXJlZCB0b28uICBUaGFua3MsCj4gCj4gQWxleAo+IApIaSBBbGV4
+LAoKSSBzaW1wbHkgdXNlZCB0aGUgc3RydWN0dXJlIHJldHVybmVkIGJ5IHRoZSBmaXJtd2FyZSB0
+byBiZSBzdXJlIHRvIGJlIApjb25zaXN0ZW50IHdpdGggZnV0dXJlIGV2b2x1dGlvbnMgYW5kIGZh
+Y2lsaXRhdGUgdGhlIGNvcHkgZnJvbSBDTFAgYW5kIAp0byB1c2VybGFuZC4KCklmIHlvdSBwcmVm
+ZXIsIGFuZCBJIHVuZGVyc3RhbmQgdGhhdCB0aGlzIGlzIHRoZSBjYXNlLCBJIGNhbiBkZWZpbmUg
+YSAKc3BlY2lmaWMgVkZJT19JT01NVSBzdHJ1Y3R1cmUgd2l0aCBvbmx5IHRoZSBmaWVsZHMgcmVs
+ZXZhbnQgdG8gdGhlIHVzZXIsIApsZWF2aW5nIGZ1dHVyZSBlbmhhbmNlbWVudCBvZiB0aGUgdXNl
+cidzIGludGVyZmFjZSBiZWluZyBpbXBsZW1lbnRlZCBpbiAKYW5vdGhlciBrZXJuZWwgcGF0Y2gg
+d2hlbiB0aGUgdGltZSBoYXMgY29tZS4KCkluIGZhY3QsIHRoZSBzdHJ1Y3Qgd2lsbCBoYXZlIGFs
+bCBkZWZpbmVkIGZpZWxkcyBJIHVzZWQgYnV0IG5vdCB0aGUgQkFSIApzaXplIGFuZCBhZGRyZXNz
+IChhdCBsZWFzdCBmb3Igbm93IGJlY2F1c2UgdGhlcmUgYXJlIHNwZWNpYWwgY2FzZXMgd2UgZG8g
+Cm5vdCBzdXBwb3J0IHlldCB3aXRoIGJhcnMpLgpBbGwgdGhlIHJlc2VydmVkIGZpZWxkcyBjYW4g
+Z28gYXdheS4KCklzIGl0IG1vcmUgY29uZm9ybSB0byB5b3VyIGlkZWE/CgpBbHNvIEkgaGF2ZSAy
+IGludGVyZmFjZXM6CgpzMzkwX2lvbW11LmdldF9hdHRyIDwtSTEtPiBWRklPX0lPTU1VIDwtSTIt
+PiB1c2VybGFuZAoKRG8geW91IHByZWZlcjoKLSAyIGRpZmZlcmVudCBzdHJ1Y3R1cmVzLCBubyBD
+TFAgcmF3IHN0cnVjdHVyZQotIHRoZSBDTFAgcmF3IHN0cnVjdHVyZSBmb3IgSTEgYW5kIGEgVkZJ
+TyBzcGVjaWZpYyBzdHJ1Y3R1cmUgZm9yIEkyCi0gdGhlIHNhbWUgVkZJTyBzdHJ1Y3R1cmUgZm9y
+IGJvdGggSTEgYW5kIEkyCgpUaGFuayB5b3UgaWYgeW91IGNvdWxkIGdpdmUgbWUgYSBkaXJlY3Rp
+b24gZm9yIHRoaXMuCgpUaGFua3MgZm9yIHRoZSBjb21tZW50cywgYW5kIHRoYW5rcyBhIGxvdCB0
+byBoYXZlIGFuc3dlcmVkIHNvIHF1aWNrbHkuCgpQaWVycmUKCgoKCgoKCi0tIApQaWVycmUgTW9y
+ZWwKTGludXgvS1ZNL1FFTVUgaW4gQsO2YmxpbmdlbiAtIEdlcm1hbnkKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
