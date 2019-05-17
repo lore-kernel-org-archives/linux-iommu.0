@@ -7,74 +7,73 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DDCC46470
-	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 16:17:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD31C46460
+	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 16:17:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 221EE2087E
-	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 16:17:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 221EE2087E
+	by mail.kernel.org (Postfix) with ESMTPS id 19AC9216FD
+	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 16:17:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 19AC9216FD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E8443C79;
-	Fri, 17 May 2019 16:17:02 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 24B75C7F;
+	Fri, 17 May 2019 16:17:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CBA87BA4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9786BBA4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 17 May 2019 16:17:00 +0000 (UTC)
+	Fri, 17 May 2019 16:17:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 496C5885
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 76C45886
 	for <iommu@lists.linux-foundation.org>;
 	Fri, 17 May 2019 16:17:00 +0000 (UTC)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x4HG7oIf117271
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x4HG6XJW160240
 	for <iommu@lists.linux-foundation.org>; Fri, 17 May 2019 12:16:59 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2shxy9up2q-1
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2shyu0sb8p-1
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
 	for <iommu@lists.linux-foundation.org>; Fri, 17 May 2019 12:16:59 -0400
 Received: from localhost
-	by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
 	Only! Violators will be prosecuted
 	for <iommu@lists.linux-foundation.org> from <pmorel@linux.ibm.com>;
 	Fri, 17 May 2019 17:16:57 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-	by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway:
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+	by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
 	Authorized Use Only! Violators will be prosecuted; 
 	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Fri, 17 May 2019 17:16:53 +0100
+	Fri, 17 May 2019 17:16:55 +0100
 Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
 	[9.149.105.232])
-	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x4HGGqSq18743538
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x4HGGrbY42139690
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Fri, 17 May 2019 16:16:52 GMT
+	verify=OK); Fri, 17 May 2019 16:16:53 GMT
 Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1313552067;
-	Fri, 17 May 2019 16:16:52 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 5B7E852057;
+	Fri, 17 May 2019 16:16:53 +0000 (GMT)
 Received: from morel-ThinkPad-W530.boeblingen.de.ibm.com (unknown
 	[9.145.153.112])
-	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 7F1D35206D;
-	Fri, 17 May 2019 16:16:51 +0000 (GMT)
+	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id BE01E52076;
+	Fri, 17 May 2019 16:16:52 +0000 (GMT)
 From: Pierre Morel <pmorel@linux.ibm.com>
 To: sebott@linux.vnet.ibm.com
-Subject: [PATCH v2 1/4] s390: pci: Exporting access to CLP PCI function and
-	PCI group
-Date: Fri, 17 May 2019 18:16:47 +0200
+Subject: [PATCH v2 3/4] s390: iommu: Adding get attributes for s390_iommu
+Date: Fri, 17 May 2019 18:16:49 +0200
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558109810-18683-1-git-send-email-pmorel@linux.ibm.com>
 References: <1558109810-18683-1-git-send-email-pmorel@linux.ibm.com>
 X-TM-AS-GCONF: 00
-x-cbid: 19051716-4275-0000-0000-00000335E464
+x-cbid: 19051716-0012-0000-0000-0000031CCC95
 X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19051716-4276-0000-0000-0000384570A3
-Message-Id: <1558109810-18683-2-git-send-email-pmorel@linux.ibm.com>
+x-cbparentid: 19051716-0013-0000-0000-000021557328
+Message-Id: <1558109810-18683-4-git-send-email-pmorel@linux.ibm.com>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
 	definitions=2019-05-17_09:, , signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
@@ -107,147 +106,131 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-For the generic implementation of VFIO PCI we need to retrieve
-the hardware configuration for the PCI functions and the
-PCI function groups.
+We add the "get attributes" callback to the S390 iommu operations
+to retrieve the S390 specific attributes through the call of zPCI
+dedicated CLP functions.
 
-We modify the internal function using CLP Query PCI function and
-CLP query PCI function group so that they can be called from
-outside the S390 architecture PCI code and prefix the two
-functions with "zdev" to make clear that they can be called
-knowing only the associated zdevice.
+The caller can use the following attributes and retrieve:
+DOMAIN_ATTR_ZPCI_FN_SIZE: the size of the Z-PCI function attributes
+DOMAIN_ATTR_ZPCI_GRP_SIZE: the size of the Z-PCI function group attributes
+DOMAIN_ATTR_ZPCI_FN: the Z-PCI function attributes
+DOMAIN_ATTR_ZPCI_GRP: the Z-PCI function group attributes
 
 Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Sebastian Ott <sebott@linux.ibm.com>
 ---
- arch/s390/include/asm/pci.h |  3 ++
- arch/s390/pci/pci_clp.c     | 70 +++++++++++++++++++++++----------------------
- 2 files changed, 39 insertions(+), 34 deletions(-)
+ drivers/iommu/s390-iommu.c | 77 ++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h      |  4 +++
+ 2 files changed, 81 insertions(+)
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 305befd..e66b246 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -261,4 +261,7 @@ cpumask_of_pcibus(const struct pci_bus *bus)
- 
- #endif /* CONFIG_NUMA */
- 
-+int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-+			 struct clp_req_rsp_query_pci_grp *rrb);
-+int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb);
- #endif
-diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-index 3a36b07..c57f675 100644
---- a/arch/s390/pci/pci_clp.c
-+++ b/arch/s390/pci/pci_clp.c
-@@ -113,31 +113,16 @@ static void clp_store_query_pci_fngrp(struct zpci_dev *zdev,
- 	}
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 22d4db3..98082f0 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -363,6 +363,82 @@ void zpci_destroy_iommu(struct zpci_dev *zdev)
+ 	iommu_device_sysfs_remove(&zdev->iommu_dev);
  }
  
--static int clp_query_pci_fngrp(struct zpci_dev *zdev, u8 pfgid)
-+int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-+			 struct clp_req_rsp_query_pci_grp *rrb)
- {
--	struct clp_req_rsp_query_pci_grp *rrb;
--	int rc;
--
--	rrb = clp_alloc_block(GFP_KERNEL);
--	if (!rrb)
--		return -ENOMEM;
--
- 	memset(rrb, 0, sizeof(*rrb));
- 	rrb->request.hdr.len = sizeof(rrb->request);
- 	rrb->request.hdr.cmd = CLP_QUERY_PCI_FNGRP;
- 	rrb->response.hdr.len = sizeof(rrb->response);
--	rrb->request.pfgid = pfgid;
-+	rrb->request.pfgid = zdev->pfgid;
- 
--	rc = clp_req(rrb, CLP_LPS_PCI);
--	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK)
--		clp_store_query_pci_fngrp(zdev, &rrb->response);
--	else {
--		zpci_err("Q PCI FGRP:\n");
--		zpci_err_clp(rrb->response.hdr.rsp, rc);
--		rc = -EIO;
--	}
--	clp_free_block(rrb);
--	return rc;
-+	return clp_req(rrb, CLP_LPS_PCI);
- }
- 
- static int clp_store_query_pci_fn(struct zpci_dev *zdev,
-@@ -174,32 +159,49 @@ static int clp_store_query_pci_fn(struct zpci_dev *zdev,
- 	return 0;
- }
- 
--static int clp_query_pci_fn(struct zpci_dev *zdev, u32 fh)
-+int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb)
++struct zpci_dev *get_zpci(struct s390_domain *s390_domain)
 +{
++	struct s390_domain_device *domain_device;
 +
-+	memset(rrb, 0, sizeof(*rrb));
-+	rrb->request.hdr.len = sizeof(rrb->request);
-+	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
-+	rrb->response.hdr.len = sizeof(rrb->response);
-+	rrb->request.fh = zdev->fh;
-+
-+	return clp_req(rrb, CLP_LPS_PCI);
++	domain_device = list_first_entry(&s390_domain->devices,
++					 struct s390_domain_device, list);
++	if (!domain_device)
++		return NULL;
++	return domain_device->zdev;
 +}
 +
-+static int clp_query_pci(struct zpci_dev *zdev)
- {
- 	struct clp_req_rsp_query_pci *rrb;
-+	struct clp_req_rsp_query_pci_grp *grrb;
- 	int rc;
- 
- 	rrb = clp_alloc_block(GFP_KERNEL);
- 	if (!rrb)
- 		return -ENOMEM;
- 
--	memset(rrb, 0, sizeof(*rrb));
--	rrb->request.hdr.len = sizeof(rrb->request);
--	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
--	rrb->response.hdr.len = sizeof(rrb->response);
--	rrb->request.fh = fh;
--
--	rc = clp_req(rrb, CLP_LPS_PCI);
--	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK) {
--		rc = clp_store_query_pci_fn(zdev, &rrb->response);
--		if (rc)
--			goto out;
--		rc = clp_query_pci_fngrp(zdev, rrb->response.pfgid);
--	} else {
++static int s390_domain_get_fn(struct iommu_domain *domain, void *data)
++{
++	struct zpci_dev *zdev;
++	struct clp_req_rsp_query_pci *rrb;
++	int rc;
++
++	zdev = get_zpci(to_s390_domain(domain));
++	if (!zdev)
++		return -ENODEV;
++	rrb = (struct clp_req_rsp_query_pci *)
++	      __get_free_pages(GFP_KERNEL, get_order(CLP_BLK_SIZE));
++	if (!rrb)
++		return -ENOMEM;
 +	rc = zdev_query_pci_fn(zdev, rrb);
-+	if (rc || rrb->response.hdr.rsp != CLP_RC_OK) {
- 		zpci_err("Q PCI FN:\n");
- 		zpci_err_clp(rrb->response.hdr.rsp, rc);
- 		rc = -EIO;
-+		goto out;
- 	}
-+	rc = clp_store_query_pci_fn(zdev, &rrb->response);
-+	if (rc)
-+		goto out;
 +
-+	grrb = (struct clp_req_rsp_query_pci_grp *)rrb;
-+	rc = zdev_query_pci_fngrp(zdev, grrb);
-+	if (rc || grrb->response.hdr.rsp != CLP_RC_OK) {
-+		zpci_err("Q PCI FGRP:\n");
-+		zpci_err_clp(grrb->response.hdr.rsp, rc);
++	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK)
++		memcpy(data, &rrb->response, sizeof(struct clp_rsp_query_pci));
++	else
 +		rc = -EIO;
-+		goto out;
-+	}
-+	clp_store_query_pci_fngrp(zdev, &grrb->response);
++	free_pages((unsigned long) rrb, get_order(CLP_BLK_SIZE));
++	return rc;
++}
 +
- out:
- 	clp_free_block(rrb);
- 	return rc;
-@@ -219,7 +221,7 @@ int clp_add_pci_device(u32 fid, u32 fh, int configured)
- 	zdev->fid = fid;
++static int s390_domain_get_grp(struct iommu_domain *domain, void *data)
++{
++	struct zpci_dev *zdev;
++	struct clp_req_rsp_query_pci_grp *rrb;
++	int rc;
++
++	zdev = get_zpci(to_s390_domain(domain));
++	if (!zdev)
++		return -ENODEV;
++	rrb = (struct clp_req_rsp_query_pci_grp *)
++	      __get_free_pages(GFP_KERNEL, get_order(CLP_BLK_SIZE));
++	if (!rrb)
++		return -ENOMEM;
++
++	rc = zdev_query_pci_fngrp(zdev, rrb);
++	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK)
++		memcpy(data, &rrb->response,
++		       sizeof(struct clp_rsp_query_pci_grp));
++	else
++		rc = -EIO;
++
++	free_pages((unsigned long) rrb, get_order(CLP_BLK_SIZE));
++	return rc;
++}
++
++static int s390_domain_get_attr(struct iommu_domain *domain,
++				enum iommu_attr attr, void *data)
++{
++	switch (attr) {
++	case DOMAIN_ATTR_ZPCI_FN_SIZE:
++		return sizeof(struct clp_rsp_query_pci);
++	case DOMAIN_ATTR_ZPCI_GRP_SIZE:
++		return sizeof(struct clp_rsp_query_pci_grp);
++	case DOMAIN_ATTR_ZPCI_FN:
++		return s390_domain_get_fn(domain, data);
++	case DOMAIN_ATTR_ZPCI_GRP:
++		return s390_domain_get_grp(domain, data);
++	default:
++		return -ENODEV;
++	}
++}
++
+ static const struct iommu_ops s390_iommu_ops = {
+ 	.capable = s390_iommu_capable,
+ 	.domain_alloc = s390_domain_alloc,
+@@ -376,6 +452,7 @@ static const struct iommu_ops s390_iommu_ops = {
+ 	.remove_device = s390_iommu_remove_device,
+ 	.device_group = generic_device_group,
+ 	.pgsize_bitmap = S390_IOMMU_PGSIZES,
++	.domain_get_attr = s390_domain_get_attr,
+ };
  
- 	/* Query function properties and update zdev */
--	rc = clp_query_pci_fn(zdev, fh);
-+	rc = clp_query_pci(zdev);
- 	if (rc)
- 		goto error;
+ static int __init s390_iommu_init(void)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ffbbc7e..ebdcac4 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -125,6 +125,10 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
++	DOMAIN_ATTR_ZPCI_FN_SIZE,
++	DOMAIN_ATTR_ZPCI_GRP_SIZE,
++	DOMAIN_ATTR_ZPCI_FN,
++	DOMAIN_ATTR_ZPCI_GRP,
+ 	DOMAIN_ATTR_MAX,
+ };
  
 -- 
 2.7.4
