@@ -6,55 +6,60 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA93C04E84
-	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 04:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF232C04AB4
+	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 07:08:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EF2820833
-	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 04:53:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EF2820833
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id C895020833
+	for <iommu@archiver.kernel.org>; Fri, 17 May 2019 07:08:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C895020833
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 430EE86D;
-	Fri, 17 May 2019 04:53:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D219415;
+	Fri, 17 May 2019 07:08:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F00DC5A8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 99E233EE
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 17 May 2019 04:53:14 +0000 (UTC)
+	Fri, 17 May 2019 07:08:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 93C1E710
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4B76E710
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 17 May 2019 04:53:14 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	16 May 2019 21:53:13 -0700
-X-ExtLoop1: 1
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by fmsmga008.fm.intel.com with ESMTP; 16 May 2019 21:53:11 -0700
+	Fri, 17 May 2019 07:08:16 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id EE18081DE6;
+	Fri, 17 May 2019 07:07:42 +0000 (UTC)
+Received: from [10.36.116.17] (ovpn-116-17.ams2.redhat.com [10.36.116.17])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 274AC5D9C4;
+	Fri, 17 May 2019 07:07:31 +0000 (UTC)
 Subject: Re: [PATCH v3 7/7] iommu/vt-d: Differentiate relaxable and non
 	relaxable RMRRs
-To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com,
+To: Lu Baolu <baolu.lu@linux.intel.com>, eric.auger.pro@gmail.com,
 	joro@8bytes.org, iommu@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org, dwmw2@infradead.org,
 	lorenzo.pieralisi@arm.com, robin.murphy@arm.com, will.deacon@arm.com,
 	hanjun.guo@linaro.org, sudeep.holla@arm.com
 References: <20190516100817.12076-1-eric.auger@redhat.com>
 	<20190516100817.12076-8-eric.auger@redhat.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <2ebc33ed-ded6-0eee-96ef-84e6f61f692e@linux.intel.com>
-Date: Fri, 17 May 2019 12:46:34 +0800
+	<2ebc33ed-ded6-0eee-96ef-84e6f61f692e@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <65852894-2525-e67e-5fd3-55ba4a323c2f@redhat.com>
+Date: Fri, 17 May 2019 09:07:30 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20190516100817.12076-8-eric.auger@redhat.com>
+In-Reply-To: <2ebc33ed-ded6-0eee-96ef-84e6f61f692e@linux.intel.com>
 Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.25]);
+	Fri, 17 May 2019 07:08:05 +0000 (UTC)
 Cc: alex.williamson@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -68,46 +73,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Eric,
-
-On 5/16/19 6:08 PM, Eric Auger wrote:
-> Now we have a new IOMMU_RESV_DIRECT_RELAXABLE reserved memory
-> region type, let's report USB and GFX RMRRs as relaxable ones.
-> 
-> This allows to have a finer reporting at IOMMU API level of
-> reserved memory regions. This will be exploitable by VFIO to
-> define the usable IOVA range and detect potential conflicts
-> between the guest physical address space and host reserved
-> regions.
-> 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> ---
->   drivers/iommu/intel-iommu.c | 10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index a36604f4900f..af1d65fdedfc 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5493,7 +5493,9 @@ static void intel_iommu_get_resv_regions(struct device *device,
->   	for_each_rmrr_units(rmrr) {
->   		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
->   					  i, i_dev) {
-> +			struct pci_dev *pdev = to_pci_dev(device);
-
-Probably should be:
-
-struct pci_dev *pdev = dev_is_pci(device) ? to_pci_dev(device) : NULL;
-
-Best regards,
-Lu Baolu
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgTHUsCgpPbiA1LzE3LzE5IDY6NDYgQU0sIEx1IEJhb2x1IHdyb3RlOgo+IEhpIEVyaWMsCj4g
+Cj4gT24gNS8xNi8xOSA2OjA4IFBNLCBFcmljIEF1Z2VyIHdyb3RlOgo+PiBOb3cgd2UgaGF2ZSBh
+IG5ldyBJT01NVV9SRVNWX0RJUkVDVF9SRUxBWEFCTEUgcmVzZXJ2ZWQgbWVtb3J5Cj4+IHJlZ2lv
+biB0eXBlLCBsZXQncyByZXBvcnQgVVNCIGFuZCBHRlggUk1SUnMgYXMgcmVsYXhhYmxlIG9uZXMu
+Cj4+Cj4+IFRoaXMgYWxsb3dzIHRvIGhhdmUgYSBmaW5lciByZXBvcnRpbmcgYXQgSU9NTVUgQVBJ
+IGxldmVsIG9mCj4+IHJlc2VydmVkIG1lbW9yeSByZWdpb25zLiBUaGlzIHdpbGwgYmUgZXhwbG9p
+dGFibGUgYnkgVkZJTyB0bwo+PiBkZWZpbmUgdGhlIHVzYWJsZSBJT1ZBIHJhbmdlIGFuZCBkZXRl
+Y3QgcG90ZW50aWFsIGNvbmZsaWN0cwo+PiBiZXR3ZWVuIHRoZSBndWVzdCBwaHlzaWNhbCBhZGRy
+ZXNzIHNwYWNlIGFuZCBob3N0IHJlc2VydmVkCj4+IHJlZ2lvbnMuCj4+Cj4+IFNpZ25lZC1vZmYt
+Ynk6IEVyaWMgQXVnZXIgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT4KPj4gLS0tCj4+IMKgIGRyaXZl
+cnMvaW9tbXUvaW50ZWwtaW9tbXUuYyB8IDEwICsrKysrKysrLS0KPj4gwqAgMSBmaWxlIGNoYW5n
+ZWQsIDggaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+
+PiBpbmRleCBhMzY2MDRmNDkwMGYuLmFmMWQ2NWZkZWRmYyAxMDA2NDQKPj4gLS0tIGEvZHJpdmVy
+cy9pb21tdS9pbnRlbC1pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUu
+Ywo+PiBAQCAtNTQ5Myw3ICs1NDkzLDkgQEAgc3RhdGljIHZvaWQgaW50ZWxfaW9tbXVfZ2V0X3Jl
+c3ZfcmVnaW9ucyhzdHJ1Y3QKPj4gZGV2aWNlICpkZXZpY2UsCj4+IMKgwqDCoMKgwqAgZm9yX2Vh
+Y2hfcm1ycl91bml0cyhybXJyKSB7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBmb3JfZWFjaF9hY3Rp
+dmVfZGV2X3Njb3BlKHJtcnItPmRldmljZXMsIHJtcnItPmRldmljZXNfY250LAo+PiDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGksIGlfZGV2KSB7Cj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBwY2lfZGV2ICpwZGV2ID0gdG9fcGNpX2Rldihk
+ZXZpY2UpOwo+IAo+IFByb2JhYmx5IHNob3VsZCBiZToKPiAKPiBzdHJ1Y3QgcGNpX2RldiAqcGRl
+diA9IGRldl9pc19wY2koZGV2aWNlKSA/IHRvX3BjaV9kZXYoZGV2aWNlKSA6IE5VTEw7CgpUaGF0
+J3MgY29ycmVjdC4gSSB3aWxsIGZpeCB0aGF0IGFzYXAuCgpUaGFua3MhCgpFcmljCj4gCj4gQmVz
+dCByZWdhcmRzLAo+IEx1IEJhb2x1Cj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
