@@ -2,67 +2,86 @@ Return-Path: <SRS0=A2w3=TU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D45C04E87
-	for <iommu@archiver.kernel.org>; Mon, 20 May 2019 12:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA36C04AAC
+	for <iommu@archiver.kernel.org>; Mon, 20 May 2019 13:09:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A01C020645
-	for <iommu@archiver.kernel.org>; Mon, 20 May 2019 12:45:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A01C020645
+	by mail.kernel.org (Postfix) with ESMTPS id 773CD20815
+	for <iommu@archiver.kernel.org>; Mon, 20 May 2019 13:09:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 773CD20815
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 55E63D07;
-	Mon, 20 May 2019 12:45:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D3852D2E;
+	Mon, 20 May 2019 13:09:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AD45CCF6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77AA3CF6
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 20 May 2019 12:45:24 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 32C01A3
+	Mon, 20 May 2019 13:09:03 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f193.google.com (mail-qt1-f193.google.com
+	[209.85.160.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 233B683A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 20 May 2019 12:45:24 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
-	[10.5.11.14])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 9F5FE5946F;
-	Mon, 20 May 2019 12:45:19 +0000 (UTC)
-Received: from [10.36.116.113] (ovpn-116-113.ams2.redhat.com [10.36.116.113])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id A652D5DE77;
-	Mon, 20 May 2019 12:45:09 +0000 (UTC)
-Subject: Re: [PATCH v3 6/7] iommu: Introduce IOMMU_RESV_DIRECT_RELAXABLE
-	reserved memory regions
-To: Robin Murphy <robin.murphy@arm.com>, eric.auger.pro@gmail.com,
-	joro@8bytes.org, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, dwmw2@infradead.org,
-	lorenzo.pieralisi@arm.com, will.deacon@arm.com, hanjun.guo@linaro.org, 
-	sudeep.holla@arm.com
-References: <20190516100817.12076-1-eric.auger@redhat.com>
-	<20190516100817.12076-7-eric.auger@redhat.com>
-	<ad8a99fa-b98a-14d3-12be-74df0e6eb8f8@arm.com>
-	<57db1955-9d19-7c0b-eca3-37cc0d7d745b@redhat.com>
-	<fb9cd4ef-d91e-e526-fc6f-6cee43e70bb7@arm.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <84cbb905-f413-7d14-eab5-3744b016b08f@redhat.com>
-Date: Mon, 20 May 2019 14:45:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Mon, 20 May 2019 13:09:02 +0000 (UTC)
+Received: by mail-qt1-f193.google.com with SMTP id f24so16120918qtk.11
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 20 May 2019 06:09:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to;
+	bh=dFuLtne3guYuFwbHKpK48q543MOC/my0Y0MNbyUjuPE=;
+	b=ASrz/zQ13m+qe50FRZRNpnpKFDY/FarFugO+AtGHGY4LnQMNBGIMxBB4ZkH0OB8tOs
+	F/RygD1uj//BVb8F0/RB35UqtRnYaWv5rZuBgMEIQHTyUaEThGzFTx4VljqlKVdN+Bc2
+	0IiRN0TfZEeym/YFDQYrpv3VL3CQujgQcUY20eJwZt2cB+1Hz6bXuXGVW9Ogl0T4Fgdu
+	SHDPY2ohxHONzYIv3oUxCF1vmhCNg+Xe2pt074MWLySMAhkwq7zhvWj7muX1vwDqx88v
+	ejRCNrPtnzsxM+kVOHM8BxyppLNzzv/pXSFiShsIbaUD2IeKPVSuB/DQMtBSl36j1mfo
+	T8/A==
+X-Gm-Message-State: APjAAAWgELDUncg1QFNTDRwZwUaRg3pr1UL/xFg+jT7fM8fhBAQRSK4H
+	bMF7OD1dQFfVAVCOm4e4JVwx9g==
+X-Google-Smtp-Source: APXvYqxFmd0nNrX047VR0mRGjhNHl6yQJCi/WzEdlp1N5DlMzFNrD0wqdFlb4sI+QUnVeRVV7+bGMQ==
+X-Received: by 2002:a0c:af51:: with SMTP id j17mr38357606qvc.34.1558357741216; 
+	Mon, 20 May 2019 06:09:01 -0700 (PDT)
+Received: from redhat.com (pool-173-76-105-71.bstnma.fios.verizon.net.
+	[173.76.105.71]) by smtp.gmail.com with ESMTPSA id
+	n190sm7929770qkb.83.2019.05.20.06.08.58
+	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+	Mon, 20 May 2019 06:08:59 -0700 (PDT)
+Date: Mon, 20 May 2019 09:08:52 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Message-ID: <20190520090602-mutt-send-email-mst@kernel.org>
+References: <20190204144048-mutt-send-email-mst@kernel.org>
+	<87ef71seve.fsf@morokweng.localdomain>
+	<20190320171027-mutt-send-email-mst@kernel.org>
+	<87tvfvbwpb.fsf@morokweng.localdomain>
+	<20190323165456-mutt-send-email-mst@kernel.org>
+	<87a7go71hz.fsf@morokweng.localdomain>
+	<20190419190258-mutt-send-email-mst@kernel.org>
+	<875zr228zf.fsf@morokweng.localdomain>
+	<20190424210813-mutt-send-email-mst@kernel.org>
+	<871s1o1ft0.fsf@morokweng.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <fb9cd4ef-d91e-e526-fc6f-6cee43e70bb7@arm.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.39]);
-	Mon, 20 May 2019 12:45:19 +0000 (UTC)
-Cc: alex.williamson@redhat.com
+Content-Disposition: inline
+In-Reply-To: <871s1o1ft0.fsf@morokweng.localdomain>
+Cc: Mike Anderson <andmike@linux.ibm.com>,
+	Michael Roth <mdroth@linux.vnet.ibm.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	Paul Mackerras <paulus@ozlabs.org>,
+	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+	Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,89 +99,141 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Robin,
-
-On 5/16/19 7:53 PM, Robin Murphy wrote:
-> On 16/05/2019 14:23, Auger Eric wrote:
->> Hi Robin,
->> On 5/16/19 2:46 PM, Robin Murphy wrote:
->>> On 16/05/2019 11:08, Eric Auger wrote:
->>>> Introduce a new type for reserved region. This corresponds
->>>> to directly mapped regions which are known to be relaxable
->>>> in some specific conditions, such as device assignment use
->>>> case. Well known examples are those used by USB controllers
->>>> providing PS/2 keyboard emulation for pre-boot BIOS and
->>>> early BOOT or RMRRs associated to IGD working in legacy mode.
->>>>
->>>> Since commit c875d2c1b808 ("iommu/vt-d: Exclude devices using RMRRs
->>>> from IOMMU API domains") and commit 18436afdc11a ("iommu/vt-d: Allow
->>>> RMRR on graphics devices too"), those regions are currently
->>>> considered "safe" with respect to device assignment use case
->>>> which requires a non direct mapping at IOMMU physical level
->>>> (RAM GPA -> HPA mapping).
->>>>
->>>> Those RMRRs currently exist and sometimes the device is
->>>> attempting to access it but this has not been considered
->>>> an issue until now.
->>>>
->>>> However at the moment, iommu_get_group_resv_regions() is
->>>> not able to make any difference between directly mapped
->>>> regions: those which must be absolutely enforced and those
->>>> like above ones which are known as relaxable.
->>>>
->>>> This is a blocker for reporting severe conflicts between
->>>> non relaxable RMRRs (like MSI doorbells) and guest GPA space.
->>>>
->>>> With this new reserved region type we will be able to use
->>>> iommu_get_group_resv_regions() to enumerate the IOVA space
->>>> that is usable through the IOMMU API without introducing
->>>> regressions with respect to existing device assignment
->>>> use cases (USB and IGD).
->>>>
->>>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>>>
->>>> ---
->>>>
->>>> Note: At the moment the sysfs ABI is not changed. However I wonder
->>>> whether it wouldn't be preferable to report the direct region as
->>>> "direct_relaxed" there. At the moment, in case the same direct
->>>> region is used by 2 devices, one USB/GFX and another not belonging
->>>> to the previous categories, the direct region will be output twice
->>>> with "direct" type.
->>>
->>> Hmm, that sounds a bit off - if we have overlapping regions within the
->>> same domain, then we need to do some additional pre-processing to adjust
->>> them anyway, since any part of a relaxable region which overlaps a
->>> non-relaxable region cannot actually be relaxed, and so really should
->>> never be described as such.
->> In iommu_insert_resv_region(), we are overlapping regions of the same
->> type. So iommu_get_group_resv_regions() should return both the relaxable
->> region and non relaxable one. I should test this again using a hacked
->> kernel though.
+On Fri, Apr 26, 2019 at 08:56:43PM -0300, Thiago Jung Bauermann wrote:
 > 
-> We should still consider relaxable regions as being able to merge back
-> in to regular direct regions to a degree - If a relaxable region falls
-> entirely within a direct one then there's no point exposing it because
-> the direct region *has* to take precedence and be enforced. If there is
-> an incomplete overlap then we could possibly just trust consumers to see
-> it and give the direct region precedence themselves, but since the
-> relaxable region is our own in-kernel invention rather than firmware
-> gospel I think it would be safer to truncate it to just its
-> non-overlapping part.
-
-While I understand your reasoning above, and I tend to agree this would
-be nice to have, I have spent some time looking at the algo to
-merge/split/overlay regions and I am afraid that this will bring a huge
-complexity in the insertion function (I am also afraid the existing data
-structs may not be well adapted overall). So I am now a bit reluctant to
-add such complexty for shrinking relaxable regions that we will
-eventually ignore in any case.
-
-Thanks
-
-Eric
+> Michael S. Tsirkin <mst@redhat.com> writes:
 > 
-> Robin.
+> > On Wed, Apr 24, 2019 at 10:01:56PM -0300, Thiago Jung Bauermann wrote:
+> >>
+> >> Michael S. Tsirkin <mst@redhat.com> writes:
+> >>
+> >> > On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
+> >> >>
+> >> >> Michael S. Tsirkin <mst@redhat.com> writes:
+> >> >>
+> >> >> > On Thu, Mar 21, 2019 at 09:05:04PM -0300, Thiago Jung Bauermann wrote:
+> >> >> >>
+> >> >> >> Michael S. Tsirkin <mst@redhat.com> writes:
+> >> >> >>
+> >> >> >> > On Wed, Mar 20, 2019 at 01:13:41PM -0300, Thiago Jung Bauermann wrote:
+> >> >> >> >> >From what I understand of the ACCESS_PLATFORM definition, the host will
+> >> >> >> >> only ever try to access memory addresses that are supplied to it by the
+> >> >> >> >> guest, so all of the secure guest memory that the host cares about is
+> >> >> >> >> accessible:
+> >> >> >> >>
+> >> >> >> >>     If this feature bit is set to 0, then the device has same access to
+> >> >> >> >>     memory addresses supplied to it as the driver has. In particular,
+> >> >> >> >>     the device will always use physical addresses matching addresses
+> >> >> >> >>     used by the driver (typically meaning physical addresses used by the
+> >> >> >> >>     CPU) and not translated further, and can access any address supplied
+> >> >> >> >>     to it by the driver. When clear, this overrides any
+> >> >> >> >>     platform-specific description of whether device access is limited or
+> >> >> >> >>     translated in any way, e.g. whether an IOMMU may be present.
+> >> >> >> >>
+> >> >> >> >> All of the above is true for POWER guests, whether they are secure
+> >> >> >> >> guests or not.
+> >> >> >> >>
+> >> >> >> >> Or are you saying that a virtio device may want to access memory
+> >> >> >> >> addresses that weren't supplied to it by the driver?
+> >> >> >> >
+> >> >> >> > Your logic would apply to IOMMUs as well.  For your mode, there are
+> >> >> >> > specific encrypted memory regions that driver has access to but device
+> >> >> >> > does not. that seems to violate the constraint.
+> >> >> >>
+> >> >> >> Right, if there's a pre-configured 1:1 mapping in the IOMMU such that
+> >> >> >> the device can ignore the IOMMU for all practical purposes I would
+> >> >> >> indeed say that the logic would apply to IOMMUs as well. :-)
+> >> >> >>
+> >> >> >> I guess I'm still struggling with the purpose of signalling to the
+> >> >> >> driver that the host may not have access to memory addresses that it
+> >> >> >> will never try to access.
+> >> >> >
+> >> >> > For example, one of the benefits is to signal to host that driver does
+> >> >> > not expect ability to access all memory. If it does, host can
+> >> >> > fail initialization gracefully.
+> >> >>
+> >> >> But why would the ability to access all memory be necessary or even
+> >> >> useful? When would the host access memory that the driver didn't tell it
+> >> >> to access?
+> >> >
+> >> > When I say all memory I mean even memory not allowed by the IOMMU.
+> >>
+> >> Yes, but why? How is that memory relevant?
+> >
+> > It's relevant when driver is not trusted to only supply correct
+> > addresses. The feature was originally designed to support userspace
+> > drivers within guests.
+> 
+> Ah, thanks for clarifying. I don't think that's a problem in our case.
+> If the guest provides an incorrect address, the hardware simply won't
+> allow the host to access it.
+> 
+> >> >> >> > Another idea is maybe something like virtio-iommu?
+> >> >> >>
+> >> >> >> You mean, have legacy guests use virtio-iommu to request an IOMMU
+> >> >> >> bypass? If so, it's an interesting idea for new guests but it doesn't
+> >> >> >> help with guests that are out today in the field, which don't have A
+> >> >> >> virtio-iommu driver.
+> >> >> >
+> >> >> > I presume legacy guests don't use encrypted memory so why do we
+> >> >> > worry about them at all?
+> >> >>
+> >> >> They don't use encrypted memory, but a host machine will run a mix of
+> >> >> secure and legacy guests. And since the hypervisor doesn't know whether
+> >> >> a guest will be secure or not at the time it is launched, legacy guests
+> >> >> will have to be launched with the same configuration as secure guests.
+> >> >
+> >> > OK and so I think the issue is that hosts generally fail if they set
+> >> > ACCESS_PLATFORM and guests do not negotiate it.
+> >> > So you can not just set ACCESS_PLATFORM for everyone.
+> >> > Is that the issue here?
+> >>
+> >> Yes, that is one half of the issue. The other is that even if hosts
+> >> didn't fail, existing legacy guests wouldn't "take the initiative" of
+> >> not negotiating ACCESS_PLATFORM to get the improved performance. They'd
+> >> have to be modified to do that.
+> >
+> > So there's a non-encrypted guest, hypervisor wants to set
+> > ACCESS_PLATFORM to allow encrypted guests but that will slow down legacy
+> > guests since their vIOMMU emulation is very slow.
+> 
+> Yes.
+> 
+> > So enabling support for encryption slows down non-encrypted guests. Not
+> > great but not the end of the world, considering even older guests that
+> > don't support ACCESS_PLATFORM are completely broken and you do not seem
+> > to be too worried by that.
+> 
+> Well, I guess that would be the third half of the issue. :-)
+> 
+> > For future non-encrypted guests, bypassing the emulated IOMMU for when
+> > that emulated IOMMU is very slow might be solvable in some other way,
+> > e.g. with virtio-iommu. Which reminds me, could you look at
+> > virtio-iommu as a solution for some of the issues?
+> > Review of that patchset from that POV would be appreciated.
+> 
+> Yes, I will have a look. As you mentioned already, virtio-iommu doesn't
+> define a way to request iommu bypass for a device so that would have to
+> be added.
+
+I think it does have a way for guest to request bypass:
+there's a feature bit which - if set - specifies that a device
+that is in no domain bypasses the iommu.
+
+> Though to be honest in practice I don't think such a feature in
+> virtio-iommu would make things easier for us, at least in the short
+> term. It would take the same effort to define a powerpc-specific
+> hypercall to accomplish the same thing (easier, in fact since we
+> wouldn't have to implement the rest of virtio-iommu). In fact, there
+> already is such hypercall, but it is only defined for VIO devices
+> (RTAS_IBM_SET_TCE_BYPASS in QEMU). We would have to make it work on
+> virtio devices as well.
+
+Now I'm a bit lost. Could you pls describe quickly what does it do?
+
+> --
+> Thiago Jung Bauermann
+> IBM Linux Technology Center
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
