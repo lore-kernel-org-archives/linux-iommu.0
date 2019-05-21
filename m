@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 312D1C04AB4
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554CBC04AAF
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:14:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 05A7B217F4
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:14:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2B3A92173C
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:14:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="P67f9DuV";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="XbU4KG7B"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05A7B217F4
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="hz/hIbL6";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="l0xwihPx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B3A92173C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A86E6C4E;
-	Tue, 21 May 2019 16:14:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D840AC37;
+	Tue, 21 May 2019 16:14:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AEA3C255
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7C52CC6C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 16:14:23 +0000 (UTC)
+	Tue, 21 May 2019 16:14:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3C1E5E3
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D1A7EE3
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 21 May 2019 16:14:23 +0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id C88A360ACA; Tue, 21 May 2019 16:14:13 +0000 (UTC)
+	id 83C886156F; Tue, 21 May 2019 16:14:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1558455262;
-	bh=aGKLQAv1Wqo3iK9as+fTnW2wvo10dYipLbiZ+tTw6Qw=;
+	s=default; t=1558455263;
+	bh=mPpWMT8VclLlXkDHcZku25yiK9JcrH0W+cJHnR3vCe4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=P67f9DuVuSI/OYxypF+ICnm2C4cvfpQN0sAcO368lOjJALeooaTKx7vix8hs+NMmH
-	scqlRcZ5+urgTrih933Hs5for5q3k70VLEZlxbdsgNfwMzCVxwHV+dpGIL4dPCmMP6
-	g08u4a7QzUexzIOIruXZtQl92UAnMFgB8jHqGwD0=
+	b=hz/hIbL60aHAHG8/XhizDVSI21HBpQPtz6TRKLbBrF0sA7QSa02y8njF4I381qEvc
+	QJMu9C/+y55kLzDOkqS6KV0iaDmcR33TejhMjnX265y/MTsLoUeNYmspb3a4jWq3/G
+	jIKP+ghZMM691KL/7EYN96d8E6g4BHwoUH8dEbAk=
 Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
 	[199.106.103.254])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
 	(Authenticated sender: jcrouse@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id E5A3D60DB6;
-	Tue, 21 May 2019 16:14:10 +0000 (UTC)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 13D2A613A6;
+	Tue, 21 May 2019 16:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1558455252;
-	bh=aGKLQAv1Wqo3iK9as+fTnW2wvo10dYipLbiZ+tTw6Qw=;
+	s=default; t=1558455257;
+	bh=mPpWMT8VclLlXkDHcZku25yiK9JcrH0W+cJHnR3vCe4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XbU4KG7BYVeqP+pX8713MzxW2ReuMEqPxBK8OCaomYnCqk8nnntMi+KsdEGJmYd5g
-	dsnmVx8AfWokWZKPswurOQCdDIMEfd/ixPvupQlqrlcnErZFxfEY7224yQWRsaXXcN
-	CbzeGwNUrHrmrp5uZJc7OAE1Wn8ubV85ZOddO/Cw=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E5A3D60DB6
+	b=l0xwihPxMPObUCtHycTCB/OsfBwh3dlYMRoOSmVs9gyX3VnSaC8KueOMcgT5s8pST
+	HDcr+x0GKU4uh99n51sZLlMDtUt+0GE/qQx1pzMRMnEMAbpkCqTl44lUjFhOi2Uiu+
+	0bCFxnLI6vtwAzTC2oNXKHPcneKYNdQIOMz8beaA=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 13D2A613A6
 Authentication-Results: pdx-caf-mail.web.codeaurora.org;
 	dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org;
 	spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: freedreno@lists.freedesktop.org
-Subject: [PATCH v2 01/15] iommu/arm-smmu: Allow IOMMU enabled devices to skip
-	DMA domains
-Date: Tue, 21 May 2019 10:13:49 -0600
-Message-Id: <1558455243-32746-2-git-send-email-jcrouse@codeaurora.org>
+Subject: [PATCH v2 05/15] iommu/arm-smmu: Add auxiliary domain support for
+	arm-smmuv2
+Date: Tue, 21 May 2019 10:13:53 -0600
+Message-Id: <1558455243-32746-6-git-send-email-jcrouse@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558455243-32746-1-git-send-email-jcrouse@codeaurora.org>
 References: <1558455243-32746-1-git-send-email-jcrouse@codeaurora.org>
@@ -93,156 +93,280 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Allow IOMMU enabled devices specified on an opt-in list to create a
-default identity domain for a new IOMMU group and bypass the DMA
-domain created by the IOMMU core. This allows the group to be properly
-set up but otherwise skips touching the hardware until the client
-device attaches a unmanaged domain of its own.
+Support auxiliary domains for arm-smmu-v2 to initialize and support
+multiple pagetables for a single SMMU context bank. Since the smmu-v2
+hardware doesn't have any built in support for switching the pagetable
+it is left as an exercise to the caller to actually use the pagetable;
+aux domains in the IOMMU driver are only preoccupied with creating and
+managing the pagetable memory.
+
+Following is a pseudo code example of how a domain can be created
+
+ /* Check to see if aux domains are supported */
+ if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
+	 iommu = iommu_domain_alloc(...);
+
+	 if (iommu_aux_attach_device(domain, dev))
+		 return FAIL;
+
+	/* Save the base address of the pagetable for use by the driver
+	iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
+ }
+
+Then 'domain' can be used like any other iommu domain to map and
+unmap iova addresses in the pagetable. The driver/hardware is used
+to switch the pagetable according to its own specific implementation.
 
 Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 ---
 
- drivers/iommu/arm-smmu.c | 42 ++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/iommu.c    | 29 +++++++++++++++++++++++------
- include/linux/iommu.h    |  3 +++
- 3 files changed, 68 insertions(+), 6 deletions(-)
+ drivers/iommu/arm-smmu.c | 133 +++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 117 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5e54cc0..a795ada 100644
+index e09c0e6..27ff554 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1235,6 +1235,35 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	return 0;
+@@ -263,6 +263,8 @@ struct arm_smmu_domain {
+ 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+ 	u32 attributes;
+ 	struct iommu_domain		domain;
++	bool				is_aux;
++	u64				ttbr0;
+ };
+ 
+ struct arm_smmu_option_prop {
+@@ -892,6 +894,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
+ 		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 
++	/* Aux domains can only be created for stage-1 tables */
++	if (smmu_domain->is_aux && smmu_domain->stage != ARM_SMMU_DOMAIN_S1) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	/*
+ 	 * Choosing a suitable context format is even more fiddly. Until we
+ 	 * grow some way for the caller to express a preference, and/or move
+@@ -942,6 +950,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 			ias = min(ias, 32UL);
+ 			oas = min(oas, 32UL);
+ 		}
++
+ 		smmu_domain->tlb_ops = &arm_smmu_s1_tlb_ops;
+ 		break;
+ 	case ARM_SMMU_DOMAIN_NESTED:
+@@ -961,6 +970,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 			ias = min(ias, 40UL);
+ 			oas = min(oas, 40UL);
+ 		}
++
+ 		if (smmu->version == ARM_SMMU_V2)
+ 			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v2;
+ 		else
+@@ -970,23 +980,30 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	}
+-	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+-				      smmu->num_context_banks);
+-	if (ret < 0)
+-		goto out_unlock;
+ 
+-	cfg->cbndx = ret;
+-	if (smmu->version < ARM_SMMU_V2) {
+-		cfg->irptndx = atomic_inc_return(&smmu->irptndx);
+-		cfg->irptndx %= smmu->num_context_irqs;
+-	} else {
+-		cfg->irptndx = cfg->cbndx;
+-	}
++	/*
++	 * Aux domains will use the same context bank assigned to the master
++	 * domain for the device
++	 */
++	if (!smmu_domain->is_aux) {
++		ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
++					      smmu->num_context_banks);
++		if (ret < 0)
++			goto out_unlock;
+ 
+-	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
+-		cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
+-	else
+-		cfg->asid = cfg->cbndx + smmu->cavium_id_base;
++		cfg->cbndx = ret;
++		if (smmu->version < ARM_SMMU_V2) {
++			cfg->irptndx = atomic_inc_return(&smmu->irptndx);
++			cfg->irptndx %= smmu->num_context_irqs;
++		} else {
++			cfg->irptndx = cfg->cbndx;
++		}
++
++		if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
++			cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
++		else
++			cfg->asid = cfg->cbndx + smmu->cavium_id_base;
++	}
+ 
+ 	pgtbl_cfg = (struct io_pgtable_cfg) {
+ 		.pgsize_bitmap	= smmu->pgsize_bitmap,
+@@ -1009,11 +1026,21 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		goto out_clear_smmu;
+ 	}
+ 
++	/* Cache the TTBR0 for the aux domain */
++	smmu_domain->ttbr0 = pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0];
++
+ 	/* Update the domain's page sizes to reflect the page table format */
+ 	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+ 	domain->geometry.aperture_end = (1UL << ias) - 1;
+ 	domain->geometry.force_aperture = true;
+ 
++	/*
++	 * aux domains don't use split tables or program the hardware so we're
++	 * done setting it up
++	 */
++	if (smmu_domain->is_aux)
++		goto out;
++
+ 	/* Initialise the context bank with our page table cfg */
+ 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+ 
+@@ -1045,6 +1072,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		cfg->irptndx = INVALID_IRPTNDX;
+ 	}
+ 
++out:
+ 	mutex_unlock(&smmu_domain->init_mutex);
+ 
+ 	/* Publish page table ops for map/unmap */
+@@ -1070,6 +1098,12 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+ 		return;
+ 
++	/* All we need to do for aux devices is destroy the pagetable */
++	if (smmu_domain->is_aux) {
++		free_io_pgtable_ops(smmu_domain->pgtbl_ops[0]);
++		return;
++	}
++
+ 	ret = arm_smmu_rpm_get(smmu);
+ 	if (ret < 0)
+ 		return;
+@@ -1352,14 +1386,17 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 
+ struct arm_smmu_client_match_data {
+ 	bool use_identity_domain;
++	bool allow_aux_domain;
+ };
+ 
+ static const struct arm_smmu_client_match_data qcom_adreno = {
+ 	.use_identity_domain = true,
++	.allow_aux_domain = true,
+ };
+ 
+ static const struct arm_smmu_client_match_data qcom_mdss = {
+ 	.use_identity_domain = true,
++	.allow_aux_domain = false,
+ };
+ 
+ static const struct of_device_id arm_smmu_client_of_match[] = {
+@@ -1379,6 +1416,55 @@ arm_smmu_client_data(struct device *dev)
+ 	return match ? match->data : NULL;
  }
  
-+struct arm_smmu_client_match_data {
-+	bool use_identity_domain;
-+};
-+
-+static const struct arm_smmu_client_match_data qcom_adreno = {
-+	.use_identity_domain = true,
-+};
-+
-+static const struct arm_smmu_client_match_data qcom_mdss = {
-+	.use_identity_domain = true,
-+};
-+
-+static const struct of_device_id arm_smmu_client_of_match[] = {
-+	{ .compatible = "qcom,adreno", .data = &qcom_adreno },
-+	{ .compatible = "qcom,mdp4", .data = &qcom_mdss },
-+	{ .compatible = "qcom,mdss", .data = &qcom_mdss },
-+	{ .compatible = "qcom,sdm845-mdss", .data = &qcom_mdss },
-+	{},
-+};
-+
-+static const struct arm_smmu_client_match_data *
-+arm_smmu_client_data(struct device *dev)
++static bool arm_smmu_supports_aux(struct device *dev)
 +{
-+	const struct of_device_id *match =
-+		of_match_device(arm_smmu_client_of_match, dev);
++	const struct arm_smmu_client_match_data *data =
++		arm_smmu_client_data(dev);
 +
-+	return match ? match->data : NULL;
++	return (data && data->allow_aux_domain);
++}
++
++static bool arm_smmu_dev_has_feat(struct device *dev,
++		enum iommu_dev_features feat)
++{
++	if (feat != IOMMU_DEV_FEAT_AUX)
++		return false;
++
++	return arm_smmu_supports_aux(dev);
++}
++
++static int arm_smmu_dev_enable_feat(struct device *dev,
++		enum iommu_dev_features feat)
++{
++	/* If supported aux domain support is always "on" */
++	if (feat == IOMMU_DEV_FEAT_AUX && arm_smmu_supports_aux(dev))
++		return 0;
++
++	return -ENODEV;
++}
++
++static int arm_smmu_dev_disable_feat(struct device *dev,
++		enum iommu_dev_features feat)
++{
++	return -EBUSY;
++}
++
++/* Set up a new aux domain and create a new pagetable with the same
++ * characteristics as the master
++ */
++static int arm_smmu_aux_attach_dev(struct iommu_domain *domain,
++		struct device *dev)
++{
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	smmu_domain->is_aux = true;
++
++	/* No power is needed because aux domain doesn't touch the hardware */
++	return arm_smmu_init_domain_context(domain, smmu);
 +}
 +
  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  {
  	int ret;
-@@ -1552,6 +1581,7 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+@@ -1437,7 +1523,13 @@ arm_smmu_get_pgtbl_ops(struct iommu_domain *domain, unsigned long iova)
  {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-+	const struct arm_smmu_client_match_data *client;
- 	struct iommu_group *group = NULL;
- 	int i, idx;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+-	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
++	struct arm_smmu_cb *cb;
++
++	/* quick escape for domains that don't have split pagetables enabled */
++	if (!smmu_domain->pgtbl_ops[1])
++		return smmu_domain->pgtbl_ops[0];
++
++	cb = &smmu_domain->smmu->cbs[cfg->cbndx];
  
-@@ -1573,6 +1603,18 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
- 	else
- 		group = generic_device_group(dev);
- 
-+	client = arm_smmu_client_data(dev);
-+
-+	/*
-+	 * If the client chooses to bypass the dma domain, create a identity
-+	 * domain as a default placeholder. This will give the device a
-+	 * default domain but skip DMA operations and not consume a context
-+	 * bank
-+	 */
-+	if (client && client->no_dma_domain)
-+		iommu_group_set_default_domain(group, dev,
-+			IOMMU_DOMAIN_IDENTITY);
-+
- 	return group;
- }
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 67ee662..af3e1ed 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1062,6 +1062,24 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
- 	return group;
- }
- 
-+struct iommu_domain *iommu_group_set_default_domain(struct iommu_group *group,
-+		struct device *dev, unsigned int type)
-+{
-+	struct iommu_domain *dom;
-+
-+	dom = __iommu_domain_alloc(dev->bus, type);
-+	if (!dom)
-+		return NULL;
-+
-+	/* FIXME: Error if the default domain is already set? */
-+	group->default_domain = dom;
-+	if (!group->domain)
-+		group->domain = dom;
-+
-+	return dom;
-+}
-+EXPORT_SYMBOL_GPL(iommu_group_set_default_domain);
-+
- /**
-  * iommu_group_get_for_dev - Find or create the IOMMU group for a device
-  * @dev: target device
-@@ -1099,9 +1117,12 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	if (!group->default_domain) {
- 		struct iommu_domain *dom;
- 
--		dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
-+		dom = iommu_group_set_default_domain(group, dev,
-+			iommu_def_domain_type);
-+
- 		if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
--			dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
-+			dom = iommu_group_set_default_domain(group, dev,
-+				IOMMU_DOMAIN_DMA);
- 			if (dom) {
- 				dev_warn(dev,
- 					 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
-@@ -1109,10 +1130,6 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 			}
+ 	if (iova & cb->split_table_mask)
+ 		return smmu_domain->pgtbl_ops[1];
+@@ -1777,6 +1869,11 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ 				!!(smmu_domain->attributes &
+ 				   (1 << DOMAIN_ATTR_SPLIT_TABLES));
+ 			return 0;
++		case DOMAIN_ATTR_PTBASE:
++			if (!smmu_domain->is_aux)
++				return -ENODEV;
++			*((u64 *)data) = smmu_domain->ttbr0;
++			return 0;
+ 		default:
+ 			return -ENODEV;
  		}
- 
--		group->default_domain = dom;
--		if (!group->domain)
--			group->domain = dom;
--
- 		if (dom && !iommu_dma_strict) {
- 			int attr = 1;
- 			iommu_domain_set_attr(dom,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a815cf6..4ef8bd5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -394,6 +394,9 @@ extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
- 
-+struct iommu_domain *iommu_group_set_default_domain(struct iommu_group *group,
-+		struct device *dev, unsigned int type);
-+
- extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
- 				 void *data);
- extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+@@ -1887,7 +1984,11 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+ 	.domain_free		= arm_smmu_domain_free,
++	.dev_has_feat		= arm_smmu_dev_has_feat,
++	.dev_enable_feat	= arm_smmu_dev_enable_feat,
++	.dev_disable_feat	= arm_smmu_dev_disable_feat,
+ 	.attach_dev		= arm_smmu_attach_dev,
++	.aux_attach_dev		= arm_smmu_aux_attach_dev,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
+ 	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
 -- 
 2.7.4
 
