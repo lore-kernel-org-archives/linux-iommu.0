@@ -2,59 +2,98 @@ Return-Path: <SRS0=R8za=TV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC85C04AB4
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D7DC04AAF
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:14:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F1EB2217D7
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:02:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1EB2217D7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AB2A621019
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:14:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="m0FweG2/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB2A621019
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C3415C97;
-	Tue, 21 May 2019 17:02:18 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6F90DC6D;
+	Tue, 21 May 2019 17:14:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 48C54C64
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EE31CC6A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 17:02:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6B0D281A
+	Tue, 21 May 2019 17:14:16 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+	(mail-eopbgr80088.outbound.protection.outlook.com [40.107.8.88])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1618A87B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 17:02:16 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	21 May 2019 10:02:15 -0700
-X-ExtLoop1: 1
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by fmsmga001.fm.intel.com with ESMTP; 21 May 2019 10:02:15 -0700
-Date: Tue, 21 May 2019 10:05:12 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v3 03/16] iommu: Add I/O ASID allocator
-Message-ID: <20190521100512.2d6ccf5a@jacob-builder>
-In-Reply-To: <faf475ce-8645-9d05-663d-8d090cd4ac05@redhat.com>
-References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556922737-76313-4-git-send-email-jacob.jun.pan@linux.intel.com>
-	<faf475ce-8645-9d05-663d-8d090cd4ac05@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Tue, 21 May 2019 17:14:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=Ml2apWTWPBi5XppK8Yua76O7UxUx4kNPg3sh8ctsvz4=;
+	b=m0FweG2/OCK9SA+6aBBi8CVxP82vYA0aCN8YblKlOH77PyIZWXPe/9X9ljy1pINp/k8PSCT4ixQx8xnQXLmcV7nIRicoHWf4a3LBGcQ3x1W1QoND4OQejdW8A/PXsZUOo7XcPsPGCo7JFDWjzpWxWkeEgpQzlKP+ARoEGdIDCXU=
+Received: from VI1PR0402MB3485.eurprd04.prod.outlook.com (52.134.3.153) by
+	VI1PR0402MB3551.eurprd04.prod.outlook.com (52.134.4.32) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1900.17; Tue, 21 May 2019 17:14:12 +0000
+Received: from VI1PR0402MB3485.eurprd04.prod.outlook.com
+	([fe80::a450:3c13:d7af:7451]) by
+	VI1PR0402MB3485.eurprd04.prod.outlook.com
+	([fe80::a450:3c13:d7af:7451%3]) with mapi id 15.20.1900.020;
+	Tue, 21 May 2019 17:14:12 +0000
+From: Horia Geanta <horia.geanta@nxp.com>
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Konrad
+	Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Device obligation to write into a DMA_FROM_DEVICE streaming DMA
+	mapping
+Thread-Topic: Device obligation to write into a DMA_FROM_DEVICE streaming DMA
+	mapping
+Thread-Index: AQHVD/ibza+0VQqKf0WUTNByTE5q8A==
+Date: Tue, 21 May 2019 17:14:12 +0000
+Message-ID: <VI1PR0402MB348537CB86926B3E6D1DBE0A98070@VI1PR0402MB3485.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=horia.geanta@nxp.com; 
+x-originating-ip: [94.69.234.123]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d9379d1f-bfa2-4148-7e8d-08d6de0fbeab
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);
+	SRVR:VI1PR0402MB3551; 
+x-ms-traffictypediagnostic: VI1PR0402MB3551:
+x-microsoft-antispam-prvs: <VI1PR0402MB35514D6ACEC00786D1016C5998070@VI1PR0402MB3551.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0044C17179
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(376002)(396003)(366004)(346002)(39860400002)(136003)(199004)(189003)(66476007)(316002)(2906002)(66066001)(7696005)(6506007)(99286004)(25786009)(54906003)(110136005)(5660300002)(9686003)(6436002)(66556008)(71190400001)(68736007)(74316002)(478600001)(71200400001)(14454004)(55016002)(33656002)(86362001)(476003)(44832011)(486006)(53936002)(3846002)(305945005)(7736002)(6116002)(186003)(26005)(76116006)(52536014)(4326008)(8676002)(66946007)(64756008)(66446008)(73956011)(8936002)(102836004)(256004)(81156014)(81166006);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR0402MB3551;
+	H:VI1PR0402MB3485.eurprd04.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: nxp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: ygCfBJQYw+2HqpNA2oBTBsoA2uArrSn4Ed/Pow0u6q/EtXvUR0SfQ4mMgU8aJQATkyqMo4+nu10uS9MqTsU+1Leo+3GU8dssY5ad5IPBFPPt1QoA9uD2YvU/YQurADhvEHXZZdxCi7AUl92oBlNQ9iwsaDLvu2CdZVI6ytkR1LWwSXYdKkHuqf3IRFDHR7pe2oOMMQI4W2cO9Iy3Llh4PzU4InOaOe0G9H9JXceiE8/PpZTTSxVgP9UsUGyZLy3HapQrpoi6VCPoy3l4XwPEuCIEaNqEbyHQRsGMVnoEGgr69/E7JcotZQEX+Srv6GFh5cIys6dUdeIbwyorQ9vSO1PDTdAhnPZd997VC01pn5kuK/mwwxRRJjSpdqy/eO+NfOXI5kikJZ+o/4NEso4r6oPdurt5k4KZlQX1TRPVPo8=
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9379d1f-bfa2-4148-7e8d-08d6de0fbeab
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 May 2019 17:14:12.3190 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3551
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	dl-linux-imx <linux-imx@nxp.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,320 +111,54 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 21 May 2019 11:41:52 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+Hi,
 
-> Hi,
-> 
-> On 5/4/19 12:32 AM, Jacob Pan wrote:
-> > From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> > 
-> > Some devices might support multiple DMA address spaces, in
-> > particular those that have the PCI PASID feature. PASID (Process
-> > Address Space ID) allows to share process address spaces with
-> > devices (SVA), partition a device into VM-assignable entities (VFIO
-> > mdev) or simply provide multiple DMA address space to kernel
-> > drivers. Add a global PASID allocator usable by different drivers
-> > at the same time. Name it I/O ASID to avoid confusion with ASIDs
-> > allocated by arch code, which are usually a separate ID space.
-> > 
-> > The IOASID space is global. Each device can have its own PASID
-> > space, but by convention the IOMMU ended up having a global PASID
-> > space, so that with SVA, each mm_struct is associated to a single
-> > PASID.
-> > 
-> > The allocator is primarily used by IOMMU subsystem but in rare
-> > occasions drivers would like to allocate PASIDs for devices that
-> > aren't managed by an IOMMU, using the same ID space as IOMMU.
-> > 
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Link: https://lkml.org/lkml/2019/4/26/462
-> > ---
-> >  drivers/iommu/Kconfig  |   6 +++
-> >  drivers/iommu/Makefile |   1 +
-> >  drivers/iommu/ioasid.c | 140
-> > +++++++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/ioasid.h |  67 +++++++++++++++++++++++ 4 files
-> > changed, 214 insertions(+) create mode 100644 drivers/iommu/ioasid.c
-> >  create mode 100644 include/linux/ioasid.h
-> > 
-> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > index 6f07f3b..75e7f97 100644
-> > --- a/drivers/iommu/Kconfig
-> > +++ b/drivers/iommu/Kconfig
-> > @@ -2,6 +2,12 @@
-> >  config IOMMU_IOVA
-> >  	tristate
-> >  
-> > +config IOASID
-> > +	bool
-> > +	help
-> > +	  Enable the I/O Address Space ID allocator. A single ID
-> > space shared
-> > +	  between different users.
-> > +
-> >  # IOMMU_API always gets selected by whoever wants it.
-> >  config IOMMU_API
-> >  	bool
-> > diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> > index 8c71a15..0efac6f 100644
-> > --- a/drivers/iommu/Makefile
-> > +++ b/drivers/iommu/Makefile
-> > @@ -7,6 +7,7 @@ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
-> >  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
-> >  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
-> >  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-> > +obj-$(CONFIG_IOASID) += ioasid.o
-> >  obj-$(CONFIG_IOMMU_IOVA) += iova.o
-> >  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
-> >  obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
-> > diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> > new file mode 100644
-> > index 0000000..99f5e0a
-> > --- /dev/null
-> > +++ b/drivers/iommu/ioasid.c
-> > @@ -0,0 +1,140 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * I/O Address Space ID allocator. There is one global IOASID
-> > space, split into
-> > + * subsets. Users create a subset with DECLARE_IOASID_SET, then
-> > allocate and
-> > + * free IOASIDs with ioasid_alloc and ioasid_free.
-> > + */
-> > +#include <linux/xarray.h>
-> > +#include <linux/ioasid.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/spinlock.h>
-> > +
-> > +struct ioasid_data {
-> > +	ioasid_t id;
-> > +	struct ioasid_set *set;
-> > +	void *private;
-> > +	struct rcu_head rcu;
-> > +};
-> > +
-> > +static DEFINE_XARRAY_ALLOC(ioasid_xa);
-> > +
-> > +/**
-> > + * ioasid_set_data - Set private data for an allocated ioasid
-> > + * @ioasid: the ID to set data
-> > + * @data:   the private data
-> > + *
-> > + * For IOASID that is already allocated, private data can be set
-> > + * via this API. Future lookup can be done via ioasid_find.
-> > + */
-> > +int ioasid_set_data(ioasid_t ioasid, void *data)
-> > +{
-> > +	struct ioasid_data *ioasid_data;
-> > +	int ret = 0;
-> > +
-> > +	ioasid_data = xa_load(&ioasid_xa, ioasid);
-> > +	if (ioasid_data)
-> > +		ioasid_data->private = data;
-> > +	else
-> > +		ret = -ENOENT;
-> > +
-> > +	/* getter may use the private data */
-> > +	synchronize_rcu();
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_set_data);
-> > +
-> > +/**
-> > + * ioasid_alloc - Allocate an IOASID
-> > + * @set: the IOASID set
-> > + * @min: the minimum ID (inclusive)
-> > + * @max: the maximum ID (inclusive)
-> > + * @private: data private to the caller
-> > + *
-> > + * Allocate an ID between @min and @max (or %0 and %INT_MAX).
-> > Return the
-> > + * allocated ID on success, or INVALID_IOASID on failure. The
-> > @private pointer
-> > + * is stored internally and can be retrieved with ioasid_find().
-> > + */
-> > +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-> > ioasid_t max,
-> > +		      void *private)
-> > +{
-> > +	int id = INVALID_IOASID;
-> > +	struct ioasid_data *data;
-> > +
-> > +	data = kzalloc(sizeof(*data), GFP_KERNEL);
-> > +	if (!data)
-> > +		return INVALID_IOASID;
-> > +
-> > +	data->set = set;
-> > +	data->private = private;
-> > +
-> > +	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max),
-> > GFP_KERNEL)) {
-> > +		pr_err("Failed to alloc ioasid from %d to %d\n",
-> > min, max);
-> > +		goto exit_free;
-> > +	}
-> > +	data->id = id;
-> > +
-> > +exit_free:
-> > +	if (id < 0 || id == INVALID_IOASID) {
-> > +		kfree(data);
-> > +		return INVALID_IOASID;
-> > +	}
-> > +	return id;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_alloc);
-> > +
-> > +/**
-> > + * ioasid_free - Free an IOASID
-> > + * @ioasid: the ID to remove
-> > + */
-> > +void ioasid_free(ioasid_t ioasid)
-> > +{
-> > +	struct ioasid_data *ioasid_data;
-> > +
-> > +	ioasid_data = xa_erase(&ioasid_xa, ioasid);
-> > +
-> > +	kfree_rcu(ioasid_data, rcu);
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_free);
-> > +
-> > +/**
-> > + * ioasid_find - Find IOASID data
-> > + * @set: the IOASID set
-> > + * @ioasid: the IOASID to find
-> > + * @getter: function to call on the found object
-> > + *
-> > + * The optional getter function allows to take a reference to the
-> > found object
-> > + * under the rcu lock. The function can also check if the object
-> > is still valid:
-> > + * if @getter returns false, then the object is invalid and NULL
-> > is returned.
-> > + *
-> > + * If the IOASID has been allocated for this set, return the
-> > private pointer
-> > + * passed to ioasid_alloc. Private data can be NULL if not set.
-> > Return an error
-> > + * if the IOASID is not found or not belong to the set.
-> > + */
-> > +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> > +		  bool (*getter)(void *))
-> > +{
-> > +	void *priv = NULL;
-> > +	struct ioasid_data *ioasid_data;
-> > +
-> > +	rcu_read_lock();
-> > +	ioasid_data = xa_load(&ioasid_xa, ioasid);
-> > +	if (!ioasid_data) {
-> > +		priv = ERR_PTR(-ENOENT);
-> > +		goto unlock;
-> > +	}
-> > +	if (set && ioasid_data->set != set) {
-> > +		/* data found but does not belong to the set */
-> > +		priv = ERR_PTR(-EACCES);
-> > +		goto unlock;
-> > +	}
-> > +	/* Now IOASID and its set is verified, we can return the
-> > private data */
-> > +	priv = ioasid_data->private;
-> > +	if (getter && !getter(priv))
-> > +		priv = NULL;
-> > +unlock:
-> > +	rcu_read_unlock();
-> > +
-> > +	return priv;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_find);
-> > diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> > new file mode 100644
-> > index 0000000..41de5e4
-> > --- /dev/null
-> > +++ b/include/linux/ioasid.h
-> > @@ -0,0 +1,67 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +#ifndef __LINUX_IOASID_H
-> > +#define __LINUX_IOASID_H
-> > +
-> > +#define INVALID_IOASID ((ioasid_t)-1)
-> > +typedef unsigned int ioasid_t;
-> > +typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void
-> > *data);  
-> not used as reported during v2 review:
-> https://lkml.org/lkml/2019/4/25/341
-> 
-I missed it, thanks.
-> Thanks
-> 
-> Eric
-> > +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max,
-> > void *data); +typedef void (*ioasid_free_fn_t)(ioasid_t ioasid,
-> > void *data); +
-> > +struct ioasid_set {
-> > +	int dummy;
-> > +};
-> > +
-> > +struct ioasid_allocator {
-> > +	ioasid_alloc_fn_t alloc;
-> > +	ioasid_free_fn_t free;
-> > +	void *pdata;
-> > +	struct list_head list;
-> > +};
-> > +
-> > +#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
-> > +
-> > +#ifdef CONFIG_IOASID
-> > +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-> > ioasid_t max,
-> > +		      void *private);
-> > +void ioasid_free(ioasid_t ioasid);
-> > +
-> > +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-> > +		  bool (*getter)(void *));
-> > +int ioasid_register_allocator(struct ioasid_allocator *allocator);
-> > +void ioasid_unregister_allocator(struct ioasid_allocator
-> > *allocator); +
-> > +int ioasid_set_data(ioasid_t ioasid, void *data);
-> > +
-> > +#else /* !CONFIG_IOASID */
-> > +static inline ioasid_t ioasid_alloc(struct ioasid_set *set,
-> > ioasid_t min,
-> > +				    ioasid_t max, void *private)
-> > +{
-> > +	return INVALID_IOASID;
-> > +}
-> > +
-> > +static inline void ioasid_free(ioasid_t ioasid)
-> > +{
-> > +}
-> > +
-> > +static inline void *ioasid_find(struct ioasid_set *set, ioasid_t
-> > ioasid,
-> > +				bool (*getter)(void *))
-> > +{
-> > +	return NULL;
-> > +}
-> > +static inline int ioasid_register_allocator(struct
-> > ioasid_allocator *allocator) +{
-> > +	return -ENODEV;
-> > +}
-> > +
-> > +static inline void ioasid_unregister_allocator(struct
-> > ioasid_allocator *allocator) +{
-> > +}
-> > +
-> > +static inline int ioasid_set_data(ioasid_t ioasid, void *data)
-> > +{
-> > +	return -ENODEV;
-> > +}
-> > +
-> > +#endif /* CONFIG_IOASID */
-> > +#endif /* __LINUX_IOASID_H */
-> >   
+Is it mandatory for a device to write data in an area DMA mapped DMA_FROM_DEVICE?
+Can't the device just "ignore" that mapping - i.e. not write anything - and
+driver should expect original data to be found in that location (since it was
+not touched / written to by the device)?
+[Let's leave cache coherency aside, and consider "original data" to be in RAM.]
 
-[Jacob Pan]
+I am asking this since I am seeing what seems to be an inconsistent behavior /
+semantics between cases when swiotlb bouncing is used and when it's not.
+
+Specifically, the context is:
+1. driver prepares a scatterlist with several entries and performs a
+dma_map_sg() with direction FROM_DEVICE
+2. device decides there's no need to write into the buffer pointed by first
+scatterlist entry and skips it (writing into subsequent buffers)
+3. driver is notified the device finished processing and dma unmaps the scatterlist
+
+When swiotlb bounce is used, the buffer pointed to by first scatterlist entry is
+corrupted. That's because swiotlb implementation expects the device to write
+something into that buffer, however the device logic is "whatever was previously
+in that buffer should be used" (2. above).
+
+For FROM_DEVICE direction:
+-swiotlb_tbl_map_single() does not copy data from original location to swiotlb
+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+-swiotlb_tbl_unmap_single() copies data from swiotlb to original location
+	if (orig_addr != INVALID_PHYS_ADDR &&
+	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
+		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_FROM_DEVICE);
+and when device did not write anything (as in current situation), it overwrites
+original data with zeros
+
+In case swiotlb bounce is not used and device does not write into the
+FROM_DEVICE streaming DMA maping, the original data is available.
+
+Could you please clarify whether:
+-I am missing something obvious OR
+-the DMA API documentation should be updated - to mandate for device writes into
+FROM_DEVICE mappings) OR
+-the swiotlb implementation should be updated - to copy data from original
+location irrespective of DMA mapping direction?
+
+Thanks,
+Horia
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
