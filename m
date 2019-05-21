@@ -2,69 +2,71 @@ Return-Path: <SRS0=R8za=TV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E48C04AB4
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 12:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7847C04AAF
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 13:00:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1506221773
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 12:59:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1506221773
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5F22921773
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 13:00:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="ucuf5RfL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F22921773
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=armlinux.org.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CABBDBDC;
-	Tue, 21 May 2019 12:59:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 33F70C11;
+	Tue, 21 May 2019 13:00:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B1E33B50
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E3478BDC
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 12:59:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9B53627B
+	Tue, 21 May 2019 13:00:57 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 03A9227B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 12:59:35 +0000 (UTC)
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-	by Forcepoint Email with ESMTP id 91EAB237052C217B51B8;
-	Tue, 21 May 2019 20:59:32 +0800 (CST)
-Received: from [127.0.0.1] (10.202.227.238) by DGGEMS414-HUB.china.huawei.com
-	(10.3.19.214) with Microsoft SMTP Server id 14.3.439.0;
-	Tue, 21 May 2019 20:59:23 +0800
-Subject: Re: [PATCH v7 1/1] iommu: enhance IOMMU dma mode build options
-To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker
-	<jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Will
-	Deacon" <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan
-	Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>,
-	Sebastian Ott
-	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
-	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
-	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
-	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
-	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
-	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
-	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
-	<iommu@lists.linux-foundation.org>, linux-kernel
-	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
-	linux-ia64 <linux-ia64@vger.kernel.org>
-References: <20190520135947.14960-1-thunder.leizhen@huawei.com>
-	<20190520135947.14960-2-thunder.leizhen@huawei.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <1a12ce97-2e21-0b28-b852-31f21626c378@huawei.com>
-Date: Tue, 21 May 2019 13:59:06 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
-	Thunderbird/45.3.0
+	Tue, 21 May 2019 13:00:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=6ifQmDBhWTZl8rhJvIbZz2ekjW5v/WEMQ+tswwvohW8=;
+	b=ucuf5RfLFDo0GPsWp3LiAy55h
+	olVecf1LGQap4YkilkPL4Yp0l5K7zvLtvhQy+sYKv+XlLQYIytrS9zcxWwWDSLv/9ZS3xPUFRSyLE
+	QJI39Y/BZ8pYeZYDIR/Qse7d1zaNvdkyIKn+/2k8St/0VJXQzI2klNelHbUXOWFtx4sHdzD+maIql
+	C0AWmBs8YGUmdoFM1y7E+FaR05lXxMgU+8mr5rWHOunjCVuwSXCgwL8R9d6fq7JKhREl7ZQ2DEMMH
+	yWsEynJoPMCW8gFUSdGuB8XlOmweUUvddo9H+EZ28Ow9+MU5m/H2jNJLFmETDo/aB+gGpD9deH/9n
+	KwQSAp/lA==;
+Received: from shell.armlinux.org.uk
+	([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52564)
+	by pandora.armlinux.org.uk with esmtpsa
+	(TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.90_1)
+	(envelope-from <linux@armlinux.org.uk>)
+	id 1hT4Nv-0001J6-7M; Tue, 21 May 2019 14:00:51 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+	(envelope-from <linux@shell.armlinux.org.uk>)
+	id 1hT4Nr-0005qZ-Sq; Tue, 21 May 2019 14:00:47 +0100
+Date: Tue, 21 May 2019 14:00:47 +0100
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 2/2] ARM: dma-mapping: allow larger DMA mask than supported
+Message-ID: <20190521130047.3bvvttpaa3pfqkdq@shell.armlinux.org.uk>
+References: <20190521124729.23559-1-hch@lst.de>
+	<20190521124729.23559-3-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <20190520135947.14960-2-thunder.leizhen@huawei.com>
-X-Originating-IP: [10.202.227.238]
-X-CFilter-Loop: Reflected
-Cc: Linuxarm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>
+Content-Disposition: inline
+In-Reply-To: <20190521124729.23559-3-hch@lst.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,214 +79,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 20/05/2019 14:59, Zhen Lei wrote:
-> First, add build option IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
-> opportunity to set {lazy|strict} mode as default at build time. Then put
-> the three config options in an choice, make people can only choose one of
-> the three at a time.
->
-> The default IOMMU dma modes on each ARCHs have no change.
->
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+On Tue, May 21, 2019 at 02:47:29PM +0200, Christoph Hellwig wrote:
+> Since Linux 5.1 we allow drivers to just set the largest DMA mask they
+> support instead of falling back to smaller ones.
 
-Apart from more minor comments, FWIW:
+This doesn't make sense.  "they" is confusing - why would a driver set
+a DMA mask larger than the driver supports?  Or is "they" not
+referring to the drivers (in which case, what is it referring to?)
 
-Reviewed-by: John Garry <john.garry@huawei.com>
-
+> When fixing up all the dma ops instances to allow for this behavior
+> the arm direct mapping code was missed.  Fix it up by removing the
+> sanity check, as all the actual mapping code handles this case just
+> fine.
+> 
+> Fixes: 9eb9e96e97b3 ("Documentation/DMA-API-HOWTO: update dma_mask sections")
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  arch/ia64/kernel/pci-dma.c                |  2 +-
->  arch/powerpc/platforms/powernv/pci-ioda.c |  3 ++-
->  arch/s390/pci/pci_dma.c                   |  2 +-
->  arch/x86/kernel/pci-dma.c                 |  7 ++---
->  drivers/iommu/Kconfig                     | 44 ++++++++++++++++++++++++++-----
->  drivers/iommu/amd_iommu_init.c            |  3 ++-
->  drivers/iommu/intel-iommu.c               |  2 +-
->  drivers/iommu/iommu.c                     |  3 ++-
->  8 files changed, 48 insertions(+), 18 deletions(-)
->
-> diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
-> index fe988c49f01ce6a..655511dbf3c3b34 100644
-> --- a/arch/ia64/kernel/pci-dma.c
-> +++ b/arch/ia64/kernel/pci-dma.c
-> @@ -22,7 +22,7 @@
->  int force_iommu __read_mostly;
->  #endif
->
-> -int iommu_pass_through;
-> +int iommu_pass_through = IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
-
-As commented privately, I could never see this set for ia64, and it 
-seems to exist just to keep the linker happy. Anyway, I am not sure if 
-ever suitable to be set.
-
->
->  static int __init pci_iommu_init(void)
+>  arch/arm/mm/dma-mapping.c | 20 +-------------------
+>  1 file changed, 1 insertion(+), 19 deletions(-)
+> 
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 0a75058c11f3..bdf0d236aaee 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -219,25 +219,7 @@ EXPORT_SYMBOL(arm_coherent_dma_ops);
+>  
+>  static int __dma_supported(struct device *dev, u64 mask, bool warn)
 >  {
-> diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
-> index 3ead4c237ed0ec9..383e082a9bb985c 100644
-> --- a/arch/powerpc/platforms/powernv/pci-ioda.c
-> +++ b/arch/powerpc/platforms/powernv/pci-ioda.c
-> @@ -85,7 +85,8 @@ void pe_level_printk(const struct pnv_ioda_pe *pe, const char *level,
->  	va_end(args);
->  }
->
-> -static bool pnv_iommu_bypass_disabled __read_mostly;
-> +static bool pnv_iommu_bypass_disabled __read_mostly =
-> +			!IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
->  static bool pci_reset_phbs __read_mostly;
->
->  static int __init iommu_setup(char *str)
-> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-> index 9e52d1527f71495..784ad1e0acecfb1 100644
-> --- a/arch/s390/pci/pci_dma.c
-> +++ b/arch/s390/pci/pci_dma.c
-> @@ -17,7 +17,7 @@
->
->  static struct kmem_cache *dma_region_table_cache;
->  static struct kmem_cache *dma_page_table_cache;
-> -static int s390_iommu_strict;
-> +static int s390_iommu_strict = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->
->  static int zpci_refresh_global(struct zpci_dev *zdev)
->  {
-> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> index d460998ae828514..fb2bab42a0a3173 100644
-> --- a/arch/x86/kernel/pci-dma.c
-> +++ b/arch/x86/kernel/pci-dma.c
-> @@ -43,11 +43,8 @@
->   * It is also possible to disable by default in kernel config, and enable with
->   * iommu=nopt at boot time.
->   */
-> -#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
-> -int iommu_pass_through __read_mostly = 1;
-> -#else
-> -int iommu_pass_through __read_mostly;
-> -#endif
-> +int iommu_pass_through __read_mostly =
-> +			IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
->
->  extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
->
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 6f07f3b21816c64..8a1f1793cde76b4 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -74,17 +74,47 @@ config IOMMU_DEBUGFS
->  	  debug/iommu directory, and then populate a subdirectory with
->  	  entries as required.
->
-> -config IOMMU_DEFAULT_PASSTHROUGH
-> -	bool "IOMMU passthrough by default"
-> +choice
-> +	prompt "IOMMU default DMA mode"
->  	depends on IOMMU_API
-> -        help
-> -	  Enable passthrough by default, removing the need to pass in
-> -	  iommu.passthrough=on or iommu=pt through command line. If this
-> -	  is enabled, you can still disable with iommu.passthrough=off
-> -	  or iommu=nopt depending on the architecture.
-> +	default IOMMU_DEFAULT_PASSTHROUGH if (PPC_POWERNV && PCI)
-> +	default IOMMU_DEFAULT_LAZY if (AMD_IOMMU || INTEL_IOMMU || S390_IOMMU)
-> +	default IOMMU_DEFAULT_STRICT
-> +	help
-> +	  This option allows IOMMU DMA mode to be chose at build time, to
+> -	unsigned long max_dma_pfn;
+> -
+> -	/*
+> -	 * If the mask allows for more memory than we can address,
+> -	 * and we actually have that much memory, then we must
+> -	 * indicate that DMA to this device is not supported.
+> -	 */
+> -	if (sizeof(mask) != sizeof(dma_addr_t) &&
+> -	    mask > (dma_addr_t)~0 &&
+> -	    dma_to_pfn(dev, ~0) < max_pfn - 1) {
+> -		if (warn) {
+> -			dev_warn(dev, "Coherent DMA mask %#llx is larger than dma_addr_t allows\n",
+> -				 mask);
+> -			dev_warn(dev, "Driver did not use or check the return value from dma_set_coherent_mask()?\n");
+> -		}
+> -		return 0;
+> -	}
 
-I'd say /s/allows IOMMU/allows an IOMMU/, /s/chose/chosen/
+The point of this check is to trap the case where we have, for example,
+8GB of memory, but dma_addr_t is 32-bit.  We can allocate in the high
+4GB, but we can't represent the address in a dma_addr_t.
 
-> +	  override the default DMA mode of each ARCHs, removing the need to
+> -
+> -	max_dma_pfn = min(max_pfn, arm_dma_pfn_limit);
+> +	unsigned long max_dma_pfn = min(max_pfn, arm_dma_pfn_limit);
+>  
+>  	/*
+>  	 * Translate the device's DMA mask to a PFN limit.  This
+> -- 
+> 2.20.1
+> 
+> 
 
-ARCHs should be singular
-
-> +	  pass in kernel parameters through command line. You can still use
-> +	  ARCHs specific boot options to override this option again.
-> +
-> +config IOMMU_DEFAULT_PASSTHROUGH
-> +	bool "passthrough"
-> +	help
-> +	  In this mode, the DMA access through IOMMU without any addresses
-> +	  translation. That means, the wrong or illegal DMA access can not
-> +	  be caught, no error information will be reported.
->
->  	  If unsure, say N here.
->
-> +config IOMMU_DEFAULT_LAZY
-> +	bool "lazy"
-> +	help
-> +	  Support lazy mode, where for every IOMMU DMA unmap operation, the
-> +	  flush operation of IOTLB and the free operation of IOVA are deferred.
-> +	  They are only guaranteed to be done before the related IOVA will be
-> +	  reused.
-> +
-> +config IOMMU_DEFAULT_STRICT
-> +	bool "strict"
-> +	help
-> +	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
-> +	  the free operation of IOVA are guaranteed to be done in the unmap
-> +	  function.
-> +
-> +	  This mode is safer than the two above, but it maybe slower in some
-> +	  high performace scenarios.
-> +
-> +endchoice
-> +
->  config OF_IOMMU
->         def_bool y
->         depends on OF && IOMMU_API
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index ff40ba758cf365e..16c02b08adb4cb2 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -166,7 +166,8 @@ struct ivmd_header {
->  					   to handle */
->  LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
->  					   we find in ACPI */
-> -bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
-> +bool amd_iommu_unmap_flush = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
-> +					/* if true, flush on every unmap */
->
->  LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
->  					   system */
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 28cb713d728ceef..0c3cc716210f35a 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -362,7 +362,7 @@ static int domain_detach_iommu(struct dmar_domain *domain,
->
->  static int dmar_map_gfx = 1;
->  static int dmar_forcedac;
-> -static int intel_iommu_strict;
-> +static int intel_iommu_strict = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->  static int intel_iommu_superpage = 1;
->  static int intel_iommu_sm;
->  static int iommu_identity_mapping;
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 109de67d5d727c2..0ec5952ac60e2a3 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -43,7 +43,8 @@
->  #else
->  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
->  #endif
-> -static bool iommu_dma_strict __read_mostly = true;
-> +static bool iommu_dma_strict __read_mostly =
-> +			IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
->
->  struct iommu_group {
->  	struct kobject kobj;
-> --
-> 1.8.3
->
->
->
-> .
->
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
