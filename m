@@ -3,103 +3,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B4DDC04E87
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 09:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A4AC04AB4
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 09:42:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 031F22173E
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 09:14:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 031F22173E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4730A21479
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 09:42:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4730A21479
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 984F7B09;
-	Tue, 21 May 2019 09:14:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4139DA95;
+	Tue, 21 May 2019 09:42:12 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 706A0A64
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F1692A7A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 09:14:48 +0000 (UTC)
+	Tue, 21 May 2019 09:42:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3E3AA6C5
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2E1E4E3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 09:14:47 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x4L977OL131366
-	for <iommu@lists.linux-foundation.org>; Tue, 21 May 2019 05:14:46 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2smdj0jfyh-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Tue, 21 May 2019 05:14:46 -0400
-Received: from localhost
-	by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
-	Only! Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from <pmorel@linux.ibm.com>;
-	Tue, 21 May 2019 10:14:44 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-	by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Tue, 21 May 2019 10:14:41 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com
-	[9.149.105.59])
-	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x4L9Ed1U32309462
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Tue, 21 May 2019 09:14:39 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6DDBBA4040;
-	Tue, 21 May 2019 09:14:39 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C65FDA4055;
-	Tue, 21 May 2019 09:14:38 +0000 (GMT)
-Received: from [9.152.222.56] (unknown [9.152.222.56])
-	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Tue, 21 May 2019 09:14:38 +0000 (GMT)
-Subject: Re: [PATCH v2 4/4] vfio: vfio_iommu_type1: implement
-	VFIO_IOMMU_INFO_CAPABILITIES
-To: Alex Williamson <alex.williamson@redhat.com>
-References: <1558109810-18683-1-git-send-email-pmorel@linux.ibm.com>
-	<1558109810-18683-5-git-send-email-pmorel@linux.ibm.com>
-	<20190517104143.240082b5@x1.home>
-	<92b6ad4e-9a49-636b-9225-acca0bec4bb7@linux.ibm.com>
-	<ed193353-56f0-14b5-f1fb-1835d0a6c603@linux.ibm.com>
-	<20190520162737.7560ad7c.cohuck@redhat.com>
-	<23f6a739-be4f-7eda-2227-2994fdc2325a@linux.ibm.com>
-	<20190520122352.73082e52@x1.home>
-From: Pierre Morel <pmorel@linux.ibm.com>
-Date: Tue, 21 May 2019 11:14:38 +0200
+	Tue, 21 May 2019 09:42:10 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+	[10.5.11.12])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 64A283086228;
+	Tue, 21 May 2019 09:42:04 +0000 (UTC)
+Received: from [10.36.116.113] (ovpn-116-113.ams2.redhat.com [10.36.116.113])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 4979D60FE6;
+	Tue, 21 May 2019 09:41:55 +0000 (UTC)
+Subject: Re: [PATCH v3 03/16] iommu: Add I/O ASID allocator
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1556922737-76313-4-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <faf475ce-8645-9d05-663d-8d090cd4ac05@redhat.com>
+Date: Tue, 21 May 2019 11:41:52 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20190520122352.73082e52@x1.home>
+In-Reply-To: <1556922737-76313-4-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Language: en-US
-X-TM-AS-GCONF: 00
-x-cbid: 19052109-0020-0000-0000-0000033EE13E
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19052109-0021-0000-0000-00002191BE39
-Message-Id: <9dc0a8de-b850-df21-e3b7-21b7c2a373a3@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-05-21_01:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1905210059
-Cc: linux-s390@vger.kernel.org, pasic@linux.vnet.ibm.com, kvm@vger.kernel.org,
-	heiko.carstens@de.ibm.com, Cornelia Huck <cohuck@redhat.com>,
-	sebott@linux.vnet.ibm.com, walling@linux.ibm.com,
-	linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
-	iommu@lists.linux-foundation.org, schwidefsky@de.ibm.com,
-	robin.murphy@arm.com, gerald.schaefer@de.ibm.com
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.42]);
+	Tue, 21 May 2019 09:42:09 +0000 (UTC)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -112,182 +72,300 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: pmorel@linux.ibm.com
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gMjAvMDUvMjAxOSAyMDoyMywgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+IE9uIE1vbiwgMjAg
-TWF5IDIwMTkgMTg6MzE6MDggKzAyMDAKPiBQaWVycmUgTW9yZWwgPHBtb3JlbEBsaW51eC5pYm0u
-Y29tPiB3cm90ZToKPiAKPj4gT24gMjAvMDUvMjAxOSAxNjoyNywgQ29ybmVsaWEgSHVjayB3cm90
-ZToKPj4+IE9uIE1vbiwgMjAgTWF5IDIwMTkgMTM6MTk6MjMgKzAyMDAKPj4+IFBpZXJyZSBNb3Jl
-bCA8cG1vcmVsQGxpbnV4LmlibS5jb20+IHdyb3RlOgo+Pj4gICAgCj4+Pj4gT24gMTcvMDUvMjAx
-OSAyMDowNCwgUGllcnJlIE1vcmVsIHdyb3RlOgo+Pj4+PiBPbiAxNy8wNS8yMDE5IDE4OjQxLCBB
-bGV4IFdpbGxpYW1zb24gd3JvdGU6Cj4+Pj4+PiBPbiBGcmksIDE3IE1heSAyMDE5IDE4OjE2OjUw
-ICswMjAwCj4+Pj4+PiBQaWVycmUgTW9yZWwgPHBtb3JlbEBsaW51eC5pYm0uY29tPiB3cm90ZToK
-Pj4+Pj4+ICAgICAgCj4+Pj4+Pj4gV2UgaW1wbGVtZW50IHRoZSBjYXBhYmlsaXR5IGludGVyZmFj
-ZSBmb3IgVkZJT19JT01NVV9HRVRfSU5GTy4KPj4+Pj4+Pgo+Pj4+Pj4+IFdoZW4gY2FsbGluZyB0
-aGUgaW9jdGwsIHRoZSB1c2VyIG11c3Qgc3BlY2lmeQo+Pj4+Pj4+IFZGSU9fSU9NTVVfSU5GT19D
-QVBBQklMSVRJRVMgdG8gcmV0cmlldmUgdGhlIGNhcGFiaWxpdGllcyBhbmQKPj4+Pj4+PiBtdXN0
-IGNoZWNrIGluIHRoZSBhbnN3ZXIgaWYgY2FwYWJpbGl0aWVzIGFyZSBzdXBwb3J0ZWQuCj4+Pj4+
-Pj4KPj4+Pj4+PiBUaGUgaW9tbXUgZ2V0X2F0dHIgY2FsbGJhY2sgd2lsbCBiZSB1c2VkIHRvIHJl
-dHJpZXZlIHRoZSBzcGVjaWZpYwo+Pj4+Pj4+IGF0dHJpYnV0ZXMgYW5kIGZpbGwgdGhlIGNhcGFi
-aWxpdGllcy4KPj4+Pj4+Pgo+Pj4+Pj4+IEN1cnJlbnRseSB0d28gWi1QQ0kgc3BlY2lmaWMgY2Fw
-YWJpbGl0aWVzIHdpbGwgYmUgcXVlcmllZCBhbmQKPj4+Pj4+PiBmaWxsZWQgYnkgdGhlIHVuZGVy
-bHlpbmcgWiBzcGVjaWZpYyBzMzkwX2lvbW11Ogo+Pj4+Pj4+IFZGSU9fSU9NTVVfSU5GT19DQVBf
-UUZOIGZvciB0aGUgUENJIHF1ZXJ5IGZ1bmN0aW9uIGF0dHJpYnV0ZXMKPj4+Pj4+PiBhbmQKPj4+
-Pj4+PiBWRklPX0lPTU1VX0lORk9fQ0FQX1FHUlAgZm9yIHRoZSBQQ0kgcXVlcnkgZnVuY3Rpb24g
-Z3JvdXAuCj4+Pj4+Pj4KPj4+Pj4+PiBPdGhlciBhcmNoaXRlY3R1cmVzIG1heSBhZGQgbmV3IGNh
-cGFiaWxpdGllcyBpbiB0aGUgc2FtZSB3YXkKPj4+Pj4+PiBhZnRlciBlbmhhbmNpbmcgdGhlIGFy
-Y2hpdGVjdHVyZSBzcGVjaWZpYyBJT01NVSBkcml2ZXIuCj4+Pj4+Pj4KPj4+Pj4+PiBTaWduZWQt
-b2ZmLWJ5OiBQaWVycmUgTW9yZWwgPHBtb3JlbEBsaW51eC5pYm0uY29tPgo+Pj4+Pj4+IC0tLQo+
-Pj4+Pj4+ICAgwqAgZHJpdmVycy92ZmlvL3ZmaW9faW9tbXVfdHlwZTEuYyB8IDEyMgo+Pj4+Pj4+
-ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0KPj4+Pj4+PiAgIMKgIDEg
-ZmlsZSBjaGFuZ2VkLCAxMjEgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+Pj4+Pj4+Cj4+
-Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMKPj4+Pj4+
-PiBiL2RyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMKPj4+Pj4+PiBpbmRleCBkMGY3MzFj
-Li45NDM1NjQ3IDEwMDY0NAo+Pj4+Pj4+IC0tLSBhL2RyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5
-cGUxLmMKPj4+Pj4+PiArKysgYi9kcml2ZXJzL3ZmaW8vdmZpb19pb21tdV90eXBlMS5jCj4+Pj4+
-Pj4gQEAgLTE2NTgsNiArMTY1OCw5NyBAQCBzdGF0aWMgaW50Cj4+Pj4+Pj4gdmZpb19kb21haW5z
-X2hhdmVfaW9tbXVfY2FjaGUoc3RydWN0IHZmaW9faW9tbXUgKmlvbW11KQo+Pj4+Pj4+ICAgwqDC
-oMKgwqDCoCByZXR1cm4gcmV0Owo+Pj4+Pj4+ICAgwqAgfQo+Pj4+Pj4+ICtzdGF0aWMgaW50IHZm
-aW9faW9tbXVfdHlwZTFfenBjaV9mbihzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sCj4+Pj4+
-Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCB2ZmlvX2lu
-Zm9fY2FwICpjYXBzLCBzaXplX3Qgc2l6ZSkKPj4+Pj4+PiArewo+Pj4+Pj4+ICvCoMKgwqAgc3Ry
-dWN0IHZmaW9faW9tbXVfdHlwZTFfaW5mb19wY2lmbiAqaW5mb19mbjsKPj4+Pj4+PiArwqDCoMKg
-IGludCByZXQ7Cj4+Pj4+Pj4gKwo+Pj4+Pj4+ICvCoMKgwqAgaW5mb19mbiA9IGt6YWxsb2Moc2l6
-ZSwgR0ZQX0tFUk5FTCk7Cj4+Pj4+Pj4gK8KgwqDCoCBpZiAoIWluZm9fZm4pCj4+Pj4+Pj4gK8Kg
-wqDCoMKgwqDCoMKgIHJldHVybiAtRU5PTUVNOwo+Pj4+Pj4+ICsKPj4+Pj4+PiArwqDCoMKgIHJl
-dCA9IGlvbW11X2RvbWFpbl9nZXRfYXR0cihkb21haW4sIERPTUFJTl9BVFRSX1pQQ0lfRk4sCj4+
-Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICZpbmZvX2ZuLT5y
-ZXNwb25zZSk7Cj4+Pj4+Pgo+Pj4+Pj4gV2hhdCBlbnN1cmVzIHRoYXQgdGhlICdzdHJ1Y3QgY2xw
-X3JzcF9xdWVyeV9wY2knIHJldHVybmVkIGZyb20gdGhpcwo+Pj4+Pj4gZ2V0X2F0dHIgcmVtYWlu
-cyBjb25zaXN0ZW50IHdpdGggYSAnc3RydWN0IHZmaW9faW9tbXVfcGNpX2Z1bmN0aW9uJz8KPj4+
-Pj4+IFdoeSBkb2VzIHRoZSBsYXR0ZXIgY29udGFpbnMgc28gbWFueSByZXNlcnZlZCBmaWVsZHMg
-KGJleW9uZCBzaW1wbHkKPj4+Pj4+IGFsaWdubWVudCkgZm9yIGEgdXNlciBBUEk/wqAgV2hhdCBm
-aWVsZHMgb2YgdGhlc2Ugc3RydWN0dXJlcyBhcmUKPj4+Pj4+IGFjdHVhbGx5IHVzZWZ1bCB0byB1
-c2Vyc3BhY2U/wqAgU2hvdWxkIGFueSBmaWVsZHMgbm90IGJlIGV4cG9zZWQgdG8gdGhlCj4+Pj4+
-PiB1c2VyP8KgIEFyZW4ndCBCQVIgc2l6ZXMgcmVkdW5kYW50IHRvIHdoYXQncyBhdmFpbGFibGUg
-dGhyb3VnaCB0aGUgdmZpbwo+Pj4+Pj4gUENJIEFQST/CoCBJJ20gYWZyYWlkIHRoYXQgc2ltcGx5
-IHJlZGVmaW5pbmcgYW4gaW50ZXJuYWwgc3RydWN0dXJlIGFzCj4+Pj4+PiB0aGUgQVBJIGxlYXZl
-cyBhIGxvdCB0byBiZSBkZXNpcmVkIHRvby7CoCBUaGFua3MsCj4+Pj4+Pgo+Pj4+Pj4gQWxleAo+
-Pj4+Pj4gICAgICAKPj4+Pj4gSGkgQWxleCwKPj4+Pj4KPj4+Pj4gSSBzaW1wbHkgdXNlZCB0aGUg
-c3RydWN0dXJlIHJldHVybmVkIGJ5IHRoZSBmaXJtd2FyZSB0byBiZSBzdXJlIHRvIGJlCj4+Pj4+
-IGNvbnNpc3RlbnQgd2l0aCBmdXR1cmUgZXZvbHV0aW9ucyBhbmQgZmFjaWxpdGF0ZSB0aGUgY29w
-eSBmcm9tIENMUCBhbmQKPj4+Pj4gdG8gdXNlcmxhbmQuCj4+Pj4+Cj4+Pj4+IElmIHlvdSBwcmVm
-ZXIsIGFuZCBJIHVuZGVyc3RhbmQgdGhhdCB0aGlzIGlzIHRoZSBjYXNlLCBJIGNhbiBkZWZpbmUg
-YQo+Pj4+PiBzcGVjaWZpYyBWRklPX0lPTU1VIHN0cnVjdHVyZSB3aXRoIG9ubHkgdGhlIGZpZWxk
-cyByZWxldmFudCB0byB0aGUgdXNlciwKPj4+Pj4gbGVhdmluZyBmdXR1cmUgZW5oYW5jZW1lbnQg
-b2YgdGhlIHVzZXIncyBpbnRlcmZhY2UgYmVpbmcgaW1wbGVtZW50ZWQgaW4KPj4+Pj4gYW5vdGhl
-ciBrZXJuZWwgcGF0Y2ggd2hlbiB0aGUgdGltZSBoYXMgY29tZS4KPiAKPiBUQkgsIEkgaGFkIG5v
-IGlkZWEgdGhhdCBDTFAgaXMgYW4gczM5MCBmaXJtd2FyZSBpbnRlcmZhY2UgYW5kIHRoaXMgaXMK
-PiBqdXN0IGR1bXBpbmcgdGhhdCB0byB1c2Vyc3BhY2UuICBUaGUgY292ZXIgbGV0dGVyIHNheXM6
-Cj4gCj4gICAgVXNpbmcgdGhlIFBDSSBWRklPIGludGVyZmFjZSBhbGxvd3MgdXNlcmxhbmQsIGEu
-ay5hLiBRRU1VLCB0bwo+ICAgIHJldHJpZXZlIFpQQ0kgc3BlY2lmaWMgaW5mb3JtYXRpb24gd2l0
-aG91dCBrbm93aW5nIFogc3BlY2lmaWMKPiAgICBpZGVudGlmaWVycyBsaWtlIHRoZSBmdW5jdGlv
-biBJRCBvciB0aGUgZnVuY3Rpb24gaGFuZGxlIG9mIHRoZSB6UENJCj4gICAgZnVuY3Rpb24gaGlk
-ZGVuIGJlaGluZCB0aGUgUENJIGludGVyZmFjZS4KPiAKPiBCdXQgd2hhdCBkb2VzIHRoaXMgYWxs
-b3cgdXNlcmxhbmQgdG8gZG8gYW5kIHdoYXQgc3BlY2lmaWMgcGllY2VzIG9mCj4gaW5mb3JtYXRp
-b24gZG8gdGhleSBuZWVkPyAgV2UgZG8gaGF2ZSBhIGNhc2UgYWxyZWFkeSB3aGVyZSBJbnRlbAo+
-IGdyYXBoaWNzIGRldmljZXMgaGF2ZSBhIHRhYmxlIChPcFJlZ2lvbikgbGl2aW5nIGluIGhvc3Qg
-c3lzdGVtIG1lbW9yeQo+IHRoYXQgd2UgZXhwb3NlIHZpYSBhIHZmaW8gcmVnaW9uLCBzbyBpdCB3
-b3VsZG4ndCBiZSB1bnByZWNlZGVudGVkIHRvIGRvCj4gc29tZXRoaW5nIGxpa2UgdGhpcywgYnV0
-IGFzIENvbm5pZSBzdWdnZXN0cywgaWYgd2Uga25ldyB3aGF0IHdhcyBiZWluZwo+IGNvbnN1bWVk
-IGhlcmUgYW5kIHdoeSwgbWF5YmUgd2UgY291bGQgZ2VuZXJhbGl6ZSBpdCBpbnRvIHNvbWV0aGlu
-Zwo+IHVzZWZ1bCBmb3Igb3RoZXJzLgoKT0ssIHNvcnJ5IEkgdHJ5IHRvIGV4cGxhaW4gYmV0dGVy
-LgoKMSkgQSBzaG9ydCBkZXNjcmlwdGlvbiwgb2YgelBDSSBmdW5jdGlvbnMgYW5kIGdyb3VwcwoK
-SU4gWiwgUENJIGNhcmRzLCBsZWF2ZSBiZWhpbmQgYW4gYWRhcHRlciBiZXR3ZWVuIHN1YmNoYW5u
-ZWxzIGFuZCBQQ0kuCldlIGFjY2VzcyBQQ0kgY2FyZHMgdGhyb3VnaCAyIHdheXM6Ci0gZGVkaWNh
-dGVkIFBDSSBpbnN0cnVjdGlvbnMgKHBjaV9sb2FkL3BjaV9zdG9yZS9wY2kvc3RvcmVfYmxvY2sp
-Ci0gRE1BCldlIHJlY2VpdmUgZXZlbnRzIHRocm91Z2gKLSBBZGFwdGVyIGludGVycnVwdHMKLSBD
-SFNDIGV2ZW50cwoKVGhlIGFkYXB0ZXIgcHJvcG9zZSBhbiBJT01NVSB0byBwcm90ZWN0IHRoZSBE
-TUEKYW5kIHRoZSBpbnRlcnJ1cHQgaGFuZGxpbmcgZ29lcyB0aHJvdWdoIGEgTVNJWCBsaWtlIGlu
-dGVyZmFjZSBoYW5kbGVkIGJ5IAp0aGUgYWRhcHRlci4KClRoZSBhcmNoaXRlY3R1cmUgc3BlY2lm
-aWMgUENJIGRvIHRoZSBpbnRlcmZhY2UgYmV0d2VlbiB0aGUgc3RhbmRhcmQgUENJIApsZXZlbCBh
-bmQgdGhlIHpQQ0kgZnVuY3Rpb24gKFBDSSArIERNQS9JT01NVS9JbnRlcnJ1cHQpCgpUbyBoYW5k
-bGUgdGhlIGNvbW11bmljYXRpb24gdGhyb3VnaCB0aGUgInpQQ0kgd2F5IiB0aGUgQ0xQIGludGVy
-ZmFjZSAKcHJvdmlkZXMgaW5zdHJ1Y3Rpb25zIHRvIHJldHJpZXZlIGluZm9ybWF0aW9ucyBmcm9t
-IHRoZSBhZGFwdGVycy4KClRoZXJlIGFyZSBkaWZmZXJlbnQgZ3JvdXAgb2YgZnVuY3Rpb25zIGhh
-dmluZyBzYW1lIGZ1bmN0aW9uYWxpdGllcy4KCmNscF9saXN0IGdpdmUgdXMgYSBsaXN0IGZyb20g
-elBDSSBmdW5jdGlvbnMKY2xwX3F1ZXJ5X3BjaV9mdW5jdGlvbiByZXR1cm5zIGluZm9ybWF0aW9u
-cyBzcGVjaWZpYyB0byBhIGZ1bmN0aW9uCmNscF9xdWVyeV9ncm91cCByZXR1cm5zIGluZm9ybWF0
-aW9uIG9uIGEgZnVuY3Rpb24gZ3JvdXAKCgoyKSBXaHkgZG8gd2UgbmVlZCBpdCBpbiB0aGUgZ3Vl
-c3QKCldlIG5lZWQgdG8gcHJvdmlkZSB0aGUgZ3Vlc3Qgd2l0aCBpbmZvcm1hdGlvbiBvbiB0aGUg
-YWRhcHRlcnMgYW5kIHpQQ0kgCmZ1bmN0aW9ucyByZXR1cm5lZCBieSB0aGUgY2xwX3F1ZXJ5IGlu
-c3RydWN0aW9uIHNvIHRoYXQgdGhlIGd1ZXN0J3MgCmRyaXZlciBnZXRzIHRoZSByaWdodCBpbmZv
-cm1hdGlvbiBvbiBob3cgdGhlIHdheSB0byB0aGUgelBDSSBmdW5jdGlvbiAKaGFzIGJlZW4gYnVp
-bHQgaW4gdGhlIGhvc3QuCgoKV2hlbiBhIGd1ZXN0IGlzc3VlcyB0aGUgQ0xQIGluc3RydWN0aW9u
-cyB3ZSBpbnRlcmNlcHQgdGhlIGNscCBjb21tYW5kIGluIApRRU1VIGFuZCB3ZSBuZWVkIHRvIGZl
-ZWQgdGhlIHJlc3BvbnNlIHdpdGggdGhlIHJpZ2h0IHZhbHVlcyBmb3IgdGhlIGd1ZXN0LgpUaGUg
-InJpZ2h0IiB2YWx1ZXMgYXJlIG5vdCB0aGUgcmF3IENMUCByZXNwb25zZSB2YWx1ZXM6CgotIHNv
-bWUgaWRlbnRpZmllciBtdXN0IGJlIHZpcnR1YWxpemVkLCBsaWtlIFVJRCBhbmQgRklELAoKLSBz
-b21lIHZhbHVlcyBtdXN0IG1hdGNoIHdoYXQgdGhlIGhvc3QgcmVjZWl2ZWQgZnJvbSB0aGUgQ0xQ
-IHJlc3BvbnNlLCAKbGlrZSB0aGUgc2l6ZSBvZiB0aGUgdHJhbnNtaXRlZCBibG9ja3MsIHRoZSBE
-TUEgQWRkcmVzcyBTcGFjZSBNYXNrLCAKbnVtYmVyIG9mIGludGVycnVwdCwgTVNJQQoKLSBzb21l
-IG90aGVyIG11c3QgbWF0Y2ggd2hhdCB0aGUgaG9zdCBoYW5kbGVkIHdpdGggdGhlIGFkYXB0ZXIg
-YW5kIApmdW5jdGlvbiwgdGhlIHN0YXJ0IGFuZCBlbmQgb2YgRE1BLAoKLSBzb21lIHdoYXQgdGhl
-IGhvc3QgSU9NTVUgZHJpdmVyIHN1cHBvcnRzIChmcmFtZSBzaXplKSwKCgoKMykgV2UgaGF2ZSB0
-aHJlZSBkaWZmZXJlbnQgd2F5IHRvIGdldCBUaGlzIGluZm9ybWF0aW9uOgoKVGhlIFBDSSBMaW51
-eCBpbnRlcmZhY2UgaXMgYSBzdGFuZGFyZCBQQ0kgaW50ZXJmYWNlIGFuZCBzb21lIFogc3BlY2lm
-aWMgCmluZm9ybWF0aW9uIGlzIGF2YWlsYWJsZSBpbiBzeXNmcy4KTm90IGFsbCB0aGUgaW5mb3Jt
-YXRpb24gbmVlZGVkIHRvIGJlIHJldHVybmVkIGluc2lkZSB0aGUgQ0xQIHJlc3BvbnNlIGlzIAph
-dmFpbGFibGUuClNvIHdlIGNhbiBub3QgdXNlIHRoZSBzeXNmcyBpbnRlcmZhY2UgdG8gZ2V0IGFs
-bCB0aGUgaW5mb3JtYXRpb24uCgpUaGVyZSBpcyBhIENMUCBpb2N0bCBpbnRlcmZhY2UgYnV0IHRo
-aXMgaW50ZXJmYWNlIGlzIG5vdCBzZWN1cmUgaW4gdGhhdCAKaXQgcmV0dXJucyB0aGUgaW5mb3Jt
-YXRpb24gZm9yIGFsbCBhZGFwdGVycyBpbiB0aGUgc3lzdGVtLgoKVGhlIFZGSU8gaW50ZXJmYWNl
-IG9mZmVycyB0aGUgYWR2YW50YWdlIHRvIHBvaW50IHRvIGEgc2luZ2xlIFBDSSAKZnVuY3Rpb24s
-IHNvIG1vcmUgc2VjdXJlIHRoYW4gdGhlIGNscCBpb2N0bCBpbnRlcmZhY2UuCkNvdXBsZWQgd2l0
-aCB0aGUgczM5MF9pb21tdSB3ZSBnZXQgYWNjZXNzIHRvIHRoZSB6UENJIENMUCBpbnN0cnVjdGlv
-biAKYW5kIHRvIHRoZSB2YWx1ZXMgaGFuZGxlZCBieSB0aGUgelBDSSBkcml2ZXIuCgoKNCkgVW50
-aWwgbm93IHdlIHVzZWQgdG8gZmlsbCB0aGUgQ0xQIHJlc3BvbnNlIHRvIHRoZSBndWVzdCBpbnNp
-ZGUgUUVNVSAKd2l0aCBmaXhlZCB2YWx1ZXMgY29ycmVzcG9uZGluZyB0byB0aGUgb25seSBQQ0kg
-Y2FyZCB3ZSBzdXBwb3J0ZWQuClRvIHN1cHBvcnQgbmV3IGNhcmRzIHdlIG5lZWQgdG8gZ2V0IHRo
-ZSByaWdodCB2YWx1ZXMgZnJvbSB0aGUga2VybmVsIG91dC4KCj4gCj4+Pj4+IEluIGZhY3QsIHRo
-ZSBzdHJ1Y3Qgd2lsbCBoYXZlIGFsbCBkZWZpbmVkIGZpZWxkcyBJIHVzZWQgYnV0IG5vdCB0aGUg
-QkFSCj4+Pj4+IHNpemUgYW5kIGFkZHJlc3MgKGF0IGxlYXN0IGZvciBub3cgYmVjYXVzZSB0aGVy
-ZSBhcmUgc3BlY2lhbCBjYXNlcyB3ZSBkbwo+Pj4+PiBub3Qgc3VwcG9ydCB5ZXQgd2l0aCBiYXJz
-KS4KPj4+Pj4gQWxsIHRoZSByZXNlcnZlZCBmaWVsZHMgY2FuIGdvIGF3YXkuCj4+Pj4+Cj4+Pj4+
-IElzIGl0IG1vcmUgY29uZm9ybSB0byB5b3VyIGlkZWE/Cj4+Pj4+Cj4+Pj4+IEFsc28gSSBoYXZl
-IDIgaW50ZXJmYWNlczoKPj4+Pj4KPj4+Pj4gczM5MF9pb21tdS5nZXRfYXR0ciA8LUkxLT4gVkZJ
-T19JT01NVSA8LUkyLT4gdXNlcmxhbmQKPj4+Pj4KPj4+Pj4gRG8geW91IHByZWZlcjoKPj4+Pj4g
-LSAyIGRpZmZlcmVudCBzdHJ1Y3R1cmVzLCBubyBDTFAgcmF3IHN0cnVjdHVyZQo+Pj4+PiAtIHRo
-ZSBDTFAgcmF3IHN0cnVjdHVyZSBmb3IgSTEgYW5kIGEgVkZJTyBzcGVjaWZpYyBzdHJ1Y3R1cmUg
-Zm9yIEkyCj4+Pgo+Pj4gPGVudGVyaW5nIGZyb20gdGhlIHNpZGVsaW5lPgo+Pj4KPj4+IElJVUMs
-IGdldF9hdHRyIGV4dHJhY3RzIHZhcmlvdXMgZGF0YSBwb2ludHMgdmlhIGNscCwgYW5kIHdlIHRo
-ZW4gbWFrZQo+Pj4gaXQgYXZhaWxhYmxlIHRvIHVzZXJzcGFjZS4gVGhlIGNscCBpbnRlcmZhY2Ug
-bmVlZHMgdG8gYmUgYWJzdHJhY3RlZAo+Pj4gYXdheSBhdCBzb21lIHBvaW50Li4uIG9uZSBxdWVz
-dGlvbiBmcm9tIG1lOiBJcyB0aGVyZSBhIGNoYW5jZSB0aGF0Cj4+PiBzb21lb25lIGVsc2UgbWF5
-IHdhbnQgdG8gbWFrZSB1c2Ugb2YgdGhlIHVzZXJzcGFjZSBpbnRlcmZhY2UgKGV4dHJhCj4+PiBp
-bmZvcm1hdGlvbiBhYm91dCBhIGZ1bmN0aW9uKT8gSWYgeWVzLCBJJ2QgZXhwZWN0IHRoZSBnZXRf
-YXR0ciB0bwo+Pj4gb2J0YWluIHNvbWUga2luZCBvZiBwb3J0YWJsZSBpbmZvcm1hdGlvbiBhbHJl
-YWR5IChiYXNpY2FsbHkgeW91ciB0aGlyZAo+Pj4gb3B0aW9uLCBiZWxvdykuCj4gCj4gSSBhZ3Jl
-ZSwgYnV0IEkgYWxzbyBzdXNwZWN0IHdlJ3JlIHByZXR0eSBkZWVwIGludG8gczM5MAo+IGVjY2Vu
-dHJpY2l0aWVzLiAgQW4gaW9jdGwgb24gdGhlIElPTU1VIGNvbnRhaW5lciB0byBnZXQgaW5mb3Jt
-YXRpb24KPiBhYm91dCBhIFBDSSBmdW5jdGlvbiAoc2luZ3VsYXIpIHJlYWxseSBzZWVtcyBsaWtl
-IGl0IGNhbiBvbmx5IGV4aXN0IG9uCj4gYSBzeXN0ZW0gd2hlcmUgdGhlIGFjdHVhbCBQQ0kgaGFy
-ZHdhcmUgaXMgYWxyZWFkeSBiZWluZyB2aXJ0dWFsaXplZCB0bwo+IHRoZSBob3N0IHN5c3RlbS4g
-IEkgZG9uJ3QgdGhpbmsgdGhpcyBleGNsdWRlcyB1cyBmcm9tIHRoZSBjb252ZXJzYXRpb24KPiBh
-Ym91dCB3aGF0IHdlJ3JlIGFjdHVhbGx5IHRyeWluZyB0byBleHBvc2UgYW5kIHdoYXQgaXQgZW5h
-YmxlcyBpbgo+IHVzZXJzcGFjZSB0aG91Z2guCgpJIGhvcGUgSSBhbnN3ZXJlZCB0aGVzZSBxdWVz
-dGlvbiBpbiB0aGlzIGVtYWlsLCBhYm92ZS4KCj4gICAKPj4gWWVzLCBzZWVtcyB0aGUgbW9zdCBy
-ZWFzb25hYmxlLgo+PiBJbiB0aGlzIGNhc2UgSSBuZWVkIHRvIHNoYXJlIHRoZSBzdHJ1Y3R1cmUg
-ZGVmaW5pdGlvbiBiZXR3ZWVuOgo+PiB1c2Vyc3BhY2UgdGhyb3VnaCB2ZmlvLmgKPj4gdmZpb19p
-b21tdSAodGhpcyBpcyBvYnZpb3VzKQo+PiBzMzkwX2lvbW11Cj4+Cj4+IEl0IGlzIHRoaXMgdGhp
-cmQgaW5jbHVkZSB3aGljaCBtYWRlIG1lIGRvdWJ0Lgo+PiBCdXQgd2hlbiB5b3UgcmUgZm9ybXVs
-YXRlIGl0IGl0IGxvb2tzIHRoZSBtb3JlIHJlYXNvbmFibGUgYmVjYXVzZSB0aGVyZQo+PiBhcmUg
-bXVjaCBsZXNzIGNoYW5nZXMuCj4gCj4gSXQgZGVwZW5kcyBvbiB3aGF0IHdlIHNldHRsZSBvbiBm
-b3IgZ2V0X2F0dHIuICBJZiB0aGVyZSBhcmUgZGlzY3JldGUKPiBmZWF0dXJlcyB0aGF0IHZmaW9f
-aW9tbXVfdHlwZTEgY2FuIHF1ZXJ5IGFuZCBhc3NlbWJsZSBpbnRvIHRoZQo+IHVzZXJzcGFjZSBy
-ZXNwb25zZSwgdGhlIHMzOTBfaW9tbXUgZG9lc24ndCBuZWVkIHRvIGtub3cgdGhlIHJlc3VsdGlu
-Zwo+IHN0cnVjdHVyZS4gIEV2ZW4gaWYgaXQncyBqdXN0IGEgQ0xQIHN0cnVjdHVyZSBmcm9tIHRo
-ZSBnZXRfYXR0ciwgd2h5Cj4gd291bGQgczM5MF9pb21tdSBiZSByZXNwb25zaWJsZSBmb3IgZm9y
-bWF0dGluZyB0aGF0IGludG8gYSB1c2VyCj4gc3RydWN0dXJlIHZzIHZmaW9faW9tbXU/ICBJIGRv
-bid0IHRoaW5rIHdlIHdhbnQgZ2V0X2F0dHIgcGFzc2luZyB2ZmlvCj4gc3BlY2lmaWMgc3RydWN0
-dXJlcy4gIFRoYW5rcywKPiAKPiBBbGV4Cj4gCgpPSywgeWVzLCBJIGNhbiBkbyB0aGlzIGFuZCBz
-ZXR1cCBvbmUgQVRUUiBmb3IgZWFjaCBmZWF0dXJlIGFuZCAKcmVhc3NlbWJsZSBpdCBpbiBWRklP
-X0lPTU1VX1RZUEUxCgpUaGFua3MsClBpZXJyZQoKLS0gClBpZXJyZSBNb3JlbApMaW51eC9LVk0v
-UUVNVSBpbiBCw7ZibGluZ2VuIC0gR2VybWFueQoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
-LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2lvbW11
+Hi,
+
+On 5/4/19 12:32 AM, Jacob Pan wrote:
+> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> 
+> Some devices might support multiple DMA address spaces, in particular
+> those that have the PCI PASID feature. PASID (Process Address Space ID)
+> allows to share process address spaces with devices (SVA), partition a
+> device into VM-assignable entities (VFIO mdev) or simply provide
+> multiple DMA address space to kernel drivers. Add a global PASID
+> allocator usable by different drivers at the same time. Name it I/O ASID
+> to avoid confusion with ASIDs allocated by arch code, which are usually
+> a separate ID space.
+> 
+> The IOASID space is global. Each device can have its own PASID space,
+> but by convention the IOMMU ended up having a global PASID space, so
+> that with SVA, each mm_struct is associated to a single PASID.
+> 
+> The allocator is primarily used by IOMMU subsystem but in rare occasions
+> drivers would like to allocate PASIDs for devices that aren't managed by
+> an IOMMU, using the same ID space as IOMMU.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Link: https://lkml.org/lkml/2019/4/26/462
+> ---
+>  drivers/iommu/Kconfig  |   6 +++
+>  drivers/iommu/Makefile |   1 +
+>  drivers/iommu/ioasid.c | 140 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/ioasid.h |  67 +++++++++++++++++++++++
+>  4 files changed, 214 insertions(+)
+>  create mode 100644 drivers/iommu/ioasid.c
+>  create mode 100644 include/linux/ioasid.h
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 6f07f3b..75e7f97 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -2,6 +2,12 @@
+>  config IOMMU_IOVA
+>  	tristate
+>  
+> +config IOASID
+> +	bool
+> +	help
+> +	  Enable the I/O Address Space ID allocator. A single ID space shared
+> +	  between different users.
+> +
+>  # IOMMU_API always gets selected by whoever wants it.
+>  config IOMMU_API
+>  	bool
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 8c71a15..0efac6f 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+> +obj-$(CONFIG_IOASID) += ioasid.o
+>  obj-$(CONFIG_IOMMU_IOVA) += iova.o
+>  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+>  obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+> diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+> new file mode 100644
+> index 0000000..99f5e0a
+> --- /dev/null
+> +++ b/drivers/iommu/ioasid.c
+> @@ -0,0 +1,140 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * I/O Address Space ID allocator. There is one global IOASID space, split into
+> + * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
+> + * free IOASIDs with ioasid_alloc and ioasid_free.
+> + */
+> +#include <linux/xarray.h>
+> +#include <linux/ioasid.h>
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +
+> +struct ioasid_data {
+> +	ioasid_t id;
+> +	struct ioasid_set *set;
+> +	void *private;
+> +	struct rcu_head rcu;
+> +};
+> +
+> +static DEFINE_XARRAY_ALLOC(ioasid_xa);
+> +
+> +/**
+> + * ioasid_set_data - Set private data for an allocated ioasid
+> + * @ioasid: the ID to set data
+> + * @data:   the private data
+> + *
+> + * For IOASID that is already allocated, private data can be set
+> + * via this API. Future lookup can be done via ioasid_find.
+> + */
+> +int ioasid_set_data(ioasid_t ioasid, void *data)
+> +{
+> +	struct ioasid_data *ioasid_data;
+> +	int ret = 0;
+> +
+> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
+> +	if (ioasid_data)
+> +		ioasid_data->private = data;
+> +	else
+> +		ret = -ENOENT;
+> +
+> +	/* getter may use the private data */
+> +	synchronize_rcu();
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_data);
+> +
+> +/**
+> + * ioasid_alloc - Allocate an IOASID
+> + * @set: the IOASID set
+> + * @min: the minimum ID (inclusive)
+> + * @max: the maximum ID (inclusive)
+> + * @private: data private to the caller
+> + *
+> + * Allocate an ID between @min and @max (or %0 and %INT_MAX). Return the
+> + * allocated ID on success, or INVALID_IOASID on failure. The @private pointer
+> + * is stored internally and can be retrieved with ioasid_find().
+> + */
+> +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+> +		      void *private)
+> +{
+> +	int id = INVALID_IOASID;
+> +	struct ioasid_data *data;
+> +
+> +	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return INVALID_IOASID;
+> +
+> +	data->set = set;
+> +	data->private = private;
+> +
+> +	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_KERNEL)) {
+> +		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
+> +		goto exit_free;
+> +	}
+> +	data->id = id;
+> +
+> +exit_free:
+> +	if (id < 0 || id == INVALID_IOASID) {
+> +		kfree(data);
+> +		return INVALID_IOASID;
+> +	}
+> +	return id;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_alloc);
+> +
+> +/**
+> + * ioasid_free - Free an IOASID
+> + * @ioasid: the ID to remove
+> + */
+> +void ioasid_free(ioasid_t ioasid)
+> +{
+> +	struct ioasid_data *ioasid_data;
+> +
+> +	ioasid_data = xa_erase(&ioasid_xa, ioasid);
+> +
+> +	kfree_rcu(ioasid_data, rcu);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_free);
+> +
+> +/**
+> + * ioasid_find - Find IOASID data
+> + * @set: the IOASID set
+> + * @ioasid: the IOASID to find
+> + * @getter: function to call on the found object
+> + *
+> + * The optional getter function allows to take a reference to the found object
+> + * under the rcu lock. The function can also check if the object is still valid:
+> + * if @getter returns false, then the object is invalid and NULL is returned.
+> + *
+> + * If the IOASID has been allocated for this set, return the private pointer
+> + * passed to ioasid_alloc. Private data can be NULL if not set. Return an error
+> + * if the IOASID is not found or not belong to the set.
+> + */
+> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> +		  bool (*getter)(void *))
+> +{
+> +	void *priv = NULL;
+> +	struct ioasid_data *ioasid_data;
+> +
+> +	rcu_read_lock();
+> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
+> +	if (!ioasid_data) {
+> +		priv = ERR_PTR(-ENOENT);
+> +		goto unlock;
+> +	}
+> +	if (set && ioasid_data->set != set) {
+> +		/* data found but does not belong to the set */
+> +		priv = ERR_PTR(-EACCES);
+> +		goto unlock;
+> +	}
+> +	/* Now IOASID and its set is verified, we can return the private data */
+> +	priv = ioasid_data->private;
+> +	if (getter && !getter(priv))
+> +		priv = NULL;
+> +unlock:
+> +	rcu_read_unlock();
+> +
+> +	return priv;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_find);
+> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+> new file mode 100644
+> index 0000000..41de5e4
+> --- /dev/null
+> +++ b/include/linux/ioasid.h
+> @@ -0,0 +1,67 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef __LINUX_IOASID_H
+> +#define __LINUX_IOASID_H
+> +
+> +#define INVALID_IOASID ((ioasid_t)-1)
+> +typedef unsigned int ioasid_t;
+> +typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
+not used as reported during v2 review: https://lkml.org/lkml/2019/4/25/341
+
+Thanks
+
+Eric
+> +typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
+> +typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
+> +
+> +struct ioasid_set {
+> +	int dummy;
+> +};
+> +
+> +struct ioasid_allocator {
+> +	ioasid_alloc_fn_t alloc;
+> +	ioasid_free_fn_t free;
+> +	void *pdata;
+> +	struct list_head list;
+> +};
+> +
+> +#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
+> +
+> +#ifdef CONFIG_IOASID
+> +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+> +		      void *private);
+> +void ioasid_free(ioasid_t ioasid);
+> +
+> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> +		  bool (*getter)(void *));
+> +int ioasid_register_allocator(struct ioasid_allocator *allocator);
+> +void ioasid_unregister_allocator(struct ioasid_allocator *allocator);
+> +
+> +int ioasid_set_data(ioasid_t ioasid, void *data);
+> +
+> +#else /* !CONFIG_IOASID */
+> +static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+> +				    ioasid_t max, void *private)
+> +{
+> +	return INVALID_IOASID;
+> +}
+> +
+> +static inline void ioasid_free(ioasid_t ioasid)
+> +{
+> +}
+> +
+> +static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> +				bool (*getter)(void *))
+> +{
+> +	return NULL;
+> +}
+> +static inline int ioasid_register_allocator(struct ioasid_allocator *allocator)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline void ioasid_unregister_allocator(struct ioasid_allocator *allocator)
+> +{
+> +}
+> +
+> +static inline int ioasid_set_data(ioasid_t ioasid, void *data)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +#endif /* CONFIG_IOASID */
+> +#endif /* __LINUX_IOASID_H */
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
