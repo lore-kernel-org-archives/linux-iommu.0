@@ -2,56 +2,56 @@ Return-Path: <SRS0=R8za=TV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69778C04E87
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B681CC46460
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:43:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 47DA7217D9
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:27:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 47DA7217D9
+	by mail.kernel.org (Postfix) with ESMTPS id 9352E21019
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 17:43:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9352E21019
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E1F8C6D;
-	Tue, 21 May 2019 17:27:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6978DC6A;
+	Tue, 21 May 2019 17:43:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0551FC6A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A6248B50
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 17:27:55 +0000 (UTC)
+	Tue, 21 May 2019 17:43:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 97B0B881
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 1FF90879
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 17:27:54 +0000 (UTC)
+	Tue, 21 May 2019 17:43:37 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 59CE0374;
-	Tue, 21 May 2019 10:27:54 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ABB9B80D;
+	Tue, 21 May 2019 10:43:37 -0700 (PDT)
 Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EC5113F718;
-	Tue, 21 May 2019 10:27:51 -0700 (PDT)
-Subject: Re: Device obligation to write into a DMA_FROM_DEVICE streaming DMA
-	mapping
-To: Horia Geanta <horia.geanta@nxp.com>, Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-References: <VI1PR0402MB348537CB86926B3E6D1DBE0A98070@VI1PR0402MB3485.eurprd04.prod.outlook.com>
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9D20C3F718;
+	Tue, 21 May 2019 10:43:35 -0700 (PDT)
+Subject: Re: [PATCH v2 01/15] iommu/arm-smmu: Allow IOMMU enabled devices to
+	skip DMA domains
+To: Jordan Crouse <jcrouse@codeaurora.org>, freedreno@lists.freedesktop.org
+References: <1558455243-32746-1-git-send-email-jcrouse@codeaurora.org>
+	<1558455243-32746-2-git-send-email-jcrouse@codeaurora.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <584b54f6-bd12-d036-35e6-23eb2dabe811@arm.com>
-Date: Tue, 21 May 2019 18:27:49 +0100
+Message-ID: <6c5898e5-4b14-b77b-15b7-e926233c07d0@arm.com>
+Date: Tue, 21 May 2019 18:43:34 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <VI1PR0402MB348537CB86926B3E6D1DBE0A98070@VI1PR0402MB3485.eurprd04.prod.outlook.com>
+In-Reply-To: <1558455243-32746-2-git-send-email-jcrouse@codeaurora.org>
 Content-Language: en-GB
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	dl-linux-imx <linux-imx@nxp.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: jean-philippe.brucker@arm.com, linux-arm-msm@vger.kernel.org,
+	Will Deacon <will.deacon@arm.com>, dianders@chromium.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	hoegsberg@google.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,59 +69,165 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 21/05/2019 18:14, Horia Geanta wrote:
-> Hi,
-> 
-> Is it mandatory for a device to write data in an area DMA mapped DMA_FROM_DEVICE?
-> Can't the device just "ignore" that mapping - i.e. not write anything - and
-> driver should expect original data to be found in that location (since it was
-> not touched / written to by the device)?
-> [Let's leave cache coherency aside, and consider "original data" to be in RAM.]
-> 
-> I am asking this since I am seeing what seems to be an inconsistent behavior /
-> semantics between cases when swiotlb bouncing is used and when it's not.
-> 
-> Specifically, the context is:
-> 1. driver prepares a scatterlist with several entries and performs a
-> dma_map_sg() with direction FROM_DEVICE
-> 2. device decides there's no need to write into the buffer pointed by first
-> scatterlist entry and skips it (writing into subsequent buffers)
-> 3. driver is notified the device finished processing and dma unmaps the scatterlist
-> 
-> When swiotlb bounce is used, the buffer pointed to by first scatterlist entry is
-> corrupted. That's because swiotlb implementation expects the device to write
-> something into that buffer, however the device logic is "whatever was previously
-> in that buffer should be used" (2. above).
-> 
-> For FROM_DEVICE direction:
-> -swiotlb_tbl_map_single() does not copy data from original location to swiotlb
-> 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-> 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
-> 		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
-> -swiotlb_tbl_unmap_single() copies data from swiotlb to original location
-> 	if (orig_addr != INVALID_PHYS_ADDR &&
-> 	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-> 	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
-> 		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_FROM_DEVICE);
-> and when device did not write anything (as in current situation), it overwrites
-> original data with zeros
-> 
-> In case swiotlb bounce is not used and device does not write into the
-> FROM_DEVICE streaming DMA maping, the original data is available.
-> 
-> Could you please clarify whether:
-> -I am missing something obvious OR
-> -the DMA API documentation should be updated - to mandate for device writes into
-> FROM_DEVICE mappings) OR
-> -the swiotlb implementation should be updated - to copy data from original
-> location irrespective of DMA mapping direction?
+On 21/05/2019 17:13, Jordan Crouse wrote:
+> Allow IOMMU enabled devices specified on an opt-in list to create a
+> default identity domain for a new IOMMU group and bypass the DMA
+> domain created by the IOMMU core. This allows the group to be properly
+> set up but otherwise skips touching the hardware until the client
+> device attaches a unmanaged domain of its own.
 
-Hmm, that certainly feels like a bug in SWIOTLB - it seems reasonable in 
-principle for a device to only partially update a mapped buffer before a 
-sync/unmap, so I'd say it probably should be filling the bounce buffer 
-with the original data at the start, regardless of direction.
+All the cool kids are using iommu_request_dm_for_dev() to force an 
+identity domain for particular devices, won't that suffice for this case 
+too? There is definite scope for improvement in this area, so I'd really 
+like to keep things as consistent as possible to make that easier in future.
 
 Robin.
+
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> ---
+> 
+>   drivers/iommu/arm-smmu.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/iommu.c    | 29 +++++++++++++++++++++++------
+>   include/linux/iommu.h    |  3 +++
+>   3 files changed, 68 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 5e54cc0..a795ada 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1235,6 +1235,35 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>   	return 0;
+>   }
+>   
+> +struct arm_smmu_client_match_data {
+> +	bool use_identity_domain;
+> +};
+> +
+> +static const struct arm_smmu_client_match_data qcom_adreno = {
+> +	.use_identity_domain = true,
+> +};
+> +
+> +static const struct arm_smmu_client_match_data qcom_mdss = {
+> +	.use_identity_domain = true,
+> +};
+> +
+> +static const struct of_device_id arm_smmu_client_of_match[] = {
+> +	{ .compatible = "qcom,adreno", .data = &qcom_adreno },
+> +	{ .compatible = "qcom,mdp4", .data = &qcom_mdss },
+> +	{ .compatible = "qcom,mdss", .data = &qcom_mdss },
+> +	{ .compatible = "qcom,sdm845-mdss", .data = &qcom_mdss },
+> +	{},
+> +};
+> +
+> +static const struct arm_smmu_client_match_data *
+> +arm_smmu_client_data(struct device *dev)
+> +{
+> +	const struct of_device_id *match =
+> +		of_match_device(arm_smmu_client_of_match, dev);
+> +
+> +	return match ? match->data : NULL;
+> +}
+> +
+>   static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>   {
+>   	int ret;
+> @@ -1552,6 +1581,7 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>   {
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
+> +	const struct arm_smmu_client_match_data *client;
+>   	struct iommu_group *group = NULL;
+>   	int i, idx;
+>   
+> @@ -1573,6 +1603,18 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>   	else
+>   		group = generic_device_group(dev);
+>   
+> +	client = arm_smmu_client_data(dev);
+> +
+> +	/*
+> +	 * If the client chooses to bypass the dma domain, create a identity
+> +	 * domain as a default placeholder. This will give the device a
+> +	 * default domain but skip DMA operations and not consume a context
+> +	 * bank
+> +	 */
+> +	if (client && client->no_dma_domain)
+> +		iommu_group_set_default_domain(group, dev,
+> +			IOMMU_DOMAIN_IDENTITY);
+> +
+>   	return group;
+>   }
+>   
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 67ee662..af3e1ed 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1062,6 +1062,24 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
+>   	return group;
+>   }
+>   
+> +struct iommu_domain *iommu_group_set_default_domain(struct iommu_group *group,
+> +		struct device *dev, unsigned int type)
+> +{
+> +	struct iommu_domain *dom;
+> +
+> +	dom = __iommu_domain_alloc(dev->bus, type);
+> +	if (!dom)
+> +		return NULL;
+> +
+> +	/* FIXME: Error if the default domain is already set? */
+> +	group->default_domain = dom;
+> +	if (!group->domain)
+> +		group->domain = dom;
+> +
+> +	return dom;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_group_set_default_domain);
+> +
+>   /**
+>    * iommu_group_get_for_dev - Find or create the IOMMU group for a device
+>    * @dev: target device
+> @@ -1099,9 +1117,12 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+>   	if (!group->default_domain) {
+>   		struct iommu_domain *dom;
+>   
+> -		dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
+> +		dom = iommu_group_set_default_domain(group, dev,
+> +			iommu_def_domain_type);
+> +
+>   		if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
+> -			dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
+> +			dom = iommu_group_set_default_domain(group, dev,
+> +				IOMMU_DOMAIN_DMA);
+>   			if (dom) {
+>   				dev_warn(dev,
+>   					 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
+> @@ -1109,10 +1130,6 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+>   			}
+>   		}
+>   
+> -		group->default_domain = dom;
+> -		if (!group->domain)
+> -			group->domain = dom;
+> -
+>   		if (dom && !iommu_dma_strict) {
+>   			int attr = 1;
+>   			iommu_domain_set_attr(dom,
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a815cf6..4ef8bd5 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -394,6 +394,9 @@ extern int iommu_group_id(struct iommu_group *group);
+>   extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>   extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+>   
+> +struct iommu_domain *iommu_group_set_default_domain(struct iommu_group *group,
+> +		struct device *dev, unsigned int type);
+> +
+>   extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+>   				 void *data);
+>   extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
