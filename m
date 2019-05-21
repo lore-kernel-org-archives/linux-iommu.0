@@ -2,60 +2,88 @@ Return-Path: <SRS0=R8za=TV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDB3C04AAF
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C6AC04AAF
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:11:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC7DD2173C
-	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:10:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC7DD2173C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 41C1921743
+	for <iommu@archiver.kernel.org>; Tue, 21 May 2019 16:11:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dRVai1T8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 41C1921743
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D49A2BE4;
-	Tue, 21 May 2019 16:10:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 27363C4E;
+	Tue, 21 May 2019 16:11:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5BD7EBDC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 69FA8BE4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 16:10:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A3D9DE3
+	Tue, 21 May 2019 16:11:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+	[209.85.128.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AA802E3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 21 May 2019 16:10:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CB90374;
-	Tue, 21 May 2019 09:10:05 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BABFF3F718;
-	Tue, 21 May 2019 09:10:03 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v3 09/16] iommu: Introduce guest PASID bind function
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556922737-76313-10-git-send-email-jacob.jun.pan@linux.intel.com>
-	<d652546a-c6ca-1cc6-1924-b016bd81a792@arm.com>
-	<20190516091429.6d06f7e1@jacob-builder>
-	<20190520122241.0db13f14@jacob-builder>
-Message-ID: <7bf71437-d75b-c4f7-d705-fcd71fc75060@arm.com>
-Date: Tue, 21 May 2019 17:09:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Tue, 21 May 2019 16:11:09 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id 198so3576580wme.3
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 21 May 2019 09:11:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=v1KBi6qqP9EGBxX48fTi6KulOfsUgVuB2MNi/ParILE=;
+	b=dRVai1T8gwETI5/fzjSqe8AAgm5d+9JKj0lCvTp44DKAxqPXkAJsbnpAfkaDBrRrh4
+	jn7VRBDyVr1x2rk+QTLGqyAkgq5Fqp3egFWKGlh+H+TEDRbyGYTlPws4+ex4/X4Cwqfm
+	WqNC2UHEkv/CuIg5MphCgSUSEuY6Yv9sZ9qqR8yaqh02ooNXjkJg2iontuV71habufQ4
+	DFT/XugmCdba/HZ1Vdm2tFIPxi+Ooz1kc1MUa/TDWI7D7vKh36ygoFk2wR0IyWnE5UBq
+	ZGFxScYi4/1zfKL0PIG3bCbz3lk7F4a9PDxPm6ysFc3XwNYOXrMdzNA/Vd6v3f1FbRBb
+	s60Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=v1KBi6qqP9EGBxX48fTi6KulOfsUgVuB2MNi/ParILE=;
+	b=dhnEgZ96TmXrEtLdcIct6Z7g+HT9XGy/tbzh2+Vm72bSauYZtnugB9jlJvpUsK0+uI
+	wBeRHn+ZPly0ar/R3k3y2SVuu/x5bdu4elqOmfuNXB2OSTUpiBgVgDkFvfIuOnmJqITv
+	VzUc/ff750UB8XiXCcCmIX/OULQyjZ2g3pGeBlWG1fausB/BoehqQKHCWFcDhOY1sYA9
+	Aj+qiZoCCnCoT3zdgOtpW9BYecAT8C4zaCdPJDnCxboXAgsUTApKAaS8M+Vww7viCPDg
+	fCPjrxleZcsF1yOV5xx+xUgywJa8YybDz3NXIJM16IT+AtRrC+wIlAYK72n5474UbScd
+	gQAQ==
+X-Gm-Message-State: APjAAAXluPErQhmYv5jY+Q3DfBt7fqIugDFZnYmJX8gBacmsPE5pRL5l
+	pRhKoVd7pLLQ9+go5Ac2bC4=
+X-Google-Smtp-Source: APXvYqxzJh2R7WO4N4CR6Z7NWsbiVf7u/9TEGUdJ5mcXxXr27xkPEERbRL7FqUk2kZM5+H2JkAx1RQ==
+X-Received: by 2002:a1c:b3c3:: with SMTP id c186mr3968354wmf.93.1558455068018; 
+	Tue, 21 May 2019 09:11:08 -0700 (PDT)
+Received: from localhost.localdomain (18.189-60-37.rdns.acropolistelecom.net.
+	[37.60.189.18]) by smtp.gmail.com with ESMTPSA id
+	n63sm3891094wmn.38.2019.05.21.09.11.06
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Tue, 21 May 2019 09:11:07 -0700 (PDT)
+From: =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>
+To: David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>, Chen-Yu Tsai <wens@csie.org>,
+	Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+	Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Neil Armstrong <narmstrong@baylibre.com>,
+	Steven Price <steven.price@arm.com>
+Subject: [PATCH v6 0/6] Allwinner H6 Mali GPU support
+Date: Tue, 21 May 2019 18:10:56 +0200
+Message-Id: <20190521161102.29620-1-peron.clem@gmail.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20190520122241.0db13f14@jacob-builder>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+	=?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,165 +96,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 20/05/2019 20:22, Jacob Pan wrote:
-> On Thu, 16 May 2019 09:14:29 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> 
->> On Thu, 16 May 2019 15:14:40 +0100
->> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
->>
->>> Hi Jacob,
->>>
->>> On 03/05/2019 23:32, Jacob Pan wrote:  
->>>> +/**
->>>> + * struct gpasid_bind_data - Information about device and guest
->>>> PASID binding
->>>> + * @gcr3:	Guest CR3 value from guest mm
->>>> + * @pasid:	Process address space ID used for the guest mm
->>>> + * @addr_width:	Guest address width. Paging mode can also
->>>> be derived.
->>>> + */
->>>> +struct gpasid_bind_data {
->>>> +	__u64 gcr3;
->>>> +	__u32 pasid;
->>>> +	__u32 addr_width;
->>>> +	__u32 flags;
->>>> +#define	IOMMU_SVA_GPASID_SRE	BIT(0) /* supervisor
->>>> request */
->>>> +	__u8 padding[4];
->>>> +};    
->>>
->>> Could you wrap this structure into a generic one like we now do for
->>> bind_pasid_table? It would make the API easier to extend, because if
->>> we ever add individual PASID bind on Arm (something I'd like to do
->>> for virtio-iommu, eventually) it will have different parameters, as
->>> our PASID table entry has a lot of fields describing the page table
->>> format.
->>>
->>> Maybe something like the following would do?
->>>
->>> struct gpasid_bind_data {
->>> #define IOMMU_GPASID_BIND_VERSION_1 1
->>> 	__u32 version;
->>> #define IOMMU_GPASID_BIND_FORMAT_INTEL_VTD	1
->>> 	__u32 format;
->>> 	union {
->>> 		// the current gpasid_bind_data:
->>> 		struct gpasid_bind_intel_vtd vtd;
->>> 	};
->>> };
->>>   
-> 
-> Could you review the struct below? I am trying to extract the
-> common fileds as much as possible. Didn't do exactly as you suggested
-> to keep vendor specific data in separate struct under the same union.
-
-Thanks, it looks good and I think we can reuse it for SMMUv2 and v3.
-Some comments below.
-
-> 
-> Also, can you review the v3 ioasid allocator common code patches? I am
-> hoping we can get the common code in v5.3 so that we can focus on the
-> vendor specific part. The common code should include bind_guest_pasid
-> and ioasid allocator.
-> https://lkml.org/lkml/2019/5/3/787
-> https://lkml.org/lkml/2019/5/3/780
-> 
-> Thanks,
-> 
-> Jacob
-> 
-> 
-> /**
->  * struct gpasid_bind_data_vtd - Intel VT-d specific data on device and guest
->  * SVA binding.
->  *
->  * @flags:	VT-d PASID table entry attributes
->  * @pat:	Page attribute table data to compute effective memory type
->  * @emt:	Extended memory type
->  *
->  * Only guest vIOMMU selectable and effective options are passed down to
->  * the host IOMMU.
->  */
-> struct gpasid_bind_data_vtd {
-> #define	IOMMU_SVA_VTD_GPASID_SRE	BIT(0) /* supervisor request */
-> #define	IOMMU_SVA_VTD_GPASID_EAFE	BIT(1) /* extended access enable */
-> #define	IOMMU_SVA_VTD_GPASID_PCD	BIT(2) /* page-level cache disable */
-> #define	IOMMU_SVA_VTD_GPASID_PWT	BIT(3) /* page-level write through */
-> #define	IOMMU_SVA_VTD_GPASID_EMTE	BIT(4) /* extended memory type enable */
-> #define	IOMMU_SVA_VTD_GPASID_CD		BIT(5) /* PASID-level cache disable */
-
-It doesn't seem like the BIT() macro is exported to userspace, so we
-can't use it here
-
-> 	__u64 flags;
-> 	__u32 pat;
-> 	__u32 emt;
-> };
-> 
-> /**
->  * struct gpasid_bind_data - Information about device and guest PASID binding
->  * @version:	Version of this data structure
->  * @format:	PASID table entry format
->  * @flags:	Additional information on guest bind request
->  * @gpgd:	Guest page directory base of the guest mm to bind
->  * @hpasid:	Process address space ID used for the guest mm in host IOMMU
->  * @gpasid:	Process address space ID used for the guest mm in guest IOMMU
-
-Trying to understand the full flow:
-* @gpasid is the one allocated by the guest using a virtual command. The
-guest writes @gpgd into the virtual PASID table at index @gpasid, then
-sends an invalidate command to QEMU.
-* QEMU issues a gpasid_bind ioctl (on the mdev or its container?). VFIO
-forwards. The IOMMU driver installs @gpgd into the PASID table using
-@hpasid, which is associated with the auxiliary domain.
-
-But why do we need the @hpasid field here? Does userspace know about it
-at all, and does VFIO need to pass it to the IOMMU driver?
-
->  * @addr_width:	Guest address width. Paging mode can also be derived.
-
-What does the last sentence mean? @addr_width should probably be in @vtd
-if it provides implicit information.
-
->  * @vtd:	Intel VT-d specific data
->  */
-> struct gpasid_bind_data {
-> #define IOMMU_GPASID_BIND_VERSION_1	1
-> 	__u32 version;
-> #define IOMMU_PASID_FORMAT_INTEL_VTD	1
-> 	__u32 format;
-> #define	IOMMU_SVA_GPASID_VAL	BIT(1) /* guest PASID valid */
-
-(There are tabs between define and name here, as well as in the VT-d
-specific data)
-
-> 	__u64 flags;
-> 	__u64 gpgd;
-> 	__u64 hpasid;
-> 	__u64 gpasid;
-> 	__u32 addr_width;
-
-I think the union has to be aligned on 64-bit, otherwise a compiler
-might insert padding (https://lkml.org/lkml/2019/1/11/1207)
-
-Thanks,
-Jean
-
-> 	/* Vendor specific data */
-> 	union {
-> 		struct gpasid_bind_data_vtd vtd;
-> 	};
-> };
-> 
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGksCgpUaGUgQWxsd2lubmVyIEg2IGhhcyBhIE1hbGktVDcyMCBNUDIgd2hpY2ggc2hvdWxkIGJl
+IHN1cHBvcnRlZCBieQp0aGUgbmV3IHBhbmZyb3N0IGRyaXZlci4gVGhpcyBzZXJpZXMgZml4IHR3
+byBpc3N1ZXMgYW5kIGludHJvZHVjZSB0aGUKZHQtYmluZGluZ3MgYnV0IGEgc2ltcGxlIGJlbmNo
+bWFyayBzaG93IHRoYXQgaXQncyBzdGlsbCBOT1QgV09SS0lORy4KCkknbSBwdXNoaW5nIGl0IGlu
+IGNhc2Ugc29tZW9uZSB3YW50IHRvIGNvbnRpbnVlIHRoZSB3b3JrLgoKVGhpcyBoYXMgYmVlbiB0
+ZXN0ZWQgd2l0aCBNZXNhM0QgMTkuMS4wLVJDMiBhbmQgYSBHUFUgYml0bmVzcyBwYXRjaFsxXS4K
+Ck9uZSBwYXRjaCBpcyBmcm9tIEljZW5vd3kgWmhlbmcgd2hlcmUgSSBjaGFuZ2VkIHRoZSBvcmRl
+ciBhcyByZXF1aXJlZApieSBSb2IgSGVycmluZ1syXS4KClRoYW5rcywKQ2xlbWVudAoKWzFdIGh0
+dHBzOi8vZ2l0bGFiLmZyZWVkZXNrdG9wLm9yZy9rc3phcS9tZXNhL3RyZWUvcGFuZnJvc3RfNjRf
+MzIKWzJdIGh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcGF0Y2gvMTA2OTk4MjkvCgoKWyAg
+MzQ1LjIwNDgxM10gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IG1tdSBpcnEgc3RhdHVzPTEKWyAgMzQ1
+LjIwOTYxN10gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IFVuaGFuZGxlZCBQYWdlIGZhdWx0IGluIEFT
+MCBhdCBWQQoweDAwMDAwMDAwMDI0MDA0MDAKWyAgMzQ1LjIwOTYxN10gUmVhc29uOiBUT0RPClsg
+IDM0NS4yMDk2MTddIHJhdyBmYXVsdCBzdGF0dXM6IDB4ODAwMDAyQzEKWyAgMzQ1LjIwOTYxN10g
+ZGVjb2RlZCBmYXVsdCBzdGF0dXM6IFNMQVZFIEZBVUxUClsgIDM0NS4yMDk2MTddIGV4Y2VwdGlv
+biB0eXBlIDB4QzE6IFRSQU5TTEFUSU9OX0ZBVUxUX0xFVkVMMQpbICAzNDUuMjA5NjE3XSBhY2Nl
+c3MgdHlwZSAweDI6IFJFQUQKWyAgMzQ1LjIwOTYxN10gc291cmNlIGlkIDB4ODAwMApbICAzNDUu
+NzI5OTU3XSBwYW5mcm9zdCAxODAwMDAwLmdwdTogZ3B1IHNjaGVkIHRpbWVvdXQsIGpzPTAsCnN0
+YXR1cz0weDgsIGhlYWQ9MHgyNDAwNDAwLCB0YWlsPTB4MjQwMDQwMCwgc2NoZWRfam9iPTAwMDAw
+MDAwOWUyMDRkZTkKWyAgMzQ2LjA1NTg3Nl0gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IG1tdSBpcnEg
+c3RhdHVzPTEKWyAgMzQ2LjA2MDY4MF0gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IFVuaGFuZGxlZCBQ
+YWdlIGZhdWx0IGluIEFTMCBhdCBWQQoweDAwMDAwMDAwMDJDMDBBMDAKWyAgMzQ2LjA2MDY4MF0g
+UmVhc29uOiBUT0RPClsgIDM0Ni4wNjA2ODBdIHJhdyBmYXVsdCBzdGF0dXM6IDB4ODEwMDAyQzEK
+WyAgMzQ2LjA2MDY4MF0gZGVjb2RlZCBmYXVsdCBzdGF0dXM6IFNMQVZFIEZBVUxUClsgIDM0Ni4w
+NjA2ODBdIGV4Y2VwdGlvbiB0eXBlIDB4QzE6IFRSQU5TTEFUSU9OX0ZBVUxUX0xFVkVMMQpbICAz
+NDYuMDYwNjgwXSBhY2Nlc3MgdHlwZSAweDI6IFJFQUQKWyAgMzQ2LjA2MDY4MF0gc291cmNlIGlk
+IDB4ODEwMApbICAzNDYuNTYxOTU1XSBwYW5mcm9zdCAxODAwMDAwLmdwdTogZ3B1IHNjaGVkIHRp
+bWVvdXQsIGpzPTEsCnN0YXR1cz0weDgsIGhlYWQ9MHgyYzAwYTAwLCB0YWlsPTB4MmMwMGEwMCwg
+c2NoZWRfam9iPTAwMDAwMDAwYjU1YTlhODUKWyAgMzQ2LjU3MzkxM10gcGFuZnJvc3QgMTgwMDAw
+MC5ncHU6IG1tdSBpcnEgc3RhdHVzPTEKWyAgMzQ2LjU3ODcwN10gcGFuZnJvc3QgMTgwMDAwMC5n
+cHU6IFVuaGFuZGxlZCBQYWdlIGZhdWx0IGluIEFTMCBhdCBWQQoweDAwMDAwMDAwMDJDMDBCODAK
+CkNoYW5nZSBpbiB2NToKIC0gUmVtb3ZlIGZpeCBpbmRlbnQKCkNoYW5nZXMgaW4gdjQ6CiAtIEFk
+ZCBidXNfY2xvY2sgcHJvYmUKIC0gRml4IHNhbml0eSBjaGVjayBpbiBpby1wZ3RhYmxlCiAtIEFk
+ZCB2cmFtcC1kZWxheQogLSBNZXJnZSBhbGwgYm9hcmRzIGludG8gb25lIHBhdGNoCiAtIFJlbW92
+ZSB1cHN0cmVhbWVkIE5laWwgQS4gcGF0Y2gKCkNoYW5nZSBpbiB2MyAoVGhhbmtzIHRvIE1heGlt
+ZSBSaXBhcmQpOgogLSBSZWF1dGhvciBJY2Vub3d5IGZvciBoZXIgcGF0aAoKQ2hhbmdlcyBpbiB2
+MiAoVGhhbmtzIHRvIE1heGltZSBSaXBhcmQpOgogLSBEcm9wIEdQVSBPUFAgVGFibGUKIC0gQWRk
+IGNsb2NrcyBhbmQgY2xvY2stbmFtZXMgaW4gcmVxdWlyZWQKCkNsw6ltZW50IFDDqXJvbiAoNSk6
+CiAgZHJtOiBwYW5mcm9zdDogYWRkIG9wdGlvbmFsIGJ1c19jbG9jawogIGlvbW11OiBpby1wZ3Rh
+YmxlOiBmaXggc2FuaXR5IGNoZWNrIGZvciBub24gNDgtYml0IG1hbGkgaW9tbXUKICBkdC1iaW5k
+aW5nczogZ3B1OiBtYWxpLW1pZGdhcmQ6IEFkZCBINiBtYWxpIGdwdSBjb21wYXRpYmxlCiAgYXJt
+NjQ6IGR0czogYWxsd2lubmVyOiBBZGQgQVJNIE1hbGkgR1BVIG5vZGUgZm9yIEg2CiAgYXJtNjQ6
+IGR0czogYWxsd2lubmVyOiBBZGQgbWFsaSBHUFUgc3VwcGx5IGZvciBINiBib2FyZHMKCkljZW5v
+d3kgWmhlbmcgKDEpOgogIGR0LWJpbmRpbmdzOiBncHU6IGFkZCBidXMgY2xvY2sgZm9yIE1hbGkg
+TWlkZ2FyZCBHUFVzCgogLi4uL2JpbmRpbmdzL2dwdS9hcm0sbWFsaS1taWRnYXJkLnR4dCAgICAg
+ICAgIHwgMTUgKysrKysrKysrKysrLQogLi4uL2R0cy9hbGx3aW5uZXIvc3VuNTBpLWg2LWJlZWxp
+bmstZ3MxLmR0cyAgIHwgIDYgKysrKysKIC4uLi9kdHMvYWxsd2lubmVyL3N1bjUwaS1oNi1vcmFu
+Z2VwaS0zLmR0cyAgICB8ICA2ICsrKysrCiAuLi4vZHRzL2FsbHdpbm5lci9zdW41MGktaDYtb3Jh
+bmdlcGkuZHRzaSAgICAgfCAgNiArKysrKwogLi4uL2Jvb3QvZHRzL2FsbHdpbm5lci9zdW41MGkt
+aDYtcGluZS1oNjQuZHRzIHwgIDYgKysrKysKIGFyY2gvYXJtNjQvYm9vdC9kdHMvYWxsd2lubmVy
+L3N1bjUwaS1oNi5kdHNpICB8IDE0ICsrKysrKysrKysrKwogZHJpdmVycy9ncHUvZHJtL3BhbmZy
+b3N0L3BhbmZyb3N0X2RldmljZS5jICAgIHwgMjIgKysrKysrKysrKysrKysrKysrKwogZHJpdmVy
+cy9ncHUvZHJtL3BhbmZyb3N0L3BhbmZyb3N0X2RldmljZS5oICAgIHwgIDEgKwogZHJpdmVycy9p
+b21tdS9pby1wZ3RhYmxlLWFybS5jICAgICAgICAgICAgICAgIHwgIDIgKy0KIDkgZmlsZXMgY2hh
+bmdlZCwgNzYgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCi0tIAoyLjE3LjEKCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
+bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
+Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
