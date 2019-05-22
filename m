@@ -2,59 +2,89 @@ Return-Path: <SRS0=VKv6=TW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	FROM_EXCESS_BASE64,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE18C282DD
-	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 19:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946A5C282CE
+	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 19:42:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0A8E420675
-	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 19:40:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A8E420675
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 624992089E
+	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 19:42:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UNfDrv//"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 624992089E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C1256AF0;
-	Wed, 22 May 2019 19:40:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 38A16B0B;
+	Wed, 22 May 2019 19:42:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 12826A59
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7E1A3A59
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 22 May 2019 19:40:00 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4C7D0102
+	Wed, 22 May 2019 19:41:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-yb1-f193.google.com (mail-yb1-f193.google.com
+	[209.85.219.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E4950102
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 22 May 2019 19:39:59 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	22 May 2019 12:39:58 -0700
-X-ExtLoop1: 1
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga002.jf.intel.com with ESMTP; 22 May 2019 12:39:58 -0700
-Date: Wed, 22 May 2019 12:42:55 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v3 04/16] ioasid: Add custom IOASID allocator
-Message-ID: <20190522124255.117de6f6@jacob-builder>
-In-Reply-To: <c991ff0c-87bf-574a-bf31-9b37f0421385@redhat.com>
-References: <1556922737-76313-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1556922737-76313-5-git-send-email-jacob.jun.pan@linux.intel.com>
-	<c991ff0c-87bf-574a-bf31-9b37f0421385@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Wed, 22 May 2019 19:41:58 +0000 (UTC)
+Received: by mail-yb1-f193.google.com with SMTP id k128so1339881ybf.0
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 22 May 2019 12:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc:content-transfer-encoding;
+	bh=Q19RztagPywupfj/J4DqX3LJhIyXp53CM3bbmnwAQI4=;
+	b=UNfDrv//AipAlrKipQXskKoxdJ2WtyHM6zC+iXQvoSKDQ1xWXnw4KTXkT38SsmHf0v
+	KIe58FwtZxyDiXkSfZ6M1RstrZLgPH2pQ8C7cPvGvGNym49DipYStwFJgW1yxQw9Thsx
+	3qMvEXhUxNkLePzGsWh0whoKXODOhNRybDWn7sfS/Zydbv3kzTXg+AhDEfqLeagQBhoY
+	gnR/j3HbggY7pTe+Ycz3AFsB4Dn3WV0jqtN3sjyrbZzdtDPUUStbBZMSL8O3NHW7Q1wK
+	UYT8iWI8W15dz490WDuQErQYBf+B36yLyXTxFmeNfEjJFl3XgUAyx8MukKhh+Qw3BWa6
+	deFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc:content-transfer-encoding;
+	bh=Q19RztagPywupfj/J4DqX3LJhIyXp53CM3bbmnwAQI4=;
+	b=Z5kXbTWCYiQTyA9GJFJm27LB4Cr+wd0xdLo7i4uVsQHXP1u9pJVV/oGrRSiVn+uhHT
+	fRmAOu4p0ihO0LvFMg35mBx/M76kEeXxVkPei6Y17Iae+rCgyIAnElxM2OSvHD8YQmo6
+	WqfKjXNoHuJadzCsfKo9+dV25FYmFo6a3RN4aG4n4i9nYxO8Y2lLrTrlKlRVcxuf903h
+	z2iYPB6O6JrKKnLQy1fIkMNjvfQiOtQaGnFTto60z08nUByHRMiLhLDg7w5HjPpKwm2b
+	cnNN0Lgrm8gXegDJ0klSQCH9GjKr0GJoYYNdgvRelVZPHK/8g7yiprdsqD45y1Cn+mQR
+	nBTA==
+X-Gm-Message-State: APjAAAXaud6JGIjKw6UX3J1gk7iGa0SinRfoAK/1haVvmFeH/cujqNev
+	MtKjTfSQr0vOdxUoxI/8hivSY+ZXUsBMJmKL+Kk=
+X-Google-Smtp-Source: APXvYqw2xVvUgbCYG8yMU6wkqfSXTHCekPF2FBrZThkJBWJI1JX36gXbv5kknq16+qzBuCEjqhC/PD0it4+M3Z6X3Ac=
+X-Received: by 2002:a25:138a:: with SMTP id 132mr41990542ybt.127.1558554117758;
+	Wed, 22 May 2019 12:41:57 -0700 (PDT)
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+References: <20190521161102.29620-1-peron.clem@gmail.com>
+	<CAL_Jsq+86nNEBzjbf_GLWWrAN91jwU+JQ7zrEoFaT_dxUzVv4A@mail.gmail.com>
+In-Reply-To: <CAL_Jsq+86nNEBzjbf_GLWWrAN91jwU+JQ7zrEoFaT_dxUzVv4A@mail.gmail.com>
+From: =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>
+Date: Wed, 22 May 2019 21:41:46 +0200
+Message-ID: <CAJiuCcdPXdG1ZcWypJZy_d04c2obEuqFZXna-voMmbK6Au84CA@mail.gmail.com>
+Subject: Re: [PATCH v6 0/6] Allwinner H6 Mali GPU support
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>,
+	devicetree <devicetree@vger.kernel.org>,
+	Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+	Neil Armstrong <narmstrong@baylibre.com>, David Airlie <airlied@linux.ie>,
+	Will Deacon <will.deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dri-devel <dri-devel@lists.freedesktop.org>,
+	Steven Price <steven.price@arm.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>, Chen-Yu Tsai <wens@csie.org>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,245 +97,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 21 May 2019 11:55:55 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
-
-> Hi Jacob,
-> 
-> On 5/4/19 12:32 AM, Jacob Pan wrote:
-> > Sometimes, IOASID allocation must be handled by platform specific
-> > code. The use cases are guest vIOMMU and pvIOMMU where IOASIDs need
-> > to be allocated by the host via enlightened or paravirt interfaces.
-> > 
-> > This patch adds an extension to the IOASID allocator APIs such that
-> > platform drivers can register a custom allocator, possibly at boot
-> > time, to take over the allocation. Xarray is still used for tracking
-> > and searching purposes internal to the IOASID code. Private data of
-> > an IOASID can also be set after the allocation.
-> > 
-> > There can be multiple custom allocators registered but only one is
-> > used at a time. In case of hot removal of devices that provides the
-> > allocator, all IOASIDs must be freed prior to unregistering the
-> > allocator. Default XArray based allocator cannot be mixed with
-> > custom allocators, i.e. custom allocators will not be used if there
-> > are outstanding IOASIDs allocated by the default XA allocator.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/ioasid.c | 125
-> > +++++++++++++++++++++++++++++++++++++++++++++++++ 1 file changed,
-> > 125 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> > index 99f5e0a..ed2915a 100644
-> > --- a/drivers/iommu/ioasid.c
-> > +++ b/drivers/iommu/ioasid.c
-> > @@ -17,6 +17,100 @@ struct ioasid_data {
-> >  };
-> >  
-> >  static DEFINE_XARRAY_ALLOC(ioasid_xa);
-> > +static DEFINE_MUTEX(ioasid_allocator_lock);
-> > +static struct ioasid_allocator *active_custom_allocator;
-> > +
-> > +static LIST_HEAD(custom_allocators);
-> > +/*
-> > + * A flag to track if ioasid default allocator is in use, this will
-> > + * prevent custom allocator from being used. The reason is that
-> > custom allocator
-> > + * must have unadulterated space to track private data with
-> > xarray, there cannot
-> > + * be a mix been default and custom allocated IOASIDs.
-> > + */
-> > +static int default_allocator_active;
-> > +
-> > +/**
-> > + * ioasid_register_allocator - register a custom allocator
-> > + * @allocator: the custom allocator to be registered
-> > + *
-> > + * Custom allocators take precedence over the default xarray based
-> > allocator.
-> > + * Private data associated with the ASID are managed by ASID
-> > common code
-> > + * similar to data stored in xa.
-> > + *
-> > + * There can be multiple allocators registered but only one is
-> > active. In case
-> > + * of runtime removal of a custom allocator, the next one is
-> > activated based
-> > + * on the registration ordering.
-> > + */
-> > +int ioasid_register_allocator(struct ioasid_allocator *allocator)
-> > +{
-> > +	struct ioasid_allocator *pallocator;
-> > +	int ret = 0;
-> > +
-> > +	if (!allocator)
-> > +		return -EINVAL;  
-> is it really necessary? Sin't it the caller responsibility?
-makes sense. will remove this one and below.
-> > +
-> > +	mutex_lock(&ioasid_allocator_lock);
-> > +	/*
-> > +	 * No particular preference since all custom allocators
-> > end up calling
-> > +	 * the host to allocate IOASIDs. We activate the first one
-> > and keep
-> > +	 * the later registered allocators in a list in case the
-> > first one gets
-> > +	 * removed due to hotplug.
-> > +	 */
-> > +	if (list_empty(&custom_allocators))
-> > +		active_custom_allocator = allocator;> +
-> > else {
-> > +		/* Check if the allocator is already registered */
-> > +		list_for_each_entry(pallocator,
-> > &custom_allocators, list) {
-> > +			if (pallocator == allocator) {
-> > +				pr_err("IOASID allocator already
-> > registered\n");
-> > +				ret = -EEXIST;
-> > +				goto out_unlock;
-> > +			}
-> > +		}
-> > +	}
-> > +	list_add_tail(&allocator->list, &custom_allocators);
-> > +
-> > +out_unlock:
-> > +	mutex_unlock(&ioasid_allocator_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_register_allocator);
-> > +
-> > +/**
-> > + * ioasid_unregister_allocator - Remove a custom IOASID allocator
-> > + * @allocator: the custom allocator to be removed
-> > + *
-> > + * Remove an allocator from the list, activate the next allocator
-> > in
-> > + * the order it was registered.
-> > + */
-> > +void ioasid_unregister_allocator(struct ioasid_allocator
-> > *allocator) +{
-> > +	if (!allocator)
-> > +		return;  
-> is it really necessary?
-> > +
-> > +	if (list_empty(&custom_allocators)) {
-> > +		pr_warn("No custom IOASID allocators active!\n");
-> > +		return;
-> > +	}
-> > +
-> > +	mutex_lock(&ioasid_allocator_lock);
-> > +	list_del(&allocator->list);
-> > +	if (list_empty(&custom_allocators)) {
-> > +		pr_info("No custom IOASID allocators\n")>
-> > +		/*
-> > +		 * All IOASIDs should have been freed before the
-> > last custom
-> > +		 * allocator is unregistered. Unless default
-> > allocator is in
-> > +		 * use.
-> > +		 */
-> > +		BUG_ON(!xa_empty(&ioasid_xa)
-> > && !default_allocator_active);
-> > +		active_custom_allocator = NULL;
-> > +	} else if (allocator == active_custom_allocator) {  
-> In case you are removing the active custom allocator don't you also
-> need to check that all ioasids were freed. Otherwise you are likely
-> to switch to a different allocator whereas the asid space is
-> partially populated.
-The assumption is that all custom allocators on the same guest will end
-up calling the same host allocator. Having multiple custom allocators in
-the list is just a way to support multiple (p)vIOMMUs with hotplug.
-Therefore, we cannot nor need to free all PASIDs when one custom
-allocator goes away. This is a different situation then switching
-between default allocator and custom allocator, where custom allocator
-has to start with a clean space.
-
- 
-> > +		active_custom_allocator =
-> > list_entry(&custom_allocators, struct ioasid_allocator, list);
-> > +		pr_info("IOASID allocator changed");
-> > +	}
-> > +	mutex_unlock(&ioasid_allocator_lock);
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
-> >  
-> >  /**
-> >   * ioasid_set_data - Set private data for an allocated ioasid
-> > @@ -68,6 +162,29 @@ ioasid_t ioasid_alloc(struct ioasid_set *set,
-> > ioasid_t min, ioasid_t max, data->set = set;
-> >  	data->private = private;
-> >  
-> > +	mutex_lock(&ioasid_allocator_lock);
-> > +	/*
-> > +	 * Use custom allocator if available, otherwise use
-> > default.
-> > +	 * However, if there are active IOASIDs already been
-> > allocated by default
-> > +	 * allocator, custom allocator cannot be used.
-> > +	 */
-> > +	if (!default_allocator_active && active_custom_allocator) {
-> > +		id = active_custom_allocator->alloc(min, max,
-> > active_custom_allocator->pdata);
-> > +		if (id == INVALID_IOASID) {
-> > +			pr_err("Failed ASID allocation by custom
-> > allocator\n");
-> > +			mutex_unlock(&ioasid_allocator_lock);
-> > +			goto exit_free;
-> > +		}
-> > +		/*
-> > +		 * Use XA to manage private data also sanitiy
-> > check custom
-> > +		 * allocator for duplicates.
-> > +		 */
-> > +		min = id;
-> > +		max = id + 1;
-> > +	} else
-> > +		default_allocator_active = 1;  
-> nit: true?
-yes, i can turn default_allocator_active into a bool type.
-
-> > +	mutex_unlock(&ioasid_allocator_lock);
-> > +
-> >  	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max),
-> > GFP_KERNEL)) { pr_err("Failed to alloc ioasid from %d to %d\n",
-> > min, max); goto exit_free;> @@ -91,9 +208,17 @@ void
-> > ioasid_free(ioasid_t ioasid) {
-> >  	struct ioasid_data *ioasid_data;
-> >  
-> > +	mutex_lock(&ioasid_allocator_lock);
-> > +	if (active_custom_allocator)
-> > +		active_custom_allocator->free(ioasid,
-> > active_custom_allocator->pdata);
-> > +	mutex_unlock(&ioasid_allocator_lock);
-> > +
-> >  	ioasid_data = xa_erase(&ioasid_xa, ioasid);
-> >  
-> >  	kfree_rcu(ioasid_data, rcu);
-> > +
-> > +	if (xa_empty(&ioasid_xa))
-> > +		default_allocator_active = 0;  
-> Isn't it racy? what if an xa_alloc occurs inbetween?
-> 
-> 
-yes, i will move it under the mutex. Thanks.
-> >  }
-> >  EXPORT_SYMBOL_GPL(ioasid_free);
-> >  
-> >   
-> 
-> Thanks
-> 
-> Eric
-
-[Jacob Pan]
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgUm9iLAoKT24gV2VkLCAyMiBNYXkgMjAxOSBhdCAyMToyNywgUm9iIEhlcnJpbmcgPHJvYmgr
+ZHRAa2VybmVsLm9yZz4gd3JvdGU6Cj4KPiBPbiBUdWUsIE1heSAyMSwgMjAxOSBhdCAxMToxMSBB
+TSBDbMOpbWVudCBQw6lyb24gPHBlcm9uLmNsZW1AZ21haWwuY29tPiB3cm90ZToKPiA+Cj4gPiBI
+aSwKPiA+Cj4gPiBUaGUgQWxsd2lubmVyIEg2IGhhcyBhIE1hbGktVDcyMCBNUDIgd2hpY2ggc2hv
+dWxkIGJlIHN1cHBvcnRlZCBieQo+ID4gdGhlIG5ldyBwYW5mcm9zdCBkcml2ZXIuIFRoaXMgc2Vy
+aWVzIGZpeCB0d28gaXNzdWVzIGFuZCBpbnRyb2R1Y2UgdGhlCj4gPiBkdC1iaW5kaW5ncyBidXQg
+YSBzaW1wbGUgYmVuY2htYXJrIHNob3cgdGhhdCBpdCdzIHN0aWxsIE5PVCBXT1JLSU5HLgo+ID4K
+PiA+IEknbSBwdXNoaW5nIGl0IGluIGNhc2Ugc29tZW9uZSB3YW50IHRvIGNvbnRpbnVlIHRoZSB3
+b3JrLgo+ID4KPiA+IFRoaXMgaGFzIGJlZW4gdGVzdGVkIHdpdGggTWVzYTNEIDE5LjEuMC1SQzIg
+YW5kIGEgR1BVIGJpdG5lc3MgcGF0Y2hbMV0uCj4gPgo+ID4gT25lIHBhdGNoIGlzIGZyb20gSWNl
+bm93eSBaaGVuZyB3aGVyZSBJIGNoYW5nZWQgdGhlIG9yZGVyIGFzIHJlcXVpcmVkCj4gPiBieSBS
+b2IgSGVycmluZ1syXS4KPiA+Cj4gPiBUaGFua3MsCj4gPiBDbGVtZW50Cj4gPgo+ID4gWzFdIGh0
+dHBzOi8vZ2l0bGFiLmZyZWVkZXNrdG9wLm9yZy9rc3phcS9tZXNhL3RyZWUvcGFuZnJvc3RfNjRf
+MzIKPiA+IFsyXSBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNoLzEwNjk5ODI5Lwo+
+ID4KPiA+Cj4gPiBbICAzNDUuMjA0ODEzXSBwYW5mcm9zdCAxODAwMDAwLmdwdTogbW11IGlycSBz
+dGF0dXM9MQo+ID4gWyAgMzQ1LjIwOTYxN10gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IFVuaGFuZGxl
+ZCBQYWdlIGZhdWx0IGluIEFTMCBhdCBWQQo+ID4gMHgwMDAwMDAwMDAyNDAwNDAwCj4gPiBbICAz
+NDUuMjA5NjE3XSBSZWFzb246IFRPRE8KPiA+IFsgIDM0NS4yMDk2MTddIHJhdyBmYXVsdCBzdGF0
+dXM6IDB4ODAwMDAyQzEKPiA+IFsgIDM0NS4yMDk2MTddIGRlY29kZWQgZmF1bHQgc3RhdHVzOiBT
+TEFWRSBGQVVMVAo+ID4gWyAgMzQ1LjIwOTYxN10gZXhjZXB0aW9uIHR5cGUgMHhDMTogVFJBTlNM
+QVRJT05fRkFVTFRfTEVWRUwxCj4gPiBbICAzNDUuMjA5NjE3XSBhY2Nlc3MgdHlwZSAweDI6IFJF
+QUQKPiA+IFsgIDM0NS4yMDk2MTddIHNvdXJjZSBpZCAweDgwMDAKPiA+IFsgIDM0NS43Mjk5NTdd
+IHBhbmZyb3N0IDE4MDAwMDAuZ3B1OiBncHUgc2NoZWQgdGltZW91dCwganM9MCwKPiA+IHN0YXR1
+cz0weDgsIGhlYWQ9MHgyNDAwNDAwLCB0YWlsPTB4MjQwMDQwMCwgc2NoZWRfam9iPTAwMDAwMDAw
+OWUyMDRkZTkKPiA+IFsgIDM0Ni4wNTU4NzZdIHBhbmZyb3N0IDE4MDAwMDAuZ3B1OiBtbXUgaXJx
+IHN0YXR1cz0xCj4gPiBbICAzNDYuMDYwNjgwXSBwYW5mcm9zdCAxODAwMDAwLmdwdTogVW5oYW5k
+bGVkIFBhZ2UgZmF1bHQgaW4gQVMwIGF0IFZBCj4gPiAweDAwMDAwMDAwMDJDMDBBMDAKPiA+IFsg
+IDM0Ni4wNjA2ODBdIFJlYXNvbjogVE9ETwo+ID4gWyAgMzQ2LjA2MDY4MF0gcmF3IGZhdWx0IHN0
+YXR1czogMHg4MTAwMDJDMQo+ID4gWyAgMzQ2LjA2MDY4MF0gZGVjb2RlZCBmYXVsdCBzdGF0dXM6
+IFNMQVZFIEZBVUxUCj4gPiBbICAzNDYuMDYwNjgwXSBleGNlcHRpb24gdHlwZSAweEMxOiBUUkFO
+U0xBVElPTl9GQVVMVF9MRVZFTDEKPiA+IFsgIDM0Ni4wNjA2ODBdIGFjY2VzcyB0eXBlIDB4Mjog
+UkVBRAo+ID4gWyAgMzQ2LjA2MDY4MF0gc291cmNlIGlkIDB4ODEwMAo+ID4gWyAgMzQ2LjU2MTk1
+NV0gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IGdwdSBzY2hlZCB0aW1lb3V0LCBqcz0xLAo+ID4gc3Rh
+dHVzPTB4OCwgaGVhZD0weDJjMDBhMDAsIHRhaWw9MHgyYzAwYTAwLCBzY2hlZF9qb2I9MDAwMDAw
+MDBiNTVhOWE4NQo+ID4gWyAgMzQ2LjU3MzkxM10gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IG1tdSBp
+cnEgc3RhdHVzPTEKPiA+IFsgIDM0Ni41Nzg3MDddIHBhbmZyb3N0IDE4MDAwMDAuZ3B1OiBVbmhh
+bmRsZWQgUGFnZSBmYXVsdCBpbiBBUzAgYXQgVkEKPiA+IDB4MDAwMDAwMDAwMkMwMEI4MAo+ID4K
+PiA+IENoYW5nZSBpbiB2NToKPiA+ICAtIFJlbW92ZSBmaXggaW5kZW50Cj4gPgo+ID4gQ2hhbmdl
+cyBpbiB2NDoKPiA+ICAtIEFkZCBidXNfY2xvY2sgcHJvYmUKPiA+ICAtIEZpeCBzYW5pdHkgY2hl
+Y2sgaW4gaW8tcGd0YWJsZQo+ID4gIC0gQWRkIHZyYW1wLWRlbGF5Cj4gPiAgLSBNZXJnZSBhbGwg
+Ym9hcmRzIGludG8gb25lIHBhdGNoCj4gPiAgLSBSZW1vdmUgdXBzdHJlYW1lZCBOZWlsIEEuIHBh
+dGNoCj4gPgo+ID4gQ2hhbmdlIGluIHYzIChUaGFua3MgdG8gTWF4aW1lIFJpcGFyZCk6Cj4gPiAg
+LSBSZWF1dGhvciBJY2Vub3d5IGZvciBoZXIgcGF0aAo+ID4KPiA+IENoYW5nZXMgaW4gdjIgKFRo
+YW5rcyB0byBNYXhpbWUgUmlwYXJkKToKPiA+ICAtIERyb3AgR1BVIE9QUCBUYWJsZQo+ID4gIC0g
+QWRkIGNsb2NrcyBhbmQgY2xvY2stbmFtZXMgaW4gcmVxdWlyZWQKPiA+Cj4gPiBDbMOpbWVudCBQ
+w6lyb24gKDUpOgo+ID4gICBkcm06IHBhbmZyb3N0OiBhZGQgb3B0aW9uYWwgYnVzX2Nsb2NrCj4g
+PiAgIGlvbW11OiBpby1wZ3RhYmxlOiBmaXggc2FuaXR5IGNoZWNrIGZvciBub24gNDgtYml0IG1h
+bGkgaW9tbXUKPiA+ICAgZHQtYmluZGluZ3M6IGdwdTogbWFsaS1taWRnYXJkOiBBZGQgSDYgbWFs
+aSBncHUgY29tcGF0aWJsZQo+ID4gICBhcm02NDogZHRzOiBhbGx3aW5uZXI6IEFkZCBBUk0gTWFs
+aSBHUFUgbm9kZSBmb3IgSDYKPiA+ICAgYXJtNjQ6IGR0czogYWxsd2lubmVyOiBBZGQgbWFsaSBH
+UFUgc3VwcGx5IGZvciBINiBib2FyZHMKPiA+Cj4gPiBJY2Vub3d5IFpoZW5nICgxKToKPiA+ICAg
+ZHQtYmluZGluZ3M6IGdwdTogYWRkIGJ1cyBjbG9jayBmb3IgTWFsaSBNaWRnYXJkIEdQVXMKPgo+
+IEkndmUgYXBwbGllZCBwYXRjaGVzIDEgYW5kIDMgdG8gZHJtLW1pc2MuIEkgd2FzIGdvaW5nIHRv
+IGRvIHBhdGNoIDQKPiB0b28sIGJ1dCBpdCBkb2Vzbid0IGFwcGx5LgoKVGhhbmtzLAoKSSBoYXZl
+IHRyaWVkIHRvIGFwcGxpZWQgb24gZHJtLW1pc2MvZm9yLWxpbnV4LW5leHQgYnV0IGl0IGRvZXNu
+J3QgYXBwbHkgdG9vLgpJdCBsb29rcyBsaWtlIGNvbW1pdCBkNWZmMWFkYjM4MDllMmY3NGEzYjU3
+Y2VhMmU1N2M4ZTM3ZDY5M2M0IGlzCm1pc3Npbmcgb24gZHJtLW1pc2MgPwpodHRwczovL2dpdGh1
+Yi5jb20vdG9ydmFsZHMvbGludXgvY29tbWl0L2Q1ZmYxYWRiMzgwOWUyZjc0YTNiNTdjZWEyZTU3
+YzhlMzdkNjkzYzQjZGlmZi1jMzE3MmY1ZDQyMWQ0OTJmZjkxZDdiYjQ0ZGQ0NDkxNwoKQ2zDqW1l
+bnQKCj4KPiBQYXRjaCAyIGNhbiBnbyBpbiB2aWEgdGhlIGlvbW11IHRyZWUgYW5kIHRoZSByZXN0
+IHZpYSB0aGUgYWxsd2lubmVyIHRyZWUuCj4KPiBSb2IKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2lvbW11
