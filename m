@@ -2,65 +2,59 @@ Return-Path: <SRS0=VKv6=TW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8475DC282CE
-	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 21:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F27C282DD
+	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 21:14:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 24E5D2173C
-	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 21:00:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CA7A221773
+	for <iommu@archiver.kernel.org>; Wed, 22 May 2019 21:14:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMu4b6BJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 24E5D2173C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Biw2BRIl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CA7A221773
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 12213AC8;
-	Wed, 22 May 2019 21:00:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B0FC1AB9;
+	Wed, 22 May 2019 21:14:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 39668AC7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8F2709F0
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 22 May 2019 21:00:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+	Wed, 22 May 2019 21:14:53 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DCC325D0
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3ED21875
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 22 May 2019 21:00:39 +0000 (UTC)
-Received: from localhost (unknown [69.71.4.100])
+	Wed, 22 May 2019 21:14:53 +0000 (UTC)
+Received: from localhost.localdomain (c-73-223-200-170.hsd1.ca.comcast.net
+	[73.223.200.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 3FF2121019;
-	Wed, 22 May 2019 21:00:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 93FCB2173E;
+	Wed, 22 May 2019 21:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1558558839;
-	bh=DAAiD6IH0KlDghAVNPmVbeERdOtKivo01YxuNAw7Lv4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NMu4b6BJ6eGOg5zZMYjFoMJPEjwWgJzXYlUFNL/cVGdMfzr6eLQQV4fTw0oerv/D+
-	RP2brANDVsvcMxhzfOECmHSJFZ8Ghm4KstXuGdGVc+DEa3jtgRa2btaLFFe575w+TH
-	4i9jAAXLgNkFwSgCIMEOX1dAXlJtDolPRrkjQVhw=
-Date: Wed, 22 May 2019 16:00:38 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: "Isaac J. Manjarres" <isaacm@codeaurora.org>
-Subject: Re: [RFC/PATCH 2/4] PCI: Export PCI ACS and DMA searching functions
-	to modules
-Message-ID: <20190522210038.GE79339@google.com>
-References: <1558118857-16912-1-git-send-email-isaacm@codeaurora.org>
-	<1558118857-16912-3-git-send-email-isaacm@codeaurora.org>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1558118857-16912-3-git-send-email-isaacm@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: devicetree@vger.kernel.org, kernel-team@android.com,
-	linux-pci@vger.kernel.org, will.deacon@arm.com,
-	linux-kernel@vger.kernel.org, pratikp@codeaurora.org,
-	iommu@lists.linux-foundation.org, robh+dt@kernel.org,
-	lmark@codeaurora.org, frowand.list@gmail.com,
-	linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com
+	s=default; t=1558559692;
+	bh=YqxAZ35p2dCb4ol3pLFSqCJ1k7KxyeByBxDmBp5VkbA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Biw2BRIldASqZ6cE7U4pIVIimXdJqOYDrDywf8hjysNKnDbHBBRDCxBLaYFdxaREa
+	wBSWEY84IXYCS7lrImeeL7RnVcgPlquYbwbyzAGRrQU4RFM1HrzAqumYf9fCOUmrXb
+	HSPkkDTQc8Qx4QtRRP7kzgPAuGr1wtp6yzxFBj3w=
+Date: Wed, 22 May 2019 14:14:52 -0700
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Qian Cai <cai@lca.pw>
+Subject: Re: [RESEND PATCH] iommu/intel: fix variable 'iommu' set but not used
+Message-Id: <20190522141452.9105fbd041ed24eedde950b9@linux-foundation.org>
+In-Reply-To: <1558557386-17160-1-git-send-email-cai@lca.pw>
+References: <1558557386-17160-1-git-send-email-cai@lca.pw>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Cc: iommu@lists.linux-foundation.org, jroedel@suse.de, dwmw2@infradead.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,48 +72,32 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, May 17, 2019 at 11:47:35AM -0700, Isaac J. Manjarres wrote:
-> IOMMU drivers that can be compiled as modules may
-> want to use pci_for_each_dma_alias() and pci_request_acs(),
-> so export those functions.
-> 
-> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+On Wed, 22 May 2019 16:36:26 -0400 Qian Cai <cai@lca.pw> wrote:
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> The commit cf04eee8bf0e ("iommu/vt-d: Include ACPI devices in iommu=pt")
+> added for_each_active_iommu() in iommu_prepare_static_identity_mapping()
+> but never used the each element, i.e, "drhd->iommu".
+> 
+> drivers/iommu/intel-iommu.c: In function
+> 'iommu_prepare_static_identity_mapping':
+> drivers/iommu/intel-iommu.c:3037:22: warning: variable 'iommu' set but
+> not used [-Wunused-but-set-variable]
+>   struct intel_iommu *iommu;
+> 
+> Fixed the warning by passing "drhd->iommu" directly to
+> for_each_active_iommu() which all subsequent self-assignments should be
+> ignored by a compiler anyway.
+> 
 
-> ---
->  drivers/pci/pci.c    | 1 +
->  drivers/pci/search.c | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 766f577..3f354c1 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -3124,6 +3124,7 @@ void pci_request_acs(void)
->  {
->  	pci_acs_enable = 1;
->  }
-> +EXPORT_SYMBOL_GPL(pci_request_acs);
->  
->  static const char *disable_acs_redir_param;
->  
-> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-> index 2b5f720..cf9ede9 100644
-> --- a/drivers/pci/search.c
-> +++ b/drivers/pci/search.c
-> @@ -111,6 +111,7 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
->  
->  	return ret;
->  }
-> +EXPORT_SYMBOL_GPL(pci_for_each_dma_alias);
->  
->  static struct pci_bus *pci_do_find_bus(struct pci_bus *bus, unsigned char busnr)
->  {
-> -- 
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-> a Linux Foundation Collaborative Project
-> 
+Yes, assigning drhd->iommu to itself seems a bit nasty.  Maybe this is
+a case for __mabe_unused (with a comment explaining why), if that fixes
+the warning.  Dunno.
+
+btw, for_each_active_dev_scope() and for_each_dev_scope() should be
+dragged out and shot.  Or at least, should have those single-char
+identifiers changed into something meaningful so poor sods like me have
+a hope of understanding the code :(
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
