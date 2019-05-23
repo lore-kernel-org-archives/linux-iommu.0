@@ -3,104 +3,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA12C282DD
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 04:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DCDC04AAC
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 05:35:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA10F20862
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 04:16:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 434B720881
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 05:35:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="KJOSpINm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA10F20862
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="D5CUV9HI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 434B720881
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 96F2EF21;
-	Thu, 23 May 2019 04:16:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DB437F18;
+	Thu, 23 May 2019 05:35:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1809AF1F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5FC36F15
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 04:16:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-OS2-obe.outbound.protection.outlook.com
-	(mail-eopbgr1410139.outbound.protection.outlook.com [40.107.141.139])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6F3D081A
+	Thu, 23 May 2019 05:35:18 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+	[210.118.77.12])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A294C5D0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 04:16:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=zt/uipm5zsh9iKCQro4Z9mxBbevRldG5Tm9VcGcOszQ=;
-	b=KJOSpINmRY3/KT5V/ebO7qGabPmLxuNQ9eXfxP+qJos506xTbDjQZdFWTtDMkeWWBKM/9py+pQl6BNVVdJ6R/Arm3+yEzt3+on/px312Q1mpNBjfOqPo7r1ODR82u1ceRSoS+FCNPc4AacRxAG2piz+2mSPYV9+XJVmB3Otnd5E=
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com (52.134.247.150) by
-	OSAPR01MB4690.jpnprd01.prod.outlook.com (20.179.176.142) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1922.16; Thu, 23 May 2019 04:15:58 +0000
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::4597:5353:28fb:cfd8]) by
-	OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::4597:5353:28fb:cfd8%7]) with mapi id 15.20.1922.017;
-	Thu, 23 May 2019 04:15:58 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Christoph Hellwig <hch@infradead.org>
-Subject: RE: [PATCH v3 3/3] mmc: renesas_sdhi: use multiple segments if
-	possible
-Thread-Topic: [PATCH v3 3/3] mmc: renesas_sdhi: use multiple segments if
-	possible
-Thread-Index: AQHVEIhjlypG6+YeLUuqUYoEqb9HzqZ3Es6AgAD9d8A=
-Date: Thu, 23 May 2019 04:15:58 +0000
-Message-ID: <OSAPR01MB30890D412403BE3DF5C34D6BD8010@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <1558520319-16452-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1558520319-16452-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<20190522122901.GA4583@infradead.org>
-In-Reply-To: <20190522122901.GA4583@infradead.org>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 16908ba5-2fb9-4f96-dee5-08d6df355bc4
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4618075)(2017052603328)(7193020);
-	SRVR:OSAPR01MB4690; 
-x-ms-traffictypediagnostic: OSAPR01MB4690:
-x-microsoft-antispam-prvs: <OSAPR01MB4690B3BFDCA0D55FA0821676D8010@OSAPR01MB4690.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 00462943DE
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(366004)(136003)(376002)(39860400002)(396003)(346002)(199004)(189003)(4326008)(66556008)(66446008)(73956011)(8676002)(76116006)(64756008)(66476007)(9686003)(6246003)(14454004)(53936002)(8936002)(81166006)(33656002)(81156014)(66946007)(52536014)(478600001)(305945005)(186003)(7736002)(74316002)(229853002)(6436002)(55016002)(6916009)(68736007)(446003)(476003)(76176011)(7696005)(316002)(11346002)(6116002)(3846002)(99286004)(2906002)(54906003)(5660300002)(256004)(86362001)(66066001)(102836004)(486006)(26005)(6506007)(71190400001)(71200400001)(14444005)(25786009);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:OSAPR01MB4690;
-	H:OSAPR01MB3089.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: c85yS6krjVsz/Q5aF6wxgUNhPHVzNLBUbTkAxyKqjrz8vnsHz3InNvOX1SC0nQXtsgDrq34Uu4rr+yT7BCvMjJ8KrpyP4Fn033GyHix37ebYQ4yf+HtCAQykcVK8kzRDBXdK08t8NQQWfkFAa+T4ScGc/UvoZF/3xgJo2sfZA7jfinFLWIRbKFQYwsFxJliqDnNXtcmWjjhIEziqOwTr5bxor64i1aD7vMygFixZG3mlOckQESw4BOZdRz+Y/cyt35HjIK0tmBUcIF466b8ZrkKpXrZ7ejsFzvnQPLCs68Dz5nhRcCVlm2p1/wdtgp4bGJofscd86PrGW+kAAG/mFgzMI2F1hiMubtu5dVS5PCTjtZKV5RM1SXwAoNb02dwimUSYipqkRkX24/CueeskgU3Lku7IwCc20zMRBBw+vFI=
+	Thu, 23 May 2019 05:35:17 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+	20190523053515euoutp02296cdf3ee77ee21181c8af27db0b50bb~hORal4VgI1560915609euoutp02G
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 23 May 2019 05:35:15 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+	20190523053515euoutp02296cdf3ee77ee21181c8af27db0b50bb~hORal4VgI1560915609euoutp02G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1558589715;
+	bh=gPaeOPeAy+SCHwNWglSiXOmUaID43N80JI9hQwAPuEs=;
+	h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+	b=D5CUV9HIuwWtJyRwwGb0iNTFNqY0VQSkq6+pquk6qWq1qwafXeHPdM4O1NDEiEiqn
+	jAT3DFwIdrVkXq3biNuLjTI3Ey0/qcPBoGnpvOoHiST9sMlXFnQuNEqdTyxZm3ZoaR
+	40ymijvUmEXMK5uubKT08MfRLuReJEFM14lG3Duw=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20190523053514eucas1p1f1d23fd3ca299a4acedd08d175974f8d~hORZw5IY_2901129011eucas1p17;
+	Thu, 23 May 2019 05:35:14 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 22.46.04298.21136EC5;
+	Thu, 23 May 2019 06:35:14 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20190523053513eucas1p1078d4f2cb308d9e79e4edef9adaf49dc~hORY7W82t2901229012eucas1p1n;
+	Thu, 23 May 2019 05:35:13 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20190523053513eusmtrp1f0cd137533c806dcf0f77924f6a512c5~hORYtU5GR3054330543eusmtrp1J;
+	Thu, 23 May 2019 05:35:13 +0000 (GMT)
+X-AuditID: cbfec7f2-f13ff700000010ca-12-5ce631125843
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id DF.EB.04146.11136EC5;
+	Thu, 23 May 2019 06:35:13 +0100 (BST)
+Received: from [106.120.50.25] (unknown [106.120.50.25]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20190523053513eusmtip1d5a9726961a4037d0915ebfa6c2a104b~hORYXSmQc1674916749eusmtip1E;
+	Thu, 23 May 2019 05:35:13 +0000 (GMT)
+Subject: Re: [PATCH] swiotlb: sync buffer when mapping FROM_DEVICE
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <0c79721a-11cb-c945-5626-3d43cc299fe6@samsung.com>
+Date: Thu, 23 May 2019 07:35:07 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16908ba5-2fb9-4f96-dee5-08d6df355bc4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2019 04:15:58.3484 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4690
-Cc: "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+In-Reply-To: <ed26de5e-aee4-4e19-095c-cc551012d475@arm.com>
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTYRjHe3e2szmaHafmk5XCzKgkbVQ0W0hZ4b50JQxroMsdneim7HjJ
+	+tDIEbq0vIDptLKk5jVJdIiC4sSGWuqmgRdCHZuFYGhLhlqZ2+nit99z/T//l5eD8ZtZgZwU
+	VSapVsnSBDiXaXy3OnyYL5yXHhlv8BHVN/YzREsjfQxRTY9Y9LrWgUS6tXpMNNZZjYt6l+ys
+	02xJ07MmJCmbMCBJ16QGl7z92sGQLDummBJna9Bl/Ab3lJxMS8km1RFRCVyF5dMsI6Oddzvv
+	aTVLg1xcHfLiAHEMSjcGMTfziToEHz8c0CHuJn9HULTqRHTgRFBS/BjXIY5nYmYuhM4bECzX
+	OHA6WESg7TF5VvkS0ZBX+MLDfkQMrOSPst1NGNGDwGBzIXcBJ4SgW9ThbuYRUWD4MepRYBKh
+	4LIo3OhPSOGl80+HDwxU2plu9iLE0GjTerZgRDDktVdhNAfAlP05wy0FRDcbTOMrOG3zHMxM
+	V2A0+8KCuY1N8x4YKitk0gN5COaGm9l0UIhg7H4ForvE0Ge2sNwXYcRBaOmMoNNnYMaiYdCv
+	4g0Tiz70Ed5QanyC0Wke5D/g0937QW9+80+2d9SKFSOBfos1/RY7+i129P91axCzAQWQWZQy
+	maSEKjInnJIpqSxVcnhiurIVbX6ioV/mbx1oxXrLhAgOEmznKU44pHyWLJvKVZoQcDCBH29o
+	0Cbl8+Sy3DukOj1enZVGUia0m8MUBPDubpu9ySeSZZlkKklmkOq/VQbHK1CDuj5/Ka9LslkL
+	Knu714LXMyOntfsiHVwsxlC1Qxwux4yJu3Icr1J/GtNdZQnr2kdLw9m6uHLJw/cll5S2MEFo
+	0WR87YWj56OvVq0dTx056Xd2p128MT4Zl4Rfj5JEhsTOt7UUuPbazP3XFua8g63yewPTyouW
+	Sps6qMX/ynxsmIBJKWTCQ5iakv0GsMTKrUADAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrIIsWRmVeSWpSXmKPExsVy+t/xu7qChs9iDO72SlusXH2UyeLD+cNM
+	Fgv2W1ssW/yU0aLr10pmi8u75rBZHPzwhNWB3WPNvDWMHpNvLGf02H2zgc1j47sdTB4fn95i
+	8fi8SS6ALUrPpii/tCRVISO/uMRWKdrQwkjP0NJCz8jEUs/Q2DzWyshUSd/OJiU1J7MstUjf
+	LkEv4+LdB0wFW3krmufOYW1g/M7VxcjBISFgInH/oXIXIxeHkMBSRokVK94zdjFyAsVlJE5O
+	a2CFsIUl/lzrYoMoes0oMWfGUjaQhLCAk0Rzz0JmEFtEwF3ia8cFdpAiZoGDjBJ7tvWyQHS0
+	MUvs2HqUBaSKTcBQouttF1g3r4CdxPI/F9hAzmARUJX4fjEDJCwqECNxYuoWdogSQYmTM5+A
+	tXIKWEusftQCdh2zgJnEvM0PmSFseYnmrbOhbHGJW0/mM01gFJqFpH0WkpZZSFpmIWlZwMiy
+	ilEktbQ4Nz232FCvODG3uDQvXS85P3cTIzD6th37uXkH46WNwYcYBTgYlXh4M8yfxgixJpYV
+	V+YeYpTgYFYS4T196lGMEG9KYmVValF+fFFpTmrxIUZToN8mMkuJJucDE0NeSbyhqaG5haWh
+	ubG5sZmFkjhvh8DBGCGB9MSS1OzU1ILUIpg+Jg5OqQbG6G3b5VS9K9wfcu3atXPhrctbnMQS
+	/vgdvtzJVGBUoOUZ5/z80y2u4K+r5352Pvv4lYOcSUbrzZ2t4Tov1AOLRNS36+2KX/VWxY11
+	cUjcA25HX0PFNPNvQQx2TL9Y5byV86svzzga9qJIZ4OOUoKUSeDuJXYlC/1rNfboT5l9L8Bq
+	pcqkx/eVWIozEg21mIuKEwG5w3z51AIAAA==
+X-CMS-MailID: 20190523053513eucas1p1078d4f2cb308d9e79e4edef9adaf49dc
+X-Msg-Generator: CA
+X-RootMTR: 20190522135556epcas2p34e0c14f2565abfdccc7035463f60a71b
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190522135556epcas2p34e0c14f2565abfdccc7035463f60a71b
+References: <20190522072018.10660-1-horia.geanta@nxp.com>
+	<20190522123243.GA26390@lst.de>
+	<6cbe5470-16a6-17e9-337d-6ba18b16b6e8@arm.com>
+	<20190522130921.GA26874@lst.de>
+	<fdfd7318-7999-1fe6-01b6-ae1fb7ba8c30@arm.com>
+	<20190522133400.GA27229@lst.de>
+	<CGME20190522135556epcas2p34e0c14f2565abfdccc7035463f60a71b@epcas2p3.samsung.com>
+	<ed26de5e-aee4-4e19-095c-cc551012d475@arm.com>
+Cc: linux-imx@nxp.com, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?Q?Horia_Geant=c4=83?= <horia.geanta@nxp.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -113,62 +136,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
-
-Thank you for your review!
-
-> From: Christoph Hellwig, Sent: Wednesday, May 22, 2019 9:29 PM
-> 
-> On Wed, May 22, 2019 at 07:18:39PM +0900, Yoshihiro Shimoda wrote:
-> > In IOMMU environment, since it's possible to merge scatter gather
-> > buffers of memory requests to one iova, this patch changes the max_segs
-> > value when init_card of mmc_host timing to improve the transfer
-> > performance on renesas_sdhi_internal_dmac.
-> 
-> Well, you can't merge everything with an IOMMU.  For one not every
-> IOMMU can merge multiple scatterlist segments,
-
-I didn't know such IOMMU exists. But, since R-Car Gen3 IOMMU device
-(handled by ipmmu-vmsa.c) can merge multiple scatterlist segments,
-should this mmc driver check whether the IOMMU device is used or not somehow?
-
-> second even it can merge
-> segements the segments need to be aligned to the IOMMU page size.
-
-If this driver checks whether the segments are aligned to the IOMMU
-page size before DMA API is called every time, is it acceptable?
-If one of the segments is not aligned, this driver should not use
-the DMAC.
-
->  And
-> then of course we might have an upper limit on the total mapping.
-
-IIUC, if such a case, DMA API will fail. What do you think?
-
-> > +	if (host->pdata->max_segs < SDHI_MAX_SEGS_IN_IOMMU &&
-> > +	    host->pdev->dev.iommu_group &&
-> > +	    (mmc_card_mmc(card) || mmc_card_sd(card)))
-> > +		host->mmc->max_segs = SDHI_MAX_SEGS_IN_IOMMU;
-> 
-> This is way to magic.  We'll need a proper DMA layer API to expose
-> this information, and preferably a block layer helper to increase
-> max_segs instead of hacking that up in the driver.
-
-I think I should have described the detail somewhere. This can expose
-this information to a block layer by using blk_queue_max_segments()
-that mmc_setup_queue() calls. In other words, this init_card() ops
-is called before a block device is created. Is this acceptable if
-such a comment is described here?
-
-Best regards,
-Yoshihiro Shimoda
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgUm9iaW4sCgpPbiAyMDE5LTA1LTIyIDE1OjU1LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24g
+MjIvMDUvMjAxOSAxNDozNCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4+IE9uIFdlZCwgTWF5
+IDIyLCAyMDE5IGF0IDAyOjI1OjM4UE0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IFN1
+cmUsIGJ1dCB0aGF0IHNob3VsZCBiZSBpcnJlbGV2YW50IHNpbmNlIHRoZSBlZmZlY3RpdmUgcHJv
+YmxlbSBoZXJlIAo+Pj4gaXMgaW4KPj4+IHRoZSBzeW5jXypfZm9yX2NwdSBkaXJlY3Rpb24sIGFu
+ZCBpdCdzIHRoZSB1bm1hcCB3aGljaCBub2JibGVzIHRoZSAKPj4+IGJ1ZmZlci4KPj4+IElmIHRo
+ZSBkcml2ZXIgZG9lcyB0aGlzOgo+Pj4KPj4+IMKgwqDCoMKgZG1hX21hcF9zaW5nbGUod2hvbGUg
+YnVmZmVyKTsKPj4+IMKgwqDCoMKgPGRldmljZSB3cml0ZXMgdG8gcGFydCBvZiBidWZmZXI+Cj4+
+PiDCoMKgwqDCoGRtYV91bm1hcF9zaW5nbGUod2hvbGUgYnVmZmVyKTsKPj4+IMKgwqDCoMKgPGNv
+bnRlbnRzIG9mIHJlc3Qgb2YgYnVmZmVyIG5vdyB1bmRlZmluZWQ+Cj4+Pgo+Pj4gdGhlbiBpdCBj
+b3VsZCBpbnN0ZWFkIGRvIHRoaXMgYW5kIGJlIGhhcHB5Ogo+Pj4KPj4+IMKgwqDCoMKgZG1hX21h
+cF9zaW5nbGUod2hvbGUgYnVmZmVyLCBTS0lQX0NQVV9TWU5DKTsKPj4+IMKgwqDCoMKgPGRldmlj
+ZSB3cml0ZXMgdG8gcGFydCBvZiBidWZmZXI+Cj4+PiDCoMKgwqDCoGRtYV9zeW5jX3NpbmdsZV9m
+b3JfY3B1KHVwZGF0ZWQgcGFydCBvZiBidWZmZXIpOwo+Pj4gwqDCoMKgwqBkbWFfdW5tYXBfc2lu
+Z2xlKHdob2xlIGJ1ZmZlciwgU0tJUF9DUFVfU1lOQyk7Cj4+PiDCoMKgwqDCoDxjb250ZW50cyBv
+ZiByZXN0IG9mIGJ1ZmZlciBzdGlsbCB2YWxpZD4KPj4KPj4gQXNzdW1pbmcgdGhlIGRyaXZlciBr
+bm93cyBob3cgbXVjaCB3YXMgYWN0dWFsbHkgRE1BZWQgdGhpcyB3b3VsZAo+PiBzb2x2ZSB0aGUg
+aXNzdWUuwqAgSG9yaWEsIGRvZXMgdGhpcyB3b3JrIGZvciB5b3U/Cj4KPiBPaGhoLCBhbmQgbm93
+IEkndmUganVzdCB0d2lnZ2VkIHdoYXQgeW91IHdlcmUgc3VnZ2VzdGluZyAtIHlvdXIgCj4gRE1B
+X0FUVFJfUEFSVElBTCBmbGFnIHdvdWxkIG1lYW4gInRyZWF0IHRoaXMgYXMgYSByZWFkLW1vZGlm
+eS13cml0ZSBvZiAKPiB0aGUgYnVmZmVyIGJlY2F1c2Ugd2UgKmRvbid0KiBrbm93IGV4YWN0bHkg
+d2hpY2ggcGFydHMgdGhlIGRldmljZSBtYXkgCj4gd3JpdGUgdG8iLiBTbyBpbmRlZWQgaWYgd2Ug
+ZGlkIGdvIGRvd24gdGhhdCByb3V0ZSB3ZSB3b3VsZG4ndCBuZWVkIGFueSAKPiBvZiB0aGUgc3lu
+YyBzdHVmZiBJIHdhcyB3b3JyeWluZyBhYm91dCAoYnV0IEkgbWlnaHQgc3VnZ2VzdCBuYW1pbmcg
+aXQgCj4gRE1BX0FUVFJfVVBEQVRFIGluc3RlYWQpLiBBcG9sb2dpZXMgZm9yIGJlaW5nIHNsb3cg
+OikKCkRvbid0IHdlIGhhdmUgRE1BX0JJRElSRUNUSU9OQUwgZm9yIHN1Y2ggY2FzZT8gTWF5YmUg
+d2Ugc2hvdWxkIHVwZGF0ZSAKZG9jdW1lbnRhdGlvbiBhIGJpdCB0byBwb2ludCB0aGF0IERNQV9G
+Uk9NX0RFVklDRSBleHBlY3RzIHRoZSB3aG9sZSAKYnVmZmVyIHRvIGJlIGZpbGxlZCBieSB0aGUg
+ZGV2aWNlPwoKQmVzdCByZWdhcmRzCi0tIApNYXJlayBTenlwcm93c2tpLCBQaEQKU2Ftc3VuZyBS
+JkQgSW5zdGl0dXRlIFBvbGFuZAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
