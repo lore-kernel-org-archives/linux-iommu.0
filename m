@@ -2,92 +2,53 @@ Return-Path: <SRS0=aUVl=TX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14638C282DD
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 12:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFA9C46460
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 12:33:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E267421019
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 12:25:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E267421019
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id D836E20851
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 12:33:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D836E20851
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 72E04C2C;
-	Thu, 23 May 2019 12:25:38 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 919C8B2F;
+	Thu, 23 May 2019 12:33:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBD469EE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C84E7B1F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 12:25:36 +0000 (UTC)
+	Thu, 23 May 2019 12:33:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
-	[148.163.158.5])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 27E3F875
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6191381A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 12:25:35 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x4NC7ZoK018747
-	for <iommu@lists.linux-foundation.org>; Thu, 23 May 2019 08:25:35 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-	by mx0b-001b2d01.pphosted.com with ESMTP id 2snu8f0udj-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Thu, 23 May 2019 08:25:34 -0400
-Received: from localhost
-	by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
-	Only! Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from <pmorel@linux.ibm.com>;
-	Thu, 23 May 2019 13:25:33 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-	by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Thu, 23 May 2019 13:25:29 +0100
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
-	[9.149.105.232])
-	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x4NCPSVW44892364
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Thu, 23 May 2019 12:25:28 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 066DA52052;
-	Thu, 23 May 2019 12:25:28 +0000 (GMT)
-Received: from morel-ThinkPad-W530.boeblingen.de.ibm.com (unknown
-	[9.152.222.40])
-	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 7A1DF52057;
-	Thu, 23 May 2019 12:25:27 +0000 (GMT)
-From: Pierre Morel <pmorel@linux.ibm.com>
-To: sebott@linux.vnet.ibm.com
-Subject: [PATCH v3 1/3] s390: pci: Exporting access to CLP PCI function and
-	PCI group
-Date: Thu, 23 May 2019 14:25:24 +0200
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1558614326-24711-1-git-send-email-pmorel@linux.ibm.com>
-References: <1558614326-24711-1-git-send-email-pmorel@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 19052312-0012-0000-0000-0000031EAB75
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19052312-0013-0000-0000-000021576488
-Message-Id: <1558614326-24711-2-git-send-email-pmorel@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-05-23_10:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1905230087
-Cc: linux-s390@vger.kernel.org, pasic@linux.vnet.ibm.com,
-	alex.williamson@redhat.com, kvm@vger.kernel.org,
-	heiko.carstens@de.ibm.com, walling@linux.ibm.com,
-	linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
-	iommu@lists.linux-foundation.org, schwidefsky@de.ibm.com,
-	robin.murphy@arm.com, gerald.schaefer@de.ibm.com
+	Thu, 23 May 2019 12:33:04 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA87B80D;
+	Thu, 23 May 2019 05:33:03 -0700 (PDT)
+Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 75E153F575;
+	Thu, 23 May 2019 05:33:02 -0700 (PDT)
+Subject: Re: implement generic dma_map_ops for IOMMUs v6
+To: Christoph Hellwig <hch@lst.de>
+References: <20190523070028.7435-1-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <60f73595-006d-8f88-f5af-d362f9e42ec1@arm.com>
+Date: Thu, 23 May 2019 13:33:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190523070028.7435-1-hch@lst.de>
+Content-Language: en-GB
+Cc: Tom Murphy <tmurphy@arista.com>, Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -100,157 +61,68 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-For the generic implementation of VFIO PCI we need to retrieve
-the hardware configuration for the PCI functions and the
-PCI function groups.
+On 23/05/2019 08:00, Christoph Hellwig wrote:
+> 
+> Hi Robin and Joerg,
+> 
+> I think we are finally ready for the generic dma-iommu series.  I have
+> various DMA API changes pending, and Tom has patches ready to convert
+> the AMD and Intel iommu drivers over to it.  I'd love to have this
+> in a stable branch shared between the dma-mapping and iommu trees
+> the day after rc2 is released.  I volunteer to create the branch,
+> but I'm fine with it living in the iommu tree as well.
 
-We modify the internal function using CLP Query PCI function and
-CLP query PCI function group so that they can be called from
-outside the S390 architecture PCI code and prefix the two
-functions with "zdev" to make clear that they can be called
-knowing only the associated zdevice.
+Yup, I'd also like to see this in -next ASAP in the hope that board 
+farms and maybe even real users can start chewing on it. Thanks for 
+persevering :)
 
-Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Sebastian Ott <sebott@linux.ibm.com>
----
- arch/s390/include/asm/pci.h |  3 ++
- arch/s390/pci/pci_clp.c     | 70 +++++++++++++++++++++++----------------------
- 2 files changed, 39 insertions(+), 34 deletions(-)
+Robin.
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 305befd..e66b246 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -261,4 +261,7 @@ cpumask_of_pcibus(const struct pci_bus *bus)
- 
- #endif /* CONFIG_NUMA */
- 
-+int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-+			 struct clp_req_rsp_query_pci_grp *rrb);
-+int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb);
- #endif
-diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-index 3a36b07..c57f675 100644
---- a/arch/s390/pci/pci_clp.c
-+++ b/arch/s390/pci/pci_clp.c
-@@ -113,31 +113,16 @@ static void clp_store_query_pci_fngrp(struct zpci_dev *zdev,
- 	}
- }
- 
--static int clp_query_pci_fngrp(struct zpci_dev *zdev, u8 pfgid)
-+int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-+			 struct clp_req_rsp_query_pci_grp *rrb)
- {
--	struct clp_req_rsp_query_pci_grp *rrb;
--	int rc;
--
--	rrb = clp_alloc_block(GFP_KERNEL);
--	if (!rrb)
--		return -ENOMEM;
--
- 	memset(rrb, 0, sizeof(*rrb));
- 	rrb->request.hdr.len = sizeof(rrb->request);
- 	rrb->request.hdr.cmd = CLP_QUERY_PCI_FNGRP;
- 	rrb->response.hdr.len = sizeof(rrb->response);
--	rrb->request.pfgid = pfgid;
-+	rrb->request.pfgid = zdev->pfgid;
- 
--	rc = clp_req(rrb, CLP_LPS_PCI);
--	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK)
--		clp_store_query_pci_fngrp(zdev, &rrb->response);
--	else {
--		zpci_err("Q PCI FGRP:\n");
--		zpci_err_clp(rrb->response.hdr.rsp, rc);
--		rc = -EIO;
--	}
--	clp_free_block(rrb);
--	return rc;
-+	return clp_req(rrb, CLP_LPS_PCI);
- }
- 
- static int clp_store_query_pci_fn(struct zpci_dev *zdev,
-@@ -174,32 +159,49 @@ static int clp_store_query_pci_fn(struct zpci_dev *zdev,
- 	return 0;
- }
- 
--static int clp_query_pci_fn(struct zpci_dev *zdev, u32 fh)
-+int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb)
-+{
-+
-+	memset(rrb, 0, sizeof(*rrb));
-+	rrb->request.hdr.len = sizeof(rrb->request);
-+	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
-+	rrb->response.hdr.len = sizeof(rrb->response);
-+	rrb->request.fh = zdev->fh;
-+
-+	return clp_req(rrb, CLP_LPS_PCI);
-+}
-+
-+static int clp_query_pci(struct zpci_dev *zdev)
- {
- 	struct clp_req_rsp_query_pci *rrb;
-+	struct clp_req_rsp_query_pci_grp *grrb;
- 	int rc;
- 
- 	rrb = clp_alloc_block(GFP_KERNEL);
- 	if (!rrb)
- 		return -ENOMEM;
- 
--	memset(rrb, 0, sizeof(*rrb));
--	rrb->request.hdr.len = sizeof(rrb->request);
--	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
--	rrb->response.hdr.len = sizeof(rrb->response);
--	rrb->request.fh = fh;
--
--	rc = clp_req(rrb, CLP_LPS_PCI);
--	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK) {
--		rc = clp_store_query_pci_fn(zdev, &rrb->response);
--		if (rc)
--			goto out;
--		rc = clp_query_pci_fngrp(zdev, rrb->response.pfgid);
--	} else {
-+	rc = zdev_query_pci_fn(zdev, rrb);
-+	if (rc || rrb->response.hdr.rsp != CLP_RC_OK) {
- 		zpci_err("Q PCI FN:\n");
- 		zpci_err_clp(rrb->response.hdr.rsp, rc);
- 		rc = -EIO;
-+		goto out;
- 	}
-+	rc = clp_store_query_pci_fn(zdev, &rrb->response);
-+	if (rc)
-+		goto out;
-+
-+	grrb = (struct clp_req_rsp_query_pci_grp *)rrb;
-+	rc = zdev_query_pci_fngrp(zdev, grrb);
-+	if (rc || grrb->response.hdr.rsp != CLP_RC_OK) {
-+		zpci_err("Q PCI FGRP:\n");
-+		zpci_err_clp(grrb->response.hdr.rsp, rc);
-+		rc = -EIO;
-+		goto out;
-+	}
-+	clp_store_query_pci_fngrp(zdev, &grrb->response);
-+
- out:
- 	clp_free_block(rrb);
- 	return rc;
-@@ -219,7 +221,7 @@ int clp_add_pci_device(u32 fid, u32 fh, int configured)
- 	zdev->fid = fid;
- 
- 	/* Query function properties and update zdev */
--	rc = clp_query_pci_fn(zdev, fh);
-+	rc = clp_query_pci(zdev);
- 	if (rc)
- 		goto error;
- 
--- 
-2.7.4
-
+> 
+> 
+> A git tree is also available at:
+> 
+>      git://git.infradead.org/users/hch/misc.git dma-iommu-ops.6
+> 
+> Gitweb:
+> 
+>      http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops.6
+> 
+> Changes since v5:
+>   - rebased to latest linus tree and dropped a patch now merged
+>   - remove the now pointless __dma_iommu_mmap function
+>   - restore a cleanup from Robin that would have caused a conflict in
+>     last merge winow, but is fine now
+> 
+> Changes since v4:
+>   - rebased to 5.2-rc1
+> 
+> Changes since v3:
+>   - fold the separate patch to refactor mmap bounds checking
+>   - don't warn on not finding a vm_area
+>   - improve a commit log
+>   - refactor __dma_iommu_free a little differently
+>   - remove a minor MSI map cleanup to avoid a conflict with the
+>     "Split iommu_dma_map_msi_msg" series
+> 
+> Changes since v2:
+>   - address various review comments and include patches from Robin
+> 
+> Changes since v1:
+>   - only include other headers in dma-iommu.h if CONFIG_DMA_IOMMU is enabled
+>   - keep using a scatterlist in iommu_dma_alloc
+>   - split out mmap/sgtable fixes and move them early in the series
+>   - updated a few commit logs
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
