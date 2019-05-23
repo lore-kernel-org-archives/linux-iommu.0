@@ -2,55 +2,91 @@ Return-Path: <SRS0=aUVl=TX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D47F5C282DD
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 10:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0AFC282E1
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 12:25:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A048020851
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 10:41:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A048020851
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E23BA20851
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 12:25:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E23BA20851
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5FEF7AD0;
-	Thu, 23 May 2019 10:41:35 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B0B4FB43;
+	Thu, 23 May 2019 12:25:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BDD4AAB9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 669509EE
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 10:41:33 +0000 (UTC)
+	Thu, 23 May 2019 12:25:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2A49F829
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E9CB4821
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 10:41:32 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6A1A341;
-	Thu, 23 May 2019 03:41:32 -0700 (PDT)
-Received: from [192.168.1.123] (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DB19C3F718;
-	Thu, 23 May 2019 03:41:29 -0700 (PDT)
-Subject: Re: [PATCH v5 1/1] iommu/io-pgtable-arm: Add support to use system
-	cache
-To: Vivek Gautam <vivek.gautam@codeaurora.org>, will.deacon@arm.com,
-	joro@8bytes.org, iommu@lists.linux-foundation.org
-References: <20190516093020.18028-1-vivek.gautam@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a4826cd5-c190-c102-c42b-92b6040197bb@arm.com>
-Date: Thu, 23 May 2019 11:41:24 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190516093020.18028-1-vivek.gautam@codeaurora.org>
-Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, pratikp@codeaurora.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, pdaly@codeaurora.org
+	Thu, 23 May 2019 12:25:35 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x4NC9FYB026804
+	for <iommu@lists.linux-foundation.org>; Thu, 23 May 2019 08:25:35 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2snsa0pgt8-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Thu, 23 May 2019 08:25:34 -0400
+Received: from localhost
+	by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	Only! Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <pmorel@linux.ibm.com>;
+	Thu, 23 May 2019 13:25:33 +0100
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+	by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Thu, 23 May 2019 13:25:30 +0100
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
+	[9.149.105.232])
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x4NCPSks44892370
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Thu, 23 May 2019 12:25:28 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8CF9052050;
+	Thu, 23 May 2019 12:25:28 +0000 (GMT)
+Received: from morel-ThinkPad-W530.boeblingen.de.ibm.com (unknown
+	[9.152.222.40])
+	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 0C2A952054;
+	Thu, 23 May 2019 12:25:28 +0000 (GMT)
+From: Pierre Morel <pmorel@linux.ibm.com>
+To: sebott@linux.vnet.ibm.com
+Subject: [PATCH v3 2/3] vfio: zpci: defining the VFIO headers
+Date: Thu, 23 May 2019 14:25:25 +0200
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1558614326-24711-1-git-send-email-pmorel@linux.ibm.com>
+References: <1558614326-24711-1-git-send-email-pmorel@linux.ibm.com>
+X-TM-AS-GCONF: 00
+x-cbid: 19052312-0012-0000-0000-0000031EAB78
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19052312-0013-0000-0000-000021576489
+Message-Id: <1558614326-24711-3-git-send-email-pmorel@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-05-23_10:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=939 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1905230087
+Cc: linux-s390@vger.kernel.org, pasic@linux.vnet.ibm.com,
+	alex.williamson@redhat.com, kvm@vger.kernel.org,
+	heiko.carstens@de.ibm.com, walling@linux.ibm.com,
+	linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
+	iommu@lists.linux-foundation.org, schwidefsky@de.ibm.com,
+	robin.murphy@arm.com, gerald.schaefer@de.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,150 +99,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-05-16 10:30 am, Vivek Gautam wrote:
-> Few Qualcomm platforms such as, sdm845 have an additional outer
-> cache called as System cache, aka. Last level cache (LLC) that
-> allows non-coherent devices to upgrade to using caching.
-> This cache sits right before the DDR, and is tightly coupled
-> with the memory controller. The clients using this cache request
-> their slices from this system cache, make it active, and can then
-> start using it.
-> 
-> There is a fundamental assumption that non-coherent devices can't
-> access caches. This change adds an exception where they *can* use
-> some level of cache despite still being non-coherent overall.
-> The coherent devices that use cacheable memory, and CPU make use of
-> this system cache by default.
-> 
-> Looking at memory types, we have following -
-> a) Normal uncached :- MAIR 0x44, inner non-cacheable,
->                        outer non-cacheable;
-> b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
->                        outer read write-back non-transient;
->                        attribute setting for coherenet I/O devices.
-> and, for non-coherent i/o devices that can allocate in system cache
-> another type gets added -
-> c) Normal sys-cached :- MAIR 0xf4, inner non-cacheable,
->                          outer read write-back non-transient
-> 
-> Coherent I/O devices use system cache by marking the memory as
-> normal cached.
-> Non-coherent I/O devices should mark the memory as normal
-> sys-cached in page tables to use system cache.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+We define a new device region in vfio.h to be able to
+get the ZPCI CLP information by reading this region from
+userland.
 
-Acked-by: Robin Murphy <robin.murphy@arm.com>
+We create a new file, vfio_zdev.h to define the structure
+of the new region we defined in vfio.h
 
-There's a remote possibility that the IOMMU prot flag might be able to 
-be somewhat generalised in future for panfrost, as Mali appears to have 
-some pretty funky notions of cacheability, but this certainly looks fine 
-for now, thanks.
+Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+---
+ include/uapi/linux/vfio.h      |  4 ++++
+ include/uapi/linux/vfio_zdev.h | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+)
+ create mode 100644 include/uapi/linux/vfio_zdev.h
 
-Robin.
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index 8f10748..56595b8 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -306,6 +306,10 @@ struct vfio_region_info_cap_type {
+ #define VFIO_REGION_TYPE_GFX                    (1)
+ #define VFIO_REGION_SUBTYPE_GFX_EDID            (1)
+ 
++/* IBM Subtypes */
++#define VFIO_REGION_TYPE_IBM_ZDEV		(1)
++#define VFIO_REGION_SUBTYPE_ZDEV_CLP		(1)
++
+ /**
+  * struct vfio_region_gfx_edid - EDID region layout.
+  *
+diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
+new file mode 100644
+index 0000000..84b1a82
+--- /dev/null
++++ b/include/uapi/linux/vfio_zdev.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * Region definition for ZPCI devices
++ *
++ * Copyright IBM Corp. 2019
++ *
++ * Author(s): Pierre Morel <pmorel@linux.ibm.com>
++ */
++
++#ifndef _VFIO_ZDEV_H_
++#define _VFIO_ZDEV_H_
++
++#include <linux/types.h>
++
++/**
++ * struct vfio_region_zpci_info - ZPCI information.
++ *
++ */
++struct vfio_region_zpci_info {
++	__u64 dasm;
++	__u64 start_dma;
++	__u64 end_dma;
++	__u64 msi_addr;
++	__u64 flags;
++	__u16 pchid;
++	__u16 mui;
++	__u16 noi;
++	__u8 gid;
++	__u8 version;
++#define VFIO_PCI_ZDEV_FLAGS_REFRESH 1
++	__u8 util_str[CLP_UTIL_STR_LEN];
++} __packed;
++
++#endif
+-- 
+2.7.4
 
-> ---
-> 
-> V3 version of this patch and related series can be found at [1].
-> V4 of this patch is available at [2].
-> 
-> The example usage of how a smmu master can make use of this protection
-> flag and set the correct memory attributes to start using system cache,
-> can be found at [3]; and here at [3] IOMMU_UPSTREAM_HINT is same as
-> IOMMU_QCOM_SYS_CACHE.
-> 
-> Changes since v4:
->   - Changed ARM_LPAE_MAIR_ATTR_QCOM_SYS_CACHE to
->     ARM_LPAE_MAIR_ATTR_INC_OWBRWA.
->   - Changed ARM_LPAE_MAIR_ATTR_IDX_QCOM_SYS_CACHE to
->     ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE.
->   - Added comments to iommu protection flag - IOMMU_QCOM_SYS_CACHE.
-> 
-> Changes since v3:
->   - Dropping support to cache i/o page tables to system cache. Getting support
->     for data buffers is the first step.
->     Removed io-pgtable quirk and related change to add domain attribute.
-> 
-> Glmark2 numbers on SDM845 based cheza board:
-> 
-> S.No.|	with LLC support   |	without LLC support
->       |	for data buffers   |
-> ---------------------------------------------------		
-> 1    |	4480; 72.3fps      |	4042; 65.2fps
-> 2    |	4500; 72.6fps      |	4039; 65.1fps
-> 3    |	4523; 72.9fps	   |	4106; 66.2fps
-> 4    |	4489; 72.4fps	   |	4104; 66.2fps
-> 5    |	4518; 72.9fps	   |	4072; 65.7fps
-> 
-> [1] https://patchwork.kernel.org/cover/10772629/
-> [2] https://lore.kernel.org/patchwork/patch/1072936/
-> [3] https://patchwork.kernel.org/patch/10302791/
-> 
->   drivers/iommu/io-pgtable-arm.c | 9 ++++++++-
->   include/linux/iommu.h          | 6 ++++++
->   2 files changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 4e21efbc4459..2454ac11aa97 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -167,10 +167,12 @@
->   #define ARM_LPAE_MAIR_ATTR_MASK		0xff
->   #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
->   #define ARM_LPAE_MAIR_ATTR_NC		0x44
-> +#define ARM_LPAE_MAIR_ATTR_INC_OWBRWA	0xf4
->   #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
->   #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
->   #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
->   #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
-> +#define ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE	3
->   
->   #define ARM_MALI_LPAE_TTBR_ADRMODE_TABLE (3u << 0)
->   #define ARM_MALI_LPAE_TTBR_READ_INNER	BIT(2)
-> @@ -470,6 +472,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
->   		else if (prot & IOMMU_CACHE)
->   			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->   				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> +		else if (prot & IOMMU_QCOM_SYS_CACHE)
-> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE
-> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
->   	}
->   
->   	if (prot & IOMMU_NOEXEC)
-> @@ -857,7 +862,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
->   	      (ARM_LPAE_MAIR_ATTR_WBRWA
->   	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
->   	      (ARM_LPAE_MAIR_ATTR_DEVICE
-> -	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
-> +	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
-> +	      (ARM_LPAE_MAIR_ATTR_INC_OWBRWA
-> +	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE));
->   
->   	cfg->arm_lpae_s1_cfg.mair[0] = reg;
->   	cfg->arm_lpae_s1_cfg.mair[1] = 0;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a815cf6f6f47..8ee3fbaf5855 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -41,6 +41,12 @@
->    * if the IOMMU page table format is equivalent.
->    */
->   #define IOMMU_PRIV	(1 << 5)
-> +/*
-> + * Non-coherent masters on few Qualcomm SoCs can use this page protection flag
-> + * to set correct cacheability attributes to use an outer level of cache -
-> + * last level cache, aka system cache.
-> + */
-> +#define IOMMU_QCOM_SYS_CACHE	(1 << 6)
->   
->   struct iommu_ops;
->   struct iommu_group;
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
