@@ -2,54 +2,90 @@ Return-Path: <SRS0=aUVl=TX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D081DC282DD
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 18:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A73A9C282E1
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 20:00:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AF0A22175B
-	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 18:57:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF0A22175B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7D14020856
+	for <iommu@archiver.kernel.org>; Thu, 23 May 2019 20:00:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="BItDH4G4";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="bX2rnrsQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D14020856
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 75F34F30;
-	Thu, 23 May 2019 18:57:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EBA85FA9;
+	Thu, 23 May 2019 20:00:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1EE1EF27
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5EBB9FA2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 18:56:59 +0000 (UTC)
+	Thu, 23 May 2019 20:00:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5E78B83A
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9901E6C5
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 23 May 2019 18:56:58 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E4AA1A78;
-	Thu, 23 May 2019 11:56:57 -0700 (PDT)
-Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 07D6E3F5AF;
-	Thu, 23 May 2019 11:56:55 -0700 (PDT)
-Subject: Re: [PATCH 3/4] iommu: Introduce device fault report API
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, joro@8bytes.org,
-	alex.williamson@redhat.com
-References: <20190523180613.55049-1-jean-philippe.brucker@arm.com>
-	<20190523180613.55049-4-jean-philippe.brucker@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e56244fd-86fd-1fc9-17f7-d00179d586ac@arm.com>
-Date: Thu, 23 May 2019 19:56:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thu, 23 May 2019 20:00:48 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 33A646119E; Thu, 23 May 2019 20:00:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1558641648;
+	bh=Z5AcrjFvDwrNkhjxHTpfdZspY00IxihlRtFxpIOo+/E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=BItDH4G4NzhjL+BOfdyBWvuCmPMm0kp93QhKk3+y6qXmb+BHTtupeS37yyMNDX2Af
+	SQDadP3qx1siqmMM8AkEQnCbEFiwceAj3CAxP2Ng7s9IDBvYfJEy3NAWK8Z5GZkkMP
+	cQ6XY0NxelvFpq3ufJQ/QgnNzO80SCl9qj9dsS5Q=
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+	[199.106.103.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: jcrouse@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 83E7860E3E;
+	Thu, 23 May 2019 20:00:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1558641643;
+	bh=Z5AcrjFvDwrNkhjxHTpfdZspY00IxihlRtFxpIOo+/E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bX2rnrsQ37owVAjPQKqBc5/stuIp4p8eYRSNVAM/2An6D6HFHp4/+F6pchZe722Fg
+	10QwE/eRPrVGOfHrQOLPooUPtadMF3+8BT/uoajBbfGDcWNcuBDBkTPcJ5auITBMRj
+	yUH2jgT3JbizdNr9VKhAqy/5YP1ayaRlzwdjLRPk=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 83E7860E3E
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Thu, 23 May 2019 14:00:40 -0600
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 03/15] iommu/arm-smmu: Add split pagetable support for
+	arm-smmu-v2
+Message-ID: <20190523200040.GA18360@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
+	freedreno@lists.freedesktop.org, jean-philippe.brucker@arm.com,
+	linux-arm-msm@vger.kernel.org, hoegsberg@google.com,
+	dianders@chromium.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org
+References: <1558455243-32746-1-git-send-email-jcrouse@codeaurora.org>
+	<1558455243-32746-4-git-send-email-jcrouse@codeaurora.org>
+	<f2b2f524-cd63-7153-c454-0210410d1116@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20190523180613.55049-4-jean-philippe.brucker@arm.com>
-Content-Language: en-GB
-Cc: yi.l.liu@linux.intel.com, iommu@lists.linux-foundation.org,
-	ashok.raj@intel.com, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <f2b2f524-cd63-7153-c454-0210410d1116@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: jean-philippe.brucker@arm.com, linux-arm-msm@vger.kernel.org,
+	Will Deacon <will.deacon@arm.com>, dianders@chromium.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	hoegsberg@google.com, freedreno@lists.freedesktop.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,264 +98,220 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 23/05/2019 19:06, Jean-Philippe Brucker wrote:
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On Tue, May 21, 2019 at 07:18:32PM +0100, Robin Murphy wrote:
+> On 21/05/2019 17:13, Jordan Crouse wrote:
+> >Add support for a split pagetable (TTBR0/TTBR1) scheme for arm-smmu-v2.
+> >If split pagetables are enabled, create a pagetable for TTBR1 and set
+> >up the sign extension bit so that all IOVAs with that bit set are mapped
+> >and translated from the TTBR1 pagetable.
+> >
+> >Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> >---
+> >
+> >  drivers/iommu/arm-smmu-regs.h  |  19 +++++
+> >  drivers/iommu/arm-smmu.c       | 179 ++++++++++++++++++++++++++++++++++++++---
+> >  drivers/iommu/io-pgtable-arm.c |   3 +-
+> >  3 files changed, 186 insertions(+), 15 deletions(-)
+> >
+> >diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
+> >index e9132a9..23f27c2 100644
+> >--- a/drivers/iommu/arm-smmu-regs.h
+> >+++ b/drivers/iommu/arm-smmu-regs.h
+> >@@ -195,7 +195,26 @@ enum arm_smmu_s2cr_privcfg {
+> >  #define RESUME_RETRY			(0 << 0)
+> >  #define RESUME_TERMINATE		(1 << 0)
+> >+#define TTBCR_EPD1			(1 << 23)
+> >+#define TTBCR_T0SZ_SHIFT		0
+> >+#define TTBCR_T1SZ_SHIFT		16
+> >+#define TTBCR_IRGN1_SHIFT		24
+> >+#define TTBCR_ORGN1_SHIFT		26
+> >+#define TTBCR_RGN_WBWA			1
+> >+#define TTBCR_SH1_SHIFT			28
+> >+#define TTBCR_SH_IS			3
+> >+
+> >+#define TTBCR_TG1_16K			(1 << 30)
+> >+#define TTBCR_TG1_4K			(2 << 30)
+> >+#define TTBCR_TG1_64K			(3 << 30)
+> >+
+> >  #define TTBCR2_SEP_SHIFT		15
+> >+#define TTBCR2_SEP_31			(0x0 << TTBCR2_SEP_SHIFT)
+> >+#define TTBCR2_SEP_35			(0x1 << TTBCR2_SEP_SHIFT)
+> >+#define TTBCR2_SEP_39			(0x2 << TTBCR2_SEP_SHIFT)
+> >+#define TTBCR2_SEP_41			(0x3 << TTBCR2_SEP_SHIFT)
+> >+#define TTBCR2_SEP_43			(0x4 << TTBCR2_SEP_SHIFT)
+> >+#define TTBCR2_SEP_47			(0x5 << TTBCR2_SEP_SHIFT)
+> >  #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
+> >  #define TTBCR2_AS			(1 << 4)
+> >diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> >index a795ada..e09c0e6 100644
+> >--- a/drivers/iommu/arm-smmu.c
+> >+++ b/drivers/iommu/arm-smmu.c
+> >@@ -152,6 +152,7 @@ struct arm_smmu_cb {
+> >  	u32				tcr[2];
+> >  	u32				mair[2];
+> >  	struct arm_smmu_cfg		*cfg;
+> >+	unsigned long			split_table_mask;
+> >  };
+> >  struct arm_smmu_master_cfg {
+> >@@ -253,13 +254,14 @@ enum arm_smmu_domain_stage {
+> >  struct arm_smmu_domain {
+> >  	struct arm_smmu_device		*smmu;
+> >-	struct io_pgtable_ops		*pgtbl_ops;
+> >+	struct io_pgtable_ops		*pgtbl_ops[2];
 > 
-> Traditionally, device specific faults are detected and handled within
-> their own device drivers. When IOMMU is enabled, faults such as DMA
-> related transactions are detected by IOMMU. There is no generic
-> reporting mechanism to report faults back to the in-kernel device
-> driver or the guest OS in case of assigned devices.
+> This seems a bit off - surely the primary domain and aux domain only ever
+> need one set of tables each, but either way there's definitely unnecessary
+> redundancy in having four sets of io_pgtable_ops between them.
 > 
-> This patch introduces a registration API for device specific fault
-> handlers. This differs from the existing iommu_set_fault_handler/
-> report_iommu_fault infrastructures in several ways:
-> - it allows to report more sophisticated fault events (both
->    unrecoverable faults and page request faults) due to the nature
->    of the iommu_fault struct
-> - it is device specific and not domain specific.
+> >  	const struct iommu_gather_ops	*tlb_ops;
+> >  	struct arm_smmu_cfg		cfg;
+> >  	enum arm_smmu_domain_stage	stage;
+> >  	bool				non_strict;
+> >  	struct mutex			init_mutex; /* Protects smmu pointer */
+> >  	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+> >+	u32 attributes;
+> >  	struct iommu_domain		domain;
+> >  };
+> >@@ -621,6 +623,85 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+> >  	return IRQ_HANDLED;
+> >  }
+> >+/* Adjust the context bank settings to support TTBR1 */
+> >+static void arm_smmu_init_ttbr1(struct arm_smmu_domain *smmu_domain,
+> >+		struct io_pgtable_cfg *pgtbl_cfg)
+> >+{
+> >+	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> >+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> >+	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
+> >+	int pgsize = 1 << __ffs(pgtbl_cfg->pgsize_bitmap);
+> >+
+> >+	/* Enable speculative walks through the TTBR1 */
+> >+	cb->tcr[0] &= ~TTBCR_EPD1;
+> >+
+> >+	cb->tcr[0] |= TTBCR_SH_IS << TTBCR_SH1_SHIFT;
+> >+	cb->tcr[0] |= TTBCR_RGN_WBWA << TTBCR_IRGN1_SHIFT;
+> >+	cb->tcr[0] |= TTBCR_RGN_WBWA << TTBCR_ORGN1_SHIFT;
+> >+
+> >+	switch (pgsize) {
+> >+	case SZ_4K:
+> >+		cb->tcr[0] |= TTBCR_TG1_4K;
+> >+		break;
+> >+	case SZ_16K:
+> >+		cb->tcr[0] |= TTBCR_TG1_16K;
+> >+		break;
+> >+	case SZ_64K:
+> >+		cb->tcr[0] |= TTBCR_TG1_64K;
+> >+		break;
+> >+	}
+> >+
+> >+	/*
+> >+	 * Outside of the special 49 bit UBS case that has a dedicated sign
+> >+	 * extension bit, setting the SEP for any other va_size will force us to
+> >+	 * shrink the size of the T0/T1 regions by one bit to accommodate the
+> >+	 * SEP
+> >+	 */
+> >+	if (smmu->va_size != 48) {
+> >+		/* Replace the T0 size */
+> >+		cb->tcr[0] &= ~(0x3f << TTBCR_T0SZ_SHIFT);
+> >+		cb->tcr[0] |= (64ULL - smmu->va_size - 1) << TTBCR_T0SZ_SHIFT;
+> >+		/* Set the T1 size */
+> >+		cb->tcr[0] |= (64ULL - smmu->va_size - 1) << TTBCR_T1SZ_SHIFT;
+> >+	} else {
+> >+		/* Set the T1 size to the full available UBS */
+> >+		cb->tcr[0] |= (64ULL - smmu->va_size) << TTBCR_T1SZ_SHIFT;
+> >+	}
+> >+
+> >+	/* Clear the existing SEP configuration */
+> >+	cb->tcr[1] &= ~TTBCR2_SEP_UPSTREAM;
+> >+
+> >+	/* Set up the sign extend bit */
+> >+	switch (smmu->va_size) {
+> >+	case 32:
+> >+		cb->tcr[1] |= TTBCR2_SEP_31;
+> >+		cb->split_table_mask = (1UL << 31);
+> >+		break;
+> >+	case 36:
+> >+		cb->tcr[1] |= TTBCR2_SEP_35;
+> >+		cb->split_table_mask = (1UL << 35);
+> >+		break;
+> >+	case 40:
+> >+		cb->tcr[1] |= TTBCR2_SEP_39;
+> >+		cb->split_table_mask = (1UL << 39);
+> >+		break;
+> >+	case 42:
+> >+		cb->tcr[1] |= TTBCR2_SEP_41;
+> >+		cb->split_table_mask = (1UL << 41);
+> >+		break;
+> >+	case 44:
+> >+		cb->tcr[1] |= TTBCR2_SEP_43;
+> >+		cb->split_table_mask = (1UL << 43);
+> >+		break;
+> >+	case 48:
+> >+		cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
+> >+		cb->split_table_mask = (1UL << 48);
+> >+	}
+> >+
+> >+	cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
 > 
-> The current iommu_report_device_fault() implementation only handles
-> the "shoot and forget" unrecoverable fault case. Handling of page
-> request faults or stalled faults will come later.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> ---
->   drivers/iommu/iommu.c | 127 ++++++++++++++++++++++++++++++++++++++++++
->   include/linux/iommu.h |  29 ++++++++++
->   2 files changed, 156 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 67ee6623f9b2..d546f7baa0d4 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -644,6 +644,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->   		goto err_free_name;
->   	}
->   
-> +	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
-> +	if (!dev->iommu_param) {
-> +		ret = -ENOMEM;
-> +		goto err_free_name;
-> +	}
-> +	mutex_init(&dev->iommu_param->lock);
-> +
+> Assigning a "TTBR0" to a "TTBR1" is the point at which it becomes clear that
+> we need to take a step back and reconsider. I think there was originally a
+> half-formed idea that pagetables might go around in pairs, but things really
+> aren't working out that way in practice, so it's almost certainly time to
+> rework the io_pgatble_alloc() interface. We probably want to make "TTBR1" an
+> up-front option for the appropriate formats, such that either way they
+> return a single TTBR value plus a TCR with the appropriate half configured
+> (hopefully in such a way that the caller can simply allocate one of each and
+> merge the two TCRs together, so maybe responsibility for EPD* needs to
+> move). That way we can also make *better* use of the IOVA sanity-checking in
+> io-pgtable-arm, rather than just removing it (especially since this will
+> open up a whole new class of "unmapping a TTBR0 address from the TTBR1
+> domain" type bugs).
 
-Note that this gets a bit tricky when we come to move to move the 
-fwspec/ops/etc. into iommu_param, since that data can have a longer 
-lifespan than the group association. I'd suggest moving this management 
-out to the iommu_{probe,release}_device() level from the start, but 
-maybe we're happy to come back and change things later as necessary.
+I'm kind of having trouble wrapping my brain around what an API like this would
+look like, so please bear with me.
 
-Robin.
+The current patch does three things in the arm-smmu driver: it creates a
+secondary pagetable in the same manner as the first one (with the same
+parameters), updates the context bank registers and makes a decision at
+map/unmap time as to which pagetable ops pointer to use.
 
->   	kobject_get(group->devices_kobj);
->   
->   	dev->iommu_group = group;
-> @@ -674,6 +681,8 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->   	mutex_unlock(&group->mutex);
->   	dev->iommu_group = NULL;
->   	kobject_put(group->devices_kobj);
-> +	kfree(dev->iommu_param);
-> +	dev->iommu_param = NULL;
->   err_free_name:
->   	kfree(device->name);
->   err_remove_link:
-> @@ -721,6 +730,8 @@ void iommu_group_remove_device(struct device *dev)
->   
->   	trace_remove_device_from_group(group->id, dev);
->   
-> +	kfree(dev->iommu_param);
-> +	dev->iommu_param = NULL;
->   	kfree(device->name);
->   	kfree(device);
->   	dev->iommu_group = NULL;
-> @@ -854,6 +865,122 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
->   }
->   EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
->   
-> +/**
-> + * iommu_register_device_fault_handler() - Register a device fault handler
-> + * @dev: the device
-> + * @handler: the fault handler
-> + * @data: private data passed as argument to the handler
-> + *
-> + * When an IOMMU fault event is received, this handler gets called with the
-> + * fault event and data as argument. The handler should return 0 on success.
-> + *
-> + * Return 0 if the fault handler was installed successfully, or an error.
-> + */
-> +int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	int ret = 0;
-> +
-> +	/*
-> +	 * Device iommu_param should have been allocated when device is
-> +	 * added to its iommu_group.
-> +	 */
-> +	if (!param)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&param->lock);
-> +	/* Only allow one fault handler registered for each device */
-> +	if (param->fault_param) {
-> +		ret = -EBUSY;
-> +		goto done_unlock;
-> +	}
-> +
-> +	get_device(dev);
-> +	param->fault_param =
-> +		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
-> +	if (!param->fault_param) {
-> +		put_device(dev);
-> +		ret = -ENOMEM;
-> +		goto done_unlock;
-> +	}
-> +	param->fault_param->handler = handler;
-> +	param->fault_param->data = data;
-> +
-> +done_unlock:
-> +	mutex_unlock(&param->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
-> +
-> +/**
-> + * iommu_unregister_device_fault_handler() - Unregister the device fault handler
-> + * @dev: the device
-> + *
-> + * Remove the device fault handler installed with
-> + * iommu_register_device_fault_handler().
-> + *
-> + * Return 0 on success, or an error.
-> + */
-> +int iommu_unregister_device_fault_handler(struct device *dev)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	int ret = 0;
-> +
-> +	if (!param)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&param->lock);
-> +
-> +	if (!param->fault_param)
-> +		goto unlock;
-> +
-> +	kfree(param->fault_param);
-> +	param->fault_param = NULL;
-> +	put_device(dev);
-> +unlock:
-> +	mutex_unlock(&param->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
-> +
-> +/**
-> + * iommu_report_device_fault() - Report fault event to device driver
-> + * @dev: the device
-> + * @evt: fault event data
-> + *
-> + * Called by IOMMU drivers when a fault is detected, typically in a threaded IRQ
-> + * handler.
-> + *
-> + * Return 0 on success, or an error.
-> + */
-> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	struct iommu_fault_param *fparam;
-> +	int ret = 0;
-> +
-> +	/* iommu_param is allocated when device is added to group */
-> +	if (!param || !evt)
-> +		return -EINVAL;
-> +
-> +	/* we only report device fault if there is a handler registered */
-> +	mutex_lock(&param->lock);
-> +	fparam = param->fault_param;
-> +	if (!fparam || !fparam->handler) {
-> +		ret = -EINVAL;
-> +		goto done_unlock;
-> +	}
-> +	ret = fparam->handler(evt, fparam->data);
-> +done_unlock:
-> +	mutex_unlock(&param->lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-> +
->   /**
->    * iommu_group_id - Return ID for a group
->    * @group: the group to ID
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index d442f5f3fa93..f95e376a7ed3 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -340,6 +340,7 @@ struct iommu_fault_param {
->    *	struct iommu_fwspec	*iommu_fwspec;
->    */
->   struct iommu_param {
-> +	struct mutex lock;
->   	struct iommu_fault_param *fault_param;
->   };
->   
-> @@ -432,6 +433,15 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
->   					 struct notifier_block *nb);
->   extern int iommu_group_unregister_notifier(struct iommu_group *group,
->   					   struct notifier_block *nb);
-> +extern int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data);
-> +
-> +extern int iommu_unregister_device_fault_handler(struct device *dev);
-> +
-> +extern int iommu_report_device_fault(struct device *dev,
-> +				     struct iommu_fault_event *evt);
-> +
->   extern int iommu_group_id(struct iommu_group *group);
->   extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
->   extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
-> @@ -740,6 +750,25 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
->   	return 0;
->   }
->   
-> +static inline
-> +int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_unregister_device_fault_handler(struct device *dev)
-> +{
-> +	return 0;
-> +}
-> +
-> +static inline
-> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->   static inline int iommu_group_id(struct iommu_group *group)
->   {
->   	return -ENODEV;
-> 
+If I understand you correctly I think you are saying that we would like to move
+the register specific details into the io_pgtable code and get rid of the
+function quoted above. It also sounds like you may want to use separate
+pagetable ops for mapping ttbr0 and ttbr1 to allow for better sanity checking.
+
+I'm still not quite sure how the pagetable allocation will work in this case.
+The biggest downside is that we need to possibly adjust T0SZ in a split table
+situation to account for the SEP and both T0SZ and T1SZ live in tcr[0] so if we
+stick with individual allocation functions struct io_pgtable_cfg would have to
+be an accumulator of sorts, passed first for TTBR0 and the again for TTBR1 which
+may modify the value of tcr[0] (or OR the two values together and hope
+they don't conflict).
+
+To me this kind of defeats the purpose of calling the allocator twice. It feels
+cleaner if we called it once with the advanced knowledge that we are going to
+use TTBR1 and then return the pagetable addresses in .ttbr[0] and .ttbr[1] as
+above. We could make a new format type that incorporates TTBR1 and then we
+wouldn't have to change struct io_ptgable_cfg or the API call.
+
+This could also have the advantage of moving the mask check out of the arm-smmu
+map/unmap functions and moving it to special TTBR1 ops in the io pgtable that
+could find the right pagetable  to write to as well as do the appropriate sanity
+checks.
+
+I'm kind of shooting from the hip here so feel free to let me know I'm being
+silly. I really want to get this moving forward so any reasonable ideas will be
+welcome.
+
+> Robin.
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
