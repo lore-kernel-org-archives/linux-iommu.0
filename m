@@ -6,43 +6,43 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDB3C282E1
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 23:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF64C282E1
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 23:43:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6E778217F9
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 23:43:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6E778217F9
+	by mail.kernel.org (Postfix) with ESMTPS id BACF5217F9
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 23:43:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BACF5217F9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F33F7FD4;
-	Fri, 24 May 2019 23:43:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 34B33FF0;
+	Fri, 24 May 2019 23:43:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1E70F265
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A5256F7B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 23:43:09 +0000 (UTC)
+	Fri, 24 May 2019 23:43:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 61C8C7FB
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C700E7FB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 23:43:08 +0000 (UTC)
+	Fri, 24 May 2019 23:43:10 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
 	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	24 May 2019 16:43:08 -0700
+	24 May 2019 16:43:10 -0700
 X-ExtLoop1: 1
 Received: from sai-dev-mach.sc.intel.com ([143.183.140.153])
-	by orsmga001.jf.intel.com with ESMTP; 24 May 2019 16:43:07 -0700
+	by orsmga001.jf.intel.com with ESMTP; 24 May 2019 16:43:10 -0700
 From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH V3 2/3] iommu/vt-d: Introduce macros useful for dumping DMAR
-	table
-Date: Fri, 24 May 2019 16:40:16 -0700
-Message-Id: <bb8048e050d5555fae5b288129e4e05399b52cff.1558735674.git.sai.praneeth.prakhya@intel.com>
+Subject: [PATCH V3 3/3] iommu/vt-d: Add debugfs support to show scalable mode
+	DMAR table internals
+Date: Fri, 24 May 2019 16:40:17 -0700
+Message-Id: <01defc6cb40203ec984a1368dceec799308a0ccc.1558735674.git.sai.praneeth.prakhya@intel.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1558735674.git.sai.praneeth.prakhya@intel.com>
 References: <cover.1558735674.git.sai.praneeth.prakhya@intel.com>
@@ -67,18 +67,39 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-A scalable mode DMAR table walk would involve looking at bits in each stage
-of walk, like,
-1. Is PASID enabled in the context entry?
-2. What's the size of PASID directory?
-3. Is the PASID directory entry present?
-4. Is the PASID table entry present?
-5. Number of PASID table entries?
+A DMAR table walk would typically follow the below process.
+1. Bus number is used to index into root table which points to a context
+   table.
+2. Device number and Function number are used together to index into
+   context table which then points to a pasid directory.
+3. PASID[19:6] is used to index into PASID directory which points to a
+   PASID table.
+4. PASID[5:0] is used to index into PASID table which points to all levels
+   of page tables.
 
-Hence, add these macros that will later be used during this walk.
-Apart from adding new macros, move existing macros (like
-pasid_pde_is_present(), get_pasid_table_from_pde() and pasid_supported())
-to appropriate header files so that they could be reused.
+Whenever a user opens the file
+"/sys/kernel/debug/iommu/intel/dmar_translation_struct", the above
+described DMAR table walk is performed and the contents of the table are
+dumped into the file. The dump could be handy while dealing with devices
+that use PASID.
+
+Example of such dump:
+cat /sys/kernel/debug/iommu/intel/dmar_translation_struct
+
+(Please note that because of 80 char limit, entries that should have been
+in the same line are broken into different lines)
+
+IOMMU dmar0: Root Table Address: 0x436f7c000
+B.D.F	Root_entry				Context_entry
+PASID	PASID_table_entry
+00:0a.0	0x0000000000000000:0x000000044dd3f001	0x0000000000100000:0x0000000435460e1d
+0	0x000000044d6e1089:0x0000000000000003:0x0000000000000001
+00:0a.0	0x0000000000000000:0x000000044dd3f001	0x0000000000100000:0x0000000435460e1d
+1	0x0000000000000049:0x0000000000000001:0x0000000003c0e001
+
+Note that the above format is followed even for legacy DMAR table dump
+which doesn't support PASID and hence in such cases PASID is defaulted to
+-1 indicating that PASID and it's related fields are invalid.
 
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Ashok Raj <ashok.raj@intel.com>
@@ -91,131 +112,137 @@ Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
 ---
- drivers/iommu/intel-iommu.c |  6 +-----
- drivers/iommu/intel-pasid.c | 17 -----------------
- drivers/iommu/intel-pasid.h | 26 ++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  6 ++++++
- 4 files changed, 33 insertions(+), 22 deletions(-)
+ drivers/iommu/intel-iommu-debugfs.c | 78 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 75 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a209199f3af6..f284732fe62b 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -357,6 +357,7 @@ int dmar_disabled = 0;
- int dmar_disabled = 1;
- #endif /*CONFIG_INTEL_IOMMU_DEFAULT_ON*/
+diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
+index 3f5399b5e6c0..73a552914455 100644
+--- a/drivers/iommu/intel-iommu-debugfs.c
++++ b/drivers/iommu/intel-iommu-debugfs.c
+@@ -14,11 +14,15 @@
  
-+int intel_iommu_sm;
- int intel_iommu_enabled = 0;
- EXPORT_SYMBOL_GPL(intel_iommu_enabled);
+ #include <asm/irq_remapping.h>
  
-@@ -364,17 +365,12 @@ static int dmar_map_gfx = 1;
- static int dmar_forcedac;
- static int intel_iommu_strict;
- static int intel_iommu_superpage = 1;
--static int intel_iommu_sm;
- static int iommu_identity_mapping;
- 
- #define IDENTMAP_ALL		1
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
- 
--#define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
--#define pasid_supported(iommu)	(sm_supported(iommu) &&			\
--				 ecap_pasid((iommu)->ecap))
--
- int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
- 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 2fefeafda437..6895a23b2157 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -169,23 +169,6 @@ int intel_pasid_alloc_table(struct device *dev)
- 	return 0;
- }
- 
--/* Get PRESENT bit of a PASID directory entry. */
--static inline bool
--pasid_pde_is_present(struct pasid_dir_entry *pde)
--{
--	return READ_ONCE(pde->val) & PASID_PTE_PRESENT;
--}
--
--/* Get PASID table from a PASID directory entry. */
--static inline struct pasid_entry *
--get_pasid_table_from_pde(struct pasid_dir_entry *pde)
--{
--	if (!pasid_pde_is_present(pde))
--		return NULL;
--
--	return phys_to_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
--}
--
- void intel_pasid_free_table(struct device *dev)
- {
- 	struct device_domain_info *info;
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 23537b3f34e3..fc8cd8f17de1 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -18,6 +18,10 @@
- #define PDE_PFN_MASK			PAGE_MASK
- #define PASID_PDE_SHIFT			6
- #define MAX_NR_PASID_BITS		20
-+#define PASID_TBL_ENTRIES		BIT(PASID_PDE_SHIFT)
++#include "intel-pasid.h"
 +
-+#define is_pasid_enabled(entry)		(((entry)->lo >> 3) & 0x1)
-+#define get_pasid_dir_size(entry)	(1 << ((((entry)->lo >> 9) & 0x7) + 7))
- 
- /*
-  * Domain ID reserved for pasid entries programmed for first-level
-@@ -49,6 +53,28 @@ struct pasid_table {
- 	struct list_head	dev;		/* device list */
+ struct tbl_walk {
+ 	u16 bus;
+ 	u16 devfn;
++	u32 pasid;
+ 	struct root_entry *rt_entry;
+ 	struct context_entry *ctx_entry;
++	struct pasid_entry *pasid_tbl_entry;
  };
  
-+/* Get PRESENT bit of a PASID directory entry. */
-+static inline bool pasid_pde_is_present(struct pasid_dir_entry *pde)
-+{
-+	return READ_ONCE(pde->val) & PASID_PTE_PRESENT;
-+}
-+
-+/* Get PASID table from a PASID directory entry. */
-+static inline struct pasid_entry *
-+get_pasid_table_from_pde(struct pasid_dir_entry *pde)
-+{
-+	if (!pasid_pde_is_present(pde))
-+		return NULL;
-+
-+	return phys_to_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
-+}
-+
-+/* Get PRESENT bit of a PASID table entry. */
-+static inline bool pasid_pte_is_present(struct pasid_entry *pte)
-+{
-+	return READ_ONCE(pte->val[0]) & PASID_PTE_PRESENT;
-+}
-+
- extern u32 intel_pasid_max_id;
- int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
- void intel_pasid_free_id(int pasid);
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 6925a18a5ca3..4140726867a9 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -447,6 +447,12 @@ enum {
- #define VTD_FLAG_TRANS_PRE_ENABLED	(1 << 0)
- #define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
+ struct iommu_regset {
+@@ -142,21 +146,82 @@ static inline void print_tbl_walk(struct seq_file *m)
+ {
+ 	struct tbl_walk *tbl_wlk = m->private;
  
-+extern int intel_iommu_sm;
+-	seq_printf(m, "%02x:%02x.%x\t0x%016llx:0x%016llx\t0x%016llx:0x%016llx\n",
++	seq_printf(m, "%02x:%02x.%x\t0x%016llx:0x%016llx\t0x%016llx:0x%016llx\t",
+ 		   tbl_wlk->bus, PCI_SLOT(tbl_wlk->devfn),
+ 		   PCI_FUNC(tbl_wlk->devfn), tbl_wlk->rt_entry->hi,
+ 		   tbl_wlk->rt_entry->lo, tbl_wlk->ctx_entry->hi,
+ 		   tbl_wlk->ctx_entry->lo);
 +
-+#define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
-+#define pasid_supported(iommu)	(sm_supported(iommu) &&			\
-+				 ecap_pasid((iommu)->ecap))
++	/*
++	 * A legacy mode DMAR doesn't support PASID, hence default it to -1
++	 * indicating that it's invalid. Also, default all PASID related fields
++	 * to 0.
++	 */
++	if (!tbl_wlk->pasid_tbl_entry)
++		seq_printf(m, "%-6d\t0x%016llx:0x%016llx:0x%016llx\n", -1,
++			   (u64)0, (u64)0, (u64)0);
++	else
++		seq_printf(m, "%-6d\t0x%016llx:0x%016llx:0x%016llx\n",
++			   tbl_wlk->pasid, tbl_wlk->pasid_tbl_entry->val[0],
++			   tbl_wlk->pasid_tbl_entry->val[1],
++			   tbl_wlk->pasid_tbl_entry->val[2]);
++}
 +
- struct pasid_entry;
- struct pasid_state_entry;
- struct page_req_dsc;
++static void pasid_tbl_walk(struct seq_file *m, struct pasid_entry *tbl_entry,
++			   u16 dir_idx)
++{
++	struct tbl_walk *tbl_wlk = m->private;
++	u8 tbl_idx;
++
++	for (tbl_idx = 0; tbl_idx < PASID_TBL_ENTRIES; tbl_idx++) {
++		if (pasid_pte_is_present(tbl_entry)) {
++			tbl_wlk->pasid_tbl_entry = tbl_entry;
++			tbl_wlk->pasid = (dir_idx << PASID_PDE_SHIFT) + tbl_idx;
++			print_tbl_walk(m);
++		}
++
++		tbl_entry++;
++	}
++}
++
++static void pasid_dir_walk(struct seq_file *m, u64 pasid_dir_ptr,
++			   u16 pasid_dir_size)
++{
++	struct pasid_dir_entry *dir_entry = phys_to_virt(pasid_dir_ptr);
++	struct pasid_entry *pasid_tbl;
++	u16 dir_idx;
++
++	for (dir_idx = 0; dir_idx < pasid_dir_size; dir_idx++) {
++		pasid_tbl = get_pasid_table_from_pde(dir_entry);
++		if (pasid_tbl)
++			pasid_tbl_walk(m, pasid_tbl, dir_idx);
++
++		dir_entry++;
++	}
+ }
+ 
+ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
+ {
+ 	struct context_entry *context;
+-	u16 devfn;
++	u16 devfn, pasid_dir_size;
++	u64 pasid_dir_ptr;
+ 
+ 	for (devfn = 0; devfn < 256; devfn++) {
+ 		struct tbl_walk tbl_wlk = {0};
+ 
++		/*
++		 * Scalable mode root entry points to upper scalable mode
++		 * context table and lower scalable mode context table. Each
++		 * scalable mode context table has 128 context entries where as
++		 * legacy mode context table has 256 context entries. So in
++		 * scalable mode, the context entries for former 128 devices are
++		 * in the lower scalable mode context table, while the latter
++		 * 128 devices are in the upper scalable mode context table.
++		 * In scalable mode, when devfn > 127, iommu_context_addr()
++		 * automatically refers to upper scalable mode context table and
++		 * hence the caller doesn't have to worry about differences
++		 * between scalable mode and non scalable mode.
++		 */
+ 		context = iommu_context_addr(iommu, bus, devfn, 0);
+ 		if (!context)
+ 			return;
+@@ -170,6 +235,13 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
+ 		tbl_wlk.ctx_entry = context;
+ 		m->private = &tbl_wlk;
+ 
++		if (pasid_supported(iommu) && is_pasid_enabled(context)) {
++			pasid_dir_ptr = context->lo & VTD_PAGE_MASK;
++			pasid_dir_size = get_pasid_dir_size(context);
++			pasid_dir_walk(m, pasid_dir_ptr, pasid_dir_size);
++			continue;
++		}
++
+ 		print_tbl_walk(m);
+ 	}
+ }
+@@ -182,7 +254,7 @@ static void root_tbl_walk(struct seq_file *m, struct intel_iommu *iommu)
+ 	spin_lock_irqsave(&iommu->lock, flags);
+ 	seq_printf(m, "IOMMU %s: Root Table Address: 0x%llx\n", iommu->name,
+ 		   (u64)virt_to_phys(iommu->root_entry));
+-	seq_puts(m, "B.D.F\tRoot_entry\t\t\t\tContext_entry\n");
++	seq_puts(m, "B.D.F\tRoot_entry\t\t\t\tContext_entry\t\t\t\tPASID\tPASID_table_entry\n");
+ 
+ 	/*
+ 	 * No need to check if the root entry is present or not because
 -- 
 2.7.4
 
