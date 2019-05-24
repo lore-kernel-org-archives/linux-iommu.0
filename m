@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F225C282DD
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AD5C282DE
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 304B5217F9
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 304B5217F9
+	by mail.kernel.org (Postfix) with ESMTPS id 4B175217F9
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4B175217F9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E8817105F;
-	Fri, 24 May 2019 01:16:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2ECC911A1;
+	Fri, 24 May 2019 01:16:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E051F114E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0757AFD4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 01:16:45 +0000 (UTC)
+	Fri, 24 May 2019 01:16:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 33E306C5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A045481A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 01:16:45 +0000 (UTC)
+	Fri, 24 May 2019 01:16:44 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
@@ -37,14 +37,14 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
 	23 May 2019 18:16:39 -0700
 X-ExtLoop1: 1
 Received: from unknown (HELO luv-build.sc.intel.com) ([172.25.110.25])
-	by fmsmga008.fm.intel.com with ESMTP; 23 May 2019 18:16:39 -0700
+	by fmsmga008.fm.intel.com with ESMTP; 23 May 2019 18:16:38 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>,
 	Borislav Petkov <bp@suse.de>
-Subject: [RFC PATCH v4 21/21] x86/watchdog/hardlockup/hpet: Support interrupt
-	remapping
-Date: Thu, 23 May 2019 18:16:23 -0700
-Message-Id: <1558660583-28561-22-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v4 19/21] iommu/vt-d: Rework prepare_irte() to support
+	per-irq delivery mode
+Date: Thu, 23 May 2019 18:16:21 -0700
+Message-Id: <1558660583-28561-20-git-send-email-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
@@ -81,15 +81,18 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When interrupt remapping is enabled in the system, the MSI interrupt
-message must follow a special format the IOMMU can understand. Hence,
-utilize the functionality provided by the IOMMU driver for such purpose.
+A recent change introduced a new member to struct irq_cfg to specify the
+delivery mode of an interrupt. Supporting the configuration of the
+delivery mode would require adding a third argument to prepare_irte().
+Instead, simply take a pointer to a irq_cfg data structure as a the only
+argument.
 
-The first step is to determine whether interrupt remapping is enabled
-by looking for the existence of an interrupt remapping domain. If it
-exists, let the IOMMU driver compose the MSI message for us. The hard-
-lockup detector is still responsible of writing the message in the
-HPET FSB route register.
+Internally, configure the delivery mode of the Interrupt Remapping Table
+Entry as specified in the irq_cfg data structure and not as the APIC
+setting.
+
+This change does not change the existing behavior, as the delivery mode
+of the APIC is used to configure irq_cfg data structure.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
@@ -113,76 +116,44 @@ Cc: x86@kernel.org
 Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- arch/x86/kernel/watchdog_hld_hpet.c | 33 ++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+ drivers/iommu/intel_irq_remapping.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kernel/watchdog_hld_hpet.c b/arch/x86/kernel/watchdog_hld_hpet.c
-index 76eed714a1cb..a266439fdb9e 100644
---- a/arch/x86/kernel/watchdog_hld_hpet.c
-+++ b/arch/x86/kernel/watchdog_hld_hpet.c
-@@ -20,6 +20,7 @@
- #include <linux/hpet.h>
- #include <linux/slab.h>
- #include <asm/msidef.h>
-+#include <asm/irq_remapping.h>
- #include <asm/hpet.h>
- 
- static struct hpet_hld_data *hld_data;
-@@ -117,6 +118,25 @@ static bool is_hpet_wdt_interrupt(struct hpet_hld_data *hdata)
- 	return false;
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 4160aa9f3f80..2e61eaca7d7e 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -1072,7 +1072,7 @@ static int reenable_irq_remapping(int eim)
+ 	return -1;
  }
  
-+/** irq_remapping_enabled() - Detect if interrupt remapping is enabled
-+ * @hdata:	A data structure with the HPET block id
-+ *
-+ * Determine if the HPET block that the hardlockup detector is under
-+ * the remapped interrupt domain.
-+ *
-+ * Returns: True interrupt remapping is enabled. False otherwise.
-+ */
-+static bool irq_remapping_enabled(struct hpet_hld_data *hdata)
-+{
-+	struct irq_alloc_info info;
-+
-+	init_irq_alloc_info(&info, NULL);
-+	info.type = X86_IRQ_ALLOC_TYPE_HPET;
-+	info.hpet_id = hdata->blockid;
-+
-+	return !!irq_remapping_get_ir_irq_domain(&info);
-+}
-+
- /**
-  * compose_msi_msg() - Populate address and data fields of an MSI message
-  * @hdata:	A data strucure with the message to populate
-@@ -161,6 +181,9 @@ static int update_msi_destid(struct hpet_hld_data *hdata)
+-static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
++static void prepare_irte(struct irte *irte, struct irq_cfg *irq_cfg)
  {
- 	u32 destid;
+ 	memset(irte, 0, sizeof(*irte));
  
-+	if (irq_remapping_enabled(hdata))
-+		return hld_hpet_intremap_activate_irq(hdata);
-+
- 	hdata->msi_msg.address_lo &= ~MSI_ADDR_DEST_ID_MASK;
- 	destid = apic->calc_dest_apicid(hdata->handling_cpu);
- 	hdata->msi_msg.address_lo |= MSI_ADDR_DEST_ID(destid);
-@@ -217,9 +240,17 @@ static int hardlockup_detector_nmi_handler(unsigned int type,
-  */
- static int setup_irq_msi_mode(struct hpet_hld_data *hdata)
- {
-+	s32 ret;
- 	u32 v;
+@@ -1086,9 +1086,9 @@ static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
+ 	 * irq migration in the presence of interrupt-remapping.
+ 	*/
+ 	irte->trigger_mode = 0;
+-	irte->dlvry_mode = apic->irq_delivery_mode;
+-	irte->vector = vector;
+-	irte->dest_id = IRTE_DEST(dest);
++	irte->dlvry_mode = irq_cfg->delivery_mode;
++	irte->vector = irq_cfg->vector;
++	irte->dest_id = IRTE_DEST(irq_cfg->dest_apicid);
+ 	irte->redir_hint = 1;
+ }
  
--	compose_msi_msg(hdata);
-+	if (irq_remapping_enabled(hdata)) {
-+		ret = hld_hpet_intremap_alloc_irq(hdata);
-+		if (ret)
-+			return ret;
-+	} else {
-+		compose_msi_msg(hdata);
-+	}
-+
- 	hpet_writel(hdata->msi_msg.data, HPET_Tn_ROUTE(hdata->num));
- 	hpet_writel(hdata->msi_msg.address_lo, HPET_Tn_ROUTE(hdata->num) + 4);
+@@ -1265,7 +1265,7 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
+ 	struct irte *irte = &data->irte_entry;
+ 	struct msi_msg *msg = &data->msi_entry;
  
+-	prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
++	prepare_irte(irte, irq_cfg);
+ 	switch (info->type) {
+ 	case X86_IRQ_ALLOC_TYPE_IOAPIC:
+ 		/* Set source-id of interrupt request */
 -- 
 2.17.1
 
