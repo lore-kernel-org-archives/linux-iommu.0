@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3F1C282DD
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C05C282DD
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:43 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 380EC217F9
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 380EC217F9
+	by mail.kernel.org (Postfix) with ESMTPS id A34A1217F9
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A34A1217F9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2D191116E;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 698D31171;
 	Fri, 24 May 2019 01:16:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E1458105C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 26C8B10BD
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 01:16:44 +0000 (UTC)
+	Fri, 24 May 2019 01:16:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 84387F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 790A46C5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 01:16:43 +0000 (UTC)
+	Fri, 24 May 2019 01:16:44 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
@@ -37,36 +37,32 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
 	23 May 2019 18:16:38 -0700
 X-ExtLoop1: 1
 Received: from unknown (HELO luv-build.sc.intel.com) ([172.25.110.25])
-	by fmsmga008.fm.intel.com with ESMTP; 23 May 2019 18:16:37 -0700
+	by fmsmga008.fm.intel.com with ESMTP; 23 May 2019 18:16:38 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>,
 	Borislav Petkov <bp@suse.de>
-Subject: [RFC PATCH v4 15/21] watchdog/hardlockup/hpet: Only enable the HPET
-	watchdog via a boot parameter
-Date: Thu, 23 May 2019 18:16:17 -0700
-Message-Id: <1558660583-28561-16-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v4 18/21] x86/apic: Add a parameter for the APIC delivery
+	mode
+Date: Thu, 23 May 2019 18:16:20 -0700
+Message-Id: <1558660583-28561-19-git-send-email-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
 	Peter Zijlstra <peterz@infradead.org>, Jan Kiszka <jan.kiszka@siemens.com>,
-	Clemens Ladisch <clemens@ladisch.de>,
 	Ricardo Neri <ricardo.neri@intel.com>,
-	Stephane Eranian <eranian@google.com>,
-	Masahiro Yamada <yamada.masahiro@socionext.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
+	Stephane Eranian <eranian@google.com>, Wincy Van <fanwenyi0529@gmail.com>,
 	Ashok Raj <ashok.raj@intel.com>, x86@kernel.org,
 	Andi Kleen <andi.kleen@intel.com>,
+	"Eric W. Biederman" <ebiederm@xmission.com>,
 	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
 	Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-	Mimi Zohar <zohar@linux.ibm.com>, Tony Luck <tony.luck@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Juergen Gross <jgross@suse.com>, Tony Luck <tony.luck@intel.com>,
 	Randy Dunlap <rdunlap@infradead.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Philippe Ombredanne <pombredanne@nexb.com>,
-	Nayna Jain <nayna@linux.ibm.com>
+	Jacob Pan <jacob.jun.pan@intel.com>,
+	Philippe Ombredanne <pombredanne@nexb.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -85,109 +81,103 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Keep the HPET-based hardlockup detector disabled unless explicitly enabled
-via a command-line argument. If such parameter is not given, the
-initialization of the hpet-based hardlockup detector fails and the NMI
-watchdog will fallback to use the perf-based implementation.
+Until now, the delivery mode of APIC interrupts is set to the default
+mode set in the APIC driver. However, there are no restrictions in hardware
+to configure each interrupt with a different delivery mode. Specifying the
+delivery mode per interrupt is useful when one is interested in changing
+the delivery mode of a particular interrupt. For instance, this can be used
+to deliver an interrupt as non-maskable.
 
-Given that __setup("nmi_watchdog=") is already used to control the behavior
-of the NMI watchdog (via hardlockup_panic_setup()), it cannot be used to
-control of the hpet-based implementation. Instead, use a new
-early_param("nmi_watchdog").
+Add a new member, delivery_mode, to struct irq_cfg. This new member, can
+be used to update the configuration of the delivery mode in each interrupt
+domain. Likewise, add equivalent macros to populate MSI messages.
 
-Cc: "H. Peter Anvin" <hpa@zytor.com>
+Currently, all interrupt domains set the delivery mode of interrupts using
+the APIC setting. Interrupt domains use an irq_cfg data structure to
+configure their own data structures and hardware resources. Thus, in order
+to keep the current behavior, set the delivery mode of the irq
+configuration that as the APIC setting. In this manner, irq domains can
+obtain the delivery mode from the irq configuration data instead of the
+APIC setting, if needed.
+
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
 Cc: Tony Luck <tony.luck@intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Clemens Ladisch <clemens@ladisch.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Jacob Pan <jacob.jun.pan@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Wincy Van <fanwenyi0529@gmail.com>
 Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Mimi Zohar <zohar@linux.ibm.com>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Baoquan He <bhe@redhat.com>
 Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: Nayna Jain <nayna@linux.ibm.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: x86@kernel.org
+Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-
---
-checkpatch gives the following warning:
-
-CHECK: __setup appears un-documented -- check Documentation/admin-guide/kernel-parameters.rst
-+__setup("nmi_watchdog=", hardlockup_detector_hpet_setup);
-
-This is a false-positive as the option nmi_watchdog is already
-documented. The option is re-evaluated in this file as well.
 ---
- .../admin-guide/kernel-parameters.txt         |  8 ++++++-
- arch/x86/kernel/watchdog_hld_hpet.c           | 22 +++++++++++++++++++
- 2 files changed, 29 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/hw_irq.h |  5 +++--
+ arch/x86/include/asm/msidef.h |  3 +++
+ arch/x86/kernel/apic/vector.c | 10 ++++++++++
+ 3 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 138f6664b2e2..17ed3dcda13e 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -2831,7 +2831,7 @@
- 			Format: [state][,regs][,debounce][,die]
+diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
+index 32e666e1231e..c024e5976b78 100644
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -117,8 +117,9 @@ struct irq_alloc_info {
+ };
  
- 	nmi_watchdog=	[KNL,BUGS=X86] Debugging features for SMP kernels
--			Format: [panic,][nopanic,][num]
-+			Format: [panic,][nopanic,][num,][hpet]
- 			Valid num: 0 or 1
- 			0 - turn hardlockup detector in nmi_watchdog off
- 			1 - turn hardlockup detector in nmi_watchdog on
-@@ -2841,6 +2841,12 @@
- 			please see 'nowatchdog'.
- 			This is useful when you use a panic=... timeout and
- 			need the box quickly up again.
-+			When hpet is specified, the NMI watchdog will be driven
-+			by an HPET timer, if available in the system. Otherwise,
-+			it falls back to the default implementation (perf or
-+			architecture-specific). Specifying hpet has no effect
-+			if the NMI watchdog is not enabled (either at build time
-+			or via the command line).
+ struct irq_cfg {
+-	unsigned int		dest_apicid;
+-	unsigned int		vector;
++	unsigned int				dest_apicid;
++	unsigned int				vector;
++	enum ioapic_irq_destination_types	delivery_mode;
+ };
  
- 			These settings can be accessed at runtime via
- 			the nmi_watchdog and hardlockup_panic sysctls.
-diff --git a/arch/x86/kernel/watchdog_hld_hpet.c b/arch/x86/kernel/watchdog_hld_hpet.c
-index dcc50cd29374..76eed714a1cb 100644
---- a/arch/x86/kernel/watchdog_hld_hpet.c
-+++ b/arch/x86/kernel/watchdog_hld_hpet.c
-@@ -351,6 +351,28 @@ void hardlockup_detector_hpet_stop(void)
- 	disable_timer(hld_data);
- }
+ extern struct irq_cfg *irq_cfg(unsigned int irq);
+diff --git a/arch/x86/include/asm/msidef.h b/arch/x86/include/asm/msidef.h
+index 38ccfdc2d96e..6d666c90f057 100644
+--- a/arch/x86/include/asm/msidef.h
++++ b/arch/x86/include/asm/msidef.h
+@@ -16,6 +16,9 @@
+ 					 MSI_DATA_VECTOR_MASK)
  
-+/**
-+ * hardlockup_detector_hpet_setup() - Parse command-line parameters
-+ * @str:	A string containing the kernel command line
-+ *
-+ * Parse the nmi_watchdog parameter from the kernel command line. If
-+ * selected by the user, use this implementation to detect hardlockups.
-+ */
-+static int __init hardlockup_detector_hpet_setup(char *str)
-+{
-+	if (!str)
-+		return -EINVAL;
+ #define MSI_DATA_DELIVERY_MODE_SHIFT	8
++#define MSI_DATA_DELIVERY_MODE_MASK	0x00000700
++#define MSI_DATA_DELIVERY_MODE(dm)	(((dm) << MSI_DATA_DELIVERY_MODE_SHIFT) & \
++					 MSI_DATA_DELIVERY_MODE_MASK)
+ #define  MSI_DATA_DELIVERY_FIXED	(0 << MSI_DATA_DELIVERY_MODE_SHIFT)
+ #define  MSI_DATA_DELIVERY_LOWPRI	(1 << MSI_DATA_DELIVERY_MODE_SHIFT)
+ #define  MSI_DATA_DELIVERY_NMI		(4 << MSI_DATA_DELIVERY_MODE_SHIFT)
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 3173e07d3791..99436fe7e932 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -548,6 +548,16 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
+ 		irqd->chip_data = apicd;
+ 		irqd->hwirq = virq + i;
+ 		irqd_set_single_target(irqd);
 +
-+	if (parse_option_str(str, "hpet"))
-+		hardlockup_use_hpet = true;
++		/*
++		 * Initialize the delivery mode of this irq to match the
++		 * default delivery mode of the APIC. This is useful for
++		 * children irq domains which want to take the delivery
++		 * mode from the individual irq configuration rather
++		 * than from the APIC.
++		 */
++		 apicd->hw_irq_cfg.delivery_mode = apic->irq_delivery_mode;
 +
-+	if (!nmi_watchdog_user_enabled && hardlockup_use_hpet)
-+		pr_warn("Selecting HPET NMI watchdog has no effect with NMI watchdog disabled\n");
-+
-+	return 0;
-+}
-+early_param("nmi_watchdog", hardlockup_detector_hpet_setup);
-+
- /**
-  * hardlockup_detector_hpet_init() - Initialize the hardlockup detector
-  *
+ 		/*
+ 		 * Legacy vectors are already assigned when the IOAPIC
+ 		 * takes them over. They stay on the same vector. This is
 -- 
 2.17.1
 
