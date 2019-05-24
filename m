@@ -4,31 +4,32 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF52DC282DD
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E69E2C282DD
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 974D621841
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 974D621841
+	by mail.kernel.org (Postfix) with ESMTPS id C0CFE217F9
+	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 01:18:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0CFE217F9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 50D67114E;
-	Fri, 24 May 2019 01:16:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8066E1032;
+	Fri, 24 May 2019 01:16:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 946B7F3E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1F293FD4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 01:16:43 +0000 (UTC)
+	Fri, 24 May 2019 01:16:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1DA07821
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E6CB581A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 01:16:43 +0000 (UTC)
+	Fri, 24 May 2019 01:16:41 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
@@ -36,36 +37,43 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
 	23 May 2019 18:16:37 -0700
 X-ExtLoop1: 1
 Received: from unknown (HELO luv-build.sc.intel.com) ([172.25.110.25])
-	by fmsmga008.fm.intel.com with ESMTP; 23 May 2019 18:16:37 -0700
+	by fmsmga008.fm.intel.com with ESMTP; 23 May 2019 18:16:36 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>,
 	Borislav Petkov <bp@suse.de>
-Subject: [RFC PATCH v4 14/21] watchdog/hardlockup: Use parse_option_str() to
-	handle "nmi_watchdog"
-Date: Thu, 23 May 2019 18:16:16 -0700
-Message-Id: <1558660583-28561-15-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v4 12/21] watchdog/hardlockup/hpet: Adjust timer
+	expiration on the number of monitored CPUs
+Date: Thu, 23 May 2019 18:16:14 -0700
+Message-Id: <1558660583-28561-13-git-send-email-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Peter Zijlstra <peterz@infradead.org>, Jan Kiszka <jan.kiszka@siemens.com>,
-	Clemens Ladisch <clemens@ladisch.de>,
-	Ricardo Neri <ricardo.neri@intel.com>,
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Peter Zijlstra <peterz@infradead.org>, Alexei Starovoitov <ast@kernel.org>,
 	Stephane Eranian <eranian@google.com>,
-	Masahiro Yamada <yamada.masahiro@socionext.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Ashok Raj <ashok.raj@intel.com>, x86@kernel.org,
-	Andi Kleen <andi.kleen@intel.com>,
+	Kai-Heng Feng <kai.heng.feng@canonical.com>,
+	Davidlohr Bueso <dave@stgolabs.net>, Ashok Raj <ashok.raj@intel.com>,
+	Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
+	"Luis R. Rodriguez" <mcgrof@kernel.org>,
+	David Rientjes <rientjes@google.com>, Andi Kleen <andi.kleen@intel.com>,
+	Waiman Long <longman@redhat.com>,
+	"Paul E. McKenney" <paulmck@linux.vnet.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>, Don Zickus <dzickus@redhat.com>,
 	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Marc Zyngier <marc.zyngier@arm.com>,
 	Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-	Mimi Zohar <zohar@linux.ibm.com>, Tony Luck <tony.luck@intel.com>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Nicholas Piggin <npiggin@gmail.com>, Ricardo Neri <ricardo.neri@intel.com>,
+	Byungchul Park <byungchul.park@lge.com>, Babu Moger <Babu.Moger@amd.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Josh Poimboeuf <jpoimboe@redhat.com>, Tony Luck <tony.luck@intel.com>,
 	Randy Dunlap <rdunlap@infradead.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Jacob Pan <jacob.jun.pan@intel.com>,
 	Philippe Ombredanne <pombredanne@nexb.com>,
-	Nayna Jain <nayna@linux.ibm.com>
+	Colin Ian King <colin.king@canonical.com>,
+	Andrew Morton <akpm@linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -84,56 +92,163 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Prepare hardlockup_panic_setup() to handle a comma-separated list of
-options. This is needed to pass options to specific implementations of the
-hardlockup detector.
+Each CPU should be monitored for hardlockups every watchdog_thresh seconds.
+Since all the CPUs in the system are monitored by the same timer and the
+timer interrupt is rotated among the monitored CPUs, the timer must expire
+every watchdog_thresh/N seconds; where N is the number of monitored CPUs.
+Use the new member of struct hld_data, ticks_per_cpu, to store the
+aforementioned quantity.
 
-Cc: "H. Peter Anvin" <hpa@zytor.com>
+The ticks-per-CPU quantity is updated every time the number of monitored
+CPUs changes: when the watchdog is enabled or disabled for a specific CPU.
+If the timer is used in periodic mode, it needs to be adjusted to reflect
+the new expected expiration.
+
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
 Cc: Tony Luck <tony.luck@intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Clemens Ladisch <clemens@ladisch.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Jacob Pan <jacob.jun.pan@intel.com>
 Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Mimi Zohar <zohar@linux.ibm.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: Nayna Jain <nayna@linux.ibm.com>
+Cc: Don Zickus <dzickus@redhat.com>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Babu Moger <Babu.Moger@amd.com>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Colin Ian King <colin.king@canonical.com>
+Cc: Byungchul Park <byungchul.park@lge.com>
+Cc: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Cc: Waiman Long <longman@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: David Rientjes <rientjes@google.com>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: x86@kernel.org
+Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- kernel/watchdog.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/hpet.h         |  1 +
+ arch/x86/kernel/watchdog_hld_hpet.c | 46 +++++++++++++++++++++++++++--
+ 2 files changed, 44 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index be589001200a..fd50049449ec 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -70,13 +70,13 @@ void __init hardlockup_detector_disable(void)
+diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
+index 31fc27508cf3..64acacce095d 100644
+--- a/arch/x86/include/asm/hpet.h
++++ b/arch/x86/include/asm/hpet.h
+@@ -114,6 +114,7 @@ struct hpet_hld_data {
+ 	bool		has_periodic;
+ 	u32		num;
+ 	u64		ticks_per_second;
++	u64		ticks_per_cpu;
+ 	u32		handling_cpu;
+ 	u32		enabled_cpus;
+ 	struct msi_msg	msi_msg;
+diff --git a/arch/x86/kernel/watchdog_hld_hpet.c b/arch/x86/kernel/watchdog_hld_hpet.c
+index dff4dadabd4c..74aeb0535d08 100644
+--- a/arch/x86/kernel/watchdog_hld_hpet.c
++++ b/arch/x86/kernel/watchdog_hld_hpet.c
+@@ -45,6 +45,13 @@ static void kick_timer(struct hpet_hld_data *hdata, bool force)
+ 	 * are able to update the comparator before the counter reaches such new
+ 	 * value.
+ 	 *
++	 * Each CPU must be monitored every watch_thresh seconds. Since the
++	 * timer targets one CPU at a time, it must expire every
++	 *
++	 *        ticks_per_cpu = watch_thresh * ticks_per_second /enabled_cpus
++	 *
++	 * as computed in update_ticks_per_cpu().
++	 *
+ 	 * Let it wrap around if needed.
+ 	 */
  
- static int __init hardlockup_panic_setup(char *str)
- {
--	if (!strncmp(str, "panic", 5))
-+	if (parse_option_str(str, "panic"))
- 		hardlockup_panic = 1;
--	else if (!strncmp(str, "nopanic", 7))
-+	else if (parse_option_str(str, "nopanic"))
- 		hardlockup_panic = 0;
--	else if (!strncmp(str, "0", 1))
-+	else if (parse_option_str(str, "0"))
- 		nmi_watchdog_user_enabled = 0;
--	else if (!strncmp(str, "1", 1))
-+	else if (parse_option_str(str, "1"))
- 		nmi_watchdog_user_enabled = 1;
- 	return 1;
+@@ -52,10 +59,10 @@ static void kick_timer(struct hpet_hld_data *hdata, bool force)
+ 		return;
+ 
+ 	if (hdata->has_periodic)
+-		period = watchdog_thresh * hdata->ticks_per_second;
++		period = watchdog_thresh * hdata->ticks_per_cpu;
+ 
+ 	count = hpet_readl(HPET_COUNTER);
+-	new_compare = count + watchdog_thresh * hdata->ticks_per_second;
++	new_compare = count + watchdog_thresh * hdata->ticks_per_cpu;
+ 	hpet_set_comparator(hdata->num, (u32)new_compare, (u32)period);
  }
+ 
+@@ -234,6 +241,27 @@ static int setup_hpet_irq(struct hpet_hld_data *hdata)
+ 	return ret;
+ }
+ 
++/**
++ * update_ticks_per_cpu() - Update the number of HPET ticks per CPU
++ * @hdata:     struct with the timer's the ticks-per-second and CPU mask
++ *
++ * From the overall ticks-per-second of the timer, compute the number of ticks
++ * after which the timer should expire to monitor each CPU every watch_thresh
++ * seconds. The ticks-per-cpu quantity is computed using the number of CPUs that
++ * the watchdog currently monitors.
++ */
++static void update_ticks_per_cpu(struct hpet_hld_data *hdata)
++{
++	u64 temp = hdata->ticks_per_second;
++
++	/* Only update if there are monitored CPUs. */
++	if (!hdata->enabled_cpus)
++		return;
++
++	do_div(temp, hdata->enabled_cpus);
++	hdata->ticks_per_cpu = temp;
++}
++
+ /**
+  * hardlockup_detector_hpet_enable() - Enable the hardlockup detector
+  * @cpu:	CPU Index in which the watchdog will be enabled.
+@@ -246,13 +274,23 @@ void hardlockup_detector_hpet_enable(unsigned int cpu)
+ {
+ 	cpumask_set_cpu(cpu, to_cpumask(hld_data->cpu_monitored_mask));
+ 
+-	if (!hld_data->enabled_cpus++) {
++	hld_data->enabled_cpus++;
++	update_ticks_per_cpu(hld_data);
++
++	if (hld_data->enabled_cpus == 1) {
+ 		hld_data->handling_cpu = cpu;
+ 		update_msi_destid(hld_data);
+ 		/* Force timer kick when detector is just enabled */
+ 		kick_timer(hld_data, true);
+ 		enable_timer(hld_data);
+ 	}
++
++	/*
++	 * When in periodic mode, we only kick the timer here. Hence,
++	 * as there are now more CPUs to monitor, we need to adjust the
++	 * periodic expiration.
++	 */
++	kick_timer(hld_data, hld_data->has_periodic);
+ }
+ 
+ /**
+@@ -268,6 +306,8 @@ void hardlockup_detector_hpet_disable(unsigned int cpu)
+ 	cpumask_clear_cpu(cpu, to_cpumask(hld_data->cpu_monitored_mask));
+ 	hld_data->enabled_cpus--;
+ 
++	update_ticks_per_cpu(hld_data);
++
+ 	if (hld_data->handling_cpu != cpu)
+ 		return;
+ 
 -- 
 2.17.1
 
