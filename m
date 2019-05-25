@@ -1,55 +1,52 @@
-Return-Path: <SRS0=CTmu=TY=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=lyO4=TZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF64C282E1
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 23:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0276BC28CBF
+	for <iommu@archiver.kernel.org>; Sat, 25 May 2019 05:48:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BACF5217F9
-	for <iommu@archiver.kernel.org>; Fri, 24 May 2019 23:43:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BACF5217F9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id D18FD2133D
+	for <iommu@archiver.kernel.org>; Sat, 25 May 2019 05:48:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D18FD2133D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 34B33FF0;
-	Fri, 24 May 2019 23:43:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 882F7B88;
+	Sat, 25 May 2019 05:48:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A5256F7B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 449AD481
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 23:43:11 +0000 (UTC)
+	Sat, 25 May 2019 05:48:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C700E7FB
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A1AB7A9
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 24 May 2019 23:43:10 +0000 (UTC)
+	Sat, 25 May 2019 05:48:48 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	24 May 2019 16:43:10 -0700
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	24 May 2019 22:48:47 -0700
 X-ExtLoop1: 1
-Received: from sai-dev-mach.sc.intel.com ([143.183.140.153])
-	by orsmga001.jf.intel.com with ESMTP; 24 May 2019 16:43:10 -0700
-From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH V3 3/3] iommu/vt-d: Add debugfs support to show scalable mode
-	DMAR table internals
-Date: Fri, 24 May 2019 16:40:17 -0700
-Message-Id: <01defc6cb40203ec984a1368dceec799308a0ccc.1558735674.git.sai.praneeth.prakhya@intel.com>
-X-Mailer: git-send-email 2.19.1
-In-Reply-To: <cover.1558735674.git.sai.praneeth.prakhya@intel.com>
-References: <cover.1558735674.git.sai.praneeth.prakhya@intel.com>
-MIME-Version: 1.0
-Cc: Ashok Raj <ashok.raj@intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Received: from allen-box.sh.intel.com ([10.239.159.136])
+	by fmsmga006.fm.intel.com with ESMTP; 24 May 2019 22:48:44 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH v4 00/15] iommu/vt-d: Delegate DMA domain to generic iommu
+Date: Sat, 25 May 2019 13:41:21 +0800
+Message-Id: <20190525054136.27810-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, dima@arista.com,
+	tmurphy@arista.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,189 +59,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-A DMAR table walk would typically follow the below process.
-1. Bus number is used to index into root table which points to a context
-   table.
-2. Device number and Function number are used together to index into
-   context table which then points to a pasid directory.
-3. PASID[19:6] is used to index into PASID directory which points to a
-   PASID table.
-4. PASID[5:0] is used to index into PASID table which points to all levels
-   of page tables.
+Hi,
 
-Whenever a user opens the file
-"/sys/kernel/debug/iommu/intel/dmar_translation_struct", the above
-described DMAR table walk is performed and the contents of the table are
-dumped into the file. The dump could be handy while dealing with devices
-that use PASID.
+This patchset delegates the iommu DMA domain management to the
+generic iommu layer. It avoids the use of find_or_alloc_domain
+whose domain assignment is inconsistent with the iommu grouping
+as determined by pci_device_group.
 
-Example of such dump:
-cat /sys/kernel/debug/iommu/intel/dmar_translation_struct
+The major change is to permit domains of type IOMMU_DOMAIN_DMA
+and IOMMU_DOMAIN_IDENTITY to be allocated via the iommu_ops api.
+This allows the default_domain of an iommu group to be set in
+iommu.c. This domain will be attached to every device that is
+brought up with an iommu group, and the devices reserved regions
+will be mapped using regions returned by get_resv_regions.
 
-(Please note that because of 80 char limit, entries that should have been
-in the same line are broken into different lines)
+The default domain implementation defines a default domain type
+and a domain of the default domain type will be allocated and
+attached to devices which belong to a same group. Unfortunately,
+this doesn't work for some quirky devices which is known to only
+work with a specific domain type. PATCH 1/15 adds an iommu ops
+which allows the IOMMU driver to request a dma domain if the
+default identity domain doesn't match the device. Together with
+iommu_request_dm_for_dev(), we can handle the mismatching cases
+in a nice way.
 
-IOMMU dmar0: Root Table Address: 0x436f7c000
-B.D.F	Root_entry				Context_entry
-PASID	PASID_table_entry
-00:0a.0	0x0000000000000000:0x000000044dd3f001	0x0000000000100000:0x0000000435460e1d
-0	0x000000044d6e1089:0x0000000000000003:0x0000000000000001
-00:0a.0	0x0000000000000000:0x000000044dd3f001	0x0000000000100000:0x0000000435460e1d
-1	0x0000000000000049:0x0000000000000001:0x0000000003c0e001
+Other changes are limited within the Intel IOMMU driver. They
+mainly allow the driver to adapt to allocating domains, attaching
+domains, applying and direct mapping reserved memory regions,
+deferred domain attachment, and so on, via the iommu_ops api's.
 
-Note that the above format is followed even for legacy DMAR table dump
-which doesn't support PASID and hence in such cases PASID is defaulted to
--1 indicating that PASID and it's related fields are invalid.
+This patchset was initiated by James Sewart. The v1 and v2 were
+posted here [1] [2] for discussion. Lu Baolu took over the work
+for testing and bug fixing with permission from James Sewart.
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Sohil Mehta <sohil.mehta@intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
----
- drivers/iommu/intel-iommu-debugfs.c | 78 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 75 insertions(+), 3 deletions(-)
+This version of implementation depends on the patchset of "RMRR
+related fixes and enhancements". The latest version is under
+discussion at [3]. It allows the iommu_alloc_resv_region() to
+be called in a non preemptible section.
 
-diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
-index 3f5399b5e6c0..73a552914455 100644
---- a/drivers/iommu/intel-iommu-debugfs.c
-+++ b/drivers/iommu/intel-iommu-debugfs.c
-@@ -14,11 +14,15 @@
- 
- #include <asm/irq_remapping.h>
- 
-+#include "intel-pasid.h"
-+
- struct tbl_walk {
- 	u16 bus;
- 	u16 devfn;
-+	u32 pasid;
- 	struct root_entry *rt_entry;
- 	struct context_entry *ctx_entry;
-+	struct pasid_entry *pasid_tbl_entry;
- };
- 
- struct iommu_regset {
-@@ -142,21 +146,82 @@ static inline void print_tbl_walk(struct seq_file *m)
- {
- 	struct tbl_walk *tbl_wlk = m->private;
- 
--	seq_printf(m, "%02x:%02x.%x\t0x%016llx:0x%016llx\t0x%016llx:0x%016llx\n",
-+	seq_printf(m, "%02x:%02x.%x\t0x%016llx:0x%016llx\t0x%016llx:0x%016llx\t",
- 		   tbl_wlk->bus, PCI_SLOT(tbl_wlk->devfn),
- 		   PCI_FUNC(tbl_wlk->devfn), tbl_wlk->rt_entry->hi,
- 		   tbl_wlk->rt_entry->lo, tbl_wlk->ctx_entry->hi,
- 		   tbl_wlk->ctx_entry->lo);
-+
-+	/*
-+	 * A legacy mode DMAR doesn't support PASID, hence default it to -1
-+	 * indicating that it's invalid. Also, default all PASID related fields
-+	 * to 0.
-+	 */
-+	if (!tbl_wlk->pasid_tbl_entry)
-+		seq_printf(m, "%-6d\t0x%016llx:0x%016llx:0x%016llx\n", -1,
-+			   (u64)0, (u64)0, (u64)0);
-+	else
-+		seq_printf(m, "%-6d\t0x%016llx:0x%016llx:0x%016llx\n",
-+			   tbl_wlk->pasid, tbl_wlk->pasid_tbl_entry->val[0],
-+			   tbl_wlk->pasid_tbl_entry->val[1],
-+			   tbl_wlk->pasid_tbl_entry->val[2]);
-+}
-+
-+static void pasid_tbl_walk(struct seq_file *m, struct pasid_entry *tbl_entry,
-+			   u16 dir_idx)
-+{
-+	struct tbl_walk *tbl_wlk = m->private;
-+	u8 tbl_idx;
-+
-+	for (tbl_idx = 0; tbl_idx < PASID_TBL_ENTRIES; tbl_idx++) {
-+		if (pasid_pte_is_present(tbl_entry)) {
-+			tbl_wlk->pasid_tbl_entry = tbl_entry;
-+			tbl_wlk->pasid = (dir_idx << PASID_PDE_SHIFT) + tbl_idx;
-+			print_tbl_walk(m);
-+		}
-+
-+		tbl_entry++;
-+	}
-+}
-+
-+static void pasid_dir_walk(struct seq_file *m, u64 pasid_dir_ptr,
-+			   u16 pasid_dir_size)
-+{
-+	struct pasid_dir_entry *dir_entry = phys_to_virt(pasid_dir_ptr);
-+	struct pasid_entry *pasid_tbl;
-+	u16 dir_idx;
-+
-+	for (dir_idx = 0; dir_idx < pasid_dir_size; dir_idx++) {
-+		pasid_tbl = get_pasid_table_from_pde(dir_entry);
-+		if (pasid_tbl)
-+			pasid_tbl_walk(m, pasid_tbl, dir_idx);
-+
-+		dir_entry++;
-+	}
- }
- 
- static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
- {
- 	struct context_entry *context;
--	u16 devfn;
-+	u16 devfn, pasid_dir_size;
-+	u64 pasid_dir_ptr;
- 
- 	for (devfn = 0; devfn < 256; devfn++) {
- 		struct tbl_walk tbl_wlk = {0};
- 
-+		/*
-+		 * Scalable mode root entry points to upper scalable mode
-+		 * context table and lower scalable mode context table. Each
-+		 * scalable mode context table has 128 context entries where as
-+		 * legacy mode context table has 256 context entries. So in
-+		 * scalable mode, the context entries for former 128 devices are
-+		 * in the lower scalable mode context table, while the latter
-+		 * 128 devices are in the upper scalable mode context table.
-+		 * In scalable mode, when devfn > 127, iommu_context_addr()
-+		 * automatically refers to upper scalable mode context table and
-+		 * hence the caller doesn't have to worry about differences
-+		 * between scalable mode and non scalable mode.
-+		 */
- 		context = iommu_context_addr(iommu, bus, devfn, 0);
- 		if (!context)
- 			return;
-@@ -170,6 +235,13 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
- 		tbl_wlk.ctx_entry = context;
- 		m->private = &tbl_wlk;
- 
-+		if (pasid_supported(iommu) && is_pasid_enabled(context)) {
-+			pasid_dir_ptr = context->lo & VTD_PAGE_MASK;
-+			pasid_dir_size = get_pasid_dir_size(context);
-+			pasid_dir_walk(m, pasid_dir_ptr, pasid_dir_size);
-+			continue;
-+		}
-+
- 		print_tbl_walk(m);
- 	}
- }
-@@ -182,7 +254,7 @@ static void root_tbl_walk(struct seq_file *m, struct intel_iommu *iommu)
- 	spin_lock_irqsave(&iommu->lock, flags);
- 	seq_printf(m, "IOMMU %s: Root Table Address: 0x%llx\n", iommu->name,
- 		   (u64)virt_to_phys(iommu->root_entry));
--	seq_puts(m, "B.D.F\tRoot_entry\t\t\t\tContext_entry\n");
-+	seq_puts(m, "B.D.F\tRoot_entry\t\t\t\tContext_entry\t\t\t\tPASID\tPASID_table_entry\n");
- 
- 	/*
- 	 * No need to check if the root entry is present or not because
+Reference:
+[1] https://lkml.org/lkml/2019/3/4/644
+[2] https://lkml.org/lkml/2019/3/14/299
+[3] https://lkml.org/lkml/2019/5/16/237
+
+Best regards,
+Lu Baolu
+
+Change log:
+ v3->v4:
+  - Add code to probe the DMA-capable devices through ACPI
+    name space.
+  - Remove the callbacks for pci hot-plug devices in Intel
+    IOMMU driver.
+  - Remove the code to prepare static identity map during
+    boot.
+  - Add iommu_request_dma_domain_for_dev() to request dma
+    domain in case the default identity domain doesn't match
+    the device.
+
+ v2->v3:
+  - https://lkml.org/lkml/2019/4/28/284
+  - Add supported default domain type callback.
+  - Make the iommu map() callback work even the domain is not
+    attached.
+  - Add domain deferred attach when iommu is pre-enabled in
+    kdump kernel.
+
+ v1->v2:
+  - https://lkml.org/lkml/2019/3/14/299
+  - Refactored ISA direct mappings to be returned by
+    iommu_get_resv_regions.
+  - Integrated patch by Lu to defer turning on DMAR until iommu.c
+    has mapped reserved regions.
+  - Integrated patches by Lu to remove more unused code in cleanup.
+
+ v1:
+  -Original post https://lkml.org/lkml/2019/3/4/644
+
+James Sewart (1):
+  iommu/vt-d: Implement apply_resv_region iommu ops entry
+
+Lu Baolu (14):
+  iommu: Add API to request DMA domain for device
+  iommu/vt-d: Expose ISA direct mapping region via
+    iommu_get_resv_regions
+  iommu/vt-d: Enable DMA remapping after rmrr mapped
+  iommu/vt-d: Add device_def_domain_type() helper
+  iommu/vt-d: Delegate the identity domain to upper layer
+  iommu/vt-d: Delegate the dma domain to upper layer
+  iommu/vt-d: Identify default domains replaced with private
+  iommu/vt-d: Handle 32bit device with identity default domain
+  iommu/vt-d: Probe DMA-capable ACPI name space devices
+  iommu/vt-d: Implement is_attach_deferred iommu ops entry
+  iommu/vt-d: Cleanup get_valid_domain_for_dev()
+  iommu/vt-d: Remove startup parameter from device_def_domain_type()
+  iommu/vt-d: Remove duplicated code for device hotplug
+  iommu/vt-d: Remove static identity map code
+
+ drivers/iommu/intel-iommu.c | 608 +++++++++++++++++-------------------
+ drivers/iommu/iommu.c       |  36 ++-
+ include/linux/intel-iommu.h |   1 -
+ include/linux/iommu.h       |   6 +
+ 4 files changed, 324 insertions(+), 327 deletions(-)
+
 -- 
-2.7.4
+2.17.1
 
 _______________________________________________
 iommu mailing list
