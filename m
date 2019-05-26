@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F739C282E3
-	for <iommu@archiver.kernel.org>; Sun, 26 May 2019 16:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D19BBC28CBF
+	for <iommu@archiver.kernel.org>; Sun, 26 May 2019 16:12:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F70C20657
-	for <iommu@archiver.kernel.org>; Sun, 26 May 2019 16:12:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F70C20657
+	by mail.kernel.org (Postfix) with ESMTPS id B4D982075C
+	for <iommu@archiver.kernel.org>; Sun, 26 May 2019 16:12:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4D982075C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 858B713E9;
-	Sun, 26 May 2019 16:12:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B943B13F0;
+	Sun, 26 May 2019 16:12:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4B75713E8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 924DF13EE
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 26 May 2019 16:12:00 +0000 (UTC)
+	Sun, 26 May 2019 16:12:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EE7376C5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 434EE6C5
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 26 May 2019 16:11:59 +0000 (UTC)
+	Sun, 26 May 2019 16:12:04 +0000 (UTC)
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
 	[10.5.11.14])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 6D6C33082AED;
-	Sun, 26 May 2019 16:11:59 +0000 (UTC)
+	by mx1.redhat.com (Postfix) with ESMTPS id A43633058839;
+	Sun, 26 May 2019 16:12:03 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-116-67.ams2.redhat.com [10.36.116.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 309244FA39;
-	Sun, 26 May 2019 16:11:51 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id C1D55179F7;
+	Sun, 26 May 2019 16:11:59 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
 	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
@@ -45,17 +45,17 @@ To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
 	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
 	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com,
 	robin.murphy@arm.com
-Subject: [PATCH v8 18/29] iommu/smmuv3: Nested mode single MSI doorbell per
-	domain enforcement
-Date: Sun, 26 May 2019 18:09:53 +0200
-Message-Id: <20190526161004.25232-19-eric.auger@redhat.com>
+Subject: [PATCH v8 19/29] iommu/smmuv3: Enforce incompatibility between nested
+	mode and HW MSI regions
+Date: Sun, 26 May 2019 18:09:54 +0200
+Message-Id: <20190526161004.25232-20-eric.auger@redhat.com>
 In-Reply-To: <20190526161004.25232-1-eric.auger@redhat.com>
 References: <20190526161004.25232-1-eric.auger@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.45]);
-	Sun, 26 May 2019 16:11:59 +0000 (UTC)
+	(mx1.redhat.com [10.5.110.41]);
+	Sun, 26 May 2019 16:12:03 +0000 (UTC)
 Cc: marc.zyngier@arm.com, peter.maydell@linaro.org, kevin.tian@intel.com,
 	vincent.stehle@arm.com, ashok.raj@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -75,78 +75,59 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-In nested mode we enforce the rule that all devices belonging
-to the same iommu_domain share the same msi_domain.
+Nested mode currently is not compatible with HW MSI reserved regions.
+Indeed MSI transactions targeting this MSI doorbells bypass the SMMU.
 
-Indeed if there were several physical MSI doorbells being used
-within a single iommu_domain, it becomes really difficult to
-resolve the nested stage mapping translating into the correct
-physical doorbell. So let's forbid this situation.
+Let's check nested mode is not attempted in such configuration.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 41 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index b4813f23f302..31d8028bb997 100644
+index 31d8028bb997..2621c3b7cf73 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2048,6 +2048,37 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
- 	arm_smmu_disable_ats(master);
+@@ -2079,6 +2079,23 @@ static bool arm_smmu_share_msi_domain(struct iommu_domain *domain,
+ 	return share;
  }
  
-+static bool arm_smmu_share_msi_domain(struct iommu_domain *domain,
-+				      struct device *dev)
++static bool arm_smmu_has_hw_msi_resv_region(struct device *dev)
 +{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct irq_domain *irqd = dev_get_msi_domain(dev);
-+	struct arm_smmu_master *master;
-+	unsigned long flags;
-+	bool share = false;
++	struct iommu_resv_region *region;
++	bool has_msi_resv_region = false;
++	LIST_HEAD(resv_regions);
 +
-+	if (!irqd)
-+		return true;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-+		struct irq_domain *d = dev_get_msi_domain(master->dev);
-+
-+		if (!d)
-+			continue;
-+		if (irqd != d) {
-+			dev_info(dev, "Nested mode forbids to attach devices "
-+				 "using different physical MSI doorbells "
-+				 "to the same iommu_domain");
-+			goto unlock;
++	iommu_get_resv_regions(dev, &resv_regions);
++	list_for_each_entry(region, &resv_regions, list) {
++		if (region->type == IOMMU_RESV_MSI) {
++			has_msi_resv_region = true;
++			break;
 +		}
 +	}
-+	share = true;
-+unlock:
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+	return share;
++	iommu_put_resv_regions(dev, &resv_regions);
++	return has_msi_resv_region;
 +}
 +
  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  {
  	int ret = 0;
-@@ -2082,6 +2113,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		ret = -ENXIO;
+@@ -2116,10 +2133,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	/*
+ 	 * In nested mode we must check all devices belonging to the
+ 	 * domain share the same physical MSI doorbell. Otherwise nested
+-	 * stage MSI binding is not supported.
++	 * stage MSI binding is not supported. Also nested mode is not
++	 * compatible with MSI HW reserved regions.
+ 	 */
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED &&
+-		!arm_smmu_share_msi_domain(domain, dev)) {
++		(!arm_smmu_share_msi_domain(domain, dev) ||
++		 arm_smmu_has_hw_msi_resv_region(dev))) {
+ 		ret = -EINVAL;
  		goto out_unlock;
  	}
-+	/*
-+	 * In nested mode we must check all devices belonging to the
-+	 * domain share the same physical MSI doorbell. Otherwise nested
-+	 * stage MSI binding is not supported.
-+	 */
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED &&
-+		!arm_smmu_share_msi_domain(domain, dev)) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
- 
- 	master->domain = smmu_domain;
- 
 -- 
 2.20.1
 
