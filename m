@@ -6,43 +6,43 @@ X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F4FC07542
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 09:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2777C04AB3
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 10:03:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD65A21734
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 09:55:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD65A21734
+	by mail.kernel.org (Postfix) with ESMTPS id 79768208CA
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 10:03:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79768208CA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A5A3C170A;
-	Mon, 27 May 2019 09:55:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 35F121774;
+	Mon, 27 May 2019 10:03:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 527061707
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4738E176C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 09:55:40 +0000 (UTC)
+	Mon, 27 May 2019 10:03:31 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D8F41A9
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B3A22821
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 09:55:39 +0000 (UTC)
+	Mon, 27 May 2019 10:03:30 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 311DE272; Mon, 27 May 2019 11:55:38 +0200 (CEST)
-Date: Mon, 27 May 2019 11:55:36 +0200
+	id B37C72E2; Mon, 27 May 2019 12:03:28 +0200 (CEST)
+Date: Mon, 27 May 2019 12:03:27 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix bind svm with multiple devices
-Message-ID: <20190527095536.GA8420@8bytes.org>
-References: <1557343366-18686-1-git-send-email-jacob.jun.pan@linux.intel.com>
+To: Colin King <colin.king@canonical.com>
+Subject: Re: [PATCH] iommu/amd: remove redundant assignment to variable npages
+Message-ID: <20190527100327.GC8420@8bytes.org>
+References: <20190511124135.3635-1-colin.king@canonical.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1557343366-18686-1-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20190511124135.3635-1-colin.king@canonical.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>,
-	LKML <linux-kernel@vger.kernel.org>, Raj Ashok <ashok.raj@intel.com>
+Cc: iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,19 +60,20 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, May 08, 2019 at 12:22:46PM -0700, Jacob Pan wrote:
-> If multiple devices try to bind to the same mm/PASID, we need to
-> set up first level PASID entries for all the devices. The current
-> code does not consider this case which results in failed DMA for
-> devices after the first bind.
+On Sat, May 11, 2019 at 01:41:35PM +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Reported-by: Mike Campin <mike.campin@intel.com>
+> The variable npages is being initialized however this is never read and
+> later it is being reassigned to a new value. The initialization is
+> redundant and hence can be removed.
+> 
+> Addresses-Coverity: ("Unused Value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > ---
->  drivers/iommu/intel-svm.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+>  drivers/iommu/amd_iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied for v5.3, thanks.
+Applied, thanks.
 
 _______________________________________________
 iommu mailing list
