@@ -2,59 +2,54 @@ Return-Path: <SRS0=w+D4=T3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81FCBC07542
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 08:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C97C07542
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 09:26:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5D6BA21721
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 08:57:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D6BA21721
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A099B2173B
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 09:26:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A099B2173B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A75CE1647;
-	Mon, 27 May 2019 08:57:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5FC3E16C6;
+	Mon, 27 May 2019 09:26:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 12C8C1632
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 08:56:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2A43187C
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 08:56:49 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
-	[10.5.11.14])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 96568BCD24;
-	Mon, 27 May 2019 08:56:48 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-67.ams2.redhat.com [10.36.116.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 6D6AE5D978;
-	Mon, 27 May 2019 08:56:44 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	dwmw2@infradead.org, lorenzo.pieralisi@arm.com, robin.murphy@arm.com,
-	will.deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com
-Subject: [PATCH v4 8/8] iommu/vt-d: Differentiate relaxable and non relaxable
-	RMRRs
-Date: Mon, 27 May 2019 10:55:41 +0200
-Message-Id: <20190527085541.5294-9-eric.auger@redhat.com>
-In-Reply-To: <20190527085541.5294-1-eric.auger@redhat.com>
-References: <20190527085541.5294-1-eric.auger@redhat.com>
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 53C8316BD;
+	Mon, 27 May 2019 09:26:09 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5FB5F13A;
+	Mon, 27 May 2019 09:26:07 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id BF9BB26B; Mon, 27 May 2019 11:26:04 +0200 (CEST)
+Date: Mon, 27 May 2019 11:26:04 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
+Message-ID: <20190527092604.GB21613@8bytes.org>
+References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
+	<20190512123022-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.38]);
-	Mon, 27 May 2019 08:56:48 +0000 (UTC)
-Cc: alex.williamson@redhat.com
+Content-Disposition: inline
+In-Reply-To: <20190512123022-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: mark.rutland@arm.com, virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
+	tnowicki@caviumnetworks.com, devicetree@vger.kernel.org,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	linux-pci@vger.kernel.org, jasowang@redhat.com,
+	will.deacon@arm.com, robin.murphy@arm.com,
+	virtualization@lists.linux-foundation.org,
+	iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+	marc.zyngier@arm.com, bhelgaas@google.com,
+	frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,124 +67,20 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Now we have a new IOMMU_RESV_DIRECT_RELAXABLE reserved memory
-region type, let's report USB and GFX RMRRs as relaxable ones.
+On Sun, May 12, 2019 at 12:31:59PM -0400, Michael S. Tsirkin wrote:
+> OK this has been in next for a while.
+> 
+> Last time IOMMU maintainers objected. Are objections
+> still in force?
+> 
+> If not could we get acks please?
 
-We introduce a new device_rmrr_is_relaxable() helper to check
-whether the rmrr belongs to the relaxable category.
+No objections against the code, I only hesitated because the Spec was
+not yet official.
 
-This allows to have a finer reporting at IOMMU API level of
-reserved memory regions. This will be exploitable by VFIO to
-define the usable IOVA range and detect potential conflicts
-between the guest physical address space and host reserved
-regions.
+So for the code:
 
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
-
----
-
-v3 -> v4:
-- introduce device_rmrr_is_relaxable and reshuffle the comments
----
- drivers/iommu/intel-iommu.c | 55 +++++++++++++++++++++++++++----------
- 1 file changed, 40 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a36604f4900f..ed24a11accb8 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2920,6 +2920,36 @@ static bool device_has_rmrr(struct device *dev)
- 	return false;
- }
- 
-+/*
-+ * device_rmrr_is_relaxable - Test whether the RMRR of this device
-+ * is relaxable (ie. is allowed to be not enforced under some conditions)
-+ *
-+ * @dev: device handle
-+ *
-+ * We assume that PCI USB devices with RMRRs have them largely
-+ * for historical reasons and that the RMRR space is not actively used post
-+ * boot.  This exclusion may change if vendors begin to abuse it.
-+ *
-+ * The same exception is made for graphics devices, with the requirement that
-+ * any use of the RMRR regions will be torn down before assigning the device
-+ * to a guest.
-+ *
-+ * Return: true if the RMRR is relaxable
-+ */
-+static bool device_rmrr_is_relaxable(struct device *dev)
-+{
-+	struct pci_dev *pdev;
-+
-+	if (!dev_is_pci(dev))
-+		return false;
-+
-+	pdev = to_pci_dev(dev);
-+	if (IS_USB_DEVICE(pdev) || IS_GFX_DEVICE(pdev))
-+		return true;
-+	else
-+		return false;
-+}
-+
- /*
-  * There are a couple cases where we need to restrict the functionality of
-  * devices associated with RMRRs.  The first is when evaluating a device for
-@@ -2934,25 +2964,16 @@ static bool device_has_rmrr(struct device *dev)
-  * We therefore prevent devices associated with an RMRR from participating in
-  * the IOMMU API, which eliminates them from device assignment.
-  *
-- * In both cases we assume that PCI USB devices with RMRRs have them largely
-- * for historical reasons and that the RMRR space is not actively used post
-- * boot.  This exclusion may change if vendors begin to abuse it.
-- *
-- * The same exception is made for graphics devices, with the requirement that
-- * any use of the RMRR regions will be torn down before assigning the device
-- * to a guest.
-+ * In both cases, devices which have relaxable RMRRs are not concerned by this
-+ * restriction. See device_rmrr_is_relaxable comment.
-  */
- static bool device_is_rmrr_locked(struct device *dev)
- {
- 	if (!device_has_rmrr(dev))
- 		return false;
- 
--	if (dev_is_pci(dev)) {
--		struct pci_dev *pdev = to_pci_dev(dev);
--
--		if (IS_USB_DEVICE(pdev) || IS_GFX_DEVICE(pdev))
--			return false;
--	}
-+	if (device_rmrr_is_relaxable(dev))
-+		return false;
- 
- 	return true;
- }
-@@ -5494,6 +5515,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
- 					  i, i_dev) {
- 			struct iommu_resv_region *resv;
-+			enum iommu_resv_type type;
- 			size_t length;
- 
- 			if (i_dev != device &&
-@@ -5501,9 +5523,12 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 				continue;
- 
- 			length = rmrr->end_address - rmrr->base_address + 1;
-+
-+			type = device_rmrr_is_relaxable(device) ?
-+				IOMMU_RESV_DIRECT_RELAXABLE : IOMMU_RESV_DIRECT;
-+
- 			resv = iommu_alloc_resv_region(rmrr->base_address,
--						       length, prot,
--						       IOMMU_RESV_DIRECT,
-+						       length, prot, type,
- 						       GFP_ATOMIC);
- 			if (!resv)
- 				break;
--- 
-2.20.1
+	Acked-by: Joerg Roedel <jroedel@suse.de>
 
 _______________________________________________
 iommu mailing list
