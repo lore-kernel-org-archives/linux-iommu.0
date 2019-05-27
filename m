@@ -2,48 +2,48 @@ Return-Path: <SRS0=w+D4=T3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A07AC04AB3
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 11:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8271C07542
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 11:53:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5C07A20883
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 11:53:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C07A20883
+	by mail.kernel.org (Postfix) with ESMTPS id C9FAB21721
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 11:53:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9FAB21721
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 183561838;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 640EB183B;
 	Mon, 27 May 2019 11:53:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F334E1823
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 143AD1824
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 27 May 2019 11:53:02 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [195.130.137.89])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4C23D83A
 	for <iommu@lists.linux-foundation.org>;
 	Mon, 27 May 2019 11:53:01 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [195.130.137.90])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0AEABA9
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 11:53:00 +0000 (UTC)
-Received: from ramsan ([84.194.111.163]) by albert.telenet-ops.be with bizsmtp
-	id HPsy2000G3XaVaC06PsyAT; Mon, 27 May 2019 13:52:59 +0200
+Received: from ramsan ([84.194.111.163]) by laurent.telenet-ops.be with bizsmtp
+	id HPsy2000X3XaVaC01PsyfY; Mon, 27 May 2019 13:52:59 +0200
 Received: from rox.of.borg ([192.168.97.57]) by ramsan with esmtp (Exim 4.90_1)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1hVEBW-0001O2-DG; Mon, 27 May 2019 13:52:58 +0200
+	id 1hVEBW-0001OH-Il; Mon, 27 May 2019 13:52:58 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1hVEBW-0000ao-BN; Mon, 27 May 2019 13:52:58 +0200
+	id 1hVEBW-0000bB-HV; Mon, 27 May 2019 13:52:58 +0200
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Joerg Roedel <joro@8bytes.org>,
 	Magnus Damm <damm+renesas@opensource.se>
-Subject: [PATCH v4 1/6] iommu/ipmmu-vmsa: Link IOMMUs and devices in sysfs
-Date: Mon, 27 May 2019 13:52:48 +0200
-Message-Id: <20190527115253.2114-2-geert+renesas@glider.be>
+Subject: [PATCH v4 6/6] iommu/ipmmu-vmsa: Add suspend/resume support
+Date: Mon, 27 May 2019 13:52:53 +0200
+Message-Id: <20190527115253.2114-7-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190527115253.2114-1-geert+renesas@glider.be>
 References: <20190527115253.2114-1-geert+renesas@glider.be>
@@ -68,79 +68,129 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-As of commit 7af9a5fdb9e0ca33 ("iommu/ipmmu-vmsa: Use
-iommu_device_sysfs_add()/remove()"), IOMMU devices show up under
-/sys/class/iommu/, but their "devices" subdirectories are empty.
-Likewise, devices tied to an IOMMU do not have an "iommu" backlink.
+During PSCI system suspend, R-Car Gen3 SoCs are powered down, and all
+IPMMU state is lost.  Hence after s2ram, devices wired behind an IPMMU,
+and configured to use it, will see their DMA operations hang.
 
-Make sure all links are created, on both arm32 and arm64.
+To fix this, restore all IPMMU contexts, and re-enable all active
+micro-TLBs during system resume.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
+This patch takes a different approach than the BSP, which implements a
+bulk save/restore of all registers during system suspend/resume.
+
 v4:
   - Add Reviewed-by, Tested-by,
 
 v3:
-  - Fix sysfs path typo in patch description,
+  - No changes,
 
 v2:
-  - Add Reviewed-by.
+  - Drop PSCI checks.
 ---
- drivers/iommu/ipmmu-vmsa.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 47 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9a380c10655e182d..9f2b781e20a0eba6 100644
+index 56e84bcc9532e1ce..408ad0b2591925e0 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -885,27 +885,37 @@ static int ipmmu_init_arm_mapping(struct device *dev)
+@@ -36,7 +36,10 @@
+ #define arm_iommu_detach_device(...)	do {} while (0)
+ #endif
  
- static int ipmmu_add_device(struct device *dev)
- {
-+	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+-#define IPMMU_CTX_MAX 8U
++#define IPMMU_CTX_MAX		8U
++#define IPMMU_CTX_INVALID	-1
++
++#define IPMMU_UTLB_MAX		48U
+ 
+ struct ipmmu_features {
+ 	bool use_ns_alias_offset;
+@@ -58,6 +61,7 @@ struct ipmmu_vmsa_device {
+ 	spinlock_t lock;			/* Protects ctx and domains[] */
+ 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+ 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
++	s8 utlb_ctx[IPMMU_UTLB_MAX];
+ 
  	struct iommu_group *group;
-+	int ret;
+ 	struct dma_iommu_mapping *mapping;
+@@ -335,6 +339,7 @@ static void ipmmu_utlb_enable(struct ipmmu_vmsa_domain *domain,
+ 	ipmmu_write(mmu, IMUCTR(utlb),
+ 		    IMUCTR_TTSEL_MMU(domain->context_id) | IMUCTR_FLUSH |
+ 		    IMUCTR_MMUEN);
++	mmu->utlb_ctx[utlb] = domain->context_id;
+ }
  
- 	/*
- 	 * Only let through devices that have been verified in xlate()
- 	 */
--	if (!to_ipmmu(dev))
-+	if (!mmu)
- 		return -ENODEV;
+ /*
+@@ -346,6 +351,7 @@ static void ipmmu_utlb_disable(struct ipmmu_vmsa_domain *domain,
+ 	struct ipmmu_vmsa_device *mmu = domain->mmu;
  
--	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA))
--		return ipmmu_init_arm_mapping(dev);
-+	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA)) {
-+		ret = ipmmu_init_arm_mapping(dev);
-+		if (ret)
-+			return ret;
-+	} else {
-+		group = iommu_group_get_for_dev(dev);
-+		if (IS_ERR(group))
-+			return PTR_ERR(group);
+ 	ipmmu_write(mmu, IMUCTR(utlb), 0);
++	mmu->utlb_ctx[utlb] = IPMMU_CTX_INVALID;
+ }
  
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group))
--		return PTR_ERR(group);
-+		iommu_group_put(group);
-+	}
+ static void ipmmu_tlb_flush_all(void *cookie)
+@@ -1043,6 +1049,7 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	spin_lock_init(&mmu->lock);
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 	mmu->features = of_device_get_match_data(&pdev->dev);
++	memset(mmu->utlb_ctx, IPMMU_CTX_INVALID, mmu->features->num_utlbs);
+ 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
  
--	iommu_group_put(group);
-+	iommu_device_link(&mmu->iommu, dev);
+ 	/* Map I/O memory and request IRQ. */
+@@ -1158,10 +1165,48 @@ static int ipmmu_remove(struct platform_device *pdev)
  	return 0;
  }
  
- static void ipmmu_remove_device(struct device *dev)
- {
-+	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
++#ifdef CONFIG_PM_SLEEP
++static int ipmmu_resume_noirq(struct device *dev)
++{
++	struct ipmmu_vmsa_device *mmu = dev_get_drvdata(dev);
++	unsigned int i;
 +
-+	iommu_device_unlink(&mmu->iommu, dev);
- 	arm_iommu_detach_device(dev);
- 	iommu_group_remove_device(dev);
- }
++	/* Reset root MMU and restore contexts */
++	if (ipmmu_is_root(mmu)) {
++		ipmmu_device_reset(mmu);
++
++		for (i = 0; i < mmu->num_ctx; i++) {
++			if (!mmu->domains[i])
++				continue;
++
++			ipmmu_domain_setup_context(mmu->domains[i]);
++		}
++	}
++
++	/* Re-enable active micro-TLBs */
++	for (i = 0; i < mmu->features->num_utlbs; i++) {
++		if (mmu->utlb_ctx[i] == IPMMU_CTX_INVALID)
++			continue;
++
++		ipmmu_utlb_enable(mmu->root->domains[mmu->utlb_ctx[i]], i);
++	}
++
++	return 0;
++}
++
++static const struct dev_pm_ops ipmmu_pm  = {
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(NULL, ipmmu_resume_noirq)
++};
++#define DEV_PM_OPS	&ipmmu_pm
++#else
++#define DEV_PM_OPS	NULL
++#endif /* CONFIG_PM_SLEEP */
++
+ static struct platform_driver ipmmu_driver = {
+ 	.driver = {
+ 		.name = "ipmmu-vmsa",
+ 		.of_match_table = of_match_ptr(ipmmu_of_ids),
++		.pm = DEV_PM_OPS,
+ 	},
+ 	.probe = ipmmu_probe,
+ 	.remove	= ipmmu_remove,
 -- 
 2.17.1
 
