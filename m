@@ -6,43 +6,43 @@ X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD57C04AB3
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 13:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146B7C04AB3
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 14:05:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8E30B20859
-	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 13:51:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E30B20859
+	by mail.kernel.org (Postfix) with ESMTPS id E203F205ED
+	for <iommu@archiver.kernel.org>; Mon, 27 May 2019 14:05:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E203F205ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4E8D21918;
-	Mon, 27 May 2019 13:51:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A52F31836;
+	Mon, 27 May 2019 14:05:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E4701190D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A06D81834
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 13:50:46 +0000 (UTC)
+	Mon, 27 May 2019 14:05:21 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 03E6413A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3A69213A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 27 May 2019 13:50:44 +0000 (UTC)
+	Mon, 27 May 2019 14:05:21 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 046B22F9; Mon, 27 May 2019 15:50:42 +0200 (CEST)
-Date: Mon, 27 May 2019 15:50:41 +0200
+	id 6FB302E2; Mon, 27 May 2019 16:05:19 +0200 (CEST)
+Date: Mon, 27 May 2019 16:05:15 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Kevin Mitchell <kevmitch@arista.com>
-Subject: Re: [PATCH 1/3] iommu/amd: make iommu_disable safer
-Message-ID: <20190527135041.GD8420@8bytes.org>
-References: <20190517005242.20257-1-kevmitch@arista.com>
-	<20190517005242.20257-2-kevmitch@arista.com>
+To: Lukasz Odzioba <lukasz.odzioba@intel.com>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Remove unnecessary rcu_read_locks
+Message-ID: <20190527140514.GE8420@8bytes.org>
+References: <1558359688-21804-1-git-send-email-lukasz.odzioba@intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190517005242.20257-2-kevmitch@arista.com>
+In-Reply-To: <1558359688-21804-1-git-send-email-lukasz.odzioba@intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,17 +60,22 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Kevin,
+On Mon, May 20, 2019 at 03:41:28PM +0200, Lukasz Odzioba wrote:
+> We use RCU's for rarely updated lists like iommus, rmrr, atsr units.
+> 
+> I'm not sure why domain_remove_dev_info() in domain_exit() was surrounded
+> by rcu_read_lock. Lock was present before refactoring in d160aca527,
+> but it was related to rcu list, not domain_remove_dev_info function.
+> 
+> dmar_remove_one_dev_info() doesn't touch any of those lists, so it doesn't
+> require a lock. In fact it is called 6 times without it anyway.
+> 
+> Fixes: d160aca5276d ("iommu/vt-d: Unify domain->iommu attach/detachment")
+> 
+> Signed-off-by: Lukasz Odzioba <lukasz.odzioba@intel.com>
 
-On Thu, May 16, 2019 at 05:52:40PM -0700, Kevin Mitchell wrote:
-> Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+Applied, thanks.
 
-somehow I didn't receive the cover letter and patch 3 of this set, can
-you please re-send so I have it all for review?
-
-Regards,
-
-	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
