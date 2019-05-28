@@ -2,65 +2,68 @@ Return-Path: <SRS0=b5RZ=T4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF4CC04AB6
-	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 06:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF24DC04AB6
+	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 09:19:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 225AD208C3
-	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 06:25:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="W83n7DMZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 225AD208C3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 8B0B9208C3
+	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 09:19:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B0B9208C3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D31021B5D;
-	Tue, 28 May 2019 06:25:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7AA8C1BCC;
+	Tue, 28 May 2019 09:19:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 19F731B5C
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 28 May 2019 06:24:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 732D4D0
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 28 May 2019 06:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=5UTOpPtcHs8+TYR7e/ooqgilSmaZoeoYd8YGidb41CI=;
-	b=W83n7DMZ/HGGBGO+mk/+j3B3p
-	c8qY0eY5onPoT1cK3izLxsjR2tjr0tG/nubI6iqXj6OsnyJREEYxuAMptdP3w04TJERClZgrDhRPk
-	aaH2293n3rxbv3XGVLHVO60LpGvgqN0hrPbSGWcIgrdta6TNMv1pYHbu1pmus2+3l6Cq5NMoELA3p
-	9/Rp250G0Mgxyu3+808hMdlSWxr49AIaxcRnzxLhgs+STFBEmJSnKMt95xe/mgVJ8DWq1sTJE2YDT
-	PmE32egvDL0lB15S7L4n5aN+UbzGG7bML3j5Hm6OcQVvXnBFbuie1R4G95vIDP9INIuophTFPp+d1
-	JVQfLsjHQ==;
-Received: from 213-225-10-46.nat.highway.a1.net ([213.225.10.46]
-	helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-	id 1hVVWz-0005Z7-QX; Tue, 28 May 2019 06:24:18 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: linux@armlinux.org.uk
-Subject: [PATCH, resend] ARM: dma-mapping: don't use the atomic pool for
-	DMA_ATTR_NO_KERNEL_MAPPING
-Date: Tue, 28 May 2019 08:24:14 +0200
-Message-Id: <20190528062414.30287-1-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E31C31B5C;
+	Tue, 28 May 2019 09:18:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 90492EC;
+	Tue, 28 May 2019 09:18:52 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3E8B3341;
+	Tue, 28 May 2019 02:18:52 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5B0993F59C;
+	Tue, 28 May 2019 02:18:48 -0700 (PDT)
+Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
+To: "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>
+References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
+	<20190512123022-mutt-send-email-mst@kernel.org>
+	<20190527092604.GB21613@8bytes.org>
+	<20190527111345-mutt-send-email-mst@kernel.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <99ff5494-bfdf-f4ef-b2d2-c177add385c6@arm.com>
+Date: Tue, 28 May 2019 10:18:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190527111345-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+Cc: Mark Rutland <Mark.Rutland@arm.com>,
+	"virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Marc Zyngier <Marc.Zyngier@arm.com>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>,
+	"virtualization@lists.linux-foundation.org"
+	<virtualization@lists.linux-foundation.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"robh+dt@kernel.org" <robh+dt@kernel.org>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"frowand.list@gmail.com" <frowand.list@gmail.com>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,66 +81,34 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-DMA allocations with the DMA_ATTR_NO_KERNEL_MAPPING do not return a kernel
-virtual address for use in driver, but are expected to be used entirely
-for userspace mappings and/or device private memory.
+On 27/05/2019 16:15, Michael S. Tsirkin wrote:
+> On Mon, May 27, 2019 at 11:26:04AM +0200, Joerg Roedel wrote:
+>> On Sun, May 12, 2019 at 12:31:59PM -0400, Michael S. Tsirkin wrote:
+>>> OK this has been in next for a while.
+>>>
+>>> Last time IOMMU maintainers objected. Are objections
+>>> still in force?
+>>>
+>>> If not could we get acks please?
+>>
+>> No objections against the code, I only hesitated because the Spec was
+>> not yet official.
+>>
+>> So for the code:
+>>
+>> 	Acked-by: Joerg Roedel <jroedel@suse.de>
+> 
+> Last spec patch had a bunch of comments not yet addressed.
+> But I do not remember whether comments are just about wording
+> or about the host/guest interface as well.
+> Jean-Philippe could you remind me please?
 
-Because of that we don't need to remap them as uncached, and thus don't need
-the atomic pool for non-blocking allocations.  Note that using the
-DMA allocator with DMA_ATTR_NO_KERNEL_MAPPING from non-blocking context
-on a non-coherent device is actually broken without this patch as well, as
-we feed the address passes to dma_free_attrs directly to the genpool
-allocator, but for DMA_ATTR_NO_KERNEL_MAPPING allocations it actually
-contains the address of the first page pointer.
+It's mostly wording, but there is a small change in the config space
+layout and two new feature bits. I'll send a new version of the driver
+when possible.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm/mm/dma-mapping.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 0a75058c11f3..30e891f54d36 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -724,6 +724,7 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
- 			 gfp_t gfp, pgprot_t prot, bool is_coherent,
- 			 unsigned long attrs, const void *caller)
- {
-+	bool want_vaddr = !(attrs & DMA_ATTR_NO_KERNEL_MAPPING);
- 	u64 mask = get_coherent_dma_mask(dev);
- 	struct page *page = NULL;
- 	void *addr;
-@@ -735,7 +736,7 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
- 		.gfp = gfp,
- 		.prot = prot,
- 		.caller = caller,
--		.want_vaddr = ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) == 0),
-+		.want_vaddr = want_vaddr,
- 		.coherent_flag = is_coherent ? COHERENT : NORMAL,
- 	};
- 
-@@ -773,14 +774,14 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
- 	allowblock = gfpflags_allow_blocking(gfp);
- 	cma = allowblock ? dev_get_cma_area(dev) : false;
- 
--	if (cma)
-+	if (!allowblock && !is_coherent && want_vaddr)
-+		buf->allocator = &pool_allocator;
-+	else if (cma)
- 		buf->allocator = &cma_allocator;
- 	else if (is_coherent)
- 		buf->allocator = &simple_allocator;
--	else if (allowblock)
--		buf->allocator = &remap_allocator;
- 	else
--		buf->allocator = &pool_allocator;
-+		buf->allocator = &remap_allocator;
- 
- 	addr = buf->allocator->alloc(&args, &page);
- 
--- 
-2.20.1
-
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
