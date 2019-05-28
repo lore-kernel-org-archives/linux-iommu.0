@@ -4,54 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590A4C04AB6
-	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 11:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A70C04AB6
+	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 11:52:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3663C2075B
-	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 11:52:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3663C2075B
+	by mail.kernel.org (Postfix) with ESMTPS id B57DD2075B
+	for <iommu@archiver.kernel.org>; Tue, 28 May 2019 11:52:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B57DD2075B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 191891C42;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4CD681C49;
 	Tue, 28 May 2019 11:52:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7707B1BAD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9DC901BAD
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 28 May 2019 11:51:03 +0000 (UTC)
+	Tue, 28 May 2019 11:51:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 326A981A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2243181A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 28 May 2019 11:51:03 +0000 (UTC)
+	Tue, 28 May 2019 11:51:11 +0000 (UTC)
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
 	[10.5.11.14])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 2FEE7C05E76E;
-	Tue, 28 May 2019 11:50:58 +0000 (UTC)
+	by mx1.redhat.com (Postfix) with ESMTPS id B11C6F74A7;
+	Tue, 28 May 2019 11:51:05 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-116-67.ams2.redhat.com [10.36.116.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id E5CC15D9DC;
-	Tue, 28 May 2019 11:50:50 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 3F77B5D969;
+	Tue, 28 May 2019 11:51:01 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
 	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
 	dwmw2@infradead.org, robin.murphy@arm.com
-Subject: [PATCH v5 4/7] iommu/vt-d: Handle RMRR with PCI bridge device scopes
-Date: Tue, 28 May 2019 13:50:22 +0200
-Message-Id: <20190528115025.17194-5-eric.auger@redhat.com>
+Subject: [PATCH v5 6/7] iommu: Introduce IOMMU_RESV_DIRECT_RELAXABLE reserved
+	memory regions
+Date: Tue, 28 May 2019 13:50:24 +0200
+Message-Id: <20190528115025.17194-7-eric.auger@redhat.com>
 In-Reply-To: <20190528115025.17194-1-eric.auger@redhat.com>
 References: <20190528115025.17194-1-eric.auger@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.31]);
-	Tue, 28 May 2019 11:51:02 +0000 (UTC)
+	(mx1.redhat.com [10.5.110.38]);
+	Tue, 28 May 2019 11:51:10 +0000 (UTC)
 Cc: jean-philippe.brucker@arm.com, alex.williamson@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -70,39 +71,118 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When reading the vtd specification and especially the
-Reserved Memory Region Reporting Structure chapter,
-it is not obvious a device scope element cannot be a
-PCI-PCI bridge, in which case all downstream ports are
-likely to access the reserved memory region. Let's handle
-this case in device_has_rmrr.
+Introduce a new type for reserved region. This corresponds
+to directly mapped regions which are known to be relaxable
+in some specific conditions, such as device assignment use
+case. Well known examples are those used by USB controllers
+providing PS/2 keyboard emulation for pre-boot BIOS and
+early BOOT or RMRRs associated to IGD working in legacy mode.
 
-Fixes: ea2447f700ca ("intel-iommu: Prevent devices with RMRRs from being placed into SI Domain")
+Since commit c875d2c1b808 ("iommu/vt-d: Exclude devices using RMRRs
+from IOMMU API domains") and commit 18436afdc11a ("iommu/vt-d: Allow
+RMRR on graphics devices too"), those regions are currently
+considered "safe" with respect to device assignment use case
+which requires a non direct mapping at IOMMU physical level
+(RAM GPA -> HPA mapping).
+
+Those RMRRs currently exist and sometimes the device is
+attempting to access it but this has not been considered
+an issue until now.
+
+However at the moment, iommu_get_group_resv_regions() is
+not able to make any difference between directly mapped
+regions: those which must be absolutely enforced and those
+like above ones which are known as relaxable.
+
+This is a blocker for reporting severe conflicts between
+non relaxable RMRRs (like MSI doorbells) and guest GPA space.
+
+With this new reserved region type we will be able to use
+iommu_get_group_resv_regions() to enumerate the IOVA space
+that is usable through the IOMMU API without introducing
+regressions with respect to existing device assignment
+use cases (USB and IGD).
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
 
-v1 -> v2:
-- is_downstream_to_pci_bridge helper introduced in a separate patch
----
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v3 -> v4:
+- expose the relaxable regions as "direct-relaxable" in the sysfs
+- update ABI documentation
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 879f11c82b05..35508687f178 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2910,7 +2910,8 @@ static bool device_has_rmrr(struct device *dev)
- 		 */
- 		for_each_active_dev_scope(rmrr->devices,
- 					  rmrr->devices_cnt, i, tmp)
--			if (tmp == dev) {
-+			if (tmp == dev ||
-+			    is_downstream_to_pci_bridge(dev, tmp)) {
- 				rcu_read_unlock();
- 				return true;
- 			}
+v2 -> v3:
+- fix direct type check
+---
+ Documentation/ABI/testing/sysfs-kernel-iommu_groups |  9 +++++++++
+ drivers/iommu/iommu.c                               | 12 +++++++-----
+ include/linux/iommu.h                               |  6 ++++++
+ 3 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+index 35c64e00b35c..017f5bc3920c 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
++++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+@@ -24,3 +24,12 @@ Description:    /sys/kernel/iommu_groups/reserved_regions list IOVA
+ 		region is described on a single line: the 1st field is
+ 		the base IOVA, the second is the end IOVA and the third
+ 		field describes the type of the region.
++
++What:		/sys/kernel/iommu_groups/reserved_regions
++Date: 		June 2019
++KernelVersion:  v5.3
++Contact: 	Eric Auger <eric.auger@redhat.com>
++Description:    In case an RMRR is used only by graphics or USB devices
++		it is now exposed as "direct-relaxable" instead of "direct".
++		In device assignment use case, for instance, those RMRR
++		are considered to be relaxable and safe.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f961f71e4ff8..276eae9822f2 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -73,10 +73,11 @@ struct iommu_group_attribute {
+ };
+ 
+ static const char * const iommu_group_resv_type_string[] = {
+-	[IOMMU_RESV_DIRECT]	= "direct",
+-	[IOMMU_RESV_RESERVED]	= "reserved",
+-	[IOMMU_RESV_MSI]	= "msi",
+-	[IOMMU_RESV_SW_MSI]	= "msi",
++	[IOMMU_RESV_DIRECT]			= "direct",
++	[IOMMU_RESV_DIRECT_RELAXABLE]		= "direct-relaxable",
++	[IOMMU_RESV_RESERVED]			= "reserved",
++	[IOMMU_RESV_MSI]			= "msi",
++	[IOMMU_RESV_SW_MSI]			= "msi",
+ };
+ 
+ #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+@@ -575,7 +576,8 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+ 		start = ALIGN(entry->start, pg_size);
+ 		end   = ALIGN(entry->start + entry->length, pg_size);
+ 
+-		if (entry->type != IOMMU_RESV_DIRECT)
++		if (entry->type != IOMMU_RESV_DIRECT &&
++		    entry->type != IOMMU_RESV_DIRECT_RELAXABLE)
+ 			continue;
+ 
+ 		for (addr = start; addr < end; addr += pg_size) {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a815cf6f6f47..d7d1c8de9bbc 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -135,6 +135,12 @@ enum iommu_attr {
+ enum iommu_resv_type {
+ 	/* Memory regions which must be mapped 1:1 at all times */
+ 	IOMMU_RESV_DIRECT,
++	/*
++	 * Memory regions which are advertised to be 1:1 but are
++	 * commonly considered relaxable in some conditions,
++	 * for instance in device assignment use case (USB, Graphics)
++	 */
++	IOMMU_RESV_DIRECT_RELAXABLE,
+ 	/* Arbitrary "never map this or give it to a device" address ranges */
+ 	IOMMU_RESV_RESERVED,
+ 	/* Hardware MSI region (untranslated) */
 -- 
 2.20.1
 
