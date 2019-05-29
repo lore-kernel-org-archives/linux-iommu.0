@@ -2,64 +2,63 @@ Return-Path: <SRS0=Uk+I=T5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D2DC28CC0
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 15:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49832C28CC0
+	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 15:49:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5ED2323BCD
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 15:49:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5ED2323BCD
+	by mail.kernel.org (Postfix) with ESMTPS id 28CAA23BCD
+	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 15:49:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 28CAA23BCD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 98A8C26EA;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CE6E226EC;
 	Wed, 29 May 2019 15:49:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C8661268B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B12D6268B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 15:43:27 +0000 (UTC)
+	Wed, 29 May 2019 15:43:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7CB73821
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0733F7D2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 15:43:27 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
-	[10.5.11.23])
+	Wed, 29 May 2019 15:43:56 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+	[10.5.11.16])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 4905A3082B71;
-	Wed, 29 May 2019 15:43:15 +0000 (UTC)
+	by mx1.redhat.com (Postfix) with ESMTPS id 664FE4CF7E;
+	Wed, 29 May 2019 15:43:51 +0000 (UTC)
 Received: from [10.36.116.67] (ovpn-116-67.ams2.redhat.com [10.36.116.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 43C75272BB;
-	Wed, 29 May 2019 15:43:09 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id C5B3E5C5DF;
+	Wed, 29 May 2019 15:43:43 +0000 (UTC)
 From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v5 3/7] iommu/vt-d: Introduce is_downstream_to_pci_bridge
-	helper
-To: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH v5 7/7] iommu/vt-d: Differentiate relaxable and non
+	relaxable RMRRs
+To: Lu Baolu <baolu.lu@linux.intel.com>, eric.auger.pro@gmail.com,
+	joro@8bytes.org, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, dwmw2@infradead.org, robin.murphy@arm.com
 References: <20190528115025.17194-1-eric.auger@redhat.com>
-	<20190528115025.17194-4-eric.auger@redhat.com>
-	<20190529062125.GC26055@infradead.org>
-Message-ID: <f8edf6af-0c67-0e31-d28c-731e77f22a29@redhat.com>
-Date: Wed, 29 May 2019 17:43:05 +0200
+	<20190528115025.17194-8-eric.auger@redhat.com>
+	<13a77738-5e85-ea62-aab1-384c75bde8bd@linux.intel.com>
+Message-ID: <1f2a7039-04be-383e-b054-d0dba99b9bdf@redhat.com>
+Date: Wed, 29 May 2019 17:43:41 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20190529062125.GC26055@infradead.org>
+In-Reply-To: <13a77738-5e85-ea62-aab1-384c75bde8bd@linux.intel.com>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.45]);
-	Wed, 29 May 2019 15:43:23 +0000 (UTC)
-Cc: alex.williamson@redhat.com, jean-philippe.brucker@arm.com,
-	dwmw2@infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, robin.murphy@arm.com,
-	eric.auger.pro@gmail.com
+	(mx1.redhat.com [10.5.110.25]);
+	Wed, 29 May 2019 15:43:56 +0000 (UTC)
+Cc: jean-philippe.brucker@arm.com, alex.williamson@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,42 +71,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
-
-On 5/29/19 8:21 AM, Christoph Hellwig wrote:
->> +/* is_downstream_to_pci_bridge - test if a device belongs to the
->> + * PCI sub-hierarchy of a candidate PCI-PCI bridge
->> + *
->> + * @dev: candidate PCI device belonging to @bridge PCI sub-hierarchy
->> + * @bridge: the candidate PCI-PCI bridge
->> + *
->> + * Return: true if @dev belongs to @bridge PCI sub-hierarchy
->> + */
-> 
-> This is not valid kerneldoc comment.  Try something like this:
-> 
-> /**
->  * is_downstream_to_pci_bridge - test if a device belongs to the PCI
->  *				 sub-hierarchy of a candidate PCI-PCI bridge
->  * @dev: candidate PCI device belonging to @bridge PCI sub-hierarchy
->  * @bridge: the candidate PCI-PCI bridge
->  *
->  * Returns true if @dev belongs to @bridge PCI sub-hierarchy, else false.
->  */
-> 
-Sure,
-
-just replaced Returns by Return:
-
-Thanks
-
-Eric
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgTHUsCgpPbiA1LzI5LzE5IDQ6MzQgQU0sIEx1IEJhb2x1IHdyb3RlOgo+IEhpLAo+IAo+IE9u
+IDUvMjgvMTkgNzo1MCBQTSwgRXJpYyBBdWdlciB3cm90ZToKPj4gTm93IHdlIGhhdmUgYSBuZXcg
+SU9NTVVfUkVTVl9ESVJFQ1RfUkVMQVhBQkxFIHJlc2VydmVkIG1lbW9yeQo+PiByZWdpb24gdHlw
+ZSwgbGV0J3MgcmVwb3J0IFVTQiBhbmQgR0ZYIFJNUlJzIGFzIHJlbGF4YWJsZSBvbmVzLgo+Pgo+
+PiBXZSBpbnRyb2R1Y2UgYSBuZXcgZGV2aWNlX3JtcnJfaXNfcmVsYXhhYmxlKCkgaGVscGVyIHRv
+IGNoZWNrCj4+IHdoZXRoZXIgdGhlIHJtcnIgYmVsb25ncyB0byB0aGUgcmVsYXhhYmxlIGNhdGVn
+b3J5Lgo+Pgo+PiBUaGlzIGFsbG93cyB0byBoYXZlIGEgZmluZXIgcmVwb3J0aW5nIGF0IElPTU1V
+IEFQSSBsZXZlbCBvZgo+PiByZXNlcnZlZCBtZW1vcnkgcmVnaW9ucy4gVGhpcyB3aWxsIGJlIGV4
+cGxvaXRhYmxlIGJ5IFZGSU8gdG8KPj4gZGVmaW5lIHRoZSB1c2FibGUgSU9WQSByYW5nZSBhbmQg
+ZGV0ZWN0IHBvdGVudGlhbCBjb25mbGljdHMKPj4gYmV0d2VlbiB0aGUgZ3Vlc3QgcGh5c2ljYWwg
+YWRkcmVzcyBzcGFjZSBhbmQgaG9zdCByZXNlcnZlZAo+PiByZWdpb25zLgo+Pgo+PiBTaWduZWQt
+b2ZmLWJ5OiBFcmljIEF1Z2VyIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+Cj4+Cj4+IC0tLQo+Pgo+
+PiB2MyAtPiB2NDoKPj4gLSBpbnRyb2R1Y2UgZGV2aWNlX3JtcnJfaXNfcmVsYXhhYmxlIGFuZCBy
+ZXNodWZmbGUgdGhlIGNvbW1lbnRzCj4+IC0tLQo+PiDCoCBkcml2ZXJzL2lvbW11L2ludGVsLWlv
+bW11LmMgfCA1NSArKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tCj4+IMKgIDEg
+ZmlsZSBjaGFuZ2VkLCA0MCBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMoLSkKPj4KPj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50
+ZWwtaW9tbXUuYwo+PiBpbmRleCA5MzAyMzUxODE4YWIuLjAxYzgyZjg0ODQ3MCAxMDA2NDQKPj4g
+LS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUv
+aW50ZWwtaW9tbXUuYwo+PiBAQCAtMjkyMCw2ICsyOTIwLDM2IEBAIHN0YXRpYyBib29sIGRldmlj
+ZV9oYXNfcm1ycihzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+IMKgwqDCoMKgwqAgcmV0dXJuIGZhbHNl
+Owo+PiDCoCB9Cj4+IMKgICsvKgo+PiArICogZGV2aWNlX3JtcnJfaXNfcmVsYXhhYmxlIC0gVGVz
+dCB3aGV0aGVyIHRoZSBSTVJSIG9mIHRoaXMgZGV2aWNlCj4+ICsgKiBpcyByZWxheGFibGUgKGll
+LiBpcyBhbGxvd2VkIHRvIGJlIG5vdCBlbmZvcmNlZCB1bmRlciBzb21lCj4+IGNvbmRpdGlvbnMp
+Cj4+ICsgKgo+PiArICogQGRldjogZGV2aWNlIGhhbmRsZQo+PiArICoKPj4gKyAqIFdlIGFzc3Vt
+ZSB0aGF0IFBDSSBVU0IgZGV2aWNlcyB3aXRoIFJNUlJzIGhhdmUgdGhlbSBsYXJnZWx5Cj4+ICsg
+KiBmb3IgaGlzdG9yaWNhbCByZWFzb25zIGFuZCB0aGF0IHRoZSBSTVJSIHNwYWNlIGlzIG5vdCBh
+Y3RpdmVseQo+PiB1c2VkIHBvc3QKPj4gKyAqIGJvb3QuwqAgVGhpcyBleGNsdXNpb24gbWF5IGNo
+YW5nZSBpZiB2ZW5kb3JzIGJlZ2luIHRvIGFidXNlIGl0Lgo+PiArICoKPj4gKyAqIFRoZSBzYW1l
+IGV4Y2VwdGlvbiBpcyBtYWRlIGZvciBncmFwaGljcyBkZXZpY2VzLCB3aXRoIHRoZQo+PiByZXF1
+aXJlbWVudCB0aGF0Cj4+ICsgKiBhbnkgdXNlIG9mIHRoZSBSTVJSIHJlZ2lvbnMgd2lsbCBiZSB0
+b3JuIGRvd24gYmVmb3JlIGFzc2lnbmluZyB0aGUKPj4gZGV2aWNlCj4+ICsgKiB0byBhIGd1ZXN0
+Lgo+PiArICoKPj4gKyAqIFJldHVybjogdHJ1ZSBpZiB0aGUgUk1SUiBpcyByZWxheGFibGUKPj4g
+KyAqLwo+PiArc3RhdGljIGJvb2wgZGV2aWNlX3JtcnJfaXNfcmVsYXhhYmxlKHN0cnVjdCBkZXZp
+Y2UgKmRldikKPj4gK3sKPj4gK8KgwqDCoCBzdHJ1Y3QgcGNpX2RldiAqcGRldjsKPj4gKwo+PiAr
+wqDCoMKgIGlmICghZGV2X2lzX3BjaShkZXYpKQo+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJuIGZh
+bHNlOwo+PiArCj4+ICvCoMKgwqAgcGRldiA9IHRvX3BjaV9kZXYoZGV2KTsKPj4gK8KgwqDCoCBp
+ZiAoSVNfVVNCX0RFVklDRShwZGV2KSB8fCBJU19HRlhfREVWSUNFKHBkZXYpKQo+PiArwqDCoMKg
+wqDCoMKgwqAgcmV0dXJuIHRydWU7Cj4+ICvCoMKgwqAgZWxzZQo+PiArwqDCoMKgwqDCoMKgwqAg
+cmV0dXJuIGZhbHNlOwo+PiArfQo+IAo+IEkga25vdyB0aGlzIGlzIG9ubHkgY29kZSByZWZhY3Rv
+cmluZy4gQnV0IHN0cmljdGx5IHNwZWFraW5nLCB0aGUgcm1yciBvZgo+IGFueSBVU0IgaG9zdCBk
+ZXZpY2UgaXMgaWdub3JhYmxlIG9ubHkgaWYgcXVpcmtfdXNiX2Vhcmx5X2hhbmRvZmYoKSBoYXMK
+PiBiZWVuIGNhbGxlZC4gVGhlcmUsIHRoZSBjb250cm9sIG9mIFVTQiBob3N0IGNvbnRyb2xsZXIg
+d2lsbCBiZSBoYW5kZWQKPiBvdmVyIGZyb20gQklPUyB0byBPUyBhbmQgdGhlIGNvcnJlc3BvbmRp
+bmcgU01JIGFyZSBkaXNhYmxlZC4KPiAKPiBUaGlzIGZ1bmN0aW9uIGlzIHJlZ2lzdGVyZWQgaW4g
+ZHJpdmVycy91c2IvaG9zdC9wY2ktcXVpcmtzLmMKPiAKPiBERUNMQVJFX1BDSV9GSVhVUF9DTEFT
+U19GSU5BTChQQ0lfQU5ZX0lELCBQQ0lfQU5ZX0lELAo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgUENJX0NMQVNTX1NFUklBTF9VU0IsIDgsIHF1aXJrX3Vz
+Yl9lYXJseV9oYW5kb2ZmKTsKPiAKPiBhbmQgb25seSBnZXQgY29tcGlsZWQgaWYgQ09ORklHX1VT
+Ql9QQ0kgaXMgZW5hYmxlZC4KPiAKPiBIZW5jZSwgaXQncyBzYWZlciB0byBzYXk6Cj4gCj4gKyNp
+ZmRlZiBDT05GSUdfVVNCX1BDSQo+ICvCoMKgwqAgaWYgKElTX1VTQl9ERVZJQ0UocGRldikpCj4g
+K8KgwqDCoMKgwqDCoMKgIHJldHVybiB0cnVlOwo+ICsjZW5kaWYgLyogQ09ORklHX1VTQl9QQ0kg
+Ki8KPiAKPiBJIGFtIG9rYXkgaWYgd2Uga2VlcCB0aGlzIHVudG91Y2hlZCBhbmQgbWFrZSB0aGlz
+IGNoYW5nZSB3aXRoaW4gYQo+IHNlcGFyYXRlZCBwYXRjaC4KCkFzIHdlIGZpcnN0IGNoZWNrZWQg
+d2hldGhlciB0aGUgZGV2aWNlIHdhcyBhIHBjaSBkZXZpY2UsIGlzbid0IGl0CnN1ZmZpY2llbnQg
+dG8gZ3VhcmFudGVlIHRoZSBxdWlyayBpcyBzZXR1cD8KCkFzIHlvdSBzdWdnZXN0ZWQsIEkgYW0g
+aW5jbGluZWQgdG8ga2VlcCBpdCBhcyBhIHNlcGFyYXRlIHBhdGNoIGFueXdheS4KClRoYW5rIHlv
+dSBmb3IgdGhlIHJldmlldyEKCkJlc3QgUmVnYXJkcwoKRXJpYwo+IAo+PiArCj4+IMKgIC8qCj4+
+IMKgwqAgKiBUaGVyZSBhcmUgYSBjb3VwbGUgY2FzZXMgd2hlcmUgd2UgbmVlZCB0byByZXN0cmlj
+dCB0aGUKPj4gZnVuY3Rpb25hbGl0eSBvZgo+PiDCoMKgICogZGV2aWNlcyBhc3NvY2lhdGVkIHdp
+dGggUk1SUnMuwqAgVGhlIGZpcnN0IGlzIHdoZW4gZXZhbHVhdGluZyBhCj4+IGRldmljZSBmb3IK
+Pj4gQEAgLTI5MzQsMjUgKzI5NjQsMTYgQEAgc3RhdGljIGJvb2wgZGV2aWNlX2hhc19ybXJyKHN0
+cnVjdCBkZXZpY2UgKmRldikKPj4gwqDCoCAqIFdlIHRoZXJlZm9yZSBwcmV2ZW50IGRldmljZXMg
+YXNzb2NpYXRlZCB3aXRoIGFuIFJNUlIgZnJvbQo+PiBwYXJ0aWNpcGF0aW5nIGluCj4+IMKgwqAg
+KiB0aGUgSU9NTVUgQVBJLCB3aGljaCBlbGltaW5hdGVzIHRoZW0gZnJvbSBkZXZpY2UgYXNzaWdu
+bWVudC4KPj4gwqDCoCAqCj4+IC0gKiBJbiBib3RoIGNhc2VzIHdlIGFzc3VtZSB0aGF0IFBDSSBV
+U0IgZGV2aWNlcyB3aXRoIFJNUlJzIGhhdmUgdGhlbQo+PiBsYXJnZWx5Cj4+IC0gKiBmb3IgaGlz
+dG9yaWNhbCByZWFzb25zIGFuZCB0aGF0IHRoZSBSTVJSIHNwYWNlIGlzIG5vdCBhY3RpdmVseQo+
+PiB1c2VkIHBvc3QKPj4gLSAqIGJvb3QuwqAgVGhpcyBleGNsdXNpb24gbWF5IGNoYW5nZSBpZiB2
+ZW5kb3JzIGJlZ2luIHRvIGFidXNlIGl0Lgo+PiAtICoKPj4gLSAqIFRoZSBzYW1lIGV4Y2VwdGlv
+biBpcyBtYWRlIGZvciBncmFwaGljcyBkZXZpY2VzLCB3aXRoIHRoZQo+PiByZXF1aXJlbWVudCB0
+aGF0Cj4+IC0gKiBhbnkgdXNlIG9mIHRoZSBSTVJSIHJlZ2lvbnMgd2lsbCBiZSB0b3JuIGRvd24g
+YmVmb3JlIGFzc2lnbmluZyB0aGUKPj4gZGV2aWNlCj4+IC0gKiB0byBhIGd1ZXN0Lgo+PiArICog
+SW4gYm90aCBjYXNlcywgZGV2aWNlcyB3aGljaCBoYXZlIHJlbGF4YWJsZSBSTVJScyBhcmUgbm90
+Cj4+IGNvbmNlcm5lZCBieSB0aGlzCj4+ICsgKiByZXN0cmljdGlvbi4gU2VlIGRldmljZV9ybXJy
+X2lzX3JlbGF4YWJsZSBjb21tZW50Lgo+PiDCoMKgICovCj4+IMKgIHN0YXRpYyBib29sIGRldmlj
+ZV9pc19ybXJyX2xvY2tlZChzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+IMKgIHsKPj4gwqDCoMKgwqDC
+oCBpZiAoIWRldmljZV9oYXNfcm1ycihkZXYpKQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJu
+IGZhbHNlOwo+PiDCoCAtwqDCoMKgIGlmIChkZXZfaXNfcGNpKGRldikpIHsKPj4gLcKgwqDCoMKg
+wqDCoMKgIHN0cnVjdCBwY2lfZGV2ICpwZGV2ID0gdG9fcGNpX2RldihkZXYpOwo+PiAtCj4+IC3C
+oMKgwqDCoMKgwqDCoCBpZiAoSVNfVVNCX0RFVklDRShwZGV2KSB8fCBJU19HRlhfREVWSUNFKHBk
+ZXYpKQo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gZmFsc2U7Cj4+IC3CoMKgwqAg
+fQo+PiArwqDCoMKgIGlmIChkZXZpY2Vfcm1ycl9pc19yZWxheGFibGUoZGV2KSkKPj4gK8KgwqDC
+oMKgwqDCoMKgIHJldHVybiBmYWxzZTsKPj4gwqAgwqDCoMKgwqDCoCByZXR1cm4gdHJ1ZTsKPj4g
+wqAgfQo+PiBAQCAtNTQ5NCw2ICs1NTE1LDcgQEAgc3RhdGljIHZvaWQgaW50ZWxfaW9tbXVfZ2V0
+X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QKPj4gZGV2aWNlICpkZXZpY2UsCj4+IMKgwqDCoMKgwqDCoMKg
+wqDCoCBmb3JfZWFjaF9hY3RpdmVfZGV2X3Njb3BlKHJtcnItPmRldmljZXMsIHJtcnItPmRldmlj
+ZXNfY250LAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IGksIGlfZGV2KSB7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBpb21tdV9y
+ZXN2X3JlZ2lvbiAqcmVzdjsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZW51bSBpb21tdV9y
+ZXN2X3R5cGUgdHlwZTsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGxlbmd0
+aDsKPj4gwqAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKGlfZGV2ICE9IGRldmljZSAm
+Jgo+PiBAQCAtNTUwMSw5ICs1NTIzLDEyIEBAIHN0YXRpYyB2b2lkIGludGVsX2lvbW11X2dldF9y
+ZXN2X3JlZ2lvbnMoc3RydWN0Cj4+IGRldmljZSAqZGV2aWNlLAo+PiDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIGNvbnRpbnVlOwo+PiDCoCDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBsZW5ndGggPSBybXJyLT5lbmRfYWRkcmVzcyAtIHJtcnItPmJhc2VfYWRkcmVzcyArIDE7
+Cj4+ICsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdHlwZSA9IGRldmljZV9ybXJyX2lzX3Jl
+bGF4YWJsZShkZXZpY2UpID8KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBJT01N
+VV9SRVNWX0RJUkVDVF9SRUxBWEFCTEUgOiBJT01NVV9SRVNWX0RJUkVDVDsKPj4gKwo+PiDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXN2ID0gaW9tbXVfYWxsb2NfcmVzdl9yZWdpb24ocm1y
+ci0+YmFzZV9hZGRyZXNzLAo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGxlbmd0aCwgcHJvdCwKPj4gLcKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBJT01NVV9SRVNW
+X0RJUkVDVCk7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgbGVuZ3RoLCBwcm90LCB0eXBlKTsKPj4gwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgaWYgKCFyZXN2KQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIGJyZWFrOwo+PiDCoAo+IAo+IE90aGVyIGxvb2tzIGdvb2QgdG8gbWUuCj4gCj4gUmV2aWV3
+ZWQtYnk6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+Cj4gCj4gQmVzdCByZWdh
+cmRzLAo+IEJhb2x1Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
