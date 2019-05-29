@@ -2,51 +2,58 @@ Return-Path: <SRS0=Uk+I=T5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD881C28CC1
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 12:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 621C4C28CC0
+	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 13:09:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99CEE217D9
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 12:27:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99CEE217D9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 4001B205F4
+	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 13:09:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4001B205F4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D6BA255F;
-	Wed, 29 May 2019 12:27:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0BF932624;
+	Wed, 29 May 2019 13:09:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 43287247D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B93082453
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 12:22:45 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8059C881
+	Wed, 29 May 2019 13:06:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 493ACEC
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 12:22:44 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 93FF968AFE; Wed, 29 May 2019 14:22:19 +0200 (CEST)
-Date: Wed, 29 May 2019 14:22:19 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH 1/2] dma-mapping: truncate dma masks to what dma_addr_t
-	can hold
-Message-ID: <20190529122219.GA9982@lst.de>
-References: <20190521124729.23559-1-hch@lst.de>
-	<20190521124729.23559-2-hch@lst.de>
-	<20190521130436.bgt53bf7nshz62ip@shell.armlinux.org.uk>
-	<20190521131503.GA5258@lst.de>
+	Wed, 29 May 2019 13:06:04 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC4BEA78;
+	Wed, 29 May 2019 06:06:03 -0700 (PDT)
+Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
+	[10.72.51.249])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EEA1C3F59C;
+	Wed, 29 May 2019 06:06:01 -0700 (PDT)
+Date: Wed, 29 May 2019 14:05:59 +0100
+From: Will Deacon <will.deacon@arm.com>
+To: Marc Gonzalez <marc.w.gonzalez@free.fr>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Avoid constant zero in TLBI writes
+Message-ID: <20190529130559.GB11023@fuggles.cambridge.arm.com>
+References: <f523effd-ef81-46fe-1f9e-1a0cb42c8b7b@free.fr>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190521131503.GA5258@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <f523effd-ef81-46fe-1f9e-1a0cb42c8b7b@free.fr>
+User-Agent: Mutt/1.11.1+86 (6f28e57d73f2) ()
+Cc: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+	MSM <linux-arm-msm@vger.kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	iommu <iommu@lists.linux-foundation.org>, Andy Gross <agross@kernel.org>,
+	AngeloGioacchino Del Regno <kholk11@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,114 +71,82 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Russell,
+On Wed, May 29, 2019 at 01:55:48PM +0200, Marc Gonzalez wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
+> 
+> Apparently, some Qualcomm arm64 platforms which appear to expose their
+> SMMU global register space are still, in fact, using a hypervisor to
+> mediate it by trapping and emulating register accesses. Sadly, some
+> deployed versions of said trapping code have bugs wherein they go
+> horribly wrong for stores using r31 (i.e. XZR/WZR) as the source
+> register.
 
-any additional comments on this series?
+^^^
+This should be in the comment instead of "qcom bug".
 
-On Tue, May 21, 2019 at 03:15:03PM +0200, Christoph Hellwig wrote:
-> On Tue, May 21, 2019 at 02:04:37PM +0100, Russell King - ARM Linux admin wrote:
-> > So how does the driver negotiation for >32bit addresses work if we don't
-> > fail for large masks?
-> > 
-> > I'm thinking about all those PCI drivers that need DAC cycles for >32bit
-> > addresses, such as e1000, which negotiate via (eg):
-> > 
-> >         /* there is a workaround being applied below that limits
-> >          * 64-bit DMA addresses to 64-bit hardware.  There are some
-> >          * 32-bit adapters that Tx hang when given 64-bit DMA addresses
-> >          */
-> >         pci_using_dac = 0;
-> >         if ((hw->bus_type == e1000_bus_type_pcix) &&
-> >             !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
-> >                 pci_using_dac = 1;
-> >         } else {
-> >                 err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-> >                 if (err) {
-> >                         pr_err("No usable DMA config, aborting\n");
-> >                         goto err_dma;
-> >                 }
-> >         }
-> > 
-> > and similar.  If we blindly trunate the 64-bit to 32-bit, aren't we
-> > going to end up with PCI cards using DAC cycles to a host bridge that
-> > do not support DAC cycles?
+> While this can be mitigated for GCC today by tweaking the constraints
+> for the implementation of writel_relaxed(), to avoid any potential
+> arms race with future compilers more aggressively optimising register
+> allocation, the simple way is to just remove all the problematic
+> constant zeros. For the write-only TLB operations, the actual value is
+> irrelevant anyway and any old nearby variable will provide a suitable
+> GPR to encode. The one point at which we really do need a zero to clear
+> a context bank happens before any of the TLB maintenance where crashes
+> have been reported, so is apparently not a problem... :/
+
+Hmm. It would be nice to understand this a little better. In which cases
+does XZR appear to work?
+
+> Reported-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
+> Reviewed-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Tested-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
+> Tested-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
+> Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> Changes from v1:
+> - Tweak commit message (remove "compilers", s/hangs/crashes)
+> - Add a comment before writel_relaxed
+> ---
+>  drivers/iommu/arm-smmu.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
-> In general PCI devices just use DAC cycles when they need it.  I only
-> know of about a handful of devices that need to negotiate their
-> addressing mode, and those already use the proper API for that, which
-> is dma_get_required_mask.
-> 
-> The e1000 example is a good case of how the old API confused people.
-> First it only sets the 64-bit mask for devices which can support it,
-> which is good, but then it sets the NETIF_F_HIGHDMA flag only if we
-> set a 64-bit mask, which is completely unrelated to the DMA mask,
-> it just means the driver can handle sk_buff fragments that do not
-> have a kernel mapping, which really is a driver and not a hardware
-> issue.
-> 
-> So what this driver really should do is something like:
-> 
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-> index 551de8c2fef2..d9236083da94 100644
-> --- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-> +++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-> @@ -925,7 +925,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 5e54cc0a28b3..3f352268fa8b 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -423,7 +423,8 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+>  {
+>  	unsigned int spin_cnt, delay;
 >  
->  	static int cards_found;
->  	static int global_quad_port_a; /* global ksp3 port a indication */
-> -	int i, err, pci_using_dac;
-> +	int i, err;
->  	u16 eeprom_data = 0;
->  	u16 tmp = 0;
->  	u16 eeprom_apme_mask = E1000_EEPROM_APME;
-> @@ -996,16 +996,11 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	 * 64-bit DMA addresses to 64-bit hardware.  There are some
->  	 * 32-bit adapters that Tx hang when given 64-bit DMA addresses
->  	 */
-> -	pci_using_dac = 0;
-> -	if ((hw->bus_type == e1000_bus_type_pcix) &&
-> -	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
-> -		pci_using_dac = 1;
-> -	} else {
-> -		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-> -		if (err) {
-> -			pr_err("No usable DMA config, aborting\n");
-> -			goto err_dma;
-> -		}
-> +	err = dma_set_mask_and_coherent(&pdev->dev,
-> +		DMA_BIT_MASK(hw->bus_type == e1000_bus_type_pcix ? 64 : 32));
-> +	if (err) {
-> +		pr_err("No usable DMA config, aborting\n");
-> +		goto err_dma;
+> -	writel_relaxed(0, sync);
+> +	/* Write "garbage" (rather than 0) to work around a qcom bug */
+> +	writel_relaxed((unsigned long)sync, sync);
+>  	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
+>  		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+>  			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
+> @@ -1763,8 +1764,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
 >  	}
 >  
->  	netdev->netdev_ops = &e1000_netdev_ops;
-> @@ -1047,19 +1042,15 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  
->  	netdev->priv_flags |= IFF_SUPP_NOFCS;
->  
-> -	netdev->features |= netdev->hw_features;
-> +	netdev->features |= netdev->hw_features | NETIF_F_HIGHDMA;
->  	netdev->hw_features |= (NETIF_F_RXCSUM |
->  				NETIF_F_RXALL |
->  				NETIF_F_RXFCS);
->  
-> -	if (pci_using_dac) {
-> -		netdev->features |= NETIF_F_HIGHDMA;
-> -		netdev->vlan_features |= NETIF_F_HIGHDMA;
-> -	}
-> -
->  	netdev->vlan_features |= (NETIF_F_TSO |
->  				  NETIF_F_HW_CSUM |
-> -				  NETIF_F_SG);
-> +				  NETIF_F_SG |
-> +				  NETIF_F_HIGHDMA);
->  
->  	/* Do not set IFF_UNICAST_FLT for VMWare's 82545EM */
->  	if (hw->device_id != E1000_DEV_ID_82545EM_COPPER ||
-> 
----end quoted text---
+>  	/* Invalidate the TLB, just in case */
+> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+> +	/* Write "garbage" (rather than 0) to work around a qcom bug */
+> +	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_TLBIALLH);
+> +	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
+
+Any reason not to make these obviously dummy values e.g.:
+
+	/*
+	 * Text from the commit message about broken hypervisor
+	 */
+	#define QCOM_DUMMY_VAL_NOT_XZR	~0U
+
+That makes the callsites much easier to understand and I doubt there's a
+performance impact from allocating an extra register here.
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
