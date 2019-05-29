@@ -6,32 +6,32 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8C6C04AB3
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 06:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 602C5C04AB3
+	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 06:25:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 780BD208CB
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 06:21:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1DB3C21019
+	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 06:25:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="KeAxAjEg"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 780BD208CB
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="FhPehD3a"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DB3C21019
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 199C32402;
-	Wed, 29 May 2019 06:21:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B52662404;
+	Wed, 29 May 2019 06:25:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7B99A23FB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A3F6623FF
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 06:18:02 +0000 (UTC)
+	Wed, 29 May 2019 06:21:30 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3283CEC
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5BF3F7D2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 06:18:02 +0000 (UTC)
+	Wed, 29 May 2019 06:21:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209;
 	h=In-Reply-To:Content-Type:MIME-Version
@@ -39,25 +39,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
 	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=SlJAo9Q1H6Y1MH1l1DawZNFwXZmoCdx0nahsUu/QeN8=;
-	b=KeAxAjEgLFUtRPQwovBoJEqbz
-	T8+FcjyGQDM8krZaFZlhjfc7W7jJ9IQ74reJcgB0/lUZhIUdXr5ry+Ph0Mnlo9E7lsCkAv6kYQ3Vs
-	d6+TWy4glZBYzl7yH580tMbPr0aevty1Y/hEjy67y8Aj4xeGWlonCh3ip8ZwSsBTbvV8JgNfYqSd/
-	INZHesRyjDqzul7h4oWVE6lZwXZvoWFjdPUyhvAFktttue138Ps6N14Kzam1JDtylR8OUcUQoI6NG
-	+NYxHjquKzeCbWZ9Eu1c4B4/0PPZy5klFa61/CeULI1b06knxKlZcYF2rAwGHuGjmJDRP+x3CrglZ
-	EbMtIDnEA==;
+	bh=YAyDy9iRa/2fBxfKwwoNkpWrW0fkg9D/tjr6FTgsOyI=;
+	b=FhPehD3axIksKRnIAkO8z5PZ0
+	/IWo79p9ISk6KUJrb4Tzo0L7JcrN0r0NWLmJfZDWK/tGH1l3Ah8vxbrM1IQrF7lZMaH4E3wdMLSbR
+	C7306ng7j+7pX41Ak9IWU97kQ/ib98gb139ktjf4dQK+92ag/7Bv77A6qBznURzzHlbB8AFVvAiK3
+	/yCQaOXSok5cfCB6/XEVN3ShvbaXlCvm3jKMkRf76ZjXOCxmbFuemwrVWGkB6MfdVtKUBRVKfVVp4
+	bOyZ0umCIni6OicPHULdvvjiSXTgNw9UeuMveGQsAfSjdPUtR9zjSvr6+VcE9u+fnmBufZafcC478
+	Fm2NcITbw==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red
-	Hat Linux)) id 1hVruP-00089b-4I; Wed, 29 May 2019 06:17:57 +0000
-Date: Tue, 28 May 2019 23:17:56 -0700
+	Hat Linux)) id 1hVrxl-00011q-W3; Wed, 29 May 2019 06:21:25 +0000
+Date: Tue, 28 May 2019 23:21:25 -0700
 From: Christoph Hellwig <hch@infradead.org>
 To: Eric Auger <eric.auger@redhat.com>
-Subject: Re: [PATCH v5 1/7] iommu: Fix a leak in iommu_insert_resv_region
-Message-ID: <20190529061756.GB26055@infradead.org>
+Subject: Re: [PATCH v5 3/7] iommu/vt-d: Introduce is_downstream_to_pci_bridge
+	helper
+Message-ID: <20190529062125.GC26055@infradead.org>
 References: <20190528115025.17194-1-eric.auger@redhat.com>
-	<20190528115025.17194-2-eric.auger@redhat.com>
+	<20190528115025.17194-4-eric.auger@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190528115025.17194-2-eric.auger@redhat.com>
+In-Reply-To: <20190528115025.17194-4-eric.auger@redhat.com>
 User-Agent: Mutt/1.9.2 (2017-12-15)
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
 	bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -82,33 +83,25 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
->  		} else if ((start >= a) && (end <= b)) {
->  			if (new->type == type)
-> -				goto done;
-> +				return 0;
->  			else
->  				pos = pos->next;
+> +/* is_downstream_to_pci_bridge - test if a device belongs to the
+> + * PCI sub-hierarchy of a candidate PCI-PCI bridge
+> + *
+> + * @dev: candidate PCI device belonging to @bridge PCI sub-hierarchy
+> + * @bridge: the candidate PCI-PCI bridge
+> + *
+> + * Return: true if @dev belongs to @bridge PCI sub-hierarchy
+> + */
 
-Please remove the pointless else after the return statement.
+This is not valid kerneldoc comment.  Try something like this:
 
->  		} else {
->  			if (new->type == type) {
->  				phys_addr_t new_start = min(a, start);
->  				phys_addr_t new_end = max(b, end);
-> +				int ret;
->  
->  				list_del(&entry->list);
->  				entry->start = new_start;
->  				entry->length = new_end - new_start + 1;
-> -				iommu_insert_resv_region(entry, regions);
-> +				ret = iommu_insert_resv_region(entry, regions);
-> +				kfree(entry);
-> +				return ret;
->  			} else {
->  				pos = pos->next;
->  			}
-
-Same here.
+/**
+ * is_downstream_to_pci_bridge - test if a device belongs to the PCI
+ *				 sub-hierarchy of a candidate PCI-PCI bridge
+ * @dev: candidate PCI device belonging to @bridge PCI sub-hierarchy
+ * @bridge: the candidate PCI-PCI bridge
+ *
+ * Returns true if @dev belongs to @bridge PCI sub-hierarchy, else false.
+ */
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
