@@ -2,71 +2,69 @@ Return-Path: <SRS0=ZfVm=T6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC28C28CC2
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 09:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE2DC28CC0
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 12:31:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A5A012563A
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 09:11:36 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="oThcn6rn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5A012563A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id F0E40258D6
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 12:31:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F0E40258D6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A01173729;
-	Thu, 30 May 2019 09:11:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AB8F539F0;
+	Thu, 30 May 2019 12:31:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0DEC33706
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8B94C39CD
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 30 May 2019 09:04:11 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B46CC83A
+	Thu, 30 May 2019 12:20:45 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EB9A67D2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 30 May 2019 09:04:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=49xeno4V9mLcXP70a+Sa/AkFzuIPrG2MU15kIdS1nJ8=;
-	b=oThcn6rn+teoSzUhrD1ivlyEm
-	NLcVzG/BInSURdKJwXjMVmB0tKRq2g286EMQ0Vbdus1/jzEsGjN6XnhdBK3nYR5GYNC7wN7ReinQB
-	3n5NIOsvffPiVfhvRiW3EvTICSdbwKBv/i/9afRwg2p5SAX5l8O3lVdxogQFdTLhCSjgbqIyBovaq
-	HdvlU7le3E69hkHYFKiywpDmUF0xxF4nsGjN26NKcvet2nTpoHnlbHuqKRHq64tnGNicYRZx5ZOtn
-	IZa8k14vODzW8d1RWcI83yW8p6ez+NLE4lGppYOGQriUa8uMMd6jfDcUHc7s0wdXA34vb0HOKm+He
-	0LenWjfaw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red
-	Hat Linux)) id 1hWGyn-000806-HQ; Thu, 30 May 2019 09:04:09 +0000
-Date: Thu, 30 May 2019 02:04:09 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Juergen Gross <jgross@suse.com>
-Subject: Re: [PATCH v2 3/3] xen/swiotlb: remember having called
-	xen_create_contiguous_region()
-Message-ID: <20190530090409.GB30428@infradead.org>
-References: <20190529090407.1225-1-jgross@suse.com>
-	<20190529090407.1225-4-jgross@suse.com>
+	Thu, 30 May 2019 12:20:44 +0000 (UTC)
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id 2BC0084B9352ECE62CBB;
+	Thu, 30 May 2019 20:20:41 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.238) by DGGEMS414-HUB.china.huawei.com
+	(10.3.19.214) with Microsoft SMTP Server id 14.3.439.0;
+	Thu, 30 May 2019 20:20:31 +0800
+Subject: Re: [PATCH v8 1/7] iommu: enhance IOMMU default DMA mode build options
+To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker
+	<jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Will
+	Deacon" <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan
+	Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>,
+	Sebastian Ott
+	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
+	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
+	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
+	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
+	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
+	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
+	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
+	<iommu@lists.linux-foundation.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
+	linux-ia64 <linux-ia64@vger.kernel.org>
+References: <20190530034831.4184-1-thunder.leizhen@huawei.com>
+	<20190530034831.4184-2-thunder.leizhen@huawei.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <645bd526-4eb0-4a36-2dda-023f009247ab@huawei.com>
+Date: Thu, 30 May 2019 13:20:16 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190529090407.1225-4-jgross@suse.com>
-User-Agent: Mutt/1.9.2 (2017-12-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	xen-devel@lists.xenproject.org,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>
+In-Reply-To: <20190530034831.4184-2-thunder.leizhen@huawei.com>
+X-Originating-IP: [10.202.227.238]
+X-CFilter-Loop: Reflected
+Cc: Linuxarm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,14 +77,116 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Please don't add your private flag to page-flags.h.  The whole point of
-the private flag is that you can use it in any way you want withou
-touching the common code.
+On 30/05/2019 04:48, Zhen Lei wrote:
+> First, add build option IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
+> opportunity to set {lazy|strict} mode as default at build time. Then put
+> the three config options in an choice, make people can only choose one of
+> the three at a time.
+>
+
+Since this was not picked up, but modulo (somtimes same) comments below:
+
+Reviewed-by: John Garry <john.garry@huawei.com>
+
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/iommu/Kconfig | 42 +++++++++++++++++++++++++++++++++++-------
+>  drivers/iommu/iommu.c |  3 ++-
+>  2 files changed, 37 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 83664db5221df02..d6a1a45f80ffbf5 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -75,17 +75,45 @@ config IOMMU_DEBUGFS
+>  	  debug/iommu directory, and then populate a subdirectory with
+>  	  entries as required.
+>
+> -config IOMMU_DEFAULT_PASSTHROUGH
+> -	bool "IOMMU passthrough by default"
+> +choice
+> +	prompt "IOMMU default DMA mode"
+>  	depends on IOMMU_API
+> -        help
+> -	  Enable passthrough by default, removing the need to pass in
+> -	  iommu.passthrough=on or iommu=pt through command line. If this
+> -	  is enabled, you can still disable with iommu.passthrough=off
+> -	  or iommu=nopt depending on the architecture.
+> +	default IOMMU_DEFAULT_STRICT
+> +	help
+> +	  This option allows IOMMU DMA mode to be chose at build time, to
+
+As before:
+/s/chose/chosen/, /s/allows IOMMU/allows an IOMMU/
+
+> +	  override the default DMA mode of each ARCHs, removing the need to
+
+Again, as before:
+ARCHs should be singular
+
+> +	  pass in kernel parameters through command line. You can still use
+> +	  ARCHs specific boot options to override this option again.
+> +
+> +config IOMMU_DEFAULT_PASSTHROUGH
+> +	bool "passthrough"
+> +	help
+> +	  In this mode, the DMA access through IOMMU without any addresses
+> +	  translation. That means, the wrong or illegal DMA access can not
+> +	  be caught, no error information will be reported.
+>
+>  	  If unsure, say N here.
+>
+> +config IOMMU_DEFAULT_LAZY
+> +	bool "lazy"
+> +	help
+> +	  Support lazy mode, where for every IOMMU DMA unmap operation, the
+> +	  flush operation of IOTLB and the free operation of IOVA are deferred.
+> +	  They are only guaranteed to be done before the related IOVA will be
+> +	  reused.
+
+why no advisory on how to set if unsure?
+
+> +
+> +config IOMMU_DEFAULT_STRICT
+> +	bool "strict"
+> +	help
+> +	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
+> +	  the free operation of IOVA are guaranteed to be done in the unmap
+> +	  function.
+> +
+> +	  This mode is safer than the two above, but it maybe slower in some
+> +	  high performace scenarios.
+
+and here?
+
+> +
+> +endchoice
+> +
+>  config OF_IOMMU
+>         def_bool y
+>         depends on OF && IOMMU_API
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 67ee6623f9b2a4d..56bce221285b15f 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -43,7 +43,8 @@
+>  #else
+>  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+>  #endif
+> -static bool iommu_dma_strict __read_mostly = true;
+> +static bool iommu_dma_strict __read_mostly =
+> +			IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
+>
+>  struct iommu_group {
+>  	struct kobject kobj;
+>
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
