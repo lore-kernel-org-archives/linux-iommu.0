@@ -6,42 +6,41 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D09C28CC0
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 17:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2C7C28CC0
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 17:13:49 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 98ADA25E24
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 17:13:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 98ADA25E24
+	by mail.kernel.org (Postfix) with ESMTPS id C745F25E24
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 17:13:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C745F25E24
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 561172510;
-	Thu, 30 May 2019 17:12:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E53A22535;
+	Thu, 30 May 2019 17:12:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DADEF250A;
-	Thu, 30 May 2019 17:12:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2E01D250A;
+	Thu, 30 May 2019 17:12:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 8D84787D;
-	Thu, 30 May 2019 17:12:45 +0000 (UTC)
+Received: from foss.arm.com (foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D5CB95F4;
+	Thu, 30 May 2019 17:12:48 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5D1B11684;
-	Thu, 30 May 2019 10:12:45 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B1832169E;
+	Thu, 30 May 2019 10:12:48 -0700 (PDT)
 Received: from ostrya.cambridge.arm.com (ostrya.cambridge.arm.com
 	[10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 454813F5AF; 
-	Thu, 30 May 2019 10:12:42 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9978A3F5AF; 
+	Thu, 30 May 2019 10:12:45 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 To: joro@8bytes.org,
 	mst@redhat.com
-Subject: [PATCH v8 3/7] of: Allow the iommu-map property to omit untranslated
-	devices
-Date: Thu, 30 May 2019 18:09:25 +0100
-Message-Id: <20190530170929.19366-4-jean-philippe.brucker@arm.com>
+Subject: [PATCH v8 4/7] PCI: OF: Initialize dev->fwnode appropriately
+Date: Thu, 30 May 2019 18:09:26 +0100
+Message-Id: <20190530170929.19366-5-jean-philippe.brucker@arm.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190530170929.19366-1-jean-philippe.brucker@arm.com>
 References: <20190530170929.19366-1-jean-philippe.brucker@arm.com>
@@ -69,43 +68,52 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-In PCI root complex nodes, the iommu-map property describes the IOMMU that
-translates each endpoint. On some platforms, the IOMMU itself is presented
-as a PCI endpoint (e.g. AMD IOMMU and virtio-iommu). This isn't supported
-by the current OF driver, which expects all endpoints to have an IOMMU.
-Allow the iommu-map property to have gaps.
+For PCI devices that have an OF node, set the fwnode as well. This way
+drivers that rely on fwnode don't need the special case described by
+commit f94277af03ea ("of/platform: Initialise dev->fwnode appropriately").
 
-Relaxing of_map_rid() also allows the msi-map property to have gaps, which
-is invalid since MSIs always reach an MSI controller. In that case
-pci_msi_setup_msi_irqs() will return an error when attempting to find the
-device's MSI domain.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/of/base.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/pci/of.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index 20e0e7ee4edf..55e7f5bb0549 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -2294,8 +2294,12 @@ int of_map_rid(struct device_node *np, u32 rid,
- 		return 0;
- 	}
- 
--	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
--		np, map_name, rid, target && *target ? *target : NULL);
--	return -EFAULT;
-+	pr_info("%pOF: no %s translation for rid 0x%x on %pOF\n", np, map_name,
-+		rid, target && *target ? *target : NULL);
-+
-+	/* Bypasses translation */
-+	if (id_out)
-+		*id_out = rid;
-+	return 0;
+diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+index 73d5adec0a28..c4f1b5507b40 100644
+--- a/drivers/pci/of.c
++++ b/drivers/pci/of.c
+@@ -22,12 +22,15 @@ void pci_set_of_node(struct pci_dev *dev)
+ 		return;
+ 	dev->dev.of_node = of_pci_find_child_device(dev->bus->dev.of_node,
+ 						    dev->devfn);
++	if (dev->dev.of_node)
++		dev->dev.fwnode = &dev->dev.of_node->fwnode;
  }
- EXPORT_SYMBOL_GPL(of_map_rid);
+ 
+ void pci_release_of_node(struct pci_dev *dev)
+ {
+ 	of_node_put(dev->dev.of_node);
+ 	dev->dev.of_node = NULL;
++	dev->dev.fwnode = NULL;
+ }
+ 
+ void pci_set_bus_of_node(struct pci_bus *bus)
+@@ -42,12 +45,15 @@ void pci_set_bus_of_node(struct pci_bus *bus)
+ 			bus->self->untrusted = true;
+ 	}
+ 	bus->dev.of_node = node;
++	if (node)
++		bus->dev.fwnode = &node->fwnode;
+ }
+ 
+ void pci_release_bus_of_node(struct pci_bus *bus)
+ {
+ 	of_node_put(bus->dev.of_node);
+ 	bus->dev.of_node = NULL;
++	bus->dev.fwnode = NULL;
+ }
+ 
+ struct device_node * __weak pcibios_get_phb_of_node(struct pci_bus *bus)
 -- 
 2.21.0
 
