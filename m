@@ -1,94 +1,87 @@
-Return-Path: <SRS0=Uk+I=T5=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ZfVm=T6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-13.6 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05609C28CC0
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 23:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A37B7C28CC0
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 01:06:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C1EC424314
-	for <iommu@archiver.kernel.org>; Wed, 29 May 2019 23:18:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 620EB243DA
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 01:06:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M3qzbB1q"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1EC424314
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hnIAhEAw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 620EB243DA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 71AAF2C52;
-	Wed, 29 May 2019 23:18:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 22C242E7B;
+	Thu, 30 May 2019 01:06:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 16E932C26
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D5282E55
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 23:07:31 +0000 (UTC)
+	Thu, 30 May 2019 00:55:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
-	[209.85.214.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 11E54EC
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+	[209.85.215.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 39EAC7D2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 23:07:29 +0000 (UTC)
-Received: by mail-pl1-f193.google.com with SMTP id g69so1692628plb.7
+	Thu, 30 May 2019 00:55:38 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id v11so917115pgl.5
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 16:07:29 -0700 (PDT)
+	Wed, 29 May 2019 17:55:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=EbuoCefVnNXOM+7/3lTJLOeEE6MIMd3tES4l4TDHW64=;
-	b=M3qzbB1qBronEk3HobFj0grL6qxn37uEHDCE23Rc9qHgtHVbbm7aetvz/fMuixWxxU
-	18ifnSGCUWmA8JSF7pqwjqGf7Vm4ytetknLeNECbQzJZYrD2xncVVlFfRqBuPK5oqm62
-	A8upO2dHAIenvci/wvlYReVClbElOEFJTes8v3rFEhQaZTzVYhOjndZWm9vBfaTQ8T+m
-	a7EWYUcaF6cDefqdDWahKl9XCxJobHvwxlTWGMR/HKk0ZUv258X+kfpede/Xg2Koc2k9
-	ID51BNwbNVj6+5jGUZJK9BwclNT+3waLnGXyFTsrp3Z7u6G/S4EOXO30iQQHIYNUeoOd
-	+Paw==
+	h=from:to:cc:subject:date:message-id;
+	bh=j+S8VH4EYGO4/qvjEKOLjTRlvJPXtPKggpnmCuwYCJk=;
+	b=hnIAhEAw1B8+HSc8nBdWkvnzdk8JnD7G3XYLuJBXKpPwdofWkmlKry4oTqv+eCRfIw
+	AWVq6NO+DTSJFdxnY24J3LI/0pjWkRqZltSgfEVJh1yFk43ZkCkn/f9f0mrxFH9G2fqT
+	bxS3d0SymmwS0yM/8EwfMgyB2TVJPRmiBTyVAVpOl9Xqz/xSiZC5G1BadL+K10JCniUu
+	yxIXfVwptGqpPMKI6Gu2mhgCQyTZfQ7VIdV/+jUWW/QTyKXu0nsXsRiJgAZPIYjm55O2
+	ZpEmUrzUwfGMhn82kpSq98ms7bPhVYvIMWvn8s7kXolT63MjlLDfSl/GKRXEGet7pG4D
+	Wurg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=EbuoCefVnNXOM+7/3lTJLOeEE6MIMd3tES4l4TDHW64=;
-	b=nQLN53O1uXm8iSFKTm/hP2X3YZcrxNOqFcjhKtbDOBJGnXtPO4uUQUmXfQ1qmyFuEU
-	YzaoaKiNKmWiD+wHnKKhxxhhoAcQpV5gzIdqlBHyD6hnUSk68Q71893rLo4WRemHzqdi
-	QaCHN31BVdUnY4/qHrIOQBDBRe8dA3+oZDryTE+pzC/Yvyb6jELQkP3s4SN+aKOEjYM+
-	YLN6KbIhm4+D2LDYVuIWUi6QVvrpOrCGHoRyA2Ylum7rYxat1ciB64ks4MjKI/EeooyX
-	VZV1l1pEB23+2NysHcMSaqM6gawVvIdwktNWJ0qEWsI3ufIWtZw9zLrtQpFzq3e/ya0o
-	iGEw==
-X-Gm-Message-State: APjAAAUfswRWs93CawZM2EfHnYU8ry78PLEJGN13656KQ4K7Wnojp3mA
-	MtDJpaBYD7b9g2zB2OYXaF4=
-X-Google-Smtp-Source: APXvYqyZnGjzHeeiqAw/QSIZUGr4a34eKBKdG3AsoGh8+Qmht/O/mRzd7nLEOS8kavtAfsemH3fTvQ==
-X-Received: by 2002:a17:902:b18f:: with SMTP id
-	s15mr576136plr.44.1559171249534; 
-	Wed, 29 May 2019 16:07:29 -0700 (PDT)
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=j+S8VH4EYGO4/qvjEKOLjTRlvJPXtPKggpnmCuwYCJk=;
+	b=h9SGSFNP6UZxbzEH8zZSrOVU8pArl+NQenxgvuU8E7guCSUeIJHlDjwu1hnCFlwvmP
+	SMz2UT30hDG5Tv4A8toWdA0HKbamzcKlfXKSZleRBzYNWz1NVU9w8ADh2LJZj+3HqLJc
+	2PXHZPXzRlf/jzolqKux7eWRBuEaT0nKWDog8G1b9CXKL1sz0ZOmIsH8N51eaH2s3/am
+	aXRpdvVgYcKmNX22rmGkzqX5rUw8xAd1M+Q8Oo8CTJ4Hw309zdH0+XkMNJq7Tr3OGEN7
+	AbXIUs9Hk4+Ahn3ipBZoyzbRKbaYqCMX48zFVkO6z8JNi55tKlpPpaRzaMIRKaSc4vir
+	xoow==
+X-Gm-Message-State: APjAAAXlcKlrdxKUNMGwndNv7SR5nCXsqG8Mn+Cl7NJi8r1janCm/kI8
+	MBZWTH8D+YxpKQxkAQTNKFA=
+X-Google-Smtp-Source: APXvYqxtuX8YgbcCnGunpbCj925iJH5WENQwQbWXCUKu3KUBzqJBUASxoDUJLPWti79LI/QU+rkNGg==
+X-Received: by 2002:a62:5103:: with SMTP id f3mr684368pfb.146.1559177737572;
+	Wed, 29 May 2019 17:55:37 -0700 (PDT)
 Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
 	[216.228.112.22])
-	by smtp.gmail.com with ESMTPSA id e6sm773276pfl.115.2019.05.29.16.07.27
-	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-	Wed, 29 May 2019 16:07:28 -0700 (PDT)
-Date: Wed, 29 May 2019 16:06:19 -0700
+	by smtp.gmail.com with ESMTPSA id l12sm490223pgq.26.2019.05.29.17.55.36
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 29 May 2019 17:55:37 -0700 (PDT)
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v3 0/2] Optimize dma_*_from_contiguous calls
-Message-ID: <20190529230618.GC17556@Asurada-Nvidia.nvidia.com>
-References: <20190524040633.16854-1-nicoleotsuka@gmail.com>
-	<20190528060424.GA11521@lst.de>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190528060424.GA11521@lst.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: tony@atomide.com, catalin.marinas@arm.com, will.deacon@arm.com,
-	jcmvbkbc@gmail.com, sfr@canb.auug.org.au,
-	dann.frazier@canonical.com, linux@armlinux.org.uk,
-	treding@nvidia.com, linux-xtensa@linux-xtensa.org,
-	keescook@chromium.org, akpm@linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org, chris@zankel.net,
-	wsa+renesas@sang-engineering.com, dwmw2@infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	iamjoonsoo.kim@lge.com, robin.murphy@arm.com
+To: hch@lst.de, robin.murphy@arm.com, m.szyprowski@samsung.com,
+	natechancellor@gmail.com
+Subject: [PATCH] dma-contiguous: Fix !CONFIG_DMA_CMA version of dma_{alloc,
+	free}_contiguous()
+Date: Wed, 29 May 2019 17:54:25 -0700
+Message-Id: <20190530005425.7184-1-nicoleotsuka@gmail.com>
+X-Mailer: git-send-email 2.17.1
+Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org,
+	sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com,
+	will.deacon@arm.com, linux@armlinux.org.uk,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com,
+	dann.frazier@canonical.com, akpm@linux-foundation.org,
+	treding@nvidia.com, dwmw2@infradead.org, iamjoonsoo.kim@lge.com,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -101,26 +94,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, May 28, 2019 at 08:04:24AM +0200, Christoph Hellwig wrote:
-> Thanks,
-> 
-> applied to dma-mapping for-next.
-> 
-> Can you also send a conversion of drivers/iommu/dma-iommu.c to your
-> new helpers against this tree?
-> 
-> http://git.infradead.org/users/hch/dma-mapping.git/shortlog/refs/heads/for-next
+Commit fdaeec198ada ("dma-contiguous: add dma_{alloc,free}_contiguous()
+helpers") adds a pair of new helper functions so as to abstract code in
+the dma-direct (and other places in the future), however it breaks QEMU
+boot feature using x86_64 defconfig.
 
-I can. There is a reported regression with !CONFIG_DMA_CMA now
-so I will do that after a fix is merged and the whole thing is
-stable.
+That's because x86_64 defconfig has CONFIG_DMA_CMA=n so those two newly
+introduced helper functions are empty in their !CONFIG_DMA_CMA version,
+while previously the platform independent dma-direct code had fallback
+alloc_pages_node() and __free_pages().
 
-Thank you
+So this patch fixes it by adding alloc_pages_node() and __free_pages()
+in the !CONFIG_DMA_CMA version of the two helper functions.
+
+Tested with below QEMU command:
+  qemu-system-x86_64 -m 512m \
+      -drive file=images/x86_64/rootfs.ext4,format=raw,if=ide \
+      -append 'console=ttyS0 root=/dev/sda' -nographic \
+      -kernel arch/x86_64/boot/bzImage
+
+with the rootfs from the below link:
+  https://github.com/ClangBuiltLinux/continuous-integration/raw/master/images/x86_64/rootfs.ext4
+
+Fixes: fdaeec198ada ("dma-contiguous: add dma_{alloc,free}_contiguous() helpers")
+Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+ include/linux/dma-contiguous.h | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
+index 428f3b7b1c42..c05d4e661489 100644
+--- a/include/linux/dma-contiguous.h
++++ b/include/linux/dma-contiguous.h
+@@ -50,6 +50,7 @@
+ #ifdef __KERNEL__
+ 
+ #include <linux/device.h>
++#include <linux/mm.h>
+ 
+ struct cma;
+ struct page;
+@@ -155,15 +156,20 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+ 	return false;
+ }
+ 
++/* Use fallback alloc() and free() when CONFIG_DMA_CMA=n */
+ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
+ 		gfp_t gfp)
+ {
+-	return NULL;
++	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
++	size_t align = get_order(PAGE_ALIGN(size));
++
++	return alloc_pages_node(node, gfp, align);
+ }
+ 
+ static inline void dma_free_contiguous(struct device *dev, struct page *page,
+ 		size_t size)
+ {
++	__free_pages(page, get_order(size));
+ }
+ 
+ #endif
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
