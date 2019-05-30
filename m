@@ -2,86 +2,64 @@ Return-Path: <SRS0=ZfVm=T6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A37B7C28CC0
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 01:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DE4C072B1
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 03:57:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 620EB243DA
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 01:06:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hnIAhEAw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 620EB243DA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id EAA5924994
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 03:57:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EAA5924994
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 22C242E7B;
-	Thu, 30 May 2019 01:06:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9E2B93095;
+	Thu, 30 May 2019 03:57:36 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D5282E55
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6B518306D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 30 May 2019 00:55:38 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
-	[209.85.215.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 39EAC7D2
+	Thu, 30 May 2019 03:49:21 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CD02A619
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 30 May 2019 00:55:38 +0000 (UTC)
-Received: by mail-pg1-f195.google.com with SMTP id v11so917115pgl.5
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 29 May 2019 17:55:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id;
-	bh=j+S8VH4EYGO4/qvjEKOLjTRlvJPXtPKggpnmCuwYCJk=;
-	b=hnIAhEAw1B8+HSc8nBdWkvnzdk8JnD7G3XYLuJBXKpPwdofWkmlKry4oTqv+eCRfIw
-	AWVq6NO+DTSJFdxnY24J3LI/0pjWkRqZltSgfEVJh1yFk43ZkCkn/f9f0mrxFH9G2fqT
-	bxS3d0SymmwS0yM/8EwfMgyB2TVJPRmiBTyVAVpOl9Xqz/xSiZC5G1BadL+K10JCniUu
-	yxIXfVwptGqpPMKI6Gu2mhgCQyTZfQ7VIdV/+jUWW/QTyKXu0nsXsRiJgAZPIYjm55O2
-	ZpEmUrzUwfGMhn82kpSq98ms7bPhVYvIMWvn8s7kXolT63MjlLDfSl/GKRXEGet7pG4D
-	Wurg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id;
-	bh=j+S8VH4EYGO4/qvjEKOLjTRlvJPXtPKggpnmCuwYCJk=;
-	b=h9SGSFNP6UZxbzEH8zZSrOVU8pArl+NQenxgvuU8E7guCSUeIJHlDjwu1hnCFlwvmP
-	SMz2UT30hDG5Tv4A8toWdA0HKbamzcKlfXKSZleRBzYNWz1NVU9w8ADh2LJZj+3HqLJc
-	2PXHZPXzRlf/jzolqKux7eWRBuEaT0nKWDog8G1b9CXKL1sz0ZOmIsH8N51eaH2s3/am
-	aXRpdvVgYcKmNX22rmGkzqX5rUw8xAd1M+Q8Oo8CTJ4Hw309zdH0+XkMNJq7Tr3OGEN7
-	AbXIUs9Hk4+Ahn3ipBZoyzbRKbaYqCMX48zFVkO6z8JNi55tKlpPpaRzaMIRKaSc4vir
-	xoow==
-X-Gm-Message-State: APjAAAXlcKlrdxKUNMGwndNv7SR5nCXsqG8Mn+Cl7NJi8r1janCm/kI8
-	MBZWTH8D+YxpKQxkAQTNKFA=
-X-Google-Smtp-Source: APXvYqxtuX8YgbcCnGunpbCj925iJH5WENQwQbWXCUKu3KUBzqJBUASxoDUJLPWti79LI/QU+rkNGg==
-X-Received: by 2002:a62:5103:: with SMTP id f3mr684368pfb.146.1559177737572;
-	Wed, 29 May 2019 17:55:37 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
-	[216.228.112.22])
-	by smtp.gmail.com with ESMTPSA id l12sm490223pgq.26.2019.05.29.17.55.36
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 29 May 2019 17:55:37 -0700 (PDT)
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: hch@lst.de, robin.murphy@arm.com, m.szyprowski@samsung.com,
-	natechancellor@gmail.com
-Subject: [PATCH] dma-contiguous: Fix !CONFIG_DMA_CMA version of dma_{alloc,
-	free}_contiguous()
-Date: Wed, 29 May 2019 17:54:25 -0700
-Message-Id: <20190530005425.7184-1-nicoleotsuka@gmail.com>
-X-Mailer: git-send-email 2.17.1
-Cc: chris@zankel.net, linux-xtensa@linux-xtensa.org, keescook@chromium.org,
-	sfr@canb.auug.org.au, tony@atomide.com, catalin.marinas@arm.com,
-	will.deacon@arm.com, linux@armlinux.org.uk,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	jcmvbkbc@gmail.com, wsa+renesas@sang-engineering.com,
-	dann.frazier@canonical.com, akpm@linux-foundation.org,
-	treding@nvidia.com, dwmw2@infradead.org, iamjoonsoo.kim@lge.com,
-	linux-arm-kernel@lists.infradead.org
+	Thu, 30 May 2019 03:49:20 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+	by Forcepoint Email with ESMTP id A41468F06A13BCCAA76D;
+	Thu, 30 May 2019 11:49:17 +0800 (CST)
+Received: from HGHY4L002753561.china.huawei.com (10.133.215.186) by
+	DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server
+	id 14.3.439.0; Thu, 30 May 2019 11:49:10 +0800
+From: Zhen Lei <thunder.leizhen@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
+	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+	<will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet
+	<corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott
+	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
+	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
+	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
+	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
+	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
+	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
+	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
+	<iommu@lists.linux-foundation.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
+	linux-ia64 <linux-ia64@vger.kernel.org>
+Subject: [PATCH v8 0/7] iommu: enhance IOMMU default DMA mode build options
+Date: Thu, 30 May 2019 11:48:24 +0800
+Message-ID: <20190530034831.4184-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.21.0.windows.1
+MIME-Version: 1.0
+X-Originating-IP: [10.133.215.186]
+X-CFilter-Loop: Reflected
+Cc: Hanjun Guo <guohanjun@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,77 +72,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Commit fdaeec198ada ("dma-contiguous: add dma_{alloc,free}_contiguous()
-helpers") adds a pair of new helper functions so as to abstract code in
-the dma-direct (and other places in the future), however it breaks QEMU
-boot feature using x86_64 defconfig.
+v7--> v8
+1. Split into multiple small patches base on ARCHs or IOMMU drivers.
+2. Hide the unsupported build options on the related ARCH or IOMMU.
 
-That's because x86_64 defconfig has CONFIG_DMA_CMA=n so those two newly
-introduced helper functions are empty in their !CONFIG_DMA_CMA version,
-while previously the platform independent dma-direct code had fallback
-alloc_pages_node() and __free_pages().
+v6 --> v7:
+1. Fix some text editing errors
 
-So this patch fixes it by adding alloc_pages_node() and __free_pages()
-in the !CONFIG_DMA_CMA version of the two helper functions.
+v5 --> v6:
+1. give up adding boot option iommu.dma_mode
 
-Tested with below QEMU command:
-  qemu-system-x86_64 -m 512m \
-      -drive file=images/x86_64/rootfs.ext4,format=raw,if=ide \
-      -append 'console=ttyS0 root=/dev/sda' -nographic \
-      -kernel arch/x86_64/boot/bzImage
+v4 --> v5:
+As Hanjun and Thomas Gleixner's suggestion:
+1. Keep the old ARCH specific boot options no change.
+2. Keep build option CONFIG_IOMMU_DEFAULT_PASSTHROUGH no change.
 
-with the rootfs from the below link:
-  https://github.com/ClangBuiltLinux/continuous-integration/raw/master/images/x86_64/rootfs.ext4
+v4:
+As Robin Murphy's suggestion:
+"It's also not necessarily obvious to the user how this interacts with
+IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
+would be better to refactor the whole lot into a single selection of something
+like IOMMU_DEFAULT_MODE anyway."
 
-Fixes: fdaeec198ada ("dma-contiguous: add dma_{alloc,free}_contiguous() helpers")
-Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- include/linux/dma-contiguous.h | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+In this version, I tried to normalize the IOMMU dma mode boot options for all
+ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
+lazy(mapping but defer the IOTLB invalidation), strict. But currently each
+ARCHs defined their private boot options, different with each other. For
+example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
+X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
 
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index 428f3b7b1c42..c05d4e661489 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -50,6 +50,7 @@
- #ifdef __KERNEL__
- 
- #include <linux/device.h>
-+#include <linux/mm.h>
- 
- struct cma;
- struct page;
-@@ -155,15 +156,20 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 	return false;
- }
- 
-+/* Use fallback alloc() and free() when CONFIG_DMA_CMA=n */
- static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
- 		gfp_t gfp)
- {
--	return NULL;
-+	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-+	size_t align = get_order(PAGE_ALIGN(size));
-+
-+	return alloc_pages_node(node, gfp, align);
- }
- 
- static inline void dma_free_contiguous(struct device *dev, struct page *page,
- 		size_t size)
- {
-+	__free_pages(page, get_order(size));
- }
- 
- #endif
+Zhen Lei (7):
+  iommu: enhance IOMMU default DMA mode build options
+  x86/dma: use IS_ENABLED() to simplify the code
+  s390/pci: add support for IOMMU default DMA mode build options
+  powernv/iommu: add support for IOMMU default DMA mode build options
+  iommu/vt-d: add support for IOMMU default DMA mode build options
+  iommu/amd: add support for IOMMU default DMA mode build options
+  ia64: hide build option IOMMU_DEFAULT_PASSTHROUGH
+
+ arch/powerpc/platforms/powernv/pci-ioda.c |  3 +-
+ arch/s390/pci/pci_dma.c                   |  2 +-
+ arch/x86/kernel/pci-dma.c                 |  7 ++---
+ drivers/iommu/Kconfig                     | 46 ++++++++++++++++++++++++++-----
+ drivers/iommu/amd_iommu_init.c            |  3 +-
+ drivers/iommu/intel-iommu.c               |  2 +-
+ drivers/iommu/iommu.c                     |  3 +-
+ 7 files changed, 49 insertions(+), 17 deletions(-)
+
 -- 
-2.17.1
+1.8.3
+
 
 _______________________________________________
 iommu mailing list
