@@ -6,35 +6,35 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D100BC28CC2
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 03:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36794C072B1
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 03:58:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B431523FC2
-	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 03:58:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B431523FC2
+	by mail.kernel.org (Postfix) with ESMTPS id 1632C242C4
+	for <iommu@archiver.kernel.org>; Thu, 30 May 2019 03:58:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1632C242C4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A557230A1;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E77E330A4;
 	Thu, 30 May 2019 03:57:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8F4F73070
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7D0993070
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 30 May 2019 03:49:26 +0000 (UTC)
+	Thu, 30 May 2019 03:49:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DD65C821
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3B9487D2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 30 May 2019 03:49:24 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-	by Forcepoint Email with ESMTP id BDE66C3CFC5D45E96D5B;
-	Thu, 30 May 2019 11:49:22 +0800 (CST)
+	Thu, 30 May 2019 03:49:30 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id BC38EA36FC591233E71A;
+	Thu, 30 May 2019 11:49:27 +0800 (CST)
 Received: from HGHY4L002753561.china.huawei.com (10.133.215.186) by
 	DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server
-	id 14.3.439.0; Thu, 30 May 2019 11:49:15 +0800
+	id 14.3.439.0; Thu, 30 May 2019 11:49:20 +0800
 From: Zhen Lei <thunder.leizhen@huawei.com>
 To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
@@ -52,10 +52,9 @@ To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
 	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
 	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v8 3/7] s390/pci: add support for IOMMU default DMA mode build
-	options
-Date: Thu, 30 May 2019 11:48:27 +0800
-Message-ID: <20190530034831.4184-4-thunder.leizhen@huawei.com>
+Subject: [PATCH v8 7/7] ia64: hide build option IOMMU_DEFAULT_PASSTHROUGH
+Date: Thu, 30 May 2019 11:48:31 +0800
+Message-ID: <20190530034831.4184-8-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.21.0.windows.1
 In-Reply-To: <20190530034831.4184-1-thunder.leizhen@huawei.com>
 References: <20190530034831.4184-1-thunder.leizhen@huawei.com>
@@ -80,47 +79,23 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The default DMA mode is LAZY on s390, this patch make it can be set to
-STRICT at build time. It can be overridden by boot option.
-
-There is no functional change.
+The DMA mode PASSTHROUGH is not used on ia64.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- arch/s390/pci/pci_dma.c | 2 +-
- drivers/iommu/Kconfig   | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-index 9e52d1527f71495..784ad1e0acecfb1 100644
---- a/arch/s390/pci/pci_dma.c
-+++ b/arch/s390/pci/pci_dma.c
-@@ -17,7 +17,7 @@
- 
- static struct kmem_cache *dma_region_table_cache;
- static struct kmem_cache *dma_page_table_cache;
--static int s390_iommu_strict;
-+static int s390_iommu_strict = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
- 
- static int zpci_refresh_global(struct zpci_dev *zdev)
- {
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d6a1a45f80ffbf5..9b48c2fc20e14d3 100644
+index f6c030433d38048..f7400e35628dce4 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -78,6 +78,7 @@ config IOMMU_DEBUGFS
- choice
- 	prompt "IOMMU default DMA mode"
- 	depends on IOMMU_API
-+	default IOMMU_DEFAULT_LAZY if S390_IOMMU
- 	default IOMMU_DEFAULT_STRICT
- 	help
- 	  This option allows IOMMU DMA mode to be chose at build time, to
-@@ -87,6 +88,7 @@ choice
+@@ -89,7 +89,7 @@ choice
  
  config IOMMU_DEFAULT_PASSTHROUGH
  	bool "passthrough"
-+	depends on !S390_IOMMU
+-	depends on !S390_IOMMU
++	depends on (!S390_IOMMU && !IA64)
  	help
  	  In this mode, the DMA access through IOMMU without any addresses
  	  translation. That means, the wrong or illegal DMA access can not
