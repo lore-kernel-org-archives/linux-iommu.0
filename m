@@ -2,75 +2,107 @@ Return-Path: <SRS0=mJb0=T7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D96C28CC2
-	for <iommu@archiver.kernel.org>; Fri, 31 May 2019 12:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F01DC04AB6
+	for <iommu@archiver.kernel.org>; Fri, 31 May 2019 13:10:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 518FE23B19
-	for <iommu@archiver.kernel.org>; Fri, 31 May 2019 12:05:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 518FE23B19
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0067A26933
+	for <iommu@archiver.kernel.org>; Fri, 31 May 2019 13:10:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="piBRNDz/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0067A26933
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 235D2107F;
-	Fri, 31 May 2019 12:05:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B48951183;
+	Fri, 31 May 2019 13:10:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54B6B1065
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7BFBD1170
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 31 May 2019 12:05:03 +0000 (UTC)
+	Fri, 31 May 2019 13:09:29 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-it1-f194.google.com (mail-it1-f194.google.com
-	[209.85.166.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BAED05F4
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com
+	(mail-eopbgr30053.outbound.protection.outlook.com [40.107.3.53])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B24B05F4
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 31 May 2019 12:05:02 +0000 (UTC)
-Received: by mail-it1-f194.google.com with SMTP id j17so10765295itk.0
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 31 May 2019 05:05:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc:content-transfer-encoding;
-	bh=tqrmQ2U13+xCmSb38oWvwz7Ya/O77rdp+A5n3MJMo9s=;
-	b=EAVssgeGBCvIeN+LOaVQJhli9zK5WDpZ2PQL9gkDLY6QdVReJFS1rLxx9WjhOmAMmj
-	v1vagOru+dq6oya+bCAnPtDOBj3bJSbfA4vB4ZivogSmc4lL8rRDf4cUZwkalajh+0a8
-	OFJ9lBVSYOiTVx+6GPpK9ri0cAcGKqKbL4uYz+EYhQraAJ+jsdzRQcduU3Tu/kHNM7dY
-	Jz5dXSxcfdm7acMdECPVKF+igmk9nVUz1yfu7+YC6sghTCUOPf/Edd4mhM6sOUyFkDwj
-	pmLKBvxvT2XLiQ5xog/MWg1EIYec5M2Ig9isAg2bi7XneZaeNqljqC62/ZjW4KpqoUux
-	Q7OA==
-X-Gm-Message-State: APjAAAXWcl/VfojwHC3+vSH+qNjowFvSEV1K69JCt3pFxRSCFU+jWXAe
-	WSeNFIQfqbCus6K637urDeW8QZjA0APYGm94GW4=
-X-Google-Smtp-Source: APXvYqySiM9LW0NoBLx4rQzzZSpkGZOKNt7EZ4KDgWPh4CJ8HWvRwy6qvhRMJVkCU4IorVkpiTWZW/8PXo9JPFU0TFc=
-X-Received: by 2002:a24:5a45:: with SMTP id v66mr6900489ita.140.1559304302034; 
-	Fri, 31 May 2019 05:05:02 -0700 (PDT)
+	Fri, 31 May 2019 13:09:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=thIHFzZq6Yb7o0fGxI4pwYvE39AiI5eu80a85wEuJ1M=;
+	b=piBRNDz/eG+pR7bxfuC6i1wl8ga2ktUmDf4jTvetzep3//wcRekFdj/IKE5xVPUlWWOtzUoxJCr+wuB6WhPjFWQbeAqgmJSfghpkdyyWyYNXHNGZFFuV/o2TMFm6mxBi9DZKQltnEX6YKC8Au9LONQO72h8BLhdgZTRbVFXKoDc=
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.50.159) by
+	VI1PR04MB5583.eurprd04.prod.outlook.com (20.178.123.33) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.1943.17; Fri, 31 May 2019 13:09:25 +0000
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::8d0e:de86:9b49:b40]) by VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::8d0e:de86:9b49:b40%7]) with mapi id 15.20.1922.024;
+	Fri, 31 May 2019 13:09:25 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: David Miller <davem@davemloft.net>
+Subject: RE: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
+Thread-Topic: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
+Thread-Index: AQHVFvLAUsVmmx2jaE2ZHLZY1pGN66aEOpgAgAD6PbA=
+Date: Fri, 31 May 2019 13:09:25 +0000
+Message-ID: <VI1PR04MB5134C8FF07C4BED216DE12DCEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
+References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
+	<20190530.150844.1826796344374758568.davem@davemloft.net>
+In-Reply-To: <20190530.150844.1826796344374758568.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=laurentiu.tudor@nxp.com; 
+x-originating-ip: [192.88.166.1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3b320303-6336-4846-e41c-08d6e5c934cc
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
+	SRVR:VI1PR04MB5583; 
+x-ms-traffictypediagnostic: VI1PR04MB5583:
+x-ms-exchange-purlcount: 1
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-microsoft-antispam-prvs: <VI1PR04MB5583705E1A156E9DF61DFD80EC190@VI1PR04MB5583.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1443;
+x-forefront-prvs: 00540983E2
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(136003)(366004)(376002)(39860400002)(346002)(396003)(189003)(199004)(13464003)(26005)(66946007)(64756008)(6916009)(73956011)(11346002)(3846002)(99286004)(33656002)(6116002)(4744005)(66556008)(76176011)(66446008)(66476007)(186003)(55016002)(44832011)(966005)(7696005)(476003)(14454004)(446003)(486006)(478600001)(6246003)(2906002)(229853002)(4326008)(6436002)(25786009)(14444005)(74316002)(9686003)(68736007)(6306002)(76116006)(52536014)(66066001)(305945005)(71190400001)(71200400001)(53936002)(54906003)(6506007)(256004)(5660300002)(7736002)(8936002)(102836004)(81156014)(86362001)(81166006)(316002)(8676002);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR04MB5583;
+	H:VI1PR04MB5134.eurprd04.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: nxp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: gnqMazF+nzQTNQhmoGkYY7imzrTpo5wzUZ0kcmM93IUJDEfrqOQ15Bn2XqpCjTa3uflPhM7mwZTLTJgCnOUMXfqxueSQmCHsmwuAwaYHLFQxyZeA6CAuWSXcyDGmQxgMgurtAAz281eZP7q6owXMEUUFykgBzo6nbx9XLMwdU7nTQqRDIV2Fv5osOT8lAg8ICwAL949f8xK40AVKOr6S1UYlcAdys2155+H3eB4fm0RARCGp+1BPqG0DAysREEtvLq053Y2HP+E+fycMKUfnmo9NG07i3yb3lspMDUUOngq7ufnseDXmT8SuNLpk/KpW+IN7lsj8hZ9EgjOrbqtoY6JpLj4gg4Dz+KhCE1/Dq0pUwajK3hUW1m72SLQA0D0ML6OAEf2x2E88mvqknaf9qppWSBg3/as88O4VfPz4pds=
 MIME-Version: 1.0
-References: <20190521161102.29620-1-peron.clem@gmail.com>
-	<CAAObsKD8bij1ANLqX6y11Y6mDEXiymNjrDkmHmvGWiFLKWu_FA@mail.gmail.com>
-	<4ff02295-6c34-791b-49f4-6558a92ad7a3@arm.com>
-In-Reply-To: <4ff02295-6c34-791b-49f4-6558a92ad7a3@arm.com>
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Date: Fri, 31 May 2019 14:04:50 +0200
-Message-ID: <CAAObsKBt1tPw9RKGi_Xey=1zy9Tu3N+A=1te2R8=NuJ5tDBqVg@mail.gmail.com>
-Subject: Re: [PATCH v6 0/6] Allwinner H6 Mali GPU support
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>,
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>, Neil Armstrong <narmstrong@baylibre.com>,
-	David Airlie <airlied@linux.ie>, Will Deacon <will.deacon@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	dri-devel <dri-devel@lists.freedesktop.org>,
-	Steven Price <steven.price@arm.com>,
-	Maxime Ripard <maxime.ripard@bootlin.com>,
-	Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
-	=?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-	Linux IOMMU <iommu@lists.linux-foundation.org>,
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b320303-6336-4846-e41c-08d6e5c934cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2019 13:09:25.4735 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: laurentiu.tudor@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5583
+Cc: Madalin-cristian Bucur <madalin.bucur@nxp.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	Roy Pledge <roy.pledge@nxp.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Leo Li <leoyang.li@nxp.com>,
+	"jocke@infinera.com" <joakim.tjernlund@infinera.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Camelia Alexandra Groza <camelia.groza@nxp.com>,
+	"u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"linux-arm-kernel@lists.infradead.org"
 	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -84,65 +116,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gV2VkLCAyOSBNYXkgMjAxOSBhdCAxOTozOCwgUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlA
-YXJtLmNvbT4gd3JvdGU6Cj4KPiBPbiAyOS8wNS8yMDE5IDE2OjA5LCBUb21ldSBWaXpvc28gd3Jv
-dGU6Cj4gPiBPbiBUdWUsIDIxIE1heSAyMDE5IGF0IDE4OjExLCBDbMOpbWVudCBQw6lyb24gPHBl
-cm9uLmNsZW1AZ21haWwuY29tPiB3cm90ZToKPiA+Pgo+ID4gW3NuaXBdCj4gPj4gWyAgMzQ1LjIw
-NDgxM10gcGFuZnJvc3QgMTgwMDAwMC5ncHU6IG1tdSBpcnEgc3RhdHVzPTEKPiA+PiBbICAzNDUu
-MjA5NjE3XSBwYW5mcm9zdCAxODAwMDAwLmdwdTogVW5oYW5kbGVkIFBhZ2UgZmF1bHQgaW4gQVMw
-IGF0IFZBCj4gPj4gMHgwMDAwMDAwMDAyNDAwNDAwCj4gPgo+ID4gIEZyb20gd2hhdCBJIGNhbiBz
-ZWUgaGVyZSwgMHgwMDAwMDAwMDAyNDAwNDAwIHBvaW50cyB0byB0aGUgZmlyc3QgYnl0ZQo+ID4g
-b2YgdGhlIGZpcnN0IHN1Ym1pdHRlZCBqb2IgZGVzY3JpcHRvci4KPiA+Cj4gPiBTbyBtYXBwaW5n
-IGJ1ZmZlcnMgZm9yIHRoZSBHUFUgZG9lc24ndCBzZWVtIHRvIGJlIHdvcmtpbmcgYXQgYWxsIG9u
-Cj4gPiA2NC1iaXQgVC03NjAuCj4gPgo+ID4gU3RldmVuLCBSb2JpbiwgZG8geW91IGhhdmUgYW55
-IGlkZWEgb2Ygd2h5IHRoaXMgY291bGQgYmU/Cj4KPiBJIHRyaWVkIHJvbGxpbmcgYmFjayB0byB0
-aGUgb2xkIHBhbmZyb3N0L25vbmRybSBzaGltLCBhbmQgaXQgd29ya3MgZmluZQo+IHdpdGgga2Jh
-c2UsIGFuZCBJIGFsc28gZm91bmQgdGhhdCBULTgyMCBmYWxscyBvdmVyIGluIHRoZSBleGFjdCBz
-YW1lCj4gbWFubmVyLCBzbyB0aGUgZmFjdCB0aGF0IGl0IHNlZW1lZCB0byBiZSBjb21tb24gdG8g
-dGhlIHNtYWxsZXIgMzMtYml0Cj4gZGVzaWducyByYXRoZXIgdGhhbiBhbnl0aGluZyB0byBkbyB3
-aXRoIHRoZSBvdGhlcgo+IGpvYl9kZXNjcmlwdG9yX3NpemUvdjQvdjUgY29tcGxpY2F0aW9uIHR1
-cm5lZCBvdXQgdG8gYmUgdGVsbGluZy4KCklzIHRoaXMgY29tcGxpY2F0aW9uIHNvbWV0aGluZyB5
-b3UgY2FuIGV4cGxhaW4/IEkgZG9uJ3Qga25vdyB3aGF0IHY0CmFuZCB2NSBhcmUgbWVhbnQgaGVy
-ZS4KCj4gWyBhcyBhbiBhc2lkZSwgYXJlIDY0LWJpdCBqb2JzIGFjdHVhbGx5IGtub3duIG5vdCB0
-byB3b3JrIG9uIHY0IEdQVXMsIG9yCj4gaXMgaXQganVzdCB0aGF0IG5vYm9keSdzIHlldCBvYnNl
-cnZlZCBhIDY0LWJpdCBibG9iIGRyaXZpbmcgb25lPyBdCgpJJ20gbG9va2luZyByaWdodCBub3cg
-YXQgZ2V0dGluZyBQYW5mcm9zdCB3b3JraW5nIG9uIFQ3MjAgd2l0aCA2NC1iaXQKZGVzY3JpcHRv
-cnMsIHdpdGggdGhlIHVsdGltYXRlIGdvYWwgb2YgbWFraW5nIFBhbmZyb3N0CjY0LWJpdC1kZXNj
-cmlwdG9yIG9ubHkgc28gd2UgY2FuIGhhdmUgYSBzaW5nbGUgYnVpbGQgb2YgTWVzYSBpbgpkaXN0
-cm9zLgoKPiBMb25nIHN0b3J5IHNob3J0LCBpdCBhcHBlYXJzIHRoYXQgJ01hbGkgTFBBRScgaXMg
-YWxzbyBsYWNraW5nIHRoZSBzdGFydAo+IGxldmVsIG5vdGlvbiBvZiBWTVNBLCBhbmQgZXhwZWN0
-cyBhIGZ1bGwgNC1sZXZlbCB0YWJsZSBldmVuIGZvciA8NDAgYml0cwo+IHdoZW4gbGV2ZWwgMCBl
-ZmZlY3RpdmVseSByZWR1bmRhbnQuIFRodXMgd2Fsa2luZyB0aGUgMy1sZXZlbCB0YWJsZSB0aGF0
-Cj4gaW8tcGd0YWJsZSBjb21lcyBiYWNrIHdpdGggZW5kcyB1cCBnb2luZyB3aWxkbHkgd3Jvbmcu
-IFRoZSBoYWNrIGJlbG93Cj4gc2VlbXMgdG8gZG8gdGhlIGpvYiBmb3IgbWU7IGlmIENsw6ltZW50
-IGNhbiBjb25maXJtIChvbiBULTcyMCB5b3UnbGwKPiBzdGlsbCBuZWVkIHRoZSB1c2Vyc3BhY2Ug
-aGFjayB0byBmb3JjZSAzMi1iaXQgam9icyBhcyB3ZWxsKSB0aGVuIEkgdGhpbmsKPiBJJ2xsIGNv
-b2sgdXAgYSBwcm9wZXIgcmVmYWN0b3Jpbmcgb2YgdGhlIGFsbG9jYXRvciB0byBwdXQgdGhpbmdz
-IHJpZ2h0LgoKTW1hcHMgc2VlbSB0byB3b3JrIHdpdGggdGhpcyBwYXRjaCwgdGhhbmtzLgoKVGhl
-IG1haW4gY29tcGxpY2F0aW9uIEknbSBmYWNpbmcgcmlnaHQgbm93IHNlZW1zIHRvIGJlIHRoYXQg
-dGhlIFNGQkQKZGVzY3JpcHRvciBvbiBUNzIwIHNlZW1zIHRvIGJlIGRpZmZlcmVudCBmcm9tIHRo
-ZSBvbmUgd2UgYWxyZWFkeSBoYWQKKHRlc3RlZCBvbiBUNnh4PykuCgpDaGVlcnMsCgpUb21ldQoK
-PiBSb2Jpbi4KPgo+Cj4gLS0tLS0+OC0tLS0tCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUv
-aW8tcGd0YWJsZS1hcm0uYyBiL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYwo+IGluZGV4
-IDU0Njk2OGQ4YTM0OS4uZjI5ZGE2ZThkYzA4IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
-aW8tcGd0YWJsZS1hcm0uYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYwo+
-IEBAIC0xMDIzLDEyICsxMDIzLDE0IEBAIGFybV9tYWxpX2xwYWVfYWxsb2NfcGd0YWJsZShzdHJ1
-Y3QKPiBpb19wZ3RhYmxlX2NmZyAqY2ZnLCB2b2lkICpjb29raWUpCj4gICAgICAgICBpb3AgPSBh
-cm1fNjRfbHBhZV9hbGxvY19wZ3RhYmxlX3MxKGNmZywgY29va2llKTsKPiAgICAgICAgIGlmIChp
-b3ApIHsKPiAgICAgICAgICAgICAgICAgdTY0IG1haXIsIHR0YnI7Cj4gKyAgICAgICAgICAgICAg
-IHN0cnVjdCBhcm1fbHBhZV9pb19wZ3RhYmxlICpkYXRhID0gaW9fcGd0YWJsZV9vcHNfdG9fZGF0
-YSgmaW9wLT5vcHMpOwo+Cj4gKyAgICAgICAgICAgICAgIGRhdGEtPmxldmVscyA9IDQ7Cj4gICAg
-ICAgICAgICAgICAgIC8qIENvcHkgdmFsdWVzIGFzIHVuaW9uIGZpZWxkcyBvdmVybGFwICovCj4g
-ICAgICAgICAgICAgICAgIG1haXIgPSBjZmctPmFybV9scGFlX3MxX2NmZy5tYWlyWzBdOwo+ICAg
-ICAgICAgICAgICAgICB0dGJyID0gY2ZnLT5hcm1fbHBhZV9zMV9jZmcudHRiclswXTsKPgo+IF9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gZHJpLWRldmVs
-IG1haWxpbmcgbGlzdAo+IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKPiBodHRwczov
-L2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbApfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hello,
+
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Friday, May 31, 2019 1:09 AM
+> 
+> From: laurentiu.tudor@nxp.com
+> Date: Thu, 30 May 2019 17:19:45 +0300
+> 
+> > Depends on this pull request:
+> >
+> >
+> http://lists.infradead.org/pipermail/linux-arm-kernel/2019-May/653554.html
+> 
+> I'm not sure how you want me to handle this.
+
+Dave, would it make sense / be possible to also pick Leo's PR through your tree?
+
+---
+Thanks & Best Regards, Laurentiu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
