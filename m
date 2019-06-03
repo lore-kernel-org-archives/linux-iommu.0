@@ -2,64 +2,66 @@ Return-Path: <SRS0=n9pq=UC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50120C28CC6
-	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 11:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D693CC04AB5
+	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 11:17:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3399D24E7D
-	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 11:14:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3399D24E7D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id B3E5125DE4
+	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 11:17:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3E5125DE4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E37DFB59;
-	Mon,  3 Jun 2019 11:14:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D8F0B2F;
+	Mon,  3 Jun 2019 11:17:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5D7B67A4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A7F557A4
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  3 Jun 2019 11:14:35 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 9E0165D3
+	Mon,  3 Jun 2019 11:17:35 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 839DF5D3
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  3 Jun 2019 11:14:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 41DF1A78;
-	Mon,  3 Jun 2019 04:14:34 -0700 (PDT)
-Received: from [10.1.196.75] (e110467-lin.cambridge.arm.com [10.1.196.75])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3EC4F3F5AF;
-	Mon,  3 Jun 2019 04:14:29 -0700 (PDT)
+	Mon,  3 Jun 2019 11:17:32 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id C725068AA6; Mon,  3 Jun 2019 13:17:05 +0200 (CEST)
+Date: Mon, 3 Jun 2019 13:17:05 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
 Subject: Re: [PATCH] of/device: add blacklist for iommu dma_ops
-To: Rob Clark <robdclark@gmail.com>, Tomasz Figa <tfiga@chromium.org>
+Message-ID: <20190603111705.GA27163@lst.de>
 References: <20181201165348.24140-1-robdclark@gmail.com>
 	<CAL_JsqJmPqis46Un91QyhXgdrVtfATMP_hTp6wSeSAfc8MLFfw@mail.gmail.com>
 	<CAF6AEGs9Nsft8ofZkGz_yWBPBC+prh8dBSkJ4PJr8yk2c5FMdQ@mail.gmail.com>
 	<CAF6AEGt-dhbQS5zZCNVTLT57OiUwO0RiP5bawTSu2RKZ-7W-aw@mail.gmail.com>
 	<CAAFQd5BdrJFL5LKK8O5NPDKWfFgkTX_JU-jU3giEz33tj-jwCA@mail.gmail.com>
-	<CAF6AEGtj+kyXqKeJK2-0e1jw_A4wz-yBEyv5zhf5Vfoi2_p2CA@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <401f9948-14bd-27a2-34c1-fb429cae966d@arm.com>
-Date: Mon, 3 Jun 2019 12:14:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	<4864dc3e-6e04-43e5-32c8-2cf5a0705fe5@codeaurora.org>
+	<CAF6AEGuFyk1DJWUcQTnW=xsEUhYTYJccjzHJFxvipK4M8UdrUA@mail.gmail.com>
+	<CAFp+6iGexVjbak8RQhEQNPp5cV8PK2ubTNNCMyaFPqdTGAbJ0A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAF6AEGtj+kyXqKeJK2-0e1jw_A4wz-yBEyv5zhf5Vfoi2_p2CA@mail.gmail.com>
-Content-Language: en-GB
-Cc: devicetree@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-	Frank Rowand <frowand.list@gmail.com>, David Airlie <airlied@linux.ie>,
-	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+Content-Disposition: inline
+In-Reply-To: <CAFp+6iGexVjbak8RQhEQNPp5cV8PK2ubTNNCMyaFPqdTGAbJ0A@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+	<devicetree@vger.kernel.org>, Archit Taneja <architt@codeaurora.org>,
+	David Airlie <airlied@linux.ie>,
+	freedreno <freedreno@lists.freedesktop.org>,
 	Will Deacon <will.deacon@arm.com>, Doug Anderson <dianders@chromium.org>,
 	dri-devel <dri-devel@lists.freedesktop.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
 	Linux IOMMU <iommu@lists.linux-foundation.org>,
-	Rob Herring <robh+dt@kernel.org>, Sean Paul <seanpaul@chromium.org>,
-	freedreno <freedreno@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>
+	Sean Paul <seanpaul@chromium.org>, Daniel Vetter <daniel@ffwll.ch>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,182 +74,15 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 03/06/2019 11:47, Rob Clark wrote:
-> On Sun, Jun 2, 2019 at 11:25 PM Tomasz Figa <tfiga@chromium.org> wrote:
->>
->> On Mon, Jun 3, 2019 at 4:40 AM Rob Clark <robdclark@gmail.com> wrote:
->>>
->>> On Fri, May 10, 2019 at 7:35 AM Rob Clark <robdclark@gmail.com> wrote:
->>>>
->>>> On Tue, Dec 4, 2018 at 2:29 PM Rob Herring <robh+dt@kernel.org> wrote:
->>>>>
->>>>> On Sat, Dec 1, 2018 at 10:54 AM Rob Clark <robdclark@gmail.com> wrote:
->>>>>>
->>>>>> This solves a problem we see with drm/msm, caused by getting
->>>>>> iommu_dma_ops while we attach our own domain and manage it directly at
->>>>>> the iommu API level:
->>>>>>
->>>>>>    [0000000000000038] user address but active_mm is swapper
->>>>>>    Internal error: Oops: 96000005 [#1] PREEMPT SMP
->>>>>>    Modules linked in:
->>>>>>    CPU: 7 PID: 70 Comm: kworker/7:1 Tainted: G        W         4.19.3 #90
->>>>>>    Hardware name: xxx (DT)
->>>>>>    Workqueue: events deferred_probe_work_func
->>>>>>    pstate: 80c00009 (Nzcv daif +PAN +UAO)
->>>>>>    pc : iommu_dma_map_sg+0x7c/0x2c8
->>>>>>    lr : iommu_dma_map_sg+0x40/0x2c8
->>>>>>    sp : ffffff80095eb4f0
->>>>>>    x29: ffffff80095eb4f0 x28: 0000000000000000
->>>>>>    x27: ffffffc0f9431578 x26: 0000000000000000
->>>>>>    x25: 00000000ffffffff x24: 0000000000000003
->>>>>>    x23: 0000000000000001 x22: ffffffc0fa9ac010
->>>>>>    x21: 0000000000000000 x20: ffffffc0fab40980
->>>>>>    x19: ffffffc0fab40980 x18: 0000000000000003
->>>>>>    x17: 00000000000001c4 x16: 0000000000000007
->>>>>>    x15: 000000000000000e x14: ffffffffffffffff
->>>>>>    x13: ffff000000000000 x12: 0000000000000028
->>>>>>    x11: 0101010101010101 x10: 7f7f7f7f7f7f7f7f
->>>>>>    x9 : 0000000000000000 x8 : ffffffc0fab409a0
->>>>>>    x7 : 0000000000000000 x6 : 0000000000000002
->>>>>>    x5 : 0000000100000000 x4 : 0000000000000000
->>>>>>    x3 : 0000000000000001 x2 : 0000000000000002
->>>>>>    x1 : ffffffc0f9431578 x0 : 0000000000000000
->>>>>>    Process kworker/7:1 (pid: 70, stack limit = 0x0000000017d08ffb)
->>>>>>    Call trace:
->>>>>>     iommu_dma_map_sg+0x7c/0x2c8
->>>>>>     __iommu_map_sg_attrs+0x70/0x84
->>>>>>     get_pages+0x170/0x1e8
->>>>>>     msm_gem_get_iova+0x8c/0x128
->>>>>>     _msm_gem_kernel_new+0x6c/0xc8
->>>>>>     msm_gem_kernel_new+0x4c/0x58
->>>>>>     dsi_tx_buf_alloc_6g+0x4c/0x8c
->>>>>>     msm_dsi_host_modeset_init+0xc8/0x108
->>>>>>     msm_dsi_modeset_init+0x54/0x18c
->>>>>>     _dpu_kms_drm_obj_init+0x430/0x474
->>>>>>     dpu_kms_hw_init+0x5f8/0x6b4
->>>>>>     msm_drm_bind+0x360/0x6c8
->>>>>>     try_to_bring_up_master.part.7+0x28/0x70
->>>>>>     component_master_add_with_match+0xe8/0x124
->>>>>>     msm_pdev_probe+0x294/0x2b4
->>>>>>     platform_drv_probe+0x58/0xa4
->>>>>>     really_probe+0x150/0x294
->>>>>>     driver_probe_device+0xac/0xe8
->>>>>>     __device_attach_driver+0xa4/0xb4
->>>>>>     bus_for_each_drv+0x98/0xc8
->>>>>>     __device_attach+0xac/0x12c
->>>>>>     device_initial_probe+0x24/0x30
->>>>>>     bus_probe_device+0x38/0x98
->>>>>>     deferred_probe_work_func+0x78/0xa4
->>>>>>     process_one_work+0x24c/0x3dc
->>>>>>     worker_thread+0x280/0x360
->>>>>>     kthread+0x134/0x13c
->>>>>>     ret_from_fork+0x10/0x18
->>>>>>    Code: d2800004 91000725 6b17039f 5400048a (f9401f40)
->>>>>>    ---[ end trace f22dda57f3648e2c ]---
->>>>>>    Kernel panic - not syncing: Fatal exception
->>>>>>    SMP: stopping secondary CPUs
->>>>>>    Kernel Offset: disabled
->>>>>>    CPU features: 0x0,22802a18
->>>>>>    Memory Limit: none
->>>>>>
->>>>>> The problem is that when drm/msm does it's own iommu_attach_device(),
->>>>>> now the domain returned by iommu_get_domain_for_dev() is drm/msm's
->>>>>> domain, and it doesn't have domain->iova_cookie.
->>>>>>
->>>>>> We kind of avoided this problem prior to sdm845/dpu because the iommu
->>>>>> was attached to the mdp node in dt, which is a child of the toplevel
->>>>>> mdss node (which corresponds to the dev passed in dma_map_sg()).  But
->>>>>> with sdm845, now the iommu is attached at the mdss level so we hit the
->>>>>> iommu_dma_ops in dma_map_sg().
->>>>>>
->>>>>> But auto allocating/attaching a domain before the driver is probed was
->>>>>> already a blocking problem for enabling per-context pagetables for the
->>>>>> GPU.  This problem is also now solved with this patch.
->>>>>>
->>>>>> Fixes: 97890ba9289c dma-mapping: detect and configure IOMMU in of_dma_configure
->>>>>> Tested-by: Douglas Anderson <dianders@chromium.org>
->>>>>> Signed-off-by: Rob Clark <robdclark@gmail.com>
->>>>>> ---
->>>>>> This is an alternative/replacement for [1].  What it lacks in elegance
->>>>>> it makes up for in practicality ;-)
->>>>>>
->>>>>> [1] https://patchwork.freedesktop.org/patch/264930/
->>>>>>
->>>>>>   drivers/of/device.c | 22 ++++++++++++++++++++++
->>>>>>   1 file changed, 22 insertions(+)
->>>>>>
->>>>>> diff --git a/drivers/of/device.c b/drivers/of/device.c
->>>>>> index 5957cd4fa262..15ffee00fb22 100644
->>>>>> --- a/drivers/of/device.c
->>>>>> +++ b/drivers/of/device.c
->>>>>> @@ -72,6 +72,14 @@ int of_device_add(struct platform_device *ofdev)
->>>>>>          return device_add(&ofdev->dev);
->>>>>>   }
->>>>>>
->>>>>> +static const struct of_device_id iommu_blacklist[] = {
->>>>>> +       { .compatible = "qcom,mdp4" },
->>>>>> +       { .compatible = "qcom,mdss" },
->>>>>> +       { .compatible = "qcom,sdm845-mdss" },
->>>>>> +       { .compatible = "qcom,adreno" },
->>>>>> +       {}
->>>>>> +};
->>>>>
->>>>> Not completely clear to whether this is still needed or not, but this
->>>>> really won't scale. Why can't the driver for these devices override
->>>>> whatever has been setup by default?
->>>>>
->>>>
->>>> fwiw, at the moment it is not needed, but it will become needed again
->>>> to implement per-context pagetables (although I suppose for this we
->>>> only need to blacklist qcom,adreno and not also the display nodes).
->>>
->>> So, another case I've come across, on the display side.. I'm working
->>> on handling the case where bootloader enables display (and takes iommu
->>> out of reset).. as soon as DMA domain gets attached we get iommu
->>> faults, because bootloader has already configured display for scanout.
->>> Unfortunately this all happens before actual driver is probed and has
->>> a chance to intervene.
->>>
->>> It's rather unfortunate that we tried to be clever rather than just
->>> making drivers call some function to opt-in to the hookup of dma iommu
->>> ops :-(
->>
->> I think it still works for the 90% of cases and if 10% needs some
->> explicit work in the drivers, that's better than requiring 100% of the
->> drivers to do things manually.
-
-Right, it's not about "being clever", it's about not adding opt-in code 
-to the hundreds and hundreds and hundreds of drivers which *might* ever 
-find themselves used on a system where they would need the IOMMU's help 
-for DMA.
-
->> Adding Marek who had the same problem on Exynos.
-> 
-> I do wonder how many drivers need to iommu_map in their ->probe()?
-> I'm thinking moving the auto-hookup to after a successful probe(),
-> with some function a driver could call if they need mapping in probe,
-> might be a way to eventually get rid of the blacklist.  But I've no
-> idea how to find the subset of drivers that would be broken without a
-> dma_setup_iommu_stuff() call in their probe.
-
-Wouldn't help much. That particular issue is nothing to do with DMA ops 
-really, it's about IOMMU initialisation. On something like SMMUv3 there 
-is literally no way to turn the thing on without blocking unknown 
-traffic - it *has* to have stream table entries programmed before it can 
-even allow stuff to bypass.
-
-The answer is either to either pay attention to the "Quiesce all DMA 
-capable devices" part of the boot protocol (which has been there since 
-pretty much forever), or to come up with some robust way of 
-communicating "live" boot-time mappings to IOMMU drivers so that they 
-can program themselves appropriately during probe.
-
-Robin.
+If you (and a few others actors in the thread) want people to actually
+read what you wrote please follow proper mailing list ettiquette.  I've
+given up on reading all the recent mails after scrolling through two
+pages of full quotes.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
