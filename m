@@ -2,53 +2,67 @@ Return-Path: <SRS0=n9pq=UC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE1AC282CE
-	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 14:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC48AC28CC6
+	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 16:42:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E5D7527B42
-	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 14:59:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5D7527B42
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id CBEB82741B
+	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 16:42:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBEB82741B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 60A21DE0;
-	Mon,  3 Jun 2019 14:58:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8E6DACC0;
+	Mon,  3 Jun 2019 16:42:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 34786B0B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 55BD4B6D
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  3 Jun 2019 14:58:46 +0000 (UTC)
+	Mon,  3 Jun 2019 16:42:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.101.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 65981854
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 88409A3
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  3 Jun 2019 14:58:45 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3E3FC1688;
-	Mon,  3 Jun 2019 07:58:45 -0700 (PDT)
-Received: from ostrya.cambridge.arm.com (ostrya.cambridge.arm.com
-	[10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 71AD43F246; 
-	Mon,  3 Jun 2019 07:58:43 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com
-Subject: [PATCH v2 4/4] iommu: Add recoverable fault reporting
-Date: Mon,  3 Jun 2019 15:57:49 +0100
-Message-Id: <20190603145749.46347-5-jean-philippe.brucker@arm.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190603145749.46347-1-jean-philippe.brucker@arm.com>
-References: <20190603145749.46347-1-jean-philippe.brucker@arm.com>
+	Mon,  3 Jun 2019 16:42:15 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id B3319AE79;
+	Mon,  3 Jun 2019 16:42:13 +0000 (UTC)
+Subject: Re: [PATCH v3 0/6] Prerequisites for NXP LS104xA SMMU enablement
+To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+References: <20190530141951.6704-1-laurentiu.tudor@nxp.com>
+	<d086216f-f3fc-c88a-3891-81e84e8bdb01@suse.de>
+	<VI1PR04MB5134BFA391D8FF013762882FEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
+	<19cc3230-33b0-e465-6317-590780b33efa@suse.de>
+	<VI1PR04MB5134E4DA6EA052BEBB3C26EFEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+Openpgp: preference=signencrypt
+Organization: SUSE Linux GmbH
+Message-ID: <c237dd17-ed43-d2d0-c76c-0c1dbf859690@suse.de>
+Date: Mon, 3 Jun 2019 18:42:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Cc: ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, robin.murphy@arm.com
+In-Reply-To: <VI1PR04MB5134E4DA6EA052BEBB3C26EFEC190@VI1PR04MB5134.eurprd04.prod.outlook.com>
+Content-Language: en-US
+Cc: Madalin-cristian Bucur <madalin.bucur@nxp.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	Roy Pledge <roy.pledge@nxp.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Leo Li <leoyang.li@nxp.com>,
+	"jocke@infinera.com" <joakim.tjernlund@infinera.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Camelia Alexandra Groza <camelia.groza@nxp.com>,
+	Mian Yousaf Kaukab <yousaf.kaukab@suse.com>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"davem@davemloft.net" <davem@davemloft.net>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,300 +75,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Some IOMMU hardware features, for example PCI PRI and Arm SMMU Stall,
-enable recoverable I/O page faults. Allow IOMMU drivers to report PRI Page
-Requests and Stall events through the new fault reporting API. The
-consumer of the fault can be either an I/O page fault handler in the host,
-or a guest OS.
-
-Once handled, the fault must be completed by sending a page response back
-to the IOMMU. Add an iommu_page_response() function to complete a page
-fault.
-
-There are two ways to extend the userspace API:
-* Add a field to iommu_page_response and a flag to
-  iommu_page_response::flags describing the validity of this field.
-* Introduce a new iommu_page_response_X structure with a different version
-  number. The kernel must then support both versions.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- drivers/iommu/iommu.c      | 94 +++++++++++++++++++++++++++++++++++++-
- include/linux/iommu.h      | 19 ++++++++
- include/uapi/linux/iommu.h | 35 ++++++++++++++
- 3 files changed, 146 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8037a3f07f07..956a80364efd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -891,7 +891,14 @@ EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
-  * @data: private data passed as argument to the handler
-  *
-  * When an IOMMU fault event is received, this handler gets called with the
-- * fault event and data as argument. The handler should return 0 on success.
-+ * fault event and data as argument. The handler should return 0 on success. If
-+ * the fault is recoverable (IOMMU_FAULT_PAGE_REQ), the consumer should also
-+ * complete the fault by calling iommu_page_response() with one of the following
-+ * response code:
-+ * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
-+ * - IOMMU_PAGE_RESP_INVALID: terminate the fault
-+ * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
-+ *   page faults if possible.
-  *
-  * Return 0 if the fault handler was installed successfully, or an error.
-  */
-@@ -921,6 +928,8 @@ int iommu_register_device_fault_handler(struct device *dev,
- 	}
- 	param->fault_param->handler = handler;
- 	param->fault_param->data = data;
-+	mutex_init(&param->fault_param->lock);
-+	INIT_LIST_HEAD(&param->fault_param->faults);
- 
- done_unlock:
- 	mutex_unlock(&param->lock);
-@@ -951,6 +960,12 @@ int iommu_unregister_device_fault_handler(struct device *dev)
- 	if (!param->fault_param)
- 		goto unlock;
- 
-+	/* we cannot unregister handler if there are pending faults */
-+	if (!list_empty(&param->fault_param->faults)) {
-+		ret = -EBUSY;
-+		goto unlock;
-+	}
-+
- 	kfree(param->fault_param);
- 	param->fault_param = NULL;
- 	put_device(dev);
-@@ -967,13 +982,15 @@ EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
-  * @evt: fault event data
-  *
-  * Called by IOMMU drivers when a fault is detected, typically in a threaded IRQ
-- * handler.
-+ * handler. When this function fails and the fault is recoverable, it is the
-+ * caller's responsibility to complete the fault.
-  *
-  * Return 0 on success, or an error.
-  */
- int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
- {
- 	struct iommu_param *param = dev->iommu_param;
-+	struct iommu_fault_event *evt_pending = NULL;
- 	struct iommu_fault_param *fparam;
- 	int ret = 0;
- 
-@@ -987,13 +1004,86 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
- 		ret = -EINVAL;
- 		goto done_unlock;
- 	}
-+
-+	if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
-+	    (evt->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
-+		evt_pending = kmemdup(evt, sizeof(struct iommu_fault_event),
-+				      GFP_KERNEL);
-+		if (!evt_pending) {
-+			ret = -ENOMEM;
-+			goto done_unlock;
-+		}
-+		mutex_lock(&fparam->lock);
-+		list_add_tail(&evt_pending->list, &fparam->faults);
-+		mutex_unlock(&fparam->lock);
-+	}
-+
- 	ret = fparam->handler(&evt->fault, fparam->data);
-+	if (ret && evt_pending) {
-+		mutex_lock(&fparam->lock);
-+		list_del(&evt_pending->list);
-+		mutex_unlock(&fparam->lock);
-+		kfree(evt_pending);
-+	}
- done_unlock:
- 	mutex_unlock(&param->lock);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_report_device_fault);
- 
-+int iommu_page_response(struct device *dev,
-+			struct iommu_page_response *msg)
-+{
-+	bool pasid_valid;
-+	int ret = -EINVAL;
-+	struct iommu_fault_event *evt;
-+	struct iommu_fault_page_request *prm;
-+	struct iommu_param *param = dev->iommu_param;
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+
-+	if (!domain || !domain->ops->page_response)
-+		return -ENODEV;
-+
-+	if (!param || !param->fault_param)
-+		return -EINVAL;
-+
-+	if (msg->version != IOMMU_PAGE_RESP_VERSION_1 ||
-+	    msg->flags & ~IOMMU_PAGE_RESP_PASID_VALID)
-+		return -EINVAL;
-+
-+	/* Only send response if there is a fault report pending */
-+	mutex_lock(&param->fault_param->lock);
-+	if (list_empty(&param->fault_param->faults)) {
-+		dev_warn_ratelimited(dev, "no pending PRQ, drop response\n");
-+		goto done_unlock;
-+	}
-+	/*
-+	 * Check if we have a matching page request pending to respond,
-+	 * otherwise return -EINVAL
-+	 */
-+	list_for_each_entry(evt, &param->fault_param->faults, list) {
-+		prm = &evt->fault.prm;
-+		pasid_valid = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-+
-+		if ((pasid_valid && prm->pasid != msg->pasid) ||
-+		    prm->grpid != msg->grpid)
-+			continue;
-+
-+		/* Sanitize the reply */
-+		msg->flags = pasid_valid ? IOMMU_PAGE_RESP_PASID_VALID : 0;
-+
-+		ret = domain->ops->page_response(dev, evt, msg);
-+		list_del(&evt->list);
-+		kfree(evt);
-+		break;
-+	}
-+
-+done_unlock:
-+	mutex_unlock(&param->fault_param->lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_page_response);
-+
- /**
-  * iommu_group_id - Return ID for a group
-  * @group: the group to ID
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3e783f5bf472..76c8cda61dfd 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -227,6 +227,7 @@ struct iommu_sva_ops {
-  * @sva_bind: Bind process address space to device
-  * @sva_unbind: Unbind process address space from device
-  * @sva_get_pasid: Get PASID associated to a SVA handle
-+ * @page_response: handle page request response
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  */
- struct iommu_ops {
-@@ -287,6 +288,10 @@ struct iommu_ops {
- 	void (*sva_unbind)(struct iommu_sva *handle);
- 	int (*sva_get_pasid)(struct iommu_sva *handle);
- 
-+	int (*page_response)(struct device *dev,
-+			     struct iommu_fault_event *evt,
-+			     struct iommu_page_response *msg);
-+
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -311,19 +316,25 @@ struct iommu_device {
-  * unrecoverable faults such as DMA or IRQ remapping faults.
-  *
-  * @fault: fault descriptor
-+ * @list: pending fault event list, used for tracking responses
-  */
- struct iommu_fault_event {
- 	struct iommu_fault fault;
-+	struct list_head list;
- };
- 
- /**
-  * struct iommu_fault_param - per-device IOMMU fault data
-  * @handler: Callback function to handle IOMMU faults at device level
-  * @data: handler private data
-+ * @faults: holds the pending faults which needs response
-+ * @lock: protect pending faults list
-  */
- struct iommu_fault_param {
- 	iommu_dev_fault_handler_t handler;
- 	void *data;
-+	struct list_head faults;
-+	struct mutex lock;
- };
- 
- /**
-@@ -437,6 +448,8 @@ extern int iommu_unregister_device_fault_handler(struct device *dev);
- 
- extern int iommu_report_device_fault(struct device *dev,
- 				     struct iommu_fault_event *evt);
-+extern int iommu_page_response(struct device *dev,
-+			       struct iommu_page_response *msg);
- 
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-@@ -765,6 +778,12 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
- 	return -ENODEV;
- }
- 
-+static inline int iommu_page_response(struct device *dev,
-+				      struct iommu_page_response *msg)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int iommu_group_id(struct iommu_group *group)
- {
- 	return -ENODEV;
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 796402174d6c..f45d8e9e59c3 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -115,4 +115,39 @@ struct iommu_fault {
- 		struct iommu_fault_page_request prm;
- 	};
- };
-+
-+/**
-+ * enum iommu_page_response_code - Return status of fault handlers
-+ * @IOMMU_PAGE_RESP_SUCCESS: Fault has been handled and the page tables
-+ *	populated, retry the access. This is "Success" in PCI PRI.
-+ * @IOMMU_PAGE_RESP_FAILURE: General error. Drop all subsequent faults from
-+ *	this device if possible. This is "Response Failure" in PCI PRI.
-+ * @IOMMU_PAGE_RESP_INVALID: Could not handle this fault, don't retry the
-+ *	access. This is "Invalid Request" in PCI PRI.
-+ */
-+enum iommu_page_response_code {
-+	IOMMU_PAGE_RESP_SUCCESS = 0,
-+	IOMMU_PAGE_RESP_INVALID,
-+	IOMMU_PAGE_RESP_FAILURE,
-+};
-+
-+/**
-+ * struct iommu_page_response - Generic page response information
-+ * @version: API version of this structure
-+ * @flags: encodes whether the corresponding fields are valid
-+ *         (IOMMU_FAULT_PAGE_RESPONSE_* values)
-+ * @pasid: Process Address Space ID
-+ * @grpid: Page Request Group Index
-+ * @code: response code from &enum iommu_page_response_code
-+ */
-+struct iommu_page_response {
-+#define IOMMU_PAGE_RESP_VERSION_1	1
-+	__u32	version;
-+#define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
-+	__u32	flags;
-+	__u32	pasid;
-+	__u32	grpid;
-+	__u32	code;
-+};
-+
- #endif /* _UAPI_IOMMU_H */
--- 
-2.21.0
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+QW0gMzEuMDUuMTkgdW0gMTk6MzIgc2NocmllYiBMYXVyZW50aXUgVHVkb3I6Cj4+IC0tLS0tT3Jp
+Z2luYWwgTWVzc2FnZS0tLS0tCj4+IEZyb206IEFuZHJlYXMgRsOkcmJlciA8YWZhZXJiZXJAc3Vz
+ZS5kZT4KPj4gU2VudDogRnJpZGF5LCBNYXkgMzEsIDIwMTkgODowNCBQTQo+Pgo+PiBIZWxsbyBM
+YXVyZW50aXUsCj4+Cj4+IEFtIDMxLjA1LjE5IHVtIDE4OjQ2IHNjaHJpZWIgTGF1cmVudGl1IFR1
+ZG9yOgo+Pj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4+Pj4gRnJvbTogQW5kcmVhcyBG
+w6RyYmVyIDxhZmFlcmJlckBzdXNlLmRlPgo+Pj4+IFNlbnQ6IEZyaWRheSwgTWF5IDMxLCAyMDE5
+IDc6MTUgUE0KPj4+Pgo+Pj4+IEhpIExhdXJlbnRpdSwKPj4+Pgo+Pj4+IEFtIDMwLjA1LjE5IHVt
+IDE2OjE5IHNjaHJpZWIgbGF1cmVudGl1LnR1ZG9yQG54cC5jb206Cj4+Pj4+IFRoaXMgcGF0Y2gg
+c2VyaWVzIGNvbnRhaW5zIHNldmVyYWwgZml4ZXMgaW4gcHJlcGFyYXRpb24gZm9yIFNNTVUKPj4+
+Pj4gc3VwcG9ydCBvbiBOWFAgTFMxMDQzQSBhbmQgTFMxMDQ2QSBjaGlwcy4gT25jZSB0aGVzZSBn
+ZXQgcGlja2VkIHVwLAo+Pj4+PiBJJ2xsIHN1Ym1pdCB0aGUgYWN0dWFsIFNNTVUgZW5hYmxlbWVu
+dCBwYXRjaGVzIGNvbnNpc3RpbmcgaW4gdGhlCj4+Pj4+IHJlcXVpcmVkIGRldmljZSB0cmVlIGNo
+YW5nZXMuCj4+Pj4KPj4+PiBIYXZlIHlvdSB0aG91Z2h0IHRocm91Z2ggd2hhdCB3aWxsIGhhcHBl
+biBpZiB0aGlzIHBhdGNoIG9yZGVyaW5nIGlzIG5vdAo+Pj4+IHByZXNlcnZlZD8gSW4gcGFydGlj
+dWxhciwgYSB1c2VyIGluc3RhbGxpbmcgYSBmdXR1cmUgVS1Cb290IHVwZGF0ZSB3aXRoCj4+Pj4g
+dGhlIERUQiBiaXRzIGJ1dCBib290aW5nIGEgc3RhYmxlIGtlcm5lbCB3aXRob3V0IHRoaXMgcGF0
+Y2ggc2VyaWVzIC0KPj4+PiB3b3VsZG4ndCB0aGF0IHJlZ3Jlc3MgZHBhYSB0aGVuIGZvciBvdXIg
+Y3VzdG9tZXJzPwo+Pj4+Cj4+Pgo+Pj4gVGhlc2UgYXJlIGZpeGVzIGZvciBpc3N1ZXMgdGhhdCBw
+b3BwZWQgb3V0IGFmdGVyIGVuYWJsaW5nIFNNTVUuCj4+PiBJIGRvIG5vdCBleHBlY3QgdGhlbSB0
+byBicmVhayBhbnl0aGluZy4KPj4KPj4gVGhhdCB3YXMgbm90IG15IHF1ZXN0aW9uISBZb3UncmUg
+bWlzc2luZyBteSBwb2ludDogQWxsIHlvdXIgcGF0Y2hlcyBhcmUKPj4gbGFja2luZyBhIEZpeGVz
+IGhlYWRlciBpbiB0aGVpciBjb21taXQgbWVzc2FnZSwgZm9yIGJhY2twb3J0aW5nIHRoZW0sIHRv
+Cj4+IGF2b2lkIF95b3VyIERUIHBhdGNoZXNfIGJyZWFraW5nIHRoZSBkcml2ZXIgb24gc3RhYmxl
+IGJyYW5jaGVzIQo+IAo+IEl0IGRvZXMgYXBwZWFyIHRoYXQgSSdtIG1pc3NpbmcgeW91ciBwb2lu
+dC4gRm9yIHN1cmUsIHRoZSBEVCB1cGRhdGVzIHNvbGVseSB3aWxsCj4gYnJlYWsgdGhlIGtlcm5l
+bCB3aXRob3V0IHRoZXNlIGZpeGVzIGJ1dCBJJ20gbm90IHN1cmUgSSB1bmRlcnN0YW5kIGhvdyB0
+aGlzCj4gY291bGQgaGFwcGVuLgoKSW4gc2hvcnQsIGN1c3RvbWVycyByYXJlbHkgcnVuIG1hc3Rl
+ciBicmFuY2guIEtpbmRseSBoYXZlIHlvdXIKY29sbGVhZ3VlcyBleHBsYWluIHN0YWJsZSBicmFu
+Y2hlcyB0byB5b3UgaW4gZGV0YWlscy4KCldpdGggRml4ZXMgaGVhZGVyIEkgd2FzIHJlZmVycmlu
+ZyB0byB0aGUgc3ludGF4IGV4cGxhaW5lZCBoZXJlOgpodHRwczovL3d3dy5rZXJuZWwub3JnL2Rv
+Yy9odG1sL2xhdGVzdC9wcm9jZXNzL3N1Ym1pdHRpbmctcGF0Y2hlcy5odG1sI2Rlc2NyaWJlLXlv
+dXItY2hhbmdlcwpodHRwczovL3d3dy5rZXJuZWwub3JnL2RvYy9odG1sL2xhdGVzdC9wcm9jZXNz
+L3N1Ym1pdHRpbmctcGF0Y2hlcy5odG1sI3VzaW5nLXJlcG9ydGVkLWJ5LXRlc3RlZC1ieS1yZXZp
+ZXdlZC1ieS1zdWdnZXN0ZWQtYnktYW5kLWZpeGVzCgo+IE15IHBsYW4gd2FzIHRvIHNoYXJlIHRo
+ZSBrZXJuZWwgZHRzIHBhdGNoZXMgc29tZXRpbWUgYWZ0ZXIgdGhpcyBzZXJpZXMKPiBtYWtlcyBp
+dCB0aHJvdWdoLgoKVGhhdCdzIGZpbmUuIFdoYXQgSSdtIHdhcm5pbmcgeW91IGlzIHRoYXQgc2Vl
+bWluZ2x5IHlvdXIgRFQgcGF0Y2hlcywKb25jZSBpbiBvbmUgb2YgeW91ciBMU0RLIFUtQm9vdCBy
+ZWxlYXNlcywgd2lsbCBjYXVzZSBhIHJlZ3Jlc3Npb24gZm9yCmRpc3Ryb3MgbGlrZSBvdXIgU0xF
+UyAxNSBTUDEgdW5sZXNzIHRoZXNlIHByZXJlcSBrZXJuZWwgcGF0Y2hlcyBnZXQKYXBwbGllZCBv
+biB0aGUgcmVzcGVjdGl2ZSBzdGFibGUgYnJhbmNoZXMuIFdoaWNoIHdpbGwgbm90IGhhcHBlbgph
+dXRvbWF0aWNhbGx5IHVubGVzcyB5b3UgYXMgcGF0Y2ggYXV0aG9yIHRha2UgdGhlIGFwcHJvcHJp
+YXRlIGFjdGlvbgpiZWZvcmUgdGhleSBnZXQgbWVyZ2VkLgoKVGhhbmtzLApBbmRyZWFzCgotLSAK
+U1VTRSBMaW51eCBHbWJILCBNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkK
+R0Y6IEZlbGl4IEltZW5kw7ZyZmZlciwgTWFyeSBIaWdnaW5zLCBTcmkgUmFzaWFoCkhSQiAyMTI4
+NCAoQUcgTsO8cm5iZXJnKQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
+cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
+bXU=
