@@ -1,78 +1,114 @@
-Return-Path: <SRS0=n9pq=UC=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=MUIX=UD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C185AC04AB5
-	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 22:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C813BC04AB5
+	for <iommu@archiver.kernel.org>; Tue,  4 Jun 2019 01:15:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9421D25D83
-	for <iommu@archiver.kernel.org>; Mon,  3 Jun 2019 22:53:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="u9zxZmts"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9421D25D83
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id A60CF259B9
+	for <iommu@archiver.kernel.org>; Tue,  4 Jun 2019 01:15:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A60CF259B9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 51B85E97;
-	Mon,  3 Jun 2019 22:53:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1BD50EFB;
+	Tue,  4 Jun 2019 01:14:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 24F83E89
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0F456DD8
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  3 Jun 2019 22:53:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com
-	[209.85.210.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CA2D983A
+	Tue,  4 Jun 2019 01:14:17 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6E8AE6D6
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  3 Jun 2019 22:53:02 +0000 (UTC)
-Received: by mail-pf1-f195.google.com with SMTP id q17so11443186pfq.8
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 03 Jun 2019 15:53:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id;
-	bh=SImWzVCSt0RY7OufuPO1jNvGlcFHu0kGaxSEDGg7OcE=;
-	b=u9zxZmtsdOAxlFYnpVTvm0JmTl0e4S4V86dFQ2UjsLi92P4669mjO2pSvX8fp0M/yE
-	NLzfTEjFlhV1T40UVu6TG/BVf4Dgj7BZcHNKpboNcN5MNLeRa7yesEiiJut//VM8p6uU
-	I6yhjLE3LT3guizrMcvZkmA/3R0hOophx4mXn2Tlu1s/UMI0h5lXgAcb+NAIBhYJEnsQ
-	6VhMteKCmfPCED4sqNNVKitrvY9YYki5KK6e/sbEchY8WK7sK3F3dg38qZe1cCwDIbfP
-	YX6V4DQEdXPRC5BZky+wVe39CNXCssN7HHkz05GnkUr99VPuQ4MGvkkp2hyOEGn8pv5G
-	lSZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id;
-	bh=SImWzVCSt0RY7OufuPO1jNvGlcFHu0kGaxSEDGg7OcE=;
-	b=U0/8sFKA4CpjIGsUo588GBlUwZ1OMWcvVdhJDQufKVtuq1+4I8FxiOzZDiGnWWfZlH
-	oOJ3kEo0yj+qXETqJjFKZSE1Hrqdiqu/m/wAVQEL8kzeXzKAJr+XtjfDCAYqO+rOaqAt
-	uvEriY9v1uzx10HpzOwSLX7UPFjnXMbovYi1/9MA7215I0lhqzZMmrWlbRRh5gS4YPK8
-	IkCkfw86/4LycVLQy4zUG4K9nwHAhqmNnnoZzMQY1gUam6mBJo45cZPHnLzspPTwZe3O
-	ishWnpXHvO2dB4PIXOk+OWBMwej4SHcVnwL2UUTPaGGAn+jIBq01FWDaQ3Ya1vLqBP6m
-	iN/g==
-X-Gm-Message-State: APjAAAV6wCgxnQBIoJ9ed3RWLKWDgXezaUWf/kjebV4gHZ+ZGlnVVriH
-	THlrFAmBxVEgR4he4pwL79E=
-X-Google-Smtp-Source: APXvYqy8vLrFqoVL7F3FzM+8IhTHjoTUjZBmrtxoEIRl8qi1kzL0djeX3jRrJKCsLT4K1CSdITr80g==
-X-Received: by 2002:a63:5247:: with SMTP id s7mr21370699pgl.29.1559602382249; 
-	Mon, 03 Jun 2019 15:53:02 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
-	[216.228.112.22]) by smtp.gmail.com with ESMTPSA id
-	j37sm7682759pgj.58.2019.06.03.15.53.01
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Mon, 03 Jun 2019 15:53:01 -0700 (PDT)
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: joro@8bytes.org
-Subject: [PATCH] iommu/dma: Apply dma_{alloc,free}_contiguous functions
-Date: Mon,  3 Jun 2019 15:52:59 -0700
-Message-Id: <20190603225259.21994-1-nicoleotsuka@gmail.com>
-X-Mailer: git-send-email 2.17.1
-Cc: iommu@lists.linux-foundation.org, hch@lst.de, linux-kernel@vger.kernel.org
+	Tue,  4 Jun 2019 01:14:15 +0000 (UTC)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x541CE5U049341
+	for <iommu@lists.linux-foundation.org>; Mon, 3 Jun 2019 21:14:14 -0400
+Received: from e32.co.us.ibm.com (e32.co.us.ibm.com [32.97.110.150])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2sweeq8tts-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Mon, 03 Jun 2019 21:14:14 -0400
+Received: from localhost
+	by e32.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+	Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
+	Tue, 4 Jun 2019 02:14:13 +0100
+Received: from b03cxnp08025.gho.boulder.ibm.com (9.17.130.17)
+	by e32.co.us.ibm.com (192.168.1.132) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Tue, 4 Jun 2019 02:14:09 +0100
+Received: from b03ledav004.gho.boulder.ibm.com
+	(b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x541E8Gw18284804
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Tue, 4 Jun 2019 01:14:08 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EA40278064;
+	Tue,  4 Jun 2019 01:14:07 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 27B4E7805C;
+	Tue,  4 Jun 2019 01:14:04 +0000 (GMT)
+Received: from morokweng.localdomain (unknown [9.85.162.142])
+	by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTPS;
+	Tue,  4 Jun 2019 01:14:03 +0000 (GMT)
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+	<87womn8inf.fsf@morokweng.localdomain>
+	<20190129134750-mutt-send-email-mst@kernel.org>
+	<877eefxvyb.fsf@morokweng.localdomain>
+	<20190204144048-mutt-send-email-mst@kernel.org>
+	<87ef71seve.fsf@morokweng.localdomain>
+	<20190320171027-mutt-send-email-mst@kernel.org>
+	<87tvfvbwpb.fsf@morokweng.localdomain>
+	<20190323165456-mutt-send-email-mst@kernel.org>
+	<87a7go71hz.fsf@morokweng.localdomain>
+	<20190520090939-mutt-send-email-mst@kernel.org>
+User-agent: mu4e 1.0; emacs 26.2
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+In-reply-to: <20190520090939-mutt-send-email-mst@kernel.org>
+Date: Mon, 03 Jun 2019 22:13:59 -0300
+MIME-Version: 1.0
+X-TM-AS-GCONF: 00
+x-cbid: 19060401-0004-0000-0000-00001517D37A
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011210; HX=3.00000242; KW=3.00000007;
+	PH=3.00000004; SC=3.00000286; SDB=6.01212884; UDB=6.00637431;
+	IPR=6.00993944; 
+	MB=3.00027172; MTD=3.00000008; XFM=3.00000015; UTC=2019-06-04 01:14:12
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19060401-0005-0000-0000-00008BEB7B8D
+Message-Id: <877ea26tk8.fsf@morokweng.localdomain>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-06-04_01:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1906040004
+Cc: Mike Anderson <andmike@linux.ibm.com>,
+	Michael Roth <mdroth@linux.vnet.ibm.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	Paul Mackerras <paulus@ozlabs.org>,
+	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+	Christoph Hellwig <hch@lst.de>, David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -85,61 +121,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch replaces dma_{alloc,release}_from_contiguous() with
-dma_{alloc,free}_contiguous() to simplify those function calls.
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- drivers/iommu/dma-iommu.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 0cd49c2d3770..cc3d39dbbe1a 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -951,8 +951,8 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
- 
- 	if (pages)
- 		__iommu_dma_free_pages(pages, count);
--	if (page && !dma_release_from_contiguous(dev, page, count))
--		__free_pages(page, get_order(alloc_size));
-+	if (page)
-+		dma_free_contiguous(dev, page, alloc_size);
- }
- 
- static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
-@@ -970,12 +970,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	struct page *page = NULL;
- 	void *cpu_addr;
- 
--	if (gfpflags_allow_blocking(gfp))
--		page = dma_alloc_from_contiguous(dev, alloc_size >> PAGE_SHIFT,
--						 get_order(alloc_size),
--						 gfp & __GFP_NOWARN);
--	if (!page)
--		page = alloc_pages(gfp, get_order(alloc_size));
-+	page = dma_alloc_contiguous(dev, alloc_size, gfp);
- 	if (!page)
- 		return NULL;
- 
-@@ -997,8 +992,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	memset(cpu_addr, 0, alloc_size);
- 	return cpu_addr;
- out_free_pages:
--	if (!dma_release_from_contiguous(dev, page, alloc_size >> PAGE_SHIFT))
--		__free_pages(page, get_order(alloc_size));
-+	dma_free_contiguous(dev, page, alloc_size);
- 	return NULL;
- }
- 
--- 
-2.17.1
+Michael S. Tsirkin <mst@redhat.com> writes:
+
+> On Wed, Apr 17, 2019 at 06:42:00PM -0300, Thiago Jung Bauermann wrote:
+>> I rephrased it in terms of address translation. What do you think of
+>> this version? The flag name is slightly different too:
+>>
+>>
+>> VIRTIO_F_ACCESS_PLATFORM_NO_TRANSLATION This feature has the same
+>>     meaning as VIRTIO_F_ACCESS_PLATFORM both when set and when not set,
+>>     with the exception that address translation is guaranteed to be
+>>     unnecessary when accessing memory addresses supplied to the device
+>>     by the driver. Which is to say, the device will always use physical
+>>     addresses matching addresses used by the driver (typically meaning
+>>     physical addresses used by the CPU) and not translated further. This
+>>     flag should be set by the guest if offered, but to allow for
+>>     backward-compatibility device implementations allow for it to be
+>>     left unset by the guest. It is an error to set both this flag and
+>>     VIRTIO_F_ACCESS_PLATFORM.
+>
+>
+> OK so VIRTIO_F_ACCESS_PLATFORM is designed to allow unpriveledged
+> drivers. This is why devices fail when it's not negotiated.
+
+Just to clarify, what do you mean by unprivileged drivers? Is it drivers
+implemented in guest userspace such as with VFIO? Or unprivileged in
+some other sense such as needing to use bounce buffers for some reason?
+
+> This confuses me.
+> If driver is unpriveledged then what happens with this flag?
+> It can supply any address it wants. Will that corrupt kernel
+> memory?
+
+Not needing address translation doesn't necessarily mean that there's no
+IOMMU. On powerpc we don't use VIRTIO_F_ACCESS_PLATFORM but there's
+always an IOMMU present. And we also support VFIO drivers. The VFIO API
+for pseries (sPAPR section in Documentation/vfio.txt) has extra ioctls
+to program the IOMMU.
+
+For our use case, we don't need address translation because we set up an
+identity mapping in the IOMMU so that the device can use guest physical
+addresses.
+
+If the guest kernel is concerned that an unprivileged driver could
+jeopardize its integrity it should not negotiate this feature flag.
+Perhaps there should be a note about this in the flag definition? This
+concern is platform-dependant though. I don't believe it's an issue in
+pseries.
+
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
 
 _______________________________________________
 iommu mailing list
