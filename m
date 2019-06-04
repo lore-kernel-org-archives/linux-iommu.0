@@ -3,59 +3,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AB3C28D17
-	for <iommu@archiver.kernel.org>; Tue,  4 Jun 2019 09:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D01A8C28CC3
+	for <iommu@archiver.kernel.org>; Tue,  4 Jun 2019 10:52:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9D4F424088
-	for <iommu@archiver.kernel.org>; Tue,  4 Jun 2019 09:01:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D4F424088
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
+	by mail.kernel.org (Postfix) with ESMTPS id AE2BD248CB
+	for <iommu@archiver.kernel.org>; Tue,  4 Jun 2019 10:52:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE2BD248CB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6AABDCBB;
-	Tue,  4 Jun 2019 09:01:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 787FDA70;
+	Tue,  4 Jun 2019 10:52:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 92863CBA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 349BCA70
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  4 Jun 2019 09:01:33 +0000 (UTC)
+	Tue,  4 Jun 2019 10:52:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CD55E711
+Received: from foss.arm.com (usa-sjc-mx-foss1.foss.arm.com [217.140.101.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E7EA56D6
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  4 Jun 2019 09:01:32 +0000 (UTC)
-Received: from oasis.local.home (unknown [146.247.46.6])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id B08BB24071;
-	Tue,  4 Jun 2019 09:01:27 +0000 (UTC)
-Date: Tue, 4 Jun 2019 05:01:22 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 7/9] iommu/vt-d: Add trace events for domain map/unmap
-Message-ID: <20190604050122.4a095569@oasis.local.home>
-In-Reply-To: <20190603011620.31999-8-baolu.lu@linux.intel.com>
-References: <20190603011620.31999-1-baolu.lu@linux.intel.com>
-	<20190603011620.31999-8-baolu.lu@linux.intel.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	Tue,  4 Jun 2019 10:52:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.72.51.249])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6ADBC80D;
+	Tue,  4 Jun 2019 03:52:44 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B3D9C3F5AF;
+	Tue,  4 Jun 2019 03:52:41 -0700 (PDT)
+Subject: Re: [PATCH v8 05/29] iommu: Add a timeout parameter for PRQ response
+To: Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-6-eric.auger@redhat.com>
+	<20190603163214.483884a7@x1.home>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <13428eef-9b95-0f79-bebf-317a2205673a@arm.com>
+Date: Tue, 4 Jun 2019 11:52:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
-	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
-	Jonathan Corbet <corbet@lwn.net>, pengfei.xu@intel.com,
-	Ingo Molnar <mingo@redhat.com>,
-	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	mika.westerberg@linux.intel.com, Juergen Gross <jgross@suse.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	jacob.jun.pan@intel.com, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20190603163214.483884a7@x1.home>
+Content-Language: en-US
+Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Vincent Stehle <Vincent.Stehle@arm.com>,
+	Robin Murphy <Robin.Murphy@arm.com>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,113 +77,20 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon,  3 Jun 2019 09:16:18 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On 03/06/2019 23:32, Alex Williamson wrote:
+> It doesn't seem to make much sense to include this patch without also
+> including "iommu: handle page response timeout".  Was that one lost?
+> Dropped?  Lives elsewhere?
 
+The first 7 patches come from my sva/api branch, where I had forgotten
+to add the "handle page response timeout" patch. I added it back,
+probably after Eric sent this version. But I don't think the patch is
+ready for upstream, as we still haven't decided how to proceed with
+timeouts. Patches 6 and 7 are for debugging, I don't know if they should
+go upstream.
 
-> +TRACE_EVENT(bounce_unmap_single,
-> +	TP_PROTO(struct device *dev, dma_addr_t dev_addr, size_t size),
-> +
-> +	TP_ARGS(dev, dev_addr, size),
-> +
-> +	TP_STRUCT__entry(
-> +		__string(dev_name, dev_name(dev))
-> +		__field(dma_addr_t, dev_addr)
-> +		__field(size_t,	size)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__assign_str(dev_name, dev_name(dev));
-> +		__entry->dev_addr = dev_addr;
-> +		__entry->size = size;
-> +	),
-> +
-> +	TP_printk("dev=%s dev_addr=0x%llx size=%zu",
-> +		  __get_str(dev_name),
-> +		  (unsigned long long)__entry->dev_addr,
-> +		  __entry->size)
-> +);
-> +
-> +TRACE_EVENT(bounce_map_sg,
-> +	TP_PROTO(struct device *dev, unsigned int i, unsigned int nelems,
-> +		 dma_addr_t dev_addr, phys_addr_t phys_addr, size_t size),
-> +
-> +	TP_ARGS(dev, i, nelems, dev_addr, phys_addr, size),
-> +
-> +	TP_STRUCT__entry(
-> +		__string(dev_name, dev_name(dev))
-> +		__field(unsigned int, i)
-> +		__field(unsigned int, last)
-> +		__field(dma_addr_t, dev_addr)
-> +		__field(phys_addr_t, phys_addr)
-> +		__field(size_t,	size)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__assign_str(dev_name, dev_name(dev));
-> +		__entry->i = i;
-> +		__entry->last = nelems - 1;
-> +		__entry->dev_addr = dev_addr;
-> +		__entry->phys_addr = phys_addr;
-> +		__entry->size = size;
-> +	),
-> +
-> +	TP_printk("dev=%s elem=%u/%u dev_addr=0x%llx phys_addr=0x%llx size=%zu",
-> +		  __get_str(dev_name), __entry->i, __entry->last,
-> +		  (unsigned long long)__entry->dev_addr,
-> +		  (unsigned long long)__entry->phys_addr,
-> +		  __entry->size)
-> +);
-> +
-> +TRACE_EVENT(bounce_unmap_sg,
-> +	TP_PROTO(struct device *dev, unsigned int i, unsigned int nelems,
-> +		 dma_addr_t dev_addr, phys_addr_t phys_addr, size_t size),
-> +
-> +	TP_ARGS(dev, i, nelems, dev_addr, phys_addr, size),
-> +
-> +	TP_STRUCT__entry(
-> +		__string(dev_name, dev_name(dev))
-> +		__field(unsigned int, i)
-> +		__field(unsigned int, last)
-> +		__field(dma_addr_t, dev_addr)
-> +		__field(phys_addr_t, phys_addr)
-> +		__field(size_t,	size)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__assign_str(dev_name, dev_name(dev));
-> +		__entry->i = i;
-> +		__entry->last = nelems - 1;
-> +		__entry->dev_addr = dev_addr;
-> +		__entry->phys_addr = phys_addr;
-> +		__entry->size = size;
-> +	),
-> +
-> +	TP_printk("dev=%s elem=%u/%u dev_addr=0x%llx phys_addr=0x%llx size=%zu",
-> +		  __get_str(dev_name), __entry->i, __entry->last,
-> +		  (unsigned long long)__entry->dev_addr,
-> +		  (unsigned long long)__entry->phys_addr,
-> +		  __entry->size)
-> +);
-
-These last two events look identical. Please use the
-DECLARE_EVENT_CLASS() to describe the event and then DEFINE_EVENT() for
-the two events.
-
-Each TRACE_EVENT() can add up to 5k of data/text, where as a
-DEFINE_EVENT() just adds around 250 bytes.
-
-(Note, a TRACE_EVENT() is defined as a
-DECLARE_EVENT_CLASS()/DEFINE_EVENT() pair)
-
--- Steve
-
-
-> +#endif /* _TRACE_INTEL_IOMMU_H */
-> +
-> +/* This part must be outside protection */
-> +#include <trace/define_trace.h>
-
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
