@@ -2,61 +2,82 @@ Return-Path: <SRS0=DEPd=UE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28168C282CE
-	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 01:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D4DC282DE
+	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 05:50:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D797F2075C
-	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 01:43:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D797F2075C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=sina.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2967F2083E
+	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 05:50:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="FOh08iBo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2967F2083E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9E6D5CB7;
-	Wed,  5 Jun 2019 01:43:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D0C56B8E;
+	Wed,  5 Jun 2019 05:50:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 882872F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 199DEAE0
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  5 Jun 2019 00:52:54 +0000 (UTC)
-X-Greylist: delayed 00:05:24 by SQLgrey-1.7.6
-Received: from mail7-211.sinamail.sina.com.cn (mail7-211.sinamail.sina.com.cn
-	[202.108.7.211])
-	by smtp1.linuxfoundation.org (Postfix) with SMTP id 2595619B
+	Wed,  5 Jun 2019 05:50:28 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7EFF334F
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  5 Jun 2019 00:52:52 +0000 (UTC)
-Received: from unknown (HELO localhost.localdomain)([123.112.52.63])
-	by sina.com with ESMTP
-	id 5CF7111B00004B92; Wed, 5 Jun 2019 08:47:25 +0800 (CST)
-X-Sender: hdanton@sina.com
-X-Auth-ID: hdanton@sina.com
-X-SMAIL-MID: 970774395166
-From: Hillf Danton <hdanton@sina.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 07/26] iommu/dma: move the arm64 wrappers to common code
-Date: Wed,  5 Jun 2019 08:47:17 +0800
-Message-Id: <20190422175942.18788-8-hch@lst.de>
-In-Reply-To: <20190422175942.18788-1-hch@lst.de>
-References: <20190422175942.18788-1-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
+	Wed,  5 Jun 2019 05:50:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=In-Reply-To:Content-Transfer-Encoding
+	:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+	Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=OjIrnGQGCOhzp7rHkVNxq6gEHvDiczQ7n+SWfkZXfuA=;
+	b=FOh08iBoGdxd0TgZxWZAe6HY72
+	/y1hc0WRaI1KV40nBnCVCTOhmnFS1h4bSdNQSrxJOcNtvxu9PmbP/uk1SBAVW477UVP8nRBqs8cbF
+	J5rNRQNgZgLlmWRdm3illrkt8ckb3/2rN9ec5hh+jO5+vHItXKFdgfmAJFEuqyf+sww13/3n97E7S
+	vmtMhW40lznrYzWF2YPcOysOUiar1cIRSChCJkFf0lIO4NYUTTy0cr1p0wB2J5Fcp87h6zNekn8aN
+	GFTzn57fRV37XuUpKUTT7A5+IWgfzWtQwvq+XOvRwiMRtJIxwiUQHM5iDrSZzCiFK2UrdsiP5ne72
+	HRloGgdA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.90_1 #2 (Red
+	Hat Linux)) id 1hYOoX-0005Al-PR; Wed, 05 Jun 2019 05:50:21 +0000
+Date: Tue, 4 Jun 2019 22:50:21 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Tom Murphy <tmurphy@arista.com>
+Subject: Re: [PATCH v3 1/4] iommu: Add gfp parameter to iommu_ops::map
+Message-ID: <20190605055021.GA15036@infradead.org>
+References: <20190506185207.31069-1-tmurphy@arista.com>
+	<20190506185207.31069-2-tmurphy@arista.com>
 MIME-Version: 1.0
-Precedence: bulk
-X-Mailing-List: linux-kernel@vger.kernel.org
-Archived-At: <https://lore.kernel.org/lkml/20190422175942.18788-8-hch@lst.de/>
-X-Mailman-Approved-At: Wed, 05 Jun 2019 01:43:27 +0000
-Cc: Tom Lendacky <thomas.lendacky@amd.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20190506185207.31069-2-tmurphy@arista.com>
+User-Agent: Mutt/1.9.2 (2017-12-15)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Heiko Stuebner <heiko@sntech.de>, Will Deacon <will.deacon@arm.com>,
+	David Brown <david.brown@linaro.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org,
+	Kukjin Kim <kgene@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	Andy Gross <andy.gross@linaro.org>, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-kernel@vger.kernel.org, murphyt7@tcd.ie,
+	iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
+Precedence: list
 List-Id: Development issues for Linux IOMMU support
 	<iommu.lists.linux-foundation.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -66,98 +87,18 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20190605004717.YPE6cxgVVMLAVe8Fh3cdLejXS6rtVrs8TGJfePeOhes@z>
 
-
-Hi Christoph
-
-On Mon, 22 Apr 2019 19:59:23 +0200 Christoph Hellwig wrote:
-> @@ -744,18 +816,22 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
->   * impedance-matching, to be able to hand off a suitably-aligned list,
->   * but still preserve the original offsets and sizes for the caller.
->   */
-> -int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> -		int nents, int prot)
-> +static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> +		int nents, enum dma_data_direction dir, unsigned long attrs)
->  {
->  	struct iommu_domain *domain = iommu_get_dma_domain(dev);
->  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->  	struct iova_domain *iovad = &cookie->iovad;
->  	struct scatterlist *s, *prev = NULL;
-> +	int prot = dma_info_to_prot(dir, dev_is_dma_coherent(dev), attrs);
->  	dma_addr_t iova;
->  	size_t iova_len = 0;
->  	unsigned long mask = dma_get_seg_boundary(dev);
->  	int i;
->  
-> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> +		iommu_dma_sync_sg_for_device(dev, sg, nents, dir);
-> +
->  	/*
->  	 * Work out how much IOVA space we need, and align the segments to
->  	 * IOVA granules for the IOMMU driver to handle. With some clever
-> @@ -815,12 +891,16 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  	return 0;
->  }
->  
-> -void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
-> -		enum dma_data_direction dir, unsigned long attrs)
-> +static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
-> +		int nents, enum dma_data_direction dir, unsigned long attrs)
->  {
->  	dma_addr_t start, end;
->  	struct scatterlist *tmp;
->  	int i;
-> +
-> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-> +		iommu_dma_sync_sg_for_cpu(dev, sg, nents, dir);
-> +
-Is it a typo?
-
->  	/*
->  	 * The scatterlist segments are mapped into a single
->  	 * contiguous IOVA allocation, so this is incredibly easy.
-[...]
-> +
-> +/*
-> + * The IOMMU core code allocates the default DMA domain, which the underlying
-> + * IOMMU driver needs to support via the dma-iommu layer.
-> + */
-Over comment.
-
-> +void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size)
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +
-> +	if (!domain)
-> +		goto out_err;
-> +
-> +	/*
-> +	 * The IOMMU core code allocates the default DMA domain, which the
-> +	 * underlying IOMMU driver needs to support via the dma-iommu layer.
-> +	 */
-> +	if (domain->type == IOMMU_DOMAIN_DMA) {
-> +		if (iommu_dma_init_domain(domain, dma_base, size, dev))
-> +			goto out_err;
-> +		dev->dma_ops = &iommu_dma_ops;
-> +	}
-> +
-> +	return;
-> +out_err:
-> +	 pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
-> +		 dev_name(dev));
-> +}
-> +
-
-BR
-Hillf
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gTW9uLCBNYXkgMDYsIDIwMTkgYXQgMDc6NTI6MDNQTSArMDEwMCwgVG9tIE11cnBoeSB2aWEg
+aW9tbXUgd3JvdGU6Cj4gV2UgY2FuIHJlbW92ZSB0aGUgbXV0ZXggbG9jayBmcm9tIGFtZF9pb21t
+dV9tYXAgYW5kIGFtZF9pb21tdV91bm1hcC4KPiBpb21tdV9tYXAgZG9lc27igJl0IGxvY2sgd2hp
+bGUgbWFwcGluZyBhbmQgc28gbm8gdHdvIGNhbGxzIHNob3VsZCB0b3VjaAo+IHRoZSBzYW1lIGlv
+dmEgcmFuZ2UuIFRoZSBBTUQgZHJpdmVyIGFscmVhZHkgaGFuZGxlcyB0aGUgcGFnZSB0YWJsZSBw
+YWdlCj4gYWxsb2NhdGlvbnMgd2l0aG91dCBsb2NrcyBzbyB3ZSBjYW4gc2FmZWx5IHJlbW92ZSB0
+aGUgbG9ja3MuCgpCdHcsIHRoaXMgcmVhbGx5IHNob3VsZCBiZSBhIHNlcGFyYXRlIHBhdGNoLgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
+aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
+aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
