@@ -6,54 +6,71 @@ X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 090AAC282DE
-	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 08:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA92C28CC6
+	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 08:53:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE48F206B8
-	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 08:37:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE48F206B8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3DBC320866
+	for <iommu@archiver.kernel.org>; Wed,  5 Jun 2019 08:53:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3DBC320866
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B0441C64;
-	Wed,  5 Jun 2019 08:37:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D4A42265;
+	Wed,  5 Jun 2019 08:53:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0F41A2F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0708C2F
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  5 Jun 2019 08:37:40 +0000 (UTC)
+	Wed,  5 Jun 2019 08:53:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 924F419B
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 560E119B
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  5 Jun 2019 08:37:39 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id B76D4AB87;
-	Wed,  5 Jun 2019 08:37:37 +0000 (UTC)
-Subject: Re: [PATCH v2 3/3] xen/swiotlb: remember having called
-	xen_create_contiguous_region()
-To: Christoph Hellwig <hch@infradead.org>
-References: <20190529090407.1225-1-jgross@suse.com>
-	<20190529090407.1225-4-jgross@suse.com>
-	<20190530090409.GB30428@infradead.org>
-	<eebb0275-9418-717f-97d7-5e55917f46fd@oracle.com>
-	<2fbfc6a7-572c-1ce2-3323-802f9a77500e@suse.com>
-From: Juergen Gross <jgross@suse.com>
-Message-ID: <0fcd8b61-7714-2278-e552-f0b72d9c5d1a@suse.com>
-Date: Wed, 5 Jun 2019 10:37:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Wed,  5 Jun 2019 08:52:59 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	05 Jun 2019 01:52:58 -0700
+X-ExtLoop1: 1
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+	by orsmga002.jf.intel.com with ESMTP; 05 Jun 2019 01:52:57 -0700
+Received: from shsmsx105.ccr.corp.intel.com (10.239.4.158) by
+	FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server
+	(TLS) id 14.3.408.0; Wed, 5 Jun 2019 01:51:47 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.137]) by
+	SHSMSX105.ccr.corp.intel.com ([169.254.11.153]) with mapi id
+	14.03.0415.000; Wed, 5 Jun 2019 16:51:45 +0800
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Jean-Philippe Brucker
+	<jean-philippe.brucker@arm.com>
+Subject: RE: [PATCH v2 2/4] iommu: Introduce device fault data
+Thread-Topic: [PATCH v2 2/4] iommu: Introduce device fault data
+Thread-Index: AQHVGhzpdp8RFw2/OU64MEW+KDLfp6aJ93gAgALLAvA=
+Date: Wed, 5 Jun 2019 08:51:45 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19CA6A9EE@SHSMSX104.ccr.corp.intel.com>
+References: <20190603145749.46347-1-jean-philippe.brucker@arm.com>
+	<20190603145749.46347-3-jean-philippe.brucker@arm.com>
+	<20190603150842.11070cfd@jacob-builder>
+In-Reply-To: <20190603150842.11070cfd@jacob-builder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNWQ0ODQxZDgtOWQ2Ni00NTkxLThlZmItZTgyMzM0MTliZTNiIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZWJVU25wanM3dHNndlwvK2pnS3RUQmdhcUQ1eFdERDZCXC9SVXhRY1V0bGZnRFlyakNsR01cL3NiSThVWHlWa0RLSSJ9
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-In-Reply-To: <2fbfc6a7-572c-1ce2-3323-802f9a77500e@suse.com>
-Content-Language: de-DE
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	xen-devel@lists.xenproject.org,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "Raj,
+	Ashok" <ashok.raj@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,36 +83,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 31.05.19 13:38, Juergen Gross wrote:
-> On 30/05/2019 14:46, Boris Ostrovsky wrote:
->> On 5/30/19 5:04 AM, Christoph Hellwig wrote:
->>> Please don't add your private flag to page-flags.h.  The whole point of
->>> the private flag is that you can use it in any way you want withou
->>> touching the common code.
->>
->>
->> There is already a bunch of aliases for various sub-components
->> (including Xen) in page-flags.h for private flags, which is why I
->> suggested we do the same for the new use case. Adding this new alias
->> will keep flag usage consistent.
+> From: Jacob Pan
+> Sent: Tuesday, June 4, 2019 6:09 AM
 > 
-> What about me adding another patch moving those Xen private aliases
-> into arch/x86/include/asm/xen/page.h ?
+> On Mon,  3 Jun 2019 15:57:47 +0100
+> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+> 
+> > +/**
+> > + * struct iommu_fault_page_request - Page Request data
+> > + * @flags: encodes whether the corresponding fields are valid and
+> > whether this
+> > + *         is the last page in group (IOMMU_FAULT_PAGE_REQUEST_*
+> > values)
+> > + * @pasid: Process Address Space ID
+> > + * @grpid: Page Request Group Index
+> > + * @perm: requested page permissions (IOMMU_FAULT_PERM_* values)
+> > + * @addr: page address
+> > + * @private_data: device-specific private information
+> > + */
+> > +struct iommu_fault_page_request {
+> > +#define IOMMU_FAULT_PAGE_REQUEST_PASID_VALID	(1 << 0)
+> > +#define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
+> > +#define IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA	(1 << 2)
+> > +	__u32	flags;
+> > +	__u32	pasid;
+> > +	__u32	grpid;
+> > +	__u32	perm;
+> > +	__u64	addr;
+> > +	__u64	private_data[2];
+> > +};
+> > +
+> 
+> Just a thought, for non-identity G-H PASID management. We could pass on
+> guest PASID in PRQ to save a lookup in QEMU. In this case, QEMU
+> allocate a GPASID for vIOMMU then a host PASID for pIOMMU. QEMU has a
+> G->H lookup. When PRQ comes in to the pIOMMU with HPASID, IOMMU
+> driver
+> can retrieve GPASID from the bind data then report to the guest via
+> VFIO. In this case QEMU does not need to do a H->G PASID lookup.
+> 
+> Should we add a gpasid field here? or we can add a flag and field
+> later, up to you.
+> 
 
-This is becoming difficult.
+Can private_data serve this purpose? It's better not introducing
+gpasid awareness within host IOMMU driver. It is just a user-level
+data associated with a PASID when binding happens. Kernel doesn't
+care the actual meaning, simply record it and then return back to user 
+space later upon device fault. Qemu interprets the meaning as gpasid
+in its own context. otherwise usages may use it for other purpose.
 
-I'd need to remove the "#undef PF_NO_COMPOUND" from page-flags.h or to
-#include a (new) xen/page-flags.h from page-flags.h after all the
-defines are ready. Is that really worth the effort given that other
-components (e.g. file systems) are doing the same?
-
-
-Juergen
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
