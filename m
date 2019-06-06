@@ -2,80 +2,55 @@ Return-Path: <SRS0=1Id5=UF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADFCC04AB5
-	for <iommu@archiver.kernel.org>; Thu,  6 Jun 2019 06:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73571C28D1A
+	for <iommu@archiver.kernel.org>; Thu,  6 Jun 2019 07:01:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 576F4207E0
-	for <iommu@archiver.kernel.org>; Thu,  6 Jun 2019 06:55:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 576F4207E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 53DD3207E0
+	for <iommu@archiver.kernel.org>; Thu,  6 Jun 2019 07:01:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 53DD3207E0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D61BFC7C;
-	Thu,  6 Jun 2019 06:54:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 370D2B79;
+	Thu,  6 Jun 2019 07:01:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DCB6FC5D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EE123B09
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  6 Jun 2019 06:54:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 506BEA8
+	Thu,  6 Jun 2019 07:01:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7DC45A8
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  6 Jun 2019 06:54:50 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	05 Jun 2019 23:54:49 -0700
-X-ExtLoop1: 1
-Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
-	by fmsmga007.fm.intel.com with ESMTP; 05 Jun 2019 23:54:49 -0700
-Received: from fmsmsx114.amr.corp.intel.com (10.18.116.8) by
-	fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server
-	(TLS) id 14.3.408.0; Wed, 5 Jun 2019 23:54:49 -0700
-Received: from shsmsx153.ccr.corp.intel.com (10.239.6.53) by
-	FMSMSX114.amr.corp.intel.com (10.18.116.8) with Microsoft SMTP Server
-	(TLS) id 14.3.408.0; Wed, 5 Jun 2019 23:54:48 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.137]) by
-	SHSMSX153.ccr.corp.intel.com ([169.254.12.192]) with mapi id
-	14.03.0415.000; Thu, 6 Jun 2019 14:54:46 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: RE: [PATCH v2 2/4] iommu: Introduce device fault data
-Thread-Topic: [PATCH v2 2/4] iommu: Introduce device fault data
-Thread-Index: AQHVGhzpdp8RFw2/OU64MEW+KDLfp6aJ93gAgALLAvCAAA3/AIABY4qw
-Date: Thu, 6 Jun 2019 06:54:46 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19CA6C529@SHSMSX104.ccr.corp.intel.com>
-References: <20190603145749.46347-1-jean-philippe.brucker@arm.com>
-	<20190603145749.46347-3-jean-philippe.brucker@arm.com>
-	<20190603150842.11070cfd@jacob-builder>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19CA6A9EE@SHSMSX104.ccr.corp.intel.com>
-	<20190605103754.6d8830d7@jacob-builder>
-In-Reply-To: <20190605103754.6d8830d7@jacob-builder>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiM2NhYzQ0YmUtNjAzMC00OTBmLTg1NTgtZWMzMDM2YWVhYjQ0IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiRG5NZm1PSmJMUlIyalpCdWFITlVkb3o2ejdOUWp5Z0d5RXBoMVVtV0tjc1lFV21RU00wMXNmajFxZFJ6MkhSRSJ9
-dlp-product: dlpe-windows
-dlp-version: 11.0.400.15
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+	Thu,  6 Jun 2019 07:01:27 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id 8A8FB68B20; Thu,  6 Jun 2019 09:01:00 +0200 (CEST)
+Date: Thu, 6 Jun 2019 09:00:59 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [RFC PATCH v5 3/8] iommu: add a new capable IOMMU_CAP_MERGING
+Message-ID: <20190606070059.GI27033@lst.de>
+References: <1559733114-4221-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1559733114-4221-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<7dfeb7d8-b777-b4af-d892-2829cd05241b@arm.com>
+	<20190605123808.GA12529@lst.de>
+	<OSAPR01MB3089448A3D44BE61B127AA73D8170@OSAPR01MB3089.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+Content-Disposition: inline
+In-Reply-To: <OSAPR01MB3089448A3D44BE61B127AA73D8170@OSAPR01MB3089.jpnprd01.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -93,88 +68,56 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-> From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
-> Sent: Thursday, June 6, 2019 1:38 AM
+On Thu, Jun 06, 2019 at 06:28:47AM +0000, Yoshihiro Shimoda wrote:
+> > The problem is that we need a way to communicate to the block layer
+> > that more than a single segment is ok IFF the DMA API instance supports
+> > merging.  And of course the answer will depend on futher parameters
+> > like the maximum merged segment size and alignment for the segement.
 > 
-> On Wed, 5 Jun 2019 08:51:45 +0000
-> "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> 
-> > > From: Jacob Pan
-> > > Sent: Tuesday, June 4, 2019 6:09 AM
-> > >
-> > > On Mon,  3 Jun 2019 15:57:47 +0100
-> > > Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-> > >
-> > > > +/**
-> > > > + * struct iommu_fault_page_request - Page Request data
-> > > > + * @flags: encodes whether the corresponding fields are valid and
-> > > > whether this
-> > > > + *         is the last page in group (IOMMU_FAULT_PAGE_REQUEST_*
-> > > > values)
-> > > > + * @pasid: Process Address Space ID
-> > > > + * @grpid: Page Request Group Index
-> > > > + * @perm: requested page permissions (IOMMU_FAULT_PERM_*
-> values)
-> > > > + * @addr: page address
-> > > > + * @private_data: device-specific private information
-> > > > + */
-> > > > +struct iommu_fault_page_request {
-> > > > +#define IOMMU_FAULT_PAGE_REQUEST_PASID_VALID	(1 << 0)
-> > > > +#define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
-> > > > +#define IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA	(1 << 2)
-> > > > +	__u32	flags;
-> > > > +	__u32	pasid;
-> > > > +	__u32	grpid;
-> > > > +	__u32	perm;
-> > > > +	__u64	addr;
-> > > > +	__u64	private_data[2];
-> > > > +};
-> > > > +
-> > >
-> > > Just a thought, for non-identity G-H PASID management. We could
-> > > pass on guest PASID in PRQ to save a lookup in QEMU. In this case,
-> > > QEMU allocate a GPASID for vIOMMU then a host PASID for pIOMMU.
-> > > QEMU has a G->H lookup. When PRQ comes in to the pIOMMU with
-> > > HPASID, IOMMU driver
-> > > can retrieve GPASID from the bind data then report to the guest via
-> > > VFIO. In this case QEMU does not need to do a H->G PASID lookup.
-> > >
-> > > Should we add a gpasid field here? or we can add a flag and field
-> > > later, up to you.
-> > >
-> >
-> > Can private_data serve this purpose? It's better not introducing
-> > gpasid awareness within host IOMMU driver. It is just a user-level
-> > data associated with a PASID when binding happens. Kernel doesn't
-> > care the actual meaning, simply record it and then return back to
-> > user space later upon device fault. Qemu interprets the meaning as
-> > gpasid in its own context. otherwise usages may use it for other
-> > purpose.
-> >
-> private_data was intended for device PRQ with private data, part of the
-> VT-d PRQ descriptor. For vSVA, we can withhold private_data in the host
-> then respond back when page response from the guest matches pending PRQ
-> with the data withheld. But for in-kernel PRQ reporting, private data
-> still might be passed on to any driver who wants to process the PRQ. So
-> we can't re-purpose it.
+> I'm afraid but I don't understand why we need a way to communicate to
+> the block layer that more than a single segment is ok IFF the DMA API
+> instance supports merging.
 
-sure. I just use it as one example to extend.
+Assume a device (which I think is your case) that only supports a single
+segment in hardware.  In that case we set max_segments to 1 if no
+IOMMU is present.  But if we have a merge capable IOMMU we can set
+max_segments to unlimited (or some software limit for scatterlist
+allocation), as long as we set a virt_boundary matching what the IOMMU
+expects, and max_sectors_kb isn't larger than the max IOMMU mapping
+size.  Now we could probably just open code this in the driver, but
+I'd feel much happier having a block layer like this:
 
-> 
-> But for in-kernel VDCM driver, it needs a lookup from guest PASID to
-> host PASID. I thought you wanted to have IOMMU driver provide such
-> service since the knowledge of H-G pasid can be established during
-> bind_gpasid time. In that sense, we _do_ have gpasid awareness.
-> 
+bool blk_can_use_iommu_merging(struct request_queue *q, struct device *dev)
+{
+	if (!IOMMU_CAN_MERGE_SEGMENTS(dev))
+		return false;
 
-yes, it makes sense. My original point is that IOMMU driver itself 
-doesn't need to know the actual meaning of this field (then it may
-be reused for different purpose from gpasid), but you are right that
-mdev driver in kernel anyway needs to do G-H translation then 
-explicitly defining it looks reasonable.
+	blk_queue_virt_boundary(q, IOMMU_PAGE_SIZE(dev));
+	blk_queue_max_segment_size(q, IOMMU_MAX_SEGMENT_SIZE(dev));
+	return true;
+}
 
-Thanks
-Kevin 
+and the driver then does:
+
+	if (blk_can_use_iommu_merging(q, dev)) {
+		blk_queue_max_segments(q, MAX_SW_SEGMENTS);
+		// initialize sg mempool, etc..
+	}
+
+
+Where the SCREAMING pseudo code calls are something we need to find a
+good API for.
+
+And thinking about it the backend doesn't need to be an iommu, swiotlb
+could handle this as well, which might be interesting for devices
+that need to boune buffer anyway.  IIRC mmc actually has some code
+to copy multiple segments into a bounce buffer somewhere.
+
+> The block layer already has a limit "max_segment_size" for each device so that
+> regardless it can/cannot merge the segments, we can use the limit.
+> Is my understanding incorrect?
+
+Yes.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
