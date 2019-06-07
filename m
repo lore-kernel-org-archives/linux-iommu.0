@@ -2,61 +2,74 @@ Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EC2C2BCA1
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 14:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3ABC2BCA1
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 14:19:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CC7FB206E0
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 14:17:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC7FB206E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6B0222083D
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 14:19:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B0222083D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9AE1012E4;
-	Fri,  7 Jun 2019 14:17:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2D23D12E7;
+	Fri,  7 Jun 2019 14:19:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C5BAC12DA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3D29C12DE
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 14:16:16 +0000 (UTC)
+	Fri,  7 Jun 2019 14:18:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 57CC5876
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 993EA87C
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 14:16:16 +0000 (UTC)
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	07 Jun 2019 07:16:15 -0700
-X-ExtLoop1: 1
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-	by orsmga002.jf.intel.com with ESMTP; 07 Jun 2019 07:16:14 -0700
-Date: Fri, 7 Jun 2019 07:14:16 -0700
-From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To: Stephane Eranian <eranian@google.com>
-Subject: Re: [RFC PATCH v4 17/21] x86/tsc: Switch to perf-based hardlockup
-	detector if TSC become unstable
-Message-ID: <20190607141416.GA30499@ranerica-svr.sc.intel.com>
-References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1558660583-28561-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<CABPqkBQP=JxpiQE7SVuJO3xPWvsFbAPj916RTYUgaMBDG1OdaQ@mail.gmail.com>
+	Fri,  7 Jun 2019 14:18:56 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 878C2308339B;
+	Fri,  7 Jun 2019 14:18:35 +0000 (UTC)
+Received: from [10.36.116.67] (ovpn-116-67.ams2.redhat.com [10.36.116.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id B60A57A4F5;
+	Fri,  7 Jun 2019 14:18:23 +0000 (UTC)
+Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>,
+	"yi.l.liu@intel.com" <yi.l.liu@intel.com>, Will Deacon
+	<Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-27-eric.auger@redhat.com>
+	<63b37149-1f74-bca1-35ea-5e849c0c2bbb@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <76b9b3a8-28dc-8629-f3cc-23e42f869c3a@redhat.com>
+Date: Fri, 7 Jun 2019 16:18:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CABPqkBQP=JxpiQE7SVuJO3xPWvsFbAPj916RTYUgaMBDG1OdaQ@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86 <x86@kernel.org>,
-	Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
-	Randy Dunlap <rdunlap@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
-	Ricardo Neri <ricardo.neri@intel.com>, iommu@lists.linux-foundation.org,
-	Andi Kleen <andi.kleen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>
+In-Reply-To: <63b37149-1f74-bca1-35ea-5e849c0c2bbb@arm.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.44]);
+	Fri, 07 Jun 2019 14:18:45 +0000 (UTC)
+Cc: Marc Zyngier <Marc.Zyngier@arm.com>,
+	"peter.maydell@linaro.org" <peter.maydell@linaro.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	Vincent Stehle <Vincent.Stehle@arm.com>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,66 +87,64 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Jun 06, 2019 at 05:35:51PM -0700, Stephane Eranian wrote:
-> Hi Ricardo,
+Hi Jean,
 
-Hi Stephane,
-
-> Thanks for your contribution here. It is very important to move the
-> watchdog out of the PMU wherever possible.
-
-Indeed, using the PMU for the hardlockup detector is still the default
-option. This patch series proposes a new kernel command line to switch
-to use the HPET.
-
+On 6/7/19 2:48 PM, Jean-Philippe Brucker wrote:
+> On 26/05/2019 17:10, Eric Auger wrote:
+>> +int vfio_pci_iommu_dev_fault_handler(struct iommu_fault_event *evt, void *data)
+>> +{
+>> +	struct vfio_pci_device *vdev = (struct vfio_pci_device *) data;
+>> +	struct vfio_region_fault_prod *prod_region =
+>> +		(struct vfio_region_fault_prod *)vdev->fault_pages;
+>> +	struct vfio_region_fault_cons *cons_region =
+>> +		(struct vfio_region_fault_cons *)(vdev->fault_pages + 2 * PAGE_SIZE);
+>> +	struct iommu_fault *new =
+>> +		(struct iommu_fault *)(vdev->fault_pages + prod_region->offset +
+>> +			prod_region->prod * prod_region->entry_size);
+>> +	int prod, cons, size;
+>> +
+>> +	mutex_lock(&vdev->fault_queue_lock);
+>> +
+>> +	if (!vdev->fault_abi)
+>> +		goto unlock;
+>> +
+>> +	prod = prod_region->prod;
+>> +	cons = cons_region->cons;
+>> +	size = prod_region->nb_entries;
+>> +
+>> +	if (CIRC_SPACE(prod, cons, size) < 1)
+>> +		goto unlock;
+>> +
+>> +	*new = evt->fault;
 > 
-> On Thu, May 23, 2019 at 6:17 PM Ricardo Neri
-> <ricardo.neri-calderon@linux.intel.com> wrote:
-> >
-> > The HPET-based hardlockup detector relies on the TSC to determine if an
-> > observed NMI interrupt was originated by HPET timer. Hence, this detector
-> > can no longer be used with an unstable TSC.
-> >
-> > In such case, permanently stop the HPET-based hardlockup detector and
-> > start the perf-based detector.
-> >
-> > Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-> > ---
-> >  arch/x86/include/asm/hpet.h    | 2 ++
-> >  arch/x86/kernel/tsc.c          | 2 ++
-> >  arch/x86/kernel/watchdog_hld.c | 7 +++++++
-> >  3 files changed, 11 insertions(+)
-> >
-> > diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-> > index fd99f2390714..a82cbe17479d 100644
-> > --- a/arch/x86/include/asm/hpet.h
-> > +++ b/arch/x86/include/asm/hpet.h
-> > @@ -128,6 +128,7 @@ extern int hardlockup_detector_hpet_init(void);
-> >  extern void hardlockup_detector_hpet_stop(void);
-> >  extern void hardlockup_detector_hpet_enable(unsigned int cpu);
-> >  extern void hardlockup_detector_hpet_disable(unsigned int cpu);
-> > +extern void hardlockup_detector_switch_to_perf(void);
-> >  #else
-> >  static inline struct hpet_hld_data *hpet_hardlockup_detector_assign_timer(void)
-> >  { return NULL; }
-> > @@ -136,6 +137,7 @@ static inline int hardlockup_detector_hpet_init(void)
-> >  static inline void hardlockup_detector_hpet_stop(void) {}
-> >  static inline void hardlockup_detector_hpet_enable(unsigned int cpu) {}
-> >  static inline void hardlockup_detector_hpet_disable(unsigned int cpu) {}
-> > +static void harrdlockup_detector_switch_to_perf(void) {}
-> >  #endif /* CONFIG_X86_HARDLOCKUP_DETECTOR_HPET */
-> >
-> This does not compile for me when CONFIG_X86_HARDLOCKUP_DETECTOR_HPET
-> is not enabled.
-> because:
->    1- you have a typo on the function name
->     2- you are missing the inline keyword
+> Could you check fault.type and return an error if it's not UNRECOV here?
+> If the fault is recoverable (very unlikely since the PRI capability is
+> disabled, but allowed) and we return an error here, then the caller
+> takes care of completing the fault. If we forward it to the guest
+> instead, the producer will wait indefinitely for a response.
+Sure I will add that check in the next version.
 
-I am sorry. This was an oversight on my side. I have corrected this in
-preparation for a v5.
+Thanks
 
-Thanks and BR,
-Ricardo
+Eric
+> 
+> Thanks,
+> Jean
+> 
+>> +	prod = (prod + 1) % size;
+>> +	prod_region->prod = prod;
+>> +	mutex_unlock(&vdev->fault_queue_lock);
+>> +
+>> +	mutex_lock(&vdev->igate);
+>> +	if (vdev->dma_fault_trigger)
+>> +		eventfd_signal(vdev->dma_fault_trigger, 1);
+>> +	mutex_unlock(&vdev->igate);
+>> +	return 0;
+>> +
+>> +unlock:
+>> +	mutex_unlock(&vdev->fault_queue_lock);
+>> +	return -EINVAL;
+>> +}
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
