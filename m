@@ -2,68 +2,64 @@ Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C57C2BCA1
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1CCC2BCA1
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:40:48 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C3882080C
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:35:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C3882080C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 49DB320B7C
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:40:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49DB320B7C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=free.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4B5F7EA7;
-	Fri,  7 Jun 2019 10:35:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2A22FF0A;
+	Fri,  7 Jun 2019 10:40:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF78CE9B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F217BF03
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 10:33:57 +0000 (UTC)
-X-Greylist: delayed 00:05:36 by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 320FD623
+	Fri,  7 Jun 2019 10:40:08 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6217E623
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 10:33:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 622EF802;
-	Fri,  7 Jun 2019 03:28:20 -0700 (PDT)
-Received: from [192.168.0.4] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A11773F246;
-	Fri,  7 Jun 2019 03:29:56 -0700 (PDT)
-Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20190526161004.25232-1-eric.auger@redhat.com>
-	<20190526161004.25232-27-eric.auger@redhat.com>
-	<20190603163139.70fe8839@x1.home>
-	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
-	<20190605154553.0d00ad8d@jacob-builder>
-	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
-	<20190606132903.064f7ac4@jacob-builder>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
-Date: Fri, 7 Jun 2019 11:28:13 +0100
+	Fri,  7 Jun 2019 10:40:08 +0000 (UTC)
+Received: from ns.iliad.fr (localhost [127.0.0.1])
+	by ns.iliad.fr (Postfix) with ESMTP id 28F4F1FFF7;
+	Fri,  7 Jun 2019 12:40:06 +0200 (CEST)
+Received: from [192.168.108.49] (freebox.vlq16.iliad.fr [213.36.7.13])
+	by ns.iliad.fr (Postfix) with ESMTP id 1176D1FF7C;
+	Fri,  7 Jun 2019 12:40:06 +0200 (CEST)
+Subject: Re: [PATCH v3] iommu/arm-smmu: Avoid constant zero in TLBI writes
+To: Joerg Roedel <joro@8bytes.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <f523effd-ef81-46fe-1f9e-1a0cb42c8b7b@free.fr>
+	<20190529130559.GB11023@fuggles.cambridge.arm.com>
+	<84791515-e0ae-0322-78aa-02ca0b40d157@free.fr>
+	<09a290f1-27a0-5ee3-16b9-659ef2ba99dc@free.fr>
+	<20190605121900.GJ15030@fuggles.cambridge.arm.com>
+From: Marc Gonzalez <marc.w.gonzalez@free.fr>
+Message-ID: <f7b2e799-e3b1-ad40-c7b7-153f00323636@free.fr>
+Date: Fri, 7 Jun 2019 12:40:05 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190606132903.064f7ac4@jacob-builder>
+In-Reply-To: <20190605121900.GJ15030@fuggles.cambridge.arm.com>
 Content-Language: en-US
-Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"ashok.raj@intel.com" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Vincent Stehle <Vincent.Stehle@arm.com>,
-	Robin Murphy <Robin.Murphy@arm.com>,
-	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+X-Virus-Scanned: ClamAV using ClamSMTP ; ns.iliad.fr ;
+	Fri Jun  7 12:40:06 2019 +0200 (CEST)
+Cc: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+	MSM <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>,
+	iommu <iommu@lists.linux-foundation.org>, Andy Gross <agross@kernel.org>,
+	AngeloGioacchino Del Regno <kholk11@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,90 +77,50 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 06/06/2019 21:29, Jacob Pan wrote:
->>>>>> iommu_unregister_device_fault_handler(&vdev->pdev->dev);    
->>>>>
->>>>>
->>>>> But this can fail if there are pending faults which leaves a
->>>>> device reference and then the system is broken :(    
->>>> This series only features unrecoverable errors and for those the
->>>> unregistration cannot fail. Now unrecoverable errors were added I
->>>> admit this is confusing. We need to sort this out or clean the
->>>> dependencies.  
->>> As Alex pointed out in 4/29, we can make
->>> iommu_unregister_device_fault_handler() never fail and clean up all
->>> the pending faults in the host IOMMU belong to that device. But the
->>> problem is that if a fault, such as PRQ, has already been injected
->>> into the guest, the page response may come back after handler is
->>> unregistered and registered again.  
->>
->> I'm trying to figure out if that would be harmful in any way. I guess
->> it can be a bit nasty if we handle the page response right after
->> having injected a new page request that uses the same PRGI. In any
->> other case we discard the page response, but here we forward it to
->> the endpoint and:
->>
->> * If the response status is success, endpoint retries the
->> translation. The guest probably hasn't had time to handle the new
->> page request and translation will fail, which may lead the endpoint
->> to give up (two unsuccessful translation requests). Or send a new
->> request
->>
-> Good point, there shouldn't be any harm if the page response is a
-> "fake" success. In fact it could happen in the normal operation when
-> PRQs to two devices share the same non-leaf translation structure. The
-> worst case is just a retry. I am not aware of the retry limit, is it in
-> the PCIe spec? I cannot find it.
+On 05/06/2019 14:19, Will Deacon wrote:
 
-I don't think so, it's the implementation's choice. In general I don't
-think devices will have a retry limit, but it doesn't seem like the PCI
-spec prevents them from implementing one either. It could be useful to
-stop retrying after a certain number of faults, for preventing livelocks
-when the OS doesn't fix up the page tables and the device would just
-repeat the fault indefinitely.
-
-> I think we should just document it, similar to having a spurious
-> interrupt. The PRQ trace event should capture that as well.
+> On Mon, Jun 03, 2019 at 02:15:37PM +0200, Marc Gonzalez wrote:
+>
+>> From: Robin Murphy <robin.murphy@arm.com>
+>>
+>> Apparently, some Qualcomm arm64 platforms which appear to expose their
+>> SMMU global register space are still, in fact, using a hypervisor to
+>> mediate it by trapping and emulating register accesses. Sadly, some
+>> deployed versions of said trapping code have bugs wherein they go
+>> horribly wrong for stores using r31 (i.e. XZR/WZR) as the source
+>> register.
+>>
+>> While this can be mitigated for GCC today by tweaking the constraints
+>> for the implementation of writel_relaxed(), to avoid any potential
+>> arms race with future compilers more aggressively optimising register
+>> allocation, the simple way is to just remove all the problematic
+>> constant zeros. For the write-only TLB operations, the actual value is
+>> irrelevant anyway and any old nearby variable will provide a suitable
+>> GPR to encode. The one point at which we really do need a zero to clear
+>> a context bank happens before any of the TLB maintenance where crashes
+>> have been reported, so is apparently not a problem... :/
+>>
+>> Reported-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
+>> Tested-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> Signed-off-by: Marc Gonzalez <marc.w.gonzalez@free.fr>
 > 
->> * otherwise the endpoint won't retry the access, and could also
->> disable PRI if the status is failure.
->>
-> That would be true regardless this race condition with handler
-> registration. So should be fine.
-
-We do give an invalid response for the old PRG (because of unregistering),
-but also for the new one, which has a different address that the guest
-might be able to page in and would normally return success.
-
->>> We need a way to reject such page response belong
->>> to the previous life of the handler. Perhaps a sync call to the
->>> guest with your fault queue eventfd? I am not sure.  
->>
->> We could simply expect the device driver not to send any page response
->> after unregistering the fault handler. Is there any reason VFIO would
->> need to unregister and re-register the fault handler on a live guest?
->>
-> There is no reason for VFIO to unregister and register again, I was
-> just thinking from security perspective. Someone could write a VFIO app
-> do this attack. But I agree the damage is within the device, may get
-> PRI disabled as a result.
-
-Yes I think the damage would always be contained within the misbehaving
-software
-
-> So it seems we agree on the following:
-> - iommu_unregister_device_fault_handler() will never fail
-> - iommu driver cleans up all pending faults when handler is unregistered
-> - assume device driver or guest not sending more page response _after_
->   handler is unregistered.
-> - system will tolerate rare spurious response
+> Acked-by: Will Deacon <will.deacon@arm.com>
 > 
-> Sounds right?
+> Joerg -- Please can you take this as a fix for 5.2, with a Cc stable?
 
-Yes, I'll add that to the fault series
+Hello Joerg,
 
-Thanks,
-Jean
+Can you ping this thread once this patch hits linux-next, so I can
+ask Bjorn to pick up the 8998 ANOC1 DT node, and the PCIe DT node
+that requires ANOC1.
+
+Bjorn: for ANOC1, a small fixup: s/arm,smmu/iommu/
+
+https://patchwork.kernel.org/project/linux-arm-msm/list/?series=99701
+https://patchwork.kernel.org/patch/10895341/
+
+Regards.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
