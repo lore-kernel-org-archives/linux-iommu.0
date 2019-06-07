@@ -2,70 +2,84 @@ Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD216C2BCA1
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 17:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51942C2BCA1
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 21:09:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BCD1208C0
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 17:40:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BCD1208C0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1408720868
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 21:09:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="Y8xkfHK1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1408720868
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E73A15B2;
-	Fri,  7 Jun 2019 17:40:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CE35A19AA;
+	Fri,  7 Jun 2019 21:09:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F1CE71408
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 210EE1606
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 17:39:56 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 419E4623
+	Fri,  7 Jun 2019 21:08:42 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com
+	[209.85.222.171])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0144BA9
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 17:39:56 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	07 Jun 2019 10:39:55 -0700
-X-ExtLoop1: 1
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga002.jf.intel.com with ESMTP; 07 Jun 2019 10:39:55 -0700
-Date: Fri, 7 Jun 2019 10:43:01 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
-Message-ID: <20190607104301.6b1bbd74@jacob-builder>
-In-Reply-To: <dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
-References: <20190526161004.25232-1-eric.auger@redhat.com>
-	<20190526161004.25232-27-eric.auger@redhat.com>
-	<20190603163139.70fe8839@x1.home>
-	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
-	<20190605154553.0d00ad8d@jacob-builder>
-	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
-	<20190606132903.064f7ac4@jacob-builder>
-	<dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"ashok.raj@intel.com" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Fri,  7 Jun 2019 21:08:40 +0000 (UTC)
+Received: by mail-qk1-f171.google.com with SMTP id m14so2136938qka.10
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 07 Jun 2019 14:08:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+	h=message-id:subject:from:to:cc:date:mime-version
+	:content-transfer-encoding;
+	bh=E4XEGd4DqdBQRyG19CHJo5811yC3cY/TwcQ6u8XftFo=;
+	b=Y8xkfHK1OZ7tf/p7+OEuKsd86A4js8cJVS0t5BgppRwxS23p5R5zyKuTN0dz+Mo88x
+	6uQFnQ91U/bHhDQWfnqC8RxR0jv3HhyvLlm8vaOqxw2Z5eR0sav++IN1KdJd9dYV5Y3C
+	fT5D+62A0l5OqoXpNsTuB5Erk9sL2zY/DCOSTw4juP43K4xzPn69nzkPxuuoQVJFOz2c
+	4qbadClltzYLOXmxGzSDkkOmai7TskMPMOUDiNwA85HCOKvALa880+3+opO1/a2YvMgd
+	7+x2N0THC1GoVWsNPk5j9pADsXpGD8InJ9LkLs0r8XJZol1dtoXStIsatT9xlo4Kbcdo
+	VksQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:message-id:subject:from:to:cc:date:mime-version
+	:content-transfer-encoding;
+	bh=E4XEGd4DqdBQRyG19CHJo5811yC3cY/TwcQ6u8XftFo=;
+	b=nHTPPsVVs01DxL6pAYbtTNb+l9h9AXHy+sNYbAcoGNcmLzvWVljjvmPBzhRw6umkku
+	QgvsfBl3MeBDUcvg7f83DgfZdryEuB/WL1z0IWaC6BzBVjliiNhEq5qSZTMcGqsRYqV7
+	C0o210CZoXBLXt/ea/FLTzsIyzyzxB9ii8y7I/PWSKXG/uV0IX3eU3vSq1Cakl3bl+0u
+	hPkitsS821zCk1eiJVk9AIc8oyCOVrziPi6od9RMpQmOaSjcsoAvL1oCS9XEhoDM/cy9
+	0DsnZN2cARBkRwt5S5GWfXxcedcjdHTsMFbDcp2N8g3sqqyq7Fz9av4RF5wJrpBosxVY
+	AZyQ==
+X-Gm-Message-State: APjAAAX35FbEtRqMGI7w4WzfpkrChwNeNnzJvXwEBnWPANdMWjRlBuZk
+	WejHsN7siO6/KsUDiUDCXQoz+g==
+X-Google-Smtp-Source: APXvYqzB1xYDxn6tlil+RdfJuoEo0ORYAGfENTnBCZYrw4vak0QBv8QAHAPZwlXqLe61VwGLoTl4+Q==
+X-Received: by 2002:a05:620a:1425:: with SMTP id
+	k5mr44972163qkj.146.1559941720051; 
+	Fri, 07 Jun 2019 14:08:40 -0700 (PDT)
+Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
+	[66.187.233.206]) by smtp.gmail.com with ESMTPSA id
+	i55sm2291302qtc.21.2019.06.07.14.08.38
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Fri, 07 Jun 2019 14:08:39 -0700 (PDT)
+Message-ID: <1559941717.6132.63.camel@lca.pw>
+Subject: "iommu/vt-d: Delegate DMA domain to generic iommu" series breaks
+	megaraid_sas
+From: Qian Cai <cai@lca.pw>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Date: Fri, 07 Jun 2019 17:08:37 -0400
+X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
+Mime-Version: 1.0
+Cc: Joerg Roedel <jroedel@suse.de>,
+	Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Vincent Stehle <Vincent.Stehle@arm.com>,
-	Robin Murphy <Robin.Murphy@arm.com>,
-	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+	Kashyap Desai <kashyap.desai@broadcom.com>,
+	Sumit Saxena <sumit.saxena@broadcom.com>, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,158 +92,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, 7 Jun 2019 11:28:13 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-
-> On 06/06/2019 21:29, Jacob Pan wrote:
-> >>>>>> iommu_unregister_device_fault_handler(&vdev->pdev->dev);      
-> >>>>>
-> >>>>>
-> >>>>> But this can fail if there are pending faults which leaves a
-> >>>>> device reference and then the system is broken :(      
-> >>>> This series only features unrecoverable errors and for those the
-> >>>> unregistration cannot fail. Now unrecoverable errors were added I
-> >>>> admit this is confusing. We need to sort this out or clean the
-> >>>> dependencies.    
-> >>> As Alex pointed out in 4/29, we can make
-> >>> iommu_unregister_device_fault_handler() never fail and clean up
-> >>> all the pending faults in the host IOMMU belong to that device.
-> >>> But the problem is that if a fault, such as PRQ, has already been
-> >>> injected into the guest, the page response may come back after
-> >>> handler is unregistered and registered again.    
-> >>
-> >> I'm trying to figure out if that would be harmful in any way. I
-> >> guess it can be a bit nasty if we handle the page response right
-> >> after having injected a new page request that uses the same PRGI.
-> >> In any other case we discard the page response, but here we
-> >> forward it to the endpoint and:
-> >>
-> >> * If the response status is success, endpoint retries the
-> >> translation. The guest probably hasn't had time to handle the new
-> >> page request and translation will fail, which may lead the endpoint
-> >> to give up (two unsuccessful translation requests). Or send a new
-> >> request
-> >>  
-> > Good point, there shouldn't be any harm if the page response is a
-> > "fake" success. In fact it could happen in the normal operation when
-> > PRQs to two devices share the same non-leaf translation structure.
-> > The worst case is just a retry. I am not aware of the retry limit,
-> > is it in the PCIe spec? I cannot find it.  
-> 
-> I don't think so, it's the implementation's choice. In general I don't
-> think devices will have a retry limit, but it doesn't seem like the
-> PCI spec prevents them from implementing one either. It could be
-> useful to stop retrying after a certain number of faults, for
-> preventing livelocks when the OS doesn't fix up the page tables and
-> the device would just repeat the fault indefinitely.
-> 
-> > I think we should just document it, similar to having a spurious
-> > interrupt. The PRQ trace event should capture that as well.
-> >   
-> >> * otherwise the endpoint won't retry the access, and could also
-> >> disable PRI if the status is failure.
-> >>  
-> > That would be true regardless this race condition with handler
-> > registration. So should be fine.  
-> 
-> We do give an invalid response for the old PRG (because of
-> unregistering), but also for the new one, which has a different
-> address that the guest might be able to page in and would normally
-> return success.
-> 
-> >>> We need a way to reject such page response belong
-> >>> to the previous life of the handler. Perhaps a sync call to the
-> >>> guest with your fault queue eventfd? I am not sure.    
-> >>
-> >> We could simply expect the device driver not to send any page
-> >> response after unregistering the fault handler. Is there any
-> >> reason VFIO would need to unregister and re-register the fault
-> >> handler on a live guest? 
-> > There is no reason for VFIO to unregister and register again, I was
-> > just thinking from security perspective. Someone could write a VFIO
-> > app do this attack. But I agree the damage is within the device,
-> > may get PRI disabled as a result.  
-> 
-> Yes I think the damage would always be contained within the
-> misbehaving software
-> 
-> > So it seems we agree on the following:
-> > - iommu_unregister_device_fault_handler() will never fail
-> > - iommu driver cleans up all pending faults when handler is
-> > unregistered
-> > - assume device driver or guest not sending more page response
-> > _after_ handler is unregistered.
-> > - system will tolerate rare spurious response
-> > 
-> > Sounds right?  
-> 
-> Yes, I'll add that to the fault series
-Hold on a second please, I think we need more clarifications. Ashok
-pointed out to me that the spurious response can be harmful to other
-devices when it comes to mdev, where PRQ group id is not per PASID,
-device may reuse the group number and receiving spurious page response
-can confuse the entire PF. Having spurious page response is also not
-abiding the PCIe spec. exactly.
-
-We have two options here:
-1. unregister handler will get -EBUSY if outstanding fault exists.
-	-PROs: block offending device unbind only, eventually timeout
-	will clear.
-	-CONs: flooded faults can prevent clearing
-2. unregister handle will block until all faults are clear in the host.
-   Never fails unregistration
-	-PROs: simple flow for VFIO, no need to worry about device
-	holding reference.
-	-CONs: spurious page response may come from
-	misbehaving/malicious guest if guest does unregister and
-	register back to back.
-It seems the only way to prevent spurious page response is to introduce
-a SW token or sequence# for each PRQ that needs a response. I still
-think option 2 is good.
-
-Consider the following time line:
-decoding
- PR#: page request
- G#:  group #
- P#:  PASID
- S#:  sequence #
- A#:  address
- PS#: page response
- (F): Fail
- (S): Success
-
-# Dev		Host		VFIO/QEMU	Guest
-===========================================================	
-1				<-reg(handler)
-2 PR1G1S1A1	->		inject	->	PR1G1S1A1
-3 PR2G1S2A2	->		inject	->	PR2G1S2A2
-4.				<-unreg(handler)
-5.	<-PR1G1S1A1(F)			| 
-6.	<-PR2G1S2A2(F)			V
-7.				<-unreg(handler)
-8.				<-reg(handler)
-9 PR3G1S3A1	->		inject	->	PR3G1S3A1
-10.						<-PS1G1S1A1
-11.		<reject S1>
-11.		<accept S3>			<-PS3G1S3A1
-12.PS3G1S3A1(S)
-
-The spurious page response comes in at step 10 where the guest sends
-response for the request in step 1. But since the sequence # is 1, host
-IOMMU driver will reject it. At step 11, we accept page response for
-the matching sequence # then respond SUCCESS to the device.
-
-So would it be OK to add this sequence# to iommu_fault and page
-response, or could event reuse the time stamp for that purpose.
-
-
-Jacob
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+VGhlIGxpbnV4LW5leHQgc2VyaWVzICJpb21tdS92dC1kOiBEZWxlZ2F0ZSBETUEgZG9tYWluIHRv
+IGdlbmVyaWMgaW9tbXUiIFsxXQpjYXVzZXMgYSBzeXN0ZW0gd2l0aCB0aGUgcm9vdGZzIG9uIG1l
+Z2FyYWlkX3NhcyBjYXJkIHVuYWJsZSB0byBib290LgoKUmV2ZXJ0ZWQgdGhlIHdob2xlIHNlcmll
+cyBvbiB0aGUgdG9wIG9mIGxpbnV4LW5leHQgKG5leHQtMjAxOTA2MDcpIGZpeGVkIHRoZQppc3N1
+ZS4KClRoZSBpbmZvcm1hdGlvbiByZWdhcmRzIHRoaXMgc3RvcmFnZSBjYXJkIGlzLAoKW8KgwqAx
+MTYuNDY2ODEwXVvCoMKgVDMyNF0gbWVnYXJhaWRfc2FzIDAwMDA6MDY6MDAuMDogRlcgcHJvdmlk
+ZWQgc3VwcG9ydE1heEV4dExEczoKMAltYXhfbGRzOiAzMgpbwqDCoDExNi40NzYwNTJdW8KgwqBU
+MzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBjb250cm9sbGVyIHR5cGUJOgppTVIoME1C
+KQpbwqDCoDExNi40ODM2NDZdW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBP
+bmxpbmUgQ29udHJvbGxlciBSZXNldChPQ1IpCQo6IEVuYWJsZWQKW8KgwqAxMTYuNDkyNDAzXVvC
+oMKgVDMyNF0gbWVnYXJhaWRfc2FzIDAwMDA6MDY6MDAuMDogU2VjdXJlIEpCT0Qgc3VwcG9ydAk6
+ClllcwpbwqDCoDExNi40OTk4ODddW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4w
+OiBOVk1lIHBhc3N0aHJ1IHN1cHBvcnQJOgpObwpbwqDCoDExNi41MDc0ODBdW8KgwqBUMzI0XSBt
+ZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBGVyBwcm92aWRlZApbwqDCoDExNi42MTI1MjNdW8Kg
+wqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBOVk1FIHBhZ2Ugc2l6ZQk6ICgwKQpb
+wqDCoDExNi42Mjk5OTFdW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBJTklU
+IGFkYXB0ZXIgZG9uZQpbwqDCoDExNi43MTQ3ODldW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAw
+MDowNjowMC4wOiBwY2kgaWQJCToKKDB4MTAwMCkvKDB4MDAxNykvKDB4MWQ0OSkvKDB4MDUwMCkK
+W8KgwqAxMTYuNzI0MjI4XVvCoMKgVDMyNF0gbWVnYXJhaWRfc2FzIDAwMDA6MDY6MDAuMDogdW5l
+dmVuc3BhbiBzdXBwb3J0CTogbm8KW8KgwqAxMTYuNzMxNTE4XVvCoMKgVDMyNF0gbWVnYXJhaWRf
+c2FzIDAwMDA6MDY6MDAuMDogZmlybXdhcmUgY3Jhc2ggZHVtcAk6Cm5vClvCoMKgMTE2LjczODk4
+MV1bwqDCoFQzMjRdIG1lZ2FyYWlkX3NhcyAwMDAwOjA2OjAwLjA6IGpib2Qgc3luYyBtYXAJCToK
+eWVzClvCoMKgMTE2Ljc4NzQzM11bwqDCoFQzMjRdIHNjc2kgaG9zdDA6IEF2YWdvIFNBUyBiYXNl
+ZCBNZWdhUkFJRCBkcml2ZXIKW8KgwqAxMTcuMDgxMDg4XVvCoMKgVDMyNF0gc2NzaSAwOjA6MDow
+OiBEaXJlY3QtCkFjY2Vzc8KgwqDCoMKgwqBMRU5PVk/CoMKgwqBTVDkwME1NMDE2OMKgwqDCoMKg
+wqDCoEw1ODcgUFE6IDAgQU5TSTogNgoKWzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3BhdGNo
+d29yay9jb3Zlci8xMDc4OTYwLwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
+bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
+aW9tbXU=
