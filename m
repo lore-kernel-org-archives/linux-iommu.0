@@ -2,82 +2,68 @@ Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C20C2BCA1
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C57C2BCA1
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:35:00 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C9F4E208E3
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:15:51 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zbnOXGvF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9F4E208E3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8C3882080C
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 10:35:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C3882080C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8BA6C1060;
-	Fri,  7 Jun 2019 10:15:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4B5F7EA7;
+	Fri,  7 Jun 2019 10:35:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E352B105A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF78CE9B
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 10:14:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-vs1-f65.google.com (mail-vs1-f65.google.com
-	[209.85.217.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 06E42876
+	Fri,  7 Jun 2019 10:33:57 +0000 (UTC)
+X-Greylist: delayed 00:05:36 by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 320FD623
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 10:14:48 +0000 (UTC)
-Received: by mail-vs1-f65.google.com with SMTP id z11so817332vsq.9
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 07 Jun 2019 03:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=exv6uaKs/w9K/r+eTG/OXTm7v4+gG8Cb0PW6M8MWkjE=;
-	b=zbnOXGvFCxdKw4gEXDarNXkIo1ogtJ4OyMi+io8MTS+gt+f/ZFsoOxyzx1PwyXav02
-	jtyXcElR1DCj/ODjpeJ7o3Swd1u06WwUcHKYDbEvevMBGmv7jSS6CwUxuyy6H+4F0rg0
-	BLbMA3Gq44ERPyLBl8QNWyDboeqf7AmgIuLpatg0BB+YQXfzwwS8mmKQ4MzUL+tLQQ65
-	CyzKAQ6x+XThvbDg7p//1P+s5XXTLX5fIsz3vy7b4g2aeZzycvXgz9Arm30bcU4EoE5Z
-	k5L04Nw8AdGccpHjMhhlghE2YMcPxA2OiVWxJUWdkipapjX3/sU05o3OiSEdvRM1nmeH
-	Z88Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=exv6uaKs/w9K/r+eTG/OXTm7v4+gG8Cb0PW6M8MWkjE=;
-	b=Yb5fb+JzDK7LCZW86NtoLiYsO9DkKf56y7Pv3np4mPAF2+WhChAYxSsLTLuJn+mIAc
-	pk5/Y9eFvinjvyd6SRz/0+Yvfkez5p4k88MZsfINcXJv8rmw+TqvEbO5/qfjd5Vn8h9c
-	hxoK4mJu7vcLexDKFv5AHUeuW80n1q40ugTOzzCL1ylIJba6q0114QycfM3AQMI3ZHc2
-	AvirFobIWc2p+jk0I+lafQWGw9wOu4+BXt0oH7TRRcg63P09VbYcqjdqvm4hLOqTt9bh
-	qye0r44kH754vs20/qv6Ff1NHuaMPUbBVHGQBMl8cp1toPwU/zHZMD2WTrC00cVSssr4
-	HKgw==
-X-Gm-Message-State: APjAAAXobATtiPBklphhZhGShsFKPVD4/GT/barPGbtvMoYwtgY3uRKT
-	onH0PTe6kQyAa4WpxLpZxdZvecvyxYNqRzeaSUMIMw==
-X-Google-Smtp-Source: APXvYqylZ2mMNJN0GZ+tkcBJFp0Pxsn2dMa8uZ/gDV/oYdZgfbZH5RPj7MB61Gch6nfJjl3vnl9u9pIocmgL15Up8nk=
-X-Received: by 2002:a67:ebc5:: with SMTP id y5mr16672869vso.34.1559902488004; 
-	Fri, 07 Jun 2019 03:14:48 -0700 (PDT)
+	Fri,  7 Jun 2019 10:33:57 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 622EF802;
+	Fri,  7 Jun 2019 03:28:20 -0700 (PDT)
+Received: from [192.168.0.4] (unknown [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A11773F246;
+	Fri,  7 Jun 2019 03:29:56 -0700 (PDT)
+Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-27-eric.auger@redhat.com>
+	<20190603163139.70fe8839@x1.home>
+	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
+	<20190605154553.0d00ad8d@jacob-builder>
+	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
+	<20190606132903.064f7ac4@jacob-builder>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
+Date: Fri, 7 Jun 2019 11:28:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190605142312.6072-1-thierry.reding@gmail.com>
-In-Reply-To: <20190605142312.6072-1-thierry.reding@gmail.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Fri, 7 Jun 2019 12:14:11 +0200
-Message-ID: <CAPDyKFrK-65d3PJYOd=7GGABsmXs9C+y4o8Y7=KW225OjhaE8Q@mail.gmail.com>
-Subject: Re: [PATCH] driver: core: Allow subsystems to continue deferring probe
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Linux PM <linux-pm@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kevin Hilman <khilman@kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>
+In-Reply-To: <20190606132903.064f7ac4@jacob-builder>
+Content-Language: en-US
+Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Vincent Stehle <Vincent.Stehle@arm.com>,
+	Robin Murphy <Robin.Murphy@arm.com>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -95,168 +81,90 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-+ Rob
+On 06/06/2019 21:29, Jacob Pan wrote:
+>>>>>> iommu_unregister_device_fault_handler(&vdev->pdev->dev);    
+>>>>>
+>>>>>
+>>>>> But this can fail if there are pending faults which leaves a
+>>>>> device reference and then the system is broken :(    
+>>>> This series only features unrecoverable errors and for those the
+>>>> unregistration cannot fail. Now unrecoverable errors were added I
+>>>> admit this is confusing. We need to sort this out or clean the
+>>>> dependencies.  
+>>> As Alex pointed out in 4/29, we can make
+>>> iommu_unregister_device_fault_handler() never fail and clean up all
+>>> the pending faults in the host IOMMU belong to that device. But the
+>>> problem is that if a fault, such as PRQ, has already been injected
+>>> into the guest, the page response may come back after handler is
+>>> unregistered and registered again.  
+>>
+>> I'm trying to figure out if that would be harmful in any way. I guess
+>> it can be a bit nasty if we handle the page response right after
+>> having injected a new page request that uses the same PRGI. In any
+>> other case we discard the page response, but here we forward it to
+>> the endpoint and:
+>>
+>> * If the response status is success, endpoint retries the
+>> translation. The guest probably hasn't had time to handle the new
+>> page request and translation will fail, which may lead the endpoint
+>> to give up (two unsuccessful translation requests). Or send a new
+>> request
+>>
+> Good point, there shouldn't be any harm if the page response is a
+> "fake" success. In fact it could happen in the normal operation when
+> PRQs to two devices share the same non-leaf translation structure. The
+> worst case is just a retry. I am not aware of the retry limit, is it in
+> the PCIe spec? I cannot find it.
 
-On Wed, 5 Jun 2019 at 16:23, Thierry Reding <thierry.reding@gmail.com> wrote:
->
-> From: Thierry Reding <treding@nvidia.com>
->
-> Some subsystems, such as pinctrl, allow continuing to defer probe
-> indefinitely. This is useful for devices that depend on resources
-> provided by devices that are only probed after the init stage.
->
-> One example of this can be seen on Tegra, where the DPAUX hardware
-> contains pinmuxing controls for pins that it shares with an I2C
-> controller. The I2C controller is typically used for communication
-> with a monitor over HDMI (DDC). However, other instances of the I2C
-> controller are used to access system critical components, such as a
-> PMIC. The I2C controller driver will therefore usually be a builtin
-> driver, whereas the DPAUX driver is part of the display driver that
-> is loaded from a module to avoid bloating the kernel image with all
-> of the DRM/KMS subsystem.
->
-> In this particular case the pins used by this I2C/DDC controller
-> become accessible very late in the boot process. However, since the
-> controller is only used in conjunction with display, that's not an
-> issue.
->
-> Unfortunately the driver core currently outputs a warning message
-> when a device fails to get the pinctrl before the end of the init
-> stage. That can be confusing for the user because it may sound like
-> an unwanted error occurred, whereas it's really an expected and
-> harmless situation.
->
-> In order to eliminate this warning, this patch allows callers of the
-> driver_deferred_probe_check_state() helper to specify that they want
-> to continue deferring probe, regardless of whether we're past the
-> init stage or not. All of the callers of that function are updated
-> for the new signature, but only the pinctrl subsystem passes a true
-> value in the new persist parameter if appropriate.
->
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
+I don't think so, it's the implementation's choice. In general I don't
+think devices will have a retry limit, but it doesn't seem like the PCI
+spec prevents them from implementing one either. It could be useful to
+stop retrying after a certain number of faults, for preventing livelocks
+when the OS doesn't fix up the page tables and the device would just
+repeat the fault indefinitely.
 
-Overall this looks good to me. I guess Greg prefers a separate
-function, which sets a flag for the device to switch to this new
-behavior. That seems like a reasonable change to make and avoids
-changing calls to driver_deferred_probe_check_state().
+> I think we should just document it, similar to having a spurious
+> interrupt. The PRQ trace event should capture that as well.
+> 
+>> * otherwise the endpoint won't retry the access, and could also
+>> disable PRI if the status is failure.
+>>
+> That would be true regardless this race condition with handler
+> registration. So should be fine.
 
-Kind regards
-Uffe
+We do give an invalid response for the old PRG (because of unregistering),
+but also for the new one, which has a different address that the guest
+might be able to page in and would normally return success.
 
-> ---
->  drivers/base/dd.c            | 17 ++++++++++++-----
->  drivers/base/power/domain.c  |  2 +-
->  drivers/iommu/of_iommu.c     |  2 +-
->  drivers/pinctrl/devicetree.c | 10 ++++++----
->  include/linux/device.h       |  2 +-
->  5 files changed, 21 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index 0df9b4461766..25ffbadf4187 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -238,23 +238,30 @@ __setup("deferred_probe_timeout=", deferred_probe_timeout_setup);
->  /**
->   * driver_deferred_probe_check_state() - Check deferred probe state
->   * @dev: device to check
-> + * @persist: Boolean flag indicating whether drivers should keep trying to
-> + *   probe after built-in drivers have had a chance to probe. This is useful
-> + *   for built-in drivers that rely on resources provided by modular drivers.
->   *
->   * Returns -ENODEV if init is done and all built-in drivers have had a chance
-> - * to probe (i.e. initcalls are done), -ETIMEDOUT if deferred probe debug
-> - * timeout has expired, or -EPROBE_DEFER if none of those conditions are met.
-> + * to probe (i.e. initcalls are done) and unless persist is set, -ETIMEDOUT if
-> + * deferred probe debug timeout has expired, or -EPROBE_DEFER if none of those
-> + * conditions are met.
->   *
->   * Drivers or subsystems can opt-in to calling this function instead of directly
->   * returning -EPROBE_DEFER.
->   */
-> -int driver_deferred_probe_check_state(struct device *dev)
-> +int driver_deferred_probe_check_state(struct device *dev, bool persist)
->  {
->         if (initcalls_done) {
->                 if (!deferred_probe_timeout) {
->                         dev_WARN(dev, "deferred probe timeout, ignoring dependency");
->                         return -ETIMEDOUT;
->                 }
-> -               dev_warn(dev, "ignoring dependency for device, assuming no driver");
-> -               return -ENODEV;
-> +
-> +               if (!persist) {
-> +                       dev_warn(dev, "ignoring dependency for device, assuming no driver");
-> +                       return -ENODEV;
-> +               }
->         }
->         return -EPROBE_DEFER;
->  }
-> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> index 33c30c1e6a30..effa5276a773 100644
-> --- a/drivers/base/power/domain.c
-> +++ b/drivers/base/power/domain.c
-> @@ -2423,7 +2423,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
->                 mutex_unlock(&gpd_list_lock);
->                 dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
->                         __func__, PTR_ERR(pd));
-> -               return driver_deferred_probe_check_state(base_dev);
-> +               return driver_deferred_probe_check_state(base_dev, false);
->         }
->
->         dev_dbg(dev, "adding to PM domain %s\n", pd->name);
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index f04a6df65eb8..70f3946b088a 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -117,7 +117,7 @@ static int of_iommu_xlate(struct device *dev,
->          * a proper probe-ordering dependency mechanism in future.
->          */
->         if (!ops)
-> -               return driver_deferred_probe_check_state(dev);
-> +               return driver_deferred_probe_check_state(dev, false);
->
->         return ops->of_xlate(dev, iommu_spec);
->  }
-> diff --git a/drivers/pinctrl/devicetree.c b/drivers/pinctrl/devicetree.c
-> index f7e354f85518..c808bf567d24 100644
-> --- a/drivers/pinctrl/devicetree.c
-> +++ b/drivers/pinctrl/devicetree.c
-> @@ -111,13 +111,15 @@ static int dt_to_map_one_config(struct pinctrl *p,
->
->                 np_pctldev = of_get_next_parent(np_pctldev);
->                 if (!np_pctldev || of_node_is_root(np_pctldev)) {
-> +                       bool persist = false;
-> +
->                         of_node_put(np_pctldev);
-> -                       ret = driver_deferred_probe_check_state(p->dev);
->                         /* keep deferring if modules are enabled unless we've timed out */
-> -                       if (IS_ENABLED(CONFIG_MODULES) && !allow_default && ret == -ENODEV)
-> -                               ret = -EPROBE_DEFER;
-> +                       if (IS_ENABLED(CONFIG_MODULES) && !allow_default)
-> +                               persist = true;
->
-> -                       return ret;
-> +                       return driver_deferred_probe_check_state(p->dev,
-> +                                                                persist);
->                 }
->                 /* If we're creating a hog we can use the passed pctldev */
->                 if (hog_pctldev && (np_pctldev == p->dev->of_node)) {
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index e0649f6adf2e..ecf59dfcbfb7 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -340,7 +340,7 @@ struct device *driver_find_device(struct device_driver *drv,
->                                   int (*match)(struct device *dev, void *data));
->
->  void driver_deferred_probe_add(struct device *dev);
-> -int driver_deferred_probe_check_state(struct device *dev);
-> +int driver_deferred_probe_check_state(struct device *dev, bool persist);
->
->  /**
->   * struct subsys_interface - interfaces to device functions
-> --
-> 2.21.0
->
+>>> We need a way to reject such page response belong
+>>> to the previous life of the handler. Perhaps a sync call to the
+>>> guest with your fault queue eventfd? I am not sure.  
+>>
+>> We could simply expect the device driver not to send any page response
+>> after unregistering the fault handler. Is there any reason VFIO would
+>> need to unregister and re-register the fault handler on a live guest?
+>>
+> There is no reason for VFIO to unregister and register again, I was
+> just thinking from security perspective. Someone could write a VFIO app
+> do this attack. But I agree the damage is within the device, may get
+> PRI disabled as a result.
+
+Yes I think the damage would always be contained within the misbehaving
+software
+
+> So it seems we agree on the following:
+> - iommu_unregister_device_fault_handler() will never fail
+> - iommu driver cleans up all pending faults when handler is unregistered
+> - assume device driver or guest not sending more page response _after_
+>   handler is unregistered.
+> - system will tolerate rare spurious response
+> 
+> Sounds right?
+
+Yes, I'll add that to the fault series
+
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
