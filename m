@@ -2,102 +2,66 @@ Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8894C28CC3
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 08:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C02C2BCA1
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 08:29:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A46E2089E
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 08:19:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="Xhhu7QeB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A46E2089E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0EB92133D
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 08:29:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0EB92133D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6A1571060;
-	Fri,  7 Jun 2019 08:19:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5419EECC;
+	Fri,  7 Jun 2019 08:29:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E44341025
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D527EC4
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 08:19:13 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-TY1-obe.outbound.protection.outlook.com
-	(mail-eopbgr1400131.outbound.protection.outlook.com [40.107.140.131])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A21CA9
+	Fri,  7 Jun 2019 08:28:21 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7FCF96D6
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 08:19:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=8/Y0FQnRXNdESqRRq1Kn4ne96vnW4kohRKiZPMqJHAo=;
-	b=Xhhu7QeBGtX/Z+SuptZsQNvPvijp0OM6oww/qIdz3orlIYpa8Yi2ojcF9OQbSbzavricadPUJKUVNBtxESTkccAzPZhSCNaQSIlABa3wRflWMfqiAH0TR3OI58b3rPNt5URGZMa14jzNQGLUYZpk7x3NBhPPY5OZmzffVD4T/YI=
-Received: from TYAPR01MB3102.jpnprd01.prod.outlook.com (20.177.103.73) by
-	TYAPR01MB4863.jpnprd01.prod.outlook.com (20.179.175.209) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1965.14; Fri, 7 Jun 2019 08:19:09 +0000
-Received: from TYAPR01MB3102.jpnprd01.prod.outlook.com
-	([fe80::4c13:4e4f:c7ac:9f6e]) by
-	TYAPR01MB3102.jpnprd01.prod.outlook.com
-	([fe80::4c13:4e4f:c7ac:9f6e%3]) with mapi id 15.20.1965.011;
-	Fri, 7 Jun 2019 08:19:09 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: RE: [PATCH] Documentation: DMA-API: fix a function name of
-	max_mapping_size
-Thread-Topic: [PATCH] Documentation: DMA-API: fix a function name of
-	max_mapping_size
-Thread-Index: AQHVHQX28aIqCA/T0kKXQB70i48QjqaP1kMAgAACTBA=
-Date: Fri, 7 Jun 2019 08:19:08 +0000
-Message-ID: <TYAPR01MB3102C6CCC204DAAA6570FD25D8100@TYAPR01MB3102.jpnprd01.prod.outlook.com>
-References: <1559893633-6852-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<20190607080814.GA10303@lst.de>
-In-Reply-To: <20190607080814.GA10303@lst.de>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0ca70c39-69e5-4f79-c412-08d6eb20d0aa
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:TYAPR01MB4863; 
-x-ms-traffictypediagnostic: TYAPR01MB4863:
-x-microsoft-antispam-prvs: <TYAPR01MB486321076DBF2C7B8B042C87D8100@TYAPR01MB4863.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0061C35778
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(376002)(346002)(366004)(396003)(136003)(39860400002)(199004)(189003)(6436002)(54906003)(316002)(6506007)(7696005)(33656002)(68736007)(53936002)(102836004)(6246003)(66066001)(6916009)(66946007)(64756008)(66446008)(4744005)(71190400001)(66556008)(99286004)(5660300002)(81156014)(66476007)(71200400001)(256004)(81166006)(14444005)(52536014)(74316002)(8936002)(8676002)(76116006)(73956011)(25786009)(9686003)(55016002)(486006)(4326008)(76176011)(6116002)(14454004)(26005)(446003)(3846002)(7736002)(2906002)(86362001)(305945005)(229853002)(478600001)(186003)(11346002)(476003);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:TYAPR01MB4863;
-	H:TYAPR01MB3102.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ZkXewv06J4V5qfmMQgARQzIJqbF+0G2Yb8BsVhp4ZpZyjCWyt8sGm0+USdJOHyu5+phT5kmWtqy34PjQIptXmJyw822+8mcpKBmC2CFz4Jeajvnxm3rlSj9PeJfU1v6snCbFTgFtjZtVo3dImp9td8uoS6e+uBEdW+GpfJRY0p7teuOJarvrFbT3Dy/6AUJbAHhPfQuRA17pgoZFDd8UJWg6PalkskGHDfNQQ5kYkRRgyo3PsSQ3x8qiNUgWIl+ED2irgHa7wWTjea87cW0SeL34lNwExV8CIXibiunLXx8Znb0Z6GoYOLjQAf2+WrmD3JkXgxCDq/F6XNXhkzf0E5BYPCWQfaAPGCd7x0Z7T6Wl7CsvMj9P9VLlIALBdE9JruOZsw5y1MQIBnG/+/ayYUCrxfZx51Dm5moEe9X+jlU=
+	Fri,  7 Jun 2019 08:28:20 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id ACC65307B16B;
+	Fri,  7 Jun 2019 08:28:19 +0000 (UTC)
+Received: from [10.36.116.67] (ovpn-116-67.ams2.redhat.com [10.36.116.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 8BCCF5BBBD;
+	Fri,  7 Jun 2019 08:28:08 +0000 (UTC)
+Subject: Re: [PATCH v8 25/29] vfio-pci: Add a new VFIO_REGION_TYPE_NESTED
+	region type
+To: Alex Williamson <alex.williamson@redhat.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-26-eric.auger@redhat.com>
+	<20190603163159.31e7ae23@x1.home>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <9c1ea2db-5ba0-3cf5-3b38-2c4a125460e6@redhat.com>
+Date: Fri, 7 Jun 2019 10:28:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ca70c39-69e5-4f79-c412-08d6eb20d0aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 08:19:09.0747 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB4863
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"jroedel@suse.de" <jroedel@suse.de>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"corbet@lwn.net" <corbet@lwn.net>
+In-Reply-To: <20190603163159.31e7ae23@x1.home>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.45]);
+	Fri, 07 Jun 2019 08:28:19 +0000 (UTC)
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+	kvm@vger.kernel.org, jean-philippe.brucker@arm.com,
+	will.deacon@arm.com, linux-kernel@vger.kernel.org,
+	marc.zyngier@arm.com, iommu@lists.linux-foundation.org,
+	vincent.stehle@arm.com, robin.murphy@arm.com,
+	kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,21 +79,445 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+Hi Alex,
 
-> From: Christoph Hellwig, Sent: Friday, June 7, 2019 5:08 PM
+On 6/4/19 12:31 AM, Alex Williamson wrote:
+> On Sun, 26 May 2019 18:10:00 +0200
+> Eric Auger <eric.auger@redhat.com> wrote:
 > 
-> Looks good.  And it seems like you've also found the solution to
-> your usb storage problem, but I'm going to post the variant I just
-> hacked up nevertheless.
+>> This patch adds two new regions aiming to handle nested mode
+>> translation faults.
+>>
+>> The first region (two host kernel pages) is read-only from the
+>> user-space perspective. The first page contains an header
+>> that provides information about the circular buffer located in the
+>> second page. The circular buffer is put in a different page in
+>> the prospect to be mmappable.
+>>
+>> The max user API version supported by the kernel is returned
+>> through a dedicated fault region capability.
+>>
+>> The prod header contains
+>> - the user API version in use (potentially inferior to the one
+>>   returned in the capability),
+>> - the offset of the queue within the region,
+>> - the producer index relative to the start of the queue
+>> - the max number of fault records,
+>> - the size of each record.
+>>
+>> The second region is write-only from the user perspective. It
+>> contains the version of the requested fault ABI and the consumer
+>> index that is updated by the userspace each time this latter has
+>> consumed fault records.
+>>
+>> The natural order of operation for the userspace is:
+>> - retrieve the highest supported fault ABI version
+>> - set the requested fault ABI version in the consumer region
+>>
+>> Until the ABI version is not set by the userspace, the kernel
+>> cannot return a comprehensive set of information inside the
+>> prod header (entry size and number of entries in the fault queue).
+> 
+> It's not clear to me why two regions are required for this.  If the
+> first page is not mmap capable, why does it need to be read-only?  If
+> it were not read-only couldn't the fields of the second region also fit
+> within this first page?  If you wanted to deal with an mmap capable
+> writeable region, it could just be yet a 3rd page in the first region.
+I thought it would be clearer for the userspace to have 2 separate
+regions, one for the producer and one for the consumer. Otherwise I will
+need to specify which fields are read-only or write-only. But this may
+be more self-contained in a single region.
+> 
+>>
+>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>>
+>> ---
+>>
+>> v4 -> v5
+>> - check cons is not null in vfio_pci_check_cons_fault
+>>
+>> v3 -> v4:
+>> - use 2 separate regions, respectively in read and write modes
+>> - add the version capability
+>> ---
+>>  drivers/vfio/pci/vfio_pci.c         | 105 ++++++++++++++++++++++++++++
+>>  drivers/vfio/pci/vfio_pci_private.h |  17 +++++
+>>  drivers/vfio/pci/vfio_pci_rdwr.c    |  73 +++++++++++++++++++
+>>  include/uapi/linux/vfio.h           |  42 +++++++++++
+>>  4 files changed, 237 insertions(+)
+>>
+>> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+>> index cab71da46f4a..f75f61127277 100644
+>> --- a/drivers/vfio/pci/vfio_pci.c
+>> +++ b/drivers/vfio/pci/vfio_pci.c
+>> @@ -261,6 +261,106 @@ int vfio_pci_set_power_state(struct vfio_pci_device *vdev, pci_power_t state)
+>>  	return ret;
+>>  }
+>>  
+>> +void vfio_pci_fault_release(struct vfio_pci_device *vdev,
+>> +			    struct vfio_pci_region *region)
+>> +{
+>> +}
+>> +
+>> +static const struct vfio_pci_fault_abi fault_abi_versions[] = {
+>> +	[0] = {
+>> +		.entry_size = sizeof(struct iommu_fault),
+>> +	},
+>> +};
+>> +
+>> +#define NR_FAULT_ABIS ARRAY_SIZE(fault_abi_versions)
+> 
+> This looks like it's leading to some dangerous complicated code to
+> support multiple user selected ABIs.  How many ABIs do we plan to
+> support?  The region capability also exposes a type, sub-type, and
+> version.  How much of this could be exposed that way?  ie. if we need
+> to support multiple versions, expose multiple regions.
 
-Thank you for your reply! I think this API is related to my problem,
-but I don't have any actual solution (a patch) for now. So, I'll wait
-for your patch!
+This is something that was discussed earlier and suggested by
+Jean-Philippe that we may need to support several versions of the ABI
+(typicallu when adding PRI support).
+Exposing multiple region is an interesting idea and I will explore that
+direction.
+> 
+>> +
+>> +static int vfio_pci_fault_prod_add_capability(struct vfio_pci_device *vdev,
+>> +		struct vfio_pci_region *region, struct vfio_info_cap *caps)
+>> +{
+>> +	struct vfio_region_info_cap_fault cap = {
+>> +		.header.id = VFIO_REGION_INFO_CAP_PRODUCER_FAULT,
+>> +		.header.version = 1,
+>> +		.version = NR_FAULT_ABIS,
+>> +	};
+>> +	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
+>> +}
+>> +
+>> +static const struct vfio_pci_regops vfio_pci_fault_cons_regops = {
+>> +	.rw		= vfio_pci_fault_cons_rw,
+>> +	.release	= vfio_pci_fault_release,
+>> +};
+>> +
+>> +static const struct vfio_pci_regops vfio_pci_fault_prod_regops = {
+>> +	.rw		= vfio_pci_fault_prod_rw,
+>> +	.release	= vfio_pci_fault_release,
+>> +	.add_capability = vfio_pci_fault_prod_add_capability,
+>> +};
+>> +
+>> +static int vfio_pci_init_fault_region(struct vfio_pci_device *vdev)
+>> +{
+>> +	struct vfio_region_fault_prod *header;
+>> +	int ret;
+>> +
+>> +	mutex_init(&vdev->fault_queue_lock);
+>> +
+>> +	vdev->fault_pages = kzalloc(3 * PAGE_SIZE, GFP_KERNEL);
+>> +	if (!vdev->fault_pages)
+>> +		return -ENOMEM;
+>> +
+>> +	ret = vfio_pci_register_dev_region(vdev,
+>> +		VFIO_REGION_TYPE_NESTED,
+>> +		VFIO_REGION_SUBTYPE_NESTED_FAULT_PROD,
+>> +		&vfio_pci_fault_prod_regops, 2 * PAGE_SIZE,
+>> +		VFIO_REGION_INFO_FLAG_READ, vdev->fault_pages);
+> 
+> If mmap isn't supported yet, why are we pushing the queue out to the
+> 2nd page?  We're just wasting space.  vfio_region_fault_prod.offset
+> allows us to relocate it when/if it is mmap capable.
+OK. mmap capability is introduced in 27/29 though.
+> 
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	ret = vfio_pci_register_dev_region(vdev,
+>> +		VFIO_REGION_TYPE_NESTED,
+>> +		VFIO_REGION_SUBTYPE_NESTED_FAULT_CONS,
+>> +		&vfio_pci_fault_cons_regops,
+>> +		sizeof(struct vfio_region_fault_cons),
+>> +		VFIO_REGION_INFO_FLAG_WRITE,
+>> +		vdev->fault_pages + 2 * PAGE_SIZE);
+> 
+> What's the remaining (PAGE_SIZE - sizeof(struct vfio_region_fault_cons))
+> bytes used for?
+They are not used.
+> 
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	header = (struct vfio_region_fault_prod *)vdev->fault_pages;
+>> +	header->version = -1;
+>> +	header->offset = PAGE_SIZE;
+>> +	return 0;
+>> +out:
+>> +	kfree(vdev->fault_pages);
+>> +	return ret;
+>> +}
+>> +
+>> +int vfio_pci_check_cons_fault(struct vfio_pci_device *vdev,
+>> +			     struct vfio_region_fault_cons *cons_header)
+>> +{
+>> +	struct vfio_region_fault_prod *prod_header =
+>> +		(struct vfio_region_fault_prod *)vdev->fault_pages;
+>> +
+>> +	if (cons_header->version > NR_FAULT_ABIS)
+>> +		return -EINVAL;
+>> +
+>> +	if (!vdev->fault_abi) {
+>> +		vdev->fault_abi = cons_header->version;
+>> +		prod_header->entry_size =
+>> +			fault_abi_versions[vdev->fault_abi - 1].entry_size;
+>> +		prod_header->nb_entries = PAGE_SIZE / prod_header->entry_size;
+> 
+> Is this sufficient for 4K hosts?  Clearly a 64K host has 16x the number
+> of entries, so if this is a heuristic the results are vastly different.
+This series only deals with unrecoverable errors. We don't expect many
+of them so I did not consider the need to have a more complicated
+heuristic. Now if we consider the PRI use case we need to reconsider the
+size of the fault queue. If this feature is introduced later with a new
+region type, then we can handle this later?
 
-Best regards,
-Yoshihiro Shimoda
+Practically the event queue size is set by the guest SMMUv3 driver and
+trapped at the SMMUV3 QEMU device level. So we could communicate this
+info through IOMMU MR notifiers but that's a rather complicated chain
+and I would rather avoid that complexity if not necessary.
+> 
+>> +		return 0;
+>> +	}
+>> +
+>> +	/* Fault ABI is set */
+>> +	if (cons_header->version != vdev->fault_abi)
+>> +		return -EINVAL;
+>> +
+>> +	if (cons_header->cons && cons_header->cons >= prod_header->nb_entries)
+> 
+> First test seems unnecessary.
+> 
+>> +		return -EINVAL;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  static int vfio_pci_enable(struct vfio_pci_device *vdev)
+>>  {
+>>  	struct pci_dev *pdev = vdev->pdev;
+>> @@ -359,6 +459,10 @@ static int vfio_pci_enable(struct vfio_pci_device *vdev)
+>>  		}
+>>  	}
+>>  
+>> +	ret = vfio_pci_init_fault_region(vdev);
+>> +	if (ret)
+>> +		goto disable_exit;
+>> +
+>>  	vfio_pci_probe_mmaps(vdev);
+>>  
+>>  	return 0;
+>> @@ -1374,6 +1478,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
+>>  
+>>  	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
+>>  	kfree(vdev->region);
+>> +	kfree(vdev->fault_pages);
+>>  	mutex_destroy(&vdev->ioeventfds_lock);
+>>  
+>>  	if (!disable_idle_d3)
+>> diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
+>> index 1812cf22fc4f..8e0a55682d3f 100644
+>> --- a/drivers/vfio/pci/vfio_pci_private.h
+>> +++ b/drivers/vfio/pci/vfio_pci_private.h
+>> @@ -122,9 +122,12 @@ struct vfio_pci_device {
+>>  	int			ioeventfds_nr;
+>>  	struct eventfd_ctx	*err_trigger;
+>>  	struct eventfd_ctx	*req_trigger;
+>> +	struct mutex		fault_queue_lock;
+>> +	int			fault_abi;
+>>  	struct list_head	dummy_resources_list;
+>>  	struct mutex		ioeventfds_lock;
+>>  	struct list_head	ioeventfds_list;
+>> +	u8			*fault_pages;
+>>  };
+>>  
+>>  #define is_intx(vdev) (vdev->irq_type == VFIO_PCI_INTX_IRQ_INDEX)
+>> @@ -153,6 +156,18 @@ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_device *vdev, char __user *buf,
+>>  extern long vfio_pci_ioeventfd(struct vfio_pci_device *vdev, loff_t offset,
+>>  			       uint64_t data, int count, int fd);
+>>  
+>> +struct vfio_pci_fault_abi {
+>> +	u32 entry_size;
+>> +};
+>> +
+>> +extern size_t vfio_pci_fault_cons_rw(struct vfio_pci_device *vdev,
+>> +				     char __user *buf, size_t count,
+>> +				     loff_t *ppos, bool iswrite);
+>> +
+>> +extern size_t vfio_pci_fault_prod_rw(struct vfio_pci_device *vdev,
+>> +				     char __user *buf, size_t count,
+>> +				     loff_t *ppos, bool iswrite);
+>> +
+>>  extern int vfio_pci_init_perm_bits(void);
+>>  extern void vfio_pci_uninit_perm_bits(void);
+>>  
+>> @@ -166,6 +181,8 @@ extern int vfio_pci_register_dev_region(struct vfio_pci_device *vdev,
+>>  
+>>  extern int vfio_pci_set_power_state(struct vfio_pci_device *vdev,
+>>  				    pci_power_t state);
+>> +extern int vfio_pci_check_cons_fault(struct vfio_pci_device *vdev,
+>> +				     struct vfio_region_fault_cons *header);
+>>  
+>>  #ifdef CONFIG_VFIO_PCI_IGD
+>>  extern int vfio_pci_igd_init(struct vfio_pci_device *vdev);
+>> diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+>> index a6029d0a5524..67cd9363f4e7 100644
+>> --- a/drivers/vfio/pci/vfio_pci_rdwr.c
+>> +++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+>> @@ -277,6 +277,79 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_device *vdev, char __user *buf,
+>>  	return done;
+>>  }
+>>  
+>> +/* Read-only region */
+>> +size_t vfio_pci_fault_prod_rw(struct vfio_pci_device *vdev, char __user *buf,
+>> +			      size_t count, loff_t *ppos, bool iswrite)
+>> +{
+>> +	unsigned int i = VFIO_PCI_OFFSET_TO_INDEX(*ppos) - VFIO_PCI_NUM_REGIONS;
+>> +	void *base = vdev->region[i].data;
+>> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
+>> +	int ret = 0;
+>> +
+>> +	if (iswrite)
+>> +		return 0;
+>> +
+>> +	if (!vdev->fault_abi)
+>> +		return -EINVAL;
+>> +
+>> +	if (pos >= vdev->region[i].size)
+>> +		return -EINVAL;
+>> +
+>> +	count = min(count, (size_t)(vdev->region[i].size - pos));
+>> +
+>> +	mutex_lock(&vdev->fault_queue_lock);
+>> +
+>> +	if (copy_to_user(buf, base + pos, count)) {
+>> +		ret = -EFAULT;
+>> +		goto unlock;
+>> +	}
+>> +	*ppos += count;
+>> +	ret = count;
+>> +unlock:
+>> +	mutex_unlock(&vdev->fault_queue_lock);
+>> +	return ret;
+>> +}
+>> +
+>> +
+>> +/* write only */
+>> +size_t vfio_pci_fault_cons_rw(struct vfio_pci_device *vdev, char __user *buf,
+>> +			      size_t count, loff_t *ppos, bool iswrite)
+>> +{
+>> +	unsigned int i = VFIO_PCI_OFFSET_TO_INDEX(*ppos) - VFIO_PCI_NUM_REGIONS;
+>> +	void *base = vdev->region[i].data;
+>> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
+>> +	struct vfio_region_fault_cons *header;
+>> +	struct vfio_region_fault_cons orig_header =
+>> +		*(struct vfio_region_fault_cons *)base;
+>> +	int ret = 0;
+>> +
+>> +	if (!iswrite)
+>> +		return 0;
+>> +
+>> +	if (pos >= vdev->region[i].size)
+>> +		return -EINVAL;
+>> +
+>> +	count = min(count, (size_t)(vdev->region[i].size - pos));
+>> +
+>> +	mutex_lock(&vdev->fault_queue_lock);
+>> +
+>> +	if (copy_from_user(base + pos, buf, count)) {
+>> +		ret = -EFAULT;
+>> +		goto unlock;
+>> +	}
+>> +	header = (struct vfio_region_fault_cons *)base;
+>> +	ret = vfio_pci_check_cons_fault(vdev, header);
+>> +	if (ret) {
+>> +		*header = orig_header;
+>> +		goto unlock;
+>> +	}
+>> +	*ppos += count;
+>> +	ret = count;
+>> +unlock:
+>> +	mutex_unlock(&vdev->fault_queue_lock);
+>> +	return ret;
+>> +}
+>> +
+>>  static int vfio_pci_ioeventfd_handler(void *opaque, void *unused)
+>>  {
+>>  	struct vfio_pci_ioeventfd *ioeventfd = opaque;
+>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>> index 2774a1ab37ae..13e041b84d48 100644
+>> --- a/include/uapi/linux/vfio.h
+>> +++ b/include/uapi/linux/vfio.h
+>> @@ -307,6 +307,10 @@ struct vfio_region_info_cap_type {
+>>  #define VFIO_REGION_TYPE_GFX                    (1)
+>>  #define VFIO_REGION_SUBTYPE_GFX_EDID            (1)
+>>  
+>> +#define VFIO_REGION_TYPE_NESTED			(2)
+>> +#define VFIO_REGION_SUBTYPE_NESTED_FAULT_PROD	(1)
+>> +#define VFIO_REGION_SUBTYPE_NESTED_FAULT_CONS	(2)
+>> +
+>>  /**
+>>   * struct vfio_region_gfx_edid - EDID region layout.
+>>   *
+>> @@ -701,6 +705,44 @@ struct vfio_device_ioeventfd {
+>>  
+>>  #define VFIO_DEVICE_IOEVENTFD		_IO(VFIO_TYPE, VFIO_BASE + 16)
+>>  
+>> +
+>> +/*
+>> + * Capability exposed by the Producer Fault Region
+>> + * @version: max fault ABI version supported by the kernel
+>> + */
+>> +#define VFIO_REGION_INFO_CAP_PRODUCER_FAULT	6
+>> +
+>> +struct vfio_region_info_cap_fault {
+>> +	struct vfio_info_cap_header header;
+>> +	__u32 version;
+>> +};
+>> +
+>> +/*
+>> + * Producer Fault Region (Read-Only from user space perspective)
+>> + * Contains the fault circular buffer and the producer index
+>> + * @version: version of the fault record uapi
+>> + * @entry_size: size of each fault record
+>> + * @offset: offset of the start of the queue
+>> + * @prod: producer index relative to the start of the queue
+>> + */
+>> +struct vfio_region_fault_prod {
+>> +	__u32   version;
+>> +	__u32	nb_entries;
+>> +	__u32   entry_size;
+>> +	__u32	offset;
+>> +	__u32   prod;
+>> +};
+>> +
+>> +/*
+>> + * Consumer Fault Region (Write-Only from the user space perspective)
+>> + * @version: ABI version requested by the userspace
+>> + * @cons: consumer index relative to the start of the queue
+>> + */
+>> +struct vfio_region_fault_cons {
+>> +	__u32 version;
+>> +	__u32 cons;
+>> +};
+> 
+> I think there are more common semantics than this prod/cons
+> terminology, for example head/tail.
+OK. The SMMUv3 event queue uses the prod/cons terminology. Now tail/head
+may be more prevalent in kernel.
 
+Thank you for the review
+
+Eric
+
+> 
+>> +
+>>  /* -------- API for Type1 VFIO IOMMU -------- */
+>>  
+>>  /**
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
