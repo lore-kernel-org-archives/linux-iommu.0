@@ -2,60 +2,65 @@ Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6AAC2BCA1
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 12:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E86C2BCA1
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 12:05:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7D7CB20868
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 12:01:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0EF802089E
+	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 12:05:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="bstIM1pr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D7CB20868
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="l4BW6/J0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0EF802089E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 311BC111B;
-	Fri,  7 Jun 2019 12:01:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DF03F1124;
+	Fri,  7 Jun 2019 12:05:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4B0991115
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A044F1118
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 12:00:31 +0000 (UTC)
+	Fri,  7 Jun 2019 12:04:20 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from JPN01-OS2-obe.outbound.protection.outlook.com
-	(mail-eopbgr1410113.outbound.protection.outlook.com [40.107.141.113])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E697F6D6
+	(mail-eopbgr1410111.outbound.protection.outlook.com [40.107.141.111])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 257337F8
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 12:00:29 +0000 (UTC)
+	Fri,  7 Jun 2019 12:04:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
 	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=UgJjxGPF3aflVplaDhUW6m+b8snjq6SxM6U2ykK/hVQ=;
-	b=bstIM1prPPMqOpJnT8cije/pktr9LDwHcrK1ltnYQ4Nh72bkX1/zCv+yfxPcukwUX2EMnsVR5eoHNWjfz3LedQfEtmDf/K4CePdq7XB/PIKdkeHDiz6Vo3E8GOJRwLj+fFqQT+4hE4Z8vYV+dgA26CYZDLIaZCmsI8Xmr+mKu4Y=
+	bh=x1QtP2y3RnZowpIpOtByrCE5FxuGznrF064EoJ9njNE=;
+	b=l4BW6/J0RWlyQGEthEIbmrYC1az7p00Ps0GPzDbtRnTqlz6RKTXHhtEDKkNssOADAAbJCzKAUBWQjSGnbncRc02C6bgZYG+S4FxxUFmuLEdRcvxBIF0s6yZ8Kkhv7pFAPxyAp5npYXaLKYLWld3M4Aey+8mn6gI61++m51LvyP8=
 Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com (52.134.247.150) by
 	OSAPR01MB3137.jpnprd01.prod.outlook.com (52.134.249.18) with Microsoft
 	SMTP
 	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1965.15; Fri, 7 Jun 2019 12:00:27 +0000
+	15.20.1965.15; Fri, 7 Jun 2019 12:04:17 +0000
 Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com
 	([fe80::19ad:b6ce:a287:dc85]) by
 	OSAPR01MB3089.jpnprd01.prod.outlook.com
 	([fe80::19ad:b6ce:a287:dc85%7]) with mapi id 15.20.1965.011;
-	Fri, 7 Jun 2019 12:00:27 +0000
+	Fri, 7 Jun 2019 12:04:17 +0000
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: Christoph Hellwig <hch@lst.de>
-Subject: RE: How to resolve an issue in swiotlb environment?
-Thread-Topic: How to resolve an issue in swiotlb environment?
-Thread-Index: AdUZ1Qlk800+Qz0uSuO63mIBeXkktQDUe+5A
-Date: Fri, 7 Jun 2019 12:00:26 +0000
-Message-ID: <OSAPR01MB3089D50DBDAA6C7D427E72EED8100@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <OSAPR01MB3089B381AF2F687526E63EEAD8140@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSAPR01MB3089B381AF2F687526E63EEAD8140@OSAPR01MB3089.jpnprd01.prod.outlook.com>
+Subject: RE: [PATCH] Documentation: DMA-API: fix a function name of
+	max_mapping_size
+Thread-Topic: [PATCH] Documentation: DMA-API: fix a function name of
+	max_mapping_size
+Thread-Index: AQHVHQX28aIqCA/T0kKXQB70i48QjqaP1kMAgAACTBCAAAUfgIAAOh3w
+Date: Fri, 7 Jun 2019 12:04:17 +0000
+Message-ID: <OSAPR01MB3089F8522C11A80E4FB38933D8100@OSAPR01MB3089.jpnprd01.prod.outlook.com>
+References: <1559893633-6852-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<20190607080814.GA10303@lst.de>
+	<TYAPR01MB3102C6CCC204DAAA6570FD25D8100@TYAPR01MB3102.jpnprd01.prod.outlook.com>
+	<20190607083447.GA10860@lst.de>
+In-Reply-To: <20190607083447.GA10860@lst.de>
 Accept-Language: ja-JP, en-US
 Content-Language: ja-JP
 X-MS-Has-Attach: 
@@ -64,37 +69,38 @@ authentication-results: spf=none (sender IP is )
 	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
 x-originating-ip: [118.238.235.108]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e698b241-5829-4c69-47a5-08d6eb3fbae7
+x-ms-office365-filtering-correlation-id: 2f10c3bf-abdd-4f25-b2d5-08d6eb40446b
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0; PCL:0;
 	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
 	SRVR:OSAPR01MB3137; 
 x-ms-traffictypediagnostic: OSAPR01MB3137:
-x-ms-exchange-purlcount: 2
-x-microsoft-antispam-prvs: <OSAPR01MB3137F53DDDD2265A1BDE5088D8100@OSAPR01MB3137.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <OSAPR01MB313799D854033FCD0939A808D8100@OSAPR01MB3137.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
 x-forefront-prvs: 0061C35778
 x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(136003)(376002)(39860400002)(346002)(396003)(366004)(199004)(189003)(86362001)(64756008)(66446008)(256004)(14444005)(74316002)(3846002)(6116002)(305945005)(54906003)(66556008)(966005)(6306002)(9686003)(99286004)(66476007)(7696005)(76176011)(6436002)(52536014)(6916009)(55016002)(14454004)(76116006)(71190400001)(66946007)(71200400001)(73956011)(5660300002)(478600001)(2906002)(446003)(476003)(11346002)(33656002)(486006)(25786009)(6246003)(53936002)(316002)(102836004)(66066001)(6506007)(8676002)(81166006)(81156014)(186003)(68736007)(26005)(8936002)(4326008)(7736002)(229853002)(6606295002);
+	SFS:(10019020)(136003)(376002)(39860400002)(346002)(396003)(366004)(199004)(189003)(86362001)(64756008)(66446008)(256004)(14444005)(74316002)(3846002)(6116002)(305945005)(54906003)(66556008)(966005)(6306002)(9686003)(99286004)(66476007)(7696005)(76176011)(6436002)(52536014)(6916009)(4744005)(55016002)(14454004)(76116006)(71190400001)(66946007)(71200400001)(73956011)(5660300002)(478600001)(2906002)(446003)(476003)(11346002)(33656002)(486006)(25786009)(6246003)(53936002)(316002)(102836004)(66066001)(6506007)(8676002)(81166006)(81156014)(186003)(68736007)(26005)(8936002)(4326008)(7736002)(229853002)(6606295002);
 	DIR:OUT; SFP:1102; SCL:1; SRVR:OSAPR01MB3137;
 	H:OSAPR01MB3089.jpnprd01.prod.outlook.com; FPR:; SPF:None;
 	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
 received-spf: None (protection.outlook.com: renesas.com does not designate
 	permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: KIpIbwwl02p2uXWAPFK33wsti9umtO6nQPEoDrWcB8SG5cS2zeaWcgB2QkvF42H+07pe2zh8/hpJSzixQfh6gvuF5EQ6b96Iv3stcuDqR/LLsKk5jOx03ZKRKEmH47s8XT3WDU0ZgkbGDcvyRiQf0uKxn8dI2/aKAQp/4fDELTzV5D+f8/Pd+XGD6fkayPfl49m8mwTTK33yrxzpmBGh5CatTcMJJ/4k6IDnPwPYp/dXqC8xGEyxY8G3EAePXYxkE7wiRjxLUxrqicmBFe2DgcpYXTEPasIeD/DKRhfgXudFHf8qm4LAh0LEhA5TNr2HytQYttGNWQy6LtQw0xF+A4azWdVtaIlhJ9l4FuEYF+2bPqK8+AfYpvkb6q7gq//AK9qUkWEBvshiXgn11wi9MBfsoHl5W4iKt5Ur0jPH/9k=
+x-microsoft-antispam-message-info: l0R9ahB6JcaRybmNLe/KgRU4wQBirDQxqZVfkrUAFxt01SLhlcowZv4NOei55GE/pIZI6scZZqlcC2RKrRHmt1fC76ifQjrQskyC2Ud+2uX9iSxwerHMrsx/rOD/+Cp47pUaP9HHGHaAyzcKBy15hE6w0i9SR+2E3aM9fsK0HPcJ1U/yMAHeRUtiRJG7nOrcnk3aD5hQevBj5oe5lVb8vosw02XXGadfomQwpIS+7KCJtu4GPbivjo3jrNdWfC0TtcWrE2wj5h+YUbSE91LkLHMXTchQKxvituzG/V37LWOwLLFX4r8/jTsduIjFIONOreMYp3YpB1bJtKKb8jBMD/Ie7FOncYqoXq1sac5IncMtpFKxUie4kBnHKrYPW8E29+lE2PzOmH26l130MznO6scesYSbwS3eQrENH9FwMRY=
 MIME-Version: 1.0
 X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e698b241-5829-4c69-47a5-08d6eb3fbae7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 12:00:26.5753 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f10c3bf-abdd-4f25-b2d5-08d6eb40446b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2019 12:04:17.6147 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
 X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB3137
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"jroedel@suse.de" <jroedel@suse.de>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"corbet@lwn.net" <corbet@lwn.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -114,74 +120,28 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 Hi Christoph,
 
-I think we should continue to discuss on this email thread instead of the fixed DMA-API.txt patch [1]
+> From: Christoph Hellwig, Sent: Friday, June 7, 2019 5:35 PM
+> 
+> On Fri, Jun 07, 2019 at 08:19:08AM +0000, Yoshihiro Shimoda wrote:
+> > Hi Christoph,
+> >
+> > > From: Christoph Hellwig, Sent: Friday, June 7, 2019 5:08 PM
+> > >
+> > > Looks good.  And it seems like you've also found the solution to
+> > > your usb storage problem, but I'm going to post the variant I just
+> > > hacked up nevertheless.
+> >
+> > Thank you for your reply! I think this API is related to my problem,
+> > but I don't have any actual solution (a patch) for now. So, I'll wait
+> > for your patch!
+> 
+> Turns out it isn't as simple as I thought, as there doesn't seem to
+> be an easy way to get to the struct device used for DMA mapping
+> from USB drivers.  I'll need to think a bit more how to handle that
+> best.
 
-[1]
-https://marc.info/?t=155989412200001&r=1&w=2
-
-> From: Yoshihiro Shimoda, Sent: Monday, June 3, 2019 3:42 PM
-> 
-> Hi linux-block and iommu mailing lists,
-> 
-> I have an issue that a USB SSD with xHCI on R-Car H3 causes "swiotlb is full" like below.
-> 
->     [   36.745286] xhci-hcd ee000000.usb: swiotlb buffer is full (sz: 524288 bytes), total 32768 (slots), used 1338 (slots)
-> 
-> I have investigated this issue by using git bisect, and then I found the following commit:
-> 
-> ---
-> commit 09324d32d2a0843e66652a087da6f77924358e62
-> Author: Christoph Hellwig <hch@lst.de>
-> Date:   Tue May 21 09:01:41 2019 +0200
-> 
->     block: force an unlimited segment size on queues with a virt boundary
-> ---
-
-Thank you for your comment on other email thread [2] like below:
----
-Turns out it isn't as simple as I thought, as there doesn't seem to
-be an easy way to get to the struct device used for DMA mapping
-from USB drivers.  I'll need to think a bit more how to handle that
-best.
----
-
-[2]
-https://marc.info/?l=linux-doc&m=155989651620473&w=2
-
-I'm not sure this is a correct way, but the issue disappears if I applied a patch below
-to USB storage driver. Especially, WARNING happened on blk_queue_max_segment_size().
-Maybe we need to expand the argument "struct device *" of blk_queue_virt_boundary() to
-call dma_max_mapping_size()?
----
-diff --git a/drivers/usb/storage/scsiglue.c b/drivers/usb/storage/scsiglue.c
-index 59190d8..fa37b39 100644
---- a/drivers/usb/storage/scsiglue.c
-+++ b/drivers/usb/storage/scsiglue.c
-@@ -28,6 +28,7 @@
-  * status of a command.
-  */
- 
-+#include <linux/dma-mapping.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- 
-@@ -83,6 +84,15 @@ static int slave_alloc (struct scsi_device *sdev)
- 	maxp = usb_maxpacket(us->pusb_dev, us->recv_bulk_pipe, 0);
- 	blk_queue_virt_boundary(sdev->request_queue, maxp - 1);
- 
-+{
-+	struct device *dev = us->pusb_dev->bus->controller;
-+
-+	dev_info(dev, "%s: size = %zu\n", __func__, dma_max_mapping_size(dev));
-+	blk_queue_max_segment_size(sdev->request_queue,
-+				   dma_max_mapping_size(dev));
-+}
-+
-+
- 	/*
- 	 * Some host controllers may have alignment requirements.
- 	 * We'll play it safe by requiring 512-byte alignment always.
----
+Thank you for your reply. I sent an email on the original report as below.
+https://marc.info/?l=linux-block&m=155990883224615&w=2
 
 Best regards,
 Yoshihiro Shimoda
