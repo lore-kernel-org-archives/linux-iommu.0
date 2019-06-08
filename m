@@ -1,84 +1,59 @@
-Return-Path: <SRS0=pxo5=UG=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=0CRx=UH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC66C2BCA1
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 22:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF03C2BCA1
+	for <iommu@archiver.kernel.org>; Sat,  8 Jun 2019 01:48:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A64320840
-	for <iommu@archiver.kernel.org>; Fri,  7 Jun 2019 22:37:51 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="XiItKva0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A64320840
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id E9C4620868
+	for <iommu@archiver.kernel.org>; Sat,  8 Jun 2019 01:48:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9C4620868
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D96411ADE;
-	Fri,  7 Jun 2019 22:37:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7A8531D56;
+	Sat,  8 Jun 2019 01:48:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 031F11A2D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 115DF1BD8
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 22:37:06 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 44820854
+	Sat,  8 Jun 2019 01:47:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2D9DB6D6
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  7 Jun 2019 22:37:05 +0000 (UTC)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x57JZQV9112093;
-	Fri, 7 Jun 2019 14:35:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1559936126;
-	bh=zbSkB5Ajhq5+I2P/3ydJOL0aLvWRvmr8/ursYCm7yS0=;
-	h=From:To:CC:Subject:Date;
-	b=XiItKva0Y3eCs1Ox/nzCGi05jIW0SeJTZEcT1Q4f0vr+QGWjk3CC1RziNGJjpAvwk
-	2HWcuYl7pE+3/72kfLnaDw4JUXG5hojaBirjI+BDDyjTag81mcNbkeJFxDu9cl7nVD
-	VVLzf7hgiaf7iH51YhLvthxNhrZgZlfGL0dob48I=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x57JZQaR105636
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 7 Jun 2019 14:35:26 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE105.ent.ti.com
-	(10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5;
-	Fri, 7 Jun 2019 14:35:25 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
-	(10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
-	Frontend Transport; Fri, 7 Jun 2019 14:35:25 -0500
-Received: from legion.dal.design.ti.com (legion.dal.design.ti.com
-	[128.247.22.53])
-	by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x57JZP2s068219;
-	Fri, 7 Jun 2019 14:35:25 -0500
-Received: from localhost ([10.250.68.219])
-	by legion.dal.design.ti.com (8.11.7p1+Sun/8.11.7) with ESMTP id
-	x57JZOm20275; Fri, 7 Jun 2019 14:35:24 -0500 (CDT)
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	Santosh Shilimkar <ssantosh@kernel.org>,
-	Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, David Airlie <airlied@linux.ie>,
-	Daniel Vetter <daniel@ffwll.ch>, Tero Kristo <t-kristo@ti.com>,
-	William Mills <wmills@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>, John Stultz
-	<john.stultz@linaro.org>
-Subject: [RFC PATCH 0/2] Support for TI Page-based Address Translator
-Date: Fri, 7 Jun 2019 15:35:21 -0400
-Message-ID: <20190607193523.25700-1-afd@ti.com>
-X-Mailer: git-send-email 2.17.1
+	Sat,  8 Jun 2019 01:47:50 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	07 Jun 2019 18:47:49 -0700
+X-ExtLoop1: 1
+Received: from sai-dev-mach.sc.intel.com ([143.183.140.153])
+	by orsmga008.jf.intel.com with ESMTP; 07 Jun 2019 18:47:49 -0700
+Message-ID: <12f8c572074b7963705ba066fdde0f9fdf0bfc62.camel@intel.com>
+Subject: Re: Device specific pass through in host systems - discuss user
+	interface
+From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+To: Robin Murphy <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org"
+	<iommu@lists.linux-foundation.org>
+Date: Fri, 07 Jun 2019 18:44:43 -0700
+In-Reply-To: <3fa16135-b2bb-03b5-833a-bce8cc68f35f@arm.com>
+References: <FFF73D592F13FD46B8700F0A279B802F48DA796E@ORSMSX114.amr.corp.intel.com>
+	<3fa16135-b2bb-03b5-833a-bce8cc68f35f@arm.com>
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, "Andrew F . Davis" <afd@ti.com>,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>, "Tian,
+	Kevin" <kevin.tian@intel.com>, "jroedel@suse.de" <jroedel@suse.de>, "Raj,
+	Ashok" <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+	"hch@lst.de" <hch@lst.de>, "Lu, Baolu" <baolu.lu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,142 +66,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Andrew F. Davis via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Andrew F. Davis" <afd@ti.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hello all,
 
-So I've got a new IP on our new SoC I'm looking to make use of and would
-like some help figuring out what framework best matches its function. The
-IP is called a "Page-based Address Translator" or PAT. A PAT instance
-(there are 5 of these things on our J721e device[0]) is basically a
-really simple IOMMU sitting on the interconnect between the device bus
-and what is effectively our northbridge called
-MSMC (DRAM/SRAM/L3-Cache/Coherency controller).
+> It's interesting to see this from a fresh angle which isn't clouded by 
+> other SoC GPU details - thanks for the proposal! A couple more thoughts 
+> jump out immediately...
+> 
 
-Simplified it looks about like this:
+Thanks a lot! for jumping in and providing your valuable insights :)
+Sorry! for taking time to reply on this. Did some quick testing on
+unbinding/binding stuff.
 
-         CPUs
-          |
-DRAM --- MSMC --- SRAM/L3
-          |
-        NAVSS - (PATs)
-          |
-  --- Device Bus ---------
- |      |      |          |
-Device  Device  Device   etc..
+> > Since, this feature could be generic across architectures, we thought it
+> > would be better if the user interface is discussed in the community first.
+> > We are envisioning this to be used both during boot time and runtime and
+> > hence having a kernel command line argument along with a sysfs entry are
+> > needed. So, please pour in your suggestions on how the user interface
+> > should look like to make it architecture agnostic.
+> > 
+> > 
+> > 1.      Have a kernel command line argument that takes a list of BDF's as
+> > an input and puts them in pass through mode
+> > 
+> > a.      Accepting BDF as an input has a downside - BDF is dynamic and
+> > could change if BIOS/OS enumerates a new device in next reboot
+> > 
+> > b.      Accepting <vendor_id:device_id> pair as an input has a downside -
+> > What to do when there are multiple such devices and user would like to put
+> > only some of them in PT mode
+> > 
+> 
+> c. Not all devices are PCI in the first place.
 
-Each PAT has a set a window in high memory (about 0x48_0000_0000 area)
-for which any transaction with an address targeting its window will be
-routed into that PAT. The PAT then does a simple calculation based on
-the how far into the window the address is and the current page size,
-does a lookup to an internally held table of translations, then sends the
-transaction back out on the interconnect with a new address. Usually this
-address should be towards somewhere in DRAM, but can be some other device
-or even back into PAT (I'm not sure there is a valid use-case for this
-but just a point of interest).
+Agreed, maybe we could limit this feature only to PCIe devices :(
 
-My gut reaction is that this is an IOMMU which belongs in the IOMMU
-subsystem. But there are a couple oddities that make me less sure it is
-really suitable for the IOMMU framework. First it doesn't sit in front of
-any devices, it sits in front of *all* devices, this means we would have
-every device claim it as an IOMMU parent, even though many devices also
-have a traditional IOMMU connected. Second, there is only a limited
-window of address space per PAT, this means we will get fragmentation and
-allocation failures on occasion, in this way it looks to me more like AGP
-GART. Third, the window is in high-memory, so unlike some IOMMU devices
-which can be used to allow DMA to high-mem from low-mem only devices, PAT
-can't be used for that. Lastly it doesn't provide any isolation, if the
-access does not target the PAT window it is not used (that is not to say
-we don't have isolation, just that it is taken care of by other parts of
-the interconnect).
+> 
+> > 2.      Have a sysfs file which takes 1 or 0 as an input to enable/disable
+> > pass through mode. Some places that seem to be reasonable are
+> > 
+> > a.      /sys/class/iommu/dmar0/devices/
+> > 
+> > b.      /sys/kernel/iommu_groups/<id>/devices
+> 
+> Note that this this works out a bit tricky to actually use, since 
+> changing the meaning of DMA addresses under the device's feet would be 
+> disastrous.
 
-This means, to me, that PAT has one main purpose: making
-physically-contiguous views of scattered pages in system memory for DMA.
-But it does that really well, the whole translation table is held in a
-PAT-internal SRAM giving 1 bus cycle latency and at full bus bandwidth.
+Yes, that makes sense.
 
-So what are my options here, is IOMMU the right way to go or not?
+> It can only safely take effect by unbinding and rebinding 
+> the driver and/or resetting the device (as a side note, this starts to 
+> overlap with the IOMMU-drivers-as-modules concept, and whatever solution 
+> to this we end up with may be helpful in making that work too). In most 
+> cases that's probably viable, but not every driver supports unbinding, 
+> and either way what if the device in question is the one hosting the 
+> root filesystem... :/
 
-Looking around the kernel I also see the char dev ARP/GART interface
-which looks like a good fit, but also looks quite dated and my guess
-deprecated at this point. Moving right along..
+We would like to propose something like this
 
-Another thing I saw is we have the support upstream of the DMM device[1]
-available in some OMAPx/AM57x SoCs. I'm a little more familiar with this
-device. The DMM is a bundle of IPs and in fact one of them is called
-"PAT" and it even does basically the same thing this incarnation of "PAT"
-does. It's upstream integration design is a bit questionable
-unfortunately, the DMM support was integrated into the OMAPDRM display
-driver, which does make some sense then given its support for rotation
-(using TILER IP contained in DMM). The issue with this was that the
-DMM/TILER/PAT IP was not part of the our display IP, but instead out at
-the end of the shared device bus, inside the external memory controller.
-Like this new PAT this meant that any IP that could make use of it, but
-only the display framework could actually provide buffers backed by it.
-This meant, for instance, if we wanted to decode some video buffer using
-our video decoder we would have to allocate from DRM framework then pass
-that over to the V4L2 system. This doesn't make much sense and required
-the user-space to know about this odd situation and allocate from the
-right spot or else have to use up valuable CMA space or waste memory with
-dedicated carveouts.
+1. User will first unbind the device driver by
+echo "BDF" > /sys/bus/pci/drivers/<device_driver>/unbind
 
-Another idea would be to have this as a special central allocator
-(exposed through DMA-BUF heaps[2] or ION) that would give out normal
-system memory as a DMA-BUF but remap it with PAT if a device that only
-supports contiguous memory tries to attach/map that DMA-BUF.
+2. Set the Pass Through bit (this is to say the intent of the user that upon
+the next rebind, please make this device as pass through)
+echo 1 > /sys/class/iommu/dmar0/devices/<BDF>/pt
 
-One last option would be to allow user-space to choose to make the buffer
-contiguous when it needs. That's what the driver in this series allows.
-We expose a remapping device, user-space passes it a non-contiguous
-DMA-BUF handle and it passes a contiguous one back. Simple as that.
+3. Re-bind the driver again
+echo "BDF" > /sys/bus/pci/drivers/<device_driver>/bind
 
-So how do we use this, lets take Android for example, we don't know at
-allocation time if a rendering buffer will end up going back into the GPU
-for further processing, or if it will be consumed directly by the display.
-This is a problem for us as our GPU can work with non-contiguous buffers
-but our display cannot, so any buffers that could possibly go to the
-display at some point currently needs to be allocated as contiguous from
-the start, this leads to a lot of unneeded use of carveout/CMA memory.
-With this driver on the other hand, we allocate regular non-contiguous
-system memory (again using DMA-BUF heaps, but ION could work here too),
-then only when a buffer is about to be sent to the display we pass the
-handle to this DMA-BUF to our driver here and take the handle it gives
-back and pass that to the display instead.
+So, if the driver doesn't support unbind then the user cannot put the device
+in pass through mode, in which case he has to use kernel command line
+argument.
 
-As said, it is probably not the ideal solution but it does work and was
-used for some early testing of the IP.
+I did unbind on my device that has root file system and after that I was
+unable to run any command (like cat or echo), which made sense. So, it's upto
+the user to decide which devices can go through unbind and hence can be put in
+pass through mode. Since this feature requires sudo privileges, I think, we
+can assume admin does the right thing.
 
-Well, sorry for the wall of text.
-Any and all suggestions very welcome and appreciated.
+Please let me know what you think about this and also please do suggest if you
+have any other better ways to deal with this.
 
-Thanks,
-Andrew
-
-[0] http://www.ti.com/lit/pdf/spruil1
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/omapdrm/omap_dmm_tiler.c
-[2] https://lkml.org/lkml/2019/6/6/1211
-
-Andrew F. Davis (2):
-  dt-bindings: soc: ti: Add TI PAT bindings
-  soc: ti: Add Support for the TI Page-based Address Translator (PAT)
-
- .../devicetree/bindings/misc/ti,pat.txt       |  34 ++
- drivers/soc/ti/Kconfig                        |   9 +
- drivers/soc/ti/Makefile                       |   1 +
- drivers/soc/ti/ti-pat.c                       | 569 ++++++++++++++++++
- include/uapi/linux/ti-pat.h                   |  44 ++
- 5 files changed, 657 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/ti,pat.txt
- create mode 100644 drivers/soc/ti/ti-pat.c
- create mode 100644 include/uapi/linux/ti-pat.h
-
--- 
-2.17.1
+Regards,
+Sai
 
 _______________________________________________
 iommu mailing list
