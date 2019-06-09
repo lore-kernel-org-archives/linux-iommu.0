@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7ADC28EBD
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9F1C468BE
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C91B20868
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C91B20868
+	by mail.kernel.org (Postfix) with ESMTPS id EA68420868
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA68420868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4A06CC77;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8C750CA6;
 	Sun,  9 Jun 2019 13:41:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 502F8C4E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5CC3AC5C
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  9 Jun 2019 13:41:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D8CBC76F
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E5E807C3
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  9 Jun 2019 13:41:18 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Jun 2019 06:41:17 -0700
+	09 Jun 2019 06:41:16 -0700
 X-ExtLoop1: 1
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
-	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:17 -0700
+	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:16 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
 	Eric Auger <eric.auger@redhat.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v4 06/22] trace/iommu: Add sva trace events
-Date: Sun,  9 Jun 2019 06:44:06 -0700
-Message-Id: <1560087862-57608-7-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 05/22] iommu: Add a timeout parameter for PRQ response
+Date: Sun,  9 Jun 2019 06:44:05 -0700
+Message-Id: <1560087862-57608-6-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -69,122 +69,86 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+When an IO page request is processed outside IOMMU subsystem, response
+can be delayed or lost. Add a tunable setup parameter such that user can
+choose the timeout for IOMMU to track pending page requests.
 
-For development only, trace I/O page faults and responses.
+This timeout mechanism is a basic safety net which can be implemented in
+conjunction with credit based or device level page response exception
+handling.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-[JPB: removed the invalidate trace event, that will be added later]
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- include/trace/events/iommu.h | 87 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 87 insertions(+)
+ Documentation/admin-guide/kernel-parameters.txt |  8 +++++++
+ drivers/iommu/iommu.c                           | 29 +++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-index 72b4582..c8de147 100644
---- a/include/trace/events/iommu.h
-+++ b/include/trace/events/iommu.h
-@@ -12,6 +12,8 @@
- #define _TRACE_IOMMU_H
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 138f666..b43f089 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1813,6 +1813,14 @@
+ 			1 - Bypass the IOMMU for DMA.
+ 			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
  
- #include <linux/tracepoint.h>
-+#include <linux/iommu.h>
-+#include <uapi/linux/iommu.h>
++	iommu.prq_timeout=
++			Timeout in seconds to wait for page response
++			of a pending page request.
++			Format: <integer>
++			Default: 10
++			0 - no timeout tracking
++			1 to 100 - allowed range
++
+ 	io7=		[HW] IO7 for Marvel based alpha systems
+ 			See comment before marvel_specify_io7 in
+ 			arch/alpha/kernel/core_marvel.c.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 13b301c..64e87d5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -45,6 +45,19 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
+ static bool iommu_dma_strict __read_mostly = true;
  
- struct device;
++/*
++ * Timeout to wait for page response of a pending page request. This is
++ * intended as a basic safty net in case a pending page request is not
++ * responded for an exceptionally long time. Device may also implement
++ * its own protection mechanism against this exception.
++ * Units are in jiffies with a range between 1 - 100 seconds equivalent.
++ * Default to 10 seconds.
++ * Setting 0 means no timeout tracking.
++ */
++#define IOMMU_PAGE_RESPONSE_MAX_TIMEOUT (HZ * 100)
++#define IOMMU_PAGE_RESPONSE_DEF_TIMEOUT (HZ * 10)
++static unsigned long prq_timeout = IOMMU_PAGE_RESPONSE_DEF_TIMEOUT;
++
+ struct iommu_group {
+ 	struct kobject kobj;
+ 	struct kobject *devices_kobj;
+@@ -157,6 +170,22 @@ static int __init iommu_dma_setup(char *str)
+ }
+ early_param("iommu.strict", iommu_dma_setup);
  
-@@ -161,6 +163,91 @@ DEFINE_EVENT(iommu_error, io_page_fault,
- 
- 	TP_ARGS(dev, iova, flags)
- );
++static int __init iommu_set_prq_timeout(char *str)
++{
++	unsigned long timeout;
 +
-+TRACE_EVENT(dev_fault,
++	if (!str)
++		return -EINVAL;
++	timeout = simple_strtoul(str, NULL, 0);
++	timeout = timeout * HZ;
++	if (timeout > IOMMU_PAGE_RESPONSE_MAX_TIMEOUT)
++		return -EINVAL;
++	prq_timeout = timeout;
 +
-+	TP_PROTO(struct device *dev,  struct iommu_fault *evt),
++	return 0;
++}
++early_param("iommu.prq_timeout", iommu_set_prq_timeout);
 +
-+	TP_ARGS(dev, evt),
-+
-+	TP_STRUCT__entry(
-+		__string(device, dev_name(dev))
-+		__field(int, type)
-+		__field(int, reason)
-+		__field(u64, addr)
-+		__field(u64, fetch_addr)
-+		__field(u32, pasid)
-+		__field(u32, grpid)
-+		__field(u32, flags)
-+		__field(u32, prot)
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(device, dev_name(dev));
-+		__entry->type = evt->type;
-+		if (evt->type == IOMMU_FAULT_DMA_UNRECOV) {
-+			__entry->reason		= evt->event.reason;
-+			__entry->flags		= evt->event.flags;
-+			__entry->pasid		= evt->event.pasid;
-+			__entry->grpid		= 0;
-+			__entry->prot		= evt->event.perm;
-+			__entry->addr		= evt->event.addr;
-+			__entry->fetch_addr	= evt->event.fetch_addr;
-+		} else {
-+			__entry->reason		= 0;
-+			__entry->flags		= evt->prm.flags;
-+			__entry->pasid		= evt->prm.pasid;
-+			__entry->grpid		= evt->prm.grpid;
-+			__entry->prot		= evt->prm.perm;
-+			__entry->addr		= evt->prm.addr;
-+			__entry->fetch_addr	= 0;
-+		}
-+	),
-+
-+	TP_printk("IOMMU:%s type=%d reason=%d addr=0x%016llx fetch=0x%016llx pasid=%d group=%d flags=%x prot=%d",
-+		__get_str(device),
-+		__entry->type,
-+		__entry->reason,
-+		__entry->addr,
-+		__entry->fetch_addr,
-+		__entry->pasid,
-+		__entry->grpid,
-+		__entry->flags,
-+		__entry->prot
-+	)
-+);
-+
-+TRACE_EVENT(dev_page_response,
-+
-+	TP_PROTO(struct device *dev,  struct page_response_msg *msg),
-+
-+	TP_ARGS(dev, msg),
-+
-+	TP_STRUCT__entry(
-+		__string(device, dev_name(dev))
-+		__field(int, code)
-+		__field(u64, addr)
-+		__field(u32, pasid)
-+		__field(u32, grpid)
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(device, dev_name(dev));
-+		__entry->code = msg->resp_code;
-+		__entry->addr = msg->addr;
-+		__entry->pasid = msg->pasid;
-+		__entry->grpid = msg->grpid;
-+	),
-+
-+	TP_printk("IOMMU:%s code=%d addr=0x%016llx pasid=%d group=%d",
-+		__get_str(device),
-+		__entry->code,
-+		__entry->addr,
-+		__entry->pasid,
-+		__entry->grpid
-+	)
-+);
-+
- #endif /* _TRACE_IOMMU_H */
- 
- /* This part must be outside protection */
+ static ssize_t iommu_group_attr_show(struct kobject *kobj,
+ 				     struct attribute *__attr, char *buf)
+ {
 -- 
 2.7.4
 
