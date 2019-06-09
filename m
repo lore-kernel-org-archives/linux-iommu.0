@@ -2,39 +2,38 @@ Return-Path: <SRS0=fKZg=UI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 299B4C28EBD
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED22C28EBD
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08E9E20868
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08E9E20868
+	by mail.kernel.org (Postfix) with ESMTPS id 0F76320868
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F76320868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B054CF3;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CECAAD07;
 	Sun,  9 Jun 2019 13:41:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4CDCCC5C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D0002C5C
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  9 Jun 2019 13:41:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AE56476F
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DCE637C3
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  9 Jun 2019 13:41:23 +0000 (UTC)
+	Sun,  9 Jun 2019 13:41:22 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Jun 2019 06:41:19 -0700
+	09 Jun 2019 06:41:18 -0700
 X-ExtLoop1: 1
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
 	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:18 -0700
@@ -44,14 +43,15 @@ To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Eric Auger <eric.auger@redhat.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v4 21/22] iommu/vt-d: Support flushing more translation cache
-	types
-Date: Sun,  9 Jun 2019 06:44:21 -0700
-Message-Id: <1560087862-57608-22-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 18/22] iommu/vt-d: Add nested translation helper function
+Date: Sun,  9 Jun 2019 06:44:18 -0700
+Message-Id: <1560087862-57608-19-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+Cc: Yi L <yi.l.liu@linux.intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Raj Ashok <ashok.raj@intel.com>, Liu@mail.linuxfoundation.org,
 	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -71,141 +71,157 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When Shared Virtual Memory is exposed to a guest via vIOMMU, scalable
-IOTLB invalidation may be passed down from outside IOMMU subsystems.
-This patch adds invalidation functions that can be used for additional
-translation cache types.
+Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
+With PASID granular translation type set to 0x11b, translation
+result from the first level(FL) also subject to a second level(SL)
+page table translation. This mode is used for SVA virtualization,
+where FL performs guest virtual to guest physical translation and
+SL performs guest physical to host physical translation.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 ---
- drivers/iommu/dmar.c        | 50 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h | 21 +++++++++++++++----
- 2 files changed, 67 insertions(+), 4 deletions(-)
+ drivers/iommu/intel-pasid.c | 93 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel-pasid.h | 11 ++++++
+ 2 files changed, 104 insertions(+)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 6d969a1..0cda6fb 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1357,6 +1357,21 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	qi_submit_sync(&desc, iommu);
- }
+diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+index 1ff2ecc..50ec344 100644
+--- a/drivers/iommu/intel-pasid.c
++++ b/drivers/iommu/intel-pasid.c
+@@ -684,3 +684,96 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
  
-+/* PASID-based IOTLB Invalidate */
-+void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr, u32 pasid,
-+		unsigned int size_order, u64 granu, int ih)
-+{
-+	struct qi_desc desc;
-+
-+	desc.qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
-+		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
-+	desc.qw1 = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_IH(ih) |
-+		QI_EIOTLB_AM(size_order);
-+	desc.qw2 = 0;
-+	desc.qw3 = 0;
-+	qi_submit_sync(&desc, iommu);
-+}
-+
- void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask)
- {
-@@ -1380,6 +1395,41 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	qi_submit_sync(&desc, iommu);
+ 	return 0;
  }
- 
-+/* PASID-based device IOTLB Invalidate */
-+void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64 granu)
++
++/**
++ * intel_pasid_setup_nested() - Set up PASID entry for nested translation
++ * which is used for vSVA. The first level page tables are used for
++ * GVA-GPA translation in the guest, second level page tables are used
++ * for GPA to HPA translation.
++ *
++ * @iommu:      Iommu which the device belong to
++ * @dev:        Device to be set up for translation
++ * @gpgd:       FLPTPTR: First Level Page translation pointer in GPA
++ * @pasid:      PASID to be programmed in the device PASID table
++ * @flags:      Additional info such as supervisor PASID
++ * @domain:     Domain info for setting up second level page tables
++ * @addr_width: Address width of the first level (guest)
++ */
++int intel_pasid_setup_nested(struct intel_iommu *iommu,
++			struct device *dev, pgd_t *gpgd,
++			int pasid, int flags,
++			struct dmar_domain *domain,
++			int addr_width)
 +{
-+	struct qi_desc desc;
++	struct pasid_entry *pte;
++	struct dma_pte *pgd;
++	u64 pgd_val;
++	int agaw;
++	u16 did;
 +
-+	desc.qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
-+		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
-+		QI_DEV_IOTLB_PFSID(pfsid);
-+	desc.qw1 = QI_DEV_EIOTLB_GLOB(granu);
-+
-+	/* If S bit is 0, we only flush a single page. If S bit is set,
-+	 * The least significant zero bit indicates the size. VT-d spec
-+	 * 6.5.2.6
-+	 */
-+	if (!size)
-+		desc.qw0 |= QI_DEV_EIOTLB_ADDR(addr) & ~QI_DEV_EIOTLB_SIZE;
-+	else {
-+		unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size);
-+
-+		desc.qw1 |= QI_DEV_EIOTLB_ADDR(addr & ~mask) | QI_DEV_EIOTLB_SIZE;
++	if (!ecap_nest(iommu->ecap)) {
++		pr_err("IOMMU: %s: No nested translation support\n",
++		       iommu->name);
++		return -EINVAL;
 +	}
-+	qi_submit_sync(&desc, iommu);
-+}
 +
-+void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
-+{
-+	struct qi_desc desc;
++	pte = intel_pasid_get_entry(dev, pasid);
++	if (WARN_ON(!pte))
++		return -EINVAL;
 +
-+	desc.qw0 = QI_PC_TYPE | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_PASID(pasid);
-+	desc.qw1 = 0;
-+	desc.qw2 = 0;
-+	desc.qw3 = 0;
-+	qi_submit_sync(&desc, iommu);
++	pasid_clear_entry(pte);
++
++	/* Sanity checking performed by caller to make sure address
++	 * width matching in two dimensions:
++	 * 1. CPU vs. IOMMU
++	 * 2. Guest vs. Host.
++	 */
++	switch (addr_width) {
++	case 57:
++		pasid_set_flpm(pte, 1);
++		break;
++	case 48:
++		pasid_set_flpm(pte, 0);
++		break;
++	default:
++		dev_err(dev, "Invalid paging mode %d\n", addr_width);
++		return -EINVAL;
++	}
++
++	/* Setup the first level page table pointer in GPA */
++	pasid_set_flptr(pte, (u64)gpgd);
++	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
++		if (!ecap_srs(iommu->ecap)) {
++			pr_err("No supervisor request support on %s\n",
++			       iommu->name);
++			return -EINVAL;
++		}
++		pasid_set_sre(pte);
++	}
++
++	/* Setup the second level based on the given domain */
++	pgd = domain->pgd;
++
++	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
++		pgd = phys_to_virt(dma_pte_addr(pgd));
++		if (!dma_pte_present(pgd)) {
++			dev_err(dev, "Invalid domain page table\n");
++			return -EINVAL;
++		}
++	}
++	pgd_val = virt_to_phys(pgd);
++	pasid_set_slptr(pte, pgd_val);
++	pasid_set_fault_enable(pte);
++
++	did = domain->iommu_did[iommu->seq_id];
++	pasid_set_domain_id(pte, did);
++
++	pasid_set_address_width(pte, agaw);
++	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
++
++	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
++	pasid_set_present(pte);
++	pasid_flush_caches(iommu, pte, pasid, did);
++
++	return 0;
 +}
- /*
-  * Disable Queued Invalidation interface.
+diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+index 4b26ab5..2234fd5 100644
+--- a/drivers/iommu/intel-pasid.h
++++ b/drivers/iommu/intel-pasid.h
+@@ -42,6 +42,7 @@
+  * to vmalloc or even module mappings.
   */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 94d3a9a..1cdb35b 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -339,7 +339,7 @@ enum {
- #define QI_IOTLB_GRAN(gran) 	(((u64)gran) >> (DMA_TLB_FLUSH_GRANU_OFFSET-4))
- #define QI_IOTLB_ADDR(addr)	(((u64)addr) & VTD_PAGE_MASK)
- #define QI_IOTLB_IH(ih)		(((u64)ih) << 6)
--#define QI_IOTLB_AM(am)		(((u8)am))
-+#define QI_IOTLB_AM(am)		(((u8)am) & 0x3f)
+ #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
++#define PASID_FLAG_NESTED		BIT(1)
  
- #define QI_CC_FM(fm)		(((u64)fm) << 48)
- #define QI_CC_SID(sid)		(((u64)sid) << 32)
-@@ -357,17 +357,22 @@ enum {
- #define QI_PC_DID(did)		(((u64)did) << 16)
- #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
+ struct pasid_dir_entry {
+ 	u64 val;
+@@ -51,6 +52,11 @@ struct pasid_entry {
+ 	u64 val[8];
+ };
  
--#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
--#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
-+/* PASID cache invalidation granu */
-+#define QI_PC_ALL_PASIDS	0
-+#define QI_PC_PASID_SEL		1
- 
- #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
- #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
- #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
--#define QI_EIOTLB_AM(am)	(((u64)am))
-+#define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
- #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
- #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
- #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
- 
-+/* QI Dev-IOTLB inv granu */
-+#define QI_DEV_IOTLB_GRAN_ALL		1
-+#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
++#define PASID_ENTRY_PGTT_FL_ONLY	(1)
++#define PASID_ENTRY_PGTT_SL_ONLY	(2)
++#define PASID_ENTRY_PGTT_NESTED		(3)
++#define PASID_ENTRY_PGTT_PT		(4)
 +
- #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
- #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
- #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
-@@ -658,8 +663,16 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
- 			     u8 fm, u64 type);
- extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 			  unsigned int size_order, u64 type);
-+extern void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-+			u32 pasid, unsigned int size_order, u64 type, int ih);
- extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask);
-+
-+extern void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+			u32 pasid, u16 qdep, u64 addr, unsigned size, u64 granu);
-+
-+extern void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
-+
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
- 
- extern int dmar_ir_support(void);
+ /* The representative of a PASID table */
+ struct pasid_table {
+ 	void			*table;		/* pasid table pointer */
+@@ -77,6 +83,11 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 				   struct dmar_domain *domain,
+ 				   struct device *dev, int pasid);
++int intel_pasid_setup_nested(struct intel_iommu *iommu,
++			struct device *dev, pgd_t *pgd,
++			int pasid, int flags,
++			struct dmar_domain *domain,
++			int addr_width);
+ void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+ 				 struct device *dev, int pasid);
+ int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
 -- 
 2.7.4
 
