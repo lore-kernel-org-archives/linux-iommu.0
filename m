@@ -6,55 +6,76 @@ X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FCEC468BD
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 02:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF1AC468BD
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:40:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10D05214C6
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 02:50:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10D05214C6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6AF9C20868
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:40:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6AF9C20868
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C1DE5AF5;
-	Sun,  9 Jun 2019 02:50:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1E403BDC;
+	Sun,  9 Jun 2019 13:40:08 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 62F0DAF5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EB060B9E
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  9 Jun 2019 02:50:47 +0000 (UTC)
+	Sun,  9 Jun 2019 13:40:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EB01A174
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7D0B076F
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  9 Jun 2019 02:50:46 +0000 (UTC)
+	Sun,  9 Jun 2019 13:40:06 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	08 Jun 2019 19:50:46 -0700
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	09 Jun 2019 06:40:05 -0700
 X-ExtLoop1: 1
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga004.jf.intel.com with ESMTP; 08 Jun 2019 19:50:43 -0700
-Subject: Re: "iommu/vt-d: Delegate DMA domain to generic iommu" series breaks
-	megaraid_sas
-To: Qian Cai <cai@lca.pw>
-References: <1559941717.6132.63.camel@lca.pw>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <1e4f0642-e4e1-7602-3f50-37edc84ced50@linux.intel.com>
-Date: Sun, 9 Jun 2019 10:43:39 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <1559941717.6132.63.camel@lca.pw>
+Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
+	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:40:05 -0700
+Received: from fmsmsx154.amr.corp.intel.com (10.18.116.70) by
+	FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server
+	(TLS) id 14.3.408.0; Sun, 9 Jun 2019 06:40:04 -0700
+Received: from shsmsx103.ccr.corp.intel.com (10.239.4.69) by
+	FMSMSX154.amr.corp.intel.com (10.18.116.70) with Microsoft SMTP Server
+	(TLS) id 14.3.408.0; Sun, 9 Jun 2019 06:40:04 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.137]) by
+	SHSMSX103.ccr.corp.intel.com ([169.254.4.120]) with mapi id
+	14.03.0415.000; Sun, 9 Jun 2019 21:40:02 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [RFC v3 0/3] vfio_pci: wrap pci device as a mediated device
+Thread-Topic: [RFC v3 0/3] vfio_pci: wrap pci device as a mediated device
+Thread-Index: AQHU+pmUgYQWOZcgyUar+GqJiI6/NqZ4kV4g///DEoCAGzk18A==
+Date: Sun, 9 Jun 2019 13:40:02 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439EDF463@SHSMSX104.ccr.corp.intel.com>
+References: <1556021680-2911-1-git-send-email-yi.l.liu@intel.com>
+	<A2975661238FB949B60364EF0F2C257439EB884E@SHSMSX104.ccr.corp.intel.com>
+	<20190523070311.4f95ca5c@x1.home>
+In-Reply-To: <20190523070311.4f95ca5c@x1.home>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: Joerg Roedel <jroedel@suse.de>,
-	Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYmM4NWY1NmEtYTk3ZS00MTA0LWIyZDAtNTZlOTgwNTQ1ZDNlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZWxyRmRYd1pubmZWNm5xbUZPQXZLd25GQXV4XC9tMzZwVHhaUDRsYUlqaHhtbFdFRVd2ZEsrMEV5UDU0SG1ZcGIifQ==
+x-originating-ip: [10.239.127.40]
+MIME-Version: 1.0
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
+	"kwankhede@nvidia.com" <kwankhede@nvidia.com>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Kashyap Desai <kashyap.desai@broadcom.com>,
-	Sumit Saxena <sumit.saxena@broadcom.com>, iommu@lists.linux-foundation.org
+	"yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>,
+	"Sun, Yi Y" <yi.y.sun@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,43 +88,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-SGkgUWlhbiwKCkkganVzdCBwb3N0ZWQgc29tZSBmaXggcGF0Y2hlcy4gSSBjYydlZCB0aGVtIGlu
-IHlvdXIgZW1haWwgaW5ib3ggYXMKd2VsbC4gQ2FuIHlvdSBwbGVhc2UgY2hlY2sgd2hldGhlciB0
-aGV5IGhhcHBlbiB0byBmaXggeW91ciBpc3N1ZT8KSWYgbm90LCBkbyB5b3UgbWluZCBwb3N0aW5n
-IG1vcmUgZGVidWcgbWVzc2FnZXM/CgpCZXN0IHJlZ2FyZHMsCkJhb2x1CgoKT24gNi84LzE5IDU6
-MDggQU0sIFFpYW4gQ2FpIHdyb3RlOgo+IFRoZSBsaW51eC1uZXh0IHNlcmllcyAiaW9tbXUvdnQt
-ZDogRGVsZWdhdGUgRE1BIGRvbWFpbiB0byBnZW5lcmljIGlvbW11IiBbMV0KPiBjYXVzZXMgYSBz
-eXN0ZW0gd2l0aCB0aGUgcm9vdGZzIG9uIG1lZ2FyYWlkX3NhcyBjYXJkIHVuYWJsZSB0byBib290
-Lgo+IAo+IFJldmVydGVkIHRoZSB3aG9sZSBzZXJpZXMgb24gdGhlIHRvcCBvZiBsaW51eC1uZXh0
-IChuZXh0LTIwMTkwNjA3KSBmaXhlZCB0aGUKPiBpc3N1ZS4KPiAKPiBUaGUgaW5mb3JtYXRpb24g
-cmVnYXJkcyB0aGlzIHN0b3JhZ2UgY2FyZCBpcywKPiAKPiBbwqDCoDExNi40NjY4MTBdW8KgwqBU
-MzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBGVyBwcm92aWRlZCBzdXBwb3J0TWF4RXh0
-TERzOgo+IDAJbWF4X2xkczogMzIKPiBbwqDCoDExNi40NzYwNTJdW8KgwqBUMzI0XSBtZWdhcmFp
-ZF9zYXMgMDAwMDowNjowMC4wOiBjb250cm9sbGVyIHR5cGUJOgo+IGlNUigwTUIpCj4gW8KgwqAx
-MTYuNDgzNjQ2XVvCoMKgVDMyNF0gbWVnYXJhaWRfc2FzIDAwMDA6MDY6MDAuMDogT25saW5lIENv
-bnRyb2xsZXIgUmVzZXQoT0NSKQkKPiA6IEVuYWJsZWQKPiBbwqDCoDExNi40OTI0MDNdW8KgwqBU
-MzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBTZWN1cmUgSkJPRCBzdXBwb3J0CToKPiBZ
-ZXMKPiBbwqDCoDExNi40OTk4ODddW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4w
-OiBOVk1lIHBhc3N0aHJ1IHN1cHBvcnQJOgo+IE5vCj4gW8KgwqAxMTYuNTA3NDgwXVvCoMKgVDMy
-NF0gbWVnYXJhaWRfc2FzIDAwMDA6MDY6MDAuMDogRlcgcHJvdmlkZWQKPiBbwqDCoDExNi42MTI1
-MjNdW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAwMDowNjowMC4wOiBOVk1FIHBhZ2Ugc2l6ZQk6
-ICgwKQo+IFvCoMKgMTE2LjYyOTk5MV1bwqDCoFQzMjRdIG1lZ2FyYWlkX3NhcyAwMDAwOjA2OjAw
-LjA6IElOSVQgYWRhcHRlciBkb25lCj4gW8KgwqAxMTYuNzE0Nzg5XVvCoMKgVDMyNF0gbWVnYXJh
-aWRfc2FzIDAwMDA6MDY6MDAuMDogcGNpIGlkCQk6Cj4gKDB4MTAwMCkvKDB4MDAxNykvKDB4MWQ0
-OSkvKDB4MDUwMCkKPiBbwqDCoDExNi43MjQyMjhdW8KgwqBUMzI0XSBtZWdhcmFpZF9zYXMgMDAw
-MDowNjowMC4wOiB1bmV2ZW5zcGFuIHN1cHBvcnQJOiBubwo+IFvCoMKgMTE2LjczMTUxOF1bwqDC
-oFQzMjRdIG1lZ2FyYWlkX3NhcyAwMDAwOjA2OjAwLjA6IGZpcm13YXJlIGNyYXNoIGR1bXAJOgo+
-IG5vCj4gW8KgwqAxMTYuNzM4OTgxXVvCoMKgVDMyNF0gbWVnYXJhaWRfc2FzIDAwMDA6MDY6MDAu
-MDogamJvZCBzeW5jIG1hcAkJOgo+IHllcwo+IFvCoMKgMTE2Ljc4NzQzM11bwqDCoFQzMjRdIHNj
-c2kgaG9zdDA6IEF2YWdvIFNBUyBiYXNlZCBNZWdhUkFJRCBkcml2ZXIKPiBbwqDCoDExNy4wODEw
-ODhdW8KgwqBUMzI0XSBzY3NpIDA6MDowOjA6IERpcmVjdC0KPiBBY2Nlc3PCoMKgwqDCoMKgTEVO
-T1ZPwqDCoMKgU1Q5MDBNTTAxNjjCoMKgwqDCoMKgwqBMNTg3IFBROiAwIEFOU0k6IDYKPiAKPiBb
-MV0gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvcGF0Y2h3b3JrL2NvdmVyLzEwNzg5NjAvCj4gCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxp
-bmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxp
-bnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+> From Alex Williamson
+> Sent: Thursday, May 23, 2019 9:03 PM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Cc: kwankhede@nvidia.com; Tian, Kevin <kevin.tian@intel.com>;
+> baolu.lu@linux.intel.com; Sun, Yi Y <yi.y.sun@intel.com>; joro@8bytes.org; jean-
+> philippe.brucker@arm.com; peterx@redhat.com; linux-kernel@vger.kernel.org;
+> kvm@vger.kernel.org; yamada.masahiro@socionext.com; iommu@lists.linux-
+> foundation.org
+> Subject: Re: [RFC v3 0/3] vfio_pci: wrap pci device as a mediated device
+> 
+> On Thu, 23 May 2019 08:44:57 +0000
+> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> 
+> > Hi Alex,
+> >
+> > Sorry to disturb you. Do you want to review on this version or review a rebased
+> version? :-) If rebase version is better, I can try to do it asap.
+> 
+> Hi Yi,
+> 
+> Perhaps you missed my comments on 1/3:
+> 
+> https://www.spinics.net/lists/kvm/msg187282.html
+> 
+> In summary, it looks pretty good, but consider a file name more consistent with the
+> existing files and prune out the code changes from the code moves so they can be
+> reviewed more easily.  Thanks,
+
+Thanks for the remind, Alex. So sorry I made changes in a "disordered".
+I've made the changes accordingly. Pls refer to my latest post just now :-)
+
+Regards,
+Yi Liu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
