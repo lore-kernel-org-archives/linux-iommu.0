@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCA4C2BCA1
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7ADC28EBD
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F7F220868
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F7F220868
+	by mail.kernel.org (Postfix) with ESMTPS id 1C91B20868
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:41:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C91B20868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 17CC9C97;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4A06CC77;
 	Sun,  9 Jun 2019 13:41:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CC984C51
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 502F8C4E
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  9 Jun 2019 13:41:18 +0000 (UTC)
+	Sun,  9 Jun 2019 13:41:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2287476F
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D8CBC76F
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  9 Jun 2019 13:41:18 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Jun 2019 06:41:16 -0700
+	09 Jun 2019 06:41:17 -0700
 X-ExtLoop1: 1
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
-	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:16 -0700
+	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:17 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
 	Eric Auger <eric.auger@redhat.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v4 03/22] iommu: Introduce device fault report API
-Date: Sun,  9 Jun 2019 06:44:03 -0700
-Message-Id: <1560087862-57608-4-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 06/22] trace/iommu: Add sva trace events
+Date: Sun,  9 Jun 2019 06:44:06 -0700
+Message-Id: <1560087862-57608-7-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -69,258 +69,122 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Traditionally, device specific faults are detected and handled within
-their own device drivers. When IOMMU is enabled, faults such as DMA
-related transactions are detected by IOMMU. There is no generic
-reporting mechanism to report faults back to the in-kernel device
-driver or the guest OS in case of assigned devices.
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
-This patch introduces a registration API for device specific fault
-handlers. This differs from the existing iommu_set_fault_handler/
-report_iommu_fault infrastructures in several ways:
-- it allows to report more sophisticated fault events (both
-  unrecoverable faults and page request faults) due to the nature
-  of the iommu_fault struct
-- it is device specific and not domain specific.
-
-The current iommu_report_device_fault() implementation only handles
-the "shoot and forget" unrecoverable fault case. Handling of page
-request faults or stalled faults will come later.
+For development only, trace I/O page faults and responses.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+[JPB: removed the invalidate trace event, that will be added later]
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
 ---
- drivers/iommu/iommu.c | 127 +++++++++++++++++++++++++++++++++++++++++++++++++-
- include/linux/iommu.h |  33 ++++++++++++-
- 2 files changed, 157 insertions(+), 3 deletions(-)
+ include/trace/events/iommu.h | 87 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 67ee662..7955184 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -644,6 +644,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 		goto err_free_name;
- 	}
+diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
+index 72b4582..c8de147 100644
+--- a/include/trace/events/iommu.h
++++ b/include/trace/events/iommu.h
+@@ -12,6 +12,8 @@
+ #define _TRACE_IOMMU_H
  
-+	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
-+	if (!dev->iommu_param) {
-+		ret = -ENOMEM;
-+		goto err_free_name;
-+	}
-+	mutex_init(&dev->iommu_param->lock);
-+
- 	kobject_get(group->devices_kobj);
+ #include <linux/tracepoint.h>
++#include <linux/iommu.h>
++#include <uapi/linux/iommu.h>
  
- 	dev->iommu_group = group;
-@@ -674,6 +681,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	mutex_unlock(&group->mutex);
- 	dev->iommu_group = NULL;
- 	kobject_put(group->devices_kobj);
-+	kfree(dev->iommu_param);
- err_free_name:
- 	kfree(device->name);
- err_remove_link:
-@@ -720,7 +728,7 @@ void iommu_group_remove_device(struct device *dev)
- 	sysfs_remove_link(&dev->kobj, "iommu_group");
+ struct device;
  
- 	trace_remove_device_from_group(group->id, dev);
--
-+	kfree(dev->iommu_param);
- 	kfree(device->name);
- 	kfree(device);
- 	dev->iommu_group = NULL;
-@@ -855,6 +863,123 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
- EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+@@ -161,6 +163,91 @@ DEFINE_EVENT(iommu_error, io_page_fault,
  
- /**
-+ * iommu_register_device_fault_handler() - Register a device fault handler
-+ * @dev: the device
-+ * @handler: the fault handler
-+ * @data: private data passed as argument to the handler
-+ *
-+ * When an IOMMU fault event is received, this handler gets called with the
-+ * fault event and data as argument.
-+ *
-+ * Return 0 if the fault handler was installed successfully, or an error.
-+ */
-+int iommu_register_device_fault_handler(struct device *dev,
-+					iommu_dev_fault_handler_t handler,
-+					void *data)
-+{
-+	struct iommu_param *param = dev->iommu_param;
-+	int ret = 0;
+ 	TP_ARGS(dev, iova, flags)
+ );
 +
-+	/*
-+	 * Device iommu_param should have been allocated when device is
-+	 * added to its iommu_group.
-+	 */
-+	if (!param)
-+		return -EINVAL;
++TRACE_EVENT(dev_fault,
 +
-+	mutex_lock(&param->lock);
-+	/* Only allow one fault handler registered for each device */
-+	if (param->fault_param) {
-+		ret = -EBUSY;
-+		goto done_unlock;
-+	}
++	TP_PROTO(struct device *dev,  struct iommu_fault *evt),
 +
-+	get_device(dev);
-+	param->fault_param =
-+		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
-+	if (!param->fault_param) {
-+		put_device(dev);
-+		ret = -ENOMEM;
-+		goto done_unlock;
-+	}
-+	param->fault_param->handler = handler;
-+	param->fault_param->data = data;
++	TP_ARGS(dev, evt),
 +
-+done_unlock:
-+	mutex_unlock(&param->lock);
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(int, type)
++		__field(int, reason)
++		__field(u64, addr)
++		__field(u64, fetch_addr)
++		__field(u32, pasid)
++		__field(u32, grpid)
++		__field(u32, flags)
++		__field(u32, prot)
++	),
 +
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
++	TP_fast_assign(
++		__assign_str(device, dev_name(dev));
++		__entry->type = evt->type;
++		if (evt->type == IOMMU_FAULT_DMA_UNRECOV) {
++			__entry->reason		= evt->event.reason;
++			__entry->flags		= evt->event.flags;
++			__entry->pasid		= evt->event.pasid;
++			__entry->grpid		= 0;
++			__entry->prot		= evt->event.perm;
++			__entry->addr		= evt->event.addr;
++			__entry->fetch_addr	= evt->event.fetch_addr;
++		} else {
++			__entry->reason		= 0;
++			__entry->flags		= evt->prm.flags;
++			__entry->pasid		= evt->prm.pasid;
++			__entry->grpid		= evt->prm.grpid;
++			__entry->prot		= evt->prm.perm;
++			__entry->addr		= evt->prm.addr;
++			__entry->fetch_addr	= 0;
++		}
++	),
 +
-+/**
-+ * iommu_unregister_device_fault_handler() - Unregister the device fault handler
-+ * @dev: the device
-+ *
-+ * Remove the device fault handler installed with
-+ * iommu_register_device_fault_handler().
-+ *
-+ * Return 0 on success, or an error.
-+ */
-+int iommu_unregister_device_fault_handler(struct device *dev)
-+{
-+	struct iommu_param *param = dev->iommu_param;
-+	int ret = 0;
++	TP_printk("IOMMU:%s type=%d reason=%d addr=0x%016llx fetch=0x%016llx pasid=%d group=%d flags=%x prot=%d",
++		__get_str(device),
++		__entry->type,
++		__entry->reason,
++		__entry->addr,
++		__entry->fetch_addr,
++		__entry->pasid,
++		__entry->grpid,
++		__entry->flags,
++		__entry->prot
++	)
++);
 +
-+	if (!param)
-+		return -EINVAL;
++TRACE_EVENT(dev_page_response,
 +
-+	mutex_lock(&param->lock);
++	TP_PROTO(struct device *dev,  struct page_response_msg *msg),
 +
-+	if (!param->fault_param)
-+		goto unlock;
++	TP_ARGS(dev, msg),
 +
-+	kfree(param->fault_param);
-+	param->fault_param = NULL;
-+	put_device(dev);
-+unlock:
-+	mutex_unlock(&param->lock);
++	TP_STRUCT__entry(
++		__string(device, dev_name(dev))
++		__field(int, code)
++		__field(u64, addr)
++		__field(u32, pasid)
++		__field(u32, grpid)
++	),
 +
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
++	TP_fast_assign(
++		__assign_str(device, dev_name(dev));
++		__entry->code = msg->resp_code;
++		__entry->addr = msg->addr;
++		__entry->pasid = msg->pasid;
++		__entry->grpid = msg->grpid;
++	),
 +
++	TP_printk("IOMMU:%s code=%d addr=0x%016llx pasid=%d group=%d",
++		__get_str(device),
++		__entry->code,
++		__entry->addr,
++		__entry->pasid,
++		__entry->grpid
++	)
++);
 +
-+/**
-+ * iommu_report_device_fault() - Report fault event to device
-+ * @dev: the device
-+ * @evt: fault event data
-+ *
-+ * Called by IOMMU drivers when a fault is detected, typically in a threaded IRQ
-+ * handler.
-+ *
-+ * Return 0 on success, or an error.
-+ */
-+int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-+{
-+	struct iommu_param *param = dev->iommu_param;
-+	struct iommu_fault_param *fparam;
-+	int ret = 0;
-+
-+	/* iommu_param is allocated when device is added to group */
-+	if (!param || !evt)
-+		return -EINVAL;
-+
-+	/* we only report device fault if there is a handler registered */
-+	mutex_lock(&param->lock);
-+	fparam = param->fault_param;
-+	if (!fparam || !fparam->handler) {
-+		ret = -EINVAL;
-+		goto done_unlock;
-+	}
-+	ret = fparam->handler(evt, fparam->data);
-+done_unlock:
-+	mutex_unlock(&param->lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-+
-+/**
-  * iommu_group_id - Return ID for a group
-  * @group: the group to ID
-  *
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7890a92..b87b74c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -322,9 +322,9 @@ struct iommu_fault_event {
+ #endif /* _TRACE_IOMMU_H */
  
- /**
-  * struct iommu_fault_param - per-device IOMMU fault data
-- * @dev_fault_handler: Callback function to handle IOMMU faults at device level
-- * @data: handler private data
-  *
-+ * @handler: Callback function to handle IOMMU faults at device level
-+ * @data: handler private data
-  */
- struct iommu_fault_param {
- 	iommu_dev_fault_handler_t handler;
-@@ -341,6 +341,7 @@ struct iommu_fault_param {
-  *	struct iommu_fwspec	*iommu_fwspec;
-  */
- struct iommu_param {
-+	struct mutex lock;
- 	struct iommu_fault_param *fault_param;
- };
- 
-@@ -433,6 +434,15 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
- 					 struct notifier_block *nb);
- extern int iommu_group_unregister_notifier(struct iommu_group *group,
- 					   struct notifier_block *nb);
-+extern int iommu_register_device_fault_handler(struct device *dev,
-+					iommu_dev_fault_handler_t handler,
-+					void *data);
-+
-+extern int iommu_unregister_device_fault_handler(struct device *dev);
-+
-+extern int iommu_report_device_fault(struct device *dev,
-+				     struct iommu_fault_event *evt);
-+
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
-@@ -741,6 +751,25 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
- 	return 0;
- }
- 
-+static inline
-+int iommu_register_device_fault_handler(struct device *dev,
-+					iommu_dev_fault_handler_t handler,
-+					void *data)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline int iommu_unregister_device_fault_handler(struct device *dev)
-+{
-+	return 0;
-+}
-+
-+static inline
-+int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int iommu_group_id(struct iommu_group *group)
- {
- 	return -ENODEV;
+ /* This part must be outside protection */
 -- 
 2.7.4
 
