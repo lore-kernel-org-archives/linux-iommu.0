@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED22C28EBD
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5F7C28EBD
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F76320868
-	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F76320868
+	by mail.kernel.org (Postfix) with ESMTPS id 7C27420868
+	for <iommu@archiver.kernel.org>; Sun,  9 Jun 2019 13:43:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C27420868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CECAAD07;
-	Sun,  9 Jun 2019 13:41:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 07C96D12;
+	Sun,  9 Jun 2019 13:41:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D0002C5C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F10F9C6D
 	for <iommu@lists.linux-foundation.org>;
 	Sun,  9 Jun 2019 13:41:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DCE637C3
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3F1B5174
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  9 Jun 2019 13:41:22 +0000 (UTC)
+	Sun,  9 Jun 2019 13:41:24 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Jun 2019 06:41:18 -0700
+	09 Jun 2019 06:41:19 -0700
 X-ExtLoop1: 1
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
-	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:18 -0700
+	by orsmga003.jf.intel.com with ESMTP; 09 Jun 2019 06:41:19 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
 	Eric Auger <eric.auger@redhat.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v4 18/22] iommu/vt-d: Add nested translation helper function
-Date: Sun,  9 Jun 2019 06:44:18 -0700
-Message-Id: <1560087862-57608-19-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 22/22] iommu/vt-d: Add svm/sva invalidate function
+Date: Sun,  9 Jun 2019 06:44:22 -0700
+Message-Id: <1560087862-57608-23-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -71,157 +71,216 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
-With PASID granular translation type set to 0x11b, translation
-result from the first level(FL) also subject to a second level(SL)
-page table translation. This mode is used for SVA virtualization,
-where FL performs guest virtual to guest physical translation and
-SL performs guest physical to host physical translation.
+When Shared Virtual Address (SVA) is enabled for a guest OS via
+vIOMMU, we need to provide invalidation support at IOMMU API and driver
+level. This patch adds Intel VT-d specific function to implement
+iommu passdown invalidate API for shared virtual address.
+
+The use case is for supporting caching structure invalidation
+of assigned SVM capable devices. Emulated IOMMU exposes queue
+invalidation capability and passes down all descriptors from the guest
+to the physical IOMMU.
+
+The assumption is that guest to host device ID mapping should be
+resolved prior to calling IOMMU driver. Based on the device handle,
+host IOMMU driver can replace certain fields before submit to the
+invalidation queue.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 ---
- drivers/iommu/intel-pasid.c | 93 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h | 11 ++++++
- 2 files changed, 104 insertions(+)
+ drivers/iommu/intel-iommu.c | 170 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 170 insertions(+)
 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 1ff2ecc..50ec344 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -684,3 +684,96 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 
- 	return 0;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3b4d712..3b55b86 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5352,6 +5352,175 @@ static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
+ 	aux_domain_remove_dev(to_dmar_domain(domain), dev);
  }
-+
-+/**
-+ * intel_pasid_setup_nested() - Set up PASID entry for nested translation
-+ * which is used for vSVA. The first level page tables are used for
-+ * GVA-GPA translation in the guest, second level page tables are used
-+ * for GPA to HPA translation.
+ 
++/*
++ * 2D array for converting and sanitizing IOMMU generic TLB granularity to
++ * VT-d granularity. Invalidation is typically included in the unmap operation
++ * as a result of DMA or VFIO unmap. However, for assigned device where guest
++ * could own the first level page tables without being shadowed by QEMU. In
++ * this case there is no pass down unmap to the host IOMMU as a result of unmap
++ * in the guest. Only invalidations are trapped and passed down.
++ * In all cases, only first level TLB invalidation (request with PASID) can be
++ * passed down, therefore we do not include IOTLB granularity for request
++ * without PASID (second level).
 + *
-+ * @iommu:      Iommu which the device belong to
-+ * @dev:        Device to be set up for translation
-+ * @gpgd:       FLPTPTR: First Level Page translation pointer in GPA
-+ * @pasid:      PASID to be programmed in the device PASID table
-+ * @flags:      Additional info such as supervisor PASID
-+ * @domain:     Domain info for setting up second level page tables
-+ * @addr_width: Address width of the first level (guest)
++ * For an example, to find the VT-d granularity encoding for IOTLB
++ * type and page selective granularity within PASID:
++ * X: indexed by iommu cache type
++ * Y: indexed by enum iommu_inv_granularity
++ * [IOMMU_CACHE_INV_TYPE_IOTLB][IOMMU_INV_GRANU_ADDR]
++ *
++ * Granu_map array indicates validity of the table. 1: valid, 0: invalid
++ *
 + */
-+int intel_pasid_setup_nested(struct intel_iommu *iommu,
-+			struct device *dev, pgd_t *gpgd,
-+			int pasid, int flags,
-+			struct dmar_domain *domain,
-+			int addr_width)
++const static int inv_type_granu_map[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_NR] = {
++	/* PASID based IOTLB, support PASID selective and page selective */
++	{0, 1, 1},
++	/* PASID based dev TLBs, only support all PASIDs or single PASID */
++	{1, 1, 0},
++	/* PASID cache */
++	{1, 1, 0}
++};
++
++const static u64 inv_type_granu_table[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_NR] = {
++	/* PASID based IOTLB */
++	{0, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID},
++	/* PASID based dev TLBs */
++	{QI_DEV_IOTLB_GRAN_ALL, QI_DEV_IOTLB_GRAN_PASID_SEL, 0},
++	/* PASID cache */
++	{QI_PC_ALL_PASIDS, QI_PC_PASID_SEL, 0},
++};
++
++static inline int to_vtd_granularity(int type, int granu, u64 *vtd_granu)
 +{
-+	struct pasid_entry *pte;
-+	struct dma_pte *pgd;
-+	u64 pgd_val;
-+	int agaw;
-+	u16 did;
-+
-+	if (!ecap_nest(iommu->ecap)) {
-+		pr_err("IOMMU: %s: No nested translation support\n",
-+		       iommu->name);
-+		return -EINVAL;
-+	}
-+
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (WARN_ON(!pte))
++	if (type >= IOMMU_CACHE_INV_TYPE_NR || granu >= IOMMU_INV_GRANU_NR ||
++		!inv_type_granu_map[type][granu])
 +		return -EINVAL;
 +
-+	pasid_clear_entry(pte);
-+
-+	/* Sanity checking performed by caller to make sure address
-+	 * width matching in two dimensions:
-+	 * 1. CPU vs. IOMMU
-+	 * 2. Guest vs. Host.
-+	 */
-+	switch (addr_width) {
-+	case 57:
-+		pasid_set_flpm(pte, 1);
-+		break;
-+	case 48:
-+		pasid_set_flpm(pte, 0);
-+		break;
-+	default:
-+		dev_err(dev, "Invalid paging mode %d\n", addr_width);
-+		return -EINVAL;
-+	}
-+
-+	/* Setup the first level page table pointer in GPA */
-+	pasid_set_flptr(pte, (u64)gpgd);
-+	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
-+		if (!ecap_srs(iommu->ecap)) {
-+			pr_err("No supervisor request support on %s\n",
-+			       iommu->name);
-+			return -EINVAL;
-+		}
-+		pasid_set_sre(pte);
-+	}
-+
-+	/* Setup the second level based on the given domain */
-+	pgd = domain->pgd;
-+
-+	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-+		pgd = phys_to_virt(dma_pte_addr(pgd));
-+		if (!dma_pte_present(pgd)) {
-+			dev_err(dev, "Invalid domain page table\n");
-+			return -EINVAL;
-+		}
-+	}
-+	pgd_val = virt_to_phys(pgd);
-+	pasid_set_slptr(pte, pgd_val);
-+	pasid_set_fault_enable(pte);
-+
-+	did = domain->iommu_did[iommu->seq_id];
-+	pasid_set_domain_id(pte, did);
-+
-+	pasid_set_address_width(pte, agaw);
-+	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+
-+	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-+	pasid_set_present(pte);
-+	pasid_flush_caches(iommu, pte, pasid, did);
++	*vtd_granu = inv_type_granu_table[type][granu];
 +
 +	return 0;
 +}
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 4b26ab5..2234fd5 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -42,6 +42,7 @@
-  * to vmalloc or even module mappings.
-  */
- #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-+#define PASID_FLAG_NESTED		BIT(1)
- 
- struct pasid_dir_entry {
- 	u64 val;
-@@ -51,6 +52,11 @@ struct pasid_entry {
- 	u64 val[8];
- };
- 
-+#define PASID_ENTRY_PGTT_FL_ONLY	(1)
-+#define PASID_ENTRY_PGTT_SL_ONLY	(2)
-+#define PASID_ENTRY_PGTT_NESTED		(3)
-+#define PASID_ENTRY_PGTT_PT		(4)
 +
- /* The representative of a PASID table */
- struct pasid_table {
- 	void			*table;		/* pasid table pointer */
-@@ -77,6 +83,11 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 				   struct dmar_domain *domain,
- 				   struct device *dev, int pasid);
-+int intel_pasid_setup_nested(struct intel_iommu *iommu,
-+			struct device *dev, pgd_t *pgd,
-+			int pasid, int flags,
-+			struct dmar_domain *domain,
-+			int addr_width);
- void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 				 struct device *dev, int pasid);
- int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
++static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules)
++{
++	u64 nr_pages = (granu_size * nr_granules) >> VTD_PAGE_SHIFT;
++
++	/* VT-d size is encoded as 2^size of 4K pages, 0 for 4k, 9 for 2MB, etc.
++	 * IOMMU cache invalidate API passes granu_size in bytes, and number of
++	 * granu size in contiguous memory.
++	 */
++	return order_base_2(nr_pages);
++}
++
++#ifdef CONFIG_INTEL_IOMMU_SVM
++static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct iommu_cache_invalidate_info *inv_info)
++{
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct device_domain_info *info;
++	struct intel_iommu *iommu;
++	unsigned long flags;
++	int cache_type;
++	u8 bus, devfn;
++	u16 did, sid;
++	int ret = 0;
++	u64 size;
++
++	if (!inv_info || !dmar_domain ||
++		inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
++		return -EINVAL;
++
++	if (!dev || !dev_is_pci(dev))
++		return -ENODEV;
++
++	iommu = device_to_iommu(dev, &bus, &devfn);
++	if (!iommu)
++		return -ENODEV;
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&iommu->lock);
++	info = iommu_support_dev_iotlb(dmar_domain, iommu, bus, devfn);
++	if (!info) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++	did = dmar_domain->iommu_did[iommu->seq_id];
++	sid = PCI_DEVID(bus, devfn);
++	size = to_vtd_size(inv_info->addr_info.granule_size, inv_info->addr_info.nb_granules);
++
++	for_each_set_bit(cache_type, (unsigned long *)&inv_info->cache, IOMMU_CACHE_INV_TYPE_NR) {
++		u64 granu = 0;
++		u64 pasid = 0;
++
++		ret = to_vtd_granularity(cache_type, inv_info->granularity, &granu);
++		if (ret) {
++			pr_err("Invalid cache type and granu combination %d/%d\n", cache_type,
++				inv_info->granularity);
++			break;
++		}
++
++		/* PASID is stored in different locations based on granularity */
++		if (inv_info->granularity == IOMMU_INV_GRANU_PASID)
++			pasid = inv_info->pasid_info.pasid;
++		else if (inv_info->granularity == IOMMU_INV_GRANU_ADDR)
++			pasid = inv_info->addr_info.pasid;
++		else {
++			pr_err("Cannot find PASID for given cache type and granularity\n");
++			break;
++		}
++
++		switch (BIT(cache_type)) {
++		case IOMMU_CACHE_INV_TYPE_IOTLB:
++			if (size && (inv_info->addr_info.addr & ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
++				pr_err("Address out of range, 0x%llx, size order %llu\n",
++					inv_info->addr_info.addr, size);
++				ret = -ERANGE;
++				goto out_unlock;
++			}
++
++			qi_flush_piotlb(iommu, did, mm_to_dma_pfn(inv_info->addr_info.addr),
++					pasid, size, granu, inv_info->addr_info.flags & IOMMU_INV_ADDR_FLAGS_LEAF);
++
++			/*
++			 * Always flush device IOTLB if ATS is enabled since guest
++			 * vIOMMU exposes CM = 1, no device IOTLB flush will be passed
++			 * down.
++			 */
++			if (info->ats_enabled) {
++				qi_flush_dev_piotlb(iommu, sid, info->pfsid,
++						pasid, info->ats_qdep,
++						inv_info->addr_info.addr, size,
++						granu);
++			}
++			break;
++		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
++			if (info->ats_enabled) {
++				qi_flush_dev_piotlb(iommu, sid, info->pfsid,
++						inv_info->addr_info.pasid, info->ats_qdep,
++						inv_info->addr_info.addr, size,
++						granu);
++			} else
++				pr_warn("Passdown device IOTLB flush w/o ATS!\n");
++
++			break;
++		case IOMMU_CACHE_INV_TYPE_PASID:
++			qi_flush_pasid_cache(iommu, did, granu, inv_info->pasid_info.pasid);
++
++			break;
++		default:
++			dev_err(dev, "Unsupported IOMMU invalidation type %d\n",
++				cache_type);
++			ret = -EINVAL;
++		}
++	}
++out_unlock:
++	spin_unlock(&iommu->lock);
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	return ret;
++}
++#endif
++
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot)
+@@ -5783,6 +5952,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+ 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
+ #ifdef CONFIG_INTEL_IOMMU_SVM
++	.cache_invalidate	= intel_iommu_sva_invalidate,
+ 	.sva_bind_gpasid	= intel_svm_bind_gpasid,
+ 	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
+ #endif
 -- 
 2.7.4
 
