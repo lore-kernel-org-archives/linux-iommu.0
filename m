@@ -2,101 +2,62 @@ Return-Path: <SRS0=ZsFK=UJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DCCC28CC7
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 11:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0C4C282DD
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:23:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AED4D20859
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 11:13:13 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="lP8qKNje"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AED4D20859
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9A17C20820
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:23:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A17C20820
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5BBECB43;
-	Mon, 10 Jun 2019 11:13:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 68258723;
+	Mon, 10 Jun 2019 12:23:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E36BEAF0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 10918255
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 11:13:12 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-TY1-obe.outbound.protection.outlook.com
-	(mail-eopbgr1400093.outbound.protection.outlook.com [40.107.140.93])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F2BBF89D
+	Mon, 10 Jun 2019 12:23:28 +0000 (UTC)
+X-Greylist: delayed 00:05:01 by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F0FC976F
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 11:13:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=mv1cB6TYVqqrUWnJnAL27fz2RL0totzSyKRsj0PLFMo=;
-	b=lP8qKNjeMfnhKUvehlqDPW1551+49VM/xdJmAEqTSGN4fU7KcmkgeSboeUexpcK/zgO6LC48C4OyYKH6pwZSu5g18vCK4nNaSWNAlEFSsELAh3mO7ZajwPzEldGDY2OnzH2D1+gOWtGS7fBn5Zw+7QPG+CNdbY0b+ujEVYbbWhI=
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com (52.134.247.150) by
-	OSAPR01MB3924.jpnprd01.prod.outlook.com (20.178.103.206) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1965.14; Mon, 10 Jun 2019 11:13:08 +0000
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85]) by
-	OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85%7]) with mapi id 15.20.1965.017;
-	Mon, 10 Jun 2019 11:13:08 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Christoph Hellwig <hch@lst.de>, Alan Stern <stern@rowland.harvard.edu>
-Subject: RE: How to resolve an issue in swiotlb environment?
-Thread-Topic: How to resolve an issue in swiotlb environment?
-Thread-Index: AdUZ1Qlk800+Qz0uSuO63mIBeXkktQDUe+5AAJUL5SA=
-Date: Mon, 10 Jun 2019 11:13:07 +0000
-Message-ID: <OSAPR01MB3089BCA7CF78D6E4D9C83E1BD8130@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <OSAPR01MB3089B381AF2F687526E63EEAD8140@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-	<OSAPR01MB3089D50DBDAA6C7D427E72EED8100@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSAPR01MB3089D50DBDAA6C7D427E72EED8100@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4065dcc2-72a5-405b-85a5-08d6ed949e46
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:OSAPR01MB3924; 
-x-ms-traffictypediagnostic: OSAPR01MB3924:
-x-ms-exchange-purlcount: 2
-x-microsoft-antispam-prvs: <OSAPR01MB3924B1967F84D0D57C9C01C5D8130@OSAPR01MB3924.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2399;
-x-forefront-prvs: 0064B3273C
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(396003)(366004)(39860400002)(376002)(346002)(136003)(189003)(199004)(6306002)(9686003)(186003)(3846002)(6436002)(14444005)(55016002)(305945005)(7736002)(256004)(6116002)(74316002)(2906002)(26005)(229853002)(11346002)(446003)(66066001)(99286004)(7696005)(110136005)(81156014)(102836004)(81166006)(478600001)(54906003)(8936002)(316002)(8676002)(76176011)(6506007)(6246003)(476003)(966005)(486006)(5660300002)(76116006)(33656002)(66446008)(64756008)(2171002)(73956011)(66556008)(66476007)(66946007)(53936002)(14454004)(86362001)(68736007)(52536014)(4326008)(25786009)(71200400001)(71190400001)(6606295002);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:OSAPR01MB3924;
-	H:OSAPR01MB3089.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: NgAafUU9h7+iTES7NU8K82hVUXph3Ln8Byr3rdskx+lFCEIf7WQogi6Ega2SRgYGZEP5q8wpoWROVyQNQ6gZ7gB//wXWIfZZEBmvWKi0rOa3KMSohJYV0tW4sGsD90Go4aAjLNxY5X1ocz1ENccxJdB2c8UkFFz+8l1w82dhDshV0U9oCS1gtmYWKLsfKoi2jKySRhUjThwZB1XZA/a6LOAep0GKKfniaNwjSGJdgZjoKcZfKIoD/e+vinGyAyzljxYWJ9g6ZxkMG2qwz+fEg885bDyKqel/iLbOOZs8cmw51HAz33yokmi58S35q5PoAhxUP3kI89+TbkSW7/bv041+ngM9rRtkqCxsROKHNFldSY6pUc1ES4mvfZbbArvQOL8zyrbniXlPlywDcFFbtUsz3OVt1mIzYMRIg2I9xdc=
+	Mon, 10 Jun 2019 12:23:26 +0000 (UTC)
+X-UUID: 4651b9e5ad8b4bbaa0891287722533d8-20190610
+X-UUID: 4651b9e5ad8b4bbaa0891287722533d8-20190610
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mhqrelay.mediatek.com ESMTP with TLS)
+	with ESMTP id 1241747598; Mon, 10 Jun 2019 20:18:22 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+	mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Mon, 10 Jun 2019 20:18:21 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
+	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Mon, 10 Jun 2019 20:18:19 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v7 00/21] MT8183 IOMMU SUPPORT
+Date: Mon, 10 Jun 2019 20:17:39 +0800
+Message-ID: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4065dcc2-72a5-405b-85a5-08d6ed949e46
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2019 11:13:08.3860 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB3924
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>,
+	srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Matthias Kaehlcke <mka@chromium.org>,
+	linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com,
+	anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -114,100 +75,173 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph, Alan,
-(add linux-usb ML on CC.)
+This patchset mainly adds support for mt8183 IOMMU and SMI.
 
-> From: Yoshihiro Shimoda, Sent: Friday, June 7, 2019 9:00 PM
-> 
-> Hi Christoph,
-> 
-> I think we should continue to discuss on this email thread instead of the fixed DMA-API.txt patch [1]
-> 
-> [1]
-> https://marc.info/?t=155989412200001&r=1&w=2
-> 
-> > From: Yoshihiro Shimoda, Sent: Monday, June 3, 2019 3:42 PM
-> >
-> > Hi linux-block and iommu mailing lists,
-> >
-> > I have an issue that a USB SSD with xHCI on R-Car H3 causes "swiotlb is full" like below.
-> >
-> >     [   36.745286] xhci-hcd ee000000.usb: swiotlb buffer is full (sz: 524288 bytes), total 32768 (slots), used 1338
-> (slots)
-> >
-> > I have investigated this issue by using git bisect, and then I found the following commit:
-> >
-> > ---
-> > commit 09324d32d2a0843e66652a087da6f77924358e62
-> > Author: Christoph Hellwig <hch@lst.de>
-> > Date:   Tue May 21 09:01:41 2019 +0200
-> >
-> >     block: force an unlimited segment size on queues with a virt boundary
-> > ---
-> 
-> Thank you for your comment on other email thread [2] like below:
-> ---
-> Turns out it isn't as simple as I thought, as there doesn't seem to
-> be an easy way to get to the struct device used for DMA mapping
-> from USB drivers.  I'll need to think a bit more how to handle that
-> best.
-> ---
-> 
-> [2]
-> https://marc.info/?l=linux-doc&m=155989651620473&w=2
+mt8183 has only one M4U like mt8173 and is also MTK IOMMU gen2 which
+uses ARM Short-Descriptor translation table format.
 
-I have another way to avoid the issue. But it doesn't seem that a good way though...
-According to the commit that adding blk_queue_virt_boundary() [3],
-this is needed for vhci_hcd as a workaround so that if we avoid to call it
-on xhci-hcd driver, the issue disappeared. What do you think?
-JFYI, I pasted a tentative patch in the end of email [4].
+The mt8183 M4U-SMI HW diagram is as below:
 
----
-[3]
-commit 747668dbc061b3e62bc1982767a3a1f9815fcf0e
-Author: Alan Stern <stern@rowland.harvard.edu>
-Date:   Mon Apr 15 13:19:25 2019 -0400
+                          EMI
+                           |
+                          M4U
+                           |
+                       ----------
+                       |        |
+                   gals0-rx   gals1-rx
+                       |        |
+                       |        |
+                   gals0-tx   gals1-tx
+                       |        |
+                      ------------
+                       SMI Common
+                      ------------
+                           |
+  +-----+-----+--------+-----+-----+-------+-------+
+  |     |     |        |     |     |       |       |
+  |     |  gals-rx  gals-rx  |   gals-rx gals-rx gals-rx
+  |     |     |        |     |     |       |       |
+  |     |     |        |     |     |       |       |
+  |     |  gals-tx  gals-tx  |   gals-tx gals-tx gals-tx
+  |     |     |        |     |     |       |       |
+larb0 larb1  IPU0    IPU1  larb4  larb5  larb6    CCU
+disp  vdec   img     cam    venc   img    cam
 
-    usb-storage: Set virt_boundary_mask to avoid SG overflows
----
-[4]
-diff --git a/drivers/usb/storage/scsiglue.c b/drivers/usb/storage/scsiglue.c
-index 59190d8..277c6f7e 100644
---- a/drivers/usb/storage/scsiglue.c
-+++ b/drivers/usb/storage/scsiglue.c
-@@ -30,6 +30,8 @@
- 
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/usb.h>
-+#include <linux/usb/hcd.h>
- 
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
-@@ -65,6 +67,7 @@ static const char* host_info(struct Scsi_Host *host)
- static int slave_alloc (struct scsi_device *sdev)
- {
- 	struct us_data *us = host_to_us(sdev->host);
-+	struct usb_hcd *hcd = bus_to_hcd(us->pusb_dev->bus);
- 	int maxp;
- 
- 	/*
-@@ -80,8 +83,10 @@ static int slave_alloc (struct scsi_device *sdev)
- 	 * Bulk maxpacket value.  Fortunately this value is always a
- 	 * power of 2.  Inform the block layer about this requirement.
- 	 */
--	maxp = usb_maxpacket(us->pusb_dev, us->recv_bulk_pipe, 0);
--	blk_queue_virt_boundary(sdev->request_queue, maxp - 1);
-+	if (!strcmp(hcd->driver->description, "vhci_hcd")) {
-+		maxp = usb_maxpacket(us->pusb_dev, us->recv_bulk_pipe, 0);
-+		blk_queue_virt_boundary(sdev->request_queue, maxp - 1);
-+	}
- 
- 	/*
- 	 * Some host controllers may have alignment requirements.
----
-Best regards,
-Yoshihiro Shimoda
+All the connections are HW fixed, SW can NOT adjust it.
+
+Compared with mt8173, we add a GALS(Global Async Local Sync) module
+between SMI-common and M4U, and additional GALS between larb2/3/5/6
+and SMI-common. GALS can help synchronize for the modules in different
+clock frequency, it can be seen as a "asynchronous fifo".
+
+GALS can only help transfer the command/data while it doesn't have
+the configuring register, thus it has the special "smi" clock and it
+doesn't have the "apb" clock. From the diagram above, we add "gals0"
+and "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
+
+From the diagram above, IPU0/IPU1(Image Processor Unit) and CCU(Camera
+Control Unit) is connected with smi-common directly, we can take them
+as "larb2", "larb3" and "larb7", and their register spaces are
+different with the normal larb.
+
+This is the general purpose of each patch in this patchset:
+the patch 1..13 add the iommu/smi support for mt8183;
+the patch 14..16 add mmu1 support;
+the last patches contain some minor changes:
+   -patch 17 cleanup some smi codes(delete need_larbid).
+   -patch 18 fix a issue(fix vld_pa_rng).
+   -patch 19/20 improve the 4GB mode.
+   -patch 21 switch to SPDX license.
+The dtsi was sent at [1].
+
+[1] https://lore.kernel.org/patchwork/patch/1054099/
+
+Change notes:
+v7:
+   1) rebase on v5.2-rc1.
+   2) Add fixed tags in patch 20.
+   3) Remove shutdown patch. I will send it independently if necessary.
+
+v6: https://lists.linuxfoundation.org/pipermail/iommu/2019-February/033685.html
+    1) rebase on v5.0-rc1.
+    2) About the register name (VLD_PA_RNG), Keep consistent in the patches.
+    3) In the 4GB mode, Always add MTK_4GB_quirk.
+    4) Reword some commit message helped from Evan. like common->smi_ao_base is
+       completely different from common->base; STANDARD_AXI_MODE reg is completely
+       different from CTRL_MISC; commit in the shutdown patch.
+    5) Add 2 new patches again:
+       iommu/mediatek: Rename enable_4GB to dram_is_4gb
+       iommu/mediatek: Fix iova_to_phys PA start for 4GB mode
+
+v5: https://lists.linuxfoundation.org/pipermail/iommu/2019-January/032387.html
+    1) Remove this patch "iommu/mediatek: Constify iommu_ops" from here as it
+       was applied for v5.0.
+    2) Again, add 3 preparing patches. Move two property into the plat_data.
+       iommu/mediatek: Move vld_pa_rng into plat_data
+       iommu/mediatek: Move reset_axi into plat_data
+       iommu/mediatek: Refine protect memory definition
+    3) Add shutdown callback for mtk_iommu_v1 in patch[19/20].
+
+v4: http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016205.html
+    1) Add 3 preparing patches. Seperate some minor meaningful code into
+       a new patch according to Matthias's suggestion.
+       memory: mtk-smi: Add gals support         
+       iommu/mediatek: Add larb-id remapped support 
+       iommu/mediatek: Add bclk can be supported optionally       
+    2) rebase on "iommu/mediatek: Make it explicitly non-modular"
+       which was applied.
+       https://lore.kernel.org/patchwork/patch/1020125/
+    3) add some comment about "mediatek,larb-id" in the commit message of
+       the patch "mtk-smi: Get rid of need_larbid".
+    4) Fix bus_sel value.
+
+v3: https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031121.html
+    1) rebase on v4.20-rc1.
+    2) In the dt-binding, add a minor string "mt7623" which also use gen1
+       since Matthias added it in v4.20.
+    3) About v7s:
+       a) for paddr_to_pte, change the param from "arm_v7s_io_pgtable" to
+          "arm_pgtable_cfg", according to Robin suggestion.
+       b) Don't use CONFIG_PHYS_ADDR_T_64BIT.
+       c) add a little comment(pgtable address still don't over 4GB) in the
+          commit message of the patch "Extend MediaTek 4GB Mode".
+    4) add "iommu/mediatek: Constify iommu_ops" into this patchset. this may
+       be helpful for review and merge.
+       https://lists.linuxfoundation.org/pipermail/iommu/2018-October/030637.html
+
+v2: https://lists.linuxfoundation.org/pipermail/iommu/2018-September/030164.html
+    1) Fix typo in the commit message of dt-binding.
+    2) Change larb2/larb3 to the special larbs.
+    3) Refactor the larb-id remapped array(larbid_remapped), then we
+    don't need add the new function(mtk_iommu_get_larbid).
+    4) Add a new patch for v7s two helpers(paddr_to_iopte and
+    iopte_to_paddr).
+    5) Change some comment for MTK 4GB mode.
+
+v1: base on v4.19-rc1.
+http://lists.infradead.org/pipermail/linux-mediatek/2018-September/014881.html
+
+Yong Wu (21):
+  dt-bindings: mediatek: Add binding for mt8183 IOMMU and SMI
+  iommu/mediatek: Use a struct as the platform data
+  memory: mtk-smi: Use a general config_port interface
+  memory: mtk-smi: Use a struct for the platform data for smi-common
+  iommu/io-pgtable-arm-v7s: Add paddr_to_iopte and iopte_to_paddr
+    helpers
+  iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB Mode
+  iommu/mediatek: Add bclk can be supported optionally
+  iommu/mediatek: Add larb-id remapped support
+  iommu/mediatek: Refine protect memory definition
+  iommu/mediatek: Move reset_axi into plat_data
+  iommu/mediatek: Move vld_pa_rng into plat_data
+  memory: mtk-smi: Add gals support
+  iommu/mediatek: Add mt8183 IOMMU support
+  iommu/mediatek: Add mmu1 support
+  memory: mtk-smi: Invoke pm runtime_callback to enable clocks
+  memory: mtk-smi: Add bus_sel for mt8183
+  memory: mtk-smi: Get rid of need_larbid
+  iommu/mediatek: Fix VLD_PA_RNG register backup when suspend
+  iommu/mediatek: Rename enable_4GB to dram_is_4gb
+  iommu/mediatek: Fix iova_to_phys PA start for 4GB mode
+  iommu/mediatek: Switch to SPDX license identifier
+
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  30 ++-
+ .../memory-controllers/mediatek,smi-common.txt     |  12 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |   4 +
+ drivers/iommu/io-pgtable-arm-v7s.c                 |  72 ++++--
+ drivers/iommu/mtk_iommu.c                          | 166 ++++++++-----
+ drivers/iommu/mtk_iommu.h                          |  27 ++-
+ drivers/iommu/mtk_iommu_v1.c                       |  12 +-
+ drivers/memory/mtk-smi.c                           | 270 ++++++++++++++-------
+ include/dt-bindings/memory/mt2701-larb-port.h      |  10 +-
+ include/dt-bindings/memory/mt8173-larb-port.h      |  10 +-
+ include/dt-bindings/memory/mt8183-larb-port.h      | 130 ++++++++++
+ include/soc/mediatek/smi.h                         |  11 +-
+ 12 files changed, 530 insertions(+), 224 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt8183-larb-port.h
+
+-- 
+1.9.1 
 
 _______________________________________________
 iommu mailing list
