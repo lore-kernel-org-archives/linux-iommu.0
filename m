@@ -7,47 +7,48 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9910FC282DD
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ABAC282DD
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:27:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 78CB320862
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:27:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78CB320862
+	by mail.kernel.org (Postfix) with ESMTPS id 23CD920820
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:27:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 23CD920820
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 379B8C6A;
-	Mon, 10 Jun 2019 12:27:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6AC71C4E;
+	Mon, 10 Jun 2019 12:27:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 824BFC4E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54F36C6E
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 10 Jun 2019 12:27:16 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F2EEE76F
 	for <iommu@lists.linux-foundation.org>;
 	Mon, 10 Jun 2019 12:27:14 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DA22D775
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 12:27:13 +0000 (UTC)
-X-UUID: 33ed1d42f958437190f5af19f4f3d43a-20190610
-X-UUID: 33ed1d42f958437190f5af19f4f3d43a-20190610
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
+X-UUID: b4a1c721529c42b7b3e473597c925790-20190610
+X-UUID: b4a1c721529c42b7b3e473597c925790-20190610
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+	mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
 	(mhqrelay.mediatek.com ESMTP with TLS)
-	with ESMTP id 16363311; Mon, 10 Jun 2019 20:22:04 +0800
+	with ESMTP id 1303632265; Mon, 10 Jun 2019 20:22:12 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
-	mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Mon, 10 Jun 2019 20:22:04 +0800
+	mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Mon, 10 Jun 2019 20:22:10 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
 	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Mon, 10 Jun 2019 20:22:02 +0800
+	Transport; Mon, 10 Jun 2019 20:22:10 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
 	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v7 19/21] iommu/mediatek: Rename enable_4GB to dram_is_4gb
-Date: Mon, 10 Jun 2019 20:17:58 +0800
-Message-ID: <1560169080-27134-20-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v7 20/21] iommu/mediatek: Fix iova_to_phys PA start for 4GB
+	mode
+Date: Mon, 10 Jun 2019 20:17:59 +0800
+Message-ID: <1560169080-27134-21-git-send-email-yong.wu@mediatek.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
 References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
@@ -78,69 +79,70 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch only rename the variable name from enable_4GB to
-dram_is_4gb for readable.
+In the 4GB mode, the physical address is remapped,
 
+Here is the detailed remap relationship.
+CPU PA         ->    HW PA
+0x4000_0000          0x1_4000_0000 (Add bit32)
+0x8000_0000          0x1_8000_0000 ...
+0xc000_0000          0x1_c000_0000 ...
+0x1_0000_0000        0x1_0000_0000 (No change)
+
+Thus, we always add bit32 for PA when entering mtk_iommu_map.
+But in the iova_to_phys, the CPU don't need this bit32 if the
+PA is from 0x1_4000_0000 to 0x1_ffff_ffff.
+This patch discards the bit32 in this iova_to_phys in the 4GB mode.
+
+Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
+for 4GB mode")
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Evan Green <evgreen@chromium.org>
 ---
- drivers/iommu/mtk_iommu.c | 10 +++++-----
- drivers/iommu/mtk_iommu.h |  2 +-
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/iommu/mtk_iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 86158d8..67cab2d 100644
+index 67cab2d..34f2e40 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -382,7 +382,7 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	int ret;
+@@ -119,6 +119,19 @@ struct mtk_iommu_domain {
  
- 	/* The "4GB mode" M4U physically can not use the lower remap of Dram. */
--	if (data->plat_data->has_4gb_mode && data->enable_4GB)
-+	if (data->plat_data->has_4gb_mode && data->dram_is_4gb)
- 		paddr |= BIT_ULL(32);
+ static const struct iommu_ops mtk_iommu_ops;
  
- 	spin_lock_irqsave(&dom->pgtlock, flags);
-@@ -554,13 +554,13 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
++/*
++ * In M4U 4GB mode, the physical address is remapped as below:
++ *  CPU PA         ->   M4U HW PA
++ *  0x4000_0000         0x1_4000_0000 (Add bit32)
++ *  0x8000_0000         0x1_8000_0000 ...
++ *  0xc000_0000         0x1_c000_0000 ...
++ *  0x1_0000_0000       0x1_0000_0000 (No change)
++ *
++ * Thus, We always add BIT32 in the iommu_map and disable BIT32 if PA is >=
++ * 0x1_4000_0000 in the iova_to_phys.
++ */
++#define MTK_IOMMU_4GB_MODE_PA_140000000     0x140000000UL
++
+ static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
  
- 	if (data->plat_data->m4u_plat == M4U_MT8173)
--		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
-+		regval = (data->protect_base >> 1) | (data->dram_is_4gb << 31);
- 	else
- 		regval = lower_32_bits(data->protect_base) |
- 			 upper_32_bits(data->protect_base);
- 	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
+ #define for_each_m4u(data)	list_for_each_entry(data, &m4ulist, list)
+@@ -415,6 +428,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					  dma_addr_t iova)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+ 	unsigned long flags;
+ 	phys_addr_t pa;
  
--	if (data->enable_4GB && data->plat_data->has_vld_pa_rng) {
-+	if (data->dram_is_4gb && data->plat_data->has_vld_pa_rng) {
- 		/*
- 		 * If 4GB mode is enabled, the validate PA range is from
- 		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
-@@ -611,8 +611,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+@@ -422,6 +436,10 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	pa = dom->iop->iova_to_phys(dom->iop, iova);
+ 	spin_unlock_irqrestore(&dom->pgtlock, flags);
  
--	/* Whether the current dram is over 4GB */
--	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
-+	/* Whether the current dram is 4GB. */
-+	data->dram_is_4gb = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
++	if (data->plat_data->has_4gb_mode && data->dram_is_4gb &&
++	    pa >= MTK_IOMMU_4GB_MODE_PA_140000000)
++		pa &= ~BIT_ULL(32);
++
+ 	return pa;
+ }
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	data->base = devm_ioremap_resource(dev, res);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 753266b..e8114b2 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -65,7 +65,7 @@ struct mtk_iommu_data {
- 	struct mtk_iommu_domain		*m4u_dom;
- 	struct iommu_group		*m4u_group;
- 	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
--	bool                            enable_4GB;
-+	bool                            dram_is_4gb;
- 	bool				tlb_flush_active;
- 
- 	struct iommu_device		iommu;
 -- 
 1.9.1
 
