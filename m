@@ -2,106 +2,68 @@ Return-Path: <SRS0=ZsFK=UJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65149C31E40
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 16:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92807C4321B
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 18:45:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 39F20206C3
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 16:09:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="0IqS6nb5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 39F20206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 78BB520820
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 18:45:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78BB520820
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 110FCCB7;
-	Mon, 10 Jun 2019 16:09:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 390FADB4;
+	Mon, 10 Jun 2019 18:45:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7F904CAF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 068D2D3E
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 16:09:47 +0000 (UTC)
+	Mon, 10 Jun 2019 18:45:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6549C832
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 993F26D6
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 16:09:46 +0000 (UTC)
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-	by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x5AG8aYD196253; Mon, 10 Jun 2019 16:09:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
-	h=date : from : to : cc
-	: subject : message-id : references : mime-version : content-type :
-	in-reply-to; s=corp-2018-07-02;
-	bh=hXYiyFRNY5m/uaLlMRfQ/3UYIpflDnO8PXwOxxfxX2o=;
-	b=0IqS6nb5q//dGyny83gezUux3PcuC2jg0/GJinqrkTD3hKce3DiYOaGNtGlP7nRwyqum
-	cepeNjBdgW27JZuh+fUy6sEaJPnXwhmB3DYuE9Xavzkou8ZWg8Vg0sU93KdyuBAEOGVN
-	duZ28jhLo2GRe++YVlY3mHdcZNyDKFqijYOTBPeHOLcIelHisMBPF2HnQmklWyzU+E5R
-	Jt4DwQHm+eN+hDpvlCwc/C53+jsjCz1NAweFNUxEqiOSQvuiPejIb8VGHNAfaaiq3dx2
-	zEzl77Wkic9BizrOD77n1DF9pxYTxqMM+aE1jtLO6lS90kA5uzuNMee6yZjBK7u3fdJp
-	Jw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-	by userp2120.oracle.com with ESMTP id 2t05nqfsr8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 10 Jun 2019 16:09:04 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-	by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x5AG8kib032483; Mon, 10 Jun 2019 16:09:04 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-	by userp3020.oracle.com with ESMTP id 2t1jpgy001-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 10 Jun 2019 16:09:04 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-	by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x5AG93qT024727;
-	Mon, 10 Jun 2019 16:09:03 GMT
-Received: from char.us.oracle.com (/10.152.32.25)
-	by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Mon, 10 Jun 2019 09:09:02 -0700
-Received: by char.us.oracle.com (Postfix, from userid 1000)
-	id EE8D96A00FC; Mon, 10 Jun 2019 12:10:25 -0400 (EDT)
-Date: Mon, 10 Jun 2019 12:10:25 -0400
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 0/9] iommu: Bounce page for untrusted devices
-Message-ID: <20190610161025.GZ28796@char.us.oracle.com>
-References: <20190603011620.31999-1-baolu.lu@linux.intel.com>
+	Mon, 10 Jun 2019 18:45:24 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	10 Jun 2019 11:45:23 -0700
+X-ExtLoop1: 1
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+	by orsmga002.jf.intel.com with ESMTP; 10 Jun 2019 11:45:23 -0700
+Received: from orsmsx113.amr.corp.intel.com ([169.254.9.248]) by
+	ORSMSX102.amr.corp.intel.com ([169.254.3.187]) with mapi id
+	14.03.0415.000; Mon, 10 Jun 2019 11:45:23 -0700
+From: "Mehta, Sohil" <sohil.mehta@intel.com>
+To: "joro@8bytes.org" <joro@8bytes.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>
+Subject: Re: [PATCH 5/6] iommu/vt-d: Cleanup after delegating DMA domain to
+	generic iommu
+Thread-Topic: [PATCH 5/6] iommu/vt-d: Cleanup after delegating DMA domain to
+	generic iommu
+Thread-Index: AQHVHm1riigSOeMSoEKdi5DrOzgP5aaVsjoA
+Date: Mon, 10 Jun 2019 18:45:23 +0000
+Message-ID: <1560192412.27481.12.camel@intel.com>
+References: <20190609023803.23832-1-baolu.lu@linux.intel.com>
+	<20190609023803.23832-6-baolu.lu@linux.intel.com>
+In-Reply-To: <20190609023803.23832-6-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.25.110.4]
+Content-ID: <06FAD7A4365DF84993512DC9E698AAA7@intel.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190603011620.31999-1-baolu.lu@linux.intel.com>
-User-Agent: Mutt/1.9.1 (2017-09-22)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9284
-	signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
-	malwarescore=0
-	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=651
-	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
-	engine=8.0.1-1810050000 definitions=main-1906100110
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9284
-	signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
-	priorityscore=1501 malwarescore=0
-	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
-	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=699
-	adultscore=0
-	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
-	definitions=main-1906100110
-Cc: Juergen Gross <jgross@suse.com>, kevin.tian@intel.com,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	mika.westerberg@linux.intel.com, ashok.raj@intel.com,
-	Jonathan Corbet <corbet@lwn.net>, alan.cox@intel.com,
-	Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
-	jacob.jun.pan@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"cai@lca.pw" <cai@lca.pw>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -114,21 +76,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jun 03, 2019 at 09:16:11AM +0800, Lu Baolu wrote:
-> The Thunderbolt vulnerabilities are public and have a nice
-> name as Thunderclap [1] [3] nowadays. This patch series aims
-> to mitigate those concerns.
-
-.. Forgot to ask but should the patches also include the CVE number?
-Or at least the last one that enables this?
-
-Thanks.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gU3VuLCAyMDE5LTA2LTA5IGF0IDEwOjM4ICswODAwLCBMdSBCYW9sdSB3cm90ZToNCj4gwqBz
+dGF0aWMgaW50IF9faW5pdCBzaV9kb21haW5faW5pdChpbnQgaHcpDQo+IEBAIC0zMzA2LDE0ICsz
+MjUyLDEzIEBAIHN0YXRpYyBpbnQgX19pbml0IGluaXRfZG1hcnModm9pZCkNCj4gwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAocGFzaWRfc3VwcG9ydGVkKGlvbW11KSkNCj4gwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZWxfc3ZtX2lu
+aXQoaW9tbXUpOw0KPiDCoCNlbmRpZg0KPiAtwqDCoMKgwqDCoMKgwqB9DQo+IMKgDQo+IC3CoMKg
+wqDCoMKgwqDCoC8qDQo+IC3CoMKgwqDCoMKgwqDCoCAqIE5vdyB0aGF0IHFpIGlzIGVuYWJsZWQg
+b24gYWxsIGlvbW11cywgc2V0IHRoZSByb290IGVudHJ5DQo+IGFuZCBmbHVzaA0KPiAtwqDCoMKg
+wqDCoMKgwqAgKiBjYWNoZXMuIFRoaXMgaXMgcmVxdWlyZWQgb24gc29tZSBJbnRlbCBYNTggY2hp
+cHNldHMsDQo+IG90aGVyd2lzZSB0aGUNCj4gLcKgwqDCoMKgwqDCoMKgICogZmx1c2hfY29udGV4
+dCBmdW5jdGlvbiB3aWxsIGxvb3AgZm9yZXZlciBhbmQgdGhlIGJvb3QNCj4gaGFuZ3MuDQo+IC3C
+oMKgwqDCoMKgwqDCoCAqLw0KPiAtwqDCoMKgwqDCoMKgwqBmb3JfZWFjaF9hY3RpdmVfaW9tbXUo
+aW9tbXUsIGRyaGQpIHsNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoC8qDQo+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBOb3cgdGhhdCBxaSBpcyBlbmFibGVkIG9u
+IGFsbCBpb21tdXMsIHNldCB0aGUgcm9vdA0KPiBlbnRyeSBhbmQNCj4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCAqIGZsdXNoIGNhY2hlcy4gVGhpcyBpcyByZXF1aXJlZCBvbiBzb21l
+IEludGVsIFg1OA0KPiBjaGlwc2V0cywNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAqIG90aGVyd2lzZSB0aGUgZmx1c2hfY29udGV4dCBmdW5jdGlvbiB3aWxsIGxvb3ANCj4gZm9y
+ZXZlciBhbmQNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIHRoZSBib290IGhh
+bmdzLg0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICovDQo+IMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgaW9tbXVfZmx1c2hfd3JpdGVfYnVmZmVyKGlvbW11KTsNCj4g
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpb21tdV9zZXRfcm9vdF9lbnRyeShpb21t
+dSk7DQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW9tbXUtPmZsdXNoLmZsdXNo
+X2NvbnRleHQoaW9tbXUsIDAsIDAsIDAsDQo+IERNQV9DQ01EX0dMT0JBTF9JTlZMKTsNCg0KDQpU
+aGlzIGNoYW5nZXMgdGhlIGludGVudCBvZiB0aGUgb3JpZ2luYWwgY29kZS4gQXMgdGhlIGNvbW1l
+bnQgc2F5cw0KZW5hYmxlIFFJIG9uIGFsbCBJT01NVXMsIHRoZW4gZmx1c2ggdGhlIGNhY2hlcyBh
+bmQgc2V0IHRoZSByb290IGVudHJ5Lg0KVGhlIG9yZGVyIG9mIHNldHRpbmcgdGhlIHJvb3QgZW50
+cmllcyBoYXMgY2hhbmdlZCBub3cuDQoNClJlZmVyOsKgDQpDb21taXQgYTRjMzRmZjFjMDI5ICgn
+aW9tbXUvdnQtZDogRW5hYmxlIFFJIG9uIGFsbCBJT01NVXMgYmVmb3JlDQpzZXR0aW5nIHJvb3Qg
+ZW50cnknKQ0KDQotLVNvaGlsCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
