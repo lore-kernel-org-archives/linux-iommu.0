@@ -2,52 +2,70 @@ Return-Path: <SRS0=ZsFK=UJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D934CC282DD
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 894A8C28CC7
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:45:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BB87620679
-	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:32:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB87620679
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 55C36207E0
+	for <iommu@archiver.kernel.org>; Mon, 10 Jun 2019 12:45:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55C36207E0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6FB65C58;
-	Mon, 10 Jun 2019 12:32:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 01398C11;
+	Mon, 10 Jun 2019 12:45:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AEF6F255
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0B92D9BA
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 12:32:50 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1A01D174
+	Mon, 10 Jun 2019 12:45:32 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5557E775
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 10 Jun 2019 12:32:50 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 4360268B02; Mon, 10 Jun 2019 14:32:22 +0200 (CEST)
-Date: Mon, 10 Jun 2019 14:32:22 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: How to resolve an issue in swiotlb environment?
-Message-ID: <20190610123222.GA20985@lst.de>
-References: <OSAPR01MB3089B381AF2F687526E63EEAD8140@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-	<OSAPR01MB3089D50DBDAA6C7D427E72EED8100@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-	<OSAPR01MB3089BCA7CF78D6E4D9C83E1BD8130@OSAPR01MB3089.jpnprd01.prod.outlook.com>
+	Mon, 10 Jun 2019 12:45:31 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37699337;
+	Mon, 10 Jun 2019 05:45:30 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7430B3F557;
+	Mon, 10 Jun 2019 05:45:28 -0700 (PDT)
+Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-27-eric.auger@redhat.com>
+	<20190603163139.70fe8839@x1.home>
+	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
+	<20190605154553.0d00ad8d@jacob-builder>
+	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
+	<20190606132903.064f7ac4@jacob-builder>
+	<dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
+	<20190607104301.6b1bbd74@jacob-builder>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <e02b024f-6ebc-e8fa-c30c-5bf3f4b164d6@arm.com>
+Date: Mon, 10 Jun 2019 13:45:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <OSAPR01MB3089BCA7CF78D6E4D9C83E1BD8130@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+In-Reply-To: <20190607104301.6b1bbd74@jacob-builder>
+Content-Language: en-US
+Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	Vincent Stehle <Vincent.Stehle@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>
+	Robin Murphy <Robin.Murphy@arm.com>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,27 +83,133 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Yoshihiro,
+On 07/06/2019 18:43, Jacob Pan wrote:
+>>> So it seems we agree on the following:
+>>> - iommu_unregister_device_fault_handler() will never fail
+>>> - iommu driver cleans up all pending faults when handler is
+>>> unregistered
+>>> - assume device driver or guest not sending more page response
+>>> _after_ handler is unregistered.
+>>> - system will tolerate rare spurious response
+>>>
+>>> Sounds right?  
+>>
+>> Yes, I'll add that to the fault series
+> Hold on a second please, I think we need more clarifications. Ashok
+> pointed out to me that the spurious response can be harmful to other
+> devices when it comes to mdev, where PRQ group id is not per PASID,
+> device may reuse the group number and receiving spurious page response
+> can confuse the entire PF. 
 
-sorry for not taking care of this earlier, today is a public holiday
-here and thus I'm not working much over the long weekend.
+I don't understand how mdev differs from the non-mdev situation (but I
+also still don't fully get how mdev+PASID will be implemented). Is the
+following the case you're worried about?
 
-On Mon, Jun 10, 2019 at 11:13:07AM +0000, Yoshihiro Shimoda wrote:
-> I have another way to avoid the issue. But it doesn't seem that a good way though...
-> According to the commit that adding blk_queue_virt_boundary() [3],
-> this is needed for vhci_hcd as a workaround so that if we avoid to call it
-> on xhci-hcd driver, the issue disappeared. What do you think?
-> JFYI, I pasted a tentative patch in the end of email [4].
+  M#: mdev #
 
-Oh, I hadn't even look at why USB uses blk_queue_virt_boundary, and it
-seems like the usage is wrong, as it doesn't follow the same rules as
-all the others.  I think your patch goes in the right direction,
-but instead of comparing a hcd name it needs to be keyed of a flag
-set by the driver (I suspect there is one indicating native SG support,
-but I can't quickly find it), and we need an alternative solution
-for drivers that don't see like vhci.  I suspect just limiting the
-entire transfer size to something that works for a single packet
-for them would be fine.
+# Dev         Host        mdev drv       VFIO/QEMU        Guest
+====================================================================
+1                     <- reg(handler)
+2 PR1 G1 P1    ->         M1 PR1 G1        inject ->     M1 PR1 G1
+3                     <- unreg(handler)
+4       <- PS1 G1 P1 (F)      |
+5                        unreg(handler)
+6                     <- reg(handler)
+7 PR2 G1 P1    ->         M2 PR2 G1        inject ->     M2 PR2 G1
+8                                                     <- M1 PS1 G1
+9         accept ??    <- PS1 G1 P1
+10                                                    <- M2 PS2 G1
+11        accept       <- PS2 G1 P1
+
+
+Step 2 injects PR1 for mdev#1. Step 4 auto-responds to PR1. Between
+steps 5 and 6, we re-allocate PASID #1 for mdev #2. At step 7, we inject
+PR2 for mdev #2. Step 8 is the spurious Page Response for PR1.
+
+But I don't think step 9 is possible, because the mdev driver knows that
+mdev #1 isn't using PASID #1 anymore. If the configuration is valid at
+all (a page response channel still exists for mdev #1), then mdev #1 now
+has a different PASID, e.g. #2, and step 9 would be "<- PS1 G1 P2" which
+is rejected by iommu.c (no such pending page request). And step 11 will
+be accepted.
+
+If PASIDs are allocated through VCMD, then the situation seems similar:
+at step 2 you inject "M1 PR1 G1 P1" into the guest, and at step 8 the
+spurious response is "M1 PS1 G1 P1". If mdev #1 doesn't have PASID #1
+anymore, then the mdev driver can check that the PASID is invalid and
+can reject the page response.
+
+> Having spurious page response is also not
+> abiding the PCIe spec. exactly.
+
+We are following the PCI spec though, in that we don't send page
+responses for PRGIs that aren't in flight.
+
+> We have two options here:
+> 1. unregister handler will get -EBUSY if outstanding fault exists.
+> 	-PROs: block offending device unbind only, eventually timeout
+> 	will clear.
+> 	-CONs: flooded faults can prevent clearing
+> 2. unregister handle will block until all faults are clear in the host.
+>    Never fails unregistration
+
+Here the host completes the faults itself or wait for a response from
+the guest? I'm slightly confused by the word "blocking". I'd rather we
+don't introduce an uninterruptible sleep in the IOMMU core, since it's
+unlikely to ever finish if we rely on the guest to complete things.
+
+> 	-PROs: simple flow for VFIO, no need to worry about device
+> 	holding reference.
+> 	-CONs: spurious page response may come from
+> 	misbehaving/malicious guest if guest does unregister and
+> 	register back to back.
+
+> It seems the only way to prevent spurious page response is to introduce
+> a SW token or sequence# for each PRQ that needs a response. I still
+> think option 2 is good.
+> 
+> Consider the following time line:
+> decoding
+>  PR#: page request
+>  G#:  group #
+>  P#:  PASID
+>  S#:  sequence #
+>  A#:  address
+>  PS#: page response
+>  (F): Fail
+>  (S): Success
+> 
+> # Dev		Host		VFIO/QEMU	Guest
+> ===========================================================	
+> 1				<-reg(handler)
+> 2 PR1G1S1A1	->		inject	->	PR1G1S1A1
+> 3 PR2G1S2A2	->		inject	->	PR2G1S2A2
+> 4.				<-unreg(handler)
+> 5.	<-PR1G1S1A1(F)			| 
+> 6.	<-PR2G1S2A2(F)			V
+> 7.				<-unreg(handler)
+> 8.				<-reg(handler)
+> 9 PR3G1S3A1	->		inject	->	PR3G1S3A1
+> 10.						<-PS1G1S1A1
+> 11.		<reject S1>
+> 11.		<accept S3>			<-PS3G1S3A1
+> 12.PS3G1S3A1(S)
+> 
+> The spurious page response comes in at step 10 where the guest sends
+> response for the request in step 1. But since the sequence # is 1, host
+> IOMMU driver will reject it. At step 11, we accept page response for
+> the matching sequence # then respond SUCCESS to the device.
+> 
+> So would it be OK to add this sequence# to iommu_fault and page
+> response, or could event reuse the time stamp for that purpose.
+
+With a PV interface we can do what we want, but it can't work with an
+IOMMU emulation that only has 9 bits for the PRGI. I suppose we can add
+the sequence number but we'll have to handle the case where it isn't
+present in the page response (ie. accept it anyway).
+
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
