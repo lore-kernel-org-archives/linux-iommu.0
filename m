@@ -2,87 +2,58 @@ Return-Path: <SRS0=+ySY=UK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DABC4321A
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 17:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98817C4321A
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 18:10:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7AFE72086D
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 17:58:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UMYNlL1J"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7AFE72086D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7862420896
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 18:10:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7862420896
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F3AE0FBA;
-	Tue, 11 Jun 2019 17:58:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3DED110B0;
+	Tue, 11 Jun 2019 18:10:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B0429FAE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 46F7410AF
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 17:58:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
-	[209.85.214.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 68A5579
+	Tue, 11 Jun 2019 18:10:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 876EF6D6
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 17:58:49 +0000 (UTC)
-Received: by mail-pl1-f195.google.com with SMTP id g21so5459191plq.0
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 10:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references;
-	bh=7O7Ru3+l0O74nsHSw3FBczx/b+MRdjv8EnNhf40gnd0=;
-	b=UMYNlL1JStLpTHwOS2NiKeg51hIerdo4Zd3UgAz+ypA5DvTYyj8rTf1XCvbQAi4k2c
-	/lMNDLF4CoFMIRkzKdfalIJm1fKrPhLsHu183fANxaqoHyb8pzP47DOJl++biJWHIEU5
-	h3VWtbexf1/ldnGwAbF5UnMFXm4gPPZ8L+9MDMi1l7jJx5einN1e70s0xGEB+D8JLsfT
-	jysbQ5FsIgolc/Ke8vsEYlNZwtFn3VzzWg5IVntUHZZ6ATjjXPt6v4w5vzjixEyzSg3j
-	jQt5BC32PWnOjw1O/xXO4932ZBf23eNWWUMHCuQBalBUsOJ9pr3+reTbPcbBlYJOCp7W
-	rXjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references;
-	bh=7O7Ru3+l0O74nsHSw3FBczx/b+MRdjv8EnNhf40gnd0=;
-	b=q0glgLX+hpx7azL06R6Nwji2IOAQkbURWLGEGmx6RH2BhizhphfnLsMFlWQY+j5tcj
-	OLTnwtryNGL1viD0ecZzhFgm7lRsCtJMqgmBiRodVlTqCq1Fm2YIUT2982Y1kjr8zRmY
-	3H0cnYcYAIK+H2YYGM4k70PwQGCgnK0jt8nRz/Zumj26fv5cKxyvmX87ZEwVV3MAuhH9
-	eZJkG2Csr2JaGv+xULfaZ/GXFPGU3quMx02+EnFGj5OSxJ4c8pV8NQbCwKHvGsfar+ef
-	RsYxLMT+PIkYsqZHFjf9KSrYk6A4HJB5lXxdzOPV1R6Q+YOeBdG9171GIVcs0afBLsYb
-	iDaw==
-X-Gm-Message-State: APjAAAUWMbHxLPNH0v73Ff4VeHuwuhJ+jdL2GI60PviBIgx0X1DGlqPB
-	Oz5aaLespcd/g9FEm3V+MHU=
-X-Google-Smtp-Source: APXvYqyiQwe71OfRqbIpE0WEbsjZnhVJzlFBUwrbKVsHtWtIyzZS9x7MotQhzQpxZuCnEGiRlw4yyA==
-X-Received: by 2002:a17:902:106:: with SMTP id 6mr13857570plb.64.1560275928967;
-	Tue, 11 Jun 2019 10:58:48 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-	by smtp.gmail.com with ESMTPSA id
-	s24sm15991182pfh.133.2019.06.11.10.58.46
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Tue, 11 Jun 2019 10:58:46 -0700 (PDT)
-From: Florian Fainelli <f.fainelli@gmail.com>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] swiotlb: Return consistent SWIOTLB segments/nr_tbl
-Date: Tue, 11 Jun 2019 10:58:25 -0700
-Message-Id: <20190611175825.572-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190611175825.572-1-f.fainelli@gmail.com>
-References: <20190611175825.572-1-f.fainelli@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	"open list:NETWORKING \[GENERAL\]" <netdev@vger.kernel.org>,
-	Vivien Didelot <vivien.didelot@gmail.com>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	bcm-kernel-feedback-list@broadcom.com, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>
+	Tue, 11 Jun 2019 18:10:26 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+	by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	11 Jun 2019 11:10:25 -0700
+X-ExtLoop1: 1
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga007.jf.intel.com with ESMTP; 11 Jun 2019 11:10:25 -0700
+Date: Tue, 11 Jun 2019 11:13:33 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 1/8] iommu: Add I/O ASID allocator
+Message-ID: <20190611111333.425ce809@jacob-builder>
+In-Reply-To: <62d1f310-0cba-4d55-0f16-68bba3c64927@arm.com>
+References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
+	<20190610184714.6786-2-jean-philippe.brucker@arm.com>
+	<20190611103625.00001399@huawei.com>
+	<62d1f310-0cba-4d55-0f16-68bba3c64927@arm.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, will.deacon@arm.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	robh+dt@kernel.org, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -95,63 +66,141 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-With a specifically contrived memory layout where there is no physical
-memory available to the kernel below the 4GB boundary, we will fail to
-perform the initial swiotlb_init() call and set no_iotlb_memory to true.
+On Tue, 11 Jun 2019 15:35:22 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-There are drivers out there that call into swiotlb_nr_tbl() to determine
-whether they can use the SWIOTLB. With the right DMA_BIT_MASK() value
-for these drivers (say 64-bit), they won't ever need to hit
-swiotlb_tbl_map_single() so this can go unoticed and we would be
-possibly lying about those drivers.
+> On 11/06/2019 10:36, Jonathan Cameron wrote:
+> >> +/**
+> >> + * ioasid_alloc - Allocate an IOASID
+> >> + * @set: the IOASID set
+> >> + * @min: the minimum ID (inclusive)
+> >> + * @max: the maximum ID (inclusive)
+> >> + * @private: data private to the caller
+> >> + *
+> >> + * Allocate an ID between @min and @max. The @private pointer is
+> >> stored
+> >> + * internally and can be retrieved with ioasid_find().
+> >> + *
+> >> + * Return: the allocated ID on success, or %INVALID_IOASID on
+> >> failure.
+> >> + */
+> >> +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+> >> ioasid_t max,
+> >> +		      void *private)
+> >> +{
+> >> +	u32 id = INVALID_IOASID;
+> >> +	struct ioasid_data *data;
+> >> +
+> >> +	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> >> +	if (!data)
+> >> +		return INVALID_IOASID;
+> >> +
+> >> +	data->set = set;
+> >> +	data->private = private;
+> >> +
+> >> +	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max),
+> >> GFP_KERNEL)) {
+> >> +		pr_err("Failed to alloc ioasid from %d to %d\n",
+> >> min, max);
+> >> +		goto exit_free;
+> >> +	}
+> >> +	data->id = id;
+> >> +
+> >> +exit_free:  
+> > 
+> > This error flow is perhaps a little more confusing than it needs to
+> > be?
+> > 
+> > My assumption (perhaps wrong) is that we only have an id ==
+> > INVALID_IOASID if the xa_alloc fails, and that we will always have
+> > such an id value if it does (I'm not totally sure this second
+> > element is true in __xa_alloc).
+> > 
+> > If I'm missing something perhaps a comment on how else we'd get
+> > here.  
+> 
+> Yes we can simplify this:
+> 
+> 		return id;
+> 	exit_free:
+> 		kfree(data)
+> 		return INVALID_IOASID;
+> 	}
+> 
+> The XA API doesn't say that @id passed to xa_alloc() won't be modified
+> in case of error. It's true in the current implementation, but won't
+> necessarily stay that way. On the other hand I think it's safe to
+> expect @id to always be set when xa_alloc() succeeds.
+> 
+the flow with custom allocator is slightly different, but you are right
+I can simplify it as you suggested.
+Jonathan, I will add you to the cc list in next version. If you could
+also review the current version, it would be greatly appreciated.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- kernel/dma/swiotlb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+https://lore.kernel.org/lkml/1560087862-57608-13-git-send-email-jacob.jun.pan@linux.intel.com/
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b2b5c5df273c..e906ef2e6315 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -129,15 +129,17 @@ setup_io_tlb_npages(char *str)
- }
- early_param("swiotlb", setup_io_tlb_npages);
- 
-+static bool no_iotlb_memory;
-+
- unsigned long swiotlb_nr_tbl(void)
- {
--	return io_tlb_nslabs;
-+	return unlikely(no_iotlb_memory) ? 0 : io_tlb_nslabs;
- }
- EXPORT_SYMBOL_GPL(swiotlb_nr_tbl);
- 
- unsigned int swiotlb_max_segment(void)
- {
--	return max_segment;
-+	return unlikely(no_iotlb_memory) ? 0 : max_segment;
- }
- EXPORT_SYMBOL_GPL(swiotlb_max_segment);
- 
-@@ -160,8 +162,6 @@ unsigned long swiotlb_size_or_default(void)
- 	return size ? size : (IO_TLB_DEFAULT_SIZE);
- }
- 
--static bool no_iotlb_memory;
--
- void swiotlb_print_info(void)
- {
- 	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
--- 
-2.17.1
+> >> +/**
+> >> + * ioasid_find - Find IOASID data
+> >> + * @set: the IOASID set
+> >> + * @ioasid: the IOASID to find
+> >> + * @getter: function to call on the found object
+> >> + *
+> >> + * The optional getter function allows to take a reference to the
+> >> found object
+> >> + * under the rcu lock. The function can also check if the object
+> >> is still valid:
+> >> + * if @getter returns false, then the object is invalid and NULL
+> >> is returned.
+> >> + *
+> >> + * If the IOASID has been allocated for this set, return the
+> >> private pointer
+> >> + * passed to ioasid_alloc. Private data can be NULL if not set.
+> >> Return an error
+> >> + * if the IOASID is not found or does not belong to the set.  
+> > 
+> > Perhaps should make it clear that @set can be null.  
+> 
+> Indeed. But I'm not sure allowing @set to be NULL is such a good idea,
+> because the data type associated to an ioasid depends on its set. For
+> example SVA will put an mm_struct in there, and auxiliary domains use
+> some structure private to the IOMMU domain.
+> 
+I am not sure we need to count on @set to decipher data type. Whoever
+does the allocation and owns the IOASID should knows its own data type.
+My thought was that @set is only used to group IDs, permission check
+etc.
 
+> Jacob, could me make @set mandatory, or do you see a use for a global
+> search? If @set is NULL, then callers can check if the return pointer
+> is NULL, but will run into trouble if they try to dereference it.
+> 
+A global search use case can be for PRQ. IOMMU driver gets a IOASID
+(first interrupt then retrieve from a queue), it has no idea which
+@set it belongs to. But the data types are the same for all IOASIDs
+used by the IOMMU.
+If @set is NULL, the search does not check set match. It is separate
+from return pointer. Sorry i am not seeing the problems here.
+
+> >   
+> >> + */
+> >> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> >> +		  bool (*getter)(void *))
+> >> +{
+> >> +	void *priv = NULL;  
+> > 
+> > Set in all paths, so does need to be set here.  
+> 
+> Right
+> 
+> Thanks,
+> Jean
+
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
