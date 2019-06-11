@@ -3,55 +3,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C5FEC4321A
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 14:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC89DC4321A
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 14:51:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1683F2089E
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 14:38:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1683F2089E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id BCFC32054F
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 14:51:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BCFC32054F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=rowland.harvard.edu
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F0ECDEC9;
-	Tue, 11 Jun 2019 14:38:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 88085F00;
+	Tue, 11 Jun 2019 14:51:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0D55FD07
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 198DFEF4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 14:38:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A9E747C3
+	Tue, 11 Jun 2019 14:51:16 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from iolanthe.rowland.org (iolanthe.rowland.org [192.131.102.54])
+	by smtp1.linuxfoundation.org (Postfix) with SMTP id 5E61A174
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 14:38:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 35FBD337;
-	Tue, 11 Jun 2019 07:38:09 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0C1583F557;
-	Tue, 11 Jun 2019 07:38:07 -0700 (PDT)
-Subject: Re: [PATCH 1/8] iommu: Add I/O ASID allocator
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
-	<20190610184714.6786-2-jean-philippe.brucker@arm.com>
-	<20190611052626.20bed59a@jacob-builder>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <95292b47-4cf4-5fd9-b096-1cb016e2264f@arm.com>
-Date: Tue, 11 Jun 2019 15:37:42 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Tue, 11 Jun 2019 14:51:15 +0000 (UTC)
+Received: (qmail 2357 invoked by uid 2102); 11 Jun 2019 10:51:14 -0400
+Received: from localhost (sendmail-bs@127.0.0.1)
+	by localhost with SMTP; 11 Jun 2019 10:51:14 -0400
+Date: Tue, 11 Jun 2019 10:51:14 -0400 (EDT)
+From: Alan Stern <stern@rowland.harvard.edu>
+X-X-Sender: stern@iolanthe.rowland.org
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: How to resolve an issue in swiotlb environment?
+In-Reply-To: <20190611064158.GA20601@lst.de>
+Message-ID: <Pine.LNX.4.44L0.1906110956510.1535-100000@iolanthe.rowland.org>
 MIME-Version: 1.0
-In-Reply-To: <20190611052626.20bed59a@jacob-builder>
-Content-Language: en-US
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, will.deacon@arm.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	robh+dt@kernel.org, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,67 +61,92 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 11/06/2019 13:26, Jacob Pan wrote:
->> +/**
->> + * ioasid_set_data - Set private data for an allocated ioasid
->> + * @ioasid: the ID to set data
->> + * @data:   the private data
->> + *
->> + * For IOASID that is already allocated, private data can be set
->> + * via this API. Future lookup can be done via ioasid_find.
->> + */
->> +int ioasid_set_data(ioasid_t ioasid, void *data)
->> +{
->> +	struct ioasid_data *ioasid_data;
->> +	int ret = 0;
->> +
->> +	xa_lock(&ioasid_xa);
-> Just wondering if this is necessary, since xa_load is under
-> rcu_read_lock and we are not changing anything internal to xa. For
-> custom allocator I still need to have the mutex against allocator
-> removal.
+On Tue, 11 Jun 2019, Christoph Hellwig wrote:
 
-I think we do need this because of a possible race with ioasid_free():
+> Hi Alan,
+> 
+> thanks for the explanation.  It seems like what usb wants is to:
+> 
+>  - set sg_tablesize to 1 for devices that can't handle scatterlist at all
 
-         CPU1                      CPU2
-  ioasid_free(ioasid)     ioasid_set_data(ioasid, foo)
-                            data = xa_load(...)
-    xa_erase(...)
-    kfree_rcu(data)           (no RCU lock held)
-    ...free(data)
-                            data->private = foo;
+Hmmm.  usb-storage (and possible other drivers too) currently handles
+such controllers by setting up an SG transfer as a series of separate
+URBs, one for each scatterlist entry.  But this is not the same thing,
+for two reasons:
 
-The issue is theoretical at the moment because no users do this, but I'd
-be more comfortable taking the xa_lock, which prevents a concurrent
-xa_erase()+free(). (I commented on your v3 but you might have missed it)
+	It has less I/O overhead than setting sg_tablesize to 1 because 
+	it sets up the whole transfer as a single SCSI command, which 
+	requires much less time and traffic on the USB bus than sending 
+	multiple commands.
 
->> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
->> +	if (ioasid_data)
->> +		rcu_assign_pointer(ioasid_data->private, data);
-> it is good to publish and have barrier here. But I just wonder even for
-> weakly ordered machine, this pointer update is quite far away from its
-> data update.
+	It has that requirement about each scatterlist element except
+	the last being a multiple of the maximum packet size in length.
+	(This is because the USB protocol says that a transfer ends
+	whenever a less-than-maximum-size packet is encountered.)
 
-I don't know, it could be right before calling ioasid_set_data():
+We would like to avoid the extra I/O overhead for host controllers that
+can't handle SG.  In fact, switching to sg_tablesize = 1 would probably
+be considered a regression.
 
-	mydata = kzalloc(sizeof(*mydata));
-	mydata->ops = &my_ops;			(1)
-	ioasid_set_data(ioasid, mydata);
-		... /* no write barrier here */
-		data->private = mydata;		(2)
+>  - set the virt boundary as-is for devices supporting "basic" scatterlist,
+>    although that still assumes they can rejiggle them because for example
+>    you could still get a smaller than expected first segment ala (assuming
+>    a 1024 byte packet size and thus 1023 virt_boundary_mask):
+> 
+>         | 0 .. 511 | 512 .. 1023 | 1024 .. 1535 |
+> 
+>    as the virt_bondary does not guarantee that the first segment is
+>    the same size as all the mid segments.
 
-And then another thread calls ioasid_find():
+But that is exactly the problem we need to solve.
 
-	mydata = ioasid_find(ioasid);
-	if (mydata)
-		mydata->ops->do_something();
+The issue which prompted the commit this thread is about arose in a
+situation where the block layer set up a scatterlist containing buffer
+sizes something like:
 
-On a weakly ordered machine, this thread could observe the pointer
-assignment (2) before the ops assignment (1), and dereference NULL.
-Using rcu_assign_pointer() should fix that
+	4096 4096 1536 1024
 
-Thanks,
-Jean
+and the maximum packet size was 1024.  The situation was a little 
+unusual, because it involved vhci-hcd (a virtual HCD).  This doesn't 
+matter much in normal practice because:
+
+	Block devices normally have a block size of 512 bytes or more.
+	Smaller values are very uncommon.  So scatterlist element sizes
+	are always divisible by 512.
+
+	xHCI is the only USB host controller type with a maximum packet 
+	size larger than 512, and xHCI hardware can do full 
+	scatter-gather so it doesn't care what the buffer sizes are.
+
+So another approach would be to fix vhci-hcd and then trust that the
+problem won't arise again, for the reasons above.  We would be okay so
+long as nobody tried to use a USB-SCSI device with a block size of 256
+bytes or less.
+
+>  - do not set any limit on xhci
+> 
+> But that just goes back to the original problem, and that is that with
+> swiotlb we are limited in the total dma mapping size, and recent block
+> layer changes in the way we handle the virt_boundary mean we now build
+> much larger requests by default.  For SCSI ULDs to take that into
+> account I need to call dma_max_mapping_size() and use that as the
+> upper bound for the request size.  My plan is to do that in scsi_lib.c,
+> but for that we need to expose the actual struct device that the dma
+> mapping is perfomed on to the scsi layer.  If that device is different
+> from the sysfs hierchary struct device, which it is for usb the ULDD
+> needs to scsi_add_host_with_dma and pass the dma device as well.  How
+> do I get at the dma device (aka the HCDs pci_dev or similar) from
+> usb-storage/uas?
+
+From usb_stor_probe2(): us->pusb_dev->bus->sysdev.
+From uas_probe(): udev->bus->sysdev.
+
+The ->sysdev field points to the device used for DMA mapping.  It is
+often the same as ->controller, but sometimes it is
+->controller->parent because of the peculiarities of some platforms.
+
+Alan Stern
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
