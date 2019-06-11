@@ -2,78 +2,63 @@ Return-Path: <SRS0=+ySY=UK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B29C4321A
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 04:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A89C4321A
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 04:56:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB0DD20679
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 04:38:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB0DD20679
+	by mail.kernel.org (Postfix) with ESMTPS id 679752086D
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 04:56:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 679752086D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 862EE265;
-	Tue, 11 Jun 2019 04:38:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 31CFEB7D;
+	Tue, 11 Jun 2019 04:56:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2E85F2C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A6188B5F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 04:38:15 +0000 (UTC)
+	Tue, 11 Jun 2019 04:56:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1587863D
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4200E63D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 04:38:13 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
+	Tue, 11 Jun 2019 04:56:17 +0000 (UTC)
+X-Amp-Result: UNSCANNABLE
 X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	10 Jun 2019 21:38:13 -0700
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	10 Jun 2019 21:56:16 -0700
 X-ExtLoop1: 1
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-	by fmsmga006.fm.intel.com with ESMTP; 10 Jun 2019 21:38:13 -0700
-Received: from orsmsx162.amr.corp.intel.com (10.22.240.85) by
-	ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server
-	(TLS) id 14.3.408.0; Mon, 10 Jun 2019 21:38:12 -0700
-Received: from orsmsx114.amr.corp.intel.com ([169.254.8.154]) by
-	ORSMSX162.amr.corp.intel.com ([169.254.3.40]) with mapi id
-	14.03.0415.000; Mon, 10 Jun 2019 21:38:12 -0700
-From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
-To: "Raj, Ashok" <ashok.raj@intel.com>, "iommu@lists.linux-foundation.org"
-	<iommu@lists.linux-foundation.org>
-Subject: RE: Device specific pass through in host systems - discuss user
+Received: from araj-mobl1.jf.intel.com ([10.254.89.212])
+	by fmsmga004.fm.intel.com with ESMTP; 10 Jun 2019 21:56:15 -0700
+Date: Mon, 10 Jun 2019 21:56:14 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
+Subject: Re: Device specific pass through in host systems - discuss user
 	interface
-Thread-Topic: Device specific pass through in host systems - discuss user
-	interface
-Thread-Index: AdUczaahXstQhucvR3yNMqqPH3ycoQB31J8AACg+/sAAID+CAAAPfpCQ
-Date: Tue, 11 Jun 2019 04:38:11 +0000
-Message-ID: <FFF73D592F13FD46B8700F0A279B802F48DE19EC@ORSMSX114.amr.corp.intel.com>
+Message-ID: <20190611045614.GB6469@araj-mobl1.jf.intel.com>
 References: <FFF73D592F13FD46B8700F0A279B802F48DA796E@ORSMSX114.amr.corp.intel.com>
 	<b7a71b22-aa3b-5ac3-7285-5231f84ee979@intel.com>
 	<FFF73D592F13FD46B8700F0A279B802F48DD2A02@ORSMSX114.amr.corp.intel.com>
 	<20190610135617.GA27166@araj-mobl1.jf.intel.com>
-In-Reply-To: <20190610135617.GA27166@araj-mobl1.jf.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOTgxMWUyZjYtMmEyNS00MDc4LThiNTUtYTIxMzQ0ZGUyMWM3IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiU2dNdnk5T0FteHVlR092Y3pxdHNhMlVLWGpxc2trUGJMKytUQ0E3OUZ0ZmNJbVwvOFwvbDdjaENhZVwveTljVFRVYiJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
+	<FFF73D592F13FD46B8700F0A279B802F48DE19EC@ORSMSX114.amr.corp.intel.com>
 MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <FFF73D592F13FD46B8700F0A279B802F48DE19EC@ORSMSX114.amr.corp.intel.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
 Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>, "Tian,
 	Kevin" <kevin.tian@intel.com>, "jroedel@suse.de" <jroedel@suse.de>, "Lu,
 	Baolu" <baolu.lu@intel.com>, Will Deacon <will.deacon@arm.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
 	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"hch@lst.de" <hch@lst.de>, Ashok Raj <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,34 +76,37 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi All,
-
-+ Sohil and Rob Clark (as there are dropped from CC'list)
-
-> > > Most iommu vendor drivers have switched from per-device to per-group
-> > > domain (a.k.a. default domain). So per-group pass-through mode makes
-> more sense?
+On Mon, Jun 10, 2019 at 09:38:11PM -0700, Sai Praneeth Prakhya wrote:
+> Hi All,
+> 
+> + Sohil and Rob Clark (as there are dropped from CC'list)
+> 
+> > > > Most iommu vendor drivers have switched from per-device to per-group
+> > > > domain (a.k.a. default domain). So per-group pass-through mode makes
+> > more sense?
+> > > >
+> > > > By the way, can we extend this to "per-group default domain type",
+> > > > instead of only "per-group pass-through mode"? Currently we have
+> > > > system level default domain type, if we have finer granularity of
+> > > > default domain type, both iommu drivers and end users will benefit from it.
 > > >
-> > > By the way, can we extend this to "per-group default domain type",
-> > > instead of only "per-group pass-through mode"? Currently we have
-> > > system level default domain type, if we have finer granularity of
-> > > default domain type, both iommu drivers and end users will benefit from it.
-> >
-> > Sure! Makes sense.. per-group default domain type sounds good.
+> > > Sure! Makes sense.. per-group default domain type sounds good.
+> 
+> I am planning to implement an RFC (supporting only runtime case for now) which works as below
+> 
+> 1. User unbinds the driver by writing to sysfs
+> 2. User puts a group in pass through mode by writing "1" to
+> /sys/kernel/iommu_groups/<group_id>/pt
 
-I am planning to implement an RFC (supporting only runtime case for now) which works as below
+might be better to read current value of default domain for that group.. 
+/sys/kernel/iommu_groups/<group_id>/default_domain
 
-1. User unbinds the driver by writing to sysfs
-2. User puts a group in pass through mode by writing "1" to
-/sys/kernel/iommu_groups/<group_id>/pt
-3. User re-binds the driver by writing to sysfs
+reading the above value shows current setting.
+provide a differnet file next_def_domain, and you can echo "pt" or "dma_domain"
+to switch to pass-through, or normal dma isolation mode.
 
-As suggested by Lu, Baolu will look into implementing this by using "per-group default domain type"
-
-If anyone has suggestions/comments/concerns, please reply.
-
-Regards,
-Sai
+For devices that automatically set to pass through today like graphics, or isoch audio
+you can show "pt" as default_domain.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
