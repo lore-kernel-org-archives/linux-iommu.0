@@ -2,72 +2,53 @@ Return-Path: <SRS0=+ySY=UK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08422C4321A
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 13:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E57D5C4321A
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 13:46:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C959420673
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 13:15:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C959420673
+	by mail.kernel.org (Postfix) with ESMTPS id B5B3720896
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 13:46:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5B3720896
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8C53CECB;
-	Tue, 11 Jun 2019 13:15:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 87B28D4B;
+	Tue, 11 Jun 2019 13:46:12 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1BCBEEC1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 09BB9D3E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 13:15:02 +0000 (UTC)
+	Tue, 11 Jun 2019 13:46:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 846DD7C3
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 489716D6
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 13:15:01 +0000 (UTC)
+	Tue, 11 Jun 2019 13:46:10 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1289D346;
-	Tue, 11 Jun 2019 06:15:01 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 31F8E3F557;
-	Tue, 11 Jun 2019 06:14:59 -0700 (PDT)
-Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20190526161004.25232-1-eric.auger@redhat.com>
-	<20190526161004.25232-27-eric.auger@redhat.com>
-	<20190603163139.70fe8839@x1.home>
-	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
-	<20190605154553.0d00ad8d@jacob-builder>
-	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
-	<20190606132903.064f7ac4@jacob-builder>
-	<dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
-	<20190607104301.6b1bbd74@jacob-builder>
-	<e02b024f-6ebc-e8fa-c30c-5bf3f4b164d6@arm.com>
-	<20190610143134.7bff96e9@jacob-builder>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <905f130b-02dc-6971-8d5b-ce87d9bc96a4@arm.com>
-Date: Tue, 11 Jun 2019 14:14:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190610143134.7bff96e9@jacob-builder>
-Content-Language: en-US
-Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	Vincent Stehle <Vincent.Stehle@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	"ashok.raj@intel.com" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Robin Murphy <Robin.Murphy@arm.com>,
-	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B3E44344;
+	Tue, 11 Jun 2019 06:46:09 -0700 (PDT)
+Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
+	[10.121.207.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 289C03F557; 
+	Tue, 11 Jun 2019 06:46:08 -0700 (PDT)
+From: Will Deacon <will.deacon@arm.com>
+To: iommu@lists.linux-foundation.org
+Subject: [RFC CFT 0/6] Try to reduce lock contention on the SMMUv3 command
+	queue
+Date: Tue, 11 Jun 2019 14:45:57 +0100
+Message-Id: <20190611134603.4253-1-will.deacon@arm.com>
+X-Mailer: git-send-email 2.11.0
+Cc: Vijay Kilary <vkilari@codeaurora.org>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
+	Will Deacon <will.deacon@arm.com>,
+	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,99 +61,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 10/06/2019 22:31, Jacob Pan wrote:
-> On Mon, 10 Jun 2019 13:45:02 +0100
-> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-> 
->> On 07/06/2019 18:43, Jacob Pan wrote:
->>>>> So it seems we agree on the following:
->>>>> - iommu_unregister_device_fault_handler() will never fail
->>>>> - iommu driver cleans up all pending faults when handler is
->>>>> unregistered
->>>>> - assume device driver or guest not sending more page response
->>>>> _after_ handler is unregistered.
->>>>> - system will tolerate rare spurious response
->>>>>
->>>>> Sounds right?    
->>>>
->>>> Yes, I'll add that to the fault series  
->>> Hold on a second please, I think we need more clarifications. Ashok
->>> pointed out to me that the spurious response can be harmful to other
->>> devices when it comes to mdev, where PRQ group id is not per PASID,
->>> device may reuse the group number and receiving spurious page
->>> response can confuse the entire PF.   
->>
->> I don't understand how mdev differs from the non-mdev situation (but I
->> also still don't fully get how mdev+PASID will be implemented). Is the
->> following the case you're worried about?
->>
->>   M#: mdev #
->>
->> # Dev         Host        mdev drv       VFIO/QEMU        Guest
->> ====================================================================
->> 1                     <- reg(handler)
->> 2 PR1 G1 P1    ->         M1 PR1 G1        inject ->     M1 PR1 G1
->> 3                     <- unreg(handler)
->> 4       <- PS1 G1 P1 (F)      |
->> 5                        unreg(handler)
->> 6                     <- reg(handler)
->> 7 PR2 G1 P1    ->         M2 PR2 G1        inject ->     M2 PR2 G1
->> 8                                                     <- M1 PS1 G1
->> 9         accept ??    <- PS1 G1 P1
->> 10                                                    <- M2 PS2 G1
->> 11        accept       <- PS2 G1 P1
->>
-> Not really. I am not worried about PASID reuse or unbind. Just within
-> the same PASID bind lifetime of a single mdev, back to back
-> register/unregister fault handler.
-> After Step 4, device will think G1 is done. Device could reuse G1 for
-> the next PR, if we accept PS1 in step 9, device will terminate G1 before
-> the real G1 PS arrives in Step 11. The real G1 PS might have a
-> different response code. Then we just drop the PS in Step 11?
+Hi all,
 
-Yes, I think we do. Two possibilities:
+This patch series is an attempt to reduce lock contention when inserting
+commands into the Arm SMMUv3 command queue. Unfortunately, our initial
+benchmarking has shown mixed results across the board and the changes in
+the last patch don't appear to justify their complexity. Based on that,
+I only plan to queue the first patch for the time being.
 
-* G1 is reused at step 7 for the same PASID context, which means that it
-is for the same mdev. The problem is then identical to the non-mdev
-case, new page faults and old page response may cross:
+Anyway, before I park this series, I thought it was probably worth
+sharing it in case it's useful to somebody. If you have a system where
+you believe I/O performance to be limited by the SMMUv3 command queue
+then please try these patches and let me know what happens, even if it's
+just more bad news.
 
-# Dev         Host        mdev drv       VFIO/QEMU        Guest
-====================================================================
-7 PR2 G1 P1  --.
-8               \                         .------------- M1 PS1 G1
-9                '----->  PR2 G1 P1  ->  /   inject  --> M1 PR2 G1
-10           accept <---  PS1 G1 P1  <--'
-11           reject <---  PS2 G1 P1  <------------------ M1 PS2 G1
+Patches based on 5.2-rc3. I've also pushed them out to my iommu/devel
+branch for the moment:
 
-And the incorrect page response is returned to the guest. However it
-affects a single mdev/guest context, it doesn't affect other mdevs.
-
-* Or G1 is reused at step 7 for a different PASID. At step 10 the fault
-handler rejects the page response because the PASID is different, and
-step 11 is accepted.
-
-
->>> Having spurious page response is also not
->>> abiding the PCIe spec. exactly.  
->>
->> We are following the PCI spec though, in that we don't send page
->> responses for PRGIs that aren't in flight.
->>
-> You are right, the worst case of the spurious PS is to terminate the
-> group prematurely. Need to know the scope of the HW damage in case of mdev
-> where group IDs can be shared among mdevs belong to the same PF.
-
-But from the IOMMU fault API point of view, the full page request is
-identified by both PRGI and PASID. Given that each mdev has its own set
-of PASIDs, it should be easy to isolate page responses per mdev.
+  https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/devel
 
 Thanks,
-Jean
+
+Will
+
+--->8
+
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Jayachandran Chandrasekharan Nair <jnair@marvell.com>
+Cc: Jan Glauber <jglauber@marvell.com>
+Cc: Jon Masters <jcm@redhat.com>
+Cc: Eric Auger <eric.auger@redhat.com>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Vijay Kilary <vkilari@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+
+Will Deacon (6):
+  iommu/arm-smmu-v3: Increase maximum size of queues
+  iommu/arm-smmu-v3: Separate s/w and h/w views of prod and cons indexes
+  iommu/arm-smmu-v3: Drop unused 'q' argument from Q_OVF macro
+  iommu/arm-smmu-v3: Move low-level queue fields out of arm_smmu_queue
+  iommu/arm-smmu-v3: Operate directly on low-level queue where possible
+  iommu/arm-smmu-v3: Reduce contention during command-queue insertion
+
+ drivers/iommu/arm-smmu-v3.c | 725 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 534 insertions(+), 191 deletions(-)
+
+-- 
+2.11.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
