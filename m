@@ -2,100 +2,56 @@ Return-Path: <SRS0=+ySY=UK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2357DC43218
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 06:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F26C4321B
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 09:36:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC79E20896
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 06:49:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="m5e5K5VF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC79E20896
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id DCD16208E3
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 09:36:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCD16208E3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BF4D7AEF;
-	Tue, 11 Jun 2019 06:49:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 89921D9E;
+	Tue, 11 Jun 2019 09:36:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BD09D2C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AD971D89
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 06:49:18 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-TY1-obe.outbound.protection.outlook.com
-	(mail-eopbgr1400107.outbound.protection.outlook.com [40.107.140.107])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E604D79
+	Tue, 11 Jun 2019 09:36:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8113D79
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 06:49:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=3ZTXEMME8NnhGCouO7tCVCDEdyMs+irQ+11VbPTgvVo=;
-	b=m5e5K5VFR0JNVHhH71YFwbP6Ur44rvXIj/MOd3rPg9DMyP+AprsKlc55x7Ue6ZmUmCW3kqdW8OP4P7FD7GE1fMzom4lg3rwGa/CS4Sr4ViagCJr5BLqb8iLUWdRgWLjxthUexiqoah8IfE/zhgSBHEy53ksYWu5opvQMQ1CuKjg=
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com (52.134.247.150) by
-	OSAPR01MB3666.jpnprd01.prod.outlook.com (20.178.128.11) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1965.12; Tue, 11 Jun 2019 06:49:12 +0000
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85]) by
-	OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85%7]) with mapi id 15.20.1965.017;
-	Tue, 11 Jun 2019 06:49:12 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>
-Subject: RE: How to resolve an issue in swiotlb environment?
-Thread-Topic: How to resolve an issue in swiotlb environment?
-Thread-Index: AdUZ1Qlk800+Qz0uSuO63mIBeXkktQDUe+5AAJUL5SAAA1kYAAANEESAABf845A=
-Date: Tue, 11 Jun 2019 06:49:12 +0000
-Message-ID: <OSAPR01MB30899F6EE0ABD554B4A21E7FD8ED0@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <20190610123222.GA20985@lst.de>
-	<Pine.LNX.4.44L0.1906101423200.1560-100000@iolanthe.rowland.org>
-In-Reply-To: <Pine.LNX.4.44L0.1906101423200.1560-100000@iolanthe.rowland.org>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 653fa7d6-1148-484d-afa6-08d6ee38e9e9
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:OSAPR01MB3666; 
-x-ms-traffictypediagnostic: OSAPR01MB3666:
-x-microsoft-antispam-prvs: <OSAPR01MB3666C9700F08B92CD08E1272D8ED0@OSAPR01MB3666.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 006546F32A
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(366004)(346002)(376002)(396003)(39860400002)(136003)(189003)(199004)(486006)(73956011)(66066001)(66946007)(33656002)(3846002)(110136005)(6246003)(25786009)(53936002)(4326008)(66446008)(76116006)(68736007)(86362001)(6116002)(305945005)(64756008)(316002)(54906003)(66556008)(2171002)(66476007)(14444005)(256004)(7696005)(8936002)(5660300002)(14454004)(7736002)(229853002)(11346002)(76176011)(6436002)(99286004)(2906002)(55016002)(52536014)(9686003)(81166006)(71200400001)(102836004)(476003)(71190400001)(478600001)(8676002)(26005)(6506007)(446003)(186003)(81156014)(74316002);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:OSAPR01MB3666;
-	H:OSAPR01MB3089.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: cLMle0Pje1Fic3R//UYSRBgca4Dc2cCwPkLi7lZHaR+iX1jz3oJXvSifQm/XlydGsup7aBWjLB8a65ylkYiR4KxQ97KaI/wfzPZBJ8PejbKLnjZomMEiCPOuS48vkU6rof4EHVL2eZ9H899G8o8JladlMlBjEqtpb0a5rx7ezcnvJ6q39KexTmDuHZYOIgm8b2x2pVCBrIW6fOeAZ4MZU/FsDXWRGSM/elOn5r73g48PycCQZ/jIsvATZ8vGJZDIMTImiGiW4BVZ39GLsd3QoKOWVS4whuuLcPD2+WGbQoJXP1zu++/GR9/XYfXN4dWGdaC4XVT+rw/5h48HX/vXg9kLx2ZBsdnai4RUAx/w/XjrnA/CiJ8GCDgwPV+l6z8402sr+BqKF50Q/Tx7COVjIXeFO2OHSrFq8qAg77A9yhA=
+	Tue, 11 Jun 2019 09:36:43 +0000 (UTC)
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 7E1052B1E12D93060B1E;
+	Tue, 11 Jun 2019 17:36:40 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS412-HUB.china.huawei.com
+	(10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Tue, 11 Jun 2019
+	17:36:35 +0800
+Date: Tue, 11 Jun 2019 10:36:25 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 1/8] iommu: Add I/O ASID allocator
+Message-ID: <20190611103625.00001399@huawei.com>
+In-Reply-To: <20190610184714.6786-2-jean-philippe.brucker@arm.com>
+References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
+	<20190610184714.6786-2-jean-philippe.brucker@arm.com>
+Organization: Huawei
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 653fa7d6-1148-484d-afa6-08d6ee38e9e9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jun 2019 06:49:12.8499 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB3666
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+X-Originating-IP: [10.202.226.61]
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, will.deacon@arm.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	robh+dt@kernel.org, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -113,87 +69,162 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph, Alan,
+On Mon, 10 Jun 2019 19:47:07 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-> From: Alan Stern, Sent: Tuesday, June 11, 2019 3:46 AM
+> Some devices might support multiple DMA address spaces, in particular
+> those that have the PCI PASID feature. PASID (Process Address Space ID)
+> allows to share process address spaces with devices (SVA), partition a
+> device into VM-assignable entities (VFIO mdev) or simply provide
+> multiple DMA address space to kernel drivers. Add a global PASID
+> allocator usable by different drivers at the same time. Name it I/O ASID
+> to avoid confusion with ASIDs allocated by arch code, which are usually
+> a separate ID space.
 > 
-> On Mon, 10 Jun 2019, Christoph Hellwig wrote:
+> The IOASID space is global. Each device can have its own PASID space,
+> but by convention the IOMMU ended up having a global PASID space, so
+> that with SVA, each mm_struct is associated to a single PASID.
 > 
-> > Hi Yoshihiro,
-> >
-> > sorry for not taking care of this earlier, today is a public holiday
-> > here and thus I'm not working much over the long weekend.
-
-To Christoph:
-
-No worries.
-
-> > On Mon, Jun 10, 2019 at 11:13:07AM +0000, Yoshihiro Shimoda wrote:
-> > > I have another way to avoid the issue. But it doesn't seem that a good way though...
-> > > According to the commit that adding blk_queue_virt_boundary() [3],
-> > > this is needed for vhci_hcd as a workaround so that if we avoid to call it
-> > > on xhci-hcd driver, the issue disappeared. What do you think?
-> > > JFYI, I pasted a tentative patch in the end of email [4].
-> >
-> > Oh, I hadn't even look at why USB uses blk_queue_virt_boundary, and it
-> > seems like the usage is wrong, as it doesn't follow the same rules as
-> > all the others.  I think your patch goes in the right direction,
-> > but instead of comparing a hcd name it needs to be keyed of a flag
-> > set by the driver (I suspect there is one indicating native SG support,
-> > but I can't quickly find it), and we need an alternative solution
-> > for drivers that don't see like vhci.  I suspect just limiting the
-> > entire transfer size to something that works for a single packet
-> > for them would be fine.
+> The allocator is primarily used by IOMMU subsystem but in rare occasions
+> drivers would like to allocate PASIDs for devices that aren't managed by
+> an IOMMU, using the same ID space as IOMMU.
 > 
-> Christoph:
-> 
-> In most of the different kinds of USB host controllers, the hardware is
-> not capable of assembling a packet out of multiple buffers at arbitrary
-> addresses.  As a matter of fact, xHCI is the only kind that _can_ do
-> this.
-> 
-> In some cases, the hardware can assemble packets provided each buffer
-> other than the last ends at a page boundary and each buffer other than
-> the first starts at a page boundary (Intel would say the buffers are
-> "virtually contiguous"), but this is a rather complex rule and we don't
-> want to rely on it.  Plus, in other cases the hardware _can't_ do this.
-> 
-> Instead, we want the SG buffers to be set up so that each one (except
-> the last) is an exact multiple of the maximum packet size.  That way,
-> each packet can be assembled from the contents of a single buffer and
-> there's no problem.
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Hi,
 
-There is out of this topic though, if we prepare such an exact multiple
-of the maximum packet size (1024, 512 or 64), is it possible to cause
-trouble on IOMMU environment? IIUC, dma_map_sg() maps SG buffers as
-a single segment and then the segment buffer is not contiguous.
+A few trivial comments inline.  May be more because I'm not that familiar
+with xa_array than anything else.
 
-> The maximum packet size depends on the type of USB connection.
-> Typical values are 1024, 512, or 64.  It's always a power of two and
-> it's smaller than 4096.  Therefore we simplify the problem even further
-> by requiring that each SG buffer in a scatterlist (except the last one)
-> be a multiple of the page size.  (It doesn't need to be aligned on a
-> page boundary, as far as I remember.)
+Jonathan
+
+> ---
+> The most recent discussion on this patch was at:
+> https://lkml.kernel.org/lkml/1556922737-76313-4-git-send-email-jacob.jun.pan@linux.intel.com/
+> I fixed it up a bit following comments in that series, and removed the
+> definitions for the custom allocator for now.
 > 
-> That's why the blk_queue_virt_boundary usage was added to the USB code.
-> Perhaps it's not the right way of doing this; I'm not an expert on the
-> inner workings of the block layer.  If you can suggest a better way to
-> express our requirement, that would be great.
+> There also is a new version that includes the custom allocator into this
+> patch, but is currently missing the RCU fixes, at:
+> https://lore.kernel.org/lkml/1560087862-57608-13-git-send-email-jacob.jun.pan@linux.intel.com/
+> ---
 
-Since I'm also not familiar with the block layer, I could not find a better
-way...
+...
 
-Best regards,
-Yoshihiro Shimoda
+> +
+> +/**
+> + * ioasid_alloc - Allocate an IOASID
+> + * @set: the IOASID set
+> + * @min: the minimum ID (inclusive)
+> + * @max: the maximum ID (inclusive)
+> + * @private: data private to the caller
+> + *
+> + * Allocate an ID between @min and @max. The @private pointer is stored
+> + * internally and can be retrieved with ioasid_find().
+> + *
+> + * Return: the allocated ID on success, or %INVALID_IOASID on failure.
+> + */
+> +ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+> +		      void *private)
+> +{
+> +	u32 id = INVALID_IOASID;
+> +	struct ioasid_data *data;
+> +
+> +	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return INVALID_IOASID;
+> +
+> +	data->set = set;
+> +	data->private = private;
+> +
+> +	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_KERNEL)) {
+> +		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
+> +		goto exit_free;
+> +	}
+> +	data->id = id;
+> +
+> +exit_free:
 
-> Alan Stern
-> 
-> PS: There _is_ a flag saying whether an HCD supports SG.  But what it
-> means is that the driver can handle an SG list that meets the
-> requirement above; it doesn't mean that the driver can reassemble the
-> data from an SG list into a series of bounce buffers in order to meet
-> the requirement.  We very much want not to do that, especially since
-> the block layer should already be capable of doing it for us.
+This error flow is perhaps a little more confusing than it needs to be?
+
+My assumption (perhaps wrong) is that we only have an id == INVALID_IOASID
+if the xa_alloc fails, and that we will always have such an id value if
+it does (I'm not totally sure this second element is true in __xa_alloc).
+
+If I'm missing something perhaps a comment on how else we'd get here.
+
+> +	if (id == INVALID_IOASID) {
+> +		kfree(data);
+> +		return INVALID_IOASID;
+> +	}
+> +	return id;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_alloc);
+> +
+> +/**
+> + * ioasid_free - Free an IOASID
+> + * @ioasid: the ID to remove
+> + */
+> +void ioasid_free(ioasid_t ioasid)
+> +{
+> +	struct ioasid_data *ioasid_data;
+> +
+> +	ioasid_data = xa_erase(&ioasid_xa, ioasid);
+> +
+> +	kfree_rcu(ioasid_data, rcu);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_free);
+> +
+> +/**
+> + * ioasid_find - Find IOASID data
+> + * @set: the IOASID set
+> + * @ioasid: the IOASID to find
+> + * @getter: function to call on the found object
+> + *
+> + * The optional getter function allows to take a reference to the found object
+> + * under the rcu lock. The function can also check if the object is still valid:
+> + * if @getter returns false, then the object is invalid and NULL is returned.
+> + *
+> + * If the IOASID has been allocated for this set, return the private pointer
+> + * passed to ioasid_alloc. Private data can be NULL if not set. Return an error
+> + * if the IOASID is not found or does not belong to the set.
+
+Perhaps should make it clear that @set can be null.
+
+> + */
+> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> +		  bool (*getter)(void *))
+> +{
+> +	void *priv = NULL;
+
+Set in all paths, so does need to be set here.
+
+> +	struct ioasid_data *ioasid_data;
+> +
+> +	rcu_read_lock();
+> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
+> +	if (!ioasid_data) {
+> +		priv = ERR_PTR(-ENOENT);
+> +		goto unlock;
+> +	}
+> +	if (set && ioasid_data->set != set) {
+> +		/* data found but does not belong to the set */
+> +		priv = ERR_PTR(-EACCES);
+> +		goto unlock;
+> +	}
+> +	/* Now IOASID and its set is verified, we can return the private data */
+> +	priv = rcu_dereference(ioasid_data->private);
+> +	if (getter && !getter(priv))
+> +		priv = NULL;
+> +unlock:
+> +	rcu_read_unlock();
+> +
+> +	return priv;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_find);
+> +
+> +MODULE_LICENSE("GPL");
+...
 
 _______________________________________________
 iommu mailing list
