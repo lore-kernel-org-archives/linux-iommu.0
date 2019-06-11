@@ -6,44 +6,54 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC89DC4321A
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 14:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718AAC43218
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 15:14:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BCFC32054F
-	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 14:51:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BCFC32054F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=rowland.harvard.edu
+	by mail.kernel.org (Postfix) with ESMTPS id 548E42080A
+	for <iommu@archiver.kernel.org>; Tue, 11 Jun 2019 15:14:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 548E42080A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 88085F00;
-	Tue, 11 Jun 2019 14:51:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 44843F22;
+	Tue, 11 Jun 2019 15:14:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 198DFEF4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8B7ABF1F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 14:51:16 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from iolanthe.rowland.org (iolanthe.rowland.org [192.131.102.54])
-	by smtp1.linuxfoundation.org (Postfix) with SMTP id 5E61A174
+	Tue, 11 Jun 2019 15:13:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1AD8B174
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 11 Jun 2019 14:51:15 +0000 (UTC)
-Received: (qmail 2357 invoked by uid 2102); 11 Jun 2019 10:51:14 -0400
-Received: from localhost (sendmail-bs@127.0.0.1)
-	by localhost with SMTP; 11 Jun 2019 10:51:14 -0400
-Date: Tue, 11 Jun 2019 10:51:14 -0400 (EDT)
-From: Alan Stern <stern@rowland.harvard.edu>
-X-X-Sender: stern@iolanthe.rowland.org
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: How to resolve an issue in swiotlb environment?
-In-Reply-To: <20190611064158.GA20601@lst.de>
-Message-ID: <Pine.LNX.4.44L0.1906110956510.1535-100000@iolanthe.rowland.org>
+	Tue, 11 Jun 2019 15:13:58 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+	[10.5.11.12])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 60FFB307D984;
+	Tue, 11 Jun 2019 15:13:51 +0000 (UTC)
+Received: from x1.home (ovpn-116-190.phx2.redhat.com [10.3.116.190])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 1E3E660C4C;
+	Tue, 11 Jun 2019 15:13:48 +0000 (UTC)
+Date: Tue, 11 Jun 2019 09:13:48 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jiangyiwen <jiangyiwen@huawei.com>
+Subject: Re: [bug report] vfio: Can't find phys by iova in vfio_unmap_unpin()
+Message-ID: <20190611091348.60195fe0@x1.home>
+In-Reply-To: <5CFFA149.8070303@huawei.com>
+References: <5CE25C33.2060009@huawei.com> <20190520132801.4e2ab8ab@x1.home>
+	<5CFF1E35.5010602@huawei.com> <5CFFA149.8070303@huawei.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.48]);
+	Tue, 11 Jun 2019 15:13:57 +0000 (UTC)
+Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+	kvm@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,91 +71,89 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 11 Jun 2019, Christoph Hellwig wrote:
+[cc +iommu]
 
-> Hi Alan,
+On Tue, 11 Jun 2019 20:40:41 +0800
+Jiangyiwen <jiangyiwen@huawei.com> wrote:
+
+> Hi Alex,
 > 
-> thanks for the explanation.  It seems like what usb wants is to:
+> I found this problem is not very easy to solve, for
+> now, in arm64 platform, the "0" physical address
+> is a valid system memory address, so in function
+> arm_smmu_iova_to_phys() I think it should not use
+> "0" as abnormal return value.
 > 
->  - set sg_tablesize to 1 for devices that can't handle scatterlist at all
+> Do you have any idea?
 
-Hmmm.  usb-storage (and possible other drivers too) currently handles
-such controllers by setting up an SG transfer as a series of separate
-URBs, one for each scatterlist entry.  But this is not the same thing,
-for two reasons:
+I think you're going to need to redefine iommu_iova_to_phys() and fix
+all the IOMMU implementations of it to comply.  Currently AMD and Intel
+IOMMU driver return zero if a mapping is not found.  You could make the
+function return 0/errno and return the physical address via a pointer
+arg.  You could also keep the existing definition, but introduce a test
+for a valid result that might use an architecture specific value (akin
+to IS_ERR()).  You could also just reserve the zero page from userspace
+allocation.  I really don't want #ifdef in the vfio iommu driver trying
+to discern the correct invalid value though.  Thanks,
 
-	It has less I/O overhead than setting sg_tablesize to 1 because 
-	it sets up the whole transfer as a single SCSI command, which 
-	requires much less time and traffic on the USB bus than sending 
-	multiple commands.
+Alex
 
-	It has that requirement about each scatterlist element except
-	the last being a multiple of the maximum packet size in length.
-	(This is because the USB protocol says that a transfer ends
-	whenever a less-than-maximum-size packet is encountered.)
-
-We would like to avoid the extra I/O overhead for host controllers that
-can't handle SG.  In fact, switching to sg_tablesize = 1 would probably
-be considered a regression.
-
->  - set the virt boundary as-is for devices supporting "basic" scatterlist,
->    although that still assumes they can rejiggle them because for example
->    you could still get a smaller than expected first segment ala (assuming
->    a 1024 byte packet size and thus 1023 virt_boundary_mask):
+> On 2019/6/11 11:21, jiangyiwen wrote:
+> > On 2019/5/21 3:28, Alex Williamson wrote:  
+> >> On Mon, 20 May 2019 15:50:11 +0800
+> >> jiangyiwen <jiangyiwen@huawei.com> wrote:
+> >>  
+> >>> Hello alex,
+> >>>
+> >>> We test a call trace as follows use ARM64 architecture,
+> >>> it prints a WARN_ON() when find not physical address by
+> >>> iova in vfio_unmap_unpin(), I can't find the cause of
+> >>> problem now, do you have any ideas?  
+> >> Is it reproducible?  Can you explain how to reproduce it?  The stack
+> >> trace indicates a KVM VM is being shutdown and we're trying to clean
+> >> out the IOMMU mappings from the domain and find a page that we think
+> >> should be mapped that the IOMMU doesn't have mapped.  What device(s) was
+> >> assigned to the VM?  This could be an IOMMU driver bug or a
+> >> vfio_iommu_type1 bug.  Have you been able to reproduce this on other
+> >> platforms?
+> >>  
+> > Hello Alex,
+> >
+> > Sorry to reply you so late because of some things,
+> > this problem's reason is in some platform (like ARM64),
+> > the "0" physical address is valid and can be used for
+> > system memory, so in this case it should not print a
+> > WARN_ON() and continue, we should unmap and unpin this
+> > "0" physical address in these platform.
+> >
+> > So I want to return FFFFFFFFFFFFFFFFL instead of "0" as invalid
+> > physical address in function iommu_iova_to_phys(). Do you think
+> > it's appropriate?
+> >
+> > Thanks,
+> > Yiwen.
+> >  
+> >>> In addition, I want to know why there is a WARN_ON() instead
+> >>> of BUG_ON()? Does it affect the follow-up process?  
+> >> We're removing an IOMMU page mapping entry and find that it's not
+> >> present, so ultimately the effect at the IOMMU is the same, there's no
+> >> mapping at that address, but I can't say without further analysis
+> >> whether that means a page remains pinned or if that inconsistency was
+> >> resolved previously elsewhere.  We WARN_ON because this is not what we
+> >> expect, but potentially leaking a page of memory doesn't seem worthy of
+> >> crashing the host, nor would a crash dump at that point necessarily aid
+> >> in resolving the missing page as it potentially occurred well in the
+> >> past.  Thanks,
+> >>
+> >> Alex
+> >>
+> >> .
+> >>  
+> >
+> >
+> > .
+> >  
 > 
->         | 0 .. 511 | 512 .. 1023 | 1024 .. 1535 |
-> 
->    as the virt_bondary does not guarantee that the first segment is
->    the same size as all the mid segments.
-
-But that is exactly the problem we need to solve.
-
-The issue which prompted the commit this thread is about arose in a
-situation where the block layer set up a scatterlist containing buffer
-sizes something like:
-
-	4096 4096 1536 1024
-
-and the maximum packet size was 1024.  The situation was a little 
-unusual, because it involved vhci-hcd (a virtual HCD).  This doesn't 
-matter much in normal practice because:
-
-	Block devices normally have a block size of 512 bytes or more.
-	Smaller values are very uncommon.  So scatterlist element sizes
-	are always divisible by 512.
-
-	xHCI is the only USB host controller type with a maximum packet 
-	size larger than 512, and xHCI hardware can do full 
-	scatter-gather so it doesn't care what the buffer sizes are.
-
-So another approach would be to fix vhci-hcd and then trust that the
-problem won't arise again, for the reasons above.  We would be okay so
-long as nobody tried to use a USB-SCSI device with a block size of 256
-bytes or less.
-
->  - do not set any limit on xhci
-> 
-> But that just goes back to the original problem, and that is that with
-> swiotlb we are limited in the total dma mapping size, and recent block
-> layer changes in the way we handle the virt_boundary mean we now build
-> much larger requests by default.  For SCSI ULDs to take that into
-> account I need to call dma_max_mapping_size() and use that as the
-> upper bound for the request size.  My plan is to do that in scsi_lib.c,
-> but for that we need to expose the actual struct device that the dma
-> mapping is perfomed on to the scsi layer.  If that device is different
-> from the sysfs hierchary struct device, which it is for usb the ULDD
-> needs to scsi_add_host_with_dma and pass the dma device as well.  How
-> do I get at the dma device (aka the HCDs pci_dev or similar) from
-> usb-storage/uas?
-
-From usb_stor_probe2(): us->pusb_dev->bus->sysdev.
-From uas_probe(): udev->bus->sysdev.
-
-The ->sysdev field points to the device used for DMA mapping.  It is
-often the same as ->controller, but sometimes it is
-->controller->parent because of the peculiarities of some platforms.
-
-Alan Stern
 
 _______________________________________________
 iommu mailing list
