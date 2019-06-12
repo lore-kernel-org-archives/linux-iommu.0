@@ -2,101 +2,62 @@ Return-Path: <SRS0=EPGj=UL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B47C31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 08:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3A6C31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:33:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D6F7020874
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 08:54:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="M7Kk7vsJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D6F7020874
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3C1A6208CA
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:33:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C1A6208CA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 896ED17B1;
-	Wed, 12 Jun 2019 08:54:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ECDCB1B05;
+	Wed, 12 Jun 2019 11:33:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 41E5417AE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2B1001AFB
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 08:52:26 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-TY1-obe.outbound.protection.outlook.com
-	(mail-eopbgr1400135.outbound.protection.outlook.com [40.107.140.135])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AAB58E6
+	Wed, 12 Jun 2019 11:30:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BE3DD79
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 08:52:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=RVU3TwliIUydOjf7eBK/rzzSlo+vO4nnsIRH7FR5glg=;
-	b=M7Kk7vsJgnrQfog7CheWKVMZJXy9HDzwItO6QtULvXg5tX8hUQrvwFvDhDbbdxbf1q7Ck5Q9je6Ggpw58eG76tBGggQE+YJA5id9uYLjbtWxnwp63nEYWuXPes1V0zwFz35Js0bkGPr3XV98n8InnjskramkmVe3vDH0iCK3VfE=
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com (52.134.247.150) by
-	OSAPR01MB4020.jpnprd01.prod.outlook.com (20.178.102.83) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1965.14; Wed, 12 Jun 2019 08:52:21 +0000
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85]) by
-	OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85%7]) with mapi id 15.20.1965.017;
-	Wed, 12 Jun 2019 08:52:21 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Christoph Hellwig <hch@lst.de>, Alan Stern <stern@rowland.harvard.edu>
-Subject: RE: How to resolve an issue in swiotlb environment?
-Thread-Topic: How to resolve an issue in swiotlb environment?
-Thread-Index: AdUZ1Qlk800+Qz0uSuO63mIBeXkktQDUe+5AAJUL5SAAA1kYAAANEESAABj9hAAAERZjAAAi6naAAAJz/+A=
-Date: Wed, 12 Jun 2019 08:52:21 +0000
-Message-ID: <OSAPR01MB3089D154C6DF0237003CE80CD8EC0@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <20190611064158.GA20601@lst.de>
-	<Pine.LNX.4.44L0.1906110956510.1535-100000@iolanthe.rowland.org>
-	<20190612073059.GA20086@lst.de>
-In-Reply-To: <20190612073059.GA20086@lst.de>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 67300a03-2f72-4bb6-ad94-08d6ef134889
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:OSAPR01MB4020; 
-x-ms-traffictypediagnostic: OSAPR01MB4020:
-x-microsoft-antispam-prvs: <OSAPR01MB4020F8EB0D2011C0BDBBE918D8EC0@OSAPR01MB4020.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0066D63CE6
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(366004)(396003)(136003)(346002)(39850400004)(376002)(199004)(189003)(86362001)(2906002)(33656002)(81156014)(54906003)(110136005)(14454004)(316002)(486006)(8936002)(7736002)(52536014)(25786009)(6436002)(66946007)(74316002)(5660300002)(11346002)(446003)(68736007)(476003)(81166006)(3846002)(6116002)(66446008)(102836004)(66556008)(64756008)(305945005)(186003)(76116006)(53936002)(71200400001)(66476007)(9686003)(66066001)(7696005)(76176011)(478600001)(55016002)(6506007)(71190400001)(73956011)(99286004)(14444005)(4326008)(8676002)(6246003)(229853002)(256004)(2171002)(26005);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:OSAPR01MB4020;
-	H:OSAPR01MB3089.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: nlsIq6Rvrrb0DfdoeWgYMN9FU9PWqxR/6GV2UdcnxwPv+UQl7s70W1qDb05kU76uuOTG8WJ83DyHCIuuTKyRNIgxtDcl4VOOCV0K+aOXOsar2MXspYV3CE3DWs8Lm8EJq1xfiZrYLZX68VJ5FaiHjtsL15UirI821e/L+Krw1tQgxU3kBEK6NXJjnVJq9pxZ6Q91pYkFnUXtqGsqqmWIGjlpH/RSHxzzjdhzvmhpDnu20jjftf6JS/x0s8tnOPyd2tkPeaSCXdrXCSPOH4aDDGRZBKrDYsy7qDGeie6m0P3kYh1sR1kcuzxIkY4m6frKMdWcQrRNWNAt7O5i1p3SfFgXpjUk4153+snWmSus3kBs6Lb+28zPC+fq9E6sJaUOO4cM0KGWxgcoryUZ3/SajMpMyzEUjiAhG4ev9HOs8R0=
+	Wed, 12 Jun 2019 11:30:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4F9C428;
+	Wed, 12 Jun 2019 04:30:33 -0700 (PDT)
+Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C93383F246;
+	Wed, 12 Jun 2019 04:32:14 -0700 (PDT)
+Subject: Re: [PATCH 1/8] iommu: Add I/O ASID allocator
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
+	<20190610184714.6786-2-jean-philippe.brucker@arm.com>
+	<20190611052626.20bed59a@jacob-builder>
+	<95292b47-4cf4-5fd9-b096-1cb016e2264f@arm.com>
+	<20190611101052.35af46df@jacob-builder>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Message-ID: <f68f4ccb-1422-4f93-dc9c-2bcdf61c9ed4@arm.com>
+Date: Wed, 12 Jun 2019 12:30:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67300a03-2f72-4bb6-ad94-08d6ef134889
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2019 08:52:21.7764 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4020
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+In-Reply-To: <20190611101052.35af46df@jacob-builder>
+Content-Language: en-US
+Cc: Mark Rutland <Mark.Rutland@arm.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Will Deacon <Will.Deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+	"robh+dt@kernel.org" <robh+dt@kernel.org>,
+	Robin Murphy <Robin.Murphy@arm.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -114,41 +75,67 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+On 11/06/2019 18:10, Jacob Pan wrote:
+>> The issue is theoretical at the moment because no users do this, but
+>> I'd be more comfortable taking the xa_lock, which prevents a
+>> concurrent xa_erase()+free(). (I commented on your v3 but you might
+>> have missed it)
+>>
+> Did you reply to my v3? I did not see it. I only saw your comments about
+> v3 in your commit message.
 
-> From: Christoph Hellwig, Sent: Wednesday, June 12, 2019 4:31 PM
+My fault, I sneaked the comments in a random reply three levels down the
+thread:
+https://lore.kernel.org/linux-iommu/836caf0d-699e-33ba-5303-b1c9c949c9ca@arm.com/
+
+(Great, linux-iommu is indexed by lore! I won't have to Cc lkml anymore)
+
+>>>> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
+>>>> +	if (ioasid_data)
+>>>> +		rcu_assign_pointer(ioasid_data->private, data);  
+>>> it is good to publish and have barrier here. But I just wonder even
+>>> for weakly ordered machine, this pointer update is quite far away
+>>> from its data update.  
+>>
+>> I don't know, it could be right before calling ioasid_set_data():
+>>
+>> 	mydata = kzalloc(sizeof(*mydata));
+>> 	mydata->ops = &my_ops;			(1)
+>> 	ioasid_set_data(ioasid, mydata);
+>> 		... /* no write barrier here */
+>> 		data->private = mydata;		(2)
+>>
+>> And then another thread calls ioasid_find():
+>>
+>> 	mydata = ioasid_find(ioasid);
+>> 	if (mydata)
+>> 		mydata->ops->do_something();
+>>
+>> On a weakly ordered machine, this thread could observe the pointer
+>> assignment (2) before the ops assignment (1), and dereference NULL.
+>> Using rcu_assign_pointer() should fix that
+>>
+> I agree it is better to have the barrier. Just thought there is already
+> a rcu_read_lock() in xa_load() in between. rcu_read_lock() may have
+> barrier in some case but better not count on it. 
+
+Yes, and even if rcu_read_lock() provided a barrier I don't think it
+would be sufficient, because acquire semantics don't guarantee that
+prior writes appear to happen before the barrier, only the other way
+round. A lock operation with release semantics, for example
+spin_unlock(), should work.
+
+Thanks,
+Jean
+
+> No issues here. I will
+> integrate this in the next version.
 > 
-> First things first:
+>> Thanks,
+>> Jean
 > 
-> Yoshihiro, can you try this git branch?  The new bits are just the three
-> patches at the end, but they sit on top of a few patches already sent
-> out to the list, so a branch is probably either:
+> [Jacob Pan]
 > 
->    git://git.infradead.org/users/hch/misc.git scsi-virt-boundary-fixes
-
-Thank you for the patches!
-Unfortunately, the three patches could not resolve this issue.
-However, it's a hint to me, and then I found the root cause:
- - slave_configure() in drivers/usb/storage/scsiglue.c calls
-   blk_queue_max_hw_sectors() with 2048 sectors (1 MiB) when USB_SPEED_SUPER or more.
- -- So that, even if your patches (also I fixed it a little [1]) could not resolve
-    the issue because the max_sectors is overwritten by above code.
-
-So, I think we should fix the slave_configure() by using dma_max_mapping_size().
-What do you think? If so, I can make such a patch.
-
-[1]
-In the "scsi: take the DMA max mapping size into account" patch,
-+       shost->max_sectors = min_t(unsigned int, shost->max_sectors,
-+                       dma_max_mapping_size(dev) << SECTOR_SHIFT);
-
-it should be:
-+                       dma_max_mapping_size(dev) >> SECTOR_SHIFT);
-
-But, if we fix the slave_configure(), we don't need this patch, IIUC.
-
-Best regards,
-Yoshihiro Shimoda
 
 _______________________________________________
 iommu mailing list
