@@ -2,56 +2,52 @@ Return-Path: <SRS0=EPGj=UL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3FFC31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 575CFC31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 12:09:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5635520896
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:57:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5635520896
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3484220866
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 12:09:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3484220866
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 132B71B45;
-	Wed, 12 Jun 2019 11:57:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BC3C31B58;
+	Wed, 12 Jun 2019 12:09:02 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 16C231B41
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 020051B51
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 11:55:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BB30279
+	Wed, 12 Jun 2019 12:07:23 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9892379
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 11:55:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E6C128;
-	Wed, 12 Jun 2019 04:55:19 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E30603F246;
-	Wed, 12 Jun 2019 04:57:00 -0700 (PDT)
-Subject: Re: [PATCH v2 0/4] iommu: Add device fault reporting API
-To: Joerg Roedel <joro@8bytes.org>
-References: <20190603145749.46347-1-jean-philippe.brucker@arm.com>
-	<20190612081944.GB17505@8bytes.org>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <0f21e1b2-837f-87ba-6cf3-f6490d9e2a57@arm.com>
-Date: Wed, 12 Jun 2019 12:54:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Wed, 12 Jun 2019 12:07:22 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id 4822868B02; Wed, 12 Jun 2019 14:06:54 +0200 (CEST)
+Date: Wed, 12 Jun 2019 14:06:53 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Oliver Neukum <oneukum@suse.com>
+Subject: Re: How to resolve an issue in swiotlb environment?
+Message-ID: <20190612120653.GA25285@lst.de>
+References: <20190611064158.GA20601@lst.de>
+	<Pine.LNX.4.44L0.1906110956510.1535-100000@iolanthe.rowland.org>
+	<20190612073059.GA20086@lst.de> <1560339966.9728.18.camel@suse.com>
 MIME-Version: 1.0
-In-Reply-To: <20190612081944.GB17505@8bytes.org>
-Content-Language: en-US
-Cc: "ashok.raj@intel.com" <ashok.raj@intel.com>,
+Content-Disposition: inline
+In-Reply-To: <1560339966.9728.18.camel@suse.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	Robin Murphy <Robin.Murphy@arm.com>
+	Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,35 +65,28 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 12/06/2019 09:19, Joerg Roedel wrote:
-> On Mon, Jun 03, 2019 at 03:57:45PM +0100, Jean-Philippe Brucker wrote:
->> Jacob Pan (3):
->>   driver core: Add per device iommu param
->>   iommu: Introduce device fault data
->>   iommu: Introduce device fault report API
->>
->> Jean-Philippe Brucker (1):
->>   iommu: Add recoverable fault reporting
->>
->>  drivers/iommu/iommu.c      | 236 ++++++++++++++++++++++++++++++++++++-
->>  include/linux/device.h     |   3 +
->>  include/linux/iommu.h      |  87 ++++++++++++++
->>  include/uapi/linux/iommu.h | 153 ++++++++++++++++++++++++
->>  4 files changed, 476 insertions(+), 3 deletions(-)
->>  create mode 100644 include/uapi/linux/iommu.h
+On Wed, Jun 12, 2019 at 01:46:06PM +0200, Oliver Neukum wrote:
+> > Thay is someething the virt_boundary prevents.  But could still give
+> > you something like:
+> > 
+> > 	1536 4096 4096 1024
+> > 
+> > or
+> > 	1536 16384 8192 4096 16384 512
 > 
-> Applied, thanks.
+> That would kill the driver, if maxpacket were 1024.
+> 
+> USB has really two kinds of requirements
+> 
+> 1. What comes from the protocol
+> 2. What comes from the HCD
+> 
+> The protocol wants just multiples of maxpacket. XHCI can satisfy
+> that in arbitrary scatter/gather. Other HCs cannot.
 
-Thanks! As discussed I think we need to add padding into the iommu_fault
-structure before this reaches mainline, to make the UAPI easier to
-extend in the future. It's already possible to extend but requires
-introducing a new ABI version number and support two structures. Adding
-some padding would only require introducing new flags. If there is no
-objection I'll send a one-line patch bumping the structure size to 64
-bytes (currently 48)
-
-Thanks,
-Jean
+We have no real way to enforce that for the other HCs unfortunately.
+I can't really think of any better way to handle their limitations
+except for setting max_segments to 1 or bounce buffering.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
