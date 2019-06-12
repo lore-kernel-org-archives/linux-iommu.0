@@ -2,88 +2,74 @@ Return-Path: <SRS0=EPGj=UL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=unavailable
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD98C31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 18:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D5D5C31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 18:53:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BB25D206E0
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 18:44:36 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dJYzV8Km"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB25D206E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id E88B4208CA
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 18:53:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E88B4208CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 945FE1F5C;
-	Wed, 12 Jun 2019 18:44:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C014B2261;
+	Wed, 12 Jun 2019 18:53:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 26EDF1F5B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1CAFD225A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 18:42:21 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
-	[209.85.214.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CCA38E6
+	Wed, 12 Jun 2019 18:50:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5EB43E6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 18:42:19 +0000 (UTC)
-Received: by mail-pl1-f194.google.com with SMTP id f97so7005217plb.5
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 11:42:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=ei7P1FJwNjKWyY3lSsF0Jir0f+bc/vHFp/Q0OynLu/E=;
-	b=dJYzV8Km5ZstyXOMBMh0rmuaW2A/Oy1Jc9a5zkmKoZlsvp/G5nNwyEMJyTApZ+H0Q1
-	TWoDMNSRNjZcsFDwcoSZah63BSQJs1G+L196yQDOAskIfE2VYbmJCjWWSvg0W0OlT4gD
-	M+eL9xwObkunL6BVLsxe4aCqVFd7UoY17JUjMNcf5HbGIPH6hgw/LO3saS+AnJk2CPQF
-	JVy5i3CdtEPD6wu16H/c5kaWPEjKjLuvuvC4fEyr3sf/UrZPek3nSQpzs6wl9S6rJD7x
-	TnHa7TqRGvgd23WZrGO9L0bcV+gRglSa2bxDXd8KC8PDGYsoSsIFNemI7hVr4LVW73B+
-	g1hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=ei7P1FJwNjKWyY3lSsF0Jir0f+bc/vHFp/Q0OynLu/E=;
-	b=A6WhvYVqEy+Jtc/Cqp7c0E5/YIg/5uUbkEEeY7YjkWGcCqiLY0zHjRiOh1cdRT4ooe
-	G/C+6gmU+NUTcuvE++ceHZ4bs5M3/PKBIfRLfsOcei1xAyIDNRtcns0BVaV1d8PyIQ1O
-	dZsSrK9QZF029d1bnFaW887nJVzo9MLuX1Clk8VFgiaRo1/sfPrVpdaDoEVPuFYgGZV9
-	ZwcmNzKBl4JedQsQ+Yh4837Wlxt3aRBS2ige8xACvcPXnSmw2ABodQPg99j8jTV/TMPX
-	t2aPAq1yt72GubmNqwcUhbRSvFujFNKhtmmI6pNtvAeDC+mjyOS8qW2TP5Tk4g4ucVUt
-	4nyw==
-X-Gm-Message-State: APjAAAU4GC10XOUsJHS3CUejQjfOEAOKYAWBRt5/ajLYjPvz7NRgzWsH
-	IBfZd7fgKkOUhGtM4VNwf/viMw==
-X-Google-Smtp-Source: APXvYqx8C6og84A/IMmD7FqpBhMl6FAI4uVwaQWfVofVzKlkV6PqLYC/lD/NOOx00Lmozb+WHJs/pg==
-X-Received: by 2002:a17:902:e2:: with SMTP id
-	a89mr83814752pla.210.1560364939226; 
-	Wed, 12 Jun 2019 11:42:19 -0700 (PDT)
-Received: from minitux (104-188-17-28.lightspeed.sndgca.sbcglobal.net.
-	[104.188.17.28])
-	by smtp.gmail.com with ESMTPSA id r7sm262760pfl.134.2019.06.12.11.42.18
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Wed, 12 Jun 2019 11:42:18 -0700 (PDT)
-Date: Wed, 12 Jun 2019 11:42:16 -0700
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-To: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Subject: Re: [RFC 1/2] iommu: arm-smmu: Handoff SMR registers and context banks
-Message-ID: <20190612184216.GB4814@minitux>
-References: <20190605210856.20677-1-bjorn.andersson@linaro.org>
-	<20190605210856.20677-2-bjorn.andersson@linaro.org>
-	<CAOCk7NpuxpGGYwiPSdwkrZrM=u-euAUTX3wa-yaEsKocDUx-UA@mail.gmail.com>
+	Wed, 12 Jun 2019 18:50:50 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	12 Jun 2019 11:50:49 -0700
+X-ExtLoop1: 1
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga004.jf.intel.com with ESMTP; 12 Jun 2019 11:50:49 -0700
+Date: Wed, 12 Jun 2019 11:53:58 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
+Message-ID: <20190612115358.0d90b322@jacob-builder>
+In-Reply-To: <905f130b-02dc-6971-8d5b-ce87d9bc96a4@arm.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-27-eric.auger@redhat.com>
+	<20190603163139.70fe8839@x1.home>
+	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
+	<20190605154553.0d00ad8d@jacob-builder>
+	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
+	<20190606132903.064f7ac4@jacob-builder>
+	<dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
+	<20190607104301.6b1bbd74@jacob-builder>
+	<e02b024f-6ebc-e8fa-c30c-5bf3f4b164d6@arm.com>
+	<20190610143134.7bff96e9@jacob-builder>
+	<905f130b-02dc-6971-8d5b-ce87d9bc96a4@arm.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAOCk7NpuxpGGYwiPSdwkrZrM=u-euAUTX3wa-yaEsKocDUx-UA@mail.gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-Cc: Patrick Daly <pdaly@codeaurora.org>, Jeffrey Hugo <jhugo@codeaurora.org>,
-	MSM <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>,
-	lkml <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	Vincent Stehle <Vincent.Stehle@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Robin Murphy <Robin.Murphy@arm.com>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -101,239 +87,158 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed 12 Jun 11:07 PDT 2019, Jeffrey Hugo wrote:
+On Tue, 11 Jun 2019 14:14:33 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-> On Wed, Jun 5, 2019 at 3:09 PM Bjorn Andersson
-> <bjorn.andersson@linaro.org> wrote:
-> >
-> > Boot splash screen or EFI framebuffer requires the display hardware to
-> > operate while the Linux iommu driver probes. Therefore, we cannot simply
-> > wipe out the SMR register settings programmed by the bootloader.
-> >
-> > Detect which SMR registers are in use during probe, and which context
-> > banks they are associated with. Reserve these context banks for the
-> > first Linux device whose stream-id matches the SMR register.
-> >
-> > Any existing page-tables will be discarded.
-> >
-> > Heavily based on downstream implementation by Patrick Daly
-> > <pdaly@codeaurora.org>.
-> >
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> On 10/06/2019 22:31, Jacob Pan wrote:
+> > On Mon, 10 Jun 2019 13:45:02 +0100
+> > Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+> >   
+> >> On 07/06/2019 18:43, Jacob Pan wrote:  
+> >>>>> So it seems we agree on the following:
+> >>>>> - iommu_unregister_device_fault_handler() will never fail
+> >>>>> - iommu driver cleans up all pending faults when handler is
+> >>>>> unregistered
+> >>>>> - assume device driver or guest not sending more page response
+> >>>>> _after_ handler is unregistered.
+> >>>>> - system will tolerate rare spurious response
+> >>>>>
+> >>>>> Sounds right?      
+> >>>>
+> >>>> Yes, I'll add that to the fault series    
+> >>> Hold on a second please, I think we need more clarifications.
+> >>> Ashok pointed out to me that the spurious response can be harmful
+> >>> to other devices when it comes to mdev, where PRQ group id is not
+> >>> per PASID, device may reuse the group number and receiving
+> >>> spurious page response can confuse the entire PF.     
+> >>
+> >> I don't understand how mdev differs from the non-mdev situation
+> >> (but I also still don't fully get how mdev+PASID will be
+> >> implemented). Is the following the case you're worried about?
+> >>
+> >>   M#: mdev #
+> >>
+> >> # Dev         Host        mdev drv       VFIO/QEMU        Guest
+> >> ====================================================================
+> >> 1                     <- reg(handler)
+> >> 2 PR1 G1 P1    ->         M1 PR1 G1        inject ->     M1 PR1 G1
+> >> 3                     <- unreg(handler)
+> >> 4       <- PS1 G1 P1 (F)      |
+> >> 5                        unreg(handler)
+> >> 6                     <- reg(handler)
+> >> 7 PR2 G1 P1    ->         M2 PR2 G1        inject ->     M2 PR2 G1
+> >> 8                                                     <- M1 PS1 G1
+> >> 9         accept ??    <- PS1 G1 P1
+> >> 10                                                    <- M2 PS2 G1
+> >> 11        accept       <- PS2 G1 P1
+> >>  
+> > Not really. I am not worried about PASID reuse or unbind. Just
+> > within the same PASID bind lifetime of a single mdev, back to back
+> > register/unregister fault handler.
+> > After Step 4, device will think G1 is done. Device could reuse G1
+> > for the next PR, if we accept PS1 in step 9, device will terminate
+> > G1 before the real G1 PS arrives in Step 11. The real G1 PS might
+> > have a different response code. Then we just drop the PS in Step
+> > 11?  
 > 
-> Reviewed-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+> Yes, I think we do. Two possibilities:
 > 
-> This is very similar to the hacked up version I did, and I'm glad to see it
-> cleaned up and posted.
+> * G1 is reused at step 7 for the same PASID context, which means that
+> it is for the same mdev. The problem is then identical to the non-mdev
+> case, new page faults and old page response may cross:
 > 
-> This is important work, and I want to see it move forward, however it doesn't
-> completely address everything, IMO.  Fixing the remaining issues certainly
-> can be follow on work, but I don't know if they would end up affecting this
-> implementation.
+> # Dev         Host        mdev drv       VFIO/QEMU        Guest
+> ====================================================================
+> 7 PR2 G1 P1  --.
+> 8               \                         .------------- M1 PS1 G1
+> 9                '----->  PR2 G1 P1  ->  /   inject  --> M1 PR2 G1
+> 10           accept <---  PS1 G1 P1  <--'
+> 11           reject <---  PS2 G1 P1  <------------------ M1 PS2 G1
 > 
-> So, with this series, we've gone from a crash on msm8998/sdm845, to causing
-> context faults.  This is because while we are now not nuking the config, we
-> are preventing the bootloader installed translations from working.  Essentially
-> the display already has a mapping (technically passthrough) that is likely being
-> used by EFIFB.  The instant the SMMU inits, that mapping becomes invalid,
-> and the display is going to generate context faults.  While not fatal,
-> this provides
-> a bad user experience as there are nasty messages, and EFIFB stops working.
+> And the incorrect page response is returned to the guest. However it
+> affects a single mdev/guest context, it doesn't affect other mdevs.
 > 
-> The situation does get resolved once the display driver inits and takes over the
-> HW and SMMU mappings, so we are not stuck with it, but it would be nice to
-> have that addressed as well, ie have EFIFB working up until the Linux display
-> driver takes over.
+> * Or G1 is reused at step 7 for a different PASID. At step 10 the
+> fault handler rejects the page response because the PASID is
+> different, and step 11 is accepted.
 > 
+> 
+> >>> Having spurious page response is also not
+> >>> abiding the PCIe spec. exactly.    
+> >>
+> >> We are following the PCI spec though, in that we don't send page
+> >> responses for PRGIs that aren't in flight.
+> >>  
+> > You are right, the worst case of the spurious PS is to terminate the
+> > group prematurely. Need to know the scope of the HW damage in case
+> > of mdev where group IDs can be shared among mdevs belong to the
+> > same PF.  
+> 
+> But from the IOMMU fault API point of view, the full page request is
+> identified by both PRGI and PASID. Given that each mdev has its own
+> set of PASIDs, it should be easy to isolate page responses per mdev.
+> 
+On Intel platform, devices sending page request with private data must
+receive page response with matching private data. If we solely depend
+on PRGI and PASID, we may send stale private data to the device in
+those incorrect page response. Since private data may represent PF
+device wide contexts, the consequence of sending page response with
+wrong private data may affect other mdev/PASID.
 
-But do you see this even though you don't enable the mdss driver?
+One solution we are thinking to do is to inject the sequence #(e.g.
+ktime raw mono clock) as vIOMMU private data into to the guest. Guest
+would return this fake private data in page response, then host will
+send page response back to the device that matches PRG1 and PASID and
+private_data.
 
-> The only way I can see that happening is if the SMMU leaves the context bank
-> alone, with M == 0, and the iommu framework defines a domain attribute or
-> some other mechanism to allow the driver to flip the M bit in the context bank
-> after installing the necessary handover translations.
-> 
+This solution does not expose HW context related private data to the
+guest but need to extend page response in iommu uapi.
 
-From what I can tell this implementation leaves the framebuffer mapping
-in working condition until the attach_dev of the display driver, at
-which time we do get context faults until the display driver is done
-initializing things.
+/**
+ * struct iommu_page_response - Generic page response information
+ * @version: API version of this structure
+ * @flags: encodes whether the corresponding fields are valid
+ *         (IOMMU_FAULT_PAGE_RESPONSE_* values)
+ * @pasid: Process Address Space ID
+ * @grpid: Page Request Group Index
+ * @code: response code from &enum iommu_page_response_code
+ * @private_data: private data for the matching page request
+ */
+struct iommu_page_response {
+#define IOMMU_PAGE_RESP_VERSION_1	1
+	__u32	version;
+#define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
+#define IOMMU_PAGE_RESP_PRIVATE_DATA	(1 << 1)
+	__u32	flags;
+	__u32	pasid;
+	__u32	grpid;
+	__u32	code;
+	__u32	padding;
+	__u64	private_data[2];
+};
 
-So we're reducing the problem to a question of how to seamlessly carry
-over the mapping during the attach.
+There is also the change needed for separating storage for the real and
+fake private data.
 
-Regards,
-Bjorn
+Sorry for the last minute change, did not realize the HW implications.
 
-> > ---
-> >  drivers/iommu/arm-smmu-regs.h |  2 +
-> >  drivers/iommu/arm-smmu.c      | 80 ++++++++++++++++++++++++++++++++---
-> >  2 files changed, 77 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-> > index e9132a926761..8c1fd84032a2 100644
-> > --- a/drivers/iommu/arm-smmu-regs.h
-> > +++ b/drivers/iommu/arm-smmu-regs.h
-> > @@ -105,7 +105,9 @@
-> >  #define ARM_SMMU_GR0_SMR(n)            (0x800 + ((n) << 2))
-> >  #define SMR_VALID                      (1 << 31)
-> >  #define SMR_MASK_SHIFT                 16
-> > +#define SMR_MASK_MASK                  0x7fff
-> >  #define SMR_ID_SHIFT                   0
-> > +#define SMR_ID_MASK                    0xffff
-> >
-> >  #define ARM_SMMU_GR0_S2CR(n)           (0xc00 + ((n) << 2))
-> >  #define S2CR_CBNDX_SHIFT               0
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index 5e54cc0a28b3..c8629a656b42 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -135,6 +135,7 @@ struct arm_smmu_s2cr {
-> >         enum arm_smmu_s2cr_type         type;
-> >         enum arm_smmu_s2cr_privcfg      privcfg;
-> >         u8                              cbndx;
-> > +       bool                            handoff;
-> >  };
-> >
-> >  #define s2cr_init_val (struct arm_smmu_s2cr){                          \
-> > @@ -399,9 +400,22 @@ static int arm_smmu_register_legacy_master(struct device *dev,
-> >         return err;
-> >  }
-> >
-> > -static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
-> > +static int __arm_smmu_alloc_cb(struct arm_smmu_device *smmu, int start,
-> > +                              struct device *dev)
-> >  {
-> > +       struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +       unsigned long *map = smmu->context_map;
-> > +       int end = smmu->num_context_banks;
-> > +       int cbndx;
-> >         int idx;
-> > +       int i;
-> > +
-> > +       for_each_cfg_sme(fwspec, i, idx) {
-> > +               if (smmu->s2crs[idx].handoff) {
-> > +                       cbndx = smmu->s2crs[idx].cbndx;
-> > +                       goto found_handoff;
-> > +               }
-> > +       }
-> >
-> >         do {
-> >                 idx = find_next_zero_bit(map, end, start);
-> > @@ -410,6 +424,17 @@ static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
-> >         } while (test_and_set_bit(idx, map));
-> >
-> >         return idx;
-> > +
-> > +found_handoff:
-> > +       for (i = 0; i < smmu->num_mapping_groups; i++) {
-> > +               if (smmu->s2crs[i].cbndx == cbndx) {
-> > +                       smmu->s2crs[i].cbndx = 0;
-> > +                       smmu->s2crs[i].handoff = false;
-> > +                       smmu->s2crs[i].count--;
-> > +               }
-> > +       }
-> > +
-> > +       return cbndx;
-> >  }
-> >
-> >  static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
-> > @@ -759,7 +784,8 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
-> >  }
-> >
-> >  static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-> > -                                       struct arm_smmu_device *smmu)
-> > +                                       struct arm_smmu_device *smmu,
-> > +                                       struct device *dev)
-> >  {
-> >         int irq, start, ret = 0;
-> >         unsigned long ias, oas;
-> > @@ -873,8 +899,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-> >                 ret = -EINVAL;
-> >                 goto out_unlock;
-> >         }
-> > -       ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
-> > -                                     smmu->num_context_banks);
-> > +       ret = __arm_smmu_alloc_cb(smmu, start, dev);
-> >         if (ret < 0)
-> >                 goto out_unlock;
-> >
-> > @@ -1264,7 +1289,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> >                 return ret;
-> >
-> >         /* Ensure that the domain is finalised */
-> > -       ret = arm_smmu_init_domain_context(domain, smmu);
-> > +       ret = arm_smmu_init_domain_context(domain, smmu, dev);
-> >         if (ret < 0)
-> >                 goto rpm_put;
-> >
-> > @@ -1798,6 +1823,49 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
-> >         writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> >  }
-> >
-> > +static void arm_smmu_read_smr_state(struct arm_smmu_device *smmu)
-> > +{
-> > +       u32 privcfg;
-> > +       u32 cbndx;
-> > +       u32 mask;
-> > +       u32 type;
-> > +       u32 s2cr;
-> > +       u32 smr;
-> > +       u32 id;
-> > +       int i;
-> > +
-> > +       for (i = 0; i < smmu->num_mapping_groups; i++) {
-> > +               smr = readl_relaxed(ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(i));
-> > +               mask = (smr >> SMR_MASK_SHIFT) & SMR_MASK_MASK;
-> > +               id = smr & SMR_ID_MASK;
-> > +               if (!(smr & SMR_VALID))
-> > +                       continue;
-> > +
-> > +               s2cr = readl_relaxed(ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(i));
-> > +               type = (s2cr >> S2CR_TYPE_SHIFT) & S2CR_TYPE_MASK;
-> > +               cbndx = (s2cr >> S2CR_CBNDX_SHIFT) & S2CR_CBNDX_MASK;
-> > +               privcfg = (s2cr >> S2CR_PRIVCFG_SHIFT) & S2CR_PRIVCFG_MASK;
-> > +               if (type != S2CR_TYPE_TRANS)
-> > +                       continue;
-> > +
-> > +               /* Populate the SMR */
-> > +               smmu->smrs[i].mask = mask;
-> > +               smmu->smrs[i].id = id;
-> > +               smmu->smrs[i].valid = true;
-> > +
-> > +               /* Populate the S2CR */
-> > +               smmu->s2crs[i].group = NULL;
-> > +               smmu->s2crs[i].count = 1;
-> > +               smmu->s2crs[i].type = type;
-> > +               smmu->s2crs[i].privcfg = privcfg;
-> > +               smmu->s2crs[i].cbndx = cbndx;
-> > +               smmu->s2crs[i].handoff = true;
-> > +
-> > +               /* Mark the context bank as busy */
-> > +               bitmap_set(smmu->context_map, cbndx, 1);
-> > +       }
-> > +}
-> > +
-> >  static int arm_smmu_id_size_to_bits(int size)
-> >  {
-> >         switch (size) {
-> > @@ -2023,6 +2091,8 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
-> >                 dev_notice(smmu->dev, "\tStage-2: %lu-bit IPA -> %lu-bit PA\n",
-> >                            smmu->ipa_size, smmu->pa_size);
-> >
-> > +       arm_smmu_read_smr_state(smmu);
-> > +
-> >         return 0;
-> >  }
-> >
-> > --
-> > 2.18.0
-> >
-> >
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+I see this as a future extension due to limited testing, perhaps for
+now, can you add paddings similar to page request? Make it 64B as well.
+
+struct iommu_page_response {
+#define IOMMU_PAGE_RESP_VERSION_1	1
+	__u32	version;
+#define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
+	__u32	flags;
+	__u32	pasid;
+	__u32	grpid;
+	__u32	code;
+	__u8	padding[44];
+};
+
+Thanks!
+
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
