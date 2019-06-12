@@ -6,43 +6,44 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15E5C31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B098FC31E44
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D7269208C2
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7269208C2
+	by mail.kernel.org (Postfix) with ESMTPS id 8EF12208C2
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EF12208C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E51421487;
-	Wed, 12 Jun 2019 00:38:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 27480147C;
+	Wed, 12 Jun 2019 00:38:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 94695146E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7CF89146E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 00:36:11 +0000 (UTC)
+	Wed, 12 Jun 2019 00:36:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1B9D3775
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 25C627F8
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 00:36:11 +0000 (UTC)
+	Wed, 12 Jun 2019 00:36:13 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
 	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	11 Jun 2019 17:36:11 -0700
+	11 Jun 2019 17:36:13 -0700
 X-ExtLoop1: 1
 Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga001.jf.intel.com with ESMTP; 11 Jun 2019 17:36:08 -0700
+	by orsmga001.jf.intel.com with ESMTP; 11 Jun 2019 17:36:11 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v2 2/7] iommu/vt-d: Set domain type for a private domain
-Date: Wed, 12 Jun 2019 08:28:46 +0800
-Message-Id: <20190612002851.17103-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 3/7] iommu/vt-d: Don't enable iommu's which have been
+	ignored
+Date: Wed, 12 Jun 2019 08:28:47 +0800
+Message-Id: <20190612002851.17103-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190612002851.17103-1-baolu.lu@linux.intel.com>
 References: <20190612002851.17103-1-baolu.lu@linux.intel.com>
@@ -66,27 +67,44 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Otherwise, domain_get_iommu() will be broken.
+The iommu driver will ignore some iommu units if there's no
+device under its scope or those devices have been explicitly
+set to bypass the DMA translation. Don't enable those iommu
+units, otherwise the devices under its scope won't work.
 
-Fixes: 942067f1b6b97 ("iommu/vt-d: Identify default domains replaced with private")
+Fixes: d8190dc638866 ("iommu/vt-d: Enable DMA remapping after rmrr mapped")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/intel-iommu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d5a6c8064c56..d1a82039e835 100644
+index d1a82039e835..5251533a18a4 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3458,6 +3458,8 @@ static struct dmar_domain *get_private_domain_for_dev(struct device *dev)
- out:
- 	if (!domain)
- 		dev_err(dev, "Allocating domain failed\n");
-+	else
-+		domain->domain.type = IOMMU_DOMAIN_DMA;
+@@ -3232,7 +3232,12 @@ static int __init init_dmars(void)
+ 		goto error;
+ 	}
  
- 	return domain;
- }
+-	for_each_active_iommu(iommu, drhd) {
++	for_each_iommu(iommu, drhd) {
++		if (drhd->ignored) {
++			iommu_disable_translation(iommu);
++			continue;
++		}
++
+ 		/*
+ 		 * Find the max pasid size of all IOMMU's in the system.
+ 		 * We need to ensure the system pasid table is no bigger
+@@ -4793,7 +4798,7 @@ int __init intel_iommu_init(void)
+ 
+ 	/* Finally, we enable the DMA remapping hardware. */
+ 	for_each_iommu(iommu, drhd) {
+-		if (!translation_pre_enabled(iommu))
++		if (!drhd->ignored && !translation_pre_enabled(iommu))
+ 			iommu_enable_translation(iommu);
+ 
+ 		iommu_disable_protect_mem_regions(iommu);
 -- 
 2.17.1
 
