@@ -6,57 +6,58 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5EDC31E44
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0142C31E44
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 01:00:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ECB5B21721
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:54:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECB5B21721
+	by mail.kernel.org (Postfix) with ESMTPS id 80D97205ED
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 01:00:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 80D97205ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AA4BD148A;
-	Wed, 12 Jun 2019 00:54:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3F7A01497;
+	Wed, 12 Jun 2019 01:00:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BE0ED1485
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5FBA513C7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 00:53:07 +0000 (UTC)
+	Wed, 12 Jun 2019 00:59:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E4C24E6
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7DFA6711
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 00:53:06 +0000 (UTC)
+	Wed, 12 Jun 2019 00:59:29 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	11 Jun 2019 17:53:06 -0700
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	11 Jun 2019 17:59:28 -0700
 X-ExtLoop1: 1
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
 	([10.239.159.136])
-	by orsmga004.jf.intel.com with ESMTP; 11 Jun 2019 17:53:01 -0700
+	by orsmga004.jf.intel.com with ESMTP; 11 Jun 2019 17:59:23 -0700
 Subject: Re: [PATCH v4 4/9] iommu: Add bounce page APIs
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Pavel Begunkov <asml.silence@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>
 References: <20190603011620.31999-1-baolu.lu@linux.intel.com>
 	<20190603011620.31999-5-baolu.lu@linux.intel.com>
-	<20190610155614.GV28796@char.us.oracle.com>
+	<e404133f-dade-6fdf-08e9-6e4f15d23b66@gmail.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <8d34c6be-f847-3871-d098-2f3aa1933924@linux.intel.com>
-Date: Wed, 12 Jun 2019 08:45:53 +0800
+Message-ID: <e9fd7b85-add4-04e6-c588-a48d6db49b1e@linux.intel.com>
+Date: Wed, 12 Jun 2019 08:52:15 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190610155614.GV28796@char.us.oracle.com>
+In-Reply-To: <e404133f-dade-6fdf-08e9-6e4f15d23b66@gmail.com>
 Content-Language: en-US
-Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
-	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
-	Jonathan Corbet <corbet@lwn.net>, pengfei.xu@intel.com,
-	Ingo Molnar <mingo@redhat.com>,
-	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
-	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
+Cc: alan.cox@intel.com, Stefano Stabellini <sstabellini@kernel.org>,
+	ashok.raj@intel.com, Jonathan Corbet <corbet@lwn.net>,
+	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>, kevin.tian@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
 	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
 	mika.westerberg@linux.intel.com, Alan Cox <alan@linux.intel.com>,
 	Juergen Gross <jgross@suse.com>,
@@ -81,10 +82,14 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
+Hi Pavel,
 
-On 6/10/19 11:56 PM, Konrad Rzeszutek Wilk wrote:
-> On Mon, Jun 03, 2019 at 09:16:15AM +0800, Lu Baolu wrote:
+Thanks a lot for your reviewing.
+
+On 6/11/19 8:10 PM, Pavel Begunkov wrote:
+> 
+> 
+> On 03/06/2019 04:16, Lu Baolu wrote:
 >> IOMMU hardware always use paging for DMA remapping.  The
 >> minimum mapped window is a page size. The device drivers
 >> may map buffers not filling whole IOMMU window. It allows
@@ -141,18 +146,6 @@ On 6/10/19 11:56 PM, Konrad Rzeszutek Wilk wrote:
 >> +	bool "Use bounce page for untrusted devices"
 >> +	depends on IOMMU_API
 >> +	select SWIOTLB
-> 
-> I think you want:
-> 	depends on IOMMU_API && SWIOTLB
-> 
-> As people may want to have IOMMU and SWIOTLB, and not IOMMU_BOUNCE_PAGE enabled.
-
-Yes. Yours makes more sense.
-
-Best regards,
-Baolu
-
-> 
 >> +	help
 >> +	  IOMMU hardware always use paging for DMA remapping. The minimum
 >> +	  mapped window is a page size. The device drivers may map buffers
@@ -238,6 +231,13 @@ Baolu
 >> +	if (ret) {
 >> +		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
 >> +					 aligned_size, dir, attrs);
+> You would probably want to check, whether @tlb_addr came from
+> swiotlb_tbl_map_single. (is_swiotlb_buffer() or reuse predicate above).
+
+Right. Good catch.
+
+> 
+> 
 >> +		return DMA_MAPPING_ERROR;
 >> +	}
 >> +
@@ -272,6 +272,23 @@ Baolu
 >> +
 >> +	iommu_unmap(domain, iova, aligned_size);
 >> +	if (is_swiotlb_buffer(tlb_addr))
+> 
+> Is there any chance, this @tlb_addr is a swiotlb buffer, but owned by an
+> API user? I mean something like
+> iommu_bounce_map(swiotlb_tbl_map_single()).
+> 
+> Then, to retain ownership semantic, we shouldn't unmap it. Maybe to
+> check and fail iommu_bounce_map() to be sure?
+
+For untrusted devices, we always force iommu to enforce the DMA
+isolation. There are no cases where @tlb_addr is a swiotlb buffer
+owned by a device driver as far as I can see.
+
+Best regards,
+Baolu
+
+> 
+> 
 >> +		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
 >> +					 aligned_size, dir, attrs);
 >> +}
@@ -346,8 +363,6 @@ Baolu
 >>   #else /* CONFIG_IOMMU_API */
 >>   
 >>   struct iommu_ops {};
->> -- 
->> 2.17.1
 >>
 > 
 _______________________________________________
