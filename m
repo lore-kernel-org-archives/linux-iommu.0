@@ -6,44 +6,44 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D252C31E44
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0145C31E44
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51A83208C2
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51A83208C2
+	by mail.kernel.org (Postfix) with ESMTPS id C2903208C2
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 00:38:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2903208C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D56141491;
-	Wed, 12 Jun 2019 00:38:21 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 258D91493;
+	Wed, 12 Jun 2019 00:38:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8F8961476
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BC7B01476
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 00:36:19 +0000 (UTC)
+	Wed, 12 Jun 2019 00:36:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2006D775
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2451D7F8
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 00:36:19 +0000 (UTC)
+	Wed, 12 Jun 2019 00:36:21 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
 	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	11 Jun 2019 17:36:19 -0700
+	11 Jun 2019 17:36:21 -0700
 X-ExtLoop1: 1
 Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga001.jf.intel.com with ESMTP; 11 Jun 2019 17:36:17 -0700
+	by orsmga001.jf.intel.com with ESMTP; 11 Jun 2019 17:36:19 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v2 6/7] iommu/vt-d: Cleanup after delegating DMA domain to
-	generic iommu
-Date: Wed, 12 Jun 2019 08:28:50 +0800
-Message-Id: <20190612002851.17103-7-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 7/7] iommu/vt-d: Consolidate domain_init() to avoid
+	duplication
+Date: Wed, 12 Jun 2019 08:28:51 +0800
+Message-Id: <20190612002851.17103-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190612002851.17103-1-baolu.lu@linux.intel.com>
 References: <20190612002851.17103-1-baolu.lu@linux.intel.com>
@@ -67,124 +67,194 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+The domain_init() and md_domain_init() do almost the same job.
+Consolidate them to avoid duplication.
 
-[No functional changes]
-
-1. Starting with commit df4f3c603aeb ("iommu/vt-d: Remove static identity
-map code") there are no callers for iommu_prepare_rmrr_dev() but the
-implementation of the function still exists, so remove it. Also, as a
-ripple effect remove get_domain_for_dev() and iommu_prepare_identity_map()
-because they aren't being used either.
-
-2. Remove extra new line in couple of places.
-
-Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 55 -------------------------------------
- 1 file changed, 55 deletions(-)
+ drivers/iommu/intel-iommu.c | 123 +++++++++++-------------------------
+ 1 file changed, 36 insertions(+), 87 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 84e650c6a46d..5215dcd535a1 100644
+index 5215dcd535a1..b8c6cf1d5f90 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -909,7 +909,6 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
- 	return pte;
+@@ -1825,63 +1825,6 @@ static inline int guestwidth_to_adjustwidth(int gaw)
+ 	return agaw;
  }
  
--
- /* return address's pte at specific level */
- static struct dma_pte *dma_pfn_level_pte(struct dmar_domain *domain,
- 					 unsigned long pfn,
-@@ -1578,7 +1577,6 @@ static void iommu_disable_translation(struct intel_iommu *iommu)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
- 
--
- static int iommu_init_domains(struct intel_iommu *iommu)
- {
- 	u32 ndomains, nlongs;
-@@ -1616,8 +1614,6 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- 		return -ENOMEM;
- 	}
- 
--
--
- 	/*
- 	 * If Caching mode is set, then invalid translations are tagged
- 	 * with domain-id 0, hence we need to pre-allocate it. We also
-@@ -2649,29 +2645,6 @@ static struct dmar_domain *set_domain_for_dev(struct device *dev,
- 	return domain;
- }
- 
--static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+-static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
+-		       int guest_width)
 -{
--	struct dmar_domain *domain, *tmp;
+-	int adjust_width, agaw;
+-	unsigned long sagaw;
+-	int err;
 -
--	domain = find_domain(dev);
--	if (domain)
--		goto out;
+-	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
 -
--	domain = find_or_alloc_domain(dev, gaw);
--	if (!domain)
--		goto out;
+-	err = init_iova_flush_queue(&domain->iovad,
+-				    iommu_flush_iova, iova_entry_free);
+-	if (err)
+-		return err;
 -
--	tmp = set_domain_for_dev(dev, domain);
--	if (!tmp || domain != tmp) {
--		domain_exit(domain);
--		domain = tmp;
+-	domain_reserve_special_ranges(domain);
+-
+-	/* calculate AGAW */
+-	if (guest_width > cap_mgaw(iommu->cap))
+-		guest_width = cap_mgaw(iommu->cap);
+-	domain->gaw = guest_width;
+-	adjust_width = guestwidth_to_adjustwidth(guest_width);
+-	agaw = width_to_agaw(adjust_width);
+-	sagaw = cap_sagaw(iommu->cap);
+-	if (!test_bit(agaw, &sagaw)) {
+-		/* hardware doesn't support it, choose a bigger one */
+-		pr_debug("Hardware doesn't support agaw %d\n", agaw);
+-		agaw = find_next_bit(&sagaw, 5, agaw);
+-		if (agaw >= 5)
+-			return -ENODEV;
 -	}
+-	domain->agaw = agaw;
 -
--out:
+-	if (ecap_coherent(iommu->ecap))
+-		domain->iommu_coherency = 1;
+-	else
+-		domain->iommu_coherency = 0;
 -
--	return domain;
+-	if (ecap_sc_support(iommu->ecap))
+-		domain->iommu_snooping = 1;
+-	else
+-		domain->iommu_snooping = 0;
+-
+-	if (intel_iommu_superpage)
+-		domain->iommu_superpage = fls(cap_super_page_val(iommu->cap));
+-	else
+-		domain->iommu_superpage = 0;
+-
+-	domain->nid = iommu->node;
+-
+-	/* always allocate the top pgd */
+-	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
+-	if (!domain->pgd)
+-		return -ENOMEM;
+-	__iommu_flush_cache(iommu, domain->pgd, PAGE_SIZE);
+-	return 0;
 -}
 -
- static int iommu_domain_identity_map(struct dmar_domain *domain,
- 				     unsigned long long start,
- 				     unsigned long long end)
-@@ -2736,33 +2709,6 @@ static int domain_prepare_identity_map(struct device *dev,
+ static void domain_exit(struct dmar_domain *domain)
+ {
+ 	struct page *freelist;
+@@ -2563,6 +2506,31 @@ static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+ 	return 0;
+ }
+ 
++static int domain_init(struct dmar_domain *domain, int guest_width)
++{
++	int adjust_width;
++
++	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
++	domain_reserve_special_ranges(domain);
++
++	/* calculate AGAW */
++	domain->gaw = guest_width;
++	adjust_width = guestwidth_to_adjustwidth(guest_width);
++	domain->agaw = width_to_agaw(adjust_width);
++
++	domain->iommu_coherency = 0;
++	domain->iommu_snooping = 0;
++	domain->iommu_superpage = 0;
++	domain->max_addr = 0;
++
++	/* always allocate the top pgd */
++	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
++	if (!domain->pgd)
++		return -ENOMEM;
++	domain_flush_cache(domain, domain->pgd, PAGE_SIZE);
++	return 0;
++}
++
+ static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
+ {
+ 	struct device_domain_info *info;
+@@ -2600,11 +2568,19 @@ static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
+ 	domain = alloc_domain(0);
+ 	if (!domain)
+ 		return NULL;
+-	if (domain_init(domain, iommu, gaw)) {
++
++	if (domain_init(domain, gaw)) {
+ 		domain_exit(domain);
+ 		return NULL;
+ 	}
+ 
++	if (init_iova_flush_queue(&domain->iovad,
++				  iommu_flush_iova,
++				  iova_entry_free)) {
++		pr_warn("iova flush queue initialization failed\n");
++		intel_iommu_strict = 1;
++	}
++
+ out:
+ 	return domain;
+ }
+@@ -2709,8 +2685,6 @@ static int domain_prepare_identity_map(struct device *dev,
  	return iommu_domain_identity_map(domain, start, end);
  }
  
--static int iommu_prepare_identity_map(struct device *dev,
--				      unsigned long long start,
--				      unsigned long long end)
--{
--	struct dmar_domain *domain;
--	int ret;
+-static int md_domain_init(struct dmar_domain *domain, int guest_width);
 -
--	domain = get_domain_for_dev(dev, DEFAULT_DOMAIN_ADDRESS_WIDTH);
--	if (!domain)
--		return -ENOMEM;
--
--	ret = domain_prepare_identity_map(dev, domain, start, end);
--	if (ret)
--		domain_exit(domain);
--
--	return ret;
--}
--
--static inline int iommu_prepare_rmrr_dev(struct dmar_rmrr_unit *rmrr,
--					 struct device *dev)
--{
--	if (dev->archdata.iommu == DUMMY_DEVICE_DOMAIN_INFO)
--		return 0;
--	return iommu_prepare_identity_map(dev, rmrr->base_address,
--					  rmrr->end_address);
--}
--
- static int md_domain_init(struct dmar_domain *domain, int guest_width);
- 
  static int __init si_domain_init(int hw)
-@@ -4058,7 +4004,6 @@ static void __init init_iommu_pm_ops(void)
- static inline void init_iommu_pm_ops(void) {}
- #endif	/* CONFIG_PM */
- 
--
- int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
  {
- 	struct acpi_dmar_reserved_memory *rmrr;
+ 	struct dmar_rmrr_unit *rmrr;
+@@ -2721,7 +2695,7 @@ static int __init si_domain_init(int hw)
+ 	if (!si_domain)
+ 		return -EFAULT;
+ 
+-	if (md_domain_init(si_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
++	if (domain_init(si_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
+ 		domain_exit(si_domain);
+ 		return -EFAULT;
+ 	}
+@@ -4837,31 +4811,6 @@ static void dmar_remove_one_dev_info(struct device *dev)
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ }
+ 
+-static int md_domain_init(struct dmar_domain *domain, int guest_width)
+-{
+-	int adjust_width;
+-
+-	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
+-	domain_reserve_special_ranges(domain);
+-
+-	/* calculate AGAW */
+-	domain->gaw = guest_width;
+-	adjust_width = guestwidth_to_adjustwidth(guest_width);
+-	domain->agaw = width_to_agaw(adjust_width);
+-
+-	domain->iommu_coherency = 0;
+-	domain->iommu_snooping = 0;
+-	domain->iommu_superpage = 0;
+-	domain->max_addr = 0;
+-
+-	/* always allocate the top pgd */
+-	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
+-	if (!domain->pgd)
+-		return -ENOMEM;
+-	domain_flush_cache(domain, domain->pgd, PAGE_SIZE);
+-	return 0;
+-}
+-
+ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ {
+ 	struct dmar_domain *dmar_domain;
+@@ -4876,7 +4825,7 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 			pr_err("Can't allocate dmar_domain\n");
+ 			return NULL;
+ 		}
+-		if (md_domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
++		if (domain_init(dmar_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
+ 			pr_err("Domain initialization failed\n");
+ 			domain_exit(dmar_domain);
+ 			return NULL;
 -- 
 2.17.1
 
