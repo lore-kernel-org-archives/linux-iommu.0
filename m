@@ -2,66 +2,74 @@ Return-Path: <SRS0=EPGj=UL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0550C31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 06:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC28C31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 06:28:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F4CB2082C
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 06:24:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F4CB2082C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4C1B42082C
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 06:28:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C1B42082C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 47674158E;
-	Wed, 12 Jun 2019 06:24:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0C0F4158C;
+	Wed, 12 Jun 2019 06:28:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 799831585
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1CD9913E4
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 06:22:35 +0000 (UTC)
+	Wed, 12 Jun 2019 06:26:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2089679
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 806B679
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 06:22:34 +0000 (UTC)
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	11 Jun 2019 23:22:32 -0700
-X-ExtLoop1: 1
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.157])
-	by fmsmga001.fm.intel.com with SMTP; 11 Jun 2019 23:22:26 -0700
-Received: by lahna (sSMTP sendmail emulation); Wed, 12 Jun 2019 09:22:25 +0300
-Date: Wed, 12 Jun 2019 09:22:25 +0300
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 0/9] iommu: Bounce page for untrusted devices
-Message-ID: <20190612062225.GM2640@lahna.fi.intel.com>
-References: <20190603011620.31999-1-baolu.lu@linux.intel.com>
-	<20190610154241.GS28796@char.us.oracle.com>
-	<cd66dab1-9a18-13c1-e668-417036e2dbc1@linux.intel.com>
+	Wed, 12 Jun 2019 06:26:57 +0000 (UTC)
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id 81C41E146AD85FC4BB65;
+	Wed, 12 Jun 2019 14:26:54 +0800 (CST)
+Received: from [127.0.0.1] (10.133.215.186) by DGGEMS402-HUB.china.huawei.com
+	(10.3.19.202) with Microsoft SMTP Server id 14.3.439.0;
+	Wed, 12 Jun 2019 14:26:46 +0800
+Subject: Re: [PATCH v8 2/7] x86/dma: use IS_ENABLED() to simplify the code
+To: Borislav Petkov <bp@alien8.de>
+References: <20190530034831.4184-1-thunder.leizhen@huawei.com>
+	<20190530034831.4184-3-thunder.leizhen@huawei.com>
+	<20190612051624.GF32652@zn.tnic>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <bd743433-73e9-3cf1-c159-4371abebd989@huawei.com>
+Date: Wed, 12 Jun 2019 14:26:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <cd66dab1-9a18-13c1-e668-417036e2dbc1@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.11.4 (2019-03-13)
-Cc: Juergen Gross <jgross@suse.com>, kevin.tian@intel.com,
-	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, Jonathan Corbet <corbet@lwn.net>,
-	Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
-	jacob.jun.pan@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <20190612051624.GF32652@zn.tnic>
+Content-Language: en-US
+X-Originating-IP: [10.133.215.186]
+X-CFilter-Loop: Reflected
+Cc: linux-ia64 <linux-ia64@vger.kernel.org>,
+	Sebastian Ott <sebott@linux.ibm.com>,
+	linux-doc <linux-doc@vger.kernel.org>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Heiko Carstens <heiko.carstens@de.ibm.com>,
+	Paul Mackerras <paulus@samba.org>, "H . Peter Anvin" <hpa@zytor.com>,
+	linux-s390 <linux-s390@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Michael
+	Ellerman <mpe@ellerman.id.au>, x86 <x86@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>,
+	Will Deacon <will.deacon@arm.com>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	Tony Luck <tony.luck@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,16 +87,54 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Jun 12, 2019 at 11:00:06AM +0800, Lu Baolu wrote:
-> > What kind of devices did you test it with?
-> 
-> Most test work was done by Xu Pengfei (cc'ed). He has run the code
-> on real platforms with various thunderbolt peripherals (usb, disk,
-> network, etc.).
 
-In addtition to that we are also in works to build a real thunderclap
-platform to verify it can only access the bounce buffer if the DMA
-transfer was to a memory not filling the whole page.
+
+On 2019/6/12 13:16, Borislav Petkov wrote:
+> On Thu, May 30, 2019 at 11:48:26AM +0800, Zhen Lei wrote:
+>> This patch removes the ifdefs around CONFIG_IOMMU_DEFAULT_PASSTHROUGH to
+>> improve readablity.
+> 
+> Avoid having "This patch" or "This commit" in the commit message. It is
+> tautologically useless.
+
+OK, thanks.
+
+> 
+> Also, do
+> 
+> $ git grep 'This patch' Documentation/process
+> 
+> for more details.
+> 
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>  arch/x86/kernel/pci-dma.c | 7 ++-----
+>>  1 file changed, 2 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+>> index dcd272dbd0a9330..9f2b19c35a060df 100644
+>> --- a/arch/x86/kernel/pci-dma.c
+>> +++ b/arch/x86/kernel/pci-dma.c
+>> @@ -43,11 +43,8 @@
+>>   * It is also possible to disable by default in kernel config, and enable with
+>>   * iommu=nopt at boot time.
+>>   */
+>> -#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
+>> -int iommu_pass_through __read_mostly = 1;
+>> -#else
+>> -int iommu_pass_through __read_mostly;
+>> -#endif
+>> +int iommu_pass_through __read_mostly =
+>> +			IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH);
+> 
+> Let that line stick out.
+
+OK, I will merge them on the same line.
+
+> 
+> Thx.
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
