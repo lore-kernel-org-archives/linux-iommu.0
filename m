@@ -2,62 +2,53 @@ Return-Path: <SRS0=EPGj=UL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3A6C31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD8AC31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:33:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C1A6208CA
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:33:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C1A6208CA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 86E51208CA
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 11:33:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86E51208CA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id ECDCB1B05;
-	Wed, 12 Jun 2019 11:33:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2BAC11B08;
+	Wed, 12 Jun 2019 11:33:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2B1001AFB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 43BE21AFB
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 11:30:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BE3DD79
+	Wed, 12 Jun 2019 11:31:32 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0823C174
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 11:30:33 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4F9C428;
-	Wed, 12 Jun 2019 04:30:33 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C93383F246;
-	Wed, 12 Jun 2019 04:32:14 -0700 (PDT)
-Subject: Re: [PATCH 1/8] iommu: Add I/O ASID allocator
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
-	<20190610184714.6786-2-jean-philippe.brucker@arm.com>
-	<20190611052626.20bed59a@jacob-builder>
-	<95292b47-4cf4-5fd9-b096-1cb016e2264f@arm.com>
-	<20190611101052.35af46df@jacob-builder>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <f68f4ccb-1422-4f93-dc9c-2bcdf61c9ed4@arm.com>
-Date: Wed, 12 Jun 2019 12:30:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Wed, 12 Jun 2019 11:31:30 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id D62C068B02; Wed, 12 Jun 2019 13:31:02 +0200 (CEST)
+Date: Wed, 12 Jun 2019 13:31:02 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: How to resolve an issue in swiotlb environment?
+Message-ID: <20190612113102.GA24742@lst.de>
+References: <20190611064158.GA20601@lst.de>
+	<Pine.LNX.4.44L0.1906110956510.1535-100000@iolanthe.rowland.org>
+	<20190612073059.GA20086@lst.de>
+	<OSAPR01MB3089D154C6DF0237003CE80CD8EC0@OSAPR01MB3089.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20190611101052.35af46df@jacob-builder>
-Content-Language: en-US
-Cc: Mark Rutland <Mark.Rutland@arm.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Will Deacon <Will.Deacon@arm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Content-Disposition: inline
+In-Reply-To: <OSAPR01MB3089D154C6DF0237003CE80CD8EC0@OSAPR01MB3089.jpnprd01.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	Robin Murphy <Robin.Murphy@arm.com>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+	Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,68 +66,31 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 11/06/2019 18:10, Jacob Pan wrote:
->> The issue is theoretical at the moment because no users do this, but
->> I'd be more comfortable taking the xa_lock, which prevents a
->> concurrent xa_erase()+free(). (I commented on your v3 but you might
->> have missed it)
->>
-> Did you reply to my v3? I did not see it. I only saw your comments about
-> v3 in your commit message.
-
-My fault, I sneaked the comments in a random reply three levels down the
-thread:
-https://lore.kernel.org/linux-iommu/836caf0d-699e-33ba-5303-b1c9c949c9ca@arm.com/
-
-(Great, linux-iommu is indexed by lore! I won't have to Cc lkml anymore)
-
->>>> +	ioasid_data = xa_load(&ioasid_xa, ioasid);
->>>> +	if (ioasid_data)
->>>> +		rcu_assign_pointer(ioasid_data->private, data);  
->>> it is good to publish and have barrier here. But I just wonder even
->>> for weakly ordered machine, this pointer update is quite far away
->>> from its data update.  
->>
->> I don't know, it could be right before calling ioasid_set_data():
->>
->> 	mydata = kzalloc(sizeof(*mydata));
->> 	mydata->ops = &my_ops;			(1)
->> 	ioasid_set_data(ioasid, mydata);
->> 		... /* no write barrier here */
->> 		data->private = mydata;		(2)
->>
->> And then another thread calls ioasid_find():
->>
->> 	mydata = ioasid_find(ioasid);
->> 	if (mydata)
->> 		mydata->ops->do_something();
->>
->> On a weakly ordered machine, this thread could observe the pointer
->> assignment (2) before the ops assignment (1), and dereference NULL.
->> Using rcu_assign_pointer() should fix that
->>
-> I agree it is better to have the barrier. Just thought there is already
-> a rcu_read_lock() in xa_load() in between. rcu_read_lock() may have
-> barrier in some case but better not count on it. 
-
-Yes, and even if rcu_read_lock() provided a barrier I don't think it
-would be sufficient, because acquire semantics don't guarantee that
-prior writes appear to happen before the barrier, only the other way
-round. A lock operation with release semantics, for example
-spin_unlock(), should work.
-
-Thanks,
-Jean
-
-> No issues here. I will
-> integrate this in the next version.
+On Wed, Jun 12, 2019 at 08:52:21AM +0000, Yoshihiro Shimoda wrote:
+> Hi Christoph,
 > 
->> Thanks,
->> Jean
+> > From: Christoph Hellwig, Sent: Wednesday, June 12, 2019 4:31 PM
+> > 
+> > First things first:
+> > 
+> > Yoshihiro, can you try this git branch?  The new bits are just the three
+> > patches at the end, but they sit on top of a few patches already sent
+> > out to the list, so a branch is probably either:
+> > 
+> >    git://git.infradead.org/users/hch/misc.git scsi-virt-boundary-fixes
 > 
-> [Jacob Pan]
+> Thank you for the patches!
+> Unfortunately, the three patches could not resolve this issue.
+> However, it's a hint to me, and then I found the root cause:
+>  - slave_configure() in drivers/usb/storage/scsiglue.c calls
+>    blk_queue_max_hw_sectors() with 2048 sectors (1 MiB) when USB_SPEED_SUPER or more.
+>  -- So that, even if your patches (also I fixed it a little [1]) could not resolve
+>     the issue because the max_sectors is overwritten by above code.
 > 
+> So, I think we should fix the slave_configure() by using dma_max_mapping_size().
+> What do you think? If so, I can make such a patch.
 
+Yes, please do.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
