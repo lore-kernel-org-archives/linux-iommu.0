@@ -6,45 +6,51 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4038C31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 08:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A54C31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 08:12:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B160420684
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 08:05:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B160420684
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 3DBE0207E0
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 08:12:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3DBE0207E0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 608761749;
-	Wed, 12 Jun 2019 08:05:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 43A9E14A1;
+	Wed, 12 Jun 2019 08:12:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9ADF61744
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 42471177A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 08:04:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 33D95174
+	Wed, 12 Jun 2019 08:10:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B2C2E174
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 08:04:30 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id 6DDA5ABE9;
-	Wed, 12 Jun 2019 08:04:28 +0000 (UTC)
-Date: Wed, 12 Jun 2019 10:04:26 +0200
-From: Joerg Roedel <jroedel@suse.de>
-To: Qian Cai <cai@lca.pw>
-Subject: Re: [PATCH -next v2] iommu/amd: fix a null-ptr-deref in map_sg()
-Message-ID: <20190612080426.GL8151@suse.de>
-References: <20190506164440.37399-1-cai@lca.pw>
+	Wed, 12 Jun 2019 08:10:54 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id A4896398; Wed, 12 Jun 2019 10:10:51 +0200 (CEST)
+Date: Wed, 12 Jun 2019 10:10:51 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Marc Gonzalez <marc.w.gonzalez@free.fr>
+Subject: Re: [PATCH v3] iommu/arm-smmu: Avoid constant zero in TLBI writes
+Message-ID: <20190612081051.GD21613@8bytes.org>
+References: <f523effd-ef81-46fe-1f9e-1a0cb42c8b7b@free.fr>
+	<20190529130559.GB11023@fuggles.cambridge.arm.com>
+	<84791515-e0ae-0322-78aa-02ca0b40d157@free.fr>
+	<09a290f1-27a0-5ee3-16b9-659ef2ba99dc@free.fr>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190506164440.37399-1-cai@lca.pw>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: tmurphy@arista.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
+In-Reply-To: <09a290f1-27a0-5ee3-16b9-659ef2ba99dc@free.fr>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+	MSM <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	iommu <iommu@lists.linux-foundation.org>, Andy Gross <agross@kernel.org>,
+	AngeloGioacchino Del Regno <kholk11@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,20 +68,11 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, May 06, 2019 at 12:44:40PM -0400, Qian Cai wrote:
-> The commit 1a1079011da3 ("iommu/amd: Flush not present cache in
-> iommu_map_page") 
+On Mon, Jun 03, 2019 at 02:15:37PM +0200, Marc Gonzalez wrote:
+>  drivers/iommu/arm-smmu.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
 
-That patch was reverted by me in
-
-	97a18f548548a6ee1b9be14c6fc72090b8839875
-
-because it caused issues by testers. So maybe re-submit the above patch
-with this fix included?
-
-Regards,
-
-	Joerg
+Applied, thanks. It should show up in linux-next in the next days.
 
 _______________________________________________
 iommu mailing list
