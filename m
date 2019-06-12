@@ -2,64 +2,80 @@ Return-Path: <SRS0=EPGj=UL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CBEC31E46
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 21:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB5AC31E46
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 23:18:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1D5A720B7C
-	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 21:55:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2A24D208C2
+	for <iommu@archiver.kernel.org>; Wed, 12 Jun 2019 23:18:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="Eyr/wAeo"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D5A720B7C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XzeKPY4U"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A24D208C2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 31730299B;
-	Wed, 12 Jun 2019 21:55:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EA8992D12;
+	Wed, 12 Jun 2019 23:18:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 95FF527C8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 66EDB215B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 21:52:34 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com [54.193.82.35])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 422B3E6
+	Wed, 12 Jun 2019 17:58:48 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-it1-f194.google.com (mail-it1-f194.google.com
+	[209.85.166.194])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E4EB379
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 12 Jun 2019 21:52:34 +0000 (UTC)
-Received: from smtp.aristanetworks.com (localhost [127.0.0.1])
-	by smtp.aristanetworks.com (Postfix) with ESMTP id E69DE214A72B;
-	Wed, 12 Jun 2019 14:52:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-	s=Arista-A; t=1560376353;
-	bh=OG5iz7Y2otWoE83PZVl2kJS3N6qNz01B8T1Adm2jXHQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Eyr/wAeoK9oS57pbm2+3BOtbbq9ZcYEq8NTwlBHmtxp5kR2Xw1yyWgIjpwFekfqy1
-	i54LicM69uDC64/MWOpSEnv/RHnKekQm4l6Ff02U1vo7M/T3AhkclLHgfgkMI+96mw
-	LQShjlhxZHbZ285shI3c13IJN/ecd/zRcpqUXhHyhpiHnfy6eXMc4jtBQJUzAZLOMp
-	A9f1EIH98pZ8wnwl53Uy+MS4+mA+VGknSGO7NZBd4CB7qsOXiF500JKoZtCfjoe35r
-	H0m651wXd86K5jlr4NnqnynU9L8HgiWSBXsO7RgVJe55q/m3damBbMrA01i9aINeNp
-	Iys9ZOYrnSRzA==
-Received: from chmeee (unknown [10.80.4.152])
-	by smtp.aristanetworks.com (Postfix) with ESMTP id DD5203180B64;
-	Wed, 12 Jun 2019 14:52:33 -0700 (PDT)
-Received: from kevmitch by chmeee with local (Exim 4.92)
-	(envelope-from <kevmitch@chmeee>)
-	id 1hbBAX-0003KL-OA; Wed, 12 Jun 2019 14:52:33 -0700
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 3/3] iommu/amd: only free resources once on init error
-Date: Wed, 12 Jun 2019 14:52:05 -0700
-Message-Id: <20190612215203.12711-4-kevmitch@arista.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190612215203.12711-1-kevmitch@arista.com>
-References: <20190612215203.12711-1-kevmitch@arista.com>
+	Wed, 12 Jun 2019 17:58:47 +0000 (UTC)
+Received: by mail-it1-f194.google.com with SMTP id i21so12266693ita.5
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 12 Jun 2019 10:58:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=iJG2vQZhcPeJyWwyoiZlnIBWFYcWNy7uPN6RTvt3o+0=;
+	b=XzeKPY4UghingG2IHUZj64o5cUYXhSbgoRNlc2ZYSYp19Xb8MeOj9g4cyCBylvQIJh
+	wLdBJkIJKdeeyzOChwsKtMRRjxXx+i7HA90CEf1Zjd+ke64dOY4eZ0vo4X+P8bUVg2x8
+	cTnwDbkdqGs29ml8EOlAOsZ/CeH1L2BFZnzI96H2449TrjsRS3mLgYGPhGde3CEOFWTU
+	d5rtmjG4RDEjw06GweP8Ae/jfnCaibpeyqnj1mhSIkHNUliG5KoRzga9xg6ZfrcBJTBP
+	toh6V70LGrupSKYSDQK32DkuGqg9WZcJzYMNZ1/7Wmtg2LyTXR72r+qsWNzwhviHYpN8
+	SWUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=iJG2vQZhcPeJyWwyoiZlnIBWFYcWNy7uPN6RTvt3o+0=;
+	b=LhzR36YNVYGYCItmlp/8u0vyHIrYAjuRiV8kgJ7HYrfkbhsd0u8fvaTyzbOXiOEIUz
+	mNUphAv/D3fSUeHAbkSSCYNmsnGCvXIXLMX1DIxeVBaUXNquw7HugKpEi8Cp1rvhRZtp
+	IPQHLbcRrJQPq/IY6qdfV4OukgWxM9rGBEDxUnQx5TXhrhkDKrQ9wO4FjS25wE7tVtzU
+	W5hyjItCQh8v/KdVvUukjxxm7WlbP+nKN4scbqbKxj7LS4lFG5kpCS9XntPmJm2MZi5D
+	qeBdLPAip8sjjbLAqbpqq3NZw8vpNi7QMQLRkXfzpko3KOK0tqppbFLYcrZTIowxOaY3
+	1U6w==
+X-Gm-Message-State: APjAAAWnlozm6gc8Xg3Jjod5aeNiskJf4hBkphInwynJHbIlc1RRhusi
+	ht/vK4yJ8hY0tw5EyMkTOXKp0Dqv1+BS4e5HMDI=
+X-Google-Smtp-Source: APXvYqy8FsnT2tXAP9AmLOyZ4r6ik6vu3DdC9qVPGnxzd/WzDMecFvfZ2ITzSGUE4E2Ce+Va6U+5wKKkP5QgrxvaLiI=
+X-Received: by 2002:a02:7121:: with SMTP id n33mr52373916jac.19.1560362326654; 
+	Wed, 12 Jun 2019 10:58:46 -0700 (PDT)
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20190605210856.20677-1-bjorn.andersson@linaro.org>
+	<20190605210856.20677-3-bjorn.andersson@linaro.org>
+In-Reply-To: <20190605210856.20677-3-bjorn.andersson@linaro.org>
+From: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Date: Wed, 12 Jun 2019 11:58:35 -0600
+Message-ID: <CAOCk7Nocb7VO5xCcuK1FAPVdPr9U-7z8qOL4yt3ig=05e7brgg@mail.gmail.com>
+Subject: Re: [RFC 2/2] iommu: arm-smmu: Don't blindly use first SMR to
+	calculate mask
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+X-Mailman-Approved-At: Wed, 12 Jun 2019 23:16:10 +0000
+Cc: Patrick Daly <pdaly@codeaurora.org>, Jeffrey Hugo <jhugo@codeaurora.org>,
+	MSM <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>,
+	lkml <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,85 +88,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Kevin Mitchell via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Kevin Mitchell <kevmitch@arista.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When amd_iommu=off was specified on the command line, free_X_resources
-functions were called immediately after early_amd_iommu_init. They were
-then called again when amd_iommu_init also failed (as expected).
+On Wed, Jun 5, 2019 at 3:09 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> With the SMRs inherited from the bootloader the first SMR might actually
+> be valid and in use. As such probing the SMR mask using the first SMR
+> might break a stream in use. Search for an unused stream and use this to
+> probe the SMR mask.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Instead, call them only once: at the end of state_next() whenever
-there's an error. These functions should be safe to call any time and
-any number of times. However, since state_next is never called again in
-an error state, the cleanup will only ever be run once.
+Reviewed-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
 
-This also ensures that cleanup code is run as soon as possible after an
-error is detected rather than waiting for amd_iommu_init() to be called.
+I don't quite like the situation where the is no SMR to compute the mask, but I
+think the way you've handled it is the best option/
 
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
----
- drivers/iommu/amd_iommu_init.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+I'm curious, why is this not included in patch #1?  Seems like patch
+#1 introduces
+the issue, yet doesn't also fix it.
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5f3df5ae6ba8..24fc060fe596 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2638,8 +2638,6 @@ static int __init state_next(void)
- 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
- 		if (init_state == IOMMU_ACPI_FINISHED && amd_iommu_disabled) {
- 			pr_info("AMD IOMMU disabled on kernel command-line\n");
--			free_dma_resources();
--			free_iommu_resources();
- 			init_state = IOMMU_CMDLINE_DISABLED;
- 			ret = -EINVAL;
- 		}
-@@ -2680,6 +2678,19 @@ static int __init state_next(void)
- 		BUG();
- 	}
- 
-+	if (ret) {
-+		free_dma_resources();
-+		if (!irq_remapping_enabled) {
-+			disable_iommus();
-+			free_iommu_resources();
-+		} else {
-+			struct amd_iommu *iommu;
-+
-+			uninit_device_table_dma();
-+			for_each_iommu(iommu)
-+				iommu_flush_all_caches(iommu);
-+		}
-+	}
- 	return ret;
- }
- 
-@@ -2753,18 +2764,6 @@ static int __init amd_iommu_init(void)
- 	int ret;
- 
- 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
--	if (ret) {
--		free_dma_resources();
--		if (!irq_remapping_enabled) {
--			disable_iommus();
--			free_iommu_resources();
--		} else {
--			uninit_device_table_dma();
--			for_each_iommu(iommu)
--				iommu_flush_all_caches(iommu);
--		}
--	}
--
- #ifdef CONFIG_GART_IOMMU
- 	if (ret && list_empty(&amd_iommu_list)) {
- 		/*
--- 
-2.20.1
-
+> ---
+>  drivers/iommu/arm-smmu.c | 20 ++++++++++++++++----
+>  1 file changed, 16 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index c8629a656b42..0c6f5fe6f382 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1084,23 +1084,35 @@ static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
+>  {
+>         void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>         u32 smr;
+> +       int idx;
+>
+>         if (!smmu->smrs)
+>                 return;
+>
+> +       for (idx = 0; idx < smmu->num_mapping_groups; idx++) {
+> +               smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(idx));
+> +               if (!(smr & SMR_VALID))
+> +                       break;
+> +       }
+> +
+> +       if (idx == smmu->num_mapping_groups) {
+> +               dev_err(smmu->dev, "Unable to compute streamid_mask\n");
+> +               return;
+> +       }
+> +
+>         /*
+>          * SMR.ID bits may not be preserved if the corresponding MASK
+>          * bits are set, so check each one separately. We can reject
+>          * masters later if they try to claim IDs outside these masks.
+>          */
+>         smr = smmu->streamid_mask << SMR_ID_SHIFT;
+> -       writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> -       smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> +       writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(idx));
+> +       smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(idx));
+>         smmu->streamid_mask = smr >> SMR_ID_SHIFT;
+>
+>         smr = smmu->streamid_mask << SMR_MASK_SHIFT;
+> -       writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> -       smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> +       writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(idx));
+> +       smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(idx));
+>         smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
+>  }
+>
+> --
+> 2.18.0
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
