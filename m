@@ -6,35 +6,35 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A195EC31E45
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D768AC31E45
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:44:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7D01120851
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:44:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D01120851
+	by mail.kernel.org (Postfix) with ESMTPS id B9A2021479
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:44:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B9A2021479
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 11FF5130B;
-	Thu, 13 Jun 2019 08:43:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3F0311312;
+	Thu, 13 Jun 2019 08:43:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7D33F1309
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A171C1311
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:43:44 +0000 (UTC)
+	Thu, 13 Jun 2019 08:43:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D7082174
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D70F663D
 	for <iommu@lists.linux-foundation.org>;
 	Thu, 13 Jun 2019 08:43:43 +0000 (UTC)
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id E9BFCB3E969C7057F6F3;
-	Thu, 13 Jun 2019 16:43:40 +0800 (CST)
+	by Forcepoint Email with ESMTP id 018BD55A1FCA4A250BE7;
+	Thu, 13 Jun 2019 16:43:41 +0800 (CST)
 Received: from HGHY4L002753561.china.huawei.com (10.133.215.186) by
 	DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server
-	id 14.3.439.0; Thu, 13 Jun 2019 16:43:32 +0800
+	id 14.3.439.0; Thu, 13 Jun 2019 16:43:33 +0800
 From: Zhen Lei <thunder.leizhen@huawei.com>
 To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
@@ -52,10 +52,9 @@ To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
 	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
 	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v9 6/7] iommu/amd: add support for IOMMU default DMA mode
-	build options
-Date: Thu, 13 Jun 2019 16:42:39 +0800
-Message-ID: <20190613084240.16768-7-thunder.leizhen@huawei.com>
+Subject: [PATCH v9 7/7] ia64: hide build option IOMMU_DEFAULT_PASSTHROUGH
+Date: Thu, 13 Jun 2019 16:42:40 +0800
+Message-ID: <20190613084240.16768-8-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.21.0.windows.1
 In-Reply-To: <20190613084240.16768-1-thunder.leizhen@huawei.com>
 References: <20190613084240.16768-1-thunder.leizhen@huawei.com>
@@ -79,43 +78,26 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The default DMA mode of AMD IOMMU is LAZY, this patch make it can be set
-to STRICT at build time. It can be overridden by boot option.
-
-There is no functional change.
+The DMA mode PASSTHROUGH is not used on ia64.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/Kconfig          | 2 +-
- drivers/iommu/amd_iommu_init.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index fd297b0e0330d27..70741fd73b07785 100644
+index 70741fd73b07785..63506f1cad3d149 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -79,7 +79,7 @@ choice
- 	prompt "IOMMU default DMA mode"
- 	depends on IOMMU_API
- 	default IOMMU_DEFAULT_PASSTHROUGH if (PPC_POWERNV && PCI)
--	default IOMMU_DEFAULT_LAZY if (INTEL_IOMMU || S390_IOMMU)
-+	default IOMMU_DEFAULT_LAZY if (AMD_IOMMU || INTEL_IOMMU || S390_IOMMU)
- 	default IOMMU_DEFAULT_STRICT
- 	help
- 	  This option allows an IOMMU DMA mode to be chosen at build time, to
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 07d84dbab564e4d..b7d5c1757425946 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -154,7 +154,7 @@ struct ivmd_header {
- 					   to handle */
- LIST_HEAD(amd_iommu_unity_map);		/* a list of required unity mappings
- 					   we find in ACPI */
--bool amd_iommu_unmap_flush;		/* if true, flush on every unmap */
-+bool amd_iommu_unmap_flush = IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);	/* if true, flush on every unmap */
+@@ -91,7 +91,7 @@ choice
  
- LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
- 					   system */
+ config IOMMU_DEFAULT_PASSTHROUGH
+ 	bool "passthrough"
+-	depends on !S390_IOMMU
++	depends on (!S390_IOMMU && !IA64)
+ 	help
+ 	  In this mode, the DMA access through IOMMU without any addresses
+ 	  translation. That means, the wrong or illegal DMA access can not
 -- 
 1.8.3
 
