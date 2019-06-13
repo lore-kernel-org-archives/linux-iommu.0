@@ -2,104 +2,52 @@ Return-Path: <SRS0=dZmg=UM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4C7C31E45
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 04:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE98DC31E45
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 07:39:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9BC8C20866
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 04:52:13 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="Og+phJsU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9BC8C20866
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id AEFC920851
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 07:39:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEFC920851
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5188BC5C;
-	Thu, 13 Jun 2019 04:52:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4EAA4B49;
+	Thu, 13 Jun 2019 07:39:31 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2E0193EE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E1AEA949
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 04:52:12 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-OS2-obe.outbound.protection.outlook.com
-	(mail-eopbgr1410119.outbound.protection.outlook.com [40.107.141.119])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3C4ACE6
+	Thu, 13 Jun 2019 07:39:29 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7466B174
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 04:52:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=A0KvqaJ072jkO2bkJ8USO9biczqHUVBbvjaN9RjmwVw=;
-	b=Og+phJsUg4CrEnoCz2rKqyIMK41Ja+0I3Tl/3dP6Q67O4F5lxjvrR4InGIlBhQ+yewsJHQki4jJ7NMHKt/g40Z2Wc2ljkwEGeOVaDyPFvFaUZ4NErsjhY4dVxe8nhXTTg7x7TBZaKZ1YwdsJ54E4jCz4Xoe44RyVEYwVWK5lOOM=
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com (52.134.247.150) by
-	OSAPR01MB2995.jpnprd01.prod.outlook.com (52.134.248.16) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.1987.11; Thu, 13 Jun 2019 04:52:05 +0000
-Received: from OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85]) by
-	OSAPR01MB3089.jpnprd01.prod.outlook.com
-	([fe80::19ad:b6ce:a287:dc85%7]) with mapi id 15.20.1965.017;
-	Thu, 13 Jun 2019 04:52:05 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: RE: How to resolve an issue in swiotlb environment?
-Thread-Topic: How to resolve an issue in swiotlb environment?
-Thread-Index: AdUZ1Qlk800+Qz0uSuO63mIBeXkktQDUe+5AAJUL5SAAA1kYAAANEESAABj9hAAAERZjAAAi6naAAAJz/+AABe44AAAkT+Aw
-Date: Thu, 13 Jun 2019 04:52:04 +0000
-Message-ID: <OSAPR01MB3089ACE26C9C986BB15CF960D8EF0@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-References: <20190611064158.GA20601@lst.de>
-	<Pine.LNX.4.44L0.1906110956510.1535-100000@iolanthe.rowland.org>
-	<20190612073059.GA20086@lst.de>
-	<OSAPR01MB3089D154C6DF0237003CE80CD8EC0@OSAPR01MB3089.jpnprd01.prod.outlook.com>
-	<20190612113102.GA24742@lst.de>
-In-Reply-To: <20190612113102.GA24742@lst.de>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b76f24c3-92f8-4dbb-0a27-08d6efbae22d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);
-	SRVR:OSAPR01MB2995; 
-x-ms-traffictypediagnostic: OSAPR01MB2995:
-x-microsoft-antispam-prvs: <OSAPR01MB29956F43960EF8EFCC63DF5BD8EF0@OSAPR01MB2995.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0067A8BA2A
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(396003)(39860400002)(376002)(346002)(366004)(136003)(199004)(189003)(7696005)(6116002)(25786009)(33656002)(478600001)(14444005)(9686003)(256004)(6246003)(4326008)(76116006)(476003)(76176011)(11346002)(66446008)(73956011)(66946007)(81156014)(66476007)(66066001)(446003)(66556008)(64756008)(486006)(81166006)(7736002)(3846002)(8936002)(6916009)(8676002)(54906003)(305945005)(53936002)(5660300002)(316002)(68736007)(99286004)(74316002)(71200400001)(55016002)(26005)(14454004)(2906002)(186003)(52536014)(229853002)(6506007)(102836004)(6436002)(71190400001)(86362001);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:OSAPR01MB2995;
-	H:OSAPR01MB3089.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: yuAVPmOnA7259ti7dDat3UjAmq0/YUtJVYEh1zWPz4sNxuOPqA9xvKsB+4CcWmk4vLEUbXOSG0ZlSjm4A3uEmp4aZg/VbGF0ToAQvbxqw1D/ZALCc+cVIWB0/K/idnnPQSOT0RHAScN7r1p6RlO2OPFkA/a/+kwXoUASOwsXHhEC1Tg2B2VxCFpY7t7/MWOg0C7U6TKn/0CHduM6rCxBpSIyxr1+9YJp3JlWaqMvz8jz1UW0HsML0E4woN4VV87vHlu0mWsRfBBc4odQrYLv7EdZD+7LdFXzuDB751EfNDhSEZG5kkx2zjUyA/ooh8CFMGoHNAI2jbb8nt72uzQEgfxN1cwuuCzK4RITDKSSXX4gQOQPy6gAJerKu7t1ehMiCVxc6wPoxArnh7pyhzN8ffs6wuDvsBfOCo6NyPAja3k=
+	Thu, 13 Jun 2019 07:39:29 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id D867268B02; Thu, 13 Jun 2019 09:39:00 +0200 (CEST)
+Date: Thu, 13 Jun 2019 09:39:00 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Alan Stern <stern@rowland.harvard.edu>
+Subject: Re: How to resolve an issue in swiotlb environment?
+Message-ID: <20190613073900.GC12093@lst.de>
+References: <20190612120653.GA25285@lst.de>
+	<Pine.LNX.4.44L0.1906121038210.1557-100000@iolanthe.rowland.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b76f24c3-92f8-4dbb-0a27-08d6efbae22d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2019 04:52:05.1984 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yoshihiro.shimoda.uh@renesas.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2995
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.44L0.1906121038210.1557-100000@iolanthe.rowland.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	Oliver Neukum <oneukum@suse.com>,
 	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-	Alan Stern <stern@rowland.harvard.edu>
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -117,41 +65,21 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+On Wed, Jun 12, 2019 at 10:43:11AM -0400, Alan Stern wrote:
+> Would it be okay to rely on the assumption that USB block devices never 
+> have block size < 512?  (We could even add code to the driver to 
+> enforce this, although refusing to handle such devices at all might be 
+> worse than getting an occasional error.)
 
-> From: Christoph Hellwig, Sent: Wednesday, June 12, 2019 8:31 PM
-> 
-> On Wed, Jun 12, 2019 at 08:52:21AM +0000, Yoshihiro Shimoda wrote:
-> > Hi Christoph,
-> >
-> > > From: Christoph Hellwig, Sent: Wednesday, June 12, 2019 4:31 PM
-> > >
-> > > First things first:
-> > >
-> > > Yoshihiro, can you try this git branch?  The new bits are just the three
-> > > patches at the end, but they sit on top of a few patches already sent
-> > > out to the list, so a branch is probably either:
-> > >
-> > >    git://git.infradead.org/users/hch/misc.git scsi-virt-boundary-fixes
-> >
-> > Thank you for the patches!
-> > Unfortunately, the three patches could not resolve this issue.
-> > However, it's a hint to me, and then I found the root cause:
-> >  - slave_configure() in drivers/usb/storage/scsiglue.c calls
-> >    blk_queue_max_hw_sectors() with 2048 sectors (1 MiB) when USB_SPEED_SUPER or more.
-> >  -- So that, even if your patches (also I fixed it a little [1]) could not resolve
-> >     the issue because the max_sectors is overwritten by above code.
-> >
-> > So, I think we should fix the slave_configure() by using dma_max_mapping_size().
-> > What do you think? If so, I can make such a patch.
-> 
-> Yes, please do.
+sd.c only supports a few specific sector size, and none of them is
+< 512 bytes:
 
-Thank you for your comment. I sent a patch to related mailing lists and you.
-
-Best regards,
-Yoshihiro Shimoda
-
+	if (sector_size != 512 &&
+	    sector_size != 1024 &&
+	    sector_size != 2048 &&
+	    sector_size != 4096) {
+	    	...
+		sdkp->capacity = 0;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
