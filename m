@@ -2,39 +2,39 @@ Return-Path: <SRS0=dZmg=UM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CA3C31E45
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8148C31E45
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:43:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 201C52063F
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:43:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 201C52063F
+	by mail.kernel.org (Postfix) with ESMTPS id 9D25620851
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:43:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D25620851
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B256F130B;
-	Thu, 13 Jun 2019 08:43:11 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E1B911315;
+	Thu, 13 Jun 2019 08:43:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DB03A2F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1C37F1307
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:43:09 +0000 (UTC)
+	Thu, 13 Jun 2019 08:43:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 36C14174
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BC284174
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:43:09 +0000 (UTC)
+	Thu, 13 Jun 2019 08:43:13 +0000 (UTC)
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-	by Forcepoint Email with ESMTP id 67F28FAF1D69440836FB;
-	Thu, 13 Jun 2019 16:43:05 +0800 (CST)
+	by Forcepoint Email with ESMTP id 7C2EF437288702CB4296;
+	Thu, 13 Jun 2019 16:43:10 +0800 (CST)
 Received: from HGHY4L002753561.china.huawei.com (10.133.215.186) by
 	DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server
-	id 14.3.439.0; Thu, 13 Jun 2019 16:42:58 +0800
+	id 14.3.439.0; Thu, 13 Jun 2019 16:42:59 +0800
 From: Zhen Lei <thunder.leizhen@huawei.com>
 To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
@@ -52,10 +52,12 @@ To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
 	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
 	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
 	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v9 0/7] iommu: enhance IOMMU default DMA mode build options
-Date: Thu, 13 Jun 2019 16:42:33 +0800
-Message-ID: <20190613084240.16768-1-thunder.leizhen@huawei.com>
+Subject: [PATCH v9 1/7] iommu: enhance IOMMU default DMA mode build options
+Date: Thu, 13 Jun 2019 16:42:34 +0800
+Message-ID: <20190613084240.16768-2-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.21.0.windows.1
+In-Reply-To: <20190613084240.16768-1-thunder.leizhen@huawei.com>
+References: <20190613084240.16768-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.133.215.186]
 X-CFilter-Loop: Reflected
@@ -76,56 +78,88 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-v8--> v9
-1. Fix some text editing errors
+First, add build option IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
+opportunity to set {lazy|strict} mode as default at build time. Then put
+the three config options in an choice, make people can only choose one of
+the three at a time.
 
-v7--> v8
-1. Split into multiple small patches base on ARCHs or IOMMU drivers.
-2. Hide the unsupported build options on the related ARCH or IOMMU.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/Kconfig | 44 ++++++++++++++++++++++++++++++++++++--------
+ drivers/iommu/iommu.c |  3 ++-
+ 2 files changed, 38 insertions(+), 9 deletions(-)
 
-v6 --> v7:
-1. Fix some text editing errors
-
-v5 --> v6:
-1. give up adding boot option iommu.dma_mode
-
-v4 --> v5:
-As Hanjun and Thomas Gleixner's suggestion:
-1. Keep the old ARCH specific boot options no change.
-2. Keep build option CONFIG_IOMMU_DEFAULT_PASSTHROUGH no change.
-
-v4:
-As Robin Murphy's suggestion:
-"It's also not necessarily obvious to the user how this interacts with
-IOMMU_DEFAULT_PASSTHROUGH, so if we really do go down this route, maybe it
-would be better to refactor the whole lot into a single selection of something
-like IOMMU_DEFAULT_MODE anyway."
-
-In this version, I tried to normalize the IOMMU dma mode boot options for all
-ARCHs. When IOMMU is enabled, there are 3 dma modes: paasthrough(bypass),
-lazy(mapping but defer the IOTLB invalidation), strict. But currently each
-ARCHs defined their private boot options, different with each other. For
-example, to enable/disable "passthrough", ARM64 use iommu.passthrough=1/0,
-X86 use iommu=pt/nopt, PPC/POWERNV use iommu=nobypass.
-
-Zhen Lei (7):
-  iommu: enhance IOMMU default DMA mode build options
-  x86/dma: use IS_ENABLED() to simplify the code
-  s390/pci: add support for IOMMU default DMA mode build options
-  powernv/iommu: add support for IOMMU default DMA mode build options
-  iommu/vt-d: add support for IOMMU default DMA mode build options
-  iommu/amd: add support for IOMMU default DMA mode build options
-  ia64: hide build option IOMMU_DEFAULT_PASSTHROUGH
-
- arch/powerpc/platforms/powernv/pci-ioda.c |  3 +-
- arch/s390/pci/pci_dma.c                   |  2 +-
- arch/x86/kernel/pci-dma.c                 |  6 +---
- drivers/iommu/Kconfig                     | 48 +++++++++++++++++++++++++------
- drivers/iommu/amd_iommu_init.c            |  2 +-
- drivers/iommu/intel-iommu.c               |  2 +-
- drivers/iommu/iommu.c                     |  3 +-
- 7 files changed, 48 insertions(+), 18 deletions(-)
-
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 83664db5221df02..fe715fb295c6ed2 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -75,16 +75,44 @@ config IOMMU_DEBUGFS
+ 	  debug/iommu directory, and then populate a subdirectory with
+ 	  entries as required.
+ 
+-config IOMMU_DEFAULT_PASSTHROUGH
+-	bool "IOMMU passthrough by default"
++choice
++	prompt "IOMMU default DMA mode"
+ 	depends on IOMMU_API
+-        help
+-	  Enable passthrough by default, removing the need to pass in
+-	  iommu.passthrough=on or iommu=pt through command line. If this
+-	  is enabled, you can still disable with iommu.passthrough=off
+-	  or iommu=nopt depending on the architecture.
++	default IOMMU_DEFAULT_STRICT
++	help
++	  This option allows an IOMMU DMA mode to be chosen at build time, to
++	  override the default DMA mode of each ARCH, removing the need to
++	  pass in kernel parameters through command line. You can still use
++	  ARCH specific boot options to override this option again.
+ 
+-	  If unsure, say N here.
++	  If unsure, keep the default.
++
++config IOMMU_DEFAULT_PASSTHROUGH
++	bool "passthrough"
++	help
++	  In this mode, the DMA access through IOMMU without any addresses
++	  translation. That means, the wrong or illegal DMA access can not
++	  be caught, no error information will be reported.
++
++config IOMMU_DEFAULT_LAZY
++	bool "lazy"
++	help
++	  Support lazy mode, where for every IOMMU DMA unmap operation, the
++	  flush operation of IOTLB and the free operation of IOVA are deferred.
++	  They are only guaranteed to be done before the related IOVA will be
++	  reused.
++
++config IOMMU_DEFAULT_STRICT
++	bool "strict"
++	help
++	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
++	  the free operation of IOVA are guaranteed to be done in the unmap
++	  function.
++
++	  This mode is safer than the two above, but it maybe slower in some
++	  high performace scenarios.
++
++endchoice
+ 
+ config OF_IOMMU
+        def_bool y
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f9cacce909d3ae9..05171dd0bd03aee 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -31,7 +31,8 @@
+ #else
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
+-static bool iommu_dma_strict __read_mostly = true;
++static bool iommu_dma_strict __read_mostly =
++			IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
+ 
+ struct iommu_group {
+ 	struct kobject kobj;
 -- 
 1.8.3
 
