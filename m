@@ -2,84 +2,73 @@ Return-Path: <SRS0=dZmg=UM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7081AC31E45
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81067C31E45
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:30:24 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4625120866
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:20:43 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="RsNUrK+U"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4625120866
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8B8F920B7C
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:30:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B8F920B7C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1A945B43;
-	Thu, 13 Jun 2019 08:20:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5CFF6130B;
+	Thu, 13 Jun 2019 08:30:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 89EE0AF0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB1B412F3
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:20:42 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
-	[209.85.208.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 451A4174
+	Thu, 13 Jun 2019 08:30:22 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F3C44174
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:20:41 +0000 (UTC)
-Received: by mail-ed1-f68.google.com with SMTP id w13so29973417eds.4
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 01:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=JlRxJCwiPwkUyH7EE3nyXqgO0XVluxp/0ZdmWf9P5Z0=;
-	b=RsNUrK+UEn6zsAOC9w9pM7uhwHxwQMGD+8t/Un0aIPb541XG2VU7OTMQe7tJ/AYugG
-	G3FTQ65psDJrM6tPTQKU2rOXirC03jEhQDBtSNCzKL3RlSh+B4h4RysAzf/GD6k/xBvY
-	5d4Mj8gKd6ko8kFxspCeqeasrIc8irCflYt1E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=JlRxJCwiPwkUyH7EE3nyXqgO0XVluxp/0ZdmWf9P5Z0=;
-	b=W4knIEQRRzaCFVLp4dDZhlNFNLCmKpsWYuerSQsB7cCmXXb1uexHF65zA+i2XlFxIy
-	WDSprZWpsvIs/yJzkRy6Purv2L86VJySYHgp4Q/37MbvJtJh39txUQp8goNpd5zU8NRl
-	CNVqW8F50Dyl7bGwmkW5MpWZ+VXZkqZ37Fntut+5dq1hgtFG8hEZIV1Fdlm8QTGoHCnW
-	+/Z8brd7SZDPqSvYaeoTVCNXjfvwOKpTY9pF6hWitVKWZXH3USXRx/hksGexsTktYPm3
-	AkYW+tLPUPlpIo7hJjD1SMtd2CS91nDV5XA8eX//spGA3+0UjtOCySYFpXi8u28YcbQo
-	xmoQ==
-X-Gm-Message-State: APjAAAVrcphqGAvn+vYo5Kie0qe4XWn70OYq+9zQVoF7WlYroZrYFpQC
-	h8ySewjsCd4rvmmI8kO6phe6DBkr5Pf7k3kjdW7r9w==
-X-Google-Smtp-Source: APXvYqxy4qqaJLhUmiQHMs45thTIqa/dGytvJgClVC9B5jpzBc/xWQ86XsED1JEqZnHBmphRLW0uSlK+Ywh5heGNQts=
-X-Received: by 2002:a50:b561:: with SMTP id z30mr38225104edd.87.1560414039622; 
-	Thu, 13 Jun 2019 01:20:39 -0700 (PDT)
+	Thu, 13 Jun 2019 08:30:21 +0000 (UTC)
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id 2AE1F7854A4A77E18E06;
+	Thu, 13 Jun 2019 16:30:18 +0800 (CST)
+Received: from [127.0.0.1] (10.133.215.186) by DGGEMS411-HUB.china.huawei.com
+	(10.3.19.211) with Microsoft SMTP Server id 14.3.439.0;
+	Thu, 13 Jun 2019 16:30:11 +0800
+Subject: Re: [PATCH v8 1/7] iommu: enhance IOMMU default DMA mode build options
+To: John Garry <john.garry@huawei.com>, Jean-Philippe Brucker
+	<jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Will
+	Deacon" <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan
+	Corbet <corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>,
+	Sebastian Ott
+	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
+	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
+	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
+	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
+	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
+	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
+	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
+	<iommu@lists.linux-foundation.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
+	linux-ia64 <linux-ia64@vger.kernel.org>
+References: <20190530034831.4184-1-thunder.leizhen@huawei.com>
+	<20190530034831.4184-2-thunder.leizhen@huawei.com>
+	<645bd526-4eb0-4a36-2dda-023f009247ab@huawei.com>
+	<030bafab-58f5-8bb1-0533-2977d6e138b2@huawei.com>
+	<55d0e30c-5bca-41fc-5bf0-4366dc387afd@huawei.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <7d3727e3-a455-3a26-1104-5b85c196bbdf@huawei.com>
+Date: Thu, 13 Jun 2019 16:30:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
-	<1560169080-27134-17-git-send-email-yong.wu@mediatek.com>
-In-Reply-To: <1560169080-27134-17-git-send-email-yong.wu@mediatek.com>
-From: Pi-Hsun Shih <pihsun@chromium.org>
-Date: Thu, 13 Jun 2019 16:20:03 +0800
-Message-ID: <CANdKZ0emRPcTcL7Yq5nLH5z2_9fBuuczKehA8oEi0b+je15RPg@mail.gmail.com>
-Subject: Re: [PATCH v7 16/21] memory: mtk-smi: Add bus_sel for mt8183
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com,
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>, Nicolas Boichat <drinkcat@chromium.org>,
-	srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek SoC support"
-	<linux-mediatek@lists.infradead.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	yingjoe.chen@mediatek.com, anan.sun@mediatek.com,
-	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
-	"moderated list:ARM/Mediatek SoC support"
-	<linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <55d0e30c-5bca-41fc-5bf0-4366dc387afd@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.133.215.186]
+X-CFilter-Loop: Reflected
+Cc: Linuxarm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -92,220 +81,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-(Sorry for the possibly double-posting, my last mail got rejected by
-some mailing lists.)
-
-Hi,
-When I tested this patch series (Based on linux 5.2.0-rc2, and with
-various other patch series about MT8183) with lockdep enabled, and I'm
-seeing the following lockdep warning on boot.
-
-By bisecting the commits, the first commit that introduce this warning
-is this patch. The warning also doesn't appear if
-https://lore.kernel.org/patchwork/patch/1086582/ and
-https://lore.kernel.org/patchwork/patch/1086583/ are not applied.
-
-Do anyone have idea on why this is happening, or any suggestion on
-which part I should be digging into to figure this out? Thanks.
-
-[    4.664194] ======================================================
-[    4.670368] WARNING: possible circular locking dependency detected
-[    4.676545] 5.2.0-rc2-next-20190528-44527-g6c94b6475c04 #20 Tainted: G S
-[    4.684539] ------------------------------------------------------
-[    4.690714] kworker/4:1/51 is trying to acquire lock:
-[    4.695760] (____ptrval____) (regulator_list_mutex){+.+.},
-at:regulator_lock_dependent+0xdc/0x6c4
-[    4.704732]
-[    4.704732] but task is already holding lock:
-[    4.710556] (____ptrval____) (&genpd->mlock/1){+.+.},
-at:genpd_lock_nested_mtx+0x24/0x30
-[    4.718740]
-[    4.718740] which lock already depends on the new lock.
-[    4.718740]
-[    4.726908]
-[    4.726908] the existing dependency chain (in reverse order) is:
-[    4.734382]
-[    4.734382] -> #4 (&genpd->mlock/1){+.+.}:
-[    4.739963]        __mutex_lock_common+0x1a0/0x1fe8
-[    4.744836]        mutex_lock_nested+0x40/0x50
-[    4.749275]        genpd_lock_nested_mtx+0x24/0x30
-[    4.754063]        genpd_add_subdomain+0x150/0x524
-[    4.758850]        pm_genpd_add_subdomain+0x3c/0x5c
-[    4.763723]        scpsys_probe+0x520/0xe78
-[    4.767902]        platform_drv_probe+0xf4/0x134
-[    4.772517]        really_probe+0x214/0x4dc
-[    4.776696]        driver_probe_device+0xcc/0x1d4
-[    4.781396]        __device_attach_driver+0x10c/0x180
-[    4.786442]        bus_for_each_drv+0x124/0x184
-[    4.790968]        __device_attach+0x1c0/0x2d8
-[    4.795407]        device_initial_probe+0x20/0x2c
-[    4.800106]        bus_probe_device+0x80/0x16c
-[    4.804546]        deferred_probe_work_func+0x120/0x168
-[    4.809767]        process_one_work+0x858/0x1208
-[    4.814379]        worker_thread+0x9ec/0xcb8
-[    4.818644]        kthread+0x2b8/0x2d0
-[    4.822391]        ret_from_fork+0x10/0x18
-[    4.826480]
-[    4.826480] -> #3 (&genpd->mlock){+.+.}:
-[    4.831880]        __mutex_lock_common+0x1a0/0x1fe8
-[    4.836752]        mutex_lock_nested+0x40/0x50
-[    4.841190]        genpd_lock_mtx+0x20/0x2c
-[    4.845369]        genpd_runtime_resume+0x140/0x434
-[    4.850241]        __rpm_callback+0xb0/0x1e4
-[    4.854506]        rpm_callback+0x54/0x1a8
-[    4.858597]        rpm_resume+0xc6c/0x10c4
-[    4.862689]        __pm_runtime_resume+0xb4/0x124
-[    4.867387]        device_link_add+0x598/0x8d0
-[    4.871829]        mtk_smi_larb_probe+0x2b0/0x340
-[    4.876528]        platform_drv_probe+0xf4/0x134
-[    4.881141]        really_probe+0x214/0x4dc
-[    4.885320]        driver_probe_device+0xcc/0x1d4
-[    4.890020]        __device_attach_driver+0x10c/0x180
-[    4.895066]        bus_for_each_drv+0x124/0x184
-[    4.899591]        __device_attach+0x1c0/0x2d8
-[    4.904031]        device_initial_probe+0x20/0x2c
-[    4.908730]        bus_probe_device+0x80/0x16c
-[    4.913169]        deferred_probe_work_func+0x120/0x168
-[    4.918387]        process_one_work+0x858/0x1208
-[    4.923000]        worker_thread+0x9ec/0xcb8
-[    4.927264]        kthread+0x2b8/0x2d0
-[    4.931009]        ret_from_fork+0x10/0x18
-[    4.935098]
-[    4.935098] -> #2 (dpm_list_mtx){+.+.}:
-[    4.940412]        __mutex_lock_common+0x1a0/0x1fe8
-[    4.945284]        mutex_lock_nested+0x40/0x50
-[    4.949722]        device_pm_lock+0x1c/0x24
-[    4.953900]        device_link_add+0x98/0x8d0
-[    4.958252]        _regulator_get+0x3f0/0x504
-[    4.962606]        _devm_regulator_get+0x58/0xb8
-[    4.967218]        devm_regulator_get+0x28/0x34
-[    4.971746]        pwm_backlight_probe+0x61c/0x1b90
-[    4.976617]        platform_drv_probe+0xf4/0x134
-[    4.981230]        really_probe+0x214/0x4dc
-[    4.985409]        driver_probe_device+0xcc/0x1d4
-[    4.990108]        device_driver_attach+0xe4/0x104
-[    4.994894]        __driver_attach+0x134/0x14c
-[    4.999333]        bus_for_each_dev+0x120/0x180
-[    5.003859]        driver_attach+0x48/0x54
-[    5.007950]        bus_add_driver+0x2ac/0x44c
-[    5.012303]        driver_register+0x160/0x288
-[    5.016742]        __platform_driver_register+0xcc/0xdc
-[    5.021964]        pwm_backlight_driver_init+0x1c/0x24
-[    5.027097]        do_one_initcall+0x38c/0x994
-[    5.031536]        do_initcall_level+0x3a4/0x4b8
-[    5.036148]        do_basic_setup+0x84/0xa0
-[    5.036153]        kernel_init_freeable+0x23c/0x324
-[    5.036158]        kernel_init+0x14/0x110
-[    5.036164]        ret_from_fork+0x10/0x18
-[    5.036166]
-[    5.036166] -> #1 (device_links_lock){+.+.}:
-[    5.065905]        __mutex_lock_common+0x1a0/0x1fe8
-[    5.070777]        mutex_lock_nested+0x40/0x50
-[    5.075215]        device_link_remove+0x40/0xe0
-[    5.079740]        _regulator_put+0x104/0x2d8
-[    5.084093]        regulator_put+0x30/0x44
-[    5.088184]        devm_regulator_release+0x38/0x44
-[    5.093056]        release_nodes+0x604/0x670
-[    5.097320]        devres_release_all+0x70/0x8c
-[    5.101846]        really_probe+0x270/0x4dc
-[    5.106024]        driver_probe_device+0xcc/0x1d4
-[    5.110724]        device_driver_attach+0xe4/0x104
-[    5.115510]        __driver_attach+0x134/0x14c
-[    5.119949]        bus_for_each_dev+0x120/0x180
-[    5.124474]        driver_attach+0x48/0x54
-[    5.128566]        bus_add_driver+0x2ac/0x44c
-[    5.132919]        driver_register+0x160/0x288
-[    5.137357]        __platform_driver_register+0xcc/0xdc
-[    5.142576]        pwm_backlight_driver_init+0x1c/0x24
-[    5.147708]        do_one_initcall+0x38c/0x994
-[    5.152146]        do_initcall_level+0x3a4/0x4b8
-[    5.156758]        do_basic_setup+0x84/0xa0
-[    5.160936]        kernel_init_freeable+0x23c/0x324
-[    5.165807]        kernel_init+0x14/0x110
-[    5.169813]        ret_from_fork+0x10/0x18
-[    5.173901]
-[    5.173901] -> #0 (regulator_list_mutex){+.+.}:
-[    5.179910]        lock_acquire+0x350/0x4d4
-[    5.184088]        __mutex_lock_common+0x1a0/0x1fe8
-[    5.184095]        mutex_lock_nested+0x40/0x50
-[    5.197475]        regulator_lock_dependent+0xdc/0x6c4
-[    5.197482]        regulator_disable+0xa0/0x138
-[    5.197487]        scpsys_power_off+0x38c/0x4bc
-[    5.197495]        genpd_power_off+0x3d8/0x6a0
-[    5.209399]        genpd_power_off+0x530/0x6a0
-[    5.209406]        genpd_power_off_work_fn+0x74/0xc0
-[    5.209411]        process_one_work+0x858/0x1208
-[    5.209419]        worker_thread+0x9ec/0xcb8
-[    5.219067]        kthread+0x2b8/0x2d0
-[    5.219073]        ret_from_fork+0x10/0x18
-[    5.219077]
-[    5.219077] other info that might help us debug this:
-[    5.219077]
-[    5.219080] Chain exists of:
-[    5.219080]   regulator_list_mutex --> &genpd->mlock --> &genpd->mlock/1
-[    5.219080]
-[    5.228039]  Possible unsafe locking scenario:
-[    5.228039]
-[    5.228042]        CPU0                    CPU1
-[    5.228046]        ----                    ----
-[    5.228048]   lock(&genpd->mlock/1);
-[    5.228058]                                lock(&genpd->mlock);
-[    5.311647]                                lock(&genpd->mlock/1);
-[    5.317736]   lock(regulator_list_mutex);
-[    5.321742]
-[    5.321742]  *** DEADLOCK ***
-[    5.321742]
-[    5.327655] 4 locks held by kworker/4:1/51:
-[    5.331831]  #0: (____ptrval____) ((wq_completion)pm){+.+.},
-at:process_one_work+0x57c/0x1208
-[    5.340444]  #1: (____ptrval____)
-((work_completion)(&genpd->power_off_work)){+.+.},
-at:process_one_work+0x5b8/0x1208
-[    5.351139]  #2: (____ptrval____) (&genpd->mlock){+.+.},
-at:genpd_lock_mtx+0x20/0x2c
-[    5.358970]  #3: (____ptrval____) (&genpd->mlock/1){+.+.},
-at:genpd_lock_nested_mtx+0x24/0x30
-[    5.367584]
-[    5.367584] stack backtrace:
-[    5.371939] CPU: 4 PID: 51 Comm: kworker/4:1 Tainted: G S
-     5.2.0-rc2-next-20190528-44527-g6c94b6475c04 #20
-[    5.382809] Workqueue: pm genpd_power_off_work_fn
-[    5.382816] Call trace:
-[    5.382822]  dump_backtrace+0x0/0x2c0
-[    5.382830]  show_stack+0x20/0x2c
-[    5.409174]  dump_stack+0x10c/0x17c
-[    5.412659]  print_circular_bug+0x42c/0x4d0
-[    5.416838]  __lock_acquire+0x4c88/0x5484
-[    5.420843]  lock_acquire+0x350/0x4d4
-[    5.424500]  __mutex_lock_common+0x1a0/0x1fe8
-[    5.428851]  mutex_lock_nested+0x40/0x50
-[    5.432770]  regulator_lock_dependent+0xdc/0x6c4
-[    5.437383]  regulator_disable+0xa0/0x138
-[    5.441389]  scpsys_power_off+0x38c/0x4bc
-[    5.445393]  genpd_power_off+0x3d8/0x6a0
-[    5.449310]  genpd_power_off+0x530/0x6a0
-[    5.453229]  genpd_power_off_work_fn+0x74/0xc0
-[    5.457667]  process_one_work+0x858/0x1208
-[    5.461758]  worker_thread+0x9ec/0xcb8
-[    5.465503]  kthread+0x2b8/0x2d0
-[    5.468727]  ret_from_fork+0x10/0x18
-
-On Mon, Jun 10, 2019 at 8:21 PM Yong Wu <yong.wu@mediatek.com> wrote:
-> ...
-> +       } else {
-> +               res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +               common->base = devm_ioremap_resource(dev, res);
-> +               if (IS_ERR(common->base))
-> +                       return PTR_ERR(common->base);
->         }
->         pm_runtime_enable(dev);
->         platform_set_drvdata(pdev, common);
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAyMDE5LzUvMzEgMTg6NDIsIEpvaG4gR2Fycnkgd3JvdGU6Cj4gCj4+Pj4gLWNvbmZpZyBJ
+T01NVV9ERUZBVUxUX1BBU1NUSFJPVUdICj4+Pj4gLcKgwqDCoCBib29sICJJT01NVSBwYXNzdGhy
+b3VnaCBieSBkZWZhdWx0Igo+Pj4+ICtjaG9pY2UKPj4+PiArwqDCoMKgIHByb21wdCAiSU9NTVUg
+ZGVmYXVsdCBETUEgbW9kZSIKPj4+PiDCoMKgwqDCoCBkZXBlbmRzIG9uIElPTU1VX0FQSQo+Pj4+
+IC3CoMKgwqDCoMKgwqDCoCBoZWxwCj4+Pj4gLcKgwqDCoMKgwqAgRW5hYmxlIHBhc3N0aHJvdWdo
+IGJ5IGRlZmF1bHQsIHJlbW92aW5nIHRoZSBuZWVkIHRvIHBhc3MgaW4KPj4+PiAtwqDCoMKgwqDC
+oCBpb21tdS5wYXNzdGhyb3VnaD1vbiBvciBpb21tdT1wdCB0aHJvdWdoIGNvbW1hbmQgbGluZS4g
+SWYgdGhpcwo+Pj4+IC3CoMKgwqDCoMKgIGlzIGVuYWJsZWQsIHlvdSBjYW4gc3RpbGwgZGlzYWJs
+ZSB3aXRoIGlvbW11LnBhc3N0aHJvdWdoPW9mZgo+Pj4+IC3CoMKgwqDCoMKgIG9yIGlvbW11PW5v
+cHQgZGVwZW5kaW5nIG9uIHRoZSBhcmNoaXRlY3R1cmUuCj4+Pj4gK8KgwqDCoCBkZWZhdWx0IElP
+TU1VX0RFRkFVTFRfU1RSSUNUCj4+Pj4gK8KgwqDCoCBoZWxwCj4+Pj4gK8KgwqDCoMKgwqAgVGhp
+cyBvcHRpb24gYWxsb3dzIElPTU1VIERNQSBtb2RlIHRvIGJlIGNob3NlIGF0IGJ1aWxkIHRpbWUs
+IHRvCj4+Pgo+Pj4gQXMgYmVmb3JlOgo+Pj4gL3MvY2hvc2UvY2hvc2VuLywgL3MvYWxsb3dzIElP
+TU1VL2FsbG93cyBhbiBJT01NVS8KPj4gSSdtIHNvcnJ5IHRoYXQgdGhlIHByZXZpb3VzIHZlcnNp
+b24gd2FzIG5vdCBtb2RpZmllZC4KPj4KPj4+Cj4+Pj4gK8KgwqDCoMKgwqAgb3ZlcnJpZGUgdGhl
+IGRlZmF1bHQgRE1BIG1vZGUgb2YgZWFjaCBBUkNIcywgcmVtb3ZpbmcgdGhlIG5lZWQgdG8KPj4+
+Cj4+PiBBZ2FpbiwgYXMgYmVmb3JlOgo+Pj4gQVJDSHMgc2hvdWxkIGJlIHNpbmd1bGFyCj4+IE9L
+Cj4+Cj4+Pgo+Pj4+ICvCoMKgwqDCoMKgIHBhc3MgaW4ga2VybmVsIHBhcmFtZXRlcnMgdGhyb3Vn
+aCBjb21tYW5kIGxpbmUuIFlvdSBjYW4gc3RpbGwgdXNlCj4+Pj4gK8KgwqDCoMKgwqAgQVJDSHMg
+c3BlY2lmaWMgYm9vdCBvcHRpb25zIHRvIG92ZXJyaWRlIHRoaXMgb3B0aW9uIGFnYWluLgo+IAo+
+ICoKPiAKPj4+PiArCj4+Pj4gK2NvbmZpZyBJT01NVV9ERUZBVUxUX1BBU1NUSFJPVUdICj4+Pj4g
+K8KgwqDCoCBib29sICJwYXNzdGhyb3VnaCIKPj4+PiArwqDCoMKgIGhlbHAKPj4+PiArwqDCoMKg
+wqDCoCBJbiB0aGlzIG1vZGUsIHRoZSBETUEgYWNjZXNzIHRocm91Z2ggSU9NTVUgd2l0aG91dCBh
+bnkgYWRkcmVzc2VzCj4+Pj4gK8KgwqDCoMKgwqAgdHJhbnNsYXRpb24uIFRoYXQgbWVhbnMsIHRo
+ZSB3cm9uZyBvciBpbGxlZ2FsIERNQSBhY2Nlc3MgY2FuIG5vdAo+Pj4+ICvCoMKgwqDCoMKgIGJl
+IGNhdWdodCwgbm8gZXJyb3IgaW5mb3JtYXRpb24gd2lsbCBiZSByZXBvcnRlZC4KPj4+Pgo+Pj4+
+IMKgwqDCoMKgwqDCoCBJZiB1bnN1cmUsIHNheSBOIGhlcmUuCj4+Pj4KPj4+PiArY29uZmlnIElP
+TU1VX0RFRkFVTFRfTEFaWQo+Pj4+ICvCoMKgwqAgYm9vbCAibGF6eSIKPj4+PiArwqDCoMKgIGhl
+bHAKPj4+PiArwqDCoMKgwqDCoCBTdXBwb3J0IGxhenkgbW9kZSwgd2hlcmUgZm9yIGV2ZXJ5IElP
+TU1VIERNQSB1bm1hcCBvcGVyYXRpb24sIHRoZQo+Pj4+ICvCoMKgwqDCoMKgIGZsdXNoIG9wZXJh
+dGlvbiBvZiBJT1RMQiBhbmQgdGhlIGZyZWUgb3BlcmF0aW9uIG9mIElPVkEgYXJlIGRlZmVycmVk
+Lgo+Pj4+ICvCoMKgwqDCoMKgIFRoZXkgYXJlIG9ubHkgZ3VhcmFudGVlZCB0byBiZSBkb25lIGJl
+Zm9yZSB0aGUgcmVsYXRlZCBJT1ZBIHdpbGwgYmUKPj4+PiArwqDCoMKgwqDCoCByZXVzZWQuCj4+
+Pgo+Pj4gd2h5IG5vIGFkdmlzb3J5IG9uIGhvdyB0byBzZXQgaWYgdW5zdXJlPwo+PiBCZWNhdXNl
+IHRoZSBMQVpZIGFuZCBTVFJJQ1QgaGF2ZSB0aGVpciBvd24gYWR2YW50YWdlcyBhbmQgZGlzYWR2
+YW50YWdlcy4KPj4KPj4gU2hvdWxkIEkgc2F5OiBJZiB1bnN1cmUsIGtlZXAgdGhlIGRlZmF1bHTj
+gIIKPiAKPiBNYXliZS4gU28geW91IGNvdWxkIHB1dCB0aGlzIGluIHRoZSBoZWxwIGZvciB0aGUg
+Y2hvaWNlLCAqIGFib3ZlLCBhbmQgcmVtb3ZlIHRoZSBhZHZpc29yeSBvbiBJT01NVV9ERUZBVUxU
+X1BBU1NUSFJPVUdILgoKT0ssIEknbGwgcmV2aXNlIGl0IGFjY29yZGluZyB0byB0aGlzIGlkZWEg
+aW4gdjkuCgo+IAo+IEhvd2V2ZXIgdGhlIG1haW50YWluZXIgbWF5IGhhdmUgYSBkaWZmZXJlbnQg
+dmlldy4KPiAKPiBUaGFua3MsCj4gSm9obgo+IAo+Pgo+Pj4KPj4+PiArCj4+Pj4gK2NvbmZpZyBJ
+T01NVV9ERUZBVUxUX1NUUklDVAo+Pj4+ICvCoMKgwqAgYm9vbCAic3RyaWN0Igo+Pj4+ICvCoMKg
+wqAgaGVscAo+Pj4+ICvCoMKgwqDCoMKgIEZvciBldmVyeSBJT01NVSBETUEgdW5tYXAgb3BlcmF0
+aW9uLCB0aGUgZmx1c2ggb3BlcmF0aW9uIG9mIElPVExCIGFuZAo+Pj4+ICvCoMKgwqDCoMKgIHRo
+ZSBmcmVlIG9wZXJhdGlvbiBvZiBJT1ZBIGFyZSBndWFyYW50ZWVkIHRvIGJlIGRvbmUgaW4gdGhl
+IHVubWFwCj4+Pj4gK8KgwqDCoMKgwqAgZnVuY3Rpb24uCj4+Pj4gKwo+Pj4+ICvCoMKgwqDCoMKg
+IFRoaXMgbW9kZSBpcyBzYWZlciB0aGFuIHRoZSB0d28gYWJvdmUsIGJ1dCBpdCBtYXliZSBzbG93
+ZXIgaW4gc29tZQo+Pj4+ICvCoMKgwqDCoMKgIGhpZ2ggcGVyZm9ybWFjZSBzY2VuYXJpb3MuCj4+
+Pgo+Pj4gYW5kIGhlcmU/Cj4gCj4gCj4gLgo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
+LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2lvbW11
