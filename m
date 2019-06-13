@@ -6,61 +6,48 @@ X-Spam-Status: No, score=-8.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D768AC31E45
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6402BC31E45
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 10:20:41 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B9A2021479
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 08:44:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B9A2021479
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2DE352084D
+	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 10:20:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DE352084D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3F0311312;
-	Thu, 13 Jun 2019 08:43:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CB8D41367;
+	Thu, 13 Jun 2019 10:20:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A171C1311
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 06ADB1306
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:43:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D70F663D
+	Thu, 13 Jun 2019 10:20:40 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from relmlie6.idc.renesas.com (relmlor1.renesas.com
+	[210.160.252.171])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 3281F63D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 08:43:43 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id 018BD55A1FCA4A250BE7;
-	Thu, 13 Jun 2019 16:43:41 +0800 (CST)
-Received: from HGHY4L002753561.china.huawei.com (10.133.215.186) by
-	DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server
-	id 14.3.439.0; Thu, 13 Jun 2019 16:43:33 +0800
-From: Zhen Lei <thunder.leizhen@huawei.com>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, John Garry
-	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
-	<will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Jonathan Corbet
-	<corbet@lwn.net>, linux-doc <linux-doc@vger.kernel.org>, Sebastian Ott
-	<sebott@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-	"Martin Schwidefsky" <schwidefsky@de.ibm.com>, Heiko Carstens
-	<heiko.carstens@de.ibm.com>, Benjamin Herrenschmidt
-	<benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, "Michael
-	Ellerman" <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu
-	<fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar
-	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H . Peter Anvin"
-	<hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>, iommu
-	<iommu@lists.linux-foundation.org>, linux-kernel
-	<linux-kernel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, x86 <x86@kernel.org>,
-	linux-ia64 <linux-ia64@vger.kernel.org>
-Subject: [PATCH v9 7/7] ia64: hide build option IOMMU_DEFAULT_PASSTHROUGH
-Date: Thu, 13 Jun 2019 16:42:40 +0800
-Message-ID: <20190613084240.16768-8-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.21.0.windows.1
-In-Reply-To: <20190613084240.16768-1-thunder.leizhen@huawei.com>
-References: <20190613084240.16768-1-thunder.leizhen@huawei.com>
-MIME-Version: 1.0
-X-Originating-IP: [10.133.215.186]
-X-CFilter-Loop: Reflected
+	Thu, 13 Jun 2019 10:20:38 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.62,369,1554735600"; d="scan'208";a="18380805"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+	by relmlie6.idc.renesas.com with ESMTP; 13 Jun 2019 19:20:37 +0900
+Received: from localhost.localdomain (unknown [10.166.17.210])
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8D6284274BC4;
+	Thu, 13 Jun 2019 19:20:37 +0900 (JST)
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: joro@8bytes.org, axboe@kernel.dk, ulf.hansson@linaro.org,
+	wsa+renesas@sang-engineering.com
+Subject: [RFC PATCH v6 1/5] iommu: add an exported function to get minimum
+	page size for a domain
+Date: Thu, 13 Jun 2019 19:20:11 +0900
+Message-Id: <1560421215-10750-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1560421215-10750-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1560421215-10750-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Cc: linux-renesas-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
+	linux-block@vger.kernel.org, iommu@lists.linux-foundation.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,34 +60,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The DMA mode PASSTHROUGH is not used on ia64.
+This patch adds an exported function to get minimum page size for
+a domain. This patch also modifies similar codes on the iommu.c.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 18 +++++++++++++++---
+ include/linux/iommu.h |  1 +
+ 2 files changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 70741fd73b07785..63506f1cad3d149 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -91,7 +91,7 @@ choice
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 2a90638..7ed16af 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -280,6 +280,18 @@ iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
+ 	return ret;
+ }
  
- config IOMMU_DEFAULT_PASSTHROUGH
- 	bool "passthrough"
--	depends on !S390_IOMMU
-+	depends on (!S390_IOMMU && !IA64)
- 	help
- 	  In this mode, the DMA access through IOMMU without any addresses
- 	  translation. That means, the wrong or illegal DMA access can not
++/**
++ * iommu_get_minimum_page_size - get minimum page size for a domain
++ * @domain: the domain
++ *
++ * Allow iommu driver to get a minimum page size for a domain.
++ */
++unsigned long iommu_get_minimum_page_size(struct iommu_domain *domain)
++{
++	return 1UL << __ffs(domain->pgsize_bitmap);
++}
++EXPORT_SYMBOL_GPL(iommu_get_minimum_page_size);
++
+ int iommu_get_group_resv_regions(struct iommu_group *group,
+ 				 struct list_head *head)
+ {
+@@ -558,7 +570,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+ 
+ 	BUG_ON(!domain->pgsize_bitmap);
+ 
+-	pg_size = 1UL << __ffs(domain->pgsize_bitmap);
++	pg_size = iommu_get_minimum_page_size(domain);
+ 	INIT_LIST_HEAD(&mappings);
+ 
+ 	iommu_get_resv_regions(dev, &mappings);
+@@ -1595,7 +1607,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		return -EINVAL;
+ 
+ 	/* find out the minimum page size supported */
+-	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
++	min_pagesz = iommu_get_minimum_page_size(domain);
+ 
+ 	/*
+ 	 * both the virtual address and the physical one, as well as
+@@ -1655,7 +1667,7 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 		return 0;
+ 
+ 	/* find out the minimum page size supported */
+-	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
++	min_pagesz = iommu_get_minimum_page_size(domain);
+ 
+ 	/*
+ 	 * The virtual address, as well as the size of the mapping, must be
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 91af22a..7e53b43 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -366,6 +366,7 @@ extern int iommu_request_dma_domain_for_dev(struct device *dev);
+ extern struct iommu_resv_region *
+ iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot,
+ 			enum iommu_resv_type type);
++extern unsigned long iommu_get_minimum_page_size(struct iommu_domain *domain);
+ extern int iommu_get_group_resv_regions(struct iommu_group *group,
+ 					struct list_head *head);
+ 
 -- 
-1.8.3
-
+2.7.4
 
 _______________________________________________
 iommu mailing list
