@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D16C31E4C
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3578C31E4B
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E38A2133D
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B8E5E2133D
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="goAYdDm6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E38A2133D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="mJaWxF1L"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8E5E2133D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B49F138A;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DB9F41387;
 	Fri, 14 Jun 2019 14:45:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 15F451372
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B1F321372
 	for <iommu@lists.linux-foundation.org>;
 	Fri, 14 Jun 2019 14:45:21 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7F408E5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 28A23E5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 14:45:20 +0000 (UTC)
+	Fri, 14 Jun 2019 14:45:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=uwnDv1KhES3Re+AMwM82pmt+rEujP4N4t/Md4KoSM88=;
-	b=goAYdDm609nD5VBcnMmPH4v15P
-	kYpPS40DH9d8YqwKfLgZO/b3FSOZOgUzamHnQFqToxP9H/DyUbvT/dwC04XH4P2LRiWrRVieXp1n5
-	JbZ9AupJ6l+ROXP8jJv5jVaSekslaf+Wl2a/PO6rwDnQtclWPO3SY5W6LLZXYe9wRp/1qZhY1W2Cz
-	W4omLGDSRkZ85dQ0h9KHFiYDUreq6puCMLiGeqeZ8wHYpe7AoozVZnMRUEkW5owjwIYA4YRLwzi0s
-	dGictznwZyHKAr3d2Ljl3S60RN72I89FmbWsVVLfqJqLaTZ06iRd1DI4tkRLl42MAjBngAdrkUHoD
-	B3WIkXlw==;
+	bh=6oT8UJTQXi/1p8Vkkp5X8xwmGurQs1ddz1miIiClqjk=;
+	b=mJaWxF1LU5NE66yogc7K2jE1M/
+	ajfoGNhD/vHgJ/uO2a6yGrnarIGQmAne1urocITqlmwPKCKe2hlDmAS5mYlahdFDwlTHEpCkUvZst
+	H/0IapTE9o/v3gUJZtcOSKnxWVSlqsRtANoKdrY4+dxqP8cB9X1c+Ds8XzV0nIqb7c0zXEBxA8pgT
+	Q0QJQs89LQ6TsbElGVp2107/s1joP7iiwY/LBLoR9E7trvIwigj06pgJxwCloASrzS6n0cw8RPir2
+	eVruFf63T1nOouQVzlVGxJTiFciYyfyh+t+IgLGxXQEMNMLk4Fo9aGxmnTOJVy2gf1kdcyN/sCPZe
+	77MjzUgw==;
 Received: from 213-225-9-13.nat.highway.a1.net ([213.225.9.13] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hbnRt-00069J-D9; Fri, 14 Jun 2019 14:45:02 +0000
+	id 1hbnRp-00064n-IM; Fri, 14 Jun 2019 14:44:58 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Vineet Gupta <vgupta@synopsys.com>
-Subject: [PATCH 7/7] arc: use the generic remapping allocator for coherent DMA
-	allocations
-Date: Fri, 14 Jun 2019 16:44:31 +0200
-Message-Id: <20190614144431.21760-8-hch@lst.de>
+Subject: [PATCH 6/7] dma-direct: handle DMA_ATTR_NO_KERNEL_MAPPING in common
+	code
+Date: Fri, 14 Jun 2019 16:44:30 +0200
+Message-Id: <20190614144431.21760-7-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190614144431.21760-1-hch@lst.de>
 References: <20190614144431.21760-1-hch@lst.de>
@@ -86,127 +86,129 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Replace the code that sets up uncached PTEs with the generic vmap based
-remapping code.  It also provides an atomic pool for allocations from
-non-blocking context, which we not properly supported by the existing
-arc code.
+DMA_ATTR_NO_KERNEL_MAPPING is generally implemented by allocating
+normal cacheable pages or CMA memory, and then returning the page
+pointer as the opaque handle.  Lift that code from the xtensa and
+generic dma remapping implementations into the generic dma-direct
+code so that we don't even call arch_dma_alloc for these allocations.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arc/Kconfig  |  2 ++
- arch/arc/mm/dma.c | 62 ++++++++---------------------------------------
- 2 files changed, 12 insertions(+), 52 deletions(-)
+ arch/xtensa/kernel/pci-dma.c    |  8 +-------
+ include/linux/dma-noncoherent.h |  2 ++
+ kernel/dma/direct.c             | 14 ++++++++++++++
+ kernel/dma/remap.c              | 13 ++-----------
+ 4 files changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-index 23e063df5d2c..cdad7d30ff1d 100644
---- a/arch/arc/Kconfig
-+++ b/arch/arc/Kconfig
-@@ -10,6 +10,7 @@ config ARC
- 	def_bool y
- 	select ARC_TIMERS
- 	select ARCH_HAS_DMA_COHERENT_TO_PFN
-+	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_PTE_SPECIAL
- 	select ARCH_HAS_SETUP_DMA_OPS
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
-@@ -19,6 +20,7 @@ config ARC
- 	select BUILDTIME_EXTABLE_SORT
- 	select CLONE_BACKWARDS
- 	select COMMON_CLK
-+	select DMA_DIRECT_REMAP
- 	select GENERIC_ATOMIC64 if !ISA_ARCV2 || !(ARC_HAS_LL64 && ARC_HAS_LLSC)
- 	select GENERIC_CLOCKEVENTS
- 	select GENERIC_FIND_FIRST_BIT
-diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
-index 9832928f896d..0fa850709fac 100644
---- a/arch/arc/mm/dma.c
-+++ b/arch/arc/mm/dma.c
-@@ -11,46 +11,15 @@
- #include <asm/cacheflush.h>
+diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
+index 9171bff76fc4..206771277dff 100644
+--- a/arch/xtensa/kernel/pci-dma.c
++++ b/arch/xtensa/kernel/pci-dma.c
+@@ -167,10 +167,6 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
  
- /*
-- * ARCH specific callbacks for generic noncoherent DMA ops (dma/noncoherent.c)
-+ * ARCH specific callbacks for generic noncoherent DMA ops
-  *  - hardware IOC not available (or "dma-coherent" not set for device in DT)
-  *  - But still handle both coherent and non-coherent requests from caller
-  *
-  * For DMA coherent hardware (IOC) generic code suffices
-  */
--void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
--		gfp_t gfp, unsigned long attrs)
--{
--	unsigned long order = get_order(size);
--	struct page *page;
--	phys_addr_t paddr;
--	void *kvaddr;
--
--	/*
--	 * __GFP_HIGHMEM flag is cleared by upper layer functions
--	 * (in include/linux/dma-mapping.h) so we should never get a
--	 * __GFP_HIGHMEM here.
--	 */
--	BUG_ON(gfp & __GFP_HIGHMEM);
--
--	page = alloc_pages(gfp | __GFP_ZERO, order);
--	if (!page)
--		return NULL;
--
--	/* This is linear addr (0x8000_0000 based) */
--	paddr = page_to_phys(page);
--
--	*dma_handle = paddr;
--
--	/*
--	 * A coherent buffer needs MMU mapping to enforce non-cachability.
--	 * kvaddr is kernel Virtual address (0x7000_0000 based).
--	 */
--	kvaddr = ioremap_nocache(paddr, size);
--	if (kvaddr == NULL) {
--		__free_pages(page, order);
--		return NULL;
+ 	*handle = phys_to_dma(dev, page_to_phys(page));
+ 
+-	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
+-		return page;
 -	}
+-
+ #ifdef CONFIG_MMU
+ 	if (PageHighMem(page)) {
+ 		void *p;
+@@ -196,9 +192,7 @@ void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	struct page *page;
  
-+void arch_dma_prep_coherent(struct page *page, size_t size)
-+{
- 	/*
- 	 * Evict any existing L1 and/or L2 lines for the backing page
- 	 * in case it was used earlier as a normal "cached" page.
-@@ -61,24 +30,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 	 * Currently flush_cache_vmap nukes the L1 cache completely which
- 	 * will be optimized as a separate commit
- 	 */
--	dma_cache_wback_inv(paddr, size);
--	return kvaddr;
--}
--
--void arch_dma_free(struct device *dev, size_t size, void *vaddr,
--		dma_addr_t dma_handle, unsigned long attrs)
--{
--	phys_addr_t paddr = dma_handle;
--	struct page *page = virt_to_page(paddr);
--
--	iounmap((void __force __iomem *)vaddr);
--	__free_pages(page, get_order(size));
--}
--
--long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
--		dma_addr_t dma_addr)
--{
--	return __phys_to_pfn(dma_addr);
-+	dma_cache_wback_inv(page_to_phys(page), size);
- }
+-	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
+-		page = vaddr;
+-	} else if (platform_vaddr_uncached(vaddr)) {
++	if (platform_vaddr_uncached(vaddr)) {
+ 		page = virt_to_page(platform_vaddr_to_cached(vaddr));
+ 	} else {
+ #ifdef CONFIG_MMU
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index 732919ac5c11..53ee36ecdf37 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -28,6 +28,8 @@ static inline bool dma_alloc_need_uncached(struct device *dev,
+ {
+ 	if (dev_is_dma_coherent(dev))
+ 		return false;
++	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
++		return false;
+ 	if (IS_ENABLED(CONFIG_DMA_NONCOHERENT_CACHE_SYNC) &&
+ 	    (attrs & DMA_ATTR_NON_CONSISTENT))
+ 		return false;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index fc354f4f490b..b90e1aede743 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -138,6 +138,14 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	if (!page)
+ 		return NULL;
  
- /*
-@@ -155,3 +107,9 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 	dev_info(dev, "use %sncoherent DMA ops\n",
- 		 dev->dma_coherent ? "" : "non");
- }
++	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
++		/* remove any dirty cache lines on the kernel alias */
++		if (!PageHighMem(page))
++			arch_dma_prep_coherent(page, size);
++		/* return the page pointer as the opaque cookie */
++		return page;
++	}
 +
-+static int __init atomic_pool_init(void)
-+{
-+	return dma_atomic_pool_init(GFP_KERNEL, pgprot_noncached(PAGE_KERNEL));
-+}
-+postcore_initcall(atomic_pool_init);
+ 	if (PageHighMem(page)) {
+ 		/*
+ 		 * Depending on the cma= arguments and per-arch setup
+@@ -178,6 +186,12 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ {
+ 	unsigned int page_order = get_order(size);
+ 
++	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
++		/* cpu_addr is a struct page cookie, not a kernel address */
++		__dma_direct_free_pages(dev, size, cpu_addr);
++		return;
++	}
++
+ 	if (force_dma_unencrypted())
+ 		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
+ 
+diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+index 0207e3764d52..a594aec07882 100644
+--- a/kernel/dma/remap.c
++++ b/kernel/dma/remap.c
+@@ -202,8 +202,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 
+ 	size = PAGE_ALIGN(size);
+ 
+-	if (!gfpflags_allow_blocking(flags) &&
+-	    !(attrs & DMA_ATTR_NO_KERNEL_MAPPING)) {
++	if (!gfpflags_allow_blocking(flags)) {
+ 		ret = dma_alloc_from_pool(size, &page, flags);
+ 		if (!ret)
+ 			return NULL;
+@@ -217,11 +216,6 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	/* remove any dirty cache lines on the kernel alias */
+ 	arch_dma_prep_coherent(page, size);
+ 
+-	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
+-		ret = page; /* opaque cookie */
+-		goto done;
+-	}
+-
+ 	/* create a coherent mapping */
+ 	ret = dma_common_contiguous_remap(page, size, VM_USERMAP,
+ 			arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
+@@ -240,10 +234,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 		dma_addr_t dma_handle, unsigned long attrs)
+ {
+-	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
+-		/* vaddr is a struct page cookie, not a kernel address */
+-		__dma_direct_free_pages(dev, size, vaddr);
+-	} else if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
++	if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
+ 		phys_addr_t phys = dma_to_phys(dev, dma_handle);
+ 		struct page *page = pfn_to_page(__phys_to_pfn(phys));
+ 
 -- 
 2.20.1
 
