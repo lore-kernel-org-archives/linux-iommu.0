@@ -2,75 +2,78 @@ Return-Path: <SRS0=ZdmF=UN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B03C31E4B
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E110C468B0
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:47:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4509820850
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:17:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4509820850
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 23A692173C
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:47:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="O+TbJCIv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 23A692173C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 19152EEA;
-	Fri, 14 Jun 2019 13:17:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E5621E6F;
+	Fri, 14 Jun 2019 13:47:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C779DD3E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AA652D9E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 13:17:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3EF4F174
+	Fri, 14 Jun 2019 13:47:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9ED59E5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 13:17:55 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
-	[10.5.11.15])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 6B8B3356EA;
-	Fri, 14 Jun 2019 13:17:40 +0000 (UTC)
-Received: from [10.36.116.67] (ovpn-116-67.ams2.redhat.com [10.36.116.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 7366A54696;
-	Fri, 14 Jun 2019 13:17:28 +0000 (UTC)
-Subject: Re: [PATCH v8 23/29] vfio: VFIO_IOMMU_CACHE_INVALIDATE
-To: "Liu, Yi L" <yi.l.liu@intel.com>,
-	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>,
-	"jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
-	"will.deacon@arm.com" <will.deacon@arm.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20190526161004.25232-1-eric.auger@redhat.com>
-	<20190526161004.25232-24-eric.auger@redhat.com>
-	<A2975661238FB949B60364EF0F2C257439EFB432@SHSMSX104.ccr.corp.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <8d36cf34-a89b-6587-08e9-99242e2f34dc@redhat.com>
-Date: Fri, 14 Jun 2019 15:17:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Fri, 14 Jun 2019 13:47:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=8y6h8N73FB5NENGJmXuBWpySrRWBuNuuherB6ijj6q8=;
+	b=O+TbJCIvZxITqhhJGk19PgKDVb
+	zP/cXr3k3gVNVyNuIZZ1EUainJIi7wVTUxXsQtP55j6fTBfcF7Sa+btFSjlOoBpdFax1u6ZazzUaz
+	FPx/YcvbrcmM0hj9iSxxr66wiPpIo2CQcbBfULKCswmUhdFlmoDtWAaHV5c6chhQgW7u9cc4uUrYi
+	+YgK5P2yi8DIc4PxIDTgNB0H2HMyfDDjSri1AD09oFbVupeMjadiOSOnAJwBO5Fva8F5W4du1//3V
+	PC6NEPWuGSXf3Iz9K+nbMDUlMTGN745meRSObE6d5NxDDUuRnYJGChXPFHVxfA6Pw0enVfuoGJDnu
+	q+P8IvBA==;
+Received: from 213-225-9-13.nat.highway.a1.net ([213.225.9.13] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hbmYJ-0004Xw-Il; Fri, 14 Jun 2019 13:47:36 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>,
+	David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>
+Subject: [PATCH 01/16] media: videobuf-dma-contig: use dma_mmap_coherent
+Date: Fri, 14 Jun 2019 15:47:11 +0200
+Message-Id: <20190614134726.3827-2-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190614134726.3827-1-hch@lst.de>
+References: <20190614134726.3827-1-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439EFB432@SHSMSX104.ccr.corp.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.30]);
-	Fri, 14 Jun 2019 13:17:51 +0000 (UTC)
-Cc: "marc.zyngier@arm.com" <marc.zyngier@arm.com>,
-	"peter.maydell@linaro.org" <peter.maydell@linaro.org>, "Tian,
-	Kevin" <kevin.tian@intel.com>,
-	"vincent.stehle@arm.com" <vincent.stehle@arm.com>, "Raj,
-	Ashok" <ashok.raj@intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
+	Intel Linux Wireless <linuxwifi@intel.com>,
+	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+	intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,169 +91,87 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Liu,
+dma_alloc_coherent does not return a physical address, but a DMA
+address, which might be remapped or have an offset.  Passing this
+DMA address to vm_iomap_memory is completely bogus.  Use the proper
+dma_mmap_coherent helper instead, and stop passing __GFP_COMP
+to dma_alloc_coherent, as the memory management inside the DMA
+allocator is hidden from the callers.
 
-On 6/14/19 2:38 PM, Liu, Yi L wrote:
-> Hi Eric,
-> 
->> From: Eric Auger [mailto:eric.auger@redhat.com]
->> Sent: Monday, May 27, 2019 12:10 AM
->> Subject: [PATCH v8 23/29] vfio: VFIO_IOMMU_CACHE_INVALIDATE
->>
->> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
->>
->> When the guest "owns" the stage 1 translation structures,  the host IOMMU driver
->> has no knowledge of caching structure updates unless the guest invalidation
->> requests are trapped and passed down to the host.
->>
->> This patch adds the VFIO_IOMMU_CACHE_INVALIDATE ioctl with aims at
->> propagating guest stage1 IOMMU cache invalidations to the host.
->>
->> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>
->> ---
->> v6 -> v7:
->> - Use iommu_capsule struct
->> - renamed vfio_iommu_for_each_dev into vfio_iommu_lookup_dev
->>   due to checkpatch error related to for_each_dev suffix
->>
->> v2 -> v3:
->> - introduce vfio_iommu_for_each_dev back in this patch
->>
->> v1 -> v2:
->> - s/TLB/CACHE
->> - remove vfio_iommu_task usage
->> - commit message rewording
->> ---
->>  drivers/vfio/vfio_iommu_type1.c | 55 +++++++++++++++++++++++++++++++++
->>  include/uapi/linux/vfio.h       | 13 ++++++++
->>  2 files changed, 68 insertions(+)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index b2d609d6fe83..6fda4fbc9bfa 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -120,6 +120,34 @@ struct vfio_regions {
->>  #define IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)	\
->>  					(!list_empty(&iommu->domain_list))
->>
->> +struct domain_capsule {
->> +	struct iommu_domain *domain;
->> +	void *data;
->> +};
->> +
->> +/* iommu->lock must be held */
->> +static int
->> +vfio_iommu_lookup_dev(struct vfio_iommu *iommu,
->> +		      int (*fn)(struct device *dev, void *data),
->> +		      void *data)
->> +{
->> +	struct domain_capsule dc = {.data = data};
->> +	struct vfio_domain *d;
->> +	struct vfio_group *g;
->> +	int ret = 0;
->> +
->> +	list_for_each_entry(d, &iommu->domain_list, next) {
->> +		dc.domain = d->domain;
->> +		list_for_each_entry(g, &d->group_list, next) {
->> +			ret = iommu_group_for_each_dev(g->iommu_group,
->> +						       &dc, fn);
->> +			if (ret)
->> +				break;
->> +		}
->> +	}
->> +	return ret;
->> +}
->> +
->>  static int put_pfn(unsigned long pfn, int prot);
->>
->>  /*
->> @@ -1795,6 +1823,15 @@ vfio_attach_pasid_table(struct vfio_iommu *iommu,
->>  	return ret;
->>  }
->>
->> +static int vfio_cache_inv_fn(struct device *dev, void *data) {
->> +	struct domain_capsule *dc = (struct domain_capsule *)data;
->> +	struct vfio_iommu_type1_cache_invalidate *ustruct =
->> +		(struct vfio_iommu_type1_cache_invalidate *)dc->data;
->> +
->> +	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info); }
->> +
->>  static long vfio_iommu_type1_ioctl(void *iommu_data,
->>  				   unsigned int cmd, unsigned long arg)  { @@ -
->> 1881,6 +1918,24 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->>  	} else if (cmd == VFIO_IOMMU_DETACH_PASID_TABLE) {
->>  		vfio_detach_pasid_table(iommu);
->>  		return 0;
->> +	} else if (cmd == VFIO_IOMMU_CACHE_INVALIDATE) {
->> +		struct vfio_iommu_type1_cache_invalidate ustruct;
->> +		int ret;
->> +
->> +		minsz = offsetofend(struct vfio_iommu_type1_cache_invalidate,
->> +				    info);
->> +
->> +		if (copy_from_user(&ustruct, (void __user *)arg, minsz))
->> +			return -EFAULT;
->> +
->> +		if (ustruct.argsz < minsz || ustruct.flags)
-> 
-> May remove the flags field?
-> 
->> +			return -EINVAL;
->> +
->> +		mutex_lock(&iommu->lock);
->> +		ret = vfio_iommu_lookup_dev(iommu, vfio_cache_inv_fn,
->> +					    &ustruct);
->> +		mutex_unlock(&iommu->lock);
->> +		return ret;
->>  	}
->>
->>  	return -ENOTTY;
->> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h index
->> 4316dd8cb5b5..055aa9b9745a 100644
->> --- a/include/uapi/linux/vfio.h
->> +++ b/include/uapi/linux/vfio.h
->> @@ -785,6 +785,19 @@ struct vfio_iommu_type1_attach_pasid_table {
->>   */
->>  #define VFIO_IOMMU_DETACH_PASID_TABLE	_IO(VFIO_TYPE, VFIO_BASE + 23)
->>
->> +/**
->> + * VFIO_IOMMU_CACHE_INVALIDATE - _IOWR(VFIO_TYPE, VFIO_BASE + 24,
->> + *			struct vfio_iommu_type1_cache_invalidate)
->> + *
->> + * Propagate guest IOMMU cache invalidation to the host.
->> + */
->> +struct vfio_iommu_type1_cache_invalidate {
->> +	__u32   argsz;
->> +	__u32   flags;
-> 
-> Looks like there is no more usage on "flags". is it?
+Fixes: a8f3c203e19b ("[media] videobuf-dma-contig: add cache support")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/media/v4l2-core/videobuf-dma-contig.c | 23 +++++++------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
-Agreed. However all the other vfio structs embed it.
-vfio_iommu_type1_dma_unmap (VFIO_IOMMU_UNMAP_DMA) or
-vfio_iommu_type1_info (VFIO_IOMMU_GET_INFO) also feature it and do not
-use it either if I am not wrong.
+diff --git a/drivers/media/v4l2-core/videobuf-dma-contig.c b/drivers/media/v4l2-core/videobuf-dma-contig.c
+index e1bf50df4c70..a5942ea38f1f 100644
+--- a/drivers/media/v4l2-core/videobuf-dma-contig.c
++++ b/drivers/media/v4l2-core/videobuf-dma-contig.c
+@@ -39,11 +39,11 @@ struct videobuf_dma_contig_memory {
+ 
+ static int __videobuf_dc_alloc(struct device *dev,
+ 			       struct videobuf_dma_contig_memory *mem,
+-			       unsigned long size, gfp_t flags)
++			       unsigned long size)
+ {
+ 	mem->size = size;
+-	mem->vaddr = dma_alloc_coherent(dev, mem->size,
+-					&mem->dma_handle, flags);
++	mem->vaddr = dma_alloc_coherent(dev, mem->size, &mem->dma_handle,
++			GFP_KERNEL);
+ 
+ 	if (!mem->vaddr) {
+ 		dev_err(dev, "memory alloc size %ld failed\n", mem->size);
+@@ -260,8 +260,7 @@ static int __videobuf_iolock(struct videobuf_queue *q,
+ 			return videobuf_dma_contig_user_get(mem, vb);
+ 
+ 		/* allocate memory for the read() method */
+-		if (__videobuf_dc_alloc(q->dev, mem, PAGE_ALIGN(vb->size),
+-					GFP_KERNEL))
++		if (__videobuf_dc_alloc(q->dev, mem, PAGE_ALIGN(vb->size)))
+ 			return -ENOMEM;
+ 		break;
+ 	case V4L2_MEMORY_OVERLAY:
+@@ -280,7 +279,6 @@ static int __videobuf_mmap_mapper(struct videobuf_queue *q,
+ 	struct videobuf_dma_contig_memory *mem;
+ 	struct videobuf_mapping *map;
+ 	int retval;
+-	unsigned long size;
+ 
+ 	dev_dbg(q->dev, "%s\n", __func__);
+ 
+@@ -298,23 +296,18 @@ static int __videobuf_mmap_mapper(struct videobuf_queue *q,
+ 	BUG_ON(!mem);
+ 	MAGIC_CHECK(mem->magic, MAGIC_DC_MEM);
+ 
+-	if (__videobuf_dc_alloc(q->dev, mem, PAGE_ALIGN(buf->bsize),
+-				GFP_KERNEL | __GFP_COMP))
++	if (__videobuf_dc_alloc(q->dev, mem, PAGE_ALIGN(buf->bsize)))
+ 		goto error;
+ 
+-	/* Try to remap memory */
+-	size = vma->vm_end - vma->vm_start;
+-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+-
+ 	/* the "vm_pgoff" is just used in v4l2 to find the
+ 	 * corresponding buffer data structure which is allocated
+ 	 * earlier and it does not mean the offset from the physical
+ 	 * buffer start address as usual. So set it to 0 to pass
+-	 * the sanity check in vm_iomap_memory().
++	 * the sanity check in dma_mmap_coherent().
+ 	 */
+ 	vma->vm_pgoff = 0;
+-
+-	retval = vm_iomap_memory(vma, mem->dma_handle, size);
++	retval = dma_mmap_coherent(q->dev, vma, mem->vaddr, mem->dma_handle,
++			vma->vm_end - vma->vm_start);
+ 	if (retval) {
+ 		dev_err(q->dev, "mmap: remap failed with error %d. ",
+ 			retval);
+-- 
+2.20.1
 
-So I guess flags is a common pattern for the API and somehow allows to
-extend the API if needed. So I would be inclined to keep it, no?
-
-Thanks
-
-Eric
-> 
-> Regards,
-> Yi Liu
-> 
->> +	struct iommu_cache_invalidate_info info; };
->> +#define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 24)
->> +
->>  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
->>
->>  /*
->> --
->> 2.20.1
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
