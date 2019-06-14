@@ -2,67 +2,54 @@ Return-Path: <SRS0=ZdmF=UN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 695C6C31E4A
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 01:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 464B3C31E4A
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 01:40:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BED8217D7
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 01:15:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BED8217D7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 240B6208CA
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 01:40:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 240B6208CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D7088E39;
-	Fri, 14 Jun 2019 01:15:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B1EE7BB3;
+	Fri, 14 Jun 2019 01:40:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 76375E20
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C3461B6C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 01:15:15 +0000 (UTC)
+	Fri, 14 Jun 2019 01:40:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0D1D2E5
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 591DA711
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 01:15:14 +0000 (UTC)
-X-Amp-Result: UNSCANNABLE
+	Fri, 14 Jun 2019 01:40:37 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	13 Jun 2019 18:15:14 -0700
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	13 Jun 2019 18:40:36 -0700
 X-ExtLoop1: 1
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-	by orsmga005.jf.intel.com with ESMTP; 13 Jun 2019 18:15:13 -0700
-Date: Thu, 13 Jun 2019 18:14:54 -0700
-From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH v4 05/21] x86/hpet: Reserve timer for the HPET
-	hardlockup detector
-Message-ID: <20190614011454.GA6347@ranerica-svr.sc.intel.com>
-References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1558660583-28561-6-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<alpine.DEB.2.21.1906112152430.2214@nanos.tec.linutronix.de>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.1906112152430.2214@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-	"Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org,
-	Ashok Raj <ashok.raj@intel.com>, Arnd Bergmann <arnd@arndb.de>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Philippe Ombredanne <pombredanne@nexb.com>,
-	Randy Dunlap <rdunlap@infradead.org>, Clemens Ladisch <clemens@ladisch.de>,
-	linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-	Ricardo Neri <ricardo.neri@intel.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Andi Kleen <andi.kleen@intel.com>, Borislav Petkov <bp@suse.de>,
-	Ingo Molnar <mingo@kernel.org>
+Received: from lftan-mobl.gar.corp.intel.com (HELO ubuntu) ([10.226.248.78])
+	by fmsmga007.fm.intel.com with SMTP; 13 Jun 2019 18:40:34 -0700
+Received: by ubuntu (sSMTP sendmail emulation); Fri, 14 Jun 2019 09:40:34 +0800
+Message-ID: <1560476434.21652.1.camel@intel.com>
+Subject: Re: switch nios2 and microblaze to use the generic uncached
+	segement support
+From: Ley Foon Tan <ley.foon.tan@intel.com>
+To: Christoph Hellwig <hch@lst.de>, Michal Simek <monstr@monstr.eu>
+Date: Fri, 14 Jun 2019 09:40:34 +0800
+In-Reply-To: <20190603065324.9724-1-hch@lst.de>
+References: <20190603065324.9724-1-hch@lst.de>
+X-Mailer: Evolution 3.18.5.2-0ubuntu3.1 
+Mime-Version: 1.0
+Cc: iommu@lists.linux-foundation.org, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,42 +62,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Jun 11, 2019 at 09:54:25PM +0200, Thomas Gleixner wrote:
-> On Thu, 23 May 2019, Ricardo Neri wrote:
-> 
-> > HPET timer 2 will be used to drive the HPET-based hardlockup detector.
-> > Reserve such timer to ensure it cannot be used by user space programs or
-> > for clock events.
-> > 
-> > When looking for MSI-capable timers for clock events, skip timer 2 if
-> > the HPET hardlockup detector is selected.
-> 
-> Why? Both the changelog and the code change lack an explanation why this
-> timer is actually touched after it got reserved for the platform. The
-> reservation should make it inaccessible for other things.
-
-hpet_reserve_platform_timers() will give the HPET char driver a data
-structure which specifies which drivers are reserved. In this manner,
-they cannot be used by applications via file opens. The timer used by
-the hardlockup detector should be marked as reserved.
-
-Also, hpet_msi_capability_lookup() populates another data structure
-which is used when obtaining an unused timer for a HPET clock event.
-The timer used by the hardlockup detector should not be included in such
-data structure.
-
-Is this the explanation you would like to see? If yes, I will include it
-in the changelog.
-
-Thanks and BR,
-Ricardo
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gTW9uLCAyMDE5LTA2LTAzIGF0IDA4OjUzICswMjAwLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90
+ZToKPiBIaSBhbGwsCj4gCj4gY2FuIHlvdSB0YWtlIGEgbG9vayBhdCB0aGlzIHNlcmllcz/CoMKg
+SXQgc3dpdGNoZXMgbmlvcHMyIGFuZAo+IG1pY3JvYmxhemUgdG8KPiB1c2UgdGhlIGdlbmVyaWMg
+ZG1hIGxheWVyIHN1cHBvcnQgZm9yIHVuY2FjaGVkIHNlZ2VtZW50cy4KPiAKPiBUaGUgZG1hIG1h
+cHBpbmcgZm9yLW5leHQgZ2l0IHRyZWUgdGhhdCBpbmNsdWRlcyB0aGUgc3VwcG9ydCBpcwo+IGF2
+YWlsYWJsZQo+IGhlcmU6Cj4gCj4gwqDCoMKgwqBnaXQ6Ly9naXQuaW5mcmFkZWFkLm9yZy91c2Vy
+cy9oY2gvZG1hLW1hcHBpbmcuZ2l0IGZvci1uZXh0Cj4gCj4gR2l0d2ViOgo+IAo+IMKgwqDCoMKg
+aHR0cDovL2dpdC5pbmZyYWRlYWQub3JnL3VzZXJzL2hjaC9kbWEtbWFwcGluZy5naXQvc2hvcnRs
+b2cvcmVmcy8KPiBoZWFkcy9mb3ItbmV4dAo+IAoKSGnCoENocmlzdG9waAoKQ2FuIHRoaXMgcGF0
+Y2ggaW7CoGh0dHA6Ly9naXQuaW5mcmFkZWFkLm9yZy91c2Vycy9oY2gvZG1hLW1hcHBpbmcuZ2l0
+L3NoCm9ydGxvZy9yZWZzL2hlYWRzL2Zvci1uZXh0CgpbUEFUQ0ggMS8yXSBuaW9zMjogdXNlIHRo
+ZSBnZW5lcmljIHVuY2FjaGVkIHNlZ21lbnQgc3VwcG9ydCBpbiBkbWEtCmRpcmVjdAoKUmVnYXJk
+cwpMZXkgRm9vbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
+cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
