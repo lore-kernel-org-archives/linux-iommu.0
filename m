@@ -2,64 +2,62 @@ Return-Path: <SRS0=ZdmF=UN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 550EDC31E4D
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 15:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46BCC31E4B
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 15:54:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 35F2E2175B
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 15:35:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35F2E2175B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 8BBB32168B
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 15:54:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BBB32168B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 04CB61175;
-	Fri, 14 Jun 2019 15:35:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9F293147E;
+	Fri, 14 Jun 2019 15:54:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 357451175
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 88B8E147A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 15:34:59 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C4718174
+	Fri, 14 Jun 2019 15:54:22 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1AD30775
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 15:34:58 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id DF91968AFE; Fri, 14 Jun 2019 17:34:28 +0200 (CEST)
-Date: Fri, 14 Jun 2019 17:34:28 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 12/16] staging/comedi: mark as broken
-Message-ID: <20190614153428.GA10008@lst.de>
-References: <20190614134726.3827-1-hch@lst.de>
-	<20190614134726.3827-13-hch@lst.de>
-	<20190614140239.GA7234@kroah.com> <20190614144857.GA9088@lst.de>
-	<20190614153032.GD18049@kroah.com>
+	Fri, 14 Jun 2019 15:54:22 +0000 (UTC)
+Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
+	by Galois.linutronix.de with esmtpsa
+	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
+	(envelope-from <tglx@linutronix.de>)
+	id 1hboWk-0002JC-4R; Fri, 14 Jun 2019 17:54:06 +0200
+Date: Fri, 14 Jun 2019 17:54:05 +0200 (CEST)
+From: Thomas Gleixner <tglx@linutronix.de>
+To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [RFC PATCH v4 03/21] x86/hpet: Calculate ticks-per-second in a
+	separate function
+In-Reply-To: <1558660583-28561-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Message-ID: <alpine.DEB.2.21.1906141749330.1722@nanos.tec.linutronix.de>
+References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1558660583-28561-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190614153032.GD18049@kroah.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Maxime Ripard <maxime.ripard@bootlin.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-	Christoph Hellwig <hch@lst.de>, devel@driverdev.osuosl.org,
-	linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-	David Airlie <airlied@linux.ie>, linux-media@vger.kernel.org,
-	Intel Linux Wireless <linuxwifi@intel.com>,
-	intel-gfx@lists.freedesktop.org,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>, Ian Abbott <abbotti@mev.co.uk>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, Sean Paul <sean@poorly.run>,
-	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+	"Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org,
+	Ashok Raj <ashok.raj@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Philippe Ombredanne <pombredanne@nexb.com>,
+	Randy Dunlap <rdunlap@infradead.org>, Clemens Ladisch <clemens@ladisch.de>,
+	linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+	Ricardo Neri <ricardo.neri@intel.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Andi Kleen <andi.kleen@intel.com>, Borislav Petkov <bp@suse.de>,
+	Ingo Molnar <mingo@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,27 +75,76 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Jun 14, 2019 at 05:30:32PM +0200, Greg KH wrote:
-> On Fri, Jun 14, 2019 at 04:48:57PM +0200, Christoph Hellwig wrote:
-> > On Fri, Jun 14, 2019 at 04:02:39PM +0200, Greg KH wrote:
-> > > Perhaps a hint as to how we can fix this up?  This is the first time
-> > > I've heard of the comedi code not handling dma properly.
-> > 
-> > It can be fixed by:
-> > 
-> >  a) never calling virt_to_page (or vmalloc_to_page for that matter)
-> >     on dma allocation
-> >  b) never remapping dma allocation with conflicting cache modes
-> >     (no remapping should be doable after a) anyway).
-> 
-> Ok, fair enough, have any pointers of drivers/core code that does this
-> correctly?  I can put it on my todo list, but might take a week or so...
+On Thu, 23 May 2019, Ricardo Neri wrote:
+>  
+> +u64 hpet_get_ticks_per_sec(u64 hpet_caps)
+> +{
+> +	u64 ticks_per_sec, period;
+> +
+> +	period = (hpet_caps & HPET_COUNTER_CLK_PERIOD_MASK) >>
+> +		 HPET_COUNTER_CLK_PERIOD_SHIFT; /* fs, 10^-15 */
+> +
+> +	/*
+> +	 * The frequency is the reciprocal of the period. The period is given
+> +	 * in femtoseconds per second. Thus, prepare a dividend to obtain the
+> +	 * frequency in ticks per second.
+> +	 */
+> +
+> +	/* 10^15 femtoseconds per second */
+> +	ticks_per_sec = 1000000000000000ULL;
+> +	ticks_per_sec += period >> 1; /* round */
+> +
+> +	/* The quotient is put in the dividend. We drop the remainder. */
+> +	do_div(ticks_per_sec, period);
+> +
+> +	return ticks_per_sec;
+> +}
+> +
+>  int hpet_alloc(struct hpet_data *hdp)
+>  {
+>  	u64 cap, mcfg;
+> @@ -844,7 +867,6 @@ int hpet_alloc(struct hpet_data *hdp)
+>  	struct hpets *hpetp;
+>  	struct hpet __iomem *hpet;
+>  	static struct hpets *last;
+> -	unsigned long period;
+>  	unsigned long long temp;
+>  	u32 remainder;
+>  
+> @@ -894,12 +916,7 @@ int hpet_alloc(struct hpet_data *hdp)
+>  
+>  	last = hpetp;
+>  
+> -	period = (cap & HPET_COUNTER_CLK_PERIOD_MASK) >>
+> -		HPET_COUNTER_CLK_PERIOD_SHIFT; /* fs, 10^-15 */
+> -	temp = 1000000000000000uLL; /* 10^15 femtoseconds per second */
+> -	temp += period >> 1; /* round */
+> -	do_div(temp, period);
+> -	hpetp->hp_tick_freq = temp; /* ticks per second */
+> +	hpetp->hp_tick_freq = hpet_get_ticks_per_sec(cap);
 
-Just about everyone else.  They just need to remove the vmap and
-either do one large allocation, or live with the fact that they need
-helpers to access multiple array elements instead of one net vmap,
-which most of the users already seem to do anyway, with just a few
-using the vmap (which might explain why we didn't see blowups yet).
+Why are we actually computing this over and over?
+
+In hpet_enable() which is the first function invoked we have:
+
+        /*
+         * The period is a femto seconds value. Convert it to a
+         * frequency.
+         */
+        freq = FSEC_PER_SEC;
+        do_div(freq, hpet_period);
+        hpet_freq = freq;
+
+So we already have ticks per second, aka frequency, right? So why do we
+need yet another function instead of using the value which is computed
+once? The frequency of the HPET channels has to be identical no matter
+what. If it's not HPET is broken beyond repair.
+
+Thanks,
+
+	tglx
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
