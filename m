@@ -3,47 +3,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B67CC31E4D
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 15:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E1BC31E4C
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 16:10:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1EB1F2168B
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 15:59:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1EB1F2168B
+	by mail.kernel.org (Postfix) with ESMTPS id 81A4A20850
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 16:10:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 81A4A20850
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E85DE1540;
-	Fri, 14 Jun 2019 15:59:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 57A5115B3;
+	Fri, 14 Jun 2019 16:10:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4FCA91531
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 135FF15B2
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 15:59:46 +0000 (UTC)
+	Fri, 14 Jun 2019 16:10:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2BFCAE5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8EA00E5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 15:59:45 +0000 (UTC)
+	Fri, 14 Jun 2019 16:10:35 +0000 (UTC)
 Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
 	by Galois.linutronix.de with esmtpsa
 	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
 	(envelope-from <tglx@linutronix.de>)
-	id 1hboc2-0002RQ-MH; Fri, 14 Jun 2019 17:59:34 +0200
-Date: Fri, 14 Jun 2019 17:59:34 +0200 (CEST)
+	id 1hbomR-0002i5-69; Fri, 14 Jun 2019 18:10:19 +0200
+Date: Fri, 14 Jun 2019 18:10:18 +0200 (CEST)
 From: Thomas Gleixner <tglx@linutronix.de>
 To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: Re: [RFC PATCH v4 03/21] x86/hpet: Calculate ticks-per-second in a
-	separate function
-In-Reply-To: <alpine.DEB.2.21.1906141749330.1722@nanos.tec.linutronix.de>
-Message-ID: <alpine.DEB.2.21.1906141756430.1722@nanos.tec.linutronix.de>
+Subject: Re: [RFC PATCH v4 05/21] x86/hpet: Reserve timer for the HPET
+	hardlockup detector
+In-Reply-To: <20190614011454.GA6347@ranerica-svr.sc.intel.com>
+Message-ID: <alpine.DEB.2.21.1906141726190.1722@nanos.tec.linutronix.de>
 References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1558660583-28561-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<alpine.DEB.2.21.1906141749330.1722@nanos.tec.linutronix.de>
+	<1558660583-28561-6-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<alpine.DEB.2.21.1906112152430.2214@nanos.tec.linutronix.de>
+	<20190614011454.GA6347@ranerica-svr.sc.intel.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Cc: Kate Stewart <kstewart@linuxfoundation.org>,
@@ -76,53 +77,61 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, 14 Jun 2019, Thomas Gleixner wrote:
-> On Thu, 23 May 2019, Ricardo Neri wrote:
-> >  int hpet_alloc(struct hpet_data *hdp)
-> >  {
-> >  	u64 cap, mcfg;
-> > @@ -844,7 +867,6 @@ int hpet_alloc(struct hpet_data *hdp)
-> >  	struct hpets *hpetp;
-> >  	struct hpet __iomem *hpet;
-> >  	static struct hpets *last;
-> > -	unsigned long period;
-> >  	unsigned long long temp;
-> >  	u32 remainder;
-> >  
-> > @@ -894,12 +916,7 @@ int hpet_alloc(struct hpet_data *hdp)
-> >  
-> >  	last = hpetp;
-> >  
-> > -	period = (cap & HPET_COUNTER_CLK_PERIOD_MASK) >>
-> > -		HPET_COUNTER_CLK_PERIOD_SHIFT; /* fs, 10^-15 */
-> > -	temp = 1000000000000000uLL; /* 10^15 femtoseconds per second */
-> > -	temp += period >> 1; /* round */
-> > -	do_div(temp, period);
-> > -	hpetp->hp_tick_freq = temp; /* ticks per second */
-> > +	hpetp->hp_tick_freq = hpet_get_ticks_per_sec(cap);
-> 
-> Why are we actually computing this over and over?
-> 
-> In hpet_enable() which is the first function invoked we have:
-> 
->         /*
->          * The period is a femto seconds value. Convert it to a
->          * frequency.
->          */
->         freq = FSEC_PER_SEC;
->         do_div(freq, hpet_period);
->         hpet_freq = freq;
-> 
-> So we already have ticks per second, aka frequency, right? So why do we
-> need yet another function instead of using the value which is computed
-> once? The frequency of the HPET channels has to be identical no matter
-> what. If it's not HPET is broken beyond repair.
+On Thu, 13 Jun 2019, Ricardo Neri wrote:
 
-Aside of that this change breaks the IA64 support for /dev/hpet.
+> On Tue, Jun 11, 2019 at 09:54:25PM +0200, Thomas Gleixner wrote:
+> > On Thu, 23 May 2019, Ricardo Neri wrote:
+> > 
+> > > HPET timer 2 will be used to drive the HPET-based hardlockup detector.
+> > > Reserve such timer to ensure it cannot be used by user space programs or
+> > > for clock events.
+> > > 
+> > > When looking for MSI-capable timers for clock events, skip timer 2 if
+> > > the HPET hardlockup detector is selected.
+> > 
+> > Why? Both the changelog and the code change lack an explanation why this
+> > timer is actually touched after it got reserved for the platform. The
+> > reservation should make it inaccessible for other things.
+> 
+> hpet_reserve_platform_timers() will give the HPET char driver a data
+> structure which specifies which drivers are reserved. In this manner,
+> they cannot be used by applications via file opens. The timer used by
+> the hardlockup detector should be marked as reserved.
+> 
+> Also, hpet_msi_capability_lookup() populates another data structure
+> which is used when obtaining an unused timer for a HPET clock event.
+> The timer used by the hardlockup detector should not be included in such
+> data structure.
+> 
+> Is this the explanation you would like to see? If yes, I will include it
+> in the changelog.
+
+Yes, the explanation makes sense. The code still sucks. Not really your
+fault, but this is not making it any better.
+
+What bothers me most is the fact that CONFIG_X86_HARDLOCKUP_DETECTOR_HPET
+removes one HPET timer unconditionally. It neither checks whether the hpet
+watchdog is actually enabled on the command line, nor does it validate
+upfront whether the HPET supports FSB delivery.
+
+That wastes an HPET timer unconditionally for no value. Not that I
+personally care much about /dev/hpet, but some older laptops depend on HPET
+per cpu timers as the local APIC timer stops in C2/3. So this unconditional
+reservation will cause regressions for no reason.
+
+The proper approach here is to:
+
+ 1) Evaluate the command line _before_ hpet_enable() is invoked
+
+ 2) Check the availability of FSB delivery in hpet_enable()
+
+Reserve an HPET channel for the watchdog only when #1 and #2 are true.
 
 Thanks,
 
 	tglx
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
