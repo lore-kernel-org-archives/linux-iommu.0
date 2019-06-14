@@ -4,57 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABCEC31E4C
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB1CC31E4D
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 223112133D
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5606D2133D
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 14:45:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="tQ3Dza/Q"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 223112133D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="sl95Anw/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5606D2133D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D78D51381;
-	Fri, 14 Jun 2019 14:45:07 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 25B821384;
+	Fri, 14 Jun 2019 14:45:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C7569136D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7D979137E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 14:45:06 +0000 (UTC)
+	Fri, 14 Jun 2019 14:45:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A6A2E5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D27E3E5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 14:45:06 +0000 (UTC)
+	Fri, 14 Jun 2019 14:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=XBS/c6aAhCoK2T6+N2wWDRsaGJYTqp8SPA32e8G5Vls=;
-	b=tQ3Dza/QcBJcS38+zf1dMFcwCR
-	wOWrL7rj6nwYDGt7VTXJkayT9/vZ1B1x4y6D+70rRKXSK0Keg6en3t+OTABeFd2MpMr6pi86RsaVv
-	piVg2obLpRIoHvWzGLid0ELT35b1jqNF8QOOvwr8qGwZL0fdgp7LNTCL5filwC7OjiebCX4sthC0R
-	LoS2RmnWVPXEnO4xRcoY5OEvzqNgteFFeh0MPXGj/XsEnq99n4pB4DCMv1lJmzwZmadHpw25t0mwr
-	l2JSMDIinJkBK1eMoahM70H9Du6SxZPPEN9FotSUwUszwxcjBfNcWhcuX+BBsRZNYIAsJs9aPJrRy
-	4Dbh4RGg==;
+	bh=FVUCgCFoYGXgRdotxfVuIpfdudDn7941OPaQ1qXavC8=;
+	b=sl95Anw/1yGtNJg+5X/ycUvw5B
+	R+FPClXInpjM0I2EDyP21g2dvHAlOqQgF3zhZCLbTiK7YVrhM+htr4NidyrleEyfZlLoMqq0hcaVd
+	EM6nsp1ssY0bK4+tSMjmeERHUyeGLxS0NIriyrA9ESrJBYQMGrY3UpNsRPd7ReQ99FnoaVuhg63H5
+	4hZcpogxT5coYCeqkv1L+oc/QJslp8fLPfdVPLriqmGmdT+jLtU5jbKz5eeIesW2IdB0Ug1GfeDFG
+	v/qpUmhAHdnFnAMTRtcnAb2KLfaZr6mO0UO/zoZ1fEOcNNbRDDEJo5eZrR4VoPS4XqfwjfHYnlCYF
+	eRHc24VA==;
 Received: from 213-225-9-13.nat.highway.a1.net ([213.225.9.13] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hbnRf-0005uj-AL; Fri, 14 Jun 2019 14:44:47 +0000
+	id 1hbnRi-0005yA-Mt; Fri, 14 Jun 2019 14:44:51 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Vineet Gupta <vgupta@synopsys.com>
-Subject: [PATCH 3/7] openrisc: remove the partial DMA_ATTR_NON_CONSISTENT
-	support
-Date: Fri, 14 Jun 2019 16:44:27 +0200
-Message-Id: <20190614144431.21760-4-hch@lst.de>
+Subject: [PATCH 4/7] dma-mapping: add a dma_alloc_need_uncached helper
+Date: Fri, 14 Jun 2019 16:44:28 +0200
+Message-Id: <20190614144431.21760-5-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190614144431.21760-1-hch@lst.de>
 References: <20190614144431.21760-1-hch@lst.de>
@@ -86,55 +85,64 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The openrisc DMA code supports DMA_ATTR_NON_CONSISTENT allocations, but
-does not provide a cache_sync operation.  This means any user of it
-will never be able to actually transfer cache ownership and thus cause
-coherency bugs.
+Check if we need to allocate uncached memory for a device given the
+allocation flags.  Switch over the uncached segment check to this helper
+to deal with architectures that do not support the dma_cache_sync
+operation and thus should not returned cacheable memory for
+DMA_ATTR_NON_CONSISTENT allocations.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/openrisc/kernel/dma.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ include/linux/dma-noncoherent.h | 14 ++++++++++++++
+ kernel/dma/direct.c             |  4 ++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/openrisc/kernel/dma.c b/arch/openrisc/kernel/dma.c
-index f79457cb3741..9f25fd0fbb5d 100644
---- a/arch/openrisc/kernel/dma.c
-+++ b/arch/openrisc/kernel/dma.c
-@@ -98,15 +98,13 @@ arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index 7e0126a04e02..732919ac5c11 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -20,6 +20,20 @@ static inline bool dev_is_dma_coherent(struct device *dev)
+ }
+ #endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
  
- 	va = (unsigned long)page;
++/*
++ * Check if an allocation needs to be marked uncached to be coherent.
++ */
++static inline bool dma_alloc_need_uncached(struct device *dev,
++		unsigned long attrs)
++{
++	if (dev_is_dma_coherent(dev))
++		return false;
++	if (IS_ENABLED(CONFIG_DMA_NONCOHERENT_CACHE_SYNC) &&
++	    (attrs & DMA_ATTR_NON_CONSISTENT))
++		return false;
++	return true;
++}
++
+ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		gfp_t gfp, unsigned long attrs);
+ void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index b67f0aa08aa3..c2893713bf80 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -160,7 +160,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	memset(ret, 0, size);
  
--	if ((attrs & DMA_ATTR_NON_CONSISTENT) == 0) {
--		/*
--		 * We need to iterate through the pages, clearing the dcache for
--		 * them and setting the cache-inhibit bit.
--		 */
--		if (walk_page_range(va, va + size, &walk)) {
--			free_pages_exact(page, size);
--			return NULL;
--		}
-+	/*
-+	 * We need to iterate through the pages, clearing the dcache for
-+	 * them and setting the cache-inhibit bit.
-+	 */
-+	if (walk_page_range(va, va + size, &walk)) {
-+		free_pages_exact(page, size);
-+		return NULL;
+ 	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+-	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
++	    dma_alloc_need_uncached(dev, attrs)) {
+ 		arch_dma_prep_coherent(page, size);
+ 		ret = uncached_kernel_address(ret);
  	}
+@@ -182,7 +182,7 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ 		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
  
- 	return (void *)va;
-@@ -122,10 +120,8 @@ arch_dma_free(struct device *dev, size_t size, void *vaddr,
- 		.mm = &init_mm
- 	};
- 
--	if ((attrs & DMA_ATTR_NON_CONSISTENT) == 0) {
--		/* walk_page_range shouldn't be able to fail here */
--		WARN_ON(walk_page_range(va, va + size, &walk));
--	}
-+	/* walk_page_range shouldn't be able to fail here */
-+	WARN_ON(walk_page_range(va, va + size, &walk));
- 
- 	free_pages_exact(vaddr, size);
+ 	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+-	    !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT))
++	    dma_alloc_need_uncached(dev, attrs))
+ 		cpu_addr = cached_kernel_address(cpu_addr);
+ 	__dma_direct_free_pages(dev, size, virt_to_page(cpu_addr));
  }
 -- 
 2.20.1
