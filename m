@@ -1,68 +1,68 @@
-Return-Path: <SRS0=dZmg=UM=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ZdmF=UN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92675C31E45
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 23:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695C6C31E4A
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 01:15:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 583162133D
-	for <iommu@archiver.kernel.org>; Thu, 13 Jun 2019 23:19:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="l7CW3kEb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 583162133D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3BED8217D7
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 01:15:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BED8217D7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0E0BCE6C;
-	Thu, 13 Jun 2019 23:19:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D7088E39;
+	Fri, 14 Jun 2019 01:15:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6EEC1E75
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 76375E20
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 23:01:08 +0000 (UTC)
+	Fri, 14 Jun 2019 01:15:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 89395711
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0D1D2E5
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 13 Jun 2019 23:01:06 +0000 (UTC)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net
-	[24.9.64.241])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id C71622147A;
-	Thu, 13 Jun 2019 23:01:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1560466866;
-	bh=ijAoTvben3xHdJwjFjc2JVq20l3k6CT0SJjNIni16EE=;
-	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-	b=l7CW3kEbIEfMPyQKq84ka0PeuSuwdqPEd/rBwzyb+r1FqLLqyErPP9Iw42L52TmB5
-	2Uy1rIkSbsHxHYYCWBq3FZuNZTXRsZ2QRyHKWJRpBXggeBKNkX5qMpxYhhmmT5vXeb
-	r3sXe5wfp6Fftm3kLieDRdFmX+o6d0kmUyHdR3fc=
-Subject: Re: How to resolve an issue in swiotlb environment?
-To: Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>,
-	Valentina Manea <valentina.manea.m@gmail.com>
-References: <Pine.LNX.4.44L0.1906131306580.1307-100000@iolanthe.rowland.org>
-From: shuah <shuah@kernel.org>
-Message-ID: <41caad16-3fa1-413b-0d49-594d48b88de4@kernel.org>
-Date: Thu, 13 Jun 2019 17:01:05 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Fri, 14 Jun 2019 01:15:14 +0000 (UTC)
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	13 Jun 2019 18:15:14 -0700
+X-ExtLoop1: 1
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+	by orsmga005.jf.intel.com with ESMTP; 13 Jun 2019 18:15:13 -0700
+Date: Thu, 13 Jun 2019 18:14:54 -0700
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH v4 05/21] x86/hpet: Reserve timer for the HPET
+	hardlockup detector
+Message-ID: <20190614011454.GA6347@ranerica-svr.sc.intel.com>
+References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1558660583-28561-6-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<alpine.DEB.2.21.1906112152430.2214@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <Pine.LNX.4.44L0.1906131306580.1307-100000@iolanthe.rowland.org>
-Content-Language: en-US
-X-Mailman-Approved-At: Thu, 13 Jun 2019 23:19:01 +0000
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-	Oliver Neukum <oneukum@suse.com>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	shuah <shuah@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.1906112152430.2214@nanos.tec.linutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+	"Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org,
+	Ashok Raj <ashok.raj@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Philippe Ombredanne <pombredanne@nexb.com>,
+	Randy Dunlap <rdunlap@infradead.org>, Clemens Ladisch <clemens@ladisch.de>,
+	linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+	Ricardo Neri <ricardo.neri@intel.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Andi Kleen <andi.kleen@intel.com>, Borislav Petkov <bp@suse.de>,
+	Ingo Molnar <mingo@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,46 +75,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 6/13/19 11:16 AM, Alan Stern wrote:
-> On Thu, 13 Jun 2019, Christoph Hellwig wrote:
+On Tue, Jun 11, 2019 at 09:54:25PM +0200, Thomas Gleixner wrote:
+> On Thu, 23 May 2019, Ricardo Neri wrote:
 > 
->> On Wed, Jun 12, 2019 at 10:43:11AM -0400, Alan Stern wrote:
->>> Would it be okay to rely on the assumption that USB block devices never
->>> have block size < 512?  (We could even add code to the driver to
->>> enforce this, although refusing to handle such devices at all might be
->>> worse than getting an occasional error.)
->>
->> sd.c only supports a few specific sector size, and none of them is
->> < 512 bytes:
->>
->> 	if (sector_size != 512 &&
->> 	    sector_size != 1024 &&
->> 	    sector_size != 2048 &&
->> 	    sector_size != 4096) {
->> 	    	...
->> 		sdkp->capacity = 0;
+> > HPET timer 2 will be used to drive the HPET-based hardlockup detector.
+> > Reserve such timer to ensure it cannot be used by user space programs or
+> > for clock events.
+> > 
+> > When looking for MSI-capable timers for clock events, skip timer 2 if
+> > the HPET hardlockup detector is selected.
 > 
-> Great!  So all we have to do is fix vhci-hcd.  Then we can remove all
-> the virt_boundary_mask stuff from usb-storage and uas entirely.
-> 
-> (I'm assuming wireless USB isn't a genuine issue.  As far as I know, it
-> is pretty much abandoned at this point.)
-> 
-> Valentina and Shua: Adding SG support to vhci-hcd shouldn't be too
-> hard.  It ought to be possible even without changing the network
-> protocol.
-> 
+> Why? Both the changelog and the code change lack an explanation why this
+> timer is actually touched after it got reserved for the platform. The
+> reservation should make it inaccessible for other things.
 
-I will start taking a look at this. Is there a target release in plan
-to drop virt_boundary_mask stuff?
+hpet_reserve_platform_timers() will give the HPET char driver a data
+structure which specifies which drivers are reserved. In this manner,
+they cannot be used by applications via file opens. The timer used by
+the hardlockup detector should be marked as reserved.
 
-thanks,
--- Shuah
+Also, hpet_msi_capability_lookup() populates another data structure
+which is used when obtaining an unused timer for a HPET clock event.
+The timer used by the hardlockup detector should not be included in such
+data structure.
+
+Is this the explanation you would like to see? If yes, I will include it
+in the changelog.
+
+Thanks and BR,
+Ricardo
 
 _______________________________________________
 iommu mailing list
