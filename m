@@ -2,53 +2,53 @@ Return-Path: <SRS0=ZdmF=UN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012F8C31E4D
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20EEC31E4D
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:49:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CAF4220866
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:49:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8AC9B20866
+	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 13:49:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="owRHpuK6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CAF4220866
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Tpc9x4lP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8AC9B20866
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CD5C51009;
-	Fri, 14 Jun 2019 13:48:36 +0000 (UTC)
-Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
-	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 29606DD0
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0D47A102A;
+	Fri, 14 Jun 2019 13:48:38 +0000 (UTC)
+Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
+	[172.17.192.36])
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 20573ECB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 13:48:35 +0000 (UTC)
+	Fri, 14 Jun 2019 13:48:37 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BD1D8174
+	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id D02541DAA7
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 13:48:34 +0000 (UTC)
+	Fri, 14 Jun 2019 13:48:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=yT59YDuDyJ+PxdfRPqwI/alSJ84EPbJSnwgnpwBRCag=;
-	b=owRHpuK6KPpEPbej7i1YhZs6AX
-	wN7yNoV43C+ez1kJ8mjyYksBoNb/QnO43qmDtaoXcejQN8JVymeq+ihqkSdORxH9DTolc8g44wL/n
-	4LSqiLNL1pznmOxp4ws/5vWu11eRtAmNuWXern/02xHfx/UTArA2cLwNsqFsJR3FHm32czvwMjXp2
-	7sGt2jHFZhtBCFB/p80y7vCA6bbzdpMVufvVVb+aSI6J4MNffPlYXrnmf1qIq+XF2XIQg2V9t5O5b
-	b1wpDdk22coEH5ua9xigsjiut+9bxXp+UfE0duTuPjXZxk7HNsybWuKX1NvzSJkdd8inzEtTrVrtu
-	gzlO+vIg==;
+	bh=uJddLBdDNaWL4wSSvZ2YhjeFWIY1bS4Okt/V8tHSUJw=;
+	b=Tpc9x4lPYqhK3XjIXO4GqJY9rv
+	9rJeQeQNbim7ZbrvzWwlYZe6uviPZA8B8PnxWsyT6JGwXhhBWJVdSZXfCFQexWetdjj9pyjlFh9xF
+	NNuQWOD5YMIca+yt05/XIg8Wkq6pGz0Z85GD2RuHezWtfbKqQOoREoRWCESCbTHgW7AMp5BbVshrc
+	pEh3xewVIl6LVjW2c5Fh7o0QsoPF6TFPCQBrS9GLC8RQ30e45tR99TsjbM05NZ0+J3y0gAw3KzjRt
+	lGDsivXtuD6ZbALT0tjqUJ7bWzADYRpbOi1VBP2HP7AECc7ayAViL+6MV1bLNQPDXazLoyPeSUXcq
+	WTLTT30Q==;
 Received: from 213-225-9-13.nat.highway.a1.net ([213.225.9.13] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hbmYq-0005Ma-VZ; Fri, 14 Jun 2019 13:48:09 +0000
+	id 1hbmYv-0005Sj-P5; Fri, 14 Jun 2019 13:48:14 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>,
@@ -57,10 +57,9 @@ To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
 	Rodrigo Vivi <rodrigo.vivi@intel.com>, Ian Abbott <abbotti@mev.co.uk>,
 	H Hartley Sweeten <hsweeten@visionengravers.com>
-Subject: [PATCH 11/16] s390/ism: stop passing bogus gfp flags arguments to
-	dma_alloc_coherent
-Date: Fri, 14 Jun 2019 15:47:21 +0200
-Message-Id: <20190614134726.3827-12-hch@lst.de>
+Subject: [PATCH 12/16] staging/comedi: mark as broken
+Date: Fri, 14 Jun 2019 15:47:22 +0200
+Message-Id: <20190614134726.3827-13-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190614134726.3827-1-hch@lst.de>
 References: <20190614134726.3827-1-hch@lst.de>
@@ -92,29 +91,27 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-dma_alloc_coherent is not just the page allocator.  The only valid
-arguments to pass are either GFP_ATOMIC or GFP_ATOMIC with possible
-modifiers of __GFP_NORETRY or __GFP_NOWARN.
+comedi_buf.c abuse the DMA API in gravely broken ways, as it assumes it
+can call virt_to_page on the result, and the just remap it as uncached
+using vmap.  Disable the driver until this API abuse has been fixed.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/s390/net/ism_drv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/comedi/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index 4fc2056bd227..4ff5506fa4c6 100644
---- a/drivers/s390/net/ism_drv.c
-+++ b/drivers/s390/net/ism_drv.c
-@@ -241,7 +241,8 @@ static int ism_alloc_dmb(struct ism_dev *ism, struct smcd_dmb *dmb)
- 
- 	dmb->cpu_addr = dma_alloc_coherent(&ism->pdev->dev, dmb->dmb_len,
- 					   &dmb->dma_addr,
--					   GFP_KERNEL | __GFP_NOWARN | __GFP_NOMEMALLOC | __GFP_COMP | __GFP_NORETRY);
-+					   GFP_KERNEL | __GFP_NOWARN |
-+					   __GFP_NORETRY);
- 	if (!dmb->cpu_addr)
- 		clear_bit(dmb->sba_idx, ism->sba_bitmap);
- 
+diff --git a/drivers/staging/comedi/Kconfig b/drivers/staging/comedi/Kconfig
+index 049b659fa6ad..e7c021d76cfa 100644
+--- a/drivers/staging/comedi/Kconfig
++++ b/drivers/staging/comedi/Kconfig
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config COMEDI
+ 	tristate "Data acquisition support (comedi)"
++	depends on BROKEN
+ 	help
+ 	  Enable support for a wide range of data acquisition devices
+ 	  for Linux.
 -- 
 2.20.1
 
