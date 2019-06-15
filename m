@@ -1,66 +1,63 @@
-Return-Path: <SRS0=ZdmF=UN=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Lin2=UO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8B2C31E4E
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 18:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E86C31E47
+	for <iommu@archiver.kernel.org>; Sat, 15 Jun 2019 08:36:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10B432177E
-	for <iommu@archiver.kernel.org>; Fri, 14 Jun 2019 18:17:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10B432177E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id 64BA62070B
+	for <iommu@archiver.kernel.org>; Sat, 15 Jun 2019 08:36:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64BA62070B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DF044168F;
-	Fri, 14 Jun 2019 18:17:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2C054EF2;
+	Sat, 15 Jun 2019 08:36:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28B8B143D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 08098D4A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 18:17:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from Galois.linutronix.de (Galois.linutronix.de [146.0.238.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7E7A97C3
+	Sat, 15 Jun 2019 08:36:25 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7C2D5E6
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 14 Jun 2019 18:17:40 +0000 (UTC)
-Received: from p5b06daab.dip0.t-ipconnect.de ([91.6.218.171] helo=nanos)
-	by Galois.linutronix.de with esmtpsa
-	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
-	(envelope-from <tglx@linutronix.de>)
-	id 1hbqlM-0006Wc-Mn; Fri, 14 Jun 2019 20:17:20 +0200
-Date: Fri, 14 Jun 2019 20:17:14 +0200 (CEST)
-From: Thomas Gleixner <tglx@linutronix.de>
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: Re: [RFC PATCH v4 04/21] x86/hpet: Add hpet_set_comparator() for
-	periodic and one-shot modes
-In-Reply-To: <1558660583-28561-5-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Message-ID: <alpine.DEB.2.21.1906142010230.1760@nanos.tec.linutronix.de>
-References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1558660583-28561-5-git-send-email-ricardo.neri-calderon@linux.intel.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	Sat, 15 Jun 2019 08:36:24 +0000 (UTC)
+Received: by newverein.lst.de (Postfix, from userid 2407)
+	id A382E68AFE; Sat, 15 Jun 2019 10:35:54 +0200 (CEST)
+Date: Sat, 15 Jun 2019 10:35:54 +0200
+From: "hch@lst.de" <hch@lst.de>
+To: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Subject: Re: [PATCH 7/7] arc: use the generic remapping allocator for
+	coherent DMA allocations
+Message-ID: <20190615083554.GC23406@lst.de>
+References: <20190614144431.21760-1-hch@lst.de>
+	<20190614144431.21760-8-hch@lst.de>
+	<78ac563f2815a9a14bfab6076d0ef948497f5b9f.camel@synopsys.com>
 MIME-Version: 1.0
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
-	SHORTCIRCUIT=-0.0001
-Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-	"Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org,
-	Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
-	Philippe Ombredanne <pombredanne@nexb.com>,
-	Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org,
-	Stephane Eranian <eranian@google.com>,
-	Ricardo Neri <ricardo.neri@intel.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Andi Kleen <andi.kleen@intel.com>, Borislav Petkov <bp@suse.de>,
-	Ingo Molnar <mingo@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <78ac563f2815a9a14bfab6076d0ef948497f5b9f.camel@synopsys.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "jonas@southpole.se" <jonas@southpole.se>,
+	"linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
+	"vladimir.murzin@arm.com" <vladimir.murzin@arm.com>,
+	"linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+	Vineet Gupta <Vineet.Gupta1@synopsys.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"stefan.kristiansson@saunalahti.fi" <stefan.kristiansson@saunalahti.fi>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"openrisc@lists.librecores.org" <openrisc@lists.librecores.org>,
+	"deller@gmx.de" <deller@gmx.de>, "shorne@gmail.com" <shorne@gmail.com>,
+	"linux-snps-arc@lists.infradead.org"
+	<linux-snps-arc@lists.infradead.org>, "hch@lst.de" <hch@lst.de>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,56 +75,25 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, 23 May 2019, Ricardo Neri wrote:
-> +/**
-> + * hpet_set_comparator() - Helper function for setting comparator register
-> + * @num:	The timer ID
-> + * @cmp:	The value to be written to the comparator/accumulator
-> + * @period:	The value to be written to the period (0 = oneshot mode)
-> + *
-> + * Helper function for updating comparator, accumulator and period values.
-> + *
-> + * In periodic mode, HPET needs HPET_TN_SETVAL to be set before writing
-> + * to the Tn_CMP to update the accumulator. Then, HPET needs a second
-> + * write (with HPET_TN_SETVAL cleared) to Tn_CMP to set the period.
-> + * The HPET_TN_SETVAL bit is automatically cleared after the first write.
-> + *
-> + * For one-shot mode, HPET_TN_SETVAL does not need to be set.
-> + *
-> + * See the following documents:
-> + *   - Intel IA-PC HPET (High Precision Event Timers) Specification
-> + *   - AMD-8111 HyperTransport I/O Hub Data Sheet, Publication # 24674
-> + */
-> +void hpet_set_comparator(int num, unsigned int cmp, unsigned int period)
-> +{
-> +	if (period) {
-> +		unsigned int v = hpet_readl(HPET_Tn_CFG(num));
-> +
-> +		hpet_writel(v | HPET_TN_SETVAL, HPET_Tn_CFG(num));
-> +	}
-> +
-> +	hpet_writel(cmp, HPET_Tn_CMP(num));
-> +
-> +	if (!period)
-> +		return;
+On Fri, Jun 14, 2019 at 06:05:01PM +0000, Eugeniy Paltsev wrote:
+> Hi Christoph,
+> 
+> Regular question - do you have any public git repository with all this dma changes?
+> I want to test it for ARC.
+> 
+> Pretty sure the
+>  [PATCH 2/7] arc: remove the partial DMA_ATTR_NON_CONSISTENT support
+> is fine.
+> 
+> Not so sure about
+>  [PATCH 7/7] arc: use the generic remapping allocator for coherent DMA allocations
+> :)
 
-TBH, I hate this conditional handling. What's wrong with two functions?
+   git://git.infradead.org/users/hch/misc.git dma-not-consistent-cleanup
 
-> +
-> +	/*
-> +	 * This delay is seldom used: never in one-shot mode and in periodic
-> +	 * only when reprogramming the timer.
-> +	 */
-> +	udelay(1);
-> +	hpet_writel(period, HPET_Tn_CMP(num));
-> +}
-> +EXPORT_SYMBOL_GPL(hpet_set_comparator);
+Gitweb:
 
-Why is this exported? Which module user needs this?
-
-Thanks,
-
-	tglx
+   http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-not-consistent-cleanup
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
