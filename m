@@ -7,73 +7,74 @@ X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5C0C31E57
-	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 09:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 160DDC31E59
+	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 09:59:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A317B20657
-	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 09:25:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DFCC32089E
+	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 09:59:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EEgQ7ucS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A317B20657
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HU2MhpCm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFCC32089E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 68220C6E;
-	Mon, 17 Jun 2019 09:25:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A4650B8F;
+	Mon, 17 Jun 2019 09:59:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 98FBBC59
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9FE5BA95
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 09:25:12 +0000 (UTC)
+	Mon, 17 Jun 2019 09:59:26 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
-	[209.85.208.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83430E6
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ADD12822
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 09:25:11 +0000 (UTC)
-Received: by mail-ed1-f68.google.com with SMTP id s49so15198060edb.1
+	Mon, 17 Jun 2019 09:59:25 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id i11so15337683edq.0
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 02:25:11 -0700 (PDT)
+	Mon, 17 Jun 2019 02:59:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=lqVVGFiLtIXMSKaKfEjaA+hlMg6x2QMEeRiDkewgq3o=;
-	b=EEgQ7ucSAOT4FEYRbI8qWX1+QPeFvnajDV9A6n2psA0494SH6GaoY7JTQ39g8BdVQA
-	gFCu39RgNDYpyWCxHmcpdu86LbeFonpIeTddfAI2+PFvfWWcIKjEGnCXON8o2WWEfubf
-	K52s4yu+4loxtX7GTh8DvHAGGKSG1/Yr92F7kwgEZsLkGhPOlIqOARPFr+0OAIsiMG9t
-	k4MvFXZwwlMpUfUMmosNdT+MBiSo8AxDSm9xN6SIatB2MuhZd8djG2o9Ae2nNdE6nrGF
-	pq+mPD+q8Gvhd7+4nE3O/3emY7tZCIHrflAEKk1GPNxmXjizRu2VGQrb0Dv16ngPe5DK
-	VGug==
+	bh=Wk42T0Kn41hpMrw8onVz67gqbj9VTIvDZYpdkjVC3LU=;
+	b=HU2MhpCmFH5rFufEQWs7TJVnqXhA0pjjf7dg+aA8fqfagnr2AjBGI2ajPOwzvETN41
+	V5dlBx4pzhMJp4Y43GlmUc82x9F7ALUraweFErUOcRtBf5zJ6yeF9fxkomlsuXO+EXW8
+	lbaGX2Phztf+jdf0nemS3K8WapKXbR/Zg7LHQpthCxvDZ0hzj0uv3SiFPegCa5vi5jDl
+	yAyi49xqkLqv372JylnnOHwPCeDy0ecDR5uWMtlQ25gnRC0e5cbvy4JngL3diuYtSaLH
+	nz91frpKfAHMbZF4UTasneQ2fRP0hwF2MUmi35FtdggciKK6n9ulkuE2BM8vplTXFpFw
+	3F2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
 	:message-id:date:user-agent:mime-version:in-reply-to
 	:content-language:content-transfer-encoding;
-	bh=lqVVGFiLtIXMSKaKfEjaA+hlMg6x2QMEeRiDkewgq3o=;
-	b=jR++lWqVYkfvLjRRb9JAUhonx+GXKU2jXEJ/KCKUVVe1sl9T2wOE3GTGMEBp3BItgx
-	6mna4xdSYHLrQrSGa8W3zHpwMhPZIFRWyPdr+9MF/9C/cFTlbvQg2RFDAX1/nPWsczr2
-	EKHB3WGSWSwv50O9U4B0Bf1DU3WQLckS69Vd5/D9lM9jGTJPYcVRVTY9vpdnMO6EnOVD
-	75e7uYHYMxEW13CGQ46pRsLrW0N/Js7pXTY+s1TCtsfnLEmwIEmuvFcD3kbpuMLsXaTV
-	XQ1hwpo95yLbn6msVceYW34slEHAa90tHiv5CmOTlOJ8b024DXwLxIRNSCZgpOhfpXzY
-	c0qg==
-X-Gm-Message-State: APjAAAWV7KV83P9sjSKJjaxG09XsI+TmBpYXR3n5NMW20/n65DOs7wPy
-	i5h5XptuL/U3M7X/7pTDMNo=
-X-Google-Smtp-Source: APXvYqwkzwykodP96cuw+v+PHe77dVwjss/INyzxyqzj2Io0DwDiwazXF9IiEw+lJLVQfUEpn0gXfQ==
-X-Received: by 2002:a17:906:1303:: with SMTP id
-	w3mr94594670ejb.196.1560763510031; 
-	Mon, 17 Jun 2019 02:25:10 -0700 (PDT)
+	bh=Wk42T0Kn41hpMrw8onVz67gqbj9VTIvDZYpdkjVC3LU=;
+	b=puR2qfxYHgIWcsfdv6ucmZjUtQqaRPXP7rJhPnrFmP6oJEwCLwK5AIAGjy/IWTC2bm
+	JPitevwL5f0PZoearED1Crq1mdZT9bc+ydYFtGVl6kRR0y8uWLXcCpitPpsjj4mEKrg4
+	D3n7AlKh72OeYBWk1lQrxb8F3TbyXL3oi1bkyBrDmhVHtIeqZrGUFldekloT02tZZWB2
+	+8JLjQHxfgiJQ2Wjws3ZPPubPKoDFiai5NMowlUzJi7rs4f1v4g3ZIZQ62aMzasXpr/d
+	CbwPmONj2PxKnCCSFMvfmRPlSYWi+Vqo44GsTbAHV+oBfhKOBiLmQ5rQjFBM/21AgpSi
+	3eFQ==
+X-Gm-Message-State: APjAAAWu+arzHjwh8erTf6TZfUDS1T/vgj2E6z65T1SaY52eEWarXuaf
+	M1Gz5GJMngjWH+xk9Qs9XiM=
+X-Google-Smtp-Source: APXvYqyxo+9xluvpBbZCqFC3HASFesyzzpYZWPZbzIX1BjzUO5MO4hxfTHOP3fjHpxYmNS0/vPOJSQ==
+X-Received: by 2002:a17:906:2acf:: with SMTP id
+	m15mr94428745eje.31.1560765564160; 
+	Mon, 17 Jun 2019 02:59:24 -0700 (PDT)
 Received: from ziggy.stardust ([37.223.140.27])
-	by smtp.gmail.com with ESMTPSA id k11sm401711edq.54.2019.06.17.02.25.08
+	by smtp.gmail.com with ESMTPSA id
+	u26sm3458355edf.91.2019.06.17.02.59.22
 	(version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-	Mon, 17 Jun 2019 02:25:09 -0700 (PDT)
-Subject: Re: [PATCH v7 08/21] iommu/mediatek: Add larb-id remapped support
+	Mon, 17 Jun 2019 02:59:23 -0700 (PDT)
+Subject: Re: [PATCH v7 09/21] iommu/mediatek: Refine protect memory definition
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
 References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
-	<1560169080-27134-9-git-send-email-yong.wu@mediatek.com>
+	<1560169080-27134-10-git-send-email-yong.wu@mediatek.com>
 From: Matthias Brugger <matthias.bgg@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
@@ -169,12 +170,12 @@ Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
 	pac005PuhxCWkKTJz3gCmznnoat4GCnL5gy/m0Qk45l4PFqwWXVLo9AQg2Kp3mlIFZ6fsEKI
 	AN5hxlbNvNb9V2Zo5bFZjPWPFTxOteM0omUAS+QopwU0yPLLGJVf2iCmItHcUXI+r2JwH1CJ
 	jrHWeQEI2ucSKsNa8FllDmG/fQ==
-Message-ID: <3dec887b-06b5-1aeb-8bd8-924999addd53@gmail.com>
-Date: Mon, 17 Jun 2019 11:25:07 +0200
+Message-ID: <d5bf7ef9-d6dd-2e09-5ad8-e72a26dd3880@gmail.com>
+Date: Mon, 17 Jun 2019 11:59:22 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <1560169080-27134-9-git-send-email-yong.wu@mediatek.com>
+In-Reply-To: <1560169080-27134-10-git-send-email-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Nicolas Boichat <drinkcat@chromium.org>,
@@ -204,82 +205,54 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 
 On 10/06/2019 14:17, Yong Wu wrote:
-> The larb-id may be remapped in the smi-common, this means the
-> larb-id reported in the mtk_iommu_isr isn't the real larb-id,
-> 
-> Take mt8183 as a example:
->                        M4U
->                         |
-> ---------------------------------------------
-> |               SMI common                  |
-> -0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
->  |     |     |     |     |     |      |     |
-> larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
-> disp  vdec  img   cam   venc  img    cam
-> As above, larb0 connects with the id 0 in smi-common.
->           larb1 connects with the id 7 in smi-common.
->           ...
-> If the larb-id reported in the isr is 7, actually it's larb1(vdec).
-> In order to output the right larb-id in the isr, we add a larb-id
-> remapping relationship in this patch.
-> 
-> If there is no this larb-id remapping in some SoCs, use the linear
-> mapping array instead.
-> 
-> This also is a preparing patch for mt8183.
+> The protect memory setting is a little different in the different SoCs.
+> In the register REG_MMU_CTRL_REG(0x110), the TF_PROT(translation fault
+> protect) shift bit is normally 4 while it shift 5 bits only in the
+> mt8173. This patch delete the complex MACRO and use a common if-else
+> instead.
 > 
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
 > Reviewed-by: Evan Green <evgreen@chromium.org>
 
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 > ---
->  drivers/iommu/mtk_iommu.c | 4 ++++
->  drivers/iommu/mtk_iommu.h | 2 ++
->  2 files changed, 6 insertions(+)
+>  drivers/iommu/mtk_iommu.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 > 
 > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 264dda4..ad838b9 100644
+> index ad838b9..d38dfa2 100644
 > --- a/drivers/iommu/mtk_iommu.c
 > +++ b/drivers/iommu/mtk_iommu.c
-> @@ -220,6 +220,8 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
->  	fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
->  	fault_port = F_MMU0_INT_ID_PORT_ID(regval);
+> @@ -52,12 +52,9 @@
+>  #define REG_MMU_DCM_DIS				0x050
 >  
-> +	fault_larb = data->plat_data->larbid_remap[fault_larb];
-> +
->  	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
->  			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
->  		dev_err_ratelimited(
-> @@ -744,12 +746,14 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->  	.m4u_plat     = M4U_MT2712,
->  	.has_4gb_mode = true,
->  	.has_bclk     = true,
-> +	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
->  };
+>  #define REG_MMU_CTRL_REG			0x110
+> +#define F_MMU_TF_PROT_TO_PROGRAM_ADDR		(2 << 4)
+>  #define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
+> -#define F_MMU_TF_PROTECT_SEL_SHIFT(data) \
+> -	((data)->plat_data->m4u_plat == M4U_MT2712 ? 4 : 5)
+> -/* It's named by F_MMU_TF_PROT_SEL in mt2712. */
+> -#define F_MMU_TF_PROTECT_SEL(prot, data) \
+> -	(((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
+> +#define F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173	(2 << 5)
 >  
->  static const struct mtk_iommu_plat_data mt8173_data = {
->  	.m4u_plat     = M4U_MT8173,
->  	.has_4gb_mode = true,
->  	.has_bclk     = true,
-> +	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
->  };
+>  #define REG_MMU_IVRP_PADDR			0x114
 >  
->  static const struct of_device_id mtk_iommu_of_ids[] = {
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index 63e235e..61fd5d6 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -46,6 +46,8 @@ struct mtk_iommu_plat_data {
+> @@ -519,9 +516,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  		return ret;
+>  	}
 >  
->  	/* HW will use the EMI clock if there isn't the "bclk". */
->  	bool                has_bclk;
-> +
-> +	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
->  };
+> -	regval = F_MMU_TF_PROTECT_SEL(2, data);
+>  	if (data->plat_data->m4u_plat == M4U_MT8173)
+> -		regval |= F_MMU_PREFETCH_RT_REPLACE_MOD;
+> +		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
+> +			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
+> +	else
+> +		regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR;
+>  	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
 >  
->  struct mtk_iommu_domain;
+>  	regval = F_L2_MULIT_HIT_EN |
 > 
 _______________________________________________
 iommu mailing list
