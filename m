@@ -5,76 +5,76 @@ X-Spam-Level:
 X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC498C31E5B
-	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 16:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87038C31E5C
+	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 16:33:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9EB66208C4
-	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 16:30:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 607E92084D
+	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 16:33:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OcB7fk4Q"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9EB66208C4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hGG/k/Y+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 607E92084D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 78539DBE;
-	Mon, 17 Jun 2019 16:30:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 12F1CD85;
+	Mon, 17 Jun 2019 16:33:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 90DC4DB1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DD447C6A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 16:30:31 +0000 (UTC)
+	Mon, 17 Jun 2019 16:33:49 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
-	[209.85.208.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BDA6C2C3
+Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
+	[209.85.208.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CB17B2C3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 16:30:30 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id k8so17021050eds.7
+	Mon, 17 Jun 2019 16:33:48 +0000 (UTC)
+Received: by mail-ed1-f65.google.com with SMTP id r12so14854954edo.5
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 09:30:30 -0700 (PDT)
+	Mon, 17 Jun 2019 09:33:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=gXHlebz8VKQ6+/rZNAG9pPc7Wya5X3BB7Tl4DTSdlok=;
-	b=OcB7fk4QiphpSryEH2LnwMcr/w8uGBcZyA3EN314WPdy5vJxt51TdZ5QSp00zzJthl
-	85PTiQyAu745qtmPRwhdOb+JT4Jp+y0AG5cKjWGA7f5CdYvs6UOewdCxcusoLmMAyY1P
-	wgeL32843rItL36vj5HwZ50WsXWfetLgljgBNHSPg9s2VvCmYeYbNn+b3quHvohirngH
-	hN/Gh6DPqoxpUAWxHLtxXICGKj9YRrU4BGwsmUbdU2hlye9rEKaAOBjFJBwRE3vYUmcq
-	3Ov+YmwjidaCaNysI+0hrZI4X6q0vmJc9i5vO9xe9USVDZ/xH4C6jxwL3Ztx8v7AtGZZ
-	gddg==
+	bh=oYRhZvd9Rhcs1DxaHEleWPUKgvJsJsYmuXdoO4GH92I=;
+	b=hGG/k/Y+t91rEO99k82SJpAcKnYE4whaVBzSFudtLaBsJpwYFXkRkq2RwtvZVQaERQ
+	CoOEWnXA48/D92UQ82ArpJRIg9BrlG3doekpezFp5NQuDn7FmskMLVSkjfdxEbE6Y/Dl
+	dgpa1o1JqrUIJ8klECFCgUzSmihzi8KWfEZ94fr3zMMdc/Wjjzhzh00IXzylQZ3gRGBK
+	pK5eYM0TDMoO3QV9iDGDsXFleoRS6f/bhDzvXrRpjbSzcT68DxSyxGEbtx+CiSPm2VwA
+	mnBuBptAicTEPHjdXpUTTyJS+rSvdf/HqxMsZLoMpeXg372Aqzbg++pOo++HoEU9TgRZ
+	vj1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
 	:message-id:date:user-agent:mime-version:in-reply-to
 	:content-language:content-transfer-encoding;
-	bh=gXHlebz8VKQ6+/rZNAG9pPc7Wya5X3BB7Tl4DTSdlok=;
-	b=YBje6lSf+5RqeRd0Jhjh9n1/iJ0kpdfbBEDsougpdSBMwnInYIuHITjqSSa4YY2pwT
-	t5b6VV8VXEDWr1LgpzrMxQfFSn0tNQA9XG/fsJ8Xpo2o9mi58dVRqbGQKh+eUfTBSAvA
-	rWLtVEJ5uDIFoywBhXynCcKKHbpeds3lRvjKiuH4Vz48nyN30i7Zi6wA4Gtoq1vR8cPd
-	ujeVRcX4ZSAt8UJaW24cyIG2BQwbuz2WsuLrRwci8RK/5wmrt5uWQHVXOn2FdC/xbeNv
-	wzvEPXV+hpgVaIrbkXq88zQKHgQ6dx9rFyrlKJ/dzEqJRF8+36rnx/Wkfs/pkPtZMRJC
-	I/zQ==
-X-Gm-Message-State: APjAAAWZggvT+iS+H/9Oucz5us1vf7B7QxNfnjySux5/g9QK2obZ4C8B
-	ri/+wo3jhOi68pQ2lagZtgs=
-X-Google-Smtp-Source: APXvYqyc9+zFOBeTb/JPA8WZGMgJ4OyElybqj1HfguGGuxrwloyuj/dWmuxG4GMoGIl1JPP7qDZR4g==
-X-Received: by 2002:a50:b161:: with SMTP id l30mr99846580edd.278.1560789029385;
-	Mon, 17 Jun 2019 09:30:29 -0700 (PDT)
+	bh=oYRhZvd9Rhcs1DxaHEleWPUKgvJsJsYmuXdoO4GH92I=;
+	b=m/UDx5UUrcYBPYMZP8AMqlBd/1ImQ6kHnPjNFvrHPkKpb42Y+c5Hli0jdsSONO4P+K
+	6MlJzF/BLz+Fp3vDGW4HzX6SrxcdgrgQIv0fddmbJ/zEroShCBr5VAKI8GwM0XeNlxY5
+	aZLlHkm/mR+jJVWXuf2EiiArZjWXfrxKIpHRMZ3hmTsPP0cSdFubqA+hmOLP70gOVjjP
+	Sb7qdjMFWeVOOTa5BhXDQ63FBS/Jz4ffiK/4d51Om5ood23hi6PpbL3VRHFPqxwUtsna
+	UeDJ1y64/fZyEUCosX0KZUstU/8SLwpJT+7OKPBnfw530LGSDJPK5mjfLPkztLFXHa3P
+	WUjg==
+X-Gm-Message-State: APjAAAUr6qxqNcYiT8BTnFNHlxhWjNxwBwrZIRB97kZWqjZcdZUAMN6S
+	7+pXXZ1r6Ub4Ha9vQ5xWIMc=
+X-Google-Smtp-Source: APXvYqxbF7QMHTPa8Nkui5xm5nSCd98Uwko8VAJ4t4g6nYHeWc9hkxx3xdRtRxt+2Z8pYiyJjsd1Cg==
+X-Received: by 2002:a17:906:2191:: with SMTP id
+	17mr34504291eju.157.1560789227361; 
+	Mon, 17 Jun 2019 09:33:47 -0700 (PDT)
 Received: from ziggy.stardust ([37.223.140.27])
-	by smtp.gmail.com with ESMTPSA id
-	s27sm3904956eda.36.2019.06.17.09.30.27
+	by smtp.gmail.com with ESMTPSA id v3sm1427941ejk.77.2019.06.17.09.33.45
 	(version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-	Mon, 17 Jun 2019 09:30:28 -0700 (PDT)
-Subject: Re: [PATCH v7 18/21] iommu/mediatek: Fix VLD_PA_RNG register backup
-	when suspend
+	Mon, 17 Jun 2019 09:33:46 -0700 (PDT)
+Subject: Re: [PATCH v7 21/21] iommu/mediatek: Switch to SPDX license identifier
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
 References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
-	<1560169080-27134-19-git-send-email-yong.wu@mediatek.com>
+	<1560169080-27134-22-git-send-email-yong.wu@mediatek.com>
 From: Matthias Brugger <matthias.bgg@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
@@ -170,12 +170,12 @@ Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
 	pac005PuhxCWkKTJz3gCmznnoat4GCnL5gy/m0Qk45l4PFqwWXVLo9AQg2Kp3mlIFZ6fsEKI
 	AN5hxlbNvNb9V2Zo5bFZjPWPFTxOteM0omUAS+QopwU0yPLLGJVf2iCmItHcUXI+r2JwH1CJ
 	jrHWeQEI2ucSKsNa8FllDmG/fQ==
-Message-ID: <d8fd11c7-899d-27a3-7467-de351307c6a1@gmail.com>
-Date: Mon, 17 Jun 2019 18:30:27 +0200
+Message-ID: <9bf9e47f-b709-b2ce-b795-ff5e345a67d5@gmail.com>
+Date: Mon, 17 Jun 2019 18:33:45 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <1560169080-27134-19-git-send-email-yong.wu@mediatek.com>
+In-Reply-To: <1560169080-27134-22-git-send-email-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Nicolas Boichat <drinkcat@chromium.org>,
@@ -204,54 +204,177 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 
 
-On 10/06/2019 14:17, Yong Wu wrote:
-> The register VLD_PA_RNG(0x118) was forgot to backup while adding 4GB
-> mode support for mt2712. this patch add it.
+On 10/06/2019 14:18, Yong Wu wrote:
+> Switch to SPDX license identifier for MediaTek iommu/smi and their
+> header files.
 > 
-> Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
-> for 4GB mode")
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > Reviewed-by: Evan Green <evgreen@chromium.org>
 
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 > ---
->  drivers/iommu/mtk_iommu.c | 2 ++
->  drivers/iommu/mtk_iommu.h | 1 +
->  2 files changed, 3 insertions(+)
+>  drivers/iommu/mtk_iommu.c                     | 10 +---------
+>  drivers/iommu/mtk_iommu.h                     | 10 +---------
+>  drivers/iommu/mtk_iommu_v1.c                  | 10 +---------
+>  drivers/memory/mtk-smi.c                      | 10 +---------
+>  include/dt-bindings/memory/mt2701-larb-port.h | 10 +---------
+>  include/dt-bindings/memory/mt8173-larb-port.h | 10 +---------
+>  include/soc/mediatek/smi.h                    | 10 +---------
+>  7 files changed, 7 insertions(+), 63 deletions(-)
 > 
 > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 6053b8b..86158d8 100644
+> index 34f2e40..6fe3369 100644
 > --- a/drivers/iommu/mtk_iommu.c
 > +++ b/drivers/iommu/mtk_iommu.c
-> @@ -719,6 +719,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
->  	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
->  	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
->  	reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
-> +	reg->vld_pa_rng = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
->  	clk_disable_unprepare(data->bclk);
->  	return 0;
->  }
-> @@ -743,6 +744,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->  	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
->  	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
->  	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
-> +	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
->  	if (m4u_dom)
->  		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
->  		       base + REG_MMU_PT_BASE_ADDR);
+> @@ -1,15 +1,7 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Copyright (c) 2015-2016 MediaTek Inc.
+>   * Author: Yong Wu <yong.wu@mediatek.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
+>  #include <linux/memblock.h>
+>  #include <linux/bug.h>
 > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index c0b5c65..753266b 100644
+> index e8114b2..b24cfd3 100644
 > --- a/drivers/iommu/mtk_iommu.h
 > +++ b/drivers/iommu/mtk_iommu.h
-> @@ -32,6 +32,7 @@ struct mtk_iommu_suspend_reg {
->  	u32				int_control0;
->  	u32				int_main_control;
->  	u32				ivrp_paddr;
-> +	u32				vld_pa_rng;
->  };
+> @@ -1,15 +1,7 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * Copyright (c) 2015-2016 MediaTek Inc.
+>   * Author: Honghui Zhang <honghui.zhang@mediatek.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
 >  
->  enum mtk_iommu_plat {
+>  #ifndef _MTK_IOMMU_H_
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index 73308ad..0b0908c 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -1,3 +1,4 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * IOMMU API for MTK architected m4u v1 implementations
+>   *
+> @@ -5,15 +6,6 @@
+>   * Author: Honghui Zhang <honghui.zhang@mediatek.com>
+>   *
+>   * Based on driver/iommu/mtk_iommu.c
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
+>  #include <linux/memblock.h>
+>  #include <linux/bug.h>
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 10e6493..9688341 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -1,15 +1,7 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Copyright (c) 2015-2016 MediaTek Inc.
+>   * Author: Yong Wu <yong.wu@mediatek.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
+>  #include <linux/clk.h>
+>  #include <linux/component.h>
+> diff --git a/include/dt-bindings/memory/mt2701-larb-port.h b/include/dt-bindings/memory/mt2701-larb-port.h
+> index 6764d74..c511f0f 100644
+> --- a/include/dt-bindings/memory/mt2701-larb-port.h
+> +++ b/include/dt-bindings/memory/mt2701-larb-port.h
+> @@ -1,15 +1,7 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * Copyright (c) 2015 MediaTek Inc.
+>   * Author: Honghui Zhang <honghui.zhang@mediatek.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
+>  
+>  #ifndef _MT2701_LARB_PORT_H_
+> diff --git a/include/dt-bindings/memory/mt8173-larb-port.h b/include/dt-bindings/memory/mt8173-larb-port.h
+> index 111b4b0..a62bfeb 100644
+> --- a/include/dt-bindings/memory/mt8173-larb-port.h
+> +++ b/include/dt-bindings/memory/mt8173-larb-port.h
+> @@ -1,15 +1,7 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * Copyright (c) 2015-2016 MediaTek Inc.
+>   * Author: Yong Wu <yong.wu@mediatek.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
+>  #ifndef __DTS_IOMMU_PORT_MT8173_H
+>  #define __DTS_IOMMU_PORT_MT8173_H
+> diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+> index a65324d..7a8d870 100644
+> --- a/include/soc/mediatek/smi.h
+> +++ b/include/soc/mediatek/smi.h
+> @@ -1,15 +1,7 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * Copyright (c) 2015-2016 MediaTek Inc.
+>   * Author: Yong Wu <yong.wu@mediatek.com>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+>   */
+>  #ifndef MTK_IOMMU_SMI_H
+>  #define MTK_IOMMU_SMI_H
 > 
 _______________________________________________
 iommu mailing list
