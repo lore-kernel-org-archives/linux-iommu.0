@@ -5,75 +5,77 @@ X-Spam-Level:
 X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB080C31E57
-	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 10:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB099C31E57
+	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 10:27:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9B28E2087F
-	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 10:19:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9E16D2084D
+	for <iommu@archiver.kernel.org>; Mon, 17 Jun 2019 10:27:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X0f5/oBh"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B28E2087F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e87YrJq2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E16D2084D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 634BCC6F;
-	Mon, 17 Jun 2019 10:19:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6E2C2C96;
+	Mon, 17 Jun 2019 10:27:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 50B55C6C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B1239C7C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 10:19:42 +0000 (UTC)
+	Mon, 17 Jun 2019 10:27:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
-	[209.85.208.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 67B3BE6
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
+	[209.85.208.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 16B887DB
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 10:19:41 +0000 (UTC)
-Received: by mail-ed1-f65.google.com with SMTP id p15so15350317eds.8
+	Mon, 17 Jun 2019 10:27:50 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id s49so15455010edb.1
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 17 Jun 2019 03:19:41 -0700 (PDT)
+	Mon, 17 Jun 2019 03:27:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
 	:user-agent:mime-version:in-reply-to:content-language
 	:content-transfer-encoding;
-	bh=TzLoiM+4yyqS4qQ/Z+0KkcbYXDCW11jDNcS5/kQsMAU=;
-	b=X0f5/oBhHRHa1sfq/QXJP+0K+3kggxvJKOKu2+lfp3FmydWyr1IyFwsXsibJyMND7f
-	jMg3U48nUBFl7xJi5KN2ExRZntrpj+RemSGPleUWUHKJqPx997Y9YwHkqIyAjKIBtrIO
-	YqhDSmaWh8kntFouuRqfMWTPMyRM3NCFU9FykxPo7f1jiAkZQpevsj6QfxdE9yX08hOo
-	MPR4ZEvc/PN7SoEMNLUMbYfLlwecxdrAI67xRuctcAZke+aBno84ha57PWoAUTziTgjk
-	LdHPAKweoE7mjKx77aR9+i0NKEs0tFtwZ0A3l9obxDL8HslkU5v4wc1h42Mf6gD97ToN
-	/SjA==
+	bh=AJgaWp9buEhFhAfOA/w0Y0NLRlrctQbl4W8WqjusUl0=;
+	b=e87YrJq26dFWjj3SEOv+9RWslIhUXdeP1hvt6xrDEcuCmk6pZRfbx1Y4ssQrE+riCF
+	KKBQxIBQN5QVXTi5lJDVueFRgm2uu1xsh/7EN2U/W1OaYtzHt0hQyZiXwkTwjZAplLEP
+	rQ9cqJbpzxRUgW1uQbg5n0vtZRZ5lETRnDQ5tHgTxeKzrK9GaVKeZNmuN5Mds1tfR8pO
+	+dSc9CxOFGePCeVtAXd9SfqiGKfbL36vkyA5h5mQ88cRMV1JZd9FiEExERpLrk7ZAVht
+	UWSGH/Q4wJW7VlRyoX/m0x1QOuMT+C3fricop1NqqLtuPiHVSDjMKA3xA9gLaXWYAAlj
+	b0tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
 	:message-id:date:user-agent:mime-version:in-reply-to
 	:content-language:content-transfer-encoding;
-	bh=TzLoiM+4yyqS4qQ/Z+0KkcbYXDCW11jDNcS5/kQsMAU=;
-	b=RrtXGsDsU+K+L92N6L91/chCaGfsAR3jGMBUphW8jSu3Rtef0GA+3a5htRJqaG79m8
-	EjQP8hS6NnElf8vkMcz65xp2H35emHMSerGab26vzXjP/AwLKlHe/EtudCy4zqV81Jha
-	hsFXwHxv4qAgSEpvHak/YwzhMe0gp8o4K8DyiggvmHeHi7ErSo9HkT6e6tv6x1tPrNeG
-	OHGTZU9tZq70F9xrETcsf2E0U7EpiluS5FNi0we1CTbhGzu+vhWA2wRc9Ky1Y1qFTkhl
-	8KJ3W2jm9bObb68nl7h62Df3daXmhIsbU+JqVMXzMk4udBF05Sf57PNCFg724mrJ2nr/
-	t+cA==
-X-Gm-Message-State: APjAAAUbUerIO+vBNFdN/MuA1mMCuV5m/m012v+Yn6G7ozY7PFc6+k8p
-	YRlqudVe2SGmSrwktDBvUao=
-X-Google-Smtp-Source: APXvYqw8vLAprkCZUA8KLsZdwXy+cQFlPUY7TG1wOITN0+MR8u/QKJ//bJFesQh65S8lLx98Euvpcw==
-X-Received: by 2002:a17:906:74e:: with SMTP id
-	z14mr17671792ejb.310.1560766779957; 
-	Mon, 17 Jun 2019 03:19:39 -0700 (PDT)
+	bh=AJgaWp9buEhFhAfOA/w0Y0NLRlrctQbl4W8WqjusUl0=;
+	b=KgnPzNJYq4rTElmbDyWyV6WKa5EjgWbTyeaIX+O4GvyLcB7wwuAssFQImVgd3r6fHd
+	g8Ndg+mGrPgG6ZItZSieVa5L+U7FpslPAU8SEmr8Wga7oBnk1BEt3aZX5+v7d8GSHy38
+	5m/tTzCWtu1Ytxttv/CHEY+j7dUcxsqCh9bz0zlV6BGxJ2MEwhsv8awkYe8n7q7n2UWN
+	h6vuH1zlydDosxTQ4KSDHvi4a+2HF4khpN5B+gSOCS82+QBkjMdW8O49pQIOFDy8jn4I
+	+IxXg2g8xSNxLnJVYitInNvepgnMEe3QGjCKYaURoogr9s68YmQkzo3dJ47ytqaKG4Jx
+	4fPg==
+X-Gm-Message-State: APjAAAX6auQl4emgkrfmjKr0JB3wgp56iEIAtXPrwZxKqVC3iKWALDoW
+	PBT27wwCYi8dzq5gboLuH6c=
+X-Google-Smtp-Source: APXvYqw1xXHtBpv3QuYmcuGvsytZFQZdoGfd9DJnuwj6EV0g8iXIffOj0q0t1WLlcoTSpm/eivENuA==
+X-Received: by 2002:a17:906:2a8e:: with SMTP id
+	l14mr6115507eje.276.1560767268640; 
+	Mon, 17 Jun 2019 03:27:48 -0700 (PDT)
 Received: from ziggy.stardust ([37.223.140.27])
-	by smtp.gmail.com with ESMTPSA id bq8sm380099ejb.42.2019.06.17.03.19.38
+	by smtp.gmail.com with ESMTPSA id
+	f24sm1059636edt.82.2019.06.17.03.27.46
 	(version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-	Mon, 17 Jun 2019 03:19:39 -0700 (PDT)
-Subject: Re: [PATCH v7 10/21] iommu/mediatek: Move reset_axi into plat_data
+	Mon, 17 Jun 2019 03:27:47 -0700 (PDT)
+Subject: Re: [PATCH v7 11/21] iommu/mediatek: Move vld_pa_rng into plat_data
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
 	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
 References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
-	<1560169080-27134-11-git-send-email-yong.wu@mediatek.com>
+	<1560169080-27134-12-git-send-email-yong.wu@mediatek.com>
 From: Matthias Brugger <matthias.bgg@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
@@ -169,12 +171,12 @@ Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
 	pac005PuhxCWkKTJz3gCmznnoat4GCnL5gy/m0Qk45l4PFqwWXVLo9AQg2Kp3mlIFZ6fsEKI
 	AN5hxlbNvNb9V2Zo5bFZjPWPFTxOteM0omUAS+QopwU0yPLLGJVf2iCmItHcUXI+r2JwH1CJ
 	jrHWeQEI2ucSKsNa8FllDmG/fQ==
-Message-ID: <314567ce-1569-8d78-08f3-3b8b7692e599@gmail.com>
-Date: Mon, 17 Jun 2019 12:19:37 +0200
+Message-ID: <6f2d77af-a965-add5-2a3f-fd55f574d912@gmail.com>
+Date: Mon, 17 Jun 2019 12:27:46 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <1560169080-27134-11-git-send-email-yong.wu@mediatek.com>
+In-Reply-To: <1560169080-27134-12-git-send-email-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Nicolas Boichat <drinkcat@chromium.org>,
@@ -204,56 +206,49 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 
 On 10/06/2019 14:17, Yong Wu wrote:
-> In mt8173 and mt8183, 0x48 is REG_MMU_STANDARD_AXI_MODE while it is
-> REG_MMU_CTRL in the other SoCs, and the bits meaning is completely
-> different with the REG_MMU_STANDARD_AXI_MODE.
-> 
-> This patch moves this property to plat_data, it's also a preparing
-> patch for mt8183.
+> Both mt8173 and mt8183 don't have this vld_pa_rng(valid physical address
+> range) register while mt2712 have. Move it into the plat_data.
 > 
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: Nicolas Boichat <drinkcat@chromium.org>
 > Reviewed-by: Evan Green <evgreen@chromium.org>
 
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 > ---
->  drivers/iommu/mtk_iommu.c | 4 ++--
->  drivers/iommu/mtk_iommu.h | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
+>  drivers/iommu/mtk_iommu.c | 3 ++-
+>  drivers/iommu/mtk_iommu.h | 1 +
+>  2 files changed, 3 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index d38dfa2..8ac7034 100644
+> index 8ac7034..a535dcd 100644
 > --- a/drivers/iommu/mtk_iommu.c
 > +++ b/drivers/iommu/mtk_iommu.c
-> @@ -557,8 +557,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
->  	}
->  	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+> @@ -547,7 +547,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  			 upper_32_bits(data->protect_base);
+>  	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
 >  
-> -	/* It's MISC control register whose default value is ok except mt8173.*/
-> -	if (data->plat_data->m4u_plat == M4U_MT8173)
-> +	if (data->plat_data->reset_axi)
->  		writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
->  
->  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
-> @@ -752,6 +751,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->  	.m4u_plat     = M4U_MT8173,
+> -	if (data->enable_4GB && data->plat_data->m4u_plat != M4U_MT8173) {
+> +	if (data->enable_4GB && data->plat_data->has_vld_pa_rng) {
+>  		/*
+>  		 * If 4GB mode is enabled, the validate PA range is from
+>  		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
+> @@ -744,6 +744,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>  	.m4u_plat     = M4U_MT2712,
 >  	.has_4gb_mode = true,
 >  	.has_bclk     = true,
-> +	.reset_axi    = true,
->  	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+> +	.has_vld_pa_rng   = true,
+>  	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 >  };
 >  
 > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index 61fd5d6..55d73c1 100644
+> index 55d73c1..e5c9dde 100644
 > --- a/drivers/iommu/mtk_iommu.h
 > +++ b/drivers/iommu/mtk_iommu.h
-> @@ -46,7 +46,7 @@ struct mtk_iommu_plat_data {
->  
+> @@ -47,6 +47,7 @@ struct mtk_iommu_plat_data {
 >  	/* HW will use the EMI clock if there isn't the "bclk". */
 >  	bool                has_bclk;
-> -
-> +	bool                reset_axi;
+>  	bool                reset_axi;
+> +	bool                has_vld_pa_rng;
 >  	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
 >  };
 >  
