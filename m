@@ -2,68 +2,189 @@ Return-Path: <SRS0=TfAO=UR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61270C31E51
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 12:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E490CC31E51
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 13:45:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D9F820665
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 12:19:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D9F820665
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id BBF852133F
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 13:45:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GUfY19w6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BBF852133F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 146DCF23;
-	Tue, 18 Jun 2019 12:19:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7DCD4AE7;
+	Tue, 18 Jun 2019 13:45:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A733DD0A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DA2AAACD
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 12:19:34 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 97DC3886
+	Tue, 18 Jun 2019 13:45:33 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 07B025D4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 12:19:33 +0000 (UTC)
-X-UUID: 5ed4167e3f424974af35e92c0dcd0c96-20190618
-X-UUID: 5ed4167e3f424974af35e92c0dcd0c96-20190618
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(mailgw01.mediatek.com ESMTP with TLS)
-	with ESMTP id 1630706520; Tue, 18 Jun 2019 20:14:26 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
-	(172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
-	Tue, 18 Jun 2019 20:14:25 +0800
-Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
-	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Tue, 18 Jun 2019 20:14:24 +0800
-Message-ID: <1560860064.9531.0.camel@mhfsdcap03>
-Subject: Re: [PATCH v2 08/12] drm/mediatek: Get rid of mtk_smi_larb_get/put
-From: Yong Wu <yong.wu@mediatek.com>
-To: CK Hu <ck.hu@mediatek.com>
-Date: Tue, 18 Jun 2019 20:14:24 +0800
-In-Reply-To: <1560839719.3736.0.camel@mtksdaap41>
-References: <1560171313-28299-1-git-send-email-yong.wu@mediatek.com>
-	<1560171313-28299-9-git-send-email-yong.wu@mediatek.com>
-	<1560839719.3736.0.camel@mtksdaap41>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+	Tue, 18 Jun 2019 13:45:31 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id w13so21857285eds.4
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 18 Jun 2019 06:45:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+	:user-agent:mime-version:in-reply-to:content-language
+	:content-transfer-encoding;
+	bh=8Ozm0kNXGZ6CrbSELxUIOO1h6nGc9IzMfpC34Z0SD2M=;
+	b=GUfY19w6kzf5SZnyGMiG1tzqdsZk4aD4CnOjJZqwJdxGullC1MpIwW/faJLDF8Vcz+
+	wz46jjlICzjku17MCY9E1bWQjvsmZDo4jcp7AT0urduu3/UBYhIB4IWkB3f4s92yv46v
+	fPogtNPvgH/4iFE6KtQBKbaeqy/B6pIv+wMfLtmPc++HzMv7eQqkPvcZXBbz/OBq7Mf5
+	z2CiavRTmCSmpLa42Ps3vaIR4NqdJPO+G1gFzHmToCdG1cN46wT2h1UYC4/1pox7f9FL
+	n4Ms+mxt1KYo5KvsWRqTHzhrD681HX1b5HudJ5MsixKIw3yVxECLEYw0EPOTE0k0WCro
+	s3pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+	:message-id:date:user-agent:mime-version:in-reply-to
+	:content-language:content-transfer-encoding;
+	bh=8Ozm0kNXGZ6CrbSELxUIOO1h6nGc9IzMfpC34Z0SD2M=;
+	b=i/LA1MVnHo/L4IIHSoFBtZng7WVEXZr0YFpYo9E5lq2w60hUoCIfts/5heUE3WBxRA
+	NgMiQL7CfsyxpzIijtLsiO58/Fc5otR/JuHZhBljZHaMSISMffKoG3Tlm8tf69h4R87K
+	1DDX8naFrF90aNj1qmournPaTXk07XlIo1NOpE25t05XrjIYGF/gGKUAHDGDmwQYdxlM
+	pPPyYpAdVUmvOoqhUv3A7L4Nvs3WQ6vQlB6rXqhlBhGCcHxdddhkrrNw0OkUJ2l/7b7r
+	gvJ6/eOQuE8usMeA1PngqeUfJqyn+suMSwbh8PTANmKdJK3klltCUHjhkVQK0j+H+A5l
+	Ywkg==
+X-Gm-Message-State: APjAAAWosLOl5oWVJ1ugT2ZSHH8otCAiWPSA0rR9qCU7O7ex9lqh1W8y
+	CnajFWyv04/S0iRLwOOOzNw=
+X-Google-Smtp-Source: APXvYqy0rhzhm+Byo0NdWj7HzjqGVyNN16kK3vuJMl9HkqDxhsJkQNSjefHb7HdYZpMUpxsHbpGPjQ==
+X-Received: by 2002:aa7:c149:: with SMTP id r9mr37612196edp.92.1560865530547; 
+	Tue, 18 Jun 2019 06:45:30 -0700 (PDT)
+Received: from ziggy.stardust ([37.223.140.27])
+	by smtp.gmail.com with ESMTPSA id
+	u15sm4672646edi.10.2019.06.18.06.45.29
+	(version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+	Tue, 18 Jun 2019 06:45:29 -0700 (PDT)
+Subject: Re: [PATCH v7 17/21] memory: mtk-smi: Get rid of need_larbid
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
+	<1560169080-27134-18-git-send-email-yong.wu@mediatek.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
+	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
+	jrHWeQEI2ucSKsNa8FllDmG/fQ==
+Message-ID: <1af7b67a-b73a-efb9-e1f8-5701f05a4af0@gmail.com>
+Date: Tue, 18 Jun 2019 15:45:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-MTK: N
+In-Reply-To: <1560169080-27134-18-git-send-email-yong.wu@mediatek.com>
+Content-Language: en-US
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Nicolas Boichat <drinkcat@chromium.org>,
 	srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>,
 	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
 	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	yingjoe.chen@mediatek.com, anan.sun@mediatek.com,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+	Matthias Kaehlcke <mka@chromium.org>,
+	linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com,
+	anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,142 +202,150 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 2019-06-18 at 14:35 +0800, CK Hu wrote:
-> Hi, Yong:
-> 
-> On Mon, 2019-06-10 at 20:55 +0800, Yong Wu wrote:
-> > MediaTek IOMMU has already added the device_link between the consumer
-> > and smi-larb device. If the drm device call the pm_runtime_get_sync,
-> > the smi-larb's pm_runtime_get_sync also be called automatically.
-> > 
-> > CC: CK Hu <ck.hu@mediatek.com>
-> > CC: Philipp Zabel <p.zabel@pengutronix.de>
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > Reviewed-by: Evan Green <evgreen@chromium.org>
-> > ---
-> >  drivers/gpu/drm/mediatek/mtk_drm_crtc.c     | 11 -----------
-> >  drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c | 26 --------------------------
-> >  drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h |  1 -
-> >  3 files changed, 38 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> > index acad088..3a21a48 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> > @@ -18,7 +18,6 @@
-> >  #include <drm/drm_probe_helper.h>
-> >  #include <linux/clk.h>
-> >  #include <linux/pm_runtime.h>
-> > -#include <soc/mediatek/smi.h>
-> >  
-> >  #include "mtk_drm_drv.h"
-> >  #include "mtk_drm_crtc.h"
-> > @@ -371,20 +370,12 @@ static void mtk_drm_crtc_atomic_enable(struct drm_crtc *crtc,
-> >  				       struct drm_crtc_state *old_state)
-> >  {
-> >  	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
-> > -	struct mtk_ddp_comp *comp = mtk_crtc->ddp_comp[0];
-> >  	int ret;
-> >  
-> >  	DRM_DEBUG_DRIVER("%s %d\n", __func__, crtc->base.id);
-> >  
-> > -	ret = mtk_smi_larb_get(comp->larb_dev);
-> > -	if (ret) {
-> > -		DRM_ERROR("Failed to get larb: %d\n", ret);
-> > -		return;
-> > -	}
-> > -
-> >  	ret = mtk_crtc_ddp_hw_init(mtk_crtc);
-> >  	if (ret) {
-> > -		mtk_smi_larb_put(comp->larb_dev);
-> >  		return;
-> >  	}
-> 
-> Remove {}.
-
-Thanks. I will fix in next version.
-
-> 
-> Regards,
-> CK
-> 
-> >  
-> > @@ -396,7 +387,6 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
-> >  					struct drm_crtc_state *old_state)
-> >  {
-> >  	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
-> > -	struct mtk_ddp_comp *comp = mtk_crtc->ddp_comp[0];
-> >  	int i;
-> >  
-> >  	DRM_DEBUG_DRIVER("%s %d\n", __func__, crtc->base.id);
-> > @@ -419,7 +409,6 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
-> >  
-> >  	drm_crtc_vblank_off(crtc);
-> >  	mtk_crtc_ddp_hw_fini(mtk_crtc);
-> > -	mtk_smi_larb_put(comp->larb_dev);
-> >  
-> >  	mtk_crtc->enabled = false;
-> >  }
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-> > index 54ca794..ede15c9 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-> > @@ -265,8 +265,6 @@ int mtk_ddp_comp_init(struct device *dev, struct device_node *node,
-> >  		      const struct mtk_ddp_comp_funcs *funcs)
-> >  {
-> >  	enum mtk_ddp_comp_type type;
-> > -	struct device_node *larb_node;
-> > -	struct platform_device *larb_pdev;
-> >  
-> >  	if (comp_id < 0 || comp_id >= DDP_COMPONENT_ID_MAX)
-> >  		return -EINVAL;
-> > @@ -296,30 +294,6 @@ int mtk_ddp_comp_init(struct device *dev, struct device_node *node,
-> >  	if (IS_ERR(comp->clk))
-> >  		return PTR_ERR(comp->clk);
-> >  
-> > -	/* Only DMA capable components need the LARB property */
-> > -	comp->larb_dev = NULL;
-> > -	if (type != MTK_DISP_OVL &&
-> > -	    type != MTK_DISP_RDMA &&
-> > -	    type != MTK_DISP_WDMA)
-> > -		return 0;
-> > -
-> > -	larb_node = of_parse_phandle(node, "mediatek,larb", 0);
-> > -	if (!larb_node) {
-> > -		dev_err(dev,
-> > -			"Missing mediadek,larb phandle in %pOF node\n", node);
-> > -		return -EINVAL;
-> > -	}
-> > -
-> > -	larb_pdev = of_find_device_by_node(larb_node);
-> > -	if (!larb_pdev) {
-> > -		dev_warn(dev, "Waiting for larb device %pOF\n", larb_node);
-> > -		of_node_put(larb_node);
-> > -		return -EPROBE_DEFER;
-> > -	}
-> > -	of_node_put(larb_node);
-> > -
-> > -	comp->larb_dev = &larb_pdev->dev;
-> > -
-> >  	return 0;
-> >  }
-> >  
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-> > index 8399229..b8dc17e 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-> > +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-> > @@ -91,7 +91,6 @@ struct mtk_ddp_comp {
-> >  	struct clk *clk;
-> >  	void __iomem *regs;
-> >  	int irq;
-> > -	struct device *larb_dev;
-> >  	enum mtk_ddp_comp_id id;
-> >  	const struct mtk_ddp_comp_funcs *funcs;
-> >  };
-> 
-> 
 
 
+On 10/06/2019 14:17, Yong Wu wrote:
+> The "mediatek,larb-id" has already been parsed in MTK IOMMU driver.
+> It's no need to parse it again in SMI driver. Only clean some codes.
+> This patch is fit for all the current mt2701, mt2712, mt7623, mt8173
+> and mt8183.
+> 
+> After this patch, the "mediatek,larb-id" only be needed for mt2712
+> which have 2 M4Us. In the other SoCs, we can get the larb-id from M4U
+> in which the larbs in the "mediatek,larbs" always are ordered.
+> 
+> Correspondingly, the larb_nr in the "struct mtk_smi_iommu" could also
+> be deleted.
+> 
+
+I think we can get rid of struct mtk_smi_iommu and just add the
+struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX] directly to mtk_iommu_data,
+passing just that array to the components bind function.
+
+Never the less this patch looks fine:
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+> CC: Matthias Brugger <matthias.bgg@gmail.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: Evan Green <evgreen@chromium.org>
+> ---
+>  drivers/iommu/mtk_iommu.c    |  1 -
+>  drivers/iommu/mtk_iommu_v1.c |  2 --
+>  drivers/memory/mtk-smi.c     | 26 ++------------------------
+>  include/soc/mediatek/smi.h   |  1 -
+>  4 files changed, 2 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index ec4ce74..6053b8b 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -634,7 +634,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>  					     "mediatek,larbs", NULL);
+>  	if (larb_nr < 0)
+>  		return larb_nr;
+> -	data->smi_imu.larb_nr = larb_nr;
+>  
+>  	for (i = 0; i < larb_nr; i++) {
+>  		struct device_node *larbnode;
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index 52b01e3..73308ad 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -624,8 +624,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>  		larb_nr++;
+>  	}
+>  
+> -	data->smi_imu.larb_nr = larb_nr;
+> -
+>  	platform_set_drvdata(pdev, data);
+>  
+>  	ret = mtk_iommu_hw_init(data);
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 08cf40d..10e6493 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -67,7 +67,6 @@ struct mtk_smi_common_plat {
+>  };
+>  
+>  struct mtk_smi_larb_gen {
+> -	bool need_larbid;
+>  	int port_in_larb[MTK_LARB_NR_MAX + 1];
+>  	void (*config_port)(struct device *);
+>  	unsigned int larb_direct_to_common_mask;
+> @@ -153,18 +152,9 @@ void mtk_smi_larb_put(struct device *larbdev)
+>  	struct mtk_smi_iommu *smi_iommu = data;
+>  	unsigned int         i;
+>  
+> -	if (larb->larb_gen->need_larbid) {
+> -		larb->mmu = &smi_iommu->larb_imu[larb->larbid].mmu;
+> -		return 0;
+> -	}
+> -
+> -	/*
+> -	 * If there is no larbid property, Loop to find the corresponding
+> -	 * iommu information.
+> -	 */
+> -	for (i = 0; i < smi_iommu->larb_nr; i++) {
+> +	for (i = 0; i < MTK_LARB_NR_MAX; i++) {
+>  		if (dev == smi_iommu->larb_imu[i].dev) {
+> -			/* The 'mmu' may be updated in iommu-attach/detach. */
+> +			larb->larbid = i;
+>  			larb->mmu = &smi_iommu->larb_imu[i].mmu;
+>  			return 0;
+>  		}
+> @@ -243,7 +233,6 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+>  };
+>  
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
+> -	.need_larbid = true,
+>  	.port_in_larb = {
+>  		LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
+>  		LARB2_PORT_OFFSET, LARB3_PORT_OFFSET
+> @@ -252,7 +241,6 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+>  };
+>  
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
+> -	.need_larbid = true,
+>  	.config_port                = mtk_smi_larb_config_port_gen2_general,
+>  	.larb_direct_to_common_mask = BIT(8) | BIT(9),      /* bdpsys */
+>  };
+> @@ -291,7 +279,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  	struct device *dev = &pdev->dev;
+>  	struct device_node *smi_node;
+>  	struct platform_device *smi_pdev;
+> -	int err;
+>  
+>  	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+>  	if (!larb)
+> @@ -321,15 +308,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  	}
+>  	larb->smi.dev = dev;
+>  
+> -	if (larb->larb_gen->need_larbid) {
+> -		err = of_property_read_u32(dev->of_node, "mediatek,larb-id",
+> -					   &larb->larbid);
+> -		if (err) {
+> -			dev_err(dev, "missing larbid property\n");
+> -			return err;
+> -		}
+> -	}
+> -
+>  	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
+>  	if (!smi_node)
+>  		return -EINVAL;
+> diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+> index 5201e90..a65324d 100644
+> --- a/include/soc/mediatek/smi.h
+> +++ b/include/soc/mediatek/smi.h
+> @@ -29,7 +29,6 @@ struct mtk_smi_larb_iommu {
+>  };
+>  
+>  struct mtk_smi_iommu {
+> -	unsigned int larb_nr;
+>  	struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
+>  };
+>  
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
