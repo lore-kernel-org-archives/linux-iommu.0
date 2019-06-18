@@ -2,51 +2,72 @@ Return-Path: <SRS0=TfAO=UR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F23E5C31E5B
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 21:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B4BC31E5E
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 22:45:43 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C94DF20657
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 21:19:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C94DF20657
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=chris-wilson.co.uk
+	by mail.kernel.org (Postfix) with ESMTPS id 610322084D
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 22:45:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 610322084D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A40F99EE;
-	Tue, 18 Jun 2019 21:19:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EE3CEC77;
+	Tue, 18 Jun 2019 22:45:42 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 461FD3EE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E1FC7C6A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 21:19:05 +0000 (UTC)
-X-Greylist: delayed 00:16:28 by SQLgrey-1.7.6
-Received: from fireflyinternet.com (mail.fireflyinternet.com [109.228.58.192])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A51482F
+	Tue, 18 Jun 2019 22:45:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 60E682C3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 21:19:04 +0000 (UTC)
-X-Default-Received-SPF: pass (skip=forwardok (res=PASS))
-	x-ip-name=78.156.65.138; 
-Received: from localhost (unverified [78.156.65.138]) 
-	by fireflyinternet.com (Firefly Internet (M1)) with ESMTP (TLS) id
-	16945877-1500050 for multiple; Tue, 18 Jun 2019 22:02:17 +0100
+	Tue, 18 Jun 2019 22:45:41 +0000 (UTC)
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	18 Jun 2019 15:45:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,390,1557212400"; d="scan'208";a="358421836"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+	by fmsmga006.fm.intel.com with ESMTP; 18 Jun 2019 15:45:40 -0700
+Date: Tue, 18 Jun 2019 15:45:19 -0700
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH v4 20/21] iommu/vt-d: hpet: Reserve an interrupt
+	remampping table entry for watchdog
+Message-ID: <20190618224519.GA30488@ranerica-svr.sc.intel.com>
+References: <1558660583-28561-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1558660583-28561-21-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<alpine.DEB.2.21.1906162049300.1760@nanos.tec.linutronix.de>
+	<alpine.DEB.2.21.1906171007360.1760@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-To: Lu Baolu <baolu.lu@linux.intel.com>, dwmw2@infradead.org, joro@8bytes.org
-From: Chris Wilson <chris@chris-wilson.co.uk>
-In-Reply-To: <20190521073016.27525-1-baolu.lu@linux.intel.com>
-References: <20190521073016.27525-1-baolu.lu@linux.intel.com>
-Message-ID: <156089173816.31375.3686352361646791464@skylake-alporthouse-com>
-User-Agent: alot/0.6
-Subject: Re: [PATCH 1/2] iommu/vt-d: Fix lock inversion between iommu->lock and
-	device_domain_lock
-Date: Tue, 18 Jun 2019 22:02:18 +0100
-Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
-	ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.1906171007360.1760@nanos.tec.linutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Kate Stewart <kstewart@linuxfoundation.org>,
+	Peter Zijlstra <peterz@infradead.org>, Jan Kiszka <jan.kiszka@siemens.com>,
+	Ricardo Neri <ricardo.neri@intel.com>,
+	Stephane Eranian <eranian@google.com>, Ingo Molnar <mingo@kernel.org>,
+	Wincy Van <fanwenyi0529@gmail.com>,
+	Ashok Raj <ashok.raj@intel.com>, x86@kernel.org,
+	Andi Kleen <andi.kleen@intel.com>, Borislav Petkov <bp@suse.de>,
+	"Eric W. Biederman" <ebiederm@xmission.com>,
+	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Juergen Gross <jgross@suse.com>, Tony Luck <tony.luck@intel.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Jacob Pan <jacob.jun.pan@intel.com>,
+	Philippe Ombredanne <pombredanne@nexb.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,107 +85,87 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Quoting Lu Baolu (2019-05-21 08:30:15)
-> From: Dave Jiang <dave.jiang@intel.com>
+On Mon, Jun 17, 2019 at 10:25:35AM +0200, Thomas Gleixner wrote:
+> On Sun, 16 Jun 2019, Thomas Gleixner wrote:
+> > On Thu, 23 May 2019, Ricardo Neri wrote:
+> > > When the hardlockup detector is enabled, the function
+> > > hld_hpet_intremapactivate_irq() activates the recently created entry
+> > > in the interrupt remapping table via the modify_irte() functions. While
+> > > doing this, it specifies which CPU the interrupt must target via its APIC
+> > > ID. This function can be called every time the destination iD of the
+> > > interrupt needs to be updated; there is no need to allocate or remove
+> > > entries in the interrupt remapping table.
+> > 
+> > Brilliant.
+> > 
+> > > +int hld_hpet_intremap_activate_irq(struct hpet_hld_data *hdata)
+> > > +{
+> > > +	u32 destid = apic->calc_dest_apicid(hdata->handling_cpu);
+> > > +	struct intel_ir_data *data;
+> > > +
+> > > +	data = (struct intel_ir_data *)hdata->intremap_data;
+> > > +	data->irte_entry.dest_id = IRTE_DEST(destid);
+> > > +	return modify_irte(&data->irq_2_iommu, &data->irte_entry);
+> > 
+> > This calls modify_irte() which does at the very beginning:
+> > 
+> >    raw_spin_lock_irqsave(&irq_2_ir_lock, flags);
+> > 
+> > How is that supposed to work from NMI context? Not to talk about the
+> > other spinlocks which are taken in the subsequent call chain.
+> > 
+> > You cannot call in any of that code from NMI context.
+> > 
+> > The only reason why this never deadlocked in your testing is that nothing
+> > else touched that particular iommu where the HPET hangs off concurrently.
+> > 
+> > But that's just pure luck and not design. 
 > 
-> Lockdep debug reported lock inversion related with the iommu code
-> caused by dmar_insert_one_dev_info() grabbing the iommu->lock and
-> the device_domain_lock out of order versus the code path in
-> iommu_flush_dev_iotlb(). Expanding the scope of the iommu->lock and
-> reversing the order of lock acquisition fixes the issue.
+> And just for the record. I warned you about that problem during the review
+> of an earlier version and told you to talk to IOMMU folks whether there is
+> a way to update the entry w/o running into that lock problem.
 
-Which of course violates the property that device_domain_lock is the
-outer lock...
+I think I misunderstood your feedback. You did mention issues on locking
+between NMI and !NMI contexts. However, that was in the context of using the
+generic irq code to do things such as set the affinity of the interrupt and
+requesting an irq. I understood that I should instead program things directly.
+I extrapolated this to the IOMMU driver in which I also added code directly
+instead of using the existing layering.
 
-<4>[    1.252997] ======================================================
-<4>[    1.252999] WARNING: possible circular locking dependency detected
-<4>[    1.253002] 5.2.0-rc5-CI-CI_DRM_6299+ #1 Not tainted
-<4>[    1.253004] ------------------------------------------------------
-<4>[    1.253006] swapper/0/1 is trying to acquire lock:
-<4>[    1.253009] 0000000091462475 (&(&iommu->lock)->rlock){+.+.}, at: domain_context_mapping_one+0xa0/0x4f0
-<4>[    1.253015]
-                  but task is already holding lock:
-<4>[    1.253017] 0000000069266737 (device_domain_lock){....}, at: domain_context_mapping_one+0x88/0x4f0
-<4>[    1.253021]
-                  which lock already depends on the new lock.
+Also, at the time, the question regarding the IOMMU, as I understood, was
+whether it was posible to reserve a IOMMU remapping entry upfront. I believe
+my patches achieve that, even if they are hacky and ugly, and have locking
+issues. I see now that the locking issues are also part of the IOMMU
+discussion. Perhaps that was also implicit.
+> 
+> Can you tell my why am I actually reviewing patches and spending time on
+> this when the result is ignored anyway?
 
-<4>[    1.253024]
-                  the existing dependency chain (in reverse order) is:
-<4>[    1.253027]
-                  -> #1 (device_domain_lock){....}:
-<4>[    1.253031]        _raw_spin_lock_irqsave+0x33/0x50
-<4>[    1.253034]        dmar_insert_one_dev_info+0xb8/0x520
-<4>[    1.253036]        set_domain_for_dev+0x66/0xf0
-<4>[    1.253039]        iommu_prepare_identity_map+0x48/0x95
-<4>[    1.253042]        intel_iommu_init+0xfd8/0x138d
-<4>[    1.253045]        pci_iommu_init+0x11/0x3a
-<4>[    1.253048]        do_one_initcall+0x58/0x300
-<4>[    1.253051]        kernel_init_freeable+0x2c0/0x359
-<4>[    1.253054]        kernel_init+0x5/0x100
-<4>[    1.253056]        ret_from_fork+0x3a/0x50
-<4>[    1.253058]
-                  -> #0 (&(&iommu->lock)->rlock){+.+.}:
-<4>[    1.253062]        lock_acquire+0xa6/0x1c0
-<4>[    1.253064]        _raw_spin_lock+0x2a/0x40
-<4>[    1.253067]        domain_context_mapping_one+0xa0/0x4f0
-<4>[    1.253070]        pci_for_each_dma_alias+0x2b/0x160
-<4>[    1.253072]        dmar_insert_one_dev_info+0x44e/0x520
-<4>[    1.253075]        set_domain_for_dev+0x66/0xf0
-<4>[    1.253077]        iommu_prepare_identity_map+0x48/0x95
-<4>[    1.253080]        intel_iommu_init+0xfd8/0x138d
-<4>[    1.253082]        pci_iommu_init+0x11/0x3a
-<4>[    1.253084]        do_one_initcall+0x58/0x300
-<4>[    1.253086]        kernel_init_freeable+0x2c0/0x359
-<4>[    1.253089]        kernel_init+0x5/0x100
-<4>[    1.253091]        ret_from_fork+0x3a/0x50
-<4>[    1.253093]
-                  other info that might help us debug this:
+Yes, Thomas, I should have checked first with the IOMMU maintainers
+first on the issues in the paragraph above. It is not my intention to
+waste your time; your feedback has been valuable and has contributed to
+improve the code.
 
-<4>[    1.253095]  Possible unsafe locking scenario:
+> 
+> I also tried to figure out why you went away from the IPI broadcast
+> design. The only information I found is:
+> 
+> Changes vs. v1:
+> 
+>  * Brought back the round-robin mechanism proposed in v1 (this time not
+>    using the interrupt subsystem). This also requires to compute
+>    expiration times as in v1 (Andi Kleen, Stephane Eranian).
+> 
+> Great that there is no trace of any mail from Andi or Stephane about this
+> on LKML. There is no problem with talking offlist about this stuff, but
+> then you should at least provide a rationale for those who were not part of
+> the private conversation.
 
-<4>[    1.253095]        CPU0                    CPU1
-<4>[    1.253095]        ----                    ----
-<4>[    1.253095]   lock(device_domain_lock);
-<4>[    1.253095]                                lock(&(&iommu->lock)->rlock);
-<4>[    1.253095]                                lock(device_domain_lock);
-<4>[    1.253095]   lock(&(&iommu->lock)->rlock);
-<4>[    1.253095]
-                   *** DEADLOCK ***
+Stephane has already commented the rationale.
 
-<4>[    1.253095] 2 locks held by swapper/0/1:
-<4>[    1.253095]  #0: 0000000076465a1e (dmar_global_lock){++++}, at: intel_iommu_init+0x1d3/0x138d
-<4>[    1.253095]  #1: 0000000069266737 (device_domain_lock){....}, at: domain_context_mapping_one+0x88/0x4f0
-<4>[    1.253095]
-                  stack backtrace:
-<4>[    1.253095] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc5-CI-CI_DRM_6299+ #1
-<4>[    1.253095] Hardware name:  /NUC5i7RYB, BIOS RYBDWi35.86A.0362.2017.0118.0940 01/18/2017
-<4>[    1.253095] Call Trace:
-<4>[    1.253095]  dump_stack+0x67/0x9b
-<4>[    1.253095]  print_circular_bug+0x1c8/0x2b0
-<4>[    1.253095]  __lock_acquire+0x1ce9/0x24c0
-<4>[    1.253095]  ? lock_acquire+0xa6/0x1c0
-<4>[    1.253095]  lock_acquire+0xa6/0x1c0
-<4>[    1.253095]  ? domain_context_mapping_one+0xa0/0x4f0
-<4>[    1.253095]  _raw_spin_lock+0x2a/0x40
-<4>[    1.253095]  ? domain_context_mapping_one+0xa0/0x4f0
-<4>[    1.253095]  domain_context_mapping_one+0xa0/0x4f0
-<4>[    1.253095]  ? domain_context_mapping_one+0x4f0/0x4f0
-<4>[    1.253095]  pci_for_each_dma_alias+0x2b/0x160
-<4>[    1.253095]  dmar_insert_one_dev_info+0x44e/0x520
-<4>[    1.253095]  set_domain_for_dev+0x66/0xf0
-<4>[    1.253095]  iommu_prepare_identity_map+0x48/0x95
-<4>[    1.253095]  intel_iommu_init+0xfd8/0x138d
-<4>[    1.253095]  ? set_debug_rodata+0xc/0xc
-<4>[    1.253095]  ? set_debug_rodata+0xc/0xc
-<4>[    1.253095]  ? e820__memblock_setup+0x5b/0x5b
-<4>[    1.253095]  ? pci_iommu_init+0x11/0x3a
-<4>[    1.253095]  ? set_debug_rodata+0xc/0xc
-<4>[    1.253095]  pci_iommu_init+0x11/0x3a
-<4>[    1.253095]  do_one_initcall+0x58/0x300
-<4>[    1.253095]  kernel_init_freeable+0x2c0/0x359
-<4>[    1.253095]  ? rest_init+0x250/0x250
-<4>[    1.253095]  kernel_init+0x5/0x100
-<4>[    1.253095]  ret_from_fork+0x3a/0x50
+Thanks and BR,
+
+Ricardo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
