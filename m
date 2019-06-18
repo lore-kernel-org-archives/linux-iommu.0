@@ -2,190 +2,51 @@ Return-Path: <SRS0=TfAO=UR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 850F9C31E63
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 21:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F23E5C31E5B
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 21:19:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5B3FE2084A
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 21:07:36 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RdV6clCz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B3FE2084A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id C94DF20657
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 21:19:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C94DF20657
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=chris-wilson.co.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 40C45BB3;
-	Tue, 18 Jun 2019 21:07:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A40F99EE;
+	Tue, 18 Jun 2019 21:19:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 60F099EE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 461FD3EE
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 21:07:35 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
-	[209.85.221.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 50F4F180
+	Tue, 18 Jun 2019 21:19:05 +0000 (UTC)
+X-Greylist: delayed 00:16:28 by SQLgrey-1.7.6
+Received: from fireflyinternet.com (mail.fireflyinternet.com [109.228.58.192])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A51482F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 21:07:34 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id x17so974328wrl.9
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 14:07:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-	:user-agent:mime-version:in-reply-to:content-language
-	:content-transfer-encoding;
-	bh=dETPkxfMPcC0ta/lQ9fPdZDx/rgTJAUHsaSrmx4YzcA=;
-	b=RdV6clCznMrb+H+Bbd+ABhrl3YxSzMAxok0QHxrjDJXCmrx+9uC/b/Qz89LEdn1qrC
-	XgwmWlkMZJFot9yXWXNQmRCE2T43o82aHuUFHtBcqymFm6jCVYOIyBX6hg4fdg9y+AOl
-	a0whaz68LDDY3kq5PJ1FDgf3YdeYjyAj5d7152KwEP2XYKQwC/jygmAO80ujdBXLFYqA
-	LYWMpB8dnkcDXaEYRGMA+ooARsgsbQ1JYGmPimzcXmYRYbJBI4FTI5lzXt39Z4s+cphZ
-	Zoa89IGUxV94gtn+jD2t718xFF1PvhsKAhYv4aCKTiTrsnkHaLdhGocBiNpCj3qtqN1L
-	7xzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-	:message-id:date:user-agent:mime-version:in-reply-to
-	:content-language:content-transfer-encoding;
-	bh=dETPkxfMPcC0ta/lQ9fPdZDx/rgTJAUHsaSrmx4YzcA=;
-	b=ZkKoXwpaEE1P2HMAnT9sWyV/p+L+1C4nG8EKs3eAPfm1zITFsiDVLDn4BTiUl5IaOf
-	2zicLUtTObBqFKHXwov5B3m85YG4Q5LnMSjjGA9bfCRdqE00uMarCLocfU720NyG/5Ev
-	HoD6uX4HeHJJ6KslOOnhYl0CHQNL1mRLjN5pmPHd+xRqM/mmiRdDDiqOL41otEimKaqX
-	Dh/7FrQrMzStsDFLoX0XZpgFK9ss2Vr2gcoGt0uoj+fotzHU08DI4NXJbeSyz0kJ6qEn
-	fgPPv5Ch809zfJfyyiDhKPh8HkiPGsV/ZijgNUtV9pTqnzjeIefP+iABxWA55EJG5oON
-	4qWw==
-X-Gm-Message-State: APjAAAXlA4K+EZTKr0aD2W/i3swQYgP5xeUoD7YEkGrGdnVwG8MfRTN9
-	aUEbJNp9T53d2nEwtRNOLj4=
-X-Google-Smtp-Source: APXvYqwBH0yccDnjRK66wWkiPc8anxxOmiCePMlEYScdpdMmI1jINIZM0m8gOFwmA1aCsERkIpWorA==
-X-Received: by 2002:adf:ea8b:: with SMTP id s11mr1278666wrm.100.1560892052920; 
-	Tue, 18 Jun 2019 14:07:32 -0700 (PDT)
-Received: from ziggy.stardust ([95.169.230.25])
-	by smtp.gmail.com with ESMTPSA id
-	j7sm16517215wru.54.2019.06.18.14.07.30
-	(version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-	Tue, 18 Jun 2019 14:07:31 -0700 (PDT)
-Subject: Re: [PATCH v7 16/21] memory: mtk-smi: Add bus_sel for mt8183
-To: Yong Wu <yong.wu@mediatek.com>
-References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
-	<1560169080-27134-17-git-send-email-yong.wu@mediatek.com>
-	<0205e43a-8677-c194-d118-6c199c03306c@gmail.com>
-	<1560859855.8082.24.camel@mhfsdcap03>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
-	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
-	jrHWeQEI2ucSKsNa8FllDmG/fQ==
-Message-ID: <f3e200af-499e-a4af-9e2f-5e22ea5d8ee3@gmail.com>
-Date: Tue, 18 Jun 2019 23:07:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Tue, 18 Jun 2019 21:19:04 +0000 (UTC)
+X-Default-Received-SPF: pass (skip=forwardok (res=PASS))
+	x-ip-name=78.156.65.138; 
+Received: from localhost (unverified [78.156.65.138]) 
+	by fireflyinternet.com (Firefly Internet (M1)) with ESMTP (TLS) id
+	16945877-1500050 for multiple; Tue, 18 Jun 2019 22:02:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <1560859855.8082.24.camel@mhfsdcap03>
-Content-Language: en-US
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
-	Nicolas Boichat <drinkcat@chromium.org>,
-	srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>,
-	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>,
-	linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com,
-	anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
-	Matthias Kaehlcke <mka@chromium.org>, linux-arm-kernel@lists.infradead.org
+To: Lu Baolu <baolu.lu@linux.intel.com>, dwmw2@infradead.org, joro@8bytes.org
+From: Chris Wilson <chris@chris-wilson.co.uk>
+In-Reply-To: <20190521073016.27525-1-baolu.lu@linux.intel.com>
+References: <20190521073016.27525-1-baolu.lu@linux.intel.com>
+Message-ID: <156089173816.31375.3686352361646791464@skylake-alporthouse-com>
+User-Agent: alot/0.6
+Subject: Re: [PATCH 1/2] iommu/vt-d: Fix lock inversion between iommu->lock and
+	device_domain_lock
+Date: Tue, 18 Jun 2019 22:02:18 +0100
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+	ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -203,139 +64,107 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+Quoting Lu Baolu (2019-05-21 08:30:15)
+> From: Dave Jiang <dave.jiang@intel.com>
+> 
+> Lockdep debug reported lock inversion related with the iommu code
+> caused by dmar_insert_one_dev_info() grabbing the iommu->lock and
+> the device_domain_lock out of order versus the code path in
+> iommu_flush_dev_iotlb(). Expanding the scope of the iommu->lock and
+> reversing the order of lock acquisition fixes the issue.
 
+Which of course violates the property that device_domain_lock is the
+outer lock...
 
-On 18/06/2019 14:10, Yong Wu wrote:
-> On Mon, 2019-06-17 at 18:23 +0200, Matthias Brugger wrote:
->>
->> On 10/06/2019 14:17, Yong Wu wrote:
->>> There are 2 mmu cells in a M4U HW. we could adjust some larbs entering
->>> mmu0 or mmu1 to balance the bandwidth via the smi-common register
->>> SMI_BUS_SEL(0x220)(Each larb occupy 2 bits).
->>>
->>> In mt8183, For better performance, we switch larb1/2/5/7 to enter
->>> mmu1 while the others still keep enter mmu0.
->>>
->>> In mt8173 and mt2712, we don't get the performance issue,
->>> Keep its default value(0x0), that means all the larbs enter mmu0.
->>>
->>> Note: smi gen1(mt2701/mt7623) don't have this bus_sel.
->>>
->>> And, the base of smi-common is completely different with smi_ao_base
->>> of gen1, thus I add new variable for that.
->>>
->>> CC: Matthias Brugger <matthias.bgg@gmail.com>
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>> Reviewed-by: Evan Green <evgreen@chromium.org>
->>> ---
->>>  drivers/memory/mtk-smi.c | 22 ++++++++++++++++++++--
->>>  1 file changed, 20 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
->>> index 9790801..08cf40d 100644
->>> --- a/drivers/memory/mtk-smi.c
->>> +++ b/drivers/memory/mtk-smi.c
->>> @@ -49,6 +49,12 @@
->>>  #define SMI_LARB_NONSEC_CON(id)	(0x380 + ((id) * 4))
->>>  #define F_MMU_EN		BIT(0)
->>>  
->>> +/* SMI COMMON */
->>> +#define SMI_BUS_SEL			0x220
->>> +#define SMI_BUS_LARB_SHIFT(larbid)	((larbid) << 1)
->>> +/* All are MMU0 defaultly. Only specialize mmu1 here. */
->>> +#define F_MMU1_LARB(larbid)		(0x1 << SMI_BUS_LARB_SHIFT(larbid))
->>> +
->>>  enum mtk_smi_gen {
->>>  	MTK_SMI_GEN1,
->>>  	MTK_SMI_GEN2
->>> @@ -57,6 +63,7 @@ enum mtk_smi_gen {
->>>  struct mtk_smi_common_plat {
->>>  	enum mtk_smi_gen gen;
->>>  	bool             has_gals;
->>> +	u32              bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
->>>  };
->>>  
->>>  struct mtk_smi_larb_gen {
->>> @@ -72,8 +79,8 @@ struct mtk_smi {
->>>  	struct clk			*clk_apb, *clk_smi;
->>>  	struct clk			*clk_gals0, *clk_gals1;
->>>  	struct clk			*clk_async; /*only needed by mt2701*/
->>> -	void __iomem			*smi_ao_base;
->>> -
->>> +	void __iomem			*smi_ao_base; /* only for gen1 */
->>> +	void __iomem			*base;	      /* only for gen2 */
->>
->> union {} maybe?
-> 
-> Yes. Thanks.
-> 
-> I will add it.
-> 
->>
->>>  	const struct mtk_smi_common_plat *plat;
->>>  };
->>>  
->>> @@ -410,6 +417,8 @@ static int __maybe_unused mtk_smi_larb_suspend(struct device *dev)
->>>  static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
->>>  	.gen      = MTK_SMI_GEN2,
->>>  	.has_gals = true,
->>> +	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(5) |
->>> +		    F_MMU1_LARB(7),
->>>  };
->>>  
->>>  static const struct of_device_id mtk_smi_common_of_ids[] = {
->>> @@ -482,6 +491,11 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
->>>  		ret = clk_prepare_enable(common->clk_async);
->>>  		if (ret)
->>>  			return ret;
->>> +	} else {
->>> +		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>> +		common->base = devm_ioremap_resource(dev, res);
->>> +		if (IS_ERR(common->base))
->>> +			return PTR_ERR(common->base);
->>
->> We must be backwards compatible with DT which does not have the base defined.
-> 
-> The smi-common node in the previous mt2712 and mt8173 also have the
-> "reg" property even though they didn't use this base, Thus, It looks ok
-> for all the cases.
-> 
+<4>[    1.252997] ======================================================
+<4>[    1.252999] WARNING: possible circular locking dependency detected
+<4>[    1.253002] 5.2.0-rc5-CI-CI_DRM_6299+ #1 Not tainted
+<4>[    1.253004] ------------------------------------------------------
+<4>[    1.253006] swapper/0/1 is trying to acquire lock:
+<4>[    1.253009] 0000000091462475 (&(&iommu->lock)->rlock){+.+.}, at: domain_context_mapping_one+0xa0/0x4f0
+<4>[    1.253015]
+                  but task is already holding lock:
+<4>[    1.253017] 0000000069266737 (device_domain_lock){....}, at: domain_context_mapping_one+0x88/0x4f0
+<4>[    1.253021]
+                  which lock already depends on the new lock.
 
-Correct, it is defined as a required property in the binding description so we
-are good.
-Sorry for the noise.
+<4>[    1.253024]
+                  the existing dependency chain (in reverse order) is:
+<4>[    1.253027]
+                  -> #1 (device_domain_lock){....}:
+<4>[    1.253031]        _raw_spin_lock_irqsave+0x33/0x50
+<4>[    1.253034]        dmar_insert_one_dev_info+0xb8/0x520
+<4>[    1.253036]        set_domain_for_dev+0x66/0xf0
+<4>[    1.253039]        iommu_prepare_identity_map+0x48/0x95
+<4>[    1.253042]        intel_iommu_init+0xfd8/0x138d
+<4>[    1.253045]        pci_iommu_init+0x11/0x3a
+<4>[    1.253048]        do_one_initcall+0x58/0x300
+<4>[    1.253051]        kernel_init_freeable+0x2c0/0x359
+<4>[    1.253054]        kernel_init+0x5/0x100
+<4>[    1.253056]        ret_from_fork+0x3a/0x50
+<4>[    1.253058]
+                  -> #0 (&(&iommu->lock)->rlock){+.+.}:
+<4>[    1.253062]        lock_acquire+0xa6/0x1c0
+<4>[    1.253064]        _raw_spin_lock+0x2a/0x40
+<4>[    1.253067]        domain_context_mapping_one+0xa0/0x4f0
+<4>[    1.253070]        pci_for_each_dma_alias+0x2b/0x160
+<4>[    1.253072]        dmar_insert_one_dev_info+0x44e/0x520
+<4>[    1.253075]        set_domain_for_dev+0x66/0xf0
+<4>[    1.253077]        iommu_prepare_identity_map+0x48/0x95
+<4>[    1.253080]        intel_iommu_init+0xfd8/0x138d
+<4>[    1.253082]        pci_iommu_init+0x11/0x3a
+<4>[    1.253084]        do_one_initcall+0x58/0x300
+<4>[    1.253086]        kernel_init_freeable+0x2c0/0x359
+<4>[    1.253089]        kernel_init+0x5/0x100
+<4>[    1.253091]        ret_from_fork+0x3a/0x50
+<4>[    1.253093]
+                  other info that might help us debug this:
 
-With the union added you can add:
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+<4>[    1.253095]  Possible unsafe locking scenario:
 
->>
->> Regards,
->> Matthias
->>
->>>  	}
->>>  	pm_runtime_enable(dev);
->>>  	platform_set_drvdata(pdev, common);
->>> @@ -497,6 +511,7 @@ static int mtk_smi_common_remove(struct platform_device *pdev)
->>>  static int __maybe_unused mtk_smi_common_resume(struct device *dev)
->>>  {
->>>  	struct mtk_smi *common = dev_get_drvdata(dev);
->>> +	u32 bus_sel = common->plat->bus_sel;
->>>  	int ret;
->>>  
->>>  	ret = mtk_smi_clk_enable(common);
->>> @@ -504,6 +519,9 @@ static int __maybe_unused mtk_smi_common_resume(struct device *dev)
->>>  		dev_err(common->dev, "Failed to enable clock(%d).\n", ret);
->>>  		return ret;
->>>  	}
->>> +
->>> +	if (common->plat->gen == MTK_SMI_GEN2 && bus_sel)
->>> +		writel(bus_sel, common->base + SMI_BUS_SEL);
->>>  	return 0;
->>>  }
->>>  
->>>
-> 
-> 
+<4>[    1.253095]        CPU0                    CPU1
+<4>[    1.253095]        ----                    ----
+<4>[    1.253095]   lock(device_domain_lock);
+<4>[    1.253095]                                lock(&(&iommu->lock)->rlock);
+<4>[    1.253095]                                lock(device_domain_lock);
+<4>[    1.253095]   lock(&(&iommu->lock)->rlock);
+<4>[    1.253095]
+                   *** DEADLOCK ***
+
+<4>[    1.253095] 2 locks held by swapper/0/1:
+<4>[    1.253095]  #0: 0000000076465a1e (dmar_global_lock){++++}, at: intel_iommu_init+0x1d3/0x138d
+<4>[    1.253095]  #1: 0000000069266737 (device_domain_lock){....}, at: domain_context_mapping_one+0x88/0x4f0
+<4>[    1.253095]
+                  stack backtrace:
+<4>[    1.253095] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc5-CI-CI_DRM_6299+ #1
+<4>[    1.253095] Hardware name:  /NUC5i7RYB, BIOS RYBDWi35.86A.0362.2017.0118.0940 01/18/2017
+<4>[    1.253095] Call Trace:
+<4>[    1.253095]  dump_stack+0x67/0x9b
+<4>[    1.253095]  print_circular_bug+0x1c8/0x2b0
+<4>[    1.253095]  __lock_acquire+0x1ce9/0x24c0
+<4>[    1.253095]  ? lock_acquire+0xa6/0x1c0
+<4>[    1.253095]  lock_acquire+0xa6/0x1c0
+<4>[    1.253095]  ? domain_context_mapping_one+0xa0/0x4f0
+<4>[    1.253095]  _raw_spin_lock+0x2a/0x40
+<4>[    1.253095]  ? domain_context_mapping_one+0xa0/0x4f0
+<4>[    1.253095]  domain_context_mapping_one+0xa0/0x4f0
+<4>[    1.253095]  ? domain_context_mapping_one+0x4f0/0x4f0
+<4>[    1.253095]  pci_for_each_dma_alias+0x2b/0x160
+<4>[    1.253095]  dmar_insert_one_dev_info+0x44e/0x520
+<4>[    1.253095]  set_domain_for_dev+0x66/0xf0
+<4>[    1.253095]  iommu_prepare_identity_map+0x48/0x95
+<4>[    1.253095]  intel_iommu_init+0xfd8/0x138d
+<4>[    1.253095]  ? set_debug_rodata+0xc/0xc
+<4>[    1.253095]  ? set_debug_rodata+0xc/0xc
+<4>[    1.253095]  ? e820__memblock_setup+0x5b/0x5b
+<4>[    1.253095]  ? pci_iommu_init+0x11/0x3a
+<4>[    1.253095]  ? set_debug_rodata+0xc/0xc
+<4>[    1.253095]  pci_iommu_init+0x11/0x3a
+<4>[    1.253095]  do_one_initcall+0x58/0x300
+<4>[    1.253095]  kernel_init_freeable+0x2c0/0x359
+<4>[    1.253095]  ? rest_init+0x250/0x250
+<4>[    1.253095]  kernel_init+0x5/0x100
+<4>[    1.253095]  ret_from_fork+0x3a/0x50
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
