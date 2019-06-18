@@ -2,86 +2,75 @@ Return-Path: <SRS0=TfAO=UR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DFCC31E51
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 12:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C4DC31E5E
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 12:14:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E44F120679
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 12:05:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="smx/tb15"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E44F120679
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6A2622085A
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 12:14:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6A2622085A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B844DF21;
-	Tue, 18 Jun 2019 12:05:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1BCECDCE;
+	Tue, 18 Jun 2019 12:14:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1F46AEFD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 18A5DD0A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 11:01:39 +0000 (UTC)
-X-Greylist: delayed 01:53:17 by SQLgrey-1.7.6
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 047422C3
+	Tue, 18 Jun 2019 12:14:13 +0000 (UTC)
+X-Greylist: delayed 00:05:01 by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 1AD65886
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 11:01:37 +0000 (UTC)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5I984Zb035352;
-	Tue, 18 Jun 2019 04:08:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1560848884;
-	bh=abtG7KfkcUMHnnFWN6H/vrDUdzm1W5X7zfbJG/5wh98=;
-	h=Subject:To:CC:References:From:Date:In-Reply-To;
-	b=smx/tb15A64vVOzIi4eLnANif3D1PJYzquMYOKYyLagBzE2jXAEb4s2oa67Fbrq6i
-	D1b83YmYsGrJe9OPETyqn0KYQpC+AY3MXOqZTB2SOCMu7MqwhWfIXZN34vDpmgT0+u
-	3gGQtdxROSfrA45fg2prinaPA2O+kNW3tcpS/1yE=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5I983DY109742
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 18 Jun 2019 04:08:03 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE109.ent.ti.com
-	(157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5;
-	Tue, 18 Jun 2019 04:08:03 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
-	(157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
-	Frontend Transport; Tue, 18 Jun 2019 04:08:03 -0500
-Received: from [127.0.0.1] (ileax41-snat.itg.ti.com [10.172.224.153])
-	by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5I97wXE095650;
-	Tue, 18 Jun 2019 04:07:59 -0500
-Subject: Re: [RFC PATCH 2/2] soc: ti: Add Support for the TI Page-based
-	Address Translator (PAT)
-To: "Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>, Mark
-	Rutland <mark.rutland@arm.com>, Santosh Shilimkar <ssantosh@kernel.org>,
-	Will Deacon <will.deacon@arm.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-	William Mills <wmills@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>, John Stultz
-	<john.stultz@linaro.org>
-References: <20190607193523.25700-1-afd@ti.com>
-	<20190607193523.25700-3-afd@ti.com>
-Message-ID: <28dea95d-8ae6-431c-ca88-149972d26502@ti.com>
-Date: Tue, 18 Jun 2019 12:07:58 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Tue, 18 Jun 2019 12:14:11 +0000 (UTC)
+X-UUID: 869e132c44684e91b1a10166255098c0-20190618
+X-UUID: 869e132c44684e91b1a10166255098c0-20190618
+Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 634461938; Tue, 18 Jun 2019 20:09:06 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
+	(172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Tue, 18 Jun 2019 20:09:04 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Tue, 18 Jun 2019 20:09:03 +0800
+Message-ID: <1560859743.8082.23.camel@mhfsdcap03>
+Subject: Re: [PATCH v7 14/21] iommu/mediatek: Add mmu1 support
+From: Yong Wu <yong.wu@mediatek.com>
+To: Tomasz Figa <tfiga@google.com>
+Date: Tue, 18 Jun 2019 20:09:03 +0800
+In-Reply-To: <CAAFQd5A5GUn1Zq1xF2_2V0MReNPd5bra2F=nquvodSAZUua5AQ@mail.gmail.com>
+References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
+	<1560169080-27134-15-git-send-email-yong.wu@mediatek.com>
+	<CAAFQd5A5GUn1Zq1xF2_2V0MReNPd5bra2F=nquvodSAZUua5AQ@mail.gmail.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-In-Reply-To: <20190607193523.25700-3-afd@ti.com>
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Mailman-Approved-At: Tue, 18 Jun 2019 12:04:59 +0000
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
-	linux-media@vger.kernel.org
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>,
+	srv_heupstream <srv_heupstream@mediatek.com>,
+	Will Deacon <will.deacon@arm.com>, Linux Kernel
+	Mailing List <linux-kernel@vger.kernel.org>,
+	Evan Green <evgreen@chromium.org>, "list@263.net:IOMMU DRIVERS
+	<iommu@lists.linux-foundation.org>, Joerg  Roedel <joro@8bytes.org>,
+	" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>,
+	"moderated list:ARM/Mediatek SoC support"
+	<linux-mediatek@lists.infradead.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Yingjoe Chen =?UTF-8?Q?=28=E9=99=B3=E8=8B=B1=E6=B4=B2=29?=
+	<yingjoe.chen@mediatek.com>, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias
+	Kaehlcke <mka@chromium.org>, "list@263.net:IOMMU DRIVERS
+	<iommu@lists.linux-foundation.org>, Joerg  Roedel <joro@8bytes.org>,
+	" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,261 +83,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tero Kristo via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tero Kristo <t-kristo@ti.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 07/06/2019 22:35, Andrew F. Davis wrote:
-> This patch adds a driver for the Page-based Address Translator (PAT)
-> present on various TI SoCs. A PAT device performs address translation
-> using tables stored in an internal SRAM. Each PAT supports a set number
-> of pages, each occupying a programmable 4KB, 16KB, 64KB, or 1MB of
-> addresses in a window for which an incoming transaction will be
-> translated.
+On Tue, 2019-06-18 at 15:19 +0900, Tomasz Figa wrote:
+> On Mon, Jun 10, 2019 at 9:21 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> >
+> > Normally the M4U HW connect EMI with smi. the diagram is like below:
+> >               EMI
+> >                |
+> >               M4U
+> >                |
+> >             smi-common
+> >                |
+> >        -----------------
+> >        |    |    |     |    ...
+> >     larb0 larb1  larb2 larb3
+> >
+> > Actually there are 2 mmu cells in the M4U HW, like this diagram:
+> >
+> >               EMI
+> >            ---------
+> >             |     |
+> >            mmu0  mmu1     <- M4U
+> >             |     |
+> >            ---------
+> >                |
+> >             smi-common
+> >                |
+> >        -----------------
+> >        |    |    |     |    ...
+> >     larb0 larb1  larb2 larb3
+> >
+> > This patch add support for mmu1. In order to get better performance,
+> > we could adjust some larbs go to mmu1 while the others still go to
+> > mmu0. This is controlled by a SMI COMMON register SMI_BUS_SEL(0x220).
+> >
+> > mt2712, mt8173 and mt8183 M4U HW all have 2 mmu cells. the default
+> > value of that register is 0 which means all the larbs go to mmu0
+> > defaultly.
+> >
+> > This is a preparing patch for adjusting SMI_BUS_SEL for mt8183.
+> >
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > Reviewed-by: Evan Green <evgreen@chromium.org>
+> > ---
+> >  drivers/iommu/mtk_iommu.c | 46 +++++++++++++++++++++++++++++-----------------
+> >  1 file changed, 29 insertions(+), 17 deletions(-)
+> >
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 3a14301..ec4ce74 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -72,26 +72,32 @@
+> >  #define F_INT_CLR_BIT                          BIT(12)
+> >
+> >  #define REG_MMU_INT_MAIN_CONTROL               0x124
+> > -#define F_INT_TRANSLATION_FAULT                        BIT(0)
+> > -#define F_INT_MAIN_MULTI_HIT_FAULT             BIT(1)
+> > -#define F_INT_INVALID_PA_FAULT                 BIT(2)
+> > -#define F_INT_ENTRY_REPLACEMENT_FAULT          BIT(3)
+> > -#define F_INT_TLB_MISS_FAULT                   BIT(4)
+> > -#define F_INT_MISS_TRANSACTION_FIFO_FAULT      BIT(5)
+> > -#define F_INT_PRETETCH_TRANSATION_FIFO_FAULT   BIT(6)
+> > +                                               /* mmu0 | mmu1 */
+> > +#define F_INT_TRANSLATION_FAULT                        (BIT(0) | BIT(7))
+> > +#define F_INT_MAIN_MULTI_HIT_FAULT             (BIT(1) | BIT(8))
+> > +#define F_INT_INVALID_PA_FAULT                 (BIT(2) | BIT(9))
+> > +#define F_INT_ENTRY_REPLACEMENT_FAULT          (BIT(3) | BIT(10))
+> > +#define F_INT_TLB_MISS_FAULT                   (BIT(4) | BIT(11))
+> > +#define F_INT_MISS_TRANSACTION_FIFO_FAULT      (BIT(5) | BIT(12))
+> > +#define F_INT_PRETETCH_TRANSATION_FIFO_FAULT   (BIT(6) | BIT(13))
 > 
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> ---
->   drivers/soc/ti/Kconfig      |   9 +
->   drivers/soc/ti/Makefile     |   1 +
->   drivers/soc/ti/ti-pat.c     | 569 ++++++++++++++++++++++++++++++++++++
->   include/uapi/linux/ti-pat.h |  44 +++
->   4 files changed, 623 insertions(+)
->   create mode 100644 drivers/soc/ti/ti-pat.c
->   create mode 100644 include/uapi/linux/ti-pat.h
+> If there are two IOMMUs, shouldn't we have two driver instances handle
+> them, instead of making the driver combine them two internally?
+
+Actually it means only one IOMMU(M4U) HW here. Each a M4U HW has two
+small iommu cells which have independent MTLB. As the diagram above, M4U
+contain mmu0 and mmu1.
+
+MT8173 and MT8183 have only one M4U HW while MT2712 have 2 M4U HWs(two
+driver instances).
+
 > 
-> diff --git a/drivers/soc/ti/Kconfig b/drivers/soc/ti/Kconfig
-> index f0be35d3dcba..b838ae74d01f 100644
-> --- a/drivers/soc/ti/Kconfig
-> +++ b/drivers/soc/ti/Kconfig
-> @@ -86,4 +86,13 @@ config TI_SCI_INTA_MSI_DOMAIN
->   	help
->   	  Driver to enable Interrupt Aggregator specific MSI Domain.
->   
-> +config TI_PAT
-> +	tristate "TI PAT DMA-BUF exporter"
-> +	select REGMAP
+> And, what is even more important from security point of view actually,
+> have two separate page tables (aka IOMMU groups) for them?
 
-What is the reasoning for using regmap for internal register access? Why 
-not just use direct readl/writel for everything? To me it seems this is 
-only used during probe time also...
+Each a IOMMU(M4U) have its own pagetable, thus, mt8183 have only one
+pagetable while mt2712 have two.
 
-> +	help
-> +	  Driver for TI Page-based Address Translator (PAT). This driver
-> +	  provides the an API allowing the remapping of a non-contiguous
-> +	  DMA-BUF into a contiguous one that is sutable for devices needing
-> +	  coniguous memory.
+> 
+> Best regards,
+> Tomasz
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
-Minor typo: contiguous.
 
-> +
->   endif # SOC_TI
-> diff --git a/drivers/soc/ti/Makefile b/drivers/soc/ti/Makefile
-> index b3868d392d4f..1369642b40c3 100644
-> --- a/drivers/soc/ti/Makefile
-> +++ b/drivers/soc/ti/Makefile
-> @@ -9,3 +9,4 @@ obj-$(CONFIG_AMX3_PM)			+= pm33xx.o
->   obj-$(CONFIG_WKUP_M3_IPC)		+= wkup_m3_ipc.o
->   obj-$(CONFIG_TI_SCI_PM_DOMAINS)		+= ti_sci_pm_domains.o
->   obj-$(CONFIG_TI_SCI_INTA_MSI_DOMAIN)	+= ti_sci_inta_msi.o
-> +obj-$(CONFIG_TI_PAT)			+= ti-pat.o
-> diff --git a/drivers/soc/ti/ti-pat.c b/drivers/soc/ti/ti-pat.c
-> new file mode 100644
-> index 000000000000..7359ea0f7ccf
-> --- /dev/null
-> +++ b/drivers/soc/ti/ti-pat.c
-> @@ -0,0 +1,569 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * TI PAT mapped DMA-BUF memory re-exporter
-> + *
-> + * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
-> + *	Andrew F. Davis <afd@ti.com>
-> + */
-> +
-> +#include <linux/fs.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/uaccess.h>
-> +#include <linux/miscdevice.h>
-> +#include <linux/regmap.h>
-> +#include <linux/dma-buf.h>
-> +#include <linux/genalloc.h>
-> +#include <linux/vmalloc.h>
-> +#include <linux/slab.h>
-> +
-> +#include <linux/ti-pat.h>
-> +
-> +#define TI_PAT_DRIVER_NAME	"ti-pat"
-
-Why do you have a define for this seeing it is only used in single location?
-
-> +
-> +/* TI PAT MMRS registers */
-> +#define TI_PAT_MMRS_PID		0x0 /* Revision Register */
-> +#define TI_PAT_MMRS_CONFIG	0x4 /* Config Register */
-> +#define TI_PAT_MMRS_CONTROL	0x10 /* Control Register */
-> +
-> +/* TI PAT CONTROL register field values */
-> +#define TI_PAT_CONTROL_ARB_MODE_UF	0x0 /* Updates first */
-> +#define TI_PAT_CONTROL_ARB_MODE_RR	0x2 /* Round-robin */
-> +
-> +#define TI_PAT_CONTROL_PAGE_SIZE_4KB	0x0
-> +#define TI_PAT_CONTROL_PAGE_SIZE_16KB	0x1
-> +#define TI_PAT_CONTROL_PAGE_SIZE_64KB	0x2
-> +#define TI_PAT_CONTROL_PAGE_SIZE_1MB	0x3
-> +
-> +static unsigned int ti_pat_page_sizes[] = {
-> +	[TI_PAT_CONTROL_PAGE_SIZE_4KB]  = 4 * 1024,
-> +	[TI_PAT_CONTROL_PAGE_SIZE_16KB] = 16 * 1024,
-> +	[TI_PAT_CONTROL_PAGE_SIZE_64KB] = 64 * 1024,
-> +	[TI_PAT_CONTROL_PAGE_SIZE_1MB]  = 1024 * 1024,
-> +};
-> +
-> +enum ti_pat_mmrs_fields {
-> +	/* Revision */
-> +	F_PID_MAJOR,
-> +	F_PID_MINOR,
-> +
-> +	/* Controls */
-> +	F_CONTROL_ARB_MODE,
-> +	F_CONTROL_PAGE_SIZE,
-> +	F_CONTROL_REPLACE_OID_EN,
-> +	F_CONTROL_EN,
-> +
-> +	/* sentinel */
-> +	F_MAX_FIELDS
-> +};
-> +
-> +static const struct reg_field ti_pat_mmrs_reg_fields[] = {
-> +	/* Revision */
-> +	[F_PID_MAJOR]			= REG_FIELD(TI_PAT_MMRS_PID, 8, 10),
-> +	[F_PID_MINOR]			= REG_FIELD(TI_PAT_MMRS_PID, 0, 5),
-> +	/* Controls */
-> +	[F_CONTROL_ARB_MODE]		= REG_FIELD(TI_PAT_MMRS_CONTROL, 6, 7),
-> +	[F_CONTROL_PAGE_SIZE]		= REG_FIELD(TI_PAT_MMRS_CONTROL, 4, 5),
-> +	[F_CONTROL_REPLACE_OID_EN]	= REG_FIELD(TI_PAT_MMRS_CONTROL, 1, 1),
-> +	[F_CONTROL_EN]			= REG_FIELD(TI_PAT_MMRS_CONTROL, 0, 0),
-> +};
-> +
-> +/**
-> + * struct ti_pat_data - PAT device instance data
-> + * @dev: PAT device structure
-> + * @mdev: misc device
-> + * @mmrs_map: Register map of MMRS region
-> + * @table_base: Base address of TABLE region
-
-Please add kerneldoc comments for all fields.
-
-> + */
-> +struct ti_pat_data {
-> +	struct device *dev;
-> +	struct miscdevice mdev;
-> +	struct regmap *mmrs_map;
-> +	struct regmap_field *mmrs_fields[F_MAX_FIELDS];
-> +	void __iomem *table_base;
-> +	unsigned int page_count;
-> +	unsigned int page_size;
-> +	phys_addr_t window_base;
-> +	struct gen_pool *pool;
-> +};
-> +
-
-Kerneldoc comments for below structs would be also useful, especially 
-for ti_pat_buffer.
-
-> +struct ti_pat_dma_buf_attachment {
-> +	struct device *dev;
-> +	struct sg_table *table;
-> +	struct ti_pat_buffer *buffer;
-> +	struct list_head list;
-> +};
-> +
-> +struct ti_pat_buffer {
-> +	struct ti_pat_data *pat;
-> +	struct dma_buf *i_dma_buf;
-> +	size_t size;
-> +	unsigned long offset;
-> +	struct dma_buf *e_dma_buf;
-> +
-> +	struct dma_buf_attachment *attachment;
-> +	struct sg_table *sgt;
-> +
-> +	struct list_head attachments;
-> +	int map_count;
-> +
-> +	struct mutex lock;
-> +};
-> +
-> +static const struct regmap_config ti_pat_regmap_config = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = 4,
-> +};
-> +
-> +static int ti_pat_dma_buf_attach(struct dma_buf *dmabuf,
-> +				 struct dma_buf_attachment *attachment)
-> +{
-> +	struct ti_pat_dma_buf_attachment *a;
-> +	struct ti_pat_buffer *buffer = dmabuf->priv;
-> +
-> +	a = kzalloc(sizeof(*a), GFP_KERNEL);
-> +	if (!a)
-> +		return -ENOMEM;
-> +
-> +	a->dev = attachment->dev;
-> +	a->buffer = buffer;
-> +	INIT_LIST_HEAD(&a->list);
-> +
-> +	a->table = kzalloc(sizeof(*a->table), GFP_KERNEL);
-> +	if (!a->table) {
-> +		kfree(a);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	if (sg_alloc_table(a->table, 1, GFP_KERNEL)) {
-> +		kfree(a->table);
-> +		kfree(a);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	sg_set_page(a->table->sgl, pfn_to_page(PFN_DOWN(buffer->offset)), buffer->size, 0);
-> +
-> +	attachment->priv = a;
-> +
-> +	mutex_lock(&buffer->lock);
-> +	/* First time attachment we attach to parent */
-> +	if (list_empty(&buffer->attachments)) {
-> +		buffer->attachment = dma_buf_attach(buffer->i_dma_buf, buffer->pat->dev);
-> +		if (IS_ERR(buffer->attachment)) {
-> +			dev_err(buffer->pat->dev, "Unable to attach to parent DMA-BUF\n");
-> +			mutex_unlock(&buffer->lock);
-> +			kfree(a->table);
-> +			kfree(a);
-> +			return PTR_ERR(buffer->attachment);
-> +		}
-> +	}
-> +	list_add(&a->list, &buffer->attachments);
-> +	mutex_unlock(&buffer->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static void ti_pat_dma_buf_detatch(struct dma_buf *dmabuf,
-> +				   struct dma_buf_attachment *attachment)
-
-Func name should be ti_pat_dma_buf_detach instead?
-
-Other than that, I can't see anything obvious with my limited experience 
-with dma_buf. Is there a simple way to test this driver btw?
-
--Tero
-
---
-Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
