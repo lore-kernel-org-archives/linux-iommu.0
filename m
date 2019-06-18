@@ -2,102 +2,59 @@ Return-Path: <SRS0=+KpI=US=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DATE_IN_PAST_24_48,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93D5C31E5E
-	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 16:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2344BC31E5B
+	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 16:31:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AD3D22173E
-	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 16:29:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Mu7sgXi6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD3D22173E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+	by mail.kernel.org (Postfix) with ESMTPS id EB6F52173E
+	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 16:31:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB6F52173E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 815BFCCC;
-	Wed, 19 Jun 2019 16:29:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C05CAD7E;
+	Wed, 19 Jun 2019 16:31:32 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A0DA1CC9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A7996CD3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 19 Jun 2019 16:29:05 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f195.google.com (mail-qk1-f195.google.com
-	[209.85.222.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 38BB2832
+	Wed, 19 Jun 2019 16:31:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5F91BE6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 19 Jun 2019 16:29:05 +0000 (UTC)
-Received: by mail-qk1-f195.google.com with SMTP id t8so11320544qkt.1
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 19 Jun 2019 09:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=qnUOwWGBCAXAVLri1Ul0fDjUeERWKjKVp0Rio+t6Mw0=;
-	b=Mu7sgXi6O1BEfTzeAxDFiZq9WYAU+8GuA+frzMgX9hRk0/2Eo2VPU9VKN7SPqn7GLw
-	BMmvCbBlMZt8BrrdyjrzJb5mIwmN+Un5ohC6uh52oLeiu3fM9lYGSfsBxw2N/in8YFn5
-	94JBdMTWXqhPkHC5ogDkAk30Vj3tK2OB7FH+D8RuRjkNrh4KSwvNzZkKLQDt1o6UXnKk
-	akxzg79p5LQYrNgI6wQWhEDCa4i3Wr2Q3GuDm1M6C6XhuTkbEI5dQ8Rzs09QxzMXG/yv
-	86i6u7h1UReQ+1KLg8ARX3o5vtg8COFFdiinD/3xnzFLxOpaxmET6WHLpP1penmwv6Fz
-	qw4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=qnUOwWGBCAXAVLri1Ul0fDjUeERWKjKVp0Rio+t6Mw0=;
-	b=GBitddsFr3YgWuTF4v4gCkuCmlNibH5Ep0Ql3nmisePt+GdxCBfnvxSvXZZATLb5h8
-	skAUxTVxqmHNRGO/47rhfaUn8J/kAU+DF75E50/FMNl37TFa62CHjk5LBWTRstCcFLgM
-	dR7BRKk/wwwfHwuEyfhkwdfiZn7qMH0uD/Is5wF9UR+nlvIDFZmVkekDpUVXqG0mSu+n
-	r1ip08WjCkkL/PAlUc6mGhra4Z2gmg2WAnD00K3O9mBZjPBEHSmVO4dIvEFXOeHUVCdj
-	SaIZwd5EtN9EacLR0Kzo1bIpm8KyaN4U3t13sO7SvhAXJae7GEG0g3QCX7+wY+TLmXVG
-	kxcg==
-X-Gm-Message-State: APjAAAWLW//b7U5IdAYjlAwr4nGUj+GzsP6xfFxx8c+qmD1M5DXP1F+E
-	f5Leegt7meycLhwQZakpBzYWyw==
-X-Google-Smtp-Source: APXvYqxI2A2AbFb1+ZoFRIh7H3fg512a+PNV8rhMF80/TQ7Ui3RJ5j2fJJDqC3jWu2+hRHD8V09puw==
-X-Received: by 2002:a37:5444:: with SMTP id i65mr23556982qkb.263.1560961744340;
-	Wed, 19 Jun 2019 09:29:04 -0700 (PDT)
-Received: from ziepe.ca
-	(hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net.
-	[156.34.55.100]) by smtp.gmail.com with ESMTPSA id
-	n5sm11854916qta.29.2019.06.19.09.29.03
-	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-	Wed, 19 Jun 2019 09:29:03 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1hddSJ-0001sf-Di; Wed, 19 Jun 2019 13:29:03 -0300
-Date: Wed, 19 Jun 2019 13:29:03 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>,
-	Potnuri Bharat Teja <bharat@chelsio.com>
-Subject: Re: use exact allocation for dma coherent memory
-Message-ID: <20190619162903.GF9360@ziepe.ca>
-References: <20190614134726.3827-1-hch@lst.de> <20190617082148.GF28859@kadam>
-	<20190617083342.GA7883@lst.de>
+	Wed, 19 Jun 2019 16:31:28 +0000 (UTC)
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 2C9DE10BDBC801D2AD92;
+	Thu, 20 Jun 2019 00:31:24 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS408-HUB.china.huawei.com
+	(10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Thu, 20 Jun 2019
+	00:31:02 +0800
+Date: Tue, 18 Jun 2019 16:41:58 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v4 03/22] iommu: Introduce device fault report API
+Message-ID: <20190618164158.0000489c@huawei.com>
+In-Reply-To: <1560087862-57608-4-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1560087862-57608-4-git-send-email-jacob.jun.pan@linux.intel.com>
+Organization: Huawei
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190617083342.GA7883@lst.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: Maxime Ripard <maxime.ripard@bootlin.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-	devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-	linux-rdma@vger.kernel.org, David Airlie <airlied@linux.ie>,
-	Dan Carpenter <dan.carpenter@oracle.com>, linux-media@vger.kernel.org,
-	Intel Linux Wireless <linuxwifi@intel.com>,
-	intel-gfx@lists.freedesktop.org,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>, Ian Abbott <abbotti@mev.co.uk>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, Sean Paul <sean@poorly.run>,
-	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	H Hartley Sweeten <hsweeten@visionengravers.com>,
-	iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>
+X-Originating-IP: [10.202.226.61]
+X-CFilter-Loop: Reflected
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,31 +72,281 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jun 17, 2019 at 10:33:42AM +0200, Christoph Hellwig wrote:
-> > drivers/infiniband/hw/cxgb4/qp.c
-> >    129  static int alloc_host_sq(struct c4iw_rdev *rdev, struct t4_sq *sq)
-> >    130  {
-> >    131          sq->queue = dma_alloc_coherent(&(rdev->lldi.pdev->dev), sq->memsize,
-> >    132                                         &(sq->dma_addr), GFP_KERNEL);
-> >    133          if (!sq->queue)
-> >    134                  return -ENOMEM;
-> >    135          sq->phys_addr = virt_to_phys(sq->queue);
-> >    136          dma_unmap_addr_set(sq, mapping, sq->dma_addr);
-> >    137          return 0;
-> >    138  }
-> > 
-> > Is this a bug?
+On Sun, 9 Jun 2019 06:44:03 -0700
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+
+> Traditionally, device specific faults are detected and handled within
+> their own device drivers. When IOMMU is enabled, faults such as DMA
+> related transactions are detected by IOMMU. There is no generic
+> reporting mechanism to report faults back to the in-kernel device
+> driver or the guest OS in case of assigned devices.
 > 
-> Yes.  This will blow up badly on many platforms, as sq->queue
-> might be vmapped, ioremapped, come from a pool without page backing.
+> This patch introduces a registration API for device specific fault
+> handlers. This differs from the existing iommu_set_fault_handler/
+> report_iommu_fault infrastructures in several ways:
+> - it allows to report more sophisticated fault events (both
+>   unrecoverable faults and page request faults) due to the nature
+>   of the iommu_fault struct
+> - it is device specific and not domain specific.
+> 
+> The current iommu_report_device_fault() implementation only handles
+> the "shoot and forget" unrecoverable fault case. Handling of page
+> request faults or stalled faults will come later.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
-Gah, this addr gets fed into io_remap_pfn_range/remap_pfn_range too..
+A few nitpicks and minor suggestions inline.
 
-Potnuri, you should fix this.. 
+> ---
+>  drivers/iommu/iommu.c | 127 +++++++++++++++++++++++++++++++++++++++++++++++++-
+>  include/linux/iommu.h |  33 ++++++++++++-
+>  2 files changed, 157 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 67ee662..7955184 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -644,6 +644,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  		goto err_free_name;
+>  	}
+>  
+> +	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
+> +	if (!dev->iommu_param) {
+> +		ret = -ENOMEM;
+> +		goto err_free_name;
+> +	}
+> +	mutex_init(&dev->iommu_param->lock);
+> +
+>  	kobject_get(group->devices_kobj);
+>  
+>  	dev->iommu_group = group;
+> @@ -674,6 +681,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  	mutex_unlock(&group->mutex);
+>  	dev->iommu_group = NULL;
+>  	kobject_put(group->devices_kobj);
+> +	kfree(dev->iommu_param);
+>  err_free_name:
+>  	kfree(device->name);
+>  err_remove_link:
+> @@ -720,7 +728,7 @@ void iommu_group_remove_device(struct device *dev)
+>  	sysfs_remove_link(&dev->kobj, "iommu_group");
+>  
+>  	trace_remove_device_from_group(group->id, dev);
+> -
+> +	kfree(dev->iommu_param);
+>  	kfree(device->name);
+>  	kfree(device);
+>  	dev->iommu_group = NULL;
+> @@ -855,6 +863,123 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
+>  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+>  
+>  /**
+> + * iommu_register_device_fault_handler() - Register a device fault handler
+> + * @dev: the device
+> + * @handler: the fault handler
+> + * @data: private data passed as argument to the handler
+> + *
+> + * When an IOMMU fault event is received, this handler gets called with the
+> + * fault event and data as argument.
+> + *
+> + * Return 0 if the fault handler was installed successfully, or an error.
+> + */
+> +int iommu_register_device_fault_handler(struct device *dev,
+> +					iommu_dev_fault_handler_t handler,
+> +					void *data)
+> +{
+> +	struct iommu_param *param = dev->iommu_param;
+> +	int ret = 0;
+> +
+> +	/*
+> +	 * Device iommu_param should have been allocated when device is
+> +	 * added to its iommu_group.
+> +	 */
+> +	if (!param)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&param->lock);
+> +	/* Only allow one fault handler registered for each device */
+> +	if (param->fault_param) {
+> +		ret = -EBUSY;
+> +		goto done_unlock;
+> +	}
+> +
+> +	get_device(dev);
+> +	param->fault_param =
+> +		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
+> +	if (!param->fault_param) {
+> +		put_device(dev);
+> +		ret = -ENOMEM;
+> +		goto done_unlock;
+> +	}
+> +	param->fault_param->handler = handler;
+> +	param->fault_param->data = data;
+> +
+> +done_unlock:
+> +	mutex_unlock(&param->lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
+> +
+> +/**
+> + * iommu_unregister_device_fault_handler() - Unregister the device fault handler
+> + * @dev: the device
+> + *
+> + * Remove the device fault handler installed with
+> + * iommu_register_device_fault_handler().
+> + *
+> + * Return 0 on success, or an error.
+> + */
+> +int iommu_unregister_device_fault_handler(struct device *dev)
+> +{
+> +	struct iommu_param *param = dev->iommu_param;
+> +	int ret = 0;
+> +
+> +	if (!param)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&param->lock);
+> +
+> +	if (!param->fault_param)
+> +		goto unlock;
+> +
+> +	kfree(param->fault_param);
+> +	param->fault_param = NULL;
+> +	put_device(dev);
+> +unlock:
+> +	mutex_unlock(&param->lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
+> +
 
-You probably need to use dma_mmap_from_dev_coherent() in the mmap ?
+One blank line probably enough.. (my personal favourite
+stylistic nitpick ;)
 
-Jason
+> +
+> +/**
+> + * iommu_report_device_fault() - Report fault event to device
+> + * @dev: the device
+> + * @evt: fault event data
+> + *
+> + * Called by IOMMU drivers when a fault is detected, typically in a threaded IRQ
+> + * handler.
+
+What constraints does that put on it?  We probably don't care about the
+fact it is in a threaded irq as such, rather something that is true as
+a result of that?
+
+> + *
+> + * Return 0 on success, or an error.
+> + */
+> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+> +{
+> +	struct iommu_param *param = dev->iommu_param;
+> +	struct iommu_fault_param *fparam;
+> +	int ret = 0;
+> +
+> +	/* iommu_param is allocated when device is added to group */
+> +	if (!param || !evt)
+> +		return -EINVAL;
+> +
+> +	/* we only report device fault if there is a handler registered */
+> +	mutex_lock(&param->lock);
+> +	fparam = param->fault_param;
+> +	if (!fparam || !fparam->handler) {
+> +		ret = -EINVAL;
+> +		goto done_unlock;
+> +	}
+> +	ret = fparam->handler(evt, fparam->data);
+> +done_unlock:
+> +	mutex_unlock(&param->lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_report_device_fault);
+> +
+> +/**
+>   * iommu_group_id - Return ID for a group
+>   * @group: the group to ID
+>   *
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 7890a92..b87b74c 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -322,9 +322,9 @@ struct iommu_fault_event {
+>  
+>  /**
+>   * struct iommu_fault_param - per-device IOMMU fault data
+> - * @dev_fault_handler: Callback function to handle IOMMU faults at device level
+> - * @data: handler private data
+>   *
+> + * @handler: Callback function to handle IOMMU faults at device level
+
+This should be in the previous patch, not this one.
+
+> + * @data: handler private data
+>   */
+>  struct iommu_fault_param {
+>  	iommu_dev_fault_handler_t handler;
+> @@ -341,6 +341,7 @@ struct iommu_fault_param {
+>   *	struct iommu_fwspec	*iommu_fwspec;
+>   */
+>  struct iommu_param {
+> +	struct mutex lock;
+
+Structure has kernel doc so this should be added to that.
+
+>  	struct iommu_fault_param *fault_param;
+>  };
+>  
+> @@ -433,6 +434,15 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
+>  					 struct notifier_block *nb);
+>  extern int iommu_group_unregister_notifier(struct iommu_group *group,
+>  					   struct notifier_block *nb);
+> +extern int iommu_register_device_fault_handler(struct device *dev,
+> +					iommu_dev_fault_handler_t handler,
+> +					void *data);
+> +
+> +extern int iommu_unregister_device_fault_handler(struct device *dev);
+> +
+> +extern int iommu_report_device_fault(struct device *dev,
+> +				     struct iommu_fault_event *evt);
+> +
+>  extern int iommu_group_id(struct iommu_group *group);
+>  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>  extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+> @@ -741,6 +751,25 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
+>  	return 0;
+>  }
+>  
+> +static inline
+> +int iommu_register_device_fault_handler(struct device *dev,
+> +					iommu_dev_fault_handler_t handler,
+> +					void *data)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iommu_unregister_device_fault_handler(struct device *dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline
+> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  static inline int iommu_group_id(struct iommu_group *group)
+>  {
+>  	return -ENODEV;
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
