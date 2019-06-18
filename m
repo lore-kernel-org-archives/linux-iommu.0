@@ -2,51 +2,66 @@ Return-Path: <SRS0=TfAO=UR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A10F3C31E5B
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 15:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4601DC31E5E
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 15:28:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EF0A2085A
-	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 15:25:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EF0A2085A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1CE77214AF
+	for <iommu@archiver.kernel.org>; Tue, 18 Jun 2019 15:28:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1637osod"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CE77214AF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3EF99C6E;
-	Tue, 18 Jun 2019 15:25:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BE33EC7A;
+	Tue, 18 Jun 2019 15:28:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 434BDC4E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F16B5B8E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 15:25:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B4A81893
+	Tue, 18 Jun 2019 15:28:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B98EB2C3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 18 Jun 2019 15:25:20 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 188C34B5; Tue, 18 Jun 2019 17:25:19 +0200 (CEST)
-Date: Tue, 18 Jun 2019 17:25:17 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] iommu: fix integer truncation
-Message-ID: <20190618152517.GB21128@8bytes.org>
-References: <20190617133101.2817807-1-arnd@arndb.de>
+	Tue, 18 Jun 2019 15:28:36 +0000 (UTC)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net
+	[24.9.64.241])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 031B92085A;
+	Tue, 18 Jun 2019 15:28:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1560871716;
+	bh=cBZbIGQ+cjyD2YCVRDOXcoe7z6QzrPpzbzN0znS/Ylg=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=1637osodxbXA+dd8NcCz7z4PZoJd2L4ooz5xgXaHLyVoXzk6mzzxCFsnF70fvSYaj
+	rxwiYsehj0Nwqj96sUhbw7/ewZ6peonITYgoV53cZ0Lc/Fz3dnxXt5nuaECF1D648A
+	wRwkpNFXQQ0FTiqYqUEkbxk32ximtj+bSI7AepPk=
+Subject: Re: How to resolve an issue in swiotlb environment?
+To: Alan Stern <stern@rowland.harvard.edu>
+References: <Pine.LNX.4.44L0.1906141043530.24571-100000@netrider.rowland.org>
+From: shuah <shuah@kernel.org>
+Message-ID: <20684ef6-7da7-90ed-4cd6-3bc46202de6d@kernel.org>
+Date: Tue, 18 Jun 2019 09:28:35 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190617133101.2817807-1-arnd@arndb.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Oza Pawandeep <poza@codeaurora.org>, Marc Zyngier <marc.zyngier@arm.com>,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	Julien Grall <julien.grall@arm.com>,
-	Srinath Mannam <srinath.mannam@broadcom.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>
+In-Reply-To: <Pine.LNX.4.44L0.1906141043530.24571-100000@netrider.rowland.org>
+Content-Language: en-US
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	Oliver Neukum <oneukum@suse.com>,
+	Valentina Manea <valentina.manea.m@gmail.com>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	shuah <shuah@kernel.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -59,26 +74,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jun 17, 2019 at 03:30:54PM +0200, Arnd Bergmann wrote:
-> On 32-bit architectures, phys_addr_t may be different from dma_add_t,
-> both smaller and bigger. This can lead to an overflow during an assignment
-> that clang warns about:
+On 6/14/19 8:44 AM, Alan Stern wrote:
+> On Thu, 13 Jun 2019, shuah wrote:
 > 
-> drivers/iommu/dma-iommu.c:230:10: error: implicit conversion from 'dma_addr_t' (aka 'unsigned long long') to
->       'phys_addr_t' (aka 'unsigned int') changes value from 18446744073709551615 to 4294967295 [-Werror,-Wconstant-conversion]
+>>> Great!  So all we have to do is fix vhci-hcd.  Then we can remove all
+>>> the virt_boundary_mask stuff from usb-storage and uas entirely.
+>>>
+>>> (I'm assuming wireless USB isn't a genuine issue.  As far as I know, it
+>>> is pretty much abandoned at this point.)
+>>>
+>>> Valentina and Shua: Adding SG support to vhci-hcd shouldn't be too
+>>> hard.  It ought to be possible even without changing the network
+>>> protocol.
+>>>
+>>
+>> I will start taking a look at this. Is there a target release in plan
+>> to drop virt_boundary_mask stuff?
 > 
-> Use phys_addr_t here because that is the type that the variable was
-> declared as.
+> Not yet.  But since it doesn't do what we want anyway, this should be
+> fixed quickly.
 > 
-> Fixes: aadad097cd46 ("iommu/dma: Reserve IOVA for PCIe inaccessible DMA address")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Applied, thanks.
+Sounds good. I am working on it.
+
+thanks,
+-- Shuah
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
