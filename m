@@ -2,59 +2,67 @@ Return-Path: <SRS0=+KpI=US=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.3 required=3.0 tests=DATE_IN_PAST_24_48,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2344BC31E5B
-	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 16:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB59DC48BDF
+	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 20:23:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EB6F52173E
-	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 16:31:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB6F52173E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 830B221721
+	for <iommu@archiver.kernel.org>; Wed, 19 Jun 2019 20:23:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2QUpyZNp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 830B221721
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C05CAD7E;
-	Wed, 19 Jun 2019 16:31:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 51F8FD9C;
+	Wed, 19 Jun 2019 20:23:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A7996CD3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28BE5D83
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 19 Jun 2019 16:31:30 +0000 (UTC)
+	Wed, 19 Jun 2019 20:23:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5F91BE6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C337BE6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 19 Jun 2019 16:31:28 +0000 (UTC)
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-	by Forcepoint Email with ESMTP id 2C9DE10BDBC801D2AD92;
-	Thu, 20 Jun 2019 00:31:24 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS408-HUB.china.huawei.com
-	(10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Thu, 20 Jun 2019
-	00:31:02 +0800
-Date: Tue, 18 Jun 2019 16:41:58 +0100
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 03/22] iommu: Introduce device fault report API
-Message-ID: <20190618164158.0000489c@huawei.com>
-In-Reply-To: <1560087862-57608-4-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1560087862-57608-4-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: Huawei
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+	Wed, 19 Jun 2019 20:23:24 +0000 (UTC)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net
+	[24.9.64.241])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id ECD302082C;
+	Wed, 19 Jun 2019 20:23:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1560975804;
+	bh=qgcuW/vpzcqzKWbZjJN8NyIykkFdIDlqS/LyBwbAD84=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=2QUpyZNpIs0fr4yIAAGZpJfOerU3kctEhFAVhrxVIpL2sZNFbbjH9MNecIR3iaS7/
+	1+IVwdlC8UAm6yHU1q1s1CjEktjpPeu7Vqc+H+c8VDh0NHdSwh6YbJaBHnuoam38/T
+	N2Fzf8pKY9U1vht0lC7lKRD3uGiONsQs/7P7/ehA=
+Subject: Re: How to resolve an issue in swiotlb environment?
+To: Alan Stern <stern@rowland.harvard.edu>
+References: <Pine.LNX.4.44L0.1906141043530.24571-100000@netrider.rowland.org>
+	<20684ef6-7da7-90ed-4cd6-3bc46202de6d@kernel.org>
+From: shuah <shuah@kernel.org>
+Message-ID: <7a6450cd-7b68-778d-0124-3c21d4616069@kernel.org>
+Date: Wed, 19 Jun 2019 14:23:11 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20684ef6-7da7-90ed-4cd6-3bc46202de6d@kernel.org>
+Content-Language: en-US
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	Oliver Neukum <oneukum@suse.com>,
+	Valentina Manea <valentina.manea.m@gmail.com>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	shuah <shuah@kernel.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,287 +75,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sun, 9 Jun 2019 06:44:03 -0700
-Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-
-> Traditionally, device specific faults are detected and handled within
-> their own device drivers. When IOMMU is enabled, faults such as DMA
-> related transactions are detected by IOMMU. There is no generic
-> reporting mechanism to report faults back to the in-kernel device
-> driver or the guest OS in case of assigned devices.
-> 
-> This patch introduces a registration API for device specific fault
-> handlers. This differs from the existing iommu_set_fault_handler/
-> report_iommu_fault infrastructures in several ways:
-> - it allows to report more sophisticated fault events (both
->   unrecoverable faults and page request faults) due to the nature
->   of the iommu_fault struct
-> - it is device specific and not domain specific.
-> 
-> The current iommu_report_device_fault() implementation only handles
-> the "shoot and forget" unrecoverable fault case. Handling of page
-> request faults or stalled faults will come later.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-
-A few nitpicks and minor suggestions inline.
-
-> ---
->  drivers/iommu/iommu.c | 127 +++++++++++++++++++++++++++++++++++++++++++++++++-
->  include/linux/iommu.h |  33 ++++++++++++-
->  2 files changed, 157 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 67ee662..7955184 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -644,6 +644,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->  		goto err_free_name;
->  	}
->  
-> +	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
-> +	if (!dev->iommu_param) {
-> +		ret = -ENOMEM;
-> +		goto err_free_name;
-> +	}
-> +	mutex_init(&dev->iommu_param->lock);
-> +
->  	kobject_get(group->devices_kobj);
->  
->  	dev->iommu_group = group;
-> @@ -674,6 +681,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->  	mutex_unlock(&group->mutex);
->  	dev->iommu_group = NULL;
->  	kobject_put(group->devices_kobj);
-> +	kfree(dev->iommu_param);
->  err_free_name:
->  	kfree(device->name);
->  err_remove_link:
-> @@ -720,7 +728,7 @@ void iommu_group_remove_device(struct device *dev)
->  	sysfs_remove_link(&dev->kobj, "iommu_group");
->  
->  	trace_remove_device_from_group(group->id, dev);
-> -
-> +	kfree(dev->iommu_param);
->  	kfree(device->name);
->  	kfree(device);
->  	dev->iommu_group = NULL;
-> @@ -855,6 +863,123 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
->  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
->  
->  /**
-> + * iommu_register_device_fault_handler() - Register a device fault handler
-> + * @dev: the device
-> + * @handler: the fault handler
-> + * @data: private data passed as argument to the handler
-> + *
-> + * When an IOMMU fault event is received, this handler gets called with the
-> + * fault event and data as argument.
-> + *
-> + * Return 0 if the fault handler was installed successfully, or an error.
-> + */
-> +int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	int ret = 0;
-> +
-> +	/*
-> +	 * Device iommu_param should have been allocated when device is
-> +	 * added to its iommu_group.
-> +	 */
-> +	if (!param)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&param->lock);
-> +	/* Only allow one fault handler registered for each device */
-> +	if (param->fault_param) {
-> +		ret = -EBUSY;
-> +		goto done_unlock;
-> +	}
-> +
-> +	get_device(dev);
-> +	param->fault_param =
-> +		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
-> +	if (!param->fault_param) {
-> +		put_device(dev);
-> +		ret = -ENOMEM;
-> +		goto done_unlock;
-> +	}
-> +	param->fault_param->handler = handler;
-> +	param->fault_param->data = data;
-> +
-> +done_unlock:
-> +	mutex_unlock(&param->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
-> +
-> +/**
-> + * iommu_unregister_device_fault_handler() - Unregister the device fault handler
-> + * @dev: the device
-> + *
-> + * Remove the device fault handler installed with
-> + * iommu_register_device_fault_handler().
-> + *
-> + * Return 0 on success, or an error.
-> + */
-> +int iommu_unregister_device_fault_handler(struct device *dev)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	int ret = 0;
-> +
-> +	if (!param)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&param->lock);
-> +
-> +	if (!param->fault_param)
-> +		goto unlock;
-> +
-> +	kfree(param->fault_param);
-> +	param->fault_param = NULL;
-> +	put_device(dev);
-> +unlock:
-> +	mutex_unlock(&param->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
-> +
-
-One blank line probably enough.. (my personal favourite
-stylistic nitpick ;)
-
-> +
-> +/**
-> + * iommu_report_device_fault() - Report fault event to device
-> + * @dev: the device
-> + * @evt: fault event data
-> + *
-> + * Called by IOMMU drivers when a fault is detected, typically in a threaded IRQ
-> + * handler.
-
-What constraints does that put on it?  We probably don't care about the
-fact it is in a threaded irq as such, rather something that is true as
-a result of that?
-
-> + *
-> + * Return 0 on success, or an error.
-> + */
-> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	struct iommu_fault_param *fparam;
-> +	int ret = 0;
-> +
-> +	/* iommu_param is allocated when device is added to group */
-> +	if (!param || !evt)
-> +		return -EINVAL;
-> +
-> +	/* we only report device fault if there is a handler registered */
-> +	mutex_lock(&param->lock);
-> +	fparam = param->fault_param;
-> +	if (!fparam || !fparam->handler) {
-> +		ret = -EINVAL;
-> +		goto done_unlock;
-> +	}
-> +	ret = fparam->handler(evt, fparam->data);
-> +done_unlock:
-> +	mutex_unlock(&param->lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-> +
-> +/**
->   * iommu_group_id - Return ID for a group
->   * @group: the group to ID
->   *
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 7890a92..b87b74c 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -322,9 +322,9 @@ struct iommu_fault_event {
->  
->  /**
->   * struct iommu_fault_param - per-device IOMMU fault data
-> - * @dev_fault_handler: Callback function to handle IOMMU faults at device level
-> - * @data: handler private data
->   *
-> + * @handler: Callback function to handle IOMMU faults at device level
-
-This should be in the previous patch, not this one.
-
-> + * @data: handler private data
->   */
->  struct iommu_fault_param {
->  	iommu_dev_fault_handler_t handler;
-> @@ -341,6 +341,7 @@ struct iommu_fault_param {
->   *	struct iommu_fwspec	*iommu_fwspec;
->   */
->  struct iommu_param {
-> +	struct mutex lock;
-
-Structure has kernel doc so this should be added to that.
-
->  	struct iommu_fault_param *fault_param;
->  };
->  
-> @@ -433,6 +434,15 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
->  					 struct notifier_block *nb);
->  extern int iommu_group_unregister_notifier(struct iommu_group *group,
->  					   struct notifier_block *nb);
-> +extern int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data);
-> +
-> +extern int iommu_unregister_device_fault_handler(struct device *dev);
-> +
-> +extern int iommu_report_device_fault(struct device *dev,
-> +				     struct iommu_fault_event *evt);
-> +
->  extern int iommu_group_id(struct iommu_group *group);
->  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
-> @@ -741,6 +751,25 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
->  	return 0;
->  }
->  
-> +static inline
-> +int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_unregister_device_fault_handler(struct device *dev)
-> +{
-> +	return 0;
-> +}
-> +
-> +static inline
-> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  static inline int iommu_group_id(struct iommu_group *group)
->  {
->  	return -ENODEV;
-
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgQWxhbiwKCk9uIDYvMTgvMTkgOToyOCBBTSwgc2h1YWggd3JvdGU6Cj4gT24gNi8xNC8xOSA4
+OjQ0IEFNLCBBbGFuIFN0ZXJuIHdyb3RlOgo+PiBPbiBUaHUsIDEzIEp1biAyMDE5LCBzaHVhaCB3
+cm90ZToKPj4KPj4+PiBHcmVhdCHCoCBTbyBhbGwgd2UgaGF2ZSB0byBkbyBpcyBmaXggdmhjaS1o
+Y2QuwqAgVGhlbiB3ZSBjYW4gcmVtb3ZlIGFsbAo+Pj4+IHRoZSB2aXJ0X2JvdW5kYXJ5X21hc2sg
+c3R1ZmYgZnJvbSB1c2Itc3RvcmFnZSBhbmQgdWFzIGVudGlyZWx5Lgo+Pj4+Cj4+Pj4gKEknbSBh
+c3N1bWluZyB3aXJlbGVzcyBVU0IgaXNuJ3QgYSBnZW51aW5lIGlzc3VlLsKgIEFzIGZhciBhcyBJ
+IGtub3csIGl0Cj4+Pj4gaXMgcHJldHR5IG11Y2ggYWJhbmRvbmVkIGF0IHRoaXMgcG9pbnQuKQo+
+Pj4+Cj4+Pj4gVmFsZW50aW5hIGFuZCBTaHVhOiBBZGRpbmcgU0cgc3VwcG9ydCB0byB2aGNpLWhj
+ZCBzaG91bGRuJ3QgYmUgdG9vCj4+Pj4gaGFyZC7CoCBJdCBvdWdodCB0byBiZSBwb3NzaWJsZSBl
+dmVuIHdpdGhvdXQgY2hhbmdpbmcgdGhlIG5ldHdvcmsKPj4+PiBwcm90b2NvbC4KPj4+Pgo+Pj4K
+Pj4+IEkgd2lsbCBzdGFydCB0YWtpbmcgYSBsb29rIGF0IHRoaXMuIElzIHRoZXJlIGEgdGFyZ2V0
+IHJlbGVhc2UgaW4gcGxhbgo+Pj4gdG8gZHJvcCB2aXJ0X2JvdW5kYXJ5X21hc2sgc3R1ZmY/Cj4+
+Cj4+IE5vdCB5ZXQuwqAgQnV0IHNpbmNlIGl0IGRvZXNuJ3QgZG8gd2hhdCB3ZSB3YW50IGFueXdh
+eSwgdGhpcyBzaG91bGQgYmUKPj4gZml4ZWQgcXVpY2tseS4KPj4KPiAKCkkgbWlzc2VkIGEgbG90
+IG9mIHRoZSB0aHJlYWQgaW5mby4gYW5kIHdlbnQgbG9va2luZyBmb3IgaXQgYW5kIGZvdW5kIHRo
+ZQpmb2xsb3dpbmcgc3VtbWFyeSBvZiB0aGUgcHJvYmxlbToKCj09PT09PT09PT09PT09PT09PQpU
+aGUgaXNzdWUgd2hpY2ggcHJvbXB0ZWQgdGhlIGNvbW1pdCB0aGlzIHRocmVhZCBpcyBhYm91dCBh
+cm9zZSBpbiBhCnNpdHVhdGlvbiB3aGVyZSB0aGUgYmxvY2sgbGF5ZXIgc2V0IHVwIGEgc2NhdHRl
+cmxpc3QgY29udGFpbmluZyBidWZmZXIKc2l6ZXMgc29tZXRoaW5nIGxpa2U6CgoJNDA5NiA0MDk2
+IDE1MzYgMTAyNAoKYW5kIHRoZSBtYXhpbXVtIHBhY2tldCBzaXplIHdhcyAxMDI0LiAgVGhlIHNp
+dHVhdGlvbiB3YXMgYSBsaXR0bGUKdW51c3VhbCwgYmVjYXVzZSBpdCBpbnZvbHZlZCB2aGNpLWhj
+ZCAoYSB2aXJ0dWFsIEhDRCkuICBUaGlzIGRvZXNuJ3QKbWF0dGVyIG11Y2ggaW4gbm9ybWFsIHBy
+YWN0aWNlIGJlY2F1c2U6CgoJQmxvY2sgZGV2aWNlcyBub3JtYWxseSBoYXZlIGEgYmxvY2sgc2l6
+ZSBvZiA1MTIgYnl0ZXMgb3IgbW9yZS4KCVNtYWxsZXIgdmFsdWVzIGFyZSB2ZXJ5IHVuY29tbW9u
+LiAgU28gc2NhdHRlcmxpc3QgZWxlbWVudCBzaXplcwoJYXJlIGFsd2F5cyBkaXZpc2libGUgYnkg
+NTEyLgoKCXhIQ0kgaXMgdGhlIG9ubHkgVVNCIGhvc3QgY29udHJvbGxlciB0eXBlIHdpdGggYSBt
+YXhpbXVtIHBhY2tldAoJc2l6ZSBsYXJnZXIgdGhhbiA1MTIsIGFuZCB4SENJIGhhcmR3YXJlIGNh
+biBkbyBmdWxsCglzY2F0dGVyLWdhdGhlciBzbyBpdCBkb2Vzbid0IGNhcmUgd2hhdCB0aGUgYnVm
+ZmVyIHNpemVzIGFyZS4KClNvIGFub3RoZXIgYXBwcm9hY2ggd291bGQgYmUgdG8gZml4IHZoY2kt
+aGNkIGFuZCB0aGVuIHRydXN0IHRoYXQgdGhlCnByb2JsZW0gd29uJ3QgYXJpc2UgYWdhaW4sIGZv
+ciB0aGUgcmVhc29ucyBhYm92ZS4gIFdlIHdvdWxkIGJlIG9rYXkgc28KbG9uZyBhcyBub2JvZHkg
+dHJpZWQgdG8gdXNlIGEgVVNCLVNDU0kgZGV2aWNlIHdpdGggYSBibG9jayBzaXplIG9mIDI1Ngpi
+eXRlcyBvciBsZXNzLgo9PT09PT09PT09PT09PT09PT09CgpPdXQgb2YgdGhlIHN1bW1hcnksIHRo
+ZSBmb2xsb3dpbmcgZ2l2ZXMgbWUgcGF1c2U6CgoieEhDSSBoYXJkd2FyZSBjYW4gZG8gZnVsbCBz
+Y2F0dGVyLWdhdGhlciBzbyBpdCBkb2Vzbid0IGNhcmUgd2hhdCB0aGUKYnVmZmVyIHNpemVzIGFy
+ZS4iCgp2aGNpLWhjZCB3b24ndCBiZSBhYmxlIHRvIGNvdW50IG9uIGhhcmR3YXJlIGJlaW5nIGFi
+bGUgdG8gZG8gZnVsbApzY2F0dGVyLWdhdGhlci4gSXQgaGFzIHRvIGRlYWwgd2l0aCBhIHZhcmll
+dHkgb2YgaGFyZHdhcmUgd2l0aAp2YXJ5aW5nIHNwZWVkcy4KCiJXZSB3b3VsZCBiZSBva2F5IHNv
+IGxvbmcgYXMgbm9ib2R5IHRyaWVkIHRvIHVzZSBhIFVTQi1TQ1NJIGRldmljZSB3aXRoCmEgYmxv
+Y2sgc2l6ZSBvZiAyNTYgYnl0ZXMgb3IgbGVzcy4iCgpBdCBsZWFzdCBhIFVTQiBTdG9yYWdlIGRl
+dmljZSwgSSB0ZXN0IHdpdGggc2F5cyA1MTIgYmxvY2sgc2l6ZS4gQ2FuIHdlCmNvdW50IG9uIG5v
+dCBzZWVpbmcgYSBkZXZpY2Ugd2l0aCBibG9jayBzaXplIDw9IDI1NiBieXRlcz8KCkluIGFueSBj
+YXNlLCBJIGFtIGxvb2tpbmcgaW50byBhZGRpbmcgU0cgc3VwcG9ydCB2aGNpLWhjaSBhdCB0aGUg
+bW9tZW50LgoKTG9va3MgbGlrZSB0aGUgZm9sbG93aW5nIGlzIHRoZSByZXBvLCBJIHNob3VsZCBi
+ZSB3b3JraW5nIHdpdGg/CgpnaXQ6Ly9naXQuaW5mcmFkZWFkLm9yZy91c2Vycy9oY2gvbWlzYy5n
+aXQKCnRoYW5rcywKLS0gU2h1YWgKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
