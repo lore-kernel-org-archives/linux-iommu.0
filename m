@@ -2,195 +2,55 @@ Return-Path: <SRS0=IV2l=UT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DC9C43613
-	for <iommu@archiver.kernel.org>; Thu, 20 Jun 2019 09:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D34C43613
+	for <iommu@archiver.kernel.org>; Thu, 20 Jun 2019 10:44:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5DB1C2082C
-	for <iommu@archiver.kernel.org>; Thu, 20 Jun 2019 09:35:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lbnby+Be"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DB1C2082C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5781E2070B
+	for <iommu@archiver.kernel.org>; Thu, 20 Jun 2019 10:44:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5781E2070B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 191A2ACC;
-	Thu, 20 Jun 2019 09:35:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 16960B1F;
+	Thu, 20 Jun 2019 10:44:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 56E2DA49
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5D762AE7
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 20 Jun 2019 09:35:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
-	[209.85.208.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E7E182F
+	Thu, 20 Jun 2019 10:44:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A83B57DB
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 20 Jun 2019 09:35:44 +0000 (UTC)
-Received: by mail-ed1-f67.google.com with SMTP id i11so3802131edq.0
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 20 Jun 2019 02:35:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-	:user-agent:mime-version:in-reply-to:content-language
-	:content-transfer-encoding;
-	bh=hlEddQt4Q9ov16HB4zeHkov03nbfzJf1avLVJN1unsA=;
-	b=lbnby+BexmGifHBzFHF5kBckPslfVY03o/3HDvyfPYGNA5vxIVMKWhR8D2LswgANVG
-	LKcY/EZRep/FvSwsKvf6dszliFirZUywhz94d/agVad9J8j+Z5tjh/EnPtgbkgXVYz/h
-	JQucPlzm7iYPMHzFvDtuA8XUlPOaIPjDAyNvLHPZa1y+puHvl5ljraCaxTUCjP7+Hm5B
-	je5w54pc/sip7gohHd0TrcwTWggUeo6Dyuw3lL5bBi+XYzzPwGdACuRWqh9xlP+pslRR
-	1DsNk1/vwEjxFc58pU7ioB+Amq1kxANumGOfDbAOMLYJsq7FyRaFKzRncEX9NVw0Yzch
-	dGHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-	:message-id:date:user-agent:mime-version:in-reply-to
-	:content-language:content-transfer-encoding;
-	bh=hlEddQt4Q9ov16HB4zeHkov03nbfzJf1avLVJN1unsA=;
-	b=Ld7e/JBC7k4EhRT7Fg6HLn8Med6bugCQTDH2AIx/vUnyci/mswyf/qhNlarBqzhBM8
-	0ixnzxA4yC0sgFYXepiudMPQ7ArdNx1xsOp9nxv4RTrSa5H3KYWst8vWoq8GR6rkGrqE
-	2Bh2GsM0euhqZregmuySnXDUAl1fFxLjrsQP0Ht3lYLIpO/ejlOsz33q7syYYnf2ECPg
-	szHje7s9JIC21+WLxsfmv4ad04+mcZ4aQt5Od79XLTvUlyLRxx4inNyrcQgengjVDXMH
-	TjRnDwnopvkCbDcpxRfobrSI+J75SFz7+s2f42PYLoXN1BsYNgwtU2zgNVBkwLUfAvo/
-	GMug==
-X-Gm-Message-State: APjAAAXUnOcHvJKRtlzsOKsRtYlVwmCRs5KKBEZLpss5G8GnI94kQjsY
-	AAitJ8jCLA825THqABVkxPE=
-X-Google-Smtp-Source: APXvYqwjVHItQwfuQ3w+bgYJGKc40F9nNSBwJebZ7YdC5wA/vu8mJeC4BEmt9HI2wLgCMgfjCKcVNw==
-X-Received: by 2002:a50:8934:: with SMTP id
-	e49mr111201777ede.156.1561023343005; 
-	Thu, 20 Jun 2019 02:35:43 -0700 (PDT)
-Received: from ziggy.stardust ([37.223.145.205])
-	by smtp.gmail.com with ESMTPSA id
-	d12sm1757360ejd.65.2019.06.20.02.35.41
-	(version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-	Thu, 20 Jun 2019 02:35:42 -0700 (PDT)
-Subject: Re: [PATCH v7 16/21] memory: mtk-smi: Add bus_sel for mt8183
-To: Pi-Hsun Shih <pihsun@chromium.org>, Yong Wu <yong.wu@mediatek.com>
-References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
-	<1560169080-27134-17-git-send-email-yong.wu@mediatek.com>
-	<CANdKZ0d873PJ2u=Hn_aUJBu3dDiNyueVwBv94-VXHGLJBvAbGg@mail.gmail.com>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
-	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
-	jrHWeQEI2ucSKsNa8FllDmG/fQ==
-Message-ID: <eee15db0-e43f-de9b-28a0-93bdd04836d7@gmail.com>
-Date: Thu, 20 Jun 2019 11:35:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thu, 20 Jun 2019 10:44:57 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+	[10.5.11.23])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id B44D8316290E;
+	Thu, 20 Jun 2019 10:44:37 +0000 (UTC)
+Received: from xz-x1 (ovpn-12-68.pek2.redhat.com [10.72.12.68])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 0DD8419C5B;
+	Thu, 20 Jun 2019 10:44:31 +0000 (UTC)
+Date: Thu, 20 Jun 2019 18:44:29 +0800
+From: Peter Xu <peterx@redhat.com>
+To: Linux IOMMU Mailing List <iommu@lists.linux-foundation.org>
+Subject: VT-d deadlock issue on device_domain_lock and iommu lock (5.2-rc5)
+Message-ID: <20190620104418.GA9657@xz-x1>
 MIME-Version: 1.0
-In-Reply-To: <CANdKZ0d873PJ2u=Hn_aUJBu3dDiNyueVwBv94-VXHGLJBvAbGg@mail.gmail.com>
-Content-Language: en-US
-Cc: youlin.pei@mediatek.com,
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>, Nicolas Boichat <drinkcat@chromium.org>,
-	srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek SoC support"
-	<linux-mediatek@lists.infradead.org>, yingjoe.chen@mediatek.com,
-	anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
-	Matthias Kaehlcke <mka@chromium.org>,
-	"moderated list:ARM/Mediatek SoC support"
-	<linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.41]);
+	Thu, 20 Jun 2019 10:44:42 +0000 (UTC)
+Cc: dave.jiang@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -208,328 +68,132 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+Hi,
 
+With 5.2.0-rc5 I can easily trigger this with lockdep:
 
-On 13/06/2019 10:14, Pi-Hsun Shih wrote:
-> Hi,
-> When I tested this patch series (Based on linux 5.2.0-rc2, and with
-> various other patch series about MT8183) with lockdep enabled, and I'm
-> seeing the following lockdep warning on boot.
-> 
-> By bisecting the commits, the first commit that introduce this warning
-> is this patch. The warning also doesn't appear if
-> https://lore.kernel.org/patchwork/patch/1086582/ and
-> https://lore.kernel.org/patchwork/patch/1086583/ are not applied.
-> 
-> Do anyone have idea on why this is happening, or any suggestion on
-> which part I should be digging into to figure this out? Thanks.
-> 
-> [    4.664194] ======================================================
-> [    4.670368] WARNING: possible circular locking dependency detected
-> [    4.676545] 5.2.0-rc2-next-20190528-44527-g6c94b6475c04 #20 Tainted: G S
-> [    4.684539] ------------------------------------------------------
-> [    4.690714] kworker/4:1/51 is trying to acquire lock:
-> [    4.695760] (____ptrval____) (regulator_list_mutex){+.+.},
-> at:regulator_lock_dependent+0xdc/0x6c4
-> [    4.704732]
-> [    4.704732] but task is already holding lock:
-> [    4.710556] (____ptrval____) (&genpd->mlock/1){+.+.},
-> at:genpd_lock_nested_mtx+0x24/0x30
-> [    4.718740]
-> [    4.718740] which lock already depends on the new lock.
-> [    4.718740]
-> [    4.726908]
-> [    4.726908] the existing dependency chain (in reverse order) is:
-> [    4.734382]
-> [    4.734382] -> #4 (&genpd->mlock/1){+.+.}:
-> [    4.739963]        __mutex_lock_common+0x1a0/0x1fe8
-> [    4.744836]        mutex_lock_nested+0x40/0x50
-> [    4.749275]        genpd_lock_nested_mtx+0x24/0x30
-> [    4.754063]        genpd_add_subdomain+0x150/0x524
-> [    4.758850]        pm_genpd_add_subdomain+0x3c/0x5c
-> [    4.763723]        scpsys_probe+0x520/0xe78
-> [    4.767902]        platform_drv_probe+0xf4/0x134
-> [    4.772517]        really_probe+0x214/0x4dc
-> [    4.776696]        driver_probe_device+0xcc/0x1d4
-> [    4.781396]        __device_attach_driver+0x10c/0x180
-> [    4.786442]        bus_for_each_drv+0x124/0x184
-> [    4.790968]        __device_attach+0x1c0/0x2d8
-> [    4.795407]        device_initial_probe+0x20/0x2c
-> [    4.800106]        bus_probe_device+0x80/0x16c
-> [    4.804546]        deferred_probe_work_func+0x120/0x168
-> [    4.809767]        process_one_work+0x858/0x1208
-> [    4.814379]        worker_thread+0x9ec/0xcb8
-> [    4.818644]        kthread+0x2b8/0x2d0
-> [    4.822391]        ret_from_fork+0x10/0x18
-> [    4.826480]
-> [    4.826480] -> #3 (&genpd->mlock){+.+.}:
-> [    4.831880]        __mutex_lock_common+0x1a0/0x1fe8
-> [    4.836752]        mutex_lock_nested+0x40/0x50
-> [    4.841190]        genpd_lock_mtx+0x20/0x2c
-> [    4.845369]        genpd_runtime_resume+0x140/0x434
-> [    4.850241]        __rpm_callback+0xb0/0x1e4
-> [    4.854506]        rpm_callback+0x54/0x1a8
-> [    4.858597]        rpm_resume+0xc6c/0x10c4
-> [    4.862689]        __pm_runtime_resume+0xb4/0x124
-> [    4.867387]        device_link_add+0x598/0x8d0
+--------------------------------------------
+Jun 20 14:37:37 xz-x1 kernel: ======================================================
+Jun 20 14:37:37 xz-x1 kernel: WARNING: possible circular locking dependency detected
+Jun 20 14:37:37 xz-x1 kernel: 5.2.0-rc5 #78 Not tainted
+Jun 20 14:37:37 xz-x1 kernel: ------------------------------------------------------
+Jun 20 14:37:37 xz-x1 kernel: swapper/0/1 is trying to acquire lock:
+Jun 20 14:37:37 xz-x1 kernel: 00000000ea2b3beb (&(&iommu->lock)->rlock){+.+.}, at: domain_context_mapping_one+0xa5/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:
+                              but task is already holding lock:
+Jun 20 14:37:37 xz-x1 kernel: 00000000a681907b (device_domain_lock){....}, at: domain_context_mapping_one+0x8d/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:
+                              which lock already depends on the new lock.
+Jun 20 14:37:37 xz-x1 kernel:
+                              the existing dependency chain (in reverse order) is:
+Jun 20 14:37:37 xz-x1 kernel:
+                              -> #1 (device_domain_lock){....}:
+Jun 20 14:37:37 xz-x1 kernel:        _raw_spin_lock_irqsave+0x3c/0x50
+Jun 20 14:37:37 xz-x1 kernel:        dmar_insert_one_dev_info+0xbb/0x510
+Jun 20 14:37:37 xz-x1 kernel:        domain_add_dev_info+0x50/0x90
+Jun 20 14:37:37 xz-x1 kernel:        dev_prepare_static_identity_mapping+0x30/0x68
+Jun 20 14:37:37 xz-x1 kernel:        intel_iommu_init+0xddd/0x1422
+Jun 20 14:37:37 xz-x1 kernel:        pci_iommu_init+0x16/0x3f
+Jun 20 14:37:37 xz-x1 kernel:        do_one_initcall+0x5d/0x2b4
+Jun 20 14:37:37 xz-x1 kernel:        kernel_init_freeable+0x218/0x2c1
+Jun 20 14:37:37 xz-x1 kernel:        kernel_init+0xa/0x100
+Jun 20 14:37:37 xz-x1 kernel:        ret_from_fork+0x3a/0x50
+Jun 20 14:37:37 xz-x1 kernel:
+                              -> #0 (&(&iommu->lock)->rlock){+.+.}:
+Jun 20 14:37:37 xz-x1 kernel:        lock_acquire+0x9e/0x170
+Jun 20 14:37:37 xz-x1 kernel:        _raw_spin_lock+0x25/0x30
+Jun 20 14:37:37 xz-x1 kernel:        domain_context_mapping_one+0xa5/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:        pci_for_each_dma_alias+0x30/0x140
+Jun 20 14:37:37 xz-x1 kernel:        dmar_insert_one_dev_info+0x3b2/0x510
+Jun 20 14:37:37 xz-x1 kernel:        domain_add_dev_info+0x50/0x90
+Jun 20 14:37:37 xz-x1 kernel:        dev_prepare_static_identity_mapping+0x30/0x68
+Jun 20 14:37:37 xz-x1 kernel:        intel_iommu_init+0xddd/0x1422
+Jun 20 14:37:37 xz-x1 kernel:        pci_iommu_init+0x16/0x3f
+Jun 20 14:37:37 xz-x1 kernel:        do_one_initcall+0x5d/0x2b4
+Jun 20 14:37:37 xz-x1 kernel:        kernel_init_freeable+0x218/0x2c1
+Jun 20 14:37:37 xz-x1 kernel:        kernel_init+0xa/0x100
+Jun 20 14:37:37 xz-x1 kernel:        ret_from_fork+0x3a/0x50
+Jun 20 14:37:37 xz-x1 kernel:
+                              other info that might help us debug this:
+Jun 20 14:37:37 xz-x1 kernel:  Possible unsafe locking scenario:
+Jun 20 14:37:37 xz-x1 kernel:        CPU0                    CPU1
+Jun 20 14:37:37 xz-x1 kernel:        ----                    ----
+Jun 20 14:37:37 xz-x1 kernel:   lock(device_domain_lock);
+Jun 20 14:37:37 xz-x1 kernel:                                lock(&(&iommu->lock)->rlock);
+Jun 20 14:37:37 xz-x1 kernel:                                lock(device_domain_lock);
+Jun 20 14:37:37 xz-x1 kernel:   lock(&(&iommu->lock)->rlock);
+Jun 20 14:37:37 xz-x1 kernel:
+                               *** DEADLOCK ***
+Jun 20 14:37:37 xz-x1 kernel: 2 locks held by swapper/0/1:
+Jun 20 14:37:37 xz-x1 kernel:  #0: 00000000033eb13d (dmar_global_lock){++++}, at: intel_iommu_init+0x1e0/0x1422
+Jun 20 14:37:37 xz-x1 kernel:  #1: 00000000a681907b (device_domain_lock){....}, at: domain_context_mapping_one+0x8d/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:
+                              stack backtrace:
+Jun 20 14:37:37 xz-x1 kernel: CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc5 #78
+Jun 20 14:37:37 xz-x1 kernel: Hardware name: LENOVO 20KGS35G01/20KGS35G01, BIOS N23ET50W (1.25 ) 06/25/2018
+Jun 20 14:37:37 xz-x1 kernel: Call Trace:
+Jun 20 14:37:37 xz-x1 kernel:  dump_stack+0x85/0xc0
+Jun 20 14:37:37 xz-x1 kernel:  print_circular_bug.cold.57+0x15c/0x195
+Jun 20 14:37:37 xz-x1 kernel:  __lock_acquire+0x152a/0x1710
+Jun 20 14:37:37 xz-x1 kernel:  lock_acquire+0x9e/0x170
+Jun 20 14:37:37 xz-x1 kernel:  ? domain_context_mapping_one+0xa5/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:  _raw_spin_lock+0x25/0x30
+Jun 20 14:37:37 xz-x1 kernel:  ? domain_context_mapping_one+0xa5/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:  domain_context_mapping_one+0xa5/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:  ? domain_context_mapping_one+0x4e0/0x4e0
+Jun 20 14:37:37 xz-x1 kernel:  pci_for_each_dma_alias+0x30/0x140
+Jun 20 14:37:37 xz-x1 kernel:  dmar_insert_one_dev_info+0x3b2/0x510
+Jun 20 14:37:37 xz-x1 kernel:  domain_add_dev_info+0x50/0x90
+Jun 20 14:37:37 xz-x1 kernel:  dev_prepare_static_identity_mapping+0x30/0x68
+Jun 20 14:37:37 xz-x1 kernel:  intel_iommu_init+0xddd/0x1422
+Jun 20 14:37:37 xz-x1 kernel:  ? printk+0x58/0x6f
+Jun 20 14:37:37 xz-x1 kernel:  ? lockdep_hardirqs_on+0xf0/0x180
+Jun 20 14:37:37 xz-x1 kernel:  ? do_early_param+0x8e/0x8e
+Jun 20 14:37:37 xz-x1 kernel:  ? e820__memblock_setup+0x63/0x63
+Jun 20 14:37:37 xz-x1 kernel:  pci_iommu_init+0x16/0x3f
+Jun 20 14:37:37 xz-x1 kernel:  do_one_initcall+0x5d/0x2b4
+Jun 20 14:37:37 xz-x1 kernel:  ? do_early_param+0x8e/0x8e
+Jun 20 14:37:37 xz-x1 kernel:  ? rcu_read_lock_sched_held+0x55/0x60
+Jun 20 14:37:37 xz-x1 kernel:  ? do_early_param+0x8e/0x8e
+Jun 20 14:37:37 xz-x1 kernel:  kernel_init_freeable+0x218/0x2c1
+Jun 20 14:37:37 xz-x1 kernel:  ? rest_init+0x230/0x230
+Jun 20 14:37:37 xz-x1 kernel:  kernel_init+0xa/0x100
+Jun 20 14:37:37 xz-x1 kernel:  ret_from_fork+0x3a/0x50
+--------------------------------------------
 
-For this looks as if you have also patch
-[PATCH v2 04/12] memory: mtk-smi: Add device-link between smi-larb and smi-common
-from series
-[PATCH v2 00/12] Clean up "mediatek,larb" after adding device_link
-applied.
+domain_context_mapping_one() is taking device_domain_lock first then
+iommu lock, while dmar_insert_one_dev_info() is doing the reverse.
 
-Regards,
-Matthias
+I digged a bit and I saw this commit which seems suspicous:
 
-> [    4.871829]        mtk_smi_larb_probe+0x2b0/0x340
-> [    4.876528]        platform_drv_probe+0xf4/0x134
-> [    4.881141]        really_probe+0x214/0x4dc
-> [    4.885320]        driver_probe_device+0xcc/0x1d4
-> [    4.890020]        __device_attach_driver+0x10c/0x180
-> [    4.895066]        bus_for_each_drv+0x124/0x184
-> [    4.899591]        __device_attach+0x1c0/0x2d8
-> [    4.904031]        device_initial_probe+0x20/0x2c
-> [    4.908730]        bus_probe_device+0x80/0x16c
-> [    4.913169]        deferred_probe_work_func+0x120/0x168
-> [    4.918387]        process_one_work+0x858/0x1208
-> [    4.923000]        worker_thread+0x9ec/0xcb8
-> [    4.927264]        kthread+0x2b8/0x2d0
-> [    4.931009]        ret_from_fork+0x10/0x18
-> [    4.935098]
-> [    4.935098] -> #2 (dpm_list_mtx){+.+.}:
-> [    4.940412]        __mutex_lock_common+0x1a0/0x1fe8
-> [    4.945284]        mutex_lock_nested+0x40/0x50
-> [    4.949722]        device_pm_lock+0x1c/0x24
-> [    4.953900]        device_link_add+0x98/0x8d0
-> [    4.958252]        _regulator_get+0x3f0/0x504
-> [    4.962606]        _devm_regulator_get+0x58/0xb8
-> [    4.967218]        devm_regulator_get+0x28/0x34
-> [    4.971746]        pwm_backlight_probe+0x61c/0x1b90
-> [    4.976617]        platform_drv_probe+0xf4/0x134
-> [    4.981230]        really_probe+0x214/0x4dc
-> [    4.985409]        driver_probe_device+0xcc/0x1d4
-> [    4.990108]        device_driver_attach+0xe4/0x104
-> [    4.994894]        __driver_attach+0x134/0x14c
-> [    4.999333]        bus_for_each_dev+0x120/0x180
-> [    5.003859]        driver_attach+0x48/0x54
-> [    5.007950]        bus_add_driver+0x2ac/0x44c
-> [    5.012303]        driver_register+0x160/0x288
-> [    5.016742]        __platform_driver_register+0xcc/0xdc
-> [    5.021964]        pwm_backlight_driver_init+0x1c/0x24
-> [    5.027097]        do_one_initcall+0x38c/0x994
-> [    5.031536]        do_initcall_level+0x3a4/0x4b8
-> [    5.036148]        do_basic_setup+0x84/0xa0
-> [    5.036153]        kernel_init_freeable+0x23c/0x324
-> [    5.036158]        kernel_init+0x14/0x110
-> [    5.036164]        ret_from_fork+0x10/0x18
-> [    5.036166]
-> [    5.036166] -> #1 (device_links_lock){+.+.}:
-> [    5.065905]        __mutex_lock_common+0x1a0/0x1fe8
-> [    5.070777]        mutex_lock_nested+0x40/0x50
-> [    5.075215]        device_link_remove+0x40/0xe0
-> [    5.079740]        _regulator_put+0x104/0x2d8
-> [    5.084093]        regulator_put+0x30/0x44
-> [    5.088184]        devm_regulator_release+0x38/0x44
-> [    5.093056]        release_nodes+0x604/0x670
-> [    5.097320]        devres_release_all+0x70/0x8c
-> [    5.101846]        really_probe+0x270/0x4dc
-> [    5.106024]        driver_probe_device+0xcc/0x1d4
-> [    5.110724]        device_driver_attach+0xe4/0x104
-> [    5.115510]        __driver_attach+0x134/0x14c
-> [    5.119949]        bus_for_each_dev+0x120/0x180
-> [    5.124474]        driver_attach+0x48/0x54
-> [    5.128566]        bus_add_driver+0x2ac/0x44c
-> [    5.132919]        driver_register+0x160/0x288
-> [    5.137357]        __platform_driver_register+0xcc/0xdc
-> [    5.142576]        pwm_backlight_driver_init+0x1c/0x24
-> [    5.147708]        do_one_initcall+0x38c/0x994
-> [    5.152146]        do_initcall_level+0x3a4/0x4b8
-> [    5.156758]        do_basic_setup+0x84/0xa0
-> [    5.160936]        kernel_init_freeable+0x23c/0x324
-> [    5.165807]        kernel_init+0x14/0x110
-> [    5.169813]        ret_from_fork+0x10/0x18
-> [    5.173901]
-> [    5.173901] -> #0 (regulator_list_mutex){+.+.}:
-> [    5.179910]        lock_acquire+0x350/0x4d4
-> [    5.184088]        __mutex_lock_common+0x1a0/0x1fe8
-> [    5.184095]        mutex_lock_nested+0x40/0x50
-> [    5.197475]        regulator_lock_dependent+0xdc/0x6c4
-> [    5.197482]        regulator_disable+0xa0/0x138
-> [    5.197487]        scpsys_power_off+0x38c/0x4bc
-> [    5.197495]        genpd_power_off+0x3d8/0x6a0
-> [    5.209399]        genpd_power_off+0x530/0x6a0
-> [    5.209406]        genpd_power_off_work_fn+0x74/0xc0
-> [    5.209411]        process_one_work+0x858/0x1208
-> [    5.209419]        worker_thread+0x9ec/0xcb8
-> [    5.219067]        kthread+0x2b8/0x2d0
-> [    5.219073]        ret_from_fork+0x10/0x18
-> [    5.219077]
-> [    5.219077] other info that might help us debug this:
-> [    5.219077]
-> [    5.219080] Chain exists of:
-> [    5.219080]   regulator_list_mutex --> &genpd->mlock --> &genpd->mlock/1
-> [    5.219080]
-> [    5.228039]  Possible unsafe locking scenario:
-> [    5.228039]
-> [    5.228042]        CPU0                    CPU1
-> [    5.228046]        ----                    ----
-> [    5.228048]   lock(&genpd->mlock/1);
-> [    5.228058]                                lock(&genpd->mlock);
-> [    5.311647]                                lock(&genpd->mlock/1);
-> [    5.317736]   lock(regulator_list_mutex);
-> [    5.321742]
-> [    5.321742]  *** DEADLOCK ***
-> [    5.321742]
-> [    5.327655] 4 locks held by kworker/4:1/51:
-> [    5.331831]  #0: (____ptrval____) ((wq_completion)pm){+.+.},
-> at:process_one_work+0x57c/0x1208
-> [    5.340444]  #1: (____ptrval____)
-> ((work_completion)(&genpd->power_off_work)){+.+.},
-> at:process_one_work+0x5b8/0x1208
-> [    5.351139]  #2: (____ptrval____) (&genpd->mlock){+.+.},
-> at:genpd_lock_mtx+0x20/0x2c
-> [    5.358970]  #3: (____ptrval____) (&genpd->mlock/1){+.+.},
-> at:genpd_lock_nested_mtx+0x24/0x30
-> [    5.367584]
-> [    5.367584] stack backtrace:
-> [    5.371939] CPU: 4 PID: 51 Comm: kworker/4:1 Tainted: G S
->  5.2.0-rc2-next-20190528-44527-g6c94b6475c04 #20
-> [    5.382809] Workqueue: pm genpd_power_off_work_fn
-> [    5.382816] Call trace:
-> [    5.382822]  dump_backtrace+0x0/0x2c0
-> [    5.382830]  show_stack+0x20/0x2c
-> [    5.409174]  dump_stack+0x10c/0x17c
-> [    5.412659]  print_circular_bug+0x42c/0x4d0
-> [    5.416838]  __lock_acquire+0x4c88/0x5484
-> [    5.420843]  lock_acquire+0x350/0x4d4
-> [    5.424500]  __mutex_lock_common+0x1a0/0x1fe8
-> [    5.428851]  mutex_lock_nested+0x40/0x50
-> [    5.432770]  regulator_lock_dependent+0xdc/0x6c4
-> [    5.437383]  regulator_disable+0xa0/0x138
-> [    5.441389]  scpsys_power_off+0x38c/0x4bc
-> [    5.445393]  genpd_power_off+0x3d8/0x6a0
-> [    5.449310]  genpd_power_off+0x530/0x6a0
-> [    5.453229]  genpd_power_off_work_fn+0x74/0xc0
-> [    5.457667]  process_one_work+0x858/0x1208
-> [    5.461758]  worker_thread+0x9ec/0xcb8
-> [    5.465503]  kthread+0x2b8/0x2d0
-> [    5.468727]  ret_from_fork+0x10/0x18
-> 
-> On Mon, Jun 10, 2019 at 8:21 PM Yong Wu <yong.wu@mediatek.com> wrote:
->> ...
-> 
-> 
-> On Mon, Jun 10, 2019 at 8:21 PM Yong Wu <yong.wu@mediatek.com> wrote:
-> 
->> There are 2 mmu cells in a M4U HW. we could adjust some larbs entering
->> mmu0 or mmu1 to balance the bandwidth via the smi-common register
->> SMI_BUS_SEL(0x220)(Each larb occupy 2 bits).
->>
->> In mt8183, For better performance, we switch larb1/2/5/7 to enter
->> mmu1 while the others still keep enter mmu0.
->>
->> In mt8173 and mt2712, we don't get the performance issue,
->> Keep its default value(0x0), that means all the larbs enter mmu0.
->>
->> Note: smi gen1(mt2701/mt7623) don't have this bus_sel.
->>
->> And, the base of smi-common is completely different with smi_ao_base
->> of gen1, thus I add new variable for that.
->>
->> CC: Matthias Brugger <matthias.bgg@gmail.com>
->> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->> Reviewed-by: Evan Green <evgreen@chromium.org>
->> ---
->>  drivers/memory/mtk-smi.c | 22 ++++++++++++++++++++--
->>  1 file changed, 20 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
->> index 9790801..08cf40d 100644
->> --- a/drivers/memory/mtk-smi.c
->> +++ b/drivers/memory/mtk-smi.c
->> @@ -49,6 +49,12 @@
->>  #define SMI_LARB_NONSEC_CON(id)        (0x380 + ((id) * 4))
->>  #define F_MMU_EN               BIT(0)
->>
->> +/* SMI COMMON */
->> +#define SMI_BUS_SEL                    0x220
->> +#define SMI_BUS_LARB_SHIFT(larbid)     ((larbid) << 1)
->> +/* All are MMU0 defaultly. Only specialize mmu1 here. */
->> +#define F_MMU1_LARB(larbid)            (0x1 << SMI_BUS_LARB_SHIFT(larbid))
->> +
->>  enum mtk_smi_gen {
->>         MTK_SMI_GEN1,
->>         MTK_SMI_GEN2
->> @@ -57,6 +63,7 @@ enum mtk_smi_gen {
->>  struct mtk_smi_common_plat {
->>         enum mtk_smi_gen gen;
->>         bool             has_gals;
->> +       u32              bus_sel; /* Balance some larbs to enter mmu0 or
->> mmu1 */
->>  };
->>
->>  struct mtk_smi_larb_gen {
->> @@ -72,8 +79,8 @@ struct mtk_smi {
->>         struct clk                      *clk_apb, *clk_smi;
->>         struct clk                      *clk_gals0, *clk_gals1;
->>         struct clk                      *clk_async; /*only needed by
->> mt2701*/
->> -       void __iomem                    *smi_ao_base;
->> -
->> +       void __iomem                    *smi_ao_base; /* only for gen1 */
->> +       void __iomem                    *base;        /* only for gen2 */
->>         const struct mtk_smi_common_plat *plat;
->>  };
->>
->> @@ -410,6 +417,8 @@ static int __maybe_unused mtk_smi_larb_suspend(struct
->> device *dev)
->>  static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
->>         .gen      = MTK_SMI_GEN2,
->>         .has_gals = true,
->> +       .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(5) |
->> +                   F_MMU1_LARB(7),
->>  };
->>
->>  static const struct of_device_id mtk_smi_common_of_ids[] = {
->> @@ -482,6 +491,11 @@ static int mtk_smi_common_probe(struct
->> platform_device *pdev)
->>                 ret = clk_prepare_enable(common->clk_async);
->>                 if (ret)
->>                         return ret;
->> +       } else {
->> +               res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +               common->base = devm_ioremap_resource(dev, res);
->> +               if (IS_ERR(common->base))
->> +                       return PTR_ERR(common->base);
->>         }
->>         pm_runtime_enable(dev);
->>         platform_set_drvdata(pdev, common);
->> @@ -497,6 +511,7 @@ static int mtk_smi_common_remove(struct
->> platform_device *pdev)
->>  static int __maybe_unused mtk_smi_common_resume(struct device *dev)
->>  {
->>         struct mtk_smi *common = dev_get_drvdata(dev);
->> +       u32 bus_sel = common->plat->bus_sel;
->>         int ret;
->>
->>         ret = mtk_smi_clk_enable(common);
->> @@ -504,6 +519,9 @@ static int __maybe_unused mtk_smi_common_resume(struct
->> device *dev)
->>                 dev_err(common->dev, "Failed to enable clock(%d).\n", ret);
->>                 return ret;
->>         }
->> +
->> +       if (common->plat->gen == MTK_SMI_GEN2 && bus_sel)
->> +               writel(bus_sel, common->base + SMI_BUS_SEL);
->>         return 0;
->>  }
->>
->> --
->> 1.9.1
->>
->>
-> 
+7560cc3ca7d9 ("iommu/vt-d: Fix lock inversion between iommu->lock and
+              device_domain_lock", 2019-05-27)
+
+More interestingly, it was trying to fix the inverted deadlock...
+
+The thing is that even if above commit is correct on the ordering (I
+still feel strange that we need to take a per-iommu lock before
+another global lock), that commit seems to be an incomplete fix
+because there's still other places that are using the other way round.
+
+When I read deeper into that commit message, it seems to be telling me
+that before reaching iommu_flush_dev_iotlb() we've got iommu lock
+somewhere but I cannot really understand how it happened because I
+cannot find a path that iommu lock is taken when reaching
+iommu_flush_dev_iotlb().  So I cannot understand how that lockdep
+warning message could trigger.
+
+I reverted that commit and now everything is good here (no long runs
+but at least previous deadlock issue is fixed).  And with that, IMHO
+we'll actually have the correct ordering in the whole repository that
+we'll take device_domain_lock before per iommu lock always.
+
+Is there anything I've missed on why we have had 7560cc3ca7d9?
+
+Thanks,
+
+-- 
+Peter Xu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
