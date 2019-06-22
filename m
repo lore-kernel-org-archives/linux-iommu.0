@@ -1,78 +1,69 @@
-Return-Path: <SRS0=QAQK=UU=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=H1gU=UV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 265C3C48BE3
-	for <iommu@archiver.kernel.org>; Fri, 21 Jun 2019 23:56:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B67BC43613
+	for <iommu@archiver.kernel.org>; Sat, 22 Jun 2019 02:42:32 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 01761206B6
-	for <iommu@archiver.kernel.org>; Fri, 21 Jun 2019 23:56:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01761206B6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1AEE720665
+	for <iommu@archiver.kernel.org>; Sat, 22 Jun 2019 02:42:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AEE720665
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AE5A11423;
-	Fri, 21 Jun 2019 23:56:07 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D35481425;
+	Sat, 22 Jun 2019 02:42:31 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4BE521421
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2857113D6
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 21 Jun 2019 23:56:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C297A102
+	Sat, 22 Jun 2019 02:42:30 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 922E927B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 21 Jun 2019 23:56:05 +0000 (UTC)
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	21 Jun 2019 16:56:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,402,1557212400"; d="scan'208";a="162822624"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-	by fmsmga007.fm.intel.com with ESMTP; 21 Jun 2019 16:56:03 -0700
-Date: Fri, 21 Jun 2019 16:55:41 -0700
-From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH v4 20/21] iommu/vt-d: hpet: Reserve an interrupt
-	remampping table entry for watchdog
-Message-ID: <20190621235541.GA25773@ranerica-svr.sc.intel.com>
-References: <1558660583-28561-21-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<alpine.DEB.2.21.1906162049300.1760@nanos.tec.linutronix.de>
-	<alpine.DEB.2.21.1906171007360.1760@nanos.tec.linutronix.de>
-	<CABPqkBTai76Bgb4E61tF-mJUkFNxVa4B8M2bxTEYVgBsuAANNQ@mail.gmail.com>
-	<alpine.DEB.2.21.1906172343120.1963@nanos.tec.linutronix.de>
-	<20190619084316.71ce5477@jacob-builder>
-	<alpine.DEB.2.21.1906211732330.5503@nanos.tec.linutronix.de>
-	<20190621103126.585ca6d3@jacob-builder>
-	<20190621113938.1679f329@jacob-builder>
-	<alpine.DEB.2.21.1906212201400.5503@nanos.tec.linutronix.de>
+	Sat, 22 Jun 2019 02:42:28 +0000 (UTC)
+X-UUID: 46f3b0ab22ef47108b56fa41695c34ec-20190622
+X-UUID: 46f3b0ab22ef47108b56fa41695c34ec-20190622
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 1842459820; Sat, 22 Jun 2019 10:42:21 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
+	(172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Sat, 22 Jun 2019 10:42:20 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Sat, 22 Jun 2019 10:42:19 +0800
+Message-ID: <1561171339.4850.6.camel@mhfsdcap03>
+Subject: Re: [PATCH v7 19/21] iommu/mediatek: Rename enable_4GB to dram_is_4gb
+From: Yong Wu <yong.wu@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Date: Sat, 22 Jun 2019 10:42:19 +0800
+In-Reply-To: <d932ded6-2e1c-f2d1-d3cf-8cb0cdbdbb0d@gmail.com>
+References: <1560169080-27134-1-git-send-email-yong.wu@mediatek.com>
+	<1560169080-27134-20-git-send-email-yong.wu@mediatek.com>
+	<9bf13c22-0c73-2950-2204-23d577976b03@gmail.com>
+	<1561039192.4021.23.camel@mhfsdcap03>
+	<d932ded6-2e1c-f2d1-d3cf-8cb0cdbdbb0d@gmail.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.1906212201400.5503@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: Kate Stewart <kstewart@linuxfoundation.org>,
-	"Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-	Tony Luck <tony.luck@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Jan Kiszka <jan.kiszka@siemens.com>, x86 <x86@kernel.org>,
-	Ricardo Neri <ricardo.neri@intel.com>,
-	Stephane Eranian <eranian@google.com>, LKML <linux-kernel@vger.kernel.org>,
-	Juergen Gross <jgross@suse.com>, Bjorn Helgaas <bhelgaas@google.com>,
-	iommu@lists.linux-foundation.org, Randy Dunlap <rdunlap@infradead.org>,
-	Jacob Pan <jacob.jun.pan@intel.com>,
-	Philippe Ombredanne <pombredanne@nexb.com>,
-	Andi Kleen <andi.kleen@intel.com>, Borislav Petkov <bp@suse.de>,
-	Ingo Molnar <mingo@kernel.org>, Wincy Van <fanwenyi0529@gmail.com>,
-	"Eric W. Biederman" <ebiederm@xmission.com>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>,
+	srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>, Tomasz
+	Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Rob
+	Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+	yingjoe.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -90,55 +81,129 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Jun 21, 2019 at 10:05:01PM +0200, Thomas Gleixner wrote:
-> On Fri, 21 Jun 2019, Jacob Pan wrote:
-> > On Fri, 21 Jun 2019 10:31:26 -0700
-> > Jacob Pan <jacob.jun.pan@intel.com> wrote:
-> > 
-> > > On Fri, 21 Jun 2019 17:33:28 +0200 (CEST)
-> > > Thomas Gleixner <tglx@linutronix.de> wrote:
-> > > 
-> > > > On Wed, 19 Jun 2019, Jacob Pan wrote:  
-> > > > > On Tue, 18 Jun 2019 01:08:06 +0200 (CEST)
-> > > > > Thomas Gleixner <tglx@linutronix.de> wrote:    
-> > > > > > 
-> > > > > > Unless this problem is not solved and I doubt it can be solved
-> > > > > > after talking to IOMMU people and studying manuals,    
-> > > > >
-> > > > > I agree. modify irte might be done with cmpxchg_double() but the
-> > > > > queued invalidation interface for IRTE cache flush is shared with
-> > > > > DMA and requires holding a spinlock for enque descriptors, QI tail
-> > > > > update etc.
-> > > > > 
-> > > > > Also, reserving & manipulating IRTE slot for hpet via backdoor
-> > > > > might not be needed if the HPET PCI BDF (found in ACPI) can be
-> > > > > utilized. But it might need more work to add a fake PCI device for
-> > > > > HPET.    
-> > > > 
-> > > > What would PCI/BDF solve?  
-> > > I was thinking if HPET is a PCI device then it can naturally
-> > > gain slots in IOMMU remapping table IRTEs via PCI MSI code. Then
-> > > perhaps it can use the IRQ subsystem to set affinity etc. w/o
-> > > directly adding additional helper functions in IRQ remapping code. I
-> > > have not followed all the discussions, just a thought.
-> > > 
-> > I looked at the code again, seems the per cpu HPET code already taken
-> > care of HPET MSI management. Why can't we use IR-HPET-MSI chip and
-> > domain to allocate and set affinity etc.?
-> > Most APIC timer has ARAT not enough per cpu HPET, so per cpu HPET is
-> > not used mostly.
+
+On Fri, 2019-06-21 at 12:10 +0200, Matthias Brugger wrote:
 > 
-> Sure, we can use that, but that does not allow to move the affinity from
-> NMI context either. Same issue with the IOMMU as with the other hack.
+> On 20/06/2019 15:59, Yong Wu wrote:
+> > On Tue, 2019-06-18 at 18:06 +0200, Matthias Brugger wrote:
+> >>
+> >> On 10/06/2019 14:17, Yong Wu wrote:
+> >>> This patch only rename the variable name from enable_4GB to
+> >>> dram_is_4gb for readable.
+> >>
+> >> From my understanding this is true when available RAM > 4GB so I think the name
+> >> should be something like dram_bigger_4gb otherwise it may create confusion again.
+> > 
+> > Strictly, It is not "dram_bigger_4gb". actually if the dram size is over
+> > 3GB (the first 1GB is the register space), the "4GB mode" will be
+> > enabled. then how about the name "dram_enable_32bit"?(the PA 32bit will
+> > be enabled in the 4GB mode.)
+> 
+> Ok I think dram_is_4gb is ok then. But I'd suggest to add an explanation above
+> the struct mtk_iommu_data to explain exactly what this means.
+> 
+> >      
+> > There is another option, please see the last part in [1] suggested by
+> > Evan, something like below:
+> > ----
+> > data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
+> > if (!data->plat_data->has_4gb_mode)
+> >     data->enable_4GB = false;
+> > Then mtk_iommu_map would only have:
+> >     if (data->enable_4GB)
+> >          paddr |= BIT_ULL(32);
+> > ----
+> 
+> I think that's a nicer way to handle it.
 
-If I understand Thomas' point correctly, the problem is having to take
-lock in NMI context to update the IRTE for the HPET; both as in my hack
-and in the generic irq code. The problem is worse when using the generic
-irq code as there are several layers and several locks that need to be
-handled.
+Thanks your feedback. then I will use this way.
 
-Thanks and BR,
-Ricardo
+> 
+> Regards,
+> Matthias
+> 
+> > 
+> > Which one do you prefer?      
+> >       
+> > [1] https://lore.kernel.org/patchwork/patch/1028421/
+> > 
+> >>
+> >> Also from my point of view this patch should be done before
+> >> "[PATCH 06/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB Mode"
+> > 
+> > OK.
+> > 
+> >>
+> >> Regards,
+> >> Matthias
+> >>
+> >>>
+> >>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> >>> Reviewed-by: Evan Green <evgreen@chromium.org>
+> >>> ---
+> >>>  drivers/iommu/mtk_iommu.c | 10 +++++-----
+> >>>  drivers/iommu/mtk_iommu.h |  2 +-
+> >>>  2 files changed, 6 insertions(+), 6 deletions(-)
+> >>>
+> >>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> >>> index 86158d8..67cab2d 100644
+> >>> --- a/drivers/iommu/mtk_iommu.c
+> >>> +++ b/drivers/iommu/mtk_iommu.c
+> >>> @@ -382,7 +382,7 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+> >>>  	int ret;
+> >>>  
+> >>>  	/* The "4GB mode" M4U physically can not use the lower remap of Dram. */
+> >>> -	if (data->plat_data->has_4gb_mode && data->enable_4GB)
+> >>> +	if (data->plat_data->has_4gb_mode && data->dram_is_4gb)
+> >>>  		paddr |= BIT_ULL(32);
+> >>>  
+> >>>  	spin_lock_irqsave(&dom->pgtlock, flags);
+> >>> @@ -554,13 +554,13 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+> >>>  	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
+> >>>  
+> >>>  	if (data->plat_data->m4u_plat == M4U_MT8173)
+> >>> -		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
+> >>> +		regval = (data->protect_base >> 1) | (data->dram_is_4gb << 31);
+> >>>  	else
+> >>>  		regval = lower_32_bits(data->protect_base) |
+> >>>  			 upper_32_bits(data->protect_base);
+> >>>  	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
+> >>>  
+> >>> -	if (data->enable_4GB && data->plat_data->has_vld_pa_rng) {
+> >>> +	if (data->dram_is_4gb && data->plat_data->has_vld_pa_rng) {
+> >>>  		/*
+> >>>  		 * If 4GB mode is enabled, the validate PA range is from
+> >>>  		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
+> >>> @@ -611,8 +611,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >>>  		return -ENOMEM;
+> >>>  	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+> >>>  
+> >>> -	/* Whether the current dram is over 4GB */
+> >>> -	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
+> >>> +	/* Whether the current dram is 4GB. */
+> >>> +	data->dram_is_4gb = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
+> >>>  
+> >>>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >>>  	data->base = devm_ioremap_resource(dev, res);
+> >>> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> >>> index 753266b..e8114b2 100644
+> >>> --- a/drivers/iommu/mtk_iommu.h
+> >>> +++ b/drivers/iommu/mtk_iommu.h
+> >>> @@ -65,7 +65,7 @@ struct mtk_iommu_data {
+> >>>  	struct mtk_iommu_domain		*m4u_dom;
+> >>>  	struct iommu_group		*m4u_group;
+> >>>  	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
+> >>> -	bool                            enable_4GB;
+> >>> +	bool                            dram_is_4gb;
+> >>>  	bool				tlb_flush_active;
+> >>>  
+> >>>  	struct iommu_device		iommu;
+> >>>
+> > 
+> > 
+
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
