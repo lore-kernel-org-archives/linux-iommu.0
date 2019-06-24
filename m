@@ -2,51 +2,65 @@ Return-Path: <SRS0=0Jvo=UX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92FBC43613
-	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 06:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0989AC48BE8
+	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 07:16:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BBBE321670
-	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 06:24:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BBBE321670
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id DB01F2083D
+	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 07:16:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB01F2083D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8095DC21;
-	Mon, 24 Jun 2019 06:24:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F7C6265;
+	Mon, 24 Jun 2019 07:16:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4FC60BA9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 288C12C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 24 Jun 2019 06:24:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D3149710
+	Mon, 24 Jun 2019 07:16:43 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com
+	[209.85.167.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 68378710
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 24 Jun 2019 06:24:45 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 19E9568AFE; Mon, 24 Jun 2019 08:24:15 +0200 (CEST)
-Date: Mon, 24 Jun 2019 08:24:14 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [RFC PATCH v7 5/5] mmc: queue: Use bigger segments if DMA MAP
-	layer can merge the segments
-Message-ID: <20190624062414.GD2989@lst.de>
-References: <1561020610-953-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1561020610-953-6-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	Mon, 24 Jun 2019 07:16:42 +0000 (UTC)
+Received: by mail-oi1-f193.google.com with SMTP id a128so9049310oib.1
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 24 Jun 2019 00:16:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=+VaP9DcJntoExkzdbDVYZcYt6yhIrCESVYXgeB0JPho=;
+	b=F6lcQryV2i4cCY7eoT7Xh3/I+tVO5A6tESI35WZ25C/zWjuUM8Fpk9q085dp+Rz8nU
+	in4YcETVNvmmPyce+D+GCnBkUZKxDa4Vay7TApdd4FkGHTJXl74G29vmuoTM7w/YGpBl
+	wkgisKjTKuWNW4+0HsO3+2W9ooL6AZta5YOwebAZOv/4n50lzMjZXaCf0TISRWuinV0S
+	91TpfOIU/Jgj2nkR0P9CEK+ERgnT3cptDPS0KWSkbRECB2s/U16dK+i+Toy7LzkA+0hh
+	5O87Z8eN5H5BTqT6EFhEeFrtD7eclcA3+clEyDZBy1PsOox/kzc6SF7wVxVxfwgzP8jV
+	h7eA==
+X-Gm-Message-State: APjAAAV+wJYAxXMEZZWFbo29cQvTy8idEXhw/k4zkf1SEGp9q3CW5eh0
+	YLHQG5cB9epgJ78AXFkNDdlM+BE644ZGbf8qaEs=
+X-Google-Smtp-Source: APXvYqwjNpJZS5JGDSd4vFCHzeEA5Jvi4zbkSDl1ADx6436Ln2bc4donTa2LIBvyHioB/b/v4b+ZniLu5PjJQ3MIyuw=
+X-Received: by 2002:aca:c4d5:: with SMTP id u204mr9868425oif.131.1561360601551;
+	Mon, 24 Jun 2019 00:16:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1561020610-953-6-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: axboe@kernel.dk, linux-renesas-soc@vger.kernel.org, ulf.hansson@linaro.org,
-	linux-mmc@vger.kernel.org, linux-block@vger.kernel.org,
-	wsa+renesas@sang-engineering.com,
-	iommu@lists.linux-foundation.org, robin.murphy@arm.com, hch@lst.de
+References: <20190614102126.8402-1-hch@lst.de>
+In-Reply-To: <20190614102126.8402-1-hch@lst.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 24 Jun 2019 09:16:30 +0200
+Message-ID: <CAMuHMdUbuTc+MWqDFw=RnYxtiNQPQkzJ91KDuAQbhMq533tBCQ@mail.gmail.com>
+Subject: Re: [RFC] switch m68k to use the generic remapping DMA allocator
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-m68k <linux-m68k@lists.linux-m68k.org>,
+	Greg Ungerer <gerg@linux-m68k.org>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,52 +78,50 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Jun 20, 2019 at 05:50:10PM +0900, Yoshihiro Shimoda wrote:
-> When the max_segs of a mmc host is smaller than 512, the mmc
-> subsystem tries to use 512 segments if DMA MAP layer can merge
-> the segments, and then the mmc subsystem exposes such information
-> to the block layer by using blk_queue_can_use_dma_map_merging().
-> 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
->  drivers/mmc/core/queue.c | 35 ++++++++++++++++++++++++++++++++---
->  include/linux/mmc/host.h |  1 +
->  2 files changed, 33 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/mmc/core/queue.c b/drivers/mmc/core/queue.c
-> index 92900a0..ab0ecc6 100644
-> --- a/drivers/mmc/core/queue.c
-> +++ b/drivers/mmc/core/queue.c
-> @@ -24,6 +24,8 @@
->  #include "card.h"
->  #include "host.h"
->  
-> +#define MMC_DMA_MAP_MERGE_SEGMENTS	512
-> +
->  static inline bool mmc_cqe_dcmd_busy(struct mmc_queue *mq)
->  {
->  	/* Allow only 1 DCMD at a time */
-> @@ -196,6 +198,12 @@ static void mmc_queue_setup_discard(struct request_queue *q,
->  		blk_queue_flag_set(QUEUE_FLAG_SECERASE, q);
->  }
->  
-> +static unsigned int mmc_get_max_segments(struct mmc_host *host)
-> +{
-> +	return host->can_dma_map_merge ? MMC_DMA_MAP_MERGE_SEGMENTS :
-> +					 host->max_segs;
+Hi Christoph,
 
-I personally don't like superflous use of ? : if an if would be more
-obvious:
+On Fri, Jun 14, 2019 at 12:21 PM Christoph Hellwig <hch@lst.de> wrote:
+> can you take a look at the (untested) patches below?  They convert m68k
+> to use the generic remapping DMA allocator, which is also used by
+> arm64 and csky.
 
-	if (host->can_dma_map_merge)
-		return MMC_DMA_MAP_MERGE_SEGMENTS;
-	return host->max_segs;
+When building for Sun-3:
 
-but that is really just a nitpick and for the mmc maintainer to decide.
+kernel/dma/remap.o: In function `arch_dma_alloc':
+remap.c:(.text+0x316): undefined reference to `__dma_direct_alloc_pages'
+remap.c:(.text+0x32a): undefined reference to `arch_dma_prep_coherent'
+remap.c:(.text+0x34e): undefined reference to `arch_dma_mmap_pgprot'
+remap.c:(.text+0x378): undefined reference to `__dma_direct_free_pages'
+remap.c:(.text+0x3f4): undefined reference to `arch_dma_prep_coherent'
+remap.c:(.text+0x40a): undefined reference to `__dma_direct_alloc_pages'
+kernel/dma/remap.o: In function `arch_dma_free':
+remap.c:(.text+0x446): undefined reference to `__dma_direct_free_pages'
+remap.c:(.text+0x4a8): undefined reference to `__dma_direct_free_pages'
+kernel/dma/remap.o: In function `dma_atomic_pool_init':
+remap.c:(.init.text+0x66): undefined reference to `arch_dma_prep_coherent'
 
-Otherwise looks good:
+Doing
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+-       select DMA_DIRECT_REMAP if MMU && !COLDFIRE
++       select DMA_DIRECT_REMAP if MMU && !COLDFIRE && !SUN3
+
+in arch/m68k/Kconfig fixes the build.
+
+Alternatively, you could use:
+
+-       select DMA_DIRECT_REMAP if MMU && !COLDFIRE
++       select DMA_DIRECT_REMAP if HAS_DMA && MMU && !COLDFIRE
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
