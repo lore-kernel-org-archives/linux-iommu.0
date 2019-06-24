@@ -2,61 +2,74 @@ Return-Path: <SRS0=0Jvo=UX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8E6C43613
-	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 15:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86338C43613
+	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 17:03:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A2D320673
-	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 15:23:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A2D320673
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5440B20645
+	for <iommu@archiver.kernel.org>; Mon, 24 Jun 2019 17:03:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="flxl+4Ya"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5440B20645
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1DE1ECA6;
-	Mon, 24 Jun 2019 15:23:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 081BD898;
+	Mon, 24 Jun 2019 17:03:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9C4C2AEF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F30202C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 24 Jun 2019 15:23:43 +0000 (UTC)
+	Mon, 24 Jun 2019 17:03:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 3DA197FB
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7F1107FB
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 24 Jun 2019 15:23:43 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C424A2B;
-	Mon, 24 Jun 2019 08:23:42 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5250A3F71E;
-	Mon, 24 Jun 2019 08:23:41 -0700 (PDT)
-Subject: Re: [PATCH v4 08/22] iommu: Introduce attach/detach_pasid_table API
-To: Auger Eric <eric.auger@redhat.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1560087862-57608-9-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190618164128.0000204f@huawei.com>
-	<c6e2d65b-8181-3627-f454-d491a738b6ee@redhat.com>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <e23414a4-698d-e7ed-d1eb-f680992e7deb@arm.com>
-Date: Mon, 24 Jun 2019 16:23:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Mon, 24 Jun 2019 17:03:54 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 5CD1720645;
+	Mon, 24 Jun 2019 17:03:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1561395834;
+	bh=jD2uK5kCwexPBSnlloDzcLqIftPyzxTGZFnE/+MKxQM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=flxl+4YatLVLP2cePA3e4X7Wh66OFz4Df7unTW3gX7IS3uVUqtmUW+bqjszBy3MvG
+	B5+DWZMnFBCVb3RpJ84i30TPyvr0bD5egtvEfqu+i+MV+3OoTkg4GQIa76HRa4YYRU
+	Rrf1OiPhakYPRzxa7pXFv2aNJhrv/KGzo07Sm2To=
+Date: Mon, 24 Jun 2019 18:03:49 +0100
+From: Will Deacon <will@kernel.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: Add support to handle Qcom's
+	wait-for-safe logic
+Message-ID: <20190624170348.7dncuc5qezqeyvq2@willie-the-truck>
+References: <20190612071554.13573-1-vivek.gautam@codeaurora.org>
+	<20190612071554.13573-4-vivek.gautam@codeaurora.org>
+	<20190614040520.GK22737@tuxbook-pro>
+	<3e1f5e03-6448-8730-056d-fc47bdd71b3f@codeaurora.org>
+	<20190618175218.GH4270@fuggles.cambridge.arm.com>
+	<CAFp+6iEynLa=Jt_-oAwt4zmzxzhEXtWNCmghz6rFzcpQVGwrMg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c6e2d65b-8181-3627-f454-d491a738b6ee@redhat.com>
-Content-Language: en-US
-Cc: Yi L <yi.l.liu@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Raj Ashok <ashok.raj@intel.com>, Liu@mail.linuxfoundation.org,
-	LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <CAFp+6iEynLa=Jt_-oAwt4zmzxzhEXtWNCmghz6rFzcpQVGwrMg@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+	<devicetree@vger.kernel.org>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <will.deacon@arm.com>,
+	open list <linux-kernel@vger.kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	David Brown <david.brown@linaro.org>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	robh+dt <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,47 +87,90 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 24/06/2019 16:06, Auger Eric wrote:
-> Hi,
-> 
-> On 6/18/19 5:41 PM, Jonathan Cameron wrote:
->> On Sun, 9 Jun 2019 06:44:08 -0700
->> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
->>
->>> In virtualization use case, when a guest is assigned
->>> a PCI host device, protected by a virtual IOMMU on the guest,
->>> the physical IOMMU must be programmed to be consistent with
->>> the guest mappings. If the physical IOMMU supports two
->>> translation stages it makes sense to program guest mappings
->>> onto the first stage/level (ARM/Intel terminology) while the host
->>> owns the stage/level 2.
->>>
->>> In that case, it is mandated to trap on guest configuration
->>> settings and pass those to the physical iommu driver.
->>>
->>> This patch adds a new API to the iommu subsystem that allows
->>> to set/unset the pasid table information.
->>>
->>> A generic iommu_pasid_table_config struct is introduced in
->>> a new iommu.h uapi header. This is going to be used by the VFIO
->>> user API.
->>
->> Another case where strictly speaking stuff is introduced that this series
->> doesn't use.  I don't know what the plans are to merge the various
->> related series though so this might make sense in general. Right now
->> it just bloats this series a bit..
-> 
-> I am now the only user of this API in
-> [PATCH v8 00/29] SMMUv3 Nested Stage Setup
-> (https://patchwork.kernel.org/cover/10961733/).
-> 
-> This can live in this series or Jean-Philippe do you intend to keep on
-> maintaining it in your api branch?
+[+Krishna]
 
-No, I think it makes sense to keep it within your series
+Hi Vivek,
 
-Thanks,
-Jean
+On Mon, Jun 24, 2019 at 03:58:32PM +0530, Vivek Gautam wrote:
+> On Tue, Jun 18, 2019 at 11:22 PM Will Deacon <will.deacon@arm.com> wrote:
+> > On Fri, Jun 14, 2019 at 02:48:07PM +0530, Vivek Gautam wrote:
+> > > On 6/14/2019 9:35 AM, Bjorn Andersson wrote:
+> > > > On Wed 12 Jun 00:15 PDT 2019, Vivek Gautam wrote:
+> > > > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > > > > index 0ad086da399c..3c3ad43eda97 100644
+> > > > > --- a/drivers/iommu/arm-smmu.c
+> > > > > +++ b/drivers/iommu/arm-smmu.c
+> > > > > @@ -39,6 +39,7 @@
+> > > > >   #include <linux/pci.h>
+> > > > >   #include <linux/platform_device.h>
+> > > > >   #include <linux/pm_runtime.h>
+> > > > > +#include <linux/qcom_scm.h>
+> > > > >   #include <linux/slab.h>
+> > > > >   #include <linux/spinlock.h>
+> > > > > @@ -177,6 +178,7 @@ struct arm_smmu_device {
+> > > > >           u32                             features;
+> > > > >   #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+> > > > > +#define ARM_SMMU_OPT_QCOM_FW_IMPL_SAFE_ERRATA (1 << 1)
+> > > > >           u32                             options;
+> > > > >           enum arm_smmu_arch_version      version;
+> > > > >           enum arm_smmu_implementation    model;
+> > > > > @@ -262,6 +264,7 @@ static bool using_legacy_binding, using_generic_binding;
+> > > > >   static struct arm_smmu_option_prop arm_smmu_options[] = {
+> > > > >           { ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
+> > > > > + { ARM_SMMU_OPT_QCOM_FW_IMPL_SAFE_ERRATA, "qcom,smmu-500-fw-impl-safe-errata" },
+> > > > This should be added to the DT binding as well.
+> > >
+> > > Ah right. I missed that. Will add this and respin unless Robin and Will have
+> > > concerns with this change.
+> >
+> > My only concern really is whether it's safe for us to turn this off. It's
+> > clear that somebody went to a lot of effort to add this extra goodness to
+> > the IP, but your benchmarks suggest they never actually tried it out after
+> > they finished building it.
+> >
+> > Is there some downside I'm not seeing from disabling this stuff?
+> 
+> This wait-for-safe is a TLB invalidation enhancement to help display
+> and camera devices.
+> The SMMU hardware throttles the invalidations so that clients such as
+> display and camera can indicate when to start the invalidation.
+> So the SMMU essentially reduces the rate at which invalidations are
+> serviced from its queue. This also throttles the invalidations from
+> other masters too.
+> 
+> On sdm845, the software is expected to serialize the invalidation
+> command loading into SMMU invalidation FIFO using hardware locks
+> (downstream code [2]), and is also expected to throttle non-real time
+> clients while waiting for SAFE==1 (downstream code[2]). We don't do
+> any of these yet, and as per my understanding as this wait-for-safe is
+> enabled by the bootloader in a one time config, this logic reduces
+> performance of devices such as usb and ufs.
+> 
+> There's isn't any downside from disabling this logic until we have all
+> the pieces together from downstream in upstream kernels, and until we
+> have sdm845 devices that are running with full display/gfx stack
+> running. That's when we plan to revisit this and enable all the pieces
+> to get display and USB/UFS working with their optimum performance.
+
+Generally, I'd agree that approaching this incrementally makes sense, but
+in this case you're adding new device-tree properties
+("qcom,smmu-500-fw-impl-safe-errata") in order to do so, which seems
+questionable if they're only going to be used in the short-term and will
+be obsolete once Linux knows how to drive the device properly.
+
+Instead, I think this needs to be part of a separate file that is maintained
+by you, which follows on from the work that Krishna is doing for nvidia
+built on top of Robin's prototype patches:
+
+http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/smmu-impl
+
+Once we have that, you can key this behaviour off the compatible string
+rather than having to add quirk properties to reflect the transient needs of
+Linux.
+
+Krishna -- how have you been getting on with the branch above?
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
