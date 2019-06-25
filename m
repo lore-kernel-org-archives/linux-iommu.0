@@ -2,63 +2,112 @@ Return-Path: <SRS0=85Jd=UY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A2B4C48BD4
-	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 11:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C51CEC48BD4
+	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 12:24:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6076D215EA
-	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 11:56:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9BAF9214DA
+	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 12:24:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iqPdjIMf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6076D215EA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="l69nHg8u"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9BAF9214DA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gmx.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 32E78EC1;
-	Tue, 25 Jun 2019 11:56:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 58116A49;
+	Tue, 25 Jun 2019 12:24:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0EDF3EC0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ACD20949
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 25 Jun 2019 11:56:53 +0000 (UTC)
+	Tue, 25 Jun 2019 12:24:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 21C0E834
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 907187FD
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 25 Jun 2019 11:56:52 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 46EE3214DA;
-	Tue, 25 Jun 2019 11:56:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1561463811;
-	bh=4pgnpx/fvE/UxGAd4e8raS3xLty+N/evA6nbzvo1QPg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iqPdjIMfWjlQAMU8mSxYeyshLvYtLohzT6HDUE2plVElRE3/d9bc7VtGaZfiqWJqP
-	VfFhcK7Zxn4BhEybY0uglGZi8TdjwyWlbxU9GxIz0B9Tcym+YxS6UBh6iiAsM6st9o
-	ibAjtXouS/WAzFt9sRpwtLGGxft/WLJNWk4ssEHk=
-Date: Tue, 25 Jun 2019 12:56:47 +0100
-From: Will Deacon <will@kernel.org>
-To: Will Deacon <will.deacon@arm.com>, bjorn.andersson@linaro.org
-Subject: Re: [PATCH] iommu: io-pgtable: Support non-coherent page tables
-Message-ID: <20190625115646.pgsuhz6dza5bsa6q@willie-the-truck>
-References: <20190515233234.22990-1-bjorn.andersson@linaro.org>
-	<20190618173929.GG4270@fuggles.cambridge.arm.com>
-	<20190624115349.f62uqypyt7l73skf@willie-the-truck>
+	Tue, 25 Jun 2019 12:24:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+	s=badeba3b8450; t=1561465428;
+	bh=lXm8L+HzKH4d1mexizCG9D/l2EEEHxMhxU58Jy+QVgI=;
+	h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+	b=l69nHg8uMeUijlLFX42gE3vl0S4pCco4bLsthCmG3Y8OxoxuJjE/inb7oJ2k8MCE+
+	/x4kYXq4DeYX1OUDoJH5ahj+vNm6lW2k7qRXkIt9tgW7QZ4K9E9PuPyx9tnYjI1dfO
+	1qsFRpm7zuqKV5q2KG/LsR5S3KmxCc+efsECkBEQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.144.45]) by mail.gmx.com (mrgmx102
+	[212.227.17.168]) with ESMTPSA (Nemesis) id 0LgvEY-1iK3O60j8I-00oFLO;
+	Tue, 25 Jun 2019 14:23:48 +0200
+Subject: Re: [PATCH 5/7] dma-direct: handle DMA_ATTR_NON_CONSISTENT in common
+	code
+To: Christoph Hellwig <hch@lst.de>, Vineet Gupta <vgupta@synopsys.com>
+References: <20190614144431.21760-1-hch@lst.de>
+	<20190614144431.21760-6-hch@lst.de>
+From: Helge Deller <deller@gmx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=deller@gmx.de; keydata=
+	xsBNBFDPIPYBCAC6PdtagIE06GASPWQJtfXiIzvpBaaNbAGgmd3Iv7x+3g039EV7/zJ1do/a
+	y9jNEDn29j0/jyd0A9zMzWEmNO4JRwkMd5Z0h6APvlm2D8XhI94r/8stwroXOQ8yBpBcP0yX
+	+sqRm2UXgoYWL0KEGbL4XwzpDCCapt+kmarND12oFj30M1xhTjuFe0hkhyNHkLe8g6MC0xNg
+	KW3x7B74Rk829TTAtj03KP7oA+dqsp5hPlt/hZO0Lr0kSAxf3kxtaNA7+Z0LLiBqZ1nUerBh
+	OdiCasCF82vQ4/y8rUaKotXqdhGwD76YZry9AQ9p6ccqKaYEzWis078Wsj7p0UtHoYDbABEB
+	AAHNHEhlbGdlIERlbGxlciA8ZGVsbGVyQGdteC5kZT7CwJIEEwECADwCGwMGCwkIBwMCBhUI
+	AgkKCwQWAgMBAh4BAheAFiEE9M/0wAvkPPtRU6Boh8nBUbUeOGQFAlrHzIICGQEACgkQh8nB
+	UbUeOGT1GAgAt+EeoHB4DbAx+pZoGbBYp6ZY8L6211n8fSi7wiwgM5VppucJ+C+wILoPkqiU
+	+ZHKlcWRbttER2oBUvKOt0+yDfAGcoZwHS0P+iO3HtxR81h3bosOCwek+TofDXl+TH/WSQJa
+	iaitof6iiPZLygzUmmW+aLSSeIAHBunpBetRpFiep1e5zujCglKagsW78Pq0DnzbWugGe26A
+	288JcK2W939bT1lZc22D9NhXXRHfX2QdDdrCQY7UsI6g/dAm1d2ldeFlGleqPMdaaQMcv5+E
+	vDOur20qjTlenjnR/TFm9tA1zV+K7ePh+JfwKc6BSbELK4EHv8J8WQJjfTphakYLVM7ATQRQ
+	zyD2AQgA2SJJapaLvCKdz83MHiTMbyk8yj2AHsuuXdmB30LzEQXjT3JEqj1mpvcEjXrX1B3h
+	+0nLUHPI2Q4XWRazrzsseNMGYqfVIhLsK6zT3URPkEAp7R1JxoSiLoh4qOBdJH6AJHex4CWu
+	UaSXX5HLqxKl1sq1tO8rq2+hFxY63zbWINvgT0FUEME27Uik9A5t8l9/dmF0CdxKdmrOvGMw
+	T770cTt76xUryzM3fAyjtOEVEglkFtVQNM/BN/dnq4jDE5fikLLs8eaJwsWG9k9wQUMtmLpL
+	gRXeFPRRK+IT48xuG8rK0g2NOD8aW5ThTkF4apznZe74M7OWr/VbuZbYW443QQARAQABwsBf
+	BBgBAgAJBQJQzyD2AhsMAAoJEIfJwVG1HjhkNTgH/idWz2WjLE8DvTi7LvfybzvnXyx6rWUs
+	91tXUdCzLuOtjqWVsqBtSaZynfhAjlbqRlrFZQ8i8jRyJY1IwqgvHP6PO9s+rIxKlfFQtqhl
+	kR1KUdhNGtiI90sTpi4aeXVsOyG3572KV3dKeFe47ALU6xE5ZL5U2LGhgQkbjr44I3EhPWc/
+	lJ/MgLOPkfIUgjRXt0ZcZEN6pAMPU95+u1N52hmqAOQZvyoyUOJFH1siBMAFRbhgWyv+YE2Y
+	ZkAyVDL2WxAedQgD/YCCJ+16yXlGYGNAKlvp07SimS6vBEIXk/3h5Vq4Hwgg0Z8+FRGtYZyD
+	KrhlU0uMP9QTB5WAUvxvGy8=
+Message-ID: <3eb32e0b-5aa4-fe1e-e581-038750e11cef@gmx.de>
+Date: Tue, 25 Jun 2019 14:23:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190624115349.f62uqypyt7l73skf@willie-the-truck>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: linux-arm-msm@vger.kernel.org, Vivek Gautam <vgautam@qti.qualcomm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190614144431.21760-6-hch@lst.de>
+Content-Language: en-US
+X-Provags-ID: V03:K1:nfaGv5spT8x7rf7B/nqBzz4jCb0tl88kVqyS0ePi/a46YeoZLiC
+	pvu/LChtKCtOyQwnbu/2PGhxw+jWzpXSKWioxGckDeya97Lx3cwoH32FkVnTaavmTpoqgZ4
+	IRrz56RXE0L7jZuB4moLknQ4guLpgGgbOucwaD02ongelV/zRy9lhHLhKYjt96pGZxBY0p0
+	erPXQlmGcA/bkLH9TAUMQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/MBv0FfBXkA=:BduY4+NJG7nwJq9PtPoBTJ
+	fTTuR9z7MSN0d3rWITsrByvEPjWNvzKHp9lM9xFgiRC28d1KXg3oosND34Ftnav0+KnjxgQ+h
+	hcalc7K7bep/1l4etpzwLXrp1UG8ndNHiDteWzAmJlCX5g4zZj+lp0jQiqKtnZKbIe8X//SZ1
+	4yVspbAa9YUDUc3+QIW99a8FED92dc/PXAFKcsVGjb8fuBIGWU+X1B2tZVJx1dGdoYyhlatdA
+	VvNdQhZ9Bb5QKTTo1iTzw7Hn7YN9bp7rkjmClcX1M9UtTj+PfDXaJLafZXzRzgn4rsyL2SELO
+	MeLlIHcO02IeRckoLdwR/YIvbabZKFpfT4nI97tkvKBeyyIq4uxvK0XMFCwESULGopsEFjNQx
+	HoxapufaLj+kxHlLcQP+5JeeONvE1Q4RlFkCFGkR9wQpAXBNI2On9rYvOnVW1rZWwH9k7+FwT
+	90JghnpVEQLuFIh3qOb/tR4AC5NAkV3hlB2q2/vVEOKplXQukrEJUQo+1f5BHbcbb6hPmSZLE
+	9+7ipBdGpX6MtC9uqMcBHn2sOBx1geO92dL+KouOAQRsvuKn+kho4/uuxAwJ6Y5mb2CvxWNDm
+	7L4FMhKzyKEDimWpN1DVjVNrzOPQmShx7mXPUAlYlyvAZUBddO8anVXBaladLwVcuge/PGg/S
+	iBDdVrrIW6hOS4UA2o5IR0G02YwHFr+TzPCZLCEc+bb+RX0sCMquyOr7fPOndF6YuyQiztAId
+	c1x0LmT6l6kqGp6Kov1MzkqQGnm6NWLUJeZznwH16Q3blnlMa4P3mtktWiOzC9ZayMKouMOZP
+	0xem64tk2R14YA3Pu7xQoR33qXzCATI8rNFUibKLxoD69gJpqTQ1NLak44QlVFlpfONBrLsk9
+	Lr7fEerEo6ThYS1Yj1UkyMGCImkgueEPPDL7p6/Ix7t2SYoP0hyuA0J/kztpjlGNDuc8NLe6W
+	1DZykvB+UWifUpEQYoEsW62d0NRueG8ajnettwCt3hLas6jPFQfsqJssn5WHG8Cc6KVxzsbXY
+	xtFACec6J8brBbjsvHcB4UqB5JHjaUBvvrzs4plT0+jvz8PXpQklKxk0F9myO6pIqmuYqqDK1
+	fi4AAjPLS9NDgI=
+Cc: Jonas Bonn <jonas@southpole.se>, Vladimir Murzin <vladimir.murzin@arm.com>,
+	linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+	iommu@lists.linux-foundation.org, openrisc@lists.librecores.org,
+	Stafford Horne <shorne@gmail.com>, linux-snps-arc@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,323 +125,128 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jun 24, 2019 at 12:53:49PM +0100, Will Deacon wrote:
-> On Tue, Jun 18, 2019 at 06:39:33PM +0100, Will Deacon wrote:
-> > On Wed, May 15, 2019 at 04:32:34PM -0700, Bjorn Andersson wrote:
-> > > Describe the memory related to page table walks as non-cachable for iommu
-> > > instances that are not DMA coherent.
-> > > 
-> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > ---
-> > >  drivers/iommu/io-pgtable-arm.c | 12 +++++++++---
-> > >  1 file changed, 9 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > > index 4e21efbc4459..68ff22ffd2cb 100644
-> > > --- a/drivers/iommu/io-pgtable-arm.c
-> > > +++ b/drivers/iommu/io-pgtable-arm.c
-> > > @@ -803,9 +803,15 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> > >  		return NULL;
-> > >  
-> > >  	/* TCR */
-> > > -	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > > -	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
-> > > -	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
-> > > +	if (cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) {
-> > > +		reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > > +		      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
-> > > +		      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
-> > > +	} else {
-> > > +		reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > 
-> > Nit: this should be outer-shareable (ARM_LPAE_TCR_SH_OS).
-> > 
-> > > +		      (ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT) |
-> > > +		      (ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_ORGN0_SHIFT);
-> > > +	}
-> > 
-> > Should we also be doing something similar for the short-descriptor code
-> > in io-pgtable-arm-v7s.c? Looks like you just need to use ARM_V7S_RGN_NC
-> > instead of ARM_V7S_RGN_WBWA when initialising ttbr0 for non-coherent
-> > SMMUs.
-> 
-> Do you plan to respin this? I'll need it this week if you're shooting for
-> 5.3.
+On 14.06.19 16:44, Christoph Hellwig wrote:
+> Only call into arch_dma_alloc if we require an uncached mapping,
+> and remove the parisc code manually doing normal cached
+> DMA_ATTR_NON_CONSISTENT allocations.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-I started having a crack at this myself, but in doing so I realised that
-using IO_PGTABLE_QUIRK_NO_DMA for this isn't quite right based on its
-current description. When that flag is set, we can rely on the page-table walker
-being coherent, but I don't think it works the other way around: you can't
-rely on the flag being clear meaning that the page-table walker is not
-coherent.
+Acked-by: Helge Deller <deller@gmx.de> # parisc
 
-Ideally, we'd use something like is_device_dma_coherent, but that's a Xen
-thing and it doesn't look reliable for the IOMMU.
+Boot-tested 32-bit kernel on PCX-L and PCX-W2 machines (although
+the patches don't cleanly apply any longer against git head).
 
-Looking at the users of io-pgtable, we have:
+Helge
 
-panfrost_mmu.c	- I can't see where the page-table even gets installed...
-arm-smmu.c	- IO_PGTABLE_QUIRK_NO_DMA is reliable
-arm-smmu-v3.c	- IO_PGTABLE_QUIRK_NO_DMA is reliable
-ipmmu-vmsa.c	- Always sets TTBCR as cacheable (ignores tcr)
-msm_iommu.c	- Always non-coherent
-mtk_iommu.c	- Ignores tcr
-qcom_iommu.c	- Always non-coherent
-
-so we could go ahead and change IO_PGTABLE_QUIRK_NO_DMA to do what you want
-without breaking any drivers. In any case, the driver is free to override
-the control register if it knows better, as seems to be the case for some
-of these already.
-
-See patch below. I'll rework your patch on top.
-
-Will
-
---->8
-
-From 4f41845b340783eaec9cc2840fe3cb9a00574054 Mon Sep 17 00:00:00 2001
-From: Will Deacon <will@kernel.org>
-Date: Tue, 25 Jun 2019 12:51:25 +0100
-Subject: [PATCH] iommu/io-pgtable: Replace IO_PGTABLE_QUIRK_NO_DMA with
- specific flag
-
-IO_PGTABLE_QUIRK_NO_DMA is a bit of a misnomer, since it's really just
-an indication of whether or not the page-table walker for the IOMMU is
-coherent with the CPU caches. Since cache coherency is more than just a
-quirk, replace the flag with its own field in the io_pgtable_cfg
-structure.
-
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Will Deacon <will@kernel.org>
----
- drivers/iommu/arm-smmu-v3.c        |  4 +---
- drivers/iommu/arm-smmu.c           |  4 +---
- drivers/iommu/io-pgtable-arm-v7s.c | 10 +++++-----
- drivers/iommu/io-pgtable-arm.c     | 19 ++++++++-----------
- drivers/iommu/ipmmu-vmsa.c         |  1 +
- include/linux/io-pgtable.h         | 11 ++++-------
- 6 files changed, 20 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 65de2458999f..8ff8f61d9e1c 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1789,13 +1789,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
-+		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
- 		.tlb		= &arm_smmu_gather_ops,
- 		.iommu_dev	= smmu->dev,
- 	};
- 
--	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
--		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
--
- 	if (smmu_domain->non_strict)
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5e54cc0a28b3..009156bb6d42 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -895,13 +895,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
-+		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENT_WALK,
- 		.tlb		= smmu_domain->tlb_ops,
- 		.iommu_dev	= smmu->dev,
- 	};
- 
--	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
--		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
--
- 	if (smmu_domain->non_strict)
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 9a8a8870e267..8454de93e356 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -215,7 +215,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
- 		goto out_free;
- 	}
--	if (table && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
-+	if (table && !cfg->coherent_walk) {
- 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
- 			goto out_free;
-@@ -249,7 +249,7 @@ static void __arm_v7s_free_table(void *table, int lvl,
- 	struct device *dev = cfg->iommu_dev;
- 	size_t size = ARM_V7S_TABLE_SIZE(lvl);
- 
--	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
-+	if (!cfg->coherent_walk)
- 		dma_unmap_single(dev, __arm_v7s_dma_addr(table), size,
- 				 DMA_TO_DEVICE);
- 	if (lvl == 1)
-@@ -261,7 +261,7 @@ static void __arm_v7s_free_table(void *table, int lvl,
- static void __arm_v7s_pte_sync(arm_v7s_iopte *ptep, int num_entries,
- 			       struct io_pgtable_cfg *cfg)
- {
--	if (cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)
-+	if (cfg->coherent_walk)
- 		return;
- 
- 	dma_sync_single_for_device(cfg->iommu_dev, __arm_v7s_dma_addr(ptep),
-@@ -727,7 +727,6 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 			    IO_PGTABLE_QUIRK_NO_PERMS |
- 			    IO_PGTABLE_QUIRK_TLBI_ON_MAP |
- 			    IO_PGTABLE_QUIRK_ARM_MTK_4GB |
--			    IO_PGTABLE_QUIRK_NO_DMA |
- 			    IO_PGTABLE_QUIRK_NON_STRICT))
- 		return NULL;
- 
-@@ -846,7 +845,8 @@ static int __init arm_v7s_do_selftests(void)
- 		.tlb = &dummy_tlb_ops,
- 		.oas = 32,
- 		.ias = 32,
--		.quirks = IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA,
-+		.coherent_walk = true,
-+		.quirks = IO_PGTABLE_QUIRK_ARM_NS,
- 		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	};
- 	unsigned int iova, size, iova_start;
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 2454ac11aa97..91d0a4228b58 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -252,7 +252,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- 		return NULL;
- 
- 	pages = page_address(p);
--	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
-+	if (!cfg->coherent_walk) {
- 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
- 			goto out_free;
-@@ -278,7 +278,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- static void __arm_lpae_free_pages(void *pages, size_t size,
- 				  struct io_pgtable_cfg *cfg)
- {
--	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
-+	if (!cfg->coherent_walk)
- 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
- 				 size, DMA_TO_DEVICE);
- 	free_pages((unsigned long)pages, get_order(size));
-@@ -296,7 +296,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
- {
- 	*ptep = pte;
- 
--	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
-+	if (!cfg->coherent_walk)
- 		__arm_lpae_sync_pte(ptep, cfg);
- }
- 
-@@ -374,8 +374,7 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 
- 	old = cmpxchg64_relaxed(ptep, curr, new);
- 
--	if ((cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) ||
--	    (old & ARM_LPAE_PTE_SW_SYNC))
-+	if (cfg->coherent_walk || (old & ARM_LPAE_PTE_SW_SYNC))
- 		return old;
- 
- 	/* Even if it's not ours, there's no point waiting; just kick it */
-@@ -416,8 +415,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
- 		if (pte)
- 			__arm_lpae_free_pages(cptep, tblsz, cfg);
--	} else if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) &&
--		   !(pte & ARM_LPAE_PTE_SW_SYNC)) {
-+	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
- 		__arm_lpae_sync_pte(ptep, cfg);
- 	}
- 
-@@ -799,7 +797,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	u64 reg;
- 	struct arm_lpae_io_pgtable *data;
- 
--	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
- 			    IO_PGTABLE_QUIRK_NON_STRICT))
- 		return NULL;
- 
-@@ -894,8 +892,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
- 
- 	/* The NS quirk doesn't apply at stage 2 */
--	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
--			    IO_PGTABLE_QUIRK_NON_STRICT))
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NON_STRICT))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -1230,7 +1227,7 @@ static int __init arm_lpae_do_selftests(void)
- 	struct io_pgtable_cfg cfg = {
- 		.tlb = &dummy_tlb_ops,
- 		.oas = 48,
--		.quirks = IO_PGTABLE_QUIRK_NO_DMA,
-+		.coherent_walk = true,
- 	};
- 
- 	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9a380c10655e..12bcb95bdaa8 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -431,6 +431,7 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- 	 * TODO: Add support for coherent walk through CCI with DVM and remove
- 	 * cache handling. For now, delegate it to the io-pgtable code.
- 	 */
-+	domain->cfg.coherent_walk = false;
- 	domain->cfg.iommu_dev = domain->mmu->root->dev;
- 
- 	/*
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 76969a564831..b5a450a3bb47 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -44,6 +44,8 @@ struct iommu_gather_ops {
-  *                 tables.
-  * @ias:           Input address (iova) size, in bits.
-  * @oas:           Output address (paddr) size, in bits.
-+ * @coherent_walk  A flag to indicate whether or not page table walks made
-+ *                 by the IOMMU are coherent with the CPU caches.
-  * @tlb:           TLB management callbacks for this set of tables.
-  * @iommu_dev:     The device representing the DMA configuration for the
-  *                 page table walker.
-@@ -68,11 +70,6 @@ struct io_pgtable_cfg {
- 	 *	when the SoC is in "4GB mode" and they can only access the high
- 	 *	remap of DRAM (0x1_00000000 to 0x1_ffffffff).
- 	 *
--	 * IO_PGTABLE_QUIRK_NO_DMA: Guarantees that the tables will only ever
--	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
--	 *	software-emulated IOMMU), such that pagetable updates need not
--	 *	be treated as explicit DMA data.
--	 *
- 	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
- 	 *	on unmap, for DMA domains using the flush queue mechanism for
- 	 *	delayed invalidation.
-@@ -81,12 +78,12 @@ struct io_pgtable_cfg {
- 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
- 	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
- 	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
--	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
--	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
-+	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
- 	unsigned long			quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
- 	unsigned int			oas;
-+	bool				coherent_walk;
- 	const struct iommu_gather_ops	*tlb;
- 	struct device			*iommu_dev;
- 
--- 
-2.11.0
+> ---
+>  arch/parisc/kernel/pci-dma.c | 48 ++++++++++--------------------------
+>  kernel/dma/direct.c          |  4 +--
+>  2 files changed, 15 insertions(+), 37 deletions(-)
+>
+> diff --git a/arch/parisc/kernel/pci-dma.c b/arch/parisc/kernel/pci-dma.c
+> index 239162355b58..ca35d9a76e50 100644
+> --- a/arch/parisc/kernel/pci-dma.c
+> +++ b/arch/parisc/kernel/pci-dma.c
+> @@ -394,17 +394,20 @@ pcxl_dma_init(void)
+>
+>  __initcall(pcxl_dma_init);
+>
+> -static void *pcxl_dma_alloc(struct device *dev, size_t size,
+> -		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs)
+> +void *arch_dma_alloc(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+>  {
+>  	unsigned long vaddr;
+>  	unsigned long paddr;
+>  	int order;
+>
+> +	if (boot_cpu_data.cpu_type != pcxl2 && boot_cpu_data.cpu_type != pcxl)
+> +		return NULL;
+> +
+>  	order = get_order(size);
+>  	size = 1 << (order + PAGE_SHIFT);
+>  	vaddr = pcxl_alloc_range(size);
+> -	paddr = __get_free_pages(flag | __GFP_ZERO, order);
+> +	paddr = __get_free_pages(gfp | __GFP_ZERO, order);
+>  	flush_kernel_dcache_range(paddr, size);
+>  	paddr = __pa(paddr);
+>  	map_uncached_pages(vaddr, size, paddr);
+> @@ -421,44 +424,19 @@ static void *pcxl_dma_alloc(struct device *dev, size_t size,
+>  	return (void *)vaddr;
+>  }
+>
+> -static void *pcx_dma_alloc(struct device *dev, size_t size,
+> -		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs)
+> -{
+> -	void *addr;
+> -
+> -	if ((attrs & DMA_ATTR_NON_CONSISTENT) == 0)
+> -		return NULL;
+> -
+> -	addr = (void *)__get_free_pages(flag | __GFP_ZERO, get_order(size));
+> -	if (addr)
+> -		*dma_handle = (dma_addr_t)virt_to_phys(addr);
+> -
+> -	return addr;
+> -}
+> -
+> -void *arch_dma_alloc(struct device *dev, size_t size,
+> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+> -{
+> -
+> -	if (boot_cpu_data.cpu_type == pcxl2 || boot_cpu_data.cpu_type == pcxl)
+> -		return pcxl_dma_alloc(dev, size, dma_handle, gfp, attrs);
+> -	else
+> -		return pcx_dma_alloc(dev, size, dma_handle, gfp, attrs);
+> -}
+> -
+>  void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+>  		dma_addr_t dma_handle, unsigned long attrs)
+>  {
+>  	int order = get_order(size);
+>
+> -	if (boot_cpu_data.cpu_type == pcxl2 || boot_cpu_data.cpu_type == pcxl) {
+> -		size = 1 << (order + PAGE_SHIFT);
+> -		unmap_uncached_pages((unsigned long)vaddr, size);
+> -		pcxl_free_range((unsigned long)vaddr, size);
+> +	WARN_ON_ONCE(boot_cpu_data.cpu_type != pcxl2 &&
+> +		     boot_cpu_data.cpu_type != pcxl);
+>
+> -		vaddr = __va(dma_handle);
+> -	}
+> -	free_pages((unsigned long)vaddr, get_order(size));
+> +	size = 1 << (order + PAGE_SHIFT);
+> +	unmap_uncached_pages((unsigned long)vaddr, size);
+> +	pcxl_free_range((unsigned long)vaddr, size);
+> +
+> +	free_pages((unsigned long)__va(dma_handle), order);
+>  }
+>
+>  void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index c2893713bf80..fc354f4f490b 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -191,7 +191,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>  		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+>  {
+>  	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+> -	    !dev_is_dma_coherent(dev))
+> +	    dma_alloc_need_uncached(dev, attrs))
+>  		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
+>  	return dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
+>  }
+> @@ -200,7 +200,7 @@ void dma_direct_free(struct device *dev, size_t size,
+>  		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+>  {
+>  	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+> -	    !dev_is_dma_coherent(dev))
+> +	    dma_alloc_need_uncached(dev, attrs))
+>  		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
+>  	else
+>  		dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
+>
 
 _______________________________________________
 iommu mailing list
