@@ -6,45 +6,45 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D87AC48BD6
-	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 06:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C057EC48BD4
+	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 06:14:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F83820652
-	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 06:11:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F83820652
+	by mail.kernel.org (Postfix) with ESMTPS id A095620652
+	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 06:14:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A095620652
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id ED650A59;
-	Tue, 25 Jun 2019 06:11:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 65E86A49;
+	Tue, 25 Jun 2019 06:14:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0F3F25AA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BDADF255
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 25 Jun 2019 06:11:37 +0000 (UTC)
+	Tue, 25 Jun 2019 06:14:04 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A3A61710
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5B221710
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 25 Jun 2019 06:11:36 +0000 (UTC)
+	Tue, 25 Jun 2019 06:14:04 +0000 (UTC)
 Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 413AB68B02; Tue, 25 Jun 2019 08:11:04 +0200 (CEST)
-Date: Tue, 25 Jun 2019 08:11:04 +0200
+	id 4350A68B02; Tue, 25 Jun 2019 08:13:32 +0200 (CEST)
+Date: Tue, 25 Jun 2019 08:13:32 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH 5/7] dma-direct: handle DMA_ATTR_NON_CONSISTENT in
-	common code
-Message-ID: <20190625061104.GB28986@lst.de>
+To: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: Re: [PATCH 1/7] arm-nommu: remove the partial
+	DMA_ATTR_NON_CONSISTENT support
+Message-ID: <20190625061332.GC28986@lst.de>
 References: <20190614144431.21760-1-hch@lst.de>
-	<20190614144431.21760-6-hch@lst.de>
+	<20190614144431.21760-2-hch@lst.de>
+	<a017e704-c6c4-7718-7f8b-eb8a0eced14d@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190614144431.21760-6-hch@lst.de>
+In-Reply-To: <a017e704-c6c4-7718-7f8b-eb8a0eced14d@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Jonas Bonn <jonas@southpole.se>, linux-xtensa@linux-xtensa.org,
-	Vladimir Murzin <vladimir.murzin@arm.com>,
 	linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>,
 	Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
 	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
@@ -68,27 +68,22 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sun, Jun 16, 2019 at 06:08:40PM +0800, Hillf Danton wrote:
-> Literally, any cpu (call it cpuW) other than pcx12 and pcx1 will no longer do
-> dma alloc for any device with this patch applied.
+On Mon, Jun 24, 2019 at 03:23:08PM +0100, Vladimir Murzin wrote:
+> On 6/14/19 3:44 PM, Christoph Hellwig wrote:
+> > The arm-nommu DMA code supports DMA_ATTR_NON_CONSISTENT allocations, but
+> > does not provide a cache_sync operation.  This means any user of it
+> > will never be able to actually transfer cache ownership and thus cause
+> > coherency bugs.
+> 
+> By the way, Documentation/DMA-attributes.txt doesn't specify cache_sync() as
+> requirement for DMA_ATTR_NON_CONSISTENT it only states that it is responsibility
+> of the driver to have all the correct and necessary sync points.
 
-Yes.  And that is not a chance from the previous code, where only
-pcx1 and pcx12 could do coherent allocations,
-
-> On the other hand, 
-> !dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT) will ask
-> any cpu to do dma alloc, regardless of pcx1. This patch works imo unless cpuW
-> plays games only with devices that are dma coherent. I doubt it is true.
-
-I can't parse these two sentences.  But to explains the bits mentioned
-here - dev_is_dma_coherent will return if a device is coherently
-attached vs the cpu.  This will never be true for the parisc direct
-mapping.  DMA_ATTR_NON_CONSISTENT asks for a non-coherent mapping that
-needs to be explicitly synced.  This support now is in the dma-direct
-core code, and this is what the parisc specific devices used on the
-non-pcxl systems use, as they do not support dma coherency at all.
-(the story slightly changes when using an iommu, but that is irrelevant
-here)
+True.  dma_cache_sync has always been a rather odd interface, as it
+doesn't specify in what direction we need to sync and doesn't
+participate in our ownership protocol.  So my mid-term plan is to kill
+it off and replace it with the existing dma_sync_* helpers.  This
+series is the first step towards that.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
