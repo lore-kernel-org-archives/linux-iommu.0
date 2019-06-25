@@ -2,55 +2,76 @@ Return-Path: <SRS0=85Jd=UY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57342C48BD4
-	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 12:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3158C48BD5
+	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 13:39:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3A048213F2
-	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 12:28:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A048213F2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id A61982133F
+	for <iommu@archiver.kernel.org>; Tue, 25 Jun 2019 13:39:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hiUdQSgP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A61982133F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0C2B7EE5;
-	Tue, 25 Jun 2019 12:28:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4A336F4A;
+	Tue, 25 Jun 2019 13:39:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B3D21E4A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DC5E8F43
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 25 Jun 2019 12:28:40 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from newverein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 452B488E
+	Tue, 25 Jun 2019 13:39:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E0F7882C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 25 Jun 2019 12:28:40 +0000 (UTC)
-Received: by newverein.lst.de (Postfix, from userid 2407)
-	id 02DC568B05; Tue, 25 Jun 2019 14:28:09 +0200 (CEST)
-Date: Tue, 25 Jun 2019 14:28:08 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH 5/7] dma-direct: handle DMA_ATTR_NON_CONSISTENT in
-	common code
-Message-ID: <20190625122808.GB4421@lst.de>
-References: <20190614144431.21760-1-hch@lst.de>
-	<20190614144431.21760-6-hch@lst.de>
-	<3eb32e0b-5aa4-fe1e-e581-038750e11cef@gmx.de>
+	Tue, 25 Jun 2019 13:39:30 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id B8A042133F;
+	Tue, 25 Jun 2019 13:39:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1561469970;
+	bh=3muJjXWRycZv3Y/JtYQgT9Oc/WMSWIxkkMKqCMNX5RI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hiUdQSgP3fzkh9uQINSrEWWxdCpnUcZOSUINFQIWpnmazGlfb+eIkvMic2wa1obwq
+	MOYLBIk3dgpziyQsVjbfSEPXsH6+/BUjsU3tczSc0CNj21IRV5UqpLgjpqguUV3p1v
+	BvJY98/KPveTSOl42McksrdQHTu0QRNQQWXrFSnU=
+Date: Tue, 25 Jun 2019 14:39:25 +0100
+From: Will Deacon <will@kernel.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: Add support to handle Qcom's
+	wait-for-safe logic
+Message-ID: <20190625133924.fqq3y7p3i3fqem5p@willie-the-truck>
+References: <20190612071554.13573-1-vivek.gautam@codeaurora.org>
+	<20190612071554.13573-4-vivek.gautam@codeaurora.org>
+	<20190614040520.GK22737@tuxbook-pro>
+	<3e1f5e03-6448-8730-056d-fc47bdd71b3f@codeaurora.org>
+	<20190618175218.GH4270@fuggles.cambridge.arm.com>
+	<CAFp+6iEynLa=Jt_-oAwt4zmzxzhEXtWNCmghz6rFzcpQVGwrMg@mail.gmail.com>
+	<20190624170348.7dncuc5qezqeyvq2@willie-the-truck>
+	<CAFp+6iF0TQtAy2JFXk6zjX5GpjeLFesqPZV6ezbDXmc85yvMEA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <3eb32e0b-5aa4-fe1e-e581-038750e11cef@gmx.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Jonas Bonn <jonas@southpole.se>, Vladimir Murzin <vladimir.murzin@arm.com>,
-	linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>,
-	linux-kernel@vger.kernel.org,
-	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-	iommu@lists.linux-foundation.org, openrisc@lists.librecores.org,
-	Stafford Horne <shorne@gmail.com>, linux-snps-arc@lists.infradead.org,
-	Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <CAFp+6iF0TQtAy2JFXk6zjX5GpjeLFesqPZV6ezbDXmc85yvMEA@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+	<devicetree@vger.kernel.org>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <will.deacon@arm.com>,
+	open list <linux-kernel@vger.kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	David Brown <david.brown@linaro.org>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	robh+dt <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,23 +89,28 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Jun 25, 2019 at 02:23:45PM +0200, Helge Deller wrote:
-> On 14.06.19 16:44, Christoph Hellwig wrote:
-> > Only call into arch_dma_alloc if we require an uncached mapping,
-> > and remove the parisc code manually doing normal cached
-> > DMA_ATTR_NON_CONSISTENT allocations.
+On Tue, Jun 25, 2019 at 12:34:56PM +0530, Vivek Gautam wrote:
+> On Mon, Jun 24, 2019 at 10:33 PM Will Deacon <will@kernel.org> wrote:
+> > Instead, I think this needs to be part of a separate file that is maintained
+> > by you, which follows on from the work that Krishna is doing for nvidia
+> > built on top of Robin's prototype patches:
 > >
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/smmu-impl
 > 
-> Acked-by: Helge Deller <deller@gmx.de> # parisc
-> 
-> Boot-tested 32-bit kernel on PCX-L and PCX-W2 machines (although
-> the patches don't cleanly apply any longer against git head).
+> Looking at this branch quickly, it seem there can be separate implementation
+> level configuration file that can be added.
+> But will this also handle separate page table ops when required in future.
 
-The series was against the dma-mapping tree, which might have diverged
-a bit already.
+Nothing's set in stone, but having the implementation-specific code
+constrain the page-table format (especially wrt quirks) sounds reasonable to
+me. I'm currently waiting for Krishna to respin the nvidia changes [1] on
+top of this so that we can see how well the abstractions are holding up.
 
-Thanks for testing!
+I certainly won't merge the stuff until we have a user.
+
+Will
+
+[1] https://lkml.kernel.org/r/1543887414-18209-1-git-send-email-vdumpa@nvidia.com
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
