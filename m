@@ -2,68 +2,63 @@ Return-Path: <SRS0=d63v=UZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7018DC48BD9
-	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 17:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A1AC48BD3
+	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 18:00:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 429A721726
-	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 17:51:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 36BC221726
+	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 18:00:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ObuCZMnJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 429A721726
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="KBxCyhHD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36BC221726
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F3B52D8B;
-	Wed, 26 Jun 2019 17:51:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 08486CA1;
+	Wed, 26 Jun 2019 18:00:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77338D8B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E8846B2F
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 26 Jun 2019 17:51:35 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AF01682C
+	Wed, 26 Jun 2019 18:00:05 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 527C6710
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 26 Jun 2019 17:51:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=/vs8Egy5g6Si0QhAWTdGb3iiX4UWuX/9RaMs8MRYrk0=;
-	b=ObuCZMnJZL8XNKfEkGcnHvqPQ
-	0snBZEHMJeZIlgKormOrFx9XKNZKn33QySiOBBapISItR0gi6ysSoc9ZVrAvT5JH0ueHZqZMyuA+y
-	izLVmercQAhaMcp4j3x985xKi65IjQaHbwJJMqkkU7xHeSx/4nYn3SbcYtle1VLXXJCgG+2cKeyhv
-	YSqVHhTYdnvfShOwnTEnhzxv9QE0MO/ANXi1ljUb8edvZeH4nyR99EXN+gpeUJcDAg/hhxRxKWQhg
-	tGB7O37l3u0XPhaTtCwYKe1W3Z2e3ktVUq+DPh5eltEiqNFJ1ofEPqZPq1qHKtMXUva310T8yKBvq
-	edAHdacLA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat
-	Linux)) id 1hgC4x-0004yn-Oh; Wed, 26 Jun 2019 17:51:31 +0000
-Date: Wed, 26 Jun 2019 10:51:31 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Pankaj Suryawanshi <pankajssuryawanshi@gmail.com>
-Subject: Re: DMA-API attr - DMA_ATTR_NO_KERNEL_MAPPING
-Message-ID: <20190626175131.GA17250@infradead.org>
-References: <CACDBo564RoWpi8y2pOxoddnn0s3f3sA-fmNxpiXuxebV5TFBJA@mail.gmail.com>
-	<CACDBo55GfomD4yAJ1qaOvdm8EQaD-28=etsRHb39goh+5VAeqw@mail.gmail.com>
+	Wed, 26 Jun 2019 18:00:05 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id F23AF208E3;
+	Wed, 26 Jun 2019 18:00:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1561572005;
+	bh=Yw+WNhu2uTH/tNxCYEnMhsKWbJMHkoSnvT9yxad1CYc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KBxCyhHD2cBAcSN2qEvsVo8wqPUOEcC/iX1A4kip5UJ/ExQik0trzTbSNlmE5QGfS
+	ER9ioo+a/BMpevKUIClKM4Z178VZbr2b4CIJmITUu93R/WpWzbAKGvhHpk3p+6yidG
+	jAx3yTXQMazq94naq2uX+Ea4dO32EIGsaHVXDOxQ=
+Date: Wed, 26 Jun 2019 18:59:59 +0100
+From: Will Deacon <will@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 6/8] iommu/arm-smmu-v3: Support auxiliary domains
+Message-ID: <20190626175959.ubxvb2qn4taclact@willie-the-truck>
+References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
+	<20190610184714.6786-7-jean-philippe.brucker@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <CACDBo55GfomD4yAJ1qaOvdm8EQaD-28=etsRHb39goh+5VAeqw@mail.gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-	Michal Hocko <mhocko@kernel.org>
+In-Reply-To: <20190610184714.6786-7-jean-philippe.brucker@arm.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, will.deacon@arm.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	robh+dt@kernel.org, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,22 +76,168 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Jun 26, 2019 at 10:12:45PM +0530, Pankaj Suryawanshi wrote:
-> [CC: linux kernel and Vlastimil Babka]
+Hi Jean-Philippe,
 
-The right list is the list for the DMA mapping subsystem, which is
-iommu@lists.linux-foundation.org.  I've also added that.
+On Mon, Jun 10, 2019 at 07:47:12PM +0100, Jean-Philippe Brucker wrote:
+> In commit a3a195929d40 ("iommu: Add APIs for multiple domains per
+> device"), the IOMMU API gained the concept of auxiliary domains (AUXD),
+> which allows to control the PASID-tagged address spaces of a device. With
+> AUXD the PASID address space are not shared with the CPU, but are instead
+> modified with iommu_map() and iommu_unmap() calls on auxiliary domains.
+> 
+> Add auxiliary domain support to the SMMUv3 driver. Device drivers allocate
+> an unmanaged IOMMU domain with iommu_domain_alloc(), and attach it to the
+> device with iommu_aux_attach_domain().
 
-> > I am writing driver in which I used DMA_ATTR_NO_KERNEL_MAPPING attribute
-> > for cma allocation using dma_alloc_attr(), as per kernel docs
-> > https://www.kernel.org/doc/Documentation/DMA-attributes.txt  buffers
-> > allocated with this attribute can be only passed to user space by calling
-> > dma_mmap_attrs().
-> >
-> > how can I mapped in kernel space (after dma_alloc_attr with
-> > DMA_ATTR_NO_KERNEL_MAPPING ) ?
+[...]
 
-You can't.  And that is the whole point of that API.
+> 
+> The AUXD API is fairly permissive, and allows to attach an IOMMU domain in
+> both normal and auxiliary mode at the same time - one device can be
+> attached to the domain normally, and another device can be attached
+> through one of its PASIDs. To avoid excessive complexity in the SMMU
+> implementation we pose some restrictions on supported AUXD usage:
+> 
+> * A domain is either in auxiliary mode or normal mode. And that state is
+>   sticky. Once detached the domain has to be re-attached in the same mode.
+> 
+> * An auxiliary domain can have a single parent domain. Two devices can be
+>   attached to the same auxiliary domain only if they are attached to the
+>   same parent domain.
+> 
+> In practice these shouldn't be problematic, since we have the same kind of
+> restriction on normal domains and users have been able to cope so far: at
+> the moment a domain cannot be attached to two devices behind different
+> SMMUs. When VFIO puts two such devices in the same container, it simply
+> falls back to allocating two separate IOMMU domains.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> ---
+>  drivers/iommu/Kconfig       |   1 +
+>  drivers/iommu/arm-smmu-v3.c | 276 +++++++++++++++++++++++++++++++++---
+>  2 files changed, 260 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 9b45f70549a7..d326fef3d3a6 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -393,6 +393,7 @@ config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
+>  config ARM_SMMU_V3
+>  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+>  	depends on ARM64
+> +	select IOASID
+>  	select IOMMU_API
+>  	select IOMMU_IO_PGTABLE_LPAE
+>  	select GENERIC_MSI_IRQ_DOMAIN
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 326b71793336..633d829f246f 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/err.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/io-pgtable.h>
+> +#include <linux/ioasid.h>
+>  #include <linux/iommu.h>
+>  #include <linux/iopoll.h>
+>  #include <linux/init.h>
+> @@ -641,6 +642,7 @@ struct arm_smmu_master {
+>  	unsigned int			num_sids;
+>  	unsigned int			ssid_bits;
+>  	bool				ats_enabled		:1;
+> +	bool				auxd_enabled		:1;
+>  };
+>  
+>  /* SMMU private data for an IOMMU domain */
+> @@ -666,8 +668,14 @@ struct arm_smmu_domain {
+>  
+>  	struct iommu_domain		domain;
+>  
+> +	/* Unused in aux domains */
+>  	struct list_head		devices;
+>  	spinlock_t			devices_lock;
+> +
+> +	/* Auxiliary domain stuff */
+> +	struct arm_smmu_domain		*parent;
+> +	ioasid_t			ssid;
+> +	unsigned long			aux_nr_devs;
+
+Maybe use a union to avoid comments about what is used/unused?
+
+> +static void arm_smmu_aux_detach_dev(struct iommu_domain *domain, struct device *dev)
+> +{
+> +	struct iommu_domain *parent_domain;
+> +	struct arm_smmu_domain *parent_smmu_domain;
+> +	struct arm_smmu_master *master = dev_to_master(dev);
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +
+> +	if (!arm_smmu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX))
+> +		return;
+> +
+> +	parent_domain = iommu_get_domain_for_dev(dev);
+> +	if (!parent_domain)
+> +		return;
+> +	parent_smmu_domain = to_smmu_domain(parent_domain);
+> +
+> +	mutex_lock(&smmu_domain->init_mutex);
+> +	if (!smmu_domain->aux_nr_devs)
+> +		goto out_unlock;
+> +
+> +	if (!--smmu_domain->aux_nr_devs) {
+> +		arm_smmu_write_ctx_desc(parent_smmu_domain, smmu_domain->ssid,
+> +					NULL);
+> +		/*
+> +		 * TLB doesn't need invalidation since accesses from the device
+> +		 * can't use this domain's ASID once the CD is clear.
+> +		 *
+> +		 * Sadly that doesn't apply to ATCs, which are PASID tagged.
+> +		 * Invalidate all other devices as well, because even though
+> +		 * they weren't 'officially' attached to the auxiliary domain,
+> +		 * they could have formed ATC entries.
+> +		 */
+> +		arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
+
+I've been struggling to understand the locking here, since both
+arm_smmu_write_ctx_desc and arm_smmu_atc_inv_domain take and release the
+devices_lock for the domain. Is there not a problem with devices coming and
+going in-between the two calls?
+
+> +	} else {
+> +		struct arm_smmu_cmdq_ent cmd;
+> +
+> +		/* Invalidate only this device's ATC */
+> +		if (master->ats_enabled) {
+> +			arm_smmu_atc_inv_to_cmd(smmu_domain->ssid, 0, 0, &cmd);
+> +			arm_smmu_atc_inv_master(master, &cmd);
+> +		}
+> +	}
+> +out_unlock:
+> +	mutex_unlock(&smmu_domain->init_mutex);
+> +}
+> +
+> +static int arm_smmu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+> +{
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +
+> +	return smmu_domain->ssid ?: -EINVAL;
+> +}
+> +
+>  static struct iommu_ops arm_smmu_ops = {
+>  	.capable		= arm_smmu_capable,
+>  	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -2539,6 +2772,13 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.of_xlate		= arm_smmu_of_xlate,
+>  	.get_resv_regions	= arm_smmu_get_resv_regions,
+>  	.put_resv_regions	= arm_smmu_put_resv_regions,
+> +	.dev_has_feat		= arm_smmu_dev_has_feature,
+> +	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+> +	.dev_enable_feat	= arm_smmu_dev_enable_feature,
+> +	.dev_disable_feat	= arm_smmu_dev_disable_feature,
+
+Why can't we use the existing ->capable and ->dev_{get,set}_attr callbacks
+for this?
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
