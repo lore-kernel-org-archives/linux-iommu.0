@@ -2,75 +2,78 @@ Return-Path: <SRS0=d63v=UZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA5DC48BD6
-	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 14:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACECDC48BD9
+	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 14:48:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 96C5F2080C
-	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 14:43:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 84BC521738
+	for <iommu@archiver.kernel.org>; Wed, 26 Jun 2019 14:48:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="uCmi320p"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96C5F2080C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="FVyyJTKA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 84BC521738
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6C5A8DCE;
-	Wed, 26 Jun 2019 14:43:07 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3C423C86;
+	Wed, 26 Jun 2019 14:48:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5564BED2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 25080C3A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 26 Jun 2019 10:04:33 +0000 (UTC)
-X-Greylist: delayed 01:20:14 by SQLgrey-1.7.6
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CBDE3710
+	Wed, 26 Jun 2019 14:48:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C9C80710
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 26 Jun 2019 10:04:32 +0000 (UTC)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-	by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5Q8i5Ep068189;
-	Wed, 26 Jun 2019 03:44:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1561538645;
-	bh=LtR8YqPAxJoiiaQr+rKC4/jbAgDp9J8cOhOylP72rFk=;
-	h=To:CC:From:Subject:Date;
-	b=uCmi320peXxY+9VVMxlqGczAuesFTOnvNiO719Tx3/VfLpv8kLRtAVEsLt4v9TA7u
-	5S+K5IDrMWs93S4SgZ9ClOyFe6U6KQdl8IHCb3oj1q3y7mPbMhe7PSkHAchIXdmQDp
-	J4CK53JrZx6ou4nwx9Ry5ka0o64SD8lcxWmsRaA0=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5Q8i5lN006920
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 26 Jun 2019 03:44:05 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE115.ent.ti.com
-	(10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5;
-	Wed, 26 Jun 2019 03:44:03 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE113.ent.ti.com
-	(10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
-	Frontend Transport; Wed, 26 Jun 2019 03:44:03 -0500
-Received: from [192.168.2.6] (ileax41-snat.itg.ti.com [10.172.224.153])
-	by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5Q8hxVh129407;
-	Wed, 26 Jun 2019 03:44:00 -0500
-To: <hch@lst.de>, "hdegoede@redhat.com" <hdegoede@redhat.com>
-Subject: SATA broken with LPAE
-Message-ID: <16f065ef-f4ac-46b4-de2a-6b5420ae873a@ti.com>
-Date: Wed, 26 Jun 2019 11:43:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Wed, 26 Jun 2019 14:48:50 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id A227A205C9;
+	Wed, 26 Jun 2019 14:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1561560530;
+	bh=Q0fkJnt5Wk/wU807scvnJI4s4UA4UjwWKB0s0wc3Xm0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FVyyJTKAehLp05zG/pwe9Aa0/ZSb6jmhAh7fYWRrQXRe15i7Nde+lWOqOrHb21zCS
+	I5b5iC0ODpC6vtRvyZwwNJHkjG6b2B82I8tgZ7I8FFj5w751IN+kgPwk5zvzxXWuut
+	Ad9RXJbltpQ3GJ3YyUAXj1PB4wW1p/znSA1zDdnw=
+Date: Wed, 26 Jun 2019 15:48:45 +0100
+From: Will Deacon <will@kernel.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: Add support to handle Qcom's
+	wait-for-safe logic
+Message-ID: <20190626144844.key3n6ueb6skgkp4@willie-the-truck>
+References: <20190612071554.13573-1-vivek.gautam@codeaurora.org>
+	<20190612071554.13573-4-vivek.gautam@codeaurora.org>
+	<20190614040520.GK22737@tuxbook-pro>
+	<3e1f5e03-6448-8730-056d-fc47bdd71b3f@codeaurora.org>
+	<20190618175218.GH4270@fuggles.cambridge.arm.com>
+	<CAFp+6iEynLa=Jt_-oAwt4zmzxzhEXtWNCmghz6rFzcpQVGwrMg@mail.gmail.com>
+	<20190624170348.7dncuc5qezqeyvq2@willie-the-truck>
+	<CAFp+6iF0TQtAy2JFXk6zjX5GpjeLFesqPZV6ezbDXmc85yvMEA@mail.gmail.com>
+	<20190625133924.fqq3y7p3i3fqem5p@willie-the-truck>
+	<CAFp+6iH-KzX7x1j8AAuKJcOP6v=fyP-yLvaeeE_Ly3oueu_ngg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Mailman-Approved-At: Wed, 26 Jun 2019 14:43:06 +0000
-Cc: axboe@kernel.dk, Vignesh Raghavendra <vigneshr@ti.com>,
-	martin.petersen@oracle.com, Tony Lindgren <tony@atomide.com>,
-	jejb@linux.ibm.com, "Nori, Sekhar" <nsekhar@ti.com>,
-	linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
-	rmk+kernel@arm.linux.org.uk, linux-omap@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <CAFp+6iH-KzX7x1j8AAuKJcOP6v=fyP-yLvaeeE_Ly3oueu_ngg@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+	<devicetree@vger.kernel.org>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <will.deacon@arm.com>,
+	open list <linux-kernel@vger.kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	David Brown <david.brown@linaro.org>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	robh+dt <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,84 +86,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Roger Quadros via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Roger Quadros <rogerq@ti.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph / Hans,
+On Wed, Jun 26, 2019 at 12:03:02PM +0530, Vivek Gautam wrote:
+> On Tue, Jun 25, 2019 at 7:09 PM Will Deacon <will@kernel.org> wrote:
+> >
+> > On Tue, Jun 25, 2019 at 12:34:56PM +0530, Vivek Gautam wrote:
+> > > On Mon, Jun 24, 2019 at 10:33 PM Will Deacon <will@kernel.org> wrote:
+> > > > Instead, I think this needs to be part of a separate file that is maintained
+> > > > by you, which follows on from the work that Krishna is doing for nvidia
+> > > > built on top of Robin's prototype patches:
+> > > >
+> > > > http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/smmu-impl
+> > >
+> > > Looking at this branch quickly, it seem there can be separate implementation
+> > > level configuration file that can be added.
+> > > But will this also handle separate page table ops when required in future.
+> >
+> > Nothing's set in stone, but having the implementation-specific code
+> > constrain the page-table format (especially wrt quirks) sounds reasonable to
+> > me. I'm currently waiting for Krishna to respin the nvidia changes [1] on
+> > top of this so that we can see how well the abstractions are holding up.
+> 
+> Sure. Would you want me to try Robin's branch and take out the qualcomm
+> related stuff to its own implementation? Or, would you like me to respin this
+> series so that you can take it in to enable SDM845 boards such as, MTP
+> and dragonboard to have a sane build - debian, etc. so people benefit
+> out of it.
 
-SATA has been broken on TI platforms with LPAE, on systems with RAM addresses > 32-bits,
-(e.g. DRA7 rev.H+) since v4.18.
+I can't take this series without Acks on the firmware calling changes, and I
+plan to send my 5.3 patches to Joerg at the end of the week so they get some
+time in -next. In which case, I think it may be worth you having a play with
+the branch above so we can get a better idea of any additional smmu_impl hooks
+you may need.
 
-The commit at which it breaks is
-21e07dba9fb1179148089d611fc9e6e70d1887c3 ("scsi: reduce use of block bounce buffers").
+> Qualcomm stuff is lying in qcom-smmu and arm-smmu and may take some
+> time to stub out the implementation related details.
 
-The effect is that the SATA controller starts to see DMA addresses
-above 32-bit which it does not support.
+Not sure I follow you here. Are you talking about qcom_iommu.c?
 
-Could you please shed some light on how it is supposed to work if
-we don't call blk_queue_bounce_limit() for devices that can do only 32-bit DMA
-on a system that has addressable RAM above 32-bit Physical?
-
-The below patch fixes it. Is this the right thing to do?
-
-diff --git a/drivers/ata/ahci_platform.c b/drivers/ata/ahci_platform.c
-index 3aab2e3d57f3..b925dc54cfa5 100644
---- a/drivers/ata/ahci_platform.c
-+++ b/drivers/ata/ahci_platform.c
-@@ -62,6 +62,9 @@ static int ahci_probe(struct platform_device *pdev)
- 	if (of_device_is_compatible(dev->of_node, "hisilicon,hisi-ahci"))
- 		hpriv->flags |= AHCI_HFLAG_NO_FBS | AHCI_HFLAG_NO_NCQ;
- 
-+	if (of_device_is_compatible(dev->of_node, "snps,dwc-ahci"))
-+		hpriv->flags |= AHCI_HFLAG_32BIT_ONLY;
-+
- 	port = acpi_device_get_match_data(dev);
- 	if (!port)
- 		port = &ahci_port_info;
-diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
-index 65d0a10c76ad..9083c7b89dfc 100644
---- a/drivers/scsi/scsi_lib.c
-+++ b/drivers/scsi/scsi_lib.c
-@@ -1750,6 +1750,21 @@ static int scsi_map_queues(struct blk_mq_tag_set *set)
- 	return blk_mq_map_queues(&set->map[HCTX_TYPE_DEFAULT]);
- }
- 
-+static u64 scsi_calculate_bounce_limit(struct Scsi_Host *shost)
-+{
-+	struct device *dma_dev = shost->dma_dev;
-+	u64 bounce_limit = 0xffffffff;
-+
-+	if (shost->unchecked_isa_dma)
-+		return BLK_BOUNCE_ISA;
-+
-+	if (dma_dev && dma_dev->dma_mask)
-+		bounce_limit = (u64)dma_max_pfn(dma_dev) << PAGE_SHIFT;
-+
-+	return bounce_limit;
-+}
-+
- void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q)
- {
- 	struct device *dev = shost->dma_dev;
-@@ -1769,8 +1784,7 @@ void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q)
- 	}
- 
- 	blk_queue_max_hw_sectors(q, shost->max_sectors);
--	if (shost->unchecked_isa_dma)
--		blk_queue_bounce_limit(q, BLK_BOUNCE_ISA);
-+	blk_queue_bounce_limit(q, scsi_calculate_bounce_limit(shost));
- 	blk_queue_segment_boundary(q, shost->dma_boundary);
- 	dma_set_seg_boundary(dev, shost->dma_boundary);
-
-cheers,
--roger
--- 
-Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki.
-Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
