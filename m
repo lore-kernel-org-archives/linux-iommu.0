@@ -4,89 +4,103 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38082C48BD6
-	for <iommu@archiver.kernel.org>; Thu, 27 Jun 2019 05:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D38C48BDA
+	for <iommu@archiver.kernel.org>; Thu, 27 Jun 2019 07:05:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A195B2054F
-	for <iommu@archiver.kernel.org>; Thu, 27 Jun 2019 05:55:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AEC20205C9
+	for <iommu@archiver.kernel.org>; Thu, 27 Jun 2019 07:05:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="IX03YAhJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A195B2054F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="e/PJdize";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="ou36ma9p"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEC20205C9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 359AFCC8;
-	Thu, 27 Jun 2019 05:55:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5A00DCBB;
+	Thu, 27 Jun 2019 07:05:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB7D7C9B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C2C3DB7D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 27 Jun 2019 05:55:38 +0000 (UTC)
+	Thu, 27 Jun 2019 07:05:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EC4F13D0
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 501E23D0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 27 Jun 2019 05:55:37 +0000 (UTC)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-	by mailout4.samsung.com (KnoxPortal) with ESMTP id
-	20190627055535epoutp0404a6eb1b1c69d54cc1aa0afbb91d77ee~r_IKcDsQH2274122741epoutp04Y
+	Thu, 27 Jun 2019 07:05:18 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id E9ECA60E57; Thu, 27 Jun 2019 07:05:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1561619118;
+	bh=4sMYL/vEnFR3JJT1yrTXKeeZBriSZ99gcmBVQPeanvA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=e/PJdizeuVqUAN3aRZQrNdNKP83BlAgHiacq6m2Aw+J7XZwjk3NKYbMez+4P28C7v
+	aeP7wIu+x8boN9BAf2aEMR29ePoZykHoBVekoBspNkvzP4bEfZnpGcpHhSXje9zCng
+	cnjokAgK8+Csf0fiuRyObg7GN7IrLiU7xsxjEdhg=
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com
+	[209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 59AD76038E
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 27 Jun 2019 05:55:35 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com
-	20190627055535epoutp0404a6eb1b1c69d54cc1aa0afbb91d77ee~r_IKcDsQH2274122741epoutp04Y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1561614935;
-	bh=oxKtuFXFu5WD9Homk5xhMeXg/GuXZII8dMpoFSiCOT0=;
-	h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-	b=IX03YAhJe922Q7CrwSHQRjXTQwCgBKpnsewG0B3cZ/XJcO4/SJ2yUhhSLdFMOTkTQ
-	1tlhBd/ocChssNE8C5gpXih9qOeDkGZ//qYIeQsjo/SfYWYqrw7fxL33ribdCZSZ6N
-	2dY1VWeXjMmeEtIyBXskDhUK7dB7nxXchiL5Oj+I=
-Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
-	epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-	20190627055535epcas5p45ab2832e1276616ff656c3cb002c153b~r_IKPVhJ72044020440epcas5p47;
-	Thu, 27 Jun 2019 05:55:35 +0000 (GMT)
-X-AuditID: b6c32a4a-95bff70000000fe2-37-5d145a5523d6
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-	epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	D5.D1.04066.55A541D5; Thu, 27 Jun 2019 14:55:33 +0900 (KST)
-Mime-Version: 1.0
-Subject: RE: RE: Re: CMA in AMD IOMMU driver
-From: Sathyavathi M <sathya.m@samsung.com>
-To: Christoph Hellwig <hch@infradead.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <20190626094804epcms5p259576d5f98e8caf2968f7303676beb4a@epcms5p2>
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20190627055533epcms5p4cfa5be15b120d9bdbc8467a704d96e32@epcms5p4>
-Date: Thu, 27 Jun 2019 11:25:33 +0530
-X-CMS-MailID: 20190627055533epcms5p4cfa5be15b120d9bdbc8467a704d96e32
-CMS-TYPE: 105P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrMIsWRmVeSWpSXmKPExsWy7bCmlm5olEiswbUv8hanJyxisliw39qB
-	yWPzCi2PyTeWMwYwRXHZpKTmZJalFunbJXBlzHvxiK1gNV/F391/mBoYz/J2MXJySAiYSGx5
-	2MLcxcjFISSwm1Hi2O4d7F2MHBy8AoISf3cIg5jCAjoSE1+kgJQLCchJ3DncxQRig4T7nk0D
-	q2YT0JJ49ZQHJCwioClxa3k7M4jNLOApsf3WQXaITbwSM9qfskDY0hLbl29lBLE5BfwkOt+u
-	Y4aIi0rcXP2WHcZ+f2w+I4QtItF67yxUjaDEg5+7GUHWgsyZeCoAIlwucWb7RhaQRyQEGhgl
-	um7sZYVImEvMvfcd6ilfidcHvEBMFgFVifs7+CAqXCQmHZ7FAnGxtsSyha+ZQUqYgT5Zv0sf
-	Iswn0fv7CRPMIzvmwdhKEic+v4WyJSTW7IdZ6iHRNfU+IyRYm5gkXn+dyziBUX4WImRnIdk2
-	C2HbAkbmVYySqQXFuempxaYFRnmp5XrFibnFpXnpesn5uZsYwVGv5bWDcdk5n0OMAhyMSjy8
-	K3YKxwqxJpYVV+YeYpTgYFYS4c0PE4kV4k1JrKxKLcqPLyrNSS0+xCjNwaIkzjuJ9WqMkEB6
-	YklqdmpqQWoRTJaJg1OqgVEpnVfBkn1N1CLnS+6OvgfDeP4KxIXtnPxXTFciQeSB4OytCnc9
-	Q++kfZpkrrHj2bTTOaGBqloTRU6fi6w4pyPYtWEr59+s8s9PPj5Q/dzz/nXm/PsuHz5NLFrv
-	sDCBY7Pck55zEdtsSo+kcX6//erz9Vrx3iW68Uv643cs0D//XXRJqbJ64jklluKMREMt5qLi
-	RABP1Wi49gIAAA==
-X-CMS-RootMailID: 20190626043433epcms5p84b9b6580f6c6444e69b85525863460ea
-References: <20190626094804epcms5p259576d5f98e8caf2968f7303676beb4a@epcms5p2>
-	<20190626065847.GA14605@infradead.org>
-	<20190626043433epcms5p84b9b6580f6c6444e69b85525863460ea@epcms5p8>
-	<CGME20190626043433epcms5p84b9b6580f6c6444e69b85525863460ea@epcms5p4>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+	Thu, 27 Jun 2019 07:05:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1561619117;
+	bh=4sMYL/vEnFR3JJT1yrTXKeeZBriSZ99gcmBVQPeanvA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=ou36ma9pIfK8dHNclgs1noT/MtX+sA0jszvw2qqktBI0k/jiXntFE9wnYEXwFXhCz
+	eV/0NdpCw1OP/InYN6MODkWArQCj05X6ScVlHBn1eTpLiS3WIrm/cjYJjoR5neJevQ
+	wLMRqjxMU7DZOsP7gPkKNAuzGhZjgi3cRU+llTmI=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 59AD76038E
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
+Received: by mail-ed1-f50.google.com with SMTP id e3so5980795edr.10
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 27 Jun 2019 00:05:16 -0700 (PDT)
+X-Gm-Message-State: APjAAAXZVr1BMgC030btuDoxrE2GXSU/RBcUjg7T2cbAGSoJcUtjfAbh
+	VCtqpPfdlfNcvdetiFMaGIzb2sYWhdhx9wnAYWs=
+X-Google-Smtp-Source: APXvYqy6/T0+BAERf4oMw5abJsW76giuCjeiXeBDMRRBEFACHq6VcztnGhX1IL9uJkMy8ums6cUkmiXVqPScbQRjh1Y=
+X-Received: by 2002:a17:906:3c1:: with SMTP id
+	c1mr1624686eja.221.1561619115146; 
+	Thu, 27 Jun 2019 00:05:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190612071554.13573-1-vivek.gautam@codeaurora.org>
+	<20190612071554.13573-4-vivek.gautam@codeaurora.org>
+	<20190614040520.GK22737@tuxbook-pro>
+	<3e1f5e03-6448-8730-056d-fc47bdd71b3f@codeaurora.org>
+	<20190618175218.GH4270@fuggles.cambridge.arm.com>
+	<CAFp+6iEynLa=Jt_-oAwt4zmzxzhEXtWNCmghz6rFzcpQVGwrMg@mail.gmail.com>
+	<20190624170348.7dncuc5qezqeyvq2@willie-the-truck>
+	<CAFp+6iF0TQtAy2JFXk6zjX5GpjeLFesqPZV6ezbDXmc85yvMEA@mail.gmail.com>
+	<20190625133924.fqq3y7p3i3fqem5p@willie-the-truck>
+	<CAFp+6iH-KzX7x1j8AAuKJcOP6v=fyP-yLvaeeE_Ly3oueu_ngg@mail.gmail.com>
+	<20190626144844.key3n6ueb6skgkp4@willie-the-truck>
+In-Reply-To: <20190626144844.key3n6ueb6skgkp4@willie-the-truck>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Date: Thu, 27 Jun 2019 12:35:02 +0530
+X-Gmail-Original-Message-ID: <CAFp+6iGvUd6QhmEO0rSSXAZnYt3x_5G0HuGUJYZ203W1_ER+=w@mail.gmail.com>
+Message-ID: <CAFp+6iGvUd6QhmEO0rSSXAZnYt3x_5G0HuGUJYZ203W1_ER+=w@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: Add support to handle Qcom's
+	wait-for-safe logic
+To: Will Deacon <will@kernel.org>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+	<devicetree@vger.kernel.org>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Will Deacon <will.deacon@arm.com>,
+	open list <linux-kernel@vger.kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	David Brown <david.brown@linaro.org>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	robh+dt <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -99,35 +113,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: sathya.m@samsung.com
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-SSB0cmllZCB0byBhcHBseSB0aGUgcGF0Y2ggKEFNRCBJT01NVSBkcml2ZXIgdG8gdXNlIGRtYS1p
-b21tdSkgdG8gbGludXgga2VyZW5sIDUuMS4xNSBidXQgaXQgZ2l2ZXMgbWUgc29tZSBlcnJvcnMu
-IApEb3dubG9hZGVkIHRoZSBwYXRjaCBmcm9tIGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcv
-cGF0Y2gvMTA5NjAxNS8KCklzIHRoaXMgdGhlIHJpZ2h0IHdheSBpbSBkb2luZz8KClBsZWFzZSBs
-ZXQgbWUga25vdy4KClRoYW5rcywKU2F0aHlhwqANCsKgDQotLS0tLS0tLS0gT3JpZ2luYWwgTWVz
-c2FnZSAtLS0tLS0tLS0NClNlbmRlciA6IFNhdGh5YXZhdGhpIE3CoDxzYXRoeWEubUBzYW1zdW5n
-LmNvbT7CoEVuZ2luZWVyL0hvc3QgU29mdHdhcmUgL1NTSVIvU2Ftc3VuZyBFbGVjdHJvbmljcw0K
-RGF0ZSAgIDogMjAxOS0wNi0yNiAxNToyMSAoR01UKzU6MzApDQpUaXRsZSAgOiBSRTogUmU6IENN
-QSBpbiBBTUQgSU9NTVUgZHJpdmVyDQpUbyA6IG51bGw8aGNoQGluZnJhZGVhZC5vcmc+DQpDQyA6
-IG51bGw8aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc+DQrCoA0KRGVhcsKgQ2hyaXN0
-b3BoLA0KwqANClRoYW5rc8KgZm9ywqB0aGXCoHJlcGx5Lg0KY2FuwqB5b3XCoHBsZWFzZcKgbGV0
-wqBtZcKga25vd8Kgd2hpY2jCoGtlcm5lbMKgaGFzwqBpdD8NCsKgDQrCoA0KVGhhbmtzLA0KU2F0
-aHlhwqANCsKgDQotLS0tLS0tLS3CoE9yaWdpbmFswqBNZXNzYWdlwqAtLS0tLS0tLS0NClNlbmRl
-csKgOsKgQ2hyaXN0b3BowqBIZWxsd2lnwqA8aGNoQGluZnJhZGVhZC5vcmc+DQpEYXRlwqDCoMKg
-OsKgMjAxOS0wNi0yNsKgMTI6MjjCoChHTVQrNTozMCkNClRpdGxlwqDCoDrCoFJlOsKgQ01BwqBp
-bsKgQU1EwqBJT01NVcKgZHJpdmVyDQpUb8KgOsKgU2F0aHlhdmF0aGnCoE08c2F0aHlhLm1Ac2Ft
-c3VuZy5jb20+DQpDQ8KgOsKgbnVsbDxpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZz4N
-CsKgDQpUb21zwqBjb252ZXJzaW9uwqBvZsKgdGhlwqBBTUTCoElPTU1VwqBkcml2ZXLCoHRvwqB1
-c2XCoGRtYS1pb21tdcKgYWRkc8KgQ01BDQpzdXBwb3J0wqA6KQ0KwqANCsKgDQpSZWdhcmRzLA0K
-U2F0aHlhDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
-aW9tbXXCoG1haWxpbmfCoGxpc3QNCmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnDQpo
-dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ0K
-wqANClJlZ2FyZHMsDQpTYXRoeWEKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+On Wed, Jun 26, 2019 at 8:18 PM Will Deacon <will@kernel.org> wrote:
+>
+> On Wed, Jun 26, 2019 at 12:03:02PM +0530, Vivek Gautam wrote:
+> > On Tue, Jun 25, 2019 at 7:09 PM Will Deacon <will@kernel.org> wrote:
+> > >
+> > > On Tue, Jun 25, 2019 at 12:34:56PM +0530, Vivek Gautam wrote:
+> > > > On Mon, Jun 24, 2019 at 10:33 PM Will Deacon <will@kernel.org> wrote:
+> > > > > Instead, I think this needs to be part of a separate file that is maintained
+> > > > > by you, which follows on from the work that Krishna is doing for nvidia
+> > > > > built on top of Robin's prototype patches:
+> > > > >
+> > > > > http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/smmu-impl
+> > > >
+> > > > Looking at this branch quickly, it seem there can be separate implementation
+> > > > level configuration file that can be added.
+> > > > But will this also handle separate page table ops when required in future.
+> > >
+> > > Nothing's set in stone, but having the implementation-specific code
+> > > constrain the page-table format (especially wrt quirks) sounds reasonable to
+> > > me. I'm currently waiting for Krishna to respin the nvidia changes [1] on
+> > > top of this so that we can see how well the abstractions are holding up.
+> >
+> > Sure. Would you want me to try Robin's branch and take out the qualcomm
+> > related stuff to its own implementation? Or, would you like me to respin this
+> > series so that you can take it in to enable SDM845 boards such as, MTP
+> > and dragonboard to have a sane build - debian, etc. so people benefit
+> > out of it.
+>
+> I can't take this series without Acks on the firmware calling changes, and I
+> plan to send my 5.3 patches to Joerg at the end of the week so they get some
+> time in -next. In which case, I think it may be worth you having a play with
+> the branch above so we can get a better idea of any additional smmu_impl hooks
+> you may need.
+
+Cool. I will play around with it and get something tangible and meaningful.
+
+>
+> > Qualcomm stuff is lying in qcom-smmu and arm-smmu and may take some
+> > time to stub out the implementation related details.
+>
+> Not sure I follow you here. Are you talking about qcom_iommu.c?
+
+That's right. The qcom_iommu.c solved a different issue of secure context bank
+allocations, when Rob forked out this driver and reused some of the
+arm-smmu.c stuff.
+
+We will take a look at that once we start adding the qcom implementation.
+
+Thanks
+Vivek
+
+>
+> Will
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
