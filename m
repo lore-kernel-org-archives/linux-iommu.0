@@ -2,82 +2,85 @@ Return-Path: <SRS0=o8L7=U6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DACEC06511
-	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 18:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF56C5B578
+	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 21:49:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C70821841
-	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 18:36:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6F0C920B7C
+	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 21:49:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jRjwVcrQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C70821841
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r+J3BWcp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6F0C920B7C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A4494CDB;
-	Mon,  1 Jul 2019 18:36:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 416CABBC;
+	Mon,  1 Jul 2019 21:49:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5EF2BC00
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3A681AE0
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  1 Jul 2019 18:36:16 +0000 (UTC)
+	Mon,  1 Jul 2019 21:49:55 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-vk1-f195.google.com (mail-vk1-f195.google.com
-	[209.85.221.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AD410832
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+	[209.85.210.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DA48D832
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  1 Jul 2019 18:36:15 +0000 (UTC)
-Received: by mail-vk1-f195.google.com with SMTP id w186so2899959vkd.11
+	Mon,  1 Jul 2019 21:49:54 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id r1so7181098pfq.12
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 01 Jul 2019 11:36:15 -0700 (PDT)
+	Mon, 01 Jul 2019 14:49:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=ME/BMFz6NjZC07J0/XWrhiS+OPbFaTEtUu/72plFOIs=;
-	b=jRjwVcrQqXZNLpn3VqHQ3MNa85+tUsohQg8XyZGRfIVSN9Dg4ifRAkBUmZRDluUndU
-	DwyOoDiibj9Hqm0vxcf9whB4JTjNMbHhRhF7Zt3xAQE4EnxfNeP0slrYel8Kh8TdNCDz
-	3rakNvIy/gyaTwUK+L28P6T36xww+8w7c/VJsP9Bui57GEXN9W0EhTeMdYCN+SKfFczz
-	Ij3FEA4vevsqUeueZwJSjsQW8vQ6TBmGJAiGYuy6ZJXP3KS0BByhUboKXHO6jxGNMem+
-	hSOrrt0L509dYmb6kxlKdzNf4AqXAurpg39HNaSvBIW8+ccaColJ3RJauD3Uru+EK5kC
-	4RvQ==
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=qrAn2xUKRq25y9kmzyaSOl6EHUIG32pV7WxMNDG8GTU=;
+	b=r+J3BWcpMj4stnUQYC0UzYxus0LNbXZ5INvJM2e5T4JIlGrVQqhWSbGBRKIyPr535q
+	8T93C+kbCyES+mBJZR9vt94+hsAfRX4P5uErBtHBheWxL238GDa9in27SoyF8aMms66F
+	IHIpfeMYQEQS8gasoKDX/WcpFaaAK/v/gFJ0VEHsCTN4MtrbkqP+ia5TDYgUpZKobLmP
+	wblE/51iRadAFKuCgP6eWWFUWjzAhQr5oDFH8HsC3KkFmT3AvD9cz3OpPpna9NegTqKu
+	wyuxVglV4HU+6Agumkq3w1jx5uipzIUPZfJYhIQYn21ZRvT6cIRDz/M+2RrOFoiFYeH9
+	dN0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=ME/BMFz6NjZC07J0/XWrhiS+OPbFaTEtUu/72plFOIs=;
-	b=YC4/0p7ku+y8gY8M/bX8owjC6vtH4VJtqHCIHQlE5yLmUNNUumX723ymOIIvSKk7ch
-	eLJEW4+tgSlSdjXyFinx3cqoMbVsYTt4xNhCU5P2Mc7GUSsH7SIOInGt6Gjg3QL8w5vu
-	WCL1Y84JLZtK5Q0IBhDtTUhdbska4M3KZxBE2ZdxjpGnudFs7MAm3h9sjqYYTbJDlL5n
-	ClVOiaAyZjjIjK8QE4DKttA6oQI/35t0KH7hCqFIhR5qf9t8ogjFquazbt8wORxPYMqd
-	qNqbiNYEVdDdsppgaFdjUYLRB1bVYL/CrUZrEjmj5m4ZE/f9owbONdy/vTO5IQwjeakz
-	2cBA==
-X-Gm-Message-State: APjAAAVAag2Cs3RPuNPo4nBP1m+BVO4EVV3KD1He2UjT5c/n1/EnjYm2
-	bfohpFoiPZT6v7bK+AT6ZT9GHPuV+lC9dSls9fU=
-X-Google-Smtp-Source: APXvYqxHi98I0sWxmIGmh3jNQhZD68UapxsiPklkNgaXVkZVV94WssxNS+ZXvzcSmlI/hWtXHMrtuNrf4wiVPtP41OQ=
-X-Received: by 2002:a1f:2896:: with SMTP id o144mr3294269vko.73.1562006174652; 
-	Mon, 01 Jul 2019 11:36:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <CACDBo564RoWpi8y2pOxoddnn0s3f3sA-fmNxpiXuxebV5TFBJA@mail.gmail.com>
-	<CACDBo55GfomD4yAJ1qaOvdm8EQaD-28=etsRHb39goh+5VAeqw@mail.gmail.com>
-	<20190626175131.GA17250@infradead.org>
-	<CACDBo56fNVxVyNEGtKM+2R0X7DyZrrHMQr6Yw4NwJ6USjD5Png@mail.gmail.com>
-	<c9fe4253-5698-a226-c643-32a21df8520a@arm.com>
-	<CACDBo57CcYQmNrsTdMbax27nbLyeMQu4kfKZOzNczNcnde9g3Q@mail.gmail.com>
-In-Reply-To: <CACDBo57CcYQmNrsTdMbax27nbLyeMQu4kfKZOzNczNcnde9g3Q@mail.gmail.com>
-From: Pankaj Suryawanshi <pankajssuryawanshi@gmail.com>
-Date: Tue, 2 Jul 2019 00:06:03 +0530
-Message-ID: <CACDBo54TUut15pr0pJ_6TcQxu-wc5uo5vEJ+bsU6L=abBoN80Q@mail.gmail.com>
-Subject: Re: DMA-API attr - DMA_ATTR_NO_KERNEL_MAPPING
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=qrAn2xUKRq25y9kmzyaSOl6EHUIG32pV7WxMNDG8GTU=;
+	b=OrUPWnox0z+EuvpRkrxCYhFQ4hs0SBp6JuM+qWRD8BqZ2OnJW7kzVyDAulhobaJddk
+	U5+ZqRO9O6ZgVsktN99kMrzY1eRiBH0mSpbAERkppRIVqozvHpbhhlADbjSK4LxYfI4o
+	Um5shFcpNgVU34KL5bKIqLlQwl0oRKChgdY71hJEI0QN4OTFYslr9L87A+H0vLjqpqQ8
+	T9GgusBbmMV+PzwHOJ5+iVbP7GkoPewQtSs+B4Ic85TEeDgkt0dI+GBNgGZlESCCmWo2
+	UZXtTFRVIAP8OZpDqv735F7pmjYijhYNTebjvyL6EA3rcoUOjJRA24NcJBrwo9Jy0wLb
+	Q1nA==
+X-Gm-Message-State: APjAAAVccqNXav6a8PS6/o75zCjJDyrXQcUYjiP8nMN7rh5ZHC/uKXfk
+	meJcKrFdd/MqreCEHer6Zjc=
+X-Google-Smtp-Source: APXvYqybnVoHn0Mqql3MjYii8qxRZOBUD7/F4uVFfVlZKVv479rac3TNe4yf3ed1olx5G9I8U1x/2g==
+X-Received: by 2002:a17:90a:26a1:: with SMTP id
+	m30mr1595227pje.59.1562017794264; 
+	Mon, 01 Jul 2019 14:49:54 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
+	[216.228.112.22])
+	by smtp.gmail.com with ESMTPSA id a3sm463514pje.3.2019.07.01.14.49.53
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Mon, 01 Jul 2019 14:49:53 -0700 (PDT)
+Date: Mon, 1 Jul 2019 14:50:17 -0700
+From: Nicolin Chen <nicoleotsuka@gmail.com>
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
-	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-	Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH] iommu/dma: Fix calculation overflow in __finalise_sg()
+Message-ID: <20190701215016.GA16247@Asurada-Nvidia.nvidia.com>
+References: <20190622043814.5003-1-nicoleotsuka@gmail.com>
+	<20190701122158.GE8166@8bytes.org>
+	<91a389be-fd76-c87f-7613-8cc972b69685@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <91a389be-fd76-c87f-7613-8cc972b69685@arm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -95,128 +98,52 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jul 1, 2019 at 11:17 PM Pankaj Suryawanshi
-<pankajssuryawanshi@gmail.com> wrote:
->
->
->
->
-> On Mon, Jul 1, 2019 at 7:39 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 28/06/2019 17:29, Pankaj Suryawanshi wrote:
->> > On Wed, Jun 26, 2019 at 11:21 PM Christoph Hellwig <hch@infradead.org> wrote:
->> >>
->> >> On Wed, Jun 26, 2019 at 10:12:45PM +0530, Pankaj Suryawanshi wrote:
->> >>> [CC: linux kernel and Vlastimil Babka]
->> >>
->> >> The right list is the list for the DMA mapping subsystem, which is
->> >> iommu@lists.linux-foundation.org.  I've also added that.
->> >>
->> >>>> I am writing driver in which I used DMA_ATTR_NO_KERNEL_MAPPING attribute
->> >>>> for cma allocation using dma_alloc_attr(), as per kernel docs
->> >>>> https://www.kernel.org/doc/Documentation/DMA-attributes.txt  buffers
->> >>>> allocated with this attribute can be only passed to user space by calling
->> >>>> dma_mmap_attrs().
->> >>>>
->> >>>> how can I mapped in kernel space (after dma_alloc_attr with
->> >>>> DMA_ATTR_NO_KERNEL_MAPPING ) ?
->> >>
->> >> You can't.  And that is the whole point of that API.
->> >
->> > 1. We can again mapped in kernel space using dma_remap() api , because
->> > when we are using  DMA_ATTR_NO_KERNEL_MAPPING for dma_alloc_attr it
->> > returns the page as virtual address(in case of CMA) so we can mapped
->> > it again using dma_remap().
->>
->> No, you really can't. A caller of dma_alloc_attrs(...,
->> DMA_ATTR_NO_KERNEL_MAPPING) cannot make any assumptions about the void*
->> it returns, other than that it must be handed back to dma_free_attrs()
->> later. The implementation is free to ignore the flag and give back a
->> virtual mapping anyway. Any driver which depends on how one particular
->> implementation on one particular platform happens to behave today is,
->> essentially, wrong.
->
->
-> Here is the example that i have tried in my driver.
-> ///////////////code snippet/////////////////////////////////////////////////////////////////////////
->
-> For CMA allocation using DMA API with DMA_ATTR_NO_KERNEL_MAPPING  :-
->
-> if(strcmp("video",info->name) == 0)
->         {
->         printk("Testing CMA Alloc %s\n", info->name);
->         info->dma_virt = dma_alloc_attrs(pmap_device, info->size, &phys, GFP_KERNEL,
->                         DMA_ATTR_WRITE_COMBINE | DMA_ATTR_FORCE_CONTIGUOUS | DMA_ATTR_NO_KERNEL_MAPPING);
->         if (!info->dma_virt) {
->                 pr_err("\x1b[31m" "pmap: cma: failed to alloc %s" "\x1b[0m\n",
->                                 info->name);
->                 return 0;
->         }
->                 __dma_remap(info->dma_virt, info->size, PAGE_KERNEL); // /*TO DO pgprot we will be taken from attr */  // we will use this only when virtual mapping is required.
->                 virt = page_address(info->dma_virt); // will use this virtual when kernel mapping needed.
->         }
->
-> For CMA free using DMA api with DMA_ATTR_NO_KERNEL_MAPPING:-
->
-> if(strcmp("video",info->name) == 0)
->         {
->         printk("Testing CMA Release\n");
->         __dma_remap(info->dma_virt, info->size, PAGE_KERNEL);
->         dma_free_attrs(pmap_device, info->size, info->dma_virt, phys,
->                         DMA_ATTR_WRITE_COMBINE | DMA_ATTR_FORCE_CONTIGUOUS | DMA_ATTR_NO_KERNEL_MAPPING);
->         }
->
-> Flow of Function calls :-
->
-> 1. static void *__dma_alloc() // .want_vaddr = ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) == 0)
->
-> 2.cma_allocator :-
->                             i.  static void *cma_allocator_alloc ()
->                             ii. static void *__alloc_from_contiguous()  // file name :- ./arch/arm/mm/dma-mapping.c
->                                                                      if (!want_vaddr)
->                                                                                     goto out; // condition true for DMA_ATTR_NO_KERNEL_MAPPING
->
->                                                                      if (PageHighMem(page)) {
->                                                                      ptr = __dma_alloc_remap(page, size, GFP_KERNEL, prot, caller);
->                                                                      if (!ptr) {
->                                                                                 dma_release_from_contiguous(dev, page, count);
->                                                                                 return NULL;
->                                                                       }
->                                                                      } else {
->                                                                      __dma_remap(page, size, prot);
->                                                                     ptr = page_address(page);
->                                                                      }
->
->                                                                    out:
->                                                                   *ret_page = page; // return  page
->                                                                    return ptr;  // nothing in ptr
->                                                                   }
->                             iii. struct page *dma_alloc_from_contiguous()
->                             iv. cma_alloc()
-> 3. dma_alloc () // returns
-> return args.want_vaddr ? addr : page; // returns page which is return by alloc_from_contiguous().
->
-> What wrong with this if we already know page is returning dma_alloc_attr().
-> we can use dma_remap in our driver and free as freed in static void __free_from_contiguous ().
-> Please let me know if i missing anything.
->
->> > 2. We can mapped in kernel space using vmap() as used for ion-cma
->> > https://github.com/torvalds/linux/tree/master/drivers/staging/android/ion
->> >   as used in function ion_heap_map_kernel().
->> >
->> > Please let me know if i am missing anything.
->>
->> If you want a kernel mapping, *don't* explicitly request not to have a
->> kernel mapping in the first place. It's that simple.
->
->
-> Do you mean do not use dma-api ? because if i used dma-api it will give you mapped virtual address.
-> or i have to use directly cma_alloc() in my driver. // if i used this approach i need to reserved more vmalloc area.
->
-> Any help would be appreciated.
->>
->>
->> Robin.
+Hi Robin,
+
+On Mon, Jul 01, 2019 at 01:39:55PM +0100, Robin Murphy wrote:
+> > > The max_len is a u32 type variable so the calculation on the
+> > > left hand of the last if-condition will potentially overflow
+> > > when a cur_len gets closer to UINT_MAX -- note that there're
+> > > drivers setting max_seg_size to UINT_MAX:
+> > >    drivers/dma/dw-edma/dw-edma-core.c:745:
+> > >      dma_set_max_seg_size(dma->dev, U32_MAX);
+> > >    drivers/dma/dma-axi-dmac.c:871:
+> > >      dma_set_max_seg_size(&pdev->dev, UINT_MAX);
+> > >    drivers/mmc/host/renesas_sdhi_internal_dmac.c:338:
+> > >      dma_set_max_seg_size(dev, 0xffffffff);
+> > >    drivers/nvme/host/pci.c:2520:
+> > >      dma_set_max_seg_size(dev->dev, 0xffffffff);
+> > > 
+> > > So this patch just casts the cur_len in the calculation to a
+> > > size_t type to fix the overflow issue, as it's not necessary
+> > > to change the type of cur_len after all.
+> > > 
+> > > Fixes: 809eac54cdd6 ("iommu/dma: Implement scatterlist segment merging")
+> > > Cc: stable@vger.kernel.org
+> > > Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+> > 
+> > Looks good to me, but I let Robin take a look too before I apply it,
+> > Robin?
+> I'll need to take a closer look at how exactly an overflow would happen here
+
+It was triggered by a test case that was trying to map a 4GB
+dma_buf (1000+ nents in the scatterlist). This function then
+seemed to reduce the nents by merging most of them, probably
+because they were contiguous.
+
+> (just got back off some holiday), but my immediate thought is that if this
+> is a real problem, then what about 32-bit builds where size_t would still
+> overflow?
+
+I think most of callers are also using size_t type for their
+size parameters like dma_buf, so the cur_len + s_length will
+unlikely go higher than UINT_MAX. But just in case that some
+driver allocates a large sg with a size parameter defined in
+64-bit and uses this map() function, so it might be safer to
+change to "size_t" here to "u64"?
+
+Thank you
+Nicolin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
