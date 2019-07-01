@@ -2,63 +2,47 @@ Return-Path: <SRS0=o8L7=U6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F509C0650E
-	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 12:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE2BEC0650E
+	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 12:22:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4F89520B7C
-	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 12:19:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F89520B7C
+	by mail.kernel.org (Postfix) with ESMTPS id C68E520B7C
+	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 12:22:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C68E520B7C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6BD092969;
-	Mon,  1 Jul 2019 12:19:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B8AE1472;
+	Mon,  1 Jul 2019 12:22:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E3634285B;
-	Mon,  1 Jul 2019 12:19:17 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 994071161
+	for <iommu@lists.linux-foundation.org>;
+	Mon,  1 Jul 2019 12:22:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 764B7836;
-	Mon,  1 Jul 2019 12:19:17 +0000 (UTC)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2BE85832
+	for <iommu@lists.linux-foundation.org>;
+	Mon,  1 Jul 2019 12:22:02 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id B9E84229; Mon,  1 Jul 2019 14:19:15 +0200 (CEST)
-Date: Mon, 1 Jul 2019 14:19:14 +0200
+	id 82844229; Mon,  1 Jul 2019 14:22:00 +0200 (CEST)
+Date: Mon, 1 Jul 2019 14:21:59 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v4 0/5] iommu/amd: Convert the AMD iommu driver to the
-	dma-iommu api
-Message-ID: <20190701121914.GD8166@8bytes.org>
-References: <20190613223901.9523-1-murphyt7@tcd.ie>
-	<20190624061945.GA4912@infradead.org>
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: Re: [PATCH] iommu/dma: Fix calculation overflow in __finalise_sg()
+Message-ID: <20190701122158.GE8166@8bytes.org>
+References: <20190622043814.5003-1-nicoleotsuka@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190624061945.GA4912@infradead.org>
+In-Reply-To: <20190622043814.5003-1-nicoleotsuka@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Heiko Stuebner <heiko@sntech.de>, Will Deacon <will.deacon@arm.com>,
-	virtualization@lists.linux-foundation.org,
-	David Brown <david.brown@linaro.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org,
-	Andy Gross <agross@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-	linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-kernel@vger.kernel.org, Tom Murphy <murphyt7@tcd.ie>,
-	iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,22 +60,30 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
-	
-On Sun, Jun 23, 2019 at 11:19:45PM -0700, Christoph Hellwig wrote:
-> Joerg, any chance you could review this?  Toms patches to convert the
-> AMD and Intel IOMMU drivers to the dma-iommu code are going to make my
-> life in DMA land significantly easier, so I have a vested interest
-> in this series moving forward :)
+On Fri, Jun 21, 2019 at 09:38:14PM -0700, Nicolin Chen wrote:
+> The max_len is a u32 type variable so the calculation on the
+> left hand of the last if-condition will potentially overflow
+> when a cur_len gets closer to UINT_MAX -- note that there're
+> drivers setting max_seg_size to UINT_MAX:
+>   drivers/dma/dw-edma/dw-edma-core.c:745:
+>     dma_set_max_seg_size(dma->dev, U32_MAX);
+>   drivers/dma/dma-axi-dmac.c:871:
+>     dma_set_max_seg_size(&pdev->dev, UINT_MAX);
+>   drivers/mmc/host/renesas_sdhi_internal_dmac.c:338:
+>     dma_set_max_seg_size(dev, 0xffffffff);
+>   drivers/nvme/host/pci.c:2520:
+>     dma_set_max_seg_size(dev->dev, 0xffffffff);
+> 
+> So this patch just casts the cur_len in the calculation to a
+> size_t type to fix the overflow issue, as it's not necessary
+> to change the type of cur_len after all.
+> 
+> Fixes: 809eac54cdd6 ("iommu/dma: Implement scatterlist segment merging")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
 
-I really appreciate Toms work on this. Tom, please rebase and resubmit
-this series after the next merge window and I will do more performance
-testing on it. If all goes well I and no other issues show up I can
-apply it for v5.4.
-
-Regards,
-
-	Joerg
+Looks good to me, but I let Robin take a look too before I apply it,
+Robin?
 
 _______________________________________________
 iommu mailing list
