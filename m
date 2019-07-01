@@ -3,58 +3,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225EBC06510
-	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 08:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A783CC0650E
+	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 08:59:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 032092089C
-	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 08:48:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 032092089C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 78F6920B7C
+	for <iommu@archiver.kernel.org>; Mon,  1 Jul 2019 08:59:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78F6920B7C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B2374713C;
-	Mon,  1 Jul 2019 08:48:38 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 36012714A;
+	Mon,  1 Jul 2019 08:59:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C2F9EACC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2C6B07142
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  1 Jul 2019 08:48:36 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6214570D
+	Mon,  1 Jul 2019 08:59:49 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C1725832
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  1 Jul 2019 08:48:36 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id AC3E268B20; Mon,  1 Jul 2019 10:48:33 +0200 (CEST)
-Date: Mon, 1 Jul 2019 10:48:33 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <maxime.ripard@bootlin.com>,
-	Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-	Daniel Vetter <daniel@ffwll.ch>, Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, Ian Abbott <abbotti@mev.co.uk>,
-	H Hartley Sweeten <hsweeten@visionengravers.com>
-Subject: Re: use exact allocation for dma coherent memory
-Message-ID: <20190701084833.GA22927@lst.de>
-References: <20190614134726.3827-1-hch@lst.de>
+	Mon,  1 Jul 2019 08:59:48 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id E20E3AD2A;
+	Mon,  1 Jul 2019 08:59:46 +0000 (UTC)
+Date: Mon, 1 Jul 2019 10:59:44 +0200
+From: "jroedel@suse.de" <jroedel@suse.de>
+To: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
+Subject: Re: Device specific pass through in host systems - discuss user
+	interface
+Message-ID: <20190701085944.GB3131@suse.de>
+References: <FFF73D592F13FD46B8700F0A279B802F48DA796E@ORSMSX114.amr.corp.intel.com>
+	<b7a71b22-aa3b-5ac3-7285-5231f84ee979@intel.com>
+	<FFF73D592F13FD46B8700F0A279B802F48DD2A02@ORSMSX114.amr.corp.intel.com>
+	<20190610135617.GA27166@araj-mobl1.jf.intel.com>
+	<FFF73D592F13FD46B8700F0A279B802F48DE19EC@ORSMSX114.amr.corp.intel.com>
+	<20190611045614.GB6469@araj-mobl1.jf.intel.com>
+	<FFF73D592F13FD46B8700F0A279B802F48DE94B3@ORSMSX114.amr.corp.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190614134726.3827-1-hch@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-	Intel Linux Wireless <linuxwifi@intel.com>,
-	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-	intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-	linux-media@vger.kernel.org
+In-Reply-To: <FFF73D592F13FD46B8700F0A279B802F48DE94B3@ORSMSX114.amr.corp.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>, "Tian,
+	Kevin" <kevin.tian@intel.com>, "Raj,
+	Ashok" <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"hch@lst.de" <hch@lst.de>, "Lu, Baolu" <baolu.lu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,20 +74,22 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Jun 14, 2019 at 03:47:10PM +0200, Christoph Hellwig wrote:
-> Switching to a slightly cleaned up alloc_pages_exact is pretty easy,
-> but it turns out that because we didn't filter valid gfp_t flags
-> on the DMA allocator, a bunch of drivers were passing __GFP_COMP
-> to it, which is rather bogus in too many ways to explain.  Arm has
-> been filtering it for a while, but this series instead tries to fix
-> the drivers and warn when __GFP_COMP is passed, which makes it much
-> larger than just adding the functionality.
+On Tue, Jun 11, 2019 at 05:27:15PM +0000, Prakhya, Sai Praneeth wrote:
+> 1. Since we already have "type" file, which is "read-only", we could make it R/W.
+> 
+> The present value shows the existing type of default domain.
+> If user wants to change it (Eg: from DMA to IDENTITY or vice versa), he attempts to write the new value.
+> Kernel performs checks to make sure that the driver in unbinded and it's safe to change the default domain type.
+> After successfully changing the default_domain type internally, kernel reflects the new value in the file.
+> Ay errors in the process will be reported in dmesg.
 
-Dear driver maintainers,
+I prefer this way. Writing to the file should fail with -EBUSY when it
+is not safe to change the default domain-type. Writing should only
+succeed when no device in the group is assigned to a device driver.
 
-can you look over the patches touching your drivers, please?  I'd
-like to get as much as possible of the driver patches into this
-merge window, so that it can you through your maintainer trees.
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
