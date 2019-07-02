@@ -2,61 +2,97 @@ Return-Path: <SRS0=9cYo=U7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C86C06510
-	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 406DEC06510
+	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 20:31:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 160762082F
-	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:53:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 160762082F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0A4A121897
+	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 20:31:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y0c3Zbx/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A4A121897
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C329E1D48;
-	Tue,  2 Jul 2019 15:53:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B0A862155;
+	Tue,  2 Jul 2019 20:31:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 71BD51D0A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DEA61212A
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  2 Jul 2019 15:49:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 96FB5836
+	Tue,  2 Jul 2019 20:26:46 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f193.google.com (mail-qt1-f193.google.com
+	[209.85.160.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B431F782
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  2 Jul 2019 15:49:38 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 22AF128;
-	Tue,  2 Jul 2019 08:49:38 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BFEAD3F246;
-	Tue,  2 Jul 2019 08:49:35 -0700 (PDT)
-Subject: Re: [RFC PATCH 0/2] Support for TI Page-based Address Translator
-To: "Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, Santosh Shilimkar
-	<ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, David Airlie <airlied@linux.ie>,
-	Daniel Vetter <daniel@ffwll.ch>, Tero Kristo <t-kristo@ti.com>,
-	William Mills <wmills@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	John Stultz <john.stultz@linaro.org>
-References: <20190607193523.25700-1-afd@ti.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <f706bfe0-fdf6-afdd-fea7-13b78b16cdee@arm.com>
-Date: Tue, 2 Jul 2019 16:49:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Tue,  2 Jul 2019 20:26:45 +0000 (UTC)
+Received: by mail-qt1-f193.google.com with SMTP id h24so50069qto.0
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 02 Jul 2019 13:26:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=aM7TEuKumvUMe3SbB3+XmY4I8aQKFrST7xx8ZApBOcM=;
+	b=Y0c3Zbx/HklkB3ZQUMPUnd3cuD2+CXBd/qv6pY0OkEJTg/+z03wi0oF1CvFJYsaUkZ
+	4zHdADC6xI/bjao5kJDJAheklnpxnkP641vjkWWAD6dXp83EK+bgIBqRrhp5R+e9GhCz
+	zCGy7sAlE3XsPTlqcBMQPxFhUYqm5Yg2JhxtQejc7AlhxkxL1xSYYXRVk6l4V/OzXbVr
+	F2N4nVUleb2SyZc8sgC2poSaaQ+CgHZiuCRWIi+78YgA4bpPN5KzS8h7SHnC0qrpdgs/
+	YZxrEttZo98QKBCnwb20wNLc3UgkTsaMpeRea2ivIhOm1ixPyotAxAUbQecsF1pxUnqv
+	E1Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=aM7TEuKumvUMe3SbB3+XmY4I8aQKFrST7xx8ZApBOcM=;
+	b=UUS+ATgIAbqALb3rU3/SH56jyQLxl9y55vitTpy8jlaOgpOlvKTFQYZHjXpGwdR42W
+	9nxgP0wpecKt1Qujg+69gAaal40ks8W7DJRR4md51RD2DxTzJQ15fgrzJvdwROH/f5HX
+	pdYlXsayuE+bD8dxHXpTpX0ma6AkFZ8gG4Qc092kbCSVow8inEw/x4twSpHf8Flpfqhe
+	V8V/Q6gBTexA9tWzg1REdIMurZNwQR1t++0YH9I8SnCoYcLJJ5YFdkUXbweGAqEQqK0o
+	E/hzrGhsMGS8+ueo3YpdLvxWyXoA4IGYJFnhzpwFiAKuu/d+uuYKASpefh9QEP+UOP9X
+	llsA==
+X-Gm-Message-State: APjAAAWbP4GPaXcpOf52qoeryL2eSV5dFvm4cIxcWZUreizbjL9cuVbU
+	WlOQ3WQWNEw+jvWITJWOZhQku9XuTQMUSg==
+X-Google-Smtp-Source: APXvYqxHJBmk2g0xpgV4VUHGsLMtAzHIfVL3nv7QBsGBAXs8stUf9sYJU+dbtd2Yxf85Z4tgzUX1Cw==
+X-Received: by 2002:a0c:b755:: with SMTP id q21mr27605171qve.92.1562099204529; 
+	Tue, 02 Jul 2019 13:26:44 -0700 (PDT)
+Received: from localhost ([2601:184:4780:7861:5010:5849:d76d:b714])
+	by smtp.gmail.com with ESMTPSA id f6sm6267017qkk.79.2019.07.02.13.26.43
+	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+	Tue, 02 Jul 2019 13:26:44 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: iommu@lists.linux-foundation.org,
+	dri-devel@lists.freedesktop.org
+Subject: [PATCH 0/2] iommu: handle drivers that manage iommu directly
+Date: Tue,  2 Jul 2019 13:26:17 -0700
+Message-Id: <20190702202631.32148-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190607193523.25700-1-afd@ti.com>
-Content-Language: en-GB
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
-	linux-media@vger.kernel.org
+Cc: Ulf Hansson <ulf.hansson@linaro.org>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Daniel Vetter <daniel.vetter@ffwll.ch>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Rob Clark <robdclark@chromium.org>, Jonathan Marek <jonathan@marek.ca>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Mamta Shukla <mamtashukla555@gmail.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Joerg Roedel <jroedel@suse.de>, "open list:DRM DRIVER FOR MSM ADRENO GPU"
+	<linux-arm-msm@vger.kernel.org>, Abhinav Kumar <abhinavk@codeaurora.org>,
+	Bruce Wang <bzwang@chromium.org>, Sean Paul <seanpaul@chromium.org>,
+	Jeykumar Sankaran <jsanka@codeaurora.org>,
+	aarch64-laptops@lists.linaro.org, Boris Brezillon <bbrezillon@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	Sudeep Holla <sudeep.holla@arm.com>, Joe Perches <joe@perches.com>,
+	"open list:DRM DRIVER FOR MSM ADRENO GPU"
+	<freedreno@lists.freedesktop.org>, Daniel Mack <daniel@zonque.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,153 +105,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 07/06/2019 20:35, Andrew F. Davis wrote:
-> Hello all,
-> 
-> So I've got a new IP on our new SoC I'm looking to make use of and would
-> like some help figuring out what framework best matches its function. The
-> IP is called a "Page-based Address Translator" or PAT. A PAT instance
-> (there are 5 of these things on our J721e device[0]) is basically a
-> really simple IOMMU sitting on the interconnect between the device bus
-> and what is effectively our northbridge called
-> MSMC (DRAM/SRAM/L3-Cache/Coherency controller).
-> 
-> Simplified it looks about like this:
-> 
->           CPUs
->            |
-> DRAM --- MSMC --- SRAM/L3
->            |
->          NAVSS - (PATs)
->            |
->    --- Device Bus ---------
->   |      |      |          |
-> Device  Device  Device   etc..
-> 
-> Each PAT has a set a window in high memory (about 0x48_0000_0000 area)
-> for which any transaction with an address targeting its window will be
-> routed into that PAT. The PAT then does a simple calculation based on
-> the how far into the window the address is and the current page size,
-> does a lookup to an internally held table of translations, then sends the
-> transaction back out on the interconnect with a new address. Usually this
-> address should be towards somewhere in DRAM, but can be some other device
-> or even back into PAT (I'm not sure there is a valid use-case for this
-> but just a point of interest).
-> 
-> My gut reaction is that this is an IOMMU which belongs in the IOMMU
-> subsystem. But there are a couple oddities that make me less sure it is
-> really suitable for the IOMMU framework. First it doesn't sit in front of
-> any devices, it sits in front of *all* devices, this means we would have
-> every device claim it as an IOMMU parent, even though many devices also
-> have a traditional IOMMU connected. Second, there is only a limited
-> window of address space per PAT, this means we will get fragmentation and
-> allocation failures on occasion, in this way it looks to me more like AGP
-> GART. Third, the window is in high-memory, so unlike some IOMMU devices
-> which can be used to allow DMA to high-mem from low-mem only devices, PAT
-> can't be used for that. Lastly it doesn't provide any isolation, if the
-> access does not target the PAT window it is not used (that is not to say
-> we don't have isolation, just that it is taken care of by other parts of
-> the interconnect).
-> 
-> This means, to me, that PAT has one main purpose: making
-> physically-contiguous views of scattered pages in system memory for DMA.
-> But it does that really well, the whole translation table is held in a
-> PAT-internal SRAM giving 1 bus cycle latency and at full bus bandwidth.
-> 
-> So what are my options here, is IOMMU the right way to go or not?
+From: Rob Clark <robdclark@chromium.org>
 
-FWIW, that sounds almost exactly like my (vague) understanding of other 
-GARTs, and as such should be pretty well manageable via the IOMMU API - 
-we already have tegra-gart, for example. The aperture contention issue 
-could certainly be mitigated by letting the firmware claim it's only 
-associated with the display and any other devices which really need it.
+One of the challenges we need to handle to enable the aarch64 laptops
+upstream is dealing with the fact that the bootloader enables the
+display and takes the corresponding SMMU context-bank out of BYPASS.
+Unfortunately, currently, the IOMMU framework attaches a DMA (or
+potentially an IDENTITY) domain before the driver is probed and has
+a chance to intervene and shutdown[1] scanout.  Which makes things go
+horribly wrong.
 
-A further interesting avenue of investigation - now that Christoph's 
-recent work has made it much more possible - would be a second set of 
-IOMMU DMA ops tailored for "GART-like" domains where force_aperture=0, 
-which could behave as dma-direct wherever possible and only use IOMMU 
-remaps when absolutely necessary.
+This also happens to solve a problem that is blocking us from supporting
+per-context pagetables on the GPU, due to domain that is attached before
+driver has a chance to attach it's own domain for the GPU.
 
-Robin.
+But since the driver is managing it's own iommu domains directly, and
+does not use dev->iommu_group->default_domain at all, the simple
+solution to both problems is to just avoid attaching that domain in the
+first place.
 
-> Looking around the kernel I also see the char dev ARP/GART interface
-> which looks like a good fit, but also looks quite dated and my guess
-> deprecated at this point. Moving right along..
-> 
-> Another thing I saw is we have the support upstream of the DMM device[1]
-> available in some OMAPx/AM57x SoCs. I'm a little more familiar with this
-> device. The DMM is a bundle of IPs and in fact one of them is called
-> "PAT" and it even does basically the same thing this incarnation of "PAT"
-> does. It's upstream integration design is a bit questionable
-> unfortunately, the DMM support was integrated into the OMAPDRM display
-> driver, which does make some sense then given its support for rotation
-> (using TILER IP contained in DMM). The issue with this was that the
-> DMM/TILER/PAT IP was not part of the our display IP, but instead out at
-> the end of the shared device bus, inside the external memory controller.
-> Like this new PAT this meant that any IP that could make use of it, but
-> only the display framework could actually provide buffers backed by it.
-> This meant, for instance, if we wanted to decode some video buffer using
-> our video decoder we would have to allocate from DRM framework then pass
-> that over to the V4L2 system. This doesn't make much sense and required
-> the user-space to know about this odd situation and allocate from the
-> right spot or else have to use up valuable CMA space or waste memory with
-> dedicated carveouts.
-> 
-> Another idea would be to have this as a special central allocator
-> (exposed through DMA-BUF heaps[2] or ION) that would give out normal
-> system memory as a DMA-BUF but remap it with PAT if a device that only
-> supports contiguous memory tries to attach/map that DMA-BUF.
-> 
-> One last option would be to allow user-space to choose to make the buffer
-> contiguous when it needs. That's what the driver in this series allows.
-> We expose a remapping device, user-space passes it a non-contiguous
-> DMA-BUF handle and it passes a contiguous one back. Simple as that.
-> 
-> So how do we use this, lets take Android for example, we don't know at
-> allocation time if a rendering buffer will end up going back into the GPU
-> for further processing, or if it will be consumed directly by the display.
-> This is a problem for us as our GPU can work with non-contiguous buffers
-> but our display cannot, so any buffers that could possibly go to the
-> display at some point currently needs to be allocated as contiguous from
-> the start, this leads to a lot of unneeded use of carveout/CMA memory.
-> With this driver on the other hand, we allocate regular non-contiguous
-> system memory (again using DMA-BUF heaps, but ION could work here too),
-> then only when a buffer is about to be sent to the display we pass the
-> handle to this DMA-BUF to our driver here and take the handle it gives
-> back and pass that to the display instead.
-> 
-> As said, it is probably not the ideal solution but it does work and was
-> used for some early testing of the IP.
-> 
-> Well, sorry for the wall of text.
-> Any and all suggestions very welcome and appreciated.
-> 
-> Thanks,
-> Andrew
-> 
-> [0] http://www.ti.com/lit/pdf/spruil1
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/omapdrm/omap_dmm_tiler.c
-> [2] https://lkml.org/lkml/2019/6/6/1211
-> 
-> Andrew F. Davis (2):
->    dt-bindings: soc: ti: Add TI PAT bindings
->    soc: ti: Add Support for the TI Page-based Address Translator (PAT)
-> 
->   .../devicetree/bindings/misc/ti,pat.txt       |  34 ++
->   drivers/soc/ti/Kconfig                        |   9 +
->   drivers/soc/ti/Makefile                       |   1 +
->   drivers/soc/ti/ti-pat.c                       | 569 ++++++++++++++++++
->   include/uapi/linux/ti-pat.h                   |  44 ++
->   5 files changed, 657 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/misc/ti,pat.txt
->   create mode 100644 drivers/soc/ti/ti-pat.c
->   create mode 100644 include/uapi/linux/ti-pat.h
-> 
+[1] Eventually we want to be able to do a seemless transition from
+    efifb to drm/msm... but first step is to get the core (iommu,
+    clk, genpd) pieces in place, so a first step of disabling the
+    display before first modeset enables us to get all of the
+    dependencies outside of drm/msm in place.  And this at least
+    gets us parity with windows (which also appears to do a modeset
+    between bootloader and HLSO).  After that there is a bunch of
+    drm/msm work that is probably not interesting to folks outside
+    of dri-devel.
+
+Rob Clark (2):
+  iommu: add support for drivers that manage iommu explicitly
+  drm/msm: mark devices where iommu is managed by driver
+
+ drivers/gpu/drm/msm/adreno/adreno_device.c |  1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c    |  1 +
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c   |  1 +
+ drivers/gpu/drm/msm/msm_drv.c              |  1 +
+ drivers/iommu/iommu.c                      | 11 +++++++++++
+ include/linux/device.h                     |  3 ++-
+ 6 files changed, 17 insertions(+), 1 deletion(-)
+
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
