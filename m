@@ -2,93 +2,60 @@ Return-Path: <SRS0=9cYo=U7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C7EC06510
-	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C86C06510
+	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:53:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 213142146F
-	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:13:45 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="PZuM9EJb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 213142146F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 160762082F
+	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:53:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 160762082F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F15A1C69;
-	Tue,  2 Jul 2019 15:13:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C329E1D48;
+	Tue,  2 Jul 2019 15:53:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E6D3D17E8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 71BD51D0A
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  2 Jul 2019 09:48:50 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
-	[209.85.221.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8B971836
+	Tue,  2 Jul 2019 15:49:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 96FB5836
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  2 Jul 2019 09:48:49 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id p13so16983230wru.10
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 02 Jul 2019 02:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
-	h=subject:to:cc:references:from:message-id:date:user-agent
-	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=UdYCIZGQ7tAt7A88vWqWA422Qpx5IuQReKn9P3m3xX8=;
-	b=PZuM9EJbQb3YhMp+qaw+VF6BwkhSSyYMquhljCcVZSO+tjIcy06ofVIGPbwYNmREXi
-	pRcuGFWqgU+nSlEobDVIi97m26fD20LGHZVCL/m/+eGewb0yAO7NlvlF/9gBYN5Rgy0B
-	UVcUnIeulg2Ui8pzjNF76wVB55J/p/3pN/YrI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-	:user-agent:mime-version:in-reply-to:content-language
-	:content-transfer-encoding;
-	bh=UdYCIZGQ7tAt7A88vWqWA422Qpx5IuQReKn9P3m3xX8=;
-	b=hOBxWrs6dVeLLs+SqDzxEYBKzz2b1mjjbSW8y8BM2Nkbst9xPFsM0N+p8g3YM2ouND
-	OzlMFq4jMOVNM+Ak23MtxiPPgoI5dL9cJ9n0DGcsUXcBGYb6SweOIqrDBIgAaZkSxWlH
-	nUXxI6BOwUcLUSYH3WvhxHj6TCiCguXMKtEnc16OiFDi4tRdYAH1LQO6xOjnmBm2jKey
-	Rn0ELdEk2MC+lJxfZ0v5zvIfKF2VUwKVzXA714ImFqCmij7gtQtJR6hXWmotNWQ2QeSM
-	q37HPr5FeBdVWiwJ5zHnZFk3lXgtvN0qqXz7A2SBkXxtrPSqUVmOKOWkmQ7vuR+zjWKN
-	qPuA==
-X-Gm-Message-State: APjAAAWEMc6WeuWDE5xmOFRFCONKF1A8ZOrWBGs7YH9crV/gU8cQhO2W
-	1YcVEk1FmjaZYnda8+vVcRzNXA==
-X-Google-Smtp-Source: APXvYqw+cs3wphtlInYiqa/iYYLL5YBkbuaWsrCFwdpkqDK8kfUrPvl8YI8TNOvUo+26MvPNs1E1Ng==
-X-Received: by 2002:adf:9487:: with SMTP id 7mr9588274wrr.114.1562060928176;
-	Tue, 02 Jul 2019 02:48:48 -0700 (PDT)
-Received: from [10.176.68.244] ([192.19.248.250])
-	by smtp.gmail.com with ESMTPSA id
-	l124sm2421987wmf.36.2019.07.02.02.48.46
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Tue, 02 Jul 2019 02:48:47 -0700 (PDT)
-Subject: Re: use exact allocation for dma coherent memory
-To: Christoph Hellwig <hch@lst.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, 
-	David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, Ian Abbott <abbotti@mev.co.uk>, 
-	H Hartley Sweeten <hsweeten@visionengravers.com>
-References: <20190614134726.3827-1-hch@lst.de> <20190701084833.GA22927@lst.de>
-Message-ID: <74eb9d99-6aa6-d1ad-e66d-6cc9c496b2f3@broadcom.com>
-Date: Tue, 2 Jul 2019 11:48:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.2
+	Tue,  2 Jul 2019 15:49:38 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 22AF128;
+	Tue,  2 Jul 2019 08:49:38 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BFEAD3F246;
+	Tue,  2 Jul 2019 08:49:35 -0700 (PDT)
+Subject: Re: [RFC PATCH 0/2] Support for TI Page-based Address Translator
+To: "Andrew F. Davis" <afd@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, Santosh Shilimkar
+	<ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, David Airlie <airlied@linux.ie>,
+	Daniel Vetter <daniel@ffwll.ch>, Tero Kristo <t-kristo@ti.com>,
+	William Mills <wmills@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	John Stultz <john.stultz@linaro.org>
+References: <20190607193523.25700-1-afd@ti.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <f706bfe0-fdf6-afdd-fea7-13b78b16cdee@arm.com>
+Date: Tue, 2 Jul 2019 16:49:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190701084833.GA22927@lst.de>
-Content-Language: en-US
-X-Mailman-Approved-At: Tue, 02 Jul 2019 15:11:13 +0000
-Cc: devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-	Intel Linux Wireless <linuxwifi@intel.com>,
-	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-	intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+In-Reply-To: <20190607193523.25700-1-afd@ti.com>
+Content-Language: en-GB
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
 	linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -102,48 +69,153 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Arend Van Spriel via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Arend Van Spriel <arend.vanspriel@broadcom.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-
-
-On 7/1/2019 10:48 AM, Christoph Hellwig wrote:
-> On Fri, Jun 14, 2019 at 03:47:10PM +0200, Christoph Hellwig wrote:
->> Switching to a slightly cleaned up alloc_pages_exact is pretty easy,
->> but it turns out that because we didn't filter valid gfp_t flags
->> on the DMA allocator, a bunch of drivers were passing __GFP_COMP
->> to it, which is rather bogus in too many ways to explain.  Arm has
->> been filtering it for a while, but this series instead tries to fix
->> the drivers and warn when __GFP_COMP is passed, which makes it much
->> larger than just adding the functionality.
+On 07/06/2019 20:35, Andrew F. Davis wrote:
+> Hello all,
 > 
-> Dear driver maintainers,
+> So I've got a new IP on our new SoC I'm looking to make use of and would
+> like some help figuring out what framework best matches its function. The
+> IP is called a "Page-based Address Translator" or PAT. A PAT instance
+> (there are 5 of these things on our J721e device[0]) is basically a
+> really simple IOMMU sitting on the interconnect between the device bus
+> and what is effectively our northbridge called
+> MSMC (DRAM/SRAM/L3-Cache/Coherency controller).
 > 
-> can you look over the patches touching your drivers, please?  I'd
-> like to get as much as possible of the driver patches into this
-> merge window, so that it can you through your maintainer trees.
+> Simplified it looks about like this:
+> 
+>           CPUs
+>            |
+> DRAM --- MSMC --- SRAM/L3
+>            |
+>          NAVSS - (PATs)
+>            |
+>    --- Device Bus ---------
+>   |      |      |          |
+> Device  Device  Device   etc..
+> 
+> Each PAT has a set a window in high memory (about 0x48_0000_0000 area)
+> for which any transaction with an address targeting its window will be
+> routed into that PAT. The PAT then does a simple calculation based on
+> the how far into the window the address is and the current page size,
+> does a lookup to an internally held table of translations, then sends the
+> transaction back out on the interconnect with a new address. Usually this
+> address should be towards somewhere in DRAM, but can be some other device
+> or even back into PAT (I'm not sure there is a valid use-case for this
+> but just a point of interest).
+> 
+> My gut reaction is that this is an IOMMU which belongs in the IOMMU
+> subsystem. But there are a couple oddities that make me less sure it is
+> really suitable for the IOMMU framework. First it doesn't sit in front of
+> any devices, it sits in front of *all* devices, this means we would have
+> every device claim it as an IOMMU parent, even though many devices also
+> have a traditional IOMMU connected. Second, there is only a limited
+> window of address space per PAT, this means we will get fragmentation and
+> allocation failures on occasion, in this way it looks to me more like AGP
+> GART. Third, the window is in high-memory, so unlike some IOMMU devices
+> which can be used to allow DMA to high-mem from low-mem only devices, PAT
+> can't be used for that. Lastly it doesn't provide any isolation, if the
+> access does not target the PAT window it is not used (that is not to say
+> we don't have isolation, just that it is taken care of by other parts of
+> the interconnect).
+> 
+> This means, to me, that PAT has one main purpose: making
+> physically-contiguous views of scattered pages in system memory for DMA.
+> But it does that really well, the whole translation table is held in a
+> PAT-internal SRAM giving 1 bus cycle latency and at full bus bandwidth.
+> 
+> So what are my options here, is IOMMU the right way to go or not?
 
-You made me look ;-) Actually not touching my drivers so I'm off the 
-hook. However, I was wondering if drivers could know so I decided to 
-look into the DMA-API.txt documentation which currently states:
+FWIW, that sounds almost exactly like my (vague) understanding of other 
+GARTs, and as such should be pretty well manageable via the IOMMU API - 
+we already have tegra-gart, for example. The aperture contention issue 
+could certainly be mitigated by letting the firmware claim it's only 
+associated with the display and any other devices which really need it.
 
-"""
-The flag parameter (dma_alloc_coherent() only) allows the caller to
-specify the ``GFP_`` flags (see kmalloc()) for the allocation (the
-implementation may choose to ignore flags that affect the location of
-the returned memory, like GFP_DMA).
-"""
+A further interesting avenue of investigation - now that Christoph's 
+recent work has made it much more possible - would be a second set of 
+IOMMU DMA ops tailored for "GART-like" domains where force_aperture=0, 
+which could behave as dma-direct wherever possible and only use IOMMU 
+remaps when absolutely necessary.
 
-I do expect you are going to change that description as well now that 
-you are going to issue a warning on __GFP_COMP. Maybe include that in 
-patch 15/16 where you introduce that warning.
+Robin.
 
-Regards,
-Arend
+> Looking around the kernel I also see the char dev ARP/GART interface
+> which looks like a good fit, but also looks quite dated and my guess
+> deprecated at this point. Moving right along..
+> 
+> Another thing I saw is we have the support upstream of the DMM device[1]
+> available in some OMAPx/AM57x SoCs. I'm a little more familiar with this
+> device. The DMM is a bundle of IPs and in fact one of them is called
+> "PAT" and it even does basically the same thing this incarnation of "PAT"
+> does. It's upstream integration design is a bit questionable
+> unfortunately, the DMM support was integrated into the OMAPDRM display
+> driver, which does make some sense then given its support for rotation
+> (using TILER IP contained in DMM). The issue with this was that the
+> DMM/TILER/PAT IP was not part of the our display IP, but instead out at
+> the end of the shared device bus, inside the external memory controller.
+> Like this new PAT this meant that any IP that could make use of it, but
+> only the display framework could actually provide buffers backed by it.
+> This meant, for instance, if we wanted to decode some video buffer using
+> our video decoder we would have to allocate from DRM framework then pass
+> that over to the V4L2 system. This doesn't make much sense and required
+> the user-space to know about this odd situation and allocate from the
+> right spot or else have to use up valuable CMA space or waste memory with
+> dedicated carveouts.
+> 
+> Another idea would be to have this as a special central allocator
+> (exposed through DMA-BUF heaps[2] or ION) that would give out normal
+> system memory as a DMA-BUF but remap it with PAT if a device that only
+> supports contiguous memory tries to attach/map that DMA-BUF.
+> 
+> One last option would be to allow user-space to choose to make the buffer
+> contiguous when it needs. That's what the driver in this series allows.
+> We expose a remapping device, user-space passes it a non-contiguous
+> DMA-BUF handle and it passes a contiguous one back. Simple as that.
+> 
+> So how do we use this, lets take Android for example, we don't know at
+> allocation time if a rendering buffer will end up going back into the GPU
+> for further processing, or if it will be consumed directly by the display.
+> This is a problem for us as our GPU can work with non-contiguous buffers
+> but our display cannot, so any buffers that could possibly go to the
+> display at some point currently needs to be allocated as contiguous from
+> the start, this leads to a lot of unneeded use of carveout/CMA memory.
+> With this driver on the other hand, we allocate regular non-contiguous
+> system memory (again using DMA-BUF heaps, but ION could work here too),
+> then only when a buffer is about to be sent to the display we pass the
+> handle to this DMA-BUF to our driver here and take the handle it gives
+> back and pass that to the display instead.
+> 
+> As said, it is probably not the ideal solution but it does work and was
+> used for some early testing of the IP.
+> 
+> Well, sorry for the wall of text.
+> Any and all suggestions very welcome and appreciated.
+> 
+> Thanks,
+> Andrew
+> 
+> [0] http://www.ti.com/lit/pdf/spruil1
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/omapdrm/omap_dmm_tiler.c
+> [2] https://lkml.org/lkml/2019/6/6/1211
+> 
+> Andrew F. Davis (2):
+>    dt-bindings: soc: ti: Add TI PAT bindings
+>    soc: ti: Add Support for the TI Page-based Address Translator (PAT)
+> 
+>   .../devicetree/bindings/misc/ti,pat.txt       |  34 ++
+>   drivers/soc/ti/Kconfig                        |   9 +
+>   drivers/soc/ti/Makefile                       |   1 +
+>   drivers/soc/ti/ti-pat.c                       | 569 ++++++++++++++++++
+>   include/uapi/linux/ti-pat.h                   |  44 ++
+>   5 files changed, 657 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/misc/ti,pat.txt
+>   create mode 100644 drivers/soc/ti/ti-pat.c
+>   create mode 100644 include/uapi/linux/ti-pat.h
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
