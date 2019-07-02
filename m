@@ -2,62 +2,94 @@ Return-Path: <SRS0=9cYo=U7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D055C06510
-	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C7EC06510
+	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:13:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7943221479
-	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:02:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7943221479
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 213142146F
+	for <iommu@archiver.kernel.org>; Tue,  2 Jul 2019 15:13:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="PZuM9EJb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 213142146F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1961F19A8;
-	Tue,  2 Jul 2019 15:02:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F15A1C69;
+	Tue,  2 Jul 2019 15:13:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2DCCB19A8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E6D3D17E8
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  2 Jul 2019 14:59:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id C5496834
+	Tue,  2 Jul 2019 09:48:50 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+	[209.85.221.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8B971836
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  2 Jul 2019 14:59:45 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A1821424;
-	Tue,  2 Jul 2019 07:59:45 -0700 (PDT)
-Received: from [10.1.196.129] (ostrya.cambridge.arm.com [10.1.196.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8FE533F703;
-	Tue,  2 Jul 2019 07:59:43 -0700 (PDT)
-Subject: Re: [PATCH v3 8/9] iommu/arm-smmu-v3: Add support for PCI ATS
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>,
-	Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>
-References: <20190417182448.12382-1-jean-philippe.brucker@arm.com>
-	<20190417182448.12382-9-jean-philippe.brucker@arm.com>
-	<7fcd5263-8a20-11cb-0c20-9fee35fe65c1@arm.com>
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Message-ID: <433038b1-048b-57ab-db0e-5f9f940d52ce@arm.com>
-Date: Tue, 2 Jul 2019 15:59:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Tue,  2 Jul 2019 09:48:49 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id p13so16983230wru.10
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 02 Jul 2019 02:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+	h=subject:to:cc:references:from:message-id:date:user-agent
+	:mime-version:in-reply-to:content-language:content-transfer-encoding;
+	bh=UdYCIZGQ7tAt7A88vWqWA422Qpx5IuQReKn9P3m3xX8=;
+	b=PZuM9EJbQb3YhMp+qaw+VF6BwkhSSyYMquhljCcVZSO+tjIcy06ofVIGPbwYNmREXi
+	pRcuGFWqgU+nSlEobDVIi97m26fD20LGHZVCL/m/+eGewb0yAO7NlvlF/9gBYN5Rgy0B
+	UVcUnIeulg2Ui8pzjNF76wVB55J/p/3pN/YrI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+	:user-agent:mime-version:in-reply-to:content-language
+	:content-transfer-encoding;
+	bh=UdYCIZGQ7tAt7A88vWqWA422Qpx5IuQReKn9P3m3xX8=;
+	b=hOBxWrs6dVeLLs+SqDzxEYBKzz2b1mjjbSW8y8BM2Nkbst9xPFsM0N+p8g3YM2ouND
+	OzlMFq4jMOVNM+Ak23MtxiPPgoI5dL9cJ9n0DGcsUXcBGYb6SweOIqrDBIgAaZkSxWlH
+	nUXxI6BOwUcLUSYH3WvhxHj6TCiCguXMKtEnc16OiFDi4tRdYAH1LQO6xOjnmBm2jKey
+	Rn0ELdEk2MC+lJxfZ0v5zvIfKF2VUwKVzXA714ImFqCmij7gtQtJR6hXWmotNWQ2QeSM
+	q37HPr5FeBdVWiwJ5zHnZFk3lXgtvN0qqXz7A2SBkXxtrPSqUVmOKOWkmQ7vuR+zjWKN
+	qPuA==
+X-Gm-Message-State: APjAAAWEMc6WeuWDE5xmOFRFCONKF1A8ZOrWBGs7YH9crV/gU8cQhO2W
+	1YcVEk1FmjaZYnda8+vVcRzNXA==
+X-Google-Smtp-Source: APXvYqw+cs3wphtlInYiqa/iYYLL5YBkbuaWsrCFwdpkqDK8kfUrPvl8YI8TNOvUo+26MvPNs1E1Ng==
+X-Received: by 2002:adf:9487:: with SMTP id 7mr9588274wrr.114.1562060928176;
+	Tue, 02 Jul 2019 02:48:48 -0700 (PDT)
+Received: from [10.176.68.244] ([192.19.248.250])
+	by smtp.gmail.com with ESMTPSA id
+	l124sm2421987wmf.36.2019.07.02.02.48.46
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Tue, 02 Jul 2019 02:48:47 -0700 (PDT)
+Subject: Re: use exact allocation for dma coherent memory
+To: Christoph Hellwig <hch@lst.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <maxime.ripard@bootlin.com>, Sean Paul <sean@poorly.run>, 
+	David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, Ian Abbott <abbotti@mev.co.uk>, 
+	H Hartley Sweeten <hsweeten@visionengravers.com>
+References: <20190614134726.3827-1-hch@lst.de> <20190701084833.GA22927@lst.de>
+Message-ID: <74eb9d99-6aa6-d1ad-e66d-6cc9c496b2f3@broadcom.com>
+Date: Tue, 2 Jul 2019 11:48:44 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <7fcd5263-8a20-11cb-0c20-9fee35fe65c1@arm.com>
+In-Reply-To: <20190701084833.GA22927@lst.de>
 Content-Language: en-US
-Cc: "zhongmiao@hisilicon.com" <zhongmiao@hisilicon.com>,
-	"okaya@kernel.org" <okaya@kernel.org>, Sudeep Holla <Sudeep.Holla@arm.com>,
-	"rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "lenb@kernel.org" <lenb@kernel.org>
+X-Mailman-Approved-At: Tue, 02 Jul 2019 15:11:13 +0000
+Cc: devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
+	Intel Linux Wireless <linuxwifi@intel.com>,
+	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+	intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,48 +102,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: Arend Van Spriel via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Arend Van Spriel <arend.vanspriel@broadcom.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 01/07/2019 18:41, Robin Murphy wrote:
-> Hi Jean-Philippe,
-> 
-> I realise it's a bit late for a "review", but digging up the original 
-> patch seemed as good a place as any to raise this...
-> 
-> On 17/04/2019 19:24, Jean-Philippe Brucker wrote:
-> [...]
->> @@ -1740,6 +1906,9 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
->>   
->>   	master->domain = NULL;
->>   	arm_smmu_install_ste_for_dev(master);
->> +
->> +	/* Disabling ATS invalidates all ATC entries */
->> +	arm_smmu_disable_ats(master);
->>   }
-> 
-> Is that actually true? I had initially overlooked this entirely while 
-> diagnosing something else and thought that we were missing any ATC 
-> invalidation on detach at all, but even having looked again I'm not 
-> entirely convinced it's bulletproof.
-> 
-> Firstly, the ATS spec only seems to say that *enabling* the ATS 
-> capability invalidates all ATC entries, although I think any corner 
-> cases that that alone opens up should be at best theoretical. More 
-> importantly though, pci_disable_ats() might not actually touch the 
-> capability - given that, it seems possible to move a VF to a new domain, 
-> and if it's not reset, end up preserving now-bogus ATC entries despite 
-> the old domain being torn down and freed. Do we need an explicit ATC 
-> invalidation here to be 100% safe, or is there something else I'm missing?
 
-Good points, yes the comment is wrong and it looks like we need an
-explicit invalidation given the current pci_disable_ats()
-implementation. I'll send a fix shortly.
 
-Thanks,
-Jean
+On 7/1/2019 10:48 AM, Christoph Hellwig wrote:
+> On Fri, Jun 14, 2019 at 03:47:10PM +0200, Christoph Hellwig wrote:
+>> Switching to a slightly cleaned up alloc_pages_exact is pretty easy,
+>> but it turns out that because we didn't filter valid gfp_t flags
+>> on the DMA allocator, a bunch of drivers were passing __GFP_COMP
+>> to it, which is rather bogus in too many ways to explain.  Arm has
+>> been filtering it for a while, but this series instead tries to fix
+>> the drivers and warn when __GFP_COMP is passed, which makes it much
+>> larger than just adding the functionality.
+> 
+> Dear driver maintainers,
+> 
+> can you look over the patches touching your drivers, please?  I'd
+> like to get as much as possible of the driver patches into this
+> merge window, so that it can you through your maintainer trees.
+
+You made me look ;-) Actually not touching my drivers so I'm off the 
+hook. However, I was wondering if drivers could know so I decided to 
+look into the DMA-API.txt documentation which currently states:
+
+"""
+The flag parameter (dma_alloc_coherent() only) allows the caller to
+specify the ``GFP_`` flags (see kmalloc()) for the allocation (the
+implementation may choose to ignore flags that affect the location of
+the returned memory, like GFP_DMA).
+"""
+
+I do expect you are going to change that description as well now that 
+you are going to issue a warning on __GFP_COMP. Maybe include that in 
+patch 15/16 where you introduce that warning.
+
+Regards,
+Arend
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
