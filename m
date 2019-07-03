@@ -2,106 +2,91 @@ Return-Path: <SRS0=mxFs=VA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93699C0650E
-	for <iommu@archiver.kernel.org>; Wed,  3 Jul 2019 12:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EC3C0650E
+	for <iommu@archiver.kernel.org>; Wed,  3 Jul 2019 14:19:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6765C2187F
-	for <iommu@archiver.kernel.org>; Wed,  3 Jul 2019 12:48:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 75BCC21881
+	for <iommu@archiver.kernel.org>; Wed,  3 Jul 2019 14:19:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=wavesemi.onmicrosoft.com header.i=@wavesemi.onmicrosoft.com header.b="k90WjiK1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6765C2187F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mips.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VBVktxWH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75BCC21881
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 20070F3F;
-	Wed,  3 Jul 2019 12:48:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 313821045;
+	Wed,  3 Jul 2019 14:19:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9FE56F14
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C6BBB103C
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  3 Jul 2019 12:47:54 +0000 (UTC)
+	Wed,  3 Jul 2019 14:18:27 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com
-	(mail-eopbgr710131.outbound.protection.outlook.com [40.107.71.131])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 14C0E837
+Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
+	[209.85.208.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0F53B898
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  3 Jul 2019 12:47:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=wavesemi.onmicrosoft.com; s=selector1-wavesemi-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=76XIjbz8Uc7Tq+D1vwNiQ4/FI/+4VBwHzXo63jQcruU=;
-	b=k90WjiK1onDuCZbwTfI8aAescdsTNdVZSaeOXWICBFT2aRdfRyG2xWvLfJmEi7axWF98waJeyK2iDCylUsJsWIieoe5h0E+HI5OBDpZa5+8HjNGjT0EaNiKxU+UlUQaAUflWyJVu+XbkpEiZXcy+DPLR/Gd/WD3A5otkZcAzc9g=
-Received: from CY4PR2201MB1272.namprd22.prod.outlook.com (10.171.214.23) by
-	CY4PR2201MB1173.namprd22.prod.outlook.com (10.171.240.35) with
-	Microsoft SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2052.16; Wed, 3 Jul 2019 12:47:44 +0000
-Received: from CY4PR2201MB1272.namprd22.prod.outlook.com
-	([fe80::9554:3ef:4a67:87f8]) by
-	CY4PR2201MB1272.namprd22.prod.outlook.com
-	([fe80::9554:3ef:4a67:87f8%5]) with mapi id 15.20.2032.019;
-	Wed, 3 Jul 2019 12:47:44 +0000
-From: Paul Burton <paul.burton@mips.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] MIPS: only select ARCH_HAS_UNCACHED_SEGMENT for
-	non-coherent platforms
-Thread-Topic: [PATCH] MIPS: only select ARCH_HAS_UNCACHED_SEGMENT for
-	non-coherent platforms
-Thread-Index: AQHVL2OakQs3eFNofkSxhu39rzGYG6a43DeA
-Date: Wed, 3 Jul 2019 12:47:44 +0000
-Message-ID: <20190703124739.vgz7bwkjdyiwc7lx@pburton-laptop>
-References: <20190630164805.12229-1-hch@lst.de>
-In-Reply-To: <20190630164805.12229-1-hch@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LNXP265CA0040.GBRP265.PROD.OUTLOOK.COM
-	(2603:10a6:600:5c::28) To CY4PR2201MB1272.namprd22.prod.outlook.com
-	(2603:10b6:910:6e::23)
-user-agent: NeoMutt/20180716
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=pburton@wavecomp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2a02:c7f:5e43:2c00:50fd:bec4:fe7e:44e7]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a272da24-7363-4f22-ea9d-08d6ffb4a467
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);
-	SRVR:CY4PR2201MB1173; 
-x-ms-traffictypediagnostic: CY4PR2201MB1173:
-x-microsoft-antispam-prvs: <CY4PR2201MB1173B9EE193AC4CA12B87AF9C1FB0@CY4PR2201MB1173.namprd22.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 00872B689F
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(7916004)(136003)(39850400004)(346002)(366004)(396003)(376002)(199004)(189003)(53936002)(486006)(44832011)(11346002)(476003)(9686003)(6512007)(66446008)(64756008)(66556008)(66476007)(66946007)(73956011)(446003)(1076003)(2906002)(14454004)(68736007)(6246003)(58126008)(7736002)(316002)(305945005)(81166006)(8936002)(81156014)(6116002)(8676002)(6916009)(6486002)(54906003)(478600001)(229853002)(33716001)(6436002)(99286004)(71200400001)(386003)(6506007)(186003)(46003)(25786009)(71190400001)(4326008)(102836004)(52116002)(5660300002)(76176011)(42882007)(4744005)(14444005)(256004);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:CY4PR2201MB1173;
-	H:CY4PR2201MB1272.namprd22.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: wavecomp.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: U4vArmeBuGN1lU/zciNGRNBv+In7uCfNFuVlYyUhDgKA6kSi/k3HUmSdOMkBpockNAthxhp8QfpNiAqWYMKD5YrGN5Vqy/gD10+13l9OpWJW4VdrIxsZyDWUrgj/xfFbAb6I7+fQxkz27xcavrW/ydXraJIhWSIYXe9ZnXKILz/dB2IMHQtejm1WDwn1TzU75ecvdKtlQfiABQgiW/9lkA1O/cbllYHzhqiSu5ur9yY3J+2/zaCGTp+DovDqbb2xzXlo1BDZz+CyKNA5MxEDHCX/huzCnClE8xrfGoezMKuFrXIFpJt0O4vS6EPRHq33a2YqAWDw7yRCvYn5Sw49CmrOe+WAKR2r0iVHGn0ChZWajtkJybZidjC//ktqjcdGNLDi/09/FWS4imQyZbabQfw8wAHVlmCcQ0sfmOOLHsc=
-Content-ID: <59985F48F24AFA488F895AB8AD226DA5@namprd22.prod.outlook.com>
+	Wed,  3 Jul 2019 14:18:26 +0000 (UTC)
+Received: by mail-ed1-f65.google.com with SMTP id i11so2282088edq.0
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 03 Jul 2019 07:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=8yk0cmMEv+0MRszdLD3dUEUWJ8XlSxTYFd0KIq4hn+w=;
+	b=VBVktxWHDr/tcb4xMnf3yUMnjauIkACQ8w4TsjDkKJA0yHi/rKxm04J42qgrHUDJ6m
+	2kGNQFeB3/8j0J1I380Caebl4y9dHK7AQfbdoBEmzVtuWOVL67qlrULGwtq8L83HgU23
+	0/R+pMDqzoGh71vihJQaxt21fKME6ffuSsFp0FZe8TLhxHM2JqWFJMbua6tAoWhVjVag
+	yZqZPY1QZDiQiq9jDz4QQmUa7Qqv6fGCuJMOXA8Myl0lgeEyT7jwxAGisrfHJpwUWFZr
+	Dg9jDaQ4l70Wdy+/P83ey9vaYwwF33B+ljifhDqV33Jwe51HrJtZ/Ab5662GBfGHTPnf
+	1W8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=8yk0cmMEv+0MRszdLD3dUEUWJ8XlSxTYFd0KIq4hn+w=;
+	b=ICv0dWAvFf8RHVIN2gbP6PNwUBcYiu1XWiXoSoKlNVzRT9B7ObjZPsmVyUxDc1uQYr
+	yBLC6MwCrKPmq3g8RxZpWK2rW3pha2n2Bjz2RgVoXPEoBZvLVUNXC5Om1PeSSP4Es3vj
+	40EcKozoGC1cxbc7BIL49HB/T5VSfsqiEYMgfY/R85ff6eFBpvteTxcjlH79NegVgiKT
+	3UbNIEMkbOit2I178IpSEmOvVnnLTBHwhLqmKA22gAl+3AVjWGrScbaXpp5O0UQ/fQqA
+	/4O7+RQFJkX92wcvyHTtwPTAS7ynyNX37mFECeJdsbVYcPax0u9fGkJARCfsvaa7wKmn
+	GAPw==
+X-Gm-Message-State: APjAAAWrkNWgdQfyGZcWoqew5MeaGZF5ERbrjX4S6LePuE731oWWwcOd
+	q7sdoxZahJHm/2pKw82HwHsggR9J0zyBwCFtv6w=
+X-Google-Smtp-Source: APXvYqx0+oVtdHnixNwuU8fi/y+kTfkvf4ofilsk/qeaDhAQAHX/OpYwYivYh196b63WJsMfSphgpalrxzaAtAr6VTA=
+X-Received: by 2002:a50:9468:: with SMTP id q37mr42530358eda.163.1562163505578;
+	Wed, 03 Jul 2019 07:18:25 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: mips.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a272da24-7363-4f22-ea9d-08d6ffb4a467
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 12:47:44.1357 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pburton@wavecomp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR2201MB1173
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-	"linux@roeck-us.net" <linux@roeck-us.net>
+References: <20190702202631.32148-1-robdclark@gmail.com>
+	<20190702202631.32148-2-robdclark@gmail.com>
+	<2d612bbc-2d2d-f718-1499-79d5a55e0d00@arm.com>
+In-Reply-To: <2d612bbc-2d2d-f718-1499-79d5a55e0d00@arm.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 3 Jul 2019 07:18:09 -0700
+Message-ID: <CAF6AEGvp1yUquP2JnSWuOSpVscj+BXqkuK+7bHmAKuL3LL2ZaQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu: add support for drivers that manage iommu
+	explicitly
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Rob Clark <robdclark@chromium.org>, aarch64-laptops@lists.linaro.org,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	dri-devel <dri-devel@lists.freedesktop.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	Sudeep Holla <sudeep.holla@arm.com>, Joe Perches <joe@perches.com>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -119,23 +104,121 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+On Wed, Jul 3, 2019 at 5:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 02/07/2019 21:26, Rob Clark wrote:
+> > From: Rob Clark <robdclark@chromium.org>
+> >
+> > Avoid attaching any non-driver managed domain if the driver indicates
+> > that it manages the iommu directly.
+> >
+> > This solves a couple problems that drm/msm + arm-smmu has with the iommu
+> > framework:
+> >
+> > 1) In some cases the bootloader takes the iommu out of bypass and
+> >     enables the display.  This is in particular a problem on the aarch64
+> >     laptops that exist these days, and modern snapdragon android devices.
+> >     (Older devices also enabled the display in bootloader but did not
+> >     take the iommu out of bypass.)  Attaching a DMA or IDENTITY domain
+> >     while scanout is active, before the driver has a chance to intervene,
+> >     makes things go *boom*
+>
+> In the general case, we have to assume that things already went boom
+> long ago, as soon as the IOMMU itself was probed and reset. By the time
+> we get to the point of binding of a client driver, also assume that the
+> IOMMU is already powered off and stopping traffic because the RPM device
+> links aren't in place yet and it believes itself unused.
 
-On Sun, Jun 30, 2019 at 06:48:05PM +0200, Christoph Hellwig wrote:
-> While mips might architecturally have the uncached segment all the time,
-> the infrastructure to use it is only need on platforms where DMA is
-> at least partially incoherent.  Only select it for those configuration
-> to fix a build failure as the arch_dma_prep_coherent symbol is also only
-> provided for non-coherent platforms.
-> 
-> Fixes: 2e96e04d25 ("MIPS: use the generic uncached segment support in dma-direct")
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+you are correct that this is only part of what is needed to get things
+working.  We also need Bjorn's patch set to inherit SMR and CB config
+during init:
 
-Acked-by: Paul Burton <paul.burton@mips.com>
+https://www.spinics.net/lists/arm-kernel/msg732246.html
 
-Thanks,
-    Paul
+>
+> > 2) We are currently blocked on landing support for GPU per-context
+> >     pagetables because of the domain attached before driver's ->probe()
+> >     is called.
+>
+> I'm getting a little fed up of explaining that that problem is specific
+> to the current behaviour of one particular IOMMU driver and trying to
+> work around it anywhere other than in that driver is at best an
+> unreliable hack.
+
+Perhaps the GPU part of the problem.  The display part is not.
+However I'm fine to move the "don't actually attach" part into
+arm-smmu if that is preferred.  The next person to hit the same
+problem on a different iommu could certainly move the check or copy it
+into their iommu driver.
+
+> > This solves both problems.
+>
+> For a very, very specific value of "solve"... ;)
+
+well, "solve" == "it boots fine and doesn't explode"..
+
+I'm certainly happy to entertain alternative suggestions, but these
+are real problems that need solutions.
+
+BR,
+-R
+
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > ---
+> >   drivers/iommu/iommu.c  | 11 +++++++++++
+> >   include/linux/device.h |  3 ++-
+> >   2 files changed, 13 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 0c674d80c37f..efa0957f9772 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -1573,6 +1573,17 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+> >           domain->ops->is_attach_deferred(domain, dev))
+> >               return 0;
+> >
+> > +     /*
+> > +      * If driver is going to manage iommu directly, then avoid
+> > +      * attaching any non driver managed domain.  There could
+> > +      * be already active dma underway (ie. scanout in case of
+> > +      * bootloader enabled display), and interfering with that
+> > +      * will make things go *boom*
+> > +      */
+> > +     if ((domain->type != IOMMU_DOMAIN_UNMANAGED) &&
+> > +         dev->driver && dev->driver->driver_manages_iommu)
+> > +             return 0;
+>
+> This leaving things half-hanging is really ugly, but more than that it
+> assumes that allocating a default domain in the first place isn't
+> disruptive - I'm not 100% sure that's *always* the case today, and it's
+> definitely likely to change in future as part of improving the current
+> request_dm_for_dev() mechanism. As it happens, those proposed changes
+> would not only break this idea, but make it redundant, since they're
+> about forcing the default domain type to passthrough on a per-device
+> basis, which leads to an equivalent end result to this patch, but in a
+> cleaner and more robust manner.
+>
+> Robin.
+>
+> > +
+> >       if (unlikely(domain->ops->attach_dev == NULL))
+> >               return -ENODEV;
+> >
+> > diff --git a/include/linux/device.h b/include/linux/device.h
+> > index e138baabe01e..d98aa4d3c8c3 100644
+> > --- a/include/linux/device.h
+> > +++ b/include/linux/device.h
+> > @@ -282,7 +282,8 @@ struct device_driver {
+> >       struct module           *owner;
+> >       const char              *mod_name;      /* used for built-in modules */
+> >
+> > -     bool suppress_bind_attrs;       /* disables bind/unbind via sysfs */
+> > +     bool suppress_bind_attrs:1;     /* disables bind/unbind via sysfs */
+> > +     bool driver_manages_iommu:1;    /* driver manages IOMMU explicitly */
+> >       enum probe_type probe_type;
+> >
+> >       const struct of_device_id       *of_match_table;
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
