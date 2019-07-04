@@ -1,60 +1,80 @@
-Return-Path: <SRS0=mxFs=VA=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=qghM=VB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 524C7C06513
-	for <iommu@archiver.kernel.org>; Wed,  3 Jul 2019 20:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C39C0650E
+	for <iommu@archiver.kernel.org>; Thu,  4 Jul 2019 03:33:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 36668218A3
-	for <iommu@archiver.kernel.org>; Wed,  3 Jul 2019 20:35:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36668218A3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id B51982082E
+	for <iommu@archiver.kernel.org>; Thu,  4 Jul 2019 03:33:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j8/08T8J"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B51982082E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0E6B1EC0;
-	Wed,  3 Jul 2019 20:35:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 54437C4E;
+	Thu,  4 Jul 2019 03:33:12 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6F37EEB7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B9144C9F
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  3 Jul 2019 20:35:01 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D17E070D
+	Thu,  4 Jul 2019 02:36:27 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+	[209.85.215.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B9A3087C
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  3 Jul 2019 20:35:00 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
-	[10.5.11.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 434955944C;
-	Wed,  3 Jul 2019 20:34:55 +0000 (UTC)
-Received: from x1.home (ovpn-116-83.phx2.redhat.com [10.3.116.83])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 3E4FC18248;
-	Wed,  3 Jul 2019 20:34:52 +0000 (UTC)
-Date: Wed, 3 Jul 2019 14:34:51 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v7 3/6] vfio/type1: Update iova list on detach
-Message-ID: <20190703143451.0ae4e9f7@x1.home>
-In-Reply-To: <20190626151248.11776-4-shameerali.kolothum.thodi@huawei.com>
-References: <20190626151248.11776-1-shameerali.kolothum.thodi@huawei.com>
-	<20190626151248.11776-4-shameerali.kolothum.thodi@huawei.com>
-Organization: Red Hat
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.39]);
-	Wed, 03 Jul 2019 20:35:00 +0000 (UTC)
-Cc: kevin.tian@intel.com, kvm@vger.kernel.org, pmorel@linux.vnet.ibm.com,
-	linux-kernel@vger.kernel.org, xuwei5@hisilicon.com,
-	linuxarm@huawei.com, iommu@lists.linux-foundation.org
+	Thu,  4 Jul 2019 02:36:26 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id i18so2140346pgl.11
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 03 Jul 2019 19:36:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id;
+	bh=3tmiZiCH2XBVN5DuJQwuRPNtjxIcwvAWUQCPl8nlFS8=;
+	b=j8/08T8J4krcY8oeDaG8iVVGo9lDUlLhT7nM08zXXc+dclnwsab6iqduH7tHilXg1g
+	iSLsCS3QNXdkfi1FhjmW4M+qjeb6irGtZkh2B23TfRkOwhSRUjIrxy49y5Jortjk3bqM
+	F4tnycg+yEFACC1trpDUiej9M3IDJ8sncAwMfoeeVJlMNr+FfVENXns0vMOLK09IAINS
+	mJAG107H+F/holFUJnJS+bcpCZXn+xtxxC9qXA20WHYLRo/ss977B1Hi8tqclnGhOH/D
+	0UGxKsT3xi1+00z5+8m9DpbHsWYLYfvacof4ISc52xEy3N6v3wwpAlomqt3mtmo/Ey+n
+	Q6tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=3tmiZiCH2XBVN5DuJQwuRPNtjxIcwvAWUQCPl8nlFS8=;
+	b=eOdQn9kuf/7+4nxJD2ZQNvjVNRusS+P8JuB31qkFYOp/Rh6dGwQo7Qej5GGY8k/xKw
+	ShxoWrMDfi3qVPb0Ry6Guo170RNvY4D1nrNn/Sv06x+sAs8q2xZd147jvpRTm1XyvgRy
+	xYkQ6dzH9Nspgo1JvA4aNP3/Z4rEVLsg4RRCuc4e1iQG0MJ81HO6pcn9LPPdkj+xTehP
+	QMAwjGmPLXuPTYdZbG5r/DtCnzU53fQ2G1SDyYB8TmOgrtObFuxuiwMDaPgZlUN2rvxv
+	zTovOst7b1eifmVVg5PWbGudFO1Qv+nXSyyBkFZhLOO70d9m/5EaTmxd6N3VayutiZCv
+	plbA==
+X-Gm-Message-State: APjAAAXe9DdKC54F+m7xdP3EHwYZfHHrqV9BE0EENLnTfXrTa9aQYY+8
+	XTo9NMBFbWRq++nG07IYpX0=
+X-Google-Smtp-Source: APXvYqyk5Nfr9mkfmlo0wPAAUjVe5OCh9aS4oDX9RYtz0TWt4Psr0aPBzYiylWf+ahi1WXDd32HvNA==
+X-Received: by 2002:a63:d512:: with SMTP id c18mr42063797pgg.239.1562207786341;
+	Wed, 03 Jul 2019 19:36:26 -0700 (PDT)
+Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+	by smtp.googlemail.com with ESMTPSA id
+	t96sm3105193pjb.1.2019.07.03.19.36.24
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 03 Jul 2019 19:36:25 -0700 (PDT)
+From: Fuqian Huang <huangfq.daxian@gmail.com>
+To: 
+Subject: [Patch v2 06/10] iommu: using dev_get_drvdata directly
+Date: Thu,  4 Jul 2019 10:36:20 +0800
+Message-Id: <20190704023620.4689-1-huangfq.daxian@gmail.com>
+X-Mailer: git-send-email 2.11.0
+X-Mailman-Approved-At: Thu, 04 Jul 2019 03:33:10 +0000
+Cc: Fuqian Huang <huangfq.daxian@gmail.com>, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,158 +87,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, 26 Jun 2019 16:12:45 +0100
-Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
+Several drivers cast a struct device pointer to a struct
+platform_device pointer only to then call platform_get_drvdata().
+To improve readability, these constructs can be simplified
+by using dev_get_drvdata() directly.
 
-> Get a copy of iova list on _group_detach and try to update the list.
-> On success replace the current one with the copy. Leave the list as
-> it is if update fails.
-> 
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 91 +++++++++++++++++++++++++++++++++
->  1 file changed, 91 insertions(+)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index b6bfdfa16c33..e872fb3a0f39 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1873,12 +1873,88 @@ static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
->  	WARN_ON(iommu->notifier.head);
->  }
->  
-> +/*
-> + * Called when a domain is removed in detach. It is possible that
-> + * the removed domain decided the iova aperture window. Modify the
-> + * iova aperture with the smallest window among existing domains.
-> + */
-> +static void vfio_iommu_aper_expand(struct vfio_iommu *iommu,
-> +				   struct list_head *iova_copy)
-> +{
-> +	struct vfio_domain *domain;
-> +	struct iommu_domain_geometry geo;
-> +	struct vfio_iova *node;
-> +	dma_addr_t start = 0;
-> +	dma_addr_t end = (dma_addr_t)~0;
-> +
-> +	list_for_each_entry(domain, &iommu->domain_list, next) {
-> +		iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY,
-> +				      &geo);
-> +		if (geo.aperture_start > start)
-> +			start = geo.aperture_start;
-> +		if (geo.aperture_end < end)
-> +			end = geo.aperture_end;
-> +	}
-> +
-> +	/* Modify aperture limits. The new aper is either same or bigger */
-> +	node = list_first_entry(iova_copy, struct vfio_iova, list);
-> +	node->start = start;
-> +	node = list_last_entry(iova_copy, struct vfio_iova, list);
-> +	node->end = end;
-> +}
-> +
-> +/*
-> + * Called when a group is detached. The reserved regions for that
-> + * group can be part of valid iova now. But since reserved regions
-> + * may be duplicated among groups, populate the iova valid regions
-> + * list again.
-> + */
-> +static int vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
-> +				   struct list_head *iova_copy)
-> +{
-> +	struct vfio_domain *d;
-> +	struct vfio_group *g;
-> +	struct vfio_iova *node;
-> +	dma_addr_t start, end;
-> +	LIST_HEAD(resv_regions);
-> +	int ret;
-> +
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		list_for_each_entry(g, &d->group_list, next)
-> +			iommu_get_group_resv_regions(g->iommu_group,
-> +						     &resv_regions);
+Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+---
+Changes in v2:
+  - Make the commit message more clearly.
 
-Need to account for failure case here too.
+ drivers/iommu/omap-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +	}
-> +
-> +	if (list_empty(&resv_regions))
-> +		return 0;
-> +
-> +	node = list_first_entry(iova_copy, struct vfio_iova, list);
-> +	start = node->start;
-> +	node = list_last_entry(iova_copy, struct vfio_iova, list);
-> +	end = node->end;
-> +
-> +	/* purge the iova list and create new one */
-> +	vfio_iommu_iova_free(iova_copy);
-> +
-> +	ret = vfio_iommu_aper_resize(iova_copy, start, end);
-> +	if (ret)
-> +		goto done;
-> +
-> +	/* Exclude current reserved regions from iova ranges */
-> +	ret = vfio_iommu_resv_exclude(iova_copy, &resv_regions);
-> +done:
-> +	vfio_iommu_resv_free(&resv_regions);
-> +	return ret;
-> +}
-> +
->  static void vfio_iommu_type1_detach_group(void *iommu_data,
->  					  struct iommu_group *iommu_group)
->  {
->  	struct vfio_iommu *iommu = iommu_data;
->  	struct vfio_domain *domain;
->  	struct vfio_group *group;
-> +	bool iova_copy_fail;
-> +	LIST_HEAD(iova_copy);
->  
->  	mutex_lock(&iommu->lock);
->  
-> @@ -1901,6 +1977,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->  		}
->  	}
->  
-> +	/*
-> +	 * Get a copy of iova list. If success, use copy to update the
-> +	 * list and to replace the current one.
-> +	 */
-> +	iova_copy_fail = !!vfio_iommu_iova_get_copy(iommu, &iova_copy);
-> +
->  	list_for_each_entry(domain, &iommu->domain_list, next) {
->  		group = find_iommu_group(domain, iommu_group);
->  		if (!group)
-> @@ -1926,10 +2008,19 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->  			iommu_domain_free(domain->domain);
->  			list_del(&domain->next);
->  			kfree(domain);
-> +			if (!iova_copy_fail && !list_empty(&iommu->domain_list))
-> +				vfio_iommu_aper_expand(iommu, &iova_copy);
->  		}
->  		break;
->  	}
->  
-> +	if (!iova_copy_fail && !list_empty(&iommu->domain_list)) {
-> +		if (!vfio_iommu_resv_refresh(iommu, &iova_copy))
-> +			vfio_iommu_iova_insert_copy(iommu, &iova_copy);
-> +		else
-> +			vfio_iommu_iova_free(&iova_copy);
-> +	}
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 62f9c61338a5..c638f7795735 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -36,7 +36,7 @@
+ static const struct iommu_ops omap_iommu_ops;
+ 
+ #define to_iommu(dev)							\
+-	((struct omap_iommu *)platform_get_drvdata(to_platform_device(dev)))
++	((struct omap_iommu *)dev_get_drvdata(dev))
+ 
+ /* bitmap of the page sizes currently supported */
+ #define OMAP_IOMMU_PGSIZES	(SZ_4K | SZ_64K | SZ_1M | SZ_16M)
+-- 
+2.11.0
 
-The iova_copy_fail and list_empty tests are rather ugly, could we avoid
-them by pushing the tests to the expand and refresh functions?  ie. it
-looks like vfio_iommu_aper_expand() could test list_empty(iova_copy),
-the list_for_each on domain_list doesn't need special handling.  Same
-for vfio_iommu_resv_refresh().  This would also fix the bug above that
-I think we don't free iova_copy if domain_list becomes empty during
-this operation.  Thanks,
-
-Alex
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
