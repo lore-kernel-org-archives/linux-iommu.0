@@ -2,47 +2,64 @@ Return-Path: <SRS0=qghM=VB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C2BC0651F
-	for <iommu@archiver.kernel.org>; Thu,  4 Jul 2019 15:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC108C46495
+	for <iommu@archiver.kernel.org>; Thu,  4 Jul 2019 22:06:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 225DA2184B
-	for <iommu@archiver.kernel.org>; Thu,  4 Jul 2019 15:36:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 225DA2184B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id BA4BF2189E
+	for <iommu@archiver.kernel.org>; Thu,  4 Jul 2019 22:06:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA4BF2189E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B765E1669;
-	Thu,  4 Jul 2019 15:35:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7E366C00;
+	Thu,  4 Jul 2019 22:06:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3B81315EA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 56C40BE7
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  4 Jul 2019 15:35:56 +0000 (UTC)
+	Thu,  4 Jul 2019 22:06:33 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0801187B
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 86CBD87C
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  4 Jul 2019 15:35:54 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 460884F1; Thu,  4 Jul 2019 17:35:52 +0200 (CEST)
-Date: Thu, 4 Jul 2019 17:35:52 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] omap-iommu: no need to check return value of
-	debugfs_create functions
-Message-ID: <20190704153551.GG3310@8bytes.org>
-References: <20190704143649.GA11697@kroah.com>
+	Thu,  4 Jul 2019 22:06:32 +0000 (UTC)
+Received: from lhreml706-cah.china.huawei.com (unknown [172.18.7.107])
+	by Forcepoint Email with ESMTP id 053BABD501BBC6932294;
+	Thu,  4 Jul 2019 23:06:30 +0100 (IST)
+Received: from LHREML524-MBS.china.huawei.com ([169.254.2.154]) by
+	lhreml706-cah.china.huawei.com ([10.201.108.47]) with mapi id
+	14.03.0415.000; Thu, 4 Jul 2019 23:06:23 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+	update iova list
+Thread-Topic: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+	update iova list
+Thread-Index: AQHVLDHlfv32Tq6P8k2BSud+nbtQFqa5VEOAgAEf3kCAAJvsIA==
+Date: Thu, 4 Jul 2019 22:06:23 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA83F2DDED5@lhreml524-mbs.china.huawei.com>
+References: <20190626151248.11776-1-shameerali.kolothum.thodi@huawei.com>
+	<20190626151248.11776-3-shameerali.kolothum.thodi@huawei.com>
+	<20190703143427.2d63c15f@x1.home> 
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.45.141.232]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190704143649.GA11697@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+X-CFilter-Loop: Reflected
+Cc: "kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Linuxarm <linuxarm@huawei.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"xuwei \(O\)" <xuwei5@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,29 +77,90 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Jul 04, 2019 at 04:36:49PM +0200, Greg Kroah-Hartman wrote:
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic should
-> never do something different based on this.
+
+
+> -----Original Message-----
+> From: Shameerali Kolothum Thodi
+> Sent: 04 July 2019 13:51
+> To: 'Alex Williamson' <alex.williamson@redhat.com>
+> Cc: eric.auger@redhat.com; kvm@vger.kernel.org;
+> linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org; Linuxarm
+> <linuxarm@huawei.com>; John Garry <john.garry@huawei.com>; xuwei (O)
+> <xuwei5@huawei.com>; kevin.tian@intel.com
+> Subject: RE: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+> update iova list
 > 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: iommu@lists.linux-foundation.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
-> Warning, not even test-built, but "should" work :)
+> 
+> 
+> > -----Original Message-----
+> > From: kvm-owner@vger.kernel.org [mailto:kvm-owner@vger.kernel.org] On
+> > Behalf Of Alex Williamson
+> > Sent: 03 July 2019 21:34
+> > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> > Cc: eric.auger@redhat.com; pmorel@linux.vnet.ibm.com;
+> > kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>; John
+> > Garry <john.garry@huawei.com>; xuwei (O) <xuwei5@huawei.com>;
+> > kevin.tian@intel.com
+> > Subject: Re: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+> > update iova list
+> >
+> > On Wed, 26 Jun 2019 16:12:44 +0100
+> > Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
+> >
+> > > This retrieves the reserved regions associated with dev group and
+> > > checks for conflicts with any existing dma mappings. Also update
+> > > the iova list excluding the reserved regions.
+> > >
+> > > Reserved regions with type IOMMU_RESV_DIRECT_RELAXABLE are
+> > > excluded from above checks as they are considered as directly
+> > > mapped regions which are known to be relaxable.
+> > >
+> > > Signed-off-by: Shameer Kolothum
+> <shameerali.kolothum.thodi@huawei.com>
+> > > ---
+> > >  drivers/vfio/vfio_iommu_type1.c | 96
+> > +++++++++++++++++++++++++++++++++
+> > >  1 file changed, 96 insertions(+)
+> > >
+> > > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > b/drivers/vfio/vfio_iommu_type1.c
+> > > index 970d1ec06aed..b6bfdfa16c33 100644
+> > > --- a/drivers/vfio/vfio_iommu_type1.c
+> > > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > > @@ -1559,6 +1641,7 @@ static int vfio_iommu_type1_attach_group(void
+> > *iommu_data,
+> > >  	phys_addr_t resv_msi_base;
+> > >  	struct iommu_domain_geometry geo;
+> > >  	LIST_HEAD(iova_copy);
+> > > +	LIST_HEAD(group_resv_regions);
+> > >
+> > >  	mutex_lock(&iommu->lock);
+> > >
+> > > @@ -1644,6 +1727,13 @@ static int vfio_iommu_type1_attach_group(void
+> > *iommu_data,
+> > >  		goto out_detach;
+> > >  	}
+> > >
+> > > +	iommu_get_group_resv_regions(iommu_group,
+> &group_resv_regions);
+> >
+> > This can fail and should have an error case.  I assume we'd fail the
+> > group attach on failure.  Thanks,
+> 
+> Right. I will add the check. Do you think we should do the same in
+> vfio_iommu_has_sw_msi()
+> as well? (In fact, it looks like iommu_get_group_resv_regions() ret is not
+> checked anywhere in
+> kernel).
 
-It almost did :)
-
-> +	debugfs_create_file("regs", 0400, d, obj, &attrregs_fops);
-> +	debugfs_create_file("tlb", 0400, d, obj, &attrtlb_fops);
-> +	debugfs_create_file("pagetable", 0400, d, obj, &attrpagetable_fops);
-
-The _fops were named without the 'attr' prefix, changed that and it
-compiled. Patch is now applied.
+Ah..forgot the fact that patch 6/6 should take care of vfio_iommu_has_sw_msi() 
+case as we are removing the duplicate iommu_get_group_resv_regions() there. 
 
 Thanks,
+Shameer
 
-	Joerg
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
