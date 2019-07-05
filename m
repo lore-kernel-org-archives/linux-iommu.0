@@ -1,61 +1,52 @@
-Return-Path: <SRS0=ZTHc=VC=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=qSbQ=VD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DATE_IN_PAST_24_48,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF653C4649E
-	for <iommu@archiver.kernel.org>; Fri,  5 Jul 2019 16:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D69C0650E
+	for <iommu@archiver.kernel.org>; Sat,  6 Jul 2019 11:27:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8EA3A218BC
-	for <iommu@archiver.kernel.org>; Fri,  5 Jul 2019 16:29:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EA3A218BC
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6C20B20989
+	for <iommu@archiver.kernel.org>; Sat,  6 Jul 2019 11:27:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6C20B20989
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2BA75CD1;
-	Fri,  5 Jul 2019 16:29:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 164DE1C3D;
+	Sat,  6 Jul 2019 11:27:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 944E0CCE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ED7D31C2F
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  5 Jul 2019 16:29:11 +0000 (UTC)
+	Sat,  6 Jul 2019 11:23:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 1094887E
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6D04A87C
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  5 Jul 2019 16:29:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 736042B;
-	Fri,  5 Jul 2019 09:29:10 -0700 (PDT)
-Received: from [10.1.38.41] (unknown [10.1.38.41])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D90FC3F246;
-	Fri,  5 Jul 2019 09:29:07 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH 6/8] iommu/arm-smmu-v3: Support auxiliary domains
-To: Will Deacon <will@kernel.org>
-References: <20190610184714.6786-1-jean-philippe.brucker@arm.com>
-	<20190610184714.6786-7-jean-philippe.brucker@arm.com>
-	<20190626175959.ubxvb2qn4taclact@willie-the-truck>
-Message-ID: <7cad065e-5eba-bd22-5c1d-c55ad315ace0@arm.com>
-Date: Fri, 5 Jul 2019 17:29:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <20190626175959.ubxvb2qn4taclact@willie-the-truck>
-Content-Language: en-US
-Cc: Mark Rutland <Mark.Rutland@arm.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Will Deacon <Will.Deacon@arm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	Robin Murphy <Robin.Murphy@arm.com>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+	Sat,  6 Jul 2019 11:23:13 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	06 Jul 2019 04:23:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,458,1557212400"; d="scan'208";a="158693772"
+Received: from yiliu-dev.bj.intel.com ([10.238.156.139])
+	by orsmga008.jf.intel.com with ESMTP; 06 Jul 2019 04:23:09 -0700
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: alex.williamson@redhat.com
+Subject: [RFC v1 0/4] vfio: support Shared Virtual Addressing
+Date: Fri,  5 Jul 2019 19:06:08 +0800
+Message-Id: <1562324772-3084-1-git-send-email-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.7.4
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+	jean-philippe.brucker@arm.com, iommu@lists.linux-foundation.org,
+	yi.y.sun@intel.com, jun.j.tian@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,110 +59,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 26/06/2019 18:59, Will Deacon wrote:
->> +static void arm_smmu_aux_detach_dev(struct iommu_domain *domain, struct device *dev)
->> +{
->> +	struct iommu_domain *parent_domain;
->> +	struct arm_smmu_domain *parent_smmu_domain;
->> +	struct arm_smmu_master *master = dev_to_master(dev);
->> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->> +
->> +	if (!arm_smmu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX))
->> +		return;
->> +
->> +	parent_domain = iommu_get_domain_for_dev(dev);
->> +	if (!parent_domain)
->> +		return;
->> +	parent_smmu_domain = to_smmu_domain(parent_domain);
->> +
->> +	mutex_lock(&smmu_domain->init_mutex);
->> +	if (!smmu_domain->aux_nr_devs)
->> +		goto out_unlock;
->> +
->> +	if (!--smmu_domain->aux_nr_devs) {
->> +		arm_smmu_write_ctx_desc(parent_smmu_domain, smmu_domain->ssid,
->> +					NULL);
->> +		/*
->> +		 * TLB doesn't need invalidation since accesses from the device
->> +		 * can't use this domain's ASID once the CD is clear.
->> +		 *
->> +		 * Sadly that doesn't apply to ATCs, which are PASID tagged.
->> +		 * Invalidate all other devices as well, because even though
->> +		 * they weren't 'officially' attached to the auxiliary domain,
->> +		 * they could have formed ATC entries.
->> +		 */
->> +		arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
-> 
-> I've been struggling to understand the locking here, since both
-> arm_smmu_write_ctx_desc and arm_smmu_atc_inv_domain take and release the
-> devices_lock for the domain. Is there not a problem with devices coming and
-> going in-between the two calls?
+Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on Intel
+platforms allow address space sharing between device DMA and applications.
+SVA can reduce programming complexity and enhance security.
+This series is intended to expose SVA capability to VMs. i.e. shared guest
+application address space with passthru devices. The whole SVA virtualization
+requires QEMU/VFIO/IOMMU changes. This series includes the VFIO changes, for
+QEMU and IOMMU changes, they are in separate series (listed in the "Related
+series").
 
-Yes it's a problem. I suppose we could take the parent's init_mutex
-(making sure that it protects detach_dev() as well.
+The high-level architecture for SVA virtualization is as below:
 
-First I need to figure out how to prevent the parent domain from
-disappearing when auxiliary domains are attached, I seem to have forgotten
-that. I think checking if AUXD is enabled in the device passed to
-attach_dev() should be sufficient - that's what I do for SVA. But the
-IOMMU API isn't quite ready to handle failure in iommu_detach_device() at
-the moment. VFIO will free the domain even if it's still attached.
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest process CR3, FL only|
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush -
+    '-------------'                       |
+    |             |                       V
+    |             |                CR3 in GPA
+    '-------------'
+Guest
+------| Shadow |--------------------------|--------
+      v        v                          v
+Host
+    .-------------.  .----------------------.
+    |   pIOMMU    |  | Bind FL for GVA-GPA  |
+    |             |  '----------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.------------------------------.
+    |             |   |SL for GPA-HPA, default domain|
+    |             |   '------------------------------'
+    '-------------'
+Where:
+ - FL = First level/stage one page tables
+ - SL = Second level/stage two page tables
 
-> 
->> +	} else {
->> +		struct arm_smmu_cmdq_ent cmd;
->> +
->> +		/* Invalidate only this device's ATC */
->> +		if (master->ats_enabled) {
->> +			arm_smmu_atc_inv_to_cmd(smmu_domain->ssid, 0, 0, &cmd);
->> +			arm_smmu_atc_inv_master(master, &cmd);
->> +		}
->> +	}
->> +out_unlock:
->> +	mutex_unlock(&smmu_domain->init_mutex);
->> +}
->> +
->> +static int arm_smmu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
->> +{
->> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->> +
->> +	return smmu_domain->ssid ?: -EINVAL;
->> +}
->> +
->>  static struct iommu_ops arm_smmu_ops = {
->>  	.capable		= arm_smmu_capable,
->>  	.domain_alloc		= arm_smmu_domain_alloc,
->> @@ -2539,6 +2772,13 @@ static struct iommu_ops arm_smmu_ops = {
->>  	.of_xlate		= arm_smmu_of_xlate,
->>  	.get_resv_regions	= arm_smmu_get_resv_regions,
->>  	.put_resv_regions	= arm_smmu_put_resv_regions,
->> +	.dev_has_feat		= arm_smmu_dev_has_feature,
->> +	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
->> +	.dev_enable_feat	= arm_smmu_dev_enable_feature,
->> +	.dev_disable_feat	= arm_smmu_dev_disable_feature,
-> 
-> Why can't we use the existing ->capable and ->dev_{get,set}_attr callbacks
-> for this?
+There are roughly three parts:
+1. vfio support for PASID allocation and free from VMs
+2. vfio support for guest PASID binding from VMs
+3. vfio support for IOMMU cache invalidation from VMs
 
-->capable isn't very useful because it applies to all SMMUs in the
-system. The existing ->{get,set}_attr callbacks apply to an
-iommu_domain. The main reason for doing it on endpoints was that it
-would be tedious to keep track of capabilities when attaching and
-detaching devices to a domain, especially for drivers that allow
-multiple IOMMUs per domain [1]. There were more discussions, and in the
-end Joerg proposed the current API for device attributes [2]
+Related series:
+[1] [PATCH v4 00/22]  Shared virtual address IOMMU and VT-d support:
+https://lwn.net/Articles/790820/
+<My series is based on this kernel series from Jacob Pan>
 
-[1]
-https://lore.kernel.org/lkml/aa1ff748-c2ec-acc0-f1d9-cdff2b131e58@linux.intel.com/
-[2] https://lore.kernel.org/linux-iommu/20181207102926.GM16835@8bytes.org/
+[2] [RFC v1 00/18] intel_iommu: expose Shared Virtual Addressing to VM
+from Yi Liu
 
-Thanks,
-Jean
+This work is based on collaboration with other developers on the IOMMU
+mailing list. Notably,
+
+[1] [RFC PATCH 00/20] Qemu: Extend intel_iommu emulator to support
+Shared Virtual Memory from Yi Liu
+https://www.spinics.net/lists/kvm/msg148798.html
+
+[2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d from Yi Liu
+https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
+
+[3] [PATCH v3 00/12] Introduce new iommu notifier framework for virt-SVA by Yi
+https://lists.gnu.org/archive/html/qemu-devel/2018-03/msg00078.html
+
+[4] [PATCH v6 00/22] SMMUv3 Nested Stage Setup by Eric Auger
+https://lkml.org/lkml/2019/3/17/124
+
+[5] [RFC v4 00/27] vSMMUv3/pSMMUv3 2 stage VFIO integration by Eric Auger
+https://lists.sr.ht/~philmd/qemu/%3C20190527114203.2762-1-eric.auger%40redhat.com%3E
+
+[6] [RFC PATCH 2/6] drivers core: Add I/O ASID allocator by Jean-Philippe
+Brucker
+https://www.spinics.net/lists/iommu/msg30639.html
+
+Liu Yi L (4):
+  vfio: VFIO_IOMMU_ATTACH/DETACH_PASID_TABLE
+  vfio: VFIO_IOMMU_CACHE_INVALIDATE
+  vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
+  vfio/type1: bind guest pasid (guest page tables) to host
+
+ drivers/vfio/vfio_iommu_type1.c | 384 ++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/vfio.h       | 116 ++++++++++++
+ 2 files changed, 500 insertions(+)
+
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
