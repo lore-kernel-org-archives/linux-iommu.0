@@ -2,80 +2,63 @@ Return-Path: <SRS0=EbOf=VF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 479D4C606C7
-	for <iommu@archiver.kernel.org>; Mon,  8 Jul 2019 19:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C63CC606CE
+	for <iommu@archiver.kernel.org>; Mon,  8 Jul 2019 20:04:18 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1EBEF21783
-	for <iommu@archiver.kernel.org>; Mon,  8 Jul 2019 19:06:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F00DE20861
+	for <iommu@archiver.kernel.org>; Mon,  8 Jul 2019 20:04:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="cNjlCScr";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="YhHmJh1y"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1EBEF21783
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="DFWUKgf+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F00DE20861
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7CF172A94;
-	Mon,  8 Jul 2019 19:06:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 054F92A87;
+	Mon,  8 Jul 2019 20:04:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 92D8B2713
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E3FBA23D9
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Jul 2019 19:00:59 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8A115148
+	Mon,  8 Jul 2019 19:57:39 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3437F827
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  8 Jul 2019 19:00:58 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 281F661196; Mon,  8 Jul 2019 19:00:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1562612458;
-	bh=TS0wlrofdZ9G9964YwYXdJXHhjE2yp06YT1ABAcNFQk=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=cNjlCScrBnfn8WlNz0wtmqVfon7jpjfVTf2jpU0z6OSm+9pR9WLphOSlALmNjgMYU
-	8zSEg+llaGI3EipthtoM/ygAkD5w3O+SpqhQ3OxS2quVnrEDVrNwpO7ftMNw9/8Kxk
-	8GjJhrEy/Q7C4FPiRg4c+VV7u0UtaXf+hGvWxy0c=
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
-	[199.106.103.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: jcrouse@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id C08B960FED;
-	Mon,  8 Jul 2019 19:00:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1562612455;
-	bh=TS0wlrofdZ9G9964YwYXdJXHhjE2yp06YT1ABAcNFQk=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YhHmJh1yBt5fIw/19zSzMoSW2W+iZ7X/ZfmqCGYxCDk5ls9JwX0Gvlkg6iita2DxV
-	plmypfwcbb+ZnnHEzh2DYwodJ49NnPBBcBuPzmn3BuhYvurTXk4KdZ4EajZRU7DNIT
-	IvBlDrFBZsQ/VNIjlFiFHcdZkiBVwJaA5dBFRo0g=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C08B960FED
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=jcrouse@codeaurora.org
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: freedreno@lists.freedesktop.org
-Subject: [RESEND PATCH v2 2/3] iommu/io-pgtable-arm: Add support for AARCH64
-	split pagetables
-Date: Mon,  8 Jul 2019 13:00:46 -0600
-Message-Id: <1562612447-19856-3-git-send-email-jcrouse@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1562612447-19856-1-git-send-email-jcrouse@codeaurora.org>
-References: <1562612447-19856-1-git-send-email-jcrouse@codeaurora.org>
-Cc: Rob Herring <robh@kernel.org>, jean-philippe.brucker@arm.com,
-	linux-arm-msm@vger.kernel.org, dianders@chromium.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	hoegsberg@google.com, linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>
+	Mon,  8 Jul 2019 19:57:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=xm+6ZVNdxMkUHmStif1/+KnHVgQpdfL0ddXk9glkGmk=;
+	b=DFWUKgf+5gf9Djl7P5hCdIY/Q
+	s8mYkpHgFRngVPafI2T5xkyqdbEH7JjITgUjvoWFhZf1shCbK+NEkqMV41GrRXrwvAyfAlD3k3A8m
+	gLK6txJNix3aeR+ehwPTTgWD5zmWlpN2DBG0cc8+ZAjYVPP2jue0gMNrf5qS2ix6bOV53knAuyppP
+	xHNL7F217OT75WxqSX4fYzfkXxfCLL9GMtvCnJ+XgXkqWui03prTYW5UfrgVcV3M7ER1VMbGL5+SY
+	ajg7ZJxX8NPA+ZK0ph+ELAZMmjVVunl9jFWKPxY1nNiIjxqWmxQQ04QPxM0536aFupm6DR3EMYw8g
+	ObGNbJTZA==;
+Received: from [199.255.44.128] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hkZla-0001nU-Jg; Mon, 08 Jul 2019 19:57:38 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: rdunlap@infradead.org
+Subject: [PATCH] dma-mapping: mark dma_alloc_need_uncached as __always_inline
+Date: Mon,  8 Jul 2019 12:57:33 -0700
+Message-Id: <20190708195733.26501-1-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,505 +71,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Add a new sub-format ARM_64_LPAE_SPLIT_S1 to create and set up split
-pagetables (TTBR0 and TTBR1). The initialization function sets up the
-correct va_size and sign extension bits and programs the TCR registers.
-Split pagetable formats use their own own map/unmap wrappers to ensure
-that the correct pagetable is selected based on the incoming iova but
-most of the heavy lifting is common to the other formats.
+Without the __always_inline at least i386 configs that have
+CONFIG_OPTIMIZE_INLINING set seem fail to inline
+dma_alloc_need_uncached, leading to a linker error because of
+undefined symbols.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
+ include/linux/dma-noncoherent.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/iommu/io-pgtable-arm.c | 261 +++++++++++++++++++++++++++++++++++++----
- drivers/iommu/io-pgtable.c     |   1 +
- include/linux/io-pgtable.h     |   2 +
- 3 files changed, 240 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 161a7d56..aec35e5 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -118,7 +118,12 @@
- #define ARM_LPAE_TCR_TG0_64K		(1 << 14)
- #define ARM_LPAE_TCR_TG0_16K		(2 << 14)
- 
-+#define ARM_LPAE_TCR_TG1_4K		(0 << 30)
-+#define ARM_LPAE_TCR_TG1_64K		(1 << 30)
-+#define ARM_LPAE_TCR_TG1_16K		(2 << 30)
-+
- #define ARM_LPAE_TCR_SH0_SHIFT		12
-+#define ARM_LPAE_TCR_SH1_SHIFT		28
- #define ARM_LPAE_TCR_SH0_MASK		0x3
- #define ARM_LPAE_TCR_SH_NS		0
- #define ARM_LPAE_TCR_SH_OS		2
-@@ -126,6 +131,8 @@
- 
- #define ARM_LPAE_TCR_ORGN0_SHIFT	10
- #define ARM_LPAE_TCR_IRGN0_SHIFT	8
-+#define ARM_LPAE_TCR_ORGN1_SHIFT	26
-+#define ARM_LPAE_TCR_IRGN1_SHIFT	24
- #define ARM_LPAE_TCR_RGN_MASK		0x3
- #define ARM_LPAE_TCR_RGN_NC		0
- #define ARM_LPAE_TCR_RGN_WBWA		1
-@@ -136,6 +143,7 @@
- #define ARM_LPAE_TCR_SL0_MASK		0x3
- 
- #define ARM_LPAE_TCR_T0SZ_SHIFT		0
-+#define ARM_LPAE_TCR_T1SZ_SHIFT		16
- #define ARM_LPAE_TCR_SZ_MASK		0xf
- 
- #define ARM_LPAE_TCR_PS_SHIFT		16
-@@ -152,6 +160,14 @@
- #define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
- #define ARM_LPAE_TCR_PS_52_BIT		0x6ULL
- 
-+#define ARM_LPAE_TCR_SEP_SHIFT		47
-+#define ARM_LPAE_TCR_SEP_31		(0x0ULL << ARM_LPAE_TCR_SEP_SHIFT)
-+#define ARM_LPAE_TCR_SEP_35		(0x1ULL << ARM_LPAE_TCR_SEP_SHIFT)
-+#define ARM_LPAE_TCR_SEP_39		(0x2ULL << ARM_LPAE_TCR_SEP_SHIFT)
-+#define ARM_LPAE_TCR_SEP_41		(0x3ULL << ARM_LPAE_TCR_SEP_SHIFT)
-+#define ARM_LPAE_TCR_SEP_43		(0x4ULL << ARM_LPAE_TCR_SEP_SHIFT)
-+#define ARM_LPAE_TCR_SEP_UPSTREAM	(0x7ULL << ARM_LPAE_TCR_SEP_SHIFT)
-+
- #define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
- #define ARM_LPAE_MAIR_ATTR_MASK		0xff
- #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
-@@ -179,11 +195,12 @@ struct arm_lpae_io_pgtable {
- 	struct io_pgtable	iop;
- 
- 	int			levels;
-+	u32			sep;
- 	size_t			pgd_size;
- 	unsigned long		pg_shift;
- 	unsigned long		bits_per_level;
- 
--	void			*pgd;
-+	void			*pgd[2];
- };
- 
- typedef u64 arm_lpae_iopte;
-@@ -426,7 +443,8 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 	arm_lpae_iopte pte;
- 
- 	if (data->iop.fmt == ARM_64_LPAE_S1 ||
--	    data->iop.fmt == ARM_32_LPAE_S1) {
-+	    data->iop.fmt == ARM_32_LPAE_S1 ||
-+	    data->iop.fmt == ARM_64_LPAE_SPLIT_S1) {
- 		pte = ARM_LPAE_PTE_nG;
- 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
- 			pte |= ARM_LPAE_PTE_AP_RDONLY;
-@@ -470,11 +488,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 	return pte;
- }
- 
--static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
--			phys_addr_t paddr, size_t size, int iommu_prot)
-+static int _arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
-+			phys_addr_t paddr, size_t size, int iommu_prot,
-+			arm_lpae_iopte *ptep)
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index 53ee36ecdf37..3813211a9aad 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -23,7 +23,7 @@ static inline bool dev_is_dma_coherent(struct device *dev)
+ /*
+  * Check if an allocation needs to be marked uncached to be coherent.
+  */
+-static inline bool dma_alloc_need_uncached(struct device *dev,
++static __always_inline bool dma_alloc_need_uncached(struct device *dev,
+ 		unsigned long attrs)
  {
--	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
--	arm_lpae_iopte *ptep = data->pgd;
- 	int ret, lvl = ARM_LPAE_START_LVL(data);
- 	arm_lpae_iopte prot;
- 
-@@ -497,12 +514,39 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	return ret;
- }
- 
-+static int arm_lpae_split_map(struct io_pgtable_ops *ops, unsigned long iova,
-+		phys_addr_t paddr, size_t size, int iommu_prot)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	unsigned long mask = 1UL << data->sep;
-+	arm_lpae_iopte *ptep;
-+
-+	if (iova & mask) {
-+		ptep = data->pgd[1];
-+		iova &= (mask - 1);
-+	} else
-+		ptep = data->pgd[0];
-+
-+	return _arm_lpae_map(data, iova, paddr, size, iommu_prot, ptep);
-+}
-+
-+static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
-+			phys_addr_t paddr, size_t size, int iommu_prot)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+
-+	return _arm_lpae_map(data, iova, paddr, size, iommu_prot, data->pgd[0]);
-+}
-+
- static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
- 				    arm_lpae_iopte *ptep)
- {
- 	arm_lpae_iopte *start, *end;
- 	unsigned long table_size;
- 
-+	if (!ptep)
-+		return;
-+
- 	if (lvl == ARM_LPAE_START_LVL(data))
- 		table_size = data->pgd_size;
- 	else
-@@ -532,7 +576,8 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
- {
- 	struct arm_lpae_io_pgtable *data = io_pgtable_to_data(iop);
- 
--	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd);
-+	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd[0]);
-+	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd[1]);
- 	kfree(data);
- }
- 
-@@ -643,11 +688,28 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
- }
- 
-+static size_t arm_lpae_split_unmap(struct io_pgtable_ops *ops,
-+				   unsigned long iova, size_t size)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	unsigned long mask = 1UL << data->sep;
-+	arm_lpae_iopte *ptep;
-+	int lvl = ARM_LPAE_START_LVL(data);
-+
-+	if (iova & mask) {
-+		ptep = data->pgd[1];
-+		iova &= (mask - 1);
-+	} else
-+		ptep = data->pgd[0];
-+
-+	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-+}
-+
- static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 			     size_t size)
- {
- 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
--	arm_lpae_iopte *ptep = data->pgd;
-+	arm_lpae_iopte *ptep = data->pgd[0];
- 	int lvl = ARM_LPAE_START_LVL(data);
- 
- 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
-@@ -656,11 +718,11 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
- }
- 
--static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
--					 unsigned long iova)
-+static phys_addr_t _arm_lpae_iova_to_phys(struct arm_lpae_io_pgtable *data,
-+					  unsigned long iova,
-+					  arm_lpae_iopte *ptep)
- {
--	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
--	arm_lpae_iopte pte, *ptep = data->pgd;
-+	arm_lpae_iopte pte;
- 	int lvl = ARM_LPAE_START_LVL(data);
- 
- 	do {
-@@ -692,6 +754,31 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
- 	return iopte_to_paddr(pte, data) | iova;
- }
- 
-+
-+static phys_addr_t arm_lpae_split_iova_to_phys(struct io_pgtable_ops *ops,
-+					       unsigned long iova)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	unsigned long mask = 1UL << data->sep;
-+	arm_lpae_iopte *ptep;
-+
-+	if (iova & mask) {
-+		ptep = data->pgd[1];
-+		iova &= (mask - 1);
-+	} else
-+		ptep = data->pgd[0];
-+
-+	return _arm_lpae_iova_to_phys(data, iova, ptep);
-+}
-+
-+static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-+					 unsigned long iova)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+
-+	return _arm_lpae_iova_to_phys(data, iova, data->pgd[0]);
-+}
-+
- static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
- {
- 	unsigned long granule, page_sizes;
-@@ -771,6 +858,9 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
- 	pgd_bits = va_bits - (data->bits_per_level * (data->levels - 1));
- 	data->pgd_size = 1UL << (pgd_bits + ilog2(sizeof(arm_lpae_iopte)));
- 
-+	data->pgd[0] = NULL;
-+	data->pgd[1] = NULL;
-+
- 	data->iop.ops = (struct io_pgtable_ops) {
- 		.map		= arm_lpae_map,
- 		.unmap		= arm_lpae_unmap,
-@@ -780,8 +870,8 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
- 	return data;
- }
- 
--static struct io_pgtable *
--arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-+static struct arm_lpae_io_pgtable *
-+_arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg)
- {
- 	u64 reg;
- 	struct arm_lpae_io_pgtable *data;
-@@ -845,8 +935,6 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T0SZ_SHIFT;
- 
--	/* Disable speculative walks through TTBR1 */
--	reg |= ARM_LPAE_TCR_EPD1;
- 	cfg->arm_lpae_s1_cfg.tcr = reg;
- 
- 	/* MAIRs */
-@@ -863,24 +951,143 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	cfg->arm_lpae_s1_cfg.mair[1] = 0;
- 
- 	/* Looking good; allocate a pgd */
--	data->pgd = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
--	if (!data->pgd)
-+	data->pgd[0] = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-+	if (!data->pgd[0])
- 		goto out_free_data;
- 
- 	/* Ensure the empty pgd is visible before any actual TTBR write */
- 	wmb();
- 
- 	/* TTBRs */
--	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd);
-+	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd[0]);
- 	cfg->arm_lpae_s1_cfg.ttbr[1] = 0;
-+	return data;
-+
-+out_free_data:
-+	kfree(data);
-+	return NULL;
-+}
-+
-+
-+/* Allocate split pagetables */
-+static struct io_pgtable *
-+arm_64_lpae_alloc_pgtable_split_s1(struct io_pgtable_cfg *cfg, void *cookie)
-+{
-+	u64 reg;
-+	struct arm_lpae_io_pgtable *data;
-+	u32 sep;
-+
-+	/* Figure out what the sign extension bit should be */
-+	switch (cfg->ias) {
-+	case 32:
-+	case 36:
-+	case 40:
-+	case 42:
-+	case 44:
-+		sep = cfg->ias - 1;
-+		/* Adjust the address size to account for the extension bit */
-+		cfg->ias--;
-+		break;
-+	case 48:
-+		/* IAS of 48 is a special case, it has a dedicated bit */
-+		sep = 48;
-+		break;
-+	default:
-+		return NULL;
-+	}
-+
-+	data = _arm_64_lpae_alloc_pgtable_s1(cfg);
-+	if (!data)
-+		return NULL;
-+
-+	/* Add the TTBR1 settings */
-+	reg = cfg->arm_lpae_s1_cfg.tcr;
-+
-+	/* TCR */
-+	reg |= (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH1_SHIFT) |
-+	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN1_SHIFT) |
-+	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN1_SHIFT);
-+
-+	switch (ARM_LPAE_GRANULE(data)) {
-+	case SZ_4K:
-+		reg |= ARM_LPAE_TCR_TG1_4K;
-+		break;
-+	case SZ_16K:
-+		reg |= ARM_LPAE_TCR_TG1_16K;
-+		break;
-+	case SZ_64K:
-+		reg |= ARM_LPAE_TCR_TG1_64K;
-+		break;
-+	}
-+
-+	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T1SZ_SHIFT;
-+
-+	switch (sep) {
-+	case 31:
-+		reg |= ARM_LPAE_TCR_SEP_31;
-+		break;
-+	case 35:
-+		reg |= ARM_LPAE_TCR_SEP_35;
-+		break;
-+	case 39:
-+		reg |= ARM_LPAE_TCR_SEP_39;
-+		break;
-+	case 41:
-+		reg |= ARM_LPAE_TCR_SEP_41;
-+		break;
-+	case 43:
-+		reg |= ARM_LPAE_TCR_SEP_43;
-+		break;
-+	case 48:
-+		reg |= ARM_LPAE_TCR_SEP_UPSTREAM;
-+		break;
-+	}
-+
-+	cfg->arm_lpae_s1_cfg.tcr = reg;
-+
-+	/* Allocate the TTBR1 pagetable */
-+	data->pgd[1] = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-+	if (!data->pgd[1])
-+		goto out_free_data;
-+
-+	/* Override the data ops with split table specific ops */
-+	data->iop.ops = (struct io_pgtable_ops) {
-+		.map		= arm_lpae_split_map,
-+		.unmap		= arm_lpae_split_unmap,
-+		.iova_to_phys	= arm_lpae_split_iova_to_phys,
-+	};
-+
-+	/*
-+	 * remember the sign extension bit, we'll need it later to figure out
-+	 * which pagetable to use
-+	 */
-+	data->sep = sep;
-+
-+	/* Ensure the empty pgd is visible before any actual TTBR write */
-+	wmb();
-+
-+	cfg->arm_lpae_s1_cfg.ttbr[1] = virt_to_phys(data->pgd[1]);
- 	return &data->iop;
- 
- out_free_data:
-+	__arm_lpae_free_pages(data->pgd[0], data->pgd_size, cfg);
- 	kfree(data);
- 	return NULL;
- }
- 
- static struct io_pgtable *
-+arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-+{
-+	struct arm_lpae_io_pgtable *data;
-+
-+	data = _arm_64_lpae_alloc_pgtable_s1(cfg);
-+	if (!data)
-+		return NULL;
-+
-+	return &data->iop;
-+}
-+
-+static struct io_pgtable *
- arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- {
- 	u64 reg, sl;
-@@ -960,15 +1167,15 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	cfg->arm_lpae_s2_cfg.vtcr = reg;
- 
- 	/* Allocate pgd pages */
--	data->pgd = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
--	if (!data->pgd)
-+	data->pgd[0] = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-+	if (!data->pgd[0])
- 		goto out_free_data;
- 
- 	/* Ensure the empty pgd is visible before any actual TTBR write */
- 	wmb();
- 
- 	/* VTTBR */
--	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd);
-+	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd[0]);
- 	return &data->iop;
- 
- out_free_data:
-@@ -1041,6 +1248,11 @@ struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
- 	.free	= arm_lpae_free_pgtable,
- };
- 
-+struct io_pgtable_init_fns io_pgtable_arm_64_lpae_split_s1_init_fns = {
-+	.alloc	= arm_64_lpae_alloc_pgtable_split_s1,
-+	.free	= arm_lpae_free_pgtable,
-+};
-+
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
- 	.alloc	= arm_64_lpae_alloc_pgtable_s2,
- 	.free	= arm_lpae_free_pgtable,
-@@ -1095,9 +1307,9 @@ static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
- 
- 	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit\n",
- 		cfg->pgsize_bitmap, cfg->ias);
--	pr_err("data: %d levels, 0x%zx pgd_size, %lu pg_shift, %lu bits_per_level, pgd @ %p\n",
-+	pr_err("data: %d levels, 0x%zx pgd_size, %lu pg_shift, %lu bits_per_level, pgd @ %p %p\n",
- 		data->levels, data->pgd_size, data->pg_shift,
--		data->bits_per_level, data->pgd);
-+		data->bits_per_level, data->pgd[0], data->pgd[1]);
- }
- 
- #define __FAIL(ops, i)	({						\
-@@ -1112,6 +1324,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 	static const enum io_pgtable_fmt fmts[] = {
- 		ARM_64_LPAE_S1,
- 		ARM_64_LPAE_S2,
-+		ARM_64_LPAE_SPLIT_S1,
- 	};
- 
- 	int i, j;
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index ced53e5..ed1985f 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -20,6 +20,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
- 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
- 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
- 	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
-+	[ARM_64_LPAE_SPLIT_S1] = &io_pgtable_arm_64_lpae_split_s1_init_fns,
- #endif
- #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
- 	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index b5a450a..2ed0e6a 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -10,6 +10,7 @@ enum io_pgtable_fmt {
- 	ARM_32_LPAE_S1,
- 	ARM_32_LPAE_S2,
- 	ARM_64_LPAE_S1,
-+	ARM_64_LPAE_SPLIT_S1,
- 	ARM_64_LPAE_S2,
- 	ARM_V7S,
- 	ARM_MALI_LPAE,
-@@ -211,6 +212,7 @@ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_split_s1_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
- 
+ 	if (dev_is_dma_coherent(dev))
 -- 
-2.7.4
+2.20.1
 
 _______________________________________________
 iommu mailing list
