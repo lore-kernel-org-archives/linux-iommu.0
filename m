@@ -1,63 +1,69 @@
-Return-Path: <SRS0=R9yw=VE=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=EbOf=VF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D46CBC48BDE
-	for <iommu@archiver.kernel.org>; Sun,  7 Jul 2019 15:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0460AC48BE7
+	for <iommu@archiver.kernel.org>; Mon,  8 Jul 2019 07:05:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B24D82082E
-	for <iommu@archiver.kernel.org>; Sun,  7 Jul 2019 15:13:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B24D82082E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id C3CB920844
+	for <iommu@archiver.kernel.org>; Mon,  8 Jul 2019 07:05:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3CB920844
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 847AF1E76;
-	Sun,  7 Jul 2019 15:13:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 761CE217C;
+	Mon,  8 Jul 2019 07:05:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C47FC1E1A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8031A2151
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  7 Jul 2019 15:03:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 750A5148
+	Mon,  8 Jul 2019 06:59:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B0473827
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  7 Jul 2019 15:03:53 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
-	[10.5.11.15])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id F0E4A7FDCA;
-	Sun,  7 Jul 2019 15:03:52 +0000 (UTC)
-Received: from [10.36.116.46] (ovpn-116-46.ams2.redhat.com [10.36.116.46])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id A0D5E98B1;
-	Sun,  7 Jul 2019 15:03:48 +0000 (UTC)
-Subject: Re: [PATCH v7 6/6] vfio/type1: remove duplicate retrieval of reserved
-	regions
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	alex.williamson@redhat.com, pmorel@linux.vnet.ibm.com
+	Mon,  8 Jul 2019 06:59:51 +0000 (UTC)
+Received: from lhreml703-cah.china.huawei.com (unknown [172.18.7.108])
+	by Forcepoint Email with ESMTP id 2CD05F0471F05A2FC7B9;
+	Mon,  8 Jul 2019 07:59:49 +0100 (IST)
+Received: from LHREML524-MBS.china.huawei.com ([169.254.2.154]) by
+	lhreml703-cah.china.huawei.com ([10.201.108.44]) with mapi id
+	14.03.0415.000; Mon, 8 Jul 2019 07:59:40 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Auger Eric <eric.auger@redhat.com>, Alex Williamson
+	<alex.williamson@redhat.com>
+Subject: RE: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+	update iova list
+Thread-Topic: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+	update iova list
+Thread-Index: AQHVLDHlfv32Tq6P8k2BSud+nbtQFqa5VEOAgAEf3kCAAXe2AIAEcOwg
+Date: Mon, 8 Jul 2019 06:59:39 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA83F2E198C@lhreml524-mbs.china.huawei.com>
 References: <20190626151248.11776-1-shameerali.kolothum.thodi@huawei.com>
-	<20190626151248.11776-7-shameerali.kolothum.thodi@huawei.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <7e4fd6c4-ac01-1378-cf8d-35ef490fe7ca@redhat.com>
-Date: Sun, 7 Jul 2019 17:03:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <20190626151248.11776-7-shameerali.kolothum.thodi@huawei.com>
+	<20190626151248.11776-3-shameerali.kolothum.thodi@huawei.com>
+	<20190703143427.2d63c15f@x1.home>
+	<5FC3163CFD30C246ABAA99954A238FA83F2DDB68@lhreml524-mbs.china.huawei.com>
+	<d70c59ec-e837-7697-acb1-c2b5027570ee@redhat.com>
+In-Reply-To: <d70c59ec-e837-7697-acb1-c2b5027570ee@redhat.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.27]);
-	Sun, 07 Jul 2019 15:03:53 +0000 (UTC)
-Cc: kevin.tian@intel.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	xuwei5@hisilicon.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.34.206.221]
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
+Cc: "kevin.tian@intel.com" <kevin.tian@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Linuxarm <linuxarm@huawei.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"xuwei \(O\)" <xuwei5@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,65 +81,100 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Shameer,
-On 6/26/19 5:12 PM, Shameer Kolothum wrote:
-> As we now already have the reserved regions list, just pass that into
-> vfio_iommu_has_sw_msi() fn.
-> 
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Hi Eric
 
-Thanks
+> -----Original Message-----
+> From: Auger Eric [mailto:eric.auger@redhat.com]
+> Sent: 05 July 2019 13:10
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> Alex Williamson <alex.williamson@redhat.com>
+> Cc: kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>; John
+> Garry <john.garry@huawei.com>; xuwei (O) <xuwei5@huawei.com>;
+> kevin.tian@intel.com
+> Subject: Re: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+> update iova list
+> 
+> Hi Shameer,
+> 
+> On 7/4/19 2:51 PM, Shameerali Kolothum Thodi wrote:
+> >
+> >
+> >> -----Original Message-----
+> >> From: kvm-owner@vger.kernel.org [mailto:kvm-owner@vger.kernel.org] On
+> >> Behalf Of Alex Williamson
+> >> Sent: 03 July 2019 21:34
+> >> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> >> Cc: eric.auger@redhat.com; pmorel@linux.vnet.ibm.com;
+> >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> >> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
+> John
+> >> Garry <john.garry@huawei.com>; xuwei (O) <xuwei5@huawei.com>;
+> >> kevin.tian@intel.com
+> >> Subject: Re: [PATCH v7 2/6] vfio/type1: Check reserve region conflict and
+> >> update iova list
+> >>
+> >> On Wed, 26 Jun 2019 16:12:44 +0100
+> >> Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
+> >>
+> >>> This retrieves the reserved regions associated with dev group and
+> >>> checks for conflicts with any existing dma mappings. Also update
+> >>> the iova list excluding the reserved regions.
+> >>>
+> >>> Reserved regions with type IOMMU_RESV_DIRECT_RELAXABLE are
+> >>> excluded from above checks as they are considered as directly
+> >>> mapped regions which are known to be relaxable.
+> >>>
+> >>> Signed-off-by: Shameer Kolothum
+> <shameerali.kolothum.thodi@huawei.com>
+> >>> ---
+> >>>  drivers/vfio/vfio_iommu_type1.c | 96
+> >> +++++++++++++++++++++++++++++++++
+> >>>  1 file changed, 96 insertions(+)
+> >>>
+> >>> diff --git a/drivers/vfio/vfio_iommu_type1.c
+> >> b/drivers/vfio/vfio_iommu_type1.c
+> >>> index 970d1ec06aed..b6bfdfa16c33 100644
+> >>> --- a/drivers/vfio/vfio_iommu_type1.c
+> >>> +++ b/drivers/vfio/vfio_iommu_type1.c
+> >>> @@ -1559,6 +1641,7 @@ static int vfio_iommu_type1_attach_group(void
+> >> *iommu_data,
+> >>>  	phys_addr_t resv_msi_base;
+> >>>  	struct iommu_domain_geometry geo;
+> >>>  	LIST_HEAD(iova_copy);
+> >>> +	LIST_HEAD(group_resv_regions);
+> >>>
+> >>>  	mutex_lock(&iommu->lock);
+> >>>
+> >>> @@ -1644,6 +1727,13 @@ static int
+> vfio_iommu_type1_attach_group(void
+> >> *iommu_data,
+> >>>  		goto out_detach;
+> >>>  	}
+> >>>
+> >>> +	iommu_get_group_resv_regions(iommu_group,
+> &group_resv_regions);
+> >>
+> >> This can fail and should have an error case.  I assume we'd fail the
+> >> group attach on failure.  Thanks,
+> >
+> > Right. I will add the check. Do you think we should do the same in
+> vfio_iommu_has_sw_msi()
+> > as well? (In fact, it looks like iommu_get_group_resv_regions() ret is not
+> checked anywhere in
+> > kernel).
+> 
+> I think the can be the topic of another series. I just noticed that in
+> iommu_insert_resv_region(), which is recursive in case ot merge, I
+> failed to propagate returned value or recursive calls. This also needs
+> to be fixed. I volunteer to work on those changes if you prefer. Just
+> let me know.
 
-Eric
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 15 ++++++---------
->  1 file changed, 6 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 450081802dcd..43b1e68ebce9 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1308,15 +1308,13 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
->  	return NULL;
->  }
->  
-> -static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
-> +static bool vfio_iommu_has_sw_msi(struct list_head *group_resv_regions,
-> +				  phys_addr_t *base)
->  {
-> -	struct list_head group_resv_regions;
-> -	struct iommu_resv_region *region, *next;
-> +	struct iommu_resv_region *region;
->  	bool ret = false;
->  
-> -	INIT_LIST_HEAD(&group_resv_regions);
-> -	iommu_get_group_resv_regions(group, &group_resv_regions);
-> -	list_for_each_entry(region, &group_resv_regions, list) {
-> +	list_for_each_entry(region, group_resv_regions, list) {
->  		/*
->  		 * The presence of any 'real' MSI regions should take
->  		 * precedence over the software-managed one if the
-> @@ -1332,8 +1330,7 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
->  			ret = true;
->  		}
->  	}
-> -	list_for_each_entry_safe(region, next, &group_resv_regions, list)
-> -		kfree(region);
-> +
->  	return ret;
->  }
->  
-> @@ -1774,7 +1771,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	if (ret)
->  		goto out_detach;
->  
-> -	resv_msi = vfio_iommu_has_sw_msi(iommu_group, &resv_msi_base);
-> +	resv_msi = vfio_iommu_has_sw_msi(&group_resv_regions, &resv_msi_base);
->  
->  	INIT_LIST_HEAD(&domain->group_list);
->  	list_add(&group->next, &domain->group_list);
-> 
+Ok. Please go ahead.
+
+Thanks,
+Shameer
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
