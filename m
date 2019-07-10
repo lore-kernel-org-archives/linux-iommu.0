@@ -2,94 +2,91 @@ Return-Path: <SRS0=bDbm=VH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91C5C74A35
-	for <iommu@archiver.kernel.org>; Wed, 10 Jul 2019 18:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A47C74A35
+	for <iommu@archiver.kernel.org>; Wed, 10 Jul 2019 18:38:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E392208C4
-	for <iommu@archiver.kernel.org>; Wed, 10 Jul 2019 18:12:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F296D20844
+	for <iommu@archiver.kernel.org>; Wed, 10 Jul 2019 18:38:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="N1GK7zEw";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="JcYJkkaR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E392208C4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bdE1Snln"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F296D20844
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E86E847ED;
-	Wed, 10 Jul 2019 18:12:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8A97C4872;
+	Wed, 10 Jul 2019 18:38:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D464E47E1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C827347F6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Jul 2019 18:05:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 69E16886
+	Wed, 10 Jul 2019 18:28:54 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
+	[209.85.210.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D3B55886
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 10 Jul 2019 18:05:42 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 2D82060909; Wed, 10 Jul 2019 18:05:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1562781942;
-	bh=Q/M+Y3hgIcs/x4Evw8WkCZO9QbiJl0A4/J4QbxvDNdY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=N1GK7zEw8QG8nzxKgmf0mEFSqezssn1zGGPg5+3gLeonDPQWsLyurT6T9Ng9IK/H2
-	3XcMVSZGyxTEZ7MGAbppd3bA7qRGXollgLQuwzECfUOn8i6qhqIbakNRn9Bp4v8nMA
-	P0k3XFZ3UblKgqbZCnhFWnw4xwVG2KHV/XWkIfeE=
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
-	[199.106.103.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: jcrouse@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id 57C3C6058E;
-	Wed, 10 Jul 2019 18:05:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1562781938;
-	bh=Q/M+Y3hgIcs/x4Evw8WkCZO9QbiJl0A4/J4QbxvDNdY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JcYJkkaR+GhyFm33ItH25B1sRStM2jTIQzxNU5LZYZox6eGXni2EkQco+QfviC/4T
-	pRMdUoPmTx0fexL71TuSs90XMlR4Fep71USqUuZ6NM1xesmvjFTRtvmaWRBkaScRM4
-	YHyEJqLdgDT3Vf7AsbOENGBMFaYhwC9P0Wx6DygU=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 57C3C6058E
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Wed, 10 Jul 2019 12:05:35 -0600
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RESEND PATCH v2 2/3] iommu/io-pgtable-arm: Add support for
-	AARCH64 split pagetables
-Message-ID: <20190710180535.GA26247@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
-	freedreno@lists.freedesktop.org, jean-philippe.brucker@arm.com,
-	linux-arm-msm@vger.kernel.org, hoegsberg@google.com,
-	dianders@chromium.org, baolu.lu@linux.intel.com,
-	Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
-	Zhen Lei <thunder.leizhen@huawei.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org
-References: <1562612447-19856-1-git-send-email-jcrouse@codeaurora.org>
-	<1562612447-19856-3-git-send-email-jcrouse@codeaurora.org>
-	<d9c1a115-ca4f-efda-4ba2-adefbd802849@arm.com>
+	Wed, 10 Jul 2019 18:28:52 +0000 (UTC)
+Received: by mail-pf1-f196.google.com with SMTP id i189so1470110pfg.10
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 10 Jul 2019 11:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-transfer-encoding;
+	bh=X2wPmom3sJSwZ6VYG/6JKsbwq16BGxAUHYVA29t4WUs=;
+	b=bdE1SnlndmJmWXI4tshCAMHf1y6EjPIbK8Fbzi7N09M0t7c7CXz9jPaAF+U4zpK2Ar
+	qgCiZ/PtW4leBd9a9AxyI8AX8KAj2qjw9PES2Zr2jdM0CYFXuuMwafu1VW3XyuIX85ze
+	WyeGDguVLVu37gQ+z7B90eyFqfNkom1MP3LikG5lNXvgTOw7RM96ogRtu5S7/ndJUKBX
+	SFSf82JGBHHIEmapCMaggiqsSGmD80h/HwjFTvWjD5i1CXq8qlzCKfCl22YLtstT+vsh
+	abGOlhy9STPiO77wHf6EZUAMV63/A7eAJBWH/kg8JCzyNogW1v4N+kxJ1fDAn8+Wu7uz
+	ddfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+	:references:mime-version:content-transfer-encoding;
+	bh=X2wPmom3sJSwZ6VYG/6JKsbwq16BGxAUHYVA29t4WUs=;
+	b=POWgKbuLJzCSUZOvlIVPs/PtvydpZy+EHJu9sBoepMcdLseW4Sn5wMXGdvQzmIxzra
+	leWM/bCROz9YTeUmJ4kFP4yvmKpyZHG6SoY/WWM+exjWWeFpbZK3MNbLsA2piZhApJ++
+	z+JpQZ36vjLPG2/96FIh7mnsitFTML6qLe3KPCh1UCRDO6lv4EJqKEuSsj05/XXVKZdq
+	UMaB0AUKBQfGdIRHrNGD9cI7i/u5+dC4GSdxuHyezCwTvtbmFpGptwAdXOzQbtN7sECU
+	AYzGyAPkltCeSijVUgnU67suNjgFmdBk4eOOtY82tJsBvECwhvifj27LYj5Zuj6I5/0o
+	uMnQ==
+X-Gm-Message-State: APjAAAXuAtyr05QDG9D5E+3JMnmkmxMUvw92MikV5KxfEMkMP8fQwwZC
+	jGS24gLeauMPw9S1KxYJp2WZbKlNdEw=
+X-Google-Smtp-Source: APXvYqzxVJwORPZh7pa+tFmbtMmG7GfDyUMvQifbBp9D3WGXW+RU3JFqDMMKkm/CNidWkfL1FXSk/Q==
+X-Received: by 2002:a65:454c:: with SMTP id x12mr38500524pgr.354.1562783332011;
+	Wed, 10 Jul 2019 11:28:52 -0700 (PDT)
+Received: from localhost ([2620:15c:f:fd00:4c3b:936:8dc5:a2ad])
+	by smtp.gmail.com with ESMTPSA id d16sm2943054pgb.4.2019.07.10.11.28.50
+	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+	Wed, 10 Jul 2019 11:28:51 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v2] iommu: add support for drivers that manage iommu explicitly
+Date: Wed, 10 Jul 2019 11:28:30 -0700
+Message-Id: <20190710182844.25032-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190702202631.32148-2-robdclark@gmail.com>
+References: <20190702202631.32148-2-robdclark@gmail.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <d9c1a115-ca4f-efda-4ba2-adefbd802849@arm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: Rob Herring <robh@kernel.org>, Will Deacon <will@kernel.org>,
-	jean-philippe.brucker@arm.com, linux-arm-msm@vger.kernel.org,
-	dianders@chromium.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, hoegsberg@google.com,
-	linux-arm-kernel@lists.infradead.org, freedreno@lists.freedesktop.org,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Cc: Rob Clark <robdclark@chromium.org>, aarch64-laptops@lists.linaro.org,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>,
+	Will Deacon <will@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -107,520 +104,75 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Jul 10, 2019 at 05:45:37PM +0100, Robin Murphy wrote:
-> Hi Jordan,
-> 
-> On 08/07/2019 20:00, Jordan Crouse wrote:
-> >Add a new sub-format ARM_64_LPAE_SPLIT_S1 to create and set up split
-> >pagetables (TTBR0 and TTBR1). The initialization function sets up the
-> >correct va_size and sign extension bits and programs the TCR registers.
-> >Split pagetable formats use their own own map/unmap wrappers to ensure
-> >that the correct pagetable is selected based on the incoming iova but
-> >most of the heavy lifting is common to the other formats.
-> 
-> I'm somewhat concerned that this implementation is very closely tied to the
-> current Adreno use-case, and won't easily generalise in future to other
-> potential TTBR1 uses which have been tossed around, like
-> SMMUv3-without-substream-ID.
+From: Rob Clark <robdclark@chromium.org>
 
-I haven't heard about these use-cases. I figured v3 would be all PASID all the
-time. If you have details, I can see if I can avoid painting v3 into a corner.
+Avoid attaching any non-driver managed domain if the driver indicates
+that it manages the iommu directly.
 
-> Furthermore, even for the Adreno pretend-PASID case it appears to be a bit
-> too fragile for comfort - given that a DOMAIN_ATTR_SPLIT_TABLES domain
-> doesn't look any different from a regular one from the users' point of view,
-> what's to stop them making "without PASID" mappings in the lower half of the
-> address space, and thus unwittingly pulling the rug out from under their own
-> feet upon attaching an aux domain? In fact allocating a TTBR0 table at all
-> for the main domain seems like little more than a waste of memory.
+This avoids a problem on devices where the bootloader takes the SMMU out
+of bypass and enables scanout, such as is the case on snapdragon aarch64
+laptops and newer snapdragon android devices.  Attaching an IDENTITY or
+DMA domain before the driver has a chance to intervene will break efifb
+scanout and start triggering iommu faults.
 
-That makes sense. Would it work better if we made a type ARM_64_LPAE_TTBR1_S1
-that only allocated memory for TTBR1 and set TBR.EDP0 to trigger faults for
-TTBR0?
+If the driver manages the iommu directly (as does drm/msm), it can
+shut down scanout when it is ready to take over the display, before
+attaching an UNMANAGED domain.
 
-Then we could get rid of most of the extra stuff in io-pgtable-arm.c and I think
-that would meet most of your concerns. 
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+v2. Move the check into arm_smmu_attach_dev() (as I *think* this is
+    what Robin preferred; update commit msg to focus on the display
+    related issue that this solves.
 
-Jordan
+We also need Bjorn's patch set to inherit SMR and CB config during
+init:
 
-> >
-> >Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> >---
-> >
-> >  drivers/iommu/io-pgtable-arm.c | 261 +++++++++++++++++++++++++++++++++++++----
-> >  drivers/iommu/io-pgtable.c     |   1 +
-> >  include/linux/io-pgtable.h     |   2 +
-> >  3 files changed, 240 insertions(+), 24 deletions(-)
-> >
-> >diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> >index 161a7d56..aec35e5 100644
-> >--- a/drivers/iommu/io-pgtable-arm.c
-> >+++ b/drivers/iommu/io-pgtable-arm.c
-> >@@ -118,7 +118,12 @@
-> >  #define ARM_LPAE_TCR_TG0_64K		(1 << 14)
-> >  #define ARM_LPAE_TCR_TG0_16K		(2 << 14)
-> >+#define ARM_LPAE_TCR_TG1_4K		(0 << 30)
-> >+#define ARM_LPAE_TCR_TG1_64K		(1 << 30)
-> >+#define ARM_LPAE_TCR_TG1_16K		(2 << 30)
-> >+
-> >  #define ARM_LPAE_TCR_SH0_SHIFT		12
-> >+#define ARM_LPAE_TCR_SH1_SHIFT		28
-> >  #define ARM_LPAE_TCR_SH0_MASK		0x3
-> >  #define ARM_LPAE_TCR_SH_NS		0
-> >  #define ARM_LPAE_TCR_SH_OS		2
-> >@@ -126,6 +131,8 @@
-> >  #define ARM_LPAE_TCR_ORGN0_SHIFT	10
-> >  #define ARM_LPAE_TCR_IRGN0_SHIFT	8
-> >+#define ARM_LPAE_TCR_ORGN1_SHIFT	26
-> >+#define ARM_LPAE_TCR_IRGN1_SHIFT	24
-> >  #define ARM_LPAE_TCR_RGN_MASK		0x3
-> >  #define ARM_LPAE_TCR_RGN_NC		0
-> >  #define ARM_LPAE_TCR_RGN_WBWA		1
-> >@@ -136,6 +143,7 @@
-> >  #define ARM_LPAE_TCR_SL0_MASK		0x3
-> >  #define ARM_LPAE_TCR_T0SZ_SHIFT		0
-> >+#define ARM_LPAE_TCR_T1SZ_SHIFT		16
-> >  #define ARM_LPAE_TCR_SZ_MASK		0xf
-> >  #define ARM_LPAE_TCR_PS_SHIFT		16
-> >@@ -152,6 +160,14 @@
-> >  #define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
-> >  #define ARM_LPAE_TCR_PS_52_BIT		0x6ULL
-> >+#define ARM_LPAE_TCR_SEP_SHIFT		47
-> >+#define ARM_LPAE_TCR_SEP_31		(0x0ULL << ARM_LPAE_TCR_SEP_SHIFT)
-> >+#define ARM_LPAE_TCR_SEP_35		(0x1ULL << ARM_LPAE_TCR_SEP_SHIFT)
-> >+#define ARM_LPAE_TCR_SEP_39		(0x2ULL << ARM_LPAE_TCR_SEP_SHIFT)
-> >+#define ARM_LPAE_TCR_SEP_41		(0x3ULL << ARM_LPAE_TCR_SEP_SHIFT)
-> >+#define ARM_LPAE_TCR_SEP_43		(0x4ULL << ARM_LPAE_TCR_SEP_SHIFT)
-> >+#define ARM_LPAE_TCR_SEP_UPSTREAM	(0x7ULL << ARM_LPAE_TCR_SEP_SHIFT)
-> 
-> This is a specific detail of SMMUv2, and nothing to do with the LPAE/AArch64
-> VMSA formats.
-> 
-> >+
-> >  #define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
-> >  #define ARM_LPAE_MAIR_ATTR_MASK		0xff
-> >  #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
-> >@@ -179,11 +195,12 @@ struct arm_lpae_io_pgtable {
-> >  	struct io_pgtable	iop;
-> >  	int			levels;
-> >+	u32			sep;
-> >  	size_t			pgd_size;
-> >  	unsigned long		pg_shift;
-> >  	unsigned long		bits_per_level;
-> >-	void			*pgd;
-> >+	void			*pgd[2];
-> >  };
-> >  typedef u64 arm_lpae_iopte;
-> >@@ -426,7 +443,8 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
-> >  	arm_lpae_iopte pte;
-> >  	if (data->iop.fmt == ARM_64_LPAE_S1 ||
-> >-	    data->iop.fmt == ARM_32_LPAE_S1) {
-> >+	    data->iop.fmt == ARM_32_LPAE_S1 ||
-> >+	    data->iop.fmt == ARM_64_LPAE_SPLIT_S1) {
-> >  		pte = ARM_LPAE_PTE_nG;
-> >  		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
-> >  			pte |= ARM_LPAE_PTE_AP_RDONLY;
-> >@@ -470,11 +488,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
-> >  	return pte;
-> >  }
-> >-static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
-> >-			phys_addr_t paddr, size_t size, int iommu_prot)
-> >+static int _arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
-> >+			phys_addr_t paddr, size_t size, int iommu_prot,
-> >+			arm_lpae_iopte *ptep)
-> >  {
-> >-	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >-	arm_lpae_iopte *ptep = data->pgd;
-> >  	int ret, lvl = ARM_LPAE_START_LVL(data);
-> >  	arm_lpae_iopte prot;
-> >@@ -497,12 +514,39 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
-> >  	return ret;
-> >  }
-> >+static int arm_lpae_split_map(struct io_pgtable_ops *ops, unsigned long iova,
-> >+		phys_addr_t paddr, size_t size, int iommu_prot)
-> >+{
-> >+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >+	unsigned long mask = 1UL << data->sep;
-> >+	arm_lpae_iopte *ptep;
-> >+
-> >+	if (iova & mask) {
-> >+		ptep = data->pgd[1];
-> >+		iova &= (mask - 1);
-> >+	} else
-> >+		ptep = data->pgd[0];
-> 
-> AFAICS, this logic effectively aliases the TTBR1 region across the entire
-> upper half of the address hole, so bogus IOVAs may corrupt valid mappings
-> instead of giving errors as expected.
-> 
-> >+
-> >+	return _arm_lpae_map(data, iova, paddr, size, iommu_prot, ptep);
-> >+}
-> >+
-> >+static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
-> >+			phys_addr_t paddr, size_t size, int iommu_prot)
-> >+{
-> >+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >+
-> >+	return _arm_lpae_map(data, iova, paddr, size, iommu_prot, data->pgd[0]);
-> >+}
-> >+
-> >  static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
-> >  				    arm_lpae_iopte *ptep)
-> >  {
-> >  	arm_lpae_iopte *start, *end;
-> >  	unsigned long table_size;
-> >+	if (!ptep)
-> >+		return;
-> >+
-> >  	if (lvl == ARM_LPAE_START_LVL(data))
-> >  		table_size = data->pgd_size;
-> >  	else
-> >@@ -532,7 +576,8 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
-> >  {
-> >  	struct arm_lpae_io_pgtable *data = io_pgtable_to_data(iop);
-> >-	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd);
-> >+	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd[0]);
-> >+	__arm_lpae_free_pgtable(data, ARM_LPAE_START_LVL(data), data->pgd[1]);
-> >  	kfree(data);
-> >  }
-> >@@ -643,11 +688,28 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> >  	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
-> >  }
-> >+static size_t arm_lpae_split_unmap(struct io_pgtable_ops *ops,
-> >+				   unsigned long iova, size_t size)
-> >+{
-> >+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >+	unsigned long mask = 1UL << data->sep;
-> >+	arm_lpae_iopte *ptep;
-> >+	int lvl = ARM_LPAE_START_LVL(data);
-> >+
-> >+	if (iova & mask) {
-> >+		ptep = data->pgd[1];
-> >+		iova &= (mask - 1);
-> >+	} else
-> >+		ptep = data->pgd[0];
-> >+
-> >+	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-> >+}
-> >+
-> >  static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
-> >  			     size_t size)
-> >  {
-> >  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >-	arm_lpae_iopte *ptep = data->pgd;
-> >+	arm_lpae_iopte *ptep = data->pgd[0];
-> >  	int lvl = ARM_LPAE_START_LVL(data);
-> >  	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
-> >@@ -656,11 +718,11 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
-> >  	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-> >  }
-> >-static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> >-					 unsigned long iova)
-> >+static phys_addr_t _arm_lpae_iova_to_phys(struct arm_lpae_io_pgtable *data,
-> >+					  unsigned long iova,
-> >+					  arm_lpae_iopte *ptep)
-> >  {
-> >-	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >-	arm_lpae_iopte pte, *ptep = data->pgd;
-> >+	arm_lpae_iopte pte;
-> >  	int lvl = ARM_LPAE_START_LVL(data);
-> >  	do {
-> >@@ -692,6 +754,31 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> >  	return iopte_to_paddr(pte, data) | iova;
-> >  }
-> >+
-> >+static phys_addr_t arm_lpae_split_iova_to_phys(struct io_pgtable_ops *ops,
-> >+					       unsigned long iova)
-> >+{
-> >+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >+	unsigned long mask = 1UL << data->sep;
-> >+	arm_lpae_iopte *ptep;
-> >+
-> >+	if (iova & mask) {
-> >+		ptep = data->pgd[1];
-> >+		iova &= (mask - 1);
-> >+	} else
-> >+		ptep = data->pgd[0];
-> >+
-> >+	return _arm_lpae_iova_to_phys(data, iova, ptep);
-> >+}
-> >+
-> >+static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> >+					 unsigned long iova)
-> >+{
-> >+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> >+
-> >+	return _arm_lpae_iova_to_phys(data, iova, data->pgd[0]);
-> >+}
-> >+
-> >  static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
-> >  {
-> >  	unsigned long granule, page_sizes;
-> >@@ -771,6 +858,9 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
-> >  	pgd_bits = va_bits - (data->bits_per_level * (data->levels - 1));
-> >  	data->pgd_size = 1UL << (pgd_bits + ilog2(sizeof(arm_lpae_iopte)));
-> >+	data->pgd[0] = NULL;
-> >+	data->pgd[1] = NULL;
-> >+
-> >  	data->iop.ops = (struct io_pgtable_ops) {
-> >  		.map		= arm_lpae_map,
-> >  		.unmap		= arm_lpae_unmap,
-> >@@ -780,8 +870,8 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
-> >  	return data;
-> >  }
-> >-static struct io_pgtable *
-> >-arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >+static struct arm_lpae_io_pgtable *
-> >+_arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg)
-> >  {
-> >  	u64 reg;
-> >  	struct arm_lpae_io_pgtable *data;
-> >@@ -845,8 +935,6 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >  	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T0SZ_SHIFT;
-> >-	/* Disable speculative walks through TTBR1 */
-> >-	reg |= ARM_LPAE_TCR_EPD1;
-> 
-> Not setting EPD1 at all could potentially lead to problems for systems not
-> using split tables.
-> 
-> >  	cfg->arm_lpae_s1_cfg.tcr = reg;
-> >  	/* MAIRs */
-> >@@ -863,24 +951,143 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >  	cfg->arm_lpae_s1_cfg.mair[1] = 0;
-> >  	/* Looking good; allocate a pgd */
-> >-	data->pgd = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-> >-	if (!data->pgd)
-> >+	data->pgd[0] = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-> >+	if (!data->pgd[0])
-> >  		goto out_free_data;
-> >  	/* Ensure the empty pgd is visible before any actual TTBR write */
-> >  	wmb();
-> >  	/* TTBRs */
-> >-	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd);
-> >+	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd[0]);
-> >  	cfg->arm_lpae_s1_cfg.ttbr[1] = 0;
-> >+	return data;
-> >+
-> >+out_free_data:
-> >+	kfree(data);
-> >+	return NULL;
-> >+}
-> >+
-> >+
-> >+/* Allocate split pagetables */
-> >+static struct io_pgtable *
-> >+arm_64_lpae_alloc_pgtable_split_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >+{
-> >+	u64 reg;
-> >+	struct arm_lpae_io_pgtable *data;
-> >+	u32 sep;
-> >+
-> >+	/* Figure out what the sign extension bit should be */
-> >+	switch (cfg->ias) {
-> 
-> IAS only tells you how wide the SMMU's address input is; what you really
-> care about for sign extension is how wide the relevant masters' address
-> *outputs* are. There's no way we can know that here, so AFAICS the only
-> truly robust answer is for the caller requesting split tables to also
-> provide the appropriate split point.
-> 
-> >+	case 32:
-> >+	case 36:
-> >+	case 40:
-> >+	case 42:
-> >+	case 44:
-> >+		sep = cfg->ias - 1;
-> >+		/* Adjust the address size to account for the extension bit */
-> >+		cfg->ias--;
-> >+		break;
-> >+	case 48:
-> >+		/* IAS of 48 is a special case, it has a dedicated bit */
-> 
-> That's not only not VMSA, but not even any architected SMMU behaviour; it
-> just happens to be the way that one user of io-pgtable-arm currently mangles
-> its IAS values.
-> 
-> Robin.
-> 
-> >+		sep = 48;
-> >+		break;
-> >+	default:
-> >+		return NULL;
-> >+	}
-> >+
-> >+	data = _arm_64_lpae_alloc_pgtable_s1(cfg);
-> >+	if (!data)
-> >+		return NULL;
-> >+
-> >+	/* Add the TTBR1 settings */
-> >+	reg = cfg->arm_lpae_s1_cfg.tcr;
-> >+
-> >+	/* TCR */
-> >+	reg |= (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH1_SHIFT) |
-> >+	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN1_SHIFT) |
-> >+	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN1_SHIFT);
-> >+
-> >+	switch (ARM_LPAE_GRANULE(data)) {
-> >+	case SZ_4K:
-> >+		reg |= ARM_LPAE_TCR_TG1_4K;
-> >+		break;
-> >+	case SZ_16K:
-> >+		reg |= ARM_LPAE_TCR_TG1_16K;
-> >+		break;
-> >+	case SZ_64K:
-> >+		reg |= ARM_LPAE_TCR_TG1_64K;
-> >+		break;
-> >+	}
-> >+
-> >+	reg |= (64ULL - cfg->ias) << ARM_LPAE_TCR_T1SZ_SHIFT;
-> >+
-> >+	switch (sep) {
-> >+	case 31:
-> >+		reg |= ARM_LPAE_TCR_SEP_31;
-> >+		break;
-> >+	case 35:
-> >+		reg |= ARM_LPAE_TCR_SEP_35;
-> >+		break;
-> >+	case 39:
-> >+		reg |= ARM_LPAE_TCR_SEP_39;
-> >+		break;
-> >+	case 41:
-> >+		reg |= ARM_LPAE_TCR_SEP_41;
-> >+		break;
-> >+	case 43:
-> >+		reg |= ARM_LPAE_TCR_SEP_43;
-> >+		break;
-> >+	case 48:
-> >+		reg |= ARM_LPAE_TCR_SEP_UPSTREAM;
-> >+		break;
-> >+	}
-> >+
-> >+	cfg->arm_lpae_s1_cfg.tcr = reg;
-> >+
-> >+	/* Allocate the TTBR1 pagetable */
-> >+	data->pgd[1] = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-> >+	if (!data->pgd[1])
-> >+		goto out_free_data;
-> >+
-> >+	/* Override the data ops with split table specific ops */
-> >+	data->iop.ops = (struct io_pgtable_ops) {
-> >+		.map		= arm_lpae_split_map,
-> >+		.unmap		= arm_lpae_split_unmap,
-> >+		.iova_to_phys	= arm_lpae_split_iova_to_phys,
-> >+	};
-> >+
-> >+	/*
-> >+	 * remember the sign extension bit, we'll need it later to figure out
-> >+	 * which pagetable to use
-> >+	 */
-> >+	data->sep = sep;
-> >+
-> >+	/* Ensure the empty pgd is visible before any actual TTBR write */
-> >+	wmb();
-> >+
-> >+	cfg->arm_lpae_s1_cfg.ttbr[1] = virt_to_phys(data->pgd[1]);
-> >  	return &data->iop;
-> >  out_free_data:
-> >+	__arm_lpae_free_pages(data->pgd[0], data->pgd_size, cfg);
-> >  	kfree(data);
-> >  	return NULL;
-> >  }
-> >  static struct io_pgtable *
-> >+arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >+{
-> >+	struct arm_lpae_io_pgtable *data;
-> >+
-> >+	data = _arm_64_lpae_alloc_pgtable_s1(cfg);
-> >+	if (!data)
-> >+		return NULL;
-> >+
-> >+	return &data->iop;
-> >+}
-> >+
-> >+static struct io_pgtable *
-> >  arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
-> >  {
-> >  	u64 reg, sl;
-> >@@ -960,15 +1167,15 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
-> >  	cfg->arm_lpae_s2_cfg.vtcr = reg;
-> >  	/* Allocate pgd pages */
-> >-	data->pgd = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-> >-	if (!data->pgd)
-> >+	data->pgd[0] = __arm_lpae_alloc_pages(data->pgd_size, GFP_KERNEL, cfg);
-> >+	if (!data->pgd[0])
-> >  		goto out_free_data;
-> >  	/* Ensure the empty pgd is visible before any actual TTBR write */
-> >  	wmb();
-> >  	/* VTTBR */
-> >-	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd);
-> >+	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd[0]);
-> >  	return &data->iop;
-> >  out_free_data:
-> >@@ -1041,6 +1248,11 @@ struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
-> >  	.free	= arm_lpae_free_pgtable,
-> >  };
-> >+struct io_pgtable_init_fns io_pgtable_arm_64_lpae_split_s1_init_fns = {
-> >+	.alloc	= arm_64_lpae_alloc_pgtable_split_s1,
-> >+	.free	= arm_lpae_free_pgtable,
-> >+};
-> >+
-> >  struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
-> >  	.alloc	= arm_64_lpae_alloc_pgtable_s2,
-> >  	.free	= arm_lpae_free_pgtable,
-> >@@ -1095,9 +1307,9 @@ static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
-> >  	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit\n",
-> >  		cfg->pgsize_bitmap, cfg->ias);
-> >-	pr_err("data: %d levels, 0x%zx pgd_size, %lu pg_shift, %lu bits_per_level, pgd @ %p\n",
-> >+	pr_err("data: %d levels, 0x%zx pgd_size, %lu pg_shift, %lu bits_per_level, pgd @ %p %p\n",
-> >  		data->levels, data->pgd_size, data->pg_shift,
-> >-		data->bits_per_level, data->pgd);
-> >+		data->bits_per_level, data->pgd[0], data->pgd[1]);
-> >  }
-> >  #define __FAIL(ops, i)	({						\
-> >@@ -1112,6 +1324,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
-> >  	static const enum io_pgtable_fmt fmts[] = {
-> >  		ARM_64_LPAE_S1,
-> >  		ARM_64_LPAE_S2,
-> >+		ARM_64_LPAE_SPLIT_S1,
-> >  	};
-> >  	int i, j;
-> >diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-> >index ced53e5..ed1985f 100644
-> >--- a/drivers/iommu/io-pgtable.c
-> >+++ b/drivers/iommu/io-pgtable.c
-> >@@ -20,6 +20,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
-> >  	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
-> >  	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
-> >  	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
-> >+	[ARM_64_LPAE_SPLIT_S1] = &io_pgtable_arm_64_lpae_split_s1_init_fns,
-> >  #endif
-> >  #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
-> >  	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
-> >diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> >index b5a450a..2ed0e6a 100644
-> >--- a/include/linux/io-pgtable.h
-> >+++ b/include/linux/io-pgtable.h
-> >@@ -10,6 +10,7 @@ enum io_pgtable_fmt {
-> >  	ARM_32_LPAE_S1,
-> >  	ARM_32_LPAE_S2,
-> >  	ARM_64_LPAE_S1,
-> >+	ARM_64_LPAE_SPLIT_S1,
-> >  	ARM_64_LPAE_S2,
-> >  	ARM_V7S,
-> >  	ARM_MALI_LPAE,
-> >@@ -211,6 +212,7 @@ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
-> >  extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
-> >  extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
-> >  extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
-> >+extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_split_s1_init_fns;
-> >  extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
-> >  extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
-> >
+https://www.spinics.net/lists/arm-kernel/msg732246.html
 
+ drivers/iommu/arm-smmu.c | 11 +++++++++++
+ include/linux/device.h   |  3 ++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 1a5efa7c8767..4a80710124db 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1411,6 +1411,17 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		return -ENXIO;
+ 	}
+ 
++	/*
++	 * If driver is going to manage iommu directly, then avoid
++	 * attaching any non driver managed domain.  There could
++	 * be already active dma underway (ie. scanout in case of
++	 * bootloader enabled display), and interfering with that
++	 * will make things go *boom*
++	 */
++	if ((domain->type != IOMMU_DOMAIN_UNMANAGED) &&
++	    dev->driver && dev->driver->driver_manages_iommu)
++		return 0;
++
+ 	/*
+ 	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
+ 	 * domains between of_xlate() and add_device() - we have no way to cope
+diff --git a/include/linux/device.h b/include/linux/device.h
+index e138baabe01e..d98aa4d3c8c3 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -282,7 +282,8 @@ struct device_driver {
+ 	struct module		*owner;
+ 	const char		*mod_name;	/* used for built-in modules */
+ 
+-	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
++	bool suppress_bind_attrs:1;	/* disables bind/unbind via sysfs */
++	bool driver_manages_iommu:1;	/* driver manages IOMMU explicitly */
+ 	enum probe_type probe_type;
+ 
+ 	const struct of_device_id	*of_match_table;
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
