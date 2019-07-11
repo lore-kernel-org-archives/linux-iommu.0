@@ -2,61 +2,71 @@ Return-Path: <SRS0=Q5U9=VI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C0DC74A52
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 12:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39623C74A35
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 12:01:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD85C208E4
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 12:01:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD85C208E4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id E73E0208E4
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 12:01:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E73E0208E4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6B1954EE5;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9BDF94EBB;
 	Thu, 11 Jul 2019 12:00:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3EC7C4B80
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AC6694B79
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 11:51:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7CCA0891
+	Thu, 11 Jul 2019 11:54:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 198EC894
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 11:51:49 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
-	[10.5.11.11])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id EBD8D550BB;
-	Thu, 11 Jul 2019 11:51:48 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-46.ams2.redhat.com [10.36.116.46])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id A8C2A600CD;
-	Thu, 11 Jul 2019 11:51:42 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
-	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
-	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com,
-	robin.murphy@arm.com
-Subject: [PATCH v9 14/14] iommu/smmuv3: Report non recoverable faults
-Date: Thu, 11 Jul 2019 13:49:59 +0200
-Message-Id: <20190711114959.15675-15-eric.auger@redhat.com>
-In-Reply-To: <20190711114959.15675-1-eric.auger@redhat.com>
-References: <20190711114959.15675-1-eric.auger@redhat.com>
+	Thu, 11 Jul 2019 11:54:08 +0000 (UTC)
+X-UUID: adde9b17e666416d966937a19d049ef3-20190711
+X-UUID: adde9b17e666416d966937a19d049ef3-20190711
+Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 315190674; Thu, 11 Jul 2019 19:54:00 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31DR.mediatek.inc
+	(172.27.6.102) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Thu, 11 Jul 2019 19:53:57 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Thu, 11 Jul 2019 19:53:56 +0800
+Message-ID: <1562846036.31342.10.camel@mhfsdcap03>
+Subject: Re: [PATCH v8 07/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
+	Mode
+From: Yong Wu <yong.wu@mediatek.com>
+To: Will Deacon <will@kernel.org>
+Date: Thu, 11 Jul 2019 19:53:56 +0800
+In-Reply-To: <20190710143649.w5dplhzdpi3bxp7e@willie-the-truck>
+References: <1561774167-24141-1-git-send-email-yong.wu@mediatek.com>
+	<1561774167-24141-8-git-send-email-yong.wu@mediatek.com>
+	<20190710143649.w5dplhzdpi3bxp7e@willie-the-truck>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.29]);
-	Thu, 11 Jul 2019 11:51:49 +0000 (UTC)
-Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
-	ashok.raj@intel.com, marc.zyngier@arm.com
+X-TM-SNTS-SMTP: 0C86952889D210679121FAA38297439300932F8917CA01830F3FF75C994BE39B2000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	yingjoe.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,260 +84,176 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When a stage 1 related fault event is read from the event queue,
-let's propagate it to potential external fault listeners, ie. users
-who registered a fault handler.
+On Wed, 2019-07-10 at 15:36 +0100, Will Deacon wrote:
+> On Sat, Jun 29, 2019 at 10:09:13AM +0800, Yong Wu wrote:
+> > MediaTek extend the arm v7s descriptor to support the dram over 4GB.
+> > 
+> > In the mt2712 and mt8173, it's called "4GB mode", the physical address
+> > is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
+> > is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
+> > bit32 is always enabled. thus, in the M4U, we always enable the bit9
+> > for all PTEs which means to enable bit32 of physical address.
+> > 
+> > but in mt8183, M4U support the dram from 0x4000_0000 to 0x3_ffff_ffff
+> > which isn't remaped. We extend the PTEs: the bit9 represent bit32 of
+> > PA and the bit4 represent bit33 of PA. Meanwhile the iova still is
+> > 32bits.
+> 
+> What happens if bit4 is set in the pte for mt2712 or mt8173? Perhaps the
 
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
+bit4 is ignored in mt2712 and mt8173(No effect).
 
----
-v8 -> v9:
-- adapt to the removal of IOMMU_FAULT_UNRECOV_PERM_VALID:
-  only look at IOMMU_FAULT_UNRECOV_ADDR_VALID which comes with
-  perm
-- do not advertise IOMMU_FAULT_UNRECOV_PASID_VALID faults for
-  translation faults
-- trace errors if !master
-- test nested before calling iommu_report_device_fault
-- call the fault handler unconditionnally in non nested mode
+> io-pgtable backend should be allowing oas > 32 when
+> IO_PGTABLE_QUIRK_ARM_MTK_4GB is set, and then enforcing that itself.
 
-v4 -> v5:
-- s/IOMMU_FAULT_PERM_INST/IOMMU_FAULT_PERM_EXEC
----
- drivers/iommu/arm-smmu-v3.c | 182 +++++++++++++++++++++++++++++++++---
- 1 file changed, 171 insertions(+), 11 deletions(-)
+About oas, It looks the oas doesn't work in current the v7s. 
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 641f1058ef51..79229560c167 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -169,6 +169,26 @@
- #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
- #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
- 
-+/* Events */
-+#define ARM_SMMU_EVT_F_UUT		0x01
-+#define ARM_SMMU_EVT_C_BAD_STREAMID	0x02
-+#define ARM_SMMU_EVT_F_STE_FETCH	0x03
-+#define ARM_SMMU_EVT_C_BAD_STE		0x04
-+#define ARM_SMMU_EVT_F_BAD_ATS_TREQ	0x05
-+#define ARM_SMMU_EVT_F_STREAM_DISABLED	0x06
-+#define ARM_SMMU_EVT_F_TRANSL_FORBIDDEN	0x07
-+#define ARM_SMMU_EVT_C_BAD_SUBSTREAMID	0x08
-+#define ARM_SMMU_EVT_F_CD_FETCH		0x09
-+#define ARM_SMMU_EVT_C_BAD_CD		0x0a
-+#define ARM_SMMU_EVT_F_WALK_EABT	0x0b
-+#define ARM_SMMU_EVT_F_TRANSLATION	0x10
-+#define ARM_SMMU_EVT_F_ADDR_SIZE	0x11
-+#define ARM_SMMU_EVT_F_ACCESS		0x12
-+#define ARM_SMMU_EVT_F_PERMISSION	0x13
-+#define ARM_SMMU_EVT_F_TLB_CONFLICT	0x20
-+#define ARM_SMMU_EVT_F_CFG_CONFLICT	0x21
-+#define ARM_SMMU_EVT_E_PAGE_REQUEST	0x24
-+
- /* Common MSI config fields */
- #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
- #define MSI_CFG2_SH			GENMASK(5, 4)
-@@ -350,6 +370,15 @@
- #define EVTQ_MAX_SZ_SHIFT		(Q_MAX_SZ_SHIFT - EVTQ_ENT_SZ_SHIFT)
- 
- #define EVTQ_0_ID			GENMASK_ULL(7, 0)
-+#define EVTQ_0_SSV			GENMASK_ULL(11, 11)
-+#define EVTQ_0_SUBSTREAMID		GENMASK_ULL(31, 12)
-+#define EVTQ_0_STREAMID			GENMASK_ULL(63, 32)
-+#define EVTQ_1_PNU			GENMASK_ULL(33, 33)
-+#define EVTQ_1_IND			GENMASK_ULL(34, 34)
-+#define EVTQ_1_RNW			GENMASK_ULL(35, 35)
-+#define EVTQ_1_S2			GENMASK_ULL(39, 39)
-+#define EVTQ_1_CLASS			GENMASK_ULL(40, 41)
-+#define EVTQ_3_FETCH_ADDR		GENMASK_ULL(51, 3)
- 
- /* PRI queue */
- #define PRIQ_ENT_SZ_SHIFT		4
-@@ -655,6 +684,57 @@ struct arm_smmu_domain {
- 	spinlock_t			devices_lock;
- };
- 
-+/* fault propagation */
-+struct arm_smmu_fault_propagation_data {
-+	enum iommu_fault_reason reason;
-+	bool s1_check;
-+	u32 fields; /* IOMMU_FAULT_UNRECOV_*_VALID bits */
-+};
-+
-+/*
-+ * Describes how SMMU faults translate into generic IOMMU faults
-+ * and if they need to be reported externally
-+ */
-+static const struct arm_smmu_fault_propagation_data fault_propagation[] = {
-+[ARM_SMMU_EVT_F_UUT]			= { },
-+[ARM_SMMU_EVT_C_BAD_STREAMID]		= { },
-+[ARM_SMMU_EVT_F_STE_FETCH]		= { },
-+[ARM_SMMU_EVT_C_BAD_STE]		= { },
-+[ARM_SMMU_EVT_F_BAD_ATS_TREQ]		= { },
-+[ARM_SMMU_EVT_F_STREAM_DISABLED]	= { },
-+[ARM_SMMU_EVT_F_TRANSL_FORBIDDEN]	= { },
-+[ARM_SMMU_EVT_C_BAD_SUBSTREAMID]	= {IOMMU_FAULT_REASON_PASID_INVALID,
-+					   false,
-+					   IOMMU_FAULT_UNRECOV_PASID_VALID
-+					  },
-+[ARM_SMMU_EVT_F_CD_FETCH]		= {IOMMU_FAULT_REASON_PASID_FETCH,
-+					   false,
-+					   IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID
-+					  },
-+[ARM_SMMU_EVT_C_BAD_CD]			= {IOMMU_FAULT_REASON_BAD_PASID_ENTRY,
-+					   false,
-+					  },
-+[ARM_SMMU_EVT_F_WALK_EABT]		= {IOMMU_FAULT_REASON_WALK_EABT, true,
-+					   IOMMU_FAULT_UNRECOV_ADDR_VALID |
-+					   IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID
-+					  },
-+[ARM_SMMU_EVT_F_TRANSLATION]		= {IOMMU_FAULT_REASON_PTE_FETCH, true,
-+					   IOMMU_FAULT_UNRECOV_ADDR_VALID
-+					  },
-+[ARM_SMMU_EVT_F_ADDR_SIZE]		= {IOMMU_FAULT_REASON_OOR_ADDRESS, true,
-+					   IOMMU_FAULT_UNRECOV_ADDR_VALID
-+					  },
-+[ARM_SMMU_EVT_F_ACCESS]			= {IOMMU_FAULT_REASON_ACCESS, true,
-+					   IOMMU_FAULT_UNRECOV_ADDR_VALID
-+					  },
-+[ARM_SMMU_EVT_F_PERMISSION]		= {IOMMU_FAULT_REASON_PERMISSION, true,
-+					   IOMMU_FAULT_UNRECOV_ADDR_VALID
-+					  },
-+[ARM_SMMU_EVT_F_TLB_CONFLICT]		= { },
-+[ARM_SMMU_EVT_F_CFG_CONFLICT]		= { },
-+[ARM_SMMU_EVT_E_PAGE_REQUEST]		= { },
-+};
-+
- struct arm_smmu_option_prop {
- 	u32 opt;
- 	const char *prop;
-@@ -1332,7 +1412,6 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
- 	return 0;
- }
- 
--__maybe_unused
- static struct arm_smmu_master *
- arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+How about I add a new simple preparing patch like this(copy from
+io-pgtable-arm.c)?
+
+==========================================
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -495,7 +495,8 @@ static int arm_v7s_map(struct io_pgtable_ops *ops,
+unsigned long iova,
+        if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+                return 0;
+
+-       if (WARN_ON(upper_32_bits(iova) || upper_32_bits(paddr)))
++       if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
++                   paddr >= (1ULL << data->iop.cfg.oas)))
+                return -ERANGE;
+
+===============================================
+
+Then, change the oas in MTK 4GB mode, like this:
+
+================================================
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -721,7 +721,9 @@ static struct io_pgtable
+*arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
  {
-@@ -1358,24 +1437,105 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
- 	return master;
- }
- 
-+/* Populates the record fields according to the input SMMU event */
-+static bool arm_smmu_transcode_fault(u64 *evt, u8 type,
-+				     struct iommu_fault_unrecoverable *record)
-+{
-+	const struct arm_smmu_fault_propagation_data *data;
-+	u32 fields;
-+
-+	if (type >= ARRAY_SIZE(fault_propagation))
-+		return false;
-+
-+	data = &fault_propagation[type];
-+	if (!data->reason)
-+		return false;
-+
-+	fields = data->fields;
-+
-+	if (data->s1_check & FIELD_GET(EVTQ_1_S2, evt[1]))
-+		return false; /* S2 related fault, don't propagate */
-+
-+	if (fields & IOMMU_FAULT_UNRECOV_PASID_VALID)
-+		record->pasid = FIELD_GET(EVTQ_0_SUBSTREAMID, evt[0]);
-+	else {
-+		/* all other transcoded errors have SSV */
-+		if (FIELD_GET(EVTQ_0_SSV, evt[0])) {
-+			record->pasid = FIELD_GET(EVTQ_0_SUBSTREAMID, evt[0]);
-+			fields |= IOMMU_FAULT_UNRECOV_PASID_VALID;
-+		}
-+	}
-+
-+	if (fields & IOMMU_FAULT_UNRECOV_ADDR_VALID) {
-+		if (FIELD_GET(EVTQ_1_RNW, evt[1]))
-+			record->perm = IOMMU_FAULT_PERM_READ;
-+		else
-+			record->perm = IOMMU_FAULT_PERM_WRITE;
-+		if (FIELD_GET(EVTQ_1_PNU, evt[1]))
-+			record->perm |= IOMMU_FAULT_PERM_PRIV;
-+		if (FIELD_GET(EVTQ_1_IND, evt[1]))
-+			record->perm |= IOMMU_FAULT_PERM_EXEC;
-+		record->addr = evt[2];
-+	}
-+
-+	if (fields & IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID)
-+		record->fetch_addr = FIELD_GET(EVTQ_3_FETCH_ADDR, evt[3]);
-+
-+	record->flags = fields;
-+	record->reason = data->reason;
-+	return true;
-+}
-+
-+static void arm_smmu_report_event(struct arm_smmu_device *smmu, u64 *evt)
-+{
-+	u32 sid = FIELD_GET(EVTQ_0_STREAMID, evt[0]);
-+	u8 type = FIELD_GET(EVTQ_0_ID, evt[0]);
-+	struct arm_smmu_master *master;
-+	struct iommu_fault_event event = {};
-+	bool nested;
-+	int i;
-+
-+	master = arm_smmu_find_master(smmu, sid);
-+	if (!master || !master->domain)
-+		goto out;
-+
-+	event.fault.type = IOMMU_FAULT_DMA_UNRECOV;
-+
-+	nested = (master->domain->stage == ARM_SMMU_DOMAIN_NESTED);
-+
-+	if (nested) {
-+		if (arm_smmu_transcode_fault(evt, type, &event.fault.event)) {
-+			/*
-+			 * Only S1 related faults should be reported to the
-+			 * guest and must not flood the host log.
-+			 * Also a fault handler should have been registered
-+			 * to guarantee the full nested functionality
-+			 */
-+			WARN_ON_ONCE(iommu_report_device_fault(master->dev,
-+							       &event));
-+			return;
-+		}
-+	} else {
-+		iommu_report_device_fault(master->dev, &event);
-+	}
-+out:
-+	dev_info(smmu->dev, "event 0x%02x received:\n", type);
-+	for (i = 0; i < EVTQ_ENT_DWORDS; ++i) {
-+		dev_info(smmu->dev, "\t0x%016llx\n",
-+			 (unsigned long long)evt[i]);
-+	}
-+}
-+
- /* IRQ and event handlers */
- static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- {
--	int i;
- 	struct arm_smmu_device *smmu = dev;
- 	struct arm_smmu_queue *q = &smmu->evtq.q;
- 	u64 evt[EVTQ_ENT_DWORDS];
- 
- 	do {
--		while (!queue_remove_raw(q, evt)) {
--			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
--
--			dev_info(smmu->dev, "event 0x%02x received:\n", id);
--			for (i = 0; i < ARRAY_SIZE(evt); ++i)
--				dev_info(smmu->dev, "\t0x%016llx\n",
--					 (unsigned long long)evt[i]);
--
--		}
-+		while (!queue_remove_raw(q, evt))
-+			arm_smmu_report_event(smmu, evt);
- 
- 		/*
- 		 * Not much we can do on overflow, so scream and pretend we're
--- 
-2.20.1
+        struct arm_v7s_io_pgtable *data;
+
+-       if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas >
+ARM_V7S_ADDR_BITS)
++       if (cfg->ias > ARM_V7S_ADDR_BITS ||
++           (cfg->oas > ARM_V7S_ADDR_BITS &&
++            !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)))
+                return NULL;
+
+        if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -274,7 +274,7 @@ static int mtk_iommu_domain_finalise(struct
+mtk_iommu_domain *dom)
+                        IO_PGTABLE_QUIRK_TLBI_ON_MAP,
+                .pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
+                .ias = 32,
+-               .oas = 32,
++               .oas = 34,
+                .tlb = &mtk_iommu_gather_ops,
+                .iommu_dev = data->dev,
+        };
+================================================
+
+
+> 
+> > In order to unify code, in the "4GB mode", we add the bit32 for the
+> > physical address manually in our driver.
+> > 
+> > Correspondingly, Adding bit32 and bit33 for the PA in the iova_to_phys
+> > has to been moved into v7s.
+> > 
+> > Regarding whether the pagetable address could be over 4GB, the mt8183
+> > support it while the previous mt8173 don't. thus keep it as is.
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> > Reviewed-by: Evan Green <evgreen@chromium.org>
+> > ---
+> > Comparing with the previous one:
+> > 1). Add a new patch "iommu/mediatek: Fix iova_to_phys PA start for 4GB
+> > mode" before this one. Thus rebase it.
+> > A little difference: in the 4gb mode, we add bit32 for PA. and the PA got
+> > from iova_to_phys always have bit32 here, thus we should adjust it to locate
+> > the valid pa.
+> > 2). Add this code suggested from Evan.
+> >  if (!data->plat_data->has_4gb_mode)
+> > 	       data->enable_4GB = false;
+> > ---
+> >  drivers/iommu/io-pgtable-arm-v7s.c | 31 ++++++++++++++++++++++++-------
+> >  drivers/iommu/mtk_iommu.c          | 29 ++++++++++++++++++-----------
+> >  drivers/iommu/mtk_iommu.h          |  1 +
+> >  3 files changed, 43 insertions(+), 18 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> > index 94c38db..4077822 100644
+> > --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> > +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> > @@ -123,7 +123,9 @@
+> >  #define ARM_V7S_TEX_MASK		0x7
+> >  #define ARM_V7S_ATTR_TEX(val)		(((val) & ARM_V7S_TEX_MASK) << ARM_V7S_TEX_SHIFT)
+> >  
+> > -#define ARM_V7S_ATTR_MTK_4GB		BIT(9) /* MTK extend it for 4GB mode */
+> > +/* MediaTek extend the two bits below for over 4GB mode */
+> > +#define ARM_V7S_ATTR_MTK_PA_BIT32	BIT(9)
+> > +#define ARM_V7S_ATTR_MTK_PA_BIT33	BIT(4)
+> >  
+> >  /* *well, except for TEX on level 2 large pages, of course :( */
+> >  #define ARM_V7S_CONT_PAGE_TEX_SHIFT	6
+> > @@ -190,13 +192,22 @@ static dma_addr_t __arm_v7s_dma_addr(void *pages)
+> >  static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+> >  				    struct io_pgtable_cfg *cfg)
+> >  {
+> > -	return paddr & ARM_V7S_LVL_MASK(lvl);
+> > +	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+> > +
+> > +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
+> > +		if (paddr & BIT_ULL(32))
+> > +			pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+> > +		if (paddr & BIT_ULL(33))
+> > +			pte |= ARM_V7S_ATTR_MTK_PA_BIT33;
+> > +	}
+> > +	return pte;
+> >  }
+> >  
+> >  static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+> >  				  struct io_pgtable_cfg *cfg)
+> >  {
+> >  	arm_v7s_iopte mask;
+> > +	phys_addr_t paddr;
+> >  
+> >  	if (ARM_V7S_PTE_IS_TABLE(pte, lvl))
+> >  		mask = ARM_V7S_TABLE_MASK;
+> > @@ -205,7 +216,14 @@ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+> >  	else
+> >  		mask = ARM_V7S_LVL_MASK(lvl);
+> >  
+> > -	return pte & mask;
+> > +	paddr = pte & mask;
+> > +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
+> > +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
+> > +			paddr |= BIT_ULL(32);
+> > +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
+> > +			paddr |= BIT_ULL(33);
+> > +	}
+> > +	return paddr;
+> 
+> I think this relies on CONFIG_PHYS_ADDR_T_64BIT, which isn't always set on
+> 32-bit ARM.
+
+This was discussed at [1]. Robin commented that this is not needed and
+build won't complain about this.
+
+[1]
+http://lists.infradead.org/pipermail/linux-mediatek/2018-November/015688.html
+
+> 
+> Will
+
 
 _______________________________________________
 iommu mailing list
