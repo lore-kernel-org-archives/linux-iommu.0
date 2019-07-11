@@ -2,72 +2,83 @@ Return-Path: <SRS0=Q5U9=VI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE878C74A54
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 12:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9E3C74A35
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 13:17:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C38512084B
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 12:41:31 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="I8t08CD6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C38512084B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id F043020872
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 13:17:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F043020872
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 880A84ECF;
-	Thu, 11 Jul 2019 12:41:31 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AD8574EF2;
+	Thu, 11 Jul 2019 13:17:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2559B4EC3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4F24F4EF1
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 12:31:37 +0000 (UTC)
+	Thu, 11 Jul 2019 13:07:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AAC03DF
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BFCCFDF
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 12:31:36 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id F26FC20872;
-	Thu, 11 Jul 2019 12:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1562848296;
-	bh=taKYFaL4w66TAwI7MPXQRwN1YVw6ACtaT/WEv3sNJm4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=I8t08CD65eN+1vdURSKrXiClbKBzmqV8BxOEB+RYrcsXeEC7JGnv38XHWFNfuEhZe
-	Fg3LNEGKB0Iy9Pmb7WmH+bzDCXLlNMZfPl3pfgJFwSxLmeRBm8cerDcIEVHkJX0JpZ
-	TevDVShZM2RAlid5HYXefWAbG56bGpv9Y1KjKVJo=
-Date: Thu, 11 Jul 2019 13:31:29 +0100
-From: Will Deacon <will@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v8 07/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
-	Mode
-Message-ID: <20190711123129.da4rg35b54u4svfw@willie-the-truck>
-References: <1561774167-24141-1-git-send-email-yong.wu@mediatek.com>
-	<1561774167-24141-8-git-send-email-yong.wu@mediatek.com>
-	<20190710143649.w5dplhzdpi3bxp7e@willie-the-truck>
-	<1562846036.31342.10.camel@mhfsdcap03>
+	Thu, 11 Jul 2019 13:07:28 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+	[10.5.11.22])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 188D930820C9;
+	Thu, 11 Jul 2019 13:07:28 +0000 (UTC)
+Received: from [10.36.116.46] (ovpn-116-46.ams2.redhat.com [10.36.116.46])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id EB7871001B0F;
+	Thu, 11 Jul 2019 13:07:20 +0000 (UTC)
+Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20190526161004.25232-1-eric.auger@redhat.com>
+	<20190526161004.25232-27-eric.auger@redhat.com>
+	<20190603163139.70fe8839@x1.home>
+	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
+	<20190605154553.0d00ad8d@jacob-builder>
+	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
+	<20190606132903.064f7ac4@jacob-builder>
+	<dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
+	<20190607104301.6b1bbd74@jacob-builder>
+	<e02b024f-6ebc-e8fa-c30c-5bf3f4b164d6@arm.com>
+	<20190610143134.7bff96e9@jacob-builder>
+	<905f130b-02dc-6971-8d5b-ce87d9bc96a4@arm.com>
+	<20190612115358.0d90b322@jacob-builder>
+	<77405d39-81a4-d9a8-5d35-27602199867a@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <b441c7aa-7aab-d816-f87f-7981dfeebc48@redhat.com>
+Date: Thu, 11 Jul 2019 15:07:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1562846036.31342.10.camel@mhfsdcap03>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	yingjoe.chen@mediatek.com, anan.sun@mediatek.com,
-	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <77405d39-81a4-d9a8-5d35-27602199867a@arm.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.47]);
+	Thu, 11 Jul 2019 13:07:28 +0000 (UTC)
+Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	Vincent Stehle <Vincent.Stehle@arm.com>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Robin Murphy <Robin.Murphy@arm.com>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -85,95 +96,128 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Jul 11, 2019 at 07:53:56PM +0800, Yong Wu wrote:
-> On Wed, 2019-07-10 at 15:36 +0100, Will Deacon wrote:
-> > On Sat, Jun 29, 2019 at 10:09:13AM +0800, Yong Wu wrote:
-> > > MediaTek extend the arm v7s descriptor to support the dram over 4GB.
-> > > 
-> > > In the mt2712 and mt8173, it's called "4GB mode", the physical address
-> > > is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
-> > > is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
-> > > bit32 is always enabled. thus, in the M4U, we always enable the bit9
-> > > for all PTEs which means to enable bit32 of physical address.
-> > > 
-> > > but in mt8183, M4U support the dram from 0x4000_0000 to 0x3_ffff_ffff
-> > > which isn't remaped. We extend the PTEs: the bit9 represent bit32 of
-> > > PA and the bit4 represent bit33 of PA. Meanwhile the iova still is
-> > > 32bits.
-> > 
-> > What happens if bit4 is set in the pte for mt2712 or mt8173? Perhaps the
-> 
-> bit4 is ignored in mt2712 and mt8173(No effect).
-> 
-> > io-pgtable backend should be allowing oas > 32 when
-> > IO_PGTABLE_QUIRK_ARM_MTK_4GB is set, and then enforcing that itself.
-> 
-> About oas, It looks the oas doesn't work in current the v7s. 
-> 
-> How about I add a new simple preparing patch like this(copy from
-> io-pgtable-arm.c)?
+Hi Jean, Jacob,
 
-This looks like the right sort of idea. Basically, I was thinking that you
-can use the oas in conjunction with the quirk to specify whether or not
-your two magic bits should be set. You could also then cap the oas using
-the size of phys_addr_t to deal with my other comment.
+On 6/18/19 4:04 PM, Jean-Philippe Brucker wrote:
+> On 12/06/2019 19:53, Jacob Pan wrote:
+>>>> You are right, the worst case of the spurious PS is to terminate the
+>>>> group prematurely. Need to know the scope of the HW damage in case
+>>>> of mdev where group IDs can be shared among mdevs belong to the
+>>>> same PF.  
+>>>
+>>> But from the IOMMU fault API point of view, the full page request is
+>>> identified by both PRGI and PASID. Given that each mdev has its own
+>>> set of PASIDs, it should be easy to isolate page responses per mdev.
+>>>
+>> On Intel platform, devices sending page request with private data must
+>> receive page response with matching private data. If we solely depend
+>> on PRGI and PASID, we may send stale private data to the device in
+>> those incorrect page response. Since private data may represent PF
+>> device wide contexts, the consequence of sending page response with
+>> wrong private data may affect other mdev/PASID.
+>>
+>> One solution we are thinking to do is to inject the sequence #(e.g.
+>> ktime raw mono clock) as vIOMMU private data into to the guest. Guest
+>> would return this fake private data in page response, then host will
+>> send page response back to the device that matches PRG1 and PASID and
+>> private_data.
+>>
+>> This solution does not expose HW context related private data to the
+>> guest but need to extend page response in iommu uapi.
+>>
+>> /**
+>>  * struct iommu_page_response - Generic page response information
+>>  * @version: API version of this structure
+>>  * @flags: encodes whether the corresponding fields are valid
+>>  *         (IOMMU_FAULT_PAGE_RESPONSE_* values)
+>>  * @pasid: Process Address Space ID
+>>  * @grpid: Page Request Group Index
+>>  * @code: response code from &enum iommu_page_response_code
+>>  * @private_data: private data for the matching page request
+>>  */
+>> struct iommu_page_response {
+>> #define IOMMU_PAGE_RESP_VERSION_1	1
+>> 	__u32	version;
+>> #define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
+>> #define IOMMU_PAGE_RESP_PRIVATE_DATA	(1 << 1)
+>> 	__u32	flags;
+>> 	__u32	pasid;
+>> 	__u32	grpid;
+>> 	__u32	code;
+>> 	__u32	padding;
+>> 	__u64	private_data[2];
+>> };
+>>
+>> There is also the change needed for separating storage for the real and
+>> fake private data.
+>>
+>> Sorry for the last minute change, did not realize the HW implications.
+>>
+>> I see this as a future extension due to limited testing, 
+> 
+> I'm wondering how we deal with:
+> (1) old userspace that won't fill the new private_data field in
+> page_response. A new kernel still has to support it.
+> (2) old kernel that won't recognize the new PRIVATE_DATA flag. Currently
+> iommu_page_response() rejects page responses with unknown flags.
+> 
+> I guess we'll need a two-way negotiation, where userspace queries
+> whether the kernel supports the flag (2), and the kernel learns whether
+> it should expect the private data to come back (1).
+> 
+>> perhaps for
+>> now, can you add paddings similar to page request? Make it 64B as well.
+> 
+> I don't think padding is necessary, because iommu_page_response is sent
+> by userspace to the kernel, unlike iommu_fault which is allocated by
+> userspace and filled by the kernel.
+> 
+> Page response looks a lot more like existing VFIO mechanisms, so I
+> suppose we'll wrap the iommu_page_response structure and include an
+> argsz parameter at the top:
+> 
+> 	struct vfio_iommu_page_response {
+> 		u32 argsz;
+> 		struct iommu_page_response pr;
+> 	};
+> 
+> 	struct vfio_iommu_page_response vpr = {
+> 		.argsz = sizeof(vpr),
+> 		.pr = ...
+> 		...
+> 	};
+> 
+> 	ioctl(devfd, VFIO_IOMMU_PAGE_RESPONSE, &vpr);
+> 
+> In that case supporting private data can be done by simply appending a
+> field at the end (plus the negotiation above).
 
-Finally, I was hoping you could drop the |= BIT_ULL(32) and the &=
-~BIT_ULL(32) bits of the mtk driver if the pgtable code now accepts higher
-addresses. Did that not work out?
-> 
-> ==========================================
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -495,7 +495,8 @@ static int arm_v7s_map(struct io_pgtable_ops *ops,
-> unsigned long iova,
->         if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
->                 return 0;
-> 
-> -       if (WARN_ON(upper_32_bits(iova) || upper_32_bits(paddr)))
-> +       if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
-> +                   paddr >= (1ULL << data->iop.cfg.oas)))
->                 return -ERANGE;
-> 
-> ===============================================
-> 
-> Then, change the oas in MTK 4GB mode, like this:
-> 
-> ================================================
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -721,7 +721,9 @@ static struct io_pgtable
-> *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->  {
->         struct arm_v7s_io_pgtable *data;
-> 
-> -       if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas >
-> ARM_V7S_ADDR_BITS)
-> +       if (cfg->ias > ARM_V7S_ADDR_BITS ||
-> +           (cfg->oas > ARM_V7S_ADDR_BITS &&
-> +            !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)))
+Sorry I did not quite follow the spurious response discussion but I just
+noticed we still do have, upstream, in
+iommu_unregister_device_fault_handler:
 
-This should probably still be capped at 34 bits.
+	/* we cannot unregister handler if there are pending faults */
+	if (!list_empty(&param->fault_param->faults)) {
+		ret = -EBUSY;
+		goto unlock;
+	}
 
-> > > +	paddr = pte & mask;
-> > > +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
-> > > +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
-> > > +			paddr |= BIT_ULL(32);
-> > > +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
-> > > +			paddr |= BIT_ULL(33);
-> > > +	}
-> > > +	return paddr;
-> > 
-> > I think this relies on CONFIG_PHYS_ADDR_T_64BIT, which isn't always set on
-> > 32-bit ARM.
+So did you eventually decide to let
+iommu_unregister_device_fault_handler fail or is an oversight?
+
+Thanks
+
+Eric
+
+
 > 
-> This was discussed at [1]. Robin commented that this is not needed and
-> build won't complain about this.
-
-It's not so much the build I was worried about, but more that we'd silently
-be doing the wrong thing and I think we can fix that as I mentioned above.
-
-Will
+> Thanks,
+> Jean
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
