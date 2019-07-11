@@ -2,83 +2,59 @@ Return-Path: <SRS0=Q5U9=VI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9E3C74A35
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 13:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B7BC74A35
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 14:05:43 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F043020872
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 13:17:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F043020872
+	by mail.kernel.org (Postfix) with ESMTPS id 084DE20872
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 14:05:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 084DE20872
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AD8574EF2;
-	Thu, 11 Jul 2019 13:17:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 29D29508C;
+	Thu, 11 Jul 2019 14:05:42 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4F24F4EF1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 43C555068
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 13:07:29 +0000 (UTC)
+	Thu, 11 Jul 2019 13:56:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BFCCFDF
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B7844883
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 13:07:28 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
-	[10.5.11.22])
+	Thu, 11 Jul 2019 13:56:36 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+	[10.5.11.13])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 188D930820C9;
-	Thu, 11 Jul 2019 13:07:28 +0000 (UTC)
-Received: from [10.36.116.46] (ovpn-116-46.ams2.redhat.com [10.36.116.46])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id EB7871001B0F;
-	Thu, 11 Jul 2019 13:07:20 +0000 (UTC)
-Subject: Re: [PATCH v8 26/29] vfio-pci: Register an iommu fault handler
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20190526161004.25232-1-eric.auger@redhat.com>
-	<20190526161004.25232-27-eric.auger@redhat.com>
-	<20190603163139.70fe8839@x1.home>
-	<10dd60d9-4af0-c0eb-08c9-a0db7ee1925e@redhat.com>
-	<20190605154553.0d00ad8d@jacob-builder>
-	<2753d192-1c46-d78e-c425-0c828e48cde2@arm.com>
-	<20190606132903.064f7ac4@jacob-builder>
-	<dc051424-67d7-02ff-9b8e-0d7a8a4e59eb@arm.com>
-	<20190607104301.6b1bbd74@jacob-builder>
-	<e02b024f-6ebc-e8fa-c30c-5bf3f4b164d6@arm.com>
-	<20190610143134.7bff96e9@jacob-builder>
-	<905f130b-02dc-6971-8d5b-ce87d9bc96a4@arm.com>
-	<20190612115358.0d90b322@jacob-builder>
-	<77405d39-81a4-d9a8-5d35-27602199867a@arm.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <b441c7aa-7aab-d816-f87f-7981dfeebc48@redhat.com>
-Date: Thu, 11 Jul 2019 15:07:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	by mx1.redhat.com (Postfix) with ESMTPS id 02D6F308626C;
+	Thu, 11 Jul 2019 13:56:36 +0000 (UTC)
+Received: from laptop.redhat.com (ovpn-116-46.ams2.redhat.com [10.36.116.46])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 0BCF960A97;
+	Thu, 11 Jul 2019 13:56:26 +0000 (UTC)
+From: Eric Auger <eric.auger@redhat.com>
+To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
+	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
+	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com,
+	robin.murphy@arm.com
+Subject: [PATCH v9 00/11] SMMUv3 Nested Stage Setup (VFIO part)
+Date: Thu, 11 Jul 2019 15:56:14 +0200
+Message-Id: <20190711135625.20684-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <77405d39-81a4-d9a8-5d35-27602199867a@arm.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.47]);
-	Thu, 11 Jul 2019 13:07:28 +0000 (UTC)
-Cc: "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	Vincent Stehle <Vincent.Stehle@arm.com>,
-	"ashok.raj@intel.com" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Robin Murphy <Robin.Murphy@arm.com>,
-	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+	(mx1.redhat.com [10.5.110.49]);
+	Thu, 11 Jul 2019 13:56:36 +0000 (UTC)
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
+	ashok.raj@intel.com, marc.zyngier@arm.com, tina.zhang@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -96,128 +72,131 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Jean, Jacob,
+This series brings the VFIO part of HW nested paging support
+in the SMMUv3.
 
-On 6/18/19 4:04 PM, Jean-Philippe Brucker wrote:
-> On 12/06/2019 19:53, Jacob Pan wrote:
->>>> You are right, the worst case of the spurious PS is to terminate the
->>>> group prematurely. Need to know the scope of the HW damage in case
->>>> of mdev where group IDs can be shared among mdevs belong to the
->>>> same PF.  
->>>
->>> But from the IOMMU fault API point of view, the full page request is
->>> identified by both PRGI and PASID. Given that each mdev has its own
->>> set of PASIDs, it should be easy to isolate page responses per mdev.
->>>
->> On Intel platform, devices sending page request with private data must
->> receive page response with matching private data. If we solely depend
->> on PRGI and PASID, we may send stale private data to the device in
->> those incorrect page response. Since private data may represent PF
->> device wide contexts, the consequence of sending page response with
->> wrong private data may affect other mdev/PASID.
->>
->> One solution we are thinking to do is to inject the sequence #(e.g.
->> ktime raw mono clock) as vIOMMU private data into to the guest. Guest
->> would return this fake private data in page response, then host will
->> send page response back to the device that matches PRG1 and PASID and
->> private_data.
->>
->> This solution does not expose HW context related private data to the
->> guest but need to extend page response in iommu uapi.
->>
->> /**
->>  * struct iommu_page_response - Generic page response information
->>  * @version: API version of this structure
->>  * @flags: encodes whether the corresponding fields are valid
->>  *         (IOMMU_FAULT_PAGE_RESPONSE_* values)
->>  * @pasid: Process Address Space ID
->>  * @grpid: Page Request Group Index
->>  * @code: response code from &enum iommu_page_response_code
->>  * @private_data: private data for the matching page request
->>  */
->> struct iommu_page_response {
->> #define IOMMU_PAGE_RESP_VERSION_1	1
->> 	__u32	version;
->> #define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
->> #define IOMMU_PAGE_RESP_PRIVATE_DATA	(1 << 1)
->> 	__u32	flags;
->> 	__u32	pasid;
->> 	__u32	grpid;
->> 	__u32	code;
->> 	__u32	padding;
->> 	__u64	private_data[2];
->> };
->>
->> There is also the change needed for separating storage for the real and
->> fake private data.
->>
->> Sorry for the last minute change, did not realize the HW implications.
->>
->> I see this as a future extension due to limited testing, 
-> 
-> I'm wondering how we deal with:
-> (1) old userspace that won't fill the new private_data field in
-> page_response. A new kernel still has to support it.
-> (2) old kernel that won't recognize the new PRIVATE_DATA flag. Currently
-> iommu_page_response() rejects page responses with unknown flags.
-> 
-> I guess we'll need a two-way negotiation, where userspace queries
-> whether the kernel supports the flag (2), and the kernel learns whether
-> it should expect the private data to come back (1).
-> 
->> perhaps for
->> now, can you add paddings similar to page request? Make it 64B as well.
-> 
-> I don't think padding is necessary, because iommu_page_response is sent
-> by userspace to the kernel, unlike iommu_fault which is allocated by
-> userspace and filled by the kernel.
-> 
-> Page response looks a lot more like existing VFIO mechanisms, so I
-> suppose we'll wrap the iommu_page_response structure and include an
-> argsz parameter at the top:
-> 
-> 	struct vfio_iommu_page_response {
-> 		u32 argsz;
-> 		struct iommu_page_response pr;
-> 	};
-> 
-> 	struct vfio_iommu_page_response vpr = {
-> 		.argsz = sizeof(vpr),
-> 		.pr = ...
-> 		...
-> 	};
-> 
-> 	ioctl(devfd, VFIO_IOMMU_PAGE_RESPONSE, &vpr);
-> 
-> In that case supporting private data can be done by simply appending a
-> field at the end (plus the negotiation above).
+The series depends on:
+[PATCH v9 00/14] SMMUv3 Nested Stage Setup (IOMMU part)
+(https://www.spinics.net/lists/kernel/msg3187714.html)
 
-Sorry I did not quite follow the spurious response discussion but I just
-noticed we still do have, upstream, in
-iommu_unregister_device_fault_handler:
+3 new IOCTLs are introduced that allow the userspace to
+1) pass the guest stage 1 configuration
+2) pass stage 1 MSI bindings
+3) invalidate stage 1 related caches
 
-	/* we cannot unregister handler if there are pending faults */
-	if (!list_empty(&param->fault_param->faults)) {
-		ret = -EBUSY;
-		goto unlock;
-	}
+They map onto the related new IOMMU API functions.
 
-So did you eventually decide to let
-iommu_unregister_device_fault_handler fail or is an oversight?
+We introduce the capability to register specific interrupt
+indexes (see [1]). A new DMA_FAULT interrupt index allows to register
+an eventfd to be signaled whenever a stage 1 related fault
+is detected at physical level. Also a specific region allows
+to expose the fault records to the user space.
 
-Thanks
+Best Regards
 
 Eric
 
+This series can be found at:
+https://github.com/eauger/linux/tree/v5.3.0-rc0-2stage-v9
 
-> 
-> Thanks,
-> Jean
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+It series includes Tina's patch steming from
+[1] "[RFC PATCH v2 1/3] vfio: Use capability chains to handle device
+specific irq" plus patches originally contributed by Yi.
+
+History:
+
+v8 -> v9:
+- introduce specific irq framework
+- single fault region
+- iommu_unregister_device_fault_handler failure case not handled
+  yet.
+
+v7 -> v8:
+- rebase on top of v5.2-rc1 and especially
+  8be39a1a04c1  iommu/arm-smmu-v3: Add a master->domain pointer
+- dynamic alloc of s1_cfg/s2_cfg
+- __arm_smmu_tlb_inv_asid/s1_range_nosync
+- check there is no HW MSI regions
+- asid invalidation using pasid extended struct (change in the uapi)
+- add s1_live/s2_live checks
+- move check about support of nested stages in domain finalise
+- fixes in error reporting according to the discussion with Robin
+- reordered the patches to have first iommu/smmuv3 patches and then
+  VFIO patches
+
+v6 -> v7:
+- removed device handle from bind/unbind_guest_msi
+- added "iommu/smmuv3: Nested mode single MSI doorbell per domain
+  enforcement"
+- added few uapi comments as suggested by Jean, Jacop and Alex
+
+v5 -> v6:
+- Fix compilation issue when CONFIG_IOMMU_API is unset
+
+v4 -> v5:
+- fix bug reported by Vincent: fault handler unregistration now happens in
+  vfio_pci_release
+- IOMMU_FAULT_PERM_* moved outside of struct definition + small
+  uapi changes suggested by Kean-Philippe (except fetch_addr)
+- iommu: introduce device fault report API: removed the PRI part.
+- see individual logs for more details
+- reset the ste abort flag on detach
+
+v3 -> v4:
+- took into account Alex, jean-Philippe and Robin's comments on v3
+- rework of the smmuv3 driver integration
+- add tear down ops for msi binding and PASID table binding
+- fix S1 fault propagation
+- put fault reporting patches at the beginning of the series following
+  Jean-Philippe's request
+- update of the cache invalidate and fault API uapis
+- VFIO fault reporting rework with 2 separate regions and one mmappable
+  segment for the fault queue
+- moved to PATCH
+
+v2 -> v3:
+- When registering the S1 MSI binding we now store the device handle. This
+  addresses Robin's comment about discimination of devices beonging to
+  different S1 groups and using different physical MSI doorbells.
+- Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
+  set the eventfd and expose the faults through an mmappable fault region
+
+v1 -> v2:
+- Added the fault reporting capability
+- asid properly passed on invalidation (fix assignment of multiple
+  devices)
+- see individual change logs for more info
+
+
+Eric Auger (8):
+  vfio: VFIO_IOMMU_SET_MSI_BINDING
+  vfio/pci: Add VFIO_REGION_TYPE_NESTED region type
+  vfio/pci: Register an iommu fault handler
+  vfio/pci: Allow to mmap the fault queue
+  vfio: Add new IRQ for DMA fault reporting
+  vfio/pci: Add framework for custom interrupt indices
+  vfio/pci: Register and allow DMA FAULT IRQ signaling
+  vfio: Document nested stage control
+
+Liu, Yi L (2):
+  vfio: VFIO_IOMMU_SET_PASID_TABLE
+  vfio: VFIO_IOMMU_CACHE_INVALIDATE
+
+Tina Zhang (1):
+  vfio: Use capability chains to handle device specific irq
+
+ Documentation/vfio.txt              |  77 ++++++++
+ drivers/vfio/pci/vfio_pci.c         | 283 ++++++++++++++++++++++++++--
+ drivers/vfio/pci/vfio_pci_intrs.c   |  62 ++++++
+ drivers/vfio/pci/vfio_pci_private.h |  24 +++
+ drivers/vfio/pci/vfio_pci_rdwr.c    |  45 +++++
+ drivers/vfio/vfio_iommu_type1.c     | 166 ++++++++++++++++
+ include/uapi/linux/vfio.h           | 109 ++++++++++-
+ 7 files changed, 747 insertions(+), 19 deletions(-)
+
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
