@@ -2,61 +2,65 @@ Return-Path: <SRS0=Q5U9=VI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B58CC74A35
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 14:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F82DC74A35
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 14:06:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE88320872
-	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 14:05:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE88320872
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id D366020872
+	for <iommu@archiver.kernel.org>; Thu, 11 Jul 2019 14:06:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="qtcfa93P"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D366020872
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B80895095;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E78095098;
 	Thu, 11 Jul 2019 14:05:42 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8CC805068
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 424555068
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 13:56:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1BADF883
+	Thu, 11 Jul 2019 13:57:02 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B42EB894
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 11 Jul 2019 13:56:57 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
-	[10.5.11.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 7AABF3086268;
-	Thu, 11 Jul 2019 13:56:56 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-46.ams2.redhat.com [10.36.116.46])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 8FB4860600;
-	Thu, 11 Jul 2019 13:56:45 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
-	alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
-	yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com,
-	robin.murphy@arm.com
-Subject: [PATCH v9 03/11] vfio: VFIO_IOMMU_SET_MSI_BINDING
-Date: Thu, 11 Jul 2019 15:56:17 +0200
-Message-Id: <20190711135625.20684-4-eric.auger@redhat.com>
-In-Reply-To: <20190711135625.20684-1-eric.auger@redhat.com>
-References: <20190711135625.20684-1-eric.auger@redhat.com>
+	Thu, 11 Jul 2019 13:57:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=0TdTTvv9gzZPCqHVN09rsHZfcgoPwm7Gi1QT/oQm0qY=;
+	b=qtcfa93Pmpg0IzzyXiBu0TpI7g
+	FlOPh39+Gsq5ONektm3WTqhDZYvBvRZat5iuAfWVWapUnx+gChRjB/4LL9cyKLBd4epmlFjmwzJEN
+	su1bngdlgE9OINFndq1VKV/dHzZg5DBhqRaclSI4UXci8KQQ+dB1U8stEkDCuSnJvxB+BVoeY8v+F
+	Wq/G5MnIWO/ZLLF90OzoOnzovyg0aqBX6zKxWHvP+xRJrrHtQArW3E5XIZYJjs+QswqPH41Gr4H3S
+	1uZlSt25IhO+u8VtMrXnG87GY6LjnPKT5sWNzMDx8BGOXRw5W8WkopRoRWhNbFmvxqDR1XUsLXYO+
+	6Qqs9yuQ==;
+Received: from [38.98.37.141] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hlZZD-0004uL-J9; Thu, 11 Jul 2019 13:57:00 +0000
+Date: Thu, 11 Jul 2019 15:56:54 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping updates for 5.3
+Message-ID: <20190711135654.GA15312@infradead.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.49]);
-	Thu, 11 Jul 2019 13:56:56 +0000 (UTC)
-Cc: peter.maydell@linaro.org, kevin.tian@intel.com, vincent.stehle@arm.com,
-	ashok.raj@intel.com, marc.zyngier@arm.com, tina.zhang@intel.com
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,145 +78,136 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch adds the VFIO_IOMMU_SET_MSI_BINDING ioctl which aim
-to (un)register the guest MSI binding to the host. This latter
-then can use those stage 1 bindings to build a nested stage
-binding targeting the physical MSIs.
+Hi Linus,
 
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
+please pull the dma-mapping update below.  Note that the tree is based
+on an branch from Joergs iommu tree that you have pulled earlier this
+week.
 
----
+There are a few of the usual Kconfig conflicts where different trees
+touch the same area, but not the same symbols, just take the changes
+from both tree in that case (none of them is in your tree yet as of
+this time).
 
-v8 -> v9:
-- merge VFIO_IOMMU_BIND_MSI/VFIO_IOMMU_UNBIND_MSI into a single
-  VFIO_IOMMU_SET_MSI_BINDING ioctl
-- ioctl id changed
+In addition there is a conflict in genalloc.h against mainline where
+late patches in the 5.2 cycle added a new gen_pool_free_owner function
+and made gen_pool_free a wrapper around it.  This tree adds new
+helpers right next to it, the fix is again to take both changes
+manually.  Bonous points for keeping all the alloc functions above
+the free ones to keep the file ordering, unlike the default git
+presentation.
 
-v6 -> v7:
-- removed the dev arg
 
-v3 -> v4:
-- add UNBIND
-- unwind on BIND error
+The following changes since commit 1b961423158caaae49d3900b7c9c37477bbfa9b3:
 
-v2 -> v3:
-- adapt to new proto of bind_guest_msi
-- directly use vfio_iommu_for_each_dev
+  iommu/dma: Fix condition check in iommu_dma_unmap_sg (2019-06-03 12:14:51 +0200)
 
-v1 -> v2:
-- s/vfio_iommu_type1_guest_msi_binding/vfio_iommu_type1_bind_guest_msi
----
- drivers/vfio/vfio_iommu_type1.c | 55 +++++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h       | 20 ++++++++++++
- 2 files changed, 75 insertions(+)
+are available in the Git repository at:
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 307f059d3080..c858be878590 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1829,6 +1829,42 @@ static int vfio_cache_inv_fn(struct device *dev, void *data)
- 	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info);
- }
- 
-+static int
-+vfio_bind_msi(struct vfio_iommu *iommu,
-+	      dma_addr_t giova, phys_addr_t gpa, size_t size)
-+{
-+	struct vfio_domain *d;
-+	int ret = 0;
-+
-+	mutex_lock(&iommu->lock);
-+
-+	list_for_each_entry(d, &iommu->domain_list, next) {
-+		ret = iommu_bind_guest_msi(d->domain, giova, gpa, size);
-+		if (ret)
-+			goto unwind;
-+	}
-+	goto unlock;
-+unwind:
-+	list_for_each_entry_continue_reverse(d, &iommu->domain_list, next) {
-+		iommu_unbind_guest_msi(d->domain, giova);
-+	}
-+unlock:
-+	mutex_unlock(&iommu->lock);
-+	return ret;
-+}
-+
-+static void
-+vfio_unbind_msi(struct vfio_iommu *iommu, dma_addr_t giova)
-+{
-+	struct vfio_domain *d;
-+
-+	mutex_lock(&iommu->lock);
-+	list_for_each_entry(d, &iommu->domain_list, next) {
-+		iommu_unbind_guest_msi(d->domain, giova);
-+	}
-+	mutex_unlock(&iommu->lock);
-+}
-+
- static long vfio_iommu_type1_ioctl(void *iommu_data,
- 				   unsigned int cmd, unsigned long arg)
- {
-@@ -1936,6 +1972,25 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 					    &ustruct);
- 		mutex_unlock(&iommu->lock);
- 		return ret;
-+	} else if (cmd == VFIO_IOMMU_SET_MSI_BINDING) {
-+		struct vfio_iommu_type1_set_msi_binding ustruct;
-+
-+		minsz = offsetofend(struct vfio_iommu_type1_set_msi_binding,
-+				    size);
-+
-+		if (copy_from_user(&ustruct, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (ustruct.argsz < minsz)
-+			return -EINVAL;
-+
-+		if (ustruct.flags == VFIO_IOMMU_UNBIND_MSI)
-+			vfio_unbind_msi(iommu, ustruct.iova);
-+		else if (ustruct.flags == VFIO_IOMMU_BIND_MSI)
-+			return vfio_bind_msi(iommu, ustruct.iova, ustruct.gpa,
-+						ustruct.size);
-+		else
-+			return -EINVAL;
- 	}
- 
- 	return -ENOTTY;
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index b31c25b682c5..deadbd84f2cf 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -795,6 +795,26 @@ struct vfio_iommu_type1_cache_invalidate {
- };
- #define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 23)
- 
-+/**
-+ * VFIO_IOMMU_SET_MSI_BINDING - _IOWR(VFIO_TYPE, VFIO_BASE + 24,
-+ *			struct vfio_iommu_type1_set_msi_binding)
-+ *
-+ * Pass a stage 1 MSI doorbell mapping to the host so that this
-+ * latter can build a nested stage2 mapping. Or conversely tear
-+ * down a previously bound stage 1 MSI binding.
-+ */
-+struct vfio_iommu_type1_set_msi_binding {
-+	__u32   argsz;
-+	__u32   flags;
-+#define VFIO_IOMMU_BIND_MSI	(1 << 0)
-+#define VFIO_IOMMU_UNBIND_MSI	(1 << 1)
-+	__u64	iova;	/* MSI guest IOVA */
-+	/* Fields below are used on BIND */
-+	__u64	gpa;	/* MSI guest physical address */
-+	__u64	size;	/* size of stage1 mapping (bytes) */
-+};
-+#define VFIO_IOMMU_SET_MSI_BINDING      _IO(VFIO_TYPE, VFIO_BASE + 24)
-+
- /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
- 
- /*
--- 
-2.20.1
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.3
 
+for you to fetch changes up to 15ffe5e1acf5fe1512e98b20702e46ce9f25e2f7:
+
+  dma-mapping: mark dma_alloc_need_uncached as __always_inline (2019-07-08 14:19:33 -0700)
+
+----------------------------------------------------------------
+dma-mapping updates for Linux 5.3
+
+ - move the USB special case that bounced DMA through a device
+   bar into the USB code instead of handling it in the common
+   DMA code (Laurentiu Tudor and Fredrik Noring)
+ - don't dip into the global CMA pool for single page allocations
+   (Nicolin Chen)
+ - fix a crash when allocating memory for the atomic pool failed
+   during boot (Florian Fainelli)
+ - move support for MIPS-style uncached segments to the common
+   code and use that for MIPS and nios2 (me)
+ - make support for DMA_ATTR_NON_CONSISTENT and
+   DMA_ATTR_NO_KERNEL_MAPPING generic (me)
+ - convert nds32 to the generic remapping allocator (me)
+
+----------------------------------------------------------------
+Christoph Hellwig (17):
+      MIPS: remove the _dma_cache_wback_inv export
+      au1100fb: fix DMA API abuse
+      dma-direct: provide generic support for uncached kernel segments
+      MIPS: use the generic uncached segment support in dma-direct
+      dma-mapping: truncate dma masks to what dma_addr_t can hold
+      ARM: dma-mapping: allow larger DMA mask than supported
+      arm-nommu: remove the partial DMA_ATTR_NON_CONSISTENT support
+      arc: remove the partial DMA_ATTR_NON_CONSISTENT support
+      openrisc: remove the partial DMA_ATTR_NON_CONSISTENT support
+      dma-mapping: add a dma_alloc_need_uncached helper
+      dma-direct: handle DMA_ATTR_NON_CONSISTENT in common code
+      dma-direct: handle DMA_ATTR_NO_KERNEL_MAPPING in common code
+      arc: use the generic remapping allocator for coherent DMA allocations
+      nds32: use the generic remapping allocator for coherent DMA allocations
+      nios2: use the generic uncached segment support in dma-direct
+      MIPS: only select ARCH_HAS_UNCACHED_SEGMENT for non-coherent platforms
+      dma-mapping: mark dma_alloc_need_uncached as __always_inline
+
+Florian Fainelli (1):
+      dma-remap: Avoid de-referencing NULL atomic_pool
+
+Fredrik Noring (3):
+      lib/genalloc: add gen_pool_dma_zalloc() for zeroed DMA allocations
+      lib/genalloc.c: Add algorithm, align and zeroed family of DMA allocators
+      usb: host: Fix excessive alignment restriction for local memory allocations
+
+Laurentiu Tudor (4):
+      USB: use genalloc for USB HCs with local memory
+      usb: host: ohci-sm501: init genalloc for local memory
+      usb: host: ohci-tmio: init genalloc for local memory
+      USB: drop HCD_LOCAL_MEM flag
+
+Nicolin Chen (4):
+      dma-contiguous: add dma_{alloc,free}_contiguous() helpers
+      dma-contiguous: use fallback alloc_pages for single pages
+      dma-contiguous: fix !CONFIG_DMA_CMA version of dma_{alloc, free}_contiguous()
+      iommu/dma: Apply dma_{alloc,free}_contiguous functions
+
+ arch/Kconfig                    |   8 +
+ arch/arc/Kconfig                |   2 +
+ arch/arc/mm/dma.c               |  71 ++-------
+ arch/arm/mm/dma-mapping-nommu.c |  24 +--
+ arch/arm/mm/dma-mapping.c       |  20 +--
+ arch/mips/Kconfig               |   1 +
+ arch/mips/include/asm/page.h    |   3 -
+ arch/mips/jazz/jazzdma.c        |   6 -
+ arch/mips/mm/cache.c            |   2 -
+ arch/mips/mm/dma-noncoherent.c  |  26 ++--
+ arch/nds32/Kconfig              |   2 +
+ arch/nds32/kernel/dma.c         | 325 ++--------------------------------------
+ arch/nios2/Kconfig              |   1 +
+ arch/nios2/include/asm/page.h   |   6 -
+ arch/nios2/mm/dma-mapping.c     |  34 ++---
+ arch/openrisc/kernel/dma.c      |  22 ++-
+ arch/parisc/kernel/pci-dma.c    |  48 ++----
+ arch/xtensa/kernel/pci-dma.c    |   8 +-
+ drivers/iommu/dma-iommu.c       |  14 +-
+ drivers/usb/Kconfig             |   1 +
+ drivers/usb/core/buffer.c       |  17 ++-
+ drivers/usb/core/hcd.c          |  51 +++++--
+ drivers/usb/host/ehci-hcd.c     |   2 +-
+ drivers/usb/host/fotg210-hcd.c  |   2 +-
+ drivers/usb/host/ohci-hcd.c     |  25 +++-
+ drivers/usb/host/ohci-mem.c     |  37 ++++-
+ drivers/usb/host/ohci-sm501.c   |  50 +++----
+ drivers/usb/host/ohci-tmio.c    |  15 +-
+ drivers/usb/host/ohci.h         |   2 +
+ drivers/usb/host/uhci-hcd.c     |   2 +-
+ drivers/video/fbdev/au1100fb.c  |  24 +--
+ drivers/video/fbdev/au1100fb.h  |   1 +
+ include/linux/dma-contiguous.h  |  19 +++
+ include/linux/dma-noncoherent.h |  19 +++
+ include/linux/genalloc.h        |   9 ++
+ include/linux/usb/hcd.h         |   6 +-
+ kernel/dma/contiguous.c         |  56 +++++++
+ kernel/dma/direct.c             |  55 ++++---
+ kernel/dma/mapping.c            |  12 ++
+ kernel/dma/remap.c              |  16 +-
+ lib/genalloc.c                  | 125 +++++++++++++++-
+ 41 files changed, 515 insertions(+), 654 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
