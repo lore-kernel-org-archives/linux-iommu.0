@@ -2,82 +2,81 @@ Return-Path: <SRS0=rccM=VJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF276C742D2
-	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 23:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EF2C742D2
+	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 23:50:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B9069208E4
-	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 23:45:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B9069208E4
+	by mail.kernel.org (Postfix) with ESMTPS id 7127D208E4
+	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 23:50:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7127D208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6528E60FE;
-	Fri, 12 Jul 2019 23:45:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 457655C20;
+	Fri, 12 Jul 2019 23:50:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5328960FA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0BC1A5B46
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Jul 2019 23:36:01 +0000 (UTC)
+	Fri, 12 Jul 2019 23:43:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
 	[148.163.158.5])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DC851DF
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 879DA887
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Jul 2019 23:36:00 +0000 (UTC)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x6CNVOVs052622; Fri, 12 Jul 2019 19:35:49 -0400
+	Fri, 12 Jul 2019 23:43:07 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6CNfvm1034924; Fri, 12 Jul 2019 19:42:49 -0400
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2tpyjart2n-1
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2tq31ahvng-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 12 Jul 2019 19:35:49 -0400
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6CNWktA055638;
-	Fri, 12 Jul 2019 19:35:48 -0400
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com
-	[169.55.85.253])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2tpyjart2d-1
+	verify=NOT); Fri, 12 Jul 2019 19:42:49 -0400
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6CNgnmu036004;
+	Fri, 12 Jul 2019 19:42:49 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com
+	[169.63.214.131])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2tq31ahvn3-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 12 Jul 2019 19:35:48 -0400
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-	by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
-	x6CNZHcN025896; Fri, 12 Jul 2019 23:35:47 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com
-	(b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-	by ppma01wdc.us.ibm.com with ESMTP id 2tjk97724r-1
+	verify=NOT); Fri, 12 Jul 2019 19:42:49 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+	by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6CNdMRr019151; Fri, 12 Jul 2019 23:42:48 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com
+	[9.57.198.25]) by ppma01dal.us.ibm.com with ESMTP id 2tjk97y53g-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 12 Jul 2019 23:35:47 +0000
-Received: from b03ledav005.gho.boulder.ibm.com
-	(b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-	by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x6CNZkKP61145568
+	verify=NOT); Fri, 12 Jul 2019 23:42:48 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com
+	[9.57.199.111])
+	by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+	x6CNglgS51118432
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Fri, 12 Jul 2019 23:35:46 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6735ABE053;
-	Fri, 12 Jul 2019 23:35:46 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C6549BE051;
-	Fri, 12 Jul 2019 23:35:41 +0000 (GMT)
+	verify=OK); Fri, 12 Jul 2019 23:42:47 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 85C7AAC05B;
+	Fri, 12 Jul 2019 23:42:47 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E6DD3AC059;
+	Fri, 12 Jul 2019 23:42:40 +0000 (GMT)
 Received: from morokweng.localdomain (unknown [9.85.135.203])
-	by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTPS;
-	Fri, 12 Jul 2019 23:35:41 +0000 (GMT)
+	by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
+	Fri, 12 Jul 2019 23:42:40 +0000 (GMT)
 References: <20190712053631.9814-1-bauerman@linux.ibm.com>
-	<20190712053631.9814-2-bauerman@linux.ibm.com>
-	<alpine.DEB.2.21.1907121804230.1788@nanos.tec.linutronix.de>
+	<20190712053631.9814-3-bauerman@linux.ibm.com>
+	<20190712071328.GA22889@lst.de>
 User-agent: mu4e 1.2.0; emacs 26.2
 From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 1/3] x86/Kconfig: Move ARCH_HAS_MEM_ENCRYPT to arch/Kconfig
-In-reply-to: <alpine.DEB.2.21.1907121804230.1788@nanos.tec.linutronix.de>
-Date: Fri, 12 Jul 2019 20:35:37 -0300
-Message-ID: <87sgrag71y.fsf@morokweng.localdomain>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 2/3] DMA mapping: Move SME handling to x86-specific files
+In-reply-to: <20190712071328.GA22889@lst.de>
+Date: Fri, 12 Jul 2019 20:42:31 -0300
+Message-ID: <87r26ug6qg.fsf@morokweng.localdomain>
 MIME-Version: 1.0
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
@@ -87,16 +86,18 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
 	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
 	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
 	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1907120242
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1907120244
 Cc: linux-s390@vger.kernel.org, Mike Anderson <andmike@linux.ibm.com>,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
 	Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
 	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
-	Alexey Dobriyan <adobriyan@gmail.com>, Halil Pasic <pasic@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
 	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
-	linux-fsdevel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	Christoph Hellwig <hch@lst.de>
+	Borislav Petkov <bp@alien8.de>, "Lendacky,
+	Thomas" <thomas.lendacky@amd.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>, linuxppc-dev@lists.ozlabs.org,
+	Alexey Dobriyan <adobriyan@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,22 +116,18 @@ Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 
-Hello Thomas,
+[ Cc'ing Tom Lendacky which I forgot to do earlier. Sorry about that. ]
 
-Thanks for quickly reviewing the patches.
+Hello Christoph,
 
-Thomas Gleixner <tglx@linutronix.de> writes:
+Christoph Hellwig <hch@lst.de> writes:
 
-> On Fri, 12 Jul 2019, Thiago Jung Bauermann wrote:
->
->> powerpc and s390 are going to use this feature as well, so put it in a
->> generic location.
->> 
->> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
->
-> Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+> Honestly I think this code should go away without any replacement.
+> There is no reason why we should have a special debug printk just
+> for one specific reason why there is a requirement for a large DMA
+> mask.
 
-Thanks!
+Makes sense. I'll submit a v2 which just removes this code.
 
 -- 
 Thiago Jung Bauermann
