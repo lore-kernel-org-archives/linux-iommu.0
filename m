@@ -2,74 +2,107 @@ Return-Path: <SRS0=rccM=VJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 649B7C742D7
-	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 18:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4CDC742D7
+	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 22:04:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EE132146E
-	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 18:40:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ewlHia7h"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EE132146E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D287420989
+	for <iommu@archiver.kernel.org>; Fri, 12 Jul 2019 22:04:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D287420989
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F1C016639;
-	Fri, 12 Jul 2019 18:40:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 74D966851;
+	Fri, 12 Jul 2019 22:04:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 57EEF662F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4A28D5B4B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Jul 2019 18:31:09 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com
-	[209.85.221.175])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AD1E8886
+	Fri, 12 Jul 2019 21:56:05 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C99A1DF
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Jul 2019 18:31:08 +0000 (UTC)
-Received: by mail-vk1-f175.google.com with SMTP id b69so2281396vkb.3
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 12 Jul 2019 11:31:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:from:date:message-id:subject:to;
-	bh=cIV6rBtWLOPRszoGLvj5E27EPDYcnDtLD4/tbfFhpvo=;
-	b=ewlHia7heeXX9gEvyayde5mx7+AEFE0O5WkRam9jXzXTM/cF4Rro/laOPuQDFADMkT
-	pgBCEH82Sq2vQ5ytflI6aY9ECob3kCsDLkBEomA3BoZout9U7Tkh8v3UE+GqetFYgZwv
-	T9i5nUr03L9NNnlgh1av/pQ5TwsQVLAfpkfba/uE0+COO/CT7rM4kTujCxnHZ/jfmRvl
-	Ha6cWu/ktyCI4B3Ir3wy+Td4QeX9+knTOY4KmhVoy866xKmqHKB7yJFGampkVPjO1EH4
-	syIDycrhKY/v7I3cqPWeNoNwRIu14RMQ2H5DNvB4fr8fphQAmDKq04wf+IpE1qy8dZZV
-	aODA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-	bh=cIV6rBtWLOPRszoGLvj5E27EPDYcnDtLD4/tbfFhpvo=;
-	b=uBN0ahy7EEWA9HjFQaBYa8QTz1ewi4rj6fSRJT6P5e5LnwKpDd6XHin/QzyKDJp/Sj
-	vYvD3RHJtEdBVNUJ8+SxynvNMmSABlFgctrYOBpOdXmNU9Xyt6Hk2suC/bXWDAwGqg9m
-	o8QSig0GqRVeuulw2SQNBmwUrDf541N7xUVQ47PaXXu3H7UciELmx9HGwUc94SqjP2M7
-	9b2ld2wTpsZbEnA8gjEwGXy+qBYPiHz9jjUXx8Nxrf7fI1sshWvXqj7K6LGNC6w+Prj7
-	615XNLve9uMabZBC1e0rVGg2hqjq9yl4SRQFO21uH/RBT/Gp5TbtbxBBwblivtJVUZym
-	paBQ==
-X-Gm-Message-State: APjAAAWTrNuxY4+yXiNorRoWdnDMgf1shxE6qwQlnfcAevcFqQBw0kli
-	o5GLRrwVzaXENo5XCsfIBzPfsO6wRuSeqrnqu70=
-X-Google-Smtp-Source: APXvYqwoOrs4KeF1E3Iz5G6XucPUIl+s2QlAoOR993+Fq0+SJIKbbL4lgPIPTE2VQvtDIDsJPH41GoubeuVBEnQGkuo=
-X-Received: by 2002:a1f:62c3:: with SMTP id w186mr6618726vkb.82.1562956267589; 
-	Fri, 12 Jul 2019 11:31:07 -0700 (PDT)
+	Fri, 12 Jul 2019 21:56:04 +0000 (UTC)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6CLqmiY072508
+	for <iommu@lists.linux-foundation.org>; Fri, 12 Jul 2019 17:56:04 -0400
+Received: from e11.ny.us.ibm.com (e11.ny.us.ibm.com [129.33.205.201])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2tq0tvbang-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Fri, 12 Jul 2019 17:56:04 -0400
+Received: from localhost
+	by e11.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+	Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
+	Fri, 12 Jul 2019 22:56:02 +0100
+Received: from b01cxnp22036.gho.pok.ibm.com (9.57.198.26)
+	by e11.ny.us.ibm.com (146.89.104.198) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Fri, 12 Jul 2019 22:55:57 +0100
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com
+	[9.57.199.110])
+	by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+	x6CLtupx10814168
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Fri, 12 Jul 2019 21:55:56 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 95FB3AE062;
+	Fri, 12 Jul 2019 21:55:56 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0522EAE05F;
+	Fri, 12 Jul 2019 21:55:51 +0000 (GMT)
+Received: from morokweng.localdomain (unknown [9.85.135.203])
+	by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
+	Fri, 12 Jul 2019 21:55:51 +0000 (GMT)
+References: <20190712053631.9814-1-bauerman@linux.ibm.com>
+	<20190712053631.9814-4-bauerman@linux.ibm.com>
+	<20190712150912.3097215e.pasic@linux.ibm.com>
+User-agent: mu4e 1.2.0; emacs 26.2
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [PATCH 3/3] fs/core/vmcore: Move sev_active() reference to x86
+	arch code
+In-reply-to: <20190712150912.3097215e.pasic@linux.ibm.com>
+Date: Fri, 12 Jul 2019 18:55:47 -0300
 MIME-Version: 1.0
-From: Pankaj Suryawanshi <pankajssuryawanshi@gmail.com>
-Date: Sat, 13 Jul 2019 00:00:56 +0530
-Message-ID: <CACDBo56EoKca9FJCnbztWZAARdUQs+B=dmCs+UxW27yHNu5pzQ@mail.gmail.com>
-Subject: cma_remap when using dma_alloc_attr :- DMA_ATTR_NO_KERNEL_MAPPING
-To: linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>, 
-	Robin Murphy <robin.murphy@arm.com>, Michal Hocko <mhocko@kernel.org>, 
-	pankaj.suryawanshi@einfochips.com, minchan@kernel.org,
-	minchan.kim@gmail.com
+X-TM-AS-GCONF: 00
+x-cbid: 19071221-2213-0000-0000-000003ADCDAE
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011417; HX=3.00000242; KW=3.00000007;
+	PH=3.00000004; SC=3.00000286; SDB=6.01231280; UDB=6.00648610;
+	IPR=6.01012564; 
+	MB=3.00027695; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-12 21:56:01
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071221-2214-0000-0000-00005F35B676
+Message-Id: <87tvbqgboc.fsf@morokweng.localdomain>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-07-12_06:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1907120224
+Cc: linux-s390@vger.kernel.org, Mike Anderson <andmike@linux.ibm.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	Alexey Dobriyan <adobriyan@gmail.com>,
+	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, "Lendacky,
+	Thomas" <thomas.lendacky@amd.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,166 +115,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============4333674490347965475=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
---===============4333674490347965475==
-Content-Type: multipart/alternative; boundary="0000000000002114d7058d801d4a"
 
---0000000000002114d7058d801d4a
-Content-Type: text/plain; charset="UTF-8"
+[ Cc'ing Tom Lendacky which I forgot to do earlier. Sorry about that. ]
 
-Hello,
+Hello Halil,
 
-When we allocate cma memory using dma_alloc_attr using
-DMA_ATTR_NO_KERNEL_MAPPING attribute. It will return physical address
-without virtual mapping and thats the use case of this attribute. but lets
-say some vpu/gpu drivers required virtual mapping of some part of the
-allocation. then we dont have anything to remap that allocated memory to
-virtual memory. and in 32-bit system it difficult for devices like android
-to work all the time with virtual mapping, it degrade the performance.
+Thanks for the quick review.
 
-For Example :
+Halil Pasic <pasic@linux.ibm.com> writes:
 
-Lets say 4k video allocation required 300MB cma memory but not required
-virtual mapping for all the 300MB, its require only 20MB virtually mapped
-at some specific use case/point of video, and unmap virtual mapping after
-uses, at that time this functions will be useful, it works like ioremap()
-for cma_alloc() using dma apis.
+> On Fri, 12 Jul 2019 02:36:31 -0300
+> Thiago Jung Bauermann <bauerman@linux.ibm.com> wrote:
+>
+>> Secure Encrypted Virtualization is an x86-specific feature, so it shouldn't
+>> appear in generic kernel code because it forces non-x86 architectures to
+>> define the sev_active() function, which doesn't make a lot of sense.
+>
+> sev_active() might be just bad (too specific) name for a general
+> concept. s390 code defines it drives the right behavior in
+> kernel/dma/direct.c (which uses it).
 
-/*
-         * function call(s) to create virtual map of given physical memory
-         * range [base, base+size) of CMA memory.
-*/
-void *cma_remap(__u32 base, __u32 size)
-{
-        struct page *page = phys_to_page(base);
-        void *virt;
+I thought about that but couldn't put my finger on a general concept.
+Is it "guest with memory inaccessible to the host"?
 
-        pr_debug("cma: request to map 0x%08x for size 0x%08x\n",
-                        base, size);
+Since your proposed definiton for force_dma_unencrypted() is simply to
+make it equivalent to sev_active(), I thought it was more
+straightforward to make each arch define force_dma_unencrypted()
+directly.
 
-        size = PAGE_ALIGN(size);
+Also, does sev_active() drive the right behavior for s390 in
+elfcorehdr_read() as well?
 
-        pgprot_t prot = get_dma_pgprot(DMA_ATTR, PAGE_KERNEL);
+>> To solve this problem, add an x86 elfcorehdr_read() function to override
+>> the generic weak implementation. To do that, it's necessary to make
+>> read_from_oldmem() public so that it can be used outside of vmcore.c.
+>>
+>> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>> ---
+>>  arch/x86/kernel/crash_dump_64.c |  5 +++++
+>>  fs/proc/vmcore.c                |  8 ++++----
+>>  include/linux/crash_dump.h      | 14 ++++++++++++++
+>>  include/linux/mem_encrypt.h     |  1 -
+>>  4 files changed, 23 insertions(+), 5 deletions(-)
+>
+> Does not seem to apply to today's or yesterdays master.
 
-        if (PageHighMem(page)){
-                virt = dma_alloc_remap(page, size, GFP_KERNEL, prot,
-__builtin_return_address(0));
-        }
-        else
-        {
-                dma_remap(page, size, prot);
-                virt = page_address(page);
-        }
+It assumes the presence of the two patches I mentioned in the cover
+letter. Only one of them is in master.
 
-        if (!virt)
-                pr_err("\x1b[31m" " cma: failed to map 0x%08x" "\x1b[0m\n",
-                                base);
-        else
-                pr_debug("cma: 0x%08x is virtually mapped to 0x%08x\n",
-                                base, (__u32) virt);
+I hadn't realized the s390 virtio patches were on their way to upstream.
+I was keeping an eye on the email thread but didn't see they were picked
+up in the s390 pull request. I'll add a new patch to this series making
+the corresponding changes to s390's <asm/mem_encrypt.h> as well.
 
-        return virt;
-}
-
-/*
-         * function call(s) to remove virtual map of given virtual memory
-         * range [virt, virt+size) of CMA memory.
-*/
-
-void cma_unmap(void *virt, __u32 size)
-{
-        size = PAGE_ALIGN(size);
-        unsigned long pfn = virt_to_pfn(virt);
-        struct page *page = pfn_to_page(pfn);
-
-                if (PageHighMem(page))
-                        dma_free_remap(virt, size);
-                else
-                        dma_remap(page, size, PAGE_KERNEL);
-
-        pr_debug(" cma: virtual address 0x%08x is unmapped\n",
-                        (__u32) virt);
-}
-
-This functions should be added in arch/arm/mm/dma-mapping.c file.
-
-Please let me know if i am missing anything.
-
-Regards,
-Pankaj
-
---0000000000002114d7058d801d4a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hello,<br><br>When we allocate cma memory using dma_alloc_=
-attr using DMA_ATTR_NO_KERNEL_MAPPING attribute. It will return physical ad=
-dress without virtual mapping and thats the use case of this attribute. but=
- lets say some vpu/gpu drivers required virtual mapping of some part of the=
- allocation. then we dont have anything to remap that allocated memory to v=
-irtual memory. and in 32-bit system it difficult for devices like android t=
-o work all the time with virtual mapping, it degrade the performance.<br><b=
-r>For Example :<br><br>Lets say 4k video allocation required 300MB cma memo=
-ry but not required virtual mapping for all the 300MB, its require only 20M=
-B virtually mapped at some specific use case/point of video, and unmap virt=
-ual mapping after uses, at that time this functions will be useful, it work=
-s like ioremap() for cma_alloc() using dma apis.<br><br>/*<br>=C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0* function call(s) to create virtual map of given phys=
-ical memory<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0* range [base, base+size) =
-of CMA memory.<br>*/<br>void *cma_remap(__u32 base, __u32 size)<br>{<br>=C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 struct page *page =3D phys_to_page(base);<br>=C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 void *virt;<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 pr_=
-debug(&quot;cma: request to map 0x%08x for size 0x%08x\n&quot;,<br>=C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 base, size);<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 size =3D PAGE_ALIGN(siz=
-e);<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 pgprot_t prot =3D get_dma_pgprot(DMA=
-_ATTR, PAGE_KERNEL);<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (PageHighMem(pag=
-e)){<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 virt =3D dm=
-a_alloc_remap(page, size, GFP_KERNEL, prot, __builtin_return_address(0));<b=
-r>=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>=C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 {<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 dma_remap(page, size, prot);<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 virt =3D page_address(page);<br>=C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 }<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!virt)<br>=C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pr_err(&quot;\x1b[31m&quot; &quo=
-t; cma: failed to map 0x%08x&quot; &quot;\x1b[0m\n&quot;,<br>=C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 base);<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>=C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pr_debug(&quot;cma: 0x=
-%08x is virtually mapped to 0x%08x\n&quot;,<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 base, (__u32) virt);<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 return v=
-irt;<br>}<br><br>/*<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0* function call(s)=
- to remove virtual map of given virtual memory<br>=C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0* range [virt, virt+size) of CMA memory.<br>*/<br><br>void cma_un=
-map(void *virt, __u32 size)<br>{<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 size =3D PA=
-GE_ALIGN(size);<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned long pfn =3D virt_t=
-o_pfn(virt);<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 struct page *page =3D pfn_to_pa=
-ge(pfn);<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if =
-(PageHighMem(page))<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 dma_free_remap(virt, size);<br>=C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>=C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 dma_remap(pa=
-ge, size, PAGE_KERNEL);<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 pr_debug(&quot; =
-cma: virtual address 0x%08x is unmapped\n&quot;,<br>=C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 (__u32) virt=
-);<br>}<br><br><div>This functions should be added in arch/arm/mm/dma-mappi=
-ng.c file.</div><div><br></div><div>Please let me know if i am missing anyt=
-hing.</div><div><br></div><div>Regards,</div><div>Pankaj<br></div></div>
-
---0000000000002114d7058d801d4a--
-
---===============4333674490347965475==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4333674490347965475==--
