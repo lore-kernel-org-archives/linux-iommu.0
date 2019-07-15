@@ -2,62 +2,62 @@ Return-Path: <SRS0=ehRZ=VM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47ECFC7618F
-	for <iommu@archiver.kernel.org>; Mon, 15 Jul 2019 14:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FC3C76195
+	for <iommu@archiver.kernel.org>; Mon, 15 Jul 2019 14:31:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B7C6205ED
-	for <iommu@archiver.kernel.org>; Mon, 15 Jul 2019 14:30:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B7C6205ED
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 5361520896
+	for <iommu@archiver.kernel.org>; Mon, 15 Jul 2019 14:31:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="EDSQjKv0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5361520896
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E44FAF09;
-	Mon, 15 Jul 2019 14:30:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 23AF6F0D;
+	Mon, 15 Jul 2019 14:31:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1449CE5A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EDCEDE5A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Jul 2019 14:30:45 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9C70271C
+	Mon, 15 Jul 2019 14:31:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A7F7D71C
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 15 Jul 2019 14:30:44 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id C945368B05; Mon, 15 Jul 2019 16:30:39 +0200 (CEST)
-Date: Mon, 15 Jul 2019 16:30:39 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH 3/3] fs/core/vmcore: Move sev_active() reference to x86
-	arch code
-Message-ID: <20190715143039.GA6892@lst.de>
-References: <20190712053631.9814-1-bauerman@linux.ibm.com>
-	<20190712053631.9814-4-bauerman@linux.ibm.com>
-	<20190712150912.3097215e.pasic@linux.ibm.com>
-	<87tvbqgboc.fsf@morokweng.localdomain>
-	<20190715160317.7e3dfb33.pasic@linux.ibm.com>
+	Mon, 15 Jul 2019 14:31:12 +0000 (UTC)
+Received: from sasha-vm.mshome.net (unknown [73.61.17.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id F3D052182B;
+	Mon, 15 Jul 2019 14:31:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1563201072;
+	bh=h5JUm6AmUPVsOD6rBVTJ4CjFmYZqKxuG1xYZXGsT/2s=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=EDSQjKv0o+qmZxahTlZo3xkInK9QoeDTPjFe3qaB1aVMK6Nsn8rYyCXXrDc1xWSW/
+	/BGt4Z/2MTMLViYIeyVnvIS5oYnNFSOl5i1PkH50Aq/kUqzJ3SEJomx61TZdjodLhk
+	NfWWJ1AUP8DfYidzpRqlFkB7DSwJ5JuDFYfA238c=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 043/105] iommu: Fix a leak in
+	iommu_insert_resv_region
+Date: Mon, 15 Jul 2019 10:27:37 -0400
+Message-Id: <20190715142839.9896-43-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190715142839.9896-1-sashal@kernel.org>
+References: <20190715142839.9896-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190715160317.7e3dfb33.pasic@linux.ibm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-s390@vger.kernel.org, Mike Anderson <andmike@linux.ibm.com>,
-	Janosch Frank <frankja@linux.ibm.com>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
-	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
-	Alexey Dobriyan <adobriyan@gmail.com>,
-	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>, "Lendacky,
-	Thomas" <thomas.lendacky@amd.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+	Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,38 +75,63 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jul 15, 2019 at 04:03:17PM +0200, Halil Pasic wrote:
-> > I thought about that but couldn't put my finger on a general concept.
-> > Is it "guest with memory inaccessible to the host"?
-> > 
-> 
-> Well, force_dma_unencrypted() is a much better name thatn sev_active():
-> s390 has no AMD SEV, that is sure, but for virtio to work we do need to
-> make our dma accessible to the hypervisor. Yes, your "guest with memory
-> inaccessible to the host" shows into the right direction IMHO.
-> Unfortunately I don't have too many cycles to spend on this right now.
+From: Eric Auger <eric.auger@redhat.com>
 
-In x86 it means that we need to remove dma encryption using
-set_memory_decrypted before using it for DMA purposes.  In the SEV
-case that seems to be so that the hypervisor can access it, in the SME
-case that Tom just fixes it is because there is an encrypted bit set
-in the physical address, and if the device doesn't support a large
-enough DMA address the direct mapping code has to encrypt the pages
-used for the contigous allocation.
+[ Upstream commit ad0834dedaa15c3a176f783c0373f836e44b4700 ]
 
-> Being on cc for your patch made me realize that things got broken on
-> s390. Thanks! I've sent out a patch that fixes protvirt, but we are going
-> to benefit from your cleanups. I think with your cleanups and that patch
-> of mine both sev_active() and sme_active() can be removed. Feel free to
-> do so. If not, I can attend to it as well.
+In case we expand an existing region, we unlink
+this latter and insert the larger one. In
+that case we should free the original region after
+the insertion. Also we can immediately return.
 
-Yes, I think with the dma-mapping fix and this series sme_active and
-sev_active should be gone from common code.  We should also be able
-to remove the exports x86 has for them.
+Fixes: 6c65fb318e8b ("iommu: iommu_get_group_resv_regions")
 
-I'll wait a few days and will then feed the dma-mapping fix to Linus,
-it might make sense to either rebase Thiagos series on top of the
-dma-mapping for-next branch, or wait a few days before reposting.
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/iommu.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3de5c0bcb5cc..1620a6f49989 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -205,18 +205,21 @@ static int iommu_insert_resv_region(struct iommu_resv_region *new,
+ 			pos = pos->next;
+ 		} else if ((start >= a) && (end <= b)) {
+ 			if (new->type == type)
+-				goto done;
++				return 0;
+ 			else
+ 				pos = pos->next;
+ 		} else {
+ 			if (new->type == type) {
+ 				phys_addr_t new_start = min(a, start);
+ 				phys_addr_t new_end = max(b, end);
++				int ret;
+ 
+ 				list_del(&entry->list);
+ 				entry->start = new_start;
+ 				entry->length = new_end - new_start + 1;
+-				iommu_insert_resv_region(entry, regions);
++				ret = iommu_insert_resv_region(entry, regions);
++				kfree(entry);
++				return ret;
+ 			} else {
+ 				pos = pos->next;
+ 			}
+@@ -229,7 +232,6 @@ static int iommu_insert_resv_region(struct iommu_resv_region *new,
+ 		return -ENOMEM;
+ 
+ 	list_add_tail(&region->list, pos);
+-done:
+ 	return 0;
+ }
+ 
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
