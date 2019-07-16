@@ -2,87 +2,59 @@ Return-Path: <SRS0=AIpH=VN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7132C76192
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 21:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 632A5C7618F
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 23:57:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7653D206C2
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 21:38:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 27E072184E
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 23:57:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="Ytei0mxZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7653D206C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="kY0Sj05a"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27E072184E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 58ED1EA5;
-	Tue, 16 Jul 2019 21:38:12 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C9972AF0;
+	Tue, 16 Jul 2019 23:57:24 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 59B53E8F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 61FF22C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 21:38:11 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
-	[209.85.221.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CDB8E892
+	Tue, 16 Jul 2019 23:57:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 13142876
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 21:38:10 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id x4so22475853wrt.6
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 14:38:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=arista.com; s=googlenew;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=DV9WVVOv8wO0ip68P+ATuW8HVCr+cq/h0WK6TYHXz40=;
-	b=Ytei0mxZsdGPH15bJ5E6+IRRrJxdxQYweXTsmG304a32ncCq2Zut6fnD0ChH5Rvdtx
-	7n6+DYDocRt6dRmIcVNoCLeoIcxBf9WuRyBQXdXzUUcpLypJZ9lDrWzEqaT2nVQGzfiC
-	mVgjxuRUg+tQ/4P4NSYTmApq7fGyu58dVFukzcTj0PlPhdSEh2IXElqTspqi3RsqXq0E
-	FurxiRjg3Ld5pWQ3inzN4xST/LNDvAVe78IvafxHU3I7W340xX7UpqT+aL5jutSmbufz
-	/F4OJz4UhgALcV279ytC7ELlQGB3Jk+7ymtI3RUJPMOIhtaR/IFCQuMDKBSB5zENjg/C
-	1fJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=DV9WVVOv8wO0ip68P+ATuW8HVCr+cq/h0WK6TYHXz40=;
-	b=oshizJPlRg8QeOCw9a5XGBKL+7gblJCJZ8xzcSuZ0vcKFzSR9XgVKb/VBTnZgGrTtp
-	YfVv7ez086qIfpurEsFotHx7RutdaK9nORQbY4sOFs49kVSmVJwHl9ZWon3V2h1fhz7o
-	RO3Zxvf9PxPyqyvLKD7F1bFHR6RDR3sFuXzwdYfPC1MtvCI95stG1VJdJv16srySXKlu
-	cNUltjYRtOT2AXdgOASNl3A7qMulhf5Vxj8e3RKxw4QOOQ3ZLiDt74vDpTsjB3qGyuj9
-	KqZHnCiWfCIKyKB0GtcqINTKFDjDWoqb92/EscbjDJtj2rVSIC05twzFPx0p6LUhf63K
-	O8gg==
-X-Gm-Message-State: APjAAAXVf2YIW2emPTzg/KhUjStC3Q9yAE5y7/Q7wJqVhVQFgoKQacfZ
-	C5u7LjKVN3C/RBFm2DQwJ1e3HQNChpJ55W1/P2t38eTHJi9DVU3tZTeUGS6RDISbHlWkJ8YN/yB
-	kMlDhhuUVMgYviiLP8ohOBcDuwWUyqSQNU/tuYS53x8T10OYa7VXBkGAJOEZ4GNhrUBmu5hlLa8
-	slmbGmsrSEGgpZA69EVI/xBFuAkWZOh2ijylfg4JmENmpJ
-X-Google-Smtp-Source: APXvYqw5ALrLIvtEXCM8Di+Utbf0l1rDDBeCT8Gy5U19bxE+NT36mjnIOBhk5/4UBMToMi+XbbXN7g==
-X-Received: by 2002:adf:ef8d:: with SMTP id d13mr36651521wro.60.1563313089468; 
-	Tue, 16 Jul 2019 14:38:09 -0700 (PDT)
-Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-	by smtp.gmail.com with ESMTPSA id
-	v5sm22496878wre.50.2019.07.16.14.38.08
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Tue, 16 Jul 2019 14:38:08 -0700 (PDT)
+	Tue, 16 Jul 2019 23:57:22 +0000 (UTC)
+Received: from localhost (unknown [23.100.24.84])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 7B0AE2184C;
+	Tue, 16 Jul 2019 23:57:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1563321442;
+	bh=ASzjUP46Go4gqGA2McCcDj63FgjSSd2/+EiMsRppPsU=;
+	h=Date:From:To:To:To:Cc:Cc:Cc:Cc:Cc:Cc:Subject:In-Reply-To:
+	References:From;
+	b=kY0Sj05aXFNcIOlODQZS0nc2hyQzWCvP34ACx1lkLd1pWTtspSiT7/8iSoACSlTkU
+	OsVWgIzjZk/UHv0q51BRm5uimgsTQb/eaZ4qLS9PRZb5DhhlUVSGXoIFs+QNpsQqCO
+	mP+pppMWenoRFnhyR9lwKkY5LWrizJZjrtpE9aGs=
+Date: Tue, 16 Jul 2019 23:57:21 +0000
+From: Sasha Levin <sashal@kernel.org>
+To: Sasha Levin <sashal@kernel.org>
+To: Dmitry Safonov <dima@arista.com>
 To: linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommu/vt-d: Check if domain->pgd was allocated
-Date: Tue, 16 Jul 2019 22:38:06 +0100
-Message-Id: <20190716213806.20456-2-dima@arista.com>
-X-Mailer: git-send-email 2.22.0
+Subject: Re: [PATCH 1/2] iommu/vt-d: Don't queue_iova() if there is no flush
+	queue
 In-Reply-To: <20190716213806.20456-1-dima@arista.com>
 References: <20190716213806.20456-1-dima@arista.com>
-MIME-Version: 1.0
-X-CLOUD-SEC-AV-Info: arista,google_mail,monitor
-X-CLOUD-SEC-AV-Sent: true
-X-Gm-Spam: 0
-X-Gm-Phishy: 0
-Cc: Dmitry Safonov <dima@arista.com>, Dmitry Safonov <0x7f454c46@gmail.com>,
+Message-Id: <20190716235722.7B0AE2184C@mail.kernel.org>
+Cc: , Dmitry Safonov <0x7f454c46@gmail.com>, stable@vger.kernel.org,
 	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -96,60 +68,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Dmitry Safonov via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Dmitry Safonov <dima@arista.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-There is a couple of places where on domain_init() failure domain_exit()
-is called. While currently domain_init() can fail only if
-alloc_pgtable_page() has failed.
+Hi,
 
-Make domain_exit() check if domain->pgd present, before calling
-domain_unmap(), as it theoretically should crash on clearing pte entries
-in dma_pte_clear_level().
+[This is an automated email]
 
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org
-Signed-off-by: Dmitry Safonov <dima@arista.com>
----
- drivers/iommu/intel-iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+This commit has been processed because it contains a "Fixes:" tag,
+fixing commit: 13cf01744608 iommu/vt-d: Make use of iova deferred flushing.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6d1510284d21..698cc40355ef 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1835,7 +1835,6 @@ static inline int guestwidth_to_adjustwidth(int gaw)
- 
- static void domain_exit(struct dmar_domain *domain)
- {
--	struct page *freelist;
- 
- 	/* Remove associated devices and clear attached or cached domains */
- 	domain_remove_dev_info(domain);
-@@ -1843,9 +1842,12 @@ static void domain_exit(struct dmar_domain *domain)
- 	/* destroy iovas */
- 	put_iova_domain(&domain->iovad);
- 
--	freelist = domain_unmap(domain, 0, DOMAIN_MAX_PFN(domain->gaw));
-+	if (domain->pgd) {
-+		struct page *freelist;
- 
--	dma_free_pagelist(freelist);
-+		freelist = domain_unmap(domain, 0, DOMAIN_MAX_PFN(domain->gaw));
-+		dma_free_pagelist(freelist);
-+	}
- 
- 	free_domain_mem(domain);
- }
--- 
-2.22.0
+The bot has tested the following trees: v5.2.1, v5.1.18, v4.19.59, v4.14.133.
 
+v5.2.1: Build OK!
+v5.1.18: Build OK!
+v4.19.59: Failed to apply! Possible dependencies:
+    02b4da5f84d1 ("intel-iommu: mark intel_dma_ops static")
+    0bbeb01a4faf ("iommu/vt-d: Manage scalalble mode PASID tables")
+    524a669bdd5f ("iommu/vt-d: remove the mapping_error dma_map_ops method")
+    932a6523ce39 ("iommu/vt-d: Use dev_printk() when possible")
+    964f2311a686 ("iommu/intel: small map_page cleanup")
+    ef848b7e5a6a ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+    f7b0c4ce8cb3 ("iommu/vt-d: Flush IOTLB for untrusted device in time")
+
+v4.14.133: Failed to apply! Possible dependencies:
+    0bbeb01a4faf ("iommu/vt-d: Manage scalalble mode PASID tables")
+    2e2e35d51279 ("iommu/vt-d: Missing checks for pasid tables if allocation fails")
+    2f13eb7c580f ("iommu/vt-d: Enable 5-level paging mode in the PASID entry")
+    3e781fcafedb ("iommu/vt-d: Remove unnecessary WARN_ON()")
+    4774cc524570 ("iommu/vt-d: Apply per pci device pasid table in SVA")
+    4fa064b26c2e ("iommu/vt-d: Clear pasid table entry when memory unbound")
+    524a669bdd5f ("iommu/vt-d: remove the mapping_error dma_map_ops method")
+    562831747f62 ("iommu/vt-d: Global PASID name space")
+    7ec916f82c48 ("Revert "iommu/intel-iommu: Enable CONFIG_DMA_DIRECT_OPS=y and clean up intel_{alloc,free}_coherent()"")
+    85319dcc8955 ("iommu/vt-d: Add for_each_device_domain() helper")
+    932a6523ce39 ("iommu/vt-d: Use dev_printk() when possible")
+    964f2311a686 ("iommu/intel: small map_page cleanup")
+    971401015d14 ("iommu/vt-d: Use real PASID for flush in caching mode")
+    9ddbfb42138d ("iommu/vt-d: Move device_domain_info to header")
+    a7fc93fed94b ("iommu/vt-d: Allocate and free pasid table")
+    af39507305fb ("iommu/vt-d: Apply global PASID in SVA")
+    be9e6598aeb0 ("iommu/vt-d: Handle memory shortage on pasid table allocation")
+    cc580e41260d ("iommu/vt-d: Per PCI device pasid table interfaces")
+    d657c5c73ca9 ("iommu/intel-iommu: Enable CONFIG_DMA_DIRECT_OPS=y and clean up intel_{alloc,free}_coherent()")
+    ef848b7e5a6a ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+    f7b0c4ce8cb3 ("iommu/vt-d: Flush IOTLB for untrusted device in time")
+
+
+NOTE: The patch will not be queued to stable trees until it is upstream.
+
+How should we proceed with this patch?
+
+--
+Thanks,
+Sasha
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
