@@ -2,109 +2,65 @@ Return-Path: <SRS0=AIpH=VN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9C8C76188
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 04:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3618C76192
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 09:29:41 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E5A9C206C2
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 04:29:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="Ed5X/W0W"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5A9C206C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	by mail.kernel.org (Postfix) with ESMTPS id B4D2E21721
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 09:29:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4D2E21721
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B4482F;
-	Tue, 16 Jul 2019 04:29:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5FDE7DE0;
+	Tue, 16 Jul 2019 09:29:41 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7353B2C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77CB3AD0
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 04:29:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com
-	(mail-eopbgr740070.outbound.protection.outlook.com [40.107.74.70])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 60990756
+	Tue, 16 Jul 2019 09:29:40 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DB14A876
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 04:29:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=YAzzLPTmRp6PToehzQk6nxx3x++5MjhTXBmhHVPlx8um/ky/S7RYCivSPf4XFsNs8Riuzbloy8L7VRAHYP2jx2pF5Sg3azmTJtYpKNRbTUPm6ALkbYMwlQ1qta19NyexB/nJA0mSJxG+28pwB0bd/9q7LQDDrAwcbtcg0GaKXAESbdlWLAx1XJ+iiDdQWHdDMn8sX9tZg5kz4LF/e5TDN5CKZwp7hLAJYlcux4arQHQby36JqLNJwp3RmYGdsm0hGjqJ2R2lkfAzqwKtkauev9kbvd0jCcVjLZhdlIdyn0WzM3Cc0WQIBMbcc8VwUAQWHluy+9+hJq2kEuBixcKKMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=5JLFDDbA2n3Q/swjVGeE018zBh4aJbOcPgy2I6UrTpo=;
-	b=ZZso0ixdyyDZY8lgBSfTXB0SZ+/EGD/YKpp5L/W4d4P8OjtIBnwW1N5k6ORaoodCLMaAztg8KD2ldcaMreiTKEeN5G6AzU2synL+eb0v9u6j0uR++jB0MrJkJ+wPckbsGJQvO/bY3jkCGWVv1ZVymgMvEauBuQwsoDdfdso6sSCp1+0OjU1sdP5A1I6SH3w/70xIEsBmNFBxkaxMcDpOF+sgUbAylF1KJkETB3IqOeOpymQ3n56HlrwOKoTzMM5z99PfYXjOCB9IGtgfEFcsvSDtsneWUJm1nczsjAbmcJvlGanAGtEUsQNl9WIZEbAwcoRV5G8G4qEsh67CBi4uNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
-	smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com;
-	dkim=pass header.d=amd.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=5JLFDDbA2n3Q/swjVGeE018zBh4aJbOcPgy2I6UrTpo=;
-	b=Ed5X/W0W02MGQR/OFkuKtMcYJb/SWG3jOuiEXlKE3zbm5yX3lU1OTIUg2E/YTLG/CByfvAMk8r1H80bayb0j2bjTcJRlLzaCvHS+moGAwVJ/TfUddofSJyN2NJckUXr6XPHu5qEcXwDSVlkmPqg8nRolFo4XX3pN5VNto8U6lF4=
-Received: from DM6PR12MB2844.namprd12.prod.outlook.com (20.176.117.96) by
-	DM6PR12MB3513.namprd12.prod.outlook.com (20.179.106.149) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2073.11; Tue, 16 Jul 2019 04:29:16 +0000
-Received: from DM6PR12MB2844.namprd12.prod.outlook.com
-	([fe80::a91d:8752:288:ed5f]) by DM6PR12MB2844.namprd12.prod.outlook.com
-	([fe80::a91d:8752:288:ed5f%6]) with mapi id 15.20.2073.012;
-	Tue, 16 Jul 2019 04:29:16 +0000
-From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Subject: [PATCH] iommu/amd: Add support for X2APIC IOMMU interrupts
-Thread-Topic: [PATCH] iommu/amd: Add support for X2APIC IOMMU interrupts
-Thread-Index: AQHVO48Hx/kfNidzeESmMCe8zpPtAw==
-Date: Tue, 16 Jul 2019 04:29:16 +0000
-Message-ID: <1563251350-81400-1-git-send-email-suravee.suthikulpanit@amd.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [165.204.78.1]
-x-clientproxiedby: SN4PR0501CA0018.namprd05.prod.outlook.com
-	(2603:10b6:803:40::31) To DM6PR12MB2844.namprd12.prod.outlook.com
-	(2603:10b6:5:45::32)
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=Suravee.Suthikulpanit@amd.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 1.8.3.1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ac88e62b-1451-4e2a-9019-08d709a6299a
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:DM6PR12MB3513; 
-x-ms-traffictypediagnostic: DM6PR12MB3513:
-x-microsoft-antispam-prvs: <DM6PR12MB3513D234D6D42D5F383EC095F3CE0@DM6PR12MB3513.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0100732B76
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(4636009)(346002)(376002)(136003)(39860400002)(396003)(366004)(199004)(189003)(86362001)(316002)(7736002)(110136005)(81166006)(8936002)(6486002)(81156014)(5660300002)(50226002)(2906002)(6512007)(66946007)(4326008)(54906003)(6436002)(25786009)(64756008)(66556008)(8676002)(4720700003)(386003)(26005)(102836004)(66446008)(6116002)(6506007)(476003)(2501003)(14444005)(256004)(99286004)(3846002)(2616005)(486006)(71190400001)(36756003)(305945005)(53936002)(14454004)(66066001)(66476007)(71200400001)(52116002)(478600001)(186003)(68736007);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:DM6PR12MB3513;
-	H:DM6PR12MB2844.namprd12.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: amd.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: V1YNTyRfLF9As29T0fnAuYRMxLeAKf9OhRNTo8tm34JITnzg4tI/mV7RxGQEUdQWGoTe/+wTJkFKR/Mo+kcqHzRmkDJuzyvwgLix32KCNCgZSebQRyKHDPXejR7K0WjapokCxJQRy9hwhLMeCx0smsIWvI8GknV/TjIPpGmETDe7PG6Ts9wQKXCnGgAAUODCDWGSngpJlnFZZR9Moq3a3AlYfKuRNKyw5JMGypqcm1CBjAZQbPsRHESBmvQgeIdIi5lZhJ+623WIfECiQT/9VAwAcTlGj0c1XxuBQRBGP6iSEyjvXMvpmLBLOspqHYgZkDPeS9JrV/byFZRKz1X6WmLUjiKTrsJQGbHih4b1HFGBSOqoa5bWuhaXNpgWKXdRrdT5p43k9UJXCA7bHcK2dk6qdje8v4Tr8yf6jskl5pM=
+	Tue, 16 Jul 2019 09:29:39 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 3309944BEF;
+	Tue, 16 Jul 2019 09:29:39 +0000 (UTC)
+Received: from [10.36.116.32] (ovpn-116-32.ams2.redhat.com [10.36.116.32])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 45D345E7A5;
+	Tue, 16 Jul 2019 09:29:32 +0000 (UTC)
+Subject: Re: [PATCH v4 13/22] iommu/vt-d: Enlightened PASID allocation
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1560087862-57608-14-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <6d53fe3e-8d91-22f6-4bec-aad6745bee81@redhat.com>
+Date: Tue, 16 Jul 2019 11:29:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac88e62b-1451-4e2a-9019-08d709a6299a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2019 04:29:16.5721 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ssuthiku@amd.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3513
+In-Reply-To: <1560087862-57608-14-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.30]);
+	Tue, 16 Jul 2019 09:29:39 +0000 (UTC)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -122,169 +78,179 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-AMD IOMMU requires IntCapXT registers to be setup in order to generate
-its own interrupts (for Event Log, PPR Log, and GA Log) with 32-bit
-APIC destination ID. Without this support, AMD IOMMU MSI interrupts
-will not be routed correctly when booting the system in X2APIC mode.
+Hi Jacob,
+On 6/9/19 3:44 PM, Jacob Pan wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the
+> IOMMU driver should rely on the emulation software to allocate
+> and free PASID IDs. The Intel vt-d spec revision 3.0 defines a
+> register set to support this. This includes a capability register,
+> a virtual command register and a virtual response register. Refer
+> to section 10.4.42, 10.4.43, 10.4.44 for more information.
+> 
+> This patch adds the enlightened PASID allocation/free interfaces
+> via the virtual command register.>
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/intel-pasid.c | 76 +++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/intel-pasid.h | 13 +++++++-
+>  include/linux/intel-iommu.h |  2 ++
+>  3 files changed, 90 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+> index 2fefeaf..69fddd3 100644
+> --- a/drivers/iommu/intel-pasid.c
+> +++ b/drivers/iommu/intel-pasid.c
+> @@ -63,6 +63,82 @@ void *intel_pasid_lookup_id(int pasid)
+>  	return p;
+>  }
+>  
+> +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
+> +{
+> +	u64 res;
+> +	u64 cap;
+> +	u8 status_code;
+> +	unsigned long flags;
+> +	int ret = 0;
+> +
+> +	if (!ecap_vcs(iommu->ecap)) {
+> +		pr_warn("IOMMU: %s: Hardware doesn't support virtual command\n",
+> +			iommu->name);
+> +		return -ENODEV;
+> +	}
+> +
+> +	cap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
+> +	if (!(cap & DMA_VCS_PAS)) {
+> +		pr_warn("IOMMU: %s: Emulation software doesn't support PASID allocation\n",
+> +			iommu->name);
+> +		return -ENODEV;
+> +	}
+> +
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+> +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, VCMD_CMD_ALLOC);
+> +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
+> +		      !(res & VCMD_VRSP_IP), res);
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+> +
+> +	status_code = VCMD_VRSP_SC(res);
+> +	switch (status_code) {
+> +	case VCMD_VRSP_SC_SUCCESS:
+> +		*pasid = VCMD_VRSP_RESULT(res);
+> +		break;
+> +	case VCMD_VRSP_SC_NO_PASID_AVAIL:
+> +		pr_info("IOMMU: %s: No PASID available\n", iommu->name);
+> +		ret = -ENOMEM;
+> +		break;
+> +	default:
+> +		ret = -ENODEV;
+> +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",
+unknown
+s/unknown/unexpected
+> +			iommu->name, status_code);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
+> +{
+> +	u64 res;
+> +	u8 status_code;
+> +	unsigned long flags;
+> +
+> +	if (!ecap_vcs(iommu->ecap)) {
+> +		pr_warn("IOMMU: %s: Hardware doesn't support virtual command\n",
+> +			iommu->name);
+> +		return;
+> +	}
+Logically shouldn't you also check DMAR_VCCAP_REG as well?
+> +
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+> +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, (pasid << 8) | VCMD_CMD_FREE);
+> +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
+> +		      !(res & VCMD_VRSP_IP), res);
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+> +
+> +	status_code = VCMD_VRSP_SC(res);
+> +	switch (status_code) {
+> +	case VCMD_VRSP_SC_SUCCESS:
+> +		break;
+> +	case VCMD_VRSP_SC_INVALID_PASID:
+> +		pr_info("IOMMU: %s: Invalid PASID\n", iommu->name);
+> +		break;
+> +	default:
+> +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",
+> +			iommu->name, status_code);
+s/Unkonwn/Unexpected
+> +	}
+> +}
+> +
+>  /*
+>   * Per device pasid table management:
+>   */
+> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+> index 23537b3..4b26ab5 100644
+> --- a/drivers/iommu/intel-pasid.h
+> +++ b/drivers/iommu/intel-pasid.h
+> @@ -19,6 +19,16 @@
+>  #define PASID_PDE_SHIFT			6
+>  #define MAX_NR_PASID_BITS		20
+>  
+> +/* Virtual command interface for enlightened pasid management. */
+> +#define VCMD_CMD_ALLOC			0x1
+> +#define VCMD_CMD_FREE			0x2
+> +#define VCMD_VRSP_IP			0x1
+> +#define VCMD_VRSP_SC(e)			(((e) >> 1) & 0x3)
+> +#define VCMD_VRSP_SC_SUCCESS		0
+> +#define VCMD_VRSP_SC_NO_PASID_AVAIL	1
+> +#define VCMD_VRSP_SC_INVALID_PASID	1
+> +#define VCMD_VRSP_RESULT(e)		(((e) >> 8) & 0xfffff)
+> +
+>  /*
+>   * Domain ID reserved for pasid entries programmed for first-level
+>   * only and pass-through transfer modes.
+> @@ -69,5 +79,6 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+>  				   struct device *dev, int pasid);
+>  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+>  				 struct device *dev, int pasid);
+> -
+> +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
+> +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid);
+>  #endif /* __INTEL_PASID_H */
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 6925a18..bff907b 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -173,6 +173,7 @@
+>  #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
+>  #define ecap_flts(e)		(((e) >> 47) & 0x1)
+>  #define ecap_slts(e)		(((e) >> 46) & 0x1)
+> +#define ecap_vcs(e)		(((e) >> 44) & 0x1)
+>  #define ecap_smts(e)		(((e) >> 43) & 0x1)
+>  #define ecap_dit(e)		((e >> 41) & 0x1)
+>  #define ecap_pasid(e)		((e >> 40) & 0x1)
+> @@ -289,6 +290,7 @@
+>  
+>  /* PRS_REG */
+>  #define DMA_PRS_PPR	((u32)1)
+> +#define DMA_VCS_PAS	((u64)1)
+>  
+>  #define IOMMU_WAIT_OP(iommu, offset, op, cond, sts)			\
+>  do {									\
+> 
+Otherwise
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd_iommu_init.c  | 90 +++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_types.h |  9 +++++
- 2 files changed, 99 insertions(+)
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index ff40ba7..a4c5b1e 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -35,6 +35,8 @@
- #include <linux/mem_encrypt.h>
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
-+#include <asm/apic.h>
-+#include <asm/msidef.h>
- #include <asm/gart.h>
- #include <asm/x86_init.h>
- #include <asm/iommu_table.h>
-@@ -1935,6 +1937,90 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
- 	return 0;
- }
- 
-+#define XT_INT_DEST_MODE(x)	(((x) & 0x1ULL) << 2)
-+#define XT_INT_DEST_LO(x)	(((x) & 0xFFFFFFULL) << 8)
-+#define XT_INT_VEC(x)		(((x) & 0xFFULL) << 32)
-+#define XT_INT_DEST_HI(x)	((((x) >> 24) & 0xFFULL) << 56)
-+
-+/**
-+ * Setup the IntCapXT registers with interrupt routing information
-+ * based on the PCI MSI capability block registers, accessed via
-+ * MMIO MSI address low/hi and MSI data registers.
-+ */
-+static void iommu_update_intcapxt(struct amd_iommu *iommu)
-+{
-+	u64 val;
-+	u32 addr_lo = readl(iommu->mmio_base + MMIO_MSI_ADDR_LO_OFFSET);
-+	u32 addr_hi = readl(iommu->mmio_base + MMIO_MSI_ADDR_HI_OFFSET);
-+	u32 data    = readl(iommu->mmio_base + MMIO_MSI_DATA_OFFSET);
-+	bool dm     = (addr_lo >> MSI_ADDR_DEST_MODE_SHIFT) & 0x1;
-+	u32 dest    = ((addr_lo >> MSI_ADDR_DEST_ID_SHIFT) & 0xFF);
-+
-+	if (x2apic_enabled())
-+		dest |= MSI_ADDR_EXT_DEST_ID(addr_hi);
-+
-+	val = XT_INT_VEC(data & 0xFF) |
-+	      XT_INT_DEST_MODE(dm) |
-+	      XT_INT_DEST_LO(dest) |
-+	      XT_INT_DEST_HI(dest);
-+
-+	/**
-+	 * Current IOMMU implemtation uses the same IRQ for all
-+	 * 3 IOMMU interrupts.
-+	 */
-+	writeq(val, iommu->mmio_base + MMIO_INTCAPXT_EVT_OFFSET);
-+	writeq(val, iommu->mmio_base + MMIO_INTCAPXT_PPR_OFFSET);
-+	writeq(val, iommu->mmio_base + MMIO_INTCAPXT_GALOG_OFFSET);
-+}
-+
-+static void _irq_notifier_notify(struct irq_affinity_notify *notify,
-+				 const cpumask_t *mask)
-+{
-+	struct amd_iommu *iommu;
-+
-+	for_each_iommu(iommu) {
-+		if (iommu->dev->irq == notify->irq) {
-+			iommu_update_intcapxt(iommu);
-+			break;
-+		}
-+	}
-+}
-+
-+static void _irq_notifier_release(struct kref *ref)
-+{
-+}
-+
-+static int iommu_init_intcapxt(struct amd_iommu *iommu)
-+{
-+	int ret;
-+	struct irq_affinity_notify *notify = &iommu->intcapxt_notify;
-+
-+	/**
-+	 * IntCapXT requires XTSup=1, which can be inferred
-+	 * amd_iommu_xt_mode.
-+	 */
-+	if (amd_iommu_xt_mode != IRQ_REMAP_X2APIC_MODE)
-+		return 0;
-+
-+	/**
-+	 * Also, we need to setup notifier to update the IntCapXT registers
-+	 * whenever the irq affinity is changed from user-space.
-+	 */
-+	notify->irq = iommu->dev->irq;
-+	notify->notify = _irq_notifier_notify,
-+	notify->release = _irq_notifier_release,
-+	ret = irq_set_affinity_notifier(iommu->dev->irq, notify);
-+	if (ret) {
-+		pr_err("Failed to register irq affinity notifier (devid=%#x, irq %d)\n",
-+		       iommu->devid, iommu->dev->irq);
-+		return ret;
-+	}
-+
-+	iommu_update_intcapxt(iommu);
-+	iommu_feature_enable(iommu, CONTROL_INTCAPXT_EN);
-+	return ret;
-+}
-+
- static int iommu_init_msi(struct amd_iommu *iommu)
- {
- 	int ret;
-@@ -1951,6 +2037,10 @@ static int iommu_init_msi(struct amd_iommu *iommu)
- 		return ret;
- 
- enable_faults:
-+	ret = iommu_init_intcapxt(iommu);
-+	if (ret)
-+		return ret;
-+
- 	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
- 
- 	if (iommu->ppr_log != NULL)
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 87965e4..39be804f 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -72,6 +72,12 @@
- #define MMIO_PPR_LOG_OFFSET	0x0038
- #define MMIO_GA_LOG_BASE_OFFSET	0x00e0
- #define MMIO_GA_LOG_TAIL_OFFSET	0x00e8
-+#define MMIO_MSI_ADDR_LO_OFFSET	0x015C
-+#define MMIO_MSI_ADDR_HI_OFFSET	0x0160
-+#define MMIO_MSI_DATA_OFFSET	0x0164
-+#define MMIO_INTCAPXT_EVT_OFFSET	0x0170
-+#define MMIO_INTCAPXT_PPR_OFFSET	0x0178
-+#define MMIO_INTCAPXT_GALOG_OFFSET	0x0180
- #define MMIO_CMD_HEAD_OFFSET	0x2000
- #define MMIO_CMD_TAIL_OFFSET	0x2008
- #define MMIO_EVT_HEAD_OFFSET	0x2010
-@@ -162,6 +168,7 @@
- #define CONTROL_GALOG_EN        0x1CULL
- #define CONTROL_GAINT_EN        0x1DULL
- #define CONTROL_XT_EN           0x32ULL
-+#define CONTROL_INTCAPXT_EN     0x33ULL
- 
- #define CTRL_INV_TO_MASK	(7 << CONTROL_INV_TIMEOUT)
- #define CTRL_INV_TO_NONE	0
-@@ -604,6 +611,8 @@ struct amd_iommu {
- 	/* DebugFS Info */
- 	struct dentry *debugfs;
- #endif
-+	/* IRQ notifier for IntCapXT interrupt */
-+	struct irq_affinity_notify intcapxt_notify;
- };
- 
- static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
--- 
-1.8.3.1
+Thanks
+
+Eric
 
 _______________________________________________
 iommu mailing list
