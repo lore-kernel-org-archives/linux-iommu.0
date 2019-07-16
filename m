@@ -2,64 +2,55 @@ Return-Path: <SRS0=AIpH=VN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 910F4C76192
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 09:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADBAC76188
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 12:02:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69FD420665
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 09:52:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69FD420665
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id CABE22145D
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 12:02:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CABE22145D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 38585E38;
-	Tue, 16 Jul 2019 09:52:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A2ACDC8B;
+	Tue, 16 Jul 2019 12:02:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7AD93E18
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3BC669F0
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 09:52:35 +0000 (UTC)
+	Tue, 16 Jul 2019 12:02:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 553B025A
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BB84E63D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 09:52:34 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
-	[10.5.11.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 9201D3081244;
-	Tue, 16 Jul 2019 09:52:33 +0000 (UTC)
-Received: from [10.36.116.32] (ovpn-116-32.ams2.redhat.com [10.36.116.32])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 3EB0F611DE;
-	Tue, 16 Jul 2019 09:52:28 +0000 (UTC)
-Subject: Re: [PATCH v4 17/22] iommu/vt-d: Avoid duplicated code for PASID setup
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1560087862-57608-18-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <798650b7-4187-4a44-152a-b0d99be55c6c@redhat.com>
-Date: Tue, 16 Jul 2019 11:52:26 +0200
+	Tue, 16 Jul 2019 12:02:22 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA1762B;
+	Tue, 16 Jul 2019 05:02:21 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 80CF63F71A;
+	Tue, 16 Jul 2019 05:02:20 -0700 (PDT)
+Subject: Re: cma_remap when using dma_alloc_attr :- DMA_ATTR_NO_KERNEL_MAPPING
+To: Pankaj Suryawanshi <pankajssuryawanshi@gmail.com>
+References: <CACDBo56EoKca9FJCnbztWZAARdUQs+B=dmCs+UxW27yHNu5pzQ@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <57f8aa35-d460-9933-a547-fbf578ea42d3@arm.com>
+Date: Tue, 16 Jul 2019 13:02:19 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <1560087862-57608-18-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.49]);
-	Tue, 16 Jul 2019 09:52:33 +0000 (UTC)
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+In-Reply-To: <CACDBo56EoKca9FJCnbztWZAARdUQs+B=dmCs+UxW27yHNu5pzQ@mail.gmail.com>
+Content-Language: en-GB
+Cc: pankaj.suryawanshi@einfochips.com, minchan@kernel.org,
+	linux-kernel@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
+	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+	minchan.kim@gmail.com, Christoph Hellwig <hch@lst.de>,
+	Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,111 +63,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Jacob,
-
-On 6/9/19 3:44 PM, Jacob Pan wrote:
-> After each setup for PASID entry, related translation caches must be flushed.
-> We can combine duplicated code into one function which is less error prone.
+On 12/07/2019 19:30, Pankaj Suryawanshi wrote:
+> Hello,
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/iommu/intel-pasid.c | 48 +++++++++++++++++----------------------------
->  1 file changed, 18 insertions(+), 30 deletions(-)
+> When we allocate cma memory using dma_alloc_attr using
+> DMA_ATTR_NO_KERNEL_MAPPING attribute. It will return physical address
+> without virtual mapping and thats the use case of this attribute. but lets
+> say some vpu/gpu drivers required virtual mapping of some part of the
+> allocation. then we dont have anything to remap that allocated memory to
+> virtual memory. and in 32-bit system it difficult for devices like android
+> to work all the time with virtual mapping, it degrade the performance.
 > 
-> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-> index 1e25539..1ff2ecc 100644
-> --- a/drivers/iommu/intel-pasid.c
-> +++ b/drivers/iommu/intel-pasid.c
-> @@ -522,6 +522,21 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
->  		devtlb_invalidation_with_pasid(iommu, dev, pasid);
->  }
->  
-> +static inline void pasid_flush_caches(struct intel_iommu *iommu,
-> +				struct pasid_entry *pte,
-> +				int pasid, u16 did)
-> +{
-> +	if (!ecap_coherent(iommu->ecap))
-> +		clflush_cache_range(pte, sizeof(*pte));
-> +
-> +	if (cap_caching_mode(iommu->cap)) {
-> +		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
-> +		iotlb_invalidation_with_pasid(iommu, did, pasid);
-> +	} else
-> +		iommu_flush_write_buffer(iommu);
-Besides the style issue reported by Jonathan and the fact this function
-may not deserve the inline (chapt 15 of
-https://www.kernel.org/doc/html/v5.1/process/coding-style.html),
+> For Example :
+> 
+> Lets say 4k video allocation required 300MB cma memory but not required
+> virtual mapping for all the 300MB, its require only 20MB virtually mapped
+> at some specific use case/point of video, and unmap virtual mapping after
+> uses, at that time this functions will be useful, it works like ioremap()
+> for cma_alloc() using dma apis.
 
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Hmm, is there any significant reason that this case couldn't be handled 
+with just get_vm_area() plus dma_mmap_attrs(). I know it's only 
+*intended* for userspace mappings, but since the basic machinery is there...
 
-Thanks
+Robin.
 
-Eric
-> +
-> +}
-> +
->  /*
->   * Set up the scalable mode pasid table entry for first only
->   * translation type.
-> @@ -567,16 +582,7 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
->  	/* Setup Present and PASID Granular Transfer Type: */
->  	pasid_set_translation_type(pte, 1);
->  	pasid_set_present(pte);
-> -
-> -	if (!ecap_coherent(iommu->ecap))
-> -		clflush_cache_range(pte, sizeof(*pte));
-> -
-> -	if (cap_caching_mode(iommu->cap)) {
-> -		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
-> -		iotlb_invalidation_with_pasid(iommu, did, pasid);
-> -	} else {
-> -		iommu_flush_write_buffer(iommu);
-> -	}
-> +	pasid_flush_caches(iommu, pte, pasid, did);
->  
->  	return 0;
->  }
-> @@ -640,16 +646,7 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->  	 */
->  	pasid_set_sre(pte);
->  	pasid_set_present(pte);
-> -
-> -	if (!ecap_coherent(iommu->ecap))
-> -		clflush_cache_range(pte, sizeof(*pte));
-> -
-> -	if (cap_caching_mode(iommu->cap)) {
-> -		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
-> -		iotlb_invalidation_with_pasid(iommu, did, pasid);
-> -	} else {
-> -		iommu_flush_write_buffer(iommu);
-> -	}
-> +	pasid_flush_caches(iommu, pte, pasid, did);
->  
->  	return 0;
->  }
-> @@ -683,16 +680,7 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->  	 */
->  	pasid_set_sre(pte);
->  	pasid_set_present(pte);
-> -
-> -	if (!ecap_coherent(iommu->ecap))
-> -		clflush_cache_range(pte, sizeof(*pte));
-> -
-> -	if (cap_caching_mode(iommu->cap)) {
-> -		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
-> -		iotlb_invalidation_with_pasid(iommu, did, pasid);
-> -	} else {
-> -		iommu_flush_write_buffer(iommu);
-> -	}
-> +	pasid_flush_caches(iommu, pte, pasid, did);
->  
->  	return 0;
->  }
+> /*
+>           * function call(s) to create virtual map of given physical memory
+>           * range [base, base+size) of CMA memory.
+> */
+> void *cma_remap(__u32 base, __u32 size)
+> {
+>          struct page *page = phys_to_page(base);
+>          void *virt;
+> 
+>          pr_debug("cma: request to map 0x%08x for size 0x%08x\n",
+>                          base, size);
+> 
+>          size = PAGE_ALIGN(size);
+> 
+>          pgprot_t prot = get_dma_pgprot(DMA_ATTR, PAGE_KERNEL);
+> 
+>          if (PageHighMem(page)){
+>                  virt = dma_alloc_remap(page, size, GFP_KERNEL, prot,
+> __builtin_return_address(0));
+>          }
+>          else
+>          {
+>                  dma_remap(page, size, prot);
+>                  virt = page_address(page);
+>          }
+> 
+>          if (!virt)
+>                  pr_err("\x1b[31m" " cma: failed to map 0x%08x" "\x1b[0m\n",
+>                                  base);
+>          else
+>                  pr_debug("cma: 0x%08x is virtually mapped to 0x%08x\n",
+>                                  base, (__u32) virt);
+> 
+>          return virt;
+> }
+> 
+> /*
+>           * function call(s) to remove virtual map of given virtual memory
+>           * range [virt, virt+size) of CMA memory.
+> */
+> 
+> void cma_unmap(void *virt, __u32 size)
+> {
+>          size = PAGE_ALIGN(size);
+>          unsigned long pfn = virt_to_pfn(virt);
+>          struct page *page = pfn_to_page(pfn);
+> 
+>                  if (PageHighMem(page))
+>                          dma_free_remap(virt, size);
+>                  else
+>                          dma_remap(page, size, PAGE_KERNEL);
+> 
+>          pr_debug(" cma: virtual address 0x%08x is unmapped\n",
+>                          (__u32) virt);
+> }
+> 
+> This functions should be added in arch/arm/mm/dma-mapping.c file.
+> 
+> Please let me know if i am missing anything.
+> 
+> Regards,
+> Pankaj
 > 
 _______________________________________________
 iommu mailing list
