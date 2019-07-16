@@ -2,62 +2,88 @@ Return-Path: <SRS0=AIpH=VN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBC8C7618F
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 17:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C511C7618F
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 21:38:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1227620651
-	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 17:06:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1227620651
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 63006206C2
+	for <iommu@archiver.kernel.org>; Tue, 16 Jul 2019 21:38:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="ey5VfHNm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63006206C2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7264BD73;
-	Tue, 16 Jul 2019 17:06:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 268A0D0A;
+	Tue, 16 Jul 2019 21:38:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EBC46D6A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C93DBB7A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 17:06:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4B6A0878
+	Tue, 16 Jul 2019 21:38:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+	[209.85.128.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E766D892
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 16 Jul 2019 17:06:07 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
-	[10.5.11.22])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id A7D6B8553A;
-	Tue, 16 Jul 2019 17:06:06 +0000 (UTC)
-Received: from [10.36.116.32] (ovpn-116-32.ams2.redhat.com [10.36.116.32])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 0DEB91001B32;
-	Tue, 16 Jul 2019 17:05:58 +0000 (UTC)
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v1 3/4] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-To: "Liu, Yi L" <yi.l.liu@intel.com>, alex.williamson@redhat.com
-References: <1562324772-3084-1-git-send-email-yi.l.liu@intel.com>
-	<1562324772-3084-4-git-send-email-yi.l.liu@intel.com>
-Message-ID: <50587a14-2c66-e7e9-0896-12917ffca428@redhat.com>
-Date: Tue, 16 Jul 2019 19:05:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Tue, 16 Jul 2019 21:38:09 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id u25so9704282wmc.4
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 16 Jul 2019 14:38:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=arista.com; s=googlenew;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=H3eudHJjvbxuD13KwrHicc1JmjafoBpBMmTNZ/oegRQ=;
+	b=ey5VfHNmGSlDC0DDsLvbGKRYgHwTGQongQ0lo1Eno08EJte+AeeVZINJzftxHNlaaD
+	4rGzTknZ7V8vQ7ix8TDmzSgCTNm8iwN5UX7mKGWK7ZLHAdhReZEUbDoLtnIAKtsslGbw
+	G319+d3jMGLrvMAZW260knyuGk1Bk/qlEPT0u8GbTd9MO8XUzpc1y/Va6/xZUOQY+Vnx
+	5PI2y1J5Ogny9caIbWPP2NOPgLZ80bO0IraxKIb29SFvZdb/aINmJolUkFe0c/XpILld
+	QwAaf+lVKVbjmWyl9ASqw77DybybNHx7Ek8r/fdpRWfo10dy83jRv1DzlCJxPTgzjxX/
+	ouUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=H3eudHJjvbxuD13KwrHicc1JmjafoBpBMmTNZ/oegRQ=;
+	b=Wfi/iL4q42M3W3NQk3YcnpwGOQp9BlNu3B2Ht4dv8qYdvGGU2BILvuIknycbxOcI4K
+	HOD3PKb5o+R7zqv+fnIIFkKFVqaMXr7NoFJe4CeKCOlUWB+QmKt1fVfrzFJKjAXNwcLw
+	IZ15tDV6OeP3zX5bFCEqoasjuVOtqopeB2Q51+oI0m/A1ZRfLKXPQJvWeomhabljEeoZ
+	YVVBfmrSg/FzyH050+GmZXNZcehmsgWg9FrPpuLUP/leo5bT/9oIMVGteqYZ7a/zybtw
+	7EmA+yB7OveOwgFnePeThrjsNR0jBqvQhJ36q7rMCUe6leQ8jrMQ04DyfgMJcHZJqVwi
+	/MCg==
+X-Gm-Message-State: APjAAAXzhWSvkJfaQJNmEm04QOeNqlX55/51QOzcT8pDMYZI0tkdKlBk
+	adJUqAz1EBA4bUtdIJg71PG4p/qNhBxb8HN+/aY+mYFuYpjEeM3f+4Bgns3iIm2+ct4mv68sYgU
+	E3QC6jb1FdLjIXJrv8WFMt8r81a7SGomyTEWUuaGD7Ohh0C4c1IV8nZ5QCy0Mb3xR9tX3p3TVzU
+	Q48Ls+cjnjtAi8/armexkox/QFOA+qCO5QyZUB3FelzPh3
+X-Google-Smtp-Source: APXvYqzXAPiCfMPhiPEqldBeMIFt/Ky+9UheM3jiHmtKkPgTcsW5NgbqIexEnJGUe2DVQhGoXCYKNg==
+X-Received: by 2002:a05:600c:118a:: with SMTP id
+	i10mr31601585wmf.162.1563313088482; 
+	Tue, 16 Jul 2019 14:38:08 -0700 (PDT)
+Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
+	by smtp.gmail.com with ESMTPSA id
+	v5sm22496878wre.50.2019.07.16.14.38.07
+	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+	Tue, 16 Jul 2019 14:38:07 -0700 (PDT)
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] iommu/vt-d: Don't queue_iova() if there is no flush queue
+Date: Tue, 16 Jul 2019 22:38:05 +0100
+Message-Id: <20190716213806.20456-1-dima@arista.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <1562324772-3084-4-git-send-email-yi.l.liu@intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.28]);
-	Tue, 16 Jul 2019 17:06:06 +0000 (UTC)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
-	jean-philippe.brucker@arm.com, jun.j.tian@intel.com,
-	iommu@lists.linux-foundation.org, yi.y.sun@intel.com
+X-CLOUD-SEC-AV-Info: arista,google_mail,monitor
+X-CLOUD-SEC-AV-Sent: true
+X-Gm-Spam: 0
+X-Gm-Phishy: 0
+Cc: Dmitry Safonov <dima@arista.com>, Dmitry Safonov <0x7f454c46@gmail.com>,
+	stable@vger.kernel.org, iommu@lists.linux-foundation.org,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,225 +96,194 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Dmitry Safonov via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Dmitry Safonov <dima@arista.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Yi,
+Intel VT-d driver was reworked to use common deferred flushing
+implementation. Previously there was one global per-cpu flush queue,
+afterwards - one per domain.
 
-On 7/5/19 1:06 PM, Liu, Yi L wrote:
-> From: Liu Yi L <yi.l.liu@intel.com>
-> 
-> This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims
-> to passdown PASID allocation/free request from the virtual
-> iommu. This is required to get PASID managed in system-wide.
-> 
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 125 ++++++++++++++++++++++++++++++++++++++++
->  include/uapi/linux/vfio.h       |  25 ++++++++
->  2 files changed, 150 insertions(+)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 6fda4fb..d5e0c01 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1832,6 +1832,94 @@ static int vfio_cache_inv_fn(struct device *dev, void *data)
->  	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info);
->  }
->  
-> +static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
-> +					 int min_pasid,
-> +					 int max_pasid)
-> +{
-> +	int ret;
-> +	ioasid_t pasid;
-> +	struct mm_struct *mm = NULL;
-> +
-> +	mutex_lock(&iommu->lock);
-> +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-Is this check really mandated and do you really need to hold the iommu lock?
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +	mm = get_task_mm(current);
-> +	/* Jacob: track ioasid allocation owner by mm */
-> +	pasid = ioasid_alloc((struct ioasid_set *)mm, min_pasid,
-> +				max_pasid, NULL);
-Shouldn't we have a PASID number limit per mm to prevent a guest from
-consuming all PASIDs and induce DoS?
-> +	if (pasid == INVALID_IOASID) {
-> +		ret = -ENOSPC;
-> +		goto out_unlock;
-> +	}
-> +	ret = pasid;
-> +out_unlock:
-> +	mutex_unlock(&iommu->lock);
-> +	if (mm)
-> +		mmput(mm);
-> +	return ret;
-> +}
-> +
-> +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu, int pasid)
-> +{
-> +	struct mm_struct *mm = NULL;
-> +	void *pdata;
-> +	int ret = 0;
-> +
-> +	mutex_lock(&iommu->lock);
-> +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-same here
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +	pr_debug("%s: pasid: %d\n", __func__, pasid);
-> +
-> +	/**
-> +	 * TODO:
-> +	 * a) for pasid free, needs to return error if free failed
-> +	 * b) Sanity check: check if the pasid is allocated to the
-> +	 *                  current process such check may be in
-> +	 *                  vendor specific pasid_free callback or
-> +	 *                  in generic layer
-> +	 * c) clean up device list and free p_alloc structure
-> +	 *
-> +	 * Jacob:
-> +	 * There are two cases free could fail:
-> +	 * 1. free pasid by non-owner, we can use ioasid_set to track mm, if
-> +	 * the set does not match, caller is not permitted to free.
-> +	 * 2. free before unbind all devices, we can check if ioasid private
-> +	 * data, if data != NULL, then fail to free.
-> +	 */
-who is going to do the garbage collection of PASIDs used by the guest in
-general as we cannot rely on the userspace to do that in general?
-> +
-> +	mm = get_task_mm(current);
-> +	pdata = ioasid_find((struct ioasid_set *)mm, pasid, NULL);
-> +	if (IS_ERR(pdata)) {
-> +		if (pdata == ERR_PTR(-ENOENT))
-> +			pr_debug("pasid %d is not allocated\n", pasid);
-> +		else if (pdata == ERR_PTR(-EACCES))
-> +			pr_debug("Not owner of pasid %d,"
-> +				 "no pasid free allowed\n", pasid);
-> +		else
-> +			pr_debug("error happened during searching"
-> +				 " pasid: %d\n", pasid);
-> +		ret = -EPERM;
-return actual pdata error?
-> +		goto out_unlock;
-> +	}
-> +	if (pdata) {
-> +		pr_debug("Cannot free pasid %d with private data\n", pasid);
-> +		/* Expect PASID has no private data if not bond */> +		ret = -EBUSY;
-> +		goto out_unlock;
-> +	}
-> +	ioasid_free(pasid);
-> +
-> +out_unlock:
-> +	if (mm)
-> +		mmput(mm);
-> +	mutex_unlock(&iommu->lock);
-> +	return ret;
-> +}
-> +
->  static long vfio_iommu_type1_ioctl(void *iommu_data,
->  				   unsigned int cmd, unsigned long arg)
->  {
-> @@ -1936,6 +2024,43 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  					    &ustruct);
->  		mutex_unlock(&iommu->lock);
->  		return ret;
-> +
-> +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
-> +		struct vfio_iommu_type1_pasid_request req;
-> +		int min_pasid, max_pasid, pasid;
-> +
-> +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
-> +				    flag);
-> +
-> +		if (copy_from_user(&req, (void __user *)arg, minsz))
-> +			return -EFAULT;
-> +
-> +		if (req.argsz < minsz)
-> +			return -EINVAL;
-> +
-> +		switch (req.flag) {
-> +		/**
-> +		 * TODO: min_pasid and max_pasid align with
-> +		 * typedef unsigned int ioasid_t
-indeed
-> +		 */
-> +		case VFIO_IOMMU_PASID_ALLOC:
-> +			if (copy_from_user(&min_pasid,
-> +				(void __user *)arg + minsz, sizeof(min_pasid)))
-> +				return -EFAULT;
-> +			if (copy_from_user(&max_pasid,
-> +				(void __user *)arg + minsz + sizeof(min_pasid),
-> +				sizeof(max_pasid)))
-> +				return -EFAULT;
-> +			return vfio_iommu_type1_pasid_alloc(iommu,
-> +						min_pasid, max_pasid);
-> +		case VFIO_IOMMU_PASID_FREE:
-> +			if (copy_from_user(&pasid,
-> +				(void __user *)arg + minsz, sizeof(pasid)))
-> +				return -EFAULT;
-> +			return vfio_iommu_type1_pasid_free(iommu, pasid);
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	}
->  
->  	return -ENOTTY;
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 055aa9b..af03c9f 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -798,6 +798,31 @@ struct vfio_iommu_type1_cache_invalidate {
->  };
->  #define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 24)
->  
-> +/*
-> + * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @min_pasid and @max_pasid fields
-inclusive
-> + * @flag=VFIO_IOMMU_PASID_FREE, refer to @pasid field
-> + */
-> +struct vfio_iommu_type1_pasid_request {
-> +	__u32	argsz;
-> +#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
-> +#define VFIO_IOMMU_PASID_FREE	(1 << 1)
-do you want a bitfield or an enum value here?
-> +	__u32	flag;
-> +	union {
-> +		struct {
-> +			int min_pasid;
-int -> __u32
-> +			int max_pasid;
-> +		};
-> +		int pasid;
-> +	};
-if you name the union field you can simplify the minsz/copy_from_user
-code I think.
-> +};
-> +
-> +/**
-> + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 27,
-> + *				struct vfio_iommu_type1_pasid_request)
-> + *
-> + */
-> +#define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 27)
-> +
->  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
->  
->  /*
-> 
+Before deferring a flush, the queue should be allocated and initialized.
 
-Thanks
+Currently only domains with IOMMU_DOMAIN_DMA type initialize their flush
+queue. It's probably worth to init it for static or unmanaged domains
+too, but it may be arguable - I'm leaving it to iommu folks.
 
-Eric
+Prevent queuing an iova flush if the domain doesn't have a queue.
+The defensive check seems to be worth to keep even if queue would be
+initialized for all kinds of domains. And is easy backportable.
+
+On 4.19.43 stable kernel it has a user-visible effect: previously for
+devices in si domain there were crashes, on sata devices:
+
+ BUG: spinlock bad magic on CPU#6, swapper/0/1
+  lock: 0xffff88844f582008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+ CPU: 6 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #1
+ Call Trace:
+  <IRQ>
+  dump_stack+0x61/0x7e
+  spin_bug+0x9d/0xa3
+  do_raw_spin_lock+0x22/0x8e
+  _raw_spin_lock_irqsave+0x32/0x3a
+  queue_iova+0x45/0x115
+  intel_unmap+0x107/0x113
+  intel_unmap_sg+0x6b/0x76
+  __ata_qc_complete+0x7f/0x103
+  ata_qc_complete+0x9b/0x26a
+  ata_qc_complete_multiple+0xd0/0xe3
+  ahci_handle_port_interrupt+0x3ee/0x48a
+  ahci_handle_port_intr+0x73/0xa9
+  ahci_single_level_irq_intr+0x40/0x60
+  __handle_irq_event_percpu+0x7f/0x19a
+  handle_irq_event_percpu+0x32/0x72
+  handle_irq_event+0x38/0x56
+  handle_edge_irq+0x102/0x121
+  handle_irq+0x147/0x15c
+  do_IRQ+0x66/0xf2
+  common_interrupt+0xf/0xf
+ RIP: 0010:__do_softirq+0x8c/0x2df
+
+The same for usb devices that use ehci-pci:
+ BUG: spinlock bad magic on CPU#0, swapper/0/1
+  lock: 0xffff88844f402008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #4
+ Call Trace:
+  <IRQ>
+  dump_stack+0x61/0x7e
+  spin_bug+0x9d/0xa3
+  do_raw_spin_lock+0x22/0x8e
+  _raw_spin_lock_irqsave+0x32/0x3a
+  queue_iova+0x77/0x145
+  intel_unmap+0x107/0x113
+  intel_unmap_page+0xe/0x10
+  usb_hcd_unmap_urb_setup_for_dma+0x53/0x9d
+  usb_hcd_unmap_urb_for_dma+0x17/0x100
+  unmap_urb_for_dma+0x22/0x24
+  __usb_hcd_giveback_urb+0x51/0xc3
+  usb_giveback_urb_bh+0x97/0xde
+  tasklet_action_common.isra.4+0x5f/0xa1
+  tasklet_action+0x2d/0x30
+  __do_softirq+0x138/0x2df
+  irq_exit+0x7d/0x8b
+  smp_apic_timer_interrupt+0x10f/0x151
+  apic_timer_interrupt+0xf/0x20
+  </IRQ>
+ RIP: 0010:_raw_spin_unlock_irqrestore+0x17/0x39
+
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org
+Cc: <stable@vger.kernel.org> # 4.14+
+Fixes: 13cf01744608 ("iommu/vt-d: Make use of iova deferred flushing")
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+ drivers/iommu/intel-iommu.c |  3 ++-
+ drivers/iommu/iova.c        | 18 ++++++++++++++----
+ include/linux/iova.h        |  6 ++++++
+ 3 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index ac4172c02244..6d1510284d21 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3564,7 +3564,8 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
+ 
+ 	freelist = domain_unmap(domain, start_pfn, last_pfn);
+ 
+-	if (intel_iommu_strict || (pdev && pdev->untrusted)) {
++	if (intel_iommu_strict || (pdev && pdev->untrusted) ||
++			!has_iova_flush_queue(&domain->iovad)) {
+ 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
+ 				      nrpages, !freelist, 0);
+ 		/* free iova */
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index d499b2621239..8413ae54904a 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -54,9 +54,14 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ }
+ EXPORT_SYMBOL_GPL(init_iova_domain);
+ 
++bool has_iova_flush_queue(struct iova_domain *iovad)
++{
++	return !!iovad->fq;
++}
++
+ static void free_iova_flush_queue(struct iova_domain *iovad)
+ {
+-	if (!iovad->fq)
++	if (!has_iova_flush_queue(iovad))
+ 		return;
+ 
+ 	if (timer_pending(&iovad->fq_timer))
+@@ -74,13 +79,14 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
+ int init_iova_flush_queue(struct iova_domain *iovad,
+ 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
+ {
++	struct iova_fq __percpu *queue;
+ 	int cpu;
+ 
+ 	atomic64_set(&iovad->fq_flush_start_cnt,  0);
+ 	atomic64_set(&iovad->fq_flush_finish_cnt, 0);
+ 
+-	iovad->fq = alloc_percpu(struct iova_fq);
+-	if (!iovad->fq)
++	queue = alloc_percpu(struct iova_fq);
++	if (!queue)
+ 		return -ENOMEM;
+ 
+ 	iovad->flush_cb   = flush_cb;
+@@ -89,13 +95,17 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ 	for_each_possible_cpu(cpu) {
+ 		struct iova_fq *fq;
+ 
+-		fq = per_cpu_ptr(iovad->fq, cpu);
++		fq = per_cpu_ptr(queue, cpu);
+ 		fq->head = 0;
+ 		fq->tail = 0;
+ 
+ 		spin_lock_init(&fq->lock);
+ 	}
+ 
++	smp_wmb();
++
++	iovad->fq = queue;
++
+ 	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
+ 	atomic_set(&iovad->fq_timer_on, 0);
+ 
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 781b96ac706f..cd0f1de901a8 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -155,6 +155,7 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+ void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
+ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	unsigned long start_pfn);
++bool has_iova_flush_queue(struct iova_domain *iovad);
+ int init_iova_flush_queue(struct iova_domain *iovad,
+ 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
+ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+@@ -235,6 +236,11 @@ static inline void init_iova_domain(struct iova_domain *iovad,
+ {
+ }
+ 
++bool has_iova_flush_queue(struct iova_domain *iovad)
++{
++	return false;
++}
++
+ static inline int init_iova_flush_queue(struct iova_domain *iovad,
+ 					iova_flush_cb flush_cb,
+ 					iova_entry_dtor entry_dtor)
+-- 
+2.22.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
