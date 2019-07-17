@@ -7,53 +7,54 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DF0C76192
-	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 06:26:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC92C76192
+	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 06:26:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BD7F2173E
-	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 06:26:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 44C3D2173E
+	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 06:26:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="H+rObaLk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BD7F2173E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bBnd0AdO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44C3D2173E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B67FBC37;
-	Wed, 17 Jul 2019 06:26:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E07A6C3E;
+	Wed, 17 Jul 2019 06:26:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9CBDAC03
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A4173C3E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Jul 2019 06:26:22 +0000 (UTC)
+	Wed, 17 Jul 2019 06:26:25 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 57C6312E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3501112E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Jul 2019 06:26:22 +0000 (UTC)
+	Wed, 17 Jul 2019 06:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=V10uEz0zWFZ63sIz9VJWmuEfwUxz9f6GOpX0SGJmq3k=;
-	b=H+rObaLkaOf7mg1iUpKwHTvO5y
-	8nUdnb5L2v6HXJNISb2ZuVZhIsuCG4IgOd9NRP1Eyo1A/taHfQcABuxLHjdap9bWXyijCKGOi8Uoq
-	MRRCdIWZ22tyFC5InEjdPx6+8QZ9pqylyjb092b3C5nYFMvY4GoT9cvnmjThEmHH2jiAUbkJR8iwr
-	4bKT8+yD1Pu+3I+JBqM50wbepIodG5xVIXg1DFAO/7Gi5qu5Uo4OcgXTKPjnqUOlmOdyPd8kpkX1D
-	+sA1BUMdOuMEslmpK+diC57qfUhjgNNKSbNPxc0PLK4TAXnGuL8u/QvhE0hvTSnbWW2cUOF/df7ZV
-	7TcDX+ow==;
+	bh=OLwTCcLK9RCDLApQkrPt1aEZJtEp881EMTzP2xH5Nhs=;
+	b=bBnd0AdOa9hsjs95DLZBAj9wOu
+	71SngVQOvq1F+jY06WmWvge52T04SRT5Th26KVoNHdiBc0susGmKQZReAbCj8/9X3cVg/4WZ84kR2
+	NmMVO8GukhfU7LlPZKWeyTh30O8Pr//KBdWHKuaGrVUOQGvGYIevCAbDkx85VrQZiVJ6SDc9pVMpw
+	oPCq5ICplg/V35SDoQhpUribj7InOPzVApExlLAIL8D4O3iEdCFsRhB6mgo2shJO7pN/+Gd+ie0su
+	1oL4/pa/hcD9CRAW6GeVKpJR2f0mGPj8zMYhSgl6j0TspJw0MuL+poTX8xJLFcBI0ncvF/cWApd27
+	kIpw7SKA==;
 Received: from [213.208.157.38] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hndOP-0003ma-Pe; Wed, 17 Jul 2019 06:26:22 +0000
+	id 1hndOS-0003n0-Eu; Wed, 17 Jul 2019 06:26:24 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 1/2] dma-mapping: add a dma_addressing_limited helper
-Date: Wed, 17 Jul 2019 08:26:14 +0200
-Message-Id: <20190717062615.10569-2-hch@lst.de>
+Subject: [PATCH 2/2] dma-direct: only limit the mapping size if swiotlb could
+	be used
+Date: Wed, 17 Jul 2019 08:26:15 +0200
+Message-Id: <20190717062615.10569-3-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190717062615.10569-1-hch@lst.de>
 References: <20190717062615.10569-1-hch@lst.de>
@@ -79,39 +80,37 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This helper returns if the device has issues addressing all present
-memory in the system.
+Don't just check for a swiotlb buffer, but also if buffering might
+be required for this particular device.
 
+Fixes: 133d624b1cee ("dma: Introduce dma_max_mapping_size()")
+Reported-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Tested-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
 ---
- include/linux/dma-mapping.h | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ kernel/dma/direct.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 8d13e28a8e07..e11b115dd0e4 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -679,6 +679,20 @@ static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
- 	return dma_set_mask_and_coherent(dev, mask);
- }
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index d7cec866d16b..e269b6f9b444 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -399,11 +399,9 @@ int dma_direct_supported(struct device *dev, u64 mask)
  
-+/**
-+ * dma_addressing_limited - return if the device is addressing limited
-+ * @dev:	device to check
-+ *
-+ * Return %true if the devices DMA mask is too small to address all memory in
-+ * the system, else %false.  Lack of addressing bits is the prime reason for
-+ * bounce buffering, but might not be the only one.
-+ */
-+static inline bool dma_addressing_limited(struct device *dev)
-+{
-+	return min_not_zero(*dev->dma_mask, dev->bus_dma_mask) <
-+		dma_get_required_mask(dev);
-+}
-+
- #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		const struct iommu_ops *iommu, bool coherent);
+ size_t dma_direct_max_mapping_size(struct device *dev)
+ {
+-	size_t size = SIZE_MAX;
+-
+ 	/* If SWIOTLB is active, use its maximum mapping size */
+-	if (is_swiotlb_active())
+-		size = swiotlb_max_mapping_size(dev);
+-
+-	return size;
++	if (is_swiotlb_active() &&
++	    (dma_addressing_limited(dev) || swiotlb_force == SWIOTLB_FORCE))
++		return swiotlb_max_mapping_size(dev);
++	return SIZE_MAX;
+ }
 -- 
 2.20.1
 
