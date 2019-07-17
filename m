@@ -2,54 +2,63 @@ Return-Path: <SRS0=5D8q=VO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50616C76188
-	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 03:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 072C1C76186
+	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 06:26:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 220B5206C2
-	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 03:38:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 220B5206C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=charter.net
+	by mail.kernel.org (Postfix) with ESMTPS id BE1102173E
+	for <iommu@archiver.kernel.org>; Wed, 17 Jul 2019 06:26:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="lrTdWqvX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE1102173E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DDBF9D90;
-	Wed, 17 Jul 2019 03:38:45 +0000 (UTC)
-Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
-	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9DFE4D8E
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8C27BB79;
+	Wed, 17 Jul 2019 06:26:21 +0000 (UTC)
+Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
+	[172.17.192.35])
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 98F63AE0
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Jul 2019 02:50:43 +0000 (UTC)
-X-Greylist: delayed 00:07:08 by SQLgrey-1.7.6
-Received: from impout006.msg.chrl.nc.charter.net
-	(impout006aa.msg.chrl.nc.charter.net [47.43.20.30])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTPS id D7E811DE21
+	Wed, 17 Jul 2019 06:26:19 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 54FD412E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 17 Jul 2019 02:50:42 +0000 (UTC)
-Received: from [10.10.100.101] ([24.236.195.206]) by cmsmtp with ESMTPA
-	id nZunhiEFjjcvSnZunhcKhc; Wed, 17 Jul 2019 02:43:33 +0000
-Authentication-Results: charter.net; none
-X-Authority-Analysis: v=2.3 cv=XPWEtjpE c=1 sm=1 tr=0
-	a=mQKZifbrf9Y32dM5lNTaRA==:117 a=mQKZifbrf9Y32dM5lNTaRA==:17
-	a=IkcTkHD0fZMA:10 a=3fyaaF4VAAAA:8 a=1asNQ19BmXUiVwYOiVQA:9
-	a=QEXdDO2ut3YA:10 a=jOuFdahVONy5WApiBME_:22
-From: Al Farleigh <AWFour@charter.net>
-Subject: x86-64 kernel dma issue; bisected
+	Wed, 17 Jul 2019 06:26:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=K7H/a4NErovUxRGU06/uLQsjkN/DLzAnnlN1h9ancXw=;
+	b=lrTdWqvXNyoOtCzQpqjDXorzc
+	SQhUNNHtbufMJYXk+tysnO6m3RMQbWASa8Tfa8j5YzLW5Ik+zuJJh4fkVrRl8LwcAbKapgowl1ak6
+	z8CkMZJvg2aiDWlazThgXQ++CGLAaJal0tZiN64mj989OyIOXfIdnBKJIGFZZ7r9dixa0ICXLplLf
+	N07/nfb+MB7wXbOh/Prhf3nDyQkPe5dJfBK90Qaoqx9mBIItlqLJ6Ixfle9H06iyuB8s4I/E1Po40
+	hg1Rg2Ov/SgUNqOupzzgirMwputAO7Wbt+XIQExfidBQ3yuZ6179O3h5euvzLJHfNvxk2fl8d9L4z
+	QF/pUXKxw==;
+Received: from [213.208.157.38] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hndOL-0003lg-Tn; Wed, 17 Jul 2019 06:26:18 +0000
+From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Message-ID: <c04211d3-5e4a-daa2-4410-88c8c84e5735@charter.net>
-Date: Tue, 16 Jul 2019 22:43:33 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+Subject: fix nvme performance regression due to dma_max_mapping_size()
+Date: Wed, 17 Jul 2019 08:26:13 +0200
+Message-Id: <20190717062615.10569-1-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Language: en-US
-X-CMAE-Envelope: MS4wfMh6iKVEv/zl2+2U2TpbcxaKskDd+WsNMjlKkvFmoobEKqiUbvfUJ8f7RUofTkKln5AZClbkzrNpWR30UKUzHZVc/fr+Bl1ZtuyWFAon+vMEMXkzYrRM
-	FFdYPby/eiUt6x2YfxnSnzdocCOyWYtFBS+7iMYf2ug3vIdiECeT4Y+8i91tR6zb2bwQBNz2gxjBfQ==
-X-Mailman-Approved-At: Wed, 17 Jul 2019 03:38:44 +0000
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,57 +71,16 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-re: the dma-direct code commit below
+Hi all,
 
-I have bisected the kernel to isolate a PCI board problem on my AMD 
-x86-64 ASROCK system. The board worked at (Fedora kernel) 4.18.16 but 
-stopped when moving to (Fedora kernel) 5.0. I then used 
-(git/torvalds/linux) 4.20-rc4 or so to locate the fault via bisect.
-
-I now have two kernels, good/bad, that straddle the commit.
-
-I was asked to try v5.2 just in case it was fixed; I compiled it and the 
-fault appears to still be present.
-
-Simply, mpeg video does not stream from board; no errors, but no video.
-
-My work is documented at
-https://bugs.kde.org/show_bug.cgi?id=408004
-
-including dmesgs, lspcis, and (second) git bisect log.
-
-Could I please ask if and where I should submit a bug? and am willing to 
-assist if I can.
-
-Thank You!
-
-
------
-
-commit 55897af63091ebc2c3f239c6a6666f748113ac50
-Author: Christoph Hellwig <hch@lst.de>
-Date:   Mon Dec 3 11:43:54 2018 +0100
-
-     dma-direct: merge swiotlb_dma_ops into the dma_direct code
-
-     While the dma-direct code is (relatively) clean and simple we
-     actually have to use the swiotlb ops for the mapping on many
-     architectures due to devices with addressing limits.  Instead
-     of keeping two implementations around this commit allows the
-     dma-direct implementation to call the swiotlb bounce buffering
-     functions and thus share the guts of the mapping implementation.
-     This also simplified the dma-mapping setup on a few architectures
-     where we don't have to differenciate which implementation to use.
-
-
-
-
-
+the new dma_max_mapping_size function is a little to eager to limit
+the I/O size if the swiotlb buffer is present, but the device is
+not addressing limited.  Fix this by adding an additional check.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
