@@ -2,60 +2,103 @@ Return-Path: <SRS0=oZX7=VP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384AFC76186
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0123BC76192
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:29:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 178662173E
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:12:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 178662173E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id D14FD2085A
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:29:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D14FD2085A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C85E213C7;
-	Thu, 18 Jul 2019 03:12:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9845913F2;
+	Thu, 18 Jul 2019 03:29:32 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1583313C6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7074013EE
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 03:12:31 +0000 (UTC)
+	Thu, 18 Jul 2019 03:29:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0F407886
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 775B625A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 03:12:28 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
-	[10.5.11.11])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id F3FBF33025F;
-	Thu, 18 Jul 2019 03:12:27 +0000 (UTC)
-Received: from x1.home (ovpn-116-35.phx2.redhat.com [10.3.116.35])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id E9655600D1;
-	Thu, 18 Jul 2019 03:12:26 +0000 (UTC)
-Date: Wed, 17 Jul 2019 21:12:26 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 12/15] iommu/vt-d: Cleanup get_valid_domain_for_dev()
-Message-ID: <20190717211226.5ffbf524@x1.home>
-In-Reply-To: <20190525054136.27810-13-baolu.lu@linux.intel.com>
-References: <20190525054136.27810-1-baolu.lu@linux.intel.com>
-	<20190525054136.27810-13-baolu.lu@linux.intel.com>
-Organization: Red Hat
+	Thu, 18 Jul 2019 03:29:30 +0000 (UTC)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6I3S641060077
+	for <iommu@lists.linux-foundation.org>; Wed, 17 Jul 2019 23:29:28 -0400
+Received: from e14.ny.us.ibm.com (e14.ny.us.ibm.com [129.33.205.204])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2ttcmeys65-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Wed, 17 Jul 2019 23:29:28 -0400
+Received: from localhost
+	by e14.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+	Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
+	Thu, 18 Jul 2019 04:29:27 +0100
+Received: from b01cxnp22034.gho.pok.ibm.com (9.57.198.24)
+	by e14.ny.us.ibm.com (146.89.104.201) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Thu, 18 Jul 2019 04:29:21 +0100
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com
+	[9.57.199.110])
+	by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+	x6I3TKoU49152394
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Thu, 18 Jul 2019 03:29:20 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0F321AE05C;
+	Thu, 18 Jul 2019 03:29:20 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D236EAE062;
+	Thu, 18 Jul 2019 03:29:15 +0000 (GMT)
+Received: from morokweng.localdomain.com (unknown [9.85.129.123])
+	by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+	Thu, 18 Jul 2019 03:29:15 +0000 (GMT)
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: x86@kernel.org
+Subject: [PATCH v3 1/6] x86,
+	s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig
+Date: Thu, 18 Jul 2019 00:28:53 -0300
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190718032858.28744-1-bauerman@linux.ibm.com>
+References: <20190718032858.28744-1-bauerman@linux.ibm.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.29]);
-	Thu, 18 Jul 2019 03:12:28 +0000 (UTC)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, dima@arista.com,
-	tmurphy@arista.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	David Woodhouse <dwmw2@infradead.org>
+X-TM-AS-GCONF: 00
+x-cbid: 19071803-0052-0000-0000-000003E297FE
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011449; HX=3.00000242; KW=3.00000007;
+	PH=3.00000004; SC=3.00000286; SDB=6.01233737; UDB=6.00650106;
+	IPR=6.01015065; 
+	MB=3.00027771; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-18 03:29:25
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19071803-0053-0000-0000-000061BE0F36
+Message-Id: <20190718032858.28744-2-bauerman@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-07-18_01:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1907180037
+Cc: linux-s390@vger.kernel.org, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Robin Murphy <robin.murphy@arm.com>, Mike Anderson <andmike@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	Alexey Dobriyan <adobriyan@gmail.com>, Halil Pasic <pasic@linux.ibm.com>,
+	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, Thomas Lendacky <Thomas.Lendacky@amd.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,159 +116,74 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sat, 25 May 2019 13:41:33 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+powerpc is also going to use this feature, so put it in a generic location.
 
-> Previously, get_valid_domain_for_dev() is used to retrieve the
-> DMA domain which has been attached to the device or allocate one
-> if no domain has been attached yet. As we have delegated the DMA
-> domain management to upper layer, this function is used purely to
-> allocate a private DMA domain if the default domain doesn't work
-> for ths device. Cleanup the code for readability.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel-iommu.c | 18 ++++++++----------
->  include/linux/intel-iommu.h |  1 -
->  2 files changed, 8 insertions(+), 11 deletions(-)
+Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/Kconfig      | 3 +++
+ arch/s390/Kconfig | 4 +---
+ arch/x86/Kconfig  | 4 +---
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
-System fails to boot bisected to this commit:
+diff --git a/arch/Kconfig b/arch/Kconfig
+index e8d19c3cb91f..8fc285180848 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -935,6 +935,9 @@ config LOCK_EVENT_COUNTS
+ 	  the chance of application behavior change because of timing
+ 	  differences. The counts are reported via debugfs.
+ 
++config ARCH_HAS_MEM_ENCRYPT
++	bool
++
+ source "kernel/gcov/Kconfig"
+ 
+ source "scripts/gcc-plugins/Kconfig"
+diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+index a4ad2733eedf..f43319c44454 100644
+--- a/arch/s390/Kconfig
++++ b/arch/s390/Kconfig
+@@ -1,7 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+-config ARCH_HAS_MEM_ENCRYPT
+-        def_bool y
+-
+ config MMU
+ 	def_bool y
+ 
+@@ -68,6 +65,7 @@ config S390
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_GIGANTIC_PAGE
+ 	select ARCH_HAS_KCOV
++	select ARCH_HAS_MEM_ENCRYPT
+ 	select ARCH_HAS_PTE_SPECIAL
+ 	select ARCH_HAS_SET_MEMORY
+ 	select ARCH_HAS_STRICT_KERNEL_RWX
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index c9f331bb538b..5d3295f2df94 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -68,6 +68,7 @@ config X86
+ 	select ARCH_HAS_FORTIFY_SOURCE
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_KCOV			if X86_64
++	select ARCH_HAS_MEM_ENCRYPT
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
+ 	select ARCH_HAS_PMEM_API		if X86_64
+ 	select ARCH_HAS_PTE_SPECIAL
+@@ -1520,9 +1521,6 @@ config X86_CPA_STATISTICS
+ 	  helps to determine the effectiveness of preserving large and huge
+ 	  page mappings when mapping protections are changed.
+ 
+-config ARCH_HAS_MEM_ENCRYPT
+-	def_bool y
+-
+ config AMD_MEM_ENCRYPT
+ 	bool "AMD Secure Memory Encryption (SME) support"
+ 	depends on X86_64 && CPU_SUP_AMD
 
-ommit 4ec066c7b1476e0ca66a7acdb575627a5d1a1ee6 (HEAD, refs/bisect/bad)
-Author: Lu Baolu <baolu.lu@linux.intel.com>
-Date:   Sat May 25 13:41:33 2019 +0800
-
-    iommu/vt-d: Cleanup get_valid_domain_for_dev()
-
-[    6.857697] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
-[    6.870723] ehci-pci: EHCI PCI platform driver
-[    6.879666] ehci-pci 0000:00:1a.0: EHCI Host Controller
-[    6.890122] ehci-pci 0000:00:1a.0: new USB bus registered, assigned bus number 1
-[    6.904893] ehci-pci 0000:00:1a.0: debug port 2
-[    6.913961] ehci-pci 0000:00:1a.0: DMAR: Setting identity map [0xbe8d1000 - 0xbe8dffff]
-[    6.929953] ehci-pci 0000:00:1a.0: DMAR: 32bit DMA uses non-identity mapping
-[    6.944033] WARNING: CPU: 0 PID: 1 at drivers/iommu/intel-iommu.c:600 domain_get_iommu+0x55/0x60
-[    6.945017] Modules linked in:
-[    6.945017] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc2+ #37
-[    6.945017] Hardware name: System manufacturer System Product Name/P8H67-M PRO, BIOS 3904 04/27/2013
-[    6.945017] RIP: 0010:domain_get_iommu+0x55/0x60
-[    6.945017] Code: c2 01 eb 0b 48 83 c0 01 8b 34 87 85 f6 75 0b 48 63 c8 48 39 c2 75 ed 31 c0 c3 48 c1 e1 03 48 8b 05 e0 f5 44 01 48 8b 04 08 c3 <0f> 0b 31 c0 c3 31 c9 eb eb 66 90 0f 1f 44 00 00 41 55 40 0f b6 f6
-[    6.945017] RSP: 0018:ffffbd02418bba98 EFLAGS: 00010293
-[    6.945017] RAX: ffffffffffffffff RBX: 0000000000000000 RCX: 0000000000000000
-[    6.945017] RDX: 0000000000001000 RSI: 00000000313ea000 RDI: ffff9ce9f3026e00
-[    6.945017] RBP: ffff9cea144f80b0 R08: 00000000ffffffff R09: ffff9ce9f13ea000
-[    6.945017] R10: 0000000000100000 R11: 0000000000000100 R12: 00000000313ea000
-[    6.945017] R13: ffff9ce9f3026e00 R14: 0000000000001000 R15: 00000000313ea000
-[    6.945017] FS:  0000000000000000(0000) GS:ffff9ceddf400000(0000) knlGS:0000000000000000
-[    6.945017] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    6.945017] CR2: 00007fa72ed421f8 CR3: 000000011b20a001 CR4: 00000000001606f0
-[    6.945017] Call Trace:
-[    6.945017]  __intel_map_single+0x4e/0x120
-[    6.945017]  intel_alloc_coherent+0xa7/0x110
-[    6.945017]  dma_pool_alloc+0xd9/0x1e0
-[    6.945017]  ehci_qh_alloc+0x55/0x130
-[    6.945017]  ehci_setup+0x284/0x7b0
-[    6.945017]  ehci_pci_setup+0x8b/0x41d
-[    6.945017]  usb_add_hcd.cold.40+0x1c5/0x7b7
-[    6.945017]  usb_hcd_pci_probe+0x2a4/0x420
-[    6.945017]  local_pci_probe+0x42/0x80
-[    6.945017]  pci_device_probe+0x115/0x190
-[    6.945017]  really_probe+0xef/0x390
-[    6.945017]  driver_probe_device+0xb4/0x100
-[    6.945017]  device_driver_attach+0x4f/0x60
-[    6.945017]  __driver_attach+0x86/0x140
-[    6.945017]  ? device_driver_attach+0x60/0x60
-[    6.945017]  bus_for_each_dev+0x77/0xc0
-[    6.945017]  ? klist_add_tail+0x3b/0x60
-[    6.945017]  bus_add_driver+0x14a/0x1e0
-[    6.945017]  ? ehci_hcd_init+0xaa/0xaa
-[    6.945017]  ? do_early_param+0x8e/0x8e
-[    6.945017]  driver_register+0x6b/0xb0
-[    6.945017]  ? ehci_hcd_init+0xaa/0xaa
-[    6.945017]  do_one_initcall+0x46/0x1f4
-[    6.945017]  ? do_early_param+0x8e/0x8e
-[    6.945017]  kernel_init_freeable+0x1ac/0x255
-[    6.945017]  ? rest_init+0x9f/0x9f
-[    6.945017]  kernel_init+0xa/0x101
-[    6.945017]  ret_from_fork+0x35/0x40
-[    6.945017] ---[ end trace 1aa3219cfb92242b ]---
-
-Kernel command line includes intel_iommu=on iommu=pt
-
-On the merge commit of Joerg's pull request for 5.3 (6b04014f3f15),
-including:
-
-commit c57b260a7d7d60dfbcf794dd9836c1d9fdbf5434
-Author: Lu Baolu <baolu.lu@linux.intel.com>
-Date:   Wed Jun 12 08:28:46 2019 +0800
-
-    iommu/vt-d: Set domain type for a private domain
-    
-    Otherwise, domain_get_iommu() will be broken.
-    
-    Fixes: 942067f1b6b97 ("iommu/vt-d: Identify default domains replaced with private")
-
-
-The fail to boot error shows as:
-
-[    7.042371] general protection fault: 0000 [#1] SMP PTI
-[    7.042968] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.2.0+ #39
-[    7.042968] Hardware name: System manufacturer System Product Name/P8H67-M PRO, BIOS 3904 04/27/2013
-[    7.042968] RIP: 0010:domain_context_mapping_one+0x212/0x4c0
-[    7.042968] Code: 39 c2 0f 8d fc 01 00 00 48 8b 15 49 4d b5 00 eb 0c 83 e8 01 41 39 c2 0f 84 ea 01 00 00 4d 8b 00 49 81 e0 00 f0 ff ff 49 01 d0 <41> f6 00 03 75 e1 b8 f4 ff ff ff e9 be fe ff ff 44 89 e1 45 89 e0
-[    7.042968] RSP: 0018:ffffb021818bb928 EFLAGS: 00010087
-[    7.042968] RAX: 0000000000000002 RBX: ffff9d665f057f00 RCX: 0000000000000001
-[    7.042968] RDX: ffff9d6240000000 RSI: 0000000000000030 RDI: ffff9d665f057f00
-[    7.042968] RBP: 0000000000000003 R08: f0008c563000e000 R09: ffff9d627155a000
-[    7.042968] R10: 0000000000000001 R11: 0000000000000804 R12: 0000000000000000
-[    7.042968] R13: 0000000000000002 R14: 0000000000000000 R15: ffff9d6285934200
-[    7.042968] FS:  0000000000000000(0000) GS:ffff9d665f400000(0000) knlGS:0000000000000000
-[    7.042968] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    7.042968] CR2: 00007f99e08a81f8 CR3: 000000040c20a001 CR4: 00000000001606f0
-[    7.042968] Call Trace:
-[    7.042968]  ? domain_context_mapping_one+0x4c0/0x4c0
-[    7.042968]  pci_for_each_dma_alias+0x30/0x140
-[    7.042968]  dmar_insert_one_dev_info+0x33f/0x4b0
-[    7.042968]  get_private_domain_for_dev.part.75+0x136/0x2f0
-[    7.042968]  ? __dmar_remove_one_dev_info+0x106/0x250
-[    7.042968]  iommu_need_mapping+0xac/0xc0
-[    7.042968]  intel_alloc_coherent+0x20/0x110
-[    7.042968]  xhci_mem_init+0x1ba/0xee1
-[    7.042968]  ? xhci_dbg_trace+0x6b/0xb0
-[    7.042968]  ? recalibrate_cpu_khz+0x10/0x10
-[    7.042968]  ? ktime_get+0x36/0xa0
-[    7.042968]  ? xhci_pci_suspend+0xd0/0xd0
-[    7.042968]  xhci_init+0x81/0x170
-[    7.042968]  xhci_gen_setup+0x1fe/0x360
-[    7.042968]  xhci_pci_setup+0x4d/0x120
-[    7.042968]  usb_add_hcd.cold.40+0x1c5/0x7b7
-[    7.042968]  usb_hcd_pci_probe+0x214/0x420
-[    7.042968]  xhci_pci_probe+0x29/0x1f0
-[    7.042968]  local_pci_probe+0x42/0x80
-[    7.042968]  pci_device_probe+0x115/0x190
-[    7.042968]  really_probe+0xef/0x390
-[    7.042968]  driver_probe_device+0xb4/0x100
-[    7.042968]  device_driver_attach+0x4f/0x60
-[    7.042968]  __driver_attach+0x86/0x140
-[    7.042968]  ? device_driver_attach+0x60/0x60
-[    7.042968]  bus_for_each_dev+0x77/0xc0
-[    7.042968]  ? klist_add_tail+0x3b/0x60
-[    7.042968]  bus_add_driver+0x14a/0x1e0
-[    7.042968]  ? xhci_debugfs_create_root+0x20/0x20
-[    7.042968]  ? do_early_param+0x8e/0x8e
-[    7.042968]  driver_register+0x6b/0xb0
-[    7.042968]  ? xhci_debugfs_create_root+0x20/0x20
-[    7.042968]  do_one_initcall+0x46/0x1f4
-[    7.042968]  ? do_early_param+0x8e/0x8e
-[    7.042968]  kernel_init_freeable+0x1ac/0x255
-[    7.042968]  ? rest_init+0x9f/0x9f
-[    7.042968]  kernel_init+0xa/0x101
-[    7.042968]  ret_from_fork+0x35/0x40
-[    7.042968] Modules linked in:
-[    7.042968] ---[ end trace 6d6cf443442a773d ]---
-
-Thanks,
-Alex
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
