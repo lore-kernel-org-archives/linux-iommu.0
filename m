@@ -2,84 +2,86 @@ Return-Path: <SRS0=oZX7=VP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F771C76186
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E094C76192
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:29:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6EB372085A
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:29:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EB372085A
+	by mail.kernel.org (Postfix) with ESMTPS id 4CA4C2085A
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:29:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CA4C2085A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D4ABA13F6;
-	Thu, 18 Jul 2019 03:29:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 21BC913F5;
+	Thu, 18 Jul 2019 03:29:42 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BD7EE13EE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A073A13F4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 03:29:32 +0000 (UTC)
+	Thu, 18 Jul 2019 03:29:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
 	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5845B25A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CAC2825A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 03:29:32 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	Thu, 18 Jul 2019 03:29:38 +0000 (UTC)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
 	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x6I3SrGW094990; Wed, 17 Jul 2019 23:29:18 -0400
+	x6I3S3Ba059956; Wed, 17 Jul 2019 23:29:27 -0400
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2ttf0tkdxc-1
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2ttcmeys60-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Wed, 17 Jul 2019 23:29:17 -0400
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6I3TH2G098803;
-	Wed, 17 Jul 2019 23:29:17 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com
-	[169.53.41.122])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2ttf0tkdwy-1
+	verify=NOT); Wed, 17 Jul 2019 23:29:27 -0400
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6I3S71a060109;
+	Wed, 17 Jul 2019 23:29:26 -0400
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com
+	[169.62.189.11])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2ttcmeys5m-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Wed, 17 Jul 2019 23:29:17 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-	by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
-	x6I3QDYF010971; Thu, 18 Jul 2019 03:29:16 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com
-	[9.57.198.26]) by ppma04dal.us.ibm.com with ESMTP id 2trtmrcufr-1
+	verify=NOT); Wed, 17 Jul 2019 23:29:26 -0400
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+	by ppma03dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6I3QAC1026052; Thu, 18 Jul 2019 03:29:25 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com
+	[9.57.198.28]) by ppma03dal.us.ibm.com with ESMTP id 2tq6x7mhxm-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Thu, 18 Jul 2019 03:29:16 +0000
+	verify=NOT); Thu, 18 Jul 2019 03:29:25 +0000
 Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com
 	[9.57.199.110])
-	by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
-	x6I3TFav8520532
+	by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+	x6I3TOnJ47972778
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Thu, 18 Jul 2019 03:29:15 GMT
+	verify=OK); Thu, 18 Jul 2019 03:29:25 GMT
 Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6E5F7AE05F;
-	Thu, 18 Jul 2019 03:29:15 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id D2FE9AE066;
+	Thu, 18 Jul 2019 03:29:24 +0000 (GMT)
 Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D2DC2AE05C;
-	Thu, 18 Jul 2019 03:29:10 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 743F3AE05C;
+	Thu, 18 Jul 2019 03:29:20 +0000 (GMT)
 Received: from morokweng.localdomain.com (unknown [9.85.129.123])
 	by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-	Thu, 18 Jul 2019 03:29:10 +0000 (GMT)
+	Thu, 18 Jul 2019 03:29:20 +0000 (GMT)
 From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 To: x86@kernel.org
-Subject: [PATCH v3 0/6] Remove x86-specific code from generic headers
-Date: Thu, 18 Jul 2019 00:28:52 -0300
-Message-Id: <20190718032858.28744-1-bauerman@linux.ibm.com>
+Subject: [PATCH v3 2/6] swiotlb: Remove call to sme_active()
+Date: Thu, 18 Jul 2019 00:28:54 -0300
+Message-Id: <20190718032858.28744-3-bauerman@linux.ibm.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190718032858.28744-1-bauerman@linux.ibm.com>
+References: <20190718032858.28744-1-bauerman@linux.ibm.com>
 MIME-Version: 1.0
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
 	definitions=2019-07-18_01:, , signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
 	priorityscore=1501
-	malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
+	malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
 	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
 	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
 	scancount=1 engine=8.0.1-1810050000 definitions=main-1907180037
@@ -109,79 +111,32 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hello,
+sme_active() is an x86-specific function so it's better not to call it from
+generic code.
 
-This version is mostly about splitting up patch 2/3 into three separate
-patches, as suggested by Christoph Hellwig. Two other changes are a fix in
-patch 1 which wasn't selecting ARCH_HAS_MEM_ENCRYPT for s390 spotted by
-Janani and removal of sme_active and sev_active symbol exports as suggested
-by Christoph Hellwig.
+There's no need to mention which memory encryption feature is active, so
+just use a more generic message. Besides, other architectures will have
+different names for similar technology.
 
-These patches are applied on top of today's dma-mapping/for-next.
+Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+---
+ kernel/dma/swiotlb.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I don't have a way to test SME, SEV, nor s390's PEF so the patches have only
-been build tested.
-
-Changelog
-
-Since v2:
-
-- Patch "x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig"
-  - Added "select ARCH_HAS_MEM_ENCRYPT" to config S390. Suggested by Janani.
-
-- Patch "DMA mapping: Move SME handling to x86-specific files"
-  - Split up into 3 new patches. Suggested by Christoph Hellwig.
-
-- Patch "swiotlb: Remove call to sme_active()"
-  - New patch.
-
-- Patch "dma-mapping: Remove dma_check_mask()"
-  - New patch.
-
-- Patch "x86,s390/mm: Move sme_active() and sme_me_mask to x86-specific header"
-  - New patch.
-  - Removed export of sme_active symbol. Suggested by Christoph Hellwig.
-
-- Patch "fs/core/vmcore: Move sev_active() reference to x86 arch code"
-  - Removed export of sev_active symbol. Suggested by Christoph Hellwig.
-
-- Patch "s390/mm: Remove sev_active() function"
-  - New patch.
-
-Since v1:
-
-- Patch "x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig"
-  - Remove definition of ARCH_HAS_MEM_ENCRYPT from s390/Kconfig as well.
-  - Reworded patch title and message a little bit.
-
-- Patch "DMA mapping: Move SME handling to x86-specific files"
-  - Adapt s390's <asm/mem_encrypt.h> as well.
-  - Remove dma_check_mask() from kernel/dma/mapping.c. Suggested by
-    Christoph Hellwig.
-
-Thiago Jung Bauermann (6):
-  x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig
-  swiotlb: Remove call to sme_active()
-  dma-mapping: Remove dma_check_mask()
-  x86,s390/mm: Move sme_active() and sme_me_mask to x86-specific header
-  fs/core/vmcore: Move sev_active() reference to x86 arch code
-  s390/mm: Remove sev_active() function
-
- arch/Kconfig                        |  3 +++
- arch/s390/Kconfig                   |  4 +---
- arch/s390/include/asm/mem_encrypt.h |  5 +----
- arch/s390/mm/init.c                 |  8 +-------
- arch/x86/Kconfig                    |  4 +---
- arch/x86/include/asm/mem_encrypt.h  | 10 ++++++++++
- arch/x86/kernel/crash_dump_64.c     |  5 +++++
- arch/x86/mm/mem_encrypt.c           |  2 --
- fs/proc/vmcore.c                    |  8 ++++----
- include/linux/crash_dump.h          | 14 ++++++++++++++
- include/linux/mem_encrypt.h         | 15 +--------------
- kernel/dma/mapping.c                |  8 --------
- kernel/dma/swiotlb.c                |  3 +--
- 13 files changed, 42 insertions(+), 47 deletions(-)
-
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 62fa5a82a065..e52401f94e91 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -459,8 +459,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+ 		panic("Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
+ 
+ 	if (mem_encrypt_active())
+-		pr_warn_once("%s is active and system is using DMA bounce buffers\n",
+-			     sme_active() ? "SME" : "SEV");
++		pr_warn_once("Memory encryption is active and system is using DMA bounce buffers\n");
+ 
+ 	mask = dma_get_seg_boundary(hwdev);
+ 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
