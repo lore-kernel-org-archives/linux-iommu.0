@@ -3,44 +3,45 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C30C76195
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 08:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF1DC76195
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 08:43:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17C88217F4
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 08:42:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17C88217F4
+	by mail.kernel.org (Postfix) with ESMTPS id 3E33F208C0
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 08:43:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E33F208C0
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D9EEE1061;
-	Thu, 18 Jul 2019 08:42:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 253431061;
+	Thu, 18 Jul 2019 08:43:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 81DD4105B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8A247105C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 08:42:32 +0000 (UTC)
+	Thu, 18 Jul 2019 08:43:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 198C125A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 27C6725A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 08:42:32 +0000 (UTC)
+	Thu, 18 Jul 2019 08:43:00 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 7AC8568B05; Thu, 18 Jul 2019 10:42:30 +0200 (CEST)
-Date: Thu, 18 Jul 2019 10:42:30 +0200
+	id 9FFC668B05; Thu, 18 Jul 2019 10:42:58 +0200 (CEST)
+Date: Thu, 18 Jul 2019 10:42:58 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: Re: [PATCH v3 3/6] dma-mapping: Remove dma_check_mask()
-Message-ID: <20190718084230.GB24562@lst.de>
+Subject: Re: [PATCH v3 4/6] x86,s390/mm: Move sme_active() and sme_me_mask
+	to x86-specific header
+Message-ID: <20190718084258.GC24562@lst.de>
 References: <20190718032858.28744-1-bauerman@linux.ibm.com>
-	<20190718032858.28744-4-bauerman@linux.ibm.com>
+	<20190718032858.28744-5-bauerman@linux.ibm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190718032858.28744-4-bauerman@linux.ibm.com>
+In-Reply-To: <20190718032858.28744-5-bauerman@linux.ibm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: linux-s390@vger.kernel.org, Mike Anderson <andmike@linux.ibm.com>,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
@@ -69,11 +70,14 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Jul 18, 2019 at 12:28:55AM -0300, Thiago Jung Bauermann wrote:
-> sme_active() is an x86-specific function so it's better not to call it from
-> generic code. Christoph Hellwig mentioned that "There is no reason why we
-> should have a special debug printk just for one specific reason why there
-> is a requirement for a large DMA mask.", so just remove dma_check_mask().
+On Thu, Jul 18, 2019 at 12:28:56AM -0300, Thiago Jung Bauermann wrote:
+> Now that generic code doesn't reference them, move sme_active() and
+> sme_me_mask to x86's <asm/mem_encrypt.h>.
+> 
+> Also remove the export for sme_active() since it's only used in files that
+> won't be built as modules. sme_me_mask on the other hand is used in
+> arch/x86/kvm/svm.c (via __sme_set() and __psp_pa()) which can be built as a
+> module so its export needs to stay.
 > 
 > Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 
