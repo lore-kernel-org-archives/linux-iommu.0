@@ -2,111 +2,76 @@ Return-Path: <SRS0=oZX7=VP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B426CC76192
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 820E0C76191
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 05:37:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 92AA42077C
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 03:39:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92AA42077C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5E3592173B
+	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 05:37:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E3592173B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3276D145E;
-	Thu, 18 Jul 2019 03:39:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1C2D914E5;
+	Thu, 18 Jul 2019 05:37:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 20BA31453
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7963D14E4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 03:39:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 270528BF
+	Thu, 18 Jul 2019 05:37:35 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6AADF8A6
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 03:39:31 +0000 (UTC)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x6I3cMUo139605
-	for <iommu@lists.linux-foundation.org>; Wed, 17 Jul 2019 23:39:30 -0400
-Received: from e13.ny.us.ibm.com (e13.ny.us.ibm.com [129.33.205.203])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2ttd9aet53-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Wed, 17 Jul 2019 23:39:30 -0400
-Received: from localhost
-	by e13.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
-	Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
-	Thu, 18 Jul 2019 04:39:29 +0100
-Received: from b01cxnp23032.gho.pok.ibm.com (9.57.198.27)
-	by e13.ny.us.ibm.com (146.89.104.200) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Thu, 18 Jul 2019 04:39:26 +0100
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com
-	[9.57.199.110])
-	by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
-	x6I3dPPR39518630
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Thu, 18 Jul 2019 03:39:25 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 85D56AE063;
-	Thu, 18 Jul 2019 03:39:25 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DC3DDAE062;
-	Thu, 18 Jul 2019 03:39:22 +0000 (GMT)
-Received: from morokweng.localdomain (unknown [9.85.129.123])
-	by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
-	Thu, 18 Jul 2019 03:39:22 +0000 (GMT)
-References: <20190204144048-mutt-send-email-mst@kernel.org>
-	<87ef71seve.fsf@morokweng.localdomain>
-	<20190320171027-mutt-send-email-mst@kernel.org>
-	<87tvfvbwpb.fsf@morokweng.localdomain>
-	<20190323165456-mutt-send-email-mst@kernel.org>
-	<87a7go71hz.fsf@morokweng.localdomain>
-	<20190520090939-mutt-send-email-mst@kernel.org>
-	<877ea26tk8.fsf@morokweng.localdomain>
-	<20190603211528-mutt-send-email-mst@kernel.org>
-	<877e96qxm7.fsf@morokweng.localdomain>
-	<20190701092212-mutt-send-email-mst@kernel.org>
-	<87d0id9nah.fsf@morokweng.localdomain>
-User-agent: mu4e 1.2.0; emacs 26.2
-From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-In-reply-to: <87d0id9nah.fsf@morokweng.localdomain>
-Date: Thu, 18 Jul 2019 00:39:18 -0300
+	Thu, 18 Jul 2019 05:37:34 +0000 (UTC)
+X-UUID: 56b8101c485841a88775199fbb1b285b-20190718
+X-UUID: 56b8101c485841a88775199fbb1b285b-20190718
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 208262468; Thu, 18 Jul 2019 13:37:29 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS32DR.mediatek.inc
+	(172.27.6.104) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Thu, 18 Jul 2019 13:37:24 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Thu, 18 Jul 2019 13:37:23 +0800
+Message-ID: <1563428243.31342.39.camel@mhfsdcap03>
+Subject: Re: [PATCH v8 07/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
+	Mode
+From: Yong Wu <yong.wu@mediatek.com>
+To: Will Deacon <will@kernel.org>
+Date: Thu, 18 Jul 2019 13:37:23 +0800
+In-Reply-To: <20190717142339.wltamw6wktwixqqn@willie-the-truck>
+References: <1561774167-24141-1-git-send-email-yong.wu@mediatek.com>
+	<1561774167-24141-8-git-send-email-yong.wu@mediatek.com>
+	<20190710143649.w5dplhzdpi3bxp7e@willie-the-truck>
+	<1562846036.31342.10.camel@mhfsdcap03>
+	<20190711123129.da4rg35b54u4svfw@willie-the-truck>
+	<1563079280.31342.22.camel@mhfsdcap03>
+	<20190715095156.xczfkbm6zpjueq32@willie-the-truck>
+	<1563367459.31342.34.camel@mhfsdcap03>
+	<20190717142339.wltamw6wktwixqqn@willie-the-truck>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-x-cbid: 19071803-0064-0000-0000-000004009593
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011449; HX=3.00000242; KW=3.00000007;
-	PH=3.00000004; SC=3.00000286; SDB=6.01233740; UDB=6.00650108;
-	IPR=6.01015068; 
-	MB=3.00027771; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-18 03:39:29
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071803-0065-0000-0000-00003E521224
-Message-Id: <87y30wj9jt.fsf@morokweng.localdomain>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-07-18_01:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=939 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1907180039
-Cc: Alexey Kardashevskiy <aik@linux.ibm.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Jason Wang <jasowang@redhat.com>, Mike Anderson <andmike@linux.ibm.com>,
-	Ram Pai <linuxram@us.ibm.com>, Michael Roth <mdroth@linux.vnet.ibm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	virtualization@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
-	David Gibson <david@gibson.dropbear.id.au>
+X-TM-SNTS-SMTP: FCC812B93959C45D6AFBE2DE9BA4C64EE9C5BF014909D9D18086284D23A8FC762000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, Tomasz
+	Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	yingjoe.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias
+	Kaehlcke <mka@chromium.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -124,30 +89,98 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+On Wed, 2019-07-17 at 15:23 +0100, Will Deacon wrote:
+> On Wed, Jul 17, 2019 at 08:44:19PM +0800, Yong Wu wrote:
+> > On Mon, 2019-07-15 at 10:51 +0100, Will Deacon wrote:
+> > > On Sun, Jul 14, 2019 at 12:41:20PM +0800, Yong Wu wrote:
+> > > > @@ -742,7 +763,9 @@ static struct io_pgtable
+> > > > *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+> > > >  {
+> > > >  	struct arm_v7s_io_pgtable *data;
+> > > >  
+> > > > -	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
+> > > > +	if (cfg->ias > ARM_V7S_ADDR_BITS ||
+> > > > +	    (cfg->oas > ARM_V7S_ADDR_BITS &&
+> > > > +	     !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT)))
+> > > >  		return NULL;
+> > > 
+> > > I think you can rework this to do something like:
+> > > 
+> > > 	if (cfg->ias > ARM_V7S_ADDR_BITS)
+> > > 		return NULL;
+> > > 
+> > > 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT) {
+> > > 		if (!IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT))
+> > > 			cfg->oas = min(cfg->oas, ARM_V7S_ADDR_BITS);
+> > > 		else if (cfg->oas > 34)
+> > > 			return NULL;
+> > > 	} else if (cfg->oas > ARM_V7S_ADDR_BITS) {
+> > > 		return NULL;
+> > > 	}
+> > > 
+> > > so that we clamp the oas when phys_addr_t is 32-bit for you. That should
+> > > allow you to remove lots of the checking from iopte_to_paddr() too if you
+> > > check against oas in the map() function.
+> > > 
+> > > Does that make sense?
+> > 
+> > Of course I'm ok for this. I'm only afraid that this function has
+> > already 3 checking "if (x) return NULL", Here we add a new one and so
+> > many lines... Maybe the user should guarantee the right value of oas.
+> > How about move it into mtk_iommu.c?
+> > 
+> > About the checking of iopte_to_paddr, I can not remove them. I know it
+> > may be a bit special and not readable. Hmm, I guess I should use a MACRO
+> > instead of the hard code 33 for the special 4GB mode case.
+> 
+> Why can't you just do something like:
+> 
+> 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT))
+> 		return paddr;
+> 
+> 	if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
+> 		paddr |= BIT_ULL(33);
 
-Hello,
+OK here.
 
-Just going back to this question which I wasn't able to answer.
+> 
+> 	if (pte & ARM_V&S_ATTR_MTK_PA_BIT32)
+> 		paddr |= BIT_ULL(32);
 
-Thiago Jung Bauermann <bauerman@linux.ibm.com> writes:
+No here, The flow is a bit special for 4GB mode here.
 
-> Michael S. Tsirkin <mst@redhat.com> writes:
->
->> So far so good, but now a question:
->>
->> how are we handling guest address width limitations?
->> Is VIRTIO_F_ACCESS_PLATFORM_IDENTITY_ADDRESS subject to
->> guest address width limitations?
->> I am guessing we can make them so ...
->> This needs to be documented.
->
-> I'm not sure. I will get back to you on this.
+This is the detailed remap relationship for our 4GB mode.
+           CPU PA               ->    HW PA
+register: 0x0 ~ 0x3fff_ffff
+dram 1G:0x4000_0000~0x7fff_ffff ->0x1_4000_0000~0x1_7fff_ffff(Add bit32)
+dram 2G:0x8000_0000~0xbfff_ffff ->0x1_8000_0000~0x1_bfff_ffff(Add bit32)
+dram 3G:0xc000_0000~0xffff_ffff ->0x1_c000_0000~0x1_ffff_ffff(Add bit32)
+dram 4G:0x1_0000_0000~0x1_3fff_ffff->0x1_0000_0000~0x1_3fff_ffff
 
-We don't have address width limitations between host and guest.
+Thus, in the 4GB mode, we should add always add bit9 in pte(for bit32
+PA). But we can not always add bit32 in the iova_to_phys. The valid PA
+range should be 0x4000_0000 - 0x1_3fff_ffff. Thus, we can only add bit32
+when the PA in pte < 0x4000_0000, keep it as-is if the PA in pte located
+from 0x4000_0000 to 0xffff_ffff.
 
---
-Thiago Jung Bauermann
-IBM Linux Technology Center
+This issue exist all the time after we added 4GB mode for mt8173.
+
+Thus, I have to add a special flow for 4gb mode here:
+
+	/* Workaround for MTK 4GB Mode: Add BIT32 only when PA < 0x4000_0000.*/
+	if (cfg->oas == ARM_V7S_MTK_4GB_OAS && paddr < 0x40000000UL)
+		paddr |= BIT_ULL(32);
+	else if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
+		paddr |= BIT_ULL(32);
+
+> 
+> 	return paddr;
+> 
+> The diff I sent previously sanitises the oas at init time, and then you
+> can just enforce it in map().
+> 
+> Will
+
 
 _______________________________________________
 iommu mailing list
