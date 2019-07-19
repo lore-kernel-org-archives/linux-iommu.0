@@ -2,67 +2,61 @@ Return-Path: <SRS0=Jh8h=VQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F87C76195
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 07:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DB2C76195
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 08:27:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CEDF20693
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 07:37:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=anastas.io header.i=@anastas.io header.b="SEbNU/1/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CEDF20693
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 5756F21849
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 08:27:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5756F21849
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 599E6226E;
-	Fri, 19 Jul 2019 07:37:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 50673235A;
+	Fri, 19 Jul 2019 08:27:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 701832205
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D113F2225
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 07:36:45 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from alpha.anastas.io (alpha.anastas.io [104.248.188.109])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 17636892
+	Fri, 19 Jul 2019 08:27:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1BFE0FE
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 07:36:44 +0000 (UTC)
-Received: from authenticated-user (alpha.anastas.io [104.248.188.109])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by alpha.anastas.io (Postfix) with ESMTPSA id 02BC77F92F;
-	Fri, 19 Jul 2019 02:36:43 -0500 (CDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=anastas.io; s=mail;
-	t=1563521804; bh=DOeY01lxwZti9woJpEBA+lAJ08+UzoDDuA49gXiGLkc=;
-	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-	b=SEbNU/1/gVAOEAoqOo2wZdU0O7c1WarNt7PQrJo9lyC8bPBP/YEB05TZhkfG9Eg9l
-	qg1+1iScjT01Bu0kTYRfe8EwSUqsBh0kacfyB/8bUvIfbWD+UQVF5YwAmQOIGc7oI7
-	oKDCJkKBELCl38is+tIVTX6QoyFIYUZNhr0PopyyzBYD+Y2LKGuJ39sSCpTJbAUYs4
-	T+JBc9Nzw1YrhrvW+WcrJh7HtUoR+tcPhqTjMvYSfHtcm2+PSPk/0KGOVaK4Gsq39v
-	ZVtKc2c5hwfIidblCCzMxjpxrLRViP5/AJfWVEWWw2XyvuT8g0a7LOSDcWZZgueoiN
-	D7LZXmqSPUWYQ==
-Subject: Re: [PATCH] powerpc/dma: Fix invalid DMA mmap behavior
-To: Christoph Hellwig <hch@lst.de>
-References: <20190717235437.12908-1-shawn@anastas.io>
-	<8b6963ac-521a-5752-2cfb-bcd87cad9dc4@ozlabs.ru>
-	<f9753335-b62c-67b4-84d7-7b67fe1b64ca@anastas.io>
-	<CAOSf1CGA_fDH7aAqRkc4maJUByaX7adGcjyt3cj4KFsMJNnocA@mail.gmail.com>
-	<20190718084934.GF24562@lst.de> <20190718095200.GA25744@lst.de>
-	<2da4fafe-93f2-4bf1-62e1-180a3ac800fa@anastas.io>
-	<20190719070659.GA19555@lst.de>
-Message-ID: <3dd3bf62-3881-51f1-bbb0-e8ee515bb3d8@anastas.io>
-Date: Fri, 19 Jul 2019 02:36:42 -0500
+	Fri, 19 Jul 2019 08:27:33 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	19 Jul 2019 01:27:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,281,1559545200"; d="scan'208";a="179562077"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 19 Jul 2019 01:27:30 -0700
+Subject: Re: [PATCH v2 7/7] iommu/vt-d: Consolidate domain_init() to avoid
+	duplication
+To: Alex Williamson <alex.williamson@redhat.com>
+References: <20190612002851.17103-1-baolu.lu@linux.intel.com>
+	<20190612002851.17103-8-baolu.lu@linux.intel.com>
+	<20190718171615.2ed56280@x1.home>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <f56599a6-77ac-e1ef-4843-51167b1284b3@linux.intel.com>
+Date: Fri, 19 Jul 2019 16:27:04 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190719070659.GA19555@lst.de>
+In-Reply-To: <20190718171615.2ed56280@x1.home>
 Content-Language: en-US
-Cc: Sam Bobroff <sbobroff@linux.ibm.com>, iommu@lists.linux-foundation.org,
-	Oliver O'Halloran <oohall@gmail.com>,
-	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,53 +69,199 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shawn Anastasio via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shawn Anastasio <shawn@anastas.io>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 7/19/19 2:06 AM, Christoph Hellwig wrote:
- > What is inherently architecture specific here over the fact that
- > the pgprot_* expand to architecture specific bits?
+Hi Alex,
 
-What I meant is that different architectures seem to have different
-criteria for setting the different pgprot_ bits. i.e. ppc checks
-for cache coherency, arm64 checks for cache coherency and
-writecombine, mips just checks for writecombine, etc.
+On 7/19/19 7:16 AM, Alex Williamson wrote:
+> On Wed, 12 Jun 2019 08:28:51 +0800
+> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> 
+>> The domain_init() and md_domain_init() do almost the same job.
+>> Consolidate them to avoid duplication.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel-iommu.c | 123 +++++++++++-------------------------
+>>   1 file changed, 36 insertions(+), 87 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>> index 5215dcd535a1..b8c6cf1d5f90 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -1825,63 +1825,6 @@ static inline int guestwidth_to_adjustwidth(int gaw)
+>>   	return agaw;
+>>   }
+>>   
+>> -static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
+>> -		       int guest_width)
+>> -{
+>> -	int adjust_width, agaw;
+>> -	unsigned long sagaw;
+>> -	int err;
+>> -
+>> -	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
+>> -
+>> -	err = init_iova_flush_queue(&domain->iovad,
+>> -				    iommu_flush_iova, iova_entry_free);
+>> -	if (err)
+>> -		return err;
+>> -
+>> -	domain_reserve_special_ranges(domain);
+>> -
+>> -	/* calculate AGAW */
+>> -	if (guest_width > cap_mgaw(iommu->cap))
+>> -		guest_width = cap_mgaw(iommu->cap);
+>> -	domain->gaw = guest_width;
+>> -	adjust_width = guestwidth_to_adjustwidth(guest_width);
+>> -	agaw = width_to_agaw(adjust_width);
+>> -	sagaw = cap_sagaw(iommu->cap);
+>> -	if (!test_bit(agaw, &sagaw)) {
+>> -		/* hardware doesn't support it, choose a bigger one */
+>> -		pr_debug("Hardware doesn't support agaw %d\n", agaw);
+>> -		agaw = find_next_bit(&sagaw, 5, agaw);
+>> -		if (agaw >= 5)
+>> -			return -ENODEV;
+>> -	}
+>> -	domain->agaw = agaw;
+>> -
+>> -	if (ecap_coherent(iommu->ecap))
+>> -		domain->iommu_coherency = 1;
+>> -	else
+>> -		domain->iommu_coherency = 0;
+>> -
+>> -	if (ecap_sc_support(iommu->ecap))
+>> -		domain->iommu_snooping = 1;
+>> -	else
+>> -		domain->iommu_snooping = 0;
+>> -
+>> -	if (intel_iommu_superpage)
+>> -		domain->iommu_superpage = fls(cap_super_page_val(iommu->cap));
+>> -	else
+>> -		domain->iommu_superpage = 0;
+>> -
+>> -	domain->nid = iommu->node;
+>> -
+>> -	/* always allocate the top pgd */
+>> -	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
+>> -	if (!domain->pgd)
+>> -		return -ENOMEM;
+>> -	__iommu_flush_cache(iommu, domain->pgd, PAGE_SIZE);
+>> -	return 0;
+>> -}
+>> -
+>>   static void domain_exit(struct dmar_domain *domain)
+>>   {
+>>   	struct page *freelist;
+>> @@ -2563,6 +2506,31 @@ static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+>>   	return 0;
+>>   }
+>>   
+>> +static int domain_init(struct dmar_domain *domain, int guest_width)
+>> +{
+>> +	int adjust_width;
+>> +
+>> +	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
+>> +	domain_reserve_special_ranges(domain);
+>> +
+>> +	/* calculate AGAW */
+>> +	domain->gaw = guest_width;
+>> +	adjust_width = guestwidth_to_adjustwidth(guest_width);
+>> +	domain->agaw = width_to_agaw(adjust_width);
+> 
+> 
+> How do we justify that domain->agaw is nothing like it was previously
+> here?  I spent some more time working on the failure to boot that I
+> thought was caused by 4ec066c7b147, but there are so many breakages and
+> fixes in Joerg's x86/vt-d branch that I think my bisect zero'd in on
+> the wrong one.  Instead I cherry-picked every commit from Joerg's tree
+> and matched Fixes patches to their original commit, which led me to
+> this patch, mainline commit 123b2ffc376e.  The issue I'm seeing is that
+> we call domain_context_mapping_one() and we are in this section:
+> 
+>          struct dma_pte *pgd = domain->pgd;
+>          int agaw;
+> 
+>          context_set_domain_id(context, did);
+> 
+>          if (translation != CONTEXT_TT_PASS_THROUGH) {
+>                  /*
+>                   * Skip top levels of page tables for iommu which has
+>                   * less agaw than default. Unnecessary for PT mode.
+>                   */
+>                  for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
+>                          ret = -ENOMEM;
+>                          pgd = phys_to_virt(dma_pte_addr(pgd));
+>                          if (!dma_pte_present(pgd))
+>                                  goto out_unlock;
+>                  }
+> 
+> Prior to this commit, we had domain->agaw=1 and iommu->agaw=1, so we
+> don't enter the loop.  With this commit, we have domain->agaw=3,
+> iommu->agaw=1 with pgd->val=0!
+> 
 
-That being said, I'm no expert here and there is probably some behavior
-here that would make for a much more sane default.
+iommu->agaw presents the level of page table which is by default
+supported by the @iommu. domain->agaw presents the level of page
+table which is used by the @domain.
 
- > I'd rather not create boilerplate code where we don't have to it. Note
- > that arch_dma_mmap_pgprot is a little misnamed now, as we also use it
- > for the in-kernel remapping in kernel/dma/remap.c, which I'm slowly
- > switching a lot of architectures to.  powerpc will follow soon once
- > I get the ppc44x that was given to me to actually boot with a recent
- > kernel (not that I've tried much so far).
+agaw = 1: 3-level page table
+agaw = 2: 4-level page table
+agaw = 3: 5-level page table
 
-Fair enough. I didn't realize that most of the other architectures
-don't use the common code anyways as you mention below.
+The case here is that @iommu only supports 3-level page table, but the
+@domain was set to use 5-level page table. So we must skip level 4 and 5
+page tables of the @domain.
 
- > Every arch except for arm32 now uses dma direct for the direct mapping,
- > and thus the common code without the indeed odd default.  I also have
- > a series to remove the default fallback, which is inherently a bad idea:
- >
- > 
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-no-defaults
+This code in the loop looks odd to me. It will always goto to unlock and
+leave pgd->val==0. How about below change? (not tested yet!)
 
-Awesome. This is great to hear.
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 412f18aba501..98d6878cd29d 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2020,11 +2020,15 @@ static int domain_context_mapping_one(struct 
+dmar_domain *domain,
+                          * Skip top levels of page tables for iommu 
+which has
+                          * less agaw than default. Unnecessary for PT mode.
+                          */
+-                       for (agaw = domain->agaw; agaw > iommu->agaw; 
+agaw--) {
+-                               ret = -ENOMEM;
+-                               pgd = phys_to_virt(dma_pte_addr(pgd));
+-                               if (!dma_pte_present(pgd))
+-                                       goto out_unlock;
++                       while (iommu->agaw < domain->agaw) {
++                               struct dma_pte *pte;
++
++                               pte = domain->pgd;
++                               if (dma_pte_present(pte)) {
++                                       domain->pgd = 
+phys_to_virt(dma_pte_addr(pte));
++                                       free_pgtable_page(pte);
++                               }
++                               domain->agaw--;
+                         }
 
- > I think your patch that started this thread is fine for 5.3 and -stable:
- >
- > Reviewed-by: Christoph Hellwig <hch@lst.de>
+                         info = iommu_support_dev_iotlb(domain, iommu, 
+bus, devfn);
 
-Thanks!
+> I don't really follow how the setting of these fields above is
+> equivalent to what they were previously or if they're supposed to be
+> updated lazily, but the current behavior is non-functional.  Commit
+> 123b2ffc376e can be reverted with only a bit of offset, which brings
+> Linus' tree back into working operation for me.  Should we revert or is
+> there an obvious fix here?  Thanks,
 
- > But going forward I'd rather have a sane default.
+This commit is not the root cause of this issue as far as I can see, it
+only triggers above loop to get entered.
 
-Agreed.
+Best regards,
+Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
