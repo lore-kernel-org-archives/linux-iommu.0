@@ -4,55 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A91C76188
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 09:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81224C76195
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 10:38:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B3C082084D
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 09:27:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3C082084D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5D4182173B
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 10:38:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D4182173B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 71DA42424;
-	Fri, 19 Jul 2019 09:27:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DFBB82461;
+	Fri, 19 Jul 2019 10:38:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C26D6220E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6043D245C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 09:27:21 +0000 (UTC)
+	Fri, 19 Jul 2019 10:38:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D72E9180
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D0646FE
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 09:27:20 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	19 Jul 2019 02:27:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,281,1559545200"; d="scan'208";a="179575053"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga002.jf.intel.com with ESMTP; 19 Jul 2019 02:27:18 -0700
-Subject: Re: [PATCH 1/2] iommu/vt-d: Don't queue_iova() if there is no flush
-	queue
-To: Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
-References: <20190716213806.20456-1-dima@arista.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <d22175ca-817a-fa20-cd23-9f8a5ea9b642@linux.intel.com>
-Date: Fri, 19 Jul 2019 17:26:51 +0800
+	Fri, 19 Jul 2019 10:38:18 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3BFB9337;
+	Fri, 19 Jul 2019 03:38:18 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3345C3F59C;
+	Fri, 19 Jul 2019 03:38:17 -0700 (PDT)
+Subject: Re: [PATCH dma 1/1] dma-direct: correct the physical addr in
+	dma_direct_sync_sg_for_cpu/device
+To: fugang.duan@nxp.com, hch@lst.de, m.szyprowski@samsung.com
+References: <20190719092648.11085-1-fugang.duan@nxp.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <a9a544fc-5c45-ec14-9a1d-f976f20b2d25@arm.com>
+Date: Fri, 19 Jul 2019 11:38:16 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.2
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190716213806.20456-1-dima@arista.com>
-Content-Language: en-US
-Cc: Dmitry Safonov <0x7f454c46@gmail.com>, stable@vger.kernel.org,
-	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20190719092648.11085-1-fugang.duan@nxp.com>
+Content-Language: en-GB
+Cc: aisheng.dong@nxp.com, Al Farleigh <AWFour@charter.net>,
+	iommu@lists.linux-foundation.org, festevam@gmail.com,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,201 +68,74 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
+On 19/07/2019 10:26, fugang.duan@nxp.com wrote:
+> From: Fugang Duan <fugang.duan@nxp.com>
+> 
+> dma_map_sg() may use swiotlb buffer when kernel parameter include
+> "swiotlb=force" or the dma_addr is out of dev->dma_mask range. After
+> DMA complete the memory moving from device to memory, then user call
+> dma_sync_sg_for_cpu() to sync with DMA buffer, and copy the original
+> virtual buffer to other space.
+> 
+> So dma_direct_sync_sg_for_cpu() should use swiotlb physical addr, not
+> the original physical addr from sg_phys(sg).
+> 
+> dma_direct_sync_sg_for_device() also has the similar issue, correct it.
 
-On 7/17/19 5:38 AM, Dmitry Safonov wrote:
-> Intel VT-d driver was reworked to use common deferred flushing
-> implementation. Previously there was one global per-cpu flush queue,
-> afterwards - one per domain.
-> 
-> Before deferring a flush, the queue should be allocated and initialized.
-> 
-> Currently only domains with IOMMU_DOMAIN_DMA type initialize their flush
-> queue. It's probably worth to init it for static or unmanaged domains
-> too, but it may be arguable - I'm leaving it to iommu folks.
+Yikes, that was unfortunate. There aren't too many users of 
+dma_sync_sg*(), but I note that a few of them are in and around v4l2, so 
+this could well explain the video brokenness that Al reported.
 
-We will submit per-device dma ops soon. Then we don't need to call
-intel_unmap() for the identity (static) domain. For unmanaged domains,
-the map/unmap happen only during VM startup/shutdown, I am not sure
-whether it's worth a flush queue.
+AFAICS the fix looks appropriate;
 
-This fix looks good to me anyway. We should always avoid deferring a
-flush if there's no flush queue there.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-Baolu
-
-> 
-> Prevent queuing an iova flush if the domain doesn't have a queue.
-> The defensive check seems to be worth to keep even if queue would be
-> initialized for all kinds of domains. And is easy backportable.
-> 
-> On 4.19.43 stable kernel it has a user-visible effect: previously for
-> devices in si domain there were crashes, on sata devices:
-> 
->   BUG: spinlock bad magic on CPU#6, swapper/0/1
->    lock: 0xffff88844f582008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
->   CPU: 6 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #1
->   Call Trace:
->    <IRQ>
->    dump_stack+0x61/0x7e
->    spin_bug+0x9d/0xa3
->    do_raw_spin_lock+0x22/0x8e
->    _raw_spin_lock_irqsave+0x32/0x3a
->    queue_iova+0x45/0x115
->    intel_unmap+0x107/0x113
->    intel_unmap_sg+0x6b/0x76
->    __ata_qc_complete+0x7f/0x103
->    ata_qc_complete+0x9b/0x26a
->    ata_qc_complete_multiple+0xd0/0xe3
->    ahci_handle_port_interrupt+0x3ee/0x48a
->    ahci_handle_port_intr+0x73/0xa9
->    ahci_single_level_irq_intr+0x40/0x60
->    __handle_irq_event_percpu+0x7f/0x19a
->    handle_irq_event_percpu+0x32/0x72
->    handle_irq_event+0x38/0x56
->    handle_edge_irq+0x102/0x121
->    handle_irq+0x147/0x15c
->    do_IRQ+0x66/0xf2
->    common_interrupt+0xf/0xf
->   RIP: 0010:__do_softirq+0x8c/0x2df
-> 
-> The same for usb devices that use ehci-pci:
->   BUG: spinlock bad magic on CPU#0, swapper/0/1
->    lock: 0xffff88844f402008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
->   CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #4
->   Call Trace:
->    <IRQ>
->    dump_stack+0x61/0x7e
->    spin_bug+0x9d/0xa3
->    do_raw_spin_lock+0x22/0x8e
->    _raw_spin_lock_irqsave+0x32/0x3a
->    queue_iova+0x77/0x145
->    intel_unmap+0x107/0x113
->    intel_unmap_page+0xe/0x10
->    usb_hcd_unmap_urb_setup_for_dma+0x53/0x9d
->    usb_hcd_unmap_urb_for_dma+0x17/0x100
->    unmap_urb_for_dma+0x22/0x24
->    __usb_hcd_giveback_urb+0x51/0xc3
->    usb_giveback_urb_bh+0x97/0xde
->    tasklet_action_common.isra.4+0x5f/0xa1
->    tasklet_action+0x2d/0x30
->    __do_softirq+0x138/0x2df
->    irq_exit+0x7d/0x8b
->    smp_apic_timer_interrupt+0x10f/0x151
->    apic_timer_interrupt+0xf/0x20
->    </IRQ>
->   RIP: 0010:_raw_spin_unlock_irqrestore+0x17/0x39
-> 
-> Cc: David Woodhouse <dwmw2@infradead.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: <stable@vger.kernel.org> # 4.14+
-> Fixes: 13cf01744608 ("iommu/vt-d: Make use of iova deferred flushing")
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
+> Fixes: 55897af63091("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
+> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 > ---
->   drivers/iommu/intel-iommu.c |  3 ++-
->   drivers/iommu/iova.c        | 18 ++++++++++++++----
->   include/linux/iova.h        |  6 ++++++
->   3 files changed, 22 insertions(+), 5 deletions(-)
+>   kernel/dma/direct.c | 18 +++++++++++-------
+>   1 file changed, 11 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index ac4172c02244..6d1510284d21 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3564,7 +3564,8 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index b90e1ae..0e87f86 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -242,12 +242,14 @@ void dma_direct_sync_sg_for_device(struct device *dev,
+>   	int i;
 >   
->   	freelist = domain_unmap(domain, start_pfn, last_pfn);
->   
-> -	if (intel_iommu_strict || (pdev && pdev->untrusted)) {
-> +	if (intel_iommu_strict || (pdev && pdev->untrusted) ||
-> +			!has_iova_flush_queue(&domain->iovad)) {
->   		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
->   				      nrpages, !freelist, 0);
->   		/* free iova */
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index d499b2621239..8413ae54904a 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -54,9 +54,14 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   }
->   EXPORT_SYMBOL_GPL(init_iova_domain);
->   
-> +bool has_iova_flush_queue(struct iova_domain *iovad)
-> +{
-> +	return !!iovad->fq;
-> +}
+>   	for_each_sg(sgl, sg, nents, i) {
+> -		if (unlikely(is_swiotlb_buffer(sg_phys(sg))))
+> -			swiotlb_tbl_sync_single(dev, sg_phys(sg), sg->length,
+> +		phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
 > +
->   static void free_iova_flush_queue(struct iova_domain *iovad)
->   {
-> -	if (!iovad->fq)
-> +	if (!has_iova_flush_queue(iovad))
->   		return;
+> +		if (unlikely(is_swiotlb_buffer(paddr)))
+> +			swiotlb_tbl_sync_single(dev, paddr, sg->length,
+>   					dir, SYNC_FOR_DEVICE);
 >   
->   	if (timer_pending(&iovad->fq_timer))
-> @@ -74,13 +79,14 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
->   int init_iova_flush_queue(struct iova_domain *iovad,
->   			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
->   {
-> +	struct iova_fq __percpu *queue;
->   	int cpu;
+>   		if (!dev_is_dma_coherent(dev))
+> -			arch_sync_dma_for_device(dev, sg_phys(sg), sg->length,
+> +			arch_sync_dma_for_device(dev, paddr, sg->length,
+>   					dir);
+>   	}
+>   }
+> @@ -279,11 +281,13 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+>   	int i;
 >   
->   	atomic64_set(&iovad->fq_flush_start_cnt,  0);
->   	atomic64_set(&iovad->fq_flush_finish_cnt, 0);
->   
-> -	iovad->fq = alloc_percpu(struct iova_fq);
-> -	if (!iovad->fq)
-> +	queue = alloc_percpu(struct iova_fq);
-> +	if (!queue)
->   		return -ENOMEM;
->   
->   	iovad->flush_cb   = flush_cb;
-> @@ -89,13 +95,17 @@ int init_iova_flush_queue(struct iova_domain *iovad,
->   	for_each_possible_cpu(cpu) {
->   		struct iova_fq *fq;
->   
-> -		fq = per_cpu_ptr(iovad->fq, cpu);
-> +		fq = per_cpu_ptr(queue, cpu);
->   		fq->head = 0;
->   		fq->tail = 0;
->   
->   		spin_lock_init(&fq->lock);
+>   	for_each_sg(sgl, sg, nents, i) {
+> +		phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
+> +
+>   		if (!dev_is_dma_coherent(dev))
+> -			arch_sync_dma_for_cpu(dev, sg_phys(sg), sg->length, dir);
+> -	
+> -		if (unlikely(is_swiotlb_buffer(sg_phys(sg))))
+> -			swiotlb_tbl_sync_single(dev, sg_phys(sg), sg->length, dir,
+> +			arch_sync_dma_for_cpu(dev, paddr, sg->length, dir);
+> +
+> +		if (unlikely(is_swiotlb_buffer(paddr)))
+> +			swiotlb_tbl_sync_single(dev, paddr, sg->length, dir,
+>   					SYNC_FOR_CPU);
 >   	}
 >   
-> +	smp_wmb();
-> +
-> +	iovad->fq = queue;
-> +
->   	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
->   	atomic_set(&iovad->fq_timer_on, 0);
->   
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 781b96ac706f..cd0f1de901a8 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -155,6 +155,7 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
->   void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
->   void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	unsigned long start_pfn);
-> +bool has_iova_flush_queue(struct iova_domain *iovad);
->   int init_iova_flush_queue(struct iova_domain *iovad,
->   			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
->   struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
-> @@ -235,6 +236,11 @@ static inline void init_iova_domain(struct iova_domain *iovad,
->   {
->   }
->   
-> +bool has_iova_flush_queue(struct iova_domain *iovad)
-> +{
-> +	return false;
-> +}
-> +
->   static inline int init_iova_flush_queue(struct iova_domain *iovad,
->   					iova_flush_cb flush_cb,
->   					iova_entry_dtor entry_dtor)
 > 
 _______________________________________________
 iommu mailing list
