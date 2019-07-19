@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5091C76195
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 03:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42050C76196
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 04:04:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8F6F321873
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 03:59:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1C1CE218A3
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 04:04:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="rRyvETRc"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F6F321873
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="XgwsFRTw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C1CE218A3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6757B2147;
-	Fri, 19 Jul 2019 03:59:14 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D42B91EE8;
+	Fri, 19 Jul 2019 04:04:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D8AD71CFA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 713C31E9C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 03:59:00 +0000 (UTC)
+	Fri, 19 Jul 2019 04:04:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1B0B4B0
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A299E7C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 03:59:00 +0000 (UTC)
+	Fri, 19 Jul 2019 04:04:19 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
 	[73.47.72.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 341C021850;
-	Fri, 19 Jul 2019 03:58:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id D20DC2189F;
+	Fri, 19 Jul 2019 04:04:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563508739;
+	s=default; t=1563509059;
 	bh=KaJybzooJrFsC/ElmIpJxxbbdj+KQOzrS7L32BxViLM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rRyvETRcdDesp5fX6zbbQaZdzTE98EsMRPAhf2OZi5R/Cg/vuymRHLCFH+N2fTb2p
-	0gFWYfxE1NNqxdcsFhBghvrCbRooeHEcR9vn9bspnEFutjIPtgzQ85piFbn6Kxl0eJ
-	rdYKDoFUgzrZ4ba51YyWTcef0UCMG9Zvsrli9OI4=
+	b=XgwsFRTw/SN7bMDVpVxb7WdqW5CUscoJX+6ol3DzC0ism2dTyJYwwcKh/OLKGxHnw
+	j+d7nXPHtX3AmDld/w/E5BUv05xINShPNYrMIFrOAyEYqdY1YYnB53TpDIUFfbbGjv
+	sFrtTkoN+pk+VjM58vW1ml1aZjQ+emzElNqTGuwM=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 061/171] dma-remap: Avoid de-referencing NULL
+Subject: [PATCH AUTOSEL 5.1 044/141] dma-remap: Avoid de-referencing NULL
 	atomic_pool
-Date: Thu, 18 Jul 2019 23:54:52 -0400
-Message-Id: <20190719035643.14300-61-sashal@kernel.org>
+Date: Fri, 19 Jul 2019 00:01:09 -0400
+Message-Id: <20190719040246.15945-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
-References: <20190719035643.14300-1-sashal@kernel.org>
+In-Reply-To: <20190719040246.15945-1-sashal@kernel.org>
+References: <20190719040246.15945-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
