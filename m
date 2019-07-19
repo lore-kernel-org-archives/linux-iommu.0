@@ -1,61 +1,65 @@
-Return-Path: <SRS0=oZX7=VP=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Jh8h=VQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021E1C7618F
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 23:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5091C76195
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 03:59:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D22CF21019
-	for <iommu@archiver.kernel.org>; Thu, 18 Jul 2019 23:16:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D22CF21019
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8F6F321873
+	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 03:59:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="rRyvETRc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F6F321873
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8586A1719;
-	Thu, 18 Jul 2019 23:16:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6757B2147;
+	Fri, 19 Jul 2019 03:59:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 37E5D16B5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D8AD71CFA
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 23:16:18 +0000 (UTC)
+	Fri, 19 Jul 2019 03:59:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E4A2756
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1B0B4B0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 18 Jul 2019 23:16:17 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
-	[10.5.11.22])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	Fri, 19 Jul 2019 03:59:00 +0000 (UTC)
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
+	[73.47.72.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id DBE04300CA4E;
-	Thu, 18 Jul 2019 23:16:16 +0000 (UTC)
-Received: from x1.home (ovpn-116-35.phx2.redhat.com [10.3.116.35])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 213461001B35;
-	Thu, 18 Jul 2019 23:16:16 +0000 (UTC)
-Date: Thu, 18 Jul 2019 17:16:15 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 7/7] iommu/vt-d: Consolidate domain_init() to avoid
-	duplication
-Message-ID: <20190718171615.2ed56280@x1.home>
-In-Reply-To: <20190612002851.17103-8-baolu.lu@linux.intel.com>
-References: <20190612002851.17103-1-baolu.lu@linux.intel.com>
-	<20190612002851.17103-8-baolu.lu@linux.intel.com>
-Organization: Red Hat
+	by mail.kernel.org (Postfix) with ESMTPSA id 341C021850;
+	Fri, 19 Jul 2019 03:58:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1563508739;
+	bh=KaJybzooJrFsC/ElmIpJxxbbdj+KQOzrS7L32BxViLM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=rRyvETRcdDesp5fX6zbbQaZdzTE98EsMRPAhf2OZi5R/Cg/vuymRHLCFH+N2fTb2p
+	0gFWYfxE1NNqxdcsFhBghvrCbRooeHEcR9vn9bspnEFutjIPtgzQ85piFbn6Kxl0eJ
+	rdYKDoFUgzrZ4ba51YyWTcef0UCMG9Zvsrli9OI4=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 061/171] dma-remap: Avoid de-referencing NULL
+	atomic_pool
+Date: Thu, 18 Jul 2019 23:54:52 -0400
+Message-Id: <20190719035643.14300-61-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
+References: <20190719035643.14300-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.42]);
-	Thu, 18 Jul 2019 23:16:17 +0000 (UTC)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	David Woodhouse <dwmw2@infradead.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+	Florian Fainelli <f.fainelli@gmail.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,140 +77,167 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, 12 Jun 2019 08:28:51 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-> The domain_init() and md_domain_init() do almost the same job.
-> Consolidate them to avoid duplication.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel-iommu.c | 123 +++++++++++-------------------------
->  1 file changed, 36 insertions(+), 87 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 5215dcd535a1..b8c6cf1d5f90 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1825,63 +1825,6 @@ static inline int guestwidth_to_adjustwidth(int gaw)
->  	return agaw;
->  }
->  
-> -static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
-> -		       int guest_width)
-> -{
-> -	int adjust_width, agaw;
-> -	unsigned long sagaw;
-> -	int err;
-> -
-> -	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
-> -
-> -	err = init_iova_flush_queue(&domain->iovad,
-> -				    iommu_flush_iova, iova_entry_free);
-> -	if (err)
-> -		return err;
-> -
-> -	domain_reserve_special_ranges(domain);
-> -
-> -	/* calculate AGAW */
-> -	if (guest_width > cap_mgaw(iommu->cap))
-> -		guest_width = cap_mgaw(iommu->cap);
-> -	domain->gaw = guest_width;
-> -	adjust_width = guestwidth_to_adjustwidth(guest_width);
-> -	agaw = width_to_agaw(adjust_width);
-> -	sagaw = cap_sagaw(iommu->cap);
-> -	if (!test_bit(agaw, &sagaw)) {
-> -		/* hardware doesn't support it, choose a bigger one */
-> -		pr_debug("Hardware doesn't support agaw %d\n", agaw);
-> -		agaw = find_next_bit(&sagaw, 5, agaw);
-> -		if (agaw >= 5)
-> -			return -ENODEV;
-> -	}
-> -	domain->agaw = agaw;
-> -
-> -	if (ecap_coherent(iommu->ecap))
-> -		domain->iommu_coherency = 1;
-> -	else
-> -		domain->iommu_coherency = 0;
-> -
-> -	if (ecap_sc_support(iommu->ecap))
-> -		domain->iommu_snooping = 1;
-> -	else
-> -		domain->iommu_snooping = 0;
-> -
-> -	if (intel_iommu_superpage)
-> -		domain->iommu_superpage = fls(cap_super_page_val(iommu->cap));
-> -	else
-> -		domain->iommu_superpage = 0;
-> -
-> -	domain->nid = iommu->node;
-> -
-> -	/* always allocate the top pgd */
-> -	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
-> -	if (!domain->pgd)
-> -		return -ENOMEM;
-> -	__iommu_flush_cache(iommu, domain->pgd, PAGE_SIZE);
-> -	return 0;
-> -}
-> -
->  static void domain_exit(struct dmar_domain *domain)
->  {
->  	struct page *freelist;
-> @@ -2563,6 +2506,31 @@ static int get_last_alias(struct pci_dev *pdev, u16 alias, void *opaque)
->  	return 0;
->  }
->  
-> +static int domain_init(struct dmar_domain *domain, int guest_width)
-> +{
-> +	int adjust_width;
-> +
-> +	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
-> +	domain_reserve_special_ranges(domain);
-> +
-> +	/* calculate AGAW */
-> +	domain->gaw = guest_width;
-> +	adjust_width = guestwidth_to_adjustwidth(guest_width);
-> +	domain->agaw = width_to_agaw(adjust_width);
+[ Upstream commit 4b4b077cbd0a998aebaa72c199e06b8a4c8dcfee ]
 
+With architectures allowing the kernel to be placed almost arbitrarily
+in memory (e.g.: ARM64), it is possible to have the kernel resides at
+physical addresses above 4GB, resulting in neither the default CMA area,
+nor the atomic pool from successfully allocating. This does not prevent
+specific peripherals from working though, one example is XHCI, which
+still operates correctly.
 
-How do we justify that domain->agaw is nothing like it was previously
-here?  I spent some more time working on the failure to boot that I
-thought was caused by 4ec066c7b147, but there are so many breakages and
-fixes in Joerg's x86/vt-d branch that I think my bisect zero'd in on
-the wrong one.  Instead I cherry-picked every commit from Joerg's tree
-and matched Fixes patches to their original commit, which led me to
-this patch, mainline commit 123b2ffc376e.  The issue I'm seeing is that
-we call domain_context_mapping_one() and we are in this section:
+Trouble comes when the XHCI driver gets suspended and resumed, since we
+can now trigger the following NPD:
 
-        struct dma_pte *pgd = domain->pgd;
-        int agaw;
+[   12.664170] usb usb1: root hub lost power or was reset
+[   12.669387] usb usb2: root hub lost power or was reset
+[   12.674662] Unable to handle kernel NULL pointer dereference at virtual address 00000008
+[   12.682896] pgd = ffffffc1365a7000
+[   12.686386] [00000008] *pgd=0000000136500003, *pud=0000000136500003, *pmd=0000000000000000
+[   12.694897] Internal error: Oops: 96000006 [#1] SMP
+[   12.699843] Modules linked in:
+[   12.702980] CPU: 0 PID: 1499 Comm: pml Not tainted 4.9.135-1.13pre #51
+[   12.709577] Hardware name: BCM97268DV (DT)
+[   12.713736] task: ffffffc136bb6540 task.stack: ffffffc1366cc000
+[   12.719740] PC is at addr_in_gen_pool+0x4/0x48
+[   12.724253] LR is at __dma_free+0x64/0xbc
+[   12.728325] pc : [<ffffff80083c0df8>] lr : [<ffffff80080979e0>] pstate: 60000145
+[   12.735825] sp : ffffffc1366cf990
+[   12.739196] x29: ffffffc1366cf990 x28: ffffffc1366cc000
+[   12.744608] x27: 0000000000000000 x26: ffffffc13a8568c8
+[   12.750020] x25: 0000000000000000 x24: ffffff80098f9000
+[   12.755433] x23: 000000013a5ff000 x22: ffffff8009c57000
+[   12.760844] x21: ffffffc13a856810 x20: 0000000000000000
+[   12.766255] x19: 0000000000001000 x18: 000000000000000a
+[   12.771667] x17: 0000007f917553e0 x16: 0000000000001002
+[   12.777078] x15: 00000000000a36cb x14: ffffff80898feb77
+[   12.782490] x13: ffffffffffffffff x12: 0000000000000030
+[   12.787899] x11: 00000000fffffffe x10: ffffff80098feb7f
+[   12.793311] x9 : 0000000005f5e0ff x8 : 65776f702074736f
+[   12.798723] x7 : 6c2062756820746f x6 : ffffff80098febb1
+[   12.804134] x5 : ffffff800809797c x4 : 0000000000000000
+[   12.809545] x3 : 000000013a5ff000 x2 : 0000000000000fff
+[   12.814955] x1 : ffffff8009c57000 x0 : 0000000000000000
+[   12.820363]
+[   12.821907] Process pml (pid: 1499, stack limit = 0xffffffc1366cc020)
+[   12.828421] Stack: (0xffffffc1366cf990 to 0xffffffc1366d0000)
+[   12.834240] f980:                                   ffffffc1366cf9e0 ffffff80086004d0
+[   12.842186] f9a0: ffffffc13ab08238 0000000000000010 ffffff80097c2218 ffffffc13a856810
+[   12.850131] f9c0: ffffff8009c57000 000000013a5ff000 0000000000000008 000000013a5ff000
+[   12.858076] f9e0: ffffffc1366cfa50 ffffff80085f9250 ffffffc13ab08238 0000000000000004
+[   12.866021] fa00: ffffffc13ab08000 ffffff80097b6000 ffffffc13ab08130 0000000000000001
+[   12.873966] fa20: 0000000000000008 ffffffc13a8568c8 0000000000000000 ffffffc1366cc000
+[   12.881911] fa40: ffffffc13ab08130 0000000000000001 ffffffc1366cfa90 ffffff80085e3de8
+[   12.889856] fa60: ffffffc13ab08238 0000000000000000 ffffffc136b75b00 0000000000000000
+[   12.897801] fa80: 0000000000000010 ffffff80089ccb92 ffffffc1366cfac0 ffffff80084ad040
+[   12.905746] faa0: ffffffc13a856810 0000000000000000 ffffff80084ad004 ffffff80084b91a8
+[   12.913691] fac0: ffffffc1366cfae0 ffffff80084b91b4 ffffffc13a856810 ffffff80080db5cc
+[   12.921636] fae0: ffffffc1366cfb20 ffffff80084b96bc ffffffc13a856810 0000000000000010
+[   12.929581] fb00: ffffffc13a856870 0000000000000000 ffffffc13a856810 ffffff800984d2b8
+[   12.937526] fb20: ffffffc1366cfb50 ffffff80084baa70 ffffff8009932ad0 ffffff800984d260
+[   12.945471] fb40: 0000000000000010 00000002eff0a065 ffffffc1366cfbb0 ffffff80084bafbc
+[   12.953415] fb60: 0000000000000010 0000000000000003 ffffff80098fe000 0000000000000000
+[   12.961360] fb80: ffffff80097b6000 ffffff80097b6dc8 ffffff80098c12b8 ffffff80098c12f8
+[   12.969306] fba0: ffffff8008842000 ffffff80097b6dc8 ffffffc1366cfbd0 ffffff80080e0d88
+[   12.977251] fbc0: 00000000fffffffb ffffff80080e10bc ffffffc1366cfc60 ffffff80080e16a8
+[   12.985196] fbe0: 0000000000000000 0000000000000003 ffffff80097b6000 ffffff80098fe9f0
+[   12.993140] fc00: ffffff80097d4000 ffffff8008983802 0000000000000123 0000000000000040
+[   13.001085] fc20: ffffff8008842000 ffffffc1366cc000 ffffff80089803c2 00000000ffffffff
+[   13.009029] fc40: 0000000000000000 0000000000000000 ffffffc1366cfc60 0000000000040987
+[   13.016974] fc60: ffffffc1366cfcc0 ffffff80080dfd08 0000000000000003 0000000000000004
+[   13.024919] fc80: 0000000000000003 ffffff80098fea08 ffffffc136577ec0 ffffff80089803c2
+[   13.032864] fca0: 0000000000000123 0000000000000001 0000000500000002 0000000000040987
+[   13.040809] fcc0: ffffffc1366cfd00 ffffff80083a89d4 0000000000000004 ffffffc136577ec0
+[   13.048754] fce0: ffffffc136610cc0 ffffffffffffffea ffffffc1366cfeb0 ffffffc136610cd8
+[   13.056700] fd00: ffffffc1366cfd10 ffffff800822a614 ffffffc1366cfd40 ffffff80082295d4
+[   13.064645] fd20: 0000000000000004 ffffffc136577ec0 ffffffc136610cc0 0000000021670570
+[   13.072590] fd40: ffffffc1366cfd80 ffffff80081b5d10 ffffff80097b6000 ffffffc13aae4200
+[   13.080536] fd60: ffffffc1366cfeb0 0000000000000004 0000000021670570 0000000000000004
+[   13.088481] fd80: ffffffc1366cfe30 ffffff80081b6b20 ffffffc13aae4200 0000000000000000
+[   13.096427] fda0: 0000000000000004 0000000021670570 ffffffc1366cfeb0 ffffffc13a838200
+[   13.104371] fdc0: 0000000000000000 000000000000000a ffffff80097b6000 0000000000040987
+[   13.112316] fde0: ffffffc1366cfe20 ffffff80081b3af0 ffffffc13a838200 0000000000000000
+[   13.120261] fe00: ffffffc1366cfe30 ffffff80081b6b0c ffffffc13aae4200 0000000000000000
+[   13.128206] fe20: 0000000000000004 0000000000040987 ffffffc1366cfe70 ffffff80081b7dd8
+[   13.136151] fe40: ffffff80097b6000 ffffffc13aae4200 ffffffc13aae4200 fffffffffffffff7
+[   13.144096] fe60: 0000000021670570 ffffffc13a8c63c0 0000000000000000 ffffff8008083180
+[   13.152042] fe80: ffffffffffffff1d 0000000021670570 ffffffffffffffff 0000007f917ad9b8
+[   13.159986] fea0: 0000000020000000 0000000000000015 0000000000000000 0000000000040987
+[   13.167930] fec0: 0000000000000001 0000000021670570 0000000000000004 0000000000000000
+[   13.175874] fee0: 0000000000000888 0000440110000000 000000000000006d 0000000000000003
+[   13.183819] ff00: 0000000000000040 ffffff80ffffffc8 0000000000000000 0000000000000020
+[   13.191762] ff20: 0000000000000000 0000000000000000 0000000000000001 0000000000000000
+[   13.199707] ff40: 0000000000000000 0000007f917553e0 0000000000000000 0000000000000004
+[   13.207651] ff60: 0000000021670570 0000007f91835480 0000000000000004 0000007f91831638
+[   13.215595] ff80: 0000000000000004 00000000004b0de0 00000000004b0000 0000000000000000
+[   13.223539] ffa0: 0000000000000000 0000007fc92ac8c0 0000007f9175d178 0000007fc92ac8c0
+[   13.231483] ffc0: 0000007f917ad9b8 0000000020000000 0000000000000001 0000000000000040
+[   13.239427] ffe0: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+[   13.247360] Call trace:
+[   13.249866] Exception stack(0xffffffc1366cf7a0 to 0xffffffc1366cf8d0)
+[   13.256386] f7a0: 0000000000001000 0000007fffffffff ffffffc1366cf990 ffffff80083c0df8
+[   13.264331] f7c0: 0000000060000145 ffffff80089b5001 ffffffc13ab08130 0000000000000001
+[   13.272275] f7e0: 0000000000000008 ffffffc13a8568c8 0000000000000000 0000000000000000
+[   13.280220] f800: ffffffc1366cf960 ffffffc1366cf960 ffffffc1366cf930 00000000ffffffd8
+[   13.288165] f820: ffffff8009931ac0 4554535953425553 4544006273753d4d 3831633d45434956
+[   13.296110] f840: ffff003832313a39 ffffff800845926c ffffffc1366cf880 0000000000040987
+[   13.304054] f860: 0000000000000000 ffffff8009c57000 0000000000000fff 000000013a5ff000
+[   13.311999] f880: 0000000000000000 ffffff800809797c ffffff80098febb1 6c2062756820746f
+[   13.319944] f8a0: 65776f702074736f 0000000005f5e0ff ffffff80098feb7f 00000000fffffffe
+[   13.327884] f8c0: 0000000000000030 ffffffffffffffff
+[   13.332835] [<ffffff80083c0df8>] addr_in_gen_pool+0x4/0x48
+[   13.338398] [<ffffff80086004d0>] xhci_mem_cleanup+0xc8/0x51c
+[   13.344137] [<ffffff80085f9250>] xhci_resume+0x308/0x65c
+[   13.349524] [<ffffff80085e3de8>] xhci_brcm_resume+0x84/0x8c
+[   13.355174] [<ffffff80084ad040>] platform_pm_resume+0x3c/0x64
+[   13.360997] [<ffffff80084b91b4>] dpm_run_callback+0x5c/0x15c
+[   13.366732] [<ffffff80084b96bc>] device_resume+0xc0/0x190
+[   13.372205] [<ffffff80084baa70>] dpm_resume+0x144/0x2cc
+[   13.377504] [<ffffff80084bafbc>] dpm_resume_end+0x20/0x34
+[   13.382980] [<ffffff80080e0d88>] suspend_devices_and_enter+0x104/0x704
+[   13.389585] [<ffffff80080e16a8>] pm_suspend+0x320/0x53c
+[   13.394881] [<ffffff80080dfd08>] state_store+0xbc/0xe0
+[   13.400094] [<ffffff80083a89d4>] kobj_attr_store+0x14/0x24
+[   13.405655] [<ffffff800822a614>] sysfs_kf_write+0x60/0x70
+[   13.411128] [<ffffff80082295d4>] kernfs_fop_write+0x130/0x194
+[   13.416954] [<ffffff80081b5d10>] __vfs_write+0x60/0x150
+[   13.422254] [<ffffff80081b6b20>] vfs_write+0xc8/0x164
+[   13.427376] [<ffffff80081b7dd8>] SyS_write+0x70/0xc8
+[   13.432412] [<ffffff8008083180>] el0_svc_naked+0x34/0x38
+[   13.437800] Code: 92800173 97f6fb9e 17fffff5 d1000442 (f8408c03)
+[   13.444033] ---[ end trace 2effe12f909ce205 ]---
 
-        context_set_domain_id(context, did);
+The call path leading to this problem is xhci_mem_cleanup() ->
+dma_free_coherent() -> dma_free_from_pool() -> addr_in_gen_pool. If the
+atomic_pool is NULL, we can't possibly have the address in the atomic
+pool anyway, so guard against that.
 
-        if (translation != CONTEXT_TT_PASS_THROUGH) {
-                /*
-                 * Skip top levels of page tables for iommu which has
-                 * less agaw than default. Unnecessary for PT mode.
-                 */
-                for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
-                        ret = -ENOMEM;
-                        pgd = phys_to_virt(dma_pte_addr(pgd));
-                        if (!dma_pte_present(pgd))
-                                goto out_unlock;
-                }
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/dma/remap.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Prior to this commit, we had domain->agaw=1 and iommu->agaw=1, so we
-don't enter the loop.  With this commit, we have domain->agaw=3,
-iommu->agaw=1 with pgd->val=0!
+diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+index 7a723194ecbe..0207e3764d52 100644
+--- a/kernel/dma/remap.c
++++ b/kernel/dma/remap.c
+@@ -158,6 +158,9 @@ int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
+ 
+ bool dma_in_atomic_pool(void *start, size_t size)
+ {
++	if (unlikely(!atomic_pool))
++		return false;
++
+ 	return addr_in_gen_pool(atomic_pool, (unsigned long)start, size);
+ }
+ 
+-- 
+2.20.1
 
-I don't really follow how the setting of these fields above is
-equivalent to what they were previously or if they're supposed to be
-updated lazily, but the current behavior is non-functional.  Commit
-123b2ffc376e can be reverted with only a bit of offset, which brings
-Linus' tree back into working operation for me.  Should we revert or is
-there an obvious fix here?  Thanks,
-
-Alex
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
