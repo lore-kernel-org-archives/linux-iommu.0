@@ -2,52 +2,66 @@ Return-Path: <SRS0=zP7B=VR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B4EC76196
-	for <iommu@archiver.kernel.org>; Sat, 20 Jul 2019 02:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A85C76196
+	for <iommu@archiver.kernel.org>; Sat, 20 Jul 2019 17:29:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B22B020880
-	for <iommu@archiver.kernel.org>; Sat, 20 Jul 2019 02:02:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B22B020880
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6D57D2084C
+	for <iommu@archiver.kernel.org>; Sat, 20 Jul 2019 17:29:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TYB3ehpK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D57D2084C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5E2491135;
-	Sat, 20 Jul 2019 02:02:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 058D9FD5;
+	Sat, 20 Jul 2019 17:29:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B6BBC1115
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CC626FD3
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 20 Jul 2019 02:02:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2464E71C
+	Sat, 20 Jul 2019 17:29:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 27D1E71C
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 20 Jul 2019 02:02:03 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	19 Jul 2019 19:02:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,285,1559545200"; d="scan'208";a="159277267"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga007.jf.intel.com with ESMTP; 19 Jul 2019 19:02:01 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 1/1] iommu/vt-d: Correctly check format of page table in
-	debugfs
-Date: Sat, 20 Jul 2019 10:01:26 +0800
-Message-Id: <20190720020126.9974-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
+	Sat, 20 Jul 2019 17:29:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=4u1UOOluIxzpChbBbBSB5WjUOAsP++Ttncv2ljBjqr4=;
+	b=TYB3ehpK45DbHzMLjElDZFdEgT
+	BWsGY7vVVkBDsGd5ZwN28+yzOtO3hPDvoWtQfoG3dCbG0IcuYyw8DlIfFMN0ySS1i6HepXsVr1T9f
+	KWrM3efShVAhHknbh4NIlzbH8t46Wj+wz/jl7uxEOPgdbl4FsSbdliD6VAnfdf+V8fQbyHnqjXjk+
+	JVcCumn9IhxkbYuqXsJkPnucLp4tvwS0My2jZGSycB8/qtK6VTkPX3i4JHeHa3vi64HhbusL5Ruat
+	oP63hhsz2KQsg1q/XJEqKEBArPQZFy7l7/9hYw0IqglTvwtqEWnNEw9gjCKT6XYdYWmkKuQLr0OLl
+	32QaUt0A==;
+Received: from 089144207240.atnat0016.highway.bob.at ([89.144.207.240]
+	helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hotAX-0004Zo-Pi; Sat, 20 Jul 2019 17:29:14 +0000
+Date: Sat, 20 Jul 2019 19:29:11 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping fixes for 5.3
+Message-ID: <20190720172911.GA11099@infradead.org>
+MIME-Version: 1.0
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,42 +74,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-PASID support and enable bit in the context entry isn't the right
-indicator for the type of tables (legacy or scalable mode). Check
-the DMA_RTADDR_SMT bit in the root context pointer instead.
+The following changes since commit 9637d517347e80ee2fe1c5d8ce45ba1b88d8b5cd:
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Sai Praneeth <sai.praneeth.prakhya@intel.com>
-Fixes: dd5142ca5d24b ("iommu/vt-d: Add debugfs support to show scalable mode DMAR table internals")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel-iommu-debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  Merge tag 'for-linus-20190715' of git://git.kernel.dk/linux-block (2019-07-15 21:20:52 -0700)
 
-diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
-index 73a552914455..e31c3b416351 100644
---- a/drivers/iommu/intel-iommu-debugfs.c
-+++ b/drivers/iommu/intel-iommu-debugfs.c
-@@ -235,7 +235,7 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
- 		tbl_wlk.ctx_entry = context;
- 		m->private = &tbl_wlk;
- 
--		if (pasid_supported(iommu) && is_pasid_enabled(context)) {
-+		if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT) {
- 			pasid_dir_ptr = context->lo & VTD_PAGE_MASK;
- 			pasid_dir_size = get_pasid_dir_size(context);
- 			pasid_dir_walk(m, pasid_dir_ptr, pasid_dir_size);
--- 
-2.17.1
+are available in the Git repository at:
 
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.3-1
+
+for you to fetch changes up to 449fa54d6815be8c2c1f68fa9dbbae9384a7c03e:
+
+  dma-direct: correct the physical addr in dma_direct_sync_sg_for_cpu/device (2019-07-19 14:09:40 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for 5.3-rc1
+
+Fix various regressions:
+
+ - force unencrypted dma-coherent buffers if encryption bit can't fit
+   into the dma coherent mask (Tom Lendacky)
+ - avoid limiting request size if swiotlb is not used (me)
+ - fix swiotlb handling in dma_direct_sync_sg_for_cpu/device
+   (Fugang Duan)
+
+----------------------------------------------------------------
+Christoph Hellwig (2):
+      dma-mapping: add a dma_addressing_limited helper
+      dma-direct: only limit the mapping size if swiotlb could be used
+
+Fugang Duan (1):
+      dma-direct: correct the physical addr in dma_direct_sync_sg_for_cpu/device
+
+Tom Lendacky (1):
+      dma-direct: Force unencrypted DMA under SME for certain DMA masks
+
+ arch/s390/Kconfig           |  1 +
+ arch/s390/mm/init.c         |  7 ++++++-
+ arch/x86/Kconfig            |  1 +
+ arch/x86/mm/mem_encrypt.c   | 30 ++++++++++++++++++++++++++++++
+ include/linux/dma-direct.h  |  9 +++++++++
+ include/linux/dma-mapping.h | 14 ++++++++++++++
+ kernel/dma/Kconfig          |  3 +++
+ kernel/dma/direct.c         | 44 +++++++++++++++++++-------------------------
+ 8 files changed, 83 insertions(+), 26 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
