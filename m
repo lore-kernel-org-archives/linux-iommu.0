@@ -1,113 +1,101 @@
-Return-Path: <SRS0=Jh8h=VQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=zP7B=VR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F993C7618F
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 15:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E78C7618F
+	for <iommu@archiver.kernel.org>; Sat, 20 Jul 2019 00:22:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 25CFA21872
-	for <iommu@archiver.kernel.org>; Fri, 19 Jul 2019 15:47:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25CFA21872
+	by mail.kernel.org (Postfix) with ESMTPS id 0756721872
+	for <iommu@archiver.kernel.org>; Sat, 20 Jul 2019 00:22:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0756721872
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DE28D2854;
-	Fri, 19 Jul 2019 15:47:31 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A39C42915;
+	Sat, 20 Jul 2019 00:22:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B1F73284F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DB25D2901
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 15:47:20 +0000 (UTC)
+	Sat, 20 Jul 2019 00:22:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
 	[148.163.158.5])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 470758B1
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CD5F2E6
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 19 Jul 2019 15:47:20 +0000 (UTC)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x6JFkh1b087810
-	for <iommu@lists.linux-foundation.org>; Fri, 19 Jul 2019 11:47:19 -0400
-Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
-	by mx0b-001b2d01.pphosted.com with ESMTP id 2tuf10w6na-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Fri, 19 Jul 2019 11:47:19 -0400
-Received: from localhost
-	by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
-	Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
-	Fri, 19 Jul 2019 16:47:18 +0100
-Received: from b01cxnp23033.gho.pok.ibm.com (9.57.198.28)
-	by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Fri, 19 Jul 2019 16:47:12 +0100
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com
-	[9.57.199.110])
-	by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
-	x6JFlBQD50725154
+	Sat, 20 Jul 2019 00:22:35 +0000 (UTC)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6K0LvFs022690; Fri, 19 Jul 2019 20:22:18 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2tur360gyu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Fri, 19 Jul 2019 20:22:18 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x6K0MH09023483;
+	Fri, 19 Jul 2019 20:22:17 -0400
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com
+	[169.62.189.11])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2tur360gyg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Fri, 19 Jul 2019 20:22:17 -0400
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+	by ppma03dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
+	x6K0JYEd030099; Sat, 20 Jul 2019 00:22:16 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com
+	[9.57.198.27]) by ppma03dal.us.ibm.com with ESMTP id 2tq6x82fd4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Sat, 20 Jul 2019 00:22:16 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com
+	[9.57.199.111])
+	by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+	x6K0MFeN48562682
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Fri, 19 Jul 2019 15:47:11 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D8EBAAE05C;
-	Fri, 19 Jul 2019 15:47:11 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8ABCAAE05F;
-	Fri, 19 Jul 2019 15:47:07 +0000 (GMT)
+	verify=OK); Sat, 20 Jul 2019 00:22:15 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BD7F9AC05B;
+	Sat, 20 Jul 2019 00:22:15 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 38292AC059;
+	Sat, 20 Jul 2019 00:22:11 +0000 (GMT)
 Received: from morokweng.localdomain (unknown [9.85.190.209])
-	by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
-	Fri, 19 Jul 2019 15:47:07 +0000 (GMT)
-References: <20190718032858.28744-1-bauerman@linux.ibm.com>
-	<20190718032858.28744-6-bauerman@linux.ibm.com>
-	<4a07bf75-b516-c81b-da7a-4b323e6d7e52@amd.com>
-	<c85ae8ff-3b7b-88bf-6b6a-c41b159c9cc2@redhat.com>
+	by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
+	Sat, 20 Jul 2019 00:22:11 +0000 (GMT)
+References: <20190712053631.9814-3-bauerman@linux.ibm.com>
+	<201907191711.8BlpwBo2%lkp@intel.com>
 User-agent: mu4e 1.2.0; emacs 26.2
 From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-To: lijiang <lijiang@redhat.com>
-Subject: Re: [PATCH v3 5/6] fs/core/vmcore: Move sev_active() reference to x86
-	arch code
-In-reply-to: <c85ae8ff-3b7b-88bf-6b6a-c41b159c9cc2@redhat.com>
-Date: Fri, 19 Jul 2019 12:47:03 -0300
+To: kbuild test robot <lkp@intel.com>
+Subject: Re: [PATCH 2/3] DMA mapping: Move SME handling to x86-specific files
+In-reply-to: <201907191711.8BlpwBo2%lkp@intel.com>
+Date: Fri, 19 Jul 2019 21:22:09 -0300
+Message-ID: <87ef2lh7wu.fsf@morokweng.localdomain>
 MIME-Version: 1.0
 X-TM-AS-GCONF: 00
-x-cbid: 19071915-0072-0000-0000-0000044B1EEB
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011457; HX=3.00000242; KW=3.00000007;
-	PH=3.00000004; SC=3.00000287; SDB=6.01234458; UDB=6.00650541;
-	IPR=6.01015790; 
-	MB=3.00027801; MTD=3.00000008; XFM=3.00000015; UTC=2019-07-19 15:47:17
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19071915-0073-0000-0000-00004CBB738B
-Message-Id: <87h87igh6w.fsf@morokweng.localdomain>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-07-19_11:, , signatures=0
+	definitions=2019-07-19_16:, , signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
 	priorityscore=1501
 	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
 	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1810050000 definitions=main-1907190172
-Cc: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-	Mike Anderson <andmike@linux.ibm.com>,
+	scancount=1 engine=8.0.1-1810050000 definitions=main-1907200003
+Cc: linux-s390@vger.kernel.org, Mike Anderson <andmike@linux.ibm.com>,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"x86@kernel.org" <x86@kernel.org>, Ram Pai <linuxram@us.ibm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
 	Alexey Dobriyan <adobriyan@gmail.com>, Halil Pasic <pasic@linux.ibm.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	"linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, kbuild-all@01.org,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
 	Thomas Gleixner <tglx@linutronix.de>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	Christoph Hellwig <hch@lst.de>
+	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -120,30 +108,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-CkhlbGxvIExpYW5ibywKCmxpamlhbmcgPGxpamlhbmdAcmVkaGF0LmNvbT4gd3JpdGVzOgoKPiDl
-nKggMjAxOeW5tDA35pyIMTnml6UgMDE6NDcsIExlbmRhY2t5LCBUaG9tYXMg5YaZ6YGTOgo+PiBP
-biA3LzE3LzE5IDEwOjI4IFBNLCBUaGlhZ28gSnVuZyBCYXVlcm1hbm4gd3JvdGU6Cj4+PiBTZWN1
-cmUgRW5jcnlwdGVkIFZpcnR1YWxpemF0aW9uIGlzIGFuIHg4Ni1zcGVjaWZpYyBmZWF0dXJlLCBz
-byBpdCBzaG91bGRuJ3QKPj4+IGFwcGVhciBpbiBnZW5lcmljIGtlcm5lbCBjb2RlIGJlY2F1c2Ug
-aXQgZm9yY2VzIG5vbi14ODYgYXJjaGl0ZWN0dXJlcyB0bwo+Pj4gZGVmaW5lIHRoZSBzZXZfYWN0
-aXZlKCkgZnVuY3Rpb24sIHdoaWNoIGRvZXNuJ3QgbWFrZSBhIGxvdCBvZiBzZW5zZS4KPj4+Cj4+
-PiBUbyBzb2x2ZSB0aGlzIHByb2JsZW0sIGFkZCBhbiB4ODYgZWxmY29yZWhkcl9yZWFkKCkgZnVu
-Y3Rpb24gdG8gb3ZlcnJpZGUKPj4+IHRoZSBnZW5lcmljIHdlYWsgaW1wbGVtZW50YXRpb24uIFRv
-IGRvIHRoYXQsIGl0J3MgbmVjZXNzYXJ5IHRvIG1ha2UKPj4+IHJlYWRfZnJvbV9vbGRtZW0oKSBw
-dWJsaWMgc28gdGhhdCBpdCBjYW4gYmUgdXNlZCBvdXRzaWRlIG9mIHZtY29yZS5jLgo+Pj4KPj4+
-IEFsc28sIHJlbW92ZSB0aGUgZXhwb3J0IGZvciBzZXZfYWN0aXZlKCkgc2luY2UgaXQncyBvbmx5
-IHVzZWQgaW4gZmlsZXMgdGhhdAo+Pj4gd29uJ3QgYmUgYnVpbHQgYXMgbW9kdWxlcy4KPj4+Cj4+
-PiBTaWduZWQtb2ZmLWJ5OiBUaGlhZ28gSnVuZyBCYXVlcm1hbm4gPGJhdWVybWFuQGxpbnV4Lmli
-bS5jb20+Cj4+IAo+PiBBZGRpbmcgTGlhbmJvIGFuZCBCYW9xdWFuLCB3aG8gcmVjZW50bHkgd29y
-a2VkIG9uIHRoaXMsIGZvciB0aGVpciByZXZpZXcuCj4+IAo+Cj4gVGhpcyBjaGFuZ2UgbG9va3Mg
-Z29vZCB0byBtZS4KPgo+IFJldmlld2VkLWJ5OiBMaWFuYm8gSmlhbmcgPGxpamlhbmdAcmVkaGF0
-LmNvbT4KClRoYW5rcyBmb3IgeW91ciByZXZpZXchCgotLSAKVGhpYWdvIEp1bmcgQmF1ZXJtYW5u
-CklCTSBMaW51eCBUZWNobm9sb2d5IENlbnRlcgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
-LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2lvbW11
+
+kbuild test robot <lkp@intel.com> writes:
+
+> Hi Thiago,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on linus/master]
+> [cannot apply to v5.2 next-20190718]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+>
+> url:    https://github.com/0day-ci/linux/commits/Thiago-Jung-Bauermann/Remove-x86-specific-code-from-generic-headers/20190715-063006
+> config: s390-allnoconfig (attached as .config)
+> compiler: s390-linux-gcc (GCC) 7.4.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         GCC_VERSION=7.4.0 make.cross ARCH=s390
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    kernel/dma/swiotlb.c: In function 'swiotlb_tbl_map_single':
+>>> kernel/dma/swiotlb.c:461:6: error: implicit declaration of function 'mem_encrypt_active'; did you mean 'set_cpu_active'? [-Werror=implicit-function-declaration]
+>      if (mem_encrypt_active())
+>          ^~~~~~~~~~~~~~~~~~
+>          set_cpu_active
+>    cc1: some warnings being treated as errors
+
+This error was reported for v1 of the patch series. I wasn't able to
+reproduce this problem on v1 but found a similar issue on v2.
+
+I just did a build test of each patch of the latest version (v3) with an
+s390 cross-toolchain and the config file from this report and didn't
+find any build issues, so I believe this problem is solved.
+
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
