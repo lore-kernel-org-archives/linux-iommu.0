@@ -2,60 +2,92 @@ Return-Path: <SRS0=E6XH=VT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FE2C76190
-	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB43C76190
+	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:41:58 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 860F22190F
-	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:40:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 860F22190F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 113512190F
+	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:41:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oq1L146U"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 113512190F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 59527D81;
-	Mon, 22 Jul 2019 15:40:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ED8E4CD5;
+	Mon, 22 Jul 2019 15:41:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C462ECC9;
-	Mon, 22 Jul 2019 15:40:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 72BA8224;
-	Mon, 22 Jul 2019 15:40:06 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
-	[10.5.11.12])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id E7D003082E72;
-	Mon, 22 Jul 2019 15:40:05 +0000 (UTC)
-Received: from redhat.com (ovpn-124-54.rdu2.redhat.com [10.10.124.54])
-	by smtp.corp.redhat.com (Postfix) with SMTP id CA11F60BEC;
-	Mon, 22 Jul 2019 15:39:58 +0000 (UTC)
-Date: Mon, 22 Jul 2019 11:39:57 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 2/2] virtio/virtio_ring: Fix the dma_max_mapping_size call
-Message-ID: <20190722113403-mutt-send-email-mst@kernel.org>
-References: <20190722145509.1284-1-eric.auger@redhat.com>
-	<20190722145509.1284-3-eric.auger@redhat.com>
-	<20190722152710.GB3780@lst.de>
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7E3B3CC9
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Jul 2019 15:41:56 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 392B4775
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Jul 2019 15:41:47 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id m10so41022850edv.6
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Jul 2019 08:41:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=gbhi3M6mI+4oCuQkiXeYBwKqa8lehAmY1ApNgOUqhwo=;
+	b=oq1L146UMTM5yp1F87M46OMRVNjVPxNYCqBgriKVv6dMDXX08s6uRiySQkE09kcK1A
+	Ra2YvaKODVmITKUqtD7D1ZZBRTfaE2EIyiEpJokB2G8dfoqP1hIzdCqNe2owW2cN7JpK
+	/zkAUcT1M6a8ckcpVXXe7ckudGM6GLl5YeRMMzlKGUi8Cgv8GgmvLGEpveZ4wCxnc3C4
+	GLJFTrJWuI6GKBiuXFR8rfOXC8m6Lg7NcV5ejYFsiYQ+u0UPXpfbJ566t2UX28hlymTM
+	STU8X04EdUcw3iu9gaHq2Zbbe4WfrqN3U1tyLEkqb89i0xg7+i4TO2G0kFl8exgLi//U
+	0Dvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=gbhi3M6mI+4oCuQkiXeYBwKqa8lehAmY1ApNgOUqhwo=;
+	b=C9CkX5IR/x6+AFc8wiVvfAcgUJ59IL92li3WNXE/uXdNZNYz12gOc5mtowSyONEqCR
+	lngVN4SrWKgkIcjF/L8sUEoQR683bgIKtKTpty7ECapVlnMFuKcmGblF04MLcQzBXvLc
+	mJ0/DPWXvZbrPq46/c4vjoJkDLOpeIxu/MQflIlunzIy8wHbJC9F8+9W2ouXJk2bAXoC
+	zY4Jcsxx6QCMEGg194cwmbuT1FtzMBlSYUrUeC/NIeGFF/sWIn61BB5yvbQ2bSfll0Ju
+	KmqgERBvMMgm+uV87qGKUojuaEYn0faDs0WkliIUJqEhvtVSaQW2QcnJ3bLVOSQRXFVc
+	Yyig==
+X-Gm-Message-State: APjAAAXPpH4jZXn68FqIfzjPQ7CS/yCdoczKO9vOKAG96H67JIBcmHGX
+	uCWvEiKSVscuEQHdublPbAgVRn9ouiiUvI4WR4w=
+X-Google-Smtp-Source: APXvYqxAGVaQMLs79f0ezsPQ6fjGuLy15ZNhz+Hy27pbz3hAzVegkYLJIcY3Cz+18kjo6Re9A52+O183SrZvHqwPE8o=
+X-Received: by 2002:a50:8bfd:: with SMTP id n58mr60475682edn.272.1563810105719;
+	Mon, 22 Jul 2019 08:41:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190722152710.GB3780@lst.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.46]);
-	Mon, 22 Jul 2019 15:40:06 +0000 (UTC)
-Cc: jasowang@redhat.com, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
-	robin.murphy@arm.com
+References: <20190702202631.32148-2-robdclark@gmail.com>
+	<20190710182844.25032-1-robdclark@gmail.com>
+	<20190722142833.GB12009@8bytes.org>
+In-Reply-To: <20190722142833.GB12009@8bytes.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Mon, 22 Jul 2019 08:41:34 -0700
+Message-ID: <CAF6AEGvJc2RK3GkpcXiVKsuTX81D3oahnu=qWJ9LFst1eT3tMg@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu: add support for drivers that manage iommu
+	explicitly
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Rob Clark <robdclark@chromium.org>, aarch64-laptops@lists.linaro.org,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>,
+	Will Deacon <will@kernel.org>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,36 +105,33 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jul 22, 2019 at 05:27:10PM +0200, Christoph Hellwig wrote:
-> On Mon, Jul 22, 2019 at 04:55:09PM +0200, Eric Auger wrote:
-> > Do not call dma_max_mapping_size for devices that have no DMA
-> > mask set, otherwise we can hit a NULL pointer dereference.
-> > 
-> > This occurs when a virtio-blk-pci device is protected with
-> > a virtual IOMMU.
-> > 
-> > Fixes: e6d6dd6c875e ("virtio: Introduce virtio_max_dma_size()")
-> > Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> > Suggested-by: Christoph Hellwig <hch@lst.de>
-> 
-> Looks good.  virtio maintainers, let me know if you want to queue
-> it up or if I should pick the patch up through the dma-mapping tree.
+On Mon, Jul 22, 2019 at 7:28 AM Joerg Roedel <joro@8bytes.org> wrote:
+>
+> On Wed, Jul 10, 2019 at 11:28:30AM -0700, Rob Clark wrote:
+> > --- a/include/linux/device.h
+> > +++ b/include/linux/device.h
+> > @@ -282,7 +282,8 @@ struct device_driver {
+> >       struct module           *owner;
+> >       const char              *mod_name;      /* used for built-in modules */
+> >
+> > -     bool suppress_bind_attrs;       /* disables bind/unbind via sysfs */
+> > +     bool suppress_bind_attrs:1;     /* disables bind/unbind via sysfs */
+> > +     bool driver_manages_iommu:1;    /* driver manages IOMMU explicitly */
+>
+> Who will set this bit?
+>
 
-Personally I dislike this API because I feel presence of dma mask does
-not strictly have to reflect max size. And generally the requirement to
-check presence of mask feels like an undocumented hack to me.  Even
-reading code will not help you avoid the warning, everyone will get it
-wrong and get the warning splat in their logs.  So I would prefer just
-v1 of the patch that makes dma API do the right thing for us.
+It is set by the driver:
 
-However, if that's not going to be the case, let's fix it up in virtio.
-In any case, for both v1 and v2 of the patches, you can merge them
-through your tree:
+https://patchwork.freedesktop.org/patch/315291/
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+(This doesn't really belong in devicetree, since it isn't a
+description of the hardware, so the driver is really the only place to
+set this.. which is fine because it is about a detail of how the
+driver works.)
 
--- 
-MST
+BR,
+-R
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
