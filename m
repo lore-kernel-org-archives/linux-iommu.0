@@ -2,46 +2,56 @@ Return-Path: <SRS0=E6XH=VT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31810C76188
-	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AD4C76188
+	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:34:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0DAB92190D
-	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:27:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0DAB92190D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 5096F21921
+	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:34:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5096F21921
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D41E8D82;
-	Mon, 22 Jul 2019 15:27:21 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E73E4CAD;
+	Mon, 22 Jul 2019 15:34:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 576D4CAD;
-	Mon, 22 Jul 2019 15:27:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B7CA4102;
-	Mon, 22 Jul 2019 15:27:12 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 8D99068B20; Mon, 22 Jul 2019 17:27:10 +0200 (CEST)
-Date: Mon, 22 Jul 2019 17:27:10 +0200
-From: Christoph Hellwig <hch@lst.de>
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8225BB88;
+	Mon, 22 Jul 2019 15:33:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 21DA0224;
+	Mon, 22 Jul 2019 15:33:51 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 60CEE307D915;
+	Mon, 22 Jul 2019 15:33:50 +0000 (UTC)
+Received: from redhat.com (ovpn-124-54.rdu2.redhat.com [10.10.124.54])
+	by smtp.corp.redhat.com (Postfix) with SMTP id 786F95D968;
+	Mon, 22 Jul 2019 15:33:44 +0000 (UTC)
+Date: Mon, 22 Jul 2019 11:33:35 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Eric Auger <eric.auger@redhat.com>
 Subject: Re: [PATCH 2/2] virtio/virtio_ring: Fix the dma_max_mapping_size call
-Message-ID: <20190722152710.GB3780@lst.de>
+Message-ID: <20190722112704-mutt-send-email-mst@kernel.org>
 References: <20190722145509.1284-1-eric.auger@redhat.com>
 	<20190722145509.1284-3-eric.auger@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
 In-Reply-To: <20190722145509.1284-3-eric.auger@redhat.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.48]);
+	Mon, 22 Jul 2019 15:33:50 +0000 (UTC)
+Cc: jasowang@redhat.com, linux-kernel@vger.kernel.org,
 	virtualization@lists.linux-foundation.org,
 	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
 	robin.murphy@arm.com, hch@lst.de
@@ -73,8 +83,31 @@ On Mon, Jul 22, 2019 at 04:55:09PM +0200, Eric Auger wrote:
 > Signed-off-by: Eric Auger <eric.auger@redhat.com>
 > Suggested-by: Christoph Hellwig <hch@lst.de>
 
-Looks good.  virtio maintainers, let me know if you want to queue
-it up or if I should pick the patch up through the dma-mapping tree.
+Christoph, I wonder why did you suggest this?
+The connection between dma_mask and dma_max_mapping_size
+is far from obvious.  The documentation doesn't exist.
+Do we really have to teach all users about this hack?
+Why not just make dma_max_mapping_size DTRT?
+
+> ---
+>  drivers/virtio/virtio_ring.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index c8be1c4f5b55..37c143971211 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -262,7 +262,7 @@ size_t virtio_max_dma_size(struct virtio_device *vdev)
+>  {
+>  	size_t max_segment_size = SIZE_MAX;
+>  
+> -	if (vring_use_dma_api(vdev))
+> +	if (vring_use_dma_api(vdev) && vdev->dev.dma_mask)
+>  		max_segment_size = dma_max_mapping_size(&vdev->dev);
+>  
+>  	return max_segment_size;
+> -- 
+> 2.20.1
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
