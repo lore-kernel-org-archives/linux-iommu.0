@@ -6,59 +6,61 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D91C76188
-	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4BFC76188
+	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:48:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 548692171F
-	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:46:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 548692171F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5630020821
+	for <iommu@archiver.kernel.org>; Mon, 22 Jul 2019 15:48:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5630020821
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A9884D93;
-	Mon, 22 Jul 2019 15:46:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3EBCCC9A;
+	Mon, 22 Jul 2019 15:48:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C11ABD1A;
-	Mon, 22 Jul 2019 15:46:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8516D224;
-	Mon, 22 Jul 2019 15:46:06 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 1BC5F3082AF2;
-	Mon, 22 Jul 2019 15:46:06 +0000 (UTC)
-Received: from [10.36.116.45] (ovpn-116-45.ams2.redhat.com [10.36.116.45])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id A6C3E5C21F;
-	Mon, 22 Jul 2019 15:46:01 +0000 (UTC)
-Subject: Re: [PATCH 1/2] dma-mapping: Protect dma_addressing_limited against
-	NULL dma_mask
-To: Christoph Hellwig <hch@lst.de>
-References: <20190722145509.1284-1-eric.auger@redhat.com>
-	<20190722145509.1284-2-eric.auger@redhat.com>
-	<20190722152637.GA3780@lst.de>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <e1e02286-ccf9-3335-28c8-0c6b122b05a1@redhat.com>
-Date: Mon, 22 Jul 2019 17:46:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1CD24BA4
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Jul 2019 15:48:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A9A49224
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 22 Jul 2019 15:48:06 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 8B0901F2; Mon, 22 Jul 2019 17:48:04 +0200 (CEST)
+Date: Mon, 22 Jul 2019 17:48:03 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH v2] iommu: add support for drivers that manage iommu
+	explicitly
+Message-ID: <20190722154803.GG12009@8bytes.org>
+References: <20190702202631.32148-2-robdclark@gmail.com>
+	<20190710182844.25032-1-robdclark@gmail.com>
+	<20190722142833.GB12009@8bytes.org>
+	<CAF6AEGvJc2RK3GkpcXiVKsuTX81D3oahnu=qWJ9LFst1eT3tMg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190722152637.GA3780@lst.de>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.45]);
-	Mon, 22 Jul 2019 15:46:06 +0000 (UTC)
-Cc: mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
-	robin.murphy@arm.com
+Content-Disposition: inline
+In-Reply-To: <CAF6AEGvJc2RK3GkpcXiVKsuTX81D3oahnu=qWJ9LFst1eT3tMg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Rob Clark <robdclark@chromium.org>, aarch64-laptops@lists.linaro.org,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>,
+	Will Deacon <will@kernel.org>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,29 +78,28 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
-
-On 7/22/19 5:26 PM, Christoph Hellwig wrote:
->>  static inline bool dma_addressing_limited(struct device *dev)
->>  {
->> -	return min_not_zero(*dev->dma_mask, dev->bus_dma_mask) <
->> -		dma_get_required_mask(dev);
->> +	return WARN_ON_ONCE(!dev->dma_mask) ? false :
->> +		min_not_zero(*dev->dma_mask, dev->bus_dma_mask) <
->> +			dma_get_required_mask(dev);
+On Mon, Jul 22, 2019 at 08:41:34AM -0700, Rob Clark wrote:
+> It is set by the driver:
 > 
-> This should really use a separate if statement, but I can fix that
-> up when applying it.
+> https://patchwork.freedesktop.org/patch/315291/
 > 
-Just wondering why we don't use the dma_get_mask() accessor which
-returns DMA_BIT_MASK(32) in case the dma_mask is not set.
+> (This doesn't really belong in devicetree, since it isn't a
+> description of the hardware, so the driver is really the only place to
+> set this.. which is fine because it is about a detail of how the
+> driver works.)
 
-Do you foresee any issue and would it still mandate to add dma_mask
-checks on each call sites?
+It is more a detail about how the firmware works. IIUC the problem is
+that the firmware initializes the context mappings for the GPU and the
+OS doesn't know anything about that and just overwrites them, causing
+the firmware GPU driver to fail badly.
 
-Thanks
+So I think it is the task of the firmware to tell the OS not to touch
+the devices mappings until the OS device driver takes over. On x86 there
+is something similar with the RMRR/unity-map tables from the firmware.
 
-Eric
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
