@@ -2,47 +2,50 @@ Return-Path: <SRS0=bViT=VU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D56C76190
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 05:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81117C76190
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 05:28:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 061CB21BF6
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 05:27:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 061CB21BF6
+	by mail.kernel.org (Postfix) with ESMTPS id 648592084D
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 05:28:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 648592084D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AC87ECB1;
-	Tue, 23 Jul 2019 05:27:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D7306CBF;
+	Tue, 23 Jul 2019 05:27:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3A09FA7A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EB9A8BE7
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 23 Jul 2019 05:27:54 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
-	[210.160.252.171])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 7A34E224
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
+	[210.160.252.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6C211709
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Jul 2019 05:27:53 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.64,297,1559487600"; d="scan'208";a="22145533"
+	Tue, 23 Jul 2019 05:27:54 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.64,297,1559487600"; d="scan'208";a="21926860"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-	by relmlie5.idc.renesas.com with ESMTP; 23 Jul 2019 14:27:52 +0900
+	by relmlie6.idc.renesas.com with ESMTP; 23 Jul 2019 14:27:52 +0900
 Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 03EDD41E3CDE;
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 92E1841E40B1;
 	Tue, 23 Jul 2019 14:27:52 +0900 (JST)
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: ulf.hansson@linaro.org, hch@lst.de, m.szyprowski@samsung.com,
 	robin.murphy@arm.com, joro@8bytes.org, axboe@kernel.dk
-Subject: [PATCH v8 0/5] treewide: improve R-Car SDHI performance
-Date: Tue, 23 Jul 2019 14:26:43 +0900
-Message-Id: <1563859608-19456-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v8 4/5] block: add a helper function to merge the segments
+Date: Tue, 23 Jul 2019 14:26:47 +0900
+Message-Id: <1563859608-19456-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1563859608-19456-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1563859608-19456-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Cc: linux-renesas-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
 	linux-block@vger.kernel.org, wsa+renesas@sang-engineering.com,
 	iommu@lists.linux-foundation.org
@@ -64,78 +67,69 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch series is based on linux-next.git / next-20190722 tag.
+This patch adds a helper function whether a queue can merge
+the segments by the DMA MAP layer (e.g. via IOMMU).
 
-Since SDHI host internal DMAC of the R-Car Gen3 cannot handle two or
-more segments, the performance rate (especially, eMMC HS400 reading)
-is not good. However, if IOMMU is enabled on the DMAC, since IOMMU will
-map multiple scatter gather buffers as one contignous iova, the DMAC can
-handle the iova as well and then the performance rate is possible to
-improve. In fact, I have measured the performance by using bonnie++,
-"Sequential Input - block" rate was improved on r8a7795.
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+---
+ block/blk-settings.c   | 22 ++++++++++++++++++++++
+ include/linux/blkdev.h |  2 ++
+ 2 files changed, 24 insertions(+)
 
-To achieve this, this patch series modifies IOMMU and Block subsystem
-at first. This patch series is strictly depended on each subsystem
-modification, so that I submit it as treewide.
-
-Changes from v7:
- - Rebase on next-20190722 (v5.3-rc1 + next branches of subsystems)
- - Add some Reviewed-by.
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=135391
-
-Changes from v6:
- - [1/5 for DMA MAP] A new patch.
- - [2/5 for IOMMU] A new patch.
- - [3/5 for BLOCK] Add Reviewed-by.
- - [4/5 for BLOCK] Use a new DMA MAP API instead of device_iommu_mapped().
- - [5/5 for MMC] Likewise, and some minor fix.
- - Remove patch 4/5 of v6 from this v7 patch series.
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=131769
-
-Changes from v5:
- - Almost all patches are new code.
- - [4/5 for MMC] This is a refactor patch so that I don't add any
-   {Tested,Reviewed}-by tags.
- - [5/5 for MMC] Modify MMC subsystem to use bigger segments instead of
-   the renesas_sdhi driver.
- - [5/5 for MMC] Use BLK_MAX_SEGMENTS (128) instead of local value
-   SDHI_MAX_SEGS_IN_IOMMU (512). Even if we use BLK_MAX_SEGMENTS,
-   the performance is still good.
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=127511
-
-Changes from v4:
- - [DMA MAPPING] Add a new device_dma_parameters for iova contiguous.
- - [IOMMU] Add a new capable for "merging" segments.
- - [IOMMU] Add a capable ops into the ipmmu-vmsa driver.
- - [MMC] Sort headers in renesas_sdhi_core.c.
- - [MMC] Remove the following codes that made on v3 that can be achieved by
-	 DMA MAPPING and IOMMU subsystem:
- -- Check if R-Car Gen3 IPMMU is used or not on patch 3.
- -- Check if all multiple segment buffers are aligned to PAGE_SIZE on patch 3.
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=125593
-
-Changes from v3:
- - Use a helper function device_iommu_mapped on patch 1 and 3.
- - Check if R-Car Gen3 IPMMU is used or not on patch 3.
-
-Yoshihiro Shimoda (5):
-  dma: Introduce dma_get_merge_boundary()
-  iommu/dma: Add a new dma_map_ops of get_merge_boundary()
-  block: sort headers on blk-setting.c
-  block: add a helper function to merge the segments
-  mmc: queue: Use bigger segments if DMA MAP layer can merge the
-    segments
-
- Documentation/DMA-API.txt   |  8 ++++++++
- block/blk-settings.c        | 34 ++++++++++++++++++++++++++++------
- drivers/iommu/dma-iommu.c   | 11 +++++++++++
- drivers/mmc/core/queue.c    | 35 ++++++++++++++++++++++++++++++++---
- include/linux/blkdev.h      |  2 ++
- include/linux/dma-mapping.h |  6 ++++++
- include/linux/mmc/host.h    |  1 +
- kernel/dma/mapping.c        | 11 +++++++++++
- 8 files changed, 99 insertions(+), 9 deletions(-)
-
+diff --git a/block/blk-settings.c b/block/blk-settings.c
+index 45f2c52..6a78ea0 100644
+--- a/block/blk-settings.c
++++ b/block/blk-settings.c
+@@ -4,6 +4,7 @@
+  */
+ #include <linux/bio.h>
+ #include <linux/blkdev.h>
++#include <linux/dma-mapping.h>
+ #include <linux/gcd.h>
+ #include <linux/gfp.h>
+ #include <linux/init.h>
+@@ -831,6 +832,27 @@ void blk_queue_write_cache(struct request_queue *q, bool wc, bool fua)
+ }
+ EXPORT_SYMBOL_GPL(blk_queue_write_cache);
+ 
++/**
++ * blk_queue_can_use_dma_map_merging - configure queue for merging segments.
++ * @q:		the request queue for the device
++ * @dev:	the device pointer for dma
++ *
++ * Tell the block layer about merging the segments by dma map of @q.
++ */
++bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
++				       struct device *dev)
++{
++	unsigned long boundary = dma_get_merge_boundary(dev);
++
++	if (!boundary)
++		return false;
++
++	/* No need to update max_segment_size. see blk_queue_virt_boundary() */
++	blk_queue_virt_boundary(q, boundary);
++
++	return true;
++}
++
+ static int __init blk_settings_init(void)
+ {
+ 	blk_max_low_pfn = max_low_pfn - 1;
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 1ef375d..f6d55e2 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1085,6 +1085,8 @@ extern void blk_queue_dma_alignment(struct request_queue *, int);
+ extern void blk_queue_update_dma_alignment(struct request_queue *, int);
+ extern void blk_queue_rq_timeout(struct request_queue *, unsigned int);
+ extern void blk_queue_write_cache(struct request_queue *q, bool enabled, bool fua);
++extern bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
++					      struct device *dev);
+ 
+ /*
+  * Number of physical segments as sent to the device.
 -- 
 2.7.4
 
