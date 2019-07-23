@@ -2,49 +2,74 @@ Return-Path: <SRS0=bViT=VU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEC8C7618B
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 15:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5CFC7618B
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 15:47:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D987217D4
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 15:39:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D987217D4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 6B549218D3
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 15:47:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B549218D3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7A59FCDB;
-	Tue, 23 Jul 2019 15:38:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 59CE9CC1;
+	Tue, 23 Jul 2019 15:47:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 513B2CB7;
-	Tue, 23 Jul 2019 15:38:53 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EBCF6892;
-	Tue, 23 Jul 2019 15:38:52 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 93A4868B02; Tue, 23 Jul 2019 17:38:51 +0200 (CEST)
-Date: Tue, 23 Jul 2019 17:38:51 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6082AB50
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 23 Jul 2019 15:47:36 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ua1-f65.google.com (mail-ua1-f65.google.com
+	[209.85.222.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DCC368B3
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 23 Jul 2019 15:47:34 +0000 (UTC)
+Received: by mail-ua1-f65.google.com with SMTP id v18so17076904uad.12
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 23 Jul 2019 08:47:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to;
+	bh=EVAD8Vf0X0incVqfNJDqjZVDQjwtcJn0P5gsd+3TH3w=;
+	b=My+dGEAzaaQCQOf6WSYZTkV+Q0K5ntlssyIowlLPAKbMytVzSvNiq3gG612uh8H10o
+	y17ZKpNw2b2glmJZL345JWozdbt9eA9qSRKU/OOK7qN+fOmmCz9+3cMGScaRKQb2EoYl
+	GchJcY0Oz8nuHeviYry06ehKGcYzNUqK3B2/JCE7SerbJuKjaQZgIf9TgaTD3GPSGqGx
+	Kxfe+1DiA6NHRCm0lHKrCijWYQSMcdcQQdg3wluV84/tFcEUokUx2cBRKb6Zzuf4P/hc
+	0ubA3HAP0qZscC2lApi8OBIH5UgUPiLBa+hpfNU17xmqk8cFLbSn/tpP7viqqhEJK3tr
+	o7zg==
+X-Gm-Message-State: APjAAAXYhLf8ZknopmL1xx0ChFCKJctb33clEfvoyyhFwNZ9xXzo5jgL
+	usl/xIYuJeai3CdrVjLBkLKeHg==
+X-Google-Smtp-Source: APXvYqzIzHEVdbHcpvt3jUNOAipVxZHK2T6eMul3vNE3BHOosQ4+ZcwjKuMyZs2L9p2YrV6mjmClLw==
+X-Received: by 2002:ab0:734f:: with SMTP id k15mr19186395uap.28.1563896853769; 
+	Tue, 23 Jul 2019 08:47:33 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
+	by smtp.gmail.com with ESMTPSA id
+	j138sm17625220vka.11.2019.07.23.08.47.29
+	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+	Tue, 23 Jul 2019 08:47:32 -0700 (PDT)
+Date: Tue, 23 Jul 2019 11:47:27 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Christoph Hellwig <hch@lst.de>
 Subject: Re: [PATCH 2/2] virtio/virtio_ring: Fix the dma_max_mapping_size call
-Message-ID: <20190723153851.GE720@lst.de>
+Message-ID: <20190723114504-mutt-send-email-mst@kernel.org>
 References: <20190722145509.1284-1-eric.auger@redhat.com>
 	<20190722145509.1284-3-eric.auger@redhat.com>
-	<e4a288f2-a93a-5ce4-32da-f5434302551f@arm.com>
+	<20190722112704-mutt-send-email-mst@kernel.org>
+	<20190723153830.GD720@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <e4a288f2-a93a-5ce4-32da-f5434302551f@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+In-Reply-To: <20190723153830.GD720@lst.de>
+Cc: jasowang@redhat.com, linux-kernel@vger.kernel.org,
 	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com, hch@lst.de
+	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
+	robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,22 +87,33 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Jul 22, 2019 at 04:36:09PM +0100, Robin Murphy wrote:
->> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
->> index c8be1c4f5b55..37c143971211 100644
->> --- a/drivers/virtio/virtio_ring.c
->> +++ b/drivers/virtio/virtio_ring.c
->> @@ -262,7 +262,7 @@ size_t virtio_max_dma_size(struct virtio_device *vdev)
->>   {
->>   	size_t max_segment_size = SIZE_MAX;
->>   -	if (vring_use_dma_api(vdev))
->> +	if (vring_use_dma_api(vdev) && vdev->dev.dma_mask)
->
-> Hmm, might it make sense to roll that check up into vring_use_dma_api() 
-> itself? After all, if the device has no mask then it's likely that other 
-> DMA API ops wouldn't really work as expected either.
+On Tue, Jul 23, 2019 at 05:38:30PM +0200, Christoph Hellwig wrote:
+> On Mon, Jul 22, 2019 at 11:33:35AM -0400, Michael S. Tsirkin wrote:
+> > On Mon, Jul 22, 2019 at 04:55:09PM +0200, Eric Auger wrote:
+> > > Do not call dma_max_mapping_size for devices that have no DMA
+> > > mask set, otherwise we can hit a NULL pointer dereference.
+> > > 
+> > > This occurs when a virtio-blk-pci device is protected with
+> > > a virtual IOMMU.
+> > > 
+> > > Fixes: e6d6dd6c875e ("virtio: Introduce virtio_max_dma_size()")
+> > > Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> > > Suggested-by: Christoph Hellwig <hch@lst.de>
+> > 
+> > Christoph, I wonder why did you suggest this?
+> > The connection between dma_mask and dma_max_mapping_size
+> > is far from obvious.  The documentation doesn't exist.
+> > Do we really have to teach all users about this hack?
+> > Why not just make dma_max_mapping_size DTRT?
+> 
+> Because we should not call into dma API functions for devices that
+> are not DMA capable.
 
-Makes sense to me.
+I'd rather call is_device_dma_capable then, better than poking
+at DMA internals.
+
+-- 
+MST
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
