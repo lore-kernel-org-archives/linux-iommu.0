@@ -2,52 +2,49 @@ Return-Path: <SRS0=bViT=VU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84ABAC76188
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 05:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A310EC76190
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 08:17:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64BD32199C
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 05:28:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64BD32199C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6466C223BE
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 08:17:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6466C223BE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 47BAECCE;
-	Tue, 23 Jul 2019 05:27:58 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 09555ACC;
+	Tue, 23 Jul 2019 08:17:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 15D63CBC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 152DA2C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Jul 2019 05:27:56 +0000 (UTC)
+	Tue, 23 Jul 2019 08:17:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
-	[210.160.252.171])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id C5A457C3
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6DB2CFE
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Jul 2019 05:27:54 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.64,297,1559487600"; d="scan'208";a="22145540"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-	by relmlie5.idc.renesas.com with ESMTP; 23 Jul 2019 14:27:52 +0900
-Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 6316641E4097;
-	Tue, 23 Jul 2019 14:27:52 +0900 (JST)
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: ulf.hansson@linaro.org, hch@lst.de, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, joro@8bytes.org, axboe@kernel.dk
-Subject: [PATCH v8 3/5] block: sort headers on blk-setting.c
-Date: Tue, 23 Jul 2019 14:26:46 +0900
-Message-Id: <1563859608-19456-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1563859608-19456-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-References: <1563859608-19456-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-renesas-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
-	linux-block@vger.kernel.org, wsa+renesas@sang-engineering.com,
-	iommu@lists.linux-foundation.org
+	Tue, 23 Jul 2019 08:17:42 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 5F4E43A2; Tue, 23 Jul 2019 10:17:40 +0200 (CEST)
+Date: Tue, 23 Jul 2019 10:17:35 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Dmitry Safonov <dima@arista.com>
+Subject: Re: [PATCH 1/2] iommu/vt-d: Don't queue_iova() if there is no flush
+	queue
+Message-ID: <20190723081735.GJ12009@8bytes.org>
+References: <20190716213806.20456-1-dima@arista.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20190716213806.20456-1-dima@arista.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, iommu@lists.linux-foundation.org,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,51 +57,29 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch sorts the headers in alphabetic order to ease
-the maintenance for this part.
+On Tue, Jul 16, 2019 at 10:38:05PM +0100, Dmitry Safonov wrote:
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- block/blk-settings.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> @@ -235,6 +236,11 @@ static inline void init_iova_domain(struct iova_domain *iovad,
+>  {
+>  }
+>  
+> +bool has_iova_flush_queue(struct iova_domain *iovad)
+> +{
+> +	return false;
+> +}
+> +
 
-diff --git a/block/blk-settings.c b/block/blk-settings.c
-index 2ae348c..45f2c52 100644
---- a/block/blk-settings.c
-+++ b/block/blk-settings.c
-@@ -2,16 +2,16 @@
- /*
-  * Functions related to setting various queue properties from drivers
-  */
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/init.h>
- #include <linux/bio.h>
- #include <linux/blkdev.h>
--#include <linux/memblock.h>	/* for max_pfn/max_low_pfn */
- #include <linux/gcd.h>
--#include <linux/lcm.h>
--#include <linux/jiffies.h>
- #include <linux/gfp.h>
-+#include <linux/init.h>
-+#include <linux/jiffies.h>
-+#include <linux/kernel.h>
-+#include <linux/lcm.h>
-+#include <linux/memblock.h>     /* for max_pfn/max_low_pfn */
-+#include <linux/module.h>
- 
- #include "blk.h"
- #include "blk-wbt.h"
--- 
-2.7.4
+This needs to be 'static inline', I queued a patch on-top of my fixes
+branch.
 
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
