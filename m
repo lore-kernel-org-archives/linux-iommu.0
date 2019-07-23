@@ -3,73 +3,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5CFC7618B
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 15:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DD9C7618B
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 16:08:32 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6B549218D3
-	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 15:47:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B549218D3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 104EF21734
+	for <iommu@archiver.kernel.org>; Tue, 23 Jul 2019 16:08:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 104EF21734
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 59CE9CC1;
-	Tue, 23 Jul 2019 15:47:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B5FC5CC3;
+	Tue, 23 Jul 2019 16:08:31 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6082AB50
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 827F1C9A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Jul 2019 15:47:36 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ua1-f65.google.com (mail-ua1-f65.google.com
-	[209.85.222.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DCC368B3
+	Tue, 23 Jul 2019 16:08:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B8EF98D7
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Jul 2019 15:47:34 +0000 (UTC)
-Received: by mail-ua1-f65.google.com with SMTP id v18so17076904uad.12
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 23 Jul 2019 08:47:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to;
-	bh=EVAD8Vf0X0incVqfNJDqjZVDQjwtcJn0P5gsd+3TH3w=;
-	b=My+dGEAzaaQCQOf6WSYZTkV+Q0K5ntlssyIowlLPAKbMytVzSvNiq3gG612uh8H10o
-	y17ZKpNw2b2glmJZL345JWozdbt9eA9qSRKU/OOK7qN+fOmmCz9+3cMGScaRKQb2EoYl
-	GchJcY0Oz8nuHeviYry06ehKGcYzNUqK3B2/JCE7SerbJuKjaQZgIf9TgaTD3GPSGqGx
-	Kxfe+1DiA6NHRCm0lHKrCijWYQSMcdcQQdg3wluV84/tFcEUokUx2cBRKb6Zzuf4P/hc
-	0ubA3HAP0qZscC2lApi8OBIH5UgUPiLBa+hpfNU17xmqk8cFLbSn/tpP7viqqhEJK3tr
-	o7zg==
-X-Gm-Message-State: APjAAAXYhLf8ZknopmL1xx0ChFCKJctb33clEfvoyyhFwNZ9xXzo5jgL
-	usl/xIYuJeai3CdrVjLBkLKeHg==
-X-Google-Smtp-Source: APXvYqzIzHEVdbHcpvt3jUNOAipVxZHK2T6eMul3vNE3BHOosQ4+ZcwjKuMyZs2L9p2YrV6mjmClLw==
-X-Received: by 2002:ab0:734f:: with SMTP id k15mr19186395uap.28.1563896853769; 
-	Tue, 23 Jul 2019 08:47:33 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-	by smtp.gmail.com with ESMTPSA id
-	j138sm17625220vka.11.2019.07.23.08.47.29
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Tue, 23 Jul 2019 08:47:32 -0700 (PDT)
-Date: Tue, 23 Jul 2019 11:47:27 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 2/2] virtio/virtio_ring: Fix the dma_max_mapping_size call
-Message-ID: <20190723114504-mutt-send-email-mst@kernel.org>
-References: <20190722145509.1284-1-eric.auger@redhat.com>
-	<20190722145509.1284-3-eric.auger@redhat.com>
-	<20190722112704-mutt-send-email-mst@kernel.org>
-	<20190723153830.GD720@lst.de>
+	Tue, 23 Jul 2019 16:08:28 +0000 (UTC)
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 0681BBBCE45D5BFE0D5D;
+	Wed, 24 Jul 2019 00:08:24 +0800 (CST)
+Received: from S00345302A-PC.china.huawei.com (10.202.227.237) by
+	DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server
+	id 14.3.439.0; Wed, 24 Jul 2019 00:08:15 +0800
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <alex.williamson@redhat.com>, <eric.auger@redhat.com>
+Subject: [PATCH v8 0/6] vfio/type1: Add support for valid iova list management
+Date: Tue, 23 Jul 2019 17:06:31 +0100
+Message-ID: <20190723160637.8384-1-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190723153830.GD720@lst.de>
-Cc: jasowang@redhat.com, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
-	robin.murphy@arm.com
+X-Originating-IP: [10.202.227.237]
+X-CFilter-Loop: Reflected
+Cc: kevin.tian@intel.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	xuwei5@hisilicon.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -87,33 +63,100 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Jul 23, 2019 at 05:38:30PM +0200, Christoph Hellwig wrote:
-> On Mon, Jul 22, 2019 at 11:33:35AM -0400, Michael S. Tsirkin wrote:
-> > On Mon, Jul 22, 2019 at 04:55:09PM +0200, Eric Auger wrote:
-> > > Do not call dma_max_mapping_size for devices that have no DMA
-> > > mask set, otherwise we can hit a NULL pointer dereference.
-> > > 
-> > > This occurs when a virtio-blk-pci device is protected with
-> > > a virtual IOMMU.
-> > > 
-> > > Fixes: e6d6dd6c875e ("virtio: Introduce virtio_max_dma_size()")
-> > > Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> > > Suggested-by: Christoph Hellwig <hch@lst.de>
-> > 
-> > Christoph, I wonder why did you suggest this?
-> > The connection between dma_mask and dma_max_mapping_size
-> > is far from obvious.  The documentation doesn't exist.
-> > Do we really have to teach all users about this hack?
-> > Why not just make dma_max_mapping_size DTRT?
-> 
-> Because we should not call into dma API functions for devices that
-> are not DMA capable.
+This is to revive this series which almost made to 4.18 but got dropped
+as Alex found an issue[1] with IGD and USB devices RMRR region being
+reported as reserved regions.
 
-I'd rather call is_device_dma_capable then, better than poking
-at DMA internals.
+Thanks to Eric for his work here[2]. It provides a way to exclude
+these regions while reporting the valid iova regions and this respin
+make use of that.
+
+Please note that I don't have a platform to verify the reported RMRR
+issue and appreciate testing on those platforms.
+
+Thanks,
+Shameer
+
+[1] https://lkml.org/lkml/2018/6/5/760
+[2] https://lore.kernel.org/patchwork/cover/1083072/
+
+v7-->v8
+  -Rebased to 5.3-rc1
+  -Addressed comments from Alex and Eric. Please see
+   individual patch history.
+  -Added Eric's R-by to patches 4/5/6
+
+v6-->v7
+ -Rebased to 5.2-rc6 + Eric's patches
+ -Added logic to exclude IOMMU_RESV_DIRECT_RELAXABLE reserved memory
+  region type(patch #2).
+ -Dropped patch #4 of v6 as it is already part of mainline.
+ -Addressed "container with only an mdev device will have an empty list"
+  case(patches 4/6 & 5/6 - Suggested by Alex)
+
+Old
+----
+This series introduces an iova list associated with a vfio 
+iommu. The list is kept updated taking care of iommu apertures,
+and reserved regions. Also this series adds checks for any conflict
+with existing dma mappings whenever a new device group is attached to
+the domain.
+
+User-space can retrieve valid iova ranges using VFIO_IOMMU_GET_INFO
+ioctl capability chains. Any dma map request outside the valid iova
+range will be rejected.
+
+v5 --> v6
+
+ -Rebased to 4.17-rc1
+ -Changed the ordering such that previous patch#7 "iommu/dma: Move
+  PCI window region reservation back...")  is now patch #4. This
+  will avoid any bisection issues pointed out by Alex.
+ -Added Robins's Reviewed-by tag for patch#4
+
+v4 --> v5
+Rebased to next-20180315.
+ 
+ -Incorporated the corner case bug fix suggested by Alex to patch #5.
+ -Based on suggestions by Alex and Robin, added patch#7. This
+  moves the PCI window  reservation back in to DMA specific path.
+  This is to fix the issue reported by Eric[1].
+
+v3 --> v4
+ Addressed comments received for v3.
+ -dma_addr_t instead of phys_addr_t
+ -LIST_HEAD() usage.
+ -Free up iova_copy list in case of error.
+ -updated logic in filling the iova caps info(patch #5)
+
+RFCv2 --> v3
+ Removed RFC tag.
+ Addressed comments from Alex and Eric:
+ - Added comments to make iova list management logic more clear.
+ - Use of iova list copy so that original is not altered in
+   case of failure.
+
+RFCv1 --> RFCv2
+ Addressed comments from Alex:
+-Introduced IOVA list management and added checks for conflicts with 
+ existing dma map entries during attach/detach.
+
+Shameer Kolothum (6):
+  vfio/type1: Introduce iova list and add iommu aperture validity check
+  vfio/type1: Check reserved region conflict and update iova list
+  vfio/type1: Update iova list on detach
+  vfio/type1: check dma map request is within a valid iova range
+  vfio/type1: Add IOVA range capability support
+  vfio/type1: remove duplicate retrieval of reserved regions
+
+ drivers/vfio/vfio_iommu_type1.c | 518 +++++++++++++++++++++++++++++++-
+ include/uapi/linux/vfio.h       |  26 +-
+ 2 files changed, 531 insertions(+), 13 deletions(-)
 
 -- 
-MST
+2.17.1
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
