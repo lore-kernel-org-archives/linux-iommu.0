@@ -2,57 +2,58 @@ Return-Path: <SRS0=WqUy=VV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC8CC7618F
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 13:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5B0C7618B
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 13:51:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E1BA5214C6
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 13:49:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1BA5214C6
+	by mail.kernel.org (Postfix) with ESMTPS id 3647E217D4
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 13:51:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3647E217D4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 88443E63;
-	Wed, 24 Jul 2019 13:49:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 09B96E63;
+	Wed, 24 Jul 2019 13:51:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1C67DE1E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 02D54E41
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 13:49:46 +0000 (UTC)
+	Wed, 24 Jul 2019 13:51:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5818A224
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 79142FE
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 13:49:44 +0000 (UTC)
+	Wed, 24 Jul 2019 13:51:28 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE10E28;
-	Wed, 24 Jul 2019 06:49:43 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 88C793F71A;
-	Wed, 24 Jul 2019 06:49:42 -0700 (PDT)
-Subject: Re: [PATCH] media: staging: ipu3: Enable IOVA API only when IOMMU
-	support is enabled
-To: Sakari Ailus <sakari.ailus@linux.intel.com>,
-	YueHaibing <yuehaibing@huawei.com>
-References: <20190722134749.21580-1-yuehaibing@huawei.com>
-	<20190724103027.GD21370@paasikivi.fi.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e48fc180-06cc-eac7-d8ca-9be1699c8677@arm.com>
-Date: Wed, 24 Jul 2019 14:49:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 21F7B28;
+	Wed, 24 Jul 2019 06:51:28 -0700 (PDT)
+Received: from arrakis.emea.arm.com (arrakis.cambridge.arm.com [10.1.196.78])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
+	7116C3F71A; Wed, 24 Jul 2019 06:51:26 -0700 (PDT)
+Date: Wed, 24 Jul 2019 14:51:24 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [RFC 3/4] dma-direct: add dma_direct_min_mask
+Message-ID: <20190724135124.GA44864@arrakis.emea.arm.com>
+References: <20190717153135.15507-1-nsaenzjulienne@suse.de>
+	<20190717153135.15507-4-nsaenzjulienne@suse.de>
+	<20190718091526.GA25321@lst.de>
+	<13dd1a4f33fcf814545f0d93f18429e853de9eaf.camel@suse.de>
+	<58753252bd7964e3b9e9558b633bd325c4a898a1.camel@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <20190724103027.GD21370@paasikivi.fi.intel.com>
-Content-Language: en-GB
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	yong.zhi@intel.com, hverkuil-cisco@xs4all.nl, digetx@gmail.com,
-	mchehab@kernel.org, linux-media@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <58753252bd7964e3b9e9558b633bd325c4a898a1.camel@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: stefan.wahren@i2se.com, f.fainelli@gmail.com,
+	Robin Murphy <robin.murphy@arm.com>, phil@raspberrypi.org,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	Jisheng.Zhang@synaptics.com, mbrugger@suse.com, will@kernel.org,
+	Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,62 +66,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 24/07/2019 11:30, Sakari Ailus wrote:
-> Hi Yue,
+On Fri, Jul 19, 2019 at 03:08:52PM +0200, Nicolas Saenz Julienne wrote:
+> On Thu, 2019-07-18 at 13:18 +0200, Nicolas Saenz Julienne wrote:
+> > On Thu, 2019-07-18 at 11:15 +0200, Christoph Hellwig wrote:
+> > > On Wed, Jul 17, 2019 at 05:31:34PM +0200, Nicolas Saenz Julienne wrote:
+> > > > Historically devices with ZONE_DMA32 have been assumed to be able to
+> > > > address at least the lower 4GB of ram for DMA. This is still the defualt
+> > > > behavior yet the Raspberry Pi 4 is limited to the first GB of memory.
+> > > > This has been observed to trigger failures in dma_direct_supported() as
+> > > > the 'min_mask' isn't properly set.
+> > > > 
+> > > > We create 'dma_direct_min_mask' in order for the arch init code to be
+> > > > able to fine-tune dma direct's 'min_dma' mask.
+> > > 
+> > > Normally we use ZONE_DMA for that case.
+> > 
+> > Fair enough, I didn't think of that possibility.
+> > 
+> > So would the arm64 maintainers be happy with something like this:
+> > 
+> > - ZONE_DMA: Follows standard definition, 16MB in size. ARCH_ZONE_DMA_BITS is
+> > 	    left as is.
+> > - ZONE_DMA32: Will honor the most constraining 'dma-ranges'. Which so far for
+> > 	      most devices is 4G, except for RPi4.
+> > - ZONE_NORMAL: The rest of the memory.
 > 
-> On Mon, Jul 22, 2019 at 09:47:49PM +0800, YueHaibing wrote:
->> If IOMMU_SUPPORT is not set, ipu3 driver may select IOMMU_IOVA to m.
->> But for many drivers, they use "select IOMMU_IOVA if IOMMU_SUPPORT"
->> in the Kconfig, for example, CONFIG_TEGRA_VDE is set to y but IOMMU_IOVA
->> is m, then the building fails like this:
->>
->> drivers/staging/media/tegra-vde/iommu.o: In function `tegra_vde_iommu_map':
->> iommu.c:(.text+0x41): undefined reference to `alloc_iova'
->> iommu.c:(.text+0x56): undefined reference to `__free_iova'
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Fixes: 7fc7af649ca7 ("media: staging/intel-ipu3: Add imgu top level pci device driver")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
->>   drivers/staging/media/ipu3/Kconfig | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/media/ipu3/Kconfig b/drivers/staging/media/ipu3/Kconfig
->> index 4b51c67..b7df18f 100644
->> --- a/drivers/staging/media/ipu3/Kconfig
->> +++ b/drivers/staging/media/ipu3/Kconfig
->> @@ -4,7 +4,7 @@ config VIDEO_IPU3_IMGU
->>   	depends on PCI && VIDEO_V4L2
->>   	depends on MEDIA_CONTROLLER && VIDEO_V4L2_SUBDEV_API
->>   	depends on X86
->> -	select IOMMU_IOVA
->> +	select IOMMU_IOVA if IOMMU_SUPPORT
+> Never mind this suggestion, I don't think it makes any sense. If anything arm64
+> seems to fit the ZONE_DMA usage pattern of arm and powerpc: where ZONE_DMA's
+> size is decided based on ram size and/or board configuration. It was actually
+> set-up like this until Christoph's ad67f5a6545f7 ("arm64: replace ZONE_DMA with
+> ZONE_DMA32").
 > 
-> This doesn't seem right: the ipu3-cio2 driver needs IOMMU_IOVA
-> independently of IOMMU_SUPPORT.
+> So the easy solution would be to simply revert that commit. On one hand I feel
+> it would be a step backwards as most 64 bit architectures have been moving to
+> use ZONE_DMA32. On the other, current ZONE_DMA32 usage seems to be heavily
+> rooted on having a 32 bit DMA mask*, which will no longer be the case on arm64
+> if we want to support the RPi 4.
 > 
-> Looking at tegra-vde, it seems to depend on IOMMU_SUPPORT but that's not
-> declared in its Kconfig entry. I wonder if adding that would be the right
-> way to fix this.
-> 
-> Cc'ing the IOMMU list.
+> So the way I see it and lacking a better solution, the argument is stronger on
+> moving back arm64 to using ZONE_DMA. Any comments/opinions?
 
-Right, I also had the impression that we'd made the IOVA library 
-completely standalone. And what does the IPU3 driver's Kconfig have to 
-do with some *other* driver failing to link anyway?
+As it was suggested in this or the previous thread, I'm not keen on
+limiting ZONE_DMA32 to the smalles RPi4 can cover, as the naming
+implies this zone should cover 32-bit devices that can deal with a full
+32-bit mask.
 
-Robin.
+I think it may be better if we have both ZONE_DMA and ZONE_DMA32 on
+arm64. ZONE_DMA would be based on the smallest dma-ranges as described
+in the DT while DMA32 covers the first naturally aligned 4GB of RAM
+(unchanged). When a smaller ZONE_DMA is not needed, it could be expanded
+to cover what would normally be ZONE_DMA32 (or could we have ZONE_DMA as
+0-bytes? I don't think GFP_DMA can still allocate memory in this case).
 
-> 
->>   	select VIDEOBUF2_DMA_SG
->>   	help
->>   	  This is the Video4Linux2 driver for Intel IPU3 image processing unit,
-> 
+We'd probably have to define ARCH_ZONE_DMA_BITS for arm64 to something
+smaller than 32-bit but sufficient to cover the known platforms like
+RPi4 (the current 24 is too small, so maybe 30). AFAICT,
+__dma_direct_optimal_gfp_mask() figures out whether GFP_DMA or GFP_DMA32
+should be passed.
+
+-- 
+Catalin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
