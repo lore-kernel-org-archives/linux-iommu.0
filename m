@@ -2,68 +2,65 @@ Return-Path: <SRS0=WqUy=VV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0A2C7618B
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 14:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BD0C7618B
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 14:49:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C62921951
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 14:48:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3FE7121926
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 14:49:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="u/H7QA63"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C62921951
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bJ7ghFzS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FE7121926
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BDACEE7F;
-	Wed, 24 Jul 2019 14:48:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1203AC90;
+	Wed, 24 Jul 2019 14:49:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6AD18C6E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2B7B3C6E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 14:48:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0B8B489D
+	Wed, 24 Jul 2019 14:49:58 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D1160FE
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 14:48:23 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id A0DE721926;
-	Wed, 24 Jul 2019 14:48:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563979702;
-	bh=NjyXOd/eYWCIn56MCe2H8quYkaUhOqDF7ZIn2vsUG4Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=u/H7QA63b5cplCrAjMjF/TVrkPoX30R5JlBMyR1xAKvvqio094WVEucJSLe9RtEyO
-	i6jL+x28xB96aql7EUPElb7RrflABnnsKPj/zasbPBSFYwFKGgv3ZOjgxRNgedRAMc
-	7EsayQ+wa/BpDueshpuF+k51x7VEwwZMcJjHYRQQ=
-Date: Wed, 24 Jul 2019 15:48:17 +0100
-From: Will Deacon <will@kernel.org>
-To: John Garry <john.garry@huawei.com>
-Subject: Re: [RFC PATCH v2 00/19] Try to reduce lock contention on the SMMUv3
-	command queue
-Message-ID: <20190724144817.kecc6kx7lhitaaac@willie-the-truck>
-References: <20190711171927.28803-1-will@kernel.org>
-	<c8dcc53f-8afa-0966-dcfd-ca79b099893f@huawei.com>
-	<20190724122019.tzllwvqzy5ptfz6c@willie-the-truck>
-	<085c4eb1-e385-04b7-e3ce-f290a80c1779@huawei.com>
+	Wed, 24 Jul 2019 14:49:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=Gj6vhBjXAzGh9jRMU6YR+yrj0IdWgFMq59EQg/9k+u8=;
+	b=bJ7ghFzSFQMsTBd0wP3AqBV5KZ
+	o8+R3qyOWbW/2i67yT4bnvLvsRttMcjNaaGGX9m9HsdLJYPh4oqUX+MuTncF56xAEolcxzQSybgqI
+	GAFF0myGqKoKvI/P30X0SvuyGFHHvd4ZuJqykpUU2asA85NN3Ynx5qh895L5OuKw0NlF93Pzk4Dvp
+	CfW19KczHwFJWzph29RVu4RDAybG5+FGrn5y3v9ihDLQRI/HN9ik5Be8VIGLyUnsjZL1iXUn8n/kw
+	soljA8t5+voJS/ZgzC5peplaw0NUa6G6AkDp2lNkSYrvZUIoBvHABaydRJKHuwOHqNOq1jHbSygDD
+	zJZhFirg==;
+Received: from [46.183.103.8] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hqIaZ-00039s-5G; Wed, 24 Jul 2019 14:49:57 +0000
+Date: Wed, 24 Jul 2019 16:49:42 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping fix for 5.3
+Message-ID: <20190724144942.GA7893@infradead.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <085c4eb1-e385-04b7-e3ce-f290a80c1779@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: Vijay Kilary <vkilari@codeaurora.org>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	iommu@lists.linux-foundation.org,
-	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
-	Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,79 +78,30 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Jul 24, 2019 at 03:25:07PM +0100, John Garry wrote:
-> On 24/07/2019 13:20, Will Deacon wrote:
-> > On Wed, Jul 24, 2019 at 10:58:26AM +0100, John Garry wrote:
-> > > On 11/07/2019 18:19, Will Deacon wrote:
-> > > > This is a significant rework of the RFC I previously posted here:
-> > > > 
-> > > >   https://lkml.kernel.org/r/20190611134603.4253-1-will.deacon@arm.com
-> > > > 
-> > > > But this time, it looks like it might actually be worthwhile according
-> > > > to my perf profiles, where __iommu_unmap() falls a long way down the
-> > > > profile for a multi-threaded netperf run. I'm still relying on others to
-> > > > confirm this is useful, however.
-> > > > 
-> > > > Some of the changes since last time are:
-> > > > 
-> > > >   * Support for constructing and submitting a list of commands in the
-> > > >     driver
-> > > > 
-> > > >   * Numerous changes to the IOMMU and io-pgtable APIs so that we can
-> > > >     submit commands in batches
-> > > > 
-> > > >   * Removal of cmpxchg() from cmdq_shared_lock() fast-path
-> > > > 
-> > > >   * Code restructuring and cleanups
-> > > > 
-> > > > This current applies against my iommu/devel branch that Joerg has pulled
-> > > > for 5.3. If you want to test it out, I've put everything here:
-> > > > 
-> > > >   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/cmdq
-> > > > 
-> > > > Feedback welcome. I appreciate that we're in the merge window, but I
-> > > > wanted to get this on the list for people to look at as an RFC.
-> > > > 
-> > > 
-> > > I tested storage performance on this series, which I think is a better
-> > > scenario to test than network performance, that being generally limited by
-> > > the network link speed.
-> > 
-> > Interesting, thanks for sharing. Do you also see a similar drop in CPU time
-> > to the one reported by Ganapat?
-> 
-> Not really, CPU load reported by fio is mostly the same.
+The following changes since commit 7b5cf701ea9c395c792e2a7e3b7caf4c68b87721:
 
-That's a pity. Maybe the cmdq isn't actually getting hit very heavily by
-fio.
+  Merge branch 'sched-urgent-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip (2019-07-22 09:30:34 -0700)
 
-> > > Baseline performance (will/iommu/devel, commit 9e6ea59f3)
-> > > 8x SAS disks D05	839K IOPS
-> > > 1x NVMe D05		454K IOPS
-> > > 1x NVMe D06		442k IOPS
-> > > 
-> > > Patchset performance (will/iommu/cmdq)
-> > > 8x SAS disk D05		835K IOPS
-> > > 1x NVMe D05		472K IOPS
-> > > 1x NVMe D06		459k IOPS
-> > > 
-> > > So we see a bit of an NVMe boost, but about the same for 8x disks. No iommu
-> > > performance is about 918K IOPs for 8x disks, so it is not limited by the
-> > > medium.
-> > 
-> > It would be nice to know if this performance gap is because of Linux, or
-> > simply because of the translation overhead in the SMMU hardware. Are you
-> > able to get a perf profile to see where we're spending time?
-> 
-> I'll look to do that, but I'd really expect it to be down to the time linux
-> spends on the DMA map and unmaps.
+are available in the Git repository at:
 
-Right, and it would be good to see how much of that is in SMMUv3-specific
-code. Another interesting thing to try would be reducing the depth of the
-io-pgtable. We currently key that off VA_BITS which may be much larger
-than you need (by virtue of being a compile-time value).
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.3-2
 
-Will
+for you to fetch changes up to 06532750010e06dd4b6d69983773677df7fc5291:
+
+  dma-mapping: use dma_get_mask in dma_addressing_limited (2019-07-23 17:43:58 +0200)
+
+----------------------------------------------------------------
+dma-mapping regression fix for 5.3
+
+ - ensure that dma_addressing_limited doesn't crash on devices
+   without a dma mask (Eric Auger)
+
+----------------------------------------------------------------
+Eric Auger (1):
+      dma-mapping: use dma_get_mask in dma_addressing_limited
+
+ include/linux/dma-mapping.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
