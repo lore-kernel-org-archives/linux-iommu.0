@@ -2,99 +2,122 @@ Return-Path: <SRS0=WqUy=VV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CADC7618F
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 16:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B95FC76186
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 16:42:41 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AB3BC21841
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 16:11:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D9AAE2189F
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 16:42:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cVuuHA2c"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB3BC21841
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="W8Xl7ku6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D9AAE2189F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 81B62E7B;
-	Wed, 24 Jul 2019 16:11:58 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ABC90F6C;
+	Wed, 24 Jul 2019 16:42:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B0BDAE50
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BCA2BF4D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 16:11:56 +0000 (UTC)
+	Wed, 24 Jul 2019 16:42:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
-	[209.85.208.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8D12A701
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com
+	(mail-eopbgr680053.outbound.protection.outlook.com [40.107.68.53])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E2B6FFE
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 16:11:55 +0000 (UTC)
-Received: by mail-ed1-f65.google.com with SMTP id d4so47640894edr.13
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 09:11:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=BcPYpR9djhaAnW7bmdaXKS87Ax5QIqkCxuLZrAiV9mQ=;
-	b=cVuuHA2c2hmZ1JZ77+HbfslSKbGPv3c3+EO5CcF0SdOPaiZbD1c19Z2G6/z4E3s/wd
-	6x6eglO2cwi45TxHB76FO7V4aPgD6U1mQXvolig1tck5UO13xUuAUtYZoOgADYnd58Om
-	cBFBQEHNck17IEdM2yJsvobMNW6ytF+mbNF3lk/V3q21tIleWbAun5vDG4f2OD6ruckJ
-	SE0FpfhHBTlHrNoYSJCdlbxOcQoeGJa3yGFv4b8UVznsu6qY/fXVtTzRQ+E3UwqeOl57
-	S03mFg4EDwHc5h4nEI8fUnm4fErXaE3accQk42M0EHZOF/GAzr0ARQ3ocB1ugjoyDDyv
-	ESPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=BcPYpR9djhaAnW7bmdaXKS87Ax5QIqkCxuLZrAiV9mQ=;
-	b=Vmap7v1EgOy8Z0mM8ZOJGczQp/WjAx16mmrOVbwfAQH14HzWc1Ehw1FJz2ylRzVakk
-	jyN/SiTa2j3ineOuq/J9wHZnroquH24oRm1Y/oJ9jbw/tiP+HM9JdBa3KYcGZKFWGjMZ
-	Zqk0yAFJl/nIxFvYbQzQxAs1EtsplqxKw1+fr56GbUJ6Qp6WyMK5BltdVLbE9Dr1Cvzc
-	yHN+zjSFf8ebJE5Viwp/dfLuXmeWcO9fV9JL3hFe/iLJKKvMBCDD14PTirdl/uUnaq9w
-	R5TnjCP7ytmFd8bMjF7KEsURHjAYA7CAOPZJENqSSon7qy3NPHVtdhZVdZCeilwkJODJ
-	i5wQ==
-X-Gm-Message-State: APjAAAVRLlNX89okyXMXkVqQvWSjvz2+yd1UWnjqv2JrzZTMnnBcXAUf
-	gOIwv/9EfnAbUOvQlYClkyScLxtNwrWYcOffi8s=
-X-Google-Smtp-Source: APXvYqwnKz9+2R8hHcVfd0x/lvnHSBr5dPATrNP0dt3ip0omN9IfWY8hedoH3nZfWjSJPNlTslQKwkgg3Tr0lC5VCoU=
-X-Received: by 2002:a17:906:3612:: with SMTP id
-	q18mr64994404ejb.278.1563984714038; 
-	Wed, 24 Jul 2019 09:11:54 -0700 (PDT)
+	Wed, 24 Jul 2019 16:42:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=LzVuK9KLGbmb5Nq+4rBZb6yvjH9ghN7CXGUzz6E8LK+48Rx9EGHPOds1Iv8rQDRcOueEBk4SoWEmuzlpZlj9bdcaEbc6RIZf5pT7IOqw4noO1Vh1OxExbV1cL/wGDpmvFQR+0aHAhn3wUEYBPs3ywBV3UTSe/ygLBNXZT+LY9ZM0SkQkk4HPLFHt7/3Ii8GGL8pwDUFA5hrHXlcqofW0yfmfewaifyuvwM56s5XFpRzfqCSdnzhI4sc7tBEy1zZlPY1SUGFgK47AaND/GmShLaYH6WMBosEbLIKcT/EllHDfg3teXfiLeqOdBsAFi7aqOTaLOG2IiSVRwwFGPBocWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=95v9hTjNjX05jPmYXWrCEZIxgJzaaYNopRlP6dA/qes=;
+	b=JXv15IGK98hLsoc36l2+G9hqHVzy7OI4oszaZUfTv16BJNFWiMkVEFGUGtObY/7kSOtqfyudxdNXWNQJjCz9GCCpqPYlhHLC/vgaieuBj/Cp9ybg5sGTU0VK42KQ2vG++mLVquu3LssAE4iAfEeIso2N3nowHSE5F/nciZ2Lebzc2+v6QMCtojokSXy+GxW0Thi9wF814R6obd3gmIEnLzGSN9MsgrOVM7fm4+c/wOaob/sUehS+Z6WcKsfnbvHH/rCRoQy+CC/ApCQV9bnL9d0esSdLBJjQ03Gr6qAQ1gVCRZHslvksIQaKHRVnlPJXBNGH3UAWMPw/vzX5GKeNVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+	smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com;
+	dkim=pass header.d=amd.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=95v9hTjNjX05jPmYXWrCEZIxgJzaaYNopRlP6dA/qes=;
+	b=W8Xl7ku6sijOylU8auT/ekXEWG6niGXDND2oyzoozam6IrD24Mcev0CCiyM5TU1dAS0J0vB03EkHk+RzLSgWb7mxXIL9IgcxGs6alWQNTa3h9s0teEH2yZpfH1kjJiDo3t1H9LWFmvWaIrp2vgN0ic3EcUMXwhmJ6zw37TyPq1k=
+Received: from DM6PR12MB3163.namprd12.prod.outlook.com (20.179.104.150) by
+	DM6PR12MB2763.namprd12.prod.outlook.com (20.176.118.93) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2115.10; Wed, 24 Jul 2019 16:42:35 +0000
+Received: from DM6PR12MB3163.namprd12.prod.outlook.com
+	([fe80::9c3d:8593:906c:e4f7]) by
+	DM6PR12MB3163.namprd12.prod.outlook.com
+	([fe80::9c3d:8593:906c:e4f7%6]) with mapi id 15.20.2094.013;
+	Wed, 24 Jul 2019 16:42:35 +0000
+From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+To: "Kirill A. Shutemov" <kirill@shutemov.name>
+Subject: Re: [PATCH] dma-direct: Force unencrypted DMA under SME for certain
+	DMA masks
+Thread-Topic: [PATCH] dma-direct: Force unencrypted DMA under SME for certain
+	DMA masks
+Thread-Index: AQHVN1HbhkVejMp04kW0O/tJG/K57qbaAcwAgAANJYA=
+Date: Wed, 24 Jul 2019 16:42:35 +0000
+Message-ID: <acee0a74-77fc-9c81-087b-ce55abf87bd4@amd.com>
+References: <10b83d9ff31bca88e94da2ff34e30619eb396078.1562785123.git.thomas.lendacky@amd.com>
+	<20190724155530.hlingpcirjcf2ljg@box>
+In-Reply-To: <20190724155530.hlingpcirjcf2ljg@box>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: SN6PR06CA0022.namprd06.prod.outlook.com
+	(2603:10b6:805:8e::35) To DM6PR12MB3163.namprd12.prod.outlook.com
+	(2603:10b6:5:182::22)
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=Thomas.Lendacky@amd.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [165.204.77.1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c94b40c5-ca89-499c-79a2-08d71055ee70
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
+	SRVR:DM6PR12MB2763; 
+x-ms-traffictypediagnostic: DM6PR12MB2763:
+x-microsoft-antispam-prvs: <DM6PR12MB2763A765B507273CEA56144AECC60@DM6PR12MB2763.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0108A997B2
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(39860400002)(136003)(376002)(366004)(396003)(346002)(189003)(199004)(5660300002)(6486002)(66476007)(53546011)(229853002)(386003)(4326008)(66556008)(66946007)(6506007)(14454004)(6116002)(26005)(8936002)(3846002)(6512007)(71190400001)(71200400001)(102836004)(54906003)(6916009)(186003)(316002)(66446008)(81156014)(81166006)(64756008)(6246003)(256004)(52116002)(68736007)(31696002)(31686004)(25786009)(53936002)(8676002)(2906002)(7736002)(7416002)(305945005)(2616005)(476003)(36756003)(486006)(478600001)(6436002)(11346002)(66066001)(99286004)(86362001)(446003)(76176011);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:DM6PR12MB2763;
+	H:DM6PR12MB3163.namprd12.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: amd.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: OE6o+gTZ3ZmQ+ZfSYJD7cCDH3ZAON0wW+wyat2P0i01aBOgD1Z98zyNguVWa6AbnIYMfyl9jiYPWnOg9yLRKxAPR+lYCjo0ekxEPxTQVVzSKEWvEAaX8QRfuX751MSR/rWDc7VsmIlPQQuoBZzQm6RuhvvQTjnrT1fVHJ6eYyHpapaxPIbW+E6hx6xSugdewvssJNRHTbPgriKuirKaG1n7169cAdZKTX3lS4/S1/O8fEANilSwS9qs3pZNkEa1gnmHK01ib/x2+mTzXE531u1HHRBuOU7e+VJtg2SnYAGcg4Re25BXsXwEiK5BlW4NeWCkIpk15SaYRdshegQlrb3EH3RJIvzrLtUTxqZLdBgjdGgfnQa30q7WN2Ck8jJ12k0vBkJQCd3AzA262HZuhb5EzwGkp2D46aZyeAtRFFq4=
+Content-ID: <D055E53CB3BCD94DB631418512E4999B@namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <20190702202631.32148-2-robdclark@gmail.com>
-	<20190710182844.25032-1-robdclark@gmail.com>
-	<20190722142833.GB12009@8bytes.org>
-	<CAF6AEGvJc2RK3GkpcXiVKsuTX81D3oahnu=qWJ9LFst1eT3tMg@mail.gmail.com>
-	<20190722154803.GG12009@8bytes.org>
-	<CAF6AEGvWf3ZOrbyyWjORuOVEPOcPr+JSEO78aYjhL-GVhDZnTg@mail.gmail.com>
-	<20190723153822.gm4ossn43nvqbyak@willie-the-truck>
-	<CAF6AEGtL6gqtbmtksf7zCSGrFOEj0ynq-2nwvizLLiS0FTwHpg@mail.gmail.com>
-	<20190724105116.fwhnbfuglbbojjzu@willie-the-truck>
-In-Reply-To: <20190724105116.fwhnbfuglbbojjzu@willie-the-truck>
-From: Rob Clark <robdclark@gmail.com>
-Date: Wed, 24 Jul 2019 09:11:42 -0700
-Message-ID: <CAF6AEGsmNtwjQQPjwzFBJSAV9dPLFH5=-vkchz0KHgL1yz3mYg@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu: add support for drivers that manage iommu
-	explicitly
-To: Will Deacon <will@kernel.org>
-Cc: Rob Clark <robdclark@chromium.org>, aarch64-laptops@lists.linaro.org,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Andersson <bjorn.andersson@linaro.org>,
-	Robin Murphy <robin.murphy@arm.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
-	<linux-arm-kernel@lists.infradead.org>
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c94b40c5-ca89-499c-79a2-08d71055ee70
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 16:42:35.6746 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tlendack@amd.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2763
+Cc: Dave Hansen <dave.hansen@linux.intel.com>,
+	Lianbo Jiang <lijiang@redhat.com>, Peter Zijlstra <peterz@infradead.org>,
+	"x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Andy Lutomirski <luto@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -112,154 +135,51 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Jul 24, 2019 at 3:51 AM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Jul 23, 2019 at 10:40:55AM -0700, Rob Clark wrote:
-> > On Tue, Jul 23, 2019 at 8:38 AM Will Deacon <will@kernel.org> wrote:
-> > >
-> > > On Mon, Jul 22, 2019 at 09:23:48AM -0700, Rob Clark wrote:
-> > > > On Mon, Jul 22, 2019 at 8:48 AM Joerg Roedel <joro@8bytes.org> wrote:
-> > > > >
-> > > > > On Mon, Jul 22, 2019 at 08:41:34AM -0700, Rob Clark wrote:
-> > > > > > It is set by the driver:
-> > > > > >
-> > > > > > https://patchwork.freedesktop.org/patch/315291/
-> > > > > >
-> > > > > > (This doesn't really belong in devicetree, since it isn't a
-> > > > > > description of the hardware, so the driver is really the only place to
-> > > > > > set this.. which is fine because it is about a detail of how the
-> > > > > > driver works.)
-> > > > >
-> > > > > It is more a detail about how the firmware works. IIUC the problem is
-> > > > > that the firmware initializes the context mappings for the GPU and the
-> > > > > OS doesn't know anything about that and just overwrites them, causing
-> > > > > the firmware GPU driver to fail badly.
-> > > > >
-> > > > > So I think it is the task of the firmware to tell the OS not to touch
-> > > > > the devices mappings until the OS device driver takes over. On x86 there
-> > > > > is something similar with the RMRR/unity-map tables from the firmware.
-> > > > >
-> > > >
-> > > > Bjorn had a patchset[1] to inherit the config from firmware/bootloader
-> > > > when arm-smmu is probed which handles that part of the problem.  My
-> > > > patch is intended to be used on top of his patchset.  This seems to me
-> > > > like the best solution, if we don't have control over the firmware.
-> > >
-> > > Hmm, but the feedback from Robin on the thread you cite was that this should
-> > > be generalised to look more like RMRR, so there seems to be a clear message
-> > > here.
-> > >
-> >
-> > Perhaps it is a lack of creativity, or lack of familiarity w/ iommu vs
-> > virtualization, but I'm not quite seeing how RMRR would help.. in
-> > particular when dealing with both DT and ACPI cases.
->
-> Well, I suppose we'd have something for DT and something for ACPI and we'd
-> try to make them look similar enough that we don't need lots of divergent
-> code in the kernel. The RMRR-like description would describe that, for a
-> particular device, a specific virt:phys mapping needs to exist in the
-> small window between initialising the SMMU and re-initialising the device
-> (GPU).
+On 7/24/19 10:55 AM, Kirill A. Shutemov wrote:
+> On Wed, Jul 10, 2019 at 07:01:19PM +0000, Lendacky, Thomas wrote:
+>> @@ -351,6 +355,32 @@ bool sev_active(void)
+>>  }
+>>  EXPORT_SYMBOL(sev_active);
+>>  
+>> +/* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+>> +bool force_dma_unencrypted(struct device *dev)
+>> +{
+>> +	/*
+>> +	 * For SEV, all DMA must be to unencrypted addresses.
+>> +	 */
+>> +	if (sev_active())
+>> +		return true;
+>> +
+>> +	/*
+>> +	 * For SME, all DMA must be to unencrypted addresses if the
+>> +	 * device does not support DMA to addresses that include the
+>> +	 * encryption mask.
+>> +	 */
+>> +	if (sme_active()) {
+>> +		u64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));
+>> +		u64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,
+>> +						dev->bus_dma_mask);
+>> +
+>> +		if (dma_dev_mask <= dma_enc_mask)
+>> +			return true;
+> 
+> Hm. What is wrong with the dev mask being equal to enc mask? IIUC, it
+> means that device mask is wide enough to cover encryption bit, doesn't it?
 
-For both DT and ACPI (or perhaps more accurately UEFI and non-UEFI) we
-often don't have much/any control of the firmware.  In the UEFI case,
-we can at least get the physical address of the scanout buffer from
-EFI GOP (since VA=PA at that point).  In either case we could get the
-iova by reading back controller state.  We kinda just need the iommu
-driver to not change anything about the context bank the display is
-using until the display driver is ready to install it's own
-pagetables.
+Not really...  it's the way DMA_BIT_MASK works vs bit numbering. Let's say
+that sme_me_mask has bit 47 set. __ffs64 returns 47 and DMA_BIT_MASK(47)
+will generate a mask without bit 47 set (0x7fffffffffff). So the check
+will catch anything that does not support at least 48-bit DMA.
 
-Initially I just want to shut down display, and then bring it back up
-w/ my own pagetables.. but eventually, once iommu/clk/genpd issues are
-sorted upstream, I'm planning to read out more completely the display
-state, and remap the existing scanout buffer at same iova in my own
-pagetables/iommu_domain, for a flicker-free display handover... that
-is a lot more work but at least it is self contained in the display
-(and bridge/panel) drivers.
+Thanks,
+Tom
 
-> I would prefer this to be framebuffer-specific, since we're already in
-> flagrant violation of the arm64 boot requirements wrt ongoing DMA and making
-> this too general could lead to all sorts of brain damage. That would
-> probably also allow us to limit the flexibility, by mandating things like
-> alignment and memory attributes.
-
-I'd be pretty happy if we could convince qcom to use EFI GOP on
-android devices too..
-
-Although there is a lot more activity these days with people bringing
-upstream support to various existing android phones/tablets.. and I'd
-like to see that continue without downstream hacks due to lack of
-control over firmware.
-
-> Having said that, I just realised I'm still a bit confused about the
-> problem: why does the bootloader require SMMU translation for the GPU at
-> all? If we could limit this whole thing to be identity-mapped/bypassed,
-> then all we need is a per-device flag in the firmware to indicate that the
-> SMMU should be initialised to allow passthrough for transactions originating
-> from that device.
-
-I was chatting last night w/ Bjorn on IRC.. and he mentioned that it
-looked like TTBRn was 0x0.  Which I wasn't expecting, and I didn't
-realize was a legit thing.  Maybe the purpose is to allow display to
-access memory w/ iova==pa but disallow memory access from other
-devices using different context banks of the same iommu?  Maybe this
-makes more sense to you?
-
-> > So I kinda prefer, when possible, if arm-smmu can figure out what is going
-> > on by looking at the hw state at boot (since that approach would work
-> > equally well for DT and ACPI).
->
-> That's not going to fly.
->
-> Forcing Linux to infer the state of the system by effectively parsing the
-> hardware configuration directly is fragile, error-prone and may not even be
-> possible in the general case. Worse, if this goes wrong, the symptoms are
-> very likely to be undiagnosable memory corruption, which is pretty awful in
-> my opinion.
-
-So, I guess in a DT world, we could have some boot-on; flag in the
-device node.. that tells the iommu driver the stream-id(s) which might
-be in use.  I guess the iommu driver would still need to map that back
-to context bank, and then leave that CB and stream<->CB mapping alone.
-But I think that would at least prevent "false positives", which I
-think is what you are worrying about.
-
-I'm not sure how this would work for ACPI, but tbh I haven't looked
-yet at how iommu and device are connected w/ ACPI.
-
-> Not only would you need separate parsing code for every IOMMU out there,
-> but you'd also need to make Linux aware of device aspects that it otherwise
-> doesn't care about, just in case the firmware decided to use them.
-> Furthermore, running an older kernel on newer hardware (which may have some
-> extensions), could cause the parsing to silently ignore parts of the device
-> that indicate memory regions which are in use. On top of that, there made be
-> device-global state that we are unable to reconfigure and that affect
-> devices other than the ones in question.
-
-I'm not sure you can avoid having *some* amount of code in each iommu
-driver, since the exact meaning of iommu-cells can be different.. but
-I guess we could come up with a generic way of determining which
-device(s) attached to an iommu might be active when the iommu driver
-probes.
-
-> So no, I'm very much against this approach and the solution absolutely needs
-> to come in the form of a more abstract description from firmware.
->
-> > I *think* (but need to confirm if Bjorn hasn't already) that the
-> > memory for the pagetables that firmware/bootloader sets up is already
-> > removed from the memory map efi passes to kernel, so we don't need to
-> > worry about kernel stomping in-use pagetables.
->
-> It's precisely this sort of fragility that makes me nervous about this whole
-> approach.
-
-See above about TTBRn==null.. although if there were actually
-pagetables, they would need to be reserved memory, otherwise I guess
-windows would also have a problem w/ stomping pagetables.
-
-BR,
--R
+> 
+>> +	}
+>> +
+>> +	return false;
+>> +}
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
