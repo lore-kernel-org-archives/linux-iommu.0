@@ -2,117 +2,93 @@ Return-Path: <SRS0=WqUy=VV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E236AC76186
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 18:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4DBC76186
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 18:40:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B107721911
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 18:30:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 29B6721852
+	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 18:40:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="MCKHO5SI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B107721911
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=shutemov-name.20150623.gappssmtp.com header.i=@shutemov-name.20150623.gappssmtp.com header.b="MF69AuNN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29B6721852
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7F8071359;
-	Wed, 24 Jul 2019 18:30:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EDE0F1363;
+	Wed, 24 Jul 2019 18:40:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D16A105A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D088C135E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 18:30:26 +0000 (UTC)
+	Wed, 24 Jul 2019 18:40:33 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com
-	(mail-eopbgr730065.outbound.protection.outlook.com [40.107.73.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 65BEBFE
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EF551701
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 18:30:25 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=ViO3LTAoff4sRxjI2wsuI0UfccEUAuD+ZuXLatOnrt4ubCFEy3EBE269HgFpGUUMPvnKp2PuGEvTOHD5XdXjbA0L4U5sMN6tQlgGF3Lno9zRI49R8sQoonVBQkce/MgCt5wCZaNrwoB9byeuPTRxtsyfYdAO1id/ZlQBGAhu8oG9mK78N7ObB0/xbF/MjBHwquv9+5k+b8+RTy02fnazucXmjbrtWTOxQFj70EKhzIbOYN9bgM524fVKltgtkaHdU+4CeT9HotkaouHjMT03N7npJvWKdI6Wnyab7dSH1w5OO21P215BCFfAcWRB97Zmh2yDAEE+f1pgdzXGbGRqFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=eJjYGFa4uv+c0SPjGFCRoEA4tVq7L8w1kjZ94YRAzq0=;
-	b=LMlOOsm3GBtdJMIOk2OHwai4WYtUAaatzWLytWzgPzqALD9zyGTO6Fh1oCdeFNUylEXKrNnoajluXTw9M4D8pvkK1ushit5+pp3cWjHf6R1v7pPmhAQ5nBn6YefvdEeAO1S8CkL+esMoZgtwxNfhb1Lk58XFZXRc/RCl3W9yz4QMe9F+/sLGmns/1CexPHhLij4B09sLU1aH7sOvBiIxIHzq53+xzUC//zPKQc3jKPWS81qKRTT26IfIrxtX0FklRB+6fpI+9VG/jnATtMBb+xEbZBU5mC8XbLuwnGZbudvzowE0CSbPMh4Xo3QujhIN21SEjvBfEpyD8AafdSdVaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
-	smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com;
-	dkim=pass header.d=amd.com;arc=none
+	Wed, 24 Jul 2019 18:40:32 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id m10so47966233edv.6
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 24 Jul 2019 11:40:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=eJjYGFa4uv+c0SPjGFCRoEA4tVq7L8w1kjZ94YRAzq0=;
-	b=MCKHO5SI0mM+rxtq4rOCxeEWM+gXOado4h2KVYW+/0Ctx30lDXTRqdLci7b29TqixgoIkZa4Uw39kzYWeWIH+NzSSo1NMsNvBeQ/BieqJNDZuuBw46K+2Ymjw+1RtwGth11vIEkQ3woMq8DCSd+13hNRs7lkXbXrD1a2Hn93/10=
-Received: from DM6PR12MB3163.namprd12.prod.outlook.com (20.179.104.150) by
-	DM6PR12MB2633.namprd12.prod.outlook.com (20.176.116.18) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2094.16; Wed, 24 Jul 2019 18:30:21 +0000
-Received: from DM6PR12MB3163.namprd12.prod.outlook.com
-	([fe80::9c3d:8593:906c:e4f7]) by
-	DM6PR12MB3163.namprd12.prod.outlook.com
-	([fe80::9c3d:8593:906c:e4f7%6]) with mapi id 15.20.2094.013;
-	Wed, 24 Jul 2019 18:30:21 +0000
-From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-To: "Kirill A. Shutemov" <kirill@shutemov.name>
+	d=shutemov-name.20150623.gappssmtp.com; s=20150623;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:content-transfer-encoding:in-reply-to
+	:user-agent; bh=0RBA0r+HuUMJnUIFQULKwRjicj1pjNi4d1DCC8b97rk=;
+	b=MF69AuNNNhhzCEKJkPUt7eAFK+sCltEUk6IkHaos7UwBGVBJPw9k+Fa8bJi0QGqWl8
+	04zOXGt5TnP6FuVbL3mx8zKSG32MNENIMg8bNJYTGYMoGCoiCMdPOfvGv18WkvqF5niP
+	wzJeC1XNj0T0GgPM1l9TqaMjlpfIHmB+ChV3jMw1UsEKAAXYzEwk7c8CvNP/tcEQQ8u+
+	h895HSFmoxamLAZx25NA6vvEOcKhKr+zwDgVe4g7BIrOi/1aZm21/ORt70vo8bhaZ2rB
+	psVKmAoi+e5kSYYNRQcgyPd7l1X0EZkByd9d0ef8rVpfhUC6/9pLza2a7l3F/u5okkQp
+	qsFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:content-transfer-encoding
+	:in-reply-to:user-agent;
+	bh=0RBA0r+HuUMJnUIFQULKwRjicj1pjNi4d1DCC8b97rk=;
+	b=MAqzv0t/E7qgHG7etiBKPZGtg2vdbxHRfQTLhigIcCjVii1WnHnHoQ83KG3T7BadRL
+	TYJE6z+qwleVDKcMpJetkZ3WW8Wlx5Q7maZ8XJTv/5hGa1HXDDixX5FE3lSTWGLN5m0J
+	JKSyBjSovG7EOiEFw/QESYM0WOzxxvrJ0WZbEmHv1vn/UBLrj0a+o+mpHnR8ejv4BGHb
+	vaqaRyz8y3dfMoCyhisgbqaKFteIOub9XqjI+fspHMZGhkokfjD0I4f1dEfULX5ffcx8
+	gWcwPBPOjgoeXMy9wHVfqHCxNUq3BrZK9RmfQl09eMlKwc61bFm81iWMNBGXtsDPU14i
+	Mrmg==
+X-Gm-Message-State: APjAAAVQ3grk7dziYNWe1yeNc/RWFlG/GVqXcdNYHn6ky/DEb86l5m62
+	wcChrr7KINBysr5qv2Fl1b0=
+X-Google-Smtp-Source: APXvYqyxnPp1hss8dzI5LTeZvLocYMD2wy5hKAUamWtogGCa9d+Trt82hxtui3TdQzf0w3mi3xpsbg==
+X-Received: by 2002:a17:906:154f:: with SMTP id
+	c15mr63716333ejd.268.1563993631518; 
+	Wed, 24 Jul 2019 11:40:31 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+	by smtp.gmail.com with ESMTPSA id
+	b19sm9400257eje.80.2019.07.24.11.40.30
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 24 Jul 2019 11:40:30 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+	id E5B8010169F; Wed, 24 Jul 2019 21:40:15 +0300 (+03)
+Date: Wed, 24 Jul 2019 21:40:15 +0300
+From: "Kirill A. Shutemov" <kirill@shutemov.name>
+To: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
 Subject: Re: [PATCH] dma-direct: Force unencrypted DMA under SME for certain
 	DMA masks
-Thread-Topic: [PATCH] dma-direct: Force unencrypted DMA under SME for certain
-	DMA masks
-Thread-Index: AQHVN1HbhkVejMp04kW0O/tJG/K57qbaAcwAgAANJYCAAAaagIAAB+IAgAAKaYCAAAU3gA==
-Date: Wed, 24 Jul 2019 18:30:21 +0000
-Message-ID: <9f9bfd05-0010-9050-20f0-8c89b2f039ef@amd.com>
+Message-ID: <20190724184015.ye6gjoikowiyh63f@box>
 References: <10b83d9ff31bca88e94da2ff34e30619eb396078.1562785123.git.thomas.lendacky@amd.com>
 	<20190724155530.hlingpcirjcf2ljg@box>
 	<acee0a74-77fc-9c81-087b-ce55abf87bd4@amd.com>
 	<a89e7574-096d-9105-45ff-34bbb74918a5@arm.com>
 	<c4110c6b-686c-7e77-fedc-33782e5b3e50@amd.com>
 	<20190724181139.yebja5yflzjgfxlx@box>
-In-Reply-To: <20190724181139.yebja5yflzjgfxlx@box>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: SN4PR0401CA0031.namprd04.prod.outlook.com
-	(2603:10b6:803:2a::17) To DM6PR12MB3163.namprd12.prod.outlook.com
-	(2603:10b6:5:182::22)
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=Thomas.Lendacky@amd.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [165.204.77.1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6b0c5075-7f33-49bc-c248-08d71064fc4d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:DM6PR12MB2633; 
-x-ms-traffictypediagnostic: DM6PR12MB2633:
-x-microsoft-antispam-prvs: <DM6PR12MB2633FF783D8073A8EAE3CF40ECC60@DM6PR12MB2633.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0108A997B2
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(189003)(199004)(102836004)(26005)(71190400001)(386003)(486006)(71200400001)(186003)(478600001)(3846002)(53936002)(68736007)(6506007)(36756003)(52116002)(8676002)(53546011)(76176011)(6116002)(66066001)(6246003)(6486002)(446003)(305945005)(11346002)(2616005)(476003)(31686004)(7736002)(6512007)(66476007)(6436002)(66556008)(14454004)(8936002)(66946007)(25786009)(81166006)(316002)(5660300002)(81156014)(64756008)(66446008)(86362001)(31696002)(54906003)(4326008)(2906002)(229853002)(99286004)(7416002)(6916009)(256004);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:DM6PR12MB2633;
-	H:DM6PR12MB3163.namprd12.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: amd.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 7ZlNCMICRuclaan2SoDLA8MBRQUVatZWpOJawVBoYMMCmWrT0PPWqq6SgLF9crRgCiK6wrYKhb+TuCIcE0gxCPXG/4h5y1zqYK7YNTYPkfetauq4qi3exSen6xdx0RXzQH7gWfveSxmMgTywiIWwUUc79aKkymPcUiJ2fDebNvHIXjhwYECqZoIaytl7vxkXac4qwb3HDXMTfwxEbPfHYT05hjKlW+oD7gfp0uLbsC5oMaXbOM41UFt+Mqdfgz41RxEzfUc2deI8Yl+vK2nXp6fqml0yc8PWUXDUXxBnUIwpzI1/BPJ6WEMsWpjr2D8nynllPnrmuQrt787wT8Tt5JqOHqZXqO1L7panL06QZRidN4fmJUuplFSmQNpW8Vr1tvLf3vRK5M7KXeDXjJPOoo+/q74dJyQyEdkVCd9Wdxk=
-Content-ID: <4D87444C6770634390A0D7D696E571B3@namprd12.prod.outlook.com>
+	<9f9bfd05-0010-9050-20f0-8c89b2f039ef@amd.com>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b0c5075-7f33-49bc-c248-08d71064fc4d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2019 18:30:21.3212 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tlendack@amd.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2633
+Content-Disposition: inline
+In-Reply-To: <9f9bfd05-0010-9050-20f0-8c89b2f039ef@amd.com>
+User-Agent: NeoMutt/20180716
 Cc: Dave Hansen <dave.hansen@linux.intel.com>,
 	Lianbo Jiang <lijiang@redhat.com>, Peter Zijlstra <peterz@infradead.org>,
 	"x86@kernel.org" <x86@kernel.org>,
@@ -134,83 +110,185 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gNy8yNC8xOSAxOjExIFBNLCBLaXJpbGwgQS4gU2h1dGVtb3Ygd3JvdGU6DQo+IE9uIFdlZCwg
-SnVsIDI0LCAyMDE5IGF0IDA1OjM0OjI2UE0gKzAwMDAsIExlbmRhY2t5LCBUaG9tYXMgd3JvdGU6
-DQo+PiBPbiA3LzI0LzE5IDEyOjA2IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6DQo+Pj4gT24gMjQv
-MDcvMjAxOSAxNzo0MiwgTGVuZGFja3ksIFRob21hcyB3cm90ZToNCj4+Pj4gT24gNy8yNC8xOSAx
-MDo1NSBBTSwgS2lyaWxsIEEuIFNodXRlbW92IHdyb3RlOg0KPj4+Pj4gT24gV2VkLCBKdWwgMTAs
-IDIwMTkgYXQgMDc6MDE6MTlQTSArMDAwMCwgTGVuZGFja3ksIFRob21hcyB3cm90ZToNCj4+Pj4+
-PiBAQCAtMzUxLDYgKzM1NSwzMiBAQCBib29sIHNldl9hY3RpdmUodm9pZCkNCj4+Pj4+PiDCoCB9
-DQo+Pj4+Pj4gwqAgRVhQT1JUX1NZTUJPTChzZXZfYWN0aXZlKTsNCj4+Pj4+PiDCoCArLyogT3Zl
-cnJpZGUgZm9yIERNQSBkaXJlY3QgYWxsb2NhdGlvbiBjaGVjayAtDQo+Pj4+Pj4gQVJDSF9IQVNf
-Rk9SQ0VfRE1BX1VORU5DUllQVEVEICovDQo+Pj4+Pj4gK2Jvb2wgZm9yY2VfZG1hX3VuZW5jcnlw
-dGVkKHN0cnVjdCBkZXZpY2UgKmRldikNCj4+Pj4+PiArew0KPj4+Pj4+ICvCoMKgwqAgLyoNCj4+
-Pj4+PiArwqDCoMKgwqAgKiBGb3IgU0VWLCBhbGwgRE1BIG11c3QgYmUgdG8gdW5lbmNyeXB0ZWQg
-YWRkcmVzc2VzLg0KPj4+Pj4+ICvCoMKgwqDCoCAqLw0KPj4+Pj4+ICvCoMKgwqAgaWYgKHNldl9h
-Y3RpdmUoKSkNCj4+Pj4+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJuIHRydWU7DQo+Pj4+Pj4gKw0K
-Pj4+Pj4+ICvCoMKgwqAgLyoNCj4+Pj4+PiArwqDCoMKgwqAgKiBGb3IgU01FLCBhbGwgRE1BIG11
-c3QgYmUgdG8gdW5lbmNyeXB0ZWQgYWRkcmVzc2VzIGlmIHRoZQ0KPj4+Pj4+ICvCoMKgwqDCoCAq
-IGRldmljZSBkb2VzIG5vdCBzdXBwb3J0IERNQSB0byBhZGRyZXNzZXMgdGhhdCBpbmNsdWRlIHRo
-ZQ0KPj4+Pj4+ICvCoMKgwqDCoCAqIGVuY3J5cHRpb24gbWFzay4NCj4+Pj4+PiArwqDCoMKgwqAg
-Ki8NCj4+Pj4+PiArwqDCoMKgIGlmIChzbWVfYWN0aXZlKCkpIHsNCj4+Pj4+PiArwqDCoMKgwqDC
-oMKgwqAgdTY0IGRtYV9lbmNfbWFzayA9IERNQV9CSVRfTUFTSyhfX2ZmczY0KHNtZV9tZV9tYXNr
-KSk7DQo+Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgIHU2NCBkbWFfZGV2X21hc2sgPSBtaW5fbm90X3pl
-cm8oZGV2LT5jb2hlcmVudF9kbWFfbWFzaywNCj4+Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZXYtPmJ1c19kbWFfbWFzayk7DQo+Pj4+Pj4gKw0K
-Pj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCBpZiAoZG1hX2Rldl9tYXNrIDw9IGRtYV9lbmNfbWFzaykN
-Cj4+Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gdHJ1ZTsNCj4+Pj4+DQo+Pj4+
-PiBIbS4gV2hhdCBpcyB3cm9uZyB3aXRoIHRoZSBkZXYgbWFzayBiZWluZyBlcXVhbCB0byBlbmMg
-bWFzaz8gSUlVQywgaXQNCj4+Pj4+IG1lYW5zIHRoYXQgZGV2aWNlIG1hc2sgaXMgd2lkZSBlbm91
-Z2ggdG8gY292ZXIgZW5jcnlwdGlvbiBiaXQsIGRvZXNuJ3QgaXQ/DQo+Pj4+DQo+Pj4+IE5vdCBy
-ZWFsbHkuLi7CoCBpdCdzIHRoZSB3YXkgRE1BX0JJVF9NQVNLIHdvcmtzIHZzIGJpdCBudW1iZXJp
-bmcuIExldCdzIHNheQ0KPj4+PiB0aGF0IHNtZV9tZV9tYXNrIGhhcyBiaXQgNDcgc2V0LiBfX2Zm
-czY0IHJldHVybnMgNDcgYW5kIERNQV9CSVRfTUFTSyg0NykNCj4+Pj4gd2lsbCBnZW5lcmF0ZSBh
-IG1hc2sgd2l0aG91dCBiaXQgNDcgc2V0ICgweDdmZmZmZmZmZmZmZikuIFNvIHRoZSBjaGVjaw0K
-Pj4+PiB3aWxsIGNhdGNoIGFueXRoaW5nIHRoYXQgZG9lcyBub3Qgc3VwcG9ydCBhdCBsZWFzdCA0
-OC1iaXQgRE1BLg0KPj4+DQo+Pj4gQ291bGRuJ3QgdGhhdCBiZSBleHByZXNzZWQgYXMganVzdDoN
-Cj4+Pg0KPj4+IMKgwqDCoMKgaWYgKHNtZV9tZV9tYXNrICYgZG1hX2Rldl9tYXNrID09IHNtZV9t
-ZV9tYXNrKQ0KPj4NCj4+IEFjdHVhbGx5ICE9LCBidXQgeWVzLCBpdCBjb3VsZCBoYXZlIGJlZW4g
-ZG9uZSBsaWtlIHRoYXQsIEkganVzdCBkaWRuJ3QNCj4+IHRoaW5rIG9mIGl0Lg0KPiANCj4gSSdt
-IGxvb2tpbmcgaW50byBnZW5lcmFsaXppbmcgdGhlIGNoZWNrIHRvIGNvdmVyIE1LVE1FLg0KPiAN
-Cj4gTGVhdmluZwlvZmYgdGhlIEtjb25maWcgY2hhbmdlcyBhbmQgbW92aW5nIHRoZSBjaGVjayB0
-byBvdGhlciBmaWxlLCBkb2VzdA0KPiB0aGUgY2hhbmdlIGJlbG93IGxvb2sgcmVhc29uYWJsZSB0
-byB5b3UuIEl0J3Mgb25seSBidWlsZCB0ZXN0ZWQgc28gZmFyLg0KPiANCj4gZGlmZiAtLWdpdCBh
-L2FyY2gveDg2L21tL21lbV9lbmNyeXB0LmMgYi9hcmNoL3g4Ni9tbS9tZW1fZW5jcnlwdC5jDQo+
-IGluZGV4IGZlY2UzMGNhOGIwYy4uNmM4NmFkY2QwMmRhIDEwMDY0NA0KPiAtLS0gYS9hcmNoL3g4
-Ni9tbS9tZW1fZW5jcnlwdC5jDQo+ICsrKyBiL2FyY2gveDg2L21tL21lbV9lbmNyeXB0LmMNCj4g
-QEAgLTM1NSw2ICszNTUsOCBAQCBFWFBPUlRfU1lNQk9MKHNldl9hY3RpdmUpOw0KPiAgLyogT3Zl
-cnJpZGUgZm9yIERNQSBkaXJlY3QgYWxsb2NhdGlvbiBjaGVjayAtIEFSQ0hfSEFTX0ZPUkNFX0RN
-QV9VTkVOQ1JZUFRFRCAqLw0KPiAgYm9vbCBmb3JjZV9kbWFfdW5lbmNyeXB0ZWQoc3RydWN0IGRl
-dmljZSAqZGV2KQ0KPiAgew0KPiArCXU2NCBkbWFfZW5jX21hc2s7DQo+ICsNCj4gIAkvKg0KPiAg
-CSAqIEZvciBTRVYsIGFsbCBETUEgbXVzdCBiZSB0byB1bmVuY3J5cHRlZCBhZGRyZXNzZXMuDQo+
-ICAJICovDQo+IEBAIC0zNjIsMTggKzM2NCwyMCBAQCBib29sIGZvcmNlX2RtYV91bmVuY3J5cHRl
-ZChzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+ICAJCXJldHVybiB0cnVlOw0KPiAgDQo+ICAJLyoNCj4g
-LQkgKiBGb3IgU01FLCBhbGwgRE1BIG11c3QgYmUgdG8gdW5lbmNyeXB0ZWQgYWRkcmVzc2VzIGlm
-IHRoZQ0KPiAtCSAqIGRldmljZSBkb2VzIG5vdCBzdXBwb3J0IERNQSB0byBhZGRyZXNzZXMgdGhh
-dCBpbmNsdWRlIHRoZQ0KPiAtCSAqIGVuY3J5cHRpb24gbWFzay4NCj4gKwkgKiBGb3IgU01FIGFu
-ZCBNS1RNRSwgYWxsIERNQSBtdXN0IGJlIHRvIHVuZW5jcnlwdGVkIGFkZHJlc3NlcyBpZiB0aGUN
-Cj4gKwkgKiBkZXZpY2UgZG9lcyBub3Qgc3VwcG9ydCBETUEgdG8gYWRkcmVzc2VzIHRoYXQgaW5j
-bHVkZSB0aGUgZW5jcnlwdGlvbg0KPiArCSAqIG1hc2suDQo+ICAJICovDQo+IC0JaWYgKHNtZV9h
-Y3RpdmUoKSkgew0KPiAtCQl1NjQgZG1hX2VuY19tYXNrID0gRE1BX0JJVF9NQVNLKF9fZmZzNjQo
-c21lX21lX21hc2spKTsNCj4gLQkJdTY0IGRtYV9kZXZfbWFzayA9IG1pbl9ub3RfemVybyhkZXYt
-PmNvaGVyZW50X2RtYV9tYXNrLA0KPiAtCQkJCQkJZGV2LT5idXNfZG1hX21hc2spOw0KPiArCWlm
-ICghc21lX2FjdGl2ZSgpICYmICFta3RtZV9lbmFibGVkKCkpDQo+ICsJCXJldHVybiBmYWxzZTsN
-Cj4gIA0KPiAtCQlpZiAoZG1hX2Rldl9tYXNrIDw9IGRtYV9lbmNfbWFzaykNCj4gLQkJCXJldHVy
-biB0cnVlOw0KPiAtCX0NCj4gKwlkbWFfZW5jX21hc2sgPSBzbWVfbWVfbWFzayB8IG1rdG1lX2tl
-eWlkX21hc2soKTsNCj4gKw0KPiArCWlmIChkZXYtPmNvaGVyZW50X2RtYV9tYXNrICYmIChkZXYt
-PmNvaGVyZW50X2RtYV9tYXNrICYgZG1hX2VuY19tYXNrKSAhPSBkbWFfZW5jX21hc2spDQo+ICsJ
-CXJldHVybiB0cnVlOw0KPiArDQo+ICsJaWYgKGRldi0+YnVzX2RtYV9tYXNrICYmIChkZXYtPmJ1
-c19kbWFfbWFzayAmIGRtYV9lbmNfbWFzaykgIT0gZG1hX2VuY19tYXNrKQ0KPiArCQlyZXR1cm4g
-dHJ1ZTsNCg0KRG8geW91IHdhbnQgdG8gZXJyIG9uIHRoZSBzaWRlIG9mIGNhdXRpb24gYW5kIHJl
-dHVybiB0cnVlIGlmIGJvdGggbWFza3MNCmFyZSB6ZXJvPyBZb3UgY291bGQgZG8gdGhlIG1pbl9u
-b3RfemVybyBzdGVwIGFuZCB0aGVuIHJldHVybiB0cnVlIGlmIHRoZQ0KcmVzdWx0IGlzIHplcm8u
-IFRoZW4ganVzdCBtYWtlIHRoZSBvbmUgY29tcGFyaXNvbiBhZ2FpbnN0IGRtYV9lbmNfbWFzay4N
-Cg0KVGhhbmtzLA0KVG9tDQoNCj4gIA0KPiAgCXJldHVybiBmYWxzZTsNCj4gIH0NCj4gDQpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Wed, Jul 24, 2019 at 06:30:21PM +0000, Lendacky, Thomas wrote:
+> On 7/24/19 1:11 PM, Kirill A. Shutemov wrote:
+> > On Wed, Jul 24, 2019 at 05:34:26PM +0000, Lendacky, Thomas wrote:
+> >> On 7/24/19 12:06 PM, Robin Murphy wrote:
+> >>> On 24/07/2019 17:42, Lendacky, Thomas wrote:
+> >>>> On 7/24/19 10:55 AM, Kirill A. Shutemov wrote:
+> >>>>> On Wed, Jul 10, 2019 at 07:01:19PM +0000, Lendacky, Thomas wrote:
+> >>>>>> @@ -351,6 +355,32 @@ bool sev_active(void)
+> >>>>>> =A0 }
+> >>>>>> =A0 EXPORT_SYMBOL(sev_active);
+> >>>>>> =A0 +/* Override for DMA direct allocation check -
+> >>>>>> ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+> >>>>>> +bool force_dma_unencrypted(struct device *dev)
+> >>>>>> +{
+> >>>>>> +=A0=A0=A0 /*
+> >>>>>> +=A0=A0=A0=A0 * For SEV, all DMA must be to unencrypted addresses.
+> >>>>>> +=A0=A0=A0=A0 */
+> >>>>>> +=A0=A0=A0 if (sev_active())
+> >>>>>> +=A0=A0=A0=A0=A0=A0=A0 return true;
+> >>>>>> +
+> >>>>>> +=A0=A0=A0 /*
+> >>>>>> +=A0=A0=A0=A0 * For SME, all DMA must be to unencrypted addresses =
+if the
+> >>>>>> +=A0=A0=A0=A0 * device does not support DMA to addresses that incl=
+ude the
+> >>>>>> +=A0=A0=A0=A0 * encryption mask.
+> >>>>>> +=A0=A0=A0=A0 */
+> >>>>>> +=A0=A0=A0 if (sme_active()) {
+> >>>>>> +=A0=A0=A0=A0=A0=A0=A0 u64 dma_enc_mask =3D DMA_BIT_MASK(__ffs64(s=
+me_me_mask));
+> >>>>>> +=A0=A0=A0=A0=A0=A0=A0 u64 dma_dev_mask =3D min_not_zero(dev->cohe=
+rent_dma_mask,
+> >>>>>> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0 dev->bus_dma_mask);
+> >>>>>> +
+> >>>>>> +=A0=A0=A0=A0=A0=A0=A0 if (dma_dev_mask <=3D dma_enc_mask)
+> >>>>>> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return true;
+> >>>>>
+> >>>>> Hm. What is wrong with the dev mask being equal to enc mask? IIUC, =
+it
+> >>>>> means that device mask is wide enough to cover encryption bit, does=
+n't it?
+> >>>>
+> >>>> Not really...=A0 it's the way DMA_BIT_MASK works vs bit numbering. L=
+et's say
+> >>>> that sme_me_mask has bit 47 set. __ffs64 returns 47 and DMA_BIT_MASK=
+(47)
+> >>>> will generate a mask without bit 47 set (0x7fffffffffff). So the che=
+ck
+> >>>> will catch anything that does not support at least 48-bit DMA.
+> >>>
+> >>> Couldn't that be expressed as just:
+> >>>
+> >>> =A0=A0=A0=A0if (sme_me_mask & dma_dev_mask =3D=3D sme_me_mask)
+> >>
+> >> Actually !=3D, but yes, it could have been done like that, I just didn=
+'t
+> >> think of it.
+> > =
+
+> > I'm looking into generalizing the check to cover MKTME.
+> > =
+
+> > Leaving	off the Kconfig changes and moving the check to other file, doe=
+st
+> > the change below look reasonable to you. It's only build tested so far.
+> > =
+
+> > diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> > index fece30ca8b0c..6c86adcd02da 100644
+> > --- a/arch/x86/mm/mem_encrypt.c
+> > +++ b/arch/x86/mm/mem_encrypt.c
+> > @@ -355,6 +355,8 @@ EXPORT_SYMBOL(sev_active);
+> >  /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENC=
+RYPTED */
+> >  bool force_dma_unencrypted(struct device *dev)
+> >  {
+> > +	u64 dma_enc_mask;
+> > +
+> >  	/*
+> >  	 * For SEV, all DMA must be to unencrypted addresses.
+> >  	 */
+> > @@ -362,18 +364,20 @@ bool force_dma_unencrypted(struct device *dev)
+> >  		return true;
+> >  =
+
+> >  	/*
+> > -	 * For SME, all DMA must be to unencrypted addresses if the
+> > -	 * device does not support DMA to addresses that include the
+> > -	 * encryption mask.
+> > +	 * For SME and MKTME, all DMA must be to unencrypted addresses if the
+> > +	 * device does not support DMA to addresses that include the encrypti=
+on
+> > +	 * mask.
+> >  	 */
+> > -	if (sme_active()) {
+> > -		u64 dma_enc_mask =3D DMA_BIT_MASK(__ffs64(sme_me_mask));
+> > -		u64 dma_dev_mask =3D min_not_zero(dev->coherent_dma_mask,
+> > -						dev->bus_dma_mask);
+> > +	if (!sme_active() && !mktme_enabled())
+> > +		return false;
+> >  =
+
+> > -		if (dma_dev_mask <=3D dma_enc_mask)
+> > -			return true;
+> > -	}
+> > +	dma_enc_mask =3D sme_me_mask | mktme_keyid_mask();
+> > +
+> > +	if (dev->coherent_dma_mask && (dev->coherent_dma_mask & dma_enc_mask)=
+ !=3D dma_enc_mask)
+> > +		return true;
+> > +
+> > +	if (dev->bus_dma_mask && (dev->bus_dma_mask & dma_enc_mask) !=3D dma_=
+enc_mask)
+> > +		return true;
+> =
+
+> Do you want to err on the side of caution and return true if both masks
+> are zero? You could do the min_not_zero step and then return true if the
+> result is zero. Then just make the one comparison against dma_enc_mask.
+
+Something like this?
+
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index fece30ca8b0c..173d68b08c55 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -355,6 +355,8 @@ EXPORT_SYMBOL(sev_active);
+ /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPT=
+ED */
+ bool force_dma_unencrypted(struct device *dev)
+ {
++	u64 dma_enc_mask, dma_dev_mask;
++
+ 	/*
+ 	 * For SEV, all DMA must be to unencrypted addresses.
+ 	 */
+@@ -362,20 +364,17 @@ bool force_dma_unencrypted(struct device *dev)
+ 		return true;
+ =
+
+ 	/*
+-	 * For SME, all DMA must be to unencrypted addresses if the
+-	 * device does not support DMA to addresses that include the
+-	 * encryption mask.
++	 * For SME and MKTME, all DMA must be to unencrypted addresses if the
++	 * device does not support DMA to addresses that include the encryption
++	 * mask.
+ 	 */
+-	if (sme_active()) {
+-		u64 dma_enc_mask =3D DMA_BIT_MASK(__ffs64(sme_me_mask));
+-		u64 dma_dev_mask =3D min_not_zero(dev->coherent_dma_mask,
+-						dev->bus_dma_mask);
++	if (!sme_active() && !mktme_enabled())
++		return false;
+ =
+
+-		if (dma_dev_mask <=3D dma_enc_mask)
+-			return true;
+-	}
++	dma_enc_mask =3D sme_me_mask | mktme_keyid_mask();
++	dma_dev_mask =3D min_not_zero(dev->coherent_dma_mask, dev->bus_dma_mask);
+ =
+
+-	return false;
++	return (dma_dev_mask & dma_enc_mask) !=3D dma_enc_mask;
+ }
+ =
+
+ /* Architecture __weak replacement functions */
+-- =
+
+ Kirill A. Shutemov
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
