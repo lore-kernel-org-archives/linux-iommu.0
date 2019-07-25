@@ -6,58 +6,56 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1511EC7618B
-	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 11:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1A9C76194
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 11:43:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E3D872054F
-	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 11:31:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3D872054F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9D41A229F9
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 11:43:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D41A229F9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AD5FCEC9;
-	Thu, 25 Jul 2019 11:31:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6FDB1EF7;
+	Thu, 25 Jul 2019 11:43:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E0090DC5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DA117EF2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Jul 2019 11:31:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2CCD2701
+	Thu, 25 Jul 2019 11:43:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 42A96775
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Jul 2019 11:31:20 +0000 (UTC)
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-	by Forcepoint Email with ESMTP id 49FF142CD2EDFF41F924;
-	Thu, 25 Jul 2019 19:31:18 +0800 (CST)
-Received: from [127.0.0.1] (10.202.227.238) by DGGEMS414-HUB.china.huawei.com
-	(10.3.19.214) with Microsoft SMTP Server id 14.3.439.0;
-	Thu, 25 Jul 2019 19:31:12 +0800
-Subject: Re: [RFC PATCH v2 18/19] iommu/arm-smmu-v3: Reduce contention during
-	command-queue insertion
-To: Will Deacon <will@kernel.org>
-References: <20190711171927.28803-1-will@kernel.org>
-	<20190711171927.28803-19-will@kernel.org>
-	<b6302fdf-29ef-0aa2-ae7a-ed21c506c6ec@huawei.com>
-	<20190724143355.r2zw6z37igwav2ki@willie-the-truck>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <de49178c-0628-e759-fcc0-aabd7e86337c@huawei.com>
-Date: Thu, 25 Jul 2019 12:31:05 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
-	Thunderbird/45.3.0
+	Thu, 25 Jul 2019 11:43:52 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 137C168BFE; Thu, 25 Jul 2019 13:43:49 +0200 (CEST)
+Date: Thu, 25 Jul 2019 13:43:48 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 02/10] iommu/vt-d: Use per-device dma_ops
+Message-ID: <20190725114348.GA30957@lst.de>
+References: <20190725031717.32317-1-baolu.lu@linux.intel.com>
+	<20190725031717.32317-3-baolu.lu@linux.intel.com>
+	<20190725054413.GC24527@lst.de>
+	<bc831f88-5b19-7531-00aa-a7577dd5c1ac@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20190724143355.r2zw6z37igwav2ki@willie-the-truck>
-X-Originating-IP: [10.202.227.238]
-X-CFilter-Loop: Reflected
-Cc: Vijay Kilary <vkilari@codeaurora.org>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	iommu@lists.linux-foundation.org,
-	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
-	Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <bc831f88-5b19-7531-00aa-a7577dd5c1ac@linux.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
+	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
+	Jonathan Corbet <corbet@lwn.net>, pengfei.xu@intel.com,
+	Ingo Molnar <mingo@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	mika.westerberg@linux.intel.com, Juergen Gross <jgross@suse.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	jacob.jun.pan@intel.com, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,80 +68,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Will,
-
->>> +		old = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);
->>
->> I added some basic debug to the stress test on your branch, and this cmpxchg
->> was failing ~10 times on average on my D06.
->>
->> So we're not using the spinlock now, but this cmpxchg may lack fairness.
->
-> It definitely lacks fairness, although that's going to be the case in many
-> other places where locking is elided as well. If it shows up as an issue, we
-> should try to address it, but queueing means serialisation and that largely
-> defeats the point of this patch. I also don't expect it to be a problem
-> unless the cmpxchg() is heavily contended, which shouldn't be the case if
-> we're batching.
->
->> Since we're batching commands, I wonder if it's better to restore the
->> spinlock and send batched commands + CMD_SYNC under the lock, and then wait
->> for the CMD_SYNC completion outside the lock.
->
-> Again, we'd need some numbers, but my concern with that approach is that
-> we're serialising CPUs which is what I've been trying hard to avoid.
-
-That makes sense about the serialisation.
-
-I'm just concerned with the scenario when the queue is heavily 
-contented; here we may be gathering multiple batches of commands, and 
-owners and non-owners a. may delay each other in writing the commands b. 
-also pend the final CMD_SYNC consumption, which is for all gathered 
-commands, and not just the commands which a particular CPU is interested in.
-
-It
-> also doesn't let you straightforwardly remove the cmpxchg() loop, since
-> the owner clears the OWNED flag and you probably wouldn't want to hold
-> the lock for that.
->
->> I don't know if it improves the queue contetion, but at least the prod
->> pointer would be more closely track the issued commands, such that we're not
->> waiting to kick off many gathered batches of commands, while the SMMU HW may
->> be idle (in terms of command processing).
->
-> Again, probably going to need some numbers to change this, although it
-> sounds like your other suggestion about having the owner move prod twice
-> would largely address your concerns.
-
-Limited initial testing shows that it makes little difference...
-
-  Reintroducing the lock, on the other
-> hand, feels like a big step backwards to me, and the whole reason I started
-> down the current route was because of vague claims that the locking was a
-> problem for large systems.
-
-To me, the biggest improvement is batching of the commands, and it may 
-not make much difference either way in how we deal with submitting them 
-to the queue.
-
-Cheers,
-John
-
->
-> Thanks,
->
-> Will
->
-> .
->
-
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCBKdWwgMjUsIDIwMTkgYXQgMDM6MTg6MDNQTSArMDgwMCwgTHUgQmFvbHUgd3JvdGU6
+Cj4+IERvbid0IHdlIG5lZWQgdG8ga2VlcCB0aGlzIGJpdCBzbyB0aGF0IHdlIHN0aWxsIGFsbG93
+IHRoZSBJT01NVQo+PiB0byBhY3QgaWYgdGhlIGRldmljZSBoYXMgYSB0b28gc21hbGwgRE1BIG1h
+c2sgdG8gYWRkcmVzcyBhbGwgbWVtb3J5IGluCj4+IHRoZSBzeXN0ZW0sIGV2ZW4gaWYgaWYgaXQg
+c2hvdWxkIG90aGVyd2lzZSBiZSBpZGVudGl0eSBtYXBwZWQ/Cj4+Cj4KPiBUaGlzIGNoZWNraW5n
+IGhhcHBlbnMgb25seSB3aGVuIGRldmljZSBpcyB1c2luZyBhbiBpZGVudGl0eSBtYXBwZWQKPiBk
+b21haW4uIElmIHRoZSBkZXZpY2UgaGFzIGEgc21hbGwgRE1BIG1hc2ssIHN3aW90bGIgd2lsbCBi
+ZSB1c2VkIGZvcgo+IGhpZ2ggbWVtb3J5IGFjY2Vzcy4KPgo+IFRoaXMgaXMgc3VwcG9zZWQgdG8g
+YmUgaGFuZGxlZCBpbiBkbWFfZGlyZWN0X21hcF9wYWdlKCk6Cj4KPiAgICAgICAgIGlmICh1bmxp
+a2VseSghZG1hX2RpcmVjdF9wb3NzaWJsZShkZXYsIGRtYV9hZGRyLCBzaXplKSkgJiYKPiAgICAg
+ICAgICAgICAhc3dpb3RsYl9tYXAoZGV2LCAmcGh5cywgJmRtYV9hZGRyLCBzaXplLCBkaXIsIGF0
+dHJzKSkgewo+ICAgICAgICAgICAgICAgICByZXBvcnRfYWRkcihkZXYsIGRtYV9hZGRyLCBzaXpl
+KTsKPiAgICAgICAgICAgICAgICAgcmV0dXJuIERNQV9NQVBQSU5HX0VSUk9SOwo+ICAgICAgICAg
+fQoKV2VsbCwgeWVzLiAgQnV0IHRoZSBwb2ludCBpcyB0aGF0IHRoZSBjdXJyZW50IGNvZGUgdXNl
+cyBkeW5hbWljIGlvbW11Cm1hcHBpbmdzIGV2ZW4gaWYgdGhlIGRldmljZXMgaXMgaW4gdGhlIGlk
+ZW50aXR5IG1hcHBlZCBkb21haW4gd2hlbiB0aGUKZG1hIG1hc2sg0ZZzIHRvbyBzbWFsbCB0byBt
+YXAgYWxsIG1lbW9yeSBkaXJlY3RseS4gIFlvdXIgY2hhbmdlIG1lYW5zIGl0CndpbGwgbm93IHVz
+ZSBzd2lvdGxiIHdoaWNoIGlzIG1vc3QgbGlrZWx5IGdvaW5nIHRvIGJlIGEgbG90IG1vcmUKZXhw
+ZW5zaXZlLiAgSSBkb24ndCB0aGluayB0aGF0IHRoaXMgY2hhbmdlIGlzIGEgZ29vZCBpZGVhLCBh
+bmQgZXZlbiBpZgp3ZSBkZWNpZGUgdGhhdCB0aGlzIGlzIGEgZ29vZCBpZGVhIGFmdGVyIGFsbCB0
+aGF0IHNob3VsZCBiZSBkb25lIGluIGEKc2VwYXJhdGUgcHJlcCBwYXRjaCB0aGF0IGV4cGxhaW5z
+IHRoZSByYXRpb25hbGUuCgo+IEJlc3QgcmVnYXJkcywKPiBCYW9sdQotLS1lbmQgcXVvdGVkIHRl
+eHQtLS0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
