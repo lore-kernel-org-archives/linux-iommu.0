@@ -6,42 +6,41 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4E1C76194
-	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 05:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196EAC76191
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 05:44:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8890822CB8
-	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 05:42:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8890822CB8
+	by mail.kernel.org (Postfix) with ESMTPS id EE64021880
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 05:44:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE64021880
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 386C01647;
-	Thu, 25 Jul 2019 05:42:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AAC81163E;
+	Thu, 25 Jul 2019 05:44:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6B3F3163E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4D685150B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Jul 2019 05:41:58 +0000 (UTC)
+	Thu, 25 Jul 2019 05:44:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 00C80FE
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E656C7FD
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Jul 2019 05:41:57 +0000 (UTC)
+	Thu, 25 Jul 2019 05:44:16 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id A931F68B20; Thu, 25 Jul 2019 07:41:54 +0200 (CEST)
-Date: Thu, 25 Jul 2019 07:41:54 +0200
+	id 659C368B20; Thu, 25 Jul 2019 07:44:13 +0200 (CEST)
+Date: Thu, 25 Jul 2019 07:44:13 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 01/10] iommu/vt-d: Don't switch off swiotlb if use
-	direct dma
-Message-ID: <20190725054154.GB24527@lst.de>
+Subject: Re: [PATCH v5 02/10] iommu/vt-d: Use per-device dma_ops
+Message-ID: <20190725054413.GC24527@lst.de>
 References: <20190725031717.32317-1-baolu.lu@linux.intel.com>
-	<20190725031717.32317-2-baolu.lu@linux.intel.com>
+	<20190725031717.32317-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190725031717.32317-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20190725031717.32317-3-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
 	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
@@ -72,9 +71,27 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Looks good:
+>  /* Check if the dev needs to go through non-identity map and unmap process.*/
+>  static bool iommu_need_mapping(struct device *dev)
+>  {
+> -	int ret;
+> -
+>  	if (iommu_dummy(dev))
+>  		return false;
+>  
+> -	ret = identity_mapping(dev);
+> -	if (ret) {
+> -		u64 dma_mask = *dev->dma_mask;
+> -
+> -		if (dev->coherent_dma_mask && dev->coherent_dma_mask < dma_mask)
+> -			dma_mask = dev->coherent_dma_mask;
+> -
+> -		if (dma_mask >= dma_get_required_mask(dev))
+> -			return false;
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Don't we need to keep this bit so that we still allow the IOMMU
+to act if the device has a too small DMA mask to address all memory in
+the system, even if if it should otherwise be identity mapped?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
