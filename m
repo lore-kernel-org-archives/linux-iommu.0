@@ -1,75 +1,62 @@
-Return-Path: <SRS0=WqUy=VV=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=la/L=VW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD96C76186
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 22:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF994C76186
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 01:40:49 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B23FD21880
-	for <iommu@archiver.kernel.org>; Wed, 24 Jul 2019 22:11:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B23FD21880
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8C3B821951
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 01:40:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C3B821951
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4A89A15A7;
-	Wed, 24 Jul 2019 22:11:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 588281636;
+	Thu, 25 Jul 2019 01:40:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4835215A5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 49A8D13E3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 22:11:02 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
-	[209.85.160.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 47C848A7
+	Thu, 25 Jul 2019 01:40:48 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DAE22FE
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 22:11:00 +0000 (UTC)
-Received: by mail-qt1-f196.google.com with SMTP id a15so47104719qtn.7
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 24 Jul 2019 15:11:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to;
-	bh=ZiT1oQ3le6gupTI0pwbmKNqZ9qeZj4CLKlZRplQnTAY=;
-	b=n4nioEFz0eEixhvC4LWBGQ4Uia1wSdk64JIohjbhC31AsDp4AK8OyscgSZOHxA0O2I
-	WbzGvHYMb08gz5FkQS8YYr+uOmtsrlaPvU9xRgpDhm9WXD4LL9d1LHpmtG0tilftWCxJ
-	WlEFyiKVlZR8DTNbqEX2WSdHMKFMWOOdQ+I+RebL424azA2rcUTEJTLjOEpfIPEnT+XQ
-	KZRc0qg3ZeDJFWsxfKnyuIqtw+oZm1vqtr6EW2OHIQ86XMtFbSsh1Bt7X1oK1dd3fz03
-	OTCvj5fWClJBQSAAm96kNAtUWaSryIP0o4Thw0U14tD6tmvUm064N8XptYXyYcFkpOYv
-	Ts1g==
-X-Gm-Message-State: APjAAAV73Dp9qLZXH/1LpigM8vliWpd6U+sTcEOYfbpEypP7HE6GYtGC
-	WOFp+Us0OENKKNLIE7DM1YAwBA==
-X-Google-Smtp-Source: APXvYqwsl34mAeI1ycJq/WD6DI4M1e7pIzRNfVQKDNOWFybfH6EBHoRGki9/ggsy5dsu/ZaP8T89Pw==
-X-Received: by 2002:ac8:3014:: with SMTP id f20mr59384146qte.69.1564006259498; 
-	Wed, 24 Jul 2019 15:10:59 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-	by smtp.gmail.com with ESMTPSA id
-	g54sm28199760qtc.61.2019.07.24.15.10.56
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Wed, 24 Jul 2019 15:10:58 -0700 (PDT)
-Date: Wed, 24 Jul 2019 18:10:53 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 2/2] virtio/virtio_ring: Fix the dma_max_mapping_size call
-Message-ID: <20190723114750-mutt-send-email-mst@kernel.org>
-References: <20190722145509.1284-1-eric.auger@redhat.com>
-	<20190722145509.1284-3-eric.auger@redhat.com>
-	<e4a288f2-a93a-5ce4-32da-f5434302551f@arm.com>
-	<20190723153851.GE720@lst.de>
+	Thu, 25 Jul 2019 01:40:47 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	24 Jul 2019 18:40:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,305,1559545200"; d="scan'208";a="181303519"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 24 Jul 2019 18:40:44 -0700
+Subject: Re: [PATCH 1/1] iommu/vt-d: Correctly check format of page table in
+	debugfs
+To: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+References: <20190720020126.9974-1-baolu.lu@linux.intel.com>
+	<FFF73D592F13FD46B8700F0A279B802F4F9354AF@ORSMSX114.amr.corp.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <8d09da43-d0dd-9dff-0cb3-aa93448a7e60@linux.intel.com>
+Date: Thu, 25 Jul 2019 09:40:10 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190723153851.GE720@lst.de>
-Cc: jasowang@redhat.com, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
-	Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <FFF73D592F13FD46B8700F0A279B802F4F9354AF@ORSMSX114.amr.corp.intel.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,36 +69,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Jul 23, 2019 at 05:38:51PM +0200, Christoph Hellwig wrote:
-> On Mon, Jul 22, 2019 at 04:36:09PM +0100, Robin Murphy wrote:
-> >> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> >> index c8be1c4f5b55..37c143971211 100644
-> >> --- a/drivers/virtio/virtio_ring.c
-> >> +++ b/drivers/virtio/virtio_ring.c
-> >> @@ -262,7 +262,7 @@ size_t virtio_max_dma_size(struct virtio_device *vdev)
-> >>   {
-> >>   	size_t max_segment_size = SIZE_MAX;
-> >>   -	if (vring_use_dma_api(vdev))
-> >> +	if (vring_use_dma_api(vdev) && vdev->dev.dma_mask)
-> >
-> > Hmm, might it make sense to roll that check up into vring_use_dma_api() 
-> > itself? After all, if the device has no mask then it's likely that other 
-> > DMA API ops wouldn't really work as expected either.
+Hi Sai,
+
+On 7/22/19 1:21 PM, Prakhya, Sai Praneeth wrote:
+> Hi Allen,
 > 
-> Makes sense to me.
+>> diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-
+>> iommu-debugfs.c
+>> index 73a552914455..e31c3b416351 100644
+>> --- a/drivers/iommu/intel-iommu-debugfs.c
+>> +++ b/drivers/iommu/intel-iommu-debugfs.c
+>> @@ -235,7 +235,7 @@ static void ctx_tbl_walk(struct seq_file *m, struct
+>> intel_iommu *iommu, u16 bus)
+>>   		tbl_wlk.ctx_entry = context;
+>>   		m->private = &tbl_wlk;
+>>
+>> -		if (pasid_supported(iommu) && is_pasid_enabled(context)) {
+>> +		if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) &
+>> DMA_RTADDR_SMT) {
+> 
+> Thanks for adding this, I do believe this is a good addition but I also think that we might
+> need "is_pasid_enabled()" as well. It checks if PASIDE bit in context entry is enabled or not.
+> 
+> I am thinking that even though DMAR might be using scalable root and context table, the entry
+> itself should have PASIDE bit set. Did I miss something here?
 
-Christoph - would a documented API wrapping dma_mask make sense?
-With the documentation explaining how users must
-desist from using DMA APIs if that returns false ...
+No matter the PASIDE bit set or not, IOMMU always uses the scalable mode
+page table if scalable mode is enabled. If PASIDE is set, requests with
+PASID will be handled. Otherwise, requests with PASID will be blocked
+(but request without PASID will always be handled).
 
+We are dumpling the page table of the IOMMU, so we only care about what
+page table format it is using. Do I understand it right>
 
--- 
-MST
+Best regards,
+Baolu
+
+> 
+> And I also think a macro would be better so that it could reused elsewhere (if need be).
+> 
+> Regards,
+> Sai
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
