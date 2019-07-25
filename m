@@ -2,62 +2,52 @@ Return-Path: <SRS0=la/L=VW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF85C76186
-	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 03:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F24C7618B
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 05:25:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9BE942075C
-	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 03:18:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9BE942075C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 379422190F
+	for <iommu@archiver.kernel.org>; Thu, 25 Jul 2019 05:25:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 379422190F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3D3541711;
-	Thu, 25 Jul 2019 03:18:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0D4A8157D;
+	Thu, 25 Jul 2019 05:25:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BCDA916FB
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Jul 2019 03:18:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0786C701
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 25 Jul 2019 03:18:36 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	24 Jul 2019 20:18:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,305,1559545200"; d="scan'208";a="189228365"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by fmsmga001.fm.intel.com with ESMTP; 24 Jul 2019 20:18:33 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v5 10/10] iommu/vt-d: Use bounce buffer for untrusted devices
-Date: Thu, 25 Jul 2019 11:17:17 +0800
-Message-Id: <20190725031717.32317-11-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190725031717.32317-1-baolu.lu@linux.intel.com>
-References: <20190725031717.32317-1-baolu.lu@linux.intel.com>
-Cc: Juergen Gross <jgross@suse.com>, kevin.tian@intel.com,
-	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, Jonathan Corbet <corbet@lwn.net>,
-	Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
-	jacob.jun.pan@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	mika.westerberg@linux.intel.com
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6F00214B6;
+	Thu, 25 Jul 2019 05:25:32 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E06B87FD;
+	Thu, 25 Jul 2019 05:25:31 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id E280168B20; Thu, 25 Jul 2019 07:25:29 +0200 (CEST)
+Date: Thu, 25 Jul 2019 07:25:29 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 2/2] virtio/virtio_ring: Fix the dma_max_mapping_size call
+Message-ID: <20190725052529.GA24355@lst.de>
+References: <20190722145509.1284-1-eric.auger@redhat.com>
+	<20190722145509.1284-3-eric.auger@redhat.com>
+	<e4a288f2-a93a-5ce4-32da-f5434302551f@arm.com>
+	<20190723153851.GE720@lst.de>
+	<20190723114750-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20190723114750-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: jasowang@redhat.com, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,268 +60,18 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The Intel VT-d hardware uses paging for DMA remapping.
-The minimum mapped window is a page size. The device
-drivers may map buffers not filling the whole IOMMU
-window. This allows the device to access to possibly
-unrelated memory and a malicious device could exploit
-this to perform DMA attacks. To address this, the
-Intel IOMMU driver will use bounce pages for those
-buffers which don't fill whole IOMMU pages.
+On Wed, Jul 24, 2019 at 06:10:53PM -0400, Michael S. Tsirkin wrote:
+> Christoph - would a documented API wrapping dma_mask make sense?
+> With the documentation explaining how users must
+> desist from using DMA APIs if that returns false ...
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Tested-by: Xu Pengfei <pengfei.xu@intel.com>
-Tested-by: Mika Westerberg <mika.westerberg@intel.com>
----
- drivers/iommu/Kconfig       |   2 +
- drivers/iommu/intel-iommu.c | 188 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 188 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d7f2e09cbcf2..3baa418edc16 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -195,6 +195,8 @@ config INTEL_IOMMU
- 	select IOMMU_IOVA
- 	select NEED_DMA_MAP_STATE
- 	select DMAR_TABLE
-+	select SWIOTLB
-+	select IOMMU_BOUNCE_PAGE
- 	help
- 	  DMA remapping (DMAR) devices support enables independent address
- 	  translations for Direct Memory Access (DMA) from devices.
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4185406b0368..2cdec279ccac 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -44,6 +44,7 @@
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-+#include <trace/events/intel_iommu.h>
- 
- #include "irq_remapping.h"
- #include "intel-pasid.h"
-@@ -3672,6 +3673,183 @@ static const struct dma_map_ops intel_dma_ops = {
- 	.dma_supported = dma_direct_supported,
- };
- 
-+static dma_addr_t
-+bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
-+		  enum dma_data_direction dir, unsigned long attrs,
-+		  u64 dma_mask)
-+{
-+	struct dmar_domain *domain;
-+	struct intel_iommu *iommu;
-+	unsigned long iova_pfn;
-+	unsigned long nrpages;
-+	dma_addr_t ret_addr;
-+
-+	domain = find_domain(dev);
-+	if (WARN_ON(dir == DMA_NONE || !domain))
-+		return DMA_MAPPING_ERROR;
-+
-+	iommu = domain_get_iommu(domain);
-+	nrpages = aligned_nrpages(0, size);
-+	iova_pfn = intel_alloc_iova(dev, domain,
-+				    dma_to_mm_pfn(nrpages), dma_mask);
-+	if (!iova_pfn)
-+		return DMA_MAPPING_ERROR;
-+
-+	ret_addr = iommu_bounce_map(dev, iova_pfn << PAGE_SHIFT,
-+				    paddr, size, dir, attrs);
-+	if (ret_addr == DMA_MAPPING_ERROR) {
-+		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(nrpages));
-+		return DMA_MAPPING_ERROR;
-+	}
-+
-+	trace_bounce_map_single(dev, iova_pfn << PAGE_SHIFT, paddr, size);
-+
-+	return ret_addr;
-+}
-+
-+static void
-+bounce_unmap_single(struct device *dev, dma_addr_t dev_addr, size_t size,
-+		    enum dma_data_direction dir, unsigned long attrs)
-+{
-+	struct dmar_domain *domain;
-+	struct intel_iommu *iommu;
-+	unsigned long iova_pfn;
-+	unsigned long nrpages;
-+
-+	domain = find_domain(dev);
-+	if (WARN_ON(!domain))
-+		return;
-+
-+	iommu_bounce_unmap(dev, dev_addr, size, dir, attrs);
-+	trace_bounce_unmap_single(dev, dev_addr, size);
-+
-+	iommu = domain_get_iommu(domain);
-+	iova_pfn = IOVA_PFN(dev_addr);
-+	nrpages = aligned_nrpages(0, size);
-+
-+	iommu_flush_iotlb_psi(iommu, domain,
-+			      mm_to_dma_pfn(iova_pfn), nrpages, 0, 0);
-+	free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(nrpages));
-+}
-+
-+static dma_addr_t
-+bounce_map_page(struct device *dev, struct page *page, unsigned long offset,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	return bounce_map_single(dev, page_to_phys(page) + offset,
-+				 size, dir, attrs, *dev->dma_mask);
-+}
-+
-+static dma_addr_t
-+bounce_map_resource(struct device *dev, phys_addr_t phys_addr, size_t size,
-+		    enum dma_data_direction dir, unsigned long attrs)
-+{
-+	return bounce_map_single(dev, phys_addr, size,
-+				 dir, attrs, *dev->dma_mask);
-+}
-+
-+static void
-+bounce_unmap_page(struct device *dev, dma_addr_t dev_addr, size_t size,
-+		  enum dma_data_direction dir, unsigned long attrs)
-+{
-+	bounce_unmap_single(dev, dev_addr, size, dir, attrs);
-+}
-+
-+static void
-+bounce_unmap_resource(struct device *dev, dma_addr_t dev_addr, size_t size,
-+		      enum dma_data_direction dir, unsigned long attrs)
-+{
-+	bounce_unmap_single(dev, dev_addr, size, dir, attrs);
-+}
-+
-+static void
-+bounce_unmap_sg(struct device *dev, struct scatterlist *sglist, int nelems,
-+		enum dma_data_direction dir, unsigned long attrs)
-+{
-+	struct scatterlist *sg;
-+	int i;
-+
-+	for_each_sg(sglist, sg, nelems, i)
-+		bounce_unmap_page(dev, sg->dma_address,
-+				  sg_dma_len(sg), dir, attrs);
-+}
-+
-+static int
-+bounce_map_sg(struct device *dev, struct scatterlist *sglist, int nelems,
-+	      enum dma_data_direction dir, unsigned long attrs)
-+{
-+	int i;
-+	struct scatterlist *sg;
-+
-+	for_each_sg(sglist, sg, nelems, i) {
-+		sg->dma_address = bounce_map_page(dev, sg_page(sg),
-+				sg->offset, sg->length, dir, attrs);
-+		if (sg->dma_address == DMA_MAPPING_ERROR)
-+			goto out_unmap;
-+		sg_dma_len(sg) = sg->length;
-+	}
-+
-+	return nelems;
-+
-+out_unmap:
-+	bounce_unmap_sg(dev, sglist, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+	return 0;
-+}
-+
-+static void
-+bounce_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-+			   size_t size, enum dma_data_direction dir)
-+{
-+	iommu_bounce_sync(dev, addr, size, dir, SYNC_FOR_CPU);
-+}
-+
-+static void
-+bounce_sync_single_for_device(struct device *dev, dma_addr_t addr,
-+			      size_t size, enum dma_data_direction dir)
-+{
-+	iommu_bounce_sync(dev, addr, size, dir, SYNC_FOR_DEVICE);
-+}
-+
-+static void
-+bounce_sync_sg_for_cpu(struct device *dev, struct scatterlist *sglist,
-+		       int nelems, enum dma_data_direction dir)
-+{
-+	struct scatterlist *sg;
-+	int i;
-+
-+	for_each_sg(sglist, sg, nelems, i)
-+		iommu_bounce_sync(dev, sg_dma_address(sg),
-+				  sg_dma_len(sg), dir, SYNC_FOR_CPU);
-+}
-+
-+static void
-+bounce_sync_sg_for_device(struct device *dev, struct scatterlist *sglist,
-+			  int nelems, enum dma_data_direction dir)
-+{
-+	struct scatterlist *sg;
-+	int i;
-+
-+	for_each_sg(sglist, sg, nelems, i)
-+		iommu_bounce_sync(dev, sg_dma_address(sg),
-+				  sg_dma_len(sg), dir, SYNC_FOR_DEVICE);
-+}
-+
-+static const struct dma_map_ops bounce_dma_ops = {
-+	.alloc			= intel_alloc_coherent,
-+	.free			= intel_free_coherent,
-+	.map_sg			= bounce_map_sg,
-+	.unmap_sg		= bounce_unmap_sg,
-+	.map_page		= bounce_map_page,
-+	.unmap_page		= bounce_unmap_page,
-+	.sync_single_for_cpu	= bounce_sync_single_for_cpu,
-+	.sync_single_for_device	= bounce_sync_single_for_device,
-+	.sync_sg_for_cpu	= bounce_sync_sg_for_cpu,
-+	.sync_sg_for_device	= bounce_sync_sg_for_device,
-+	.map_resource		= bounce_map_resource,
-+	.unmap_resource		= bounce_unmap_resource,
-+	.dma_supported		= dma_direct_supported,
-+};
-+
- static inline int iommu_domain_cache_init(void)
- {
- 	int ret = 0;
-@@ -5212,7 +5390,10 @@ static int intel_iommu_add_device(struct device *dev)
- 					 "Device uses a private identity domain.\n");
- 			}
- 		} else {
--			set_dma_ops(dev, &intel_dma_ops);
-+			if (device_needs_bounce(dev))
-+				set_dma_ops(dev, &bounce_dma_ops);
-+			else
-+				set_dma_ops(dev, &intel_dma_ops);
- 		}
- 	} else {
- 		if (device_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
-@@ -5229,7 +5410,10 @@ static int intel_iommu_add_device(struct device *dev)
- 					 "Device uses a private dma domain.\n");
- 			}
- 
--			set_dma_ops(dev, &intel_dma_ops);
-+			if (device_needs_bounce(dev))
-+				set_dma_ops(dev, &bounce_dma_ops);
-+			else
-+				set_dma_ops(dev, &intel_dma_ops);
- 		}
- 	}
- 
--- 
-2.17.1
-
+We have some bigger changes in this are planned, including turning
+dma_mask into a scalar instead of a pointer, please stay tuned.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
