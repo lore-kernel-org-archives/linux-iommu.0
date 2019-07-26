@@ -4,44 +4,45 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD71C7618B
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 08:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8D8C7618B
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 08:32:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D87921901
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 08:32:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D87921901
+	by mail.kernel.org (Postfix) with ESMTPS id 4DC8A21901
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 08:32:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4DC8A21901
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A18BACB5;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C1981CBA;
 	Fri, 26 Jul 2019 08:32:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 861C7C84
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D62BBB5F
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 08:32:26 +0000 (UTC)
+	Fri, 26 Jul 2019 08:32:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
 	[210.160.252.171])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 8600789C
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 028F5709
 	for <iommu@lists.linux-foundation.org>;
 	Fri, 26 Jul 2019 08:32:25 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.64,310,1559487600"; d="scan'208";a="22504205"
+X-IronPort-AV: E=Sophos;i="5.64,310,1559487600"; d="scan'208";a="22504208"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
 	by relmlie5.idc.renesas.com with ESMTP; 26 Jul 2019 17:32:23 +0900
 Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 7F7854202743;
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id AF5FD42017BC;
 	Fri, 26 Jul 2019 17:32:23 +0900 (JST)
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: ulf.hansson@linaro.org, hch@lst.de, m.szyprowski@samsung.com,
 	robin.murphy@arm.com, joro@8bytes.org, axboe@kernel.dk
-Subject: [PATCH v9 3/5] block: sort headers on blk-setting.c
-Date: Fri, 26 Jul 2019 17:31:14 +0900
-Message-Id: <1564129876-28261-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v9 4/5] block: add a helper function to merge the segments
+Date: Fri, 26 Jul 2019 17:31:15 +0900
+Message-Id: <1564129876-28261-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564129876-28261-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1564129876-28261-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
@@ -66,43 +67,70 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch sorts the headers in alphabetic order to ease
-the maintenance for this part.
+This patch adds a helper function whether a queue can merge
+the segments by the DMA MAP layer (e.g. via IOMMU).
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
 ---
- block/blk-settings.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ block/blk-settings.c   | 22 ++++++++++++++++++++++
+ include/linux/blkdev.h |  2 ++
+ 2 files changed, 24 insertions(+)
 
 diff --git a/block/blk-settings.c b/block/blk-settings.c
-index 2ae348c..45f2c52 100644
+index 45f2c52..6a78ea0 100644
 --- a/block/blk-settings.c
 +++ b/block/blk-settings.c
-@@ -2,16 +2,16 @@
- /*
-  * Functions related to setting various queue properties from drivers
+@@ -4,6 +4,7 @@
   */
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/init.h>
  #include <linux/bio.h>
  #include <linux/blkdev.h>
--#include <linux/memblock.h>	/* for max_pfn/max_low_pfn */
++#include <linux/dma-mapping.h>
  #include <linux/gcd.h>
--#include <linux/lcm.h>
--#include <linux/jiffies.h>
  #include <linux/gfp.h>
-+#include <linux/init.h>
-+#include <linux/jiffies.h>
-+#include <linux/kernel.h>
-+#include <linux/lcm.h>
-+#include <linux/memblock.h>     /* for max_pfn/max_low_pfn */
-+#include <linux/module.h>
+ #include <linux/init.h>
+@@ -831,6 +832,27 @@ void blk_queue_write_cache(struct request_queue *q, bool wc, bool fua)
+ }
+ EXPORT_SYMBOL_GPL(blk_queue_write_cache);
  
- #include "blk.h"
- #include "blk-wbt.h"
++/**
++ * blk_queue_can_use_dma_map_merging - configure queue for merging segments.
++ * @q:		the request queue for the device
++ * @dev:	the device pointer for dma
++ *
++ * Tell the block layer about merging the segments by dma map of @q.
++ */
++bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
++				       struct device *dev)
++{
++	unsigned long boundary = dma_get_merge_boundary(dev);
++
++	if (!boundary)
++		return false;
++
++	/* No need to update max_segment_size. see blk_queue_virt_boundary() */
++	blk_queue_virt_boundary(q, boundary);
++
++	return true;
++}
++
+ static int __init blk_settings_init(void)
+ {
+ 	blk_max_low_pfn = max_low_pfn - 1;
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 1ef375d..f6d55e2 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1085,6 +1085,8 @@ extern void blk_queue_dma_alignment(struct request_queue *, int);
+ extern void blk_queue_update_dma_alignment(struct request_queue *, int);
+ extern void blk_queue_rq_timeout(struct request_queue *, unsigned int);
+ extern void blk_queue_write_cache(struct request_queue *q, bool enabled, bool fua);
++extern bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
++					      struct device *dev);
+ 
+ /*
+  * Number of physical segments as sent to the device.
 -- 
 2.7.4
 
