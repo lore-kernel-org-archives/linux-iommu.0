@@ -2,52 +2,63 @@ Return-Path: <SRS0=gbr8=VX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12288C7618B
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 12:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FE0C41514
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 13:40:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD470218DA
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 12:01:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD470218DA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 588CF22BF5
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 13:40:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="kLhHdUp7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 588CF22BF5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AF09DC8F;
-	Fri, 26 Jul 2019 12:01:07 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 282E5C84;
+	Fri, 26 Jul 2019 13:40:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EF62FAB9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D3418C7A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 12:01:05 +0000 (UTC)
+	Fri, 26 Jul 2019 13:40:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E71F989C
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7BA2389C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 12:01:04 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9F185344;
-	Fri, 26 Jul 2019 05:01:04 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B2B983F694;
-	Fri, 26 Jul 2019 05:01:03 -0700 (PDT)
-Subject: Re: [PATCH] iommu: arm-smmu-v3: Mark expected switch fall-through
-To: Anders Roxell <anders.roxell@linaro.org>, will@kernel.org, joro@8bytes.org
-References: <20190726112821.19775-1-anders.roxell@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <522507e5-96e6-2bf4-cf91-73963a77358d@arm.com>
-Date: Fri, 26 Jul 2019 13:01:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Fri, 26 Jul 2019 13:40:09 +0000 (UTC)
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
+	[73.47.72.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 8A19122CBF;
+	Fri, 26 Jul 2019 13:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1564148409;
+	bh=tm7Y0GezpikEYvCrzvAS38HkjuB5/K0CmseOd6YnkoU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=kLhHdUp7e30CpRtubBfT+2W//1zpenTCCn+xphNeETZ/dwPZWO2m7aNeFgZ6yCaAy
+	CMo6B3a4boVTGqMQgmJ6jqRTv48/Cub3OUMDruGi7CnsWaLd4y03LOG1UV/yIM/LRw
+	IKNbkadJVHvEZxFzmbLiyPRf3I7m9S9d1wd0G01A=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 18/85] swiotlb: fix phys_addr_t overflow warning
+Date: Fri, 26 Jul 2019 09:38:28 -0400
+Message-Id: <20190726133936.11177-18-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190726133936.11177-1-sashal@kernel.org>
+References: <20190726133936.11177-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20190726112821.19775-1-anders.roxell@linaro.org>
-Content-Language: en-GB
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+	Stefano Stabellini <sstabellini@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,41 +71,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gMjYvMDcvMjAxOSAxMjoyOCwgQW5kZXJzIFJveGVsbCB3cm90ZToKPiBXaGVuIGZhbGwtdGhy
-b3VnaCB3YXJuaW5ncyB3YXMgZW5hYmxlZCBieSBkZWZhdWx0LCBjb21taXQgZDkzNTEyZWYwZjBl
-CgpUaGF0IGNvbW1pdCBJRCBvbmx5IGV4aXN0cyBpbiBhIGhhbmRmdWwgb2Ygb2xkIGxpbnV4LW5l
-eHQgdGFncy4KCj4gKCJNYWtlZmlsZTogR2xvYmFsbHkgZW5hYmxlIGZhbGwtdGhyb3VnaCB3YXJu
-aW5nIiksIHRoZSBmb2xsb3dpbmcKPiB3YXJuaW5nIHdhcyBzdGFydGluZyB0byBzaG93IHVwOgo+
-IAo+IC4uL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYzogSW4gZnVuY3Rpb24g4oCYYXJtX3Nt
-bXVfd3JpdGVfc3RydGFiX2VudOKAmToKPiAuLi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmM6
-MTE4OTo3OiB3YXJuaW5nOiB0aGlzIHN0YXRlbWVudCBtYXkgZmFsbAo+ICAgdGhyb3VnaCBbLVdp
-bXBsaWNpdC1mYWxsdGhyb3VnaD1dCj4gICAgICBpZiAoZGlzYWJsZV9ieXBhc3MpCj4gICAgICAg
-ICBeCj4gLi4vZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jOjExOTE6Mzogbm90ZTogaGVyZQo+
-ICAgICBkZWZhdWx0Ogo+ICAgICBefn5+fn5+Cj4gCj4gUmV3b3JrIHNvIHRoYXQgdGhlIGNvbXBp
-bGVyIGRvZXNuJ3Qgd2FybiBhYm91dCBmYWxsLXRocm91Z2guIE1ha2UgaXQKPiBjbGVhcmVyIGJ5
-IGNhbGxpbmcgJ0JVRygpJyB3aGVuIGRpc2FibGVfYnlwYXNzIGlzIHNldCwgYW5kIGFsd2F5cwo+
-ICdicmVhazsnCj4gCj4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcgIyB2NC4yKwo+IEZpeGVz
-OiA1YmMwYTExNjY0ZTEgKCJpb21tdS9hcm0tc21tdTogRG9uJ3QgQlVHKCkgaWYgd2UgZmluZCBh
-Ym9ydGluZyBTVEVzIHdpdGggZGlzYWJsZV9ieXBhc3MiKQoKV2h5PyBUaGVyZSdzIG5vIGFjdHVh
-bCBidWcsIGFuZCBub3QgZXZlbiBjdXJyZW50IGtlcm5lbHMgaGF2ZSB0aGF0IAp3YXJuaW5nIGVu
-YWJsZWQuCgo+IFNpZ25lZC1vZmYtYnk6IEFuZGVycyBSb3hlbGwgPGFuZGVycy5yb3hlbGxAbGlu
-YXJvLm9yZz4KPiAtLS0KPiAgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDUgKysrLS0K
-PiAgIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4gCj4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUv
-YXJtLXNtbXUtdjMuYwo+IGluZGV4IGE5YTlmYWJkMzk2OC4uOGU1ZjA1NjU5OTZkIDEwMDY0NAo+
-IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUv
-YXJtLXNtbXUtdjMuYwo+IEBAIC0xMTg2LDggKzExODYsOSBAQCBzdGF0aWMgdm9pZCBhcm1fc21t
-dV93cml0ZV9zdHJ0YWJfZW50KHN0cnVjdCBhcm1fc21tdV9tYXN0ZXIgKm1hc3RlciwgdTMyIHNp
-ZCwKPiAgIAkJCXN0ZV9saXZlID0gdHJ1ZTsKPiAgIAkJCWJyZWFrOwo+ICAgCQljYXNlIFNUUlRB
-Ql9TVEVfMF9DRkdfQUJPUlQ6Cj4gLQkJCWlmIChkaXNhYmxlX2J5cGFzcykKPiAtCQkJCWJyZWFr
-Owo+ICsJCQlpZiAoIWRpc2FibGVfYnlwYXNzKQo+ICsJCQkJQlVHKCk7CgpZb3UgbWF5IGFzIHdl
-bGwganVzdCB1c2UgQlVHX09OKCkuCgpSb2Jpbi4KCj4gKwkJCWJyZWFrOwo+ICAgCQlkZWZhdWx0
-Ogo+ICAgCQkJQlVHKCk7IC8qIFNURSBjb3JydXB0aW9uICovCj4gICAJCX0KPiAKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0
-CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3Vu
-ZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+From: Arnd Bergmann <arnd@arndb.de>
+
+[ Upstream commit 9c106119f6538f65bdddb7948a157d90625effa7 ]
+
+On architectures that have a larger dma_addr_t than phys_addr_t,
+the swiotlb_tbl_map_single() function truncates its return code
+in the failure path, making it impossible to identify the error
+later, as we compare to the original value:
+
+kernel/dma/swiotlb.c:551:9: error: implicit conversion from 'dma_addr_t' (aka 'unsigned long long') to 'phys_addr_t' (aka 'unsigned int') changes value from 18446744073709551615 to 4294967295 [-Werror,-Wconstant-conversion]
+        return DMA_MAPPING_ERROR;
+
+Use an explicit typecast here to convert it to the narrower type,
+and use the same expression in the error handling later.
+
+Fixes: b907e20508d0 ("swiotlb: remove SWIOTLB_MAP_ERROR")
+Acked-by: Stefano Stabellini <sstabellini@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/xen/swiotlb-xen.c | 2 +-
+ kernel/dma/swiotlb.c      | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index d53f3493a6b9..cfbe46785a3b 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -402,7 +402,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 
+ 	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
+ 				     attrs);
+-	if (map == DMA_MAPPING_ERROR)
++	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+ 
+ 	dev_addr = xen_phys_to_bus(map);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 13f0cb080a4d..5f4e1b78babb 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -546,7 +546,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+ 	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit())
+ 		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
+ 			 size, io_tlb_nslabs, tmp_io_tlb_used);
+-	return DMA_MAPPING_ERROR;
++	return (phys_addr_t)DMA_MAPPING_ERROR;
+ found:
+ 	io_tlb_used += nslots;
+ 	spin_unlock_irqrestore(&io_tlb_lock, flags);
+@@ -664,7 +664,7 @@ bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
+ 	/* Oh well, have to allocate and map a bounce buffer. */
+ 	*phys = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
+ 			*phys, size, dir, attrs);
+-	if (*phys == DMA_MAPPING_ERROR)
++	if (*phys == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return false;
+ 
+ 	/* Ensure that the address returned is DMA'ble */
+-- 
+2.20.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
