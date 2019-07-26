@@ -2,44 +2,80 @@ Return-Path: <SRS0=gbr8=VX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED64CC7618B
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 09:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E66C76191
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 11:04:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CCB4422BEF
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 09:20:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CCB4422BEF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 0800021994
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 11:04:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0800021994
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8721BE24;
-	Fri, 26 Jul 2019 09:20:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C0918CA1;
+	Fri, 26 Jul 2019 11:04:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B660DE20
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 284349EE
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 09:20:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1AEDF8A0
+	Fri, 26 Jul 2019 11:04:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BCBC67C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 09:20:57 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id D3E5D284; Fri, 26 Jul 2019 11:20:54 +0200 (CEST)
-Date: Fri, 26 Jul 2019 11:20:53 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.3-rc1
-Message-ID: <20190726092048.GA3957@8bytes.org>
+	Fri, 26 Jul 2019 11:04:27 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 300D4344;
+	Fri, 26 Jul 2019 04:04:27 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 86A963F71A;
+	Fri, 26 Jul 2019 04:04:24 -0700 (PDT)
+Subject: Re: [RFC, v3 9/9] media: platform: Add Mediatek ISP P1 shared memory
+	device
+To: Tomasz Figa <tfiga@chromium.org>, Christoph Hellwig <hch@infradead.org>
+References: <jungo.lin@mediatek.com>
+	<20190611035344.29814-1-jungo.lin@mediatek.com>
+	<20190611035344.29814-10-jungo.lin@mediatek.com>
+	<20190701072532.GB137710@chromium.org>
+	<1562297618.1212.46.camel@mtksdccf07>
+	<CAAFQd5BaTQ-Q7gsE0X+d4_81OZq9WHaCYkmALt7_4A1JFo=_8g@mail.gmail.com>
+	<1562313579.1212.73.camel@mtksdccf07>
+	<CAAFQd5AaNFpMGCVJREY85n8UetEwd99TOka8-ECoLzMbMkos_g@mail.gmail.com>
+	<1563870117.1212.455.camel@mtksdccf07>
+	<CAAFQd5Bh80N+cMhz=eyHUGJLaE5uuypOawQvHrTgGSMDvmcpLA@mail.gmail.com>
+	<20190726074116.GA19745@infradead.org>
+	<CAAFQd5CXwRm-3jD+rfNNDNLH=gT_i0QYSAG3XBo3SJnPTY56_w@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <4460bc91-352a-7f3a-cbed-1b95e743ca8c@arm.com>
+Date: Fri, 26 Jul 2019 12:04:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <CAAFQd5CXwRm-3jD+rfNNDNLH=gT_i0QYSAG3XBo3SJnPTY56_w@mail.gmail.com>
+Content-Language: en-GB
+Cc: devicetree@vger.kernel.org,
+	=?UTF-8?B?U2VhbiBDaGVuZyAo6YSt5piH5byYKQ==?= <sean.cheng@mediatek.com>,
+	=?UTF-8?B?RnJlZGVyaWMgQ2hlbiAo6Zmz5L+K5YWDKQ==?=
+	<frederic.chen@mediatek.com>,
+	=?UTF-8?B?UnlubiBXdSAo5ZCz6IKy5oGpKQ==?= <rynn.wu@mediatek.com>,
+	srv_heupstream <srv_heupstream@mediatek.com>,
+	Rob Herring <robh@kernel.org>,
+	=?UTF-8?B?UnlhbiBZdSAo5L2Z5a2f5L+uKQ==?= <ryan.yu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	=?UTF-8?B?RnJhbmtpZSBDaGl1ICjpgrHmloflh7Ep?= <frankie.chiu@mediatek.com>,
+	"list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+	Hans Verkuil <hverkuil@xs4all.nl>, Jungo Lin <jungo.lin@mediatek.com>,
+	Sj Huang <sj.huang@mediatek.com>, "moderated list:ARM/Mediatek SoC support"
+	<linux-mediatek@lists.infradead.org>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	ddavenport@chromium.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Linux Media Mailing List <linux-media@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -52,125 +88,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============4556154366666736947=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+On 26/07/2019 08:42, Tomasz Figa wrote:
+> On Fri, Jul 26, 2019 at 4:41 PM Christoph Hellwig <hch@infradead.org> wrote:
+>>
+>> On Fri, Jul 26, 2019 at 02:15:14PM +0900, Tomasz Figa wrote:
+>>> Could you try dma_get_sgtable() with the SCP struct device and then
+>>> dma_map_sg() with the P1 struct device?
+>>
+>> Please don't do that.  dma_get_sgtable is a pretty broken API (see
+>> the common near the arm implementation) and we should not add more
+>> users of it.  If you want a piece of memory that can be mapped to
+>> multiple devices allocate it using alloc_pages and then just map
+>> it to each device.
+> 
+> Thanks for taking a look at this thread.
+> 
+> Unfortunately that wouldn't work. We have a specific reserved memory
+> pool that is the only memory area accessible to one of the devices.
+> Any idea how to handle this?
 
---===============4556154366666736947==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="vtzGhvizbBRQ85DL"
-Content-Disposition: inline
+If it's reserved in the sense of being outside struct-page-backed 
+"kernel memory", then provided you have a consistent CPU physical 
+address it might be reasonable for other devices to access it via 
+dma_map_resource().
 
-
---vtzGhvizbBRQ85DL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit 5f9e832c137075045d15cd6899ab0505cfb2ca4b:
-
-  Linus 5.3-rc1 (2019-07-21 14:05:38 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.3-rc1
-
-for you to fetch changes up to 66929812955bbec808c94d7a3916f41638a98a0a:
-
-  iommu/amd: Add support for X2APIC IOMMU interrupts (2019-07-23 17:41:52 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.3-rc1
-
-Including:
-
-	- Revert an Intel VT-d patch that caused boot problems on some
-	  machines
-
-	- Fix AMD IOMMU interrupts with x2apic enabled
-
-	- Fix a potential crash when Intel VT-d domain allocation fails
-
-	- Fix crash in Intel VT-d driver when accessing a domain without
-	  a flush queue
-
-	- Formatting fix for new Intel VT-d debugfs code
-
-	- Fix for use-after-free bug in IOVA code
-
-	- Fix for a NULL-pointer dereference in Intel VT-d driver when
-	  PCI hotplug is used
-
-	- Compilation fix for one of the previous fixes
-
-----------------------------------------------------------------
-Chris Wilson (1):
-      iommu/iova: Remove stale cached32_node
-
-Dmitry Safonov (2):
-      iommu/vt-d: Don't queue_iova() if there is no flush queue
-      iommu/vt-d: Check if domain->pgd was allocated
-
-Joerg Roedel (2):
-      Revert "iommu/vt-d: Consolidate domain_init() to avoid duplication"
-      iommu/iova: Fix compilation error with !CONFIG_IOMMU_IOVA
-
-Lu Baolu (1):
-      iommu/vt-d: Avoid duplicated pci dma alias consideration
-
-Sai Praneeth Prakhya (1):
-      iommu/vt-d: Print pasid table entries MSB to LSB in debugfs
-
-Suthikulpanit, Suravee (1):
-      iommu/amd: Add support for X2APIC IOMMU interrupts
-
- drivers/iommu/amd_iommu_init.c      |  90 +++++++++++++++++
- drivers/iommu/amd_iommu_types.h     |   9 ++
- drivers/iommu/intel-iommu-debugfs.c |   4 +-
- drivers/iommu/intel-iommu.c         | 189 ++++++++++++++++++------------------
- drivers/iommu/iova.c                |  23 +++--
- include/linux/iova.h                |   6 ++
- 6 files changed, 220 insertions(+), 101 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---vtzGhvizbBRQ85DL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl06xe8ACgkQK/BELZcB
-GuN9rRAApQnbSOnNQGGaB7lVEIquMXgk28hAf/IHYIss8lPtxJDxDgZhgKyAxsLC
-/Qn9dvZ1HHvZvvs7FMxWRYcdTmKSijlDUSjd50pOOyDFhIcycXvLWuP9hvP8xOLT
-Rl3niH2QcSXN5c08oAcuwISwvn1t96bezVz+2vgAXqkYiJsg1avVnDwkJrAMmU1P
-RPG2ZiYu39EAxnU0tUY+wUb9xebCwcCGoag3iV/lZ0QqffEwqBJkfUPO1SEKEuxr
-gOfCxHQVhAqB/wRqr/5NOrQWXW+Lf0NPcFAU3atd6FVh3xG8MNUQmvd/kFNPj/Jn
-//+1mtT6N4TuBdbSAiRUOdCZxPhfygnhL6MyO+th+e3lWjOlOmKp+vy3gW5OyGEG
-zJpA8280Itz5Yz+ZrbDQZkJXrxvIkIccwjnDbf4jEVxgN8Vn+R2e0D3TckhzOnl7
-yXAO3IFR1obEINpDplV5C+B8m7mNOryj6/RGqCujs8+XwklaHmZu6cBa61R25jZ6
-oBzQEp/EG3Ymv84x9UWIr57zqXAiepfE5kxGP+d4KAa5bjK8M1gTdPbRi4o74V0j
-xoKL7MgEmhCuqWEHgmkgQSZSJHFKK73gEz1DWs9048wjTkPsAJetKf38n8rsgxBB
-Fz9dUuC1zb5qajpv4N0Fwr16OVjHFrJGxJq6UKoJXZOVpdZjZlM=
-=uh7j
------END PGP SIGNATURE-----
-
---vtzGhvizbBRQ85DL--
-
---===============4556154366666736947==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4556154366666736947==--
