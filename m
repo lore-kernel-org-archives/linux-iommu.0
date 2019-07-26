@@ -2,112 +2,62 @@ Return-Path: <SRS0=gbr8=VX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBAFC7618B
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 16:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E843EC7618B
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 17:09:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6F840217D9
-	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 16:43:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=Mellanox.com header.i=@Mellanox.com header.b="fm5Ex0e/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6F840217D9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mellanox.com
+	by mail.kernel.org (Postfix) with ESMTPS id C90CD21734
+	for <iommu@archiver.kernel.org>; Fri, 26 Jul 2019 17:09:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C90CD21734
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 15DF9DB8;
-	Fri, 26 Jul 2019 16:43:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 683C5D7E;
+	Fri, 26 Jul 2019 17:09:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 551ECD2E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 79B32D13
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 16:31:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com
-	(mail-eopbgr50050.outbound.protection.outlook.com [40.107.5.50])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4A547894
+	Fri, 26 Jul 2019 17:09:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 22498894
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 26 Jul 2019 16:30:59 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=SwuU0E5TkP/sehOp1BaOfn5WWBSXDspzC6l4xW7zG/udyhMINoMLHUTaaGHq9OE4BcCmFG8wQA9ib7pg+5AHqmhvqXni+x8kYh7dQQRANqm4uwnIHTn3B/FFeua2lKV8+PgG3+Ww84ClwV70XPW82U3zVI8jZNN4wtDndDz8Ws6nIbK4W1su8zsm/N0SieP7n8vdRa5LJoCs/jp+K+9gXJAEyqwCf5EDLbhV6shpb2r08YYkPyt2hp+grtoatlTMCIJTi/zU7OWH4rfgQ0CS1Q9Y+aqeKPNAEHkwC18J8sqT8DPUnFgRi01NF+8VLL21F3xwN5glm7FriPFvGxg2KA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=mgCq/CdtllGtOowXrhCxNKpzL59Zcx2ezwKO0ZWhQOA=;
-	b=X7ZUYup4e+Tt2IahXgYqvBBrrryJMBgpRv3CBu8kal+S/VfawFWhyYkJGZUDXhySLciFldPu2Y2TJnebUF5B2C9jM19TZJDMt0Ooj+jEphvQl2bIS9p16X5Grnr0Ay3EmWtD/wZBTU/hCx/dKR5ITkwUkrbLrHDFn1I3EXWmtsuw0IAcEuOhhSL4/vnGCw9k4AWXfGo3C1eAm/OY6FXC+beeiBryeLLh0nwBJElO1tPTO0okP76Z2S4aqs7WPNVHpBpICTHTLGzqUaA2gNiee/DmfUfiBSgP0dk4VOYR7/I2biHI9wv5b4zj50hT/PwF3s7oEXQPQZSqVUXIMsYVpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
-	smtp.mailfrom=mellanox.com;dmarc=pass action=none
-	header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
-	s=selector2;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=mgCq/CdtllGtOowXrhCxNKpzL59Zcx2ezwKO0ZWhQOA=;
-	b=fm5Ex0e/QAYtrniVIk02gNB9XFhAH1rWg3UU49TPnyRMIHnfKY9QB824Q7hAADUrFrBmgldWQcHawyr40A9P/MZnvDqBCDOrUoB7ScWQ0d9FBjdIUX2ZjoKjvpnT6aV3EtOdOWps2V5YWRblWWKKEbwVQsf74hxfqrtF9HegXWw=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
-	VI1PR05MB5664.eurprd05.prod.outlook.com (20.178.120.214) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2115.10; Fri, 26 Jul 2019 16:30:53 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
-	([fe80::a083:d09c:aeff:c7ed]) by
-	VI1PR05MB5295.eurprd05.prod.outlook.com
-	([fe80::a083:d09c:aeff:c7ed%5]) with mapi id 15.20.2094.013;
-	Fri, 26 Jul 2019 16:30:53 +0000
-From: Vlad Buslov <vladbu@mellanox.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Failure to recreate virtual functions
-Thread-Topic: Failure to recreate virtual functions
-Thread-Index: AQHVQ89+orWUWzIuXEaLp1PfOC9kjQ==
-Date: Fri, 26 Jul 2019 16:30:53 +0000
-Message-ID: <vbf8sskwyiv.fsf@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0447.GBRP265.PROD.OUTLOOK.COM
-	(2603:10a6:600:e::27) To VI1PR05MB5295.eurprd05.prod.outlook.com
-	(2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 68454ff0-91d5-482f-9478-08d711e6a0e5
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:VI1PR05MB5664; 
-x-ms-traffictypediagnostic: VI1PR05MB5664:
-x-microsoft-antispam-prvs: <VI1PR05MB5664415072675E56220CA1F7ADC00@VI1PR05MB5664.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 01106E96F6
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(4636009)(366004)(39860400002)(396003)(346002)(376002)(136003)(199004)(189003)(186003)(316002)(81166006)(8676002)(71200400001)(54906003)(71190400001)(8936002)(68736007)(6916009)(6506007)(6486002)(102836004)(81156014)(66446008)(256004)(386003)(64756008)(52116002)(99286004)(66946007)(36756003)(25786009)(66476007)(5660300002)(7736002)(478600001)(86362001)(305945005)(53936002)(6512007)(14454004)(2906002)(2616005)(476003)(486006)(26005)(3846002)(66066001)(4326008)(6116002)(66556008)(14444005)(6436002);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR05MB5664;
-	H:VI1PR05MB5295.eurprd05.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: mellanox.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: fc5ibKmhlnzUjiPfErez6aj+HWbn44Gn+bbWiEYmFlCo08h8AcdnfjtWF3qWmKQgRPh37mF8XikDvtt/oBF+Kh/yYLvYpoOfPZ/3hTCnog1e56rutbxYhxnf2EymB7cWeUI86gTYt0qK8hNeAXCezNO6QNaxk7uOydUmz7Ny0owvA2iwT7KY2njMurXfuLAzIZZNPpTmLnobLj5yj25+ySRPE+FwzfuuYTNz3d3SKKvtDSh6zD5BR8W7djiX4LluXaGwdbjJd59LZMzPc+gEc7n4eym7QyeJQgL04jKzVEpyo4dqcFNx5UXRrZkUfieeVq78lfHLHdJyfhWlyzRFaRlibgWNMsmcNBgozN5lRWS+N7noXlfla9NLWfuh3S3N/XTWMWuU/dNrDILiullu/+LiSi50ZLS9uo94oKESydU=
+	Fri, 26 Jul 2019 17:09:49 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 7BD9681DF9;
+	Fri, 26 Jul 2019 17:09:48 +0000 (UTC)
+Received: from [10.36.116.102] (ovpn-116-102.ams2.redhat.com [10.36.116.102])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 720055DE80;
+	Fri, 26 Jul 2019 17:09:43 +0000 (UTC)
+Subject: Re: [PATCH v8 3/6] vfio/type1: Update iova list on detach
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	alex.williamson@redhat.com
+References: <20190723160637.8384-1-shameerali.kolothum.thodi@huawei.com>
+	<20190723160637.8384-4-shameerali.kolothum.thodi@huawei.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <c672300c-b689-d880-8cec-94092d9583ca@redhat.com>
+Date: Fri, 26 Jul 2019 19:09:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68454ff0-91d5-482f-9478-08d711e6a0e5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2019 16:30:53.6674 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5664
-X-Mailman-Approved-At: Fri, 26 Jul 2019 16:43:28 +0000
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <jroedel@suse.de>, Maor Gottlieb <maorg@mellanox.com>,
-	Ran Rozenstein <ranro@mellanox.com>
+In-Reply-To: <20190723160637.8384-4-shameerali.kolothum.thodi@huawei.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.25]);
+	Fri, 26 Jul 2019 17:09:48 +0000 (UTC)
+Cc: kevin.tian@intel.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	xuwei5@hisilicon.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -125,137 +75,160 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Lu Baolu,
+Hi Shameer,
 
-Our mlx5 driver fails to recreate VFs when cmdline includes
-"intel_iommu=on iommu=pt" after recent merge of patch set "iommu/vt-d:
-Delegate DMA domain to generic iommu". I've bisected the failure to
-patch b7297783c2bb ("iommu/vt-d: Remove duplicated code for device
-hotplug"). Here is the dmesg log for following case: enable switchdev
-mode, set number of VFs to 0, then set it back to any value
->0.
+On 7/23/19 6:06 PM, Shameer Kolothum wrote:
+> Get a copy of iova list on _group_detach and try to update the list.
+> On success replace the current one with the copy. Leave the list as
+> it is if update fails.
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-[  223.525282] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
-[  223.562027] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
-[  223.663766] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
-[  223.663864] pci 0000:81:00.2: enabling Extended Tags
-[  223.665143] pci 0000:81:00.2: Adding to iommu group 52
-[  223.665215] pci 0000:81:00.2: Using iommu direct mapping
-[  223.665771] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
-[  223.665890] mlx5_core 0000:81:00.2: firmware version: 16.26.148
-[  223.889908] mlx5_core 0000:81:00.2: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
-[  223.896438] mlx5_core 0000:81:00.2: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  223.896636] mlx5_core 0000:81:00.2: Assigned random MAC address 56:1f:95:e0:51:d6
-[  224.012905] mlx5_core 0000:81:00.2 ens1f0v0: renamed from eth0
-[  224.041651] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
-[  224.041711] pci 0000:81:00.3: enabling Extended Tags
-[  224.043660] pci 0000:81:00.3: Adding to iommu group 53
-[  224.043738] pci 0000:81:00.3: Using iommu direct mapping
-[  224.044196] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
-[  224.044298] mlx5_core 0000:81:00.3: firmware version: 16.26.148
-[  224.268099] mlx5_core 0000:81:00.3: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
-[  224.274983] mlx5_core 0000:81:00.3: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  224.275195] mlx5_core 0000:81:00.3: Assigned random MAC address a6:1e:56:0a:d9:f2
-[  224.388359] mlx5_core 0000:81:00.3 ens1f0v1: renamed from eth0
-[  236.325027] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(1)
-[  236.362766] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (2)
-[  237.290066] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  237.350215] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  237.373052] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
-[  237.390768] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  237.447846] ens1f0_0: renamed from eth0
-[  237.460399] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
-[  237.526880] ens1f0_1: renamed from eth1
-[  248.953873] pci 0000:81:00.2: Removing from iommu group 52
-[  248.954114] pci 0000:81:00.3: Removing from iommu group 53
-[  249.960570] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(2)
-[  250.319135] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  250.559431] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
-[  258.819162] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
-[  258.831625] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
-[  258.936160] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
-[  258.936258] pci 0000:81:00.2: enabling Extended Tags
-[  258.937438] pci 0000:81:00.2: Failed to add to iommu group 52: -16
-[  258.938053] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
-[  258.938196] mlx5_core 0000:81:00.2: firmware version: 16.26.148
-[  258.938229] mlx5_core 0000:81:00.2: mlx5_function_setup:923:(pid 265): Failed initializing command interface, aborting
-[  258.938315] mlx5_core 0000:81:00.2: init_one:1308:(pid 265): mlx5_load_one failed with error code -12
-[  258.938540] mlx5_core: probe of 0000:81:00.2 failed with error -12
-[  258.938597] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
-[  258.938657] pci 0000:81:00.3: enabling Extended Tags
-[  258.939431] pci 0000:81:00.3: Failed to add to iommu group 52: -16
-[  258.939928] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
-[  258.940039] mlx5_core 0000:81:00.3: firmware version: 16.26.148
-[  258.940071] mlx5_core 0000:81:00.3: mlx5_function_setup:923:(pid 265): Failed initializing command interface, aborting
-[  258.940158] mlx5_core 0000:81:00.3: init_one:1308:(pid 265): mlx5_load_one failed with error code -12
-[  258.940400] mlx5_core: probe of 0000:81:00.3 failed with error -12
+Thanks
 
-
-On previous patch 0e31a7266508 ("iommu/vt-d: Remove startup parameter
-from device_def_domain_type()") in the series same sequence of actions
-doesn't trigger any iommu errors:
-
-[  164.252254] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
-[  164.288724] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
-[  164.394839] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
-[  164.394938] pci 0000:81:00.2: enabling Extended Tags
-[  164.396087] pci 0000:81:00.2: Adding to iommu group 52
-[  164.396154] pci 0000:81:00.2: Using iommu direct mapping
-[  164.396679] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
-[  164.396803] mlx5_core 0000:81:00.2: firmware version: 16.26.148
-[  164.619320] mlx5_core 0000:81:00.2: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
-[  164.625754] mlx5_core 0000:81:00.2: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  164.625922] mlx5_core 0000:81:00.2: Assigned random MAC address 5e:1e:9b:ca:c8:e5
-[  164.739694] mlx5_core 0000:81:00.2 ens1f0v0: renamed from eth0
-[  164.774637] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
-[  164.774709] pci 0000:81:00.3: enabling Extended Tags
-[  164.775816] pci 0000:81:00.3: Adding to iommu group 53
-[  164.775886] pci 0000:81:00.3: Using iommu direct mapping
-[  164.776610] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
-[  164.776734] mlx5_core 0000:81:00.3: firmware version: 16.26.148
-[  164.999360] mlx5_core 0000:81:00.3: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
-[  165.007118] mlx5_core 0000:81:00.3: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  165.007327] mlx5_core 0000:81:00.3: Assigned random MAC address 82:4a:7a:5f:81:55
-[  165.123927] mlx5_core 0000:81:00.3 ens1f0v1: renamed from eth0
-[  172.063665] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(1)
-[  172.103306] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (2)
-[  173.033033] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  173.091605] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  173.129258] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
-[  173.129863] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  173.203879] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
-[  173.204002] ens1f0_0: renamed from eth1
-[  173.289454] ens1f0_1: renamed from eth0
-[  186.720692] pci 0000:81:00.2: Removing from iommu group 52
-[  186.720994] pci 0000:81:00.3: Removing from iommu group 53
-[  187.771549] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(2)
-[  188.141758] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  188.394072] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
-[  191.116400] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
-[  191.128965] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
-[  191.235151] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
-[  191.235250] pci 0000:81:00.2: enabling Extended Tags
-[  191.236463] pci 0000:81:00.2: Adding to iommu group 52
-[  191.236531] pci 0000:81:00.2: Using iommu direct mapping
-[  191.237037] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
-[  191.237161] mlx5_core 0000:81:00.2: firmware version: 16.26.148
-[  191.457369] mlx5_core 0000:81:00.2: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
-[  191.463355] mlx5_core 0000:81:00.2: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  191.463509] mlx5_core 0000:81:00.2: Assigned random MAC address e6:f2:0c:b4:e3:2e
-[  191.572884] mlx5_core 0000:81:00.2 ens1f0v0: renamed from eth0
-[  191.608592] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
-[  191.608664] pci 0000:81:00.3: enabling Extended Tags
-[  191.609434] pci 0000:81:00.3: Adding to iommu group 53
-[  191.609466] pci 0000:81:00.3: Using iommu direct mapping
-[  191.609760] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
-[  191.609862] mlx5_core 0000:81:00.3: firmware version: 16.26.148
-[  191.826324] mlx5_core 0000:81:00.3: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
-[  191.832558] mlx5_core 0000:81:00.3: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  191.832730] mlx5_core 0000:81:00.3: Assigned random MAC address a2:dc:76:30:18:6c
-[  191.949625] mlx5_core 0000:81:00.3 ens1f0v1: renamed from eth0
-
-Thanks,
-Vlad
+Eric
+> ---
+> v7 --> v8
+>   -Fixed possible invalid holes in iova list if there are no more
+>    reserved regions in vfio_iommu_resv_refresh().
+>   -Handled iommu_get_group_resv_regions() err case in
+>    vfio_iommu_resv_refresh()
+>   -Tidy up of iova_copy list fail case.
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 94 +++++++++++++++++++++++++++++++++
+>  1 file changed, 94 insertions(+)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index a3c9794ccf83..7005a8cfca1b 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -1867,12 +1867,93 @@ static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
+>  	WARN_ON(iommu->notifier.head);
+>  }
+>  
+> +/*
+> + * Called when a domain is removed in detach. It is possible that
+> + * the removed domain decided the iova aperture window. Modify the
+> + * iova aperture with the smallest window among existing domains.
+> + */
+> +static void vfio_iommu_aper_expand(struct vfio_iommu *iommu,
+> +				   struct list_head *iova_copy)
+> +{
+> +	struct vfio_domain *domain;
+> +	struct iommu_domain_geometry geo;
+> +	struct vfio_iova *node;
+> +	dma_addr_t start = 0;
+> +	dma_addr_t end = (dma_addr_t)~0;
+> +
+> +	if (list_empty(iova_copy))
+> +		return;
+> +
+> +	list_for_each_entry(domain, &iommu->domain_list, next) {
+> +		iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY,
+> +				      &geo);
+> +		if (geo.aperture_start > start)
+> +			start = geo.aperture_start;
+> +		if (geo.aperture_end < end)
+> +			end = geo.aperture_end;
+> +	}
+> +
+> +	/* Modify aperture limits. The new aper is either same or bigger */
+> +	node = list_first_entry(iova_copy, struct vfio_iova, list);
+> +	node->start = start;
+> +	node = list_last_entry(iova_copy, struct vfio_iova, list);
+> +	node->end = end;
+> +}
+> +
+> +/*
+> + * Called when a group is detached. The reserved regions for that
+> + * group can be part of valid iova now. But since reserved regions
+> + * may be duplicated among groups, populate the iova valid regions
+> + * list again.
+> + */
+> +static int vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
+> +				   struct list_head *iova_copy)
+> +{
+> +	struct vfio_domain *d;
+> +	struct vfio_group *g;
+> +	struct vfio_iova *node;
+> +	dma_addr_t start, end;
+> +	LIST_HEAD(resv_regions);
+> +	int ret;
+> +
+> +	if (list_empty(iova_copy))
+> +		return -EINVAL;
+> +
+> +	list_for_each_entry(d, &iommu->domain_list, next) {
+> +		list_for_each_entry(g, &d->group_list, next) {
+> +			ret = iommu_get_group_resv_regions(g->iommu_group,
+> +							   &resv_regions);
+> +			if (ret)
+> +				goto done;
+> +		}
+> +	}
+> +
+> +	node = list_first_entry(iova_copy, struct vfio_iova, list);
+> +	start = node->start;
+> +	node = list_last_entry(iova_copy, struct vfio_iova, list);
+> +	end = node->end;
+> +
+> +	/* purge the iova list and create new one */
+> +	vfio_iommu_iova_free(iova_copy);
+> +
+> +	ret = vfio_iommu_aper_resize(iova_copy, start, end);
+> +	if (ret)
+> +		goto done;
+> +
+> +	/* Exclude current reserved regions from iova ranges */
+> +	ret = vfio_iommu_resv_exclude(iova_copy, &resv_regions);
+> +done:
+> +	vfio_iommu_resv_free(&resv_regions);
+> +	return ret;
+> +}
+> +
+>  static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  					  struct iommu_group *iommu_group)
+>  {
+>  	struct vfio_iommu *iommu = iommu_data;
+>  	struct vfio_domain *domain;
+>  	struct vfio_group *group;
+> +	LIST_HEAD(iova_copy);
+>  
+>  	mutex_lock(&iommu->lock);
+>  
+> @@ -1895,6 +1976,13 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  		}
+>  	}
+>  
+> +	/*
+> +	 * Get a copy of iova list. This will be used to update
+> +	 * and to replace the current one later. Please note that
+> +	 * we will leave the original list as it is if update fails.
+> +	 */
+> +	vfio_iommu_iova_get_copy(iommu, &iova_copy);
+> +
+>  	list_for_each_entry(domain, &iommu->domain_list, next) {
+>  		group = find_iommu_group(domain, iommu_group);
+>  		if (!group)
+> @@ -1920,10 +2008,16 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  			iommu_domain_free(domain->domain);
+>  			list_del(&domain->next);
+>  			kfree(domain);
+> +			vfio_iommu_aper_expand(iommu, &iova_copy);
+>  		}
+>  		break;
+>  	}
+>  
+> +	if (!vfio_iommu_resv_refresh(iommu, &iova_copy))
+> +		vfio_iommu_iova_insert_copy(iommu, &iova_copy);
+> +	else
+> +		vfio_iommu_iova_free(&iova_copy);
+> +
+>  detach_group_done:
+>  	mutex_unlock(&iommu->lock);
+>  }
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
