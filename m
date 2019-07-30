@@ -2,62 +2,64 @@ Return-Path: <SRS0=JEM9=V3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0B3C433FF
-	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD2FC0650F
+	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 06:23:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09BFA206A2
-	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:58:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09BFA206A2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A08462064A
+	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 06:23:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="LWjUBjQN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A08462064A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B127F23B2;
-	Tue, 30 Jul 2019 04:58:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 29B482432;
+	Tue, 30 Jul 2019 06:23:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C605621FF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0E1FD2425
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Jul 2019 04:53:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 105E4D3
+	Tue, 30 Jul 2019 06:19:05 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A7945A8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Jul 2019 04:53:49 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	29 Jul 2019 21:53:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,325,1559545200"; d="scan'208";a="183007198"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by orsmga002.jf.intel.com with ESMTP; 29 Jul 2019 21:53:44 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v6 8/8] iommu/vt-d: Use bounce buffer for untrusted devices
-Date: Tue, 30 Jul 2019 12:52:29 +0800
-Message-Id: <20190730045229.3826-9-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190730045229.3826-1-baolu.lu@linux.intel.com>
-References: <20190730045229.3826-1-baolu.lu@linux.intel.com>
-Cc: Juergen Gross <jgross@suse.com>, kevin.tian@intel.com,
-	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	alan.cox@intel.com, Jonathan Corbet <corbet@lwn.net>,
-	Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
-	jacob.jun.pan@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	mika.westerberg@linux.intel.com
+	Tue, 30 Jul 2019 06:19:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=jzoHUBaVmA64oWNrVo/G4me83PbtX+FG4xTY0W22gF8=;
+	b=LWjUBjQNvq23AXlcybE9iOAY7
+	85k5b/KawWAxULHTtBb7zuuhUOcIeJbw5r1FThcXJAkD3StG5K+b28lS0eI52lxhLUiCHcJfGBkTx
+	AtDkk2RJwdRoU+zKsWZfQuo5IFHjE43dhQ4UcZ61be72RNFo+0tS3o3do7osxGS/ojGO22o5GYvtl
+	97SDA3JukypuGlYFTkzOIPsDNGzaaaAJII3JvH5W9ZSq5a7Jre5a4eSUKBM6h0CKux7o6b67m6pn8
+	/LxGiNxdQDzq98xG7wxgwTv/GYP1EdxlvVZEq/A6Izmb5Jl6I1n+QKk0ahKUjMjrilCanPK559AAg
+	+n7M/43oA==;
+Received: from [195.167.85.94] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1hsLTR-0006Rn-FJ; Tue, 30 Jul 2019 06:19:01 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: tomi.valkeinen@ti.com
+Subject: [PATCH] dma-mapping: remove dma_{alloc,free,mmap}_writecombine
+Date: Tue, 30 Jul 2019 09:18:49 +0300
+Message-Id: <20190730061849.29686-1-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, laurent.pinchart@ideasonboard.com,
+	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,253 +72,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The Intel VT-d hardware uses paging for DMA remapping.
-The minimum mapped window is a page size. The device
-drivers may map buffers not filling the whole IOMMU
-window. This allows the device to access to possibly
-unrelated memory and a malicious device could exploit
-this to perform DMA attacks. To address this, the
-Intel IOMMU driver will use bounce pages for those
-buffers which don't fill whole IOMMU pages.
+We can already use DMA_ATTR_WRITE_COMBINE or the _wc prefixed version,
+so remove the third way of doing things.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Tested-by: Xu Pengfei <pengfei.xu@intel.com>
-Tested-by: Mika Westerberg <mika.westerberg@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/Kconfig       |   2 +
- drivers/iommu/intel-iommu.c | 181 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 183 insertions(+)
+ drivers/gpu/drm/omapdrm/dss/dispc.c | 11 +++++------
+ include/linux/dma-mapping.h         |  9 ---------
+ 2 files changed, 5 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d7f2e09cbcf2..3baa418edc16 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -195,6 +195,8 @@ config INTEL_IOMMU
- 	select IOMMU_IOVA
- 	select NEED_DMA_MAP_STATE
- 	select DMAR_TABLE
-+	select SWIOTLB
-+	select IOMMU_BOUNCE_PAGE
- 	help
- 	  DMA remapping (DMAR) devices support enables independent address
- 	  translations for Direct Memory Access (DMA) from devices.
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index fcbbf8de07e7..9a60feeda313 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -44,6 +44,7 @@
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-+#include <trace/events/intel_iommu.h>
+diff --git a/drivers/gpu/drm/omapdrm/dss/dispc.c b/drivers/gpu/drm/omapdrm/dss/dispc.c
+index 785c5546067a..c70f3246a552 100644
+--- a/drivers/gpu/drm/omapdrm/dss/dispc.c
++++ b/drivers/gpu/drm/omapdrm/dss/dispc.c
+@@ -4609,11 +4609,10 @@ static int dispc_errata_i734_wa_init(struct dispc_device *dispc)
+ 	i734_buf.size = i734.ovli.width * i734.ovli.height *
+ 		color_mode_to_bpp(i734.ovli.fourcc) / 8;
  
- #include "irq_remapping.h"
- #include "intel-pasid.h"
-@@ -3745,6 +3746,183 @@ static const struct dma_map_ops intel_dma_ops = {
- 	.dma_supported = dma_direct_supported,
- };
- 
-+static dma_addr_t
-+bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
-+		  enum dma_data_direction dir, unsigned long attrs,
-+		  u64 dma_mask)
-+{
-+	struct dmar_domain *domain;
-+	struct intel_iommu *iommu;
-+	unsigned long iova_pfn;
-+	unsigned long nrpages;
-+	dma_addr_t ret_addr;
-+
-+	domain = find_domain(dev);
-+	if (WARN_ON(dir == DMA_NONE || !domain))
-+		return DMA_MAPPING_ERROR;
-+
-+	iommu = domain_get_iommu(domain);
-+	nrpages = aligned_nrpages(0, size);
-+	iova_pfn = intel_alloc_iova(dev, domain,
-+				    dma_to_mm_pfn(nrpages), dma_mask);
-+	if (!iova_pfn)
-+		return DMA_MAPPING_ERROR;
-+
-+	ret_addr = iommu_bounce_map(dev, iova_pfn << PAGE_SHIFT,
-+				    paddr, size, dir, attrs);
-+	if (ret_addr == DMA_MAPPING_ERROR) {
-+		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(nrpages));
-+		return DMA_MAPPING_ERROR;
-+	}
-+
-+	trace_bounce_map_single(dev, iova_pfn << PAGE_SHIFT, paddr, size);
-+
-+	return ret_addr;
-+}
-+
-+static void
-+bounce_unmap_single(struct device *dev, dma_addr_t dev_addr, size_t size,
-+		    enum dma_data_direction dir, unsigned long attrs)
-+{
-+	struct dmar_domain *domain;
-+	struct intel_iommu *iommu;
-+	unsigned long iova_pfn;
-+	unsigned long nrpages;
-+
-+	domain = find_domain(dev);
-+	if (WARN_ON(!domain))
-+		return;
-+
-+	iommu_bounce_unmap(dev, dev_addr, size, dir, attrs);
-+	trace_bounce_unmap_single(dev, dev_addr, size);
-+
-+	iommu = domain_get_iommu(domain);
-+	iova_pfn = IOVA_PFN(dev_addr);
-+	nrpages = aligned_nrpages(0, size);
-+
-+	iommu_flush_iotlb_psi(iommu, domain,
-+			      mm_to_dma_pfn(iova_pfn), nrpages, 0, 0);
-+	free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(nrpages));
-+}
-+
-+static dma_addr_t
-+bounce_map_page(struct device *dev, struct page *page, unsigned long offset,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	return bounce_map_single(dev, page_to_phys(page) + offset,
-+				 size, dir, attrs, *dev->dma_mask);
-+}
-+
-+static dma_addr_t
-+bounce_map_resource(struct device *dev, phys_addr_t phys_addr, size_t size,
-+		    enum dma_data_direction dir, unsigned long attrs)
-+{
-+	return bounce_map_single(dev, phys_addr, size,
-+				 dir, attrs, *dev->dma_mask);
-+}
-+
-+static void
-+bounce_unmap_page(struct device *dev, dma_addr_t dev_addr, size_t size,
-+		  enum dma_data_direction dir, unsigned long attrs)
-+{
-+	bounce_unmap_single(dev, dev_addr, size, dir, attrs);
-+}
-+
-+static void
-+bounce_unmap_resource(struct device *dev, dma_addr_t dev_addr, size_t size,
-+		      enum dma_data_direction dir, unsigned long attrs)
-+{
-+	bounce_unmap_single(dev, dev_addr, size, dir, attrs);
-+}
-+
-+static void
-+bounce_unmap_sg(struct device *dev, struct scatterlist *sglist, int nelems,
-+		enum dma_data_direction dir, unsigned long attrs)
-+{
-+	struct scatterlist *sg;
-+	int i;
-+
-+	for_each_sg(sglist, sg, nelems, i)
-+		bounce_unmap_page(dev, sg->dma_address,
-+				  sg_dma_len(sg), dir, attrs);
-+}
-+
-+static int
-+bounce_map_sg(struct device *dev, struct scatterlist *sglist, int nelems,
-+	      enum dma_data_direction dir, unsigned long attrs)
-+{
-+	int i;
-+	struct scatterlist *sg;
-+
-+	for_each_sg(sglist, sg, nelems, i) {
-+		sg->dma_address = bounce_map_page(dev, sg_page(sg),
-+				sg->offset, sg->length, dir, attrs);
-+		if (sg->dma_address == DMA_MAPPING_ERROR)
-+			goto out_unmap;
-+		sg_dma_len(sg) = sg->length;
-+	}
-+
-+	return nelems;
-+
-+out_unmap:
-+	bounce_unmap_sg(dev, sglist, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+	return 0;
-+}
-+
-+static void
-+bounce_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-+			   size_t size, enum dma_data_direction dir)
-+{
-+	iommu_bounce_sync(dev, addr, size, dir, SYNC_FOR_CPU);
-+}
-+
-+static void
-+bounce_sync_single_for_device(struct device *dev, dma_addr_t addr,
-+			      size_t size, enum dma_data_direction dir)
-+{
-+	iommu_bounce_sync(dev, addr, size, dir, SYNC_FOR_DEVICE);
-+}
-+
-+static void
-+bounce_sync_sg_for_cpu(struct device *dev, struct scatterlist *sglist,
-+		       int nelems, enum dma_data_direction dir)
-+{
-+	struct scatterlist *sg;
-+	int i;
-+
-+	for_each_sg(sglist, sg, nelems, i)
-+		iommu_bounce_sync(dev, sg_dma_address(sg),
-+				  sg_dma_len(sg), dir, SYNC_FOR_CPU);
-+}
-+
-+static void
-+bounce_sync_sg_for_device(struct device *dev, struct scatterlist *sglist,
-+			  int nelems, enum dma_data_direction dir)
-+{
-+	struct scatterlist *sg;
-+	int i;
-+
-+	for_each_sg(sglist, sg, nelems, i)
-+		iommu_bounce_sync(dev, sg_dma_address(sg),
-+				  sg_dma_len(sg), dir, SYNC_FOR_DEVICE);
-+}
-+
-+static const struct dma_map_ops bounce_dma_ops = {
-+	.alloc			= intel_alloc_coherent,
-+	.free			= intel_free_coherent,
-+	.map_sg			= bounce_map_sg,
-+	.unmap_sg		= bounce_unmap_sg,
-+	.map_page		= bounce_map_page,
-+	.unmap_page		= bounce_unmap_page,
-+	.sync_single_for_cpu	= bounce_sync_single_for_cpu,
-+	.sync_single_for_device	= bounce_sync_single_for_device,
-+	.sync_sg_for_cpu	= bounce_sync_sg_for_cpu,
-+	.sync_sg_for_device	= bounce_sync_sg_for_device,
-+	.map_resource		= bounce_map_resource,
-+	.unmap_resource		= bounce_unmap_resource,
-+	.dma_supported		= dma_direct_supported,
-+};
-+
- static inline int iommu_domain_cache_init(void)
- {
- 	int ret = 0;
-@@ -5304,6 +5482,9 @@ static int intel_iommu_add_device(struct device *dev)
- 		}
+-	i734_buf.vaddr = dma_alloc_writecombine(&dispc->pdev->dev,
+-						i734_buf.size, &i734_buf.paddr,
+-						GFP_KERNEL);
++	i734_buf.vaddr = dma_alloc_wc(&dispc->pdev->dev, i734_buf.size,
++			&i734_buf.paddr, GFP_KERNEL);
+ 	if (!i734_buf.vaddr) {
+-		dev_err(&dispc->pdev->dev, "%s: dma_alloc_writecombine failed\n",
++		dev_err(&dispc->pdev->dev, "%s: dma_alloc_wc failed\n",
+ 			__func__);
+ 		return -ENOMEM;
  	}
+@@ -4626,8 +4625,8 @@ static void dispc_errata_i734_wa_fini(struct dispc_device *dispc)
+ 	if (!dispc->feat->has_gamma_i734_bug)
+ 		return;
  
-+	if (device_needs_bounce(dev))
-+		set_dma_ops(dev, &bounce_dma_ops);
-+
- 	return 0;
+-	dma_free_writecombine(&dispc->pdev->dev, i734_buf.size, i734_buf.vaddr,
+-			      i734_buf.paddr);
++	dma_free_wc(&dispc->pdev->dev, i734_buf.size, i734_buf.vaddr,
++		    i734_buf.paddr);
  }
  
+ static void dispc_errata_i734_wa(struct dispc_device *dispc)
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index f7d1eea32c78..633dae466097 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -786,9 +786,6 @@ static inline void *dma_alloc_wc(struct device *dev, size_t size,
+ 
+ 	return dma_alloc_attrs(dev, size, dma_addr, gfp, attrs);
+ }
+-#ifndef dma_alloc_writecombine
+-#define dma_alloc_writecombine dma_alloc_wc
+-#endif
+ 
+ static inline void dma_free_wc(struct device *dev, size_t size,
+ 			       void *cpu_addr, dma_addr_t dma_addr)
+@@ -796,9 +793,6 @@ static inline void dma_free_wc(struct device *dev, size_t size,
+ 	return dma_free_attrs(dev, size, cpu_addr, dma_addr,
+ 			      DMA_ATTR_WRITE_COMBINE);
+ }
+-#ifndef dma_free_writecombine
+-#define dma_free_writecombine dma_free_wc
+-#endif
+ 
+ static inline int dma_mmap_wc(struct device *dev,
+ 			      struct vm_area_struct *vma,
+@@ -808,9 +802,6 @@ static inline int dma_mmap_wc(struct device *dev,
+ 	return dma_mmap_attrs(dev, vma, cpu_addr, dma_addr, size,
+ 			      DMA_ATTR_WRITE_COMBINE);
+ }
+-#ifndef dma_mmap_writecombine
+-#define dma_mmap_writecombine dma_mmap_wc
+-#endif
+ 
+ #ifdef CONFIG_NEED_DMA_MAP_STATE
+ #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)        dma_addr_t ADDR_NAME
 -- 
-2.17.1
+2.20.1
 
 _______________________________________________
 iommu mailing list
