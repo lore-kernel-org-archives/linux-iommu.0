@@ -2,60 +2,59 @@ Return-Path: <SRS0=JEM9=V3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D18DC7618E
-	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 502CAC433FF
+	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:55:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 25DA62087F
-	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:33:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25DA62087F
+	by mail.kernel.org (Postfix) with ESMTPS id 2516D206A2
+	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:55:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2516D206A2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 175A629E1;
-	Tue, 30 Jul 2019 04:33:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AE3C5238F;
+	Tue, 30 Jul 2019 04:55:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DE0AE2A0E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C166F21FF
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Jul 2019 04:29:17 +0000 (UTC)
+	Tue, 30 Jul 2019 04:53:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 44CF6D3
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B3EA5A8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 30 Jul 2019 04:29:17 +0000 (UTC)
+	Tue, 30 Jul 2019 04:53:15 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	29 Jul 2019 21:29:16 -0700
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	29 Jul 2019 21:53:15 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,325,1559545200"; d="scan'208";a="183002215"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga002.jf.intel.com with ESMTP; 29 Jul 2019 21:29:15 -0700
-Subject: Re: Failure to recreate virtual functions
-To: Vlad Buslov <vladbu@mellanox.com>
-References: <vbf8sskwyiv.fsf@mellanox.com>
-	<d4166595-ec4a-fc4a-3b5f-463b79c42936@linux.intel.com>
-	<vbfzhkx9n32.fsf@mellanox.com>
+X-IronPort-AV: E=Sophos;i="5.64,325,1559545200"; d="scan'208";a="183007113"
+Received: from allen-box.sh.intel.com ([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 29 Jul 2019 21:53:10 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <838a00c4-d5bd-08db-e39c-5f00686858b5@linux.intel.com>
-Date: Tue, 30 Jul 2019 12:28:34 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <vbfzhkx9n32.fsf@mellanox.com>
-Content-Language: en-US
-Cc: Joerg Roedel <jroedel@suse.de>, Ran Rozenstein <ranro@mellanox.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Maor Gottlieb <maorg@mellanox.com>
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v6 0/8] iommu: Bounce page for untrusted devices
+Date: Tue, 30 Jul 2019 12:52:21 +0800
+Message-Id: <20190730045229.3826-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: Juergen Gross <jgross@suse.com>, kevin.tian@intel.com,
+	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	alan.cox@intel.com, Jonathan Corbet <corbet@lwn.net>,
+	Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
+	jacob.jun.pan@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	mika.westerberg@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,85 +67,235 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
+The Thunderbolt vulnerabilities are public and have a nice
+name as Thunderclap [1] [3] nowadays. This patch series aims
+to mitigate those concerns.
 
-On 7/29/19 6:05 PM, Vlad Buslov wrote:
-> On Sat 27 Jul 2019 at 05:15, Lu Baolu<baolu.lu@linux.intel.com>  wrote:
->> Hi Vilad,
->>
->> On 7/27/19 12:30 AM, Vlad Buslov wrote:
->>> Hi Lu Baolu,
->>>
->>> Our mlx5 driver fails to recreate VFs when cmdline includes
->>> "intel_iommu=on iommu=pt" after recent merge of patch set "iommu/vt-d:
->>> Delegate DMA domain to generic iommu". I've bisected the failure to
->>> patch b7297783c2bb ("iommu/vt-d: Remove duplicated code for device
->>> hotplug"). Here is the dmesg log for following case: enable switchdev
->>> mode, set number of VFs to 0, then set it back to any value
->>>> 0.
->>> [  223.525282] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
->>> [  223.562027] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
->>> [  223.663766] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
->>> [  223.663864] pci 0000:81:00.2: enabling Extended Tags
->>> [  223.665143] pci 0000:81:00.2: Adding to iommu group 52
->>> [  223.665215] pci 0000:81:00.2: Using iommu direct mapping
->>> [  223.665771] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
->>> [  223.665890] mlx5_core 0000:81:00.2: firmware version: 16.26.148
->>> [  223.889908] mlx5_core 0000:81:00.2: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
->>> [  223.896438] mlx5_core 0000:81:00.2: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
->>> [  223.896636] mlx5_core 0000:81:00.2: Assigned random MAC address 56:1f:95:e0:51:d6
->>> [  224.012905] mlx5_core 0000:81:00.2 ens1f0v0: renamed from eth0
->>> [  224.041651] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
->>> [  224.041711] pci 0000:81:00.3: enabling Extended Tags
->>> [  224.043660] pci 0000:81:00.3: Adding to iommu group 53
->>> [  224.043738] pci 0000:81:00.3: Using iommu direct mapping
->>> [  224.044196] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
->>> [  224.044298] mlx5_core 0000:81:00.3: firmware version: 16.26.148
->>> [  224.268099] mlx5_core 0000:81:00.3: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
->>> [  224.274983] mlx5_core 0000:81:00.3: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
->>> [  224.275195] mlx5_core 0000:81:00.3: Assigned random MAC address a6:1e:56:0a:d9:f2
->>> [  224.388359] mlx5_core 0000:81:00.3 ens1f0v1: renamed from eth0
->>> [  236.325027] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(1)
->>> [  236.362766] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (2)
->>> [  237.290066] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
->>> [  237.350215] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
->>> [  237.373052] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
->>> [  237.390768] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
->>> [  237.447846] ens1f0_0: renamed from eth0
->>> [  237.460399] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
->>> [  237.526880] ens1f0_1: renamed from eth1
->>> [  248.953873] pci 0000:81:00.2: Removing from iommu group 52
->>> [  248.954114] pci 0000:81:00.3: Removing from iommu group 53
->>> [  249.960570] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(2)
->>> [  250.319135] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
->>> [  250.559431] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
->>> [  258.819162] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
->>> [  258.831625] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
->>> [  258.936160] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
->>> [  258.936258] pci 0000:81:00.2: enabling Extended Tags
->>> [  258.937438] pci 0000:81:00.2: Failed to add to iommu group 52: -16
->> It seems that an EBUSY error returned from iommu_group_add_device(). Can
->> you please hack some debug messages in iommu_group_add_device() so that
->> we can know where the EBUSY returns?
->>
->> Best regards,
->> Baolu
-> The error code is returned by __iommu_attach_device().
-> 
+An external PCI device is a PCI peripheral device connected
+to the system through an external bus, such as Thunderbolt.
+What makes it different is that it can't be trusted to the
+same degree as the devices build into the system. Generally,
+a trusted PCIe device will DMA into the designated buffers
+and not overrun or otherwise write outside the specified
+bounds. But it's different for an external device.
 
-Thanks!
+The minimum IOMMU mapping granularity is one page (4k), so
+for DMA transfers smaller than that a malicious PCIe device
+can access the whole page of memory even if it does not
+belong to the driver in question. This opens a possibility
+for DMA attack. For more information about DMA attacks
+imposed by an untrusted PCI/PCIe device, please refer to [2].
 
-It looks like the system has already a domain for specific pci bdf
-device. Does this VF share the bdf with other devices? Or has been
-previously created, and system failed to get chance to remove it?
+This implements bounce buffer for the untrusted external
+devices. The transfers should be limited in isolated pages
+so the IOMMU window does not cover memory outside of what
+the driver expects. Previously (v3 and before), we proposed
+an optimisation to only copy the head and tail of the buffer
+if it spans multiple pages, and directly map the ones in the
+middle. Figure 1 gives a big picture about this solution.
+
+                                swiotlb             System
+                IOVA          bounce page           Memory
+             .---------.      .---------.        .---------.
+             |         |      |         |        |         |
+             |         |      |         |        |         |
+buffer_start .---------.      .---------.        .---------.
+             |         |----->|         |*******>|         |
+             |         |      |         | swiotlb|         |
+             |         |      |         | mapping|         |
+ IOMMU Page  '---------'      '---------'        '---------'
+  Boundary   |         |                         |         |
+             |         |                         |         |
+             |         |                         |         |
+             |         |------------------------>|         |
+             |         |    IOMMU mapping        |         |
+             |         |                         |         |
+ IOMMU Page  .---------.                         .---------.
+  Boundary   |         |                         |         |
+             |         |                         |         |
+             |         |------------------------>|         |
+             |         |     IOMMU mapping       |         |
+             |         |                         |         |
+             |         |                         |         |
+ IOMMU Page  .---------.      .---------.        .---------.
+  Boundary   |         |      |         |        |         |
+             |         |      |         |        |         |
+             |         |----->|         |*******>|         |
+  buffer_end '---------'      '---------' swiotlb'---------'
+             |         |      |         | mapping|         |
+             |         |      |         |        |         |
+             '---------'      '---------'        '---------'
+          Figure 1: A big view of iommu bounce page 
+
+As Robin Murphy pointed out, this ties us to using strict mode for
+TLB maintenance, which may not be an overall win depending on the
+balance between invalidation bandwidth vs. memcpy bandwidth. If we
+use standard SWIOTLB logic to always copy the whole thing, we should
+be able to release the bounce pages via the flush queue to allow
+'safe' lazy unmaps. So since v4 we start to use the standard swiotlb
+logic.
+
+                                swiotlb             System
+                IOVA          bounce page           Memory
+buffer_start .---------.      .---------.        .---------.
+             |         |      |         |        |         |
+             |         |      |         |        |         |
+             |         |      |         |        .---------.physical
+             |         |----->|         | ------>|         |_start  
+             |         |iommu |         | swiotlb|         |
+             |         | map  |         |   map  |         |
+ IOMMU Page  .---------.      .---------.        '---------'
+  Boundary   |         |      |         |        |         |
+             |         |      |         |        |         |
+             |         |----->|         |        |         |
+             |         |iommu |         |        |         |
+             |         | map  |         |        |         |
+             |         |      |         |        |         |
+ IOMMU Page  .---------.      .---------.        .---------.
+  Boundary   |         |      |         |        |         |
+             |         |----->|         |        |         |
+             |         |iommu |         |        |         |
+             |         | map  |         |        |         |
+             |         |      |         |        |         |
+ IOMMU Page  |         |      |         |        |         |
+  Boundary   .---------.      .---------.        .---------.
+             |         |      |         |------->|         |
+  buffer_end '---------'      '---------' swiotlb|         |
+             |         |----->|         |   map  |         |
+             |         |iommu |         |        |         |
+             |         | map  |         |        '---------' physical
+             |         |      |         |        |         | _end    
+             '---------'      '---------'        '---------'
+          Figure 2: A big view of simplified iommu bounce page 
+
+The implementation of bounce buffers for untrusted devices
+will cause a little performance overhead, but we didn't see
+any user experience problems. The users could use the kernel
+parameter defined in the IOMMU driver to remove the performance
+overhead if they trust their devices enough.
+
+This series introduces below APIs for bounce page:
+
+ * iommu_bounce_map(dev, addr, paddr, size, dir, attrs)
+   - Map a buffer start at DMA address @addr in bounce page
+     manner. For buffer that doesn't cross whole minimal
+     IOMMU pages, the bounce buffer policy is applied.
+     A bounce page mapped by swiotlb will be used as the DMA
+     target in the IOMMU page table.
+ 
+ * iommu_bounce_unmap(dev, addr, size, dir, attrs)
+   - Unmap the buffer mapped with iommu_bounce_map(). The bounce
+     page will be torn down after the bounced data get synced.
+ 
+ * iommu_bounce_sync_single(dev, addr, size, dir, target)
+   - Synce the bounced data in case the bounce mapped buffer is
+     reused.
+
+The bounce page idea:
+Based-on-idea-by: Mika Westerberg <mika.westerberg@intel.com>
+Based-on-idea-by: Ashok Raj <ashok.raj@intel.com>
+Based-on-idea-by: Alan Cox <alan.cox@intel.com>
+Based-on-idea-by: Kevin Tian <kevin.tian@intel.com>
+Based-on-idea-by: Robin Murphy <robin.murphy@arm.com>
+
+The patch series has been tested by:
+Tested-by: Xu Pengfei <pengfei.xu@intel.com>
+Tested-by: Mika Westerberg <mika.westerberg@intel.com>
+
+Reference:
+[1] https://thunderclap.io/
+[2] https://thunderclap.io/thunderclap-paper-ndss2019.pdf
+[3] https://christian.kellner.me/2019/02/27/thunderclap-and-linux/
+[4] https://lkml.org/lkml/2019/3/4/644
 
 Best regards,
 Baolu
+
+Change log:
+  v5->v6:
+  - The previous v5 was posted here:
+    https://lkml.org/lkml/2019/7/24/2134
+  - Move the per-device dma ops into another seperated series.
+  - Christoph Hellwig reviewed the patches and add his Reviewed-bys.
+  - Add Steven Rostedt's Review-by for the trace patch.
+  - Adress the review comments from Christoph Hellwig.
+  - This patch series is now based on v5.3-rc2.
+
+  v4->v5:
+  - The previous v4 was posted here:
+    https://lkml.org/lkml/2019/6/2/187
+  - Add per-device dma ops and use bounce buffer specific dma
+    ops for those untrusted devices.
+      devices with identity domains	-> system default dma ops
+      trusted devices with dma domains	-> iommu/vt-d dma ops
+      untrusted devices		 	-> bounced dma ops
+  - Address various review comments received since v4.
+  - This patch series is based on v5.3-rc1.
+
+  v3->v4:
+  - The previous v3 was posted here:
+    https://lkml.org/lkml/2019/4/20/213
+  - Discard the optimization of only mapping head and tail
+    partial pages, use the standard swiotlb in order to achieve
+    iotlb flush efficiency.
+  - This patch series is based on the top of the vt-d branch of
+    Joerg's iommu tree.
+
+  v2->v3:
+  - The previous v2 was posed here:
+    https://lkml.org/lkml/2019/3/27/157
+  - Reuse the existing swiotlb APIs for bounce buffer by
+    extending it to support bounce page.
+  - Move the bouce page APIs into iommu generic layer.
+  - This patch series is based on 5.1-rc1.
+
+  v1->v2:
+  - The previous v1 was posted here:
+    https://lkml.org/lkml/2019/3/12/66
+  - Refactor the code to remove struct bounce_param;
+  - During the v1 review cycle, we discussed the possibility
+    of reusing swiotlb code to avoid code dumplication, but
+    we found the swiotlb implementations are not ready for the
+    use of bounce page pool.
+    https://lkml.org/lkml/2019/3/19/259
+  - This patch series has been rebased to v5.1-rc2.
+
+Lu Baolu (8):
+  iommu/vt-d: Don't switch off swiotlb if use direct dma
+  PCI: Add dev_is_untrusted helper
+  swiotlb: Split size parameter to map/unmap APIs
+  swiotlb: Zero out bounce buffer for untrusted device
+  iommu: Add bounce page APIs
+  iommu/vt-d: Check whether device requires bounce buffer
+  iommu/vt-d: Add trace events for device dma map/unmap
+  iommu/vt-d: Use bounce buffer for untrusted devices
+
+ .../admin-guide/kernel-parameters.txt         |   5 +
+ drivers/iommu/Kconfig                         |  15 ++
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/intel-iommu.c                   | 193 +++++++++++++++++-
+ drivers/iommu/intel-trace.c                   |  14 ++
+ drivers/iommu/iommu.c                         | 118 +++++++++++
+ drivers/xen/swiotlb-xen.c                     |   8 +-
+ include/linux/iommu.h                         |  35 ++++
+ include/linux/pci.h                           |   2 +
+ include/linux/swiotlb.h                       |   8 +-
+ include/trace/events/intel_iommu.h            |  95 +++++++++
+ kernel/dma/direct.c                           |   2 +-
+ kernel/dma/swiotlb.c                          |  46 +++--
+ 13 files changed, 517 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/iommu/intel-trace.c
+ create mode 100644 include/trace/events/intel_iommu.h
+
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
