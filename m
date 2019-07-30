@@ -1,65 +1,61 @@
-Return-Path: <SRS0=zE+z=V2=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=JEM9=V3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD40C76186
-	for <iommu@archiver.kernel.org>; Mon, 29 Jul 2019 19:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D18DC7618E
+	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:33:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3EB23205F4
-	for <iommu@archiver.kernel.org>; Mon, 29 Jul 2019 19:59:51 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ofUrd5Dl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3EB23205F4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 25DA62087F
+	for <iommu@archiver.kernel.org>; Tue, 30 Jul 2019 04:33:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25DA62087F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0F5081EF1;
-	Mon, 29 Jul 2019 19:59:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 175A629E1;
+	Tue, 30 Jul 2019 04:33:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 34DA81C58
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DE0AE2A0E
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Jul 2019 19:56:10 +0000 (UTC)
+	Tue, 30 Jul 2019 04:29:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9A3126CE
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 44CF6D3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 29 Jul 2019 19:56:09 +0000 (UTC)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
-	[83.86.89.107])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id F00CD204EC;
-	Mon, 29 Jul 2019 19:56:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1564430169;
-	bh=QqvEHPJv9/ttshAmGxbKZ7+rukn6ju1lIdmH1Y7hFIA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ofUrd5Dl8VU4Up+Qv1wTMKfAukY0Ur+utDTWuCOkRocgvJbcICMe5QzaY9Q+2jG2G
-	iPa5KgbyZZpm2AgfosMnnJv/ranNNaaFU8FMV2Wregq8MZ8JAAkfDFm2jv4uCqz9Lg
-	HGDNfIRQ/soIc7f6rXFB7xjJp9nAKEUFNqIdCuew=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH 5.2 202/215] iommu/vt-d: Dont queue_iova() if there is no
-	flush queue
-Date: Mon, 29 Jul 2019 21:23:18 +0200
-Message-Id: <20190729190815.008848945@linuxfoundation.org>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190729190739.971253303@linuxfoundation.org>
-References: <20190729190739.971253303@linuxfoundation.org>
-User-Agent: quilt/0.66
+	Tue, 30 Jul 2019 04:29:17 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	29 Jul 2019 21:29:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,325,1559545200"; d="scan'208";a="183002215"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 29 Jul 2019 21:29:15 -0700
+Subject: Re: Failure to recreate virtual functions
+To: Vlad Buslov <vladbu@mellanox.com>
+References: <vbf8sskwyiv.fsf@mellanox.com>
+	<d4166595-ec4a-fc4a-3b5f-463b79c42936@linux.intel.com>
+	<vbfzhkx9n32.fsf@mellanox.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <838a00c4-d5bd-08db-e39c-5f00686858b5@linux.intel.com>
+Date: Tue, 30 Jul 2019 12:28:34 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.2
 MIME-Version: 1.0
-Cc: Joerg Roedel <jroedel@suse.de>, Dmitry Safonov <dima@arista.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	stable@vger.kernel.org, iommu@lists.linux-foundation.org,
-	David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <vbfzhkx9n32.fsf@mellanox.com>
+Content-Language: en-US
+Cc: Joerg Roedel <jroedel@suse.de>, Ran Rozenstein <ranro@mellanox.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Maor Gottlieb <maorg@mellanox.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,193 +68,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Dmitry Safonov <dima@arista.com>
+Hi,
 
-commit effa467870c7612012885df4e246bdb8ffd8e44c upstream.
+On 7/29/19 6:05 PM, Vlad Buslov wrote:
+> On Sat 27 Jul 2019 at 05:15, Lu Baolu<baolu.lu@linux.intel.com>  wrote:
+>> Hi Vilad,
+>>
+>> On 7/27/19 12:30 AM, Vlad Buslov wrote:
+>>> Hi Lu Baolu,
+>>>
+>>> Our mlx5 driver fails to recreate VFs when cmdline includes
+>>> "intel_iommu=on iommu=pt" after recent merge of patch set "iommu/vt-d:
+>>> Delegate DMA domain to generic iommu". I've bisected the failure to
+>>> patch b7297783c2bb ("iommu/vt-d: Remove duplicated code for device
+>>> hotplug"). Here is the dmesg log for following case: enable switchdev
+>>> mode, set number of VFs to 0, then set it back to any value
+>>>> 0.
+>>> [  223.525282] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
+>>> [  223.562027] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
+>>> [  223.663766] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
+>>> [  223.663864] pci 0000:81:00.2: enabling Extended Tags
+>>> [  223.665143] pci 0000:81:00.2: Adding to iommu group 52
+>>> [  223.665215] pci 0000:81:00.2: Using iommu direct mapping
+>>> [  223.665771] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
+>>> [  223.665890] mlx5_core 0000:81:00.2: firmware version: 16.26.148
+>>> [  223.889908] mlx5_core 0000:81:00.2: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
+>>> [  223.896438] mlx5_core 0000:81:00.2: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>>> [  223.896636] mlx5_core 0000:81:00.2: Assigned random MAC address 56:1f:95:e0:51:d6
+>>> [  224.012905] mlx5_core 0000:81:00.2 ens1f0v0: renamed from eth0
+>>> [  224.041651] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
+>>> [  224.041711] pci 0000:81:00.3: enabling Extended Tags
+>>> [  224.043660] pci 0000:81:00.3: Adding to iommu group 53
+>>> [  224.043738] pci 0000:81:00.3: Using iommu direct mapping
+>>> [  224.044196] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
+>>> [  224.044298] mlx5_core 0000:81:00.3: firmware version: 16.26.148
+>>> [  224.268099] mlx5_core 0000:81:00.3: Rate limit: 127 rates are supported, range: 0Mbps to 97656Mbps
+>>> [  224.274983] mlx5_core 0000:81:00.3: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>>> [  224.275195] mlx5_core 0000:81:00.3: Assigned random MAC address a6:1e:56:0a:d9:f2
+>>> [  224.388359] mlx5_core 0000:81:00.3 ens1f0v1: renamed from eth0
+>>> [  236.325027] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(1)
+>>> [  236.362766] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (2)
+>>> [  237.290066] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>>> [  237.350215] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>>> [  237.373052] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
+>>> [  237.390768] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>>> [  237.447846] ens1f0_0: renamed from eth0
+>>> [  237.460399] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
+>>> [  237.526880] ens1f0_1: renamed from eth1
+>>> [  248.953873] pci 0000:81:00.2: Removing from iommu group 52
+>>> [  248.954114] pci 0000:81:00.3: Removing from iommu group 53
+>>> [  249.960570] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active vports(3) mode(2)
+>>> [  250.319135] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>>> [  250.559431] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
+>>> [  258.819162] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV: nvfs(2) mode (1)
+>>> [  258.831625] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active vports(3)
+>>> [  258.936160] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
+>>> [  258.936258] pci 0000:81:00.2: enabling Extended Tags
+>>> [  258.937438] pci 0000:81:00.2: Failed to add to iommu group 52: -16
+>> It seems that an EBUSY error returned from iommu_group_add_device(). Can
+>> you please hack some debug messages in iommu_group_add_device() so that
+>> we can know where the EBUSY returns?
+>>
+>> Best regards,
+>> Baolu
+> The error code is returned by __iommu_attach_device().
+> 
 
-Intel VT-d driver was reworked to use common deferred flushing
-implementation. Previously there was one global per-cpu flush queue,
-afterwards - one per domain.
+Thanks!
 
-Before deferring a flush, the queue should be allocated and initialized.
+It looks like the system has already a domain for specific pci bdf
+device. Does this VF share the bdf with other devices? Or has been
+previously created, and system failed to get chance to remove it?
 
-Currently only domains with IOMMU_DOMAIN_DMA type initialize their flush
-queue. It's probably worth to init it for static or unmanaged domains
-too, but it may be arguable - I'm leaving it to iommu folks.
-
-Prevent queuing an iova flush if the domain doesn't have a queue.
-The defensive check seems to be worth to keep even if queue would be
-initialized for all kinds of domains. And is easy backportable.
-
-On 4.19.43 stable kernel it has a user-visible effect: previously for
-devices in si domain there were crashes, on sata devices:
-
- BUG: spinlock bad magic on CPU#6, swapper/0/1
-  lock: 0xffff88844f582008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
- CPU: 6 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #1
- Call Trace:
-  <IRQ>
-  dump_stack+0x61/0x7e
-  spin_bug+0x9d/0xa3
-  do_raw_spin_lock+0x22/0x8e
-  _raw_spin_lock_irqsave+0x32/0x3a
-  queue_iova+0x45/0x115
-  intel_unmap+0x107/0x113
-  intel_unmap_sg+0x6b/0x76
-  __ata_qc_complete+0x7f/0x103
-  ata_qc_complete+0x9b/0x26a
-  ata_qc_complete_multiple+0xd0/0xe3
-  ahci_handle_port_interrupt+0x3ee/0x48a
-  ahci_handle_port_intr+0x73/0xa9
-  ahci_single_level_irq_intr+0x40/0x60
-  __handle_irq_event_percpu+0x7f/0x19a
-  handle_irq_event_percpu+0x32/0x72
-  handle_irq_event+0x38/0x56
-  handle_edge_irq+0x102/0x121
-  handle_irq+0x147/0x15c
-  do_IRQ+0x66/0xf2
-  common_interrupt+0xf/0xf
- RIP: 0010:__do_softirq+0x8c/0x2df
-
-The same for usb devices that use ehci-pci:
- BUG: spinlock bad magic on CPU#0, swapper/0/1
-  lock: 0xffff88844f402008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
- CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #4
- Call Trace:
-  <IRQ>
-  dump_stack+0x61/0x7e
-  spin_bug+0x9d/0xa3
-  do_raw_spin_lock+0x22/0x8e
-  _raw_spin_lock_irqsave+0x32/0x3a
-  queue_iova+0x77/0x145
-  intel_unmap+0x107/0x113
-  intel_unmap_page+0xe/0x10
-  usb_hcd_unmap_urb_setup_for_dma+0x53/0x9d
-  usb_hcd_unmap_urb_for_dma+0x17/0x100
-  unmap_urb_for_dma+0x22/0x24
-  __usb_hcd_giveback_urb+0x51/0xc3
-  usb_giveback_urb_bh+0x97/0xde
-  tasklet_action_common.isra.4+0x5f/0xa1
-  tasklet_action+0x2d/0x30
-  __do_softirq+0x138/0x2df
-  irq_exit+0x7d/0x8b
-  smp_apic_timer_interrupt+0x10f/0x151
-  apic_timer_interrupt+0xf/0x20
-  </IRQ>
- RIP: 0010:_raw_spin_unlock_irqrestore+0x17/0x39
-
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: <stable@vger.kernel.org> # 4.14+
-Fixes: 13cf01744608 ("iommu/vt-d: Make use of iova deferred flushing")
-Signed-off-by: Dmitry Safonov <dima@arista.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- drivers/iommu/intel-iommu.c |    3 ++-
- drivers/iommu/iova.c        |   18 ++++++++++++++----
- include/linux/iova.h        |    6 ++++++
- 3 files changed, 22 insertions(+), 5 deletions(-)
-
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3752,7 +3752,8 @@ static void intel_unmap(struct device *d
- 
- 	freelist = domain_unmap(domain, start_pfn, last_pfn);
- 
--	if (intel_iommu_strict || (pdev && pdev->untrusted)) {
-+	if (intel_iommu_strict || (pdev && pdev->untrusted) ||
-+			!has_iova_flush_queue(&domain->iovad)) {
- 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
- 				      nrpages, !freelist, 0);
- 		/* free iova */
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -54,9 +54,14 @@ init_iova_domain(struct iova_domain *iov
- }
- EXPORT_SYMBOL_GPL(init_iova_domain);
- 
-+bool has_iova_flush_queue(struct iova_domain *iovad)
-+{
-+	return !!iovad->fq;
-+}
-+
- static void free_iova_flush_queue(struct iova_domain *iovad)
- {
--	if (!iovad->fq)
-+	if (!has_iova_flush_queue(iovad))
- 		return;
- 
- 	if (timer_pending(&iovad->fq_timer))
-@@ -74,13 +79,14 @@ static void free_iova_flush_queue(struct
- int init_iova_flush_queue(struct iova_domain *iovad,
- 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
- {
-+	struct iova_fq __percpu *queue;
- 	int cpu;
- 
- 	atomic64_set(&iovad->fq_flush_start_cnt,  0);
- 	atomic64_set(&iovad->fq_flush_finish_cnt, 0);
- 
--	iovad->fq = alloc_percpu(struct iova_fq);
--	if (!iovad->fq)
-+	queue = alloc_percpu(struct iova_fq);
-+	if (!queue)
- 		return -ENOMEM;
- 
- 	iovad->flush_cb   = flush_cb;
-@@ -89,13 +95,17 @@ int init_iova_flush_queue(struct iova_do
- 	for_each_possible_cpu(cpu) {
- 		struct iova_fq *fq;
- 
--		fq = per_cpu_ptr(iovad->fq, cpu);
-+		fq = per_cpu_ptr(queue, cpu);
- 		fq->head = 0;
- 		fq->tail = 0;
- 
- 		spin_lock_init(&fq->lock);
- 	}
- 
-+	smp_wmb();
-+
-+	iovad->fq = queue;
-+
- 	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
- 	atomic_set(&iovad->fq_timer_on, 0);
- 
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -155,6 +155,7 @@ struct iova *reserve_iova(struct iova_do
- void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
- void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn);
-+bool has_iova_flush_queue(struct iova_domain *iovad);
- int init_iova_flush_queue(struct iova_domain *iovad,
- 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
-@@ -235,6 +236,11 @@ static inline void init_iova_domain(stru
- {
- }
- 
-+bool has_iova_flush_queue(struct iova_domain *iovad)
-+{
-+	return false;
-+}
-+
- static inline int init_iova_flush_queue(struct iova_domain *iovad,
- 					iova_flush_cb flush_cb,
- 					iova_entry_dtor entry_dtor)
-
-
+Best regards,
+Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
