@@ -6,43 +6,42 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28602C433FF
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 16:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 009D5C32751
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 16:00:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 054E0206A2
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 16:00:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 054E0206A2
+	by mail.kernel.org (Postfix) with ESMTPS id CD9F8206A2
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 16:00:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD9F8206A2
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A83983EBF;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D4E4C3EC2;
 	Wed, 31 Jul 2019 15:59:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CC9C93AA5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3E48A3AA5
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 15:48:11 +0000 (UTC)
+	Wed, 31 Jul 2019 15:48:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6625F7ED
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AF6B8E7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 15:48:11 +0000 (UTC)
+	Wed, 31 Jul 2019 15:48:12 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id D42A2B03A;
-	Wed, 31 Jul 2019 15:48:09 +0000 (UTC)
+	by mx1.suse.de (Postfix) with ESMTP id 1CBAEB05E;
+	Wed, 31 Jul 2019 15:48:11 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: catalin.marinas@arm.com, hch@lst.de, wahrenst@gmx.net,
 	marc.zyngier@arm.com, Robin Murphy <robin.murphy@arm.com>,
 	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
 	iommu@lists.linux-foundation.org, linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 7/8] arm64: update arch_zone_dma_bits to fine tune dma-direct
-	min mask
-Date: Wed, 31 Jul 2019 17:47:50 +0200
-Message-Id: <20190731154752.16557-8-nsaenzjulienne@suse.de>
+Subject: [PATCH 8/8] mm: comment arm64's usage of 'enum zone_type'
+Date: Wed, 31 Jul 2019 17:47:51 +0200
+Message-Id: <20190731154752.16557-9-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190731154752.16557-1-nsaenzjulienne@suse.de>
 References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
@@ -68,45 +67,56 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-With the introduction of ZONE_DMA in arm64 devices are not forced to
-support 32 bit DMA masks. We have to inform dma-direct of this
-limitation whenever it happens.
+arm64 uses both ZONE_DMA and ZONE_DMA32 for the same reasons x86_64
+does: peripherals with different DMA addressing limitations. This
+updates both ZONE_DMAs comments to inform about the usage.
 
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+
 ---
 
- arch/arm64/mm/init.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ include/linux/mmzone.h | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index f5279ef85756..b809f3259340 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -22,6 +22,7 @@
- #include <linux/of_fdt.h>
- #include <linux/dma-mapping.h>
- #include <linux/dma-contiguous.h>
-+#include <linux/dma-direct.h>
- #include <linux/efi.h>
- #include <linux/swiotlb.h>
- #include <linux/vmalloc.h>
-@@ -439,10 +440,14 @@ void __init arm64_memblock_init(void)
- 
- 	early_init_fdt_scan_reserved_mem();
- 
--	if (IS_ENABLED(CONFIG_ZONE_DMA))
-+	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
- 		arm64_dma_phys_limit = max_zone_dma_phys();
--	else
-+
-+		if (arm64_dma_phys_limit)
-+			arch_zone_dma_bits = ilog2(arm64_dma_phys_limit) + 1;
-+	} else {
- 		arm64_dma_phys_limit = 0;
-+	}
- 
- 	/* 4GB maximum for 32-bit only capable devices */
- 	if (IS_ENABLED(CONFIG_ZONE_DMA32))
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index d77d717c620c..8fa6bcf72e7c 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -365,23 +365,24 @@ enum zone_type {
+ 	 *
+ 	 * Some examples
+ 	 *
+-	 * Architecture		Limit
+-	 * ---------------------------
+-	 * parisc, ia64, sparc	<4G
+-	 * s390, powerpc	<2G
+-	 * arm			Various
+-	 * alpha		Unlimited or 0-16MB.
++	 * Architecture			Limit
++	 * ----------------------------------
++	 * parisc, ia64, sparc, arm64	<4G
++	 * s390, powerpc		<2G
++	 * arm				Various
++	 * alpha			Unlimited or 0-16MB.
+ 	 *
+ 	 * i386, x86_64 and multiple other arches
+-	 * 			<16M.
++	 *				<16M.
+ 	 */
+ 	ZONE_DMA,
+ #endif
+ #ifdef CONFIG_ZONE_DMA32
+ 	/*
+-	 * x86_64 needs two ZONE_DMAs because it supports devices that are
+-	 * only able to do DMA to the lower 16M but also 32 bit devices that
+-	 * can only do DMA areas below 4G.
++	 * x86_64 and arm64 need two ZONE_DMAs because they support devices
++	 * that are only able to DMA a fraction of the 32 bit addressable
++	 * memory area, but also devices that are limited to that whole 32 bit
++	 * area.
+ 	 */
+ 	ZONE_DMA32,
+ #endif
 -- 
 2.22.0
 
