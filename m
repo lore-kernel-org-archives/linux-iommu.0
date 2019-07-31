@@ -6,52 +6,52 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B00C433FF
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 17:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAACC433FF
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 17:20:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C910D206A2
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 17:13:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AD1B1206A2
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 17:20:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="wjx83ylI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C910D206A2
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="NIrF+uN1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD1B1206A2
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 780A04055;
-	Wed, 31 Jul 2019 17:13:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 742C4405B;
+	Wed, 31 Jul 2019 17:20:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 41FC93949
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5D09D3949
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 17:05:32 +0000 (UTC)
+	Wed, 31 Jul 2019 17:05:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 94B72E7
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9DB53A8
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 17:05:31 +0000 (UTC)
+	Wed, 31 Jul 2019 17:05:44 +0000 (UTC)
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
 	[83.86.89.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id E996721852;
-	Wed, 31 Jul 2019 17:05:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id F3C3F21851;
+	Wed, 31 Jul 2019 17:05:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1564592731;
-	bh=ee5WwVWliuDTtLa3+9ON6/JSs8GjBPE5J1GNMNgSVJ8=;
+	s=default; t=1564592744;
+	bh=KSps4Bo6sawPxVaKJyvC4U1HwpwLcNcrUXm6n7ZE1n0=;
 	h=Subject:To:Cc:From:Date:From;
-	b=wjx83ylI+y1AuKo9rQDnhpMRwPfyen1892bYB7BN+66p4pvESMyZNurGLmEWyYzoV
-	TjDAN5A0AjopLO0Do9lTqCfAvQMCZ7af7Qn7aeLN8TdkgHSBIVIT3raYalMvxQxkYe
-	JHRM2pwyj0A7VvdbB3nOIjLqC7ef6d3D4yij6Jmk=
+	b=NIrF+uN1fFAnTExPaXc7n/KYv+4qmPW8ne88FGRZA7DDYxCBUHDLm/kiBQ6GHssfR
+	mysUxNN8FRr2wZfebBwJ4uW/Vq5zi2CcagTF29/iYuXsfVPgfrME5lTRWu4NJhPBcC
+	zZDV4CiUzTcQSx+4aINocPsHi0J8Nf/FE7jJUbCk=
 Subject: Patch "iommu/vt-d: Don't queue_iova() if there is no flush queue" has
-	been added to the 4.14-stable tree
+	been added to the 4.19-stable tree
 To: baolu.lu@linux.intel.com, dima@arista.com, dwmw2@infradead.org,
 	gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org,
 	joro@8bytes.org, jroedel@suse.de
 From: <gregkh@linuxfoundation.org>
-Date: Wed, 31 Jul 2019 19:05:21 +0200
-Message-ID: <156459272113171@kroah.com>
+Date: Wed, 31 Jul 2019 19:05:39 +0200
+Message-ID: <1564592739179214@kroah.com>
 MIME-Version: 1.0
 X-stable: commit
 X-Patchwork-Hint: ignore 
@@ -78,12 +78,12 @@ This is a note to let you know that I've just added the patch titled
 
     iommu/vt-d: Don't queue_iova() if there is no flush queue
 
-to the 4.14-stable tree which can be found at:
+to the 4.19-stable tree which can be found at:
     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 
 The filename of the patch is:
      iommu-vt-d-don-t-queue_iova-if-there-is-no-flush-queue.patch
-and it can be found in the queue-4.14 subdirectory.
+and it can be found in the queue-4.19 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -179,8 +179,7 @@ Signed-off-by: Dmitry Safonov <dima@arista.com>
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 [v4.14-port notes:
-o minor conflict with untrusted IOMMU devices check under if-condition
-o setup_timer() near one chunk is timer_setup() in v5.3]
+o minor conflict with untrusted IOMMU devices check under if-condition]
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -191,7 +190,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3702,7 +3702,7 @@ static void intel_unmap(struct device *d
+@@ -3721,7 +3721,7 @@ static void intel_unmap(struct device *d
  
  	freelist = domain_unmap(domain, start_pfn, last_pfn);
  
@@ -202,7 +201,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		/* free iova */
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -58,9 +58,14 @@ init_iova_domain(struct iova_domain *iov
+@@ -65,9 +65,14 @@ init_iova_domain(struct iova_domain *iov
  }
  EXPORT_SYMBOL_GPL(init_iova_domain);
  
@@ -218,7 +217,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		return;
  
  	if (timer_pending(&iovad->fq_timer))
-@@ -78,13 +83,14 @@ static void free_iova_flush_queue(struct
+@@ -85,13 +90,14 @@ static void free_iova_flush_queue(struct
  int init_iova_flush_queue(struct iova_domain *iovad,
  			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
  {
@@ -235,7 +234,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		return -ENOMEM;
  
  	iovad->flush_cb   = flush_cb;
-@@ -93,13 +99,17 @@ int init_iova_flush_queue(struct iova_do
+@@ -100,13 +106,17 @@ int init_iova_flush_queue(struct iova_do
  	for_each_possible_cpu(cpu) {
  		struct iova_fq *fq;
  
@@ -251,20 +250,20 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +
 +	iovad->fq = queue;
 +
- 	setup_timer(&iovad->fq_timer, fq_flush_timeout, (unsigned long)iovad);
+ 	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
  	atomic_set(&iovad->fq_timer_on, 0);
  
 --- a/include/linux/iova.h
 +++ b/include/linux/iova.h
-@@ -154,6 +154,7 @@ struct iova *reserve_iova(struct iova_do
+@@ -156,6 +156,7 @@ struct iova *reserve_iova(struct iova_do
  void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
  void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn, unsigned long pfn_32bit);
+ 	unsigned long start_pfn);
 +bool has_iova_flush_queue(struct iova_domain *iovad);
  int init_iova_flush_queue(struct iova_domain *iovad,
  			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
  struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
-@@ -234,6 +235,11 @@ static inline void init_iova_domain(stru
+@@ -236,6 +237,11 @@ static inline void init_iova_domain(stru
  {
  }
  
@@ -280,8 +279,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 Patches currently in stable-queue which might be from dima@arista.com are
 
-queue-4.14/iommu-vt-d-don-t-queue_iova-if-there-is-no-flush-queue.patch
-queue-4.14/iommu-iova-fix-compilation-error-with-config_iommu_iova.patch
+queue-4.19/iommu-vt-d-don-t-queue_iova-if-there-is-no-flush-queue.patch
+queue-4.19/iommu-iova-fix-compilation-error-with-config_iommu_iova.patch
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
