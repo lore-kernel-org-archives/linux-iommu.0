@@ -2,61 +2,118 @@ Return-Path: <SRS0=24gJ=V4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E80FC32751
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 07:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B87C433FF
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 11:29:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA085214DA
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 07:41:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA085214DA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 543F0206A2
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 11:29:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=Mellanox.com header.i=@Mellanox.com header.b="Z/qYdCij"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 543F0206A2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mellanox.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 96649399F;
-	Wed, 31 Jul 2019 07:41:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DA4313C09;
+	Wed, 31 Jul 2019 11:29:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E2FAF364C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 165163C04
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 07:30:26 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 23381A8
+	Wed, 31 Jul 2019 11:19:47 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com
+	(mail-eopbgr10052.outbound.protection.outlook.com [40.107.1.52])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C24067DB
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 07:30:26 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	31 Jul 2019 00:30:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,329,1559545200"; d="scan'208";a="183593373"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga002.jf.intel.com with ESMTP; 31 Jul 2019 00:30:23 -0700
+	Wed, 31 Jul 2019 11:19:44 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=fqcnwNQWbjFrpO3/BIAJtqPBfZMu8IQY2dUTkUspqx/mbpuY9FMo1SrdlMJpI+UXeNTLvsp8rLf8k0J2Yu1u2at15scQxq+fBlQs6chuj3HdihpKshgbu4NDn9LZ58pGG7BFr6oD1qnckhynvYcyjDh6JesFsQeIkhJnR4+vvcgJFy7hwkVsR2xPl53HEDW5M8NmYliggZeLKWQBJ/yP65Cp7bbLfp/c5S0vFesdzFXEjUsC6G1ot6zKaKZ4ACtpAHhp/K0LjfidPZOYGuOFiyp2DzVuQPUa/yCz+eoaCqaQGdCH+xijI5EjAIFBMQ1K9XWXFjPwtLPRC7dSrGZHoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=WDIYGYXnjQCcuaEqk/dTvdrPpQz3tFsU1BjsDE28lC4=;
+	b=Bq9afRPndJP44I32D1CLPta9+6VraSGqsAnWgicPA3fcBjBbDubYZoYonCGgXaHlqpzql3vJ10uY2uDfVmWsF1UmKYyk9iJoAxB5ByDb3k3ddzLvXqODxreufzundvWOl0xNRMNpU4LPwdYI1HdPUxXKrGBsAmxEzm4RgKINYZgL5PW+yI98W+Uy7H8ExGQq5lUV6CggLCOS6RgJDq+TTKAeqK4O83Ti3FfZOZOHTBrUuZNsk/pd6s2R4HLOVWnu5V9B4sUEJa2U2Qu9Ih0tV3fnk9ugMIT1z7l4nMDB/ypCLYoDhZ7XvH5uggOGpL++XyeSjW50Mywb1SBOFFbVog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+	smtp.mailfrom=mellanox.com;dmarc=pass action=none
+	header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+	s=selector2;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=WDIYGYXnjQCcuaEqk/dTvdrPpQz3tFsU1BjsDE28lC4=;
+	b=Z/qYdCijbKlRX9spFcZ/jqeeQvfwmbv+OpxmssKsZD5/gAER67dcWvt3Uy9bhnHOCbtPCcgm9rba56ngT0qxSD+7hz3JQonua68lNPeJnc4bdz7yrNO5BVesnCQ7Qr6yBSsDWrLmVhV+XFo3yjisLUdZLxy+CQMxgTV9FAPPld8=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+	VI1PR05MB5869.eurprd05.prod.outlook.com (20.178.125.142) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2115.15; Wed, 31 Jul 2019 11:19:41 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+	([fe80::ec21:2019:cb6f:44ae]) by
+	VI1PR05MB5295.eurprd05.prod.outlook.com
+	([fe80::ec21:2019:cb6f:44ae%7]) with mapi id 15.20.2115.005;
+	Wed, 31 Jul 2019 11:19:41 +0000
+From: Vlad Buslov <vladbu@mellanox.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
 Subject: Re: Failure to recreate virtual functions
-To: Robin Murphy <robin.murphy@arm.com>, Vlad Buslov <vladbu@mellanox.com>
+Thread-Topic: Failure to recreate virtual functions
+Thread-Index: AQHVQ89+orWUWzIuXEaLp1PfOC9kjabdupoAgAOm2YCAATVtAIAAc6GAgAFRTwCAAEA+AA==
+Date: Wed, 31 Jul 2019 11:19:41 +0000
+Message-ID: <vbf36imsb79.fsf@mellanox.com>
 References: <vbf8sskwyiv.fsf@mellanox.com>
 	<d4166595-ec4a-fc4a-3b5f-463b79c42936@linux.intel.com>
 	<vbfzhkx9n32.fsf@mellanox.com>
 	<838a00c4-d5bd-08db-e39c-5f00686858b5@linux.intel.com>
 	<6ece232e-3fe8-4bd9-cd4b-c8d90a106a30@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <abba9e2b-4bd4-bca5-dd50-05ca9ad96d1f@linux.intel.com>
-Date: Wed, 31 Jul 2019 15:29:42 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <6ece232e-3fe8-4bd9-cd4b-c8d90a106a30@arm.com>
+	<abba9e2b-4bd4-bca5-dd50-05ca9ad96d1f@linux.intel.com>
+In-Reply-To: <abba9e2b-4bd4-bca5-dd50-05ca9ad96d1f@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0110.GBRP265.PROD.OUTLOOK.COM
+	(2603:10a6:600:c::26) To VI1PR05MB5295.eurprd05.prod.outlook.com
+	(2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7dde54c2-ab07-4594-ecb0-08d715a8fb9d
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
+	SRVR:VI1PR05MB5869; 
+x-ms-traffictypediagnostic: VI1PR05MB5869:
+x-microsoft-antispam-prvs: <VI1PR05MB5869F3F8A95606F14E02C328ADDF0@VI1PR05MB5869.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 011579F31F
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(199004)(189003)(316002)(86362001)(6512007)(54906003)(7736002)(53936002)(66066001)(81156014)(81166006)(8676002)(8936002)(2906002)(6916009)(6486002)(229853002)(53546011)(6506007)(386003)(76176011)(102836004)(52116002)(14454004)(26005)(186003)(68736007)(6436002)(99286004)(66946007)(64756008)(66446008)(66476007)(66556008)(2616005)(446003)(11346002)(476003)(305945005)(5660300002)(71190400001)(71200400001)(5024004)(486006)(256004)(14444005)(478600001)(36756003)(3846002)(4326008)(6246003)(6116002)(25786009)(107886003);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR05MB5869;
+	H:VI1PR05MB5295.eurprd05.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: o0dcHN5V7yEcwtpG8VG1bfh8llfLVKkz4Pi1wyLUHN86VkyjTAFnMvxaWy5UG2MgFhLPE3hqAhJzt1Oq7iUPmFKeaSOgsghhgHO/eAzn4S7hK9doF7cNiIn2ljKtJlrjuoJmAYXazFC1Hvt/YQMWYSCUCXat8A1EgEb63Sm+rnPRX/1erIhVm9IOV5WwKiNW/K1e4vKiIq4E96K3kYjCj8DSenMYHnSJVqwEef04YPQVGVerqRHO69PFCqzXyZQOJ9f0j6NglNBfObhe3ZaYUOlUxwNCOVl7+WfSDKsETsO2UJv9ifIz62u10HEy6V76wuvj9EZsu2DUJqUJ/0EEQRkNvCkC4kiJuO1XEWXZ+4U+XgZSNPp1kf1wO097tFxv1d//5IxZ2RtEmPKrxf46CxJFrgbIreQ4mAUKfHTQfYM=
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dde54c2-ab07-4594-ecb0-08d715a8fb9d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2019 11:19:41.7633 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vladbu@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5869
 Cc: Joerg Roedel <jroedel@suse.de>, Ran Rozenstein <ranro@mellanox.com>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Vlad Buslov <vladbu@mellanox.com>, Robin Murphy <robin.murphy@arm.com>,
 	Maor Gottlieb <maorg@mellanox.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -70,110 +127,143 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-SGksCgpPbiA3LzMwLzE5IDc6MjIgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAzMC8wNy8y
-MDE5IDA1OjI4LCBMdSBCYW9sdSB3cm90ZToKPj4gSGksCj4+Cj4+IE9uIDcvMjkvMTkgNjowNSBQ
-TSwgVmxhZCBCdXNsb3Ygd3JvdGU6Cj4+PiBPbiBTYXQgMjcgSnVsIDIwMTkgYXQgMDU6MTUsIEx1
-IEJhb2x1PGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT7CoCB3cm90ZToKPj4+PiBIaSBWaWxhZCwK
-Pj4+Pgo+Pj4+IE9uIDcvMjcvMTkgMTI6MzAgQU0sIFZsYWQgQnVzbG92IHdyb3RlOgo+Pj4+PiBI
-aSBMdSBCYW9sdSwKPj4+Pj4KPj4+Pj4gT3VyIG1seDUgZHJpdmVyIGZhaWxzIHRvIHJlY3JlYXRl
-IFZGcyB3aGVuIGNtZGxpbmUgaW5jbHVkZXMKPj4+Pj4gImludGVsX2lvbW11PW9uIGlvbW11PXB0
-IiBhZnRlciByZWNlbnQgbWVyZ2Ugb2YgcGF0Y2ggc2V0ICJpb21tdS92dC1kOgo+Pj4+PiBEZWxl
-Z2F0ZSBETUEgZG9tYWluIHRvIGdlbmVyaWMgaW9tbXUiLiBJJ3ZlIGJpc2VjdGVkIHRoZSBmYWls
-dXJlIHRvCj4+Pj4+IHBhdGNoIGI3Mjk3NzgzYzJiYiAoImlvbW11L3Z0LWQ6IFJlbW92ZSBkdXBs
-aWNhdGVkIGNvZGUgZm9yIGRldmljZQo+Pj4+PiBob3RwbHVnIikuIEhlcmUgaXMgdGhlIGRtZXNn
-IGxvZyBmb3IgZm9sbG93aW5nIGNhc2U6IGVuYWJsZSBzd2l0Y2hkZXYKPj4+Pj4gbW9kZSwgc2V0
-IG51bWJlciBvZiBWRnMgdG8gMCwgdGhlbiBzZXQgaXQgYmFjayB0byBhbnkgdmFsdWUKPj4+Pj4+
-IDAuCj4+Pj4+IFvCoCAyMjMuNTI1MjgyXSBtbHg1X2NvcmUgMDAwMDo4MTowMC4wOiBFLVN3aXRj
-aDogRS1Td2l0Y2ggZW5hYmxlIAo+Pj4+PiBTUklPVjogbnZmcygyKSBtb2RlICgxKQo+Pj4+PiBb
-wqAgMjIzLjU2MjAyN10gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMDogRS1Td2l0Y2g6IFNSSU9WIGVu
-YWJsZWQ6IAo+Pj4+PiBhY3RpdmUgdnBvcnRzKDMpCj4+Pj4+IFvCoCAyMjMuNjYzNzY2XSBwY2kg
-MDAwMDo4MTowMC4yOiBbMTViMzoxMDFhXSB0eXBlIDAwIGNsYXNzIDB4MDIwMDAwCj4+Pj4+IFvC
-oCAyMjMuNjYzODY0XSBwY2kgMDAwMDo4MTowMC4yOiBlbmFibGluZyBFeHRlbmRlZCBUYWdzCj4+
-Pj4+IFvCoCAyMjMuNjY1MTQzXSBwY2kgMDAwMDo4MTowMC4yOiBBZGRpbmcgdG8gaW9tbXUgZ3Jv
-dXAgNTIKPj4+Pj4gW8KgIDIyMy42NjUyMTVdIHBjaSAwMDAwOjgxOjAwLjI6IFVzaW5nIGlvbW11
-IGRpcmVjdCBtYXBwaW5nCj4+Pj4+IFvCoCAyMjMuNjY1NzcxXSBtbHg1X2NvcmUgMDAwMDo4MTow
-MC4yOiBlbmFibGluZyBkZXZpY2UgKDAwMDAgLT4gMDAwMikKPj4+Pj4gW8KgIDIyMy42NjU4OTBd
-IG1seDVfY29yZSAwMDAwOjgxOjAwLjI6IGZpcm13YXJlIHZlcnNpb246IDE2LjI2LjE0OAo+Pj4+
-PiBbwqAgMjIzLjg4OTkwOF0gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMjogUmF0ZSBsaW1pdDogMTI3
-IHJhdGVzIGFyZSAKPj4+Pj4gc3VwcG9ydGVkLCByYW5nZTogME1icHMgdG8gOTc2NTZNYnBzCj4+
-Pj4+IFvCoCAyMjMuODk2NDM4XSBtbHg1X2NvcmUgMDAwMDo4MTowMC4yOiBNTFg1RTogU3RyZFJx
-KDEpIFJxU3ooOCkgCj4+Pj4+IFN0cmRTeigyMDQ4KSBSeENxZUNtcHJzcygwKQo+Pj4+PiBbwqAg
-MjIzLjg5NjYzNl0gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMjogQXNzaWduZWQgcmFuZG9tIE1BQyBh
-ZGRyZXNzIAo+Pj4+PiA1NjoxZjo5NTplMDo1MTpkNgo+Pj4+PiBbwqAgMjI0LjAxMjkwNV0gbWx4
-NV9jb3JlIDAwMDA6ODE6MDAuMiBlbnMxZjB2MDogcmVuYW1lZCBmcm9tIGV0aDAKPj4+Pj4gW8Kg
-IDIyNC4wNDE2NTFdIHBjaSAwMDAwOjgxOjAwLjM6IFsxNWIzOjEwMWFdIHR5cGUgMDAgY2xhc3Mg
-MHgwMjAwMDAKPj4+Pj4gW8KgIDIyNC4wNDE3MTFdIHBjaSAwMDAwOjgxOjAwLjM6IGVuYWJsaW5n
-IEV4dGVuZGVkIFRhZ3MKPj4+Pj4gW8KgIDIyNC4wNDM2NjBdIHBjaSAwMDAwOjgxOjAwLjM6IEFk
-ZGluZyB0byBpb21tdSBncm91cCA1Mwo+Pj4+PiBbwqAgMjI0LjA0MzczOF0gcGNpIDAwMDA6ODE6
-MDAuMzogVXNpbmcgaW9tbXUgZGlyZWN0IG1hcHBpbmcKPj4+Pj4gW8KgIDIyNC4wNDQxOTZdIG1s
-eDVfY29yZSAwMDAwOjgxOjAwLjM6IGVuYWJsaW5nIGRldmljZSAoMDAwMCAtPiAwMDAyKQo+Pj4+
-PiBbwqAgMjI0LjA0NDI5OF0gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMzogZmlybXdhcmUgdmVyc2lv
-bjogMTYuMjYuMTQ4Cj4+Pj4+IFvCoCAyMjQuMjY4MDk5XSBtbHg1X2NvcmUgMDAwMDo4MTowMC4z
-OiBSYXRlIGxpbWl0OiAxMjcgcmF0ZXMgYXJlIAo+Pj4+PiBzdXBwb3J0ZWQsIHJhbmdlOiAwTWJw
-cyB0byA5NzY1Nk1icHMKPj4+Pj4gW8KgIDIyNC4yNzQ5ODNdIG1seDVfY29yZSAwMDAwOjgxOjAw
-LjM6IE1MWDVFOiBTdHJkUnEoMSkgUnFTeig4KSAKPj4+Pj4gU3RyZFN6KDIwNDgpIFJ4Q3FlQ21w
-cnNzKDApCj4+Pj4+IFvCoCAyMjQuMjc1MTk1XSBtbHg1X2NvcmUgMDAwMDo4MTowMC4zOiBBc3Np
-Z25lZCByYW5kb20gTUFDIGFkZHJlc3MgCj4+Pj4+IGE2OjFlOjU2OjBhOmQ5OmYyCj4+Pj4+IFvC
-oCAyMjQuMzg4MzU5XSBtbHg1X2NvcmUgMDAwMDo4MTowMC4zIGVuczFmMHYxOiByZW5hbWVkIGZy
-b20gZXRoMAo+Pj4+PiBbwqAgMjM2LjMyNTAyN10gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMDogRS1T
-d2l0Y2g6IGRpc2FibGUgU1JJT1Y6IAo+Pj4+PiBhY3RpdmUgdnBvcnRzKDMpIG1vZGUoMSkKPj4+
-Pj4gW8KgIDIzNi4zNjI3NjZdIG1seDVfY29yZSAwMDAwOjgxOjAwLjA6IEUtU3dpdGNoOiBFLVN3
-aXRjaCBlbmFibGUgCj4+Pj4+IFNSSU9WOiBudmZzKDIpIG1vZGUgKDIpCj4+Pj4+IFvCoCAyMzcu
-MjkwMDY2XSBtbHg1X2NvcmUgMDAwMDo4MTowMC4wOiBNTFg1RTogU3RyZFJxKDEpIFJxU3ooOCkg
-Cj4+Pj4+IFN0cmRTeigyMDQ4KSBSeENxZUNtcHJzcygwKQo+Pj4+PiBbwqAgMjM3LjM1MDIxNV0g
-bWx4NV9jb3JlIDAwMDA6ODE6MDAuMDogTUxYNUU6IFN0cmRScSgxKSBScVN6KDgpIAo+Pj4+PiBT
-dHJkU3ooMjA0OCkgUnhDcWVDbXByc3MoMCkKPj4+Pj4gW8KgIDIzNy4zNzMwNTJdIG1seDVfY29y
-ZSAwMDAwOjgxOjAwLjAgZW5zMWYwOiByZW5hbWVkIGZyb20gZXRoMAo+Pj4+PiBbwqAgMjM3LjM5
-MDc2OF0gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMDogTUxYNUU6IFN0cmRScSgxKSBScVN6KDgpIAo+
-Pj4+PiBTdHJkU3ooMjA0OCkgUnhDcWVDbXByc3MoMCkKPj4+Pj4gW8KgIDIzNy40NDc4NDZdIGVu
-czFmMF8wOiByZW5hbWVkIGZyb20gZXRoMAo+Pj4+PiBbwqAgMjM3LjQ2MDM5OV0gbWx4NV9jb3Jl
-IDAwMDA6ODE6MDAuMDogRS1Td2l0Y2g6IFNSSU9WIGVuYWJsZWQ6IAo+Pj4+PiBhY3RpdmUgdnBv
-cnRzKDMpCj4+Pj4+IFvCoCAyMzcuNTI2ODgwXSBlbnMxZjBfMTogcmVuYW1lZCBmcm9tIGV0aDEK
-Pj4+Pj4gW8KgIDI0OC45NTM4NzNdIHBjaSAwMDAwOjgxOjAwLjI6IFJlbW92aW5nIGZyb20gaW9t
-bXUgZ3JvdXAgNTIKPj4+Pj4gW8KgIDI0OC45NTQxMTRdIHBjaSAwMDAwOjgxOjAwLjM6IFJlbW92
-aW5nIGZyb20gaW9tbXUgZ3JvdXAgNTMKPj4+Pj4gW8KgIDI0OS45NjA1NzBdIG1seDVfY29yZSAw
-MDAwOjgxOjAwLjA6IEUtU3dpdGNoOiBkaXNhYmxlIFNSSU9WOiAKPj4+Pj4gYWN0aXZlIHZwb3J0
-cygzKSBtb2RlKDIpCj4+Pj4+IFvCoCAyNTAuMzE5MTM1XSBtbHg1X2NvcmUgMDAwMDo4MTowMC4w
-OiBNTFg1RTogU3RyZFJxKDEpIFJxU3ooOCkgCj4+Pj4+IFN0cmRTeigyMDQ4KSBSeENxZUNtcHJz
-cygwKQo+Pj4+PiBbwqAgMjUwLjU1OTQzMV0gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMCBlbnMxZjA6
-IHJlbmFtZWQgZnJvbSBldGgwCj4+Pj4+IFvCoCAyNTguODE5MTYyXSBtbHg1X2NvcmUgMDAwMDo4
-MTowMC4wOiBFLVN3aXRjaDogRS1Td2l0Y2ggZW5hYmxlIAo+Pj4+PiBTUklPVjogbnZmcygyKSBt
-b2RlICgxKQo+Pj4+PiBbwqAgMjU4LjgzMTYyNV0gbWx4NV9jb3JlIDAwMDA6ODE6MDAuMDogRS1T
-d2l0Y2g6IFNSSU9WIGVuYWJsZWQ6IAo+Pj4+PiBhY3RpdmUgdnBvcnRzKDMpCj4+Pj4+IFvCoCAy
-NTguOTM2MTYwXSBwY2kgMDAwMDo4MTowMC4yOiBbMTViMzoxMDFhXSB0eXBlIDAwIGNsYXNzIDB4
-MDIwMDAwCj4+Pj4+IFvCoCAyNTguOTM2MjU4XSBwY2kgMDAwMDo4MTowMC4yOiBlbmFibGluZyBF
-eHRlbmRlZCBUYWdzCj4+Pj4+IFvCoCAyNTguOTM3NDM4XSBwY2kgMDAwMDo4MTowMC4yOiBGYWls
-ZWQgdG8gYWRkIHRvIGlvbW11IGdyb3VwIDUyOiAtMTYKPj4+PiBJdCBzZWVtcyB0aGF0IGFuIEVC
-VVNZIGVycm9yIHJldHVybmVkIGZyb20gaW9tbXVfZ3JvdXBfYWRkX2RldmljZSgpLiAKPj4+PiBD
-YW4KPj4+PiB5b3UgcGxlYXNlIGhhY2sgc29tZSBkZWJ1ZyBtZXNzYWdlcyBpbiBpb21tdV9ncm91
-cF9hZGRfZGV2aWNlKCkgc28gdGhhdAo+Pj4+IHdlIGNhbiBrbm93IHdoZXJlIHRoZSBFQlVTWSBy
-ZXR1cm5zPwo+Pj4+Cj4+Pj4gQmVzdCByZWdhcmRzLAo+Pj4+IEJhb2x1Cj4+PiBUaGUgZXJyb3Ig
-Y29kZSBpcyByZXR1cm5lZCBieSBfX2lvbW11X2F0dGFjaF9kZXZpY2UoKS4KPj4+Cj4+Cj4+IFRo
-YW5rcyEKPj4KPj4gSXQgbG9va3MgbGlrZSB0aGUgc3lzdGVtIGhhcyBhbHJlYWR5IGEgZG9tYWlu
-IGZvciBzcGVjaWZpYyBwY2kgYmRmCj4+IGRldmljZS4gRG9lcyB0aGlzIFZGIHNoYXJlIHRoZSBi
-ZGYgd2l0aCBvdGhlciBkZXZpY2VzPyBPciBoYXMgYmVlbgo+PiBwcmV2aW91c2x5IGNyZWF0ZWQs
-IGFuZCBzeXN0ZW0gZmFpbGVkIHRvIGdldCBjaGFuY2UgdG8gcmVtb3ZlIGl0Pwo+IAo+IEF0IGEg
-Z2xhbmNlLCBpdCBsb29rcyBsaWtlIGl0IG1pZ2h0IGJlIGRvd24gdG8gCj4gaW50ZWxfaW9tbXVf
-cmVtb3ZlX2RldmljZSgpIG5vdCBjYWxsaW5nIGRtYXJfcmVtb3ZlX29uZV9kZXZfaW5mbygpIGxp
-a2UgCj4gdGhlIG9sZCBub3RpZmllciBkaWQuIElmIHRoZSBncm91cCBpcyBnZXR0aW5nIHRvcm4g
-ZG93biBhbmQgcmVjcmVhdGVkLCAKPiBidXQgdGhlIGRyaXZlciBzdGlsbCBoYXMgYSBzdGFsZSBw
-b2ludGVyIHRvIHRoZSBvbGQgZGVmYXVsdCBkb21haW4gCj4gY2FjaGVkLCB3aGljaCBkbWFyX2lu
-c2VydF9vbmVfZGV2X2luZm8oKSBmaW5kcyBhbmQgcmV0dXJucywgdGhhdCB3b3VsZCAKPiBzZWVt
-IHRvIGV4cGxhaW4gdGhlIG9ic2VydmVkIGJlaGF2aW91ci4KClllcyBhZ3JlZWQuCgpWbGFkLAoK
-Q2FuIHlvdSBwbGVhc2UgdHJ5IGJlbG93IGNoYW5nZT8KCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
-bW11L2ludGVsLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKaW5kZXggYmFm
-MjEwMDFjMzM5Li5hYmZmYzUyMGZlMDUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwt
-aW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKQEAgLTU1NzUsNiArNTU3
-NSw4IEBAIHN0YXRpYyB2b2lkIGludGVsX2lvbW11X3JlbW92ZV9kZXZpY2Uoc3RydWN0IApkZXZp
-Y2UgKmRldikKICAgICAgICAgaWYgKCFpb21tdSkKICAgICAgICAgICAgICAgICByZXR1cm47Cgor
-ICAgICAgIGRtYXJfcmVtb3ZlX29uZV9kZXZfaW5mbyhkZXYpOworCiAgICAgICAgIGlvbW11X2dy
-b3VwX3JlbW92ZV9kZXZpY2UoZGV2KTsKCiAgICAgICAgIGlvbW11X2RldmljZV91bmxpbmsoJmlv
-bW11LT5pb21tdSwgZGV2KTsKCkJlc3QgcmVnYXJkcywKQmFvbHUKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+On Wed 31 Jul 2019 at 10:29, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> Hi,
+>
+> On 7/30/19 7:22 PM, Robin Murphy wrote:
+>> On 30/07/2019 05:28, Lu Baolu wrote:
+>>> Hi,
+>>>
+>>> On 7/29/19 6:05 PM, Vlad Buslov wrote:
+>>>> On Sat 27 Jul 2019 at 05:15, Lu Baolu<baolu.lu@linux.intel.com>  wrote:
+>>>>> Hi Vilad,
+>>>>>
+>>>>> On 7/27/19 12:30 AM, Vlad Buslov wrote:
+>>>>>> Hi Lu Baolu,
+>>>>>>
+>>>>>> Our mlx5 driver fails to recreate VFs when cmdline includes
+>>>>>> "intel_iommu=on iommu=pt" after recent merge of patch set "iommu/vt-d:
+>>>>>> Delegate DMA domain to generic iommu". I've bisected the failure to
+>>>>>> patch b7297783c2bb ("iommu/vt-d: Remove duplicated code for device
+>>>>>> hotplug"). Here is the dmesg log for following case: enable switchdev
+>>>>>> mode, set number of VFs to 0, then set it back to any value
+>>>>>>> 0.
+>>>>>> [  223.525282] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV:
+>>>>>> nvfs(2) mode (1)
+>>>>>> [  223.562027] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active
+>>>>>> vports(3)
+>>>>>> [  223.663766] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
+>>>>>> [  223.663864] pci 0000:81:00.2: enabling Extended Tags
+>>>>>> [  223.665143] pci 0000:81:00.2: Adding to iommu group 52
+>>>>>> [  223.665215] pci 0000:81:00.2: Using iommu direct mapping
+>>>>>> [  223.665771] mlx5_core 0000:81:00.2: enabling device (0000 -> 0002)
+>>>>>> [  223.665890] mlx5_core 0000:81:00.2: firmware version: 16.26.148
+>>>>>> [  223.889908] mlx5_core 0000:81:00.2: Rate limit: 127 rates are
+>>>>>> supported, range: 0Mbps to 97656Mbps
+>>>>>> [  223.896438] mlx5_core 0000:81:00.2: MLX5E: StrdRq(1) RqSz(8)
+>>>>>> StrdSz(2048) RxCqeCmprss(0)
+>>>>>> [  223.896636] mlx5_core 0000:81:00.2: Assigned random MAC address
+>>>>>> 56:1f:95:e0:51:d6
+>>>>>> [  224.012905] mlx5_core 0000:81:00.2 ens1f0v0: renamed from eth0
+>>>>>> [  224.041651] pci 0000:81:00.3: [15b3:101a] type 00 class 0x020000
+>>>>>> [  224.041711] pci 0000:81:00.3: enabling Extended Tags
+>>>>>> [  224.043660] pci 0000:81:00.3: Adding to iommu group 53
+>>>>>> [  224.043738] pci 0000:81:00.3: Using iommu direct mapping
+>>>>>> [  224.044196] mlx5_core 0000:81:00.3: enabling device (0000 -> 0002)
+>>>>>> [  224.044298] mlx5_core 0000:81:00.3: firmware version: 16.26.148
+>>>>>> [  224.268099] mlx5_core 0000:81:00.3: Rate limit: 127 rates are
+>>>>>> supported, range: 0Mbps to 97656Mbps
+>>>>>> [  224.274983] mlx5_core 0000:81:00.3: MLX5E: StrdRq(1) RqSz(8)
+>>>>>> StrdSz(2048) RxCqeCmprss(0)
+>>>>>> [  224.275195] mlx5_core 0000:81:00.3: Assigned random MAC address
+>>>>>> a6:1e:56:0a:d9:f2
+>>>>>> [  224.388359] mlx5_core 0000:81:00.3 ens1f0v1: renamed from eth0
+>>>>>> [  236.325027] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active
+>>>>>> vports(3) mode(1)
+>>>>>> [  236.362766] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV:
+>>>>>> nvfs(2) mode (2)
+>>>>>> [  237.290066] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8)
+>>>>>> StrdSz(2048) RxCqeCmprss(0)
+>>>>>> [  237.350215] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8)
+>>>>>> StrdSz(2048) RxCqeCmprss(0)
+>>>>>> [  237.373052] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
+>>>>>> [  237.390768] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8)
+>>>>>> StrdSz(2048) RxCqeCmprss(0)
+>>>>>> [  237.447846] ens1f0_0: renamed from eth0
+>>>>>> [  237.460399] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active
+>>>>>> vports(3)
+>>>>>> [  237.526880] ens1f0_1: renamed from eth1
+>>>>>> [  248.953873] pci 0000:81:00.2: Removing from iommu group 52
+>>>>>> [  248.954114] pci 0000:81:00.3: Removing from iommu group 53
+>>>>>> [  249.960570] mlx5_core 0000:81:00.0: E-Switch: disable SRIOV: active
+>>>>>> vports(3) mode(2)
+>>>>>> [  250.319135] mlx5_core 0000:81:00.0: MLX5E: StrdRq(1) RqSz(8)
+>>>>>> StrdSz(2048) RxCqeCmprss(0)
+>>>>>> [  250.559431] mlx5_core 0000:81:00.0 ens1f0: renamed from eth0
+>>>>>> [  258.819162] mlx5_core 0000:81:00.0: E-Switch: E-Switch enable SRIOV:
+>>>>>> nvfs(2) mode (1)
+>>>>>> [  258.831625] mlx5_core 0000:81:00.0: E-Switch: SRIOV enabled: active
+>>>>>> vports(3)
+>>>>>> [  258.936160] pci 0000:81:00.2: [15b3:101a] type 00 class 0x020000
+>>>>>> [  258.936258] pci 0000:81:00.2: enabling Extended Tags
+>>>>>> [  258.937438] pci 0000:81:00.2: Failed to add to iommu group 52: -16
+>>>>> It seems that an EBUSY error returned from iommu_group_add_device(). Can
+>>>>> you please hack some debug messages in iommu_group_add_device() so that
+>>>>> we can know where the EBUSY returns?
+>>>>>
+>>>>> Best regards,
+>>>>> Baolu
+>>>> The error code is returned by __iommu_attach_device().
+>>>>
+>>>
+>>> Thanks!
+>>>
+>>> It looks like the system has already a domain for specific pci bdf
+>>> device. Does this VF share the bdf with other devices? Or has been
+>>> previously created, and system failed to get chance to remove it?
+>>
+>> At a glance, it looks like it might be down to intel_iommu_remove_device() not
+>> calling dmar_remove_one_dev_info() like the old notifier did. If the group is
+>> getting torn down and recreated, but the driver still has a stale pointer to
+>> the old default domain cached, which dmar_insert_one_dev_info() finds and
+>> returns, that would seem to explain the observed behaviour.
+>
+> Yes agreed.
+>
+> Vlad,
+>
+> Can you please try below change?
+>
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index baf21001c339..abffc520fe05 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5575,6 +5575,8 @@ static void intel_iommu_remove_device(struct device *dev)
+>         if (!iommu)
+>                 return;
+>
+> +       dmar_remove_one_dev_info(dev);
+> +
+>         iommu_group_remove_device(dev);
+>
+>         iommu_device_unlink(&iommu->iommu, dev);
+>
+> Best regards,
+> Baolu
+
+Hi Baolu,
+
+This patch fixes the issue for me.
+
+Thanks,
+Vlad
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
