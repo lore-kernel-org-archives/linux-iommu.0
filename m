@@ -7,49 +7,49 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B65AC32751
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 15:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC371C32751
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 16:00:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 68395206A2
-	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 15:59:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68395206A2
+	by mail.kernel.org (Postfix) with ESMTPS id 98F61206A2
+	for <iommu@archiver.kernel.org>; Wed, 31 Jul 2019 16:00:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 98F61206A2
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B3DFA3EB2;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E64C73EB4;
 	Wed, 31 Jul 2019 15:59:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EEE8C3AA5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 499243AA5
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 15:48:04 +0000 (UTC)
+	Wed, 31 Jul 2019 15:48:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 32826E7
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 89E67E7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 31 Jul 2019 15:48:04 +0000 (UTC)
+	Wed, 31 Jul 2019 15:48:05 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id A1F87AF95;
-	Wed, 31 Jul 2019 15:48:02 +0000 (UTC)
+	by mx1.suse.de (Postfix) with ESMTP id 01F74AFE4;
+	Wed, 31 Jul 2019 15:48:04 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: catalin.marinas@arm.com, hch@lst.de, wahrenst@gmx.net,
 	marc.zyngier@arm.com, Robin Murphy <robin.murphy@arm.com>,
 	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
 	iommu@lists.linux-foundation.org, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/8] arm64: rename variables used to calculate ZONE_DMA32's
-	size
-Date: Wed, 31 Jul 2019 17:47:45 +0200
-Message-Id: <20190731154752.16557-3-nsaenzjulienne@suse.de>
+	Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
+Subject: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA addressable
+	memory size
+Date: Wed, 31 Jul 2019 17:47:46 +0200
+Message-Id: <20190731154752.16557-4-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190731154752.16557-1-nsaenzjulienne@suse.de>
 References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
-Cc: phill@raspberryi.org, f.fainelli@gmail.com, mbrugger@suse.com,
-	frowand.list@gmail.com, eric@anholt.net, robh+dt@kernel.org,
+Cc: phill@raspberryi.org, f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
+	eric@anholt.net, mbrugger@suse.com,
 	linux-rpi-kernel@lists.infradead.org, akpm@linux-foundation.org,
 	will@kernel.org, nsaenzjulienne@suse.de
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -69,116 +69,117 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Let the name indicate that they are used to calculate ZONE_DMA32's size
-as opposed to ZONE_DMA.
+Some SoCs might have multiple interconnects each with their own DMA
+addressing limitations. This function parses the 'dma-ranges' on each of
+them and tries to guess the maximum SoC wide DMA addressable memory
+size.
+
+This is specially useful for arch code in order to properly setup CMA
+and memory zones.
 
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 ---
 
- arch/arm64/mm/init.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/of/fdt.c       | 72 ++++++++++++++++++++++++++++++++++++++++++
+ include/linux/of_fdt.h |  2 ++
+ 2 files changed, 74 insertions(+)
 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 6112d6c90fa8..8956c22634dd 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -50,7 +50,7 @@
- s64 memstart_addr __ro_after_init = -1;
- EXPORT_SYMBOL(memstart_addr);
- 
--phys_addr_t arm64_dma_phys_limit __ro_after_init;
-+phys_addr_t arm64_dma32_phys_limit __ro_after_init;
- 
- #ifdef CONFIG_KEXEC_CORE
- /*
-@@ -168,7 +168,7 @@ static void __init reserve_elfcorehdr(void)
-  * currently assumes that for memory starting above 4G, 32-bit devices will
-  * use a DMA offset.
-  */
--static phys_addr_t __init max_zone_dma_phys(void)
-+static phys_addr_t __init max_zone_dma32_phys(void)
- {
- 	phys_addr_t offset = memblock_start_of_DRAM() & GENMASK_ULL(63, 32);
- 	return min(offset + (1ULL << 32), memblock_end_of_DRAM());
-@@ -181,7 +181,7 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
- 
- #ifdef CONFIG_ZONE_DMA32
--	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(arm64_dma_phys_limit);
-+	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(arm64_dma32_phys_limit);
- #endif
- 	max_zone_pfns[ZONE_NORMAL] = max;
- 
-@@ -194,16 +194,16 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
- {
- 	struct memblock_region *reg;
- 	unsigned long zone_size[MAX_NR_ZONES], zhole_size[MAX_NR_ZONES];
--	unsigned long max_dma = min;
-+	unsigned long max_dma32 = min;
- 
- 	memset(zone_size, 0, sizeof(zone_size));
- 
- 	/* 4GB maximum for 32-bit only capable devices */
- #ifdef CONFIG_ZONE_DMA32
--	max_dma = PFN_DOWN(arm64_dma_phys_limit);
--	zone_size[ZONE_DMA32] = max_dma - min;
-+	max_dma32 = PFN_DOWN(arm64_dma32_phys_limit);
-+	zone_size[ZONE_DMA32] = max_dma32 - min;
- #endif
--	zone_size[ZONE_NORMAL] = max - max_dma;
-+	zone_size[ZONE_NORMAL] = max - max_dma32;
- 
- 	memcpy(zhole_size, zone_size, sizeof(zhole_size));
- 
-@@ -215,14 +215,14 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
- 			continue;
- 
- #ifdef CONFIG_ZONE_DMA32
--		if (start < max_dma) {
--			unsigned long dma_end = min(end, max_dma);
-+		if (start < max_dma32) {
-+			unsigned long dma_end = min(end, max_dma32);
- 			zhole_size[ZONE_DMA32] -= dma_end - start;
- 		}
- #endif
--		if (end > max_dma) {
-+		if (end > max_dma32) {
- 			unsigned long normal_end = min(end, max);
--			unsigned long normal_start = max(start, max_dma);
-+			unsigned long normal_start = max(start, max_dma32);
- 			zhole_size[ZONE_NORMAL] -= normal_end - normal_start;
- 		}
- 	}
-@@ -407,9 +407,9 @@ void __init arm64_memblock_init(void)
- 
- 	/* 4GB maximum for 32-bit only capable devices */
- 	if (IS_ENABLED(CONFIG_ZONE_DMA32))
--		arm64_dma_phys_limit = max_zone_dma_phys();
-+		arm64_dma32_phys_limit = max_zone_dma32_phys();
- 	else
--		arm64_dma_phys_limit = PHYS_MASK + 1;
-+		arm64_dma32_phys_limit = PHYS_MASK + 1;
- 
- 	reserve_crashkernel();
- 
-@@ -417,7 +417,7 @@ void __init arm64_memblock_init(void)
- 
- 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
- 
--	dma_contiguous_reserve(arm64_dma_phys_limit);
-+	dma_contiguous_reserve(arm64_dma32_phys_limit);
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 9cdf14b9aaab..f2444c61a136 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -953,6 +953,78 @@ int __init early_init_dt_scan_chosen_stdout(void)
  }
+ #endif
  
- void __init bootmem_init(void)
-@@ -521,7 +521,7 @@ static void __init free_unused_memmap(void)
- void __init mem_init(void)
- {
- 	if (swiotlb_force == SWIOTLB_FORCE ||
--	    max_pfn > (arm64_dma_phys_limit >> PAGE_SHIFT))
-+	    max_pfn > (arm64_dma32_phys_limit >> PAGE_SHIFT))
- 		swiotlb_init(1);
- 	else
- 		swiotlb_force = SWIOTLB_NO_FORCE;
++/**
++ * early_init_dt_dma_zone_size - Look at all 'dma-ranges' and provide the
++ * maximum common dmable memory size.
++ *
++ * Some devices might have multiple interconnects each with their own DMA
++ * addressing limitations. For example the Raspberry Pi 4 has the following:
++ *
++ * soc {
++ *	dma-ranges = <0xc0000000  0x0 0x00000000  0x3c000000>;
++ *	[...]
++ * }
++ *
++ * v3dbus {
++ *	dma-ranges = <0x00000000  0x0 0x00000000  0x3c000000>;
++ *	[...]
++ * }
++ *
++ * scb {
++ *	dma-ranges = <0x0 0x00000000  0x0 0x00000000  0xfc000000>;
++ *	[...]
++ * }
++ *
++ * Here the area addressable by all devices is [0x00000000-0x3bffffff]. Hence
++ * the function will write in 'data' a size of 0x3c000000.
++ *
++ * Note that the implementation assumes all interconnects have the same physical
++ * memory view and that the mapping always start at the beginning of RAM.
++ */
++int __init early_init_dt_dma_zone_size(unsigned long node, const char *uname,
++				       int depth, void *data)
++{
++	const char *type = of_get_flat_dt_prop(node, "device_type", NULL);
++	u64 phys_addr, dma_addr, size;
++	u64 *dma_zone_size = data;
++	int dma_addr_cells;
++	const __be32 *reg;
++	const void *prop;
++	int len;
++
++	if (depth == 0)
++		*dma_zone_size = 0;
++
++	/*
++	 * We avoid pci host controllers as they have their own way of using
++	 * 'dma-ranges'.
++	 */
++	if (type && !strcmp(type, "pci"))
++		return 0;
++
++	reg = of_get_flat_dt_prop(node, "dma-ranges", &len);
++	if (!reg)
++		return 0;
++
++	prop = of_get_flat_dt_prop(node, "#address-cells", NULL);
++	if (prop)
++		dma_addr_cells = be32_to_cpup(prop);
++	else
++		dma_addr_cells = 1; /* arm64's default addr_cell size */
++
++	if (len < (dma_addr_cells + dt_root_addr_cells + dt_root_size_cells))
++		return 0;
++
++	dma_addr = dt_mem_next_cell(dma_addr_cells, &reg);
++	phys_addr = dt_mem_next_cell(dt_root_addr_cells, &reg);
++	size = dt_mem_next_cell(dt_root_size_cells, &reg);
++
++	if (!*dma_zone_size || *dma_zone_size > size)
++		*dma_zone_size = size;
++
++	return 0;
++}
++
+ /**
+  * early_init_dt_scan_root - fetch the top level address and size cells
+  */
+diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+index acf820e88952..2ad36b7bd4fa 100644
+--- a/include/linux/of_fdt.h
++++ b/include/linux/of_fdt.h
+@@ -72,6 +72,8 @@ extern int early_init_dt_reserve_memory_arch(phys_addr_t base, phys_addr_t size,
+ 					     bool no_map);
+ extern u64 dt_mem_next_cell(int s, const __be32 **cellp);
+ 
++extern int early_init_dt_dma_zone_size(unsigned long node, const char *uname,
++				       int depth, void *data);
+ /* Early flat tree scan hooks */
+ extern int early_init_dt_scan_root(unsigned long node, const char *uname,
+ 				   int depth, void *data);
 -- 
 2.22.0
 
