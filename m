@@ -2,65 +2,65 @@ Return-Path: <SRS0=vdHR=V5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6258AC19759
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B874C19759
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:45:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31CB620838
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:44:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CFE7A2087E
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:45:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1vCYTqrW"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31CB620838
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="q04jVgzH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFE7A2087E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0DBAB16F4;
-	Thu,  1 Aug 2019 16:44:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A9FA31828;
+	Thu,  1 Aug 2019 16:45:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C73EB1186
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4EE4B17DD
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 16:44:16 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83B2A5F4
+	Thu,  1 Aug 2019 16:45:30 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0A4465F4
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 16:44:16 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id A272C20838;
-	Thu,  1 Aug 2019 16:44:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1564677856;
-	bh=luxeEe+sNcMiUEJZddOmw2LCtZnw/7cP+2BTlvtj75g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1vCYTqrWNpzwy70+mDDkDyYbXSINihdTQt827ZNZ38BqrocpuTP/5twuQPWb+gghN
-	+bl+z5TixFmhDdNjnDx+Eh8sSH8KshmaqVzUor7b7NSq1e0PiUUaxnmgdxPhdn1229
-	Armf1YNDTLI9lVu8j9VV+a1Qdb+UMV3aZU2PBKDY=
-Date: Thu, 1 Aug 2019 17:44:12 +0100
-From: Will Deacon <will@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] dma-mapping: fix page attributes for dma_mmap_*
-Message-ID: <20190801164411.kmsl4japtfkgvzxe@willie-the-truck>
-References: <20190801142118.21225-1-hch@lst.de>
-	<20190801142118.21225-2-hch@lst.de>
-	<20190801162305.3m32chycsdjmdejk@willie-the-truck>
-	<20190801163457.GB26588@lst.de>
+	Thu,  1 Aug 2019 16:45:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=jx0ZGH2N64oexlrgF/Dx4A/IEojQrEGADSEMN0h47JA=;
+	b=q04jVgzHX9OL9OEMNb9rTbxKBF
+	rmVpiKo5Sos2Acr5+b2HW5GlwhdCjCgJMM8MVsj2k3ecFDB2mr9KHVDGxbajTJ4HdfzMgd5NpFOFM
+	ZaNo8M9lCtSmIXX1dYUBCkdIyjD8K0z5WVQJ48qjcR1RD0Zh0bDinWZVHA0w0aicauKc0T6thtpUE
+	h17QGgr2g73ENNZOmZUTFaOrJYZKNvr5xSD0NrgPInAXSY11UNQne0nR4sjomi7ym94Z3zAr7CtYf
+	cZvzyj/d1VLaYSXFY/zgSGidltL9iVkf4Cnr0YYJoxNp/UBkaVMJRG16CG4FyaQ+Q/J++yWTZ8YFl
+	LXdkpfvg==;
+Received: from [195.167.85.94] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1htECn-0008F1-Ae; Thu, 01 Aug 2019 16:45:29 +0000
+Date: Thu, 1 Aug 2019 19:45:20 +0300
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping regression fixes for 5.3
+Message-ID: <20190801164520.GA26214@infradead.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190801163457.GB26588@lst.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: Shawn Anastasio <shawn@anastas.io>, Michael Ellerman <mpe@ellerman.id.au>,
-	linuxppc-dev@lists.ozlabs.org, Russell King <linux@armlinux.org.uk>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,55 +78,37 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Aug 01, 2019 at 06:34:57PM +0200, Christoph Hellwig wrote:
-> On Thu, Aug 01, 2019 at 05:23:06PM +0100, Will Deacon wrote:
-> > > -	if (!dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_WRITE_COMBINE))
-> > > -		return pgprot_writecombine(prot);
-> > > -	return prot;
-> > > +	return pgprot_writecombine(prot);
-> > >  }
-> > 
-> > Seems like a sensible cleanup to me:
-> > 
-> > Acked-by: Will Deacon <will@kernel.org>
-> > 
-> > Although arch_dma_mmap_pgprot() is a bit of a misnomer now that it only
-> > gets involved in the non-coherent case.
-> 
-> A better name is welcome.
+Hi Linus,
 
-How about arch_dma_noncoherent_mmap_pgprot() ? Too long?
+here is the easy pull request for today, two related regression
+fixes for changes from this merge window:
 
-> My other idea would be to just remove it entirely and do something like:
-> 
-> #ifndef pgprot_dmacoherent
-> #define pgprot_dmacoherent pgprot_noncached
-> #endif
-> 
-> pgprot_t dma_mmap_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs)
-> {
-> 	if (dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_NON_CONSISTENT))
-> 		return prot;
-> #ifdef pgprot_writecombine
-> 	if (attrs & DMA_ATTR_WRITE_COMBINE)
-> 		return pgprot_writecombine(prot);
-> #endif
-> 	return pgprot_dmacoherent(prot);
-> }
 
-Oh, I prefer that!
+The following changes since commit 609488bc979f99f805f34e9a32c1e3b71179d10b:
 
-> But my worry is how this interacts with architectures that have an
-> uncached segment (mips, nios2, microblaze, extensa) where we'd have
-> the kernel access DMA_ATTR_WRITE_COMBINE mappigns using the uncached
-> segment, and userspace mmaps using pgprot_writecombine, which could
-> lead to aliasing issues.  But then again mips already supports
-> DMA_ATTR_WRITE_COMBINE, so this must be ok somehow.  I guess I'll
-> need to field that question to the relevant parties.
+  Linux 5.3-rc2 (2019-07-28 12:47:02 -0700)
 
-Or it's always been busted and happens to work out in practice...
+are available in the Git repository at:
 
-Will
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.3-3
+
+for you to fetch changes up to f46cc0152501e46d1b3aa5e7eade61145070eab0:
+
+  dma-contiguous: page-align the size in dma_free_contiguous() (2019-07-29 09:50:04 +0300)
+
+----------------------------------------------------------------
+dma-mapping regression fixes for 5.3
+
+ - fix alignment issues introduced in the CMA allocation rework
+   (Nicolin Chen)
+
+----------------------------------------------------------------
+Nicolin Chen (2):
+      dma-contiguous: do not overwrite align in dma_alloc_contiguous()
+      dma-contiguous: page-align the size in dma_free_contiguous()
+
+ kernel/dma/contiguous.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
