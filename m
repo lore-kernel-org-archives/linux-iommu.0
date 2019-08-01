@@ -2,69 +2,67 @@ Return-Path: <SRS0=vdHR=V5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C194C19759
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02034C433FF
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:24:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EA3820B7C
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:21:42 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="NtiYtJVE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EA3820B7C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id D334420644
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:24:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D334420644
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 197271604;
-	Thu,  1 Aug 2019 14:21:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A89321611;
+	Thu,  1 Aug 2019 14:24:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 24E2EF58
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3A91018D2
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 14:21:41 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 70E66E7
+	Thu,  1 Aug 2019 14:24:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 809F3E7
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 14:21:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=mpHyjnJR17EzfHojRb2JoLPTrVjdaNl1TnjSHWzORXw=;
-	b=NtiYtJVEmDfDxmTbI5QbPew0xT
-	zEQbgiotyyVtl+/aNeJqPjLDkgyw4xpO15KvT7vfKK9pncilCrG1v7qLtwzbBn//rNMTVvBaozUJS
-	H5AzJslFkM8k8ljq1UrrfmIhWdKAXaLxQz9G6E0jUN8QLV1XUDdGEvV3HaANH/N5oU46TicGUJGXP
-	IbfJcEF0D32Wgd8ZSL0Zpu5bJEp12MEZLb5JIsiNCz3RptGT2CIrOj9qApxv0OGQsUkbxXBSj01B0
-	6JYc12+UjSGY9cHW/PJuj6m12u6LSGvygP9z1CPj7bq5yZn2XPNbk8jM86THnubHsqC5NBcPobQkK
-	Osll/wtQ==;
-Received: from [195.167.85.94] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1htBxT-0006Ja-DI; Thu, 01 Aug 2019 14:21:39 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] dma-mapping: fix page attributes for dma_mmap_*
-Date: Thu,  1 Aug 2019 17:21:18 +0300
-Message-Id: <20190801142118.21225-2-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190801142118.21225-1-hch@lst.de>
-References: <20190801142118.21225-1-hch@lst.de>
+	Thu,  1 Aug 2019 14:24:33 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+	[10.5.11.23])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id DCBE830860D7;
+	Thu,  1 Aug 2019 14:24:32 +0000 (UTC)
+Received: from [10.36.117.35] (ovpn-117-35.ams2.redhat.com [10.36.117.35])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 2E1971992D;
+	Thu,  1 Aug 2019 14:24:27 +0000 (UTC)
+Subject: Re: [PATCH] iommu: revisit iommu_insert_resv_region() implementation
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	"eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"hch@infradead.org" <hch@infradead.org>
+References: <20190730140055.9998-1-eric.auger@redhat.com>
+	<5FC3163CFD30C246ABAA99954A238FA83F33E69F@lhreml524-mbs.china.huawei.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <9bcef2c9-2e90-9782-3855-b0b6cfd8ec26@redhat.com>
+Date: Thu, 1 Aug 2019 16:24:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Shawn Anastasio <shawn@anastas.io>, Will Deacon <will@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
-	Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA83F33E69F@lhreml524-mbs.china.huawei.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.44]);
+	Thu, 01 Aug 2019 14:24:33 +0000 (UTC)
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,204 +80,190 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-All the way back to introducing dma_common_mmap we've defaulyed to mark
-the pages as uncached.  But this is wrong for DMA coherent devices or
-if using DMA_ATTR_NON_CONSISTENT.  Later on DMA_ATTR_WRITE_COMBINE
-also got incorrect treatment as that flag is only treated special on
-the alloc side for non-coherent devices.
+Hi Shameer,
 
-Introduce a new dma_mmap_pgprot helper that deals with the check
-for coherent devices and DMA_ATTR_NON_CONSISTENT so that only the
-remapping cases even reach arch_dma_mmap_pgprot and we thus ensure
-no aliasing of page attributes happens.
+On 8/1/19 3:46 PM, Shameerali Kolothum Thodi wrote:
+> Hi Eric,
+> 
+>> -----Original Message-----
+>> From: Eric Auger [mailto:eric.auger@redhat.com]
+>> Sent: 30 July 2019 15:01
+>> To: eric.auger.pro@gmail.com; eric.auger@redhat.com; joro@8bytes.org;
+>> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
+>> dwmw2@infradead.org; alex.williamson@redhat.com;
+>> robin.murphy@arm.com; hch@infradead.org
+>> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+>> Subject: [PATCH] iommu: revisit iommu_insert_resv_region() implementation
+>>
+>> Current implementation is recursive and in case of allocation
+>> failure the existing @regions list is altered. A non recursive
+>> version looks better for maintainability and simplifies the
+>> error handling. We use a separate stack for overlapping segment
+>> merging.
+>>
+>> Note this new implementation may change the region order of
+>> appearance in /sys/kernel/iommu_groups/<n>/reserved_regions
+>> files but this order has never been documented, see
+>> commit bc7d12b91bd3 ("iommu: Implement reserved_regions
+>> iommu-group sysfs file"). Previously the regions were sorted
+>> by start address. Now they are first sorted by type and within
+>> a type they are sorted by start address.
+> 
+> I had a quick run with this patch on one of our boards(D05) where we
+> actually have an untranslated HW MSI region.
+> 
+> Before..
+> estuary:/$ cat /sys/kernel/iommu_groups/3/reserved_regions
+> 0x0000000008000000 0x00000000080fffff msi
+> 0x00000000c6010000 0x00000000c601ffff msi 
+> 
+> After...
+> estuary:/$ cat /sys/kernel/iommu_groups/3/reserved_regions
+> 0x00000000c6010000 0x00000000c601ffff msi
+> 0x0000000008000000 0x00000000080fffff msi
+> 
+> I think the order is reversed now because they are both different types, but are 
+> called "msi". Slightly confusing, but not sure it's a good idea to change the
+> description to something more obvious. 
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm/mm/dma-mapping.c        |  4 +---
- arch/arm64/mm/dma-mapping.c      |  4 +---
- arch/powerpc/kernel/Makefile     |  3 +--
- arch/powerpc/kernel/dma-common.c | 17 -----------------
- drivers/iommu/dma-iommu.c        |  6 +++---
- include/linux/dma-mapping.h      |  1 +
- include/linux/dma-noncoherent.h  |  5 -----
- kernel/dma/mapping.c             | 11 ++++++++++-
- kernel/dma/remap.c               |  2 +-
- 9 files changed, 18 insertions(+), 35 deletions(-)
- delete mode 100644 arch/powerpc/kernel/dma-common.c
+Thank you very much for the testing. I have been working on another
+version which removes the recursiveness but still sorts by start address
+and then by type. I prefer this new one as this shouldn't change the
+order. I will submit it asap.
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 9c9a23e5600d..cfe44df169c5 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2397,9 +2397,7 @@ long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
- pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
- 		unsigned long attrs)
- {
--	if (!dev_is_dma_coherent(dev))
--		return __get_dma_pgprot(attrs, prot);
--	return prot;
-+	return __get_dma_pgprot(attrs, prot);
- }
- 
- void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 1d3f0b5a9940..bd2b039f43a6 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -14,9 +14,7 @@
- pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
- 		unsigned long attrs)
- {
--	if (!dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_WRITE_COMBINE))
--		return pgprot_writecombine(prot);
--	return prot;
-+	return pgprot_writecombine(prot);
- }
- 
- void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
-diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
-index ea0c69236789..56dfa7a2a6f2 100644
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -49,8 +49,7 @@ obj-y				:= cputable.o ptrace.o syscalls.o \
- 				   signal.o sysfs.o cacheinfo.o time.o \
- 				   prom.o traps.o setup-common.o \
- 				   udbg.o misc.o io.o misc_$(BITS).o \
--				   of_platform.o prom_parse.o \
--				   dma-common.o
-+				   of_platform.o prom_parse.o
- obj-$(CONFIG_PPC64)		+= setup_64.o sys_ppc32.o \
- 				   signal_64.o ptrace32.o \
- 				   paca.o nvram_64.o firmware.o
-diff --git a/arch/powerpc/kernel/dma-common.c b/arch/powerpc/kernel/dma-common.c
-deleted file mode 100644
-index dc7ef6b17b69..000000000000
---- a/arch/powerpc/kernel/dma-common.c
-+++ /dev/null
-@@ -1,17 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- * Contains common dma routines for all powerpc platforms.
-- *
-- * Copyright (C) 2019 Shawn Anastasio.
-- */
--
--#include <linux/mm.h>
--#include <linux/dma-noncoherent.h>
--
--pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
--		unsigned long attrs)
--{
--	if (!dev_is_dma_coherent(dev))
--		return pgprot_noncached(prot);
--	return prot;
--}
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index a7f9c3edbcb2..703de9a7553f 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -574,7 +574,7 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
- 	struct iova_domain *iovad = &cookie->iovad;
- 	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
--	pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
-+	pgprot_t prot = dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
- 	struct page **pages;
- 	struct sg_table sgt;
-@@ -975,7 +975,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 		return NULL;
- 
- 	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
--		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
-+		pgprot_t prot = dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 
- 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
- 				VM_USERMAP, prot, __builtin_return_address(0));
-@@ -1035,7 +1035,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	unsigned long pfn, off = vma->vm_pgoff;
- 	int ret;
- 
--	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-+	vma->vm_page_prot = dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
- 
- 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
- 		return ret;
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 633dae466097..c61d7870277f 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -611,6 +611,7 @@ static inline void dma_sync_single_range_for_device(struct device *dev,
- #define dma_get_sgtable(d, t, v, h, s) dma_get_sgtable_attrs(d, t, v, h, s, 0)
- #define dma_mmap_coherent(d, v, c, h, s) dma_mmap_attrs(d, v, c, h, s, 0)
- 
-+pgprot_t dma_mmap_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs);
- extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs);
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index 3813211a9aad..9ae5cee543c4 100644
---- a/include/linux/dma-noncoherent.h
-+++ b/include/linux/dma-noncoherent.h
-@@ -42,13 +42,8 @@ void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
- 		dma_addr_t dma_addr, unsigned long attrs);
- long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
- 		dma_addr_t dma_addr);
--
--#ifdef CONFIG_ARCH_HAS_DMA_MMAP_PGPROT
- pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
- 		unsigned long attrs);
--#else
--# define arch_dma_mmap_pgprot(dev, prot, attrs)	pgprot_noncached(prot)
--#endif
- 
- #ifdef CONFIG_DMA_NONCOHERENT_CACHE_SYNC
- void arch_dma_cache_sync(struct device *dev, void *vaddr, size_t size,
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 815446f76995..357ae5cdb91b 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -162,6 +162,15 @@ int dma_get_sgtable_attrs(struct device *dev, struct sg_table *sgt,
- }
- EXPORT_SYMBOL(dma_get_sgtable_attrs);
- 
-+pgprot_t dma_mmap_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs)
-+{
-+	if (dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_NON_CONSISTENT))
-+		return prot;
-+	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_MMAP_PGPROT))
-+		return arch_dma_mmap_pgprot(dev, prot, attrs);
-+	return pgprot_noncached(prot);
-+}
-+
- /*
-  * Create userspace mapping for the DMA-coherent memory.
-  */
-@@ -175,7 +184,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 	unsigned long pfn;
- 	int ret = -ENXIO;
- 
--	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
-+	vma->vm_page_prot = dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
- 
- 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
- 		return ret;
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index a594aec07882..3d75c79b124c 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -218,7 +218,7 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 
- 	/* create a coherent mapping */
- 	ret = dma_common_contiguous_remap(page, size, VM_USERMAP,
--			arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
-+			dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
- 			__builtin_return_address(0));
- 	if (!ret) {
- 		__dma_direct_free_pages(dev, size, page);
--- 
-2.20.1
+Thanks
 
+Eric
+> 
+> Cheers,
+> Shameer
+> 
+>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>>
+>> ---
+>> ---
+>>  drivers/iommu/iommu.c | 96 ++++++++++++++++++++++---------------------
+>>  1 file changed, 50 insertions(+), 46 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 0c674d80c37f..7479f3d38e61 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -229,60 +229,64 @@ static ssize_t iommu_group_show_name(struct
+>> iommu_group *group, char *buf)
+>>   * @new: new region to insert
+>>   * @regions: list of regions
+>>   *
+>> - * The new element is sorted by address with respect to the other
+>> - * regions of the same type. In case it overlaps with another
+>> - * region of the same type, regions are merged. In case it
+>> - * overlaps with another region of different type, regions are
+>> - * not merged.
+>> + * Elements are sorted by region type and elements of the same
+>> + * type are sorted by start address. Overlapping segments of the
+>> + * same type are merged.
+>>   */
+>>  static int iommu_insert_resv_region(struct iommu_resv_region *new,
+>>  				    struct list_head *regions)
+>>  {
+>> -	struct iommu_resv_region *region;
+>> -	phys_addr_t start = new->start;
+>> -	phys_addr_t end = new->start + new->length - 1;
+>> -	struct list_head *pos = regions->next;
+>> +	struct iommu_resv_region *iter, *tmp, *nr, *top;
+>> +	struct list_head low, high, stack;
+>> +	bool added = false;
+>>
+>> -	while (pos != regions) {
+>> -		struct iommu_resv_region *entry =
+>> -			list_entry(pos, struct iommu_resv_region, list);
+>> -		phys_addr_t a = entry->start;
+>> -		phys_addr_t b = entry->start + entry->length - 1;
+>> -		int type = entry->type;
+>> +	INIT_LIST_HEAD(&low);
+>> +	INIT_LIST_HEAD(&high);
+>> +	INIT_LIST_HEAD(&stack);
+>>
+>> -		if (end < a) {
+>> -			goto insert;
+>> -		} else if (start > b) {
+>> -			pos = pos->next;
+>> -		} else if ((start >= a) && (end <= b)) {
+>> -			if (new->type == type)
+>> -				return 0;
+>> -			else
+>> -				pos = pos->next;
+>> -		} else {
+>> -			if (new->type == type) {
+>> -				phys_addr_t new_start = min(a, start);
+>> -				phys_addr_t new_end = max(b, end);
+>> -				int ret;
+>> -
+>> -				list_del(&entry->list);
+>> -				entry->start = new_start;
+>> -				entry->length = new_end - new_start + 1;
+>> -				ret = iommu_insert_resv_region(entry, regions);
+>> -				kfree(entry);
+>> -				return ret;
+>> -			} else {
+>> -				pos = pos->next;
+>> -			}
+>> -		}
+>> -	}
+>> -insert:
+>> -	region = iommu_alloc_resv_region(new->start, new->length,
+>> -					 new->prot, new->type);
+>> -	if (!region)
+>> +	nr = iommu_alloc_resv_region(new->start, new->length,
+>> +				     new->prot, new->type);
+>> +	if (!nr)
+>>  		return -ENOMEM;
+>>
+>> -	list_add_tail(&region->list, pos);
+>> +	/*
+>> +	 * Elements are dispatched into 3 lists: low/high contain
+>> +	 * segments of lower/higher types than @new; only segments
+>> +	 * with same type as @new remain in @regions, including @new
+>> +	 * ordered inserted by start address
+>> +	 */
+>> +	list_for_each_entry_safe(iter, tmp, regions, list) {
+>> +		if (iter->type < nr->type) {
+>> +			list_move_tail(&iter->list, &low);
+>> +		} else if (iter->type > nr->type) {
+>> +			list_move_tail(&iter->list, &high);
+>> +		} else if (nr->start <= iter->start && !added) {
+>> +			list_add_tail(&nr->list, &iter->list);
+>> +			added = true;
+>> +		}
+>> +	}
+>> +	if (!added)
+>> +		list_add_tail(&nr->list, regions);
+>> +
+>> +	/* Merge overlapping segments in @regions, if any */
+>> +	list_move(regions->next, &stack); /* move the 1st elt to the stack */
+>> +	list_for_each_entry_safe(iter, tmp, regions, list) {
+>> +		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
+>> +
+>> +		top = list_last_entry(&stack, struct iommu_resv_region, list);
+>> +		top_end = top->start + top->length - 1;
+>> +
+>> +		if (iter->start > top_end + 1) {
+>> +			list_move(&iter->list, &top->list);
+>> +		} else {
+>> +			top->length = max(top_end, iter_end) - top->start + 1;
+>> +			list_del(&iter->list);
+>> +			kfree(iter);
+>> +		}
+>> +	}
+>> +	list_splice(&stack, regions);
+>> +	list_splice(&low, regions);
+>> +	list_splice_tail(&high, regions);
+>>  	return 0;
+>>  }
+>>
+>> --
+>> 2.20.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
