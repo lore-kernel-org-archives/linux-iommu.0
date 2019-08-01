@@ -2,59 +2,65 @@ Return-Path: <SRS0=vdHR=V5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA505C433FF
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6258AC19759
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:44:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B64002087E
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:41:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B64002087E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 31CB620838
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 16:44:50 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1vCYTqrW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31CB620838
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 897951186;
-	Thu,  1 Aug 2019 16:41:38 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0DBAB16F4;
+	Thu,  1 Aug 2019 16:44:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 836CB107A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C73EB1186
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 16:41:10 +0000 (UTC)
+	Thu,  1 Aug 2019 16:44:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C47175F4
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83B2A5F4
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 16:41:09 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id E44E3AFA1;
-	Thu,  1 Aug 2019 16:41:07 +0000 (UTC)
-Message-ID: <4027201b6128b3f2b0ab941dc473ab143da64be2.camel@suse.de>
-Subject: Re: [PATCH 5/8] arm64: use ZONE_DMA on DMA addressing limited devices
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Robin Murphy <robin.murphy@arm.com>, Catalin Marinas
-	<catalin.marinas@arm.com>
-Date: Thu, 01 Aug 2019 18:40:50 +0200
-In-Reply-To: <e35dd4a5-281b-d281-59c9-3fc7108eb8be@arm.com>
-References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
-	<20190731154752.16557-6-nsaenzjulienne@suse.de>
-	<20190731170742.GC17773@arrakis.emea.arm.com>
-	<d8b4a7cb9c06824ca88a0602a5bf38b6324b43c0.camel@suse.de>
-	<e35dd4a5-281b-d281-59c9-3fc7108eb8be@arm.com>
-User-Agent: Evolution 3.32.4 
+	Thu,  1 Aug 2019 16:44:16 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id A272C20838;
+	Thu,  1 Aug 2019 16:44:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1564677856;
+	bh=luxeEe+sNcMiUEJZddOmw2LCtZnw/7cP+2BTlvtj75g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=1vCYTqrWNpzwy70+mDDkDyYbXSINihdTQt827ZNZ38BqrocpuTP/5twuQPWb+gghN
+	+bl+z5TixFmhDdNjnDx+Eh8sSH8KshmaqVzUor7b7NSq1e0PiUUaxnmgdxPhdn1229
+	Armf1YNDTLI9lVu8j9VV+a1Qdb+UMV3aZU2PBKDY=
+Date: Thu, 1 Aug 2019 17:44:12 +0100
+From: Will Deacon <will@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] dma-mapping: fix page attributes for dma_mmap_*
+Message-ID: <20190801164411.kmsl4japtfkgvzxe@willie-the-truck>
+References: <20190801142118.21225-1-hch@lst.de>
+	<20190801142118.21225-2-hch@lst.de>
+	<20190801162305.3m32chycsdjmdejk@willie-the-truck>
+	<20190801163457.GB26588@lst.de>
 MIME-Version: 1.0
-Cc: phill@raspberryi.org, devicetree@vger.kernel.org, f.fainelli@gmail.com,
-	wahrenst@gmx.net, eric@anholt.net, marc.zyngier@arm.com,
-	frowand.list@gmail.com, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-	robh+dt@kernel.org, linux-rpi-kernel@lists.infradead.org,
-	mbrugger@suse.com, akpm@linux-foundation.org,
-	Will Deacon <will@kernel.org>, hch@lst.de,
-	linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20190801163457.GB26588@lst.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: Shawn Anastasio <shawn@anastas.io>, Michael Ellerman <mpe@ellerman.id.au>,
+	linuxppc-dev@lists.ozlabs.org, Russell King <linux@armlinux.org.uk>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,111 +73,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1027766949558518623=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+On Thu, Aug 01, 2019 at 06:34:57PM +0200, Christoph Hellwig wrote:
+> On Thu, Aug 01, 2019 at 05:23:06PM +0100, Will Deacon wrote:
+> > > -	if (!dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_WRITE_COMBINE))
+> > > -		return pgprot_writecombine(prot);
+> > > -	return prot;
+> > > +	return pgprot_writecombine(prot);
+> > >  }
+> > 
+> > Seems like a sensible cleanup to me:
+> > 
+> > Acked-by: Will Deacon <will@kernel.org>
+> > 
+> > Although arch_dma_mmap_pgprot() is a bit of a misnomer now that it only
+> > gets involved in the non-coherent case.
+> 
+> A better name is welcome.
 
---===============1027766949558518623==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-qAJVJtco/gH4l0Ax6g8O"
+How about arch_dma_noncoherent_mmap_pgprot() ? Too long?
 
+> My other idea would be to just remove it entirely and do something like:
+> 
+> #ifndef pgprot_dmacoherent
+> #define pgprot_dmacoherent pgprot_noncached
+> #endif
+> 
+> pgprot_t dma_mmap_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs)
+> {
+> 	if (dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_NON_CONSISTENT))
+> 		return prot;
+> #ifdef pgprot_writecombine
+> 	if (attrs & DMA_ATTR_WRITE_COMBINE)
+> 		return pgprot_writecombine(prot);
+> #endif
+> 	return pgprot_dmacoherent(prot);
+> }
 
---=-qAJVJtco/gH4l0Ax6g8O
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Oh, I prefer that!
 
-On Thu, 2019-08-01 at 17:07 +0100, Robin Murphy wrote:
-> On 2019-08-01 4:44 pm, Nicolas Saenz Julienne wrote:
-> > On Wed, 2019-07-31 at 18:07 +0100, Catalin Marinas wrote:
-> > > On Wed, Jul 31, 2019 at 05:47:48PM +0200, Nicolas Saenz Julienne wrot=
-e:
-> > > > diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> > > > index 1c4ffabbe1cb..f5279ef85756 100644
-> > > > --- a/arch/arm64/mm/init.c
-> > > > +++ b/arch/arm64/mm/init.c
-> > > > @@ -50,6 +50,13 @@
-> > > >   s64 memstart_addr __ro_after_init =3D -1;
-> > > >   EXPORT_SYMBOL(memstart_addr);
-> > > >  =20
-> > > > +/*
-> > > > + * We might create both a ZONE_DMA and ZONE_DMA32. ZONE_DMA is nee=
-ded
-> > > > if
-> > > > there
-> > > > + * are periferals unable to address the first naturally aligned 4G=
-B of
-> > > > ram.
-> > > > + * ZONE_DMA32 will be expanded to cover the rest of that memory. I=
-f
-> > > > such
-> > > > + * limitations doesn't exist only ZONE_DMA32 is created.
-> > > > + */
-> > >=20
-> > > Shouldn't we instead only create ZONE_DMA to cover the whole 32-bit
-> > > range and leave ZONE_DMA32 empty? Can__GFP_DMA allocations fall back
-> > > onto ZONE_DMA32?
-> >=20
-> > Hi Catalin, thanks for the review.
-> >=20
-> > You're right, the GFP_DMA page allocation will fail with a nasty dmesg =
-error
-> > if
-> > ZONE_DMA is configured but empty. Unsurprisingly the opposite situation=
- is
-> > fine
-> > (GFP_DMA32 with an empty ZONE_DMA32).
->=20
-> Was that tested on something other than RPi4 with more than 4GB of RAM?=
-=20
-> (i.e. with a non-empty ZONE_NORMAL either way)
+> But my worry is how this interacts with architectures that have an
+> uncached segment (mips, nios2, microblaze, extensa) where we'd have
+> the kernel access DMA_ATTR_WRITE_COMBINE mappigns using the uncached
+> segment, and userspace mmaps using pgprot_writecombine, which could
+> lead to aliasing issues.  But then again mips already supports
+> DMA_ATTR_WRITE_COMBINE, so this must be ok somehow.  I guess I'll
+> need to field that question to the relevant parties.
 
-No, all I did is play around with RPi4's memory size (1 GB vs 4 GB).
+Or it's always been busted and happens to work out in practice...
 
-I'll see If I can get access to a dts based board with more than 4 GB, If n=
-ot
-I'll try to fake it. It's not ideal but I can set the limit on 3 GB and hav=
-e
-the 3 areas created (with and witouth an empty ZONE_DMA32).
-
-On top of that, now that you ask, I realise I neglected all the ACPI based
-servers. I have access to some so I'll make sure I test everything on them =
-too
-for the next series.
-
-Regards,
-Nicolas
-
-
---=-qAJVJtco/gH4l0Ax6g8O
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl1DFhIACgkQlfZmHno8
-x/5YnAf/aih3gNCdpPnk9CDn+WHuChefMegomFiKPy7KLWGYmB9OrtzlXlYit3VU
-z2zffpz7+B+tFBZWLyxyQfJ8sT8uogFFJR+HNsvucEC2z4cDMksEkCgYQRHcv5iq
-4CDSPUrd5zuESxZjq3ne7sLGx0G41aVs7o+iKAaUls/WAhq7MbYiq8B/r9HPnS1/
-qAxsHlnX0PASFIN3BCnr+1VSy+xbwpFNSNVfqLYtWRQZvI8ww3Epx/AbWcTKy3YC
-3YbXITPMlA4Mf+0ROrmU4sf0dj/mdQkC6SYqPjTMqVYyzON4rJ/MvOChQDmEGPs6
-WiNr9ZnC1GXA4QfwFXcRrfK85+Y0vw==
-=e240
------END PGP SIGNATURE-----
-
---=-qAJVJtco/gH4l0Ax6g8O--
-
-
---===============1027766949558518623==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1027766949558518623==--
-
