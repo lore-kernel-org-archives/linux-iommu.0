@@ -6,51 +6,49 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3185C19759
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79493C433FF
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:14:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AC76620679
-	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:09:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC76620679
+	by mail.kernel.org (Postfix) with ESMTPS id 5641F20B7C
+	for <iommu@archiver.kernel.org>; Thu,  1 Aug 2019 14:14:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5641F20B7C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EBA101970;
-	Thu,  1 Aug 2019 14:09:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E5D6D2742;
+	Thu,  1 Aug 2019 14:10:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 355EB2397
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3C9D0EBD
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 14:08:25 +0000 (UTC)
+	Thu,  1 Aug 2019 14:09:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 989AD5F4
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C7CBF8A3
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  1 Aug 2019 14:08:24 +0000 (UTC)
+	Thu,  1 Aug 2019 14:09:16 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 7FDE168AFE; Thu,  1 Aug 2019 16:08:20 +0200 (CEST)
-Date: Thu, 1 Aug 2019 16:08:20 +0200
+	id EEECA68AFE; Thu,  1 Aug 2019 16:09:13 +0200 (CEST)
+Date: Thu, 1 Aug 2019 16:09:13 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH 8/8] mm: comment arm64's usage of 'enum zone_type'
-Message-ID: <20190801140820.GC23435@lst.de>
-References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
-	<20190731154752.16557-9-nsaenzjulienne@suse.de>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/3] iommu/vt-d: Refactor find_domain() helper
+Message-ID: <20190801140913.GD23435@lst.de>
+References: <20190801060156.8564-1-baolu.lu@linux.intel.com>
+	<20190801060156.8564-2-baolu.lu@linux.intel.com>
+	<20190801061021.GA14955@lst.de>
+	<40f3a736-0a96-0491-61ad-0ddf03612d91@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190731154752.16557-9-nsaenzjulienne@suse.de>
+In-Reply-To: <40f3a736-0a96-0491-61ad-0ddf03612d91@linux.intel.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: phill@raspberryi.org, devicetree@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org, f.fainelli@gmail.com,
-	will@kernel.org, eric@anholt.net, marc.zyngier@arm.com,
-	catalin.marinas@arm.com, frowand.list@gmail.com,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	iommu@lists.linux-foundation.org, robh+dt@kernel.org,
-	wahrenst@gmx.net, mbrugger@suse.com, akpm@linux-foundation.org,
-	Robin Murphy <robin.murphy@arm.com>, hch@lst.de,
-	linux-arm-kernel@lists.infradead.org
+Cc: kevin.tian@intel.com, ashok.raj@intel.com,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	jacob.jun.pan@intel.com, David Woodhouse <dwmw2@infradead.org>,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,41 +66,35 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Jul 31, 2019 at 05:47:51PM +0200, Nicolas Saenz Julienne wrote:
-> +	 * Architecture			Limit
-> +	 * ----------------------------------
-> +	 * parisc, ia64, sparc, arm64	<4G
-> +	 * s390, powerpc		<2G
-> +	 * arm				Various
-> +	 * alpha			Unlimited or 0-16MB.
->  	 *
->  	 * i386, x86_64 and multiple other arches
-> -	 * 			<16M.
-> +	 *				<16M.
+On Thu, Aug 01, 2019 at 02:20:07PM +0800, Lu Baolu wrote:
+> Hi Christoph,
+>
+> On 8/1/19 2:10 PM, Christoph Hellwig wrote:
+>> On Thu, Aug 01, 2019 at 02:01:54PM +0800, Lu Baolu wrote:
+>>> +	/* No lock here, assumes no domain exit in normal case */
+>>
+>> s/exit/exists/ ?
+>
+> This comment is just moved from one place to another in this patch.
+>
+> "no domain exit" means "the domain isn't freed". (my understand)
 
-powerpc is also Various now, arm64 isn't really < 4G, ia64 only uses
-ZONE_DMA32 these days, and parisc doesn't seem to use neither ZONE_DMA
-nor ZONE_DMA32.
+Maybe we'll get that refconfirmed and can fix up the comment?
 
-Based on that I'm not sure the list really makes much sense.
+>
+>>
+>>> +	info = dev->archdata.iommu;
+>>> +	if (likely(info))
+>>> +		return info->domain;
+>>
+>> But then again the likely would be odd.
+>>
+>
+> Normally there's a domain for a device (default domain or isolation
+> domain for assignment cases).
 
->  	 */
->  	ZONE_DMA,
->  #endif
->  #ifdef CONFIG_ZONE_DMA32
->  	/*
-> -	 * x86_64 needs two ZONE_DMAs because it supports devices that are
-> -	 * only able to do DMA to the lower 16M but also 32 bit devices that
-> -	 * can only do DMA areas below 4G.
-> +	 * x86_64 and arm64 need two ZONE_DMAs because they support devices
-> +	 * that are only able to DMA a fraction of the 32 bit addressable
-> +	 * memory area, but also devices that are limited to that whole 32 bit
-> +	 * area.
->  	 */
->  	ZONE_DMA32,
-
-Maybe just say various architectures instead of mentioning specific
-ones?  Something like "Some 64-bit platforms need.."
+Makes sense, I just mean to say that the likely was contrary to my
+understanding of the above comment.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
