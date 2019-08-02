@@ -2,64 +2,83 @@ Return-Path: <SRS0=q6Nl=V6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A78C433FF
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 16:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922B2C433FF
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 17:20:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BEEE820644
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 16:56:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BEEE820644
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 69B2E21773
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 17:20:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="lhaum2PD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69B2E21773
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9A23115DD;
-	Fri,  2 Aug 2019 16:56:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3C00D153D;
+	Fri,  2 Aug 2019 17:20:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1560615DA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 411FD1498
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 16:54:09 +0000 (UTC)
+	Fri,  2 Aug 2019 17:17:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4959A7ED
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C475A7ED
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 16:54:08 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
-	[10.5.11.13])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	Fri,  2 Aug 2019 17:17:39 +0000 (UTC)
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com
+	[209.85.222.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 906D23082137;
-	Fri,  2 Aug 2019 16:54:07 +0000 (UTC)
-Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id AD807608C2;
-	Fri,  2 Aug 2019 16:54:06 +0000 (UTC)
-Date: Fri, 2 Aug 2019 10:54:06 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 12/15] iommu/vt-d: Cleanup get_valid_domain_for_dev()
-Message-ID: <20190802105406.53cd9977@x1.home>
-In-Reply-To: <5258f18f-101e-8a43-edea-3f4bb88ca58b@linux.intel.com>
-References: <20190525054136.27810-1-baolu.lu@linux.intel.com>
-	<20190525054136.27810-13-baolu.lu@linux.intel.com>
-	<20190717211226.5ffbf524@x1.home>
-	<9957afdd-4075-e7ee-e1e6-97acb870e17a@linux.intel.com>
-	<20190719092303.751659a0@x1.home> <20190801193013.19444803@x1.home>
-	<5258f18f-101e-8a43-edea-3f4bb88ca58b@linux.intel.com>
-Organization: Red Hat
+	by mail.kernel.org (Postfix) with ESMTPSA id 67D71217F5
+	for <iommu@lists.linux-foundation.org>;
+	Fri,  2 Aug 2019 17:17:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1564766259;
+	bh=5vmjMpiDWDoHbfIEjw2l5ptTIfiiyZTgBi7QK8QIoHM=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=lhaum2PDzZjeWUO+WsAPOwKR/YgoXWAR0RXVBZYh5t5+PfmXONrVeQpGaqPVUFLNV
+	zeDEVI0jHfexKJbsQD+EJtDab3k6iGED56EBhGxGJaIwBy9kSo1dYlZn9j/4qmkL4a
+	R3PlUQKqZUXTeiEG8RYoleZ6v44K+IO5A8+pUoig=
+Received: by mail-qk1-f181.google.com with SMTP id r4so55276846qkm.13
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 02 Aug 2019 10:17:39 -0700 (PDT)
+X-Gm-Message-State: APjAAAWR0Q+7Z4EcByE2M+rVs5hVr3vpLi50cjdt1sq8XvPVlAx2BjUv
+	8xXmAZKEGlRoaBQC4ePPePLuAr8Fj8G3QJD2Ag==
+X-Google-Smtp-Source: APXvYqxL5GHe5mkbUxAz7mbqxNvzn4pWJks7bPOqG/UgQKQwi7xLsLORGJlb/4eoiQbYIUPfkF/if0CjxqkRI+lgyvY=
+X-Received: by 2002:a37:a48e:: with SMTP id
+	n136mr93644586qke.223.1564766258476; 
+	Fri, 02 Aug 2019 10:17:38 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.42]);
-	Fri, 02 Aug 2019 16:54:07 +0000 (UTC)
-Cc: kevin.tian@intel.com, Joerg Roedel <jroedel@suse.de>, ashok.raj@intel.com,
-	dima@arista.com, tmurphy@arista.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	jacob.jun.pan@intel.com, David Woodhouse <dwmw2@infradead.org>
+References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
+	<20190731154752.16557-4-nsaenzjulienne@suse.de>
+In-Reply-To: <20190731154752.16557-4-nsaenzjulienne@suse.de>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Fri, 2 Aug 2019 11:17:26 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
+Message-ID: <CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
+Subject: Re: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA
+	addressable memory size
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: phill@raspberryi.org, devicetree@vger.kernel.org,
+	"moderated list:BROADCOM BCM2835 ARM ARCHITECTURE"
+	<linux-rpi-kernel@lists.infradead.org>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Frank Rowand <frowand.list@gmail.com>, Eric Anholt <eric@anholt.net>,
+	Marc Zyngier <marc.zyngier@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-mm@kvack.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Matthias Brugger <mbrugger@suse.com>, wahrenst@gmx.net,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,120 +96,135 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, 2 Aug 2019 15:17:45 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Wed, Jul 31, 2019 at 9:48 AM Nicolas Saenz Julienne
+<nsaenzjulienne@suse.de> wrote:
+>
+> Some SoCs might have multiple interconnects each with their own DMA
+> addressing limitations. This function parses the 'dma-ranges' on each of
+> them and tries to guess the maximum SoC wide DMA addressable memory
+> size.
+>
+> This is specially useful for arch code in order to properly setup CMA
+> and memory zones.
 
-> Hi Alex,
-> 
-> Thanks for reporting this. I will try to find a machine with a
-> pcie-to-pci bridge and get this issue fixed. I will update you
-> later.
+We already have a way to setup CMA in reserved-memory, so why is this
+needed for that?
 
-Further debug below...
+I have doubts this can really be generic...
 
-> On 8/2/19 9:30 AM, Alex Williamson wrote:
-> > DMAR: No ATSR found
-> > DMAR: dmar0: Using Queued invalidation
-> > DMAR: dmar1: Using Queued invalidation
-> > pci 0000:00:00.0: DMAR: Software identity mapping
-> > pci 0000:00:01.0: DMAR: Software identity mapping
-> > pci 0000:00:02.0: DMAR: Software identity mapping
-> > pci 0000:00:16.0: DMAR: Software identity mapping
-> > pci 0000:00:1a.0: DMAR: Software identity mapping
-> > pci 0000:00:1b.0: DMAR: Software identity mapping
-> > pci 0000:00:1c.0: DMAR: Software identity mapping
-> > pci 0000:00:1c.5: DMAR: Software identity mapping
-> > pci 0000:00:1c.6: DMAR: Software identity mapping
-> > pci 0000:00:1c.7: DMAR: Software identity mapping
-> > pci 0000:00:1d.0: DMAR: Software identity mapping
-> > pci 0000:00:1f.0: DMAR: Software identity mapping
-> > pci 0000:00:1f.2: DMAR: Software identity mapping
-> > pci 0000:00:1f.3: DMAR: Software identity mapping
-> > pci 0000:01:00.0: DMAR: Software identity mapping
-> > pci 0000:01:00.1: DMAR: Software identity mapping
-> > pci 0000:03:00.0: DMAR: Software identity mapping
-> > pci 0000:04:00.0: DMAR: Software identity mapping
-> > DMAR: Setting RMRR:
-> > pci 0000:00:02.0: DMAR: Setting identity map [0xbf800000 - 0xcf9fffff]
-> > pci 0000:00:1a.0: DMAR: Setting identity map [0xbe8d1000 - 0xbe8dffff]
-> > pci 0000:00:1d.0: DMAR: Setting identity map [0xbe8d1000 - 0xbe8dffff]
-> > DMAR: Prepare 0-16MiB unity mapping for LPC
-> > pci 0000:00:1f.0: DMAR: Setting identity map [0x0 - 0xffffff]
-> > pci 0000:00:00.0: Adding to iommu group 0
-> > pci 0000:00:00.0: Using iommu direct mapping
-> > pci 0000:00:01.0: Adding to iommu group 1
-> > pci 0000:00:01.0: Using iommu direct mapping
-> > pci 0000:00:02.0: Adding to iommu group 2
-> > pci 0000:00:02.0: Using iommu direct mapping
-> > pci 0000:00:16.0: Adding to iommu group 3
-> > pci 0000:00:16.0: Using iommu direct mapping
-> > pci 0000:00:1a.0: Adding to iommu group 4
-> > pci 0000:00:1a.0: Using iommu direct mapping
-> > pci 0000:00:1b.0: Adding to iommu group 5
-> > pci 0000:00:1b.0: Using iommu direct mapping
-> > pci 0000:00:1c.0: Adding to iommu group 6
-> > pci 0000:00:1c.0: Using iommu direct mapping
-> > pci 0000:00:1c.5: Adding to iommu group 7
-> > pci 0000:00:1c.5: Using iommu direct mapping
-> > pci 0000:00:1c.6: Adding to iommu group 8
-> > pci 0000:00:1c.6: Using iommu direct mapping
-> > pci 0000:00:1c.7: Adding to iommu group 9
+>
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> ---
+>
+>  drivers/of/fdt.c       | 72 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/of_fdt.h |  2 ++
+>  2 files changed, 74 insertions(+)
+>
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index 9cdf14b9aaab..f2444c61a136 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -953,6 +953,78 @@ int __init early_init_dt_scan_chosen_stdout(void)
+>  }
+>  #endif
+>
+> +/**
+> + * early_init_dt_dma_zone_size - Look at all 'dma-ranges' and provide the
+> + * maximum common dmable memory size.
+> + *
+> + * Some devices might have multiple interconnects each with their own DMA
+> + * addressing limitations. For example the Raspberry Pi 4 has the following:
+> + *
+> + * soc {
+> + *     dma-ranges = <0xc0000000  0x0 0x00000000  0x3c000000>;
+> + *     [...]
+> + * }
+> + *
+> + * v3dbus {
+> + *     dma-ranges = <0x00000000  0x0 0x00000000  0x3c000000>;
+> + *     [...]
+> + * }
+> + *
+> + * scb {
+> + *     dma-ranges = <0x0 0x00000000  0x0 0x00000000  0xfc000000>;
+> + *     [...]
+> + * }
+> + *
+> + * Here the area addressable by all devices is [0x00000000-0x3bffffff]. Hence
+> + * the function will write in 'data' a size of 0x3c000000.
+> + *
+> + * Note that the implementation assumes all interconnects have the same physical
+> + * memory view and that the mapping always start at the beginning of RAM.
 
-Note that group 9 contains device 00:1c.7
+Not really a valid assumption for general code.
 
-> > pci 0000:00:1c.7: Using iommu direct mapping
+> + */
+> +int __init early_init_dt_dma_zone_size(unsigned long node, const char *uname,
+> +                                      int depth, void *data)
 
-I'm booted with iommu=pt, so the domain type is IOMMU_DOMAIN_PT
+Don't use the old fdt scanning interface with depth/data. It's not
+really needed now because you can just use libfdt calls.
 
-> > pci 0000:00:1d.0: Adding to iommu group 10
-> > pci 0000:00:1d.0: Using iommu direct mapping
-> > pci 0000:00:1f.0: Adding to iommu group 11
-> > pci 0000:00:1f.0: Using iommu direct mapping
-> > pci 0000:00:1f.2: Adding to iommu group 11
-> > pci 0000:00:1f.3: Adding to iommu group 11
-> > pci 0000:01:00.0: Adding to iommu group 1
-> > pci 0000:01:00.1: Adding to iommu group 1
-> > pci 0000:03:00.0: Adding to iommu group 12
-> > pci 0000:03:00.0: Using iommu direct mapping
-> > pci 0000:04:00.0: Adding to iommu group 13
-> > pci 0000:04:00.0: Using iommu direct mapping
-> > pci 0000:05:00.0: Adding to iommu group 9
+> +{
+> +       const char *type = of_get_flat_dt_prop(node, "device_type", NULL);
+> +       u64 phys_addr, dma_addr, size;
+> +       u64 *dma_zone_size = data;
+> +       int dma_addr_cells;
+> +       const __be32 *reg;
+> +       const void *prop;
+> +       int len;
+> +
+> +       if (depth == 0)
+> +               *dma_zone_size = 0;
+> +
+> +       /*
+> +        * We avoid pci host controllers as they have their own way of using
+> +        * 'dma-ranges'.
+> +        */
+> +       if (type && !strcmp(type, "pci"))
+> +               return 0;
+> +
+> +       reg = of_get_flat_dt_prop(node, "dma-ranges", &len);
+> +       if (!reg)
+> +               return 0;
+> +
+> +       prop = of_get_flat_dt_prop(node, "#address-cells", NULL);
+> +       if (prop)
+> +               dma_addr_cells = be32_to_cpup(prop);
+> +       else
+> +               dma_addr_cells = 1; /* arm64's default addr_cell size */
 
-05:00.0 is downstream of 00:1c.7 and in the same group.  As above, the
-domain is type IOMMU_DOMAIN_IDENTITY, so we take the following branch:
+Relying on the defaults has been a dtc error longer than arm64 has
+existed. If they are missing, just bail.
 
-        } else {
-                if (device_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
+> +
+> +       if (len < (dma_addr_cells + dt_root_addr_cells + dt_root_size_cells))
+> +               return 0;
+> +
+> +       dma_addr = dt_mem_next_cell(dma_addr_cells, &reg);
+> +       phys_addr = dt_mem_next_cell(dt_root_addr_cells, &reg);
+> +       size = dt_mem_next_cell(dt_root_size_cells, &reg);
+> +
+> +       if (!*dma_zone_size || *dma_zone_size > size)
+> +               *dma_zone_size = size;
+> +
+> +       return 0;
+> +}
 
-Default domain type is IOMMU_DOMAIN_DMA because of the code block in
-device_def_domain_type() handling bridges to conventional PCI and
-conventional PCI endpoints.
+It's possible to have multiple levels of nodes and dma-ranges. You
+need to handle that case too.
 
-                        ret = iommu_request_dma_domain_for_dev(dev);
+Doing that and handling differing address translations will be
+complicated. IMO, I'd just do:
 
-This fails in request_default_domain_for_dev() because there's more
-than one device in the group.
+if (of_fdt_machine_is_compatible(blob, "brcm,bcm2711"))
+    dma_zone_size = XX;
 
-                        if (ret) {
-                                dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
-                                if (!get_private_domain_for_dev(dev)) {
+2 lines of code is much easier to maintain than 10s of incomplete code
+and is clearer who needs this. Maybe if we have dozens of SoCs with
+this problem we should start parsing dma-ranges.
 
-With this commit, this now returns NULL because find_domain() does find
-a domain, the same one we found before this code block.
-
-                                        dev_warn(dev,
-                                                 "Failed to get a private domain.\n");
-                                        return -ENOMEM;
-                                }
-
-So the key factors are that I'm booting with iommu=pt and I have a
-PCIe-to-PCI bridge grouped with its parent root port.  The bridge
-wants an IOMMU_DOMAIN_DMA, but the group domain is already of type
-IOMMU_DOMAIN_IDENTITY.  A temporary workaround is to not use
-passthrough mode, but this is a regression versus previous kernels.
-Thanks,
-
-Alex
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
