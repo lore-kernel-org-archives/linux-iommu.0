@@ -2,53 +2,62 @@ Return-Path: <SRS0=q6Nl=V6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6580C433FF
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 07:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE57C32750
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 07:18:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8473E206A3
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 07:04:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8473E206A3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 8057A20449
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 07:18:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8057A20449
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 50DA2CC8;
-	Fri,  2 Aug 2019 07:04:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 32A2172A;
+	Fri,  2 Aug 2019 07:18:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1C15972A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 94765265
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 07:03:59 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3E518E7
+	Fri,  2 Aug 2019 07:18:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A2A35E7
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 07:03:58 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 9BBBA68B05; Fri,  2 Aug 2019 09:03:54 +0200 (CEST)
-Date: Fri, 2 Aug 2019 09:03:54 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Takashi Iwai <tiwai@suse.de>, iommu@lists.linux-foundation.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 5/5] dma-mapping: remove ARCH_NO_COHERENT_DMA_MMAP
-Message-ID: <20190802070354.GA8280@lst.de>
-References: <20190725063401.29904-1-hch@lst.de>
-	<20190725063401.29904-6-hch@lst.de>
+	Fri,  2 Aug 2019 07:18:32 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	02 Aug 2019 00:18:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,337,1559545200"; d="scan'208";a="184499124"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 02 Aug 2019 00:18:29 -0700
+Subject: Re: [PATCH v4 12/15] iommu/vt-d: Cleanup get_valid_domain_for_dev()
+To: Alex Williamson <alex.williamson@redhat.com>
+References: <20190525054136.27810-1-baolu.lu@linux.intel.com>
+	<20190525054136.27810-13-baolu.lu@linux.intel.com>
+	<20190717211226.5ffbf524@x1.home>
+	<9957afdd-4075-e7ee-e1e6-97acb870e17a@linux.intel.com>
+	<20190719092303.751659a0@x1.home> <20190801193013.19444803@x1.home>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <5258f18f-101e-8a43-edea-3f4bb88ca58b@linux.intel.com>
+Date: Fri, 2 Aug 2019 15:17:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190725063401.29904-6-hch@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-xtensa@linux-xtensa.org, Michal Simek <monstr@monstr.eu>,
-	linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190801193013.19444803@x1.home>
+Content-Language: en-US
+Cc: kevin.tian@intel.com, Joerg Roedel <jroedel@suse.de>, ashok.raj@intel.com,
+	dima@arista.com, tmurphy@arista.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	jacob.jun.pan@intel.com, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,173 +70,218 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Takashi,
+Hi Alex,
 
-any comments on the sounds/ side of this?
+Thanks for reporting this. I will try to find a machine with a
+pcie-to-pci bridge and get this issue fixed. I will update you
+later.
 
-On Thu, Jul 25, 2019 at 08:34:01AM +0200, Christoph Hellwig wrote:
-> Now that we never use a default ->mmap implementation, and non-coherent
-> architectures can control the presence of ->mmap support by enabling
-> ARCH_HAS_DMA_COHERENT_TO_PFN for the dma direct implementation there
-> is no need for a global config option to control the availability
-> of dma_common_mmap.
+Best regards,
+Baolu
+
+On 8/2/19 9:30 AM, Alex Williamson wrote:
+> On Fri, 19 Jul 2019 09:23:03 -0600
+> Alex Williamson <alex.williamson@redhat.com> wrote:
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/Kconfig            |  3 ---
->  arch/c6x/Kconfig        |  1 -
->  arch/m68k/Kconfig       |  1 -
->  arch/microblaze/Kconfig |  1 -
->  arch/parisc/Kconfig     |  1 -
->  arch/sh/Kconfig         |  1 -
->  arch/xtensa/Kconfig     |  1 -
->  kernel/dma/mapping.c    |  4 ----
->  sound/core/pcm_native.c | 10 +---------
->  9 files changed, 1 insertion(+), 22 deletions(-)
+>> On Fri, 19 Jul 2019 17:04:26 +0800
+>> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>>> Hi Alex,
+>>>
+>>> On 7/18/19 11:12 AM, Alex Williamson wrote:
+>>>> On Sat, 25 May 2019 13:41:33 +0800
+>>>> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>>      
+>>>>> Previously, get_valid_domain_for_dev() is used to retrieve the
+>>>>> DMA domain which has been attached to the device or allocate one
+>>>>> if no domain has been attached yet. As we have delegated the DMA
+>>>>> domain management to upper layer, this function is used purely to
+>>>>> allocate a private DMA domain if the default domain doesn't work
+>>>>> for ths device. Cleanup the code for readability.
+>>>>>
+>>>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>>>> ---
+>>>>>    drivers/iommu/intel-iommu.c | 18 ++++++++----------
+>>>>>    include/linux/intel-iommu.h |  1 -
+>>>>>    2 files changed, 8 insertions(+), 11 deletions(-)
+>>>>
+>>>> System fails to boot bisected to this commit:
+>>>
+>>> Is this the same issue as this https://lkml.org/lkml/2019/7/18/840?
+>>
+>> Yes, the above link is after bisecting with all the bugs and fixes
+>> squashed together to avoid landing in local bugs.  Thanks,
 > 
-> diff --git a/arch/Kconfig b/arch/Kconfig
-> index a7b57dd42c26..ec2834206d08 100644
-> --- a/arch/Kconfig
-> +++ b/arch/Kconfig
-> @@ -790,9 +790,6 @@ config COMPAT_32BIT_TIME
->  	  This is relevant on all 32-bit architectures, and 64-bit architectures
->  	  as part of compat syscall handling.
->  
-> -config ARCH_NO_COHERENT_DMA_MMAP
-> -	bool
-> -
->  config ARCH_NO_PREEMPT
->  	bool
->  
-> diff --git a/arch/c6x/Kconfig b/arch/c6x/Kconfig
-> index b4fb61c83494..e65e8d82442a 100644
-> --- a/arch/c6x/Kconfig
-> +++ b/arch/c6x/Kconfig
-> @@ -20,7 +20,6 @@ config C6X
->  	select OF_EARLY_FLATTREE
->  	select GENERIC_CLOCKEVENTS
->  	select MODULES_USE_ELF_RELA
-> -	select ARCH_NO_COHERENT_DMA_MMAP
->  	select MMU_GATHER_NO_RANGE if MMU
->  
->  config MMU
-> diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-> index c518d695c376..614b355ae338 100644
-> --- a/arch/m68k/Kconfig
-> +++ b/arch/m68k/Kconfig
-> @@ -8,7 +8,6 @@ config M68K
->  	select ARCH_HAS_DMA_PREP_COHERENT if HAS_DMA && MMU && !COLDFIRE
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if HAS_DMA
->  	select ARCH_MIGHT_HAVE_PC_PARPORT if ISA
-> -	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
->  	select ARCH_NO_PREEMPT if !COLDFIRE
->  	select BINFMT_FLAT_ARGVP_ENVP_ON_STACK
->  	select DMA_DIRECT_REMAP if HAS_DMA && MMU && !COLDFIRE
-> diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-> index d411de05b628..632c9477a0f6 100644
-> --- a/arch/microblaze/Kconfig
-> +++ b/arch/microblaze/Kconfig
-> @@ -9,7 +9,6 @@ config MICROBLAZE
->  	select ARCH_HAS_SYNC_DMA_FOR_CPU
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->  	select ARCH_MIGHT_HAVE_PC_PARPORT
-> -	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
->  	select ARCH_WANT_IPC_PARSE_VERSION
->  	select BUILDTIME_EXTABLE_SORT
->  	select TIMER_OF
-> diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-> index 6d732e451071..e9dd88b7f81e 100644
-> --- a/arch/parisc/Kconfig
-> +++ b/arch/parisc/Kconfig
-> @@ -52,7 +52,6 @@ config PARISC
->  	select GENERIC_SCHED_CLOCK
->  	select HAVE_UNSTABLE_SCHED_CLOCK if SMP
->  	select GENERIC_CLOCKEVENTS
-> -	select ARCH_NO_COHERENT_DMA_MMAP
->  	select CPU_NO_EFFICIENT_FFS
->  	select NEED_DMA_MAP_STATE
->  	select NEED_SG_DMA_LENGTH
-> diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-> index 6b1b5941b618..f356ee674d89 100644
-> --- a/arch/sh/Kconfig
-> +++ b/arch/sh/Kconfig
-> @@ -5,7 +5,6 @@ config SUPERH
->  	select ARCH_HAS_PTE_SPECIAL
->  	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
->  	select ARCH_MIGHT_HAVE_PC_PARPORT
-> -	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
->  	select HAVE_PATA_PLATFORM
->  	select CLKDEV_LOOKUP
->  	select DMA_DECLARE_COHERENT
-> diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-> index ebc135bda921..70653aed3005 100644
-> --- a/arch/xtensa/Kconfig
-> +++ b/arch/xtensa/Kconfig
-> @@ -5,7 +5,6 @@ config XTENSA
->  	select ARCH_HAS_BINFMT_FLAT if !MMU
->  	select ARCH_HAS_SYNC_DMA_FOR_CPU
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-> -	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
->  	select ARCH_USE_QUEUED_RWLOCKS
->  	select ARCH_USE_QUEUED_SPINLOCKS
->  	select ARCH_WANT_FRAME_POINTERS
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 7dff1829c8c5..815446f76995 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -169,7 +169,6 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
->  		void *cpu_addr, dma_addr_t dma_addr, size_t size,
->  		unsigned long attrs)
->  {
-> -#ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
->  	unsigned long user_count = vma_pages(vma);
->  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->  	unsigned long off = vma->vm_pgoff;
-> @@ -198,9 +197,6 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
->  
->  	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
->  			user_count << PAGE_SHIFT, vma->vm_page_prot);
-> -#else
-> -	return -ENXIO;
-> -#endif /* !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
->  }
->  
->  /**
-> diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
-> index 860543a4c840..2dadc708343a 100644
-> --- a/sound/core/pcm_native.c
-> +++ b/sound/core/pcm_native.c
-> @@ -218,15 +218,7 @@ int snd_pcm_info_user(struct snd_pcm_substream *substream,
->  
->  static bool hw_support_mmap(struct snd_pcm_substream *substream)
->  {
-> -	if (!(substream->runtime->hw.info & SNDRV_PCM_INFO_MMAP))
-> -		return false;
-> -	/* architecture supports dma_mmap_coherent()? */
-> -#if defined(CONFIG_ARCH_NO_COHERENT_DMA_MMAP) || !defined(CONFIG_HAS_DMA)
-> -	if (!substream->ops->mmap &&
-> -	    substream->dma_buffer.dev.type == SNDRV_DMA_TYPE_DEV)
-> -		return false;
-> -#endif
-> -	return true;
-> +	return substream->runtime->hw.info & SNDRV_PCM_INFO_MMAP;
->  }
->  
->  static int constrain_mask_params(struct snd_pcm_substream *substream,
-> -- 
-> 2.20.1
+> Well, it turns out this patch is still broken too.  I was excited that
+> the system booted again with reverting the commit in the link above and
+> didn't notice that VT-d failed and de-initialized itself:
+> 
+> DMAR: No ATSR found
+> DMAR: dmar0: Using Queued invalidation
+> DMAR: dmar1: Using Queued invalidation
+> pci 0000:00:00.0: DMAR: Software identity mapping
+> pci 0000:00:01.0: DMAR: Software identity mapping
+> pci 0000:00:02.0: DMAR: Software identity mapping
+> pci 0000:00:16.0: DMAR: Software identity mapping
+> pci 0000:00:1a.0: DMAR: Software identity mapping
+> pci 0000:00:1b.0: DMAR: Software identity mapping
+> pci 0000:00:1c.0: DMAR: Software identity mapping
+> pci 0000:00:1c.5: DMAR: Software identity mapping
+> pci 0000:00:1c.6: DMAR: Software identity mapping
+> pci 0000:00:1c.7: DMAR: Software identity mapping
+> pci 0000:00:1d.0: DMAR: Software identity mapping
+> pci 0000:00:1f.0: DMAR: Software identity mapping
+> pci 0000:00:1f.2: DMAR: Software identity mapping
+> pci 0000:00:1f.3: DMAR: Software identity mapping
+> pci 0000:01:00.0: DMAR: Software identity mapping
+> pci 0000:01:00.1: DMAR: Software identity mapping
+> pci 0000:03:00.0: DMAR: Software identity mapping
+> pci 0000:04:00.0: DMAR: Software identity mapping
+> DMAR: Setting RMRR:
+> pci 0000:00:02.0: DMAR: Setting identity map [0xbf800000 - 0xcf9fffff]
+> pci 0000:00:1a.0: DMAR: Setting identity map [0xbe8d1000 - 0xbe8dffff]
+> pci 0000:00:1d.0: DMAR: Setting identity map [0xbe8d1000 - 0xbe8dffff]
+> DMAR: Prepare 0-16MiB unity mapping for LPC
+> pci 0000:00:1f.0: DMAR: Setting identity map [0x0 - 0xffffff]
+> pci 0000:00:00.0: Adding to iommu group 0
+> pci 0000:00:00.0: Using iommu direct mapping
+> pci 0000:00:01.0: Adding to iommu group 1
+> pci 0000:00:01.0: Using iommu direct mapping
+> pci 0000:00:02.0: Adding to iommu group 2
+> pci 0000:00:02.0: Using iommu direct mapping
+> pci 0000:00:16.0: Adding to iommu group 3
+> pci 0000:00:16.0: Using iommu direct mapping
+> pci 0000:00:1a.0: Adding to iommu group 4
+> pci 0000:00:1a.0: Using iommu direct mapping
+> pci 0000:00:1b.0: Adding to iommu group 5
+> pci 0000:00:1b.0: Using iommu direct mapping
+> pci 0000:00:1c.0: Adding to iommu group 6
+> pci 0000:00:1c.0: Using iommu direct mapping
+> pci 0000:00:1c.5: Adding to iommu group 7
+> pci 0000:00:1c.5: Using iommu direct mapping
+> pci 0000:00:1c.6: Adding to iommu group 8
+> pci 0000:00:1c.6: Using iommu direct mapping
+> pci 0000:00:1c.7: Adding to iommu group 9
+> pci 0000:00:1c.7: Using iommu direct mapping
+> pci 0000:00:1d.0: Adding to iommu group 10
+> pci 0000:00:1d.0: Using iommu direct mapping
+> pci 0000:00:1f.0: Adding to iommu group 11
+> pci 0000:00:1f.0: Using iommu direct mapping
+> pci 0000:00:1f.2: Adding to iommu group 11
+> pci 0000:00:1f.3: Adding to iommu group 11
+> pci 0000:01:00.0: Adding to iommu group 1
+> pci 0000:01:00.1: Adding to iommu group 1
+> pci 0000:03:00.0: Adding to iommu group 12
+> pci 0000:03:00.0: Using iommu direct mapping
+> pci 0000:04:00.0: Adding to iommu group 13
+> pci 0000:04:00.0: Using iommu direct mapping
+> pci 0000:05:00.0: Adding to iommu group 9
+> pci 0000:05:00.0: DMAR: Failed to get a private domain.
+> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> pci 0000:00:00.0: Removing from iommu group 0
+> pci 0000:00:01.0: Removing from iommu group 1
+> pci 0000:00:02.0: Removing from iommu group 2
+> pci 0000:00:16.0: Removing from iommu group 3
+> pci 0000:00:1a.0: Removing from iommu group 4
+> pci 0000:00:1b.0: Removing from iommu group 5
+> pci 0000:00:1c.0: Removing from iommu group 6
+> pci 0000:00:1c.5: Removing from iommu group 7
+> pci 0000:00:1c.6: Removing from iommu group 8
+> pci 0000:00:1c.7: Removing from iommu group 9
+> pci 0000:00:1d.0: Removing from iommu group 10
+> pci 0000:00:1f.0: Removing from iommu group 11
+> pci 0000:00:1f.2: Removing from iommu group 11
+> pci 0000:00:1f.3: Removing from iommu group 11
+> pci 0000:01:00.0: Removing from iommu group 1
+> pci 0000:01:00.1: Removing from iommu group 1
+> pci 0000:03:00.0: Removing from iommu group 12
+> pci 0000:04:00.0: Removing from iommu group 13
+> pci 0000:05:00.0: Removing from iommu group 9
+> DMAR: Intel(R) Virtualization Technology for Directed I/O
+> 
+> -[0000:00]-+-00.0  Intel Corporation Xeon E3-1200 v2/Ivy Bridge DRAM Controller
+>             +-01.0-[01]--+-00.0  NVIDIA Corporation GK208 [GeForce GT 635]
+>             |            \-00.1  NVIDIA Corporation GK208 HDMI/DP Audio Controller
+>             +-02.0  Intel Corporation Xeon E3-1200 v2/3rd Gen Core processor Graphics Controller
+>             +-16.0  Intel Corporation 6 Series/C200 Series Chipset Family MEI Controller #1
+>             +-1a.0  Intel Corporation 6 Series/C200 Series Chipset Family USB Enhanced Host Controller #2
+>             +-1b.0  Intel Corporation 6 Series/C200 Series Chipset Family High Definition Audio Controller
+>             +-1c.0-[02]--
+>             +-1c.5-[03]----00.0  ASMedia Technology Inc. ASM1042 SuperSpeed USB Host Controller
+>             +-1c.6-[04]----00.0  Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+>             +-1c.7-[05-06]----00.0-[06]--
+>             +-1d.0  Intel Corporation 6 Series/C200 Series Chipset Family USB Enhanced Host Controller #1
+>             +-1f.0  Intel Corporation H67 Express Chipset LPC Controller
+>             +-1f.2  Intel Corporation 6 Series/C200 Series Chipset Family 6 port Desktop SATA AHCI Controller
+>             \-1f.3  Intel Corporation 6 Series/C200 Series Chipset Family SMBus Controller
+> 
+> 05:00.0 PCI bridge: ASMedia Technology Inc. ASM1083/1085 PCIe to PCI Bridge (rev 01) (prog-if 01 [Subtractive decode])
+> 	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+> 	Latency: 0, Cache Line Size: 32 bytes
+> 	Interrupt: pin A routed to IRQ 5
+> 	Bus: primary=05, secondary=06, subordinate=06, sec-latency=64
+> 	I/O behind bridge: None
+> 	Memory behind bridge: None
+> 	Prefetchable memory behind bridge: None
+> 	Secondary status: 66MHz+ FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort+ <SERR- <PERR-
+> 	BridgeCtl: Parity- SERR+ NoISA- VGA- VGA16+ MAbort- >Reset- FastB2B-
+> 		PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+> 	Capabilities: [c0] Subsystem: ASUSTeK Computer Inc. Device 8489
 > 
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
----end quoted text---
+> With commit 4ec066c7b1476e0ca66a7acdb575627a5d1a1ee6 reverted on
+> v5.3-rc2:
+> 
+> DMAR: No ATSR found
+> DMAR: dmar0: Using Queued invalidation
+> DMAR: dmar1: Using Queued invalidation
+> pci 0000:00:00.0: Adding to iommu group 0
+> pci 0000:00:00.0: Using iommu direct mapping
+> pci 0000:00:01.0: Adding to iommu group 1
+> pci 0000:00:01.0: Using iommu direct mapping
+> pci 0000:00:02.0: Adding to iommu group 2
+> pci 0000:00:02.0: Using iommu direct mapping
+> pci 0000:00:16.0: Adding to iommu group 3
+> pci 0000:00:16.0: Using iommu direct mapping
+> pci 0000:00:1a.0: Adding to iommu group 4
+> pci 0000:00:1a.0: Using iommu direct mapping
+> pci 0000:00:1b.0: Adding to iommu group 5
+> pci 0000:00:1b.0: Using iommu direct mapping
+> pci 0000:00:1c.0: Adding to iommu group 6
+> pci 0000:00:1c.0: Using iommu direct mapping
+> pci 0000:00:1c.5: Adding to iommu group 7
+> pci 0000:00:1c.5: Using iommu direct mapping
+> pci 0000:00:1c.6: Adding to iommu group 8
+> pci 0000:00:1c.6: Using iommu direct mapping
+> pci 0000:00:1c.7: Adding to iommu group 9
+> pci 0000:00:1c.7: Using iommu direct mapping
+> pci 0000:00:1d.0: Adding to iommu group 10
+> pci 0000:00:1d.0: Using iommu direct mapping
+> pci 0000:00:1f.0: Adding to iommu group 11
+> pci 0000:00:1f.0: Using iommu direct mapping
+> pci 0000:00:1f.2: Adding to iommu group 11
+> pci 0000:00:1f.3: Adding to iommu group 11
+> pci 0000:01:00.0: Adding to iommu group 1
+> pci 0000:01:00.1: Adding to iommu group 1
+> pci 0000:03:00.0: Adding to iommu group 12
+> pci 0000:03:00.0: Using iommu direct mapping
+> pci 0000:04:00.0: Adding to iommu group 13
+> pci 0000:04:00.0: Using iommu direct mapping
+> pci 0000:05:00.0: Adding to iommu group 9
+> pci 0000:05:00.0: DMAR: Device uses a private dma domain.
+> DMAR: Intel(R) Virtualization Technology for Directed I/O
+> 
+> I'm guessing this series was maybe never tested on and doesn't account
+> for PCIe-to-PCI bridges.  Please fix.  Thanks,
+> 
+> Alex
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
