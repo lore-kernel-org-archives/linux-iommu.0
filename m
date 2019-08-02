@@ -2,64 +2,67 @@ Return-Path: <SRS0=q6Nl=V6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A533FC32750
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 09:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 260F1C433FF
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 10:38:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F0DE20B7C
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 09:55:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EDBA12087C
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 10:38:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="STcgE6U8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F0DE20B7C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qVCPNdH/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EDBA12087C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6088A10BD;
-	Fri,  2 Aug 2019 09:55:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9A2341153;
+	Fri,  2 Aug 2019 10:38:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D06B310BC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 38342EA5
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 09:55:46 +0000 (UTC)
+	Fri,  2 Aug 2019 10:38:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3CC76E7
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C139FE7
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 09:55:46 +0000 (UTC)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
-	[83.86.89.107])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 9BCB12087E;
-	Fri,  2 Aug 2019 09:55:45 +0000 (UTC)
+	Fri,  2 Aug 2019 10:38:08 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id D13942086A;
+	Fri,  2 Aug 2019 10:38:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1564739746;
-	bh=/cb/Ces5GAssZzPycjTabnZ+Na4/ZFIaOSHATyUqsJo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=STcgE6U8SkgkZLcR4IOq9aHaw/3C+bvHVxWSjwH3QgKM6FilZrWDzlea5eeX7a4Kr
-	ls7EunQtP9ZBHd1slFy7sjJhDNBaQMbj2ewCXvvuWn/szF7GymKL0gpOEFzF9ZSD6Z
-	RZUVIZpofUZdx8RSgTXv/E6X7XYOyQfShoCh/CRw=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH 4.19 17/32] iommu/vt-d: Dont queue_iova() if there is no flush
-	queue
-Date: Fri,  2 Aug 2019 11:39:51 +0200
-Message-Id: <20190802092107.177554199@linuxfoundation.org>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190802092101.913646560@linuxfoundation.org>
-References: <20190802092101.913646560@linuxfoundation.org>
-User-Agent: quilt/0.66
+	s=default; t=1564742288;
+	bh=IYNwTW73rLYyMyjD9BJMjODjl0NeiQXEjNWG7ynwQFE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qVCPNdH/6+F3JEUwjc5ECdeVvv2rxFW/YIsSdLtdhUSAecBHvE/aZD9g4yMo2gZSj
+	2yoBLIUP0QYtsd9bkMqXcwYzxDAGO2T7/GL9cxrLT0Ys0KRqsv6Oult274XWCLaght
+	wblNSh7hCme4l3pG2uJghbpPO6jnYgJmHgYdUE7s=
+Date: Fri, 2 Aug 2019 11:38:03 +0100
+From: Will Deacon <will@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] dma-mapping: fix page attributes for dma_mmap_*
+Message-ID: <20190802103803.3qrbhqwxlasojsco@willie-the-truck>
+References: <20190801142118.21225-1-hch@lst.de>
+	<20190801142118.21225-2-hch@lst.de>
+	<20190801162305.3m32chycsdjmdejk@willie-the-truck>
+	<20190801163457.GB26588@lst.de>
+	<20190801164411.kmsl4japtfkgvzxe@willie-the-truck>
+	<20190802081441.GA9725@lst.de>
 MIME-Version: 1.0
-Cc: Joerg Roedel <jroedel@suse.de>, Dmitry Safonov <dima@arista.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	stable@vger.kernel.org, iommu@lists.linux-foundation.org,
-	David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190802081441.GA9725@lst.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: Shawn Anastasio <shawn@anastas.io>, Michael Ellerman <mpe@ellerman.id.au>,
+	linuxppc-dev@lists.ozlabs.org, Russell King <linux@armlinux.org.uk>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,189 +80,79 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Dmitry Safonov <dima@arista.com>
+On Fri, Aug 02, 2019 at 10:14:41AM +0200, Christoph Hellwig wrote:
+> On Thu, Aug 01, 2019 at 05:44:12PM +0100, Will Deacon wrote:
+> > > > Although arch_dma_mmap_pgprot() is a bit of a misnomer now that it only
+> > > > gets involved in the non-coherent case.
+> > > 
+> > > A better name is welcome.
+> > 
+> > How about arch_dma_noncoherent_mmap_pgprot() ? Too long?
+> 
+> Sounds a little long yes.  And doesn't fix the additional problem that
+> we don't just it for mmap but also for the in-kernel remapping these
+> days.
 
-commit effa467870c7612012885df4e246bdb8ffd8e44c upstream.
+Hmm. Maybe just arch_dma_noncoherent_pgprot() then.
 
-Intel VT-d driver was reworked to use common deferred flushing
-implementation. Previously there was one global per-cpu flush queue,
-afterwards - one per domain.
+> > > But my worry is how this interacts with architectures that have an
+> > > uncached segment (mips, nios2, microblaze, extensa) where we'd have
+> > > the kernel access DMA_ATTR_WRITE_COMBINE mappigns using the uncached
+> > > segment, and userspace mmaps using pgprot_writecombine, which could
+> > > lead to aliasing issues.  But then again mips already supports
+> > > DMA_ATTR_WRITE_COMBINE, so this must be ok somehow.  I guess I'll
+> > > need to field that question to the relevant parties.
+> > 
+> > Or it's always been busted and happens to work out in practice...
+> 
+> I've sent a ping to the mips folks.  While we'are at it:  arm64
+> and arm32 (optionally) map dma coherent allocations as write combine.
+> I suspect this hasn't always just been busted but intentional (of course!),
+> but is there any chance to get a quote from the arm architecture spec
+> on why this is fine as it looks rather confusion?
 
-Before deferring a flush, the queue should be allocated and initialized.
+So this boils down to a terminology mismatch. The Arm architecture doesn't have
+anything called "write combine", so in Linux we instead provide what the Arm
+architecture calls "Normal non-cacheable" memory for pgprot_writecombine().
+Amongst other things, this memory type permits speculation, unaligned accesses
+and merging of writes. I found something in the architecture spec about
+non-cachable memory, but it's written in Armglish[1].
 
-Currently only domains with IOMMU_DOMAIN_DMA type initialize their flush
-queue. It's probably worth to init it for static or unmanaged domains
-too, but it may be arguable - I'm leaving it to iommu folks.
+pgprot_noncached(), on the other hand, provides what the architecture calls
+Strongly Ordered or Device-nGnRnE memory. This is intended for mapping MMIO
+(i.e. PCI config space) and therefore forbids speculation, preserves access
+size, requires strict alignment and also forces write responses to come from
+the endpoint.
 
-Prevent queuing an iova flush if the domain doesn't have a queue.
-The defensive check seems to be worth to keep even if queue would be
-initialized for all kinds of domains. And is easy backportable.
+I think the naming mismatch is historical, but on arm64 we wanted to use the
+same names as arm32 so that any drivers using these things directly would get
+the same behaviour.
 
-On 4.19.43 stable kernel it has a user-visible effect: previously for
-devices in si domain there were crashes, on sata devices:
+Will
 
- BUG: spinlock bad magic on CPU#6, swapper/0/1
-  lock: 0xffff88844f582008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
- CPU: 6 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #1
- Call Trace:
-  <IRQ>
-  dump_stack+0x61/0x7e
-  spin_bug+0x9d/0xa3
-  do_raw_spin_lock+0x22/0x8e
-  _raw_spin_lock_irqsave+0x32/0x3a
-  queue_iova+0x45/0x115
-  intel_unmap+0x107/0x113
-  intel_unmap_sg+0x6b/0x76
-  __ata_qc_complete+0x7f/0x103
-  ata_qc_complete+0x9b/0x26a
-  ata_qc_complete_multiple+0xd0/0xe3
-  ahci_handle_port_interrupt+0x3ee/0x48a
-  ahci_handle_port_intr+0x73/0xa9
-  ahci_single_level_irq_intr+0x40/0x60
-  __handle_irq_event_percpu+0x7f/0x19a
-  handle_irq_event_percpu+0x32/0x72
-  handle_irq_event+0x38/0x56
-  handle_edge_irq+0x102/0x121
-  handle_irq+0x147/0x15c
-  do_IRQ+0x66/0xf2
-  common_interrupt+0xf/0xf
- RIP: 0010:__do_softirq+0x8c/0x2df
+[1]
 
-The same for usb devices that use ehci-pci:
- BUG: spinlock bad magic on CPU#0, swapper/0/1
-  lock: 0xffff88844f402008, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
- CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.43 #4
- Call Trace:
-  <IRQ>
-  dump_stack+0x61/0x7e
-  spin_bug+0x9d/0xa3
-  do_raw_spin_lock+0x22/0x8e
-  _raw_spin_lock_irqsave+0x32/0x3a
-  queue_iova+0x77/0x145
-  intel_unmap+0x107/0x113
-  intel_unmap_page+0xe/0x10
-  usb_hcd_unmap_urb_setup_for_dma+0x53/0x9d
-  usb_hcd_unmap_urb_for_dma+0x17/0x100
-  unmap_urb_for_dma+0x22/0x24
-  __usb_hcd_giveback_urb+0x51/0xc3
-  usb_giveback_urb_bh+0x97/0xde
-  tasklet_action_common.isra.4+0x5f/0xa1
-  tasklet_action+0x2d/0x30
-  __do_softirq+0x138/0x2df
-  irq_exit+0x7d/0x8b
-  smp_apic_timer_interrupt+0x10f/0x151
-  apic_timer_interrupt+0xf/0x20
-  </IRQ>
- RIP: 0010:_raw_spin_unlock_irqrestore+0x17/0x39
+B2.4.4 Implication of caches for the application programmer
 
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: <stable@vger.kernel.org> # 4.14+
-Fixes: 13cf01744608 ("iommu/vt-d: Make use of iova deferred flushing")
-Signed-off-by: Dmitry Safonov <dima@arista.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-[v4.14-port notes:
-o minor conflict with untrusted IOMMU devices check under if-condition]
-Signed-off-by: Dmitry Safonov <dima@arista.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iommu/intel-iommu.c |    2 +-
- drivers/iommu/iova.c        |   18 ++++++++++++++----
- include/linux/iova.h        |    6 ++++++
- 3 files changed, 21 insertions(+), 5 deletions(-)
+[...]
 
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3721,7 +3721,7 @@ static void intel_unmap(struct device *d
- 
- 	freelist = domain_unmap(domain, start_pfn, last_pfn);
- 
--	if (intel_iommu_strict) {
-+	if (intel_iommu_strict || !has_iova_flush_queue(&domain->iovad)) {
- 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
- 				      nrpages, !freelist, 0);
- 		/* free iova */
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -65,9 +65,14 @@ init_iova_domain(struct iova_domain *iov
- }
- EXPORT_SYMBOL_GPL(init_iova_domain);
- 
-+bool has_iova_flush_queue(struct iova_domain *iovad)
-+{
-+	return !!iovad->fq;
-+}
-+
- static void free_iova_flush_queue(struct iova_domain *iovad)
- {
--	if (!iovad->fq)
-+	if (!has_iova_flush_queue(iovad))
- 		return;
- 
- 	if (timer_pending(&iovad->fq_timer))
-@@ -85,13 +90,14 @@ static void free_iova_flush_queue(struct
- int init_iova_flush_queue(struct iova_domain *iovad,
- 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
- {
-+	struct iova_fq __percpu *queue;
- 	int cpu;
- 
- 	atomic64_set(&iovad->fq_flush_start_cnt,  0);
- 	atomic64_set(&iovad->fq_flush_finish_cnt, 0);
- 
--	iovad->fq = alloc_percpu(struct iova_fq);
--	if (!iovad->fq)
-+	queue = alloc_percpu(struct iova_fq);
-+	if (!queue)
- 		return -ENOMEM;
- 
- 	iovad->flush_cb   = flush_cb;
-@@ -100,13 +106,17 @@ int init_iova_flush_queue(struct iova_do
- 	for_each_possible_cpu(cpu) {
- 		struct iova_fq *fq;
- 
--		fq = per_cpu_ptr(iovad->fq, cpu);
-+		fq = per_cpu_ptr(queue, cpu);
- 		fq->head = 0;
- 		fq->tail = 0;
- 
- 		spin_lock_init(&fq->lock);
- 	}
- 
-+	smp_wmb();
-+
-+	iovad->fq = queue;
-+
- 	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
- 	atomic_set(&iovad->fq_timer_on, 0);
- 
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -156,6 +156,7 @@ struct iova *reserve_iova(struct iova_do
- void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
- void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn);
-+bool has_iova_flush_queue(struct iova_domain *iovad);
- int init_iova_flush_queue(struct iova_domain *iovad,
- 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
-@@ -236,6 +237,11 @@ static inline void init_iova_domain(stru
- {
- }
- 
-+bool has_iova_flush_queue(struct iova_domain *iovad)
-+{
-+	return false;
-+}
-+
- static inline int init_iova_flush_queue(struct iova_domain *iovad,
- 					iova_flush_cb flush_cb,
- 					iova_entry_dtor entry_dtor)
+Data coherency issues
 
+Software can ensure the data coherency of caches in the following ways:
 
+  * By not using the caches in situations where coherency issues can arise.
+    This can be achieved by:
+
+    - Using Non-cacheable or, in some cases, Write-Through Cacheable memory.
+
+    - Not enabling caches in the system.
+
+  * By using cache maintenance instructions to manage the coherency issues
+    in software.
+
+  * By using hardware coherency mechanisms to ensure the coherency of data
+    accesses to memory for cacheable locations by observers within the
+    different shareability domains.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
