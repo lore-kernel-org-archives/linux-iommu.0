@@ -7,53 +7,53 @@ X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C1DC433FF
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 09:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A533FC32750
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 09:55:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 47C7D2087E
-	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 09:54:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7F0DE20B7C
+	for <iommu@archiver.kernel.org>; Fri,  2 Aug 2019 09:55:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="bht8j9SE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 47C7D2087E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="STcgE6U8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F0DE20B7C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E9C9D10BA;
-	Fri,  2 Aug 2019 09:54:12 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6088A10BD;
+	Fri,  2 Aug 2019 09:55:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6114910B9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D06B310BC
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 09:54:11 +0000 (UTC)
+	Fri,  2 Aug 2019 09:55:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ACFAAE7
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3CC76E7
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  2 Aug 2019 09:54:10 +0000 (UTC)
+	Fri,  2 Aug 2019 09:55:46 +0000 (UTC)
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
 	[83.86.89.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 08B6021773;
-	Fri,  2 Aug 2019 09:54:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 9BCB12087E;
+	Fri,  2 Aug 2019 09:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1564739650;
-	bh=l1UnKmQOmho3vpxFLqNSfA4jWlusCR1oP8ASIJzOUD0=;
+	s=default; t=1564739746;
+	bh=/cb/Ces5GAssZzPycjTabnZ+Na4/ZFIaOSHATyUqsJo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=bht8j9SENTY94nIlqKN2cncM61HiEcRYwf4f91BdpjpISVyVFFvIlKRpmTDMl8eks
-	Hm2ttEZizwQBg1yuOO8g9yTw1V/g76bFkDuHqtBL3ar5GSHyCoR03DcXQ8SHYuI7cg
-	ncIby12I6sh3lEe3DW+LTQltylIkFjfBMc5t1cjo=
+	b=STcgE6U8SkgkZLcR4IOq9aHaw/3C+bvHVxWSjwH3QgKM6FilZrWDzlea5eeX7a4Kr
+	ls7EunQtP9ZBHd1slFy7sjJhDNBaQMbj2ewCXvvuWn/szF7GymKL0gpOEFzF9ZSD6Z
+	RZUVIZpofUZdx8RSgTXv/E6X7XYOyQfShoCh/CRw=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: linux-kernel@vger.kernel.org
-Subject: [PATCH 4.14 17/25] iommu/vt-d: Dont queue_iova() if there is no flush
+Subject: [PATCH 4.19 17/32] iommu/vt-d: Dont queue_iova() if there is no flush
 	queue
-Date: Fri,  2 Aug 2019 11:39:49 +0200
-Message-Id: <20190802092105.012085994@linuxfoundation.org>
+Date: Fri,  2 Aug 2019 11:39:51 +0200
+Message-Id: <20190802092107.177554199@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190802092058.428079740@linuxfoundation.org>
-References: <20190802092058.428079740@linuxfoundation.org>
+In-Reply-To: <20190802092101.913646560@linuxfoundation.org>
+References: <20190802092101.913646560@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Cc: Joerg Roedel <jroedel@suse.de>, Dmitry Safonov <dima@arista.com>,
@@ -162,8 +162,7 @@ Signed-off-by: Dmitry Safonov <dima@arista.com>
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 [v4.14-port notes:
-o minor conflict with untrusted IOMMU devices check under if-condition
-o setup_timer() near one chunk is timer_setup() in v5.3]
+o minor conflict with untrusted IOMMU devices check under if-condition]
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -174,7 +173,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3702,7 +3702,7 @@ static void intel_unmap(struct device *d
+@@ -3721,7 +3721,7 @@ static void intel_unmap(struct device *d
  
  	freelist = domain_unmap(domain, start_pfn, last_pfn);
  
@@ -185,7 +184,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		/* free iova */
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -58,9 +58,14 @@ init_iova_domain(struct iova_domain *iov
+@@ -65,9 +65,14 @@ init_iova_domain(struct iova_domain *iov
  }
  EXPORT_SYMBOL_GPL(init_iova_domain);
  
@@ -201,7 +200,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		return;
  
  	if (timer_pending(&iovad->fq_timer))
-@@ -78,13 +83,14 @@ static void free_iova_flush_queue(struct
+@@ -85,13 +90,14 @@ static void free_iova_flush_queue(struct
  int init_iova_flush_queue(struct iova_domain *iovad,
  			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
  {
@@ -218,7 +217,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		return -ENOMEM;
  
  	iovad->flush_cb   = flush_cb;
-@@ -93,13 +99,17 @@ int init_iova_flush_queue(struct iova_do
+@@ -100,13 +106,17 @@ int init_iova_flush_queue(struct iova_do
  	for_each_possible_cpu(cpu) {
  		struct iova_fq *fq;
  
@@ -234,20 +233,20 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +
 +	iovad->fq = queue;
 +
- 	setup_timer(&iovad->fq_timer, fq_flush_timeout, (unsigned long)iovad);
+ 	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
  	atomic_set(&iovad->fq_timer_on, 0);
  
 --- a/include/linux/iova.h
 +++ b/include/linux/iova.h
-@@ -154,6 +154,7 @@ struct iova *reserve_iova(struct iova_do
+@@ -156,6 +156,7 @@ struct iova *reserve_iova(struct iova_do
  void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
  void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn, unsigned long pfn_32bit);
+ 	unsigned long start_pfn);
 +bool has_iova_flush_queue(struct iova_domain *iovad);
  int init_iova_flush_queue(struct iova_domain *iovad,
  			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
  struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
-@@ -234,6 +235,11 @@ static inline void init_iova_domain(stru
+@@ -236,6 +237,11 @@ static inline void init_iova_domain(stru
  {
  }
  
