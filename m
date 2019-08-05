@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68215C433FF
-	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 19:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8CBC32751
+	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 20:58:58 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 41B3A2054F
-	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 19:58:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 41B3A2054F
+	by mail.kernel.org (Postfix) with ESMTPS id A80E320C01
+	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 20:58:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A80E320C01
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 06937F37;
-	Mon,  5 Aug 2019 19:58:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6CE15F2A;
+	Mon,  5 Aug 2019 20:58:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 38C2CEB4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0A8D6E8A
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  5 Aug 2019 19:58:45 +0000 (UTC)
+	Mon,  5 Aug 2019 20:58:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B379B8EA
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 047DF5E4
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  5 Aug 2019 19:58:44 +0000 (UTC)
+	Mon,  5 Aug 2019 20:58:55 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	05 Aug 2019 12:58:27 -0700
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	05 Aug 2019 13:58:43 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; d="scan'208";a="164754154"
+X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; d="scan'208";a="325430305"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga007.jf.intel.com with ESMTP; 05 Aug 2019 12:58:26 -0700
-Date: Mon, 5 Aug 2019 13:02:04 -0700
+	by orsmga004.jf.intel.com with ESMTP; 05 Aug 2019 13:58:43 -0700
+Date: Mon, 5 Aug 2019 14:02:21 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 14/22] iommu/vt-d: Add custom allocator for IOASID
-Message-ID: <20190805130204.21aca034@jacob-builder>
-In-Reply-To: <2f2ba561-793f-a6a0-5765-ef8e9a5a3ab6@redhat.com>
+Subject: Re: [PATCH v4 11/22] iommu: Introduce guest PASID bind function
+Message-ID: <20190805140221.14da41e2@jacob-builder>
+In-Reply-To: <706dacc1-18de-2a9a-23d9-3e10e9b14262@redhat.com>
 References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1560087862-57608-15-git-send-email-jacob.jun.pan@linux.intel.com>
-	<2f2ba561-793f-a6a0-5765-ef8e9a5a3ab6@redhat.com>
+	<1560087862-57608-12-git-send-email-jacob.jun.pan@linux.intel.com>
+	<706dacc1-18de-2a9a-23d9-3e10e9b14262@redhat.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -74,149 +74,259 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 16 Jul 2019 11:30:14 +0200
+On Tue, 16 Jul 2019 18:44:56 +0200
 Auger Eric <eric.auger@redhat.com> wrote:
 
 > Hi Jacob,
 > 
 > On 6/9/19 3:44 PM, Jacob Pan wrote:
-> > When VT-d driver runs in the guest, PASID allocation must be
-> > performed via virtual command interface. This patch registers a
-> > custom IOASID allocator which takes precedence over the default
-> > XArray based allocator. The resulting IOASID allocation will always
-> > come from the host. This ensures that PASID namespace is system-
-> > wide.
+> > Guest shared virtual address (SVA) may require host to shadow guest
+> > PASID tables. Guest PASID can also be allocated from the host via
+> > enlightened interfaces. In this case, guest needs to bind the guest
+> > mm, i.e. cr3 in guest physical address to the actual PASID table in
+> > the host IOMMU. Nesting will be turned on such that guest virtual
+> > address can go through a two level translation:
+> > - 1st level translates GVA to GPA
+> > - 2nd level translates GPA to HPA
+> > This patch introduces APIs to bind guest PASID data to the assigned
+> > device entry in the physical IOMMU. See the diagram below for usage
+> > explaination.
 > > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
+> >     .-------------.  .---------------------------.
+> >     |   vIOMMU    |  | Guest process mm, FL only |
+> >     |             |  '---------------------------'
+> >     .----------------/
+> >     | PASID Entry |--- PASID cache flush -
+> >     '-------------'                       |
+> >     |             |                       V
+> >     |             |                      GP
+> >     '-------------'
+> > Guest
+> > ------| Shadow |----------------------- GP->HP* ---------
+> >       v        v                          |
+> > Host                                      v
+> >     .-------------.  .----------------------.
+> >     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+> >     |             |  '----------------------'
+> >     .----------------/  |
+> >     | PASID Entry |     V (Nested xlate)
+> >     '----------------\.---------------------.
+> >     |             |   |Set SL to GPA-HPA    |
+> >     |             |   '---------------------'
+> >     '-------------'
+> > 
+> > Where:
+> >  - FL = First level/stage one page tables
+> >  - SL = Second level/stage two page tables
+> >  - GP = Guest PASID
+> >  - HP = Host PASID
+> > * Conversion needed if non-identity GP-HP mapping option is chosen.
+> > 
 > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 > > ---
-> >  drivers/iommu/Kconfig       |  1 +
-> >  drivers/iommu/intel-iommu.c | 60
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/intel-iommu.h |  2 ++ 3 files changed, 63
+> >  drivers/iommu/iommu.c      | 20 ++++++++++++++++
+> >  include/linux/iommu.h      | 21 +++++++++++++++++
+> >  include/uapi/linux/iommu.h | 58
+> > ++++++++++++++++++++++++++++++++++++++++++++++ 3 files changed, 99
 > > insertions(+)
 > > 
-> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > index c40c4b5..5d1bc2a 100644
-> > --- a/drivers/iommu/Kconfig
-> > +++ b/drivers/iommu/Kconfig
-> > @@ -213,6 +213,7 @@ config INTEL_IOMMU_SVM
-> >  	bool "Support for Shared Virtual Memory with Intel IOMMU"
-> >  	depends on INTEL_IOMMU && X86
-> >  	select PCI_PASID
-> > +	select IOASID
-> >  	select MMU_NOTIFIER
-> >  	select IOASID
-> >  	help
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index 09b8ff0..5b84994 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -1711,6 +1711,8 @@ static void free_dmar_iommu(struct
-> > intel_iommu *iommu) if (ecap_prs(iommu->ecap))
-> >  			intel_svm_finish_prq(iommu);
-> >  	}
-> > +	ioasid_unregister_allocator(&iommu->pasid_allocator);
-> > +
-> >  #endif
-> >  }
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 1758b57..d0416f60 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -1648,6 +1648,26 @@ int iommu_cache_invalidate(struct
+> > iommu_domain *domain, struct device *dev, }
+> >  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
 > >  
-> > @@ -4820,6 +4822,46 @@ static int __init
-> > platform_optin_force_iommu(void) return 1;
-> >  }
-> >  
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
-> > void *data) +{
-> > +	struct intel_iommu *iommu = data;
-> > +	ioasid_t ioasid;
+> > +int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> > +			struct device *dev, struct
+> > gpasid_bind_data *data) +{
+> > +	if (unlikely(!domain->ops->sva_bind_gpasid))
+> > +		return -ENODEV;
 > > +
-> > +	/*
-> > +	 * VT-d virtual command interface always uses the full 20
-> > bit
-> > +	 * PASID range. Host can partition guest PASID range based
-> > on
-> > +	 * policies but it is out of guest's control.
-> > +	 */
-> > +	if (min < PASID_MIN || max > PASID_MAX)
-> > +		return -EINVAL;  
-> ioasid_alloc() does not handle that error value, use INVALID_IOASID?
-> > +
-> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
-> > +		return INVALID_IOASID;
-> > +
-> > +	return ioasid;
+> > +	return domain->ops->sva_bind_gpasid(domain, dev, data);
 > > +}
+> > +EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
 > > +
-> > +static void intel_ioasid_free(ioasid_t ioasid, void *data)
+> > +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct
+> > device *dev,
+> > +			ioasid_t pasid)
 > > +{
-> > +	struct iommu_pasid_alloc_info *svm;
-> > +	struct intel_iommu *iommu = data;
+> > +	if (unlikely(!domain->ops->sva_unbind_gpasid))
+> > +		return -ENODEV;
 > > +
-> > +	if (!iommu)
-> > +		return;
-> > +	/*
-> > +	 * Sanity check the ioasid owner is done at upper layer,
-> > e.g. VFIO
-> > +	 * We can only free the PASID when all the devices are
-> > unbond.
-> > +	 */
-> > +	svm = ioasid_find(NULL, ioasid, NULL);
-> > +	if (!svm) {
-> > +		pr_warn("Freeing unbond IOASID %d\n", ioasid);
-> > +		return;
-> > +	}
-> > +	vcmd_free_pasid(iommu, ioasid);
+> > +	return domain->ops->sva_unbind_gpasid(dev, pasid);
 > > +}
-> > +#endif
+> > +EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
 > > +
-> >  int __init intel_iommu_init(void)
+> >  static void __iommu_detach_device(struct iommu_domain *domain,
+> >  				  struct device *dev)
 > >  {
-> >  	int ret = -ENODEV;
-> > @@ -4924,6 +4966,24 @@ int __init intel_iommu_init(void)
-> >  				       "%s", iommu->name);
-> >  		iommu_device_set_ops(&iommu->iommu,
-> > &intel_iommu_ops); iommu_device_register(&iommu->iommu);
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +		if (cap_caching_mode(iommu->cap) &&
-> > sm_supported(iommu)) {
-> > +			/*
-> > +			 * Register a custom ASID allocator if we
-> > are running
-> > +			 * in a guest, the purpose is to have a
-> > system wide PASID
-> > +			 * namespace among all PASID users.
-> > +			 * There can be multiple vIOMMUs in each
-> > guest but only
-> > +			 * one allocator is active. All vIOMMU
-> > allocators will
-> > +			 * eventually be calling the same host
-> > allocator.
-> > +			 */
-> > +			iommu->pasid_allocator.alloc =
-> > intel_ioasid_alloc;
-> > +			iommu->pasid_allocator.free =
-> > intel_ioasid_free;
-> > +			iommu->pasid_allocator.pdata = (void
-> > *)iommu;
-> > +			ret =
-> > ioasid_register_allocator(&iommu->pasid_allocator);
-> > +			if (ret)
-> > +				pr_warn("Custom PASID allocator
-> > registeration failed\n");  
-> what if it fails, don't you want a tear down path?
-> 
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 8d766a8..560c8c8 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -25,6 +25,7 @@
+> >  #include <linux/errno.h>
+> >  #include <linux/err.h>
+> >  #include <linux/of.h>
+> > +#include <linux/ioasid.h>
+> >  #include <uapi/linux/iommu.h>
+> >  
+> >  #define IOMMU_READ	(1 << 0)
+> > @@ -267,6 +268,8 @@ struct page_response_msg {
+> >   * @detach_pasid_table: detach the pasid table
+> >   * @cache_invalidate: invalidate translation caches
+> >   * @pgsize_bitmap: bitmap of all possible supported page sizes
+> > + * @sva_bind_gpasid: bind guest pasid and mm
+> > + * @sva_unbind_gpasid: unbind guest pasid and mm  
+> comment vs field ordering as pointed out by Jonathan on other patches
+> >   */
+> >  struct iommu_ops {
+> >  	bool (*capable)(enum iommu_cap);
+> > @@ -332,6 +335,10 @@ struct iommu_ops {
+> >  	int (*page_response)(struct device *dev, struct
+> > page_response_msg *msg); int (*cache_invalidate)(struct
+> > iommu_domain *domain, struct device *dev, struct
+> > iommu_cache_invalidate_info *inv_info);
+> > +	int (*sva_bind_gpasid)(struct iommu_domain *domain,
+> > +			struct device *dev, struct
+> > gpasid_bind_data *data); +
+> > +	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
+> >  
+> >  	unsigned long pgsize_bitmap;
+> >  };
+> > @@ -447,6 +454,10 @@ extern void iommu_detach_pasid_table(struct
+> > iommu_domain *domain); extern int iommu_cache_invalidate(struct
+> > iommu_domain *domain, struct device *dev,
+> >  				  struct
+> > iommu_cache_invalidate_info *inv_info); +extern int
+> > iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> > +		struct device *dev, struct gpasid_bind_data *data);
+> > +extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> > +				struct device *dev, ioasid_t
+> > pasid); extern struct iommu_domain *iommu_get_domain_for_dev(struct
+> > device *dev); extern struct iommu_domain
+> > *iommu_get_dma_domain(struct device *dev); extern int
+> > iommu_map(struct iommu_domain *domain, unsigned long iova, @@
+> > -998,6 +1009,16 @@ iommu_cache_invalidate(struct iommu_domain
+> > *domain, { return -ENODEV;
+> >  }
+> > +static inline int iommu_sva_bind_gpasid(struct iommu_domain
+> > *domain,
+> > +				struct device *dev, struct
+> > gpasid_bind_data *data) +{
+> > +	return -ENODEV;
+> > +}
+> > +
+> > +static inline int sva_unbind_gpasid(struct device *dev, int pasid)
+> > +{
+> > +	return -ENODEV;
+> > +}
+> >  
+> >  #endif /* CONFIG_IOMMU_API */
+> >  
+> > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> > index ca4b753..a9cdc63 100644
+> > --- a/include/uapi/linux/iommu.h
+> > +++ b/include/uapi/linux/iommu.h
+> > @@ -277,4 +277,62 @@ struct iommu_cache_invalidate_info {
+> >  	};
+> >  };
+> >  
+> > +/**
+> > + * struct gpasid_bind_data_vtd - Intel VT-d specific data on
+> > device and guest
+> > + * SVA binding.
+> > + *
+> > + * @flags:	VT-d PASID table entry attributes
+> > + * @pat:	Page attribute table data to compute effective
+> > memory type
+> > + * @emt:	Extended memory type
+> > + *
+> > + * Only guest vIOMMU selectable and effective options are passed
+> > down to
+> > + * the host IOMMU.
+> > + */
+> > +struct gpasid_bind_data_vtd {
+> > +#define IOMMU_SVA_VTD_GPASID_SRE	(1 << 0) /* supervisor
+> > request */ +#define IOMMU_SVA_VTD_GPASID_EAFE	(1 << 1) /*
+> > extended access enable */ +#define IOMMU_SVA_VTD_GPASID_PCD
+> > (1 << 2) /* page-level cache disable */ +#define
+> > IOMMU_SVA_VTD_GPASID_PWT	(1 << 3) /* page-level write
+> > through */ +#define IOMMU_SVA_VTD_GPASID_EMTE	(1 << 4) /*
+> > extended mem type enable */ +#define
+> > IOMMU_SVA_VTD_GPASID_CD		(1 << 5) /* PASID-level
+> > cache disable */
+> > +	__u64 flags;
+> > +	__u32 pat;
+> > +	__u32 emt;
+> > +};
+> > +
+> > +/**
+> > + * struct gpasid_bind_data - Information about device and guest
+> > PASID binding
+> > + * @version:	Version of this data structure
+> > + * @format:	PASID table entry format
+> > + * @flags:	Additional information on guest bind request
+> > + * @gpgd:	Guest page directory base of the guest mm to bind
+> > + * @hpasid:	Process address space ID used for the guest mm
+> > in host IOMMU
+> > + * @gpasid:	Process address space ID used for the guest mm
+> > in guest IOMMU
+> > + * @addr_width:	Guest virtual address width> + *
+> > @vtd:	Intel VT-d specific data
+> > + *
+> > + * Guest to host PASID mapping can be an identity or non-identity,
+> > where guest
+> > + * has its own PASID space. For non-identify mapping, guest to
+> > host PASID lookup
+> > + * is needed when VM programs guest PASID into an assigned device.
+> > VMM may
+> > + * trap such PASID programming then request host IOMMU driver to
+> > convert guest
+> > + * PASID to host PASID based on this bind data.  
+> Sorry I don't get when you have separate PASID space as I understand
+> you eventually allocate the guest PASID with the host allocator
+> (though paravirt)
+For the current version it is true that we eventually allocate PASID
+from the host. But in the future, we also want to support non-identical
+host-guest PASID mapping. So want to leave space in the API to support
+such case in the future.
 
-Good point, we need to disable PASID usage, i.e. disable scalable mode
-if there is no virtual command based PASID allocator in the guest.
+> > + */
+> > +struct gpasid_bind_data {  
+> other structs in iommu.h are prefixed with iommu_?
+> > +#define IOMMU_GPASID_BIND_VERSION_1	1
+> > +	__u32 version;
+> > +#define IOMMU_PASID_FORMAT_INTEL_VTD	1
+> > +	__u32 format;
+> > +#define IOMMU_SVA_GPASID_VAL	(1 << 0) /* guest PASID valid
+> > */
+> > +	__u64 flags;
+> > +	__u64 gpgd;
+> > +	__u64 hpasid;> +	__u64 gpasid;
+> > +	__u32 addr_width;
+> > +	__u8  padding[4];
+> > +	/* Vendor specific data */
+> > +	union {
+> > +		struct gpasid_bind_data_vtd vtd;
+> > +	};  
+> vtd is not used in the series if I am not wrong
+you are right. we had some internal discussion on what PASID entry
+fields are actively used in the native case, whether they need to be
+passed down or always set by the driver. It will be used in v5.
 
-Sorry for the late reply.
+Thanks,
 
+> > +};
+> > +
+> >  #endif /* _UAPI_IOMMU_H */
+> >   
 > Thanks
 > 
 > Eric
->  [...]  
 
 [Jacob Pan]
 _______________________________________________
