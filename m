@@ -2,85 +2,61 @@ Return-Path: <SRS0=bWDR=WB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F62C433FF
-	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 19:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68215C433FF
+	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 19:58:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BBA202075B
-	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 19:23:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="R/AKCL41"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BBA202075B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 41B3A2054F
+	for <iommu@archiver.kernel.org>; Mon,  5 Aug 2019 19:58:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 41B3A2054F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6B906E35;
-	Mon,  5 Aug 2019 19:23:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 06937F37;
+	Mon,  5 Aug 2019 19:58:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BFFFDE2E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 38C2CEB4
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  5 Aug 2019 19:23:18 +0000 (UTC)
+	Mon,  5 Aug 2019 19:58:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4BDEA5E4
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B379B8EA
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  5 Aug 2019 19:23:18 +0000 (UTC)
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com
-	[209.85.222.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id E871C214C6
-	for <iommu@lists.linux-foundation.org>;
-	Mon,  5 Aug 2019 19:23:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565032998;
-	bh=d6p6NWXIzAr/w+L57W8Oyrx5VdZnumUCXtu9FxtaNsc=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=R/AKCL41e439d3YyW9Frd8+LqZmY/L/BTeDfKJwCw0IYn+fId94XDv2wn7Pml91f9
-	dnKXgXpHTXeFphyc7/df75+ieHN1KnS+kSCTZqgR9c8Gkj9yb5S930ddLj/+yapLMz
-	2x3mqfxdOrcNQAQnSXJqYUrWF68Oxa6/5KI536WM=
-Received: by mail-qk1-f173.google.com with SMTP id w190so60987489qkc.6
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 05 Aug 2019 12:23:17 -0700 (PDT)
-X-Gm-Message-State: APjAAAVOP62c5NDda4rvhJnlBRRVNNnf27v0YbN55rjcKQ7PVxkbidIE
-	TarRVZHYVJO/4TF1VcI+YWfr1OrNt4ZbiTBMOQ==
-X-Google-Smtp-Source: APXvYqzJ3385dVDr7a416MCnVTqPVutjB6pJSnn10jB+T3hVVAIomIypEjVR/sntYZAAkaMyD0seP3rNxE7IslWzcJM=
-X-Received: by 2002:a37:6944:: with SMTP id e65mr95063738qkc.119.1565032997083;
-	Mon, 05 Aug 2019 12:23:17 -0700 (PDT)
+	Mon,  5 Aug 2019 19:58:44 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	05 Aug 2019 12:58:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; d="scan'208";a="164754154"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga007.jf.intel.com with ESMTP; 05 Aug 2019 12:58:26 -0700
+Date: Mon, 5 Aug 2019 13:02:04 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v4 14/22] iommu/vt-d: Add custom allocator for IOASID
+Message-ID: <20190805130204.21aca034@jacob-builder>
+In-Reply-To: <2f2ba561-793f-a6a0-5765-ef8e9a5a3ab6@redhat.com>
+References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1560087862-57608-15-git-send-email-jacob.jun.pan@linux.intel.com>
+	<2f2ba561-793f-a6a0-5765-ef8e9a5a3ab6@redhat.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
-	<20190731154752.16557-4-nsaenzjulienne@suse.de>
-	<CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
-	<2050374ac07e0330e505c4a1637256428adb10c4.camel@suse.de>
-In-Reply-To: <2050374ac07e0330e505c4a1637256428adb10c4.camel@suse.de>
-From: Rob Herring <robh+dt@kernel.org>
-Date: Mon, 5 Aug 2019 13:23:05 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
-Message-ID: <CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
-Subject: Re: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA
-	addressable memory size
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc: phill@raspberryi.org, devicetree@vger.kernel.org,
-	"moderated list:BROADCOM BCM2835 ARM ARCHITECTURE"
-	<linux-rpi-kernel@lists.infradead.org>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Will Deacon <will@kernel.org>, Eric Anholt <eric@anholt.net>,
-	Marc Zyngier <marc.zyngier@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Frank Rowand <frowand.list@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-mm@kvack.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
-	Matthias Brugger <mbrugger@suse.com>, wahrenst@gmx.net,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
-	<linux-arm-kernel@lists.infradead.org>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -98,114 +74,151 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Aug 5, 2019 at 10:03 AM Nicolas Saenz Julienne
-<nsaenzjulienne@suse.de> wrote:
->
-> Hi Rob,
-> Thanks for the review!
->
-> On Fri, 2019-08-02 at 11:17 -0600, Rob Herring wrote:
-> > On Wed, Jul 31, 2019 at 9:48 AM Nicolas Saenz Julienne
-> > <nsaenzjulienne@suse.de> wrote:
-> > > Some SoCs might have multiple interconnects each with their own DMA
-> > > addressing limitations. This function parses the 'dma-ranges' on each of
-> > > them and tries to guess the maximum SoC wide DMA addressable memory
-> > > size.
-> > >
-> > > This is specially useful for arch code in order to properly setup CMA
-> > > and memory zones.
-> >
-> > We already have a way to setup CMA in reserved-memory, so why is this
-> > needed for that?
->
-> Correct me if I'm wrong but I got the feeling you got the point of the patch
-> later on.
+On Tue, 16 Jul 2019 11:30:14 +0200
+Auger Eric <eric.auger@redhat.com> wrote:
 
-No, for CMA I don't. Can't we already pass a size and location for CMA
-region under /reserved-memory. The only advantage here is perhaps the
-CMA range could be anywhere in the DMA zone vs. a fixed location.
+> Hi Jacob,
+> 
+> On 6/9/19 3:44 PM, Jacob Pan wrote:
+> > When VT-d driver runs in the guest, PASID allocation must be
+> > performed via virtual command interface. This patch registers a
+> > custom IOASID allocator which takes precedence over the default
+> > XArray based allocator. The resulting IOASID allocation will always
+> > come from the host. This ensures that PASID namespace is system-
+> > wide.
+> > 
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/Kconfig       |  1 +
+> >  drivers/iommu/intel-iommu.c | 60
+> > +++++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/intel-iommu.h |  2 ++ 3 files changed, 63
+> > insertions(+)
+> > 
+> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > index c40c4b5..5d1bc2a 100644
+> > --- a/drivers/iommu/Kconfig
+> > +++ b/drivers/iommu/Kconfig
+> > @@ -213,6 +213,7 @@ config INTEL_IOMMU_SVM
+> >  	bool "Support for Shared Virtual Memory with Intel IOMMU"
+> >  	depends on INTEL_IOMMU && X86
+> >  	select PCI_PASID
+> > +	select IOASID
+> >  	select MMU_NOTIFIER
+> >  	select IOASID
+> >  	help
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index 09b8ff0..5b84994 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -1711,6 +1711,8 @@ static void free_dmar_iommu(struct
+> > intel_iommu *iommu) if (ecap_prs(iommu->ecap))
+> >  			intel_svm_finish_prq(iommu);
+> >  	}
+> > +	ioasid_unregister_allocator(&iommu->pasid_allocator);
+> > +
+> >  #endif
+> >  }
+> >  
+> > @@ -4820,6 +4822,46 @@ static int __init
+> > platform_optin_force_iommu(void) return 1;
+> >  }
+> >  
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
+> > void *data) +{
+> > +	struct intel_iommu *iommu = data;
+> > +	ioasid_t ioasid;
+> > +
+> > +	/*
+> > +	 * VT-d virtual command interface always uses the full 20
+> > bit
+> > +	 * PASID range. Host can partition guest PASID range based
+> > on
+> > +	 * policies but it is out of guest's control.
+> > +	 */
+> > +	if (min < PASID_MIN || max > PASID_MAX)
+> > +		return -EINVAL;  
+> ioasid_alloc() does not handle that error value, use INVALID_IOASID?
+> > +
+> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
+> > +		return INVALID_IOASID;
+> > +
+> > +	return ioasid;
+> > +}
+> > +
+> > +static void intel_ioasid_free(ioasid_t ioasid, void *data)
+> > +{
+> > +	struct iommu_pasid_alloc_info *svm;
+> > +	struct intel_iommu *iommu = data;
+> > +
+> > +	if (!iommu)
+> > +		return;
+> > +	/*
+> > +	 * Sanity check the ioasid owner is done at upper layer,
+> > e.g. VFIO
+> > +	 * We can only free the PASID when all the devices are
+> > unbond.
+> > +	 */
+> > +	svm = ioasid_find(NULL, ioasid, NULL);
+> > +	if (!svm) {
+> > +		pr_warn("Freeing unbond IOASID %d\n", ioasid);
+> > +		return;
+> > +	}
+> > +	vcmd_free_pasid(iommu, ioasid);
+> > +}
+> > +#endif
+> > +
+> >  int __init intel_iommu_init(void)
+> >  {
+> >  	int ret = -ENODEV;
+> > @@ -4924,6 +4966,24 @@ int __init intel_iommu_init(void)
+> >  				       "%s", iommu->name);
+> >  		iommu_device_set_ops(&iommu->iommu,
+> > &intel_iommu_ops); iommu_device_register(&iommu->iommu);
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +		if (cap_caching_mode(iommu->cap) &&
+> > sm_supported(iommu)) {
+> > +			/*
+> > +			 * Register a custom ASID allocator if we
+> > are running
+> > +			 * in a guest, the purpose is to have a
+> > system wide PASID
+> > +			 * namespace among all PASID users.
+> > +			 * There can be multiple vIOMMUs in each
+> > guest but only
+> > +			 * one allocator is active. All vIOMMU
+> > allocators will
+> > +			 * eventually be calling the same host
+> > allocator.
+> > +			 */
+> > +			iommu->pasid_allocator.alloc =
+> > intel_ioasid_alloc;
+> > +			iommu->pasid_allocator.free =
+> > intel_ioasid_free;
+> > +			iommu->pasid_allocator.pdata = (void
+> > *)iommu;
+> > +			ret =
+> > ioasid_register_allocator(&iommu->pasid_allocator);
+> > +			if (ret)
+> > +				pr_warn("Custom PASID allocator
+> > registeration failed\n");  
+> what if it fails, don't you want a tear down path?
+> 
 
-> > > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > > ---
-> > >
-> > >  drivers/of/fdt.c       | 72 ++++++++++++++++++++++++++++++++++++++++++
-> > >  include/linux/of_fdt.h |  2 ++
-> > >  2 files changed, 74 insertions(+)
-> > >
-> > > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> > > index 9cdf14b9aaab..f2444c61a136 100644
-> > > --- a/drivers/of/fdt.c
-> > > +++ b/drivers/of/fdt.c
-> > > @@ -953,6 +953,78 @@ int __init early_init_dt_scan_chosen_stdout(void)
-> > >  }
-> > >  #endif
-> > >
-> > > +/**
-> > > + * early_init_dt_dma_zone_size - Look at all 'dma-ranges' and provide the
-> > > + * maximum common dmable memory size.
-> > > + *
-> > > + * Some devices might have multiple interconnects each with their own DMA
-> > > + * addressing limitations. For example the Raspberry Pi 4 has the
-> > > following:
-> > > + *
-> > > + * soc {
-> > > + *     dma-ranges = <0xc0000000  0x0 0x00000000  0x3c000000>;
-> > > + *     [...]
-> > > + * }
-> > > + *
-> > > + * v3dbus {
-> > > + *     dma-ranges = <0x00000000  0x0 0x00000000  0x3c000000>;
-> > > + *     [...]
-> > > + * }
-> > > + *
-> > > + * scb {
-> > > + *     dma-ranges = <0x0 0x00000000  0x0 0x00000000  0xfc000000>;
-> > > + *     [...]
-> > > + * }
-> > > + *
-> > > + * Here the area addressable by all devices is [0x00000000-0x3bffffff].
-> > > Hence
-> > > + * the function will write in 'data' a size of 0x3c000000.
-> > > + *
-> > > + * Note that the implementation assumes all interconnects have the same
-> > > physical
-> > > + * memory view and that the mapping always start at the beginning of RAM.
-> >
-> > Not really a valid assumption for general code.
->
-> Fair enough. On my defence I settled on that assumption after grepping all dts
-> and being unable to find a board that behaved otherwise.
->
-> [...]
->
-> > It's possible to have multiple levels of nodes and dma-ranges. You need to
-> > handle that case too. Doing that and handling differing address translations
-> > will be complicated.
->
-> Understood.
->
-> > IMO, I'd just do:
-> >
-> > if (of_fdt_machine_is_compatible(blob, "brcm,bcm2711"))
-> >     dma_zone_size = XX;
-> >
-> > 2 lines of code is much easier to maintain than 10s of incomplete code
-> > and is clearer who needs this. Maybe if we have dozens of SoCs with
-> > this problem we should start parsing dma-ranges.
->
-> FYI that's what arm32 is doing at the moment and was my first instinct. But it
-> seems that arm64 has been able to survive so far without any machine specific
-> code and I have the feeling Catalin and Will will not be happy about this
-> solution. Am I wrong?
+Good point, we need to disable PASID usage, i.e. disable scalable mode
+if there is no virtual command based PASID allocator in the guest.
 
-No doubt. I'm fine if the 2 lines live in drivers/of/.
+Sorry for the late reply.
 
-Note that I'm trying to reduce the number of early_init_dt_scan_*
-calls from arch code into the DT code so there's more commonality
-across architectures in the early DT scans. So ideally, this can all
-be handled under early_init_dt_scan() call.
+> Thanks
+> 
+> Eric
+>  [...]  
 
-Rob
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
