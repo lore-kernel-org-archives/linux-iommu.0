@@ -2,81 +2,65 @@ Return-Path: <SRS0=bP0W=WC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB7BC433FF
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 16:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 125F5C433FF
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 18:12:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 70BEA20B1F
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 16:48:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="eZwyX0IY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70BEA20B1F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=armlinux.org.uk
+	by mail.kernel.org (Postfix) with ESMTPS id E65E6214C6
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 18:12:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E65E6214C6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3A404E95;
-	Tue,  6 Aug 2019 16:48:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 921FAE7F;
+	Tue,  6 Aug 2019 18:12:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D231DD4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 91A9DE59
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 16:48:28 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 198FD4C3
+	Tue,  6 Aug 2019 18:12:20 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AD98589D
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 16:48:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=2xbU9eGH8Hn5AbLibXFA8i2BhIbjPGsDxSHEGclO7DY=;
-	b=eZwyX0IYZ2o1mynwE2Hz8BgOn
-	1IYSUKBfERotJIfG9zTtzX0bg4i08mQ5mMz6MCpMov84N9NI9dKaErTO39e8hveags+aR+z+d61qP
-	W3w6jej9QozJBNVBhiIvdTj7/8x21XG296MB4TCw5PA3XToUIUHcmZVo2bgcj29giaXjSaRwo5m1i
-	apKc2Nx+v1j2CSPgt0VzhW9CxMtyl+lhnoPIf1/QpSd7MesE+kISmudz2+Jf9n3t9voIsXSyen3WY
-	+ze92NX2gq4pRI9lO51qHr+H7EmvaTCALnfcgZUyl64IRxEtq2PKmgi/japG58C1Z2+kdJ8eNmMbW
-	Nmv4H0fpQ==;
-Received: from shell.armlinux.org.uk
-	([2002:4e20:1eda:1:5054:ff:fe00:4ec]:49228)
-	by pandora.armlinux.org.uk with esmtpsa
-	(TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.90_1)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1hv2dF-0000TH-Ou; Tue, 06 Aug 2019 17:48:17 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1hv2dE-0000fq-Mb; Tue, 06 Aug 2019 17:48:16 +0100
-Date: Tue, 6 Aug 2019 17:48:16 +0100
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] dma-mapping: fix page attributes for dma_mmap_*
-Message-ID: <20190806164816.GE1330@shell.armlinux.org.uk>
-References: <20190801142118.21225-1-hch@lst.de>
-	<20190801142118.21225-2-hch@lst.de>
-	<20190801162305.3m32chycsdjmdejk@willie-the-truck>
-	<20190801163457.GB26588@lst.de>
-	<20190801164411.kmsl4japtfkgvzxe@willie-the-truck>
-	<20190802081441.GA9725@lst.de>
-	<20190802103803.3qrbhqwxlasojsco@willie-the-truck>
-	<20190803064812.GA29746@lst.de>
-	<20190806160854.htk67msiyadlrl4m@willie-the-truck>
-	<20190806164503.GD1330@shell.armlinux.org.uk>
+	Tue,  6 Aug 2019 18:12:19 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id A6E40AEF6;
+	Tue,  6 Aug 2019 18:12:17 +0000 (UTC)
+Message-ID: <12eb3aba207c552e5eb727535e7c4f08673c4c80.camel@suse.de>
+Subject: Re: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA
+	addressable memory size
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Rob Herring <robh+dt@kernel.org>
+Date: Tue, 06 Aug 2019 20:12:10 +0200
+In-Reply-To: <CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
+References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
+	<20190731154752.16557-4-nsaenzjulienne@suse.de>
+	<CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
+	<2050374ac07e0330e505c4a1637256428adb10c4.camel@suse.de>
+	<CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
+User-Agent: Evolution 3.32.4 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190806164503.GD1330@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Shawn Anastasio <shawn@anastas.io>, Michael Ellerman <mpe@ellerman.id.au>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+Cc: phill@raspberryi.org, devicetree@vger.kernel.org, "moderated list:BROADCOM
+	BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Will Deacon <will@kernel.org>, Eric Anholt <eric@anholt.net>,
+	Marc Zyngier <marc.zyngier@arm.com>,
 	Catalin Marinas <catalin.marinas@arm.com>,
-	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
+	Frank Rowand <frowand.list@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-mm@kvack.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Matthias Brugger <mbrugger@suse.com>, wahrenst@gmx.net,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -89,119 +73,204 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============0114187181580817311=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gVHVlLCBBdWcgMDYsIDIwMTkgYXQgMDU6NDU6MDNQTSArMDEwMCwgUnVzc2VsbCBLaW5nIC0g
-QVJNIExpbnV4IGFkbWluIHdyb3RlOgo+IE9uIFR1ZSwgQXVnIDA2LCAyMDE5IGF0IDA1OjA4OjU0
-UE0gKzAxMDAsIFdpbGwgRGVhY29uIHdyb3RlOgo+ID4gT24gU2F0LCBBdWcgMDMsIDIwMTkgYXQg
-MDg6NDg6MTJBTSArMDIwMCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gPiA+IE9uIEZyaSwg
-QXVnIDAyLCAyMDE5IGF0IDExOjM4OjAzQU0gKzAxMDAsIFdpbGwgRGVhY29uIHdyb3RlOgo+ID4g
-PiA+IAo+ID4gPiA+IFNvIHRoaXMgYm9pbHMgZG93biB0byBhIHRlcm1pbm9sb2d5IG1pc21hdGNo
-LiBUaGUgQXJtIGFyY2hpdGVjdHVyZSBkb2Vzbid0IGhhdmUKPiA+ID4gPiBhbnl0aGluZyBjYWxs
-ZWQgIndyaXRlIGNvbWJpbmUiLCBzbyBpbiBMaW51eCB3ZSBpbnN0ZWFkIHByb3ZpZGUgd2hhdCB0
-aGUgQXJtCj4gPiA+ID4gYXJjaGl0ZWN0dXJlIGNhbGxzICJOb3JtYWwgbm9uLWNhY2hlYWJsZSIg
-bWVtb3J5IGZvciBwZ3Byb3Rfd3JpdGVjb21iaW5lKCkuCj4gPiA+ID4gQW1vbmdzdCBvdGhlciB0
-aGluZ3MsIHRoaXMgbWVtb3J5IHR5cGUgcGVybWl0cyBzcGVjdWxhdGlvbiwgdW5hbGlnbmVkIGFj
-Y2Vzc2VzCj4gPiA+ID4gYW5kIG1lcmdpbmcgb2Ygd3JpdGVzLiBJIGZvdW5kIHNvbWV0aGluZyBp
-biB0aGUgYXJjaGl0ZWN0dXJlIHNwZWMgYWJvdXQKPiA+ID4gPiBub24tY2FjaGFibGUgbWVtb3J5
-LCBidXQgaXQncyB3cml0dGVuIGluIEFybWdsaXNoWzFdLgo+ID4gPiA+IAo+ID4gPiA+IHBncHJv
-dF9ub25jYWNoZWQoKSwgb24gdGhlIG90aGVyIGhhbmQsIHByb3ZpZGVzIHdoYXQgdGhlIGFyY2hp
-dGVjdHVyZSBjYWxscwo+ID4gPiA+IFN0cm9uZ2x5IE9yZGVyZWQgb3IgRGV2aWNlLW5HblJuRSBt
-ZW1vcnkuIFRoaXMgaXMgaW50ZW5kZWQgZm9yIG1hcHBpbmcgTU1JTwo+ID4gPiA+IChpLmUuIFBD
-SSBjb25maWcgc3BhY2UpIGFuZCB0aGVyZWZvcmUgZm9yYmlkcyBzcGVjdWxhdGlvbiwgcHJlc2Vy
-dmVzIGFjY2Vzcwo+ID4gPiA+IHNpemUsIHJlcXVpcmVzIHN0cmljdCBhbGlnbm1lbnQgYW5kIGFs
-c28gZm9yY2VzIHdyaXRlIHJlc3BvbnNlcyB0byBjb21lIGZyb20KPiA+ID4gPiB0aGUgZW5kcG9p
-bnQuCj4gPiA+ID4gCj4gPiA+ID4gSSB0aGluayB0aGUgbmFtaW5nIG1pc21hdGNoIGlzIGhpc3Rv
-cmljYWwsIGJ1dCBvbiBhcm02NCB3ZSB3YW50ZWQgdG8gdXNlIHRoZQo+ID4gPiA+IHNhbWUgbmFt
-ZXMgYXMgYXJtMzIgc28gdGhhdCBhbnkgZHJpdmVycyB1c2luZyB0aGVzZSB0aGluZ3MgZGlyZWN0
-bHkgd291bGQgZ2V0Cj4gPiA+ID4gdGhlIHNhbWUgYmVoYXZpb3VyLgo+ID4gPiAKPiA+ID4gVGhh
-dCBhbGwgbWFrZXMgc2Vuc2UsIGJ1dCBpdCB0b3RhbGx5IG5lZWRzIGEgY29tbWVudC4gIEknbGwg
-dHJ5IHRvIGRyYWZ0Cj4gPiA+IG9uZSBiYXNlZCBvbiB0aGlzLiAgSSd2ZSBhbHNvIGxvb2tlZCBh
-dCB0aGUgYXJtMzIgY29kZSBhIGJpdCBtb3JlLCBhbmQKPiA+ID4gaXQgc2VlbXMgYXJtIGFsd2F5
-cyAoPykgc3VwcG9ydGVkIE5vcm1hbCBub24tY2FjaGVhYmxlIGF0dHJpYnV0ZSwgYnV0Cj4gPiA+
-IExpbnV4IG9ubHkgb3B0aW9uYWxseSB1c2VzIGl0IGZvciBhcm0gdjYrIGJlY2F1c2Ugb2YgZmVh
-cnMgb2YgZHJpdmVycwo+ID4gPiBtaXNzaW5nIGJhcnJpZXJzLgo+ID4gCj4gPiBJIHRoaW5rIGl0
-IHdhcyBhbHNvIHRvIGRvIHdpdGggYWxpYXNpbmcsIGJ1dCBJIGRvbid0IHJlY2FsbCBhbGwgb2Yg
-dGhlCj4gPiBkZXRhaWxzLgo+IAo+IEFSTXY2KyBpcyB3aGVyZSB0aGUgYXJjaGl0ZWN0dXJlIHNp
-Z25pZmljYW50bHkgY2hhbmdlZCB0byBpbnRyb2R1Y2UKPiB0aGUgaWRlYSBvZiBbTm9ybWFsLCBE
-ZXZpY2UsIFN0cm9uZ2x5IE9yZGVyZWRdIHdoZXJlIE5vcm1hbCBoYXMgdGhlCj4gY2FjaGUgYXR0
-cmlidXRlcy4KPiAKPiBCZWZvcmUgdGhhdCwgd2UgaGFkIGp1c3QgInVuY2FjaGVkL3VuYnVmZmVy
-ZWQsIHVuY2FjaGVkL2J1ZmZlcmVkLAo+IGNhY2hlZC91bmJ1ZmZlcmVkLCBjYWNoZWQvYnVmZmVy
-ZWQiIG1vZGVzLgo+IAo+IFRoZSB3cml0ZSBidWZmZXIgKGVuYWJsZWQgYnkgYnVmZmVyZWQgbW9k
-ZXMpIGhhcyBubyBhcmNoaXRlY3RlZAo+IGd1YXJhbnRlZXMgYWJvdXQgaG93IGxvbmcgd3JpdGVz
-IHdpbGwgc2l0IGluIGl0LCBhbmQgdGhlcmUgaXMgb25seQo+IHRoZSAiZHJhaW4gd3JpdGUgYnVm
-ZmVyIiBpbnN0cnVjdGlvbiB0byBwdXNoIHdyaXRlcyBvdXQuCj4gCj4gVXAgdG8gYW5kIGluY2x1
-ZGluZyBBUk12NSwgd2UgdG9vayB0aGUgZWFzeSBhcHByb2FjaCBvZiBqdXN0IHVzaW5nCj4gdGhl
-ICJ1bmNhY2hlZC91bmJ1ZmZlcmVkIiBtb2RlIHNpbmNlIHRoYXQgaXMgKGEpIHRoZSBzYWZlc3Qs
-IGFuZCAoYikKPiBhdm9pZHMgd3JpdGUgYnVmZmVycyB0aGF0IGFsaWFzIHdoZW4gdGhlcmUgYXJl
-IG11bHRpcGxlIGRpZmZlcmVudAo+IG1hcHBpbmdzLgo+IAo+IFdlIGNvdWxkIGhhdmUgdXNlZCBh
-IGRpZmZlcmVudCBhcHByb2FjaCwgbWFraW5nIGFsbCBJTyB3cml0ZXMgY29udGFpbgo+IGEgImRy
-YWluIHdyaXRlIGJ1ZmZlciIgaW5zdHJ1Y3Rpb24sIGFuZCBtYXAgRE1BIG1lbW9yeSBhcyAiYnVm
-ZmVyZWQiLAo+IGJ1dCBhcyB0aGVyZSB3ZXJlIG5vIExpbnV4IGJhcnJpZXJzIGRlZmluZWQgdG8g
-b3JkZXIgbWVtb3J5IGFjY2Vzc2VzCj4gdG8gRE1BIG1lbW9yeSAoc28sIGZvciBleGFtcGxlLCBy
-aW5nIGJ1ZmZlcnMgY2FuIGJlIHVwZGF0ZWQgaW4gdGhlCj4gY29ycmVjdCBvcmRlcikgYmFjayBp
-biB0aG9zZSBkYXlzLCB1c2luZyB0aGUgdW5jYWNoZWQvdW5idWZmZXJlZCBtb2RlCj4gd2FzIHRo
-ZSBzYW5lc3QgYW5kIG1vc3QgcmVsaWFibGUgc29sdXRpb24uCj4gCj4gPiAKPiA+ID4gVGhlIG90
-aGVyIHJlYWxseSB3ZWlyZCB0aGluZ3MgaXMgdGhhdCBpbiBhcm0zMgo+ID4gPiBwZ3Byb3RfZG1h
-Y29oZXJlbnQgaW5jdWRlcyB0aGUgTF9QVEVfWE4gYml0LCB3aGljaCBmcm9tIG15IHVuZGVyc3Rh
-bmRpbmcKPiA+ID4gaXMgdGhlIG5vLWV4ZWN0dXJlIGJpdCwgYnV0IHBncHJvdF93cml0ZWNvbWJp
-bmUgZG9lcyBub3QuICBUaGlzIHNlZW1zIHRvCj4gPiA+IG5vdCB2ZXJ5IHVuaW50ZW50aW9uYWwu
-ICBTbyBtaW51cyB0aGF0IHRoZSB3aG9sZSBETUFfQVRUUl9XUklURV9DT01C0IZORQo+ID4gPiBz
-ZWVtcyB0byBiZSBhYm91dCBmbGFnZ2luZyBvbGQgYXJtIHNwZWNpZmljIGRyaXZlcnMgYXMgaGF2
-aW5nIHRoZSBwcm9wZXIKPiA+ID4gYmFycmllcnMgaW4gcGxhY2VzIGFuZCBvdGhlcndpc2UgaXMg
-YSBuby1vcC4KPiA+IAo+ID4gSSB0aGluayBpdCBvbmx5IG1hdHRlcnMgZm9yIEFybXY3IENQVXMs
-IGJ1dCB5ZXMsIHdlIHNob3VsZCBwcm9iYWJseSBiZQo+ID4gc2V0dGluZyBMX1BURV9YTiBmb3Ig
-Ym90aCBvZiB0aGVzZSBtZW1vcnkgdHlwZXMuCj4gCj4gQ29udmVudGlvbmFsbHksIHBncHJvdF93
-cml0ZWNvbWJpbmUoKSBoYXMgb25seSBiZWVuIHVzZWQgdG8gY2hhbmdlCj4gdGhlIG1lbW9yeSB0
-eXBlIGFuZCBub3QgdGhlIHBlcm1pc3Npb25zLiAgU2luY2Ugd3JpdGVjb21iaW5lIG1lbW9yeQo+
-IGlzIHN0aWxsIGNhcGFibGUgb2YgYmVpbmcgZXhlY3V0ZWQsIEkgZG9uJ3Qgc2VlIGFueSByZWFz
-b24gdG8gc2V0IFhOCj4gZm9yIGl0Lgo+IAo+IElmIHRoZSB1c2VyIHdpc2hlcyB0byBtbWFwKCkg
-dXNpbmcgUFJPVF9SRUFEfFBST1RfRVhFQywgdGhlbiBpcyB0aGVyZQo+IHJlYWxseSBhIHJlYXNv
-biBmb3Igd3JpdGVjb21iaW5lIHRvIHNldCBYTiBvdmVycmlkaW5nIHRoZSB1c2VyPwo+IAo+IFRo
-YXQgc2FpZCwgcGdwcm90X3dyaXRlY29tYmluZSgpIGlzIG1vc3RseSB1c2VkIGZvciBmcmFtZWJ1
-ZmZlcnMsIHdoaWNoCj4gYXJndWFibHkgc2hvdWxkbid0IGJlIGV4ZWN1dGFibGUgYW55d2F5IC0g
-YnV0IHdobydkIHdhbnQgdG8gbW1hcCgpIHRoZQo+IGZyYW1lYnVmZmVyIHdpdGggUFJPVF9FWEVD
-Pwo+IAo+ID4gCj4gPiA+IEhlcmUgaXMgbXkgdGVudGF0aXZlIHBsYW46Cj4gPiA+IAo+ID4gPiAg
-LSByZXNwaW4gdGhpcyBwYXRjaCB3aXRoIGEgc21hbGwgZml4IHRvIGhhbmRsZSB0aGUKPiA+ID4g
-ICAgRE1BX0FUVFJfTk9OX0NPTlNJU1RFTlQgKGFzIGluIGlnbm9yZSBpdCB1bmxlc3MgYWN0dWFs
-bHkgc3VwcG9ydGVkKSwKPiA+ID4gICAgYnV0IGtlZXAgdGhlIG5hbWUgYXMtaXMgdG8gYXZvaWQg
-Y2h1cm4uICBUaGlzIHNob3VsZCBhbGxvdyA1LjMKPiA+ID4gICAgaW5jbHVzaW9uIGFuZCBiYWNr
-cG9ydHMKPiA+ID4gIC0gcmVtb3ZlIERNQV9BVFRSX1dSSVRFX0NPTUJJTkUgc3VwcG9ydCBmcm9t
-IG1pcHMsIHByb2JhYmx5IGFsc28gNS4zCj4gPiA+ICAgIG1hdGVyaWFsLgo+ID4gPiAgLSBtb3Zl
-IGFsbCBhcmNoaXRlY3R1cmVzIGJ1dCBhcm0gb3ZlciB0byBqdXN0IGRlZmluZQo+ID4gPiAgICBw
-Z3Byb3RfZG1hY29oZXJlbnQsIGluY2x1ZGluZyBhIGNvbW1lbnQgd2l0aCB0aGUgYWJvdmUgZXhw
-bGFuYXRpb24KPiA+ID4gICAgZm9yIGFybTY0Lgo+ID4gCj4gPiBUaGF0IHdvdWxkIGJlIGdyZWF0
-LCB0aGFua3MuCj4gPiAKPiA+ID4gIC0gbWFrZSBETUFfQVRUUl9XUklURV9DT01CSU5FIGEgbm8t
-b3AgYW5kIHNjaGVkdWxlIGl0IGZvciByZW1vdmFsLAo+ID4gPiAgICB0aHVzIHJlbW92aW5nIHRo
-ZSBsYXN0IGluc3RhbmNlcyBvZiBhcmNoX2RtYV9tbWFwX3BncHJvdAo+ID4gCj4gPiBBbGwgc291
-bmRzIGdvb2QgdG8gbWUsIGFsdGhvdWdoIEkgc3VwcG9zZSAzMi1iaXQgQXJtIHBsYXRmb3JtcyB3
-aXRob3V0Cj4gPiBDT05GSUdfQVJNX0RNQV9NRU1fQlVGRkVSQUJMRSBtYXkgcnVuIGludG8gaXNz
-dWVzIGlmIERNQV9BVFRSX1dSSVRFX0NPTUJJTkUKPiA+IGRpc2FwcGVhcnMuIE9ubHkgb25lIHdh
-eSB0byBmaW5kIG91dC4uLgo+IAo+IExvb2tpbmcgYXQgdGhlIHJlc3VsdHMgb2YgZ3JlcCwgSSB0
-aGluayBvbmx5IE9NQVAyKyBhbmQgRXh5bm9zIG1heSBiZQo+IGFmZmVjdGVkLgo+IAo+IEhvd2V2
-ZXIsIHJlbW92aW5nIHdyaXRlY29tYmluZSBzdXBwb3J0IGZyb20gdGhlIERNQSBBUEkgaXMgZ29p
-bmcgdG8KPiBoYXZlIGEgaHVnZSBpbXBhY3QgZm9yIGZyYW1lYnVmZmVycyBvbiBlYXJsaWVyIEFS
-TXMgLSB0aGF0J3Mgd2hlcmUgd2UKPiBkbyBleHBlY3QgZnJhbWVidWZmZXJzIHRvIGJlIG1hcHBl
-ZCAidW5jYWNoZWQvYnVmZmVyZWQiIGZvciBwZXJmb3JtYW5jZQo+IHJlYXNvbnMgYW5kIG5vdCAi
-dW5jYWNoZWQvdW5idWZmZXJlZCIuICBJdCdzIHF1aXRlIGxpdGVyYWxseSB0aGUKPiBkaWZmZXJl
-bmNlIGJldHdlZW4gY29uc29sZSBzY3JvbGxpbmcgYmVpbmcgdXNhYmxlIGFuZCB0b3RhbGx5IHVu
-dXNhYmxlLgo+IAo+IEdpdmVuIHdoYXQgSSd2ZSBzYWlkIGFib3ZlLCBzd2l0Y2hpbmcgdG8gdXNp
-bmcgYnVmZmVyZWQgbW9kZSBmb3Igbm9ybWFsCj4gRE1BIG1hcHBpbmdzIGlzIGRhdGEtY29ycnVw
-dGluZyByaXNreSAtIGFzIGluIHlvdXIgZmlsZXN5c3RlbSBjb3VsZCBnZXQKPiBmcmllZC4gIEkg
-ZG9uJ3QgdGhpbmsgd2Ugc2hvdWxkIHBsYXkgZmFzdCBhbmQgbG9vc2Ugd2l0aCBwZW9wbGUncyBk
-YXRhCj4gYnkgcmFuZG9tbHkgY2hhbmdpbmcgdGhhdCAiYmVjYXVzZSB3ZSdkIGxpa2UgdG8iLCBh
-bmQgSSBkb24ndCBzZWUgdGhhdAo+IHNjcmV3aW5nIHRoZSBjb25zb2xlIGlzIHJlYWxseSBhbiBv
-cHRpb24gZWl0aGVyLgoKU29ycnksIEkgZm9yZ290IHRvIGV4cGxhaW4gLSB0aGUgcmVhc29uIGlz
-IGRtYV9hbGxvY193cml0ZWNvbWJpbmUoKQppbnRlcm5hbGx5IHVzZXMgRE1BX0FUVFJfV1JJVEVf
-Q09NQklORSwgd2hpY2ggSSdkIGZvcmdvdHRlbiBhYm91dAp3aGVuIGdyZXBwaW5nIC0gc28gdGhl
-cmUncyBwb3RlbnRpYWxseSB3YXkgbW9yZSB1c2VycyB0aGFuIG15IGdyZXBzCmFib3ZlIGZvdW5k
-LgoKLS0gClJNSydzIFBhdGNoIHN5c3RlbTogaHR0cHM6Ly93d3cuYXJtbGludXgub3JnLnVrL2Rl
-dmVsb3Blci9wYXRjaGVzLwpGVFRDIGJyb2FkYmFuZCBmb3IgMC44bWlsZSBsaW5lIGluIHN1YnVy
-YmlhOiBzeW5jIGF0IDEyLjFNYnBzIGRvd24gNjIya2JwcyB1cApBY2NvcmRpbmcgdG8gc3BlZWR0
-ZXN0Lm5ldDogMTEuOU1icHMgZG93biA1MDBrYnBzIHVwCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+
+--===============0114187181580817311==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-BWDWLSX5DbZPpBq0FAfV"
+
+
+--=-BWDWLSX5DbZPpBq0FAfV
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Rob,
+
+On Mon, 2019-08-05 at 13:23 -0600, Rob Herring wrote:
+> On Mon, Aug 5, 2019 at 10:03 AM Nicolas Saenz Julienne
+> <nsaenzjulienne@suse.de> wrote:
+> > Hi Rob,
+> > Thanks for the review!
+> >=20
+> > On Fri, 2019-08-02 at 11:17 -0600, Rob Herring wrote:
+> > > On Wed, Jul 31, 2019 at 9:48 AM Nicolas Saenz Julienne
+> > > <nsaenzjulienne@suse.de> wrote:
+> > > > Some SoCs might have multiple interconnects each with their own DMA
+> > > > addressing limitations. This function parses the 'dma-ranges' on ea=
+ch of
+> > > > them and tries to guess the maximum SoC wide DMA addressable memory
+> > > > size.
+> > > >=20
+> > > > This is specially useful for arch code in order to properly setup C=
+MA
+> > > > and memory zones.
+> > >=20
+> > > We already have a way to setup CMA in reserved-memory, so why is this
+> > > needed for that?
+> >=20
+> > Correct me if I'm wrong but I got the feeling you got the point of the =
+patch
+> > later on.
+>=20
+> No, for CMA I don't. Can't we already pass a size and location for CMA
+> region under /reserved-memory. The only advantage here is perhaps the
+> CMA range could be anywhere in the DMA zone vs. a fixed location.
+
+Now I get it, sorry I wasn't aware of that interface.
+
+Still, I'm not convinced it matches RPi's use case as this would hard-code
+CMA's size. Most people won't care, but for the ones that do, it's nicer to
+change the value from the kernel command line than editing the dtb. I get t=
+hat
+if you need to, for example, reserve some memory for the video to work, it'=
+s
+silly not to hard-code it. Yet due to the board's nature and users base I s=
+ay
+it's important to favor flexibility. It would also break compatibility with
+earlier versions of the board and diverge from the downstream kernel behavi=
+our.
+Which is a bigger issue than it seems as most users don't always understand
+which kernel they are running and unknowingly copy configuration options fr=
+om
+forums.
+
+As I also need to know the DMA addressing limitations to properly configure
+memory zones and dma-direct. Setting up the proper CMA constraints during t=
+he
+arch's init will be trivial anyway.
+
+> > > IMO, I'd just do:
+> > >=20
+> > > if (of_fdt_machine_is_compatible(blob, "brcm,bcm2711"))
+> > >     dma_zone_size =3D XX;
+> > >=20
+> > > 2 lines of code is much easier to maintain than 10s of incomplete cod=
+e
+> > > and is clearer who needs this. Maybe if we have dozens of SoCs with
+> > > this problem we should start parsing dma-ranges.
+> >=20
+> > FYI that's what arm32 is doing at the moment and was my first instinct.=
+ But
+> > it
+> > seems that arm64 has been able to survive so far without any machine
+> > specific
+> > code and I have the feeling Catalin and Will will not be happy about th=
+is
+> > solution. Am I wrong?
+>=20
+> No doubt. I'm fine if the 2 lines live in drivers/of/.
+>=20
+> Note that I'm trying to reduce the number of early_init_dt_scan_*
+> calls from arch code into the DT code so there's more commonality
+> across architectures in the early DT scans. So ideally, this can all
+> be handled under early_init_dt_scan() call.
+
+How does this look? (I'll split it in two patches and add a comment explain=
+ing
+why dt_dma_zone_size is needed)
+
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index f2444c61a136..1395be40b722 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -30,6 +30,8 @@
+=20
+ #include "of_private.h"
+=20
++u64 dt_dma_zone_size __ro_after_init;
++
+ /*
+  * of_fdt_limit_memory - limit the number of regions in the /memory node
+  * @limit: maximum entries
+@@ -802,6 +805,11 @@ const char * __init of_flat_dt_get_machine_name(void)
+        return name;
+ }
+=20
++static const int __init of_fdt_machine_is_compatible(char *name)
++{
++       return of_compat_cmp(of_flat_dt_get_machine_name(), name, strlen(na=
+me));
++}
++
+ /**
+  * of_flat_dt_match_machine - Iterate match tables to find matching machin=
+e.
+  *
+@@ -1260,6 +1268,14 @@ void __init early_init_dt_scan_nodes(void)
+        of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+ }
+=20
++void __init early_init_dt_get_dma_zone_size(void)
++{
++       dt_dma_zone_size =3D 0;
++
++       if (of_fdt_machine_is_compatible("brcm,bcm2711"))
++               dt_dma_zone_size =3D 0x3c000000;
++}
++
+ bool __init early_init_dt_scan(void *params)
+ {
+        bool status;
+@@ -1269,6 +1285,7 @@ bool __init early_init_dt_scan(void *params)
+                return false;
+=20
+        early_init_dt_scan_nodes();
++       early_init_dt_get_dma_zone_size();
+        return true;
+ }
+diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+index 2ad36b7bd4fa..b5a9f685de14 100644
+--- a/include/linux/of_fdt.h
++++ b/include/linux/of_fdt.h
+@@ -27,6 +27,8 @@ extern void *of_fdt_unflatten_tree(const unsigned long *b=
+lob,
+                                   struct device_node *dad,
+                                   struct device_node **mynodes);
+=20
++extern u64 dt_dma_zone_size __ro_after_init;
++
+ /* TBD: Temporary export of fdt globals - remove when code fully merged */
+ extern int __initdata dt_root_addr_cells;
+ extern int __initdata dt_root_size_cells;
+
+=20
+Regards,
+Nicolas
+
+
+
+--=-BWDWLSX5DbZPpBq0FAfV
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl1JwvoACgkQlfZmHno8
+x/5f/QgAsruOFQ8PvpoSHvG6DlzmdqSfRJK2v/9MyF59tpuvGoJUQggc4SObGIz8
+/Nk2Md0j7gXdLjr+t1elpo6xBmJxLWhZPw7HfIx1ejSHv2QK+gJopm/BJ54gV8cl
+oUh+Ed8eD1FBlYszwI3YRaKY/HXcQaZn97el4/AaCbztxkkAg1xEH/1L6XPwf2FC
+j9/TMxpFyE6aWdQ5GtOzxL1RVmzOEYgpvsr+mKxOFHX9V5+8UXNnLDRDjR36Ms78
+NVgFECrTr4rxiU2UJalTgyyPtch73aj8xMNKwHkOyiagITz9PhesPdVYy9sLWTM+
+KTFFdX5XzhKpZAHyjtBWPWEKO34aqg==
+=JTdS
+-----END PGP SIGNATURE-----
+
+--=-BWDWLSX5DbZPpBq0FAfV--
+
+
+--===============0114187181580817311==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0114187181580817311==--
+
