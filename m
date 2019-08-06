@@ -2,65 +2,65 @@ Return-Path: <SRS0=bP0W=WC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125F5C433FF
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 18:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B0DC433FF
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 19:39:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E65E6214C6
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 18:12:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E65E6214C6
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id E42B820880
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 19:39:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=anastas.io header.i=@anastas.io header.b="VF/YxkoG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E42B820880
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 921FAE7F;
-	Tue,  6 Aug 2019 18:12:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8BD3BD7C;
+	Tue,  6 Aug 2019 19:39:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 91A9DE59
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 02B03CB0
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 18:12:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AD98589D
+	Tue,  6 Aug 2019 19:39:14 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from alpha.anastas.io (alpha.anastas.io [104.248.188.109])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E324A829
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 18:12:19 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id A6E40AEF6;
-	Tue,  6 Aug 2019 18:12:17 +0000 (UTC)
-Message-ID: <12eb3aba207c552e5eb727535e7c4f08673c4c80.camel@suse.de>
-Subject: Re: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA
-	addressable memory size
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Rob Herring <robh+dt@kernel.org>
-Date: Tue, 06 Aug 2019 20:12:10 +0200
-In-Reply-To: <CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
-References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
-	<20190731154752.16557-4-nsaenzjulienne@suse.de>
-	<CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
-	<2050374ac07e0330e505c4a1637256428adb10c4.camel@suse.de>
-	<CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
-User-Agent: Evolution 3.32.4 
+	Tue,  6 Aug 2019 19:39:12 +0000 (UTC)
+Received: from authenticated-user (alpha.anastas.io [104.248.188.109])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by alpha.anastas.io (Postfix) with ESMTPSA id 2FB9F7F91A;
+	Tue,  6 Aug 2019 14:39:08 -0500 (CDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=anastas.io; s=mail;
+	t=1565120352; bh=HXAHKgiQsfJr2nTxca5W5Al0GVPsqRNPo3FiFtTBIoc=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=VF/YxkoGj8ca1JQcWi5sYSQVWRKBYyZtR9HUzDE+ew2GrVyUCIeEXZFt6rVd6W6wg
+	vtSTCcBTAjJH0ZszPuJKYt0eFgEDwICoBRPS0wGBydBz0++9N23+H7Ed3B5qGV1VMC
+	LvZrV59lni9MLs/JcvnzGbRKNJzNv+d8Qk4W2RBQao6w281+TddI5F/TzpRT8SkiIO
+	nhUyXU745H9K0uufXJpjZAa7VpAkGr/JSB0EdEr/q/xdFRPa19oitpAqc+ktLxg9Is
+	kcvPFe0HGSSTtWUCJqLE5dUJRbo5Vz5U2m6kzrfDAVngIfOzeFSuQSEh/otww7M/bt
+	SjEGu4AGs8jvg==
+Subject: Re: [PATCH 1/2] dma-mapping: fix page attributes for dma_mmap_*
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+References: <20190805080145.5694-1-hch@lst.de>
+	<20190805080145.5694-2-hch@lst.de>
+Message-ID: <7df95ffb-6df3-b118-284c-ee32cad81199@anastas.io>
+Date: Tue, 6 Aug 2019 21:39:06 +0200
 MIME-Version: 1.0
-Cc: phill@raspberryi.org, devicetree@vger.kernel.org, "moderated list:BROADCOM
-	BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Will Deacon <will@kernel.org>, Eric Anholt <eric@anholt.net>,
-	Marc Zyngier <marc.zyngier@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Frank Rowand <frowand.list@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-mm@kvack.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
-	Matthias Brugger <mbrugger@suse.com>, wahrenst@gmx.net,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
-	<linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20190805080145.5694-2-hch@lst.de>
+Content-Language: en-US
+Cc: Gavin Li <git@thegavinli.com>, linux-kernel@vger.kernel.org,
+	Will Deacon <will@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>,
+	linuxppc-dev@lists.ozlabs.org,
+	Russell King <linux@armlinux.org.uk>, linux-mips@vger.kernel.org,
+	Paul Burton <paul.burton@mips.com>,
+	Catalin Marinas <catalin.marinas@arm.com>, James Hogan <jhogan@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,204 +73,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0114187181580817311=="
+From: Shawn Anastasio via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Shawn Anastasio <shawn@anastas.io>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+On 8/5/19 10:01 AM, Christoph Hellwig wrote:
+> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+> index 3813211a9aad..9ae5cee543c4 100644
+> --- a/include/linux/dma-noncoherent.h
+> +++ b/include/linux/dma-noncoherent.h
+> @@ -42,13 +42,8 @@ void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+>   		dma_addr_t dma_addr, unsigned long attrs);
+>   long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
+>   		dma_addr_t dma_addr);
+> -
+> -#ifdef CONFIG_ARCH_HAS_DMA_MMAP_PGPROT
+>   pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
+>   		unsigned long attrs);
+> -#else
+> -# define arch_dma_mmap_pgprot(dev, prot, attrs)	pgprot_noncached(prot)
+> -#endif
 
---===============0114187181580817311==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-BWDWLSX5DbZPpBq0FAfV"
+Nit, but maybe the prototype should still be ifdef'd here? It at least
+could prevent a reader from incorrectly thinking that the function is
+always present.
 
+Also, like Will mentioned earlier, the function name isn't entirely
+accurate anymore. I second the suggestion of using something like
+arch_dma_noncoherent_pgprot(). As for your idea of defining
+pgprot_dmacoherent for all architectures as
 
---=-BWDWLSX5DbZPpBq0FAfV
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+#ifndef pgprot_dmacoherent
+#define pgprot_dmacoherent pgprot_noncached
+#endif
 
-Hi Rob,
-
-On Mon, 2019-08-05 at 13:23 -0600, Rob Herring wrote:
-> On Mon, Aug 5, 2019 at 10:03 AM Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de> wrote:
-> > Hi Rob,
-> > Thanks for the review!
-> >=20
-> > On Fri, 2019-08-02 at 11:17 -0600, Rob Herring wrote:
-> > > On Wed, Jul 31, 2019 at 9:48 AM Nicolas Saenz Julienne
-> > > <nsaenzjulienne@suse.de> wrote:
-> > > > Some SoCs might have multiple interconnects each with their own DMA
-> > > > addressing limitations. This function parses the 'dma-ranges' on ea=
-ch of
-> > > > them and tries to guess the maximum SoC wide DMA addressable memory
-> > > > size.
-> > > >=20
-> > > > This is specially useful for arch code in order to properly setup C=
-MA
-> > > > and memory zones.
-> > >=20
-> > > We already have a way to setup CMA in reserved-memory, so why is this
-> > > needed for that?
-> >=20
-> > Correct me if I'm wrong but I got the feeling you got the point of the =
-patch
-> > later on.
->=20
-> No, for CMA I don't. Can't we already pass a size and location for CMA
-> region under /reserved-memory. The only advantage here is perhaps the
-> CMA range could be anywhere in the DMA zone vs. a fixed location.
-
-Now I get it, sorry I wasn't aware of that interface.
-
-Still, I'm not convinced it matches RPi's use case as this would hard-code
-CMA's size. Most people won't care, but for the ones that do, it's nicer to
-change the value from the kernel command line than editing the dtb. I get t=
-hat
-if you need to, for example, reserve some memory for the video to work, it'=
-s
-silly not to hard-code it. Yet due to the board's nature and users base I s=
-ay
-it's important to favor flexibility. It would also break compatibility with
-earlier versions of the board and diverge from the downstream kernel behavi=
-our.
-Which is a bigger issue than it seems as most users don't always understand
-which kernel they are running and unknowingly copy configuration options fr=
-om
-forums.
-
-As I also need to know the DMA addressing limitations to properly configure
-memory zones and dma-direct. Setting up the proper CMA constraints during t=
-he
-arch's init will be trivial anyway.
-
-> > > IMO, I'd just do:
-> > >=20
-> > > if (of_fdt_machine_is_compatible(blob, "brcm,bcm2711"))
-> > >     dma_zone_size =3D XX;
-> > >=20
-> > > 2 lines of code is much easier to maintain than 10s of incomplete cod=
-e
-> > > and is clearer who needs this. Maybe if we have dozens of SoCs with
-> > > this problem we should start parsing dma-ranges.
-> >=20
-> > FYI that's what arm32 is doing at the moment and was my first instinct.=
- But
-> > it
-> > seems that arm64 has been able to survive so far without any machine
-> > specific
-> > code and I have the feeling Catalin and Will will not be happy about th=
-is
-> > solution. Am I wrong?
->=20
-> No doubt. I'm fine if the 2 lines live in drivers/of/.
->=20
-> Note that I'm trying to reduce the number of early_init_dt_scan_*
-> calls from arch code into the DT code so there's more commonality
-> across architectures in the early DT scans. So ideally, this can all
-> be handled under early_init_dt_scan() call.
-
-How does this look? (I'll split it in two patches and add a comment explain=
-ing
-why dt_dma_zone_size is needed)
-
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index f2444c61a136..1395be40b722 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -30,6 +30,8 @@
-=20
- #include "of_private.h"
-=20
-+u64 dt_dma_zone_size __ro_after_init;
-+
- /*
-  * of_fdt_limit_memory - limit the number of regions in the /memory node
-  * @limit: maximum entries
-@@ -802,6 +805,11 @@ const char * __init of_flat_dt_get_machine_name(void)
-        return name;
- }
-=20
-+static const int __init of_fdt_machine_is_compatible(char *name)
-+{
-+       return of_compat_cmp(of_flat_dt_get_machine_name(), name, strlen(na=
-me));
-+}
-+
- /**
-  * of_flat_dt_match_machine - Iterate match tables to find matching machin=
-e.
-  *
-@@ -1260,6 +1268,14 @@ void __init early_init_dt_scan_nodes(void)
-        of_scan_flat_dt(early_init_dt_scan_memory, NULL);
- }
-=20
-+void __init early_init_dt_get_dma_zone_size(void)
-+{
-+       dt_dma_zone_size =3D 0;
-+
-+       if (of_fdt_machine_is_compatible("brcm,bcm2711"))
-+               dt_dma_zone_size =3D 0x3c000000;
-+}
-+
- bool __init early_init_dt_scan(void *params)
- {
-        bool status;
-@@ -1269,6 +1285,7 @@ bool __init early_init_dt_scan(void *params)
-                return false;
-=20
-        early_init_dt_scan_nodes();
-+       early_init_dt_get_dma_zone_size();
-        return true;
- }
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index 2ad36b7bd4fa..b5a9f685de14 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -27,6 +27,8 @@ extern void *of_fdt_unflatten_tree(const unsigned long *b=
-lob,
-                                   struct device_node *dad,
-                                   struct device_node **mynodes);
-=20
-+extern u64 dt_dma_zone_size __ro_after_init;
-+
- /* TBD: Temporary export of fdt globals - remove when code fully merged */
- extern int __initdata dt_root_addr_cells;
- extern int __initdata dt_root_size_cells;
-
-=20
-Regards,
-Nicolas
-
-
-
---=-BWDWLSX5DbZPpBq0FAfV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl1JwvoACgkQlfZmHno8
-x/5f/QgAsruOFQ8PvpoSHvG6DlzmdqSfRJK2v/9MyF59tpuvGoJUQggc4SObGIz8
-/Nk2Md0j7gXdLjr+t1elpo6xBmJxLWhZPw7HfIx1ejSHv2QK+gJopm/BJ54gV8cl
-oUh+Ed8eD1FBlYszwI3YRaKY/HXcQaZn97el4/AaCbztxkkAg1xEH/1L6XPwf2FC
-j9/TMxpFyE6aWdQ5GtOzxL1RVmzOEYgpvsr+mKxOFHX9V5+8UXNnLDRDjR36Ms78
-NVgFECrTr4rxiU2UJalTgyyPtch73aj8xMNKwHkOyiagITz9PhesPdVYy9sLWTM+
-KTFFdX5XzhKpZAHyjtBWPWEKO34aqg==
-=JTdS
------END PGP SIGNATURE-----
-
---=-BWDWLSX5DbZPpBq0FAfV--
-
-
---===============0114187181580817311==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+I think that the name here is kind of misleading too, since this
+definition will only be used when there is no support for proper
+DMA coherency.
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0114187181580817311==--
-
