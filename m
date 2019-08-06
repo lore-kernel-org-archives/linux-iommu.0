@@ -2,56 +2,101 @@ Return-Path: <SRS0=bP0W=WC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8554AC433FF
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 02:22:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28CC4C32751
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 04:49:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 56C172086D
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 02:22:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56C172086D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 074A52147A
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 04:49:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 074A52147A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BE4DCCBA;
-	Tue,  6 Aug 2019 02:22:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C8339D80;
+	Tue,  6 Aug 2019 04:49:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B81CACB2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 55C52D7C
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 02:22:26 +0000 (UTC)
+	Tue,  6 Aug 2019 04:49:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E1FF14C3
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E962B4C3
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 02:22:25 +0000 (UTC)
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id 8527884A5492A4EC936D;
-	Tue,  6 Aug 2019 10:22:23 +0800 (CST)
-Received: from [127.0.0.1] (10.184.52.56) by DGGEMS405-HUB.china.huawei.com
-	(10.3.19.205) with Microsoft SMTP Server id 14.3.439.0; Tue, 6 Aug 2019
-	10:22:14 +0800
-Subject: Re: [PATCH] iommu/iova: wait 'fq_timer' handler to finish before
-	destroying 'fq'
-To: <joro@8bytes.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
-References: <1564219269-14346-1-git-send-email-wangxiongfeng2@huawei.com>
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Message-ID: <5ca9b2c9-11e8-1af0-2e15-a78086343c48@huawei.com>
-Date: Tue, 6 Aug 2019 10:22:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
-	Thunderbird/52.6.0
+	Tue,  6 Aug 2019 04:49:47 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x764ka6I017452
+	for <iommu@lists.linux-foundation.org>; Tue, 6 Aug 2019 00:49:47 -0400
+Received: from e32.co.us.ibm.com (e32.co.us.ibm.com [32.97.110.150])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2u6ykq6f7q-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Tue, 06 Aug 2019 00:49:46 -0400
+Received: from localhost
+	by e32.co.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+	Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <bauerman@linux.ibm.com>;
+	Tue, 6 Aug 2019 05:49:46 +0100
+Received: from b03cxnp08025.gho.boulder.ibm.com (9.17.130.17)
+	by e32.co.us.ibm.com (192.168.1.132) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Tue, 6 Aug 2019 05:49:41 +0100
+Received: from b03ledav004.gho.boulder.ibm.com
+	(b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x764nenF26083584
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Tue, 6 Aug 2019 04:49:40 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 23D757805E;
+	Tue,  6 Aug 2019 04:49:40 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1A33E7805F;
+	Tue,  6 Aug 2019 04:49:35 +0000 (GMT)
+Received: from morokweng.localdomain.com (unknown [9.85.207.254])
+	by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+	Tue,  6 Aug 2019 04:49:34 +0000 (GMT)
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: x86@kernel.org
+Subject: [PATCH v4 0/6] Remove x86-specific code from generic headers
+Date: Tue,  6 Aug 2019 01:49:13 -0300
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <1564219269-14346-1-git-send-email-wangxiongfeng2@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [10.184.52.56]
-X-CFilter-Loop: Reflected
-Cc: yaohongbo@huawei.com, huawei.libin@huawei.com
+X-TM-AS-GCONF: 00
+x-cbid: 19080604-0004-0000-0000-00001532BE8E
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011558; HX=3.00000242; KW=3.00000007;
+	PH=3.00000004; SC=3.00000287; SDB=6.01242738; UDB=6.00655521;
+	IPR=6.01024202; 
+	MB=3.00028060; MTD=3.00000008; XFM=3.00000015; UTC=2019-08-06 04:49:46
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19080604-0005-0000-0000-00008CC4ACEA
+Message-Id: <20190806044919.10622-1-bauerman@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-08-06_02:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1906280000 definitions=main-1908060056
+Cc: linux-s390@vger.kernel.org, Lianbo Jiang <lijiang@redhat.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Robin Murphy <robin.murphy@arm.com>, Mike Anderson <andmike@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	Alexey Dobriyan <adobriyan@gmail.com>, Halil Pasic <pasic@linux.ibm.com>,
+	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, Thomas Lendacky <Thomas.Lendacky@amd.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,109 +114,81 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-+ (Robin)
+Hello,
 
-Hi Robin,
+This version has only a small change in the last patch as requested by
+Christoph and Halil, and collects Reviewed-by's.
 
-Sorry to ping you...
+These patches are applied on top of v5.3-rc2.
 
-What's your suggestion for this patch? I'm looking forward to your reply.
+I don't have a way to test SME, SEV, nor s390's PEF so the patches have only
+been build tested.
 
-Thanks,
-Xiongfeng.
+Changelog
 
+Since v3:
 
-On 2019/7/27 17:21, Xiongfeng Wang wrote:
-> Fix following crash that occurs when 'fq_flush_timeout()' access
-> 'fq->lock' while 'iovad->fq' has been cleared. This happens when the
-> 'fq_timer' handler is being executed and we call
-> 'free_iova_flush_queue()'. When the timer handler is being executed,
-> its pending state is cleared and it is detached. This patch use
-> 'del_timer_sync()' to wait for the timer handler 'fq_flush_timeout()' to
-> finish before destroying the flush queue.
-> 
-> [ 9052.361840] Unable to handle kernel paging request at virtual address 0000a02fd6c66008
-> [ 9052.361843] Mem abort info:
-> [ 9052.361845]   ESR = 0x96000004
-> [ 9052.361847]   Exception class = DABT (current EL), IL = 32 bits
-> [ 9052.361849]   SET = 0, FnV = 0
-> [ 9052.361850]   EA = 0, S1PTW = 0
-> [ 9052.361852] Data abort info:
-> [ 9052.361853]   ISV = 0, ISS = 0x00000004
-> [ 9052.361855]   CM = 0, WnR = 0
-> [ 9052.361860] user pgtable: 4k pages, 48-bit VAs, pgdp = 000000009b665b91
-> [ 9052.361863] [0000a02fd6c66008] pgd=0000000000000000
-> [ 9052.361870] Internal error: Oops: 96000004 [#1] SMP
-> [ 9052.361873] Process rmmod (pid: 51122, stack limit = 0x000000003f5524f7)
-> [ 9052.361881] CPU: 69 PID: 51122 Comm: rmmod Kdump: loaded Tainted: G           OE     4.19.36-vhulk1906.3.0.h356.eulerosv2r8.aarch64 #1
-> [ 9052.361882] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 0.81 07/10/2019
-> [ 9052.361885] pstate: 80400089 (Nzcv daIf +PAN -UAO)
-> [ 9052.361902] pc : fq_flush_timeout+0x9c/0x110
-> [ 9052.361904] lr :           (null)
-> [ 9052.361906] sp : ffff00000965bd80
-> [ 9052.361907] x29: ffff00000965bd80 x28: 0000000000000202
-> [ 9052.361912] x27: 0000000000000000 x26: 0000000000000053
-> [ 9052.361915] x25: ffffa026ed805008 x24: ffff000009119810
-> [ 9052.361919] x23: ffff00000911b938 x22: ffff00000911bc04
-> [ 9052.361922] x21: ffffa026ed804f28 x20: 0000a02fd6c66008
-> [ 9052.361926] x19: 0000a02fd6c64000 x18: ffff000009117000
-> [ 9052.361929] x17: 0000000000000008 x16: 0000000000000000
-> [ 9052.361933] x15: ffff000009119708 x14: 0000000000000115
-> [ 9052.361936] x13: ffff0000092f09d7 x12: 0000000000000000
-> [ 9052.361940] x11: 0000000000000001 x10: ffff00000965be98
-> [ 9052.361943] x9 : 0000000000000000 x8 : 0000000000000007
-> [ 9052.361947] x7 : 0000000000000010 x6 : 000000d658b784ef
-> [ 9052.361950] x5 : 00ffffffffffffff x4 : 00000000ffffffff
-> [ 9052.361954] x3 : 0000000000000013 x2 : 0000000000000001
-> [ 9052.361957] x1 : 0000000000000000 x0 : 0000a02fd6c66008
-> [ 9052.361961] Call trace:
-> [ 9052.361967]  fq_flush_timeout+0x9c/0x110
-> [ 9052.361976]  call_timer_fn+0x34/0x178
-> [ 9052.361980]  expire_timers+0xec/0x158
-> [ 9052.361983]  run_timer_softirq+0xc0/0x1f8
-> [ 9052.361987]  __do_softirq+0x120/0x324
-> [ 9052.361995]  irq_exit+0x11c/0x140
-> [ 9052.362003]  __handle_domain_irq+0x6c/0xc0
-> [ 9052.362005]  gic_handle_irq+0x6c/0x150
-> [ 9052.362008]  el1_irq+0xb8/0x140
-> [ 9052.362010]  vprintk_emit+0x2b4/0x320
-> [ 9052.362013]  vprintk_default+0x54/0x90
-> [ 9052.362016]  vprintk_func+0xa0/0x150
-> [ 9052.362019]  printk+0x74/0x94
-> [ 9052.362034]  nvme_get_smart+0x200/0x220 [nvme]
-> [ 9052.362041]  nvme_remove+0x38/0x250 [nvme]
-> [ 9052.362051]  pci_device_remove+0x48/0xd8
-> [ 9052.362065]  device_release_driver_internal+0x1b4/0x250
-> [ 9052.362068]  driver_detach+0x64/0xe8
-> [ 9052.362072]  bus_remove_driver+0x64/0x118
-> [ 9052.362074]  driver_unregister+0x34/0x60
-> [ 9052.362077]  pci_unregister_driver+0x24/0xd8
-> [ 9052.362083]  nvme_exit+0x24/0x1754 [nvme]
-> [ 9052.362094]  __arm64_sys_delete_module+0x19c/0x2a0
-> [ 9052.362102]  el0_svc_common+0x78/0x130
-> [ 9052.362106]  el0_svc_handler+0x38/0x78
-> [ 9052.362108]  el0_svc+0x8/0xc
-> 
-> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-> ---
->  drivers/iommu/iova.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 3e1a8a6..90e8035 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -64,8 +64,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
->  	if (!has_iova_flush_queue(iovad))
->  		return;
->  
-> -	if (timer_pending(&iovad->fq_timer))
-> -		del_timer(&iovad->fq_timer);
-> +	del_timer_sync(&iovad->fq_timer);
->  
->  	fq_destroy_all_entries(iovad);
->  
-> 
+- Patch "s390/mm: Remove sev_active() function"
+  - Preserve comment from sev_active() in force_dma_unencrypted().
+    Suggested by Christoph Hellwig.
+
+Since v2:
+
+- Patch "x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig"
+  - Added "select ARCH_HAS_MEM_ENCRYPT" to config S390. Suggested by Janani.
+
+- Patch "DMA mapping: Move SME handling to x86-specific files"
+  - Split up into 3 new patches. Suggested by Christoph Hellwig.
+
+- Patch "swiotlb: Remove call to sme_active()"
+  - New patch.
+
+- Patch "dma-mapping: Remove dma_check_mask()"
+  - New patch.
+
+- Patch "x86,s390/mm: Move sme_active() and sme_me_mask to x86-specific header"
+  - New patch.
+  - Removed export of sme_active symbol. Suggested by Christoph Hellwig.
+
+- Patch "fs/core/vmcore: Move sev_active() reference to x86 arch code"
+  - Removed export of sev_active symbol. Suggested by Christoph Hellwig.
+
+- Patch "s390/mm: Remove sev_active() function"
+  - New patch.
+
+Since v1:
+
+- Patch "x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig"
+  - Remove definition of ARCH_HAS_MEM_ENCRYPT from s390/Kconfig as well.
+  - Reworded patch title and message a little bit.
+
+- Patch "DMA mapping: Move SME handling to x86-specific files"
+  - Adapt s390's <asm/mem_encrypt.h> as well.
+  - Remove dma_check_mask() from kernel/dma/mapping.c. Suggested by
+    Christoph Hellwig.
+
+Thiago Jung Bauermann (6):
+  x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig
+  swiotlb: Remove call to sme_active()
+  dma-mapping: Remove dma_check_mask()
+  x86,s390/mm: Move sme_active() and sme_me_mask to x86-specific header
+  fs/core/vmcore: Move sev_active() reference to x86 arch code
+  s390/mm: Remove sev_active() function
+
+ arch/Kconfig                        |  3 +++
+ arch/s390/Kconfig                   |  4 +---
+ arch/s390/include/asm/mem_encrypt.h |  5 +----
+ arch/s390/mm/init.c                 |  7 +------
+ arch/x86/Kconfig                    |  4 +---
+ arch/x86/include/asm/mem_encrypt.h  | 10 ++++++++++
+ arch/x86/kernel/crash_dump_64.c     |  5 +++++
+ arch/x86/mm/mem_encrypt.c           |  2 --
+ fs/proc/vmcore.c                    |  8 ++++----
+ include/linux/crash_dump.h          | 14 ++++++++++++++
+ include/linux/mem_encrypt.h         | 15 +--------------
+ kernel/dma/mapping.c                |  8 --------
+ kernel/dma/swiotlb.c                |  3 +--
+ 13 files changed, 42 insertions(+), 46 deletions(-)
 
 _______________________________________________
 iommu mailing list
