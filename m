@@ -2,51 +2,68 @@ Return-Path: <SRS0=bP0W=WC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6C4C31E40
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 06:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945C2C31E40
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 07:32:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4638D2147A
-	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 06:43:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4638D2147A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 659532189E
+	for <iommu@archiver.kernel.org>; Tue,  6 Aug 2019 07:32:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Eu966wVx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 659532189E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EF646CAD;
-	Tue,  6 Aug 2019 06:43:53 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2343DC2C;
+	Tue,  6 Aug 2019 07:32:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A7F03CAC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ACEC7C11
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 06:43:52 +0000 (UTC)
+	Tue,  6 Aug 2019 07:32:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 34B95829
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 48B204C3
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  6 Aug 2019 06:43:52 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id DAA6F68B02; Tue,  6 Aug 2019 08:43:47 +0200 (CEST)
-Date: Tue, 6 Aug 2019 08:43:47 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 2/3] iommu/vt-d: Apply per-device dma_ops
-Message-ID: <20190806064347.GA14906@lst.de>
-References: <20190801060156.8564-1-baolu.lu@linux.intel.com>
-	<20190801060156.8564-3-baolu.lu@linux.intel.com>
+	Tue,  6 Aug 2019 07:32:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=oTs2cY0AP7Gt6Axj3jnR38Lz4Y8u331s1JOYlARdadg=;
+	b=Eu966wVxtPDyAfxY4T5b9Mvp/
+	HDR0erbGAZXz2AqGAeOdEK/K2XQOlQyLFVaKfbHmskzMRogWsRVFf0LnYCUZq9AyhET+H+vM1RZHr
+	vCIiWCAJvnK6MTZkjamjsUOj585w67g30jU0Fwujx4PC8+7jHBrOW8snLwJTpHWqf6Cz2oB2pmaSV
+	DX1j6EYOG6XABnCRU/Kfrtx9XGQW6pUOuOCOGY/1B7Aih8on8ATF7J5BeSOzis45yUKB+8NzOAT7r
+	PS2vzt0MgWhrIfmutdWvIPkCihF4U8wHpmdjG+LLRa31zeTy96L3iN6r75nZ7ec6uQzrCErOoz8KS
+	v3FL8ONsQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat
+	Linux)) id 1hutww-0006vs-OK; Tue, 06 Aug 2019 07:32:02 +0000
+Date: Tue, 6 Aug 2019 00:32:02 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Eric Auger <eric.auger@redhat.com>
+Subject: Re: [PATCH v2] iommu: revisit iommu_insert_resv_region()
+	implementation
+Message-ID: <20190806073202.GA26575@infradead.org>
+References: <20190801155946.20645-1-eric.auger@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190801060156.8564-3-baolu.lu@linux.intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com,
-	Robin Murphy <robin.murphy@arm.com>,
+In-Reply-To: <20190801155946.20645-1-eric.auger@redhat.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: alex.williamson@redhat.com, robin.murphy@arm.com,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	jacob.jun.pan@intel.com, David Woodhouse <dwmw2@infradead.org>,
-	Christoph Hellwig <hch@lst.de>
+	dwmw2@infradead.org, eric.auger.pro@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,25 +81,107 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Lu,
+A couple nitpicks below:
 
-I really do like the switch to the per-device dma_map_ops, but:
+On Thu, Aug 01, 2019 at 05:59:46PM +0200, Eric Auger wrote:
+> - * The new element is sorted by address with respect to the other
+> - * regions of the same type. In case it overlaps with another
+> - * region of the same type, regions are merged. In case it
+> - * overlaps with another region of different type, regions are
+> - * not merged.
+> + * Elements are sorted by start address and overlapping segments
+> + * of the same type are merged.
+>   */
+> +int iommu_insert_resv_region(struct iommu_resv_region *new,
+> +			     struct list_head *regions)
+>  {
+> +	struct iommu_resv_region *iter, *tmp, *nr, *top;
+> +	struct list_head stack;
+> +	bool added = false;
+>  
+> +	INIT_LIST_HEAD(&stack);
 
-On Thu, Aug 01, 2019 at 02:01:55PM +0800, Lu Baolu wrote:
-> Current Intel IOMMU driver sets the system level dma_ops. This
-> implementation has at least the following drawbacks: 1) each
-> dma API will go through the IOMMU driver even the devices are
-> using identity mapped domains; 2) if user requests to use an
-> identity mapped domain (a.k.a. bypass iommu translation), the
-> driver might fall back to dma domain blindly if the device is
-> not able to address all system memory.
+Nit: you could just use
 
-This is very clearly a behavioral regression.  The intel-iommu driver
-has always used the iommu mapping to provide decent support for
-devices that do not have the full 64-bit addressing capability, and
-changing this will make a lot of existing setups go slower.
+	LIST_HEAD(&stack);
 
-I don't think having to use swiotlb for these devices helps anyone.
+to declare and initialize the variable in a single line.
+
+> +	nr = iommu_alloc_resv_region(new->start, new->length,
+> +				     new->prot, new->type);
+> +	if (!nr)
+>  		return -ENOMEM;
+>  
+> +	/* First add the new elt based on start address sorting */
+
+/elt/element/ ?
+
+> +	list_for_each_entry(iter, regions, list) {
+> +		if (nr->start < iter->start) {
+> +			list_add_tail(&nr->list, &iter->list);
+> +			added = true;
+> +			break;
+> +		} else if (nr->start == iter->start && nr->type <= iter->type) {
+> +			list_add_tail(&nr->list, &iter->list);
+> +			added = true;
+> +			break;
+> +		}
+
+Nit:  no need for an else after a a break.  But then again  both
+branches look identical, so why don't you just merge them:
+
+		if (nr->start < iter->start ||
+		    (nr->start == iter->start && nr->type <= iter->type)) {
+			list_add_tail(&nr->list, &iter->list);
+			added = true;
+			break;
+
+	}
+
+> +	if (!added)
+> +		list_add_tail(&nr->list, regions);
+
+Probably down to preference, but I'd just use a goto to jump past the
+list_add and save the added variable.
+
+> +	/* Merge overlapping segments of type nr->type, if any */
+> +	list_for_each_entry_safe(iter, tmp, regions, list) {
+> +		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
+> +		bool found = false;
+> +
+> +		/* no merge needed on elements of different types than @nr */
+> +		if (iter->type != nr->type) {
+> +			list_move_tail(&iter->list, &stack);
+> +			continue;
+> +		}
+> +
+> +		/* look for the last stack element of same type as @iter */
+> +		list_for_each_entry_reverse(top, &stack, list)
+> +			if (top->type == iter->type) {
+> +				found = true;
+> +				break;
+> +			}
+> +		if (!found) {
+
+Same here.
+
+> +			list_move_tail(&iter->list, &stack);
+> +			continue;
+> +		}
+> +
+> +		top_end = top->start + top->length - 1;
+> +
+> +		if (iter->start > top_end + 1) {
+> +			list_move_tail(&iter->list, &stack);
+> +		} else {
+> +			top->length = max(top_end, iter_end) - top->start + 1;
+> +			list_del(&iter->list);
+> +			kfree(iter);
+> +		}
+
+I wonder if the body of the outer list_for_each_entry_safe loop would
+be a bit nicer in a helper, but again that is probably just down to
+personal preference.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
