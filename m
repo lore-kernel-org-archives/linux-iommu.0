@@ -2,60 +2,55 @@ Return-Path: <SRS0=TgA1=WD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B4DC31E40
-	for <iommu@archiver.kernel.org>; Wed,  7 Aug 2019 03:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E639C433FF
+	for <iommu@archiver.kernel.org>; Wed,  7 Aug 2019 06:04:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 42FE82070C
-	for <iommu@archiver.kernel.org>; Wed,  7 Aug 2019 03:07:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42FE82070C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id F41C2229ED
+	for <iommu@archiver.kernel.org>; Wed,  7 Aug 2019 06:04:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F41C2229ED
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F3CD6D89;
-	Wed,  7 Aug 2019 03:07:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BF1E9CCE;
+	Wed,  7 Aug 2019 06:04:41 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7CEE87F6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4C1D6C6A
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  7 Aug 2019 03:07:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E6C4982F
+	Wed,  7 Aug 2019 06:04:40 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D5BCE7D2
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  7 Aug 2019 03:07:37 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	06 Aug 2019 20:07:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,356,1559545200"; d="scan'208";a="185855550"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by orsmga002.jf.intel.com with ESMTP; 06 Aug 2019 20:07:34 -0700
-Subject: Re: [PATCH 2/3] iommu/vt-d: Apply per-device dma_ops
-To: Christoph Hellwig <hch@lst.de>
-References: <20190801060156.8564-1-baolu.lu@linux.intel.com>
-	<20190801060156.8564-3-baolu.lu@linux.intel.com>
-	<20190806064347.GA14906@lst.de>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f532a2c3-f73a-85d2-d2ad-37cde02547ce@linux.intel.com>
-Date: Wed, 7 Aug 2019 11:06:44 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.2
+	Wed,  7 Aug 2019 06:04:39 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id BFD0A68CEE; Wed,  7 Aug 2019 08:04:33 +0200 (CEST)
+Date: Wed, 7 Aug 2019 08:04:32 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Shawn Anastasio <shawn@anastas.io>
+Subject: Re: [PATCH 1/2] dma-mapping: fix page attributes for dma_mmap_*
+Message-ID: <20190807060432.GD6627@lst.de>
+References: <20190805080145.5694-1-hch@lst.de>
+	<20190805080145.5694-2-hch@lst.de>
+	<7df95ffb-6df3-b118-284c-ee32cad81199@anastas.io>
 MIME-Version: 1.0
-In-Reply-To: <20190806064347.GA14906@lst.de>
-Content-Language: en-US
-Cc: kevin.tian@intel.com, ashok.raj@intel.com,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	jacob.jun.pan@intel.com, David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <7df95ffb-6df3-b118-284c-ee32cad81199@anastas.io>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Gavin Li <git@thegavinli.com>, linux-kernel@vger.kernel.org,
+	Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
+	Russell King <linux@armlinux.org.uk>, linux-mips@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Paul Burton <paul.burton@mips.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	James Hogan <jhogan@kernel.org>, Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,54 +63,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
-
-On 8/6/19 2:43 PM, Christoph Hellwig wrote:
-> Hi Lu,
-> 
-> I really do like the switch to the per-device dma_map_ops, but:
-> 
-> On Thu, Aug 01, 2019 at 02:01:55PM +0800, Lu Baolu wrote:
->> Current Intel IOMMU driver sets the system level dma_ops. This
->> implementation has at least the following drawbacks: 1) each
->> dma API will go through the IOMMU driver even the devices are
->> using identity mapped domains; 2) if user requests to use an
->> identity mapped domain (a.k.a. bypass iommu translation), the
->> driver might fall back to dma domain blindly if the device is
->> not able to address all system memory.
-> 
-> This is very clearly a behavioral regression.  The intel-iommu driver
-> has always used the iommu mapping to provide decent support for
-> devices that do not have the full 64-bit addressing capability, and
-> changing this will make a lot of existing setups go slower.
+On Tue, Aug 06, 2019 at 09:39:06PM +0200, Shawn Anastasio wrote:
+>> -#ifdef CONFIG_ARCH_HAS_DMA_MMAP_PGPROT
+>>   pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
+>>   		unsigned long attrs);
+>> -#else
+>> -# define arch_dma_mmap_pgprot(dev, prot, attrs)	pgprot_noncached(prot)
+>> -#endif
 >
+> Nit, but maybe the prototype should still be ifdef'd here? It at least
+> could prevent a reader from incorrectly thinking that the function is
+> always present.
 
-I agree with you that we should keep the capability and avoid possible
-performance regression on some setups. But, instead of hard-coding this
-in the iommu driver, I prefer a more scalable way.
+Actually it is typical modern Linux style to just provide a prototype
+and then use "if (IS_ENABLED(CONFIG_FOO))" to guard the call(s) to it.
 
-For example, the concept of per group default domain type [1] seems to
-be a good choice. The kernel could be statically compiled as by-default
-"pass through" or "translate everything". The per group default domain
-type API could then be used by the privileged user to tweak some of the
-groups for better performance, either by 1) bypassing iommu translation
-for the trusted super-speed devices, or 2) applying iommu translation to
-access the system memory which is beyond the device's address capability
-(without the necessary of using bounce buffer).
+>
+> Also, like Will mentioned earlier, the function name isn't entirely
+> accurate anymore. I second the suggestion of using something like
+> arch_dma_noncoherent_pgprot().
 
-[1] https://www.spinics.net/lists/iommu/msg37113.html
+As mentioned I plan to remove arch_dma_mmap_pgprot for 5.4, so I'd
+rather avoid churn for the short period of time.
 
-> I don't think having to use swiotlb for these devices helps anyone.
-> 
+> As for your idea of defining
+> pgprot_dmacoherent for all architectures as
+>
+> #ifndef pgprot_dmacoherent
+> #define pgprot_dmacoherent pgprot_noncached
+> #endif
+>
+> I think that the name here is kind of misleading too, since this
+> definition will only be used when there is no support for proper
+> DMA coherency.
 
-Best regards,
-Baolu
-
+Do you have a suggestion for a better name?  I'm pretty bad at naming,
+so just reusing the arm name seemed like a good way to avoid having
+to make naming decisions myself.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
