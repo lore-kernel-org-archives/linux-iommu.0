@@ -2,61 +2,49 @@ Return-Path: <SRS0=VhCt=WE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F5FC433FF
-	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 10:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 542CEC433FF
+	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 11:06:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4D86C2173E
-	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 10:29:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D86C2173E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 2E40421479
+	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 11:06:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E40421479
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 57CF410AA;
-	Thu,  8 Aug 2019 10:29:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D7395108A;
+	Thu,  8 Aug 2019 11:06:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4F9AF10A9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EEA241086
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 10:29:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E2868829
+	Thu,  8 Aug 2019 10:17:15 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from youngberry.canonical.com (youngberry.canonical.com
+	[91.189.89.112])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6538F14D
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 10:29:54 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id ECABD227A81; Thu,  8 Aug 2019 12:29:51 +0200 (CEST)
-Date: Thu, 8 Aug 2019 12:29:51 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v3 hmm 11/11] mm/mmu_notifiers: remove
-	unregister_no_release
-Message-ID: <20190808102951.GE648@lst.de>
-References: <20190806231548.25242-1-jgg@ziepe.ca>
-	<20190806231548.25242-12-jgg@ziepe.ca>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190806231548.25242-12-jgg@ziepe.ca>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Andrea Arcangeli <aarcange@redhat.com>,
-	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
-	Ralph Campbell <rcampbell@nvidia.com>, Dimitri Sivanich <sivanich@sgi.com>,
-	Gavin Shan <shangw@linux.vnet.ibm.com>,
-	Andrea Righi <andrea@betterlinux.com>,
-	linux-rdma@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
-	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	linux-mm@kvack.org, =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org,
-	Jason Gunthorpe <jgg@mellanox.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	intel-gfx@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>
+	Thu,  8 Aug 2019 10:17:15 +0000 (UTC)
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37]
+	helo=localhost) by youngberry.canonical.com with esmtpsa
+	(TLS1.0:RSA_AES_256_CBC_SHA1:32) (Exim 4.76)
+	(envelope-from <kai.heng.feng@canonical.com>)
+	id 1hvfTt-0002dR-0f; Thu, 08 Aug 2019 10:17:13 +0000
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+To: joro@8bytes.org
+Subject: [PATCH] iommu/amd: Override wrong IVRS IOAPIC on Raven Ridge systems
+Date: Thu,  8 Aug 2019 18:17:07 +0800
+Message-Id: <20190808101707.16783-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
+X-Mailman-Approved-At: Thu, 08 Aug 2019 11:06:51 +0000
+Cc: iommu@lists.linux-foundation.org,
+	Kai-Heng Feng <kai.heng.feng@canonical.com>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,25 +57,128 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Aug 06, 2019 at 08:15:48PM -0300, Jason Gunthorpe wrote:
-> From: Jason Gunthorpe <jgg@mellanox.com>
-> 
-> mmu_notifier_unregister_no_release() and mmu_notifier_call_srcu() no
-> longer have any users, they have all been converted to use
-> mmu_notifier_put().
-> 
-> So delete this difficult to use interface.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Raven Ridge systems may have malfunction touchpad or hang at boot if
+incorrect IVRS IOAPIC is provided by BIOS.
 
-Looks good:
+Users already found correct "ivrs_ioapic=" values, let's put them inside
+kernel to workaround buggy BIOS.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+BugLink: https://bugs.launchpad.net/bugs/1795292
+BugLink: https://bugs.launchpad.net/bugs/1837688
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/iommu/amd_iommu_init.c | 75 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 4413aa67000e..06fd008281e5 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -21,6 +21,7 @@
+ #include <linux/iommu.h>
+ #include <linux/kmemleak.h>
+ #include <linux/mem_encrypt.h>
++#include <linux/dmi.h>
+ #include <asm/pci-direct.h>
+ #include <asm/iommu.h>
+ #include <asm/apic.h>
+@@ -1109,6 +1110,78 @@ static int __init add_early_maps(void)
+ 	return 0;
+ }
+ 
++struct quirk_entry {
++	u8 id;
++	u16 devid;
++};
++
++enum {
++	DELL_INSPIRON_7375 = 0,
++	DELL_LATITUDE_5495,
++	LENOVO_IDEAPAD_330S_15ARR,
++};
++
++static const struct quirk_entry ivrs_ioapic_quirks[][3] __initconst = {
++	/* ivrs_ioapic[4]=00:14.0 ivrs_ioapic[5]=00:00.2 */
++	[DELL_INSPIRON_7375] = {
++		{ .id = 4, .devid = 0xa0 },
++		{ .id = 5, .devid = 0x2 },
++		{}
++	},
++	/* ivrs_ioapic[4]=00:14.0 */
++	[DELL_LATITUDE_5495] = {
++		{ .id = 4, .devid = 0xa0 },
++		{}
++	},
++	/* ivrs_ioapic[32]=00:14.0 */
++	[LENOVO_IDEAPAD_330S_15ARR] = {
++		{ .id = 32, .devid = 0xa0 },
++		{}
++	},
++	{}
++};
++
++static int __init ivrs_ioapic_quirk_cb(const struct dmi_system_id *d)
++{
++	const struct quirk_entry *i;
++
++	for (i = d->driver_data; i->id != 0 && i->devid != 0; i++)
++		add_special_device(IVHD_SPECIAL_IOAPIC, i->id, &i->devid, 0);
++
++	return 0;
++}
++
++static const struct dmi_system_id ivrs_quirks[] __initconst = {
++	{
++		.callback = ivrs_ioapic_quirk_cb,
++		.ident = "Dell Inspiron 7375",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 7375"),
++		},
++		.driver_data = (void *)&ivrs_ioapic_quirks[DELL_INSPIRON_7375],
++	},
++	{
++		.callback = ivrs_ioapic_quirk_cb,
++		.ident = "Dell Latitude 5495",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Latitude 5495"),
++		},
++		.driver_data = (void *)&ivrs_ioapic_quirks[DELL_LATITUDE_5495],
++	},
++	{
++		.callback = ivrs_ioapic_quirk_cb,
++		.ident = "Lenovo ideapad 330S-15ARR",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "81FB"),
++		},
++		.driver_data = (void *)&ivrs_ioapic_quirks[LENOVO_IDEAPAD_330S_15ARR],
++	},
++	{}
++};
++
+ /*
+  * Reads the device exclusion range from ACPI and initializes the IOMMU with
+  * it
+@@ -1153,6 +1226,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 	if (ret)
+ 		return ret;
+ 
++	dmi_check_system(ivrs_quirks);
++
+ 	/*
+ 	 * First save the recommended feature enable bits from ACPI
+ 	 */
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
