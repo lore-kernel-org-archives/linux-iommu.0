@@ -2,74 +2,69 @@ Return-Path: <SRS0=VhCt=WE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B951C0650F
-	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 16:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE82C32756
+	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 17:30:49 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CEF0C2184E
-	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 16:30:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="s33+JumS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEF0C2184E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 29D3721881
+	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 17:30:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29D3721881
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9FBA3C87;
-	Thu,  8 Aug 2019 16:30:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EFBCEE4C;
+	Thu,  8 Aug 2019 17:30:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 63C51C86
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E9AEBE43
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 16:30:19 +0000 (UTC)
+	Thu,  8 Aug 2019 17:30:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 01A2782D
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DBED3829
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 16:30:18 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id EEFD62173E;
-	Thu,  8 Aug 2019 16:30:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565281818;
-	bh=Y3uN9pTmCxlKNY3HVkEXKnwavVansgR7KsRQWoVVlDU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=s33+JumSJA00EXmPFAAKKQs8NHVtwqO70GPV4+ZAHCxRXirXPa9Ci667SaWUM58qB
-	fWNjT3PmR2+LNeOfdGiZeCsqTHlKbypay+ukfl8+MEdgYLD7xS5EVftrIus8p96s6q
-	iqobkqw+4VjylAwQNwkUEZLBU+s8VQjSeiy+T8Tc=
-Date: Thu, 8 Aug 2019 17:30:14 +0100
-From: Will Deacon <will@kernel.org>
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH v3 1/4] firmware: qcom_scm-64: Add atomic version of
-	qcom_scm_call
-Message-ID: <20190808163013.u5qbke54kj555oxn@willie-the-truck>
-References: <20190612071554.13573-1-vivek.gautam@codeaurora.org>
-	<20190612071554.13573-2-vivek.gautam@codeaurora.org>
-	<20190618175536.GI4270@fuggles.cambridge.arm.com>
-	<CAFp+6iEwN6jeEGNxKVU5_i5NxdEbuF2ZggegEJZ1Rq6F=H34jg@mail.gmail.com>
-	<20190805222755.GB2634@builder>
-	<CAFp+6iHhh9749dAV4YDeE_0w1nCiftecTBedW4Rf0aiaOJsN2A@mail.gmail.com>
+	Thu,  8 Aug 2019 17:30:46 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id E72A0AF4C;
+	Thu,  8 Aug 2019 17:30:44 +0000 (UTC)
+Message-ID: <6917ea286e76cb0f3f3bea23552a00d1b2a381de.camel@suse.de>
+Subject: Re: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA
+	addressable memory size
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Rob Herring <robh+dt@kernel.org>
+Date: Thu, 08 Aug 2019 19:30:42 +0200
+In-Reply-To: <CAL_JsqJS6XBSc8DuK2sJApHtY4nCSFpLezf003YMD75THLHAqg@mail.gmail.com>
+References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
+	<20190731154752.16557-4-nsaenzjulienne@suse.de>
+	<CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
+	<2050374ac07e0330e505c4a1637256428adb10c4.camel@suse.de>
+	<CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
+	<12eb3aba207c552e5eb727535e7c4f08673c4c80.camel@suse.de>
+	<CAL_JsqJS6XBSc8DuK2sJApHtY4nCSFpLezf003YMD75THLHAqg@mail.gmail.com>
+User-Agent: Evolution 3.32.4 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAFp+6iHhh9749dAV4YDeE_0w1nCiftecTBedW4Rf0aiaOJsN2A@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>,
-	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-	Will Deacon <will.deacon@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	Bjorn Andersson <bjorn.andersson@linaro.org>,
-	David Brown <david.brown@linaro.org>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	robh+dt <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
+Cc: phill@raspberryi.org, devicetree@vger.kernel.org,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Frank Rowand <frowand.list@gmail.com>, linux-mm@kvack.org,
+	Marc Zyngier <marc.zyngier@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Eric Anholt <eric@anholt.net>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Matthias Brugger <mbrugger@suse.com>, "moderated
+	list:BROADCOM BCM2835 ARM ARCHITECTURE"
+	<linux-rpi-kernel@lists.infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM
+	ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, wahrenst@gmx.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,29 +77,183 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0811344231852774570=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Aug 08, 2019 at 05:05:21PM +0530, Vivek Gautam wrote:
-> On Tue, Aug 6, 2019 at 3:58 AM Bjorn Andersson
-> <bjorn.andersson@linaro.org> wrote:
-> > Would you be able to respin this patch, so that we could unblock the
-> > introduction of the display nodes in the various device?
-> 
-> Will pointed [1] to the restructuring of arm-smmu to support
-> implementation specific details.
-> That hasn't been posted yet, and I haven't yet been able to work on that either.
-> I will be happy to respin this series with the comments addressed if
-> Will is okay to pull changes to unblock sdm845 devices. :)
-> 
-> [1] https://lore.kernel.org/patchwork/patch/1087457/
 
-Just checked with Robin, and he's planning to post something tomorrow.
+--===============0811344231852774570==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-aUnd1sGElH9S49gE7iVL"
 
-Will
+
+--=-aUnd1sGElH9S49gE7iVL
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, 2019-08-08 at 09:02 -0600, Rob Herring wrote:
+> On Tue, Aug 6, 2019 at 12:12 PM Nicolas Saenz Julienne
+> <nsaenzjulienne@suse.de> wrote:
+> > Hi Rob,
+> >=20
+> > On Mon, 2019-08-05 at 13:23 -0600, Rob Herring wrote:
+> > > On Mon, Aug 5, 2019 at 10:03 AM Nicolas Saenz Julienne
+> > > <nsaenzjulienne@suse.de> wrote:
+> > > > Hi Rob,
+> > > > Thanks for the review!
+> > > >=20
+> > > > On Fri, 2019-08-02 at 11:17 -0600, Rob Herring wrote:
+> > > > > On Wed, Jul 31, 2019 at 9:48 AM Nicolas Saenz Julienne
+> > > > > <nsaenzjulienne@suse.de> wrote:
+> > > > > > Some SoCs might have multiple interconnects each with their own=
+ DMA
+> > > > > > addressing limitations. This function parses the 'dma-ranges' o=
+n
+> > > > > > each of
+> > > > > > them and tries to guess the maximum SoC wide DMA addressable me=
+mory
+> > > > > > size.
+> > > > > >=20
+> > > > > > This is specially useful for arch code in order to properly set=
+up
+> > > > > > CMA
+> > > > > > and memory zones.
+> > > > >=20
+> > > > > We already have a way to setup CMA in reserved-memory, so why is =
+this
+> > > > > needed for that?
+> > > >=20
+> > > > Correct me if I'm wrong but I got the feeling you got the point of =
+the
+> > > > patch
+> > > > later on.
+> > >=20
+> > > No, for CMA I don't. Can't we already pass a size and location for CM=
+A
+> > > region under /reserved-memory. The only advantage here is perhaps the
+> > > CMA range could be anywhere in the DMA zone vs. a fixed location.
+> >=20
+> > Now I get it, sorry I wasn't aware of that interface.
+> >=20
+> > Still, I'm not convinced it matches RPi's use case as this would hard-c=
+ode
+> > CMA's size. Most people won't care, but for the ones that do, it's nice=
+r to
+> > change the value from the kernel command line than editing the dtb.
+>=20
+> Sure, I fully agree and am not a fan of the CMA DT overlays I've seen.
+>=20
+> > I get that
+> > if you need to, for example, reserve some memory for the video to work,=
+ it's
+> > silly not to hard-code it. Yet due to the board's nature and users base=
+ I
+> > say
+> > it's important to favor flexibility. It would also break compatibility =
+with
+> > earlier versions of the board and diverge from the downstream kernel
+> > behaviour.
+> > Which is a bigger issue than it seems as most users don't always unders=
+tand
+> > which kernel they are running and unknowingly copy configuration option=
+s
+> > from
+> > forums.
+> >=20
+> > As I also need to know the DMA addressing limitations to properly confi=
+gure
+> > memory zones and dma-direct. Setting up the proper CMA constraints duri=
+ng
+> > the
+> > arch's init will be trivial anyway.
+>=20
+> It was really just commentary on commit text as for CMA alone we have
+> a solution already. I agree on the need for zones.
+
+Ok, understood :)
+
+> > > > > IMO, I'd just do:
+> > > > >=20
+> > > > > if (of_fdt_machine_is_compatible(blob, "brcm,bcm2711"))
+> > > > >     dma_zone_size =3D XX;
+> > > > >=20
+> > > > > 2 lines of code is much easier to maintain than 10s of incomplete=
+ code
+> > > > > and is clearer who needs this. Maybe if we have dozens of SoCs wi=
+th
+> > > > > this problem we should start parsing dma-ranges.
+> > > >=20
+> > > > FYI that's what arm32 is doing at the moment and was my first insti=
+nct.
+> > > > But
+> > > > it
+> > > > seems that arm64 has been able to survive so far without any machin=
+e
+> > > > specific
+> > > > code and I have the feeling Catalin and Will will not be happy abou=
+t
+> > > > this
+> > > > solution. Am I wrong?
+> > >=20
+> > > No doubt. I'm fine if the 2 lines live in drivers/of/.
+> > >=20
+> > > Note that I'm trying to reduce the number of early_init_dt_scan_*
+> > > calls from arch code into the DT code so there's more commonality
+> > > across architectures in the early DT scans. So ideally, this can all
+> > > be handled under early_init_dt_scan() call.
+> >=20
+> > How does this look? (I'll split it in two patches and add a comment
+> > explaining
+> > why dt_dma_zone_size is needed)
+> >=20
+> > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> > index f2444c61a136..1395be40b722 100644
+> > --- a/drivers/of/fdt.c
+> > +++ b/drivers/of/fdt.c
+> > @@ -30,6 +30,8 @@
+> >=20
+> >  #include "of_private.h"
+> >=20
+> > +u64 dt_dma_zone_size __ro_after_init;
+>=20
+> Avoiding a call from arch code by just having a variable isn't really
+> better. I'd rather see a common, non DT specific variable that can be
+> adjusted. Something similar to initrd_start/end. Then the arch code
+> doesn't have to care what hardware description code adjusted the
+> value.
+
+Way better, I'll update it.
+
+
+--=-aUnd1sGElH9S49gE7iVL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl1MXEIACgkQlfZmHno8
+x/4I5gf6A+XJGnTIx+91Jp1InIYL3ffBEX7UUGqmhdiznnad0gVF6JWh/Kq6dJyQ
+zkCiCoziJ5AFuNeS3Akpa7psFTnLYsWWaeL+FzWvSvLntp6ti6URyBlx5v4JeKT2
+QaGzJsdWWGEMXA8QIHk309B127xqqgKqFJKnOYubd1h7xdULE11Ht1Ur+mTlkur/
+AEaSkGTAJHap13dIxCnV2cdHt8u/79mL/vDRSCDLmUrJxaOcvQPSDQHIK86j+cBb
+OEzAaU89Ektf1Uq1GI5yjn0gBRcOiPw+TaMlJw4PcPWZN1Lfz8M9lb3+QZOrykTs
+KgzRXlmzYbKR0CO/8rK+dbxSO+x9gg==
+=JXPI
+-----END PGP SIGNATURE-----
+
+--=-aUnd1sGElH9S49gE7iVL--
+
+
+--===============0811344231852774570==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0811344231852774570==--
+
