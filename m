@@ -2,99 +2,87 @@ Return-Path: <SRS0=VhCt=WE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D27C433FF
-	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 11:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A430C32754
+	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 15:02:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 19FC4217F4
-	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 11:35:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 01FD7217D7
+	for <iommu@archiver.kernel.org>; Thu,  8 Aug 2019 15:02:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="mqb7vvjz";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="ZbrI0B4S"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 19FC4217F4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="T8SEdQkm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01FD7217D7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DFB8AF1E;
-	Thu,  8 Aug 2019 11:35:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9C8981155;
+	Thu,  8 Aug 2019 15:02:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5B0CBDBB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D6A6DDD0
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 11:35:38 +0000 (UTC)
+	Thu,  8 Aug 2019 15:02:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B594182F
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0BE468A3
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 11:35:35 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 7F54F60795; Thu,  8 Aug 2019 11:35:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1565264135;
-	bh=sH6nUxZ8Y5dNhEx5LOsnBwv7hqu3JssLmT67GtkYFO8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=mqb7vvjzx+MKfzAMS8jEz1fTkI4H9bPpTOCk+imcRQkezG9Yp2E+E45/nhpmGZQei
-	pBirMUA6XrO/Ht5xpyR9XJ/KaYs42L/b1ivVHV1CgYRhHdhPeAC+V5PPpEvsbpjWwX
-	srYIPa2q0ySeKGkshNuudBF2AsrzdJ65bO0R/VZQ=
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com
-	[209.85.208.54])
+	Thu,  8 Aug 2019 15:02:43 +0000 (UTC)
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com
+	[209.85.160.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id 4B01E6074C
+	by mail.kernel.org (Postfix) with ESMTPSA id B420D218A6
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  8 Aug 2019 11:35:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1565264134;
-	bh=sH6nUxZ8Y5dNhEx5LOsnBwv7hqu3JssLmT67GtkYFO8=;
+	Thu,  8 Aug 2019 15:02:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1565276562;
+	bh=dyMO+YEym8ib/r3ptFxeHa3pBfgJ53Bab+zG1JtBiD8=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=ZbrI0B4S6yZ9W8DkXTkRKrtxZxIGwqY+/MXPYB0o2rmzwggw0xkXrqFe8/EQqk3qx
-	CEiE0e7ulfOwRuC4cCZk5zRsj+IjxTMkazmUE1W++Hhtf2TrNtbW8Zj1X5IqmRAqkF
-	eR+XXmlBx8cVE9RFQgP2+XxaVevY5NI/aexva7a0=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4B01E6074C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
-Received: by mail-ed1-f54.google.com with SMTP id s49so55580991edb.1
+	b=T8SEdQkmyDZjxpkvg3O5aa5y0IUhZYhli6BHqmZLmfiiG7lkr51b/UqgTFh1RGV+e
+	MfHwocgqqK6CPBSQL1LeWybLWFp8cKihuFna7gkTOy+M2wAZon7MndaSRynprNtU82
+	2zgEQWoOZhEBTgp3ROz8ugCpgJEPPuHt0voaKgmo=
+Received: by mail-qt1-f182.google.com with SMTP id v38so76350qtb.0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 08 Aug 2019 04:35:34 -0700 (PDT)
-X-Gm-Message-State: APjAAAVPb5QkF2W49o0IGlQUKdmniVCaM4gZbqauyCDF/vPzitYbaHwF
-	46QEv97qhPxa9IiQvP3UgBGCebs2mmqvimWa6Yo=
-X-Google-Smtp-Source: APXvYqzXmB+VRV0h6DczJ86/gi4VfVSVgaDq6lvQZ78xCiCfDaAmWfeWWRuyx/bhq49Zbz7Hw0FKWVka+rpz4IhZsdg=
-X-Received: by 2002:a17:906:7013:: with SMTP id
-	n19mr12879575ejj.65.1565264132964; 
-	Thu, 08 Aug 2019 04:35:32 -0700 (PDT)
+	Thu, 08 Aug 2019 08:02:42 -0700 (PDT)
+X-Gm-Message-State: APjAAAV+u4XNzylB9n+oQeUJl3U6Ucxu8d24nlLzr9LUACfWGTXoflvJ
+	IeP3kOAafguXzvZV2Py8JrjlNYBMwrzfjIWHIw==
+X-Google-Smtp-Source: APXvYqwoUwqMMoJlRpUQeZhstAAUALmk5OLfWeCSiKB8+lRLcDvufCgBEJ1TDb+hHOMFdyjeedwU8GdoRwm/uZYI8ik=
+X-Received: by 2002:ac8:7593:: with SMTP id s19mr6019854qtq.136.1565276561735; 
+	Thu, 08 Aug 2019 08:02:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190612071554.13573-1-vivek.gautam@codeaurora.org>
-	<20190612071554.13573-2-vivek.gautam@codeaurora.org>
-	<20190618175536.GI4270@fuggles.cambridge.arm.com>
-	<CAFp+6iEwN6jeEGNxKVU5_i5NxdEbuF2ZggegEJZ1Rq6F=H34jg@mail.gmail.com>
-	<20190805222755.GB2634@builder>
-In-Reply-To: <20190805222755.GB2634@builder>
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Date: Thu, 8 Aug 2019 17:05:21 +0530
-X-Gmail-Original-Message-ID: <CAFp+6iHhh9749dAV4YDeE_0w1nCiftecTBedW4Rf0aiaOJsN2A@mail.gmail.com>
-Message-ID: <CAFp+6iHhh9749dAV4YDeE_0w1nCiftecTBedW4Rf0aiaOJsN2A@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] firmware: qcom_scm-64: Add atomic version of
-	qcom_scm_call
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>,
-	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-	Will Deacon <will.deacon@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	David Brown <david.brown@linaro.org>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	robh+dt <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
+References: <20190731154752.16557-1-nsaenzjulienne@suse.de>
+	<20190731154752.16557-4-nsaenzjulienne@suse.de>
+	<CAL_JsqKF5nh3hcdLTG5+6RU3_TnFrNX08vD6qZ8wawoA3WSRpA@mail.gmail.com>
+	<2050374ac07e0330e505c4a1637256428adb10c4.camel@suse.de>
+	<CAL_Jsq+LjsRmFg-xaLgpVx3miXN3hid3aD+mgTW__j0SbEFYjQ@mail.gmail.com>
+	<12eb3aba207c552e5eb727535e7c4f08673c4c80.camel@suse.de>
+In-Reply-To: <12eb3aba207c552e5eb727535e7c4f08673c4c80.camel@suse.de>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Thu, 8 Aug 2019 09:02:30 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJS6XBSc8DuK2sJApHtY4nCSFpLezf003YMD75THLHAqg@mail.gmail.com>
+Message-ID: <CAL_JsqJS6XBSc8DuK2sJApHtY4nCSFpLezf003YMD75THLHAqg@mail.gmail.com>
+Subject: Re: [PATCH 3/8] of/fdt: add function to get the SoC wide DMA
+	addressable memory size
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: phill@raspberryi.org, devicetree@vger.kernel.org,
+	"moderated list:BROADCOM BCM2835 ARM ARCHITECTURE"
+	<linux-rpi-kernel@lists.infradead.org>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Will Deacon <will@kernel.org>, Eric Anholt <eric@anholt.net>,
+	Marc Zyngier <marc.zyngier@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Frank Rowand <frowand.list@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-mm@kvack.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Matthias Brugger <mbrugger@suse.com>, wahrenst@gmx.net,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -112,103 +100,106 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Aug 6, 2019 at 3:58 AM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
+On Tue, Aug 6, 2019 at 12:12 PM Nicolas Saenz Julienne
+<nsaenzjulienne@suse.de> wrote:
 >
-> On Wed 19 Jun 04:34 PDT 2019, Vivek Gautam wrote:
+> Hi Rob,
 >
-> > On Tue, Jun 18, 2019 at 11:25 PM Will Deacon <will.deacon@arm.com> wrote:
+> On Mon, 2019-08-05 at 13:23 -0600, Rob Herring wrote:
+> > On Mon, Aug 5, 2019 at 10:03 AM Nicolas Saenz Julienne
+> > <nsaenzjulienne@suse.de> wrote:
+> > > Hi Rob,
+> > > Thanks for the review!
 > > >
-> > > On Wed, Jun 12, 2019 at 12:45:51PM +0530, Vivek Gautam wrote:
-> > > > There are scnenarios where drivers are required to make a
-> > > > scm call in atomic context, such as in one of the qcom's
-> > > > arm-smmu-500 errata [1].
+> > > On Fri, 2019-08-02 at 11:17 -0600, Rob Herring wrote:
+> > > > On Wed, Jul 31, 2019 at 9:48 AM Nicolas Saenz Julienne
+> > > > <nsaenzjulienne@suse.de> wrote:
+> > > > > Some SoCs might have multiple interconnects each with their own DMA
+> > > > > addressing limitations. This function parses the 'dma-ranges' on each of
+> > > > > them and tries to guess the maximum SoC wide DMA addressable memory
+> > > > > size.
+> > > > >
+> > > > > This is specially useful for arch code in order to properly setup CMA
+> > > > > and memory zones.
 > > > >
-> > > > [1] ("https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/
-> > > >       drivers/iommu/arm-smmu.c?h=CogSystems-msm-49/
-> > > >       msm-4.9&id=da765c6c75266b38191b38ef086274943f353ea7")
+> > > > We already have a way to setup CMA in reserved-memory, so why is this
+> > > > needed for that?
+> > >
+> > > Correct me if I'm wrong but I got the feeling you got the point of the patch
+> > > later on.
+> >
+> > No, for CMA I don't. Can't we already pass a size and location for CMA
+> > region under /reserved-memory. The only advantage here is perhaps the
+> > CMA range could be anywhere in the DMA zone vs. a fixed location.
+>
+> Now I get it, sorry I wasn't aware of that interface.
+>
+> Still, I'm not convinced it matches RPi's use case as this would hard-code
+> CMA's size. Most people won't care, but for the ones that do, it's nicer to
+> change the value from the kernel command line than editing the dtb.
+
+Sure, I fully agree and am not a fan of the CMA DT overlays I've seen.
+
+> I get that
+> if you need to, for example, reserve some memory for the video to work, it's
+> silly not to hard-code it. Yet due to the board's nature and users base I say
+> it's important to favor flexibility. It would also break compatibility with
+> earlier versions of the board and diverge from the downstream kernel behaviour.
+> Which is a bigger issue than it seems as most users don't always understand
+> which kernel they are running and unknowingly copy configuration options from
+> forums.
+>
+> As I also need to know the DMA addressing limitations to properly configure
+> memory zones and dma-direct. Setting up the proper CMA constraints during the
+> arch's init will be trivial anyway.
+
+It was really just commentary on commit text as for CMA alone we have
+a solution already. I agree on the need for zones.
+
+>
+> > > > IMO, I'd just do:
 > > > >
-> > > > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> > > > Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > > ---
-> > > >  drivers/firmware/qcom_scm-64.c | 136 ++++++++++++++++++++++++++++-------------
-> > > >  1 file changed, 92 insertions(+), 44 deletions(-)
+> > > > if (of_fdt_machine_is_compatible(blob, "brcm,bcm2711"))
+> > > >     dma_zone_size = XX;
 > > > >
-> > > > diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-> > > > index 91d5ad7cf58b..b6dca32c5ac4 100644
-> > > > --- a/drivers/firmware/qcom_scm-64.c
-> > > > +++ b/drivers/firmware/qcom_scm-64.c
-> >
-> > [snip]
-> >
-> > > > +
-> > > > +static void qcom_scm_call_do(const struct qcom_scm_desc *desc,
-> > > > +                          struct arm_smccc_res *res, u32 fn_id,
-> > > > +                          u64 x5, bool atomic)
-> > > > +{
+> > > > 2 lines of code is much easier to maintain than 10s of incomplete code
+> > > > and is clearer who needs this. Maybe if we have dozens of SoCs with
+> > > > this problem we should start parsing dma-ranges.
 > > >
-> > > Maybe pass in the call type (ARM_SMCCC_FAST_CALL vs ARM_SMCCC_STD_CALL)
-> > > instead of "bool atomic"? Would certainly make the callsites easier to
-> > > understand.
+> > > FYI that's what arm32 is doing at the moment and was my first instinct. But
+> > > it
+> > > seems that arm64 has been able to survive so far without any machine
+> > > specific
+> > > code and I have the feeling Catalin and Will will not be happy about this
+> > > solution. Am I wrong?
 > >
-> > Sure, will do that.
+> > No doubt. I'm fine if the 2 lines live in drivers/of/.
 > >
-> > >
-> > > > +     int retry_count = 0;
-> > > > +
-> > > > +     if (!atomic) {
-> > > > +             do {
-> > > > +                     mutex_lock(&qcom_scm_lock);
-> > > > +
-> > > > +                     __qcom_scm_call_do(desc, res, fn_id, x5,
-> > > > +                                        ARM_SMCCC_STD_CALL);
-> > > > +
-> > > > +                     mutex_unlock(&qcom_scm_lock);
-> > > > +
-> > > > +                     if (res->a0 == QCOM_SCM_V2_EBUSY) {
-> > > > +                             if (retry_count++ > QCOM_SCM_EBUSY_MAX_RETRY)
-> > > > +                                     break;
-> > > > +                             msleep(QCOM_SCM_EBUSY_WAIT_MS);
-> > > > +                     }
-> > > > +             }  while (res->a0 == QCOM_SCM_V2_EBUSY);
-> > > > +     } else {
-> > > > +             __qcom_scm_call_do(desc, res, fn_id, x5, ARM_SMCCC_FAST_CALL);
-> > > > +     }
-> > >
-> > > Is it safe to make concurrent FAST calls?
-> >
-> > I better add a spinlock here.
-> >
+> > Note that I'm trying to reduce the number of early_init_dt_scan_*
+> > calls from arch code into the DT code so there's more commonality
+> > across architectures in the early DT scans. So ideally, this can all
+> > be handled under early_init_dt_scan() call.
 >
-> Hi Vivek,
+> How does this look? (I'll split it in two patches and add a comment explaining
+> why dt_dma_zone_size is needed)
 >
-> Would you be able to respin this patch, so that we could unblock the
-> introduction of the display nodes in the various device?
-
-Will pointed [1] to the restructuring of arm-smmu to support
-implementation specific details.
-That hasn't been posted yet, and I haven't yet been able to work on that either.
-I will be happy to respin this series with the comments addressed if
-Will is okay to pull changes to unblock sdm845 devices. :)
-
-[1] https://lore.kernel.org/patchwork/patch/1087457/
-
-Thanks & Regards
-Vivek
-
+> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> index f2444c61a136..1395be40b722 100644
+> --- a/drivers/of/fdt.c
+> +++ b/drivers/of/fdt.c
+> @@ -30,6 +30,8 @@
 >
-> Regards,
-> Bjorn
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>  #include "of_private.h"
+>
+> +u64 dt_dma_zone_size __ro_after_init;
 
+Avoiding a call from arch code by just having a variable isn't really
+better. I'd rather see a common, non DT specific variable that can be
+adjusted. Something similar to initrd_start/end. Then the arch code
+doesn't have to care what hardware description code adjusted the
+value.
 
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
