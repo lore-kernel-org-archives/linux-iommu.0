@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 007EBC31E40
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:08:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C027CC31E40
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:08:43 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D2DC320C01
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:08:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D2DC320C01
+	by mail.kernel.org (Postfix) with ESMTPS id 9B40120820
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:08:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B40120820
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F1DABDD5;
-	Fri,  9 Aug 2019 17:08:21 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 25A5DDDD;
+	Fri,  9 Aug 2019 17:08:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1AC35C9A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 70ADABA9
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 17:08:21 +0000 (UTC)
+	Fri,  9 Aug 2019 17:08:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 94B0B67F
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 14FCD67F
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 17:08:20 +0000 (UTC)
+	Fri,  9 Aug 2019 17:08:22 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4C6391688;
-	Fri,  9 Aug 2019 10:08:20 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B90B81684;
+	Fri,  9 Aug 2019 10:08:21 -0700 (PDT)
 Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
 	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 124E63F575; 
-	Fri,  9 Aug 2019 10:08:18 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8102E3F575; 
+	Fri,  9 Aug 2019 10:08:20 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH 05/15] iommu/arm-smmu: Split arm_smmu_tlb_inv_range_nosync()
-Date: Fri,  9 Aug 2019 18:07:42 +0100
-Message-Id: <33a49ca158509c95d50b0d3f9cba03bba2facdf3.1565369764.git.robin.murphy@arm.com>
+Subject: [PATCH 06/15] iommu/arm-smmu: Get rid of weird "atomic" write
+Date: Fri,  9 Aug 2019 18:07:43 +0100
+Message-Id: <17cf46a983ff4009cb7251f47c62937d7f834446.1565369764.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.21.0.dirty
 In-Reply-To: <cover.1565369764.git.robin.murphy@arm.com>
 References: <cover.1565369764.git.robin.murphy@arm.com>
@@ -64,117 +64,65 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Since we now use separate iommu_gather_ops for stage 1 and stage 2
-contexts, we may as well divide up the monolithic callback into its
-respective stage 1 and stage 2 parts.
+The smmu_write_atomic_lq oddity made some sense when the context
+format was effectively tied to CONFIG_64BIT, but these days it's
+simpler to just pick an explicit access size based on the format
+for the one-and-a-half times we actually care.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu.c | 66 ++++++++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 29 deletions(-)
+ drivers/iommu/arm-smmu.c | 23 +++++++----------------
+ 1 file changed, 7 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 463bc8d98adb..a681e000e704 100644
+index a681e000e704..544c992cf586 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -490,46 +490,54 @@ static void arm_smmu_tlb_inv_context_s2(void *cookie)
- 	arm_smmu_tlb_sync_global(smmu);
- }
+@@ -83,17 +83,6 @@
+ 		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
+ 			? 0x400 : 0))
  
--static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--					  size_t granule, bool leaf, void *cookie)
-+static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
-+				      size_t granule, bool leaf, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
--	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
-+	void __iomem *reg = ARM_SMMU_CB(smmu, cfg->cbndx);
+-/*
+- * Some 64-bit registers only make sense to write atomically, but in such
+- * cases all the data relevant to AArch32 formats lies within the lower word,
+- * therefore this actually makes more sense than it might first appear.
+- */
+-#ifdef CONFIG_64BIT
+-#define smmu_write_atomic_lq		writeq_relaxed
+-#else
+-#define smmu_write_atomic_lq		writel_relaxed
+-#endif
+-
+ /* Translation context bank */
+ #define ARM_SMMU_CB(smmu, n)	((smmu)->base + (((smmu)->cb_base + (n)) << (smmu)->pgshift))
  
--	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
- 		wmb();
- 
--	if (stage1) {
--		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
-+	reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
- 
--		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
--			iova &= ~12UL;
--			iova |= cfg->asid;
--			do {
--				writel_relaxed(iova, reg);
--				iova += granule;
--			} while (size -= granule);
--		} else {
--			iova >>= 12;
--			iova |= (u64)cfg->asid << 48;
--			do {
--				writeq_relaxed(iova, reg);
--				iova += granule >> 12;
--			} while (size -= granule);
--		}
--	} else {
--		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
--			      ARM_SMMU_CB_S2_TLBIIPAS2;
--		iova >>= 12;
-+	if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
-+		iova &= ~12UL;
-+		iova |= cfg->asid;
- 		do {
--			smmu_write_atomic_lq(iova, reg);
-+			writel_relaxed(iova, reg);
-+			iova += granule;
-+		} while (size -= granule);
-+	} else {
-+		iova >>= 12;
-+		iova |= (u64)cfg->asid << 48;
-+		do {
+@@ -533,7 +522,10 @@ static void arm_smmu_tlb_inv_range_s2(unsigned long iova, size_t size,
+ 	reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L : ARM_SMMU_CB_S2_TLBIIPAS2;
+ 	iova >>= 12;
+ 	do {
+-		smmu_write_atomic_lq(iova, reg);
++		if (smmu_domain->cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64)
 +			writeq_relaxed(iova, reg);
- 			iova += granule >> 12;
- 		} while (size -= granule);
- 	}
++		else
++			writel_relaxed(iova, reg);
+ 		iova += granule >> 12;
+ 	} while (size -= granule);
  }
+@@ -1371,11 +1363,10 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
  
-+static void arm_smmu_tlb_inv_range_s2(unsigned long iova, size_t size,
-+				      size_t granule, bool leaf, void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *reg = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
-+
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-+		wmb();
-+
-+	reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L : ARM_SMMU_CB_S2_TLBIIPAS2;
-+	iova >>= 12;
-+	do {
-+		smmu_write_atomic_lq(iova, reg);
-+		iova += granule >> 12;
-+	} while (size -= granule);
-+}
-+
- /*
-  * On MMU-401 at least, the cost of firing off multiple TLBIVMIDs appears
-  * almost negligible, but the benefit of getting the first one in as far ahead
-@@ -550,13 +558,13 @@ static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
+ 	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+-	/* ATS1 registers can only be written atomically */
+ 	va = iova & ~0xfffUL;
+-	if (smmu->version == ARM_SMMU_V2)
+-		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
+-	else /* Register is only 32-bit in v1 */
++	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
++		writeq_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
++	else
+ 		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
  
- static const struct iommu_gather_ops arm_smmu_s1_tlb_ops = {
- 	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-+	.tlb_add_flush	= arm_smmu_tlb_inv_range_s1,
- 	.tlb_sync	= arm_smmu_tlb_sync_context,
- };
- 
- static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v2 = {
- 	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-+	.tlb_add_flush	= arm_smmu_tlb_inv_range_s2,
- 	.tlb_sync	= arm_smmu_tlb_sync_context,
- };
- 
+ 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
 -- 
 2.21.0.dirty
 
