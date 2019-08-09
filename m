@@ -2,94 +2,57 @@ Return-Path: <SRS0=HAoA=WF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFE8C433FF
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 09:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3579EC31E40
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 12:51:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 318572171F
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 09:35:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cogentembedded-com.20150623.gappssmtp.com header.i=@cogentembedded-com.20150623.gappssmtp.com header.b="VcVeBlNE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 318572171F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=cogentembedded.com
+	by mail.kernel.org (Postfix) with ESMTPS id 11C3E214C6
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 12:51:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11C3E214C6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BF3C8E40;
-	Fri,  9 Aug 2019 09:35:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B3BDACD1;
+	Fri,  9 Aug 2019 12:51:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 14B5AE3C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 48CF9CC3
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 09:35:19 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f68.google.com (mail-lf1-f68.google.com
-	[209.85.167.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 56CC267F
+	Fri,  9 Aug 2019 12:51:49 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8361A829
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 09:35:18 +0000 (UTC)
-Received: by mail-lf1-f68.google.com with SMTP id x3so15288477lfn.6
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 09 Aug 2019 02:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-	h=subject:to:cc:references:from:message-id:date:user-agent
-	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=ZhZIKbPy1ojcvmbIo8mwd7oy4V33VIdwk5j1j74WW9w=;
-	b=VcVeBlNEjS4wa/wbZ2Jy74bbWsbslezZzRDF5L5UlZPXuFgueVv76Apfbc48KCG7go
-	O+JybRtPA55YOzc+rFrImDZn5Uzf4Iypjkw1Q2Jrzsy02VozkkgOmiMWFsyG/90IeJID
-	s7g3Gev/hUXSaIrCTrM7IhGUouQ5uAYJrQU3W3SKx3qZhdrx3pME6i2VY+znRnPsMDZ6
-	IqCV+5+rqLIKHOuF9OdviK0y/AZ3VputL3vLRILFoF8nj2+pSMBc+S3cQ85tH9TO2N3S
-	m8AsLb+p6B1SXzPU1ej0Ppenwk9xbIlPPfP789O8926HVT26h04IVIjFQkPvwouSfOGR
-	RQ1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-	:user-agent:mime-version:in-reply-to:content-language
-	:content-transfer-encoding;
-	bh=ZhZIKbPy1ojcvmbIo8mwd7oy4V33VIdwk5j1j74WW9w=;
-	b=YkiVISDLyQO/vErmnVsedvpt9L4PoF8O61fH61NXVQoq65KGsIgn+0XJthmWsYC/NT
-	WOfRFCc8IU6nWoicRCgDv9f+FBCY/heWRr7WuP4UJFD4E5mZR7ng8YYH1XXX5ISYtsjo
-	ZbDBuwz0B7KvVU3OshRvRG3d3Ap6frdNSdvBh0r8anih/SL8IreLVZjDMxVGZ5mWWnA5
-	4+qOey2gApLDIUK1gHs0TduDRH+WPoK+dNtjrT2zPKqpyOcv/nj1vShqC1Zilaoo8Sv4
-	deYH2+NRDvwdhlXAEsqjyE8Pp0hzjz6YCcRzjBfpEZT1p8H2v+TQEHN+5EoEpQjBbdN9
-	ysyg==
-X-Gm-Message-State: APjAAAVKW9J79IOv/+UVu6fciVBQqug/X6fQdIcr+0YMU/1P+4Z34H27
-	oRp5awCndmhs/HeF0wv1DE0icg==
-X-Google-Smtp-Source: APXvYqzlq7k/M37b+stHUNm1aCq6nUomyYeuBENCXNdKlF0iST4RYWqRChfyDEB29cAPzX6iW+LIMA==
-X-Received: by 2002:ac2:5981:: with SMTP id w1mr12123067lfn.85.1565343316741; 
-	Fri, 09 Aug 2019 02:35:16 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:44bf:fcca:cd2a:e5bf:7de5:cd?
-	([2a00:1fa0:44bf:fcca:cd2a:e5bf:7de5:cd])
-	by smtp.gmail.com with ESMTPSA id
-	t21sm19110864ljg.60.2019.08.09.02.35.14
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Fri, 09 Aug 2019 02:35:15 -0700 (PDT)
-Subject: Re: [PATCH 6/8] arm-nommu: call dma_mmap_from_dev_coherent directly
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20190808160005.10325-1-hch@lst.de>
-	<20190808160005.10325-7-hch@lst.de>
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <247fabce-5284-8140-c492-fe49e1683ca6@cogentembedded.com>
-Date: Fri, 9 Aug 2019 12:35:00 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	Fri,  9 Aug 2019 12:51:48 +0000 (UTC)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits)
+	server-digest SHA256) (No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 464lVk02RMz9sP7;
+	Fri,  9 Aug 2019 22:51:41 +1000 (AEST)
+From: mpe@ellerman.id.au
+To: Thiago Jung Bauermann <bauerman@linux.ibm.com>, x86@kernel.org
+Subject: Re: [PATCH v4 0/6] Remove x86-specific code from generic headers
+In-Reply-To: <20190806044919.10622-1-bauerman@linux.ibm.com>
+References: <20190806044919.10622-1-bauerman@linux.ibm.com>
+Date: Fri, 09 Aug 2019 22:51:41 +1000
+Message-ID: <87sgqasdr6.fsf@concordia.ellerman.id.au>
 MIME-Version: 1.0
-In-Reply-To: <20190808160005.10325-7-hch@lst.de>
-Content-Language: en-US
-Cc: linux-xtensa@linux-xtensa.org, Michal Simek <monstr@monstr.eu>,
-	Vladimir Murzin <vladimir.murzin@arm.com>,
-	linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org,
-	Takashi Iwai <tiwai@suse.de>, linuxppc-dev@lists.ozlabs.org,
-	Helge Deller <deller@gmx.de>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: linux-s390@vger.kernel.org, Lianbo Jiang <lijiang@redhat.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Robin Murphy <robin.murphy@arm.com>, Mike Anderson <andmike@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	Alexey Dobriyan <adobriyan@gmail.com>, Halil Pasic <pasic@linux.ibm.com>,
+	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, Thomas Lendacky <Thomas.Lendacky@amd.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-fsdevel@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -102,24 +65,101 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 08.08.2019 19:00, Christoph Hellwig wrote:
+Thiago Jung Bauermann <bauerman@linux.ibm.com> writes:
+> Hello,
+>
+> This version has only a small change in the last patch as requested by
+> Christoph and Halil, and collects Reviewed-by's.
+>
+> These patches are applied on top of v5.3-rc2.
+>
+> I don't have a way to test SME, SEV, nor s390's PEF so the patches have only
+> been build tested.
 
-> Ther is no need to go through dma_common_mmap for the arm-nommu
+I need to take this series via the powerpc tree because there is another
+fairly large powerpc specific series dependent on it.
 
-    There. :-)
+I think this series already has pretty much all the acks it needs, which
+almost never happens, amazing work!
 
-> dma mmap implementation as the only possible memory not handled above
-> could be that from the per-device coherent pool.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-[...]
+I'll put the series in a topic branch, just in case there's any bad
+conflicts and other folks want to merge it later on. I'll then merge the
+topic branch into my next, and so this series will be tested in
+linux-next that way.
 
-MBR, Sergei
+cheers
+
+
+> Changelog
+>
+> Since v3:
+>
+> - Patch "s390/mm: Remove sev_active() function"
+>   - Preserve comment from sev_active() in force_dma_unencrypted().
+>     Suggested by Christoph Hellwig.
+>
+> Since v2:
+>
+> - Patch "x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig"
+>   - Added "select ARCH_HAS_MEM_ENCRYPT" to config S390. Suggested by Janani.
+>
+> - Patch "DMA mapping: Move SME handling to x86-specific files"
+>   - Split up into 3 new patches. Suggested by Christoph Hellwig.
+>
+> - Patch "swiotlb: Remove call to sme_active()"
+>   - New patch.
+>
+> - Patch "dma-mapping: Remove dma_check_mask()"
+>   - New patch.
+>
+> - Patch "x86,s390/mm: Move sme_active() and sme_me_mask to x86-specific header"
+>   - New patch.
+>   - Removed export of sme_active symbol. Suggested by Christoph Hellwig.
+>
+> - Patch "fs/core/vmcore: Move sev_active() reference to x86 arch code"
+>   - Removed export of sev_active symbol. Suggested by Christoph Hellwig.
+>
+> - Patch "s390/mm: Remove sev_active() function"
+>   - New patch.
+>
+> Since v1:
+>
+> - Patch "x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig"
+>   - Remove definition of ARCH_HAS_MEM_ENCRYPT from s390/Kconfig as well.
+>   - Reworded patch title and message a little bit.
+>
+> - Patch "DMA mapping: Move SME handling to x86-specific files"
+>   - Adapt s390's <asm/mem_encrypt.h> as well.
+>   - Remove dma_check_mask() from kernel/dma/mapping.c. Suggested by
+>     Christoph Hellwig.
+>
+> Thiago Jung Bauermann (6):
+>   x86,s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig
+>   swiotlb: Remove call to sme_active()
+>   dma-mapping: Remove dma_check_mask()
+>   x86,s390/mm: Move sme_active() and sme_me_mask to x86-specific header
+>   fs/core/vmcore: Move sev_active() reference to x86 arch code
+>   s390/mm: Remove sev_active() function
+>
+>  arch/Kconfig                        |  3 +++
+>  arch/s390/Kconfig                   |  4 +---
+>  arch/s390/include/asm/mem_encrypt.h |  5 +----
+>  arch/s390/mm/init.c                 |  7 +------
+>  arch/x86/Kconfig                    |  4 +---
+>  arch/x86/include/asm/mem_encrypt.h  | 10 ++++++++++
+>  arch/x86/kernel/crash_dump_64.c     |  5 +++++
+>  arch/x86/mm/mem_encrypt.c           |  2 --
+>  fs/proc/vmcore.c                    |  8 ++++----
+>  include/linux/crash_dump.h          | 14 ++++++++++++++
+>  include/linux/mem_encrypt.h         | 15 +--------------
+>  kernel/dma/mapping.c                |  8 --------
+>  kernel/dma/swiotlb.c                |  3 +--
+>  13 files changed, 42 insertions(+), 46 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
