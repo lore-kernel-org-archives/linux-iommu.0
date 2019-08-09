@@ -2,82 +2,73 @@ Return-Path: <SRS0=HAoA=WF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C25C31E40
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 07:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DBFC31E40
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 07:21:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2705C208C4
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 07:10:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qnGtnDam"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2705C208C4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id ECA562166E
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 07:21:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECA562166E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F293BC74;
-	Fri,  9 Aug 2019 07:10:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ED108C7D;
+	Fri,  9 Aug 2019 07:21:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E2FF1C6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 07077C79
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 07:10:14 +0000 (UTC)
+	Fri,  9 Aug 2019 07:21:43 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
-	[209.85.215.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9F13476F
+Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com
+	[209.85.210.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3987376F
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 07:10:14 +0000 (UTC)
-Received: by mail-pg1-f194.google.com with SMTP id o13so45379812pgp.12
+	Fri,  9 Aug 2019 07:21:40 +0000 (UTC)
+Received: by mail-ot1-f65.google.com with SMTP id o101so129056070ota.8
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 09 Aug 2019 00:10:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=AfFInu/BKl5gok1YyMJiKglvG/hgOvmiC2oJHUZbiVA=;
-	b=qnGtnDamMWxXkDvOfVvqZyiG6ESs3LPrdiIFipKW0wSvRvybAaPD6u37c/y+Acoxl5
-	WcyXF6qUzNvxq9ql7r5zVsKIrKNF6L629QOCJF+cMyfo8LL+m4L+kas/k9Z4REFndMw9
-	Ma/5yipfNJ0LrB5NNa4xGgCzqc3BNHGZ8C5CBQ6nKC5fULk8MJgDqoc6WSVQMGUTLNIi
-	RWKkW5eTgoovXCx8d2pLjD4muWZYJdK4s1gfk+sDHLMVec5Zam0ER72GybKZGyuhS8KD
-	W8ovG9Oe+OzKUSVXog6pgZmJDGg26HIq7jDbIxKADkCXHo0pjEpkXFluSrfOGAjLTkPv
-	H4xA==
+	Fri, 09 Aug 2019 00:21:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=AfFInu/BKl5gok1YyMJiKglvG/hgOvmiC2oJHUZbiVA=;
-	b=LNQyzQoazOzIlU95M1M4MSr1eT68eU/7vM26TfL6xAZT4rBiYRmRONunl0wKz6ZJyZ
-	+zS67/Y2gHMVKXzi0K8uTMsvX4dyddNxOYmySIpMHF4GyJ+aiOnINcc5IvtBIDw3SfCy
-	QRKQqLljBcmFawdq37PbtMBQwIHbPBsTeR7ALjRaBu3IX5pcXiX1+8cGNpMa5nw76RAe
-	HXgqzVyh22SJrkbzGoavcU7Fz47Zd31z+PaNffk5BltRmY8SiuOd9gG1kAQDnql2cALG
-	YsfA/E5pdq2WZdE1+VBryfYXsxpLg8/i7WG8wKWba+8Amzi2FIgXD6uu5SJvYd/mONrF
-	omwg==
-X-Gm-Message-State: APjAAAXtKqVr+FjNxOh4qmyMIwLj4eIZ2Yhu/LnIlr2fYINiFvmm/zAr
-	S4ZkD1J7CS2YJyQyvoH2E/Q=
-X-Google-Smtp-Source: APXvYqyCJqVbpv6emN3HFwU1RDjesGU99ywfAwLyfs9TJwWgVvpkgL6a+uXlTNL0WPBQjy2+H6017g==
-X-Received: by 2002:a62:1444:: with SMTP id 65mr19563170pfu.145.1565334614339; 
-	Fri, 09 Aug 2019 00:10:14 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-	by smtp.gmail.com with ESMTPSA id
-	w4sm120886334pfn.144.2019.08.09.00.10.11
-	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-	Fri, 09 Aug 2019 00:10:13 -0700 (PDT)
-From: Chuhong Yuan <hslester96@gmail.com>
-To: 
-Subject: [PATCH v4 1/8] dma: debug: Replace strncmp with str_has_prefix
-Date: Fri,  9 Aug 2019 15:10:09 +0800
-Message-Id: <20190809071009.17114-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=A7mCF4lTq2gFXOvcmY2h+y2/MZQDfsM2+XB9S0QJ6k4=;
+	b=nUaScqdbE0QEkGwQuKqp0hwlAXFHIbKqJA8FDo9X8vFkU3LuM9D0J42kcMUlnlh3Ee
+	YLQhp48oPJwLr+8IyD6zgY3aADOI/fh4lSMWKxXJBd170d4pMHBF6O/2nCsLTFdwOJDF
+	zahpne2FCwNKk/mHeMpf5Bq1mMmp9RgbNZi1syTNdy7X4OnbClqUpcBA0JZ2vgrSktEz
+	m/bqPqs54Wp/Ou0wKEwp83TZeSOa47pP9BN/PWHHoUdgKM96b+hclOE2iCbXLEmkKc6O
+	3bcauJJglpesmSiCzKV0KlCN2zOBuPmks+7Hd5eDxOBnscHLTrLMh1MiHgnDjD32Ig/D
+	PbEg==
+X-Gm-Message-State: APjAAAW2Taf5vQCLRCEy/iNUGnHQwSoInwtkgyOIaXqBU4TYxNhgCZy8
+	y+YmvoHm72y6AYej4zez8JxqTiC7QE7OPJbFyWk=
+X-Google-Smtp-Source: APXvYqyBXPOK98jaQhUmqtFlEEGP/W76NVu4RQ2ZHS+SsKdevOL3KYGUiRHhF15E80P339HCx6FddAsKPmlukbGoIK8=
+X-Received: by 2002:a9d:7a90:: with SMTP id l16mr17247630otn.297.1565335299510;
+	Fri, 09 Aug 2019 00:21:39 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Chuhong Yuan <hslester96@gmail.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>
+References: <20190808160005.10325-1-hch@lst.de>
+	<20190808160005.10325-9-hch@lst.de>
+In-Reply-To: <20190808160005.10325-9-hch@lst.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 9 Aug 2019 09:21:28 +0200
+Message-ID: <CAMuHMdV0JfZ_K2V7W0FQkobE_zLwe4Uez-EWzMMdTfVffpAWtA@mail.gmail.com>
+Subject: Re: [PATCH 8/8] dma-mapping: remove CONFIG_ARCH_NO_COHERENT_DMA_MMAP
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-xtensa@linux-xtensa.org, Michal Simek <monstr@monstr.eu>,
+	Vladimir Murzin <vladimir.murzin@arm.com>,
+	Parisc List <linux-parisc@vger.kernel.org>,
+	Linux-sh list <linux-sh@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>,
+	linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Helge Deller <deller@gmx.de>,
+	the arch/x86 maintainers <x86@kernel.org>,
+	linux-m68k <linux-m68k@lists.linux-m68k.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -95,34 +86,33 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-strncmp(str, const, len) is error-prone because len
-is easy to have typo.
-The example is the hard-coded len has counting error
-or sizeof(const) forgets - 1.
-So we prefer using newly introduced str_has_prefix()
-to substitute such strncmp to make code better.
+Hi Christoph,
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- kernel/dma/debug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Aug 8, 2019 at 6:01 PM Christoph Hellwig <hch@lst.de> wrote:
+> CONFIG_ARCH_NO_COHERENT_DMA_MMAP is now functionally identical to
+> !CONFIG_MMU, so remove the separate symbol.  The only difference is that
+> arm did not set it for !CONFIG_MMU, but arm uses a separate dma mapping
+> implementation including its own mmap method, which is handled by moving
+> the CONFIG_MMU check in dma_can_mmap so that is only applies to the
+> dma-direct case, just as the other ifdefs for it.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 099002d84f46..0f9e1aba3e1a 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -970,7 +970,7 @@ static __init int dma_debug_cmdline(char *str)
- 	if (!str)
- 		return -EINVAL;
- 
--	if (strncmp(str, "off", 3) == 0) {
-+	if (str_has_prefix(str, "off")) {
- 		pr_info("debugging disabled on kernel command line\n");
- 		global_disable = true;
- 	}
+>  arch/m68k/Kconfig       |  1 -
+
+For m68k:
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.20.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
