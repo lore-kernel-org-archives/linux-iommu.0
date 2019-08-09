@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAE3C31E40
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6549EC31E40
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:09:39 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8B81E20820
-	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:09:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B81E20820
+	by mail.kernel.org (Postfix) with ESMTPS id 457DE20820
+	for <iommu@archiver.kernel.org>; Fri,  9 Aug 2019 17:09:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 457DE20820
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 52EA1DF2;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 79951E1E;
 	Fri,  9 Aug 2019 17:08:37 +0000 (UTC)
 Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
 	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 66C8BC9A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 00B4FC9A
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 17:08:34 +0000 (UTC)
+	Fri,  9 Aug 2019 17:08:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTP id B96121DAA7
+	by smtp2.linuxfoundation.org (Postfix) with ESMTP id 362251DAA7
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  9 Aug 2019 17:08:33 +0000 (UTC)
+	Fri,  9 Aug 2019 17:08:35 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 583701688;
-	Fri,  9 Aug 2019 10:08:33 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C613D15AB;
+	Fri,  9 Aug 2019 10:08:34 -0700 (PDT)
 Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
 	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1FF6B3F575; 
-	Fri,  9 Aug 2019 10:08:32 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8DDDA3F575; 
+	Fri,  9 Aug 2019 10:08:33 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH 14/15] iommu/arm-smmu: Add reset implementation hook
-Date: Fri,  9 Aug 2019 18:07:51 +0100
-Message-Id: <c4cd836312c7ca255fdf42107e78c41f73243b19.1565369764.git.robin.murphy@arm.com>
+Subject: [PATCH 15/15] iommu/arm-smmu: Add context init implementation hook
+Date: Fri,  9 Aug 2019 18:07:52 +0100
+Message-Id: <6adbec8e4757f3b6c9f47135544a0302f8e7c55c.1565369764.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.21.0.dirty
 In-Reply-To: <cover.1565369764.git.robin.murphy@arm.com>
 References: <cover.1565369764.git.robin.murphy@arm.com>
@@ -64,174 +64,246 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Reset is an activity rife with implementation-defined poking. Add a
-corresponding hook, and use it to encapsulate the existing MMU-500
-details.
+Allocating and initialising a context for a domain is another point
+where certain implementations are known to want special behaviour.
+Currently the other half of the Cavium workaround comes into play here,
+so let's finish the job to get the whole thing right out of the way.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu-impl.c | 49 +++++++++++++++++++++++++++++++++++
- drivers/iommu/arm-smmu.c      | 39 +++-------------------------
- drivers/iommu/arm-smmu.h      |  1 +
- 3 files changed, 54 insertions(+), 35 deletions(-)
+ drivers/iommu/arm-smmu-impl.c | 39 +++++++++++++++++++++++++--
+ drivers/iommu/arm-smmu.c      | 51 +++++++----------------------------
+ drivers/iommu/arm-smmu.h      | 42 +++++++++++++++++++++++++++--
+ 3 files changed, 86 insertions(+), 46 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index 0b444e476525..c8904da08354 100644
+index c8904da08354..7a657d47b6ec 100644
 --- a/drivers/iommu/arm-smmu-impl.c
 +++ b/drivers/iommu/arm-smmu-impl.c
-@@ -4,6 +4,7 @@
- 
- #define pr_fmt(fmt) "arm-smmu: " fmt
- 
-+#include <linux/bitfield.h>
- #include <linux/of.h>
- 
- #include "arm-smmu.h"
-@@ -67,6 +68,51 @@ const struct arm_smmu_impl cavium_impl = {
+@@ -48,6 +48,12 @@ const struct arm_smmu_impl calxeda_impl = {
  };
  
  
-+#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
++struct cavium_smmu {
++	struct arm_smmu_device smmu;
++	u32 id_base;
++};
++#define to_csmmu(s)	container_of(s, struct cavium_smmu, smmu)
 +
-+#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
-+#define ARM_MMU500_ACR_S2CRB_TLBEN	(1 << 10)
-+#define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
-+
-+static int arm_mmu500_reset(struct arm_smmu_device *smmu)
+ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+ {
+ 	static atomic_t context_count = ATOMIC_INIT(0);
+@@ -56,17 +62,46 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+ 	 * Ensure ASID and VMID allocation is unique across all SMMUs in
+ 	 * the system.
+ 	 */
+-	smmu->cavium_id_base = atomic_fetch_add(smmu->num_context_banks,
++	to_csmmu(smmu)->id_base = atomic_fetch_add(smmu->num_context_banks,
+ 						   &context_count);
+ 	dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
+ 
+ 	return 0;
+ }
+ 
++int cavium_init_context(struct arm_smmu_domain *smmu_domain)
 +{
-+	u32 reg, major;
-+	int i;
-+	/*
-+	 * On MMU-500 r2p0 onwards we need to clear ACR.CACHE_LOCK before
-+	 * writes to the context bank ACTLRs will stick. And we just hope that
-+	 * Secure has also cleared SACR.CACHE_LOCK for this to take effect...
-+	 */
-+	reg = arm_smmu_read_gr0(smmu, ARM_SMMU_GR0_ID7);
-+	major = FIELD_GET(ID7_MAJOR, reg);
-+	reg = arm_smmu_read_gr0(smmu, ARM_SMMU_GR0_sACR);
-+	if (major >= 2)
-+		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-+	/*
-+	 * Allow unmatched Stream IDs to allocate bypass
-+	 * TLB entries for reduced latency.
-+	 */
-+	reg |= ARM_MMU500_ACR_SMTNMB_TLBEN | ARM_MMU500_ACR_S2CRB_TLBEN;
-+	arm_smmu_write_gr0(smmu, ARM_SMMU_GR0_sACR, reg);
++	u32 id_base = to_csmmu(smmu_domain->smmu)->id_base;
 +
-+	/*
-+	 * Disable MMU-500's not-particularly-beneficial next-page
-+	 * prefetcher for the sake of errata #841119 and #826419.
-+	 */
-+	for (i = 0; i < smmu->num_context_banks; ++i) {
-+		reg = arm_smmu_read_cb(smmu, i, ARM_SMMU_CB_ACTLR);
-+		reg &= ~ARM_MMU500_ACTLR_CPRE;
-+		arm_smmu_write_cb(smmu, i, ARM_SMMU_CB_ACTLR, reg);
-+	}
++	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
++		smmu_domain->cfg.vmid += id_base;
++	else
++		smmu_domain->cfg.asid += id_base;
 +
 +	return 0;
 +}
 +
-+const struct arm_smmu_impl arm_mmu500_impl = {
-+	.reset = arm_mmu500_reset,
-+};
-+
-+
- struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- {
- 	/* The current quirks happen to be mutually-exclusive */
-@@ -77,5 +123,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 	if (smmu->model == CAVIUM_SMMUV2)
- 		smmu->impl = &cavium_impl;
+ const struct arm_smmu_impl cavium_impl = {
+ 	.cfg_probe = cavium_cfg_probe,
++	.init_context = cavium_init_context,
+ };
  
-+	if (smmu->model == ARM_MMU500)
-+		smmu->impl = &arm_mmu500_impl;
++struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smmu)
++{
++	struct cavium_smmu *csmmu;
 +
- 	return smmu;
- }
++	csmmu = devm_kzalloc(smmu->dev, sizeof(*csmmu), GFP_KERNEL);
++	if (!csmmu)
++		return ERR_PTR(-ENOMEM);
++
++	csmmu->smmu = *smmu;
++	csmmu->smmu.impl = &cavium_impl;
++
++	devm_kfree(smmu->dev, smmu);
++
++	return &csmmu->smmu;
++}
++
+ 
+ #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
+ 
+@@ -121,7 +156,7 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+ 		smmu->impl = &calxeda_impl;
+ 
+ 	if (smmu->model == CAVIUM_SMMUV2)
+-		smmu->impl = &cavium_impl;
++		return cavium_smmu_impl_init(smmu);
+ 
+ 	if (smmu->model == ARM_MMU500)
+ 		smmu->impl = &arm_mmu500_impl;
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 80822d48f6c7..298ab9e6a6cd 100644
+index 298ab9e6a6cd..1c1c9ef91d7b 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -54,12 +54,6 @@
-  */
- #define QCOM_DUMMY_VAL -1
+@@ -27,7 +27,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/io-64-nonatomic-hi-lo.h>
+-#include <linux/io-pgtable.h>
+ #include <linux/iopoll.h>
+ #include <linux/init.h>
+ #include <linux/moduleparam.h>
+@@ -111,44 +110,6 @@ struct arm_smmu_master_cfg {
+ #define for_each_cfg_sme(fw, i, idx) \
+ 	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
  
--#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
+-enum arm_smmu_context_fmt {
+-	ARM_SMMU_CTX_FMT_NONE,
+-	ARM_SMMU_CTX_FMT_AARCH64,
+-	ARM_SMMU_CTX_FMT_AARCH32_L,
+-	ARM_SMMU_CTX_FMT_AARCH32_S,
+-};
 -
--#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
--#define ARM_MMU500_ACR_S2CRB_TLBEN	(1 << 10)
--#define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
+-struct arm_smmu_cfg {
+-	u8				cbndx;
+-	u8				irptndx;
+-	union {
+-		u16			asid;
+-		u16			vmid;
+-	};
+-	enum arm_smmu_cbar_type		cbar;
+-	enum arm_smmu_context_fmt	fmt;
+-};
+-#define INVALID_IRPTNDX			0xff
 -
- #define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
- #define TLB_SPIN_COUNT			10
- 
-@@ -1574,7 +1568,7 @@ static struct iommu_ops arm_smmu_ops = {
- static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- {
- 	int i;
--	u32 reg, major;
-+	u32 reg;
- 
- 	/* clear global FSR */
- 	reg = arm_smmu_read_gr0(smmu, ARM_SMMU_GR0_sGFSR);
-@@ -1587,38 +1581,10 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	for (i = 0; i < smmu->num_mapping_groups; ++i)
- 		arm_smmu_write_sme(smmu, i);
- 
--	if (smmu->model == ARM_MMU500) {
--		/*
--		 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
--		 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
--		 * bit is only present in MMU-500r2 onwards.
--		 */
--		reg = arm_smmu_read_gr0(smmu, ARM_SMMU_GR0_ID7);
--		major = FIELD_GET(ID7_MAJOR, reg);
--		reg = arm_smmu_read_gr0(smmu, ARM_SMMU_GR0_sACR);
--		if (major >= 2)
--			reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
--		/*
--		 * Allow unmatched Stream IDs to allocate bypass
--		 * TLB entries for reduced latency.
--		 */
--		reg |= ARM_MMU500_ACR_SMTNMB_TLBEN | ARM_MMU500_ACR_S2CRB_TLBEN;
--		arm_smmu_write_gr0(smmu, ARM_SMMU_GR0_sACR, reg);
--	}
+-enum arm_smmu_domain_stage {
+-	ARM_SMMU_DOMAIN_S1 = 0,
+-	ARM_SMMU_DOMAIN_S2,
+-	ARM_SMMU_DOMAIN_NESTED,
+-	ARM_SMMU_DOMAIN_BYPASS,
+-};
 -
- 	/* Make sure all context banks are disabled and clear CB_FSR  */
- 	for (i = 0; i < smmu->num_context_banks; ++i) {
- 		arm_smmu_write_context_bank(smmu, i);
- 		arm_smmu_write_cb(smmu, i, ARM_SMMU_CB_FSR, FSR_FAULT);
--		/*
--		 * Disable MMU-500's not-particularly-beneficial next-page
--		 * prefetcher for the sake of errata #841119 and #826419.
--		 */
--		if (smmu->model == ARM_MMU500) {
--			reg = arm_smmu_read_cb(smmu, i, ARM_SMMU_CB_ACTLR);
--			reg &= ~ARM_MMU500_ACTLR_CPRE;
--			arm_smmu_write_cb(smmu, i, ARM_SMMU_CB_ACTLR, reg);
--		}
+-struct arm_smmu_domain {
+-	struct arm_smmu_device		*smmu;
+-	struct io_pgtable_ops		*pgtbl_ops;
+-	const struct iommu_gather_ops	*tlb_ops;
+-	struct arm_smmu_cfg		cfg;
+-	enum arm_smmu_domain_stage	stage;
+-	bool				non_strict;
+-	struct mutex			init_mutex; /* Protects smmu pointer */
+-	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+-	struct iommu_domain		domain;
+-};
+-
+ static bool using_legacy_binding, using_generic_binding;
+ 
+ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+@@ -749,9 +710,16 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
  	}
  
- 	/* Invalidate the TLB, just in case */
-@@ -1652,6 +1618,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
- 		reg |= sCR0_EXIDENABLE;
- 
-+	if (smmu->impl && smmu->impl->reset)
-+		smmu->impl->reset(smmu);
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
+-		cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
++		cfg->vmid = cfg->cbndx + 1;
+ 	else
+-		cfg->asid = cfg->cbndx + smmu->cavium_id_base;
++		cfg->asid = cfg->cbndx;
 +
- 	/* Push the button */
- 	arm_smmu_tlb_sync_global(smmu);
- 	arm_smmu_write_gr0(smmu, ARM_SMMU_GR0_sCR0, reg);
++	smmu_domain->smmu = smmu;
++	if (smmu->impl && smmu->impl->init_context) {
++		ret = smmu->impl->init_context(smmu_domain);
++		if (ret)
++			goto out_unlock;
++	}
+ 
+ 	pgtbl_cfg = (struct io_pgtable_cfg) {
+ 		.pgsize_bitmap	= smmu->pgsize_bitmap,
+@@ -765,7 +733,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu_domain->non_strict)
+ 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+ 
+-	smmu_domain->smmu = smmu;
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops) {
+ 		ret = -ENOMEM;
 diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index e79cb32802e9..616cc87a05e3 100644
+index 616cc87a05e3..a18b5925b43c 100644
 --- a/drivers/iommu/arm-smmu.h
 +++ b/drivers/iommu/arm-smmu.h
-@@ -288,6 +288,7 @@ struct arm_smmu_impl {
- 	void (*write_reg64)(struct arm_smmu_device *smmu, int page, int offset,
+@@ -14,6 +14,7 @@
+ #include <linux/bits.h>
+ #include <linux/clk.h>
+ #include <linux/device.h>
++#include <linux/io-pgtable.h>
+ #include <linux/iommu.h>
+ #include <linux/mutex.h>
+ #include <linux/spinlock.h>
+@@ -270,14 +271,50 @@ struct arm_smmu_device {
+ 	struct clk_bulk_data		*clks;
+ 	int				num_clks;
+ 
+-	u32				cavium_id_base; /* Specific to Cavium */
+-
+ 	spinlock_t			global_sync_lock;
+ 
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
+ };
+ 
++enum arm_smmu_context_fmt {
++	ARM_SMMU_CTX_FMT_NONE,
++	ARM_SMMU_CTX_FMT_AARCH64,
++	ARM_SMMU_CTX_FMT_AARCH32_L,
++	ARM_SMMU_CTX_FMT_AARCH32_S,
++};
++
++struct arm_smmu_cfg {
++	u8				cbndx;
++	u8				irptndx;
++	union {
++		u16			asid;
++		u16			vmid;
++	};
++	enum arm_smmu_cbar_type		cbar;
++	enum arm_smmu_context_fmt	fmt;
++};
++#define INVALID_IRPTNDX			0xff
++
++enum arm_smmu_domain_stage {
++	ARM_SMMU_DOMAIN_S1 = 0,
++	ARM_SMMU_DOMAIN_S2,
++	ARM_SMMU_DOMAIN_NESTED,
++	ARM_SMMU_DOMAIN_BYPASS,
++};
++
++struct arm_smmu_domain {
++	struct arm_smmu_device		*smmu;
++	struct io_pgtable_ops		*pgtbl_ops;
++	const struct iommu_gather_ops	*tlb_ops;
++	struct arm_smmu_cfg		cfg;
++	enum arm_smmu_domain_stage	stage;
++	bool				non_strict;
++	struct mutex			init_mutex; /* Protects smmu pointer */
++	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
++	struct iommu_domain		domain;
++};
++
+ 
+ /* Implementation details, yay! */
+ struct arm_smmu_impl {
+@@ -289,6 +326,7 @@ struct arm_smmu_impl {
  			    u64 val);
  	int (*cfg_probe)(struct arm_smmu_device *smmu);
-+	int (*reset)(struct arm_smmu_device *smmu);
+ 	int (*reset)(struct arm_smmu_device *smmu);
++	int (*init_context)(struct arm_smmu_domain *smmu_domain);
  };
  
  static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
