@@ -2,66 +2,75 @@ Return-Path: <SRS0=er0l=WG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D41C433FF
-	for <iommu@archiver.kernel.org>; Sat, 10 Aug 2019 08:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A320C433FF
+	for <iommu@archiver.kernel.org>; Sat, 10 Aug 2019 18:57:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFCB1208C4
-	for <iommu@archiver.kernel.org>; Sat, 10 Aug 2019 08:01:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFCB1208C4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 709FA2086A
+	for <iommu@archiver.kernel.org>; Sat, 10 Aug 2019 18:57:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 709FA2086A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B732B9CA;
-	Sat, 10 Aug 2019 08:01:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 206B7B79;
+	Sat, 10 Aug 2019 18:57:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8A588481
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8338BB1F
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 10 Aug 2019 08:01:58 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id AD6086D6
+	Sat, 10 Aug 2019 18:57:27 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com
+	[209.85.222.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CF357829
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 10 Aug 2019 08:01:57 +0000 (UTC)
-X-UUID: 63dccf2edcf8446e91a85e6db0f90fae-20190810
-X-UUID: 63dccf2edcf8446e91a85e6db0f90fae-20190810
-Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by
-	mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
-	(Cellopoint E-mail Firewall v4.1.10 Build 0707 with TLS)
-	with ESMTP id 2100987171; Sat, 10 Aug 2019 16:01:52 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
-	mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Sat, 10 Aug 2019 16:01:53 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
-	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Sat, 10 Aug 2019 16:01:52 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v9 21/21] iommu/mediatek: Clean up struct mtk_smi_iommu
-Date: Sat, 10 Aug 2019 15:58:21 +0800
-Message-ID: <1565423901-17008-22-git-send-email-yong.wu@mediatek.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1565423901-17008-1-git-send-email-yong.wu@mediatek.com>
-References: <1565423901-17008-1-git-send-email-yong.wu@mediatek.com>
+	Sat, 10 Aug 2019 18:57:25 +0000 (UTC)
+Received: by mail-qk1-f193.google.com with SMTP id m2so9942120qkd.10
+	for <iommu@lists.linux-foundation.org>;
+	Sat, 10 Aug 2019 11:57:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to;
+	bh=n6gqfGDHe7+MTEnADmz166g2MOtyyjqswDo8TxgNKgo=;
+	b=p9nY3ZCrdF4S1NrPi9LpMYDEDPNrkMtGKrnM2UOX6cXp97F7snHZbXq4ShcxFig5r2
+	Cdsml66jL608kMDK1ZmchxpX/EAgHyxJx1PQ1nvDfoH1/LZpy3mQrXkqYUERpAygcpg1
+	hnaNPDOc5c/xDGF/j7MJuD5pbTrdBAAUgGT1fYryT+UahTUTSYOGdH1aab9aWxU9rdzP
+	802mcZgk3BwPDFQDHIxZyUnPwvPY7HSs7wVpB4VSTyG+ypowPaoWke8AFVGb0HUqJzXz
+	Pc04nMTM6A4ulxj0Ta9pwZDXr8MJ8PPXXmNC0Kq/wzB6vV2W6OxJeXazPbEihG3I9HWK
+	AcoQ==
+X-Gm-Message-State: APjAAAVsPbLkLzU7Alnuh+kPINaxHjcQDIvUN9rlA8uEs1GlmTSECbn+
+	Hc7/br7lFpU8kiN4XV3vhHqg0A==
+X-Google-Smtp-Source: APXvYqwuyeU8UtFCpYJUCrWlfgo5mzoYufqwOGAgTcpKSjKBKpcYs8i84bGcIhjBa4714/V3v9R2eQ==
+X-Received: by 2002:a05:620a:1f0:: with SMTP id
+	x16mr12879248qkn.11.1565463444927; 
+	Sat, 10 Aug 2019 11:57:24 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
+	by smtp.gmail.com with ESMTPSA id
+	l3sm100152qkb.67.2019.08.10.11.57.20
+	(version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+	Sat, 10 Aug 2019 11:57:23 -0700 (PDT)
+Date: Sat, 10 Aug 2019 14:57:17 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Message-ID: <20190810143038-mutt-send-email-mst@kernel.org>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
 MIME-Version: 1.0
-X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
-	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>,
-	linux-mediatek@lists.infradead.org, ming-fan.chen@mediatek.com,
-	anan.sun@mediatek.com, Matthias Kaehlcke <mka@chromium.org>,
-	linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <87zhrj8kcp.fsf@morokweng.localdomain>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	Paul Mackerras <paulus@ozlabs.org>, iommu@lists.linux-foundation.org,
+	linuxppc-devel@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
+	David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,138 +88,92 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Remove the "struct mtk_smi_iommu" to simplify the code since it has only
-one item in it right now.
+On Tue, Jan 29, 2019 at 03:08:12PM -0200, Thiago Jung Bauermann wrote:
+> 
+> Hello,
+> 
+> With Christoph's rework of the DMA API that recently landed, the patch
+> below is the only change needed in virtio to make it work in a POWER
+> secure guest under the ultravisor.
+> 
+> The other change we need (making sure the device's dma_map_ops is NULL
+> so that the dma-direct/swiotlb code is used) can be made in
+> powerpc-specific code.
+> 
+> Of course, I also have patches (soon to be posted as RFC) which hook up
+> <linux/mem_encrypt.h> to the powerpc secure guest support code.
+> 
+> What do you think?
+> 
+> >From d0629a36a75c678b4a72b853f8f7f8c17eedd6b3 Mon Sep 17 00:00:00 2001
+> From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> Date: Thu, 24 Jan 2019 22:08:02 -0200
+> Subject: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+> 
+> The host can't access the guest memory when it's encrypted, so using
+> regular memory pages for the ring isn't an option. Go through the DMA API.
+> 
+> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> ---
+>  drivers/virtio/virtio_ring.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index cd7e755484e3..321a27075380 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -259,8 +259,11 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
+>  	 * not work without an even larger kludge.  Instead, enable
+>  	 * the DMA API if we're a Xen guest, which at least allows
+>  	 * all of the sensible Xen configurations to work correctly.
+> +	 *
+> +	 * Also, if guest memory is encrypted the host can't access
+> +	 * it directly. In this case, we'll need to use the DMA API.
+>  	 */
+> -	if (xen_domain())
+> +	if (xen_domain() || sev_active())
+>  		return true;
+> 
+>  	return false;
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c    | 4 ++--
- drivers/iommu/mtk_iommu.h    | 6 +++---
- drivers/iommu/mtk_iommu_v1.c | 4 ++--
- drivers/memory/mtk-smi.c     | 6 +++---
- include/soc/mediatek/smi.h   | 4 ----
- 5 files changed, 10 insertions(+), 14 deletions(-)
+So I gave this lots of thought, and I'm coming round to
+basically accepting something very similar to this patch.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 274761c..d5b9454 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -254,7 +254,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- 	for (i = 0; i < fwspec->num_ids; ++i) {
- 		larbid = MTK_M4U_TO_LARB(fwspec->ids[i]);
- 		portid = MTK_M4U_TO_PORT(fwspec->ids[i]);
--		larb_mmu = &data->smi_imu.larb_imu[larbid];
-+		larb_mmu = &data->larb_imu[larbid];
- 
- 		dev_dbg(dev, "%s iommu port: %d\n",
- 			enable ? "enable" : "disable", portid);
-@@ -653,7 +653,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			of_node_put(larbnode);
- 			return -EPROBE_DEFER;
- 		}
--		data->smi_imu.larb_imu[id].dev = &plarbdev->dev;
-+		data->larb_imu[id].dev = &plarbdev->dev;
- 
- 		component_match_add_release(dev, &match, release_of,
- 					    compare_of, larbnode);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 56b579c..fc0f16e 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -56,7 +56,6 @@ struct mtk_iommu_data {
- 	struct mtk_iommu_suspend_reg	reg;
- 	struct mtk_iommu_domain		*m4u_dom;
- 	struct iommu_group		*m4u_group;
--	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
- 	bool                            enable_4GB;
- 	bool				tlb_flush_active;
- 
-@@ -64,6 +63,7 @@ struct mtk_iommu_data {
- 	const struct mtk_iommu_plat_data *plat_data;
- 
- 	struct list_head		list;
-+	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
- };
- 
- static inline int compare_of(struct device *dev, void *data)
-@@ -80,14 +80,14 @@ static inline int mtk_iommu_bind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 
--	return component_bind_all(dev, &data->smi_imu);
-+	return component_bind_all(dev, &data->larb_imu);
- }
- 
- static inline void mtk_iommu_unbind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 
--	component_unbind_all(dev, &data->smi_imu);
-+	component_unbind_all(dev, &data->larb_imu);
- }
- 
- #endif
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 3922358..860926c 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -206,7 +206,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- 	for (i = 0; i < fwspec->num_ids; ++i) {
- 		larbid = mt2701_m4u_to_larb(fwspec->ids[i]);
- 		portid = mt2701_m4u_to_port(fwspec->ids[i]);
--		larb_mmu = &data->smi_imu.larb_imu[larbid];
-+		larb_mmu = &data->larb_imu[larbid];
- 
- 		dev_dbg(dev, "%s iommu port: %d\n",
- 			enable ? "enable" : "disable", portid);
-@@ -610,7 +610,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			}
- 		}
- 
--		data->smi_imu.larb_imu[larb_nr].dev = &plarbdev->dev;
-+		data->larb_imu[larb_nr].dev = &plarbdev->dev;
- 		component_match_add_release(dev, &match, release_of,
- 					    compare_of, larb_spec.np);
- 		larb_nr++;
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index d6dc62f..439d7d8 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -143,13 +143,13 @@ void mtk_smi_larb_put(struct device *larbdev)
- mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
- {
- 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
--	struct mtk_smi_iommu *smi_iommu = data;
-+	struct mtk_smi_larb_iommu *larb_mmu = data;
- 	unsigned int         i;
- 
- 	for (i = 0; i < MTK_LARB_NR_MAX; i++) {
--		if (dev == smi_iommu->larb_imu[i].dev) {
-+		if (dev == larb_mmu[i].dev) {
- 			larb->larbid = i;
--			larb->mmu = &smi_iommu->larb_imu[i].mmu;
-+			larb->mmu = &larb_mmu[i].mmu;
- 			return 0;
- 		}
- 	}
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index 6f0b00c..5a34b87 100644
---- a/include/soc/mediatek/smi.h
-+++ b/include/soc/mediatek/smi.h
-@@ -20,10 +20,6 @@ struct mtk_smi_larb_iommu {
- 	unsigned int   mmu;
- };
- 
--struct mtk_smi_iommu {
--	struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
--};
--
- /*
-  * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
-  *                   It also initialize some basic setting(like iommu).
+But not exactly like this :).
+
+Let's see what are the requirements.
+
+If
+
+1. We do not trust the device (so we want to use a bounce buffer with it)
+2. DMA address is also a physical address of a buffer
+
+then we should use DMA API with virtio.
+
+
+sev_active() above is one way to put (1).  I can't say I love it but
+it's tolerable.
+
+
+But we also want promise from DMA API about 2.
+
+
+Without promise 2 we simply can't use DMA API with a legacy device.
+
+
+Otherwise, on a SEV system with an IOMMU which isn't 1:1
+and with a virtio device without ACCESS_PLATFORM, we are trying
+to pass a virtual address, and devices without ACCESS_PLATFORM
+can only access CPU physical addresses.
+
+So something like:
+
+dma_addr_is_phys_addr?
+
+
+
 -- 
-1.9.1
-
+MST
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
