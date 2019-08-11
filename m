@@ -4,58 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8975C0650F
-	for <iommu@archiver.kernel.org>; Sun, 11 Aug 2019 08:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3A6C32757
+	for <iommu@archiver.kernel.org>; Sun, 11 Aug 2019 08:06:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BEB932173C
-	for <iommu@archiver.kernel.org>; Sun, 11 Aug 2019 08:06:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DE5602173C
+	for <iommu@archiver.kernel.org>; Sun, 11 Aug 2019 08:06:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Ax6p9oKF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BEB932173C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="gIc0HPMb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE5602173C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BC85CB43;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E241DB65;
 	Sun, 11 Aug 2019 08:06:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6950FAD8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C841BAC8
 	for <iommu@lists.linux-foundation.org>;
 	Sun, 11 Aug 2019 08:06:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6A66B6E0
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7B55F6E0
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 11 Aug 2019 08:05:59 +0000 (UTC)
+	Sun, 11 Aug 2019 08:06:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=aUU+hlkhrpiLGkqb9yLX5LvOZKeD+UrNctlDkcRT8c0=;
-	b=Ax6p9oKF7TWgXYyF2WtzSWjagk
-	BNniHtPluUBTFd5mJ4BNzxO+5vwnyPP+WI4FttbLmW95pNEwCTg9EEg4TxYK/KQN/+SW9a7GWZdNo
-	mi6f6w23oeCxIkPeacRf+yLhLZaeSzP9myORxWiiyuLCoQAf5yVL8xQooQRb9nlhBcaOnDnPrjHCa
-	kApazYa2o6vGOugcHVss6tyBINKprccgFsl3UnouAW7RRuyvy1YWboeKHZWWl5DrrTtm1fMx7kzna
-	sYOJ6cTc19mjBErMnjoZ8B/LFS5VxAbkBEm3fO8V9dhRNhnLtBS5c2C7dFe2rF1UMEO/1/iJkAxex
-	t+4T26aQ==;
+	bh=5H4DKSyLtnJ8RX8GrhMYzxFLFlnlKxpwlI+kM8oQhzA=;
+	b=gIc0HPMb2kkD9y746pngg/tZIN
+	BBONBD5zHBfeFgLgtqVgkSReL2hz0BiQ8tWxlcZBGdXTJzS4Ath+2GX6SY8kDOgn0wGDxJbRWR6Ym
+	/kGAt2D4y49bBi/D+c8YLGeSgiKu65k8qY+B3QSANY1FckAeC9Cxp6H6mKqnPTwSRCSdBfyPNe+Py
+	jkvjkjUHLKDmgOogJ8JSIT5mTrSbJWKkEAwbjNO7fZuw2itIciNFU03pBKETjnELhrnm+Eo2l4+0L
+	C2x20Pytwg6b/m1KFfyevb6gdPJ44xpY5hWZTqAQWyT8c+YytwOVfVY7bLH8Iq+nqurohNbdxi0Mq
+	envVcypQ==;
 Received: from [2001:4bb8:180:1ec3:c70:4a89:bc61:2] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hwirJ-00021E-C9; Sun, 11 Aug 2019 08:05:46 +0000
+	id 1hwirC-0001w6-G8; Sun, 11 Aug 2019 08:05:39 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: [PATCH 6/6] driver core: initialize a default DMA mask for platform
-	device
-Date: Sun, 11 Aug 2019 10:05:20 +0200
-Message-Id: <20190811080520.21712-7-hch@lst.de>
+Subject: [PATCH 4/6] usb/max3421: remove the dummy {un,
+	}map_urb_for_dma methods
+Date: Sun, 11 Aug 2019 10:05:18 +0200
+Message-Id: <20190811080520.21712-5-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190811080520.21712-1-hch@lst.de>
 References: <20190811080520.21712-1-hch@lst.de>
@@ -92,76 +92,49 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-We still treat devices without a DMA mask as defaulting to 32-bits for
-both mask, but a few releases ago we've started warning about such
-cases, as they require special cases to work around this sloppyness.
-Add a dma_mask field to struct platform_object so that we can initialize
-the dma_mask pointer in struct device and initialize both masks to
-32-bits by default.  Architectures can still override this in
-arch_setup_pdev_archdata if needed.
-
-Note that the code looks a little odd with the various conditionals
-because we have to support platform_device structures that are
-statically allocated.
+Now that we have an explicit HCD_DMA flag, there is not need to override
+these methods.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/base/platform.c         | 15 +++++++++++++--
- include/linux/platform_device.h |  1 +
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/usb/host/max3421-hcd.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index ec974ba9c0c4..b216fcb0a8af 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -264,6 +264,17 @@ struct platform_object {
- 	char name[];
- };
- 
-+static void setup_pdev_archdata(struct platform_device *pdev)
-+{
-+	if (!pdev->dev.coherent_dma_mask)
-+		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
-+	if (!pdev->dma_mask)
-+		pdev->dma_mask = DMA_BIT_MASK(32);
-+	if (!pdev->dev.dma_mask)
-+		pdev->dev.dma_mask = &pdev->dma_mask;
-+	arch_setup_pdev_archdata(pdev);
-+};
-+
- /**
-  * platform_device_put - destroy a platform device
-  * @pdev: platform device to free
-@@ -310,7 +321,7 @@ struct platform_device *platform_device_alloc(const char *name, int id)
- 		pa->pdev.id = id;
- 		device_initialize(&pa->pdev.dev);
- 		pa->pdev.dev.release = platform_device_release;
--		arch_setup_pdev_archdata(&pa->pdev);
-+		setup_pdev_archdata(&pa->pdev);
- 	}
- 
- 	return pa ? &pa->pdev : NULL;
-@@ -512,7 +523,7 @@ EXPORT_SYMBOL_GPL(platform_device_del);
- int platform_device_register(struct platform_device *pdev)
- {
- 	device_initialize(&pdev->dev);
--	arch_setup_pdev_archdata(pdev);
-+	setup_pdev_archdata(pdev);
- 	return platform_device_add(pdev);
+diff --git a/drivers/usb/host/max3421-hcd.c b/drivers/usb/host/max3421-hcd.c
+index afa321ab55fc..8819f502b6a6 100644
+--- a/drivers/usb/host/max3421-hcd.c
++++ b/drivers/usb/host/max3421-hcd.c
+@@ -1800,21 +1800,6 @@ max3421_bus_resume(struct usb_hcd *hcd)
+ 	return -1;
  }
- EXPORT_SYMBOL_GPL(platform_device_register);
-diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-index 9bc36b589827..a2abde2aef25 100644
---- a/include/linux/platform_device.h
-+++ b/include/linux/platform_device.h
-@@ -24,6 +24,7 @@ struct platform_device {
- 	int		id;
- 	bool		id_auto;
- 	struct device	dev;
-+	u64		dma_mask;
- 	u32		num_resources;
- 	struct resource	*resource;
  
+-/*
+- * The SPI driver already takes care of DMA-mapping/unmapping, so no
+- * reason to do it twice.
+- */
+-static int
+-max3421_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
+-{
+-	return 0;
+-}
+-
+-static void
+-max3421_unmap_urb_for_dma(struct usb_hcd *hcd, struct urb *urb)
+-{
+-}
+-
+ static const struct hc_driver max3421_hcd_desc = {
+ 	.description =		"max3421",
+ 	.product_desc =		DRIVER_DESC,
+@@ -1826,8 +1811,6 @@ static const struct hc_driver max3421_hcd_desc = {
+ 	.get_frame_number =	max3421_get_frame_number,
+ 	.urb_enqueue =		max3421_urb_enqueue,
+ 	.urb_dequeue =		max3421_urb_dequeue,
+-	.map_urb_for_dma =	max3421_map_urb_for_dma,
+-	.unmap_urb_for_dma =	max3421_unmap_urb_for_dma,
+ 	.endpoint_disable =	max3421_endpoint_disable,
+ 	.hub_status_data =	max3421_hub_status_data,
+ 	.hub_control =		max3421_hub_control,
 -- 
 2.20.1
 
