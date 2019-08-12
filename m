@@ -2,62 +2,76 @@ Return-Path: <SRS0=NGNk=WI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DATE_IN_PAST_03_06,
-	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4163C31E40
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 13:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 661C3C433FF
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 19:03:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A8BF20684
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 13:54:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 34C2B20684
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 19:03:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="XNfChPFX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A8BF20684
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="l3asKrud";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="nlmdTbTv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 34C2B20684
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4D922CA6;
-	Mon, 12 Aug 2019 13:54:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D502FB3E;
+	Mon, 12 Aug 2019 19:03:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1537CAF7;
-	Mon, 12 Aug 2019 13:54:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6D1FFAD1
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 12 Aug 2019 19:03:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DB6B38A6;
-	Mon, 12 Aug 2019 13:54:23 +0000 (UTC)
-Received: by ozlabs.org (Postfix, from userid 1007)
-	id 466clc5Gzkz9sN1; Mon, 12 Aug 2019 23:54:20 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=gibson.dropbear.id.au; s=201602; t=1565618060;
-	bh=M9fkWHdcEUWxow+UKyurPCc6awYRSJcQDFkH60t6zw4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XNfChPFXwvqdC699kOEIy0Vv+oqCy3B16t+DVeHfqEhPuYXrv4IbL35jznMyfU7fK
-	xOG5C9V9cbX93SGcIh3DMAgNEHFmoczgaOoRGnafCrGMLC0NYRRdQDDxDKSyaVS9X/
-	M9Vlcq+UBH20ge76b4ysegxd1UGPTyJxvCHp8GEQ=
-Date: Mon, 12 Aug 2019 19:51:56 +1000
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Message-ID: <20190812095156.GD3947@umbus.fritz.box>
-References: <87zhrj8kcp.fsf@morokweng.localdomain>
-	<20190810143038-mutt-send-email-mst@kernel.org>
-	<20190810220702.GA5964@ram.ibm.com> <20190811055607.GA12488@lst.de>
-MIME-Version: 1.0
-In-Reply-To: <20190811055607.GA12488@lst.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-Cc: "Michael S. Tsirkin" <mst@redhat.com>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
-	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	Paul Mackerras <paulus@ozlabs.org>, iommu@lists.linux-foundation.org,
-	linuxppc-devel@lists.ozlabs.org
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E458F87B
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 12 Aug 2019 19:03:14 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id AD328609F3; Mon, 12 Aug 2019 19:03:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1565636594;
+	bh=+MD5LElchqMbgLC+3+P9vMAxbocPXBlWdeP3RWd6oDk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=l3asKrudoUAE7CgF87q2VGkOkp4swtEZhNPb+uskZNC2m8+HvtjsIJni+IGkUJNLI
+	V5tIjeQZegsYj1k0i6cnArr7Wa9nam2m9l+VVnk8dIvzuNBUoYF06hzooz1c9Z5JIj
+	ttLqRPrl9VyCeBLf2RunXtqMdhk29MR+m9Yc+Mjk=
+Received: from isaacm-linux.qualcomm.com (i-global254.qualcomm.com
+	[199.106.103.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: isaacm@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 740ED6050D;
+	Mon, 12 Aug 2019 19:03:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1565636593;
+	bh=+MD5LElchqMbgLC+3+P9vMAxbocPXBlWdeP3RWd6oDk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=nlmdTbTvm32M7IXOQXJw6f7XJyYZXQETneNM0FW5ObkoIM+j+m8FlGrtWXDJj+0Xf
+	+wc1WsVcko+Bar7TibcAMab3/EpgSkldzfbi+hdKrACo/EgwnMAQzYoYKnJ0j8hnPu
+	QGOfORFJQXHhb/t7H6KvvVCjJqksG6JMcct8+T3M=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 740ED6050D
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=isaacm@codeaurora.org
+From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
+To: hch@lst.de,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Subject: [PATCH] dma-mapping: Use unsigned types for size checks
+Date: Mon, 12 Aug 2019 12:03:02 -0700
+Message-Id: <1565636582-9802-1-git-send-email-isaacm@codeaurora.org>
+X-Mailer: git-send-email 1.9.1
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, iommu@lists.linux-foundation.org,
+	lmark@codeaurora.org, pratikp@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,94 +84,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8835015723736642161=="
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+Both the size parameter in the dma_alloc_from_[dev/global]_coherent()
+functions and the size field in the dma_coherent_mem structure
+are represented by a signed quantity, which makes it so that any
+comparisons between these two quantities is a signed comparison.
 
---===============8835015723736642161==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="NtwzykIc2mflq5ck"
-Content-Disposition: inline
+When a reserved memory region is larger than or equal to 2GB in
+size, this will cause the most significant bit to be set to 1,
+thus, treating the size as a negative number in signed
+comparisons.
 
+This can result in allocation failures when an amount of
+memory that is strictly less than 2 GB is requested from
+this region. The allocation fails because the signed comparison
+to prevent from allocating more memory than what is in the
+region in __dma_alloc_from_coherent() evaluates to true since
+the size of the region is treated as a negative number, but the
+size of the request is treated as a positive number.
 
---NtwzykIc2mflq5ck
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thus, change the type of the size parameter in the allocation
+functions to an unsigned type, and change the type of the
+size field in the dma_coherent_mem structure to an unsigned type
+as well, as it does not make sense for sizes to be represented
+by signed quantities.
 
-On Sun, Aug 11, 2019 at 07:56:07AM +0200, Christoph Hellwig wrote:
-> sev_active() is gone now in linux-next, at least as a global API.
->=20
-> And once again this is entirely going in the wrong direction.  The only
-> way using the DMA API is going to work at all is if the device is ready
-> for it.  So we need a flag on the virtio device, exposed by the
-> hypervisor (or hardware for hw virtio devices) that says:  hey, I'm real,
-> don't take a shortcut.
+Fixes: ee7e5516be4f ("generic: per-device coherent dma allocator")
+Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+Cc: stable@vger.kernel.org
+---
+ include/linux/dma-mapping.h | 6 +++---
+ kernel/dma/coherent.c       | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-There still seems to be a failure to understand each other here.  The
-limitation here simply *is not* a property of the device.  In fact,
-it's effectively a property of the memory the virtio device would be
-trying to access (because it's in secure mode it can't be directly
-accessed via the hypervisor).  There absolutely are cases where this
-is a device property (a physical virtio device being the obvious one),
-but this isn't one of them.
-
-Unfortunately, we're kind of stymied by the feature negotiation model
-of virtio.  AIUI the hypervisor / device presents a bunch of feature
-bits of which the guest / driver selects a subset.
-
-AFAICT we already kind of abuse this for the VIRTIO_F_IOMMU_PLATFORM,
-because to handle for cases where it *is* a device limitation, we
-assume that if the hypervisor presents VIRTIO_F_IOMMU_PLATFORM then
-the guest *must* select it.
-
-What we actually need here is for the hypervisor to present
-VIRTIO_F_IOMMU_PLATFORM as available, but not required.  Then we need
-a way for the platform core code to communicate to the virtio driver
-that *it* requires the IOMMU to be used, so that the driver can select
-or not the feature bit on that basis.
-
-> And that means on power and s390 qemu will always have to set thos if
-> you want to be ready for the ultravisor and co games.  It's not like we
-> haven't been through this a few times before, have we?
-
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
-
---NtwzykIc2mflq5ck
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl1RNrcACgkQbDjKyiDZ
-s5IeEA//dnRJ6mVj+RhQveMWMmeAiLbWMfnm//uTigHRNS3wsKGZnHuzpbBnRoCc
-lEX8grJ+aGO69ZFe4N41Fad605IFGUjnxTtQn6kMx85m7F6z1+Bdi0B4H/k9iZ77
-jr/rVpXQ9lv93Sns8vg9rZloaLf3xt1ZBN7hjecvVNSN5esttOlczRXSCq8m3rGE
-2wYsyLox6y/juyLl/f+MOADagIb5ca652DrmInAaER3HgNnMmZGjr+gAjgvzNWRC
-iYF3i/T/+NQLSS2IgG3eo9kzz3TF9FxmbtpqCynyr/JOUOf+M6vN9IZnr6MDSspR
-OnUgRJLIOVjAUcG5EDwfoZQIbuJ7rJZ68/q75aJpMWpfrAsEiKPVD42lhDRtPzuT
-fyT2lVp0ZF+VfSL4lc7nFq/yEG8YCJO2ZtgulzCFo72mPieeMZj3UyBOn0eJZ6Ui
-lAOZHKgkDuhvNYXigewhujz+kTJ2UlV0ioZ0fOs9ohqOMd3t9RcIn2HIhI1j+2hN
-drDFJUL6roSn+3rMA8MxCqeumTjFXGEGa9K+MIrVHpCnfgLgxV3Z2Z/gy8TNdetk
-qobrJcniwJGse95D0BXoU6FDLRTOBsyNXa1ruMT0srHClrFIVRkGGr8fveJvUo/z
-9pxHx2HQa0ePV1VCTj0h9YficujWGsF+RwC57aQOeCUFqLYz+0c=
-=pHtB
------END PGP SIGNATURE-----
-
---NtwzykIc2mflq5ck--
-
---===============8835015723736642161==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index f7d1eea..06d446d 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -159,14 +159,14 @@ static inline int is_device_dma_capable(struct device *dev)
+  * These three functions are only for dma allocator.
+  * Don't use them in device drivers.
+  */
+-int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
++int dma_alloc_from_dev_coherent(struct device *dev, size_t size,
+ 				       dma_addr_t *dma_handle, void **ret);
+ int dma_release_from_dev_coherent(struct device *dev, int order, void *vaddr);
+ 
+ int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_struct *vma,
+ 			    void *cpu_addr, size_t size, int *ret);
+ 
+-void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle);
++void *dma_alloc_from_global_coherent(size_t size, dma_addr_t *dma_handle);
+ int dma_release_from_global_coherent(int order, void *vaddr);
+ int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *cpu_addr,
+ 				  size_t size, int *ret);
+@@ -176,7 +176,7 @@ int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *cpu_addr,
+ #define dma_release_from_dev_coherent(dev, order, vaddr) (0)
+ #define dma_mmap_from_dev_coherent(dev, vma, vaddr, order, ret) (0)
+ 
+-static inline void *dma_alloc_from_global_coherent(ssize_t size,
++static inline void *dma_alloc_from_global_coherent(size_t size,
+ 						   dma_addr_t *dma_handle)
+ {
+ 	return NULL;
+diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+index 29fd659..c671d5c 100644
+--- a/kernel/dma/coherent.c
++++ b/kernel/dma/coherent.c
+@@ -13,7 +13,7 @@ struct dma_coherent_mem {
+ 	void		*virt_base;
+ 	dma_addr_t	device_base;
+ 	unsigned long	pfn_base;
+-	int		size;
++	unsigned long	size;
+ 	unsigned long	*bitmap;
+ 	spinlock_t	spinlock;
+ 	bool		use_dev_dma_pfn_offset;
+@@ -136,7 +136,7 @@ void dma_release_declared_memory(struct device *dev)
+ EXPORT_SYMBOL(dma_release_declared_memory);
+ 
+ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+-		ssize_t size, dma_addr_t *dma_handle)
++		size_t size, dma_addr_t *dma_handle)
+ {
+ 	int order = get_order(size);
+ 	unsigned long flags;
+@@ -179,7 +179,7 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+  * Returns 0 if dma_alloc_coherent should continue with allocating from
+  * generic memory areas, or !0 if dma_alloc_coherent should return @ret.
+  */
+-int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
++int dma_alloc_from_dev_coherent(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, void **ret)
+ {
+ 	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
+@@ -191,7 +191,7 @@ int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
+ 	return 1;
+ }
+ 
+-void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle)
++void *dma_alloc_from_global_coherent(size_t size, dma_addr_t *dma_handle)
+ {
+ 	if (!dma_coherent_default_memory)
+ 		return NULL;
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8835015723736642161==--
