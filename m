@@ -2,58 +2,55 @@ Return-Path: <SRS0=NGNk=WI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50849C433FF
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 10:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86AFC31E40
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 11:01:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2BE362085A
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 10:42:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2BE362085A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id A6F9D20820
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 11:01:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A6F9D20820
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E3575C77;
-	Mon, 12 Aug 2019 10:42:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 51651C86;
+	Mon, 12 Aug 2019 11:01:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51754B79
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 21285C79
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 12 Aug 2019 10:42:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8AE8F2C6
+	Mon, 12 Aug 2019 09:59:07 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4D99A87B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 12 Aug 2019 10:42:32 +0000 (UTC)
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-	by Forcepoint Email with ESMTP id 5DD18646940A019F322D;
-	Mon, 12 Aug 2019 18:42:30 +0800 (CST)
-Received: from [127.0.0.1] (10.202.227.238) by DGGEMS406-HUB.china.huawei.com
-	(10.3.19.206) with Microsoft SMTP Server id 14.3.439.0;
-	Mon, 12 Aug 2019 18:42:22 +0800
-Subject: Re: [PATCH] iommu/arm-smmu-v3: add nr_ats_masters to avoid
-	unnecessary operations
-To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker
-	<jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Will
-	Deacon" <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel
-	<linux-arm-kernel@lists.infradead.org>, iommu
-	<iommu@lists.linux-foundation.org>, linux-kernel
-	<linux-kernel@vger.kernel.org>, <jean-philippe@linaro.org>
-References: <20190801122040.26024-1-thunder.leizhen@huawei.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <b5866f7a-013a-5900-6fce-268052f2ba0a@huawei.com>
-Date: Mon, 12 Aug 2019 11:42:17 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
-	Thunderbird/45.3.0
+	Mon, 12 Aug 2019 09:59:06 +0000 (UTC)
+Received: from rabammel.molgen.mpg.de (rabammel.molgen.mpg.de [141.14.30.220])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128
+	bits)) (No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 9572D2000C0B2;
+	Mon, 12 Aug 2019 11:59:04 +0200 (CEST)
+Subject: Re: Crash kernel with 256 MB reserved memory runs into OOM condition
+To: Michal Hocko <mhocko@kernel.org>
+References: <d65e4a42-1962-78c6-1b5a-65cb70529d62@molgen.mpg.de>
+	<20190812095029.GE5117@dhcp22.suse.cz>
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <f22573e6-320e-21a1-be1e-c854d8090df8@molgen.mpg.de>
+Date: Mon, 12 Aug 2019 11:59:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190801122040.26024-1-thunder.leizhen@huawei.com>
-X-Originating-IP: [10.202.227.238]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20190812095029.GE5117@dhcp22.suse.cz>
+X-Mailman-Approved-At: Mon, 12 Aug 2019 11:01:25 +0000
+Cc: linux-pci@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>,
+	kexec@lists.infradead.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux-foundation.org, Donald Buczek <buczek@molgen.mpg.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,127 +63,184 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============7863570296543864309=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 01/08/2019 13:20, Zhen Lei wrote:
-> When (smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS) is true, even if a
-> smmu domain does not contain any ats master, the operations of
-> arm_smmu_atc_inv_to_cmd() and lock protection in arm_smmu_atc_inv_domain()
-> are always executed. This will impact performance, especially in
-> multi-core and stress scenarios. For my FIO test scenario, about 8%
-> performance reduced.
->
-> In fact, we can use a atomic member to record how many ats masters the
-> smmu contains. And check that without traverse the list and check all
-> masters one by one in the lock protection.
->
+This is a cryptographically signed message in MIME format.
 
-Hi Will, Robin, Jean-Philippe,
+--===============7863570296543864309==
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms070106020409050702050202"
 
-Can you kindly check this issue? We have seen a signifigant performance 
-regression here.
+This is a cryptographically signed message in MIME format.
 
-Thanks!
+--------------ms070106020409050702050202
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-> Fixes: 9ce27afc0830 ("iommu/arm-smmu-v3: Add support for PCI ATS")
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index a9a9fabd396804a..1b370d9aca95f94 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -631,6 +631,7 @@ struct arm_smmu_domain {
->
->  	struct io_pgtable_ops		*pgtbl_ops;
->  	bool				non_strict;
-> +	atomic_t			nr_ats_masters;
+Dear Michal,
 
 
-It's not ideal to keep a separate count of ats masters...hmmm
+On 12.08.19 11:50, Michal Hocko wrote:
+> On Mon 12-08-19 11:42:33, Paul Menzel wrote:
 
->
->  	enum arm_smmu_domain_stage	stage;
->  	union {
-> @@ -1531,7 +1532,7 @@ static int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
->  	struct arm_smmu_cmdq_ent cmd;
->  	struct arm_smmu_master *master;
->
-> -	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
-> +	if (!atomic_read(&smmu_domain->nr_ats_masters))
->  		return 0;
+>> On a Dell PowerEdge R7425 with two AMD EPYC 7601 (total 128 threads) a=
+nd
+>> 1 TB RAM, the crash kernel with 256 MB of space reserved crashes.
+>>
+>> Please find the messages of the normal and the crash kernel attached.
+>=20
+> You will need more memory to reserve for the crash kernel because ...
+>=20
+>> [    4.548703] Node 0 DMA free:484kB min:4kB low:4kB high:4kB active_a=
+non:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0=
+kB writepending:0kB present:568kB managed:484kB mlocked:0kB kernel_stack:=
+0kB pagetables:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+>> [    4.573612] lowmem_reserve[]: 0 125 125 125
+>> [    4.577799] Node 0 DMA32 free:1404kB min:1428kB low:1784kB high:214=
+0kB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB u=
+nevictable:15720kB writepending:0kB present:261560kB managed:133752kB mlo=
+cked:0kB kernel_stack:2496kB pagetables:0kB bounce:0kB free_pcp:212kB loc=
+al_pcp:212kB free_cma:0kB
+>=20
+> ... the memory is really depleted and nothing to be reclaimed (no anon.=
 
-The rest of the code is here:
+> file pages) Look how tht free memory is below min watermark (node zone =
+DMA has
+> lowmem protection for GFP_KERNEL allocation).
+>=20
+> [...]
+>> [    4.923156] Out of memory and no killable processes...
+>=20
+> and there is no task existing to be killed so we go and panic.
 
-	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
+Yeah, we figured that.
 
-	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-	list_for_each_entry(master, &smmu_domain->devices, domain_head)
-		ret |= arm_smmu_atc_inv_master(master, &cmd);
-	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+What we wonder is, how 256 MB are not enough for booting, and what
+hardware properties cause it to be too small. In the overview I just
+see a 60 MB allocation.
 
-	return ret ? -ETIMEDOUT : 0;
-}
+    [    4.857565] kmalloc-2048           59164KB      59164KB
 
-Not directly related to leizhen's issue: Could RCU protection be used 
-for this list iteration? I can't imagine that the devices list changes 
-often. And also we already protect the cmdq in arm_smmu_atc_inv_master().
 
->
->  	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
-> @@ -1869,6 +1870,7 @@ static int arm_smmu_enable_ats(struct arm_smmu_master *master)
->  	size_t stu;
->  	struct pci_dev *pdev;
->  	struct arm_smmu_device *smmu = master->smmu;
-> +	struct arm_smmu_domain *smmu_domain = master->domain;
->  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
->
->  	if (!(smmu->features & ARM_SMMU_FEAT_ATS) || !dev_is_pci(master->dev) ||
-> @@ -1887,12 +1889,15 @@ static int arm_smmu_enable_ats(struct arm_smmu_master *master)
->  		return ret;
->
->  	master->ats_enabled = true;
-> +	atomic_inc(&smmu_domain->nr_ats_masters);
-> +
->  	return 0;
->  }
->
->  static void arm_smmu_disable_ats(struct arm_smmu_master *master)
->  {
->  	struct arm_smmu_cmdq_ent cmd;
-> +	struct arm_smmu_domain *smmu_domain = master->domain;
->
->  	if (!master->ats_enabled || !dev_is_pci(master->dev))
->  		return;
-> @@ -1901,6 +1906,7 @@ static void arm_smmu_disable_ats(struct arm_smmu_master *master)
->  	arm_smmu_atc_inv_master(master, &cmd);
->  	pci_disable_ats(to_pci_dev(master->dev));
->  	master->ats_enabled = false;
-> +	atomic_dec(&smmu_domain->nr_ats_masters);
->  }
->
->  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
-> @@ -1915,10 +1921,10 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
->  	list_del(&master->domain_head);
->  	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->
-> -	master->domain = NULL;
->  	arm_smmu_install_ste_for_dev(master);
->
->  	arm_smmu_disable_ats(master);
-> +	master->domain = NULL;
->  }
->
->  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->
+Kind regards,
 
+Paul
+
+
+--------------ms070106020409050702050202
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
+EFowggUSMIID+qADAgECAgkA4wvV+K8l2YEwDQYJKoZIhvcNAQELBQAwgYIxCzAJBgNVBAYT
+AkRFMSswKQYDVQQKDCJULVN5c3RlbXMgRW50ZXJwcmlzZSBTZXJ2aWNlcyBHbWJIMR8wHQYD
+VQQLDBZULVN5c3RlbXMgVHJ1c3QgQ2VudGVyMSUwIwYDVQQDDBxULVRlbGVTZWMgR2xvYmFs
+Um9vdCBDbGFzcyAyMB4XDTE2MDIyMjEzMzgyMloXDTMxMDIyMjIzNTk1OVowgZUxCzAJBgNV
+BAYTAkRFMUUwQwYDVQQKEzxWZXJlaW4genVyIEZvZXJkZXJ1bmcgZWluZXMgRGV1dHNjaGVu
+IEZvcnNjaHVuZ3NuZXR6ZXMgZS4gVi4xEDAOBgNVBAsTB0RGTi1QS0kxLTArBgNVBAMTJERG
+Ti1WZXJlaW4gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgMjCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBAMtg1/9moUHN0vqHl4pzq5lN6mc5WqFggEcVToyVsuXPztNXS43O+FZs
+FVV2B+pG/cgDRWM+cNSrVICxI5y+NyipCf8FXRgPxJiZN7Mg9mZ4F4fCnQ7MSjLnFp2uDo0p
+eQcAIFTcFV9Kltd4tjTTwXS1nem/wHdN6r1ZB+BaL2w8pQDcNb1lDY9/Mm3yWmpLYgHurDg0
+WUU2SQXaeMpqbVvAgWsRzNI8qIv4cRrKO+KA3Ra0Z3qLNupOkSk9s1FcragMvp0049ENF4N1
+xDkesJQLEvHVaY4l9Lg9K7/AjsMeO6W/VRCrKq4Xl14zzsjz9AkH4wKGMUZrAcUQDBHHWekC
+AwEAAaOCAXQwggFwMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUk+PYMiba1fFKpZFK4OpL
+4qIMz+EwHwYDVR0jBBgwFoAUv1kgNgB5oKAia4zV8mHSuCzLgkowEgYDVR0TAQH/BAgwBgEB
+/wIBAjAzBgNVHSAELDAqMA8GDSsGAQQBga0hgiwBAQQwDQYLKwYBBAGBrSGCLB4wCAYGZ4EM
+AQICMEwGA1UdHwRFMEMwQaA/oD2GO2h0dHA6Ly9wa2kwMzM2LnRlbGVzZWMuZGUvcmwvVGVs
+ZVNlY19HbG9iYWxSb290X0NsYXNzXzIuY3JsMIGGBggrBgEFBQcBAQR6MHgwLAYIKwYBBQUH
+MAGGIGh0dHA6Ly9vY3NwMDMzNi50ZWxlc2VjLmRlL29jc3ByMEgGCCsGAQUFBzAChjxodHRw
+Oi8vcGtpMDMzNi50ZWxlc2VjLmRlL2NydC9UZWxlU2VjX0dsb2JhbFJvb3RfQ2xhc3NfMi5j
+ZXIwDQYJKoZIhvcNAQELBQADggEBAIcL/z4Cm2XIVi3WO5qYi3FP2ropqiH5Ri71sqQPrhE4
+eTizDnS6dl2e6BiClmLbTDPo3flq3zK9LExHYFV/53RrtCyD2HlrtrdNUAtmB7Xts5et6u5/
+MOaZ/SLick0+hFvu+c+Z6n/XUjkurJgARH5pO7917tALOxrN5fcPImxHhPalR6D90Bo0fa3S
+PXez7vTXTf/D6OWST1k+kEcQSrCFWMBvf/iu7QhCnh7U3xQuTY+8npTD5+32GPg8SecmqKc2
+2CzeIs2LgtjZeOJVEqM7h0S2EQvVDFKvaYwPBt/QolOLV5h7z/0HJPT8vcP9SpIClxvyt7bP
+ZYoaorVyGTkwggWNMIIEdaADAgECAgwcOtRQhH7u81j4jncwDQYJKoZIhvcNAQELBQAwgZUx
+CzAJBgNVBAYTAkRFMUUwQwYDVQQKEzxWZXJlaW4genVyIEZvZXJkZXJ1bmcgZWluZXMgRGV1
+dHNjaGVuIEZvcnNjaHVuZ3NuZXR6ZXMgZS4gVi4xEDAOBgNVBAsTB0RGTi1QS0kxLTArBgNV
+BAMTJERGTi1WZXJlaW4gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgMjAeFw0xNjExMDMxNTI0
+NDhaFw0zMTAyMjIyMzU5NTlaMGoxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCYXllcm4xETAP
+BgNVBAcMCE11ZW5jaGVuMSAwHgYDVQQKDBdNYXgtUGxhbmNrLUdlc2VsbHNjaGFmdDEVMBMG
+A1UEAwwMTVBHIENBIC0gRzAyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnhx4
+59Lh4WqgOs/Md04XxU2yFtfM15ZuJV0PZP7BmqSJKLLPyqmOrADfNdJ5PIGBto2JBhtRRBHd
+G0GROOvTRHjzOga95WOTeura79T21FWwwAwa29OFnD3ZplQs6HgdwQrZWNi1WHNJxn/4mA19
+rNEBUc5urSIpZPvZi5XmlF3v3JHOlx3KWV7mUteB4pwEEfGTg4npPAJbp2o7arxQdoIq+Pu2
+OsvqhD7Rk4QeaX+EM1QS4lqd1otW4hE70h/ODPy1xffgbZiuotWQLC6nIwa65Qv6byqlIX0q
+Zuu99Vsu+r3sWYsL5SBkgecNI7fMJ5tfHrjoxfrKl/ErTAt8GQIDAQABo4ICBTCCAgEwEgYD
+VR0TAQH/BAgwBgEB/wIBATAOBgNVHQ8BAf8EBAMCAQYwKQYDVR0gBCIwIDANBgsrBgEEAYGt
+IYIsHjAPBg0rBgEEAYGtIYIsAQEEMB0GA1UdDgQWBBTEiKUH7rh7qgwTv9opdGNSG0lwFjAf
+BgNVHSMEGDAWgBST49gyJtrV8UqlkUrg6kviogzP4TCBjwYDVR0fBIGHMIGEMECgPqA8hjpo
+dHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWcyLWNhL3B1Yi9jcmwvY2Fjcmwu
+Y3JsMECgPqA8hjpodHRwOi8vY2RwMi5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWcyLWNhL3B1
+Yi9jcmwvY2FjcmwuY3JsMIHdBggrBgEFBQcBAQSB0DCBzTAzBggrBgEFBQcwAYYnaHR0cDov
+L29jc3AucGNhLmRmbi5kZS9PQ1NQLVNlcnZlci9PQ1NQMEoGCCsGAQUFBzAChj5odHRwOi8v
+Y2RwMS5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWcyLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNy
+dDBKBggrBgEFBQcwAoY+aHR0cDovL2NkcDIucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1nMi1j
+YS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQELBQADggEBABLpeD5FygzqOjj+
+/lAOy20UQOGWlx0RMuPcI4nuyFT8SGmK9lD7QCg/HoaJlfU/r78ex+SEide326evlFAoJXIF
+jVyzNltDhpMKrPIDuh2N12zyn1EtagqPL6hu4pVRzcBpl/F2HCvtmMx5K4WN1L1fmHWLcSap
+dhXLvAZ9RG/B3rqyULLSNN8xHXYXpmtvG0VGJAndZ+lj+BH7uvd3nHWnXEHC2q7iQlDUqg0a
+wIqWJgdLlx1Q8Dg/sodv0m+LN0kOzGvVDRCmowBdWGhhusD+duKV66pBl+qhC+4LipariWaM
+qK5ppMQROATjYeNRvwI+nDcEXr2vDaKmdbxgDVwwggWvMIIEl6ADAgECAgweKlJIhfynPMVG
+/KIwDQYJKoZIhvcNAQELBQAwajELMAkGA1UEBhMCREUxDzANBgNVBAgMBkJheWVybjERMA8G
+A1UEBwwITXVlbmNoZW4xIDAeBgNVBAoMF01heC1QbGFuY2stR2VzZWxsc2NoYWZ0MRUwEwYD
+VQQDDAxNUEcgQ0EgLSBHMDIwHhcNMTcxMTE0MTEzNDE2WhcNMjAxMTEzMTEzNDE2WjCBizEL
+MAkGA1UEBhMCREUxIDAeBgNVBAoMF01heC1QbGFuY2stR2VzZWxsc2NoYWZ0MTQwMgYDVQQL
+DCtNYXgtUGxhbmNrLUluc3RpdHV0IGZ1ZXIgbW9sZWt1bGFyZSBHZW5ldGlrMQ4wDAYDVQQL
+DAVNUElNRzEUMBIGA1UEAwwLUGF1bCBNZW56ZWwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQDIh/UR/AX/YQ48VWWDMLTYtXjYJyhRHMc81ZHMMoaoG66lWB9MtKRTnB5lovLZ
+enTIUyPsCrMhTqV9CWzDf6v9gOTWVxHEYqrUwK5H1gx4XoK81nfV8oGV4EKuVmmikTXiztGz
+peyDmOY8o/EFNWP7YuRkY/lPQJQBeBHYq9AYIgX4StuXu83nusq4MDydygVOeZC15ts0tv3/
+6WmibmZd1OZRqxDOkoBbY3Djx6lERohs3IKS6RKiI7e90rCSy9rtidJBOvaQS9wvtOSKPx0a
++2pAgJEVzZFjOAfBcXydXtqXhcpOi2VCyl+7+LnnTz016JJLsCBuWEcB3kP9nJYNAgMBAAGj
+ggIxMIICLTAJBgNVHRMEAjAAMA4GA1UdDwEB/wQEAwIF4DAdBgNVHSUEFjAUBggrBgEFBQcD
+AgYIKwYBBQUHAwQwHQYDVR0OBBYEFHM0Mc3XjMLlhWpp4JufRELL4A/qMB8GA1UdIwQYMBaA
+FMSIpQfuuHuqDBO/2il0Y1IbSXAWMCAGA1UdEQQZMBeBFXBtZW56ZWxAbW9sZ2VuLm1wZy5k
+ZTB9BgNVHR8EdjB0MDigNqA0hjJodHRwOi8vY2RwMS5wY2EuZGZuLmRlL21wZy1nMi1jYS9w
+dWIvY3JsL2NhY3JsLmNybDA4oDagNIYyaHR0cDovL2NkcDIucGNhLmRmbi5kZS9tcGctZzIt
+Y2EvcHViL2NybC9jYWNybC5jcmwwgc0GCCsGAQUFBwEBBIHAMIG9MDMGCCsGAQUFBzABhido
+dHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1AtU2VydmVyL09DU1AwQgYIKwYBBQUHMAKGNmh0
+dHA6Ly9jZHAxLnBjYS5kZm4uZGUvbXBnLWcyLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBC
+BggrBgEFBQcwAoY2aHR0cDovL2NkcDIucGNhLmRmbi5kZS9tcGctZzItY2EvcHViL2NhY2Vy
+dC9jYWNlcnQuY3J0MEAGA1UdIAQ5MDcwDwYNKwYBBAGBrSGCLAEBBDARBg8rBgEEAYGtIYIs
+AQEEAwYwEQYPKwYBBAGBrSGCLAIBBAMGMA0GCSqGSIb3DQEBCwUAA4IBAQCQs6bUDROpFO2F
+Qz2FMgrdb39VEo8P3DhmpqkaIMC5ZurGbbAL/tAR6lpe4af682nEOJ7VW86ilsIJgm1j0ueY
+aOuL8jrN4X7IF/8KdZnnNnImW3QVni6TCcc+7+ggci9JHtt0IDCj5vPJBpP/dKXLCN4M+exl
+GXYpfHgxh8gclJPY1rquhQrihCzHfKB01w9h9tWZDVMtSoy9EUJFhCXw7mYUsvBeJwZesN2B
+fndPkrXx6XWDdU3S1LyKgHlLIFtarLFm2Hb5zAUR33h+26cN6ohcGqGEEzgIG8tXS8gztEaj
+1s2RyzmKd4SXTkKR3GhkZNVWy+gM68J7jP6zzN+cMYIDmjCCA5YCAQEwejBqMQswCQYDVQQG
+EwJERTEPMA0GA1UECAwGQmF5ZXJuMREwDwYDVQQHDAhNdWVuY2hlbjEgMB4GA1UECgwXTWF4
+LVBsYW5jay1HZXNlbGxzY2hhZnQxFTATBgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzF
+RvyiMA0GCWCGSAFlAwQCAQUAoIIB8TAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
+SIb3DQEJBTEPFw0xOTA4MTIwOTU5MDRaMC8GCSqGSIb3DQEJBDEiBCDNhPDkLBVuKg10bJR1
+KAqEAStQChg0sPxizcd/2CLrNDBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglg
+hkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcG
+BSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGJBgkrBgEEAYI3EAQxfDB6MGoxCzAJBgNVBAYTAkRF
+MQ8wDQYDVQQIDAZCYXllcm4xETAPBgNVBAcMCE11ZW5jaGVuMSAwHgYDVQQKDBdNYXgtUGxh
+bmNrLUdlc2VsbHNjaGFmdDEVMBMGA1UEAwwMTVBHIENBIC0gRzAyAgweKlJIhfynPMVG/KIw
+gYsGCyqGSIb3DQEJEAILMXygejBqMQswCQYDVQQGEwJERTEPMA0GA1UECAwGQmF5ZXJuMREw
+DwYDVQQHDAhNdWVuY2hlbjEgMB4GA1UECgwXTWF4LVBsYW5jay1HZXNlbGxzY2hhZnQxFTAT
+BgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzFRvyiMA0GCSqGSIb3DQEBAQUABIIBAIWl
+GVk6U6pR5uAE5NNmp5Teybv3ieM0mOyOv0LllPTL3okDA5+HM9tQNMeRCBqyyazVioSBNedh
+AwqAgNABW8B1ARIly2WY/beF729i+L5hw1R/MV/rMBYtRzt8tr5hjCuBQO2U/A378R0ijFKh
+hIumwJwv86iQPGaKRLiaLzXCo41Zmg0ln29x1CDOHqcZ5DXDrK3aEcgZm8YMEEYyu9s+9JvY
+MZ5wTAkZsW1+/kJVkU5ode/u3Uib9ES8tQgLf8YHmTvaiGp+QBIyR1Pgw4ZUINce07wWIe9H
+2G8ClByXCWZHue1WbGraKaJDKVrY14Jz/Qxdjvs+0dUZTfaenkIAAAAAAAA=
+--------------ms070106020409050702050202--
+
+--===============7863570296543864309==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============7863570296543864309==--
