@@ -2,54 +2,62 @@ Return-Path: <SRS0=NGNk=WI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DATE_IN_PAST_03_06,
+	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A0CC31E40
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 12:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4163C31E40
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 13:54:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CCBEE20651
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 12:15:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CCBEE20651
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 7A8BF20684
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 13:54:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="XNfChPFX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A8BF20684
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D8B1FCC8;
-	Mon, 12 Aug 2019 12:15:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4D922CA6;
+	Mon, 12 Aug 2019 13:54:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C159DCB2;
-	Mon, 12 Aug 2019 12:15:39 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5C53D8A0;
-	Mon, 12 Aug 2019 12:15:39 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id EC352227A8C; Mon, 12 Aug 2019 14:15:33 +0200 (CEST)
-Date: Mon, 12 Aug 2019 14:15:32 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: "Michael S. Tsirkin" <mst@redhat.com>
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1537CAF7;
+	Mon, 12 Aug 2019 13:54:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DB6B38A6;
+	Mon, 12 Aug 2019 13:54:23 +0000 (UTC)
+Received: by ozlabs.org (Postfix, from userid 1007)
+	id 466clc5Gzkz9sN1; Mon, 12 Aug 2019 23:54:20 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+	d=gibson.dropbear.id.au; s=201602; t=1565618060;
+	bh=M9fkWHdcEUWxow+UKyurPCc6awYRSJcQDFkH60t6zw4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XNfChPFXwvqdC699kOEIy0Vv+oqCy3B16t+DVeHfqEhPuYXrv4IbL35jznMyfU7fK
+	xOG5C9V9cbX93SGcIh3DMAgNEHFmoczgaOoRGnafCrGMLC0NYRRdQDDxDKSyaVS9X/
+	M9Vlcq+UBH20ge76b4ysegxd1UGPTyJxvCHp8GEQ=
+Date: Mon, 12 Aug 2019 19:51:56 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Christoph Hellwig <hch@lst.de>
 Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
-Message-ID: <20190812121532.GB9405@lst.de>
+Message-ID: <20190812095156.GD3947@umbus.fritz.box>
 References: <87zhrj8kcp.fsf@morokweng.localdomain>
 	<20190810143038-mutt-send-email-mst@kernel.org>
 	<20190810220702.GA5964@ram.ibm.com> <20190811055607.GA12488@lst.de>
-	<20190811044431-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190811044431-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+In-Reply-To: <20190811055607.GA12488@lst.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
 	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
 	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
 	virtualization@lists.linux-foundation.org,
-	Paul Mackerras <paulus@ozlabs.org>,
-	iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
-	David Gibson <david@gibson.dropbear.id.au>
+	Paul Mackerras <paulus@ozlabs.org>, iommu@lists.linux-foundation.org,
+	linuxppc-devel@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,28 +70,94 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8835015723736642161=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sun, Aug 11, 2019 at 04:55:27AM -0400, Michael S. Tsirkin wrote:
-> On Sun, Aug 11, 2019 at 07:56:07AM +0200, Christoph Hellwig wrote:
-> > So we need a flag on the virtio device, exposed by the
-> > hypervisor (or hardware for hw virtio devices) that says:  hey, I'm real,
-> > don't take a shortcut.
-> 
-> The point here is that it's actually still not real. So we would still
-> use a physical address. However Linux decides that it wants extra
-> security by moving all data through the bounce buffer.  The distinction
-> made is that one can actually give device a physical address of the
-> bounce buffer.
 
-Sure.  The problem is just that you keep piling hacks on top of hacks.
-We need the per-device flag anyway to properly support hardware virtio
-device in all circumstances.  Instead of coming up with another ad-hoc
-hack to force DMA uses implement that one proper bit and reuse it here.
+--===============8835015723736642161==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="NtwzykIc2mflq5ck"
+Content-Disposition: inline
+
+
+--NtwzykIc2mflq5ck
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Aug 11, 2019 at 07:56:07AM +0200, Christoph Hellwig wrote:
+> sev_active() is gone now in linux-next, at least as a global API.
+>=20
+> And once again this is entirely going in the wrong direction.  The only
+> way using the DMA API is going to work at all is if the device is ready
+> for it.  So we need a flag on the virtio device, exposed by the
+> hypervisor (or hardware for hw virtio devices) that says:  hey, I'm real,
+> don't take a shortcut.
+
+There still seems to be a failure to understand each other here.  The
+limitation here simply *is not* a property of the device.  In fact,
+it's effectively a property of the memory the virtio device would be
+trying to access (because it's in secure mode it can't be directly
+accessed via the hypervisor).  There absolutely are cases where this
+is a device property (a physical virtio device being the obvious one),
+but this isn't one of them.
+
+Unfortunately, we're kind of stymied by the feature negotiation model
+of virtio.  AIUI the hypervisor / device presents a bunch of feature
+bits of which the guest / driver selects a subset.
+
+AFAICT we already kind of abuse this for the VIRTIO_F_IOMMU_PLATFORM,
+because to handle for cases where it *is* a device limitation, we
+assume that if the hypervisor presents VIRTIO_F_IOMMU_PLATFORM then
+the guest *must* select it.
+
+What we actually need here is for the hypervisor to present
+VIRTIO_F_IOMMU_PLATFORM as available, but not required.  Then we need
+a way for the platform core code to communicate to the virtio driver
+that *it* requires the IOMMU to be used, so that the driver can select
+or not the feature bit on that basis.
+
+> And that means on power and s390 qemu will always have to set thos if
+> you want to be ready for the ultravisor and co games.  It's not like we
+> haven't been through this a few times before, have we?
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--NtwzykIc2mflq5ck
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl1RNrcACgkQbDjKyiDZ
+s5IeEA//dnRJ6mVj+RhQveMWMmeAiLbWMfnm//uTigHRNS3wsKGZnHuzpbBnRoCc
+lEX8grJ+aGO69ZFe4N41Fad605IFGUjnxTtQn6kMx85m7F6z1+Bdi0B4H/k9iZ77
+jr/rVpXQ9lv93Sns8vg9rZloaLf3xt1ZBN7hjecvVNSN5esttOlczRXSCq8m3rGE
+2wYsyLox6y/juyLl/f+MOADagIb5ca652DrmInAaER3HgNnMmZGjr+gAjgvzNWRC
+iYF3i/T/+NQLSS2IgG3eo9kzz3TF9FxmbtpqCynyr/JOUOf+M6vN9IZnr6MDSspR
+OnUgRJLIOVjAUcG5EDwfoZQIbuJ7rJZ68/q75aJpMWpfrAsEiKPVD42lhDRtPzuT
+fyT2lVp0ZF+VfSL4lc7nFq/yEG8YCJO2ZtgulzCFo72mPieeMZj3UyBOn0eJZ6Ui
+lAOZHKgkDuhvNYXigewhujz+kTJ2UlV0ioZ0fOs9ohqOMd3t9RcIn2HIhI1j+2hN
+drDFJUL6roSn+3rMA8MxCqeumTjFXGEGa9K+MIrVHpCnfgLgxV3Z2Z/gy8TNdetk
+qobrJcniwJGse95D0BXoU6FDLRTOBsyNXa1ruMT0srHClrFIVRkGGr8fveJvUo/z
+9pxHx2HQa0ePV1VCTj0h9YficujWGsF+RwC57aQOeCUFqLYz+0c=
+=pHtB
+-----END PGP SIGNATURE-----
+
+--NtwzykIc2mflq5ck--
+
+--===============8835015723736642161==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============8835015723736642161==--
