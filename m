@@ -2,114 +2,58 @@ Return-Path: <SRS0=NGNk=WI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C89DC31E40
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 10:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50849C433FF
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 10:42:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3B09F208C2
-	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 10:33:01 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="D1kohbEC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B09F208C2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2BE362085A
+	for <iommu@archiver.kernel.org>; Mon, 12 Aug 2019 10:42:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2BE362085A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E2EABB79;
-	Mon, 12 Aug 2019 10:33:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E3575C77;
+	Mon, 12 Aug 2019 10:42:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 58EF986D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51754B79
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 12 Aug 2019 10:33:00 +0000 (UTC)
+	Mon, 12 Aug 2019 10:42:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
-	[210.118.77.11])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 371A187D
+Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8AE8F2C6
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 12 Aug 2019 10:32:59 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
-	20190812103257euoutp0103cec62d4647e6972676f92962315dee~6JldrEvyF2529525295euoutp01A
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 12 Aug 2019 10:32:57 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
-	20190812103257euoutp0103cec62d4647e6972676f92962315dee~6JldrEvyF2529525295euoutp01A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1565605977;
-	bh=WfCPF6suYg6AJTiRWu79YNFggXctmiOm+yE/cpdp1iw=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=D1kohbECpzpp043xPvtllytinl+A4ZeuyYEZKkB4sngb2jTgyAAQwKt3JEm6SOt/5
-	E/pwPTj8p1G2OmagCe4Xm2nsRu4tXseQguV14BrNeI63qX7vBSMM/uyRNfw0IoIOxD
-	ZuHfqd1ga/JC4rsTol8VbwVRSdfgPSiGisnSRNm8=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20190812103256eucas1p1d28d5df455544b8a2ab74fe4aa3d392e~6Jlc7_4fg1158911589eucas1p1Y;
-	Mon, 12 Aug 2019 10:32:56 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges3new.samsung.com (EUCPMTA) with SMTP id 5F.5B.04374.850415D5;
-	Mon, 12 Aug 2019 11:32:56 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20190812103255eucas1p1cdab368b5fb06e4e3df62dfdc679f3af~6JlcGzjNu2368323683eucas1p1n;
-	Mon, 12 Aug 2019 10:32:55 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20190812103255eusmtrp2c8916dc1dcf329bab7bfee4905826cd4~6Jlb4wKW10192801928eusmtrp2d;
-	Mon, 12 Aug 2019 10:32:55 +0000 (GMT)
-X-AuditID: cbfec7f5-4ddff70000001116-d9-5d51405816d1
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 46.3B.04117.750415D5;
-	Mon, 12 Aug 2019 11:32:55 +0100 (BST)
-Received: from AMDC2765.DIGITAL.local (unknown [106.120.51.73]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20190812103254eusmtip27324eb6aff714fc01f6f5beab6418dbc~6Jlbdw6ma1210512105eusmtip2e;
-	Mon, 12 Aug 2019 10:32:54 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
-Subject: [PATCH] iommu: exynos: Remove __init annotation from
-	exynos_sysmmu_probe()
-Date: Mon, 12 Aug 2019 12:32:46 +0200
-Message-Id: <20190812103246.18049-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrFIsWRmVeSWpSXmKPExsWy7djP87oRDoGxBie/81lsnLGe1WLBfmuL
-	ztkb2C3OnwcSM87vY7JYe+QuuwObx5OD85g8Nq3qZPOYfGM5o0ffllWMHp83yQWwRnHZpKTm
-	ZJalFunbJXBlbL53jqXgDXvFxq6rjA2MV9i6GDk5JARMJBrWN7KA2EICKxgl3i3k72LkArK/
-	MEosODqHFcL5zCjx5O1XFpiOvZN6oRLLGSXeNx9lgWt5/PUAI0gVm4ChRNfbLrAdIgLuEtf/
-	PAcrYhbYwChxfE8TM0hCWCBU4v/j+2BFLAKqEpNXXgWL8wrYSnzoXcAKsU5eYvWGA8wgzRIC
-	J9gk5r78BXWHi8Tt1w/YIWxhiVfHt0DZMhL/d85ngmhoZpR4eG4tO4TTwyhxuWkGI0SVtcTh
-	4xeBVnAA3aQpsX6XPkTYUWL63dksIGEJAT6JG28FQcLMQOakbdOZIcK8Eh1tQhDVahKzjq+D
-	W3vwwiVmCNtDYsqrY4yQQI2VOPV5DtMERrlZCLsWMDKuYhRPLS3OTU8tNs5LLdcrTswtLs1L
-	10vOz93ECEwBp/8d/7qDcd+fpEOMAhyMSjy8G34HxAqxJpYVV+YeYpTgYFYS4S35CxTiTUms
-	rEotyo8vKs1JLT7EKM3BoiTOW83wIFpIID2xJDU7NbUgtQgmy8TBKdXAWNPG2TDnIr/0kXVC
-	fKfn7YpjF2Ap2rp+37fDttHSsRJbQt5VVWXNzJ6bdVdkw16dBYv2n+lZFz470kf5omqguXLV
-	/hesuhdNK57XJ1h9mii2p1i+LHWGmeffB+me/y5wvCr5utpm/rzpBit9bxxI0ZGfXGyY8f4M
-	H8sG1+gr/c6Z152eyH2qVWIpzkg01GIuKk4EAMMEGEj9AgAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrALMWRmVeSWpSXmKPExsVy+t/xe7rhDoGxBo/+i1tsnLGe1WLBfmuL
-	ztkb2C3OnwcSM87vY7JYe+QuuwObx5OD85g8Nq3qZPOYfGM5o0ffllWMHp83yQWwRunZFOWX
-	lqQqZOQXl9gqRRtaGOkZWlroGZlY6hkam8daGZkq6dvZpKTmZJalFunbJehlbL53jqXgDXvF
-	xq6rjA2MV9i6GDk5JARMJPZO6mXtYuTiEBJYyijx7N1LRoiEjMTJaQ2sELawxJ9rXWwQRZ8Y
-	JS5seckMkmATMJToetsFNklEwFNi5tsWsEnMApsYJT4eP8QOkhAWCJaYfHMp2CQWAVWJySuv
-	gjXzCthKfOhdALVBXmL1hgPMExh5FjAyrGIUSS0tzk3PLTbSK07MLS7NS9dLzs/dxAgMvW3H
-	fm7Zwdj1LvgQowAHoxIPb8TPgFgh1sSy4srcQ4wSHMxKIrwlf4FCvCmJlVWpRfnxRaU5qcWH
-	GE2Blk9klhJNzgfGRV5JvKGpobmFpaG5sbmxmYWSOG+HwMEYIYH0xJLU7NTUgtQimD4mDk6p
-	Bka2Ey+0ovJY4+wm3c++qZErvXSrxubzIrs0btg4Trr68OAZTanPNzc/Mes3umHTsmhlwv/c
-	JS6Lsmu8Go2nmITMSfy9Ss325CfDubNNDzCYhGn9L3hj8iF027vSytv+j2/9ll3k8FPEu1Jp
-	t9esB60fbnOqdWYGPhL7k5AYXX91u4TEpde+ngeVWIozEg21mIuKEwGyxqFTUwIAAA==
-X-CMS-MailID: 20190812103255eucas1p1cdab368b5fb06e4e3df62dfdc679f3af
-X-Msg-Generator: CA
-X-RootMTR: 20190812103255eucas1p1cdab368b5fb06e4e3df62dfdc679f3af
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20190812103255eucas1p1cdab368b5fb06e4e3df62dfdc679f3af
-References: <CGME20190812103255eucas1p1cdab368b5fb06e4e3df62dfdc679f3af@eucas1p1.samsung.com>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>
+	Mon, 12 Aug 2019 10:42:32 +0000 (UTC)
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id 5DD18646940A019F322D;
+	Mon, 12 Aug 2019 18:42:30 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.238) by DGGEMS406-HUB.china.huawei.com
+	(10.3.19.206) with Microsoft SMTP Server id 14.3.439.0;
+	Mon, 12 Aug 2019 18:42:22 +0800
+Subject: Re: [PATCH] iommu/arm-smmu-v3: add nr_ats_masters to avoid
+	unnecessary operations
+To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker
+	<jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Will
+	Deacon" <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel
+	<linux-arm-kernel@lists.infradead.org>, iommu
+	<iommu@lists.linux-foundation.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>, <jean-philippe@linaro.org>
+References: <20190801122040.26024-1-thunder.leizhen@huawei.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <b5866f7a-013a-5900-6fce-268052f2ba0a@huawei.com>
+Date: Mon, 12 Aug 2019 11:42:17 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
+MIME-Version: 1.0
+In-Reply-To: <20190801122040.26024-1-thunder.leizhen@huawei.com>
+X-Originating-IP: [10.202.227.238]
+X-CFilter-Loop: Reflected
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -122,38 +66,125 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Exynos SYSMMU driver supports deferred probe. It happens when clocks
-needed for this driver are not yet available. Typically next calls to
-driver ->probe() happen before init section is free, but this is not
-really guaranteed. To make if safe, remove __init annotation from
-exynos_sysmmu_probe() function.
+On 01/08/2019 13:20, Zhen Lei wrote:
+> When (smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS) is true, even if a
+> smmu domain does not contain any ats master, the operations of
+> arm_smmu_atc_inv_to_cmd() and lock protection in arm_smmu_atc_inv_domain()
+> are always executed. This will impact performance, especially in
+> multi-core and stress scenarios. For my FIO test scenario, about 8%
+> performance reduced.
+>
+> In fact, we can use a atomic member to record how many ats masters the
+> smmu contains. And check that without traverse the list and check all
+> masters one by one in the lock protection.
+>
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/iommu/exynos-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Will, Robin, Jean-Philippe,
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index b0c1e5f9daae..a48236c1d5cb 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -566,7 +566,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 
- static const struct iommu_ops exynos_iommu_ops;
- 
--static int __init exynos_sysmmu_probe(struct platform_device *pdev)
-+static int exynos_sysmmu_probe(struct platform_device *pdev)
- {
- 	int irq, ret;
- 	struct device *dev = &pdev->dev;
--- 
-2.17.1
+Can you kindly check this issue? We have seen a signifigant performance 
+regression here.
+
+Thanks!
+
+> Fixes: 9ce27afc0830 ("iommu/arm-smmu-v3: Add support for PCI ATS")
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index a9a9fabd396804a..1b370d9aca95f94 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -631,6 +631,7 @@ struct arm_smmu_domain {
+>
+>  	struct io_pgtable_ops		*pgtbl_ops;
+>  	bool				non_strict;
+> +	atomic_t			nr_ats_masters;
+
+
+It's not ideal to keep a separate count of ats masters...hmmm
+
+>
+>  	enum arm_smmu_domain_stage	stage;
+>  	union {
+> @@ -1531,7 +1532,7 @@ static int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+>  	struct arm_smmu_cmdq_ent cmd;
+>  	struct arm_smmu_master *master;
+>
+> -	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
+> +	if (!atomic_read(&smmu_domain->nr_ats_masters))
+>  		return 0;
+
+The rest of the code is here:
+
+	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
+
+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+	list_for_each_entry(master, &smmu_domain->devices, domain_head)
+		ret |= arm_smmu_atc_inv_master(master, &cmd);
+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+
+	return ret ? -ETIMEDOUT : 0;
+}
+
+Not directly related to leizhen's issue: Could RCU protection be used 
+for this list iteration? I can't imagine that the devices list changes 
+often. And also we already protect the cmdq in arm_smmu_atc_inv_master().
+
+>
+>  	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
+> @@ -1869,6 +1870,7 @@ static int arm_smmu_enable_ats(struct arm_smmu_master *master)
+>  	size_t stu;
+>  	struct pci_dev *pdev;
+>  	struct arm_smmu_device *smmu = master->smmu;
+> +	struct arm_smmu_domain *smmu_domain = master->domain;
+>  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
+>
+>  	if (!(smmu->features & ARM_SMMU_FEAT_ATS) || !dev_is_pci(master->dev) ||
+> @@ -1887,12 +1889,15 @@ static int arm_smmu_enable_ats(struct arm_smmu_master *master)
+>  		return ret;
+>
+>  	master->ats_enabled = true;
+> +	atomic_inc(&smmu_domain->nr_ats_masters);
+> +
+>  	return 0;
+>  }
+>
+>  static void arm_smmu_disable_ats(struct arm_smmu_master *master)
+>  {
+>  	struct arm_smmu_cmdq_ent cmd;
+> +	struct arm_smmu_domain *smmu_domain = master->domain;
+>
+>  	if (!master->ats_enabled || !dev_is_pci(master->dev))
+>  		return;
+> @@ -1901,6 +1906,7 @@ static void arm_smmu_disable_ats(struct arm_smmu_master *master)
+>  	arm_smmu_atc_inv_master(master, &cmd);
+>  	pci_disable_ats(to_pci_dev(master->dev));
+>  	master->ats_enabled = false;
+> +	atomic_dec(&smmu_domain->nr_ats_masters);
+>  }
+>
+>  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+> @@ -1915,10 +1921,10 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+>  	list_del(&master->domain_head);
+>  	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>
+> -	master->domain = NULL;
+>  	arm_smmu_install_ste_for_dev(master);
+>
+>  	arm_smmu_disable_ats(master);
+> +	master->domain = NULL;
+>  }
+>
+>  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>
+
 
 _______________________________________________
 iommu mailing list
