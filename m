@@ -2,61 +2,65 @@ Return-Path: <SRS0=4AON=WJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F8BC433FF
-	for <iommu@archiver.kernel.org>; Tue, 13 Aug 2019 16:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FFEEC32750
+	for <iommu@archiver.kernel.org>; Tue, 13 Aug 2019 17:10:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1CE312067D
-	for <iommu@archiver.kernel.org>; Tue, 13 Aug 2019 16:53:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CE312067D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1022A20840
+	for <iommu@archiver.kernel.org>; Tue, 13 Aug 2019 17:10:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="VSoIwMBN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1022A20840
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BDA0ADD2;
-	Tue, 13 Aug 2019 16:53:44 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DCA2BDC2;
+	Tue, 13 Aug 2019 17:10:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A31E9DD0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ED397D8B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 13 Aug 2019 16:53:42 +0000 (UTC)
+	Tue, 13 Aug 2019 17:10:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0873D8D
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 956048A3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 13 Aug 2019 16:53:41 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	13 Aug 2019 09:53:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,382,1559545200"; d="scan'208";a="351588121"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga005.jf.intel.com with ESMTP; 13 Aug 2019 09:53:41 -0700
-Date: Tue, 13 Aug 2019 09:57:23 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 13/22] iommu/vt-d: Enlightened PASID allocation
-Message-ID: <20190813095723.467b0344@jacob-builder>
-In-Reply-To: <6d53fe3e-8d91-22f6-4bec-aad6745bee81@redhat.com>
-References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1560087862-57608-14-git-send-email-jacob.jun.pan@linux.intel.com>
-	<6d53fe3e-8d91-22f6-4bec-aad6745bee81@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Tue, 13 Aug 2019 17:10:44 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id CCE5E20679;
+	Tue, 13 Aug 2019 17:10:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1565716244;
+	bh=3HAujAOVhRvVLw9Wr49q0ihG1ZR2YhR/IpIuwrI01jM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VSoIwMBNPftQwtRHK78noD6VrYTtEw2/zdtVMnZa+W21+JNwBjt4M/+CUmJoAKYgm
+	vxnL6pOXtRJd3CWe1kfjMMNi8OVv8A4+2H2XXoExvno/NOG8KwCkt3EU/SRc/RJnOy
+	8Wu9Xp1qau4NNWdG7KQeXOPxv1afsB4fLI53LFeo=
+Date: Tue, 13 Aug 2019 18:10:40 +0100
+From: Will Deacon <will@kernel.org>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: add nr_ats_masters to avoid
+	unnecessary operations
+Message-ID: <20190813171039.y64wslo4dzgyis3e@willie-the-truck>
+References: <20190801122040.26024-1-thunder.leizhen@huawei.com>
+	<b5866f7a-013a-5900-6fce-268052f2ba0a@huawei.com>
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+Content-Disposition: inline
+In-Reply-To: <b5866f7a-013a-5900-6fce-268052f2ba0a@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: jean-philippe@linaro.org,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,200 +78,29 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Eric,
-
-Apologize for the delayed response below,
-
-On Tue, 16 Jul 2019 11:29:30 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
-
-> Hi Jacob,
-> On 6/9/19 3:44 PM, Jacob Pan wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
+On Mon, Aug 12, 2019 at 11:42:17AM +0100, John Garry wrote:
+> On 01/08/2019 13:20, Zhen Lei wrote:
+> > When (smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS) is true, even if a
+> > smmu domain does not contain any ats master, the operations of
+> > arm_smmu_atc_inv_to_cmd() and lock protection in arm_smmu_atc_inv_domain()
+> > are always executed. This will impact performance, especially in
+> > multi-core and stress scenarios. For my FIO test scenario, about 8%
+> > performance reduced.
 > > 
-> > If Intel IOMMU runs in caching mode, a.k.a. virtual IOMMU, the
-> > IOMMU driver should rely on the emulation software to allocate
-> > and free PASID IDs. The Intel vt-d spec revision 3.0 defines a
-> > register set to support this. This includes a capability register,
-> > a virtual command register and a virtual response register. Refer
-> > to section 10.4.42, 10.4.43, 10.4.44 for more information.
+> > In fact, we can use a atomic member to record how many ats masters the
+> > smmu contains. And check that without traverse the list and check all
+> > masters one by one in the lock protection.
 > > 
-> > This patch adds the enlightened PASID allocation/free interfaces
-> > via the virtual command register.>
-> > Cc: Ashok Raj <ashok.raj@intel.com>
-> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-pasid.c | 76
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > drivers/iommu/intel-pasid.h | 13 +++++++-
-> > include/linux/intel-iommu.h |  2 ++ 3 files changed, 90
-> > insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/intel-pasid.c
-> > b/drivers/iommu/intel-pasid.c index 2fefeaf..69fddd3 100644
-> > --- a/drivers/iommu/intel-pasid.c
-> > +++ b/drivers/iommu/intel-pasid.c
-> > @@ -63,6 +63,82 @@ void *intel_pasid_lookup_id(int pasid)
-> >  	return p;
-> >  }
-> >  
-> > +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid) +{
-> > +	u64 res;
-> > +	u64 cap;
-> > +	u8 status_code;
-> > +	unsigned long flags;
-> > +	int ret = 0;
-> > +
-> > +	if (!ecap_vcs(iommu->ecap)) {
-> > +		pr_warn("IOMMU: %s: Hardware doesn't support
-> > virtual command\n",
-> > +			iommu->name);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	cap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
-> > +	if (!(cap & DMA_VCS_PAS)) {
-> > +		pr_warn("IOMMU: %s: Emulation software doesn't
-> > support PASID allocation\n",
-> > +			iommu->name);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-> > +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, VCMD_CMD_ALLOC);
-> > +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-> > +		      !(res & VCMD_VRSP_IP), res);
-> > +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-> > +
-> > +	status_code = VCMD_VRSP_SC(res);
-> > +	switch (status_code) {
-> > +	case VCMD_VRSP_SC_SUCCESS:
-> > +		*pasid = VCMD_VRSP_RESULT(res);
-> > +		break;
-> > +	case VCMD_VRSP_SC_NO_PASID_AVAIL:
-> > +		pr_info("IOMMU: %s: No PASID available\n",
-> > iommu->name);
-> > +		ret = -ENOMEM;
-> > +		break;
-> > +	default:
-> > +		ret = -ENODEV;
-> > +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",  
-> unknown
-> s/unknown/unexpected
-sounds good.
-> > +			iommu->name, status_code);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
-> > +{
-> > +	u64 res;
-> > +	u8 status_code;
-> > +	unsigned long flags;
-> > +
-> > +	if (!ecap_vcs(iommu->ecap)) {
-> > +		pr_warn("IOMMU: %s: Hardware doesn't support
-> > virtual command\n",
-> > +			iommu->name);
-> > +		return;
-> > +	}  
-> Logically shouldn't you also check DMAR_VCCAP_REG as well?
-Good point, we may have more than just PASID allocation virtual
-commands.
-> > +
-> > +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
-> > +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, (pasid << 8) |
-> > VCMD_CMD_FREE);
-> > +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
-> > +		      !(res & VCMD_VRSP_IP), res);
-> > +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-> > +
-> > +	status_code = VCMD_VRSP_SC(res);
-> > +	switch (status_code) {
-> > +	case VCMD_VRSP_SC_SUCCESS:
-> > +		break;
-> > +	case VCMD_VRSP_SC_INVALID_PASID:
-> > +		pr_info("IOMMU: %s: Invalid PASID\n", iommu->name);
-> > +		break;
-> > +	default:
-> > +		pr_warn("IOMMU: %s: Unkonwn error code %d\n",
-> > +			iommu->name, status_code);  
-> s/Unkonwn/Unexpected
-will fix. 
-> > +	}
-> > +}
-> > +
-> >  /*
-> >   * Per device pasid table management:
-> >   */
-> > diff --git a/drivers/iommu/intel-pasid.h
-> > b/drivers/iommu/intel-pasid.h index 23537b3..4b26ab5 100644
-> > --- a/drivers/iommu/intel-pasid.h
-> > +++ b/drivers/iommu/intel-pasid.h
-> > @@ -19,6 +19,16 @@
-> >  #define PASID_PDE_SHIFT			6
-> >  #define MAX_NR_PASID_BITS		20
-> >  
-> > +/* Virtual command interface for enlightened pasid management. */
-> > +#define VCMD_CMD_ALLOC			0x1
-> > +#define VCMD_CMD_FREE			0x2
-> > +#define VCMD_VRSP_IP			0x1
-> > +#define VCMD_VRSP_SC(e)			(((e) >> 1) & 0x3)
-> > +#define VCMD_VRSP_SC_SUCCESS		0
-> > +#define VCMD_VRSP_SC_NO_PASID_AVAIL	1
-> > +#define VCMD_VRSP_SC_INVALID_PASID	1
-> > +#define VCMD_VRSP_RESULT(e)		(((e) >> 8) & 0xfffff)
-> > +
-> >  /*
-> >   * Domain ID reserved for pasid entries programmed for first-level
-> >   * only and pass-through transfer modes.
-> > @@ -69,5 +79,6 @@ int intel_pasid_setup_pass_through(struct
-> > intel_iommu *iommu, struct device *dev, int pasid);
-> >  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
-> >  				 struct device *dev, int pasid);
-> > -
-> > +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
-> > *pasid); +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned
-> > int pasid); #endif /* __INTEL_PASID_H */
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 6925a18..bff907b 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -173,6 +173,7 @@
-> >  #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
-> >  #define ecap_flts(e)		(((e) >> 47) & 0x1)
-> >  #define ecap_slts(e)		(((e) >> 46) & 0x1)
-> > +#define ecap_vcs(e)		(((e) >> 44) & 0x1)
-> >  #define ecap_smts(e)		(((e) >> 43) & 0x1)
-> >  #define ecap_dit(e)		((e >> 41) & 0x1)
-> >  #define ecap_pasid(e)		((e >> 40) & 0x1)
-> > @@ -289,6 +290,7 @@
-> >  
-> >  /* PRS_REG */
-> >  #define DMA_PRS_PPR	((u32)1)
-> > +#define DMA_VCS_PAS	((u64)1)
-> >  
-> >  #define IOMMU_WAIT_OP(iommu, offset, op, cond,
-> > sts)			\ do
-> > {
-> > \ 
-> Otherwise
 > 
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> Hi Will, Robin, Jean-Philippe,
 > 
-> Thanks
-> 
-> Eric
-> 
+> Can you kindly check this issue? We have seen a signifigant performance
+> regression here.
 
-[Jacob Pan]
+Sorry, John: Robin and Jean-Philippe are off at the moment and I've been
+swamped dealing with the arm64 queue. I'll try to get to this tomorrow.
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
