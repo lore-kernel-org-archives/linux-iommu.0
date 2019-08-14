@@ -2,46 +2,49 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740D7C433FF
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB969C32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:04:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 578F62084F
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:04:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 578F62084F
+	by mail.kernel.org (Postfix) with ESMTPS id A06CD2084F
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:04:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A06CD2084F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1FABBE1A;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4D619E1C;
 	Wed, 14 Aug 2019 18:04:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 88620DCD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A1809DC6
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 18:04:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id AC8B88A9
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 513A589D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 18:04:06 +0000 (UTC)
+	Wed, 14 Aug 2019 18:04:05 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 626D6344;
-	Wed, 14 Aug 2019 10:56:41 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 544FF169E;
+	Wed, 14 Aug 2019 10:57:08 -0700 (PDT)
 Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
 	[10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5DA1E3F694; 
-	Wed, 14 Aug 2019 10:56:39 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 51E1F3F694; 
+	Wed, 14 Aug 2019 10:57:06 -0700 (PDT)
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 00/13] Rework IOMMU API to allow for batching of invalidation
-Date: Wed, 14 Aug 2019 18:56:21 +0100
-Message-Id: <20190814175634.21081-1-will@kernel.org>
+Subject: [PATCH 12/13] iommu/io-pgtable: Pass struct iommu_iotlb_gather to
+	->unmap()
+Date: Wed, 14 Aug 2019 18:56:33 +0100
+Message-Id: <20190814175634.21081-13-will@kernel.org>
 X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20190814175634.21081-1-will@kernel.org>
+References: <20190814175634.21081-1-will@kernel.org>
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
 	Vijay Kilary <vkilari@codeaurora.org>, Robin Murphy <robin.murphy@arm.com>,
 	Jan Glauber <jglauber@marvell.com>,
@@ -67,100 +70,207 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi everybody,
+Update the io-pgtable ->unmap() function to take an iommu_iotlb_gather
+pointer as an argument, and update the callers as appropriate.
 
-These are the core IOMMU changes that I have posted previously as part
-of my ongoing effort to reduce the lock contention of the SMMUv3 command
-queue. I thought it would be better to split this out as a separate
-series, since I think it's ready to go and all the driver conversions
-mean that it's quite a pain for me to maintain out of tree!
+Signed-off-by: Will Deacon <will@kernel.org>
+---
+ drivers/gpu/drm/panfrost/panfrost_mmu.c | 2 +-
+ drivers/iommu/arm-smmu-v3.c             | 2 +-
+ drivers/iommu/arm-smmu.c                | 2 +-
+ drivers/iommu/io-pgtable-arm-v7s.c      | 6 +++---
+ drivers/iommu/io-pgtable-arm.c          | 7 +++----
+ drivers/iommu/ipmmu-vmsa.c              | 2 +-
+ drivers/iommu/msm_iommu.c               | 2 +-
+ drivers/iommu/mtk_iommu.c               | 2 +-
+ drivers/iommu/qcom_iommu.c              | 2 +-
+ include/linux/io-pgtable.h              | 4 +++-
+ 10 files changed, 16 insertions(+), 15 deletions(-)
 
-The idea of the patch series is to allow TLB invalidation to be batched
-up into a new 'struct iommu_iotlb_gather' structure, which tracks the
-properties of the virtual address range being invalidated so that it
-can be deferred until the driver's ->iotlb_sync() function is called.
-This allows for more efficient invalidation on hardware that can submit
-multiple invalidations in one go.
-
-The previous series was included in:
-
-  https://lkml.kernel.org/r/20190711171927.28803-1-will@kernel.org
-
-The only real change since then is incorporating the newly merged
-virtio-iommu driver.
-
-If you'd like to play with the patches, then I've also pushed them here:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/unmap
-
-but they should behave as a no-op on their own. Patches to convert the
-Arm SMMUv3 driver to the new API are here:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/cmdq
-
-Cheers,
-
-Will
-
---->8
-
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Jayachandran Chandrasekharan Nair <jnair@marvell.com>
-Cc: Jan Glauber <jglauber@marvell.com>
-Cc: Jon Masters <jcm@redhat.com>
-Cc: Eric Auger <eric.auger@redhat.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Vijay Kilary <vkilari@codeaurora.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-
-Will Deacon (13):
-  iommu: Remove empty iommu_tlb_range_add() callback from iommu_ops
-  iommu/io-pgtable-arm: Remove redundant call to io_pgtable_tlb_sync()
-  iommu/io-pgtable: Rename iommu_gather_ops to iommu_flush_ops
-  iommu: Introduce struct iommu_iotlb_gather for batching TLB flushes
-  iommu: Introduce iommu_iotlb_gather_add_page()
-  iommu: Pass struct iommu_iotlb_gather to ->unmap() and ->iotlb_sync()
-  iommu/io-pgtable: Introduce tlb_flush_walk() and tlb_flush_leaf()
-  iommu/io-pgtable: Hook up ->tlb_flush_walk() and ->tlb_flush_leaf() in
-    drivers
-  iommu/io-pgtable-arm: Call ->tlb_flush_walk() and ->tlb_flush_leaf()
-  iommu/io-pgtable: Replace ->tlb_add_flush() with ->tlb_add_page()
-  iommu/io-pgtable: Remove unused ->tlb_sync() callback
-  iommu/io-pgtable: Pass struct iommu_iotlb_gather to ->unmap()
-  iommu/io-pgtable: Pass struct iommu_iotlb_gather to ->tlb_add_page()
-
- drivers/gpu/drm/panfrost/panfrost_mmu.c |  24 +++++---
- drivers/iommu/amd_iommu.c               |  11 ++--
- drivers/iommu/arm-smmu-v3.c             |  52 +++++++++++-----
- drivers/iommu/arm-smmu.c                | 103 ++++++++++++++++++++++++--------
- drivers/iommu/dma-iommu.c               |   9 ++-
- drivers/iommu/exynos-iommu.c            |   3 +-
- drivers/iommu/intel-iommu.c             |   3 +-
- drivers/iommu/io-pgtable-arm-v7s.c      |  57 +++++++++---------
- drivers/iommu/io-pgtable-arm.c          |  48 ++++++++-------
- drivers/iommu/iommu.c                   |  24 ++++----
- drivers/iommu/ipmmu-vmsa.c              |  28 +++++----
- drivers/iommu/msm_iommu.c               |  42 +++++++++----
- drivers/iommu/mtk_iommu.c               |  45 +++++++++++---
- drivers/iommu/mtk_iommu_v1.c            |   3 +-
- drivers/iommu/omap-iommu.c              |   2 +-
- drivers/iommu/qcom_iommu.c              |  44 +++++++++++---
- drivers/iommu/rockchip-iommu.c          |   2 +-
- drivers/iommu/s390-iommu.c              |   3 +-
- drivers/iommu/tegra-gart.c              |  12 +++-
- drivers/iommu/tegra-smmu.c              |   2 +-
- drivers/iommu/virtio-iommu.c            |   5 +-
- drivers/vfio/vfio_iommu_type1.c         |  27 +++++----
- include/linux/io-pgtable.h              |  57 ++++++++++++------
- include/linux/iommu.h                   |  92 +++++++++++++++++++++-------
- 24 files changed, 483 insertions(+), 215 deletions(-)
-
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index de22a2276e00..6e8145c36e93 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -222,7 +222,7 @@ void panfrost_mmu_unmap(struct panfrost_gem_object *bo)
+ 		size_t unmapped_page;
+ 		size_t pgsize = get_pgsize(iova, len - unmapped_len);
+ 
+-		unmapped_page = ops->unmap(ops, iova, pgsize);
++		unmapped_page = ops->unmap(ops, iova, pgsize, NULL);
+ 		if (!unmapped_page)
+ 			break;
+ 
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 231093413ff9..8e2e53079f48 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2015,7 +2015,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	if (!ops)
+ 		return 0;
+ 
+-	ret = ops->unmap(ops, iova, size);
++	ret = ops->unmap(ops, iova, size, gather);
+ 	if (ret && arm_smmu_atc_inv_domain(smmu_domain, 0, iova, size))
+ 		return 0;
+ 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 07a267c437d6..f6689956ab6e 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1362,7 +1362,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 		return 0;
+ 
+ 	arm_smmu_rpm_get(smmu);
+-	ret = ops->unmap(ops, iova, size);
++	ret = ops->unmap(ops, iova, size, gather);
+ 	arm_smmu_rpm_put(smmu);
+ 
+ 	return ret;
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 203894fb6765..a7776e982b6c 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -666,7 +666,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+ }
+ 
+ static size_t arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+-			    size_t size)
++			    size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 
+@@ -892,7 +892,7 @@ static int __init arm_v7s_do_selftests(void)
+ 	size = 1UL << __ffs(cfg.pgsize_bitmap);
+ 	while (i < loopnr) {
+ 		iova_start = i * SZ_16M;
+-		if (ops->unmap(ops, iova_start + size, size) != size)
++		if (ops->unmap(ops, iova_start + size, size, NULL) != size)
+ 			return __FAIL(ops);
+ 
+ 		/* Remap of partial unmap */
+@@ -910,7 +910,7 @@ static int __init arm_v7s_do_selftests(void)
+ 	for_each_set_bit(i, &cfg.pgsize_bitmap, BITS_PER_LONG) {
+ 		size = 1UL << i;
+ 
+-		if (ops->unmap(ops, iova, size) != size)
++		if (ops->unmap(ops, iova, size, NULL) != size)
+ 			return __FAIL(ops);
+ 
+ 		if (ops->iova_to_phys(ops, iova + 42))
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index f35516744965..325430f8a0a1 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -12,7 +12,6 @@
+ #include <linux/atomic.h>
+ #include <linux/bitops.h>
+ #include <linux/io-pgtable.h>
+-#include <linux/iommu.h>
+ #include <linux/kernel.h>
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+@@ -642,7 +641,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ }
+ 
+ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+-			     size_t size)
++			     size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+@@ -1167,7 +1166,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 
+ 		/* Partial unmap */
+ 		size = 1UL << __ffs(cfg->pgsize_bitmap);
+-		if (ops->unmap(ops, SZ_1G + size, size) != size)
++		if (ops->unmap(ops, SZ_1G + size, size, NULL) != size)
+ 			return __FAIL(ops, i);
+ 
+ 		/* Remap of partial unmap */
+@@ -1182,7 +1181,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
+ 			size = 1UL << j;
+ 
+-			if (ops->unmap(ops, iova, size) != size)
++			if (ops->unmap(ops, iova, size, NULL) != size)
+ 				return __FAIL(ops, i);
+ 
+ 			if (ops->iova_to_phys(ops, iova + 42))
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index a2b8eff4c1f7..76a8ec343d53 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -737,7 +737,7 @@ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+-	return domain->iop->unmap(domain->iop, iova, size);
++	return domain->iop->unmap(domain->iop, iova, size, gather);
+ }
+ 
+ static void ipmmu_flush_iotlb_all(struct iommu_domain *io_domain)
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index ccfc7ed230ef..8a0dcaf0a9e9 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -523,7 +523,7 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&priv->pgtlock, flags);
+-	len = priv->iop->unmap(priv->iop, iova, len);
++	len = priv->iop->unmap(priv->iop, iova, len, gather);
+ 	spin_unlock_irqrestore(&priv->pgtlock, flags);
+ 
+ 	return len;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 3785750bdb44..b73cffd63262 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -400,7 +400,7 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+ 	size_t unmapsz;
+ 
+ 	spin_lock_irqsave(&dom->pgtlock, flags);
+-	unmapsz = dom->iop->unmap(dom->iop, iova, size);
++	unmapsz = dom->iop->unmap(dom->iop, iova, size, gather);
+ 	spin_unlock_irqrestore(&dom->pgtlock, flags);
+ 
+ 	return unmapsz;
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index 0b8a6d6bb475..48b288ef74b4 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -455,7 +455,7 @@ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	 */
+ 	pm_runtime_get_sync(qcom_domain->iommu->dev);
+ 	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
+-	ret = ops->unmap(ops, iova, size);
++	ret = ops->unmap(ops, iova, size, gather);
+ 	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
+ 	pm_runtime_put_sync(qcom_domain->iommu->dev);
+ 
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 843310484fe2..fe27d93c8ad9 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -1,7 +1,9 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ #ifndef __IO_PGTABLE_H
+ #define __IO_PGTABLE_H
++
+ #include <linux/bitops.h>
++#include <linux/iommu.h>
+ 
+ /*
+  * Public API for use by IOMMU drivers
+@@ -136,7 +138,7 @@ struct io_pgtable_ops {
+ 	int (*map)(struct io_pgtable_ops *ops, unsigned long iova,
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	size_t (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
+-			size_t size);
++			size_t size, struct iommu_iotlb_gather *gather);
+ 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+ 				    unsigned long iova);
+ };
 -- 
 2.11.0
 
