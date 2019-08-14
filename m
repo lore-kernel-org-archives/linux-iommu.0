@@ -1,156 +1,62 @@
-Return-Path: <SRS0=4AON=WJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 127BFC32750
-	for <iommu@archiver.kernel.org>; Tue, 13 Aug 2019 19:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F13EC32750
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 00:41:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE50720665
-	for <iommu@archiver.kernel.org>; Tue, 13 Aug 2019 19:16:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="cfLI5hj/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE50720665
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4BE5720644
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 00:41:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BE5720644
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9341FDC8;
-	Tue, 13 Aug 2019 19:16:38 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0AF30B5F;
+	Wed, 14 Aug 2019 00:41:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 55EB3D9D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 993ED255
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 13 Aug 2019 19:16:37 +0000 (UTC)
-X-Greylist: delayed 00:05:02 by SQLgrey-1.7.6
-Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9F514CF
+	Wed, 14 Aug 2019 00:41:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E1DB767F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 13 Aug 2019 19:16:35 +0000 (UTC)
-Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.77]) by
-	nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-	id <B5d530b630000>; Wed, 14 Aug 2019 03:11:31 +0800
-Received: from HKMAIL104.nvidia.com ([10.18.16.13])
-	by hkpgpgate101.nvidia.com (PGP Universal service);
-	Tue, 13 Aug 2019 12:11:31 -0700
-X-PGP-Universal: processed;
-	by hkpgpgate101.nvidia.com on Tue, 13 Aug 2019 12:11:31 -0700
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL104.nvidia.com
-	(10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
-	Tue, 13 Aug 2019 19:11:30 +0000
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com (104.47.41.55) by
-	HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS)
-	id
-	15.0.1473.3 via Frontend Transport; Tue, 13 Aug 2019 19:11:30 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=bdt10Z4kpPsWYghgo8w/ajOpEnQFwbw+GtqW4KGZ2oXkE6QmMx59TmM+rdrhcyp/7qtKmWDd2IjiEOMJas9+/+cwohLB9D6MvpBNCH7sGw/PyhIAmqPC9pNpwhcYKUAsLVy9DQgNEkkylgS2y33PxO4NvlmB5YbNafQTSqdF78By0XgXtH8IKIIsUQKxFJS7YKp8PSp30xXX/BOxWriw2dbPtFWIL8qgu24Vtg5BSl/3zAIljjRJ/KwAWZkOE5g+B1IhbZk/UAIdU5TYQIt+wE/BYbva4VNUuSalhUiaNiqP7bdW5HfYypB9kzbY1xhQdgVAP5QaIJ6FHQCZzUm9pA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=3kwUyv0fUiWxEgo+Q+DhBfNn/nYqdBK0HOBIm2wSqTY=;
-	b=VTFE/qzEsehXdawn5yLfZofhLDZ8SjRt2dMNBaC7KyvjFymMxVxB3MXzLsp9Vl4lwrdO+6rqvNlft+NWOo7jrXIssoZdB4pc2spwQeEP61dgePqBmV8OD6cSxMWNgLRW4ToLWTUDTUdAeFNj3DIolMu7SMIZMwmfkYIfGdusYKe60uSWxsnRphVKVg/ROXfFX79mZlFmyR/N8oqt74RSImBhRaAT9AJfJnE71sdV2JCOCMscMQEdUJVfzGujLA0ESqOB3y5bX8MmarG3BCW5RfibwqFgytY+H8SYNjhOcBzVBOfgzEx39KNyA4tO28O67llTfAK/EBzeLXW3tL7CBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
-	smtp.mailfrom=nvidia.com;dmarc=pass action=none
-	header.from=nvidia.com;dkim=pass header.d=nvidia.com;arc=none
-Received: from BYAPR12MB2710.namprd12.prod.outlook.com (20.177.124.11) by
-	BYAPR12MB3336.namprd12.prod.outlook.com (20.178.55.97) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2136.17; Tue, 13 Aug 2019 19:11:28 +0000
-Received: from BYAPR12MB2710.namprd12.prod.outlook.com
-	([fe80::60a8:9757:8be2:2c56]) by
-	BYAPR12MB2710.namprd12.prod.outlook.com
-	([fe80::60a8:9757:8be2:2c56%6]) with mapi id 15.20.2157.022;
-	Tue, 13 Aug 2019 19:11:28 +0000
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>
-Subject: RE: [PATCH 15/15] iommu/arm-smmu: Add context init implementation hook
-Thread-Topic: [PATCH 15/15] iommu/arm-smmu: Add context init implementation
-	hook
-Thread-Index: AQHVTtU7pKLRNzbO30+XQaX2jIzFWqb5dq8g
-Date: Tue, 13 Aug 2019 19:11:28 +0000
-Message-ID: <BYAPR12MB271043C700E91B2DF636DC8CB3D20@BYAPR12MB2710.namprd12.prod.outlook.com>
-References: <cover.1565369764.git.robin.murphy@arm.com>
-	<6adbec8e4757f3b6c9f47135544a0302f8e7c55c.1565369764.git.robin.murphy@arm.com>
-In-Reply-To: <6adbec8e4757f3b6c9f47135544a0302f8e7c55c.1565369764.git.robin.murphy@arm.com>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2019-08-13T19:11:25.4970088Z;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft
-	Azure Information Protection;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=5a1ec571-ee6f-4f85-9fbf-072a1bd313cd;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=vdumpa@nvidia.com; 
-x-originating-ip: [216.228.112.22]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 27975ed7-7a67-4714-e7d8-08d720220afd
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);
-	SRVR:BYAPR12MB3336; 
-x-ms-traffictypediagnostic: BYAPR12MB3336:
-x-microsoft-antispam-prvs: <BYAPR12MB33366A835DFC71E66733AA09B3D20@BYAPR12MB3336.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:153;
-x-forefront-prvs: 01283822F8
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(136003)(396003)(346002)(376002)(39860400002)(366004)(13464003)(189003)(199004)(316002)(256004)(476003)(186003)(81156014)(81166006)(478600001)(2906002)(76116006)(76176011)(8676002)(11346002)(446003)(33656002)(25786009)(14454004)(5660300002)(14444005)(110136005)(8936002)(66946007)(7696005)(66476007)(52536014)(53546011)(6436002)(229853002)(6246003)(66556008)(71200400001)(305945005)(7736002)(86362001)(74316002)(26005)(6506007)(53936002)(9686003)(4326008)(55016002)(6116002)(3846002)(2501003)(71190400001)(66066001)(64756008)(66446008)(99286004)(486006)(102836004)(54906003);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:BYAPR12MB3336;
-	H:BYAPR12MB2710.namprd12.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: nvidia.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: VKj+h+HSBetwq1NcbSuUxI5p3i724kUk59vCLl3d2ReXNY9MCyxnaEPaGF2/ddu1Tzu371hbSo/QFuQzjskM65uhjIGgb9DOlsijE+S3qVhbUCUV/dQs7lxtd4gL6lGLwY5GgRexbz0aCwb15afu8jTsfzj8tBMoajo58HzW4wq1Z7SIOlhLU9j36SOXEjuVQDUs75/7m20VFjggAnHdxfYc+/ACVjXyXO4Vw4fv87aPbzOT9qwIbTHz4FXtTHqx7cWeg9fceUSab26QhwDHb7sZrlcRKyin4lruWXnAJDgvl+8he9HhlqN2wiyNAdntOiXUvpW6QpiUE+F5ClUxljfqFzm16PtmH0268i3ls+zu9eIwFzFmaHn3eCGiv/GykcRdKqGPKEFEahp1Jd6NuEXXNqbScCWvJDnJILjb3eU=
+	Wed, 14 Aug 2019 00:41:50 +0000 (UTC)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 509E972F8571B7ADFF66;
+	Wed, 14 Aug 2019 08:41:48 +0800 (CST)
+Received: from [127.0.0.1] (10.133.215.186) by DGGEMS404-HUB.china.huawei.com
+	(10.3.19.204) with Microsoft SMTP Server id 14.3.439.0;
+	Wed, 14 Aug 2019 08:41:38 +0800
+Subject: Re: [PATCH] iommu/arm-smmu-v3: add nr_ats_masters to avoid
+	unnecessary operations
+To: Will Deacon <will@kernel.org>, John Garry <john.garry@huawei.com>
+References: <20190801122040.26024-1-thunder.leizhen@huawei.com>
+	<b5866f7a-013a-5900-6fce-268052f2ba0a@huawei.com>
+	<20190813171039.y64wslo4dzgyis3e@willie-the-truck>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <19e427af-7ff3-99a5-cfec-60ebce686cb2@huawei.com>
+Date: Wed, 14 Aug 2019 08:41:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27975ed7-7a67-4714-e7d8-08d720220afd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2019 19:11:28.0444 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wM4McDvQ35Vzv7ZYQY0TE14NaNqT7xWkX9FGcH0kSx5i1GLAX8oBeydG9hpSAb8Oa+3pDEJGLxiKiSaSlF1XdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3336
-X-OriginatorOrg: Nvidia.com
+In-Reply-To: <20190813171039.y64wslo4dzgyis3e@willie-the-truck>
 Content-Language: en-US
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-	t=1565723491; bh=3kwUyv0fUiWxEgo+Q+DhBfNn/nYqdBK0HOBIm2wSqTY=;
-	h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-	ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
-	Thread-Index:Date:Message-ID:References:In-Reply-To:
-	Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
-	authentication-results:x-originating-ip:x-ms-publictraffictype:
-	x-ms-office365-filtering-correlation-id:x-microsoft-antispam:
-	x-ms-traffictypediagnostic:x-microsoft-antispam-prvs:
-	x-ms-oob-tlc-oobclassifiers:x-forefront-prvs:
-	x-forefront-antispam-report:received-spf:
-	x-ms-exchange-senderadcheck:x-microsoft-antispam-message-info:
-	MIME-Version:X-MS-Exchange-CrossTenant-Network-Message-Id:
-	X-MS-Exchange-CrossTenant-originalarrivaltime:
-	X-MS-Exchange-CrossTenant-fromentityheader:
-	X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-	X-MS-Exchange-CrossTenant-userprincipalname:
-	X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
-	Content-Language:Content-Type:Content-Transfer-Encoding;
-	b=cfLI5hj/RTeRwT3uoq2EC4qvuFCDplJYnYxua81JEzBKwOOOUUPp2cd2P83PRwRc2
-	OCkVdMZ3LnkeEajLjnks2lFsFyeKbYcSWv229Cy9BkfEFOOMWLsDFOCrPJ7CyFznmB
-	MZTYEGmZN72WP3TRUXK0GDOYIE8CcEpe0UouVLgkBHvn2psLAiTnPdC8oPMMyfUPl8
-	LKZDaxrP9a5Y50NZi/qhHwvRINV4CxAIT5hyBUmUFY1AbW4HZ8zyjUnUe0btzbJBhu
-	nL+9aYnA7y5rPkT/gwjSu8NBgusKascCzDPPLPgxBZO3/LkIfUZV53/ym/iFKTUxKt
-	7SrRyK3YUOWmg==
-Cc: "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-	"bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+X-Originating-IP: [10.133.215.186]
+X-CFilter-Loop: Reflected
+Cc: jean-philippe@linaro.org,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	iommu <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -168,248 +74,54 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Tested-by: Krishna Reddy<vdumpa@nvidia.com>
 
-Validated the entire patch set on Tegra194 SOC based platform and confirmed that arm-smmu driver is functional as it has been. 
 
--KR
+On 2019/8/14 1:10, Will Deacon wrote:
+> On Mon, Aug 12, 2019 at 11:42:17AM +0100, John Garry wrote:
+>> On 01/08/2019 13:20, Zhen Lei wrote:
+>>> When (smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS) is true, even if a
+>>> smmu domain does not contain any ats master, the operations of
+>>> arm_smmu_atc_inv_to_cmd() and lock protection in arm_smmu_atc_inv_domain()
+>>> are always executed. This will impact performance, especially in
+>>> multi-core and stress scenarios. For my FIO test scenario, about 8%
+>>> performance reduced.
+>>>
+>>> In fact, we can use a atomic member to record how many ats masters the
+>>> smmu contains. And check that without traverse the list and check all
+>>> masters one by one in the lock protection.
+>>>
+>>
+>> Hi Will, Robin, Jean-Philippe,
+>>
+>> Can you kindly check this issue? We have seen a signifigant performance
+>> regression here.
+> 
+> Sorry, John: Robin and Jean-Philippe are off at the moment and I've been
+> swamped dealing with the arm64 queue. I'll try to get to this tomorrow.
 
------Original Message-----
-From: Robin Murphy <robin.murphy@arm.com> 
-Sent: Friday, August 9, 2019 10:08 AM
-To: will@kernel.org
-Cc: iommu@lists.linux-foundation.org; linux-arm-kernel@lists.infradead.org; joro@8bytes.org; vivek.gautam@codeaurora.org; bjorn.andersson@linaro.org; Krishna Reddy <vdumpa@nvidia.com>; gregory.clement@bootlin.com; robdclark@gmail.com
-Subject: [PATCH 15/15] iommu/arm-smmu: Add context init implementation hook
+Hi, all:
+   I found my patch have some mistake, see below. I'm sorry I didn't see this coupling. 
+I'm preparing v2. 
 
-Allocating and initialising a context for a domain is another point where certain implementations are known to want special behaviour.
-Currently the other half of the Cavium workaround comes into play here, so let's finish the job to get the whole thing right out of the way.
+> @@ -1915,10 +1921,10 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+>  	list_del(&master->domain_head);
+>  	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>  
+> -	master->domain = NULL;
+>  	arm_smmu_install_ste_for_dev(master);
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm-smmu-impl.c | 39 +++++++++++++++++++++++++--
- drivers/iommu/arm-smmu.c      | 51 +++++++----------------------------
- drivers/iommu/arm-smmu.h      | 42 +++++++++++++++++++++++++++--
- 3 files changed, 86 insertions(+), 46 deletions(-)
+"master->domain = NULL" is needed in arm_smmu_install_ste_for_dev().
 
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c index c8904da08354..7a657d47b6ec 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -48,6 +48,12 @@ const struct arm_smmu_impl calxeda_impl = {  };
- 
- 
-+struct cavium_smmu {
-+	struct arm_smmu_device smmu;
-+	u32 id_base;
-+};
-+#define to_csmmu(s)	container_of(s, struct cavium_smmu, smmu)
-+
- static int cavium_cfg_probe(struct arm_smmu_device *smmu)  {
- 	static atomic_t context_count = ATOMIC_INIT(0); @@ -56,17 +62,46 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
- 	 * Ensure ASID and VMID allocation is unique across all SMMUs in
- 	 * the system.
- 	 */
--	smmu->cavium_id_base = atomic_fetch_add(smmu->num_context_banks,
-+	to_csmmu(smmu)->id_base = atomic_fetch_add(smmu->num_context_banks,
- 						   &context_count);
- 	dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
- 
- 	return 0;
- }
- 
-+int cavium_init_context(struct arm_smmu_domain *smmu_domain) {
-+	u32 id_base = to_csmmu(smmu_domain->smmu)->id_base;
-+
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
-+		smmu_domain->cfg.vmid += id_base;
-+	else
-+		smmu_domain->cfg.asid += id_base;
-+
-+	return 0;
-+}
-+
- const struct arm_smmu_impl cavium_impl = {
- 	.cfg_probe = cavium_cfg_probe,
-+	.init_context = cavium_init_context,
- };
- 
-+struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device 
-+*smmu) {
-+	struct cavium_smmu *csmmu;
-+
-+	csmmu = devm_kzalloc(smmu->dev, sizeof(*csmmu), GFP_KERNEL);
-+	if (!csmmu)
-+		return ERR_PTR(-ENOMEM);
-+
-+	csmmu->smmu = *smmu;
-+	csmmu->smmu.impl = &cavium_impl;
-+
-+	devm_kfree(smmu->dev, smmu);
-+
-+	return &csmmu->smmu;
-+}
-+
- 
- #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
- 
-@@ -121,7 +156,7 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 		smmu->impl = &calxeda_impl;
- 
- 	if (smmu->model == CAVIUM_SMMUV2)
--		smmu->impl = &cavium_impl;
-+		return cavium_smmu_impl_init(smmu);
- 
- 	if (smmu->model == ARM_MMU500)
- 		smmu->impl = &arm_mmu500_impl;
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index 298ab9e6a6cd..1c1c9ef91d7b 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -27,7 +27,6 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/io-64-nonatomic-hi-lo.h> -#include <linux/io-pgtable.h>  #include <linux/iopoll.h>  #include <linux/init.h>  #include <linux/moduleparam.h> @@ -111,44 +110,6 @@ struct arm_smmu_master_cfg {  #define for_each_cfg_sme(fw, i, idx) \
- 	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
- 
--enum arm_smmu_context_fmt {
--	ARM_SMMU_CTX_FMT_NONE,
--	ARM_SMMU_CTX_FMT_AARCH64,
--	ARM_SMMU_CTX_FMT_AARCH32_L,
--	ARM_SMMU_CTX_FMT_AARCH32_S,
--};
--
--struct arm_smmu_cfg {
--	u8				cbndx;
--	u8				irptndx;
--	union {
--		u16			asid;
--		u16			vmid;
--	};
--	enum arm_smmu_cbar_type		cbar;
--	enum arm_smmu_context_fmt	fmt;
--};
--#define INVALID_IRPTNDX			0xff
--
--enum arm_smmu_domain_stage {
--	ARM_SMMU_DOMAIN_S1 = 0,
--	ARM_SMMU_DOMAIN_S2,
--	ARM_SMMU_DOMAIN_NESTED,
--	ARM_SMMU_DOMAIN_BYPASS,
--};
--
--struct arm_smmu_domain {
--	struct arm_smmu_device		*smmu;
--	struct io_pgtable_ops		*pgtbl_ops;
--	const struct iommu_gather_ops	*tlb_ops;
--	struct arm_smmu_cfg		cfg;
--	enum arm_smmu_domain_stage	stage;
--	bool				non_strict;
--	struct mutex			init_mutex; /* Protects smmu pointer */
--	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
--	struct iommu_domain		domain;
--};
--
- static bool using_legacy_binding, using_generic_binding;
- 
- static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu) @@ -749,9 +710,16 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	}
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
--		cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
-+		cfg->vmid = cfg->cbndx + 1;
- 	else
--		cfg->asid = cfg->cbndx + smmu->cavium_id_base;
-+		cfg->asid = cfg->cbndx;
-+
-+	smmu_domain->smmu = smmu;
-+	if (smmu->impl && smmu->impl->init_context) {
-+		ret = smmu->impl->init_context(smmu_domain);
-+		if (ret)
-+			goto out_unlock;
-+	}
- 
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
-@@ -765,7 +733,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu_domain->non_strict)
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 
--	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops) {
- 		ret = -ENOMEM;
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h index 616cc87a05e3..a18b5925b43c 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -14,6 +14,7 @@
- #include <linux/bits.h>
- #include <linux/clk.h>
- #include <linux/device.h>
-+#include <linux/io-pgtable.h>
- #include <linux/iommu.h>
- #include <linux/mutex.h>
- #include <linux/spinlock.h>
-@@ -270,14 +271,50 @@ struct arm_smmu_device {
- 	struct clk_bulk_data		*clks;
- 	int				num_clks;
- 
--	u32				cavium_id_base; /* Specific to Cavium */
--
- 	spinlock_t			global_sync_lock;
- 
- 	/* IOMMU core code handle */
- 	struct iommu_device		iommu;
- };
- 
-+enum arm_smmu_context_fmt {
-+	ARM_SMMU_CTX_FMT_NONE,
-+	ARM_SMMU_CTX_FMT_AARCH64,
-+	ARM_SMMU_CTX_FMT_AARCH32_L,
-+	ARM_SMMU_CTX_FMT_AARCH32_S,
-+};
-+
-+struct arm_smmu_cfg {
-+	u8				cbndx;
-+	u8				irptndx;
-+	union {
-+		u16			asid;
-+		u16			vmid;
-+	};
-+	enum arm_smmu_cbar_type		cbar;
-+	enum arm_smmu_context_fmt	fmt;
-+};
-+#define INVALID_IRPTNDX			0xff
-+
-+enum arm_smmu_domain_stage {
-+	ARM_SMMU_DOMAIN_S1 = 0,
-+	ARM_SMMU_DOMAIN_S2,
-+	ARM_SMMU_DOMAIN_NESTED,
-+	ARM_SMMU_DOMAIN_BYPASS,
-+};
-+
-+struct arm_smmu_domain {
-+	struct arm_smmu_device		*smmu;
-+	struct io_pgtable_ops		*pgtbl_ops;
-+	const struct iommu_gather_ops	*tlb_ops;
-+	struct arm_smmu_cfg		cfg;
-+	enum arm_smmu_domain_stage	stage;
-+	bool				non_strict;
-+	struct mutex			init_mutex; /* Protects smmu pointer */
-+	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
-+	struct iommu_domain		domain;
-+};
-+
- 
- /* Implementation details, yay! */
- struct arm_smmu_impl {
-@@ -289,6 +326,7 @@ struct arm_smmu_impl {
- 			    u64 val);
- 	int (*cfg_probe)(struct arm_smmu_device *smmu);
- 	int (*reset)(struct arm_smmu_device *smmu);
-+	int (*init_context)(struct arm_smmu_domain *smmu_domain);
- };
- 
- static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
---
-2.21.0.dirty
+>  
+>  	arm_smmu_disable_ats(master);
+> +	master->domain = NULL;
+>  }
+
+> 
+> Will
+> 
+> .
+> 
 
 _______________________________________________
 iommu mailing list
