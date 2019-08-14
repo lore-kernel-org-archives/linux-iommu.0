@@ -2,76 +2,75 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 376B3C433FF
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 21:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 313AAC32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 23:56:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 001FA2133F
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 21:53:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E63D520866
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 23:56:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="DuHQyhEk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 001FA2133F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="DPQAE2pg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E63D520866
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B525DB62;
-	Wed, 14 Aug 2019 21:53:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AB099CB5;
+	Wed, 14 Aug 2019 23:56:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4115FAE0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 66C525AA
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 21:53:51 +0000 (UTC)
+	Wed, 14 Aug 2019 23:56:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqemgate15.nvidia.com (hqemgate15.nvidia.com [216.228.121.64])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F017CCF
+Received: from hqemgate16.nvidia.com (hqemgate16.nvidia.com [216.228.121.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D240DCF
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 21:53:50 +0000 (UTC)
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by
-	hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-	id <B5d5482f40000>; Wed, 14 Aug 2019 14:53:56 -0700
+	Wed, 14 Aug 2019 23:56:04 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+	hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+	id <B5d549f960003>; Wed, 14 Aug 2019 16:56:07 -0700
 Received: from hqmail.nvidia.com ([172.20.161.6])
-	by hqpgpgate102.nvidia.com (PGP Universal service);
-	Wed, 14 Aug 2019 14:53:45 -0700
+	by hqpgpgate101.nvidia.com (PGP Universal service);
+	Wed, 14 Aug 2019 16:56:04 -0700
 X-PGP-Universal: processed;
-	by hqpgpgate102.nvidia.com on Wed, 14 Aug 2019 14:53:45 -0700
+	by hqpgpgate101.nvidia.com on Wed, 14 Aug 2019 16:56:04 -0700
 Received: from rcampbell-dev.nvidia.com (10.124.1.5) by HQMAIL107.nvidia.com
 	(172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
-	Wed, 14 Aug 2019 21:53:42 +0000
-Subject: Re: [PATCH v3 hmm 11/11] mm/mmu_notifiers: remove
-	unregister_no_release
+	Wed, 14 Aug 2019 23:56:02 +0000
+Subject: Re: [PATCH v3 hmm 00/11] Add mmu_notifier_get/put for managing mmu
+	notifier registrations
 To: Jason Gunthorpe <jgg@ziepe.ca>, <linux-mm@kvack.org>
 References: <20190806231548.25242-1-jgg@ziepe.ca>
-	<20190806231548.25242-12-jgg@ziepe.ca>
 X-Nvconfidentiality: public
 From: Ralph Campbell <rcampbell@nvidia.com>
-Message-ID: <84b35625-9877-0f35-155a-2d5ee1af4108@nvidia.com>
-Date: Wed, 14 Aug 2019 14:53:42 -0700
+Message-ID: <5c836cd9-3c20-aaea-8e98-e6d92e6879d9@nvidia.com>
+Date: Wed, 14 Aug 2019 16:56:02 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190806231548.25242-12-jgg@ziepe.ca>
+In-Reply-To: <20190806231548.25242-1-jgg@ziepe.ca>
 X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
 	HQMAIL107.nvidia.com (172.20.187.13)
 Content-Language: en-US
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-	t=1565819636; bh=jn8qPKX3vGj+tzC7jfWRezHMQaQX7LZbuyruFud4LQQ=;
+	t=1565826967; bh=KQZIZADkTJTVQx2WPyHcZuejYCxTybKh1hB7YAzhaws=;
 	h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
 	Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
 	X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
 	Content-Transfer-Encoding;
-	b=DuHQyhEkn2nVu3F9JE1Jqs394XgDiOloB/DupeDvogYw6EVbMONwcehm4ND30nlJe
-	coLB6ipCN1oIyc4w1mqCCYewK+PC5YV9u55ueYp2oaHr/1plVEnMB9PP5+CTSD2S+f
-	/EwXD2xqdd7b1DugwUAbPGKM94w9rldbIHus7fAOpSWXDg6bOvnb9bZD9px5zT4R9w
-	fNKaAnXFzpPWTG2T38iLy/xRORGPkKKaDbUB4Y5JUU/eQRUnl/o4i6ggHqZCwIPAQU
-	XR1OQDE52UPDPt8SmWG+WQaZO6Cc6+YdybR1YFmKROUzj521DapTNnEGLy+4532Itg
-	+dCm77lSoXV4A==
+	b=DPQAE2pgSQl/XQn1sjjM9NrKUE4dIfRSf7GHRsdRrmPgihcpBk5GabDJW04Y61TSS
+	7iAncQ3+R1+zgw3UEbBaoE6pxrkmIYOeqhpoN16KZs/TsqsxdJ7djkvTLnIdMXr3NZ
+	MVIMdUI9Q0Ivtmh86bTP2EH6iSvh/Fs1CI4WxT4AwNTtCCdOzKeSza9E3gIVs+zCaf
+	g+7s7qtlxYKTA3dgKGsvDrDH7MrVctT0aqnVuDzqleqRtjf1u7r3PA3avRVgwlnqhC
+	czXgQ20q0CQOn4peDoypa5Awpun++K0FRd7ut9Npwa0KmwUlGmgCSmGvNNSlheFdH6
+	E0wJVcbqJ+BkQ==
 Cc: Andrea Arcangeli <aarcange@redhat.com>,
 	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
 	Dimitri Sivanich <sivanich@sgi.com>,
@@ -107,15 +106,105 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 On 8/6/19 4:15 PM, Jason Gunthorpe wrote:
 > From: Jason Gunthorpe <jgg@mellanox.com>
 > 
-> mmu_notifier_unregister_no_release() and mmu_notifier_call_srcu() no
-> longer have any users, they have all been converted to use
-> mmu_notifier_put().
+> This series introduces a new registration flow for mmu_notifiers based on
+> the idea that the user would like to get a single refcounted piece of
+> memory for a mm, keyed to its use.
 > 
-> So delete this difficult to use interface.
+> For instance many users of mmu_notifiers use an interval tree or similar
+> to dispatch notifications to some object. There are many objects but only
+> one notifier subscription per mm holding the tree.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+> Of the 12 places that call mmu_notifier_register:
+>   - 7 are maintaining some kind of obvious mapping of mm_struct to
+>     mmu_notifier registration, ie in some linked list or hash table. Of
+>     the 7 this series converts 4 (gru, hmm, RDMA, radeon)
+> 
+>   - 3 (hfi1, gntdev, vhost) are registering multiple notifiers, but each
+>     one immediately does some VA range filtering, ie with an interval tree.
+>     These would be better with a global subsystem-wide range filter and
+>     could convert to this API.
+> 
+>   - 2 (kvm, amd_iommu) are deliberately using a single mm at a time, and
+>     really can't use this API. One of the intel-svm's modes is also in this
+>     list
+> 
+> The 3/7 unconverted drivers are:
+>   - intel-svm
+>     This driver tracks mm's in a global linked list 'global_svm_list'
+>     and would benefit from this API.
+> 
+>     Its flow is a bit complex, since it also wants a set of non-shared
+>     notifiers.
+> 
+>   - i915_gem_usrptr
+>     This driver tracks mm's in a per-device hash
+>     table (dev_priv->mm_structs), but only has an optional use of
+>     mmu_notifiers.  Since it still seems to need the hash table it is
+>     difficult to convert.
+> 
+>   - amdkfd/kfd_process
+>     This driver is using a global SRCU hash table to track mm's
+> 
+>     The control flow here is very complicated and the driver is relying on
+>     this hash table to be fast on the ioctl syscall path.
+> 
+>     It would definitely benefit, but only if the ioctl path didn't need to
+>     do the search so often.
+> 
+> This series is already entangled with patches in the hmm & RDMA tree and
+> will require some git topic branches for the RDMA ODP stuff. I intend for
+> it to go through the hmm tree.
+> 
+> There is a git version here:
+> 
+> https://github.com/jgunthorpe/linux/commits/mmu_notifier
+> 
+> Which has the required pre-patches for the RDMA ODP conversion that are
+> still being reviewed.
+> 
+> Jason Gunthorpe (11):
+>    mm/mmu_notifiers: hoist do_mmu_notifier_register down_write to the
+>      caller
+>    mm/mmu_notifiers: do not speculatively allocate a mmu_notifier_mm
+>    mm/mmu_notifiers: add a get/put scheme for the registration
+>    misc/sgi-gru: use mmu_notifier_get/put for struct gru_mm_struct
+>    hmm: use mmu_notifier_get/put for 'struct hmm'
+>    RDMA/odp: use mmu_notifier_get/put for 'struct ib_ucontext_per_mm'
+>    RDMA/odp: remove ib_ucontext from ib_umem
+>    drm/radeon: use mmu_notifier_get/put for struct radeon_mn
+>    drm/amdkfd: fix a use after free race with mmu_notifer unregister
+>    drm/amdkfd: use mmu_notifier_put
+>    mm/mmu_notifiers: remove unregister_no_release
+> 
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c  |   1 +
+>   drivers/gpu/drm/amd/amdkfd/kfd_priv.h    |   3 -
+>   drivers/gpu/drm/amd/amdkfd/kfd_process.c |  88 ++++-----
+>   drivers/gpu/drm/nouveau/nouveau_drm.c    |   3 +
+>   drivers/gpu/drm/radeon/radeon.h          |   3 -
+>   drivers/gpu/drm/radeon/radeon_device.c   |   2 -
+>   drivers/gpu/drm/radeon/radeon_drv.c      |   2 +
+>   drivers/gpu/drm/radeon/radeon_mn.c       | 157 ++++------------
+>   drivers/infiniband/core/umem.c           |   4 +-
+>   drivers/infiniband/core/umem_odp.c       | 183 ++++++------------
+>   drivers/infiniband/core/uverbs_cmd.c     |   3 -
+>   drivers/infiniband/core/uverbs_main.c    |   1 +
+>   drivers/infiniband/hw/mlx5/main.c        |   5 -
+>   drivers/misc/sgi-gru/grufile.c           |   1 +
+>   drivers/misc/sgi-gru/grutables.h         |   2 -
+>   drivers/misc/sgi-gru/grutlbpurge.c       |  84 +++------
+>   include/linux/hmm.h                      |  12 +-
+>   include/linux/mm_types.h                 |   6 -
+>   include/linux/mmu_notifier.h             |  40 +++-
+>   include/rdma/ib_umem.h                   |   2 +-
+>   include/rdma/ib_umem_odp.h               |  10 +-
+>   include/rdma/ib_verbs.h                  |   3 -
+>   kernel/fork.c                            |   1 -
+>   mm/hmm.c                                 | 121 +++---------
+>   mm/mmu_notifier.c                        | 230 +++++++++++++++++------
+>   25 files changed, 408 insertions(+), 559 deletions(-)
 
-Reviewed-by: Ralph Campbell <rcampbell@nvidia.com>
+For the core MM, HMM, and nouveau changes you can add:
+Tested-by: Ralph Campbell <rcampbell@nvidia.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
