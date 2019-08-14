@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740D5C32757
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05288C32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51863206C2
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51863206C2
+	by mail.kernel.org (Postfix) with ESMTPS id D9CAF2083B
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D9CAF2083B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E2B71052;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 52F6D1070;
 	Wed, 14 Aug 2019 13:38:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2C326105C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3CF54103A
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 13:38:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AC8BD8A7
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BFF278A8
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 13:38:47 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id BC81A4F1; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
+	id 1670A527; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 07/10] iommu: Print default domain type on boot
-Date: Wed, 14 Aug 2019 15:38:38 +0200
-Message-Id: <20190814133841.7095-8-joro@8bytes.org>
+Subject: [PATCH 09/10] iommu: Disable passthrough mode when SME is active
+Date: Wed, 14 Aug 2019 15:38:40 +0200
+Message-Id: <20190814133841.7095-10-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190814133841.7095-1-joro@8bytes.org>
 References: <20190814133841.7095-1-joro@8bytes.org>
@@ -64,60 +64,40 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Introduce a subsys_initcall for IOMMU code and use it to
-print the default domain type at boot.
+Using Passthrough mode when SME is active causes certain
+devices to use the SWIOTLB bounce buffer. The bounce buffer
+code has an upper limit of 256kb for the size of DMA
+allocations, which is too small for certain devices and
+causes them to fail.
+
+With this patch we enable IOMMU by default when SME is
+active in the system, making the default configuration work
+for more systems than it does now.
+
+Users that don't want IOMMUs to be enabled still can disable
+them with kernel parameters.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e1feb4061b8b..233bc22b487e 100644
+index 96cc7cc8ab21..4bc9025a9975 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -93,12 +93,40 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
- static LIST_HEAD(iommu_device_list);
- static DEFINE_SPINLOCK(iommu_device_lock);
+@@ -119,6 +119,11 @@ static int __init iommu_subsys_init(void)
+ 			iommu_set_default_passthrough();
+ 		else
+ 			iommu_set_default_translated();
++
++		if (iommu_default_passthrough() && sme_active()) {
++			pr_info("SME detected - Disabling default IOMMU Passthrough\n");
++			iommu_set_default_translated();
++		}
+ 	}
  
-+/*
-+ * Use a function instead of an array here because the domain-type is a
-+ * bit-field, so an array would waste memory.
-+ */
-+static const char *iommu_domain_type_str(unsigned int t)
-+{
-+	switch (t) {
-+		case IOMMU_DOMAIN_BLOCKED:
-+			return "Blocked";
-+		case IOMMU_DOMAIN_IDENTITY:
-+			return "Passthrough";
-+		case IOMMU_DOMAIN_UNMANAGED:
-+			return "Unmanaged";
-+		case IOMMU_DOMAIN_DMA:
-+			return "Translated";
-+		default:
-+			return "Unknown";
-+	}
-+}
-+
-+static int __init iommu_subsys_init(void)
-+{
-+	pr_info("Default domain type: %s\n",
-+		iommu_domain_type_str(iommu_def_domain_type));
-+
-+	return 0;
-+}
-+subsys_initcall(iommu_subsys_init);
-+
- int iommu_device_register(struct iommu_device *iommu)
- {
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
--
- 	return 0;
- }
- 
+ 	pr_info("Default domain type: %s %s\n",
 -- 
 2.17.1
 
