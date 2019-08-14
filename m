@@ -2,41 +2,41 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACBCC433FF
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A5FEC32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:43 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ECA8E2083B
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECA8E2083B
+	by mail.kernel.org (Postfix) with ESMTPS id 5738A2083B
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5738A2083B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 96A3A1075;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B5DAF1078;
 	Wed, 14 Aug 2019 13:38:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CA6041032
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 137C91032
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 13:38:48 +0000 (UTC)
+	Wed, 14 Aug 2019 13:38:49 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AB2018A6
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A825A8A3
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 13:38:47 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id E92C34FE; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
+	id A0D3D498; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 08/10] iommu: Set default domain type at runtime
-Date: Wed, 14 Aug 2019 15:38:39 +0200
-Message-Id: <20190814133841.7095-9-joro@8bytes.org>
+Subject: [PATCH 06/10] iommu: Remember when default domain type was set on
+	kernel command line
+Date: Wed, 14 Aug 2019 15:38:37 +0200
+Message-Id: <20190814133841.7095-7-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190814133841.7095-1-joro@8bytes.org>
 References: <20190814133841.7095-1-joro@8bytes.org>
@@ -65,61 +65,56 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Set the default domain-type at runtime, not at compile-time.
-This keeps default domain type setting in one place when we
-have to change it at runtime.
+Introduce an extensible concept to remember when certain
+configuration settings for the IOMMU code have been set on
+the kernel command line.
+
+This will be used later to prevent overwriting these
+settings with other defaults.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/iommu/iommu.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 233bc22b487e..96cc7cc8ab21 100644
+index f187e85a074b..e1feb4061b8b 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -26,11 +26,8 @@
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
--#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
--static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
--#else
--static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
--#endif
-+
-+static unsigned int iommu_def_domain_type __read_mostly;
+@@ -32,6 +32,7 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
  static bool iommu_dma_strict __read_mostly = true;
- static u32 iommu_cmd_line __read_mostly;
++static u32 iommu_cmd_line __read_mostly;
  
-@@ -76,7 +73,7 @@ static void iommu_set_cmd_line_dma_api(void)
- 	iommu_cmd_line |= IOMMU_CMD_LINE_DMA_API;
- }
+ struct iommu_group {
+ 	struct kobject kobj;
+@@ -68,6 +69,18 @@ static const char * const iommu_group_resv_type_string[] = {
+ 	[IOMMU_RESV_SW_MSI]			= "msi",
+ };
  
--static bool __maybe_unused iommu_cmd_line_dma_api(void)
-+static bool iommu_cmd_line_dma_api(void)
- {
- 	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
- }
-@@ -115,8 +112,18 @@ static const char *iommu_domain_type_str(unsigned int t)
- 
- static int __init iommu_subsys_init(void)
- {
--	pr_info("Default domain type: %s\n",
--		iommu_domain_type_str(iommu_def_domain_type));
-+	bool cmd_line = iommu_cmd_line_dma_api();
++#define IOMMU_CMD_LINE_DMA_API		(1 << 0)
 +
-+	if (!cmd_line) {
-+		if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
-+			iommu_set_default_passthrough();
-+		else
-+			iommu_set_default_translated();
-+	}
++static void iommu_set_cmd_line_dma_api(void)
++{
++	iommu_cmd_line |= IOMMU_CMD_LINE_DMA_API;
++}
 +
-+	pr_info("Default domain type: %s %s\n",
-+		iommu_domain_type_str(iommu_def_domain_type),
-+		cmd_line ? "(set via kernel command line)" : "");
++static bool __maybe_unused iommu_cmd_line_dma_api(void)
++{
++	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
++}
++
+ #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+ struct iommu_group_attribute iommu_group_attr_##_name =		\
+ 	__ATTR(_name, _mode, _show, _store)
+@@ -165,6 +178,8 @@ static int __init iommu_set_def_domain_type(char *str)
+ 	if (ret)
+ 		return ret;
  
++	iommu_set_cmd_line_dma_api();
++
+ 	iommu_def_domain_type = pt ? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
  	return 0;
  }
 -- 
