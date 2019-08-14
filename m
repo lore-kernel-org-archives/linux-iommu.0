@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577E5C32753
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC17FC32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 347B6206C2
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 347B6206C2
+	by mail.kernel.org (Postfix) with ESMTPS id 8801C206C2
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8801C206C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DFDFB103E;
-	Wed, 14 Aug 2019 13:38:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0FD691067;
+	Wed, 14 Aug 2019 13:38:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 36761FEC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1D624103A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 13:38:47 +0000 (UTC)
+	Wed, 14 Aug 2019 13:38:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6B1D28A7
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A19AA87E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 13:38:45 +0000 (UTC)
+	Wed, 14 Aug 2019 13:38:47 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 045F846A; Wed, 14 Aug 2019 15:38:42 +0200 (CEST)
+	id 81587479; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 02/10] iommu/amd: Request passthrough mode from IOMMU core
-Date: Wed, 14 Aug 2019 15:38:33 +0200
-Message-Id: <20190814133841.7095-3-joro@8bytes.org>
+Subject: [PATCH 05/10] ia64: Get rid of iommu_pass_through
+Date: Wed, 14 Aug 2019 15:38:36 +0200
+Message-Id: <20190814133841.7095-6-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190814133841.7095-1-joro@8bytes.org>
 References: <20190814133841.7095-1-joro@8bytes.org>
@@ -64,45 +64,42 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Get rid of the iommu_pass_through variable and request
-passthrough mode via the new iommu core function.
+This variable has no users anymore so it can be removed.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/ia64/include/asm/iommu.h | 2 --
+ arch/ia64/kernel/pci-dma.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b607a92791d3..7434b34d7a94 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -436,7 +436,7 @@ static int iommu_init_device(struct device *dev)
- 	 * invalid address), we ignore the capability for the device so
- 	 * it'll be forced to go into translation mode.
- 	 */
--	if ((iommu_pass_through || !amd_iommu_force_isolation) &&
-+	if ((iommu_default_passthrough() || !amd_iommu_force_isolation) &&
- 	    dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
- 		struct amd_iommu *iommu;
+diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
+index 7429a72f3f92..92aceef63710 100644
+--- a/arch/ia64/include/asm/iommu.h
++++ b/arch/ia64/include/asm/iommu.h
+@@ -8,10 +8,8 @@
+ extern void no_iommu_init(void);
+ #ifdef	CONFIG_INTEL_IOMMU
+ extern int force_iommu, no_iommu;
+-extern int iommu_pass_through;
+ extern int iommu_detected;
+ #else
+-#define iommu_pass_through	(0)
+ #define no_iommu		(1)
+ #define iommu_detected		(0)
+ #endif
+diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
+index fe988c49f01c..f5d49cd3fbb0 100644
+--- a/arch/ia64/kernel/pci-dma.c
++++ b/arch/ia64/kernel/pci-dma.c
+@@ -22,8 +22,6 @@ int force_iommu __read_mostly = 1;
+ int force_iommu __read_mostly;
+ #endif
  
-@@ -2226,7 +2226,7 @@ static int amd_iommu_add_device(struct device *dev)
- 
- 	BUG_ON(!dev_data);
- 
--	if (iommu_pass_through || dev_data->iommu_v2)
-+	if (dev_data->iommu_v2)
- 		iommu_request_dm_for_dev(dev);
- 
- 	/* Domains are initialized for this device - have a look what we ended up with */
-@@ -2805,7 +2805,7 @@ int __init amd_iommu_init_api(void)
- 
- int __init amd_iommu_init_dma_ops(void)
+-int iommu_pass_through;
+-
+ static int __init pci_iommu_init(void)
  {
--	swiotlb        = (iommu_pass_through || sme_me_mask) ? 1 : 0;
-+	swiotlb        = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
- 	iommu_detected = 1;
- 
- 	if (amd_iommu_unmap_flush)
+ 	if (iommu_detected)
 -- 
 2.17.1
 
