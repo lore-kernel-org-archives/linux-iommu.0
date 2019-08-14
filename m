@@ -2,54 +2,89 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6C2C32753
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 17:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF51C32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 17:43:58 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0FE1E206C2
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 17:35:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0FE1E206C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 32FD8214DA
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 17:43:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 32FD8214DA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hpe.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D815EC96;
-	Wed, 14 Aug 2019 17:35:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E956EBDC;
+	Wed, 14 Aug 2019 17:43:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7528EC91
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7FE16DB2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 17:35:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 056C487E
+	Wed, 14 Aug 2019 17:18:18 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com
+	[148.163.143.35])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1059887E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 17:35:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74608344;
-	Wed, 14 Aug 2019 10:35:24 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6CBEB3F694;
-	Wed, 14 Aug 2019 10:35:23 -0700 (PDT)
-Subject: Re: [PATCH 01/15] iommu/arm-smmu: Convert GR0 registers to bitfields
-To: Will Deacon <will@kernel.org>
-References: <cover.1565369764.git.robin.murphy@arm.com>
-	<910cad718be01904db20ce73d8d54e7481290136.1565369764.git.robin.murphy@arm.com>
-	<20190814172030.accr7azgkkkwumt2@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <4d53b058-0024-02cd-27bb-7a44b766c847@arm.com>
-Date: Wed, 14 Aug 2019 18:35:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Wed, 14 Aug 2019 17:18:17 +0000 (UTC)
+Received: from pps.filterd (m0150244.ppops.net [127.0.0.1])
+	by mx0b-002e3701.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x7EGvC4f020879; Wed, 14 Aug 2019 17:18:09 GMT
+Received: from g9t5008.houston.hpe.com (g9t5008.houston.hpe.com [15.241.48.72])
+	by mx0b-002e3701.pphosted.com with ESMTP id 2ucm0vh8y6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Wed, 14 Aug 2019 17:18:09 +0000
+Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net
+	[16.208.49.245])
+	by g9t5008.houston.hpe.com (Postfix) with ESMTP id 92E2768;
+	Wed, 14 Aug 2019 17:18:07 +0000 (UTC)
+Received: from hpe.com (teo-eag.americas.hpqcorp.net [10.33.152.10])
+	by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id 4CB6F45;
+	Wed, 14 Aug 2019 17:18:06 +0000 (UTC)
+Date: Wed, 14 Aug 2019 12:18:06 -0500
+From: Dimitri Sivanich <sivanich@hpe.com>
+To: Jason Gunthorpe <jgg@mellanox.com>
+Subject: Re: [PATCH v3 hmm 04/11] misc/sgi-gru: use mmu_notifier_get/put for
+	struct gru_mm_struct
+Message-ID: <20190814171806.GA14680@hpe.com>
+References: <20190806231548.25242-1-jgg@ziepe.ca>
+	<20190806231548.25242-5-jgg@ziepe.ca> <20190808102556.GB648@lst.de>
+	<20190814155830.GO13756@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20190814172030.accr7azgkkkwumt2@willie-the-truck>
-Content-Language: en-GB
-Cc: gregory.clement@bootlin.com, iommu@lists.linux-foundation.org,
-	bjorn.andersson@linaro.org, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20190814155830.GO13756@mellanox.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-08-14_06:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=636 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1906280000 definitions=main-1908140158
+X-Mailman-Approved-At: Wed, 14 Aug 2019 17:43:57 +0000
+Cc: Andrea Arcangeli <aarcange@redhat.com>,
+	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
+	Ralph Campbell <rcampbell@nvidia.com>,
+	Gavin Shan <shangw@linux.vnet.ibm.com>,
+	Andrea Righi <andrea@betterlinux.com>, Dimitri Sivanich <sivanich@hpe.com>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	John Hubbard <jhubbard@nvidia.com>, "Kuehling,
+	Felix" <Felix.Kuehling@amd.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,86 +97,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 14/08/2019 18:20, Will Deacon wrote:
-> On Fri, Aug 09, 2019 at 06:07:38PM +0100, Robin Murphy wrote:
->> FIELD_PREP remains a terrible name, but the overall simplification will
->> make further work on this stuff that much more manageable. This also
->> serves as an audit of the header, wherein we can impose a consistent
->> grouping and ordering of the offset and field definitions
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/arm-smmu-regs.h | 126 ++++++++++++++++------------------
->>   drivers/iommu/arm-smmu.c      |  51 +++++++-------
->>   2 files changed, 84 insertions(+), 93 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
->> index 1c278f7ae888..d189f025537a 100644
->> --- a/drivers/iommu/arm-smmu-regs.h
->> +++ b/drivers/iommu/arm-smmu-regs.h
->> @@ -10,111 +10,101 @@
->>   #ifndef _ARM_SMMU_REGS_H
->>   #define _ARM_SMMU_REGS_H
->>   
->> +#include <linux/bits.h>
->> +
->>   /* Configuration registers */
->>   #define ARM_SMMU_GR0_sCR0		0x0
->> -#define sCR0_CLIENTPD			(1 << 0)
->> -#define sCR0_GFRE			(1 << 1)
->> -#define sCR0_GFIE			(1 << 2)
->> -#define sCR0_EXIDENABLE			(1 << 3)
->> -#define sCR0_GCFGFRE			(1 << 4)
->> -#define sCR0_GCFGFIE			(1 << 5)
->> -#define sCR0_USFCFG			(1 << 10)
->> -#define sCR0_VMIDPNE			(1 << 11)
->> -#define sCR0_PTM			(1 << 12)
->> -#define sCR0_FB				(1 << 13)
->> -#define sCR0_VMID16EN			(1 << 31)
->> -#define sCR0_BSU_SHIFT			14
->> -#define sCR0_BSU_MASK			0x3
->> +#define sCR0_VMID16EN			BIT(31)
->> +#define sCR0_BSU			GENMASK(15, 14)
->> +#define sCR0_FB				BIT(13)
->> +#define sCR0_PTM			BIT(12)
->> +#define sCR0_VMIDPNE			BIT(11)
->> +#define sCR0_USFCFG			BIT(10)
->> +#define sCR0_GCFGFIE			BIT(5)
->> +#define sCR0_GCFGFRE			BIT(4)
->> +#define sCR0_EXIDENABLE			BIT(3)
->> +#define sCR0_GFIE			BIT(2)
->> +#define sCR0_GFRE			BIT(1)
->> +#define sCR0_CLIENTPD			BIT(0)
->>   
->>   /* Auxiliary Configuration register */
->>   #define ARM_SMMU_GR0_sACR		0x10
->>   
->>   /* Identification registers */
->>   #define ARM_SMMU_GR0_ID0		0x20
->> +#define ID0_S1TS			BIT(30)
->> +#define ID0_S2TS			BIT(29)
->> +#define ID0_NTS				BIT(28)
->> +#define ID0_SMS				BIT(27)
->> +#define ID0_ATOSNS			BIT(26)
->> +#define ID0_PTFS_NO_AARCH32		BIT(25)
->> +#define ID0_PTFS_NO_AARCH32S		BIT(24)
->> +#define ID0_CTTW			BIT(14)
->> +#define ID0_NUMIRPT			GENMASK(23, 16)
+On Wed, Aug 14, 2019 at 03:58:34PM +0000, Jason Gunthorpe wrote:
+> On Thu, Aug 08, 2019 at 12:25:56PM +0200, Christoph Hellwig wrote:
+> > Looks good,
+> > 
+> > Reviewed-by: Christoph Hellwig <hch@lst.de>
 > 
-> nit: assuming this should be above ID0_CTTW so things are in descending
-> bit order?
+> Dimitri, are you OK with this patch?
+>
 
-Bah, indeed it should. Fixed now.
-> Other than that, looks good to me.
+I think this looks OK.
 
-Thanks!
-
-Robin.
+Reviewed-by: Dimitri Sivanich <sivanich@hpe.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
