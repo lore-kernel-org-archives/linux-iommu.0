@@ -6,42 +6,42 @@ X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AD8C433FF
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42606C433FF
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:05:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0873D2084F
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:05:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0873D2084F
+	by mail.kernel.org (Postfix) with ESMTPS id 220312084F
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:05:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 220312084F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3AD9DE32;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5F44CE34;
 	Wed, 14 Aug 2019 18:04:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D5E3CDF2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 092ADDD9
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 18:04:08 +0000 (UTC)
+	Wed, 14 Aug 2019 18:04:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 960B387E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 9EC1D8A9
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 18:04:07 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D63741688;
-	Wed, 14 Aug 2019 10:57:03 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E3C4315BE;
+	Wed, 14 Aug 2019 10:56:54 -0700 (PDT)
 Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
 	[10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D294E3F694; 
-	Wed, 14 Aug 2019 10:57:01 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C68A83F694; 
+	Wed, 14 Aug 2019 10:56:52 -0700 (PDT)
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 10/13] iommu/io-pgtable: Replace ->tlb_add_flush() with
-	->tlb_add_page()
-Date: Wed, 14 Aug 2019 18:56:31 +0100
-Message-Id: <20190814175634.21081-11-will@kernel.org>
+Subject: [PATCH 06/13] iommu: Pass struct iommu_iotlb_gather to ->unmap() and
+	->iotlb_sync()
+Date: Wed, 14 Aug 2019 18:56:27 +0100
+Message-Id: <20190814175634.21081-7-will@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190814175634.21081-1-will@kernel.org>
 References: <20190814175634.21081-1-will@kernel.org>
@@ -70,467 +70,457 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The ->tlb_add_flush() callback in the io-pgtable API now looks a bit
-silly:
+To allow IOMMU drivers to batch up TLB flushing operations and postpone
+them until ->iotlb_sync() is called, extend the prototypes for the
+->unmap() and ->iotlb_sync() IOMMU ops callbacks to take a pointer to
+the current iommu_iotlb_gather structure.
 
-  - It takes a size and a granule, which are always the same
-  - It takes a 'bool leaf', which is always true
-  - It only ever flushes a single page
-
-With that in mind, replace it with an optional ->tlb_add_page() callback
-that drops the useless parameters.
+All affected IOMMU drivers are updated, but there should be no
+functional change since the extra parameter is ignored for now.
 
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_mmu.c |  5 --
- drivers/iommu/arm-smmu-v3.c             |  8 ++-
- drivers/iommu/arm-smmu.c                | 88 +++++++++++++++++++++------------
- drivers/iommu/io-pgtable-arm-v7s.c      | 12 ++---
- drivers/iommu/io-pgtable-arm.c          | 11 ++---
- drivers/iommu/ipmmu-vmsa.c              |  7 ---
- drivers/iommu/msm_iommu.c               |  7 ++-
- drivers/iommu/mtk_iommu.c               |  8 ++-
- drivers/iommu/qcom_iommu.c              |  8 ++-
- include/linux/io-pgtable.h              | 22 ++++-----
- 10 files changed, 105 insertions(+), 71 deletions(-)
+ drivers/iommu/amd_iommu.c      | 11 +++++++++--
+ drivers/iommu/arm-smmu-v3.c    |  7 ++++---
+ drivers/iommu/arm-smmu.c       |  5 +++--
+ drivers/iommu/exynos-iommu.c   |  3 ++-
+ drivers/iommu/intel-iommu.c    |  3 ++-
+ drivers/iommu/iommu.c          |  2 +-
+ drivers/iommu/ipmmu-vmsa.c     | 12 +++++++++---
+ drivers/iommu/msm_iommu.c      |  2 +-
+ drivers/iommu/mtk_iommu.c      | 13 ++++++++++---
+ drivers/iommu/mtk_iommu_v1.c   |  3 ++-
+ drivers/iommu/omap-iommu.c     |  2 +-
+ drivers/iommu/qcom_iommu.c     | 12 +++++++++---
+ drivers/iommu/rockchip-iommu.c |  2 +-
+ drivers/iommu/s390-iommu.c     |  3 ++-
+ drivers/iommu/tegra-gart.c     | 12 +++++++++---
+ drivers/iommu/tegra-smmu.c     |  2 +-
+ drivers/iommu/virtio-iommu.c   |  5 +++--
+ include/linux/iommu.h          |  7 ++++---
+ 18 files changed, 73 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-index 651858147bd6..ff9af320cacc 100644
---- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-@@ -247,10 +247,6 @@ static void mmu_tlb_inv_context_s1(void *cookie)
- 	mmu_hw_do_operation(pfdev, 0, 0, ~0UL, AS_COMMAND_FLUSH_MEM);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f93b148cf55e..29eeea914660 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3055,7 +3055,8 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
  }
  
--static void mmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--				     size_t granule, bool leaf, void *cookie)
--{}
--
- static void mmu_tlb_sync_context(void *cookie)
+ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+-			   size_t page_size)
++			      size_t page_size,
++			      struct iommu_iotlb_gather *gather)
  {
- 	//struct panfrost_device *pfdev = cookie;
-@@ -273,7 +269,6 @@ static const struct iommu_flush_ops mmu_tlb_ops = {
- 	.tlb_flush_all	= mmu_tlb_inv_context_s1,
- 	.tlb_flush_walk = mmu_tlb_flush_walk,
- 	.tlb_flush_leaf = mmu_tlb_flush_leaf,
--	.tlb_add_flush	= mmu_tlb_inv_range_nosync,
- 	.tlb_sync	= mmu_tlb_sync_context,
+ 	struct protection_domain *domain = to_pdomain(dom);
+ 	size_t unmap_size;
+@@ -3196,6 +3197,12 @@ static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
+ 	domain_flush_complete(dom);
+ }
+ 
++static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
++				 struct iommu_iotlb_gather *gather)
++{
++	amd_iommu_flush_iotlb_all(domain);
++}
++
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3214,7 +3221,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+ 	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
+-	.iotlb_sync = amd_iommu_flush_iotlb_all,
++	.iotlb_sync = amd_iommu_iotlb_sync,
  };
  
+ /*****************************************************************************
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 79819b003b07..98c90a1b4b22 100644
+index 7e137e1e28f1..80753b8ca054 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1603,6 +1603,12 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 	} while (size -= granule);
+@@ -1985,8 +1985,8 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 	return ops->map(ops, iova, paddr, size, prot);
  }
  
-+static void arm_smmu_tlb_inv_page_nosync(unsigned long iova, size_t granule,
-+					 void *cookie)
-+{
-+	arm_smmu_tlb_inv_range_nosync(iova, granule, granule, true, cookie);
-+}
-+
- static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
- 				  size_t granule, void *cookie)
+-static size_t
+-arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
++static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
++			     size_t size, struct iommu_iotlb_gather *gather)
  {
-@@ -1627,7 +1633,7 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
- 	.tlb_flush_all	= arm_smmu_tlb_inv_context,
- 	.tlb_flush_walk = arm_smmu_tlb_inv_walk,
- 	.tlb_flush_leaf = arm_smmu_tlb_inv_leaf,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-+	.tlb_add_page	= arm_smmu_tlb_inv_page_nosync,
- 	.tlb_sync	= arm_smmu_tlb_sync,
- };
+ 	int ret;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+@@ -2010,7 +2010,8 @@ static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
+ 		arm_smmu_tlb_inv_context(smmu_domain);
+ }
+ 
+-static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
++static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
++				struct iommu_iotlb_gather *gather)
+ {
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
  
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index e9f01b860ae3..f056164a94b0 100644
+index dc08db347ef3..e535ae2a9e65 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -248,10 +248,16 @@ enum arm_smmu_domain_stage {
- 	ARM_SMMU_DOMAIN_BYPASS,
- };
- 
-+struct arm_smmu_flush_ops {
-+	struct iommu_flush_ops		tlb;
-+	void (*tlb_inv_range)(unsigned long iova, size_t size, size_t granule,
-+			      bool leaf, void *cookie)
-+};
-+
- struct arm_smmu_domain {
- 	struct arm_smmu_device		*smmu;
- 	struct io_pgtable_ops		*pgtbl_ops;
--	const struct iommu_flush_ops	*tlb_ops;
-+	const struct arm_smmu_flush_ops	*flush_ops;
- 	struct arm_smmu_cfg		cfg;
- 	enum arm_smmu_domain_stage	stage;
- 	bool				non_strict;
-@@ -551,42 +557,62 @@ static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
- 				  size_t granule, void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
-+	const struct arm_smmu_flush_ops *ops = smmu_domain->flush_ops;
- 
--	smmu_domain->tlb_ops->tlb_add_flush(iova, size, granule, false, cookie);
--	smmu_domain->tlb_ops->tlb_sync(cookie);
-+	ops->tlb_inv_range(iova, size, granule, false, cookie);
-+	ops->tlb.tlb_sync(cookie);
+@@ -1301,7 +1301,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
  }
  
- static void arm_smmu_tlb_inv_leaf(unsigned long iova, size_t size,
- 				  size_t granule, void *cookie)
+ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			     size_t size)
++			     size_t size, struct iommu_iotlb_gather *gather)
  {
- 	struct arm_smmu_domain *smmu_domain = cookie;
-+	const struct arm_smmu_flush_ops *ops = smmu_domain->flush_ops;
-+
-+	ops->tlb_inv_range(iova, size, granule, true, cookie);
-+	ops->tlb.tlb_sync(cookie);
-+}
-+
-+static void arm_smmu_tlb_add_page(unsigned long iova, size_t granule,
-+				  void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	const struct arm_smmu_flush_ops *ops = smmu_domain->flush_ops;
- 
--	smmu_domain->tlb_ops->tlb_add_flush(iova, size, granule, true, cookie);
--	smmu_domain->tlb_ops->tlb_sync(cookie);
-+	ops->tlb_inv_range(iova, granule, granule, true, cookie);
+ 	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+@@ -1329,7 +1329,8 @@ static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
+ 	}
  }
  
--static const struct iommu_flush_ops arm_smmu_s1_tlb_ops = {
--	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
--	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
--	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
--	.tlb_sync	= arm_smmu_tlb_sync_context,
-+static const struct arm_smmu_flush_ops arm_smmu_s1_tlb_ops = {
-+	.tlb = {
-+		.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
-+		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
-+		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
-+		.tlb_add_page	= arm_smmu_tlb_add_page,
-+		.tlb_sync	= arm_smmu_tlb_sync_context,
-+	},
-+	.tlb_inv_range		= arm_smmu_tlb_inv_range_nosync,
- };
- 
--static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
--	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
--	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
--	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
--	.tlb_sync	= arm_smmu_tlb_sync_context,
-+static const struct arm_smmu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
-+	.tlb = {
-+		.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-+		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
-+		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
-+		.tlb_add_page	= arm_smmu_tlb_add_page,
-+		.tlb_sync	= arm_smmu_tlb_sync_context,
-+	},
-+	.tlb_inv_range		= arm_smmu_tlb_inv_range_nosync,
- };
- 
--static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
--	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
--	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
--	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
--	.tlb_add_flush	= arm_smmu_tlb_inv_vmid_nosync,
--	.tlb_sync	= arm_smmu_tlb_sync_vmid,
-+static const struct arm_smmu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
-+	.tlb = {
-+		.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-+		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
-+		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
-+		.tlb_add_page	= arm_smmu_tlb_add_page,
-+		.tlb_sync	= arm_smmu_tlb_sync_vmid,
-+	},
-+	.tlb_inv_range		= arm_smmu_tlb_inv_vmid_nosync,
- };
- 
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-@@ -866,7 +892,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 			ias = min(ias, 32UL);
- 			oas = min(oas, 32UL);
- 		}
--		smmu_domain->tlb_ops = &arm_smmu_s1_tlb_ops;
-+		smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
- 		break;
- 	case ARM_SMMU_DOMAIN_NESTED:
- 		/*
-@@ -886,9 +912,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 			oas = min(oas, 40UL);
- 		}
- 		if (smmu->version == ARM_SMMU_V2)
--			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v2;
-+			smmu_domain->flush_ops = &arm_smmu_s2_tlb_ops_v2;
- 		else
--			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v1;
-+			smmu_domain->flush_ops = &arm_smmu_s2_tlb_ops_v1;
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -917,7 +943,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		.ias		= ias,
- 		.oas		= oas,
- 		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENT_WALK,
--		.tlb		= smmu_domain->tlb_ops,
-+		.tlb		= &smmu_domain->flush_ops->tlb,
- 		.iommu_dev	= smmu->dev,
- 	};
- 
-@@ -1346,9 +1372,9 @@ static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
+-static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
++static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
++				struct iommu_iotlb_gather *gather)
+ {
  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
  	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
--	if (smmu_domain->tlb_ops) {
-+	if (smmu_domain->flush_ops) {
- 		arm_smmu_rpm_get(smmu);
--		smmu_domain->tlb_ops->tlb_flush_all(smmu_domain);
-+		smmu_domain->flush_ops->tlb.tlb_flush_all(smmu_domain);
- 		arm_smmu_rpm_put(smmu);
- 	}
- }
-@@ -1359,9 +1385,9 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
--	if (smmu_domain->tlb_ops) {
-+	if (smmu_domain->flush_ops) {
- 		arm_smmu_rpm_get(smmu);
--		smmu_domain->tlb_ops->tlb_sync(smmu_domain);
-+		smmu_domain->flush_ops->tlb.tlb_sync(smmu_domain);
- 		arm_smmu_rpm_put(smmu);
- 	}
- }
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 8d4914fe73bc..b3f975c95f76 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -584,7 +584,7 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
- 		return __arm_v7s_unmap(data, iova, size, 2, tablep);
- 	}
- 
--	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-+	io_pgtable_tlb_add_page(&data->iop, iova, size);
- 	return size;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b0c1e5f9daae..cf5af34cb681 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1130,7 +1130,8 @@ static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *domain
  }
  
-@@ -647,8 +647,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
- 				 */
- 				smp_wmb();
- 			} else {
--				io_pgtable_tlb_add_flush(iop, iova, blk_size,
--							 blk_size, true);
-+				io_pgtable_tlb_add_page(iop, iova, blk_size);
- 			}
- 			iova += blk_size;
- 		}
-@@ -809,10 +808,9 @@ static void dummy_tlb_flush(unsigned long iova, size_t size, size_t granule,
- 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
- }
- 
--static void dummy_tlb_add_flush(unsigned long iova, size_t size,
--				size_t granule, bool leaf, void *cookie)
-+static void dummy_tlb_add_page(unsigned long iova, size_t granule, void *cookie)
+ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
+-				 unsigned long l_iova, size_t size)
++				 unsigned long l_iova, size_t size,
++				 struct iommu_iotlb_gather *gather)
  {
--	dummy_tlb_flush(iova, size, granule, cookie);
-+	dummy_tlb_flush(iova, granule, granule, cookie);
+ 	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
+ 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index ac4172c02244..b9fb8d6ddc6e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5147,7 +5147,8 @@ static int intel_iommu_map(struct iommu_domain *domain,
  }
  
- static void dummy_tlb_sync(void *cookie)
-@@ -824,7 +822,7 @@ static const struct iommu_flush_ops dummy_tlb_ops = {
- 	.tlb_flush_all	= dummy_tlb_flush_all,
- 	.tlb_flush_walk	= dummy_tlb_flush,
- 	.tlb_flush_leaf	= dummy_tlb_flush,
--	.tlb_add_flush	= dummy_tlb_add_flush,
-+	.tlb_add_page	= dummy_tlb_add_page,
- 	.tlb_sync	= dummy_tlb_sync,
- };
- 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index b58338c86323..a5c0db01533e 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -582,7 +582,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 
- 		tablep = iopte_deref(pte, data);
- 	} else if (unmap_idx >= 0) {
--		io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-+		io_pgtable_tlb_add_page(&data->iop, iova, size);
- 		return size;
- 	}
- 
-@@ -623,7 +623,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			 */
- 			smp_wmb();
- 		} else {
--			io_pgtable_tlb_add_flush(iop, iova, size, size, true);
-+			io_pgtable_tlb_add_page(iop, iova, size);
- 		}
- 
- 		return size;
-@@ -1075,10 +1075,9 @@ static void dummy_tlb_flush(unsigned long iova, size_t size, size_t granule,
- 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
- }
- 
--static void dummy_tlb_add_flush(unsigned long iova, size_t size,
--				size_t granule, bool leaf, void *cookie)
-+static void dummy_tlb_add_page(unsigned long iova, size_t granule, void *cookie)
+ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+-				unsigned long iova, size_t size)
++				unsigned long iova, size_t size,
++				struct iommu_iotlb_gather *gather)
  {
--	dummy_tlb_flush(iova, size, granule, cookie);
-+	dummy_tlb_flush(iova, granule, granule, cookie);
- }
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	struct page *freelist = NULL;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d67222fdfe44..70bfbcc09248 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1899,7 +1899,7 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 	while (unmapped < size) {
+ 		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
  
- static void dummy_tlb_sync(void *cookie)
-@@ -1090,7 +1089,7 @@ static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
- 	.tlb_flush_all	= dummy_tlb_flush_all,
- 	.tlb_flush_walk	= dummy_tlb_flush,
- 	.tlb_flush_leaf	= dummy_tlb_flush,
--	.tlb_add_flush	= dummy_tlb_add_flush,
-+	.tlb_add_page	= dummy_tlb_add_page,
- 	.tlb_sync	= dummy_tlb_sync,
- };
+-		unmapped_page = ops->unmap(domain, iova, pgsize);
++		unmapped_page = ops->unmap(domain, iova, pgsize, iotlb_gather);
+ 		if (!unmapped_page)
+ 			break;
  
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9cc7bcb7e39d..c4da271af90e 100644
+index 2c14a2c65b22..a9332b893ce2 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -367,17 +367,10 @@ static void ipmmu_tlb_flush(unsigned long iova, size_t size,
- 	ipmmu_tlb_flush_all(cookie);
+@@ -733,14 +733,14 @@ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
  }
  
--static void ipmmu_tlb_add_flush(unsigned long iova, size_t size,
--				size_t granule, bool leaf, void *cookie)
--{
--	/* The hardware doesn't support selective TLB flush. */
--}
--
- static const struct iommu_flush_ops ipmmu_flush_ops = {
- 	.tlb_flush_all = ipmmu_tlb_flush_all,
- 	.tlb_flush_walk = ipmmu_tlb_flush,
- 	.tlb_flush_leaf = ipmmu_tlb_flush,
--	.tlb_add_flush = ipmmu_tlb_add_flush,
- 	.tlb_sync = ipmmu_tlb_flush_all,
- };
+ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+-			  size_t size)
++			  size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
  
+ 	return domain->iop->unmap(domain->iop, iova, size);
+ }
+ 
+-static void ipmmu_iotlb_sync(struct iommu_domain *io_domain)
++static void ipmmu_flush_iotlb_all(struct iommu_domain *io_domain)
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+@@ -748,6 +748,12 @@ static void ipmmu_iotlb_sync(struct iommu_domain *io_domain)
+ 		ipmmu_tlb_flush_all(domain);
+ }
+ 
++static void ipmmu_iotlb_sync(struct iommu_domain *io_domain,
++			     struct iommu_iotlb_gather *gather)
++{
++	ipmmu_flush_iotlb_all(io_domain);
++}
++
+ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
+ 				      dma_addr_t iova)
+ {
+@@ -957,7 +963,7 @@ static const struct iommu_ops ipmmu_ops = {
+ 	.detach_dev = ipmmu_detach_device,
+ 	.map = ipmmu_map,
+ 	.unmap = ipmmu_unmap,
+-	.flush_iotlb_all = ipmmu_iotlb_sync,
++	.flush_iotlb_all = ipmmu_flush_iotlb_all,
+ 	.iotlb_sync = ipmmu_iotlb_sync,
+ 	.iova_to_phys = ipmmu_iova_to_phys,
+ 	.add_device = ipmmu_add_device,
 diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 64132093751a..2cd83295a841 100644
+index 8b602384a385..681ab3d3376d 100644
 --- a/drivers/iommu/msm_iommu.c
 +++ b/drivers/iommu/msm_iommu.c
-@@ -192,11 +192,16 @@ static void __flush_iotlb_leaf(unsigned long iova, size_t size,
- 	__flush_iotlb_sync(cookie);
+@@ -509,7 +509,7 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
  }
  
-+static void __flush_iotlb_page(unsigned long iova, size_t granule, void *cookie)
-+{
-+	__flush_iotlb_range(iova, granule, granule, true, cookie);
-+}
-+
- static const struct iommu_flush_ops msm_iommu_flush_ops = {
- 	.tlb_flush_all = __flush_iotlb,
- 	.tlb_flush_walk = __flush_iotlb_walk,
- 	.tlb_flush_leaf = __flush_iotlb_leaf,
--	.tlb_add_flush = __flush_iotlb_range,
-+	.tlb_add_page = __flush_iotlb_page,
- 	.tlb_sync = __flush_iotlb_sync,
- };
- 
+ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			      size_t len)
++			      size_t len, struct iommu_iotlb_gather *gather)
+ {
+ 	struct msm_priv *priv = to_msm_priv(domain);
+ 	unsigned long flags;
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 85a7176bf9ae..a0b4b4dc4b90 100644
+index fed77658d67e..c870f1674903 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -202,11 +202,17 @@ static void mtk_iommu_tlb_flush_leaf(unsigned long iova, size_t size,
- 	mtk_iommu_tlb_sync(cookie);
+@@ -371,7 +371,8 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
  }
  
-+static void mtk_iommu_tlb_flush_page_nosync(unsigned long iova, size_t granule,
-+					    void *cookie)
+ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+-			      unsigned long iova, size_t size)
++			      unsigned long iova, size_t size,
++			      struct iommu_iotlb_gather *gather)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	unsigned long flags;
+@@ -384,7 +385,13 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+ 	return unmapsz;
+ }
+ 
+-static void mtk_iommu_iotlb_sync(struct iommu_domain *domain)
++static void mtk_iommu_flush_iotlb_all(struct iommu_domain *domain)
 +{
-+	mtk_iommu_tlb_add_flush_nosync(iova, granule, granule, true, cookie);
++	mtk_iommu_tlb_sync(mtk_iommu_get_m4u_data());
 +}
 +
- static const struct iommu_flush_ops mtk_iommu_flush_ops = {
- 	.tlb_flush_all = mtk_iommu_tlb_flush_all,
- 	.tlb_flush_walk = mtk_iommu_tlb_flush_walk,
- 	.tlb_flush_leaf = mtk_iommu_tlb_flush_leaf,
--	.tlb_add_flush = mtk_iommu_tlb_add_flush_nosync,
-+	.tlb_add_page = mtk_iommu_tlb_flush_page_nosync,
- 	.tlb_sync = mtk_iommu_tlb_sync,
- };
++static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
++				 struct iommu_iotlb_gather *gather)
+ {
+ 	mtk_iommu_tlb_sync(mtk_iommu_get_m4u_data());
+ }
+@@ -490,7 +497,7 @@ static const struct iommu_ops mtk_iommu_ops = {
+ 	.detach_dev	= mtk_iommu_detach_device,
+ 	.map		= mtk_iommu_map,
+ 	.unmap		= mtk_iommu_unmap,
+-	.flush_iotlb_all = mtk_iommu_iotlb_sync,
++	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
+ 	.iotlb_sync	= mtk_iommu_iotlb_sync,
+ 	.iova_to_phys	= mtk_iommu_iova_to_phys,
+ 	.add_device	= mtk_iommu_add_device,
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index abeeac488372..7b92ddd5d9fd 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -324,7 +324,8 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ }
  
+ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+-			      unsigned long iova, size_t size)
++			      unsigned long iova, size_t size,
++			      struct iommu_iotlb_gather *gather)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	unsigned long flags;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index dfb961d8c21b..8039bc5ee425 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1149,7 +1149,7 @@ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
+ }
+ 
+ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
+-			       size_t size)
++			       size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 	struct device *dev = omap_domain->dev;
 diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 643079e52e69..7d8411dee4cf 100644
+index fd9d9f4da735..a7432991fa04 100644
 --- a/drivers/iommu/qcom_iommu.c
 +++ b/drivers/iommu/qcom_iommu.c
-@@ -178,11 +178,17 @@ static void qcom_iommu_tlb_flush_leaf(unsigned long iova, size_t size,
- 	qcom_iommu_tlb_sync(cookie);
+@@ -417,7 +417,7 @@ static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
  }
  
-+static void qcom_iommu_tlb_add_page(unsigned long iova, size_t granule,
-+				    void *cookie)
+ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			       size_t size)
++			       size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	size_t ret;
+ 	unsigned long flags;
+@@ -441,7 +441,7 @@ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return ret;
+ }
+ 
+-static void qcom_iommu_iotlb_sync(struct iommu_domain *domain)
++static void qcom_iommu_flush_iotlb_all(struct iommu_domain *domain)
+ {
+ 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
+ 	struct io_pgtable *pgtable = container_of(qcom_domain->pgtbl_ops,
+@@ -454,6 +454,12 @@ static void qcom_iommu_iotlb_sync(struct iommu_domain *domain)
+ 	pm_runtime_put_sync(qcom_domain->iommu->dev);
+ }
+ 
++static void qcom_iommu_iotlb_sync(struct iommu_domain *domain,
++				  struct iommu_iotlb_gather *gather)
 +{
-+	qcom_iommu_tlb_inv_range_nosync(iova, granule, granule, true, cookie);
++	qcom_iommu_flush_iotlb_all(domain);
 +}
 +
- static const struct iommu_flush_ops qcom_flush_ops = {
- 	.tlb_flush_all	= qcom_iommu_tlb_inv_context,
- 	.tlb_flush_walk = qcom_iommu_tlb_flush_walk,
- 	.tlb_flush_leaf = qcom_iommu_tlb_flush_leaf,
--	.tlb_add_flush	= qcom_iommu_tlb_inv_range_nosync,
-+	.tlb_add_page	= qcom_iommu_tlb_add_page,
- 	.tlb_sync	= qcom_iommu_tlb_sync,
- };
- 
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 0618aac59e74..99e04bd2baa1 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -25,12 +25,11 @@ enum io_pgtable_fmt {
-  *                  address range.
-  * @tlb_flush_leaf: Synchronously invalidate all leaf TLB state for a virtual
-  *                  address range.
-- * @tlb_add_flush:  Optional callback to queue up leaf TLB invalidation for a
-- *                  virtual address range.  This function exists purely as an
-- *                  optimisation for IOMMUs that cannot batch TLB invalidation
-- *                  operations efficiently and are therefore better suited to
-- *                  issuing them early rather than deferring them until
-- *                  iommu_tlb_sync().
-+ * @tlb_add_page:   Optional callback to queue up leaf TLB invalidation for a
-+ *                  single page. This function exists purely as an optimisation
-+ *                  for IOMMUs that cannot batch TLB invalidation operations
-+ *                  efficiently and are therefore better suited to issuing them
-+ *                  early rather than deferring them until iommu_tlb_sync().
-  * @tlb_sync:       Ensure any queued TLB invalidation has taken effect, and
-  *                  any corresponding page table updates are visible to the
-  *                  IOMMU.
-@@ -44,8 +43,7 @@ struct iommu_flush_ops {
- 			       void *cookie);
- 	void (*tlb_flush_leaf)(unsigned long iova, size_t size, size_t granule,
- 			       void *cookie);
--	void (*tlb_add_flush)(unsigned long iova, size_t size, size_t granule,
--			      bool leaf, void *cookie);
-+	void (*tlb_add_page)(unsigned long iova, size_t granule, void *cookie);
- 	void (*tlb_sync)(void *cookie);
- };
- 
-@@ -212,10 +210,12 @@ io_pgtable_tlb_flush_leaf(struct io_pgtable *iop, unsigned long iova,
- 	iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
- }
- 
--static inline void io_pgtable_tlb_add_flush(struct io_pgtable *iop,
--		unsigned long iova, size_t size, size_t granule, bool leaf)
-+static inline void
-+io_pgtable_tlb_add_page(struct io_pgtable *iop, unsigned long iova,
-+			size_t granule)
+ static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					   dma_addr_t iova)
  {
--	iop->cfg.tlb->tlb_add_flush(iova, size, granule, leaf, iop->cookie);
-+	if (iop->cfg.tlb->tlb_add_page)
-+		iop->cfg.tlb->tlb_add_page(iova, granule, iop->cookie);
+@@ -581,7 +587,7 @@ static const struct iommu_ops qcom_iommu_ops = {
+ 	.detach_dev	= qcom_iommu_detach_dev,
+ 	.map		= qcom_iommu_map,
+ 	.unmap		= qcom_iommu_unmap,
+-	.flush_iotlb_all = qcom_iommu_iotlb_sync,
++	.flush_iotlb_all = qcom_iommu_flush_iotlb_all,
+ 	.iotlb_sync	= qcom_iommu_iotlb_sync,
+ 	.iova_to_phys	= qcom_iommu_iova_to_phys,
+ 	.add_device	= qcom_iommu_add_device,
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index dc26d74d79c2..26290f310f90 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -794,7 +794,7 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
  }
  
- static inline void io_pgtable_tlb_sync(struct io_pgtable *iop)
+ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+-			     size_t size)
++			     size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 22d4db302c1c..3b0b18e23187 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -314,7 +314,8 @@ static phys_addr_t s390_iommu_iova_to_phys(struct iommu_domain *domain,
+ }
+ 
+ static size_t s390_iommu_unmap(struct iommu_domain *domain,
+-			       unsigned long iova, size_t size)
++			       unsigned long iova, size_t size,
++			       struct iommu_iotlb_gather *gather)
+ {
+ 	struct s390_domain *s390_domain = to_s390_domain(domain);
+ 	int flags = ZPCI_PTE_INVALID;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 6d40bc1b38bf..3924f7c05544 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -207,7 +207,7 @@ static inline int __gart_iommu_unmap(struct gart_device *gart,
+ }
+ 
+ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			       size_t bytes)
++			       size_t bytes, struct iommu_iotlb_gather *gather)
+ {
+ 	struct gart_device *gart = gart_handle;
+ 	int err;
+@@ -273,11 +273,17 @@ static int gart_iommu_of_xlate(struct device *dev,
+ 	return 0;
+ }
+ 
+-static void gart_iommu_sync(struct iommu_domain *domain)
++static void gart_iommu_sync_map(struct iommu_domain *domain)
+ {
+ 	FLUSH_GART_REGS(gart_handle);
+ }
+ 
++static void gart_iommu_sync(struct iommu_domain *domain,
++			    struct iommu_iotlb_gather *gather)
++{
++	gart_iommu_sync_map(domain);
++}
++
+ static const struct iommu_ops gart_iommu_ops = {
+ 	.capable	= gart_iommu_capable,
+ 	.domain_alloc	= gart_iommu_domain_alloc,
+@@ -292,7 +298,7 @@ static const struct iommu_ops gart_iommu_ops = {
+ 	.iova_to_phys	= gart_iommu_iova_to_phys,
+ 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
+ 	.of_xlate	= gart_iommu_of_xlate,
+-	.iotlb_sync_map	= gart_iommu_sync,
++	.iotlb_sync_map	= gart_iommu_sync_map,
+ 	.iotlb_sync	= gart_iommu_sync,
+ };
+ 
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index c4a652b227f8..7293fc3f796d 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -680,7 +680,7 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			       size_t size)
++			       size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
+ 	dma_addr_t pte_dma;
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 433f4d2ee956..5f9f91a4d7f3 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -742,7 +742,7 @@ static int viommu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t viommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			   size_t size)
++			   size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	int ret = 0;
+ 	size_t unmapped;
+@@ -788,7 +788,8 @@ static phys_addr_t viommu_iova_to_phys(struct iommu_domain *domain,
+ 	return paddr;
+ }
+ 
+-static void viommu_iotlb_sync(struct iommu_domain *domain)
++static void viommu_iotlb_sync(struct iommu_domain *domain,
++			      struct iommu_iotlb_gather *gather)
+ {
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ad41aee55bc6..64ebaff33455 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -258,10 +258,11 @@ struct iommu_ops {
+ 	int (*map)(struct iommu_domain *domain, unsigned long iova,
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+-		     size_t size);
++		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
+ 	void (*flush_iotlb_all)(struct iommu_domain *domain);
+ 	void (*iotlb_sync_map)(struct iommu_domain *domain);
+-	void (*iotlb_sync)(struct iommu_domain *domain);
++	void (*iotlb_sync)(struct iommu_domain *domain,
++			   struct iommu_iotlb_gather *iotlb_gather);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
+ 	void (*remove_device)(struct device *dev);
+@@ -502,7 +503,7 @@ static inline void iommu_tlb_sync(struct iommu_domain *domain,
+ 				  struct iommu_iotlb_gather *iotlb_gather)
+ {
+ 	if (domain->ops->iotlb_sync)
+-		domain->ops->iotlb_sync(domain);
++		domain->ops->iotlb_sync(domain, iotlb_gather);
+ 
+ 	iommu_iotlb_gather_init(iotlb_gather);
+ }
 -- 
 2.11.0
 
