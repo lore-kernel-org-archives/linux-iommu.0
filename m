@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC17FC32753
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 740D5C32757
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8801C206C2
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8801C206C2
+	by mail.kernel.org (Postfix) with ESMTPS id 51863206C2
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 13:39:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51863206C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0FD691067;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E2B71052;
 	Wed, 14 Aug 2019 13:38:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1D624103A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2C326105C
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 13:38:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A19AA87E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AC8BD8A7
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 14 Aug 2019 13:38:47 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 81587479; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
+	id BC81A4F1; Wed, 14 Aug 2019 15:38:43 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 05/10] ia64: Get rid of iommu_pass_through
-Date: Wed, 14 Aug 2019 15:38:36 +0200
-Message-Id: <20190814133841.7095-6-joro@8bytes.org>
+Subject: [PATCH 07/10] iommu: Print default domain type on boot
+Date: Wed, 14 Aug 2019 15:38:38 +0200
+Message-Id: <20190814133841.7095-8-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190814133841.7095-1-joro@8bytes.org>
 References: <20190814133841.7095-1-joro@8bytes.org>
@@ -64,42 +64,60 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-This variable has no users anymore so it can be removed.
+Introduce a subsys_initcall for IOMMU code and use it to
+print the default domain type at boot.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/ia64/include/asm/iommu.h | 2 --
- arch/ia64/kernel/pci-dma.c    | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/iommu/iommu.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
 
-diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
-index 7429a72f3f92..92aceef63710 100644
---- a/arch/ia64/include/asm/iommu.h
-+++ b/arch/ia64/include/asm/iommu.h
-@@ -8,10 +8,8 @@
- extern void no_iommu_init(void);
- #ifdef	CONFIG_INTEL_IOMMU
- extern int force_iommu, no_iommu;
--extern int iommu_pass_through;
- extern int iommu_detected;
- #else
--#define iommu_pass_through	(0)
- #define no_iommu		(1)
- #define iommu_detected		(0)
- #endif
-diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
-index fe988c49f01c..f5d49cd3fbb0 100644
---- a/arch/ia64/kernel/pci-dma.c
-+++ b/arch/ia64/kernel/pci-dma.c
-@@ -22,8 +22,6 @@ int force_iommu __read_mostly = 1;
- int force_iommu __read_mostly;
- #endif
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index e1feb4061b8b..233bc22b487e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -93,12 +93,40 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
+ static LIST_HEAD(iommu_device_list);
+ static DEFINE_SPINLOCK(iommu_device_lock);
  
--int iommu_pass_through;
--
- static int __init pci_iommu_init(void)
++/*
++ * Use a function instead of an array here because the domain-type is a
++ * bit-field, so an array would waste memory.
++ */
++static const char *iommu_domain_type_str(unsigned int t)
++{
++	switch (t) {
++		case IOMMU_DOMAIN_BLOCKED:
++			return "Blocked";
++		case IOMMU_DOMAIN_IDENTITY:
++			return "Passthrough";
++		case IOMMU_DOMAIN_UNMANAGED:
++			return "Unmanaged";
++		case IOMMU_DOMAIN_DMA:
++			return "Translated";
++		default:
++			return "Unknown";
++	}
++}
++
++static int __init iommu_subsys_init(void)
++{
++	pr_info("Default domain type: %s\n",
++		iommu_domain_type_str(iommu_def_domain_type));
++
++	return 0;
++}
++subsys_initcall(iommu_subsys_init);
++
+ int iommu_device_register(struct iommu_device *iommu)
  {
- 	if (iommu_detected)
+ 	spin_lock(&iommu_device_lock);
+ 	list_add_tail(&iommu->list, &iommu_device_list);
+ 	spin_unlock(&iommu_device_lock);
+-
+ 	return 0;
+ }
+ 
 -- 
 2.17.1
 
