@@ -2,64 +2,44 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 032F6C32757
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 14:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A7AC32753
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 14:09:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C913B208C2
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 14:04:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="brBZ+XeP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C913B208C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id B655A206C1
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 14:09:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B655A206C1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A3F45E76;
-	Wed, 14 Aug 2019 14:03:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 55112E82;
+	Wed, 14 Aug 2019 14:09:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 07CEEE70
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7FC19E7A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 14:03:59 +0000 (UTC)
+	Wed, 14 Aug 2019 14:09:13 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8A228711
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 120A587E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 14:03:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=L1vfKJTJmmcyEyb0NSklvmfYo+Tqp26qCC9B9AM+osk=;
-	b=brBZ+XePlXbr56qi5de4obB8Y4
-	qgvSIzD2FaM0BJFHsclGrNe0DEGUuEDB2nFolpKlivBP5wgY94edU62/YrmVts1sK08iKcuSQJmzo
-	m4gXMxCQ0kKDyBYZ48yZ8ZxGOs/qrzRu7vPXkgw5FbXKdwf+hywRh58shrTVpfEByx8erj5AXxlCG
-	G4TUD24GjIuDLN08eqAwcNhIh/zMbEpzACFISWldfhFgWdKPBawrzPyAC5cGNBoe4Z0Mpj7o7E7M+
-	susdLDRbs8sYK2eTsc+njSYyfQN7Bj5FyoywDa0rdR3K8mioKbwI0O2vx1+IhOzNOMlkB66G7jzgi
-	BzfVEEfw==;
-Received: from [2001:4bb8:180:1ec3:c70:4a89:bc61:2] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hxtsa-00013N-Rr; Wed, 14 Aug 2019 14:03:57 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Michal Simek <monstr@monstr.eu>
-Subject: [PATCH 2/2] microblaze: use the generic dma coherent remap allocator
-Date: Wed, 14 Aug 2019 16:03:48 +0200
-Message-Id: <20190814140348.3339-3-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190814140348.3339-1-hch@lst.de>
-References: <20190814140348.3339-1-hch@lst.de>
+	Wed, 14 Aug 2019 14:09:13 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 013DD2F9; Wed, 14 Aug 2019 16:09:10 +0200 (CEST)
+Date: Wed, 14 Aug 2019 16:09:09 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.3-rc4
+Message-ID: <20190814140902.GA28527@8bytes.org>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -78,215 +58,62 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This switches to using common code for the DMA allocations, including
-potential use of the CMA allocator if configured.
+Hi Linus,
 
-Switching to the generic code enables DMA allocations from atomic
-context, which is required by the DMA API documentation, and also
-adds various other minor features drivers start relying upon.  It
-also makes sure we have on tested code base for all architectures
-that require uncached pte bits for coherent DMA allocations.
+The following changes since commit e21a712a9685488f5ce80495b37b9fdbe96c230d:
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/microblaze/Kconfig         |   1 +
- arch/microblaze/mm/consistent.c | 152 +-------------------------------
- 2 files changed, 5 insertions(+), 148 deletions(-)
+  Linux 5.3-rc3 (2019-08-04 18:40:12 -0700)
 
-diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-index a0d749c309f3..e477896fbae6 100644
---- a/arch/microblaze/Kconfig
-+++ b/arch/microblaze/Kconfig
-@@ -17,6 +17,7 @@ config MICROBLAZE
- 	select TIMER_OF
- 	select CLONE_BACKWARDS3
- 	select COMMON_CLK
-+	select DMA_DIRECT_REMAP if MMU
- 	select GENERIC_ATOMIC64
- 	select GENERIC_CLOCKEVENTS
- 	select GENERIC_CPU_DEVICES
-diff --git a/arch/microblaze/mm/consistent.c b/arch/microblaze/mm/consistent.c
-index 1a859e8b58c2..0e0f733eb846 100644
---- a/arch/microblaze/mm/consistent.c
-+++ b/arch/microblaze/mm/consistent.c
-@@ -4,43 +4,16 @@
-  * Copyright (C) 2010 Michal Simek <monstr@monstr.eu>
-  * Copyright (C) 2010 PetaLogix
-  * Copyright (C) 2005 John Williams <jwilliams@itee.uq.edu.au>
-- *
-- * Based on PowerPC version derived from arch/arm/mm/consistent.c
-- * Copyright (C) 2001 Dan Malek (dmalek@jlc.net)
-- * Copyright (C) 2000 Russell King
-  */
- 
--#include <linux/export.h>
--#include <linux/signal.h>
--#include <linux/sched.h>
- #include <linux/kernel.h>
--#include <linux/errno.h>
- #include <linux/string.h>
- #include <linux/types.h>
--#include <linux/ptrace.h>
--#include <linux/mman.h>
- #include <linux/mm.h>
--#include <linux/swap.h>
--#include <linux/stddef.h>
--#include <linux/vmalloc.h>
- #include <linux/init.h>
--#include <linux/delay.h>
--#include <linux/memblock.h>
--#include <linux/highmem.h>
--#include <linux/pci.h>
--#include <linux/interrupt.h>
--#include <linux/gfp.h>
- #include <linux/dma-noncoherent.h>
--
--#include <asm/pgalloc.h>
--#include <linux/io.h>
--#include <linux/hardirq.h>
--#include <linux/mmu_context.h>
--#include <asm/mmu.h>
--#include <linux/uaccess.h>
--#include <asm/pgtable.h>
- #include <asm/cpuinfo.h>
--#include <asm/tlbflush.h>
-+#include <asm/cacheflush.h>
- 
- void arch_dma_prep_coherent(struct page *page, size_t size)
- {
-@@ -84,126 +57,9 @@ void *cached_kernel_address(void *ptr)
- 	return (void *)(addr & ~UNCACHED_SHADOW_MASK);
- }
- #else /* CONFIG_MMU */
--void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
--		gfp_t gfp, unsigned long attrs)
--{
--	unsigned long order, vaddr;
--	void *ret;
--	unsigned int i, err = 0;
--	struct page *page, *end;
--	phys_addr_t pa;
--	struct vm_struct *area;
--	unsigned long va;
--
--	if (in_interrupt())
--		BUG();
--
--	/* Only allocate page size areas. */
--	size = PAGE_ALIGN(size);
--	order = get_order(size);
--
--	vaddr = __get_free_pages(gfp | __GFP_ZERO, order);
--	if (!vaddr)
--		return NULL;
--
--	/*
--	 * we need to ensure that there are no cachelines in use,
--	 * or worse dirty in this area.
--	 */
--	arch_dma_prep_coherent(virt_to_page((unsigned long)vaddr), size);
--
--	/* Allocate some common virtual space to map the new pages. */
--	area = get_vm_area(size, VM_ALLOC);
--	if (!area) {
--		free_pages(vaddr, order);
--		return NULL;
--	}
--	va = (unsigned long) area->addr;
--	ret = (void *)va;
--
--	/* This gives us the real physical address of the first page. */
--	*dma_handle = pa = __virt_to_phys(vaddr);
--
--	/*
--	 * free wasted pages.  We skip the first page since we know
--	 * that it will have count = 1 and won't require freeing.
--	 * We also mark the pages in use as reserved so that
--	 * remap_page_range works.
--	 */
--	page = virt_to_page(vaddr);
--	end = page + (1 << order);
--
--	split_page(page, order);
--
--	for (i = 0; i < size && err == 0; i += PAGE_SIZE) {
--		/* MS: This is the whole magic - use cache inhibit pages */
--		err = map_page(va + i, pa + i, _PAGE_KERNEL | _PAGE_NO_CACHE);
--
--		SetPageReserved(page);
--		page++;
--	}
--
--	/* Free the otherwise unused pages. */
--	while (page < end) {
--		__free_page(page);
--		page++;
--	}
--
--	if (err) {
--		free_pages(vaddr, order);
--		return NULL;
--	}
--
--	return ret;
--}
--
--static pte_t *consistent_virt_to_pte(void *vaddr)
--{
--	unsigned long addr = (unsigned long)vaddr;
--
--	return pte_offset_kernel(pmd_offset(pgd_offset_k(addr), addr), addr);
--}
--
--long arch_dma_coherent_to_pfn(struct device *dev, void *vaddr,
--		dma_addr_t dma_addr)
-+static int __init atomic_pool_init(void)
- {
--	pte_t *ptep = consistent_virt_to_pte(vaddr);
--
--	if (pte_none(*ptep) || !pte_present(*ptep))
--		return 0;
--
--	return pte_pfn(*ptep);
--}
--
--/*
-- * free page(s) as defined by the above mapping.
-- */
--void arch_dma_free(struct device *dev, size_t size, void *vaddr,
--		dma_addr_t dma_addr, unsigned long attrs)
--{
--	struct page *page;
--
--	if (in_interrupt())
--		BUG();
--
--	size = PAGE_ALIGN(size);
--
--	do {
--		pte_t *ptep = consistent_virt_to_pte(vaddr);
--		unsigned long pfn;
--
--		if (!pte_none(*ptep) && pte_present(*ptep)) {
--			pfn = pte_pfn(*ptep);
--			pte_clear(&init_mm, (unsigned int)vaddr, ptep);
--			if (pfn_valid(pfn)) {
--				page = pfn_to_page(pfn);
--				__free_reserved_page(page);
--			}
--		}
--		vaddr += PAGE_SIZE;
--	} while (size -= PAGE_SIZE);
--
--	/* flush tlb */
--	flush_tlb_all();
-+	return dma_atomic_pool_init(GFP_KERNEL, pgprot_noncached(PAGE_KERNEL));
- }
-+postcore_initcall(atomic_pool_init);
- #endif /* CONFIG_MMU */
--- 
-2.20.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.3-rc4
+
+for you to fetch changes up to 3a18844dcf89e636b2d0cbf577e3963b0bcb6d23:
+
+  iommu/vt-d: Fix possible use-after-free of private domain (2019-08-09 17:35:25 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.3-rc4
+
+Including:
+
+	- A couple more fixes for the Intel VT-d driver for bugs
+	  introduced during the recent conversion of this driver to use
+	  IOMMU core default domains.
+
+	- Fix for common dma-iommu code to make sure MSI mappings happen
+	  in the correct domain for a device.
+
+	- Fix a corner case in the handling of sg-lists in dma-iommu
+	  code that might cause dma_length to be truncated.
+
+	- Mark a switch as fall-through in arm-smmu code.
+
+----------------------------------------------------------------
+Anders Roxell (1):
+      iommu/arm-smmu: Mark expected switch fall-through
+
+Lu Baolu (4):
+      iommu/vt-d: Detach domain when move device out of group
+      iommu/vt-d: Correctly check format of page table in debugfs
+      iommu/vt-d: Detach domain before using a private one
+      iommu/vt-d: Fix possible use-after-free of private domain
+
+Robin Murphy (2):
+      iommu/dma: Handle MSI mappings separately
+      iommu/dma: Handle SG length overflow better
+
+ drivers/iommu/arm-smmu-v3.c         |  4 ++--
+ drivers/iommu/dma-iommu.c           | 19 +++++++++++--------
+ drivers/iommu/intel-iommu-debugfs.c |  2 +-
+ drivers/iommu/intel-iommu.c         | 11 +++++++++--
+ 4 files changed, 23 insertions(+), 13 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
