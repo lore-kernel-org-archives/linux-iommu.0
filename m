@@ -2,62 +2,91 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D1AC32753
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 20:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED15C433FF
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 20:17:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 614212064A
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 20:13:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 614212064A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1904D2064A
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 20:17:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="R5LCsQ2R"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1904D2064A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 26B91C9E;
-	Wed, 14 Aug 2019 20:13:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C71C2C9E;
+	Wed, 14 Aug 2019 20:17:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2C93DC84
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9A22EC91
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 20:13:45 +0000 (UTC)
+	Wed, 14 Aug 2019 20:14:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5FAFF87E
+Received: from hqemgate14.nvidia.com (hqemgate14.nvidia.com [216.228.121.143])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 79C6687E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 20:13:44 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	14 Aug 2019 13:13:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,386,1559545200"; d="scan'208";a="170894181"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga008.jf.intel.com with ESMTP; 14 Aug 2019 13:13:43 -0700
-Date: Wed, 14 Aug 2019 13:17:26 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 21/22] iommu/vt-d: Support flushing more translation
-	cache types
-Message-ID: <20190814131726.06e7423c@jacob-builder>
-In-Reply-To: <9d678164-219c-80f9-c1be-121c097c691a@redhat.com>
-References: <1560087862-57608-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1560087862-57608-22-git-send-email-jacob.jun.pan@linux.intel.com>
-	<9d678164-219c-80f9-c1be-121c097c691a@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Wed, 14 Aug 2019 20:14:27 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+	hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+	id <B5d546ba40000>; Wed, 14 Aug 2019 13:14:28 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+	by hqpgpgate101.nvidia.com (PGP Universal service);
+	Wed, 14 Aug 2019 13:14:26 -0700
+X-PGP-Universal: processed;
+	by hqpgpgate101.nvidia.com on Wed, 14 Aug 2019 13:14:26 -0700
+Received: from rcampbell-dev.nvidia.com (10.124.1.5) by HQMAIL107.nvidia.com
+	(172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
+	Wed, 14 Aug 2019 20:14:24 +0000
+Subject: Re: [PATCH v3 hmm 01/11] mm/mmu_notifiers: hoist
+	do_mmu_notifier_register down_write to the caller
+To: Jason Gunthorpe <jgg@ziepe.ca>, <linux-mm@kvack.org>
+References: <20190806231548.25242-1-jgg@ziepe.ca>
+	<20190806231548.25242-2-jgg@ziepe.ca>
+X-Nvconfidentiality: public
+From: Ralph Campbell <rcampbell@nvidia.com>
+Message-ID: <1391be01-932c-68ca-0160-e08ed2a0243d@nvidia.com>
+Date: Wed, 14 Aug 2019 13:14:24 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.7.0
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andriy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20190806231548.25242-2-jgg@ziepe.ca>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+	HQMAIL107.nvidia.com (172.20.187.13)
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+	t=1565813668; bh=l693Dsnz2cNYZkVUIa0hGWj4gZqviofo6oB5vcHDRgE=;
+	h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+	Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+	X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+	Content-Transfer-Encoding;
+	b=R5LCsQ2RGYP/aRbOOTYVqp3+mNbaFthG3djuEbE/Q5RcS9mR/XTArigIkLJIJcoUm
+	2K4ojNSONT0DPE3p48KuDCnr8/b/xkcFIsjgMnEh2A4XHosGTEQqAsOIgDIYpKjhA6
+	rkPNvw30YaNhLDpHwnvQ22Rq+l1U9m2Nr7cxGupNe9zheNvIiYxkmouASaeFKHn1Ne
+	hfrZ3XyWn84qlbZhdg2Z+7hrQwZnGR5tn9y+gosmO+PTqodnJTwNCIDxM/tYLWvgwz
+	yiPA4kvRNQ0JR0eN4UhFvOmVWdRm65jh/bJrrdWl3KFGl5AiupxGl6Jnjo5KFXd1mW
+	QlJuphdrdgDvw==
+X-Mailman-Approved-At: Wed, 14 Aug 2019 20:17:35 +0000
+Cc: Andrea Arcangeli <aarcange@redhat.com>,
+	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
+	Dimitri Sivanich <sivanich@sgi.com>,
+	Gavin Shan <shangw@linux.vnet.ibm.com>,
+	Andrea Righi <andrea@betterlinux.com>,
+	linux-rdma@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
+	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	=?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+	=?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+	iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org,
+	Jason Gunthorpe <jgg@mellanox.com>, Alex
+	Deucher <alexander.deucher@amd.com>, intel-gfx@lists.freedesktop.org,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,197 +99,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, 18 Jul 2019 10:35:37 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
 
-> Hi Jacob,
+On 8/6/19 4:15 PM, Jason Gunthorpe wrote:
+> From: Jason Gunthorpe <jgg@mellanox.com>
 > 
-> On 6/9/19 3:44 PM, Jacob Pan wrote:
-> > When Shared Virtual Memory is exposed to a guest via vIOMMU,
-> > scalable IOTLB invalidation may be passed down from outside IOMMU
-> > subsystems. This patch adds invalidation functions that can be used
-> > for additional translation cache types.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/dmar.c        | 50
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/intel-iommu.h | 21 +++++++++++++++---- 2 files
-> > changed, 67 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> > index 6d969a1..0cda6fb 100644
-> > --- a/drivers/iommu/dmar.c
-> > +++ b/drivers/iommu/dmar.c
-> > @@ -1357,6 +1357,21 @@ void qi_flush_iotlb(struct intel_iommu
-> > *iommu, u16 did, u64 addr, qi_submit_sync(&desc, iommu);
-> >  }
-> >  
-> > +/* PASID-based IOTLB Invalidate */
-> > +void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-> > u32 pasid,
-> > +		unsigned int size_order, u64 granu, int ih)
-> > +{
-> > +	struct qi_desc desc;  
-> nit: you could also init to {};
-> > +
-> > +	desc.qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
-> > +		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
-> > +	desc.qw1 = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_IH(ih) |
-> > +		QI_EIOTLB_AM(size_order);
-> > +	desc.qw2 = 0;
-> > +	desc.qw3 = 0;
-> > +	qi_submit_sync(&desc, iommu);
-> > +}
-> > +
-> >  void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16
-> > pfsid, u16 qdep, u64 addr, unsigned mask)
-> >  {
-> > @@ -1380,6 +1395,41 @@ void qi_flush_dev_iotlb(struct intel_iommu
-> > *iommu, u16 sid, u16 pfsid, qi_submit_sync(&desc, iommu);
-> >  }
-> >  
-> > +/* PASID-based device IOTLB Invalidate */
-> > +void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16
-> > pfsid,
-> > +		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64
-> > granu)  
-> s/size/size_order
-> > +{
-> > +	struct qi_desc desc;
-> > +
-> > +	desc.qw0 = QI_DEV_EIOTLB_PASID(pasid) |
-> > QI_DEV_EIOTLB_SID(sid) |
-> > +		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
-> > +		QI_DEV_IOTLB_PFSID(pfsid);  
-> maybe add a comment to remind MIP hint is sent to 0 as of now.
-> > +	desc.qw1 = QI_DEV_EIOTLB_GLOB(granu);
-> > +
-> > +	/* If S bit is 0, we only flush a single page. If S bit is
-> > set,
-> > +	 * The least significant zero bit indicates the size. VT-d
-> > spec
-> > +	 * 6.5.2.6
-> > +	 */
-> > +	if (!size)
-> > +		desc.qw0 |= QI_DEV_EIOTLB_ADDR(addr) &
-> > ~QI_DEV_EIOTLB_SIZE;  
-> this is qw1.
-my mistake.
-> > +	else {
-> > +		unsigned long mask = 1UL << (VTD_PAGE_SHIFT +
-> > size);  
-> don't you miss a "- 1 " here?
-your are right
-> > +
-> > +		desc.qw1 |= QI_DEV_EIOTLB_ADDR(addr & ~mask) |
-> > QI_DEV_EIOTLB_SIZE;  
-> desc.qw1 |= addr & ~mask | QI_DEV_EIOTLB_SIZE;
-> ie. I don't think QI_DEV_EIOTLB_ADDR is useful here?
+> This simplifies the code to not have so many one line functions and extra
+> logic. __mmu_notifier_register() simply becomes the entry point to
+> register the notifier, and the other one calls it under lock.
 > 
+> Also add a lockdep_assert to check that the callers are holding the lock
+> as expected.
 > 
-> So won't the following lines do the job?
-> 
-> unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size) -1;
-> desc.qw1 |= addr & ~mask;
-> if (size)
->     desc.qw1 |= QI_DEV_EIOTLB_SIZE
-that would work too, and simpler. thanks for the suggestion. will
-change.
-> > +	}
-> > +	qi_submit_sync(&desc, iommu);
-> > +}
-> > +
-> > +void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64
-> > granu, int pasid) +{
-> > +	struct qi_desc desc;
-> > +
-> > +	desc.qw0 = QI_PC_TYPE | QI_PC_DID(did) | QI_PC_GRAN(granu)
-> > | QI_PC_PASID(pasid);  
-> nit: reorder the fields according to the spec, easier to check if any
-> is missing.
-sounds good.
+> Suggested-by: Christoph Hellwig <hch@infradead.org>
+> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
 
-> > +	desc.qw1 = 0;
-> > +	desc.qw2 = 0;
-> > +	desc.qw3 = 0;
-> > +	qi_submit_sync(&desc, iommu);
-> > +}
-> >  /*
-> >   * Disable Queued Invalidation interface.
-> >   */
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 94d3a9a..1cdb35b 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -339,7 +339,7 @@ enum {
-> >  #define QI_IOTLB_GRAN(gran) 	(((u64)gran) >>
-> > (DMA_TLB_FLUSH_GRANU_OFFSET-4)) #define QI_IOTLB_ADDR(addr)
-> > (((u64)addr) & VTD_PAGE_MASK) #define
-> > QI_IOTLB_IH(ih)		(((u64)ih) << 6) -#define
-> > QI_IOTLB_AM(am)		(((u8)am)) +#define
-> > QI_IOTLB_AM(am)		(((u8)am) & 0x3f) 
-> >  #define QI_CC_FM(fm)		(((u64)fm) << 48)
-> >  #define QI_CC_SID(sid)		(((u64)sid) << 32)
-> > @@ -357,17 +357,22 @@ enum {
-> >  #define QI_PC_DID(did)		(((u64)did) << 16)
-> >  #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
-> >  
-> > -#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
-> > -#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
-> > +/* PASID cache invalidation granu */
-> > +#define QI_PC_ALL_PASIDS	0
-> > +#define QI_PC_PASID_SEL		1
-> >  
-> >  #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
-> >  #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
-> >  #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
-> > -#define QI_EIOTLB_AM(am)	(((u64)am))
-> > +#define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
-> >  #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
-> >  #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
-> >  #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
-> >  
-> > +/* QI Dev-IOTLB inv granu */
-> > +#define QI_DEV_IOTLB_GRAN_ALL		1
-> > +#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
-> > +
-> >  #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
-> >  #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
-> >  #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
-> > @@ -658,8 +663,16 @@ extern void qi_flush_context(struct
-> > intel_iommu *iommu, u16 did, u16 sid, u8 fm, u64 type);
-> >  extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64
-> > addr, unsigned int size_order, u64 type);
-> > +extern void qi_flush_piotlb(struct intel_iommu *iommu, u16 did,
-> > u64 addr,
-> > +			u32 pasid, unsigned int size_order, u64
-> > type, int ih); extern void qi_flush_dev_iotlb(struct intel_iommu
-> > *iommu, u16 sid, u16 pfsid, u16 qdep, u64 addr, unsigned mask);
-> > +
-> > +extern void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16
-> > sid, u16 pfsid,
-> > +			u32 pasid, u16 qdep, u64 addr, unsigned
-> > size, u64 granu);  
-> s/size/size_order
-> > +
-> > +extern void qi_flush_pasid_cache(struct intel_iommu *iommu, u16
-> > did, u64 granu, int pasid); +
-> >  extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu
-> > *iommu); 
-> >  extern int dmar_ir_support(void);
-> >   
-> 
-> Thanks
-> 
-> Eric
-
-[Jacob Pan]
+Nice clean up.
+Reviewed-by: Ralph Campbell <rcampbell@nvidia.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
