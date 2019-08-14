@@ -2,59 +2,60 @@ Return-Path: <SRS0=gZYu=WK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E9E2C433FF
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E15C433FF
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:25:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1657F214C6
-	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:06:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 01120208C2
+	for <iommu@archiver.kernel.org>; Wed, 14 Aug 2019 18:25:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="vaMyS1BJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1657F214C6
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uOGC8n80"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01120208C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 023BFDC8;
-	Wed, 14 Aug 2019 18:06:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CBCD6E19;
+	Wed, 14 Aug 2019 18:25:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F3DFADC6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4527CDDD
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 18:06:01 +0000 (UTC)
+	Wed, 14 Aug 2019 18:25:06 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B10D38D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 13F2B8D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 14 Aug 2019 18:06:01 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 00F632084F;
-	Wed, 14 Aug 2019 18:05:59 +0000 (UTC)
+	Wed, 14 Aug 2019 18:25:06 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v5.3-rc4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565805961;
-	bh=puKdRnZ9LG6uknCkDTCLnECmpG0XfmA88XteJcC0jh4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=vaMyS1BJywCuDwrnch6OBd8r5eplRXAp4jPYZAuzOJ7M2Q7m57u/Q3LLBrxhyTg4t
-	zPflWXiqZbT87UNk22LqQOg8kMAO5LgWrwosJI3QzshH1I43CmAVV85deRIvPqgGdd
-	P7pWTMZwpaVohqULOWsxSX4oRe6JjKSd6yaRjMgw=
-Date: Wed, 14 Aug 2019 19:05:57 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 04/15] iommu/arm-smmu: Rework cb_base handling
-Message-ID: <20190814180556.5asp5qflrxxjipal@willie-the-truck>
-References: <cover.1565369764.git.robin.murphy@arm.com>
-	<f4dccad78815ca0a2dd7926be7052759d099b920.1565369764.git.robin.murphy@arm.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <f4dccad78815ca0a2dd7926be7052759d099b920.1565369764.git.robin.murphy@arm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org,
-	gregory.clement@bootlin.com, linux-arm-kernel@lists.infradead.org
+	s=default; t=1565807105;
+	bh=dh++PCbnnz2m0wF6qNZbDAaaiCDxpQQji3hW50jtzqU=;
+	h=From:In-Reply-To:References:Date:To:Cc:From;
+	b=uOGC8n80LCcvFc/FD3OeARgW0V4XqD1MClJxJuDBw8L3R+ZgCuK63kNWBCQmnGW4j
+	GUjzRw4adepFtWLceA1I4FYrWu9djEJ2UlLC+Q3gCQARTVGujya4pUE1qZo2G8Q8YI
+	rtFCHmoDUhkAYU2+UIbXjjbPkLuHJ2DLyXBAHIIE=
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20190814140902.GA28527@8bytes.org>
+References: <20190814140902.GA28527@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20190814140902.GA28527@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+	tags/iommu-fixes-v5.3-rc4
+X-PR-Tracked-Commit-Id: 3a18844dcf89e636b2d0cbf577e3963b0bcb6d23
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b5e33e44d994bb03c75f1901d47b1cf971f752a0
+Message-Id: <156580710586.11871.2527303930126410920.pr-tracker-bot@kernel.org>
+Date: Wed, 14 Aug 2019 18:25:05 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,50 +68,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Aug 09, 2019 at 06:07:41PM +0100, Robin Murphy wrote:
-> To keep register-access quirks manageable, we want to structure things
-> to avoid needing too many individual overrides. It seems fairly clean to
-> have a single interface which handles both global and context registers
-> in terms of the architectural pages, so the first preparatory step is to
-> rework cb_base into a page number rather than an absolute address.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/arm-smmu.c | 22 ++++++++++++----------
->  1 file changed, 12 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index d9a93e5f422f..463bc8d98adb 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -95,7 +95,7 @@
->  #endif
->  
->  /* Translation context bank */
-> -#define ARM_SMMU_CB(smmu, n)	((smmu)->cb_base + ((n) << (smmu)->pgshift))
-> +#define ARM_SMMU_CB(smmu, n)	((smmu)->base + (((smmu)->cb_base + (n)) << (smmu)->pgshift))
->  
->  #define MSI_IOVA_BASE			0x8000000
->  #define MSI_IOVA_LENGTH			0x100000
-> @@ -168,8 +168,8 @@ struct arm_smmu_device {
->  	struct device			*dev;
->  
->  	void __iomem			*base;
-> -	void __iomem			*cb_base;
-> -	unsigned long			pgshift;
-> +	unsigned int			cb_base;
+The pull request you sent on Wed, 14 Aug 2019 16:09:09 +0200:
 
-I think this is now a misnomer. Would you be able to rename it cb_pfn or
-something, please?
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.3-rc4
 
-Otherwise, this seems fine.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b5e33e44d994bb03c75f1901d47b1cf971f752a0
 
-Will
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
