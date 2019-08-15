@@ -2,52 +2,51 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D51C433FF
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 11:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B34C31E40
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 11:41:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D08F92064A
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 11:22:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D08F92064A
+	by mail.kernel.org (Postfix) with ESMTPS id 57B6520644
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 11:41:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57B6520644
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A708FEE0;
-	Thu, 15 Aug 2019 11:22:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 18FAE109E;
+	Thu, 15 Aug 2019 11:41:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D2E00D3E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8A9C31096
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 11:22:32 +0000 (UTC)
+	Thu, 15 Aug 2019 11:41:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 7F372711
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id C0E2B67F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 11:22:32 +0000 (UTC)
+	Thu, 15 Aug 2019 11:41:54 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 30F0428;
-	Thu, 15 Aug 2019 04:22:32 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2870E28;
+	Thu, 15 Aug 2019 04:41:54 -0700 (PDT)
 Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B00463F694;
-	Thu, 15 Aug 2019 04:22:30 -0700 (PDT)
-Subject: Re: [PATCH 05/15] iommu/arm-smmu: Split
-	arm_smmu_tlb_inv_range_nosync()
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5643F3F694;
+	Thu, 15 Aug 2019 04:41:52 -0700 (PDT)
+Subject: Re: [PATCH 08/15] iommu/arm-smmu: Abstract context bank accesses
 To: Will Deacon <will@kernel.org>
 References: <cover.1565369764.git.robin.murphy@arm.com>
-	<33a49ca158509c95d50b0d3f9cba03bba2facdf3.1565369764.git.robin.murphy@arm.com>
-	<20190815105602.hk53orjumysfezff@willie-the-truck>
+	<1051d7568c96142ff90b004a2ec61e3b5dbe770e.1565369764.git.robin.murphy@arm.com>
+	<20190815105611.fk7ouis2cs3uzvew@willie-the-truck>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <0f6362e2-38ac-0ad6-5da9-645f4695b6fd@arm.com>
-Date: Thu, 15 Aug 2019 12:22:29 +0100
+Message-ID: <721e3f61-89f2-174a-da30-7aacc8c8865f@arm.com>
+Date: Thu, 15 Aug 2019 12:41:49 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190815105602.hk53orjumysfezff@willie-the-truck>
+In-Reply-To: <20190815105611.fk7ouis2cs3uzvew@willie-the-truck>
 Content-Language: en-GB
 Cc: bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org,
 	gregory.clement@bootlin.com, linux-arm-kernel@lists.infradead.org
@@ -69,52 +68,105 @@ Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 On 15/08/2019 11:56, Will Deacon wrote:
-> On Fri, Aug 09, 2019 at 06:07:42PM +0100, Robin Murphy wrote:
->> Since we now use separate iommu_gather_ops for stage 1 and stage 2
->> contexts, we may as well divide up the monolithic callback into its
->> respective stage 1 and stage 2 parts.
+> On Fri, Aug 09, 2019 at 06:07:45PM +0100, Robin Murphy wrote:
+>> Context bank accesses are fiddly enough to deserve a number of extra
+>> helpers to keep the callsites looking sane, even though there are only
+>> one or two of each.
 >>
 >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 >> ---
->>   drivers/iommu/arm-smmu.c | 66 ++++++++++++++++++++++------------------
->>   1 file changed, 37 insertions(+), 29 deletions(-)
+>>   drivers/iommu/arm-smmu.c | 137 ++++++++++++++++++++-------------------
+>>   1 file changed, 72 insertions(+), 65 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 72505647b77d..abdcc3f52e2e 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -82,9 +82,6 @@
+>>   		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
+>>   			? 0x400 : 0))
+>>   
+>> -/* Translation context bank */
+>> -#define ARM_SMMU_CB(smmu, n)	((smmu)->base + (((smmu)->cb_base + (n)) << (smmu)->pgshift))
+>> -
+>>   #define MSI_IOVA_BASE			0x8000000
+>>   #define MSI_IOVA_LENGTH			0x100000
+>>   
+>> @@ -265,9 +262,29 @@ static void arm_smmu_writel(struct arm_smmu_device *smmu, int page, int offset,
+>>   	writel_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>>   }
+>>   
+>> +static u64 arm_smmu_readq(struct arm_smmu_device *smmu, int page, int offset)
+>> +{
+>> +	return readq_relaxed(arm_smmu_page(smmu, page) + offset);
+>> +}
+>> +
+>> +static void arm_smmu_writeq(struct arm_smmu_device *smmu, int page, int offset,
+>> +			    u64 val)
+>> +{
+>> +	writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>> +}
+>> +
+>>   #define arm_smmu_read_gr1(s, r)		arm_smmu_readl((s), 1, (r))
+>>   #define arm_smmu_write_gr1(s, r, v)	arm_smmu_writel((s), 1, (r), (v))
+>>   
+>> +#define arm_smmu_read_cb(s, n, r)				\
+>> +	arm_smmu_readl((s), (s)->cb_base + (n), (r))
+>> +#define arm_smmu_write_cb(s, n, r, v)				\
+>> +	arm_smmu_writel((s), (s)->cb_base + (n), (r), (v))
+>> +#define arm_smmu_read_cb_q(s, n, r)				\
+>> +	arm_smmu_readq((s), (s)->cb_base + (n), (r))
+>> +#define arm_smmu_write_cb_q(s, n, r, v)				\
+>> +	arm_smmu_writeq((s), (s)->cb_base + (n), (r), (v))
 > 
-> This will conflict with my iommu API batching stuff, but I can sort that
-> out if/when it gets queued by Joerg.
+> 'r' for 'offset'? (maybe just rename offset => register in the helpers).
+
+I think this all represents the mangled remains of an underlying notion 
+of 'register offset' ;)
+
+>>   struct arm_smmu_option_prop {
+>>   	u32 opt;
+>>   	const char *prop;
+>> @@ -423,15 +440,17 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+>>   }
+>>   
+>>   /* Wait for any pending TLB invalidations to complete */
+>> -static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+>> -				void __iomem *sync, void __iomem *status)
+>> +static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+>> +				int sync, int status)
+>>   {
+>>   	unsigned int spin_cnt, delay;
+>> +	u32 reg;
+>>   
+>> -	writel_relaxed(QCOM_DUMMY_VAL, sync);
+>> +	arm_smmu_writel(smmu, page, sync, QCOM_DUMMY_VAL);
+>>   	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
+>>   		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+>> -			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
+>> +			reg = arm_smmu_readl(smmu, page, status);
+>> +			if (!(reg & sTLBGSTATUS_GSACTIVE))
+>>   				return;
+>>   			cpu_relax();
+>>   		}
+>> @@ -443,12 +462,11 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+>>   
+>>   static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
+>>   {
+>> -	void __iomem *base = ARM_SMMU_GR0(smmu);
+>>   	unsigned long flags;
+>>   
+>>   	spin_lock_irqsave(&smmu->global_sync_lock, flags);
+>> -	__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_GR0_sTLBGSYNC,
+>> -			    base + ARM_SMMU_GR0_sTLBGSTATUS);
+>> +	__arm_smmu_tlb_sync(smmu, 0, ARM_SMMU_GR0_sTLBGSYNC,
 > 
->> -		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
->> -			iova &= ~12UL;
->> -			iova |= cfg->asid;
->> -			do {
->> -				writel_relaxed(iova, reg);
->> -				iova += granule;
->> -			} while (size -= granule);
->> -		} else {
->> -			iova >>= 12;
->> -			iova |= (u64)cfg->asid << 48;
->> -			do {
->> -				writeq_relaxed(iova, reg);
->> -				iova += granule >> 12;
->> -			} while (size -= granule);
->> -		}
->> -	} else {
->> -		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
->> -			      ARM_SMMU_CB_S2_TLBIIPAS2;
->> -		iova >>= 12;
->> +	if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
->> +		iova &= ~12UL;
-> 
-> Oh baby. You should move code around more often, so I'm forced to take a
-> second look!
+> Can we have a #define for page zero, please?
 
-Oh dear lord... The worst part is that I do now remember seeing this and 
-having a similar moment of disbelief, but apparently I was easily 
-distracted with rebasing and forgot about it too quickly :(
-
-> Can you cook a fix for this that we can route separately, please? I see
-> it also made its way into qcom_iommu.c...
-
-Sure, I'll split it out to the front of the series for the moment.
+Again, now I recall pondering the exact same thought, so clearly I don't 
+have any grounds to object. I guess it's worth reworking the previous 
+ARM_SMMU_{GR0,GR1,CB()} macros into the page number scheme rather than 
+just killing them off - let me give that a try.
 
 Robin.
 _______________________________________________
