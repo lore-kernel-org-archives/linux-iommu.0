@@ -6,41 +6,42 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC15C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2579EC3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9B1062083B
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B1062083B
+	by mail.kernel.org (Postfix) with ESMTPS id EE5632083B
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE5632083B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 73ACC10B0;
-	Thu, 15 Aug 2019 18:37:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9426A10AB;
+	Thu, 15 Aug 2019 18:37:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8512610AB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 43F3D107E
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 18:37:49 +0000 (UTC)
+	Thu, 15 Aug 2019 18:37:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 045AACF
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6E551CF
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 18:37:49 +0000 (UTC)
+	Thu, 15 Aug 2019 18:37:50 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9AFEE360;
-	Thu, 15 Aug 2019 11:37:48 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F4141570;
+	Thu, 15 Aug 2019 11:37:50 -0700 (PDT)
 Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
 	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 471863F694; 
-	Thu, 15 Aug 2019 11:37:47 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CF0813F694; 
+	Thu, 15 Aug 2019 11:37:48 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH v2 04/17] iommu/arm-smmu: Convert GR1 registers to bitfields
-Date: Thu, 15 Aug 2019 19:37:24 +0100
-Message-Id: <98e0381a9612febbec5f3c5cc3c0b4b6350c5224.1565892337.git.robin.murphy@arm.com>
+Subject: [PATCH v2 05/17] iommu/arm-smmu: Convert context bank registers to
+	bitfields
+Date: Thu, 15 Aug 2019 19:37:25 +0100
+Message-Id: <30616d132784d6fb5a4f2ebefa3e55f004696332.1565892337.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.21.0.dirty
 In-Reply-To: <cover.1565892337.git.robin.murphy@arm.com>
 References: <cover.1565892337.git.robin.murphy@arm.com>
@@ -64,120 +65,219 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-As for GR0, use the bitfield helpers to make GR1 usage a little cleaner,
-and use it as an opportunity to audit and tidy the definitions. This
-tweaks the handling of CBAR types to match what we did for S2CR a while
-back, and fixes a couple of names which didn't quite match the latest
-architecture spec (IHI0062D.c).
+Finish the final part of the job, once again updating some names to
+match the current spec.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu-regs.h | 33 ++++++++++++++-------------------
- drivers/iommu/arm-smmu.c      | 18 +++++++++---------
- 2 files changed, 23 insertions(+), 28 deletions(-)
+ drivers/iommu/arm-smmu-regs.h | 86 ++++++++++++++++++-----------------
+ drivers/iommu/arm-smmu.c      | 16 +++----
+ drivers/iommu/qcom_iommu.c    | 13 +++---
+ 3 files changed, 59 insertions(+), 56 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-index 351ab09c7d4f..8522330ee624 100644
+index 8522330ee624..a8e288192285 100644
 --- a/drivers/iommu/arm-smmu-regs.h
 +++ b/drivers/iommu/arm-smmu-regs.h
-@@ -108,30 +108,25 @@ enum arm_smmu_s2cr_type {
- 
- /* Context bank attribute registers */
- #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
--#define CBAR_VMID_SHIFT			0
--#define CBAR_VMID_MASK			0xff
--#define CBAR_S1_BPSHCFG_SHIFT		8
--#define CBAR_S1_BPSHCFG_MASK		3
--#define CBAR_S1_BPSHCFG_NSH		3
--#define CBAR_S1_MEMATTR_SHIFT		12
--#define CBAR_S1_MEMATTR_MASK		0xf
-+#define CBAR_IRPTNDX			GENMASK(31, 24)
-+#define CBAR_TYPE			GENMASK(17, 16)
-+enum arm_smmu_cbar_type {
-+	CBAR_TYPE_S2_TRANS,
-+	CBAR_TYPE_S1_TRANS_S2_BYPASS,
-+	CBAR_TYPE_S1_TRANS_S2_FAULT,
-+	CBAR_TYPE_S1_TRANS_S2_TRANS,
-+};
-+#define CBAR_S1_MEMATTR			GENMASK(15, 12)
- #define CBAR_S1_MEMATTR_WB		0xf
--#define CBAR_TYPE_SHIFT			16
--#define CBAR_TYPE_MASK			0x3
--#define CBAR_TYPE_S2_TRANS		(0 << CBAR_TYPE_SHIFT)
--#define CBAR_TYPE_S1_TRANS_S2_BYPASS	(1 << CBAR_TYPE_SHIFT)
--#define CBAR_TYPE_S1_TRANS_S2_FAULT	(2 << CBAR_TYPE_SHIFT)
--#define CBAR_TYPE_S1_TRANS_S2_TRANS	(3 << CBAR_TYPE_SHIFT)
--#define CBAR_IRPTNDX_SHIFT		24
--#define CBAR_IRPTNDX_MASK		0xff
-+#define CBAR_S1_BPSHCFG			GENMASK(9, 8)
-+#define CBAR_S1_BPSHCFG_NSH		3
-+#define CBAR_VMID			GENMASK(7, 0)
- 
- #define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
- 
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
--#define CBA2R_RW64_32BIT		(0 << 0)
--#define CBA2R_RW64_64BIT		(1 << 0)
--#define CBA2R_VMID_SHIFT		16
--#define CBA2R_VMID_MASK			0xffff
-+#define CBA2R_VMID16			GENMASK(31, 16)
-+#define CBA2R_VA64			BIT(0)
+@@ -129,19 +129,59 @@ enum arm_smmu_cbar_type {
+ #define CBA2R_VA64			BIT(0)
  
  #define ARM_SMMU_CB_SCTLR		0x0
++#define SCTLR_S1_ASIDPNE		BIT(12)
++#define SCTLR_CFCFG			BIT(7)
++#define SCTLR_CFIE			BIT(6)
++#define SCTLR_CFRE			BIT(5)
++#define SCTLR_E				BIT(4)
++#define SCTLR_AFE			BIT(2)
++#define SCTLR_TRE			BIT(1)
++#define SCTLR_M				BIT(0)
++
  #define ARM_SMMU_CB_ACTLR		0x4
++
+ #define ARM_SMMU_CB_RESUME		0x8
+-#define ARM_SMMU_CB_TTBCR2		0x10
++#define RESUME_TERMINATE		BIT(0)
++
++#define ARM_SMMU_CB_TCR2		0x10
++#define TCR2_SEP			GENMASK(17, 15)
++#define TCR2_SEP_UPSTREAM		0x7
++#define TCR2_AS				BIT(4)
++
+ #define ARM_SMMU_CB_TTBR0		0x20
+ #define ARM_SMMU_CB_TTBR1		0x28
+-#define ARM_SMMU_CB_TTBCR		0x30
++#define TTBRn_ASID			GENMASK_ULL(63, 48)
++
++#define ARM_SMMU_CB_TCR			0x30
+ #define ARM_SMMU_CB_CONTEXTIDR		0x34
+ #define ARM_SMMU_CB_S1_MAIR0		0x38
+ #define ARM_SMMU_CB_S1_MAIR1		0x3c
++
+ #define ARM_SMMU_CB_PAR			0x50
++#define CB_PAR_F			BIT(0)
++
+ #define ARM_SMMU_CB_FSR			0x58
++#define FSR_MULTI			BIT(31)
++#define FSR_SS				BIT(30)
++#define FSR_UUT				BIT(8)
++#define FSR_ASF				BIT(7)
++#define FSR_TLBLKF			BIT(6)
++#define FSR_TLBMCF			BIT(5)
++#define FSR_EF				BIT(4)
++#define FSR_PF				BIT(3)
++#define FSR_AFF				BIT(2)
++#define FSR_TF				BIT(1)
++
++#define FSR_IGN				(FSR_AFF | FSR_ASF | \
++					 FSR_TLBMCF | FSR_TLBLKF)
++#define FSR_FAULT			(FSR_MULTI | FSR_SS | FSR_UUT | \
++					 FSR_EF | FSR_PF | FSR_TF | FSR_IGN)
++
+ #define ARM_SMMU_CB_FAR			0x60
++
+ #define ARM_SMMU_CB_FSYNR0		0x68
++#define FSYNR0_WNR			BIT(4)
++
+ #define ARM_SMMU_CB_S1_TLBIVA		0x600
+ #define ARM_SMMU_CB_S1_TLBIASID		0x610
+ #define ARM_SMMU_CB_S1_TLBIVAL		0x620
+@@ -150,46 +190,8 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CB_TLBSYNC		0x7f0
+ #define ARM_SMMU_CB_TLBSTATUS		0x7f4
+ #define ARM_SMMU_CB_ATS1PR		0x800
++
+ #define ARM_SMMU_CB_ATSR		0x8f0
+-
+-#define SCTLR_S1_ASIDPNE		(1 << 12)
+-#define SCTLR_CFCFG			(1 << 7)
+-#define SCTLR_CFIE			(1 << 6)
+-#define SCTLR_CFRE			(1 << 5)
+-#define SCTLR_E				(1 << 4)
+-#define SCTLR_AFE			(1 << 2)
+-#define SCTLR_TRE			(1 << 1)
+-#define SCTLR_M				(1 << 0)
+-
+-#define CB_PAR_F			(1 << 0)
+-
+-#define ATSR_ACTIVE			(1 << 0)
+-
+-#define RESUME_RETRY			(0 << 0)
+-#define RESUME_TERMINATE		(1 << 0)
+-
+-#define TTBCR2_SEP_SHIFT		15
+-#define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
+-#define TTBCR2_AS			(1 << 4)
+-
+-#define TTBRn_ASID_SHIFT		48
+-
+-#define FSR_MULTI			(1 << 31)
+-#define FSR_SS				(1 << 30)
+-#define FSR_UUT				(1 << 8)
+-#define FSR_ASF				(1 << 7)
+-#define FSR_TLBLKF			(1 << 6)
+-#define FSR_TLBMCF			(1 << 5)
+-#define FSR_EF				(1 << 4)
+-#define FSR_PF				(1 << 3)
+-#define FSR_AFF				(1 << 2)
+-#define FSR_TF				(1 << 1)
+-
+-#define FSR_IGN				(FSR_AFF | FSR_ASF | \
+-					 FSR_TLBMCF | FSR_TLBLKF)
+-#define FSR_FAULT			(FSR_MULTI | FSR_SS | FSR_UUT | \
+-					 FSR_EF | FSR_PF | FSR_TF | FSR_IGN)
+-
+-#define FSYNR0_WNR			(1 << 4)
++#define ATSR_ACTIVE			BIT(0)
+ 
+ #endif /* _ARM_SMMU_REGS_H */
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 105015798c06..293a95b0d682 100644
+index 293a95b0d682..a877de006d02 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -237,7 +237,7 @@ struct arm_smmu_cfg {
- 		u16			asid;
- 		u16			vmid;
- 	};
--	u32				cbar;
-+	enum arm_smmu_cbar_type		cbar;
- 	enum arm_smmu_context_fmt	fmt;
- };
- #define INVALID_IRPTNDX			0xff
-@@ -692,31 +692,31 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
- 	/* CBA2R */
- 	if (smmu->version > ARM_SMMU_V1) {
- 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
--			reg = CBA2R_RW64_64BIT;
-+			reg = CBA2R_VA64;
- 		else
--			reg = CBA2R_RW64_32BIT;
-+			reg = 0;
- 		/* 16-bit VMIDs live in CBA2R */
- 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
--			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
-+			reg |= FIELD_PREP(CBA2R_VMID16, cfg->vmid);
+@@ -628,16 +628,16 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
  
- 		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
- 	}
+ 	cb->cfg = cfg;
  
- 	/* CBAR */
--	reg = cfg->cbar;
-+	reg = FIELD_PREP(CBAR_TYPE, cfg->cbar);
- 	if (smmu->version < ARM_SMMU_V2)
--		reg |= cfg->irptndx << CBAR_IRPTNDX_SHIFT;
-+		reg |= FIELD_PREP(CBAR_IRPTNDX, cfg->irptndx);
- 
- 	/*
- 	 * Use the weakest shareability/memory types, so they are
- 	 * overridden by the ttbcr/pte.
- 	 */
+-	/* TTBCR */
++	/* TCR */
  	if (stage1) {
--		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
--			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
-+		reg |= FIELD_PREP(CBAR_S1_BPSHCFG, CBAR_S1_BPSHCFG_NSH) |
-+			FIELD_PREP(CBAR_S1_MEMATTR, CBAR_S1_MEMATTR_WB);
- 	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
- 		/* 8-bit VMIDs live in CBAR */
--		reg |= cfg->vmid << CBAR_VMID_SHIFT;
-+		reg |= FIELD_PREP(CBAR_VMID, cfg->vmid);
- 	}
+ 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+ 			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
+ 		} else {
+ 			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+ 			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+-			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
++			cb->tcr[1] |= FIELD_PREP(TCR2_SEP, TCR2_SEP_UPSTREAM);
+ 			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+-				cb->tcr[1] |= TTBCR2_AS;
++				cb->tcr[1] |= TCR2_AS;
+ 		}
+ 	} else {
+ 		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+@@ -650,9 +650,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+ 		} else {
+ 			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+-			cb->ttbr[0] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
++			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+ 			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+-			cb->ttbr[1] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
++			cb->ttbr[1] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+ 		}
+ 	} else {
+ 		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+@@ -721,13 +721,13 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
  	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
  
+ 	/*
+-	 * TTBCR
++	 * TCR
+ 	 * We must write this before the TTBRs, since it determines the
+ 	 * access behaviour of some fields (in particular, ASID[15:8]).
+ 	 */
+ 	if (stage1 && smmu->version > ARM_SMMU_V1)
+-		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
+-	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
++		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TCR2);
++	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TCR);
+ 
+ 	/* TTBRs */
+ 	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index bed948c3058a..60a125dd7300 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/atomic.h>
++#include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
+@@ -247,16 +248,16 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 		/* TTBRs */
+ 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+ 				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
+-				((u64)ctx->asid << TTBRn_ASID_SHIFT));
++				FIELD_PREP(TTBRn_ASID, ctx->asid));
+ 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
+ 				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
+-				((u64)ctx->asid << TTBRn_ASID_SHIFT));
++				FIELD_PREP(TTBRn_ASID, ctx->asid));
+ 
+-		/* TTBCR */
+-		iommu_writel(ctx, ARM_SMMU_CB_TTBCR2,
++		/* TCR */
++		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
+ 				(pgtbl_cfg.arm_lpae_s1_cfg.tcr >> 32) |
+-				TTBCR2_SEP_UPSTREAM);
+-		iommu_writel(ctx, ARM_SMMU_CB_TTBCR,
++				FIELD_PREP(TCR2_SEP, TCR2_SEP_UPSTREAM));
++		iommu_writel(ctx, ARM_SMMU_CB_TCR,
+ 				pgtbl_cfg.arm_lpae_s1_cfg.tcr);
+ 
+ 		/* MAIRs (stage-1 only) */
 -- 
 2.21.0.dirty
 
