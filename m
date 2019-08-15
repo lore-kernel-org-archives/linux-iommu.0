@@ -2,57 +2,58 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2077C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAC2C3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:57:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 853A6208C2
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:55:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D79BE2086C
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:57:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZSXhKCXn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 853A6208C2
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="0qu0vTSJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D79BE2086C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5A9D3EEB;
-	Thu, 15 Aug 2019 13:55:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B57CFEE8;
+	Thu, 15 Aug 2019 13:57:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3950FEE4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 78223EE1
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:55:35 +0000 (UTC)
+	Thu, 15 Aug 2019 13:57:29 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E062787B
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 18C37711
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:55:34 +0000 (UTC)
+	Thu, 15 Aug 2019 13:57:29 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
 	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 5A0942086C;
-	Thu, 15 Aug 2019 13:55:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 7F73E2054F;
+	Thu, 15 Aug 2019 13:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565877334;
-	bh=5wfdAeZ3utUPYQaQDWs/sPCscNo9VPDGdHObDpJgZkA=;
+	s=default; t=1565877448;
+	bh=7BqHO6v16InDHXfRqQecyNXtbnqfO3YUjLOD40xpTl0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZSXhKCXnjT2MHojqRaEFTPxafHmaj9lMMhHJUpp43bu0tOq3kPe9BYmQjtTmS1cxI
-	yPAmnhyd3tcv2gKM9FioP06CRf/UfBdxlgJ1p2oVvCNaXLzfQ2B80Dzj9FVNxlt5E9
-	WDQZVtHduPewVZJ9mtJQZLV08NiopSr1aD8Z7/fs=
-Date: Thu, 15 Aug 2019 14:55:29 +0100
+	b=0qu0vTSJN1WNXAbvj6a8lc/LN9lH6XN8S0X+M5Q9Nqz3j/69hAjzhWoLvaZcc6JG4
+	FibHmf42XKRkxBbnYHxeolL9qiuLnhoiDt6LwvwRWHj6RLzJgUWFFjO8jqRQGZxJlp
+	F0gLFLXFHLxxk3C/QgdPaH7EhSr1PyMpWNNQ2QRI=
+Date: Thu, 15 Aug 2019 14:57:23 +0100
 From: Will Deacon <will@kernel.org>
-To: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH 00/13] Rework IOMMU API to allow for batching of
-	invalidation
-Message-ID: <20190815135528.d7ip6dkqdwwvjy64@willie-the-truck>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 02/13] iommu/io-pgtable-arm: Remove redundant call to
+	io_pgtable_tlb_sync()
+Message-ID: <20190815135723.oobxfwngoq6wttlb@willie-the-truck>
 References: <20190814175634.21081-1-will@kernel.org>
-	<78d366b7-590f-b114-1a9a-91dea01cde4d@huawei.com>
+	<20190814175634.21081-3-will@kernel.org>
+	<ec5eb9fb-4178-011f-0642-bae380086a49@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <78d366b7-590f-b114-1a9a-91dea01cde4d@huawei.com>
+In-Reply-To: <ec5eb9fb-4178-011f-0642-bae380086a49@arm.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
 	Vijay Kilary <vkilari@codeaurora.org>,
@@ -60,7 +61,7 @@ Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
 	Alex Williamson <alex.williamson@redhat.com>,
 	iommu@lists.linux-foundation.org,
 	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
-	David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,47 +79,63 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Aug 15, 2019 at 12:19:58PM +0100, John Garry wrote:
+Hi Robin,
+
+On Thu, Aug 15, 2019 at 01:43:11PM +0100, Robin Murphy wrote:
 > On 14/08/2019 18:56, Will Deacon wrote:
-> > If you'd like to play with the patches, then I've also pushed them here:
+> > Commit b6b65ca20bc9 ("iommu/io-pgtable-arm: Add support for non-strict
+> > mode") added an unconditional call to io_pgtable_tlb_sync() immediately
+> > after the case where we replace a block entry with a table entry during
+> > an unmap() call. This is redundant, since the IOMMU API will call
+> > iommu_tlb_sync() on this path and the patch in question mentions this:
 > > 
-> >   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/unmap
+> >   | To save having to reason about it too much, make sure the invalidation
+> >   | in arm_lpae_split_blk_unmap() just performs its own unconditional sync
+> >   | to minimise the window in which we're technically violating the break-
+> >   | before-make requirement on a live mapping. This might work out redundant
+> >   | with an outer-level sync for strict unmaps, but we'll never be splitting
+> >   | blocks on a DMA fastpath anyway.
 > > 
-> > but they should behave as a no-op on their own.
+> > However, this sync gets in the way of deferred TLB invalidation for leaf
+> > entries and is at best a questionable, unproven hack. Remove it.
 > 
-> As anticipated, my storage testing scenarios roughly give parity throughput
-> and CPU loading before and after this series.
-> 
-> Patches to convert the
-> > Arm SMMUv3 driver to the new API are here:
-> > 
-> >   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/cmdq
-> 
-> I quickly tested this again and now I see a performance lift:
-> 
-> 			before (5.3-rc1)		after
-> D05 8x SAS disks	907K IOPS			970K IOPS
-> D05 1x NVMe		450K IOPS			466K IOPS
-> D06 1x NVMe		467K IOPS			466K IOPS
-> 
-> The CPU loading seems to track throughput, so nothing much to say there.
-> 
-> Note: From 5.2 testing, I was seeing >900K IOPS from that NVMe disk for
-> !IOMMU.
+> Hey, that's my questionable, unproven hack! :P
 
-Cheers, John. For interest, how do things look if you pass iommu.strict=0?
-That might give some indication about how much the invalidation is still
-hurting us.
+I thought you'd like to remain anonymous, but I can credit you if you like?
+;)
 
-> BTW, what were your thoughts on changing
-> arm_smmu_atc_inv_domain()->arm_smmu_atc_inv_master() to batching? It seems
-> suitable, but looks untouched. Were you waiting for a resolution to the
-> performance issue which Leizhen reported?
+> It's not entirely clear to me how this gets in the way though - AFAICS the
+> intent of tlb_flush_leaf exactly matches the desired operation here, so
+> couldn't these just wait to be converted in patch #8?
 
-In principle, I'm supportive of such a change, but I'm not currently able
-to test any ATS stuff so somebody else would need to write the patch.
-Jean-Philippe is on holiday at the moment, but I'd be happy to review
-something from you if you send it out.
+Good point. I think there are two things:
+
+	1. Initially, I didn't plan to have tlb_flush_leaf() at all because
+	   I didn't think it would be needed. Then I ran into the v7s CONT
+	   stuff and ended up needing it after all (I think it's the only
+	   user). So that's an oversight.
+
+	2. If we do the tlb_flush_leaf() here, then we could potentially
+	   put a hole in the ongoing gather structure, but I suppose we
+	   could do both a tlb_add_page() *and* a tlb_flush_leaf() to get
+	   around that.
+
+So yes, I probably could move this back if the sync is necessary but...
+
+> In principle the concern is that if the caller splits a block with
+> iommu_unmap_fast(), there's no guarantee of seeing an iommu_tlb_sync()
+> before returning to the caller, and thus there's the potential to run into a
+> TLB conflict on a subsequent access even if the endpoint was "good" and
+> didn't make any accesses *during* the unmap call.
+
+... this just feels pretty theoretical to me. The fact of the matter is
+that we're unable to do break before make because we can't reliably tolerate
+faults. If the hardware actually requires BBM for correctness, then we
+should probably explore proper solutions (e.g. quirks, avoiding block
+mappings, handling faults) rather than emitting a random sync and hoping
+for the best.
+
+Did you add the sync just in case, or was it based on a real crash?
 
 Will
 _______________________________________________
