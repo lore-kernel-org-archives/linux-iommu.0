@@ -2,101 +2,69 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CABC433FF
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 08:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFE5C31E40
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 08:48:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 89F34208C2
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 08:28:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="boxOmV2A"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 89F34208C2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id F3A8D21E71
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 08:48:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3A8D21E71
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3BDB486D;
-	Thu, 15 Aug 2019 08:28:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A15E0AD1;
+	Thu, 15 Aug 2019 08:48:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AB5D2723
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF607AD0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 08:28:31 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
-	[209.85.221.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 907BB711
+	Thu, 15 Aug 2019 08:48:07 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2CB8487B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 08:28:30 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id u16so1540056wrr.0
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 01:28:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=reply-to:subject:to:cc:references:from:message-id:date:user-agent
-	:mime-version:in-reply-to:content-transfer-encoding:content-language;
-	bh=2n57inVfSie2OKAeFsC4Tdlnlo7oR3PchxqlwbFyHws=;
-	b=boxOmV2AXJMNv7ExG5zcaNwxY8gLHePrB+8HL/cmSKDM3jIErtI774h9HjnDRzm8Tx
-	Wq9PWfYT0Sh5Po0fBclwEP4xbBfvwCFnk9C/SG/rshZcYo9N1euWPNu2UGL7EWCo3+MP
-	O2rnBrRJ7qLQnlMsBq3iYl5Gx16rioJyY8NHWzFHk6PJR3Mao4BkmwMKCPfIMe58HB2/
-	YomndBe6Ptr1r/DdLANhMMeLvEc+gN/2G78qBq1yiqedrcEA+VyitQg3m/MavBlIoO5/
-	kdqkjsndmpbzsFCRWVN8vW/8XkaogWEHGqhOo5gXtwC44YcIRAqSJ/YLJRfC4UpsUc3l
-	MU5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:reply-to:subject:to:cc:references:from
-	:message-id:date:user-agent:mime-version:in-reply-to
-	:content-transfer-encoding:content-language;
-	bh=2n57inVfSie2OKAeFsC4Tdlnlo7oR3PchxqlwbFyHws=;
-	b=V+KbIA+2fYwwJj2fWdUJoIUMTp5/YmoA0Xyx04DXWttPmjCDTYgUJvW2u8iI2PBAhj
-	mc1lwpqe2HvW35fjjJoaVjWHf6kRR92DCWhTSdj0/wkfly8zoNpAr0FPJmcKKxtSRKMS
-	TFw4FDpBFuds1g14JJ/Bii22zwJfgk6/zY6DTPLtH+wOzCQn1PsZ6H20FPC0yiIHzKSV
-	o6ZqkSBVW8kplQahLi5/D8MbWHNku0bOlfZx4uJqPIhwM+28vI4M4CUZMZ0rmAvFjG2g
-	Vi6BQjregoHYi3+lsJZC7z6gffLPotP6nS2deIzLdO1yK0ymUjSe0keHuDPj4HrIK/Fj
-	yaNQ==
-X-Gm-Message-State: APjAAAVGNMSE0VkiqGRXElETzwJOn2g/cz9seh06g/KWrJJgq5XBpnjg
-	65iLlFAVK/5PX+AUtaD72w4=
-X-Google-Smtp-Source: APXvYqwfqKb8EbCeeUml+x+2Tj1Kf6iL08f84CLc1WiMnwcV+bykZNDjSVZQ4BJrVYueAZkugq/uJg==
-X-Received: by 2002:a05:6000:cb:: with SMTP id
-	q11mr1965676wrx.50.1565857709125; 
-	Thu, 15 Aug 2019 01:28:29 -0700 (PDT)
-Received: from ?IPv6:2a02:908:1252:fb60:be8a:bd56:1f94:86e7?
-	([2a02:908:1252:fb60:be8a:bd56:1f94:86e7])
-	by smtp.gmail.com with ESMTPSA id w5sm711796wmm.43.2019.08.15.01.28.27
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 15 Aug 2019 01:28:28 -0700 (PDT)
-Subject: Re: [PATCH v3 hmm 08/11] drm/radeon: use mmu_notifier_get/put for
-	struct radeon_mn
-To: Jason Gunthorpe <jgg@ziepe.ca>, linux-mm@kvack.org
-References: <20190806231548.25242-1-jgg@ziepe.ca>
-	<20190806231548.25242-9-jgg@ziepe.ca>
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-Message-ID: <2baff2e5-b923-c39b-98e5-b3e7f77bd6d3@gmail.com>
-Date: Thu, 15 Aug 2019 10:28:21 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	Thu, 15 Aug 2019 08:48:05 +0000 (UTC)
+X-UUID: 75f2b3f6954d4fbc9a95ac3b96d6119f-20190815
+X-UUID: 75f2b3f6954d4fbc9a95ac3b96d6119f-20190815
+Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 1118993526; Thu, 15 Aug 2019 16:47:56 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31DR.mediatek.inc
+	(172.27.6.102) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Thu, 15 Aug 2019 16:47:53 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Thu, 15 Aug 2019 16:47:50 +0800
+Message-ID: <1565858869.12818.51.camel@mhfsdcap03>
+Subject: Re: [PATCH v9 08/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
+	Mode
+From: Yong Wu <yong.wu@mediatek.com>
+To: Will Deacon <will@kernel.org>
+Date: Thu, 15 Aug 2019 16:47:49 +0800
+In-Reply-To: <20190814144059.ruyc45yoqkwpbuga@willie-the-truck>
+References: <1565423901-17008-1-git-send-email-yong.wu@mediatek.com>
+	<1565423901-17008-9-git-send-email-yong.wu@mediatek.com>
+	<20190814144059.ruyc45yoqkwpbuga@willie-the-truck>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-In-Reply-To: <20190806231548.25242-9-jgg@ziepe.ca>
-Content-Language: en-US
-Cc: Andrea Arcangeli <aarcange@redhat.com>,
-	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
-	Ralph Campbell <rcampbell@nvidia.com>, Dimitri Sivanich <sivanich@sgi.com>,
-	Gavin Shan <shangw@linux.vnet.ibm.com>,
-	Andrea Righi <andrea@betterlinux.com>,
-	linux-rdma@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
-	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	Christoph Hellwig <hch@lst.de>,
-	=?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-	iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org,
-	Jason Gunthorpe <jgg@mellanox.com>,
-	Alex Deucher <alexander.deucher@amd.com>, intel-gfx@lists.freedesktop.org,
-	=?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+X-TM-SNTS-SMTP: 5D5FC90C041DBBD20C3DCD33A1B62E596CBBC6711A0F58C204785566B9B413132000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -109,179 +77,242 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: christian.koenig@amd.com
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-QW0gMDcuMDguMTkgdW0gMDE6MTUgc2NocmllYiBKYXNvbiBHdW50aG9ycGU6Cj4gRnJvbTogSmFz
-b24gR3VudGhvcnBlIDxqZ2dAbWVsbGFub3guY29tPgo+Cj4gcmFkZW9uIGlzIHVzaW5nIGEgZGV2
-aWNlIGdsb2JhbCBoYXNoIHRhYmxlIHRvIHRyYWNrIHdoYXQgbW11X25vdGlmaWVycwo+IGhhdmUg
-YmVlbiByZWdpc3RlcmVkIG9uIHN0cnVjdCBtbS4gVGhpcyBpcyBiZXR0ZXIgc2VydmVkIHdpdGgg
-dGhlIG5ldwo+IGdldC9wdXQgc2NoZW1lIGluc3RlYWQuCj4KPiByYWRlb24gaGFzIGEgYnVnIHdo
-ZXJlIGl0IHdhcyBub3QgYmxvY2tpbmcgbm90aWZpZXIgcmVsZWFzZSgpIHVudGlsIGFsbAo+IHRo
-ZSBCTydzIGhhZCBiZWVuIGludmFsaWRhdGVkLiBUaGlzIGNvdWxkIHJlc3VsdCBpbiBhIHVzZSBh
-ZnRlciBmcmVlIG9mCj4gcGFnZXMgdGhlIEJPcy4gVGhpcyBpcyB0aWVkIGludG8gYSBzZWNvbmQg
-YnVnIHdoZXJlIHJhZGVvbiBsZWZ0IHRoZQo+IG5vdGlmaWVycyBydW5uaW5nIGVuZGxlc3NseSBl
-dmVuIG9uY2UgdGhlIGludGVydmFsIHRyZWUgYmVjYW1lCj4gZW1wdHkuIFRoaXMgY291bGQgcmVz
-dWx0IGluIGEgdXNlIGFmdGVyIGZyZWUgd2l0aCBtb2R1bGUgdW5sb2FkLgo+Cj4gQm90aCBhcmUg
-Zml4ZWQgYnkgY2hhbmdpbmcgdGhlIGxpZmV0aW1lIG1vZGVsLCB0aGUgQk9zIGV4aXN0IGluIHRo
-ZQo+IGludGVydmFsIHRyZWUgd2l0aCB0aGVpciBuYXR1cmFsIGxpZmV0aW1lcyBpbmRlcGVuZGVu
-dCBvZiB0aGUgbW1fc3RydWN0Cj4gbGlmZXRpbWUgdXNpbmcgdGhlIGdldC9wdXQgc2NoZW1lLiBU
-aGUgcmVsZWFzZSBydW5zIHN5bmNocm9ub3VzbHkgYW5kIGp1c3QKPiBkb2VzIGludmFsaWRhdGVf
-c3RhcnQgYWNyb3NzIHRoZSBlbnRpcmUgaW50ZXJ2YWwgdHJlZSB0byBjcmVhdGUgdGhlCj4gcmVx
-dWlyZWQgRE1BIGZlbmNlLgo+Cj4gQWRkaXRpb25zIHRvIHRoZSBpbnRlcnZhbCB0cmVlIGFmdGVy
-IHJlbGVhc2UgYXJlIGFscmVhZHkgaW1wb3NzaWJsZSBhcwo+IG9ubHkgY3VycmVudC0+bW0gaXMg
-dXNlZCBkdXJpbmcgdGhlIGFkZC4KPgo+IFNpZ25lZC1vZmYtYnk6IEphc29uIEd1bnRob3JwZSA8
-amdnQG1lbGxhbm94LmNvbT4KCkFja2VkLWJ5OiBDaHJpc3RpYW4gS8O2bmlnIDxjaHJpc3RpYW4u
-a29lbmlnQGFtZC5jb20+CgpCdXQgSSdtIHdvbmRlcmluZyBpZiB3ZSBzaG91bGRuJ3QgY29tcGxl
-dGVseSBkcm9wIHJhZGVvbiB1c2VycHRyIHN1cHBvcnQuCgpJdCdzIGp1c3QgdG8gYnVnZ3ksCkNo
-cmlzdGlhbi4KCj4gLS0tCj4gICBkcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbi5oICAgICAg
-ICB8ICAgMyAtCj4gICBkcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9kZXZpY2UuYyB8ICAg
-MiAtCj4gICBkcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9kcnYuYyAgICB8ICAgMiArCj4g
-ICBkcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9tbi5jICAgICB8IDE1NyArKysrKystLS0t
-LS0tLS0tLS0tLS0tLS0tCj4gICA0IGZpbGVzIGNoYW5nZWQsIDM4IGluc2VydGlvbnMoKyksIDEy
-NiBkZWxldGlvbnMoLSkKPgo+IEFNRCB0ZWFtOiBJIHdvbmRlciBpZiBrZmQgaGFzIHNpbWlsYXIg
-bGlmZXRpbWUgaXNzdWVzPwo+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24v
-cmFkZW9uLmggYi9kcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbi5oCj4gaW5kZXggMzI4MDhl
-NTBiZTEyZjguLjkxODE2NGY5MGIxMTRhIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9y
-YWRlb24vcmFkZW9uLmgKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbi5oCj4g
-QEAgLTI0NTEsOSArMjQ1MSw2IEBAIHN0cnVjdCByYWRlb25fZGV2aWNlIHsKPiAgIAkvKiB0cmFj
-a2luZyBwaW5uZWQgbWVtb3J5ICovCj4gICAJdTY0IHZyYW1fcGluX3NpemU7Cj4gICAJdTY0IGdh
-cnRfcGluX3NpemU7Cj4gLQo+IC0Jc3RydWN0IG11dGV4CW1uX2xvY2s7Cj4gLQlERUNMQVJFX0hB
-U0hUQUJMRShtbl9oYXNoLCA3KTsKPiAgIH07Cj4gICAKPiAgIGJvb2wgcmFkZW9uX2lzX3B4KHN0
-cnVjdCBkcm1fZGV2aWNlICpkZXYpOwo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vcmFk
-ZW9uL3JhZGVvbl9kZXZpY2UuYyBiL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX2Rldmlj
-ZS5jCj4gaW5kZXggZGNlYjU1NGU1Njc0NDYuLjc4OGIxZDhhODBlNjYwIDEwMDY0NAo+IC0tLSBh
-L2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX2RldmljZS5jCj4gKysrIGIvZHJpdmVycy9n
-cHUvZHJtL3JhZGVvbi9yYWRlb25fZGV2aWNlLmMKPiBAQCAtMTMyNSw4ICsxMzI1LDYgQEAgaW50
-IHJhZGVvbl9kZXZpY2VfaW5pdChzdHJ1Y3QgcmFkZW9uX2RldmljZSAqcmRldiwKPiAgIAlpbml0
-X3J3c2VtKCZyZGV2LT5wbS5tY2xrX2xvY2spOwo+ICAgCWluaXRfcndzZW0oJnJkZXYtPmV4Y2x1
-c2l2ZV9sb2NrKTsKPiAgIAlpbml0X3dhaXRxdWV1ZV9oZWFkKCZyZGV2LT5pcnEudmJsYW5rX3F1
-ZXVlKTsKPiAtCW11dGV4X2luaXQoJnJkZXYtPm1uX2xvY2spOwo+IC0JaGFzaF9pbml0KHJkZXYt
-Pm1uX2hhc2gpOwo+ICAgCXIgPSByYWRlb25fZ2VtX2luaXQocmRldik7Cj4gICAJaWYgKHIpCj4g
-ICAJCXJldHVybiByOwo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVv
-bl9kcnYuYyBiL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX2Rydi5jCj4gaW5kZXggYTZj
-YmUxMWY3OWM2MTEuLmI2NTM1YWM5MWZkYjc0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2Ry
-bS9yYWRlb24vcmFkZW9uX2Rydi5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL3JhZGVvbi9yYWRl
-b25fZHJ2LmMKPiBAQCAtMzUsNiArMzUsNyBAQAo+ICAgI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5o
-Pgo+ICAgI2luY2x1ZGUgPGxpbnV4L3BtX3J1bnRpbWUuaD4KPiAgICNpbmNsdWRlIDxsaW51eC92
-Z2Ffc3dpdGNoZXJvby5oPgo+ICsjaW5jbHVkZSA8bGludXgvbW11X25vdGlmaWVyLmg+Cj4gICAK
-PiAgICNpbmNsdWRlIDxkcm0vZHJtX2NydGNfaGVscGVyLmg+Cj4gICAjaW5jbHVkZSA8ZHJtL2Ry
-bV9kcnYuaD4KPiBAQCAtNjI0LDYgKzYyNSw3IEBAIHN0YXRpYyB2b2lkIF9fZXhpdCByYWRlb25f
-ZXhpdCh2b2lkKQo+ICAgewo+ICAgCXBjaV91bnJlZ2lzdGVyX2RyaXZlcihwZHJpdmVyKTsKPiAg
-IAlyYWRlb25fdW5yZWdpc3Rlcl9hdHB4X2hhbmRsZXIoKTsKPiArCW1tdV9ub3RpZmllcl9zeW5j
-aHJvbml6ZSgpOwo+ICAgfQo+ICAgCj4gICBtb2R1bGVfaW5pdChyYWRlb25faW5pdCk7Cj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX21uLmMgYi9kcml2ZXJzL2dw
-dS9kcm0vcmFkZW9uL3JhZGVvbl9tbi5jCj4gaW5kZXggOGMzODcxZWQyM2E5ZjAuLmZjODI1NDI3
-M2E4MDBiIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX21uLmMK
-PiArKysgYi9kcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9tbi5jCj4gQEAgLTM3LDE3ICsz
-Nyw4IEBACj4gICAjaW5jbHVkZSAicmFkZW9uLmgiCj4gICAKPiAgIHN0cnVjdCByYWRlb25fbW4g
-ewo+IC0JLyogY29uc3RhbnQgYWZ0ZXIgaW5pdGlhbGlzYXRpb24gKi8KPiAtCXN0cnVjdCByYWRl
-b25fZGV2aWNlCSpyZGV2Owo+IC0Jc3RydWN0IG1tX3N0cnVjdAkqbW07Cj4gICAJc3RydWN0IG1t
-dV9ub3RpZmllcgltbjsKPiAgIAo+IC0JLyogb25seSB1c2VkIG9uIGRlc3RydWN0aW9uICovCj4g
-LQlzdHJ1Y3Qgd29ya19zdHJ1Y3QJd29yazsKPiAtCj4gLQkvKiBwcm90ZWN0ZWQgYnkgcmRldi0+
-bW5fbG9jayAqLwo+IC0Jc3RydWN0IGhsaXN0X25vZGUJbm9kZTsKPiAtCj4gICAJLyogb2JqZWN0
-cyBwcm90ZWN0ZWQgYnkgbG9jayAqLwo+ICAgCXN0cnVjdCBtdXRleAkJbG9jazsKPiAgIAlzdHJ1
-Y3QgcmJfcm9vdF9jYWNoZWQJb2JqZWN0czsKPiBAQCAtNTgsNTUgKzQ5LDYgQEAgc3RydWN0IHJh
-ZGVvbl9tbl9ub2RlIHsKPiAgIAlzdHJ1Y3QgbGlzdF9oZWFkCQlib3M7Cj4gICB9Owo+ICAgCj4g
-LS8qKgo+IC0gKiByYWRlb25fbW5fZGVzdHJveSAtIGRlc3Ryb3kgdGhlIHJtbgo+IC0gKgo+IC0g
-KiBAd29yazogcHJldmlvdXNseSBzaGVkdWxlZCB3b3JrIGl0ZW0KPiAtICoKPiAtICogTGF6eSBk
-ZXN0cm95cyB0aGUgbm90aWZpZXIgZnJvbSBhIHdvcmsgaXRlbQo+IC0gKi8KPiAtc3RhdGljIHZv
-aWQgcmFkZW9uX21uX2Rlc3Ryb3koc3RydWN0IHdvcmtfc3RydWN0ICp3b3JrKQo+IC17Cj4gLQlz
-dHJ1Y3QgcmFkZW9uX21uICpybW4gPSBjb250YWluZXJfb2Yod29yaywgc3RydWN0IHJhZGVvbl9t
-biwgd29yayk7Cj4gLQlzdHJ1Y3QgcmFkZW9uX2RldmljZSAqcmRldiA9IHJtbi0+cmRldjsKPiAt
-CXN0cnVjdCByYWRlb25fbW5fbm9kZSAqbm9kZSwgKm5leHRfbm9kZTsKPiAtCXN0cnVjdCByYWRl
-b25fYm8gKmJvLCAqbmV4dF9ibzsKPiAtCj4gLQltdXRleF9sb2NrKCZyZGV2LT5tbl9sb2NrKTsK
-PiAtCW11dGV4X2xvY2soJnJtbi0+bG9jayk7Cj4gLQloYXNoX2RlbCgmcm1uLT5ub2RlKTsKPiAt
-CXJidHJlZV9wb3N0b3JkZXJfZm9yX2VhY2hfZW50cnlfc2FmZShub2RlLCBuZXh0X25vZGUsCj4g
-LQkJCQkJICAgICAmcm1uLT5vYmplY3RzLnJiX3Jvb3QsIGl0LnJiKSB7Cj4gLQo+IC0JCWludGVy
-dmFsX3RyZWVfcmVtb3ZlKCZub2RlLT5pdCwgJnJtbi0+b2JqZWN0cyk7Cj4gLQkJbGlzdF9mb3Jf
-ZWFjaF9lbnRyeV9zYWZlKGJvLCBuZXh0X2JvLCAmbm9kZS0+Ym9zLCBtbl9saXN0KSB7Cj4gLQkJ
-CWJvLT5tbiA9IE5VTEw7Cj4gLQkJCWxpc3RfZGVsX2luaXQoJmJvLT5tbl9saXN0KTsKPiAtCQl9
-Cj4gLQkJa2ZyZWUobm9kZSk7Cj4gLQl9Cj4gLQltdXRleF91bmxvY2soJnJtbi0+bG9jayk7Cj4g
-LQltdXRleF91bmxvY2soJnJkZXYtPm1uX2xvY2spOwo+IC0JbW11X25vdGlmaWVyX3VucmVnaXN0
-ZXIoJnJtbi0+bW4sIHJtbi0+bW0pOwo+IC0Ja2ZyZWUocm1uKTsKPiAtfQo+IC0KPiAtLyoqCj4g
-LSAqIHJhZGVvbl9tbl9yZWxlYXNlIC0gY2FsbGJhY2sgdG8gbm90aWZ5IGFib3V0IG1tIGRlc3Ry
-dWN0aW9uCj4gLSAqCj4gLSAqIEBtbjogb3VyIG5vdGlmaWVyCj4gLSAqIEBtbjogdGhlIG1tIHRo
-aXMgY2FsbGJhY2sgaXMgYWJvdXQKPiAtICoKPiAtICogU2hlZHVsZSBhIHdvcmsgaXRlbSB0byBs
-YXp5IGRlc3Ryb3kgb3VyIG5vdGlmaWVyLgo+IC0gKi8KPiAtc3RhdGljIHZvaWQgcmFkZW9uX21u
-X3JlbGVhc2Uoc3RydWN0IG1tdV9ub3RpZmllciAqbW4sCj4gLQkJCSAgICAgIHN0cnVjdCBtbV9z
-dHJ1Y3QgKm1tKQo+IC17Cj4gLQlzdHJ1Y3QgcmFkZW9uX21uICpybW4gPSBjb250YWluZXJfb2Yo
-bW4sIHN0cnVjdCByYWRlb25fbW4sIG1uKTsKPiAtCUlOSVRfV09SSygmcm1uLT53b3JrLCByYWRl
-b25fbW5fZGVzdHJveSk7Cj4gLQlzY2hlZHVsZV93b3JrKCZybW4tPndvcmspOwo+IC19Cj4gLQo+
-ICAgLyoqCj4gICAgKiByYWRlb25fbW5faW52YWxpZGF0ZV9yYW5nZV9zdGFydCAtIGNhbGxiYWNr
-IHRvIG5vdGlmeSBhYm91dCBtbSBjaGFuZ2UKPiAgICAqCj4gQEAgLTE4Myw2NSArMTI1LDQ0IEBA
-IHN0YXRpYyBpbnQgcmFkZW9uX21uX2ludmFsaWRhdGVfcmFuZ2Vfc3RhcnQoc3RydWN0IG1tdV9u
-b3RpZmllciAqbW4sCj4gICAJcmV0dXJuIHJldDsKPiAgIH0KPiAgIAo+IC1zdGF0aWMgY29uc3Qg
-c3RydWN0IG1tdV9ub3RpZmllcl9vcHMgcmFkZW9uX21uX29wcyA9IHsKPiAtCS5yZWxlYXNlID0g
-cmFkZW9uX21uX3JlbGVhc2UsCj4gLQkuaW52YWxpZGF0ZV9yYW5nZV9zdGFydCA9IHJhZGVvbl9t
-bl9pbnZhbGlkYXRlX3JhbmdlX3N0YXJ0LAo+IC19Owo+ICtzdGF0aWMgdm9pZCByYWRlb25fbW5f
-cmVsZWFzZShzdHJ1Y3QgbW11X25vdGlmaWVyICptbiwgc3RydWN0IG1tX3N0cnVjdCAqbW0pCj4g
-K3sKPiArCXN0cnVjdCBtbXVfbm90aWZpZXJfcmFuZ2UgcmFuZ2UgPSB7Cj4gKwkJLm1tID0gbW0s
-Cj4gKwkJLnN0YXJ0ID0gMCwKPiArCQkuZW5kID0gVUxPTkdfTUFYLAo+ICsJCS5mbGFncyA9IDAs
-Cj4gKwkJLmV2ZW50ID0gTU1VX05PVElGWV9VTk1BUCwKPiArCX07Cj4gKwo+ICsJcmFkZW9uX21u
-X2ludmFsaWRhdGVfcmFuZ2Vfc3RhcnQobW4sICZyYW5nZSk7Cj4gK30KPiAgIAo+IC0vKioKPiAt
-ICogcmFkZW9uX21uX2dldCAtIGNyZWF0ZSBub3RpZmllciBjb250ZXh0Cj4gLSAqCj4gLSAqIEBy
-ZGV2OiByYWRlb24gZGV2aWNlIHBvaW50ZXIKPiAtICoKPiAtICogQ3JlYXRlcyBhIG5vdGlmaWVy
-IGNvbnRleHQgZm9yIGN1cnJlbnQtPm1tLgo+IC0gKi8KPiAtc3RhdGljIHN0cnVjdCByYWRlb25f
-bW4gKnJhZGVvbl9tbl9nZXQoc3RydWN0IHJhZGVvbl9kZXZpY2UgKnJkZXYpCj4gK3N0YXRpYyBz
-dHJ1Y3QgbW11X25vdGlmaWVyICpyYWRlb25fbW5fYWxsb2Nfbm90aWZpZXIoc3RydWN0IG1tX3N0
-cnVjdCAqbW0pCj4gICB7Cj4gLQlzdHJ1Y3QgbW1fc3RydWN0ICptbSA9IGN1cnJlbnQtPm1tOwo+
-ICAgCXN0cnVjdCByYWRlb25fbW4gKnJtbjsKPiAtCWludCByOwo+IC0KPiAtCWlmIChkb3duX3dy
-aXRlX2tpbGxhYmxlKCZtbS0+bW1hcF9zZW0pKQo+IC0JCXJldHVybiBFUlJfUFRSKC1FSU5UUik7
-Cj4gLQo+IC0JbXV0ZXhfbG9jaygmcmRldi0+bW5fbG9jayk7Cj4gLQo+IC0JaGFzaF9mb3JfZWFj
-aF9wb3NzaWJsZShyZGV2LT5tbl9oYXNoLCBybW4sIG5vZGUsICh1bnNpZ25lZCBsb25nKW1tKQo+
-IC0JCWlmIChybW4tPm1tID09IG1tKQo+IC0JCQlnb3RvIHJlbGVhc2VfbG9ja3M7Cj4gICAKPiAg
-IAlybW4gPSBremFsbG9jKHNpemVvZigqcm1uKSwgR0ZQX0tFUk5FTCk7Cj4gLQlpZiAoIXJtbikg
-ewo+IC0JCXJtbiA9IEVSUl9QVFIoLUVOT01FTSk7Cj4gLQkJZ290byByZWxlYXNlX2xvY2tzOwo+
-IC0JfQo+ICsJaWYgKCFybW4pCj4gKwkJcmV0dXJuIEVSUl9QVFIoLUVOT01FTSk7Cj4gICAKPiAt
-CXJtbi0+cmRldiA9IHJkZXY7Cj4gLQlybW4tPm1tID0gbW07Cj4gLQlybW4tPm1uLm9wcyA9ICZy
-YWRlb25fbW5fb3BzOwo+ICAgCW11dGV4X2luaXQoJnJtbi0+bG9jayk7Cj4gICAJcm1uLT5vYmpl
-Y3RzID0gUkJfUk9PVF9DQUNIRUQ7Cj4gLQkKPiAtCXIgPSBfX21tdV9ub3RpZmllcl9yZWdpc3Rl
-cigmcm1uLT5tbiwgbW0pOwo+IC0JaWYgKHIpCj4gLQkJZ290byBmcmVlX3JtbjsKPiAtCj4gLQlo
-YXNoX2FkZChyZGV2LT5tbl9oYXNoLCAmcm1uLT5ub2RlLCAodW5zaWduZWQgbG9uZyltbSk7Cj4g
-LQo+IC1yZWxlYXNlX2xvY2tzOgo+IC0JbXV0ZXhfdW5sb2NrKCZyZGV2LT5tbl9sb2NrKTsKPiAt
-CXVwX3dyaXRlKCZtbS0+bW1hcF9zZW0pOwo+IC0KPiAtCXJldHVybiBybW47Cj4gLQo+IC1mcmVl
-X3JtbjoKPiAtCW11dGV4X3VubG9jaygmcmRldi0+bW5fbG9jayk7Cj4gLQl1cF93cml0ZSgmbW0t
-Pm1tYXBfc2VtKTsKPiAtCWtmcmVlKHJtbik7Cj4gKwlyZXR1cm4gJnJtbi0+bW47Cj4gK30KPiAg
-IAo+IC0JcmV0dXJuIEVSUl9QVFIocik7Cj4gK3N0YXRpYyB2b2lkIHJhZGVvbl9tbl9mcmVlX25v
-dGlmaWVyKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uKQo+ICt7Cj4gKwlrZnJlZShjb250YWluZXJf
-b2YobW4sIHN0cnVjdCByYWRlb25fbW4sIG1uKSk7Cj4gICB9Cj4gICAKPiArc3RhdGljIGNvbnN0
-IHN0cnVjdCBtbXVfbm90aWZpZXJfb3BzIHJhZGVvbl9tbl9vcHMgPSB7Cj4gKwkucmVsZWFzZSA9
-IHJhZGVvbl9tbl9yZWxlYXNlLAo+ICsJLmludmFsaWRhdGVfcmFuZ2Vfc3RhcnQgPSByYWRlb25f
-bW5faW52YWxpZGF0ZV9yYW5nZV9zdGFydCwKPiArCS5hbGxvY19ub3RpZmllciA9IHJhZGVvbl9t
-bl9hbGxvY19ub3RpZmllciwKPiArCS5mcmVlX25vdGlmaWVyID0gcmFkZW9uX21uX2ZyZWVfbm90
-aWZpZXIsCj4gK307Cj4gKwo+ICAgLyoqCj4gICAgKiByYWRlb25fbW5fcmVnaXN0ZXIgLSByZWdp
-c3RlciBhIEJPIGZvciBub3RpZmllciB1cGRhdGVzCj4gICAgKgo+IEBAIC0yNTQsMTUgKzE3NSwx
-NiBAQCBzdGF0aWMgc3RydWN0IHJhZGVvbl9tbiAqcmFkZW9uX21uX2dldChzdHJ1Y3QgcmFkZW9u
-X2RldmljZSAqcmRldikKPiAgIGludCByYWRlb25fbW5fcmVnaXN0ZXIoc3RydWN0IHJhZGVvbl9i
-byAqYm8sIHVuc2lnbmVkIGxvbmcgYWRkcikKPiAgIHsKPiAgIAl1bnNpZ25lZCBsb25nIGVuZCA9
-IGFkZHIgKyByYWRlb25fYm9fc2l6ZShibykgLSAxOwo+IC0Jc3RydWN0IHJhZGVvbl9kZXZpY2Ug
-KnJkZXYgPSBiby0+cmRldjsKPiArCXN0cnVjdCBtbXVfbm90aWZpZXIgKm1uOwo+ICAgCXN0cnVj
-dCByYWRlb25fbW4gKnJtbjsKPiAgIAlzdHJ1Y3QgcmFkZW9uX21uX25vZGUgKm5vZGUgPSBOVUxM
-Owo+ICAgCXN0cnVjdCBsaXN0X2hlYWQgYm9zOwo+ICAgCXN0cnVjdCBpbnRlcnZhbF90cmVlX25v
-ZGUgKml0Owo+ICAgCj4gLQlybW4gPSByYWRlb25fbW5fZ2V0KHJkZXYpOwo+IC0JaWYgKElTX0VS
-UihybW4pKQo+IC0JCXJldHVybiBQVFJfRVJSKHJtbik7Cj4gKwltbiA9IG1tdV9ub3RpZmllcl9n
-ZXQoJnJhZGVvbl9tbl9vcHMsIGN1cnJlbnQtPm1tKTsKPiArCWlmIChJU19FUlIobW4pKQo+ICsJ
-CXJldHVybiBQVFJfRVJSKG1uKTsKPiArCXJtbiA9IGNvbnRhaW5lcl9vZihtbiwgc3RydWN0IHJh
-ZGVvbl9tbiwgbW4pOwo+ICAgCj4gICAJSU5JVF9MSVNUX0hFQUQoJmJvcyk7Cj4gICAKPiBAQCAt
-MzA5LDIyICsyMzEsMTMgQEAgaW50IHJhZGVvbl9tbl9yZWdpc3RlcihzdHJ1Y3QgcmFkZW9uX2Jv
-ICpibywgdW5zaWduZWQgbG9uZyBhZGRyKQo+ICAgICovCj4gICB2b2lkIHJhZGVvbl9tbl91bnJl
-Z2lzdGVyKHN0cnVjdCByYWRlb25fYm8gKmJvKQo+ICAgewo+IC0Jc3RydWN0IHJhZGVvbl9kZXZp
-Y2UgKnJkZXYgPSBiby0+cmRldjsKPiAtCXN0cnVjdCByYWRlb25fbW4gKnJtbjsKPiArCXN0cnVj
-dCByYWRlb25fbW4gKnJtbiA9IGJvLT5tbjsKPiAgIAlzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkOwo+
-ICAgCj4gLQltdXRleF9sb2NrKCZyZGV2LT5tbl9sb2NrKTsKPiAtCXJtbiA9IGJvLT5tbjsKPiAt
-CWlmIChybW4gPT0gTlVMTCkgewo+IC0JCW11dGV4X3VubG9jaygmcmRldi0+bW5fbG9jayk7Cj4g
-LQkJcmV0dXJuOwo+IC0JfQo+IC0KPiAgIAltdXRleF9sb2NrKCZybW4tPmxvY2spOwo+ICAgCS8q
-IHNhdmUgdGhlIG5leHQgbGlzdCBlbnRyeSBmb3IgbGF0ZXIgKi8KPiAgIAloZWFkID0gYm8tPm1u
-X2xpc3QubmV4dDsKPiAgIAo+IC0JYm8tPm1uID0gTlVMTDsKPiAgIAlsaXN0X2RlbCgmYm8tPm1u
-X2xpc3QpOwo+ICAgCj4gICAJaWYgKGxpc3RfZW1wdHkoaGVhZCkpIHsKPiBAQCAtMzM1LDUgKzI0
-OCw3IEBAIHZvaWQgcmFkZW9uX21uX3VucmVnaXN0ZXIoc3RydWN0IHJhZGVvbl9ibyAqYm8pCj4g
-ICAJfQo+ICAgCj4gICAJbXV0ZXhfdW5sb2NrKCZybW4tPmxvY2spOwo+IC0JbXV0ZXhfdW5sb2Nr
-KCZyZGV2LT5tbl9sb2NrKTsKPiArCj4gKwltbXVfbm90aWZpZXJfcHV0KCZybW4tPm1uKTsKPiAr
-CWJvLT5tbiA9IE5VTEw7Cj4gICB9CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+On Wed, 2019-08-14 at 15:41 +0100, Will Deacon wrote:
+> Hi Yong Wu,
+> 
+> Sorry, but I'm still deeply confused by this patch.
+
+Sorry for this. the "4GB mode" really is a bit odd...
+
+> 
+> On Sat, Aug 10, 2019 at 03:58:08PM +0800, Yong Wu wrote:
+> > MediaTek extend the arm v7s descriptor to support the dram over 4GB.
+> > 
+> > In the mt2712 and mt8173, it's called "4GB mode", the physical address
+> > is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
+> > is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
+> > bit32 is always enabled. thus, in the M4U, we always enable the bit9
+> > for all PTEs which means to enable bit32 of physical address. Here is
+> > the detailed remap relationship in the "4GB mode":
+> > CPU PA         ->    HW PA
+> > 0x4000_0000          0x1_4000_0000 (Add bit32)
+> > 0x8000_0000          0x1_8000_0000 ...
+> > 0xc000_0000          0x1_c000_0000 ...
+> > 0x1_0000_0000        0x1_0000_0000 (No change)
+> 
+> So in this example, there are no PAs below 0x4000_0000 yet you later
+> add code to deal with that:
+> 
+> > +	/* Workaround for MTK 4GB Mode: Add BIT32 only when PA < 0x4000_0000.*/
+> > +	if (cfg->oas == ARM_V7S_MTK_4GB_OAS && paddr < 0x40000000UL)
+> > +		paddr |= BIT_ULL(32);
+> 
+> Why? Mainline currently doesn't do anything like this for the "4gb mode"
+> support as far as I can tell. In fact, we currently unconditionally set
+> bit 32 in the physical address returned by iova_to_phys() which wouldn't
+> match your CPU PAs listed above, so I'm confused about how this is supposed
+> to work.
+
+Actually current mainline have a bug for this. So I tried to use another
+special patch[1] for it in v8.
+
+But the issue is not critical since MediaTek multimedia consumer(v4l2
+and drm) don't call iommu_iova_to_phys currently.
+
+> 
+> The way I would like this quirk to work is that the io-pgtable code
+> basically sets bit 9 in the pte when bit 32 is set in the physical address,
+> and sets bit 4 in the pte when bit 33 is set in the physical address. It
+> would then do the opposite when converting a pte to a physical address.
+> 
+> That way, your driver can call the page table code directly with the high
+> addresses and we don't have to do any manual offsetting or range checking
+> in the page table code.
+
+In this case, the mt8183 can work successfully while the "4gb
+mode"(mt8173/mt2712) can not.
+
+In the "4gb mode", As the remap relationship above, we should always add
+bit32 in pte as we did in [2]. and need add bit32 in the
+"iova_to_phys"(Not always add.). That means the "4gb mode" has a special
+flow:
+a. Always add bit32 in paddr_to_iopte.
+b. Add bit32 only when PA < 0x40000000 in iopte_to_paddr.
+
+> 
+> Please can you explain to me why the diff below doesn't work on top of
+> this series?
+
+The diff below is just I did in v8[3]. The different is that I move the
+"4gb mode" special flow in the mtk_iommu.c in v8, the code is like
+[4]below. When I sent v9, I found that I can distinguish the "4gb mode"
+with "oas == 33" in v7s. then I can "simply" add the 4gb special flow[5]
+based on your diff.
+
+
+>  I'm happy to chat on IRC if you think it would be easier,
+> because I have a horrible feeling that we've been talking past each other
+> and I'd like to see this support merged for 5.4.
+
+Thanks very much for your view, I'm sorry that I don't have IRC. I will
+send the next version quickly if we have a conclusion here. Then Which
+way is better? If you'd like keep the pagetable code clean, I will add
+the "4gb mode" special flow into mtk_iommu.c.
+
+Thanks.
+
+
+[1]http://lists.infradead.org/pipermail/linux-mediatek/2019-June/020988.html
+[2]
+https://elixir.bootlin.com/linux/v5.3-rc4/source/drivers/iommu/io-pgtable-arm-v7s.c#L299
+[3]http://lists.infradead.org/pipermail/linux-mediatek/2019-June/020991.html
+
+[4]======4gb mode special flow in mtk_iommu.c======================
+
++#define MTK_IOMMU_4GB_MODE_REMAP_BASE	 0x140000000UL
+
+@@ -380,12 +379,16 @@ static int mtk_iommu_map(struct iommu_domain
+*domain, unsigned long iova,
+ 			 phys_addr_t paddr, size_t size, int prot)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+ 	unsigned long flags;
+ 	int ret;
+ 
++	/* The "4GB mode" M4U physically can not use the lower remap of Dram.
+*/
++	if (data->enable_4GB)
++		paddr |= BIT_ULL(32);
++
+ 	spin_lock_irqsave(&dom->pgtlock, flags);
+-	ret = dom->iop->map(dom->iop, iova, paddr & DMA_BIT_MASK(32),
+-			    size, prot);
++	ret = dom->iop->map(dom->iop, iova, paddr, size, prot);
+ 	spin_unlock_irqrestore(&dom->pgtlock, flags);
+ 
+ 	return ret;
+@@ -422,8 +425,8 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct
+iommu_domain *domain,
+ 	pa = dom->iop->iova_to_phys(dom->iop, iova);
+ 	spin_unlock_irqrestore(&dom->pgtlock, flags);
+ 
+-	if (data->enable_4GB && pa < MTK_IOMMU_4GB_MODE_REMAP_BASE)
+-		pa |= BIT_ULL(32);
++	if (data->enable_4GB && pa >= MTK_IOMMU_4GB_MODE_REMAP_BASE)
++		pa &= ~BIT_ULL(32);
+ 
+ 	return pa;
+ }
+=============================================================
+
+[5]:
+=========================================================
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c
+b/drivers/iommu/io-pgtable-arm-v7s.c
+index 78fd11e..8e974a5 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -184,7 +184,7 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t
+paddr, int lvl,
+ 	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+ 
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
+-		if (paddr & BIT_ULL(32))
++		if (paddr & BIT_ULL(32) || cfg->oas == 33)
+ 			pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+ 		if (paddr & BIT_ULL(33))
+ 			pte |= ARM_V7S_ATTR_MTK_PA_BIT33;
+@@ -207,7 +207,9 @@ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte,
+int lvl,
+ 
+ 	paddr = pte & mask;
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
+-		if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
++		if (cfg->oas == 33 && paddr < 0x40000000UL)
++			paddr |= BIT_ULL(32);
++		else if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
+ 			paddr |= BIT_ULL(32);
+ 		if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
+ 			paddr |= BIT_ULL(33);
+============================================================
+
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> index ab12ef5f8b03..d8d84617c822 100644
+> --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> @@ -184,7 +184,7 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+>  	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+>  
+>  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT) {
+> -		if ((paddr & BIT_ULL(32)) || cfg->oas == ARM_V7S_MTK_4GB_OAS)
+> +		if (paddr & BIT_ULL(32))
+>  			pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+>  		if (paddr & BIT_ULL(33))
+>  			pte |= ARM_V7S_ATTR_MTK_PA_BIT33;
+> @@ -206,17 +206,14 @@ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+>  		mask = ARM_V7S_LVL_MASK(lvl);
+>  
+>  	paddr = pte & mask;
+> -	if (cfg->oas == 32 || !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT))
+> -		return paddr;
+>  
+> -	if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
+> -		paddr |= BIT_ULL(33);
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT) {
+> +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
+> +			paddr |= BIT_ULL(32);
+> +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
+> +			paddr |= BIT_ULL(33);
+> +	}
+>  
+> -	/* Workaround for MTK 4GB Mode: Add BIT32 only when PA < 0x4000_0000.*/
+> -	if (cfg->oas == ARM_V7S_MTK_4GB_OAS && paddr < 0x40000000UL)
+> -		paddr |= BIT_ULL(32);
+> -	else if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
+> -		paddr |= BIT_ULL(32);
+>  	return paddr;
+>  }
+>  
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index d5b9454352fd..3ae54dedede0 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -286,7 +286,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+>  	if (!IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT))
+>  		dom->cfg.oas = 32;
+>  	else if (data->enable_4GB)
+> -		dom->cfg.oas = ARM_V7S_MTK_4GB_OAS;
+> +		dom->cfg.oas = 33;
+>  	else
+>  		dom->cfg.oas = 34;
+>  
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 27337395bd42..a2a52c349fe4 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -113,8 +113,6 @@ struct io_pgtable_cfg {
+>  	};
+>  };
+>  
+> -#define ARM_V7S_MTK_4GB_OAS			33
+> -
+>  /**
+>   * struct io_pgtable_ops - Page table manipulation API for IOMMU drivers.
+>   *
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
