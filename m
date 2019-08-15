@@ -2,58 +2,74 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24444C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 12:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA45C3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:03:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E8C2E2133F
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 12:43:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8C2E2133F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E61F7208C2
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:03:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uwl+0uYf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E61F7208C2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D57110B6;
-	Thu, 15 Aug 2019 12:43:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AD79410CE;
+	Thu, 15 Aug 2019 13:03:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D27BC10B1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CFDD510B8
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 12:43:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5F0958A6
+	Thu, 15 Aug 2019 13:03:28 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D87FD8CA
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 12:43:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 030F0344;
-	Thu, 15 Aug 2019 05:43:15 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ECC9E3F694;
-	Thu, 15 Aug 2019 05:43:12 -0700 (PDT)
-Subject: Re: [PATCH 02/13] iommu/io-pgtable-arm: Remove redundant call to
-	io_pgtable_tlb_sync()
-To: Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org
-References: <20190814175634.21081-1-will@kernel.org>
-	<20190814175634.21081-3-will@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ec5eb9fb-4178-011f-0642-bae380086a49@arm.com>
-Date: Thu, 15 Aug 2019 13:43:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thu, 15 Aug 2019 13:03:27 +0000 (UTC)
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
+	[83.86.89.107])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 3B2B2206C1;
+	Thu, 15 Aug 2019 13:03:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1565874207;
+	bh=05FKrWR8u7yXNSzvDhK14jodYXXtJLhq05DEOB370o0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uwl+0uYfDOJT/3Ymv4Xv86Es37VhW5Szs/xP6ombz3PRSN6J0RcO0roRJ6TqaUrJ4
+	WSmNGttTeaVHYBoDy9MKtrR1Llvej761IhslQEAv61f/O4h2cwf8/2SbbMxIjcxa/O
+	n3hqpkpGHdq3IH3OCwePPEUClxHF6VmSJ+8p6W2E=
+Date: Thu, 15 Aug 2019 15:03:25 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 6/6] driver core: initialize a default DMA mask for
+	platform device
+Message-ID: <20190815130325.GB17065@kroah.com>
+References: <20190811080520.21712-1-hch@lst.de>
+	<20190811080520.21712-7-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <20190814175634.21081-3-will@kernel.org>
-Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Vijay Kilary <vkilari@codeaurora.org>,
-	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190811080520.21712-7-hch@lst.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+Cc: Gavin Li <git@thegavinli.com>, Fabio Estevam <festevam@gmail.com>,
+	linux-arch@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	Alan Stern <stern@rowland.harvard.edu>, NXP Linux Team <linux-imx@nxp.com>,
+	Mathias Nyman <mathias.nyman@intel.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Minas Harutyunyan <hminas@synopsys.com>,
+	Olav Kongas <ok@artecdesign.ee>, Bin Liu <b-liu@ti.com>,
+	linux-arm-kernel@lists.infradead.org, Geoff Levand <geoff@infradead.org>,
+	Shawn Guo <shawnguo@kernel.org>, linux-usb@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Tony Prisk <linux@prisktech.co.nz>,
+	iommu@lists.linux-foundation.org,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,73 +82,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 14/08/2019 18:56, Will Deacon wrote:
-> Commit b6b65ca20bc9 ("iommu/io-pgtable-arm: Add support for non-strict
-> mode") added an unconditional call to io_pgtable_tlb_sync() immediately
-> after the case where we replace a block entry with a table entry during
-> an unmap() call. This is redundant, since the IOMMU API will call
-> iommu_tlb_sync() on this path and the patch in question mentions this:
+On Sun, Aug 11, 2019 at 10:05:20AM +0200, Christoph Hellwig wrote:
+> We still treat devices without a DMA mask as defaulting to 32-bits for
+> both mask, but a few releases ago we've started warning about such
+> cases, as they require special cases to work around this sloppyness.
+> Add a dma_mask field to struct platform_object so that we can initialize
+> the dma_mask pointer in struct device and initialize both masks to
+> 32-bits by default.  Architectures can still override this in
+> arch_setup_pdev_archdata if needed.
 > 
->   | To save having to reason about it too much, make sure the invalidation
->   | in arm_lpae_split_blk_unmap() just performs its own unconditional sync
->   | to minimise the window in which we're technically violating the break-
->   | before-make requirement on a live mapping. This might work out redundant
->   | with an outer-level sync for strict unmaps, but we'll never be splitting
->   | blocks on a DMA fastpath anyway.
+> Note that the code looks a little odd with the various conditionals
+> because we have to support platform_device structures that are
+> statically allocated.
 > 
-> However, this sync gets in the way of deferred TLB invalidation for leaf
-> entries and is at best a questionable, unproven hack. Remove it.
-
-Hey, that's my questionable, unproven hack! :P
-
-It's not entirely clear to me how this gets in the way though - AFAICS 
-the intent of tlb_flush_leaf exactly matches the desired operation here, 
-so couldn't these just wait to be converted in patch #8?
-
-In principle the concern is that if the caller splits a block with 
-iommu_unmap_fast(), there's no guarantee of seeing an iommu_tlb_sync() 
-before returning to the caller, and thus there's the potential to run 
-into a TLB conflict on a subsequent access even if the endpoint was 
-"good" and didn't make any accesses *during* the unmap call.
-
-Robin.
-
-> Signed-off-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->   drivers/iommu/io-pgtable-arm-v7s.c | 1 -
->   drivers/iommu/io-pgtable-arm.c     | 1 -
->   2 files changed, 2 deletions(-)
+>  drivers/base/platform.c         | 15 +++++++++++++--
+>  include/linux/platform_device.h |  1 +
+>  2 files changed, 14 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index 0fc8dfab2abf..a62733c6a632 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -587,7 +587,6 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
->   	}
->   
->   	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-> -	io_pgtable_tlb_sync(&data->iop);
->   	return size;
->   }
->   
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 161a7d56264d..0d6633921c1e 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -583,7 +583,6 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->   		tablep = iopte_deref(pte, data);
->   	} else if (unmap_idx >= 0) {
->   		io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-> -		io_pgtable_tlb_sync(&data->iop);
->   		return size;
->   	}
->   
-> 
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index ec974ba9c0c4..b216fcb0a8af 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -264,6 +264,17 @@ struct platform_object {
+>  	char name[];
+>  };
+>  
+> +static void setup_pdev_archdata(struct platform_device *pdev)
+> +{
+> +	if (!pdev->dev.coherent_dma_mask)
+> +		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+> +	if (!pdev->dma_mask)
+> +		pdev->dma_mask = DMA_BIT_MASK(32);
+> +	if (!pdev->dev.dma_mask)
+> +		pdev->dev.dma_mask = &pdev->dma_mask;
+> +	arch_setup_pdev_archdata(pdev);
+> +};
+> +
+>  /**
+>   * platform_device_put - destroy a platform device
+>   * @pdev: platform device to free
+> @@ -310,7 +321,7 @@ struct platform_device *platform_device_alloc(const char *name, int id)
+>  		pa->pdev.id = id;
+>  		device_initialize(&pa->pdev.dev);
+>  		pa->pdev.dev.release = platform_device_release;
+> -		arch_setup_pdev_archdata(&pa->pdev);
+> +		setup_pdev_archdata(&pa->pdev);
+>  	}
+>  
+>  	return pa ? &pa->pdev : NULL;
+> @@ -512,7 +523,7 @@ EXPORT_SYMBOL_GPL(platform_device_del);
+>  int platform_device_register(struct platform_device *pdev)
+>  {
+>  	device_initialize(&pdev->dev);
+> -	arch_setup_pdev_archdata(pdev);
+> +	setup_pdev_archdata(pdev);
+>  	return platform_device_add(pdev);
+>  }
+>  EXPORT_SYMBOL_GPL(platform_device_register);
+> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+> index 9bc36b589827..a2abde2aef25 100644
+> --- a/include/linux/platform_device.h
+> +++ b/include/linux/platform_device.h
+> @@ -24,6 +24,7 @@ struct platform_device {
+>  	int		id;
+>  	bool		id_auto;
+>  	struct device	dev;
+> +	u64		dma_mask;
+
+Why is the dma_mask in 'struct device' which is part of this structure,
+not sufficient here?  Shouldn't the "platform" be setting that up
+correctly already in the "archdata" type callback?
+
+confused,
+
+greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
