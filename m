@@ -2,57 +2,65 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE77C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2077C3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:55:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F3566208C2
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:50:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3566208C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 853A6208C2
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:55:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZSXhKCXn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 853A6208C2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B1EAAED9;
-	Thu, 15 Aug 2019 13:50:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5A9D3EEB;
+	Thu, 15 Aug 2019 13:55:36 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 75241ED7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3950FEE4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:50:58 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 85C63711
+	Thu, 15 Aug 2019 13:55:35 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E062787B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:50:56 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25C6D344;
-	Thu, 15 Aug 2019 06:50:56 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 068C83F694;
-	Thu, 15 Aug 2019 06:50:54 -0700 (PDT)
-Subject: Re: DMA-API: cacheline tracking ENOMEM, dma-debug disabled due to
-	nouveau ?
-To: Christoph Hellwig <hch@lst.de>, Corentin Labbe
-	<clabbe.montjoie@gmail.com>, bskeggs@redhat.com, airlied@linux.ie,
-	m.szyprowski@samsung.com, dri-devel@lists.freedesktop.org,
-	nouveau@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
-References: <20190814145033.GA11190@Red>
-	<20190814174927.GT7444@phenom.ffwll.local>
-	<20190815133554.GE12036@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <cdb43f4b-55ff-80c3-8d27-56238b2ab1a1@arm.com>
-Date: Thu, 15 Aug 2019 14:50:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thu, 15 Aug 2019 13:55:34 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 5A0942086C;
+	Thu, 15 Aug 2019 13:55:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1565877334;
+	bh=5wfdAeZ3utUPYQaQDWs/sPCscNo9VPDGdHObDpJgZkA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ZSXhKCXnjT2MHojqRaEFTPxafHmaj9lMMhHJUpp43bu0tOq3kPe9BYmQjtTmS1cxI
+	yPAmnhyd3tcv2gKM9FioP06CRf/UfBdxlgJ1p2oVvCNaXLzfQ2B80Dzj9FVNxlt5E9
+	WDQZVtHduPewVZJ9mtJQZLV08NiopSr1aD8Z7/fs=
+Date: Thu, 15 Aug 2019 14:55:29 +0100
+From: Will Deacon <will@kernel.org>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH 00/13] Rework IOMMU API to allow for batching of
+	invalidation
+Message-ID: <20190815135528.d7ip6dkqdwwvjy64@willie-the-truck>
+References: <20190814175634.21081-1-will@kernel.org>
+	<78d366b7-590f-b114-1a9a-91dea01cde4d@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20190815133554.GE12036@lst.de>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <78d366b7-590f-b114-1a9a-91dea01cde4d@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Vijay Kilary <vkilari@codeaurora.org>,
+	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	iommu@lists.linux-foundation.org,
+	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
+	David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,42 +73,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 15/08/2019 14:35, Christoph Hellwig wrote:
-> On Wed, Aug 14, 2019 at 07:49:27PM +0200, Daniel Vetter wrote:
->> On Wed, Aug 14, 2019 at 04:50:33PM +0200, Corentin Labbe wrote:
->>> Hello
->>>
->>> Since lot of release (at least since 4.19), I hit the following error message:
->>> DMA-API: cacheline tracking ENOMEM, dma-debug disabled
->>>
->>> After hitting that, I try to check who is creating so many DMA mapping and see:
->>> cat /sys/kernel/debug/dma-api/dump | cut -d' ' -f2 | sort | uniq -c
->>>        6 ahci
->>>      257 e1000e
->>>        6 ehci-pci
->>>     5891 nouveau
->>>       24 uhci_hcd
->>>
->>> Does nouveau having this high number of DMA mapping is normal ?
->>
->> Yeah seems perfectly fine for a gpu.
+On Thu, Aug 15, 2019 at 12:19:58PM +0100, John Garry wrote:
+> On 14/08/2019 18:56, Will Deacon wrote:
+> > If you'd like to play with the patches, then I've also pushed them here:
+> > 
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/unmap
+> > 
+> > but they should behave as a no-op on their own.
 > 
-> That is a lot and apparently overwhelm the dma-debug tracking.  Robin
-> rewrote this code in Linux 4.21 to work a little better, so I'm curious
-> why this might have changes in 4.19, as dma-debug did not change at
-> all there.
+> As anticipated, my storage testing scenarios roughly give parity throughput
+> and CPU loading before and after this series.
+> 
+> Patches to convert the
+> > Arm SMMUv3 driver to the new API are here:
+> > 
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/cmdq
+> 
+> I quickly tested this again and now I see a performance lift:
+> 
+> 			before (5.3-rc1)		after
+> D05 8x SAS disks	907K IOPS			970K IOPS
+> D05 1x NVMe		450K IOPS			466K IOPS
+> D06 1x NVMe		467K IOPS			466K IOPS
+> 
+> The CPU loading seems to track throughput, so nothing much to say there.
+> 
+> Note: From 5.2 testing, I was seeing >900K IOPS from that NVMe disk for
+> !IOMMU.
 
-FWIW, the cacheline tracking entries are a separate thing from the 
-dma-debug entries that I rejigged - judging by those numbers there 
-should still be plenty of free dma-debug entries, but for some reason it 
-has failed to extend the radix tree :/
+Cheers, John. For interest, how do things look if you pass iommu.strict=0?
+That might give some indication about how much the invalidation is still
+hurting us.
 
-Robin.
+> BTW, what were your thoughts on changing
+> arm_smmu_atc_inv_domain()->arm_smmu_atc_inv_master() to batching? It seems
+> suitable, but looks untouched. Were you waiting for a resolution to the
+> performance issue which Leizhen reported?
+
+In principle, I'm supportive of such a change, but I'm not currently able
+to test any ATS stuff so somebody else would need to write the patch.
+Jean-Philippe is on holiday at the moment, but I'd be happy to review
+something from you if you send it out.
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
