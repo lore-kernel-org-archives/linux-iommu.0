@@ -2,59 +2,56 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA45C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF45C3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:23:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E61F7208C2
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:03:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 44E09208C2
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:23:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uwl+0uYf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E61F7208C2
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PIdKCMQ/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44E09208C2
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AD79410CE;
-	Thu, 15 Aug 2019 13:03:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0B730B6D;
+	Thu, 15 Aug 2019 13:23:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CFDD510B8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B8A0BB0B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:03:28 +0000 (UTC)
+	Thu, 15 Aug 2019 13:23:20 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D87FD8CA
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 75495711
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:03:27 +0000 (UTC)
+	Thu, 15 Aug 2019 13:23:20 +0000 (UTC)
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
 	[83.86.89.107])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 3B2B2206C1;
-	Thu, 15 Aug 2019 13:03:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id B11572084D;
+	Thu, 15 Aug 2019 13:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565874207;
-	bh=05FKrWR8u7yXNSzvDhK14jodYXXtJLhq05DEOB370o0=;
+	s=default; t=1565875400;
+	bh=v8T3qwF6qiZM++7vAT7AL0JPe0r/NT0kv4QeyOYP/rE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=uwl+0uYfDOJT/3Ymv4Xv86Es37VhW5Szs/xP6ombz3PRSN6J0RcO0roRJ6TqaUrJ4
-	WSmNGttTeaVHYBoDy9MKtrR1Llvej761IhslQEAv61f/O4h2cwf8/2SbbMxIjcxa/O
-	n3hqpkpGHdq3IH3OCwePPEUClxHF6VmSJ+8p6W2E=
-Date: Thu, 15 Aug 2019 15:03:25 +0200
+	b=PIdKCMQ/Lb50XgkTlSzI4dcJJpEBGXjfxY4vMHFbCuhE6F7PCaSzRKr5kWXihgsd6
+	CYq+SBnCJXFALaYcaG3aif6qNMb45WH5wI6jKS8CZyb2VbP+PYmponIEA+124IIRAp
+	rJJ2vhvhUrSSeOp1mohuc3t3W+bL3ZyLQHR5jtR4=
+Date: Thu, 15 Aug 2019 15:23:18 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 6/6] driver core: initialize a default DMA mask for
-	platform device
-Message-ID: <20190815130325.GB17065@kroah.com>
+Subject: Re: next take at setting up a dma mask by default for platform devices
+Message-ID: <20190815132318.GA27208@kroah.com>
 References: <20190811080520.21712-1-hch@lst.de>
-	<20190811080520.21712-7-hch@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190811080520.21712-7-hch@lst.de>
+In-Reply-To: <20190811080520.21712-1-hch@lst.de>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Cc: Gavin Li <git@thegavinli.com>, Fabio Estevam <festevam@gmail.com>,
 	linux-arch@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>,
@@ -87,80 +84,29 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sun, Aug 11, 2019 at 10:05:20AM +0200, Christoph Hellwig wrote:
-> We still treat devices without a DMA mask as defaulting to 32-bits for
-> both mask, but a few releases ago we've started warning about such
-> cases, as they require special cases to work around this sloppyness.
-> Add a dma_mask field to struct platform_object so that we can initialize
-> the dma_mask pointer in struct device and initialize both masks to
-> 32-bits by default.  Architectures can still override this in
-> arch_setup_pdev_archdata if needed.
+On Sun, Aug 11, 2019 at 10:05:14AM +0200, Christoph Hellwig wrote:
+> Hi all,
 > 
-> Note that the code looks a little odd with the various conditionals
-> because we have to support platform_device structures that are
-> statically allocated.
+> this is another attempt to make sure the dma_mask pointer is always
+> initialized for platform devices.  Not doing so lead to lots of
+> boilerplate code, and makes platform devices different from all our
+> major busses like PCI where we always set up a dma_mask.  In the long
+> run this should also help to eventually make dma_mask a scalar value
+> instead of a pointer and remove even more cruft.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/base/platform.c         | 15 +++++++++++++--
->  include/linux/platform_device.h |  1 +
->  2 files changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index ec974ba9c0c4..b216fcb0a8af 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -264,6 +264,17 @@ struct platform_object {
->  	char name[];
->  };
->  
-> +static void setup_pdev_archdata(struct platform_device *pdev)
-> +{
-> +	if (!pdev->dev.coherent_dma_mask)
-> +		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
-> +	if (!pdev->dma_mask)
-> +		pdev->dma_mask = DMA_BIT_MASK(32);
-> +	if (!pdev->dev.dma_mask)
-> +		pdev->dev.dma_mask = &pdev->dma_mask;
-> +	arch_setup_pdev_archdata(pdev);
-> +};
-> +
->  /**
->   * platform_device_put - destroy a platform device
->   * @pdev: platform device to free
-> @@ -310,7 +321,7 @@ struct platform_device *platform_device_alloc(const char *name, int id)
->  		pa->pdev.id = id;
->  		device_initialize(&pa->pdev.dev);
->  		pa->pdev.dev.release = platform_device_release;
-> -		arch_setup_pdev_archdata(&pa->pdev);
-> +		setup_pdev_archdata(&pa->pdev);
->  	}
->  
->  	return pa ? &pa->pdev : NULL;
-> @@ -512,7 +523,7 @@ EXPORT_SYMBOL_GPL(platform_device_del);
->  int platform_device_register(struct platform_device *pdev)
->  {
->  	device_initialize(&pdev->dev);
-> -	arch_setup_pdev_archdata(pdev);
-> +	setup_pdev_archdata(pdev);
->  	return platform_device_add(pdev);
->  }
->  EXPORT_SYMBOL_GPL(platform_device_register);
-> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-> index 9bc36b589827..a2abde2aef25 100644
-> --- a/include/linux/platform_device.h
-> +++ b/include/linux/platform_device.h
-> @@ -24,6 +24,7 @@ struct platform_device {
->  	int		id;
->  	bool		id_auto;
->  	struct device	dev;
-> +	u64		dma_mask;
+> The bigger blocker for this last time was the fact that the usb
+> subsystem uses the presence or lack of a dma_mask to check if the core
+> should do dma mapping for the driver, which is highly unusual.  So we
+> fix this first.  Note that this has some overlap with the pending
+> desire to use the proper dma_mmap_coherent helper for mapping usb
+> buffers.  The first two patches from this series should probably
+> go into 5.3 and then uses as the basis for the decision to use
+> dma_mmap_coherent.
 
-Why is the dma_mask in 'struct device' which is part of this structure,
-not sufficient here?  Shouldn't the "platform" be setting that up
-correctly already in the "archdata" type callback?
+I've taken the first 2 patches for 5.3-final.  Given that patch 3 needs
+to be fixed, I'll wait for a respin of these before considering them.
 
-confused,
+thanks,
 
 greg k-h
 _______________________________________________
