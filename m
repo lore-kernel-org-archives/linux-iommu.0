@@ -4,59 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E49EEC31E40
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 04:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F5EC31E40
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 05:03:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8DBC2171F
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 04:54:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8DBC2171F
+	by mail.kernel.org (Postfix) with ESMTPS id EBD8921721
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 05:03:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBD8921721
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8A4E5B4B;
-	Thu, 15 Aug 2019 04:54:35 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D709C00;
+	Thu, 15 Aug 2019 05:03:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0D972B09
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EAFD7255
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 04:54:34 +0000 (UTC)
+	Thu, 15 Aug 2019 05:03:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DE2E58AC
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7E2EE8AC
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 04:54:32 +0000 (UTC)
+	Thu, 15 Aug 2019 05:03:04 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	14 Aug 2019 21:54:32 -0700
+	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	14 Aug 2019 22:03:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,388,1559545200"; d="scan'208";a="171011114"
+X-IronPort-AV: E=Sophos;i="5.64,388,1559545200"; d="scan'208";a="171012988"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
 	([10.239.159.136])
-	by orsmga008.jf.intel.com with ESMTP; 14 Aug 2019 21:54:28 -0700
-Subject: Re: [PATCH 04/10] x86/dma: Get rid of iommu_pass_through
+	by orsmga008.jf.intel.com with ESMTP; 14 Aug 2019 22:02:59 -0700
+Subject: Re: [PATCH 06/10] iommu: Remember when default domain type was set on
+	kernel command line
 To: Joerg Roedel <joro@8bytes.org>
 References: <20190814133841.7095-1-joro@8bytes.org>
-	<20190814133841.7095-5-joro@8bytes.org>
+	<20190814133841.7095-7-joro@8bytes.org>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <ef941cbd-07dc-ac93-e5b2-f30ac4a55bc2@linux.intel.com>
-Date: Thu, 15 Aug 2019 12:53:28 +0800
+Message-ID: <754a526e-a6d4-8a3f-0b35-9dd3def5d24b@linux.intel.com>
+Date: Thu, 15 Aug 2019 13:01:57 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190814133841.7095-5-joro@8bytes.org>
+In-Reply-To: <20190814133841.7095-7-joro@8bytes.org>
 Content-Language: en-US
 Cc: fenghua.yu@intel.com, tony.luck@intel.com, linux-ia64@vger.kernel.org,
-	tglx@linutronix.de, corbet@lwn.net, x86@kernel.org,
+	corbet@lwn.net, Joerg Roedel <jroedel@suse.de>, x86@kernel.org,
 	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
-	bp@alien8.de, hpa@zytor.com, Thomas.Lendacky@amd.com, mingo@redhat.com
+	iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
+	Thomas.Lendacky@amd.com, hpa@zytor.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,70 +79,69 @@ Hi,
 On 8/14/19 9:38 PM, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel@suse.de>
 > 
-> This variable has no users anymore. Remove it and tell the
-> IOMMU code via its new functions about requested DMA modes.
+> Introduce an extensible concept to remember when certain
+> configuration settings for the IOMMU code have been set on
+> the kernel command line.
+> 
+> This will be used later to prevent overwriting these
+> settings with other defaults.
 > 
 > Signed-off-by: Joerg Roedel <jroedel@suse.de>
-
-This will also simplify the procedures in iommu_probe_device() on x86
-platforms.
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
 > ---
->   arch/x86/include/asm/iommu.h |  1 -
->   arch/x86/kernel/pci-dma.c    | 11 +++--------
->   2 files changed, 3 insertions(+), 9 deletions(-)
+>   drivers/iommu/iommu.c | 15 +++++++++++++++
+>   1 file changed, 15 insertions(+)
 > 
-> diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-> index baedab8ac538..b91623d521d9 100644
-> --- a/arch/x86/include/asm/iommu.h
-> +++ b/arch/x86/include/asm/iommu.h
-> @@ -4,7 +4,6 @@
->   
->   extern int force_iommu, no_iommu;
->   extern int iommu_detected;
-> -extern int iommu_pass_through;
->   
->   /* 10 seconds */
->   #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
-> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> index f62b498b18fb..a6fd479d4a71 100644
-> --- a/arch/x86/kernel/pci-dma.c
-> +++ b/arch/x86/kernel/pci-dma.c
-> @@ -1,6 +1,7 @@
->   // SPDX-License-Identifier: GPL-2.0
->   #include <linux/dma-direct.h>
->   #include <linux/dma-debug.h>
-> +#include <linux/iommu.h>
->   #include <linux/dmar.h>
->   #include <linux/export.h>
->   #include <linux/memblock.h>
-> @@ -43,12 +44,6 @@ int iommu_detected __read_mostly = 0;
->    * It is also possible to disable by default in kernel config, and enable with
->    * iommu=nopt at boot time.
->    */
-> -#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
-> -int iommu_pass_through __read_mostly = 1;
-> -#else
-> -int iommu_pass_through __read_mostly;
-> -#endif
-> -
->   extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
->   
->   void __init pci_iommu_alloc(void)
-> @@ -120,9 +115,9 @@ static __init int iommu_setup(char *p)
->   			swiotlb = 1;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f187e85a074b..e1feb4061b8b 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -32,6 +32,7 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
+>   static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
 >   #endif
->   		if (!strncmp(p, "pt", 2))
-> -			iommu_pass_through = 1;
-> +			iommu_set_default_passthrough();
->   		if (!strncmp(p, "nopt", 4))
-> -			iommu_pass_through = 0;
-> +			iommu_set_default_translated();
+>   static bool iommu_dma_strict __read_mostly = true;
+> +static u32 iommu_cmd_line __read_mostly;
 >   
->   		gart_parse_options(p);
+>   struct iommu_group {
+>   	struct kobject kobj;
+> @@ -68,6 +69,18 @@ static const char * const iommu_group_resv_type_string[] = {
+>   	[IOMMU_RESV_SW_MSI]			= "msi",
+>   };
 >   
+> +#define IOMMU_CMD_LINE_DMA_API		(1 << 0)
+
+Prefer BIT() micro?
+
+> +
+> +static void iommu_set_cmd_line_dma_api(void)
+> +{
+> +	iommu_cmd_line |= IOMMU_CMD_LINE_DMA_API;
+> +}
+> +
+> +static bool __maybe_unused iommu_cmd_line_dma_api(void)
+> +{
+> +	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
+> +}
+> +
+>   #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+>   struct iommu_group_attribute iommu_group_attr_##_name =		\
+>   	__ATTR(_name, _mode, _show, _store)
+> @@ -165,6 +178,8 @@ static int __init iommu_set_def_domain_type(char *str)
+>   	if (ret)
+>   		return ret;
+>   
+> +	iommu_set_cmd_line_dma_api();
+
+IOMMU command line is also set in other places, for example,
+iommu_setup() (arch/x86/kernel/pci-dma.c). Need to call this there as
+well?
+
+Best regards,
+Lu Baolu
+
+> +
+>   	iommu_def_domain_type = pt ? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
+>   	return 0;
+>   }
 > 
 _______________________________________________
 iommu mailing list
