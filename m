@@ -6,43 +6,46 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF875C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 950B0C3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:32:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AC8572084D
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:25:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC8572084D
+	by mail.kernel.org (Postfix) with ESMTPS id 5E6D72084D
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 13:32:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E6D72084D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 67FF01093;
-	Thu, 15 Aug 2019 13:25:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2B162B7A;
+	Thu, 15 Aug 2019 13:32:12 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1FE09B6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0250D265
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:25:36 +0000 (UTC)
+	Thu, 15 Aug 2019 13:32:11 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B3498711
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 90BC28A0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 13:25:35 +0000 (UTC)
+	Thu, 15 Aug 2019 13:32:10 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 5010F68AFE; Thu, 15 Aug 2019 15:25:31 +0200 (CEST)
-Date: Thu, 15 Aug 2019 15:25:31 +0200
+	id AA62D68BFE; Thu, 15 Aug 2019 15:32:04 +0200 (CEST)
+Date: Thu, 15 Aug 2019 15:32:04 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: next take at setting up a dma mask by default for platform devices
-Message-ID: <20190815132531.GA12036@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 6/6] driver core: initialize a default DMA mask for
+	platform device
+Message-ID: <20190815133204.GD12036@lst.de>
 References: <20190811080520.21712-1-hch@lst.de>
-	<20190815132318.GA27208@kroah.com>
+	<20190811080520.21712-7-hch@lst.de>
+	<fbea6e6d-7721-b51d-0501-582e8446e9c9@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190815132318.GA27208@kroah.com>
+In-Reply-To: <fbea6e6d-7721-b51d-0501-582e8446e9c9@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Gavin Li <git@thegavinli.com>, Fabio Estevam <festevam@gmail.com>,
+Cc: Gavin Li <git@thegavinli.com>, Shawn Guo <shawnguo@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
 	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
 	Michal Simek <michal.simek@xilinx.com>,
 	Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -52,9 +55,9 @@ Cc: Gavin Li <git@thegavinli.com>, Fabio Estevam <festevam@gmail.com>,
 	Minas Harutyunyan <hminas@synopsys.com>,
 	Olav Kongas <ok@artecdesign.ee>, Bin Liu <b-liu@ti.com>,
 	linux-arm-kernel@lists.infradead.org, Geoff Levand <geoff@infradead.org>,
-	Shawn Guo <shawnguo@kernel.org>, linux-usb@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Tony Prisk <linux@prisktech.co.nz>,
-	iommu@lists.linux-foundation.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Tony Prisk <linux@prisktech.co.nz>, iommu@lists.linux-foundation.org,
 	Pengutronix Kernel Team <kernel@pengutronix.de>,
 	linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -74,13 +77,37 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Aug 15, 2019 at 03:23:18PM +0200, Greg Kroah-Hartman wrote:
-> I've taken the first 2 patches for 5.3-final.  Given that patch 3 needs
-> to be fixed, I'll wait for a respin of these before considering them.
+On Wed, Aug 14, 2019 at 04:49:13PM +0100, Robin Murphy wrote:
+>> because we have to support platform_device structures that are
+>> statically allocated.
+>
+> This would be a good point to also get rid of the long-standing bodge in 
+> platform_device_register_full().
 
-I have a respun version ready, but I'd really like to hear some
-comments from usb developers about the approach before spamming
-everyone again..
+platform_device_register_full looks odd to start with, especially
+as the coumentation is rather lacking..
+
+>>   +static void setup_pdev_archdata(struct platform_device *pdev)
+>
+> Bikeshed: painting the generic DMA API properties as "archdata" feels a bit 
+> off-target :/
+>
+>> +{
+>> +	if (!pdev->dev.coherent_dma_mask)
+>> +		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+>> +	if (!pdev->dma_mask)
+>> +		pdev->dma_mask = DMA_BIT_MASK(32);
+>> +	if (!pdev->dev.dma_mask)
+>> +		pdev->dev.dma_mask = &pdev->dma_mask;
+>> +	arch_setup_pdev_archdata(pdev);
+>
+> AFAICS m68k's implementation of that arch hook becomes entirely redundant 
+> after this change, so may as well go. That would just leave powerpc's 
+> actual archdata, which at a glance looks like it could probably be cleaned 
+> up with not *too* much trouble.
+
+Actually I think we can just kill both off.  At the point archdata
+is indeed entirely misnamed.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
