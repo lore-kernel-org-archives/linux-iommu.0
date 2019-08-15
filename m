@@ -2,58 +2,49 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533EFC3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 17:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8EBC3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:37:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 124DB206C1
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 17:00:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 124DB206C1
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+	by mail.kernel.org (Postfix) with ESMTPS id 30A642083B
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:37:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30A642083B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9BF7CE42;
-	Thu, 15 Aug 2019 17:00:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D75D21094;
+	Thu, 15 Aug 2019 18:37:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 211B6E35
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B105F2C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 17:00:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3484287B
+	Thu, 15 Aug 2019 18:37:43 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id CDB55CF
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 17:00:07 +0000 (UTC)
-Received: from rabammel.molgen.mpg.de (rabammel.molgen.mpg.de [141.14.30.220])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128
-	bits)) (No client certificate requested)
-	(Authenticated sender: pmenzel)
-	by mx.molgen.mpg.de (Postfix) with ESMTPSA id C3D0E2000C0B2;
-	Thu, 15 Aug 2019 19:00:04 +0200 (CEST)
-Subject: Messages to kexec@ get moderated (was: Crash kernel with 256 MB
-	reserved memory runs into OOM condition)
-To: Dave Young <dyoung@redhat.com>, Michal Hocko <mhocko@kernel.org>
-References: <d65e4a42-1962-78c6-1b5a-65cb70529d62@molgen.mpg.de>
-	<20190812095029.GE5117@dhcp22.suse.cz>
-	<20190813024317.GA2862@dhcp-128-65.nay.redhat.com>
-	<20190813024600.GA2944@dhcp-128-65.nay.redhat.com>
-From: Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <9f125599-33a9-4dfd-be05-04335a36c52e@molgen.mpg.de>
-Date: Thu, 15 Aug 2019 19:00:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	Thu, 15 Aug 2019 18:37:42 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D064344;
+	Thu, 15 Aug 2019 11:37:42 -0700 (PDT)
+Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
+	[10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EC3403F694; 
+	Thu, 15 Aug 2019 11:37:40 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: will@kernel.org
+Subject: [PATCH v2 00/17] Arm SMMU refactoring
+Date: Thu, 15 Aug 2019 19:37:20 +0100
+Message-Id: <cover.1565892337.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.21.0.dirty
 MIME-Version: 1.0
-In-Reply-To: <20190813024600.GA2944@dhcp-128-65.nay.redhat.com>
-Cc: kasong@redhat.com, linux-pci@vger.kernel.org,
-	"x86@kernel.org" <x86@kernel.org>, kexec@lists.infradead.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux-foundation.org,
-	Donald Buczek <buczek@molgen.mpg.de>, lijiang@redhat.com
+Cc: bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org,
+	gregory.clement@bootlin.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,174 +57,276 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6184731431755067215=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This is a cryptographically signed message in MIME format.
+Hi all,
 
---===============6184731431755067215==
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms070400000301090606090306"
+v1 for context: https://patchwork.kernel.org/cover/11087347/
 
-This is a cryptographically signed message in MIME format.
+Here's a quick v2 attempting to address all the minor comments; I've
+tweaked a whole bunch of names, added some verbosity in macros and
+comments for clarity, and rejigged arm_smmu_impl_init() for a bit more
+structure. The (new) patches #1 and #2 are up front as conceptual fixes,
+although they're not actually critical - it turns out to be more of an
+embarrassment than a real problem in practice.
 
---------------ms070400000301090606090306
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+For ease of reference, the overall diff against v1 is attached below.
 
-Dear Dave,
-
-
-On 13.08.19 04:46, Dave Young wrote:
-
-> On 08/13/19 at 10:43am, Dave Young wrote:
-
-[=E2=80=A6]
-
-> The question is to Paul,  also it would be always good to cc kexec mail=
-
-> list for kexec and kdump issues.
-
-kexec@ was CCed in my original mail, but my messages got moderated. It=E2=
-=80=99d
-great if you checked that with the list administrators.
-
-> Your mail to 'kexec' with the subject
->=20
->     Crash kernel with 256 MB reserved memory runs into OOM condition
->=20
-> Is being held until the list moderator can review it for approval.
->=20
-> The reason it is being held:
->=20
->     Message has a suspicious header
->=20
-> Either the message will get posted to the list, or you will receive
-> notification of the moderator's decision.  If you would like to cancel
-> this posting, please visit the following URL:
->=20
->     http://lists.infradead.org/mailman/confirm/kexec/a23ab6162ef34d099a=
-f5dd86c46113def5152bb1
+Robin.
 
 
-Kind regards,
+Robin Murphy (17):
+  iommu/arm-smmu: Mask TLBI address correctly
+  iommu/qcom: Mask TLBI addresses correctly
+  iommu/arm-smmu: Convert GR0 registers to bitfields
+  iommu/arm-smmu: Convert GR1 registers to bitfields
+  iommu/arm-smmu: Convert context bank registers to bitfields
+  iommu/arm-smmu: Rework cb_base handling
+  iommu/arm-smmu: Split arm_smmu_tlb_inv_range_nosync()
+  iommu/arm-smmu: Get rid of weird "atomic" write
+  iommu/arm-smmu: Abstract GR1 accesses
+  iommu/arm-smmu: Abstract context bank accesses
+  iommu/arm-smmu: Abstract GR0 accesses
+  iommu/arm-smmu: Rename arm-smmu-regs.h
+  iommu/arm-smmu: Add implementation infrastructure
+  iommu/arm-smmu: Move Secure access quirk to implementation
+  iommu/arm-smmu: Add configuration implementation hook
+  iommu/arm-smmu: Add reset implementation hook
+  iommu/arm-smmu: Add context init implementation hook
 
-Paul
+ MAINTAINERS                   |   3 +-
+ drivers/iommu/Makefile        |   2 +-
+ drivers/iommu/arm-smmu-impl.c | 174 +++++++++++
+ drivers/iommu/arm-smmu-regs.h | 210 -------------
+ drivers/iommu/arm-smmu.c      | 573 +++++++++++-----------------------
+ drivers/iommu/arm-smmu.h      | 394 +++++++++++++++++++++++
+ drivers/iommu/qcom_iommu.c    |  17 +-
+ 7 files changed, 764 insertions(+), 609 deletions(-)
+ create mode 100644 drivers/iommu/arm-smmu-impl.c
+ delete mode 100644 drivers/iommu/arm-smmu-regs.h
+ create mode 100644 drivers/iommu/arm-smmu.h
 
-
---------------ms070400000301090606090306
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
-EFowggUSMIID+qADAgECAgkA4wvV+K8l2YEwDQYJKoZIhvcNAQELBQAwgYIxCzAJBgNVBAYT
-AkRFMSswKQYDVQQKDCJULVN5c3RlbXMgRW50ZXJwcmlzZSBTZXJ2aWNlcyBHbWJIMR8wHQYD
-VQQLDBZULVN5c3RlbXMgVHJ1c3QgQ2VudGVyMSUwIwYDVQQDDBxULVRlbGVTZWMgR2xvYmFs
-Um9vdCBDbGFzcyAyMB4XDTE2MDIyMjEzMzgyMloXDTMxMDIyMjIzNTk1OVowgZUxCzAJBgNV
-BAYTAkRFMUUwQwYDVQQKEzxWZXJlaW4genVyIEZvZXJkZXJ1bmcgZWluZXMgRGV1dHNjaGVu
-IEZvcnNjaHVuZ3NuZXR6ZXMgZS4gVi4xEDAOBgNVBAsTB0RGTi1QS0kxLTArBgNVBAMTJERG
-Ti1WZXJlaW4gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgMjCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAMtg1/9moUHN0vqHl4pzq5lN6mc5WqFggEcVToyVsuXPztNXS43O+FZs
-FVV2B+pG/cgDRWM+cNSrVICxI5y+NyipCf8FXRgPxJiZN7Mg9mZ4F4fCnQ7MSjLnFp2uDo0p
-eQcAIFTcFV9Kltd4tjTTwXS1nem/wHdN6r1ZB+BaL2w8pQDcNb1lDY9/Mm3yWmpLYgHurDg0
-WUU2SQXaeMpqbVvAgWsRzNI8qIv4cRrKO+KA3Ra0Z3qLNupOkSk9s1FcragMvp0049ENF4N1
-xDkesJQLEvHVaY4l9Lg9K7/AjsMeO6W/VRCrKq4Xl14zzsjz9AkH4wKGMUZrAcUQDBHHWekC
-AwEAAaOCAXQwggFwMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUk+PYMiba1fFKpZFK4OpL
-4qIMz+EwHwYDVR0jBBgwFoAUv1kgNgB5oKAia4zV8mHSuCzLgkowEgYDVR0TAQH/BAgwBgEB
-/wIBAjAzBgNVHSAELDAqMA8GDSsGAQQBga0hgiwBAQQwDQYLKwYBBAGBrSGCLB4wCAYGZ4EM
-AQICMEwGA1UdHwRFMEMwQaA/oD2GO2h0dHA6Ly9wa2kwMzM2LnRlbGVzZWMuZGUvcmwvVGVs
-ZVNlY19HbG9iYWxSb290X0NsYXNzXzIuY3JsMIGGBggrBgEFBQcBAQR6MHgwLAYIKwYBBQUH
-MAGGIGh0dHA6Ly9vY3NwMDMzNi50ZWxlc2VjLmRlL29jc3ByMEgGCCsGAQUFBzAChjxodHRw
-Oi8vcGtpMDMzNi50ZWxlc2VjLmRlL2NydC9UZWxlU2VjX0dsb2JhbFJvb3RfQ2xhc3NfMi5j
-ZXIwDQYJKoZIhvcNAQELBQADggEBAIcL/z4Cm2XIVi3WO5qYi3FP2ropqiH5Ri71sqQPrhE4
-eTizDnS6dl2e6BiClmLbTDPo3flq3zK9LExHYFV/53RrtCyD2HlrtrdNUAtmB7Xts5et6u5/
-MOaZ/SLick0+hFvu+c+Z6n/XUjkurJgARH5pO7917tALOxrN5fcPImxHhPalR6D90Bo0fa3S
-PXez7vTXTf/D6OWST1k+kEcQSrCFWMBvf/iu7QhCnh7U3xQuTY+8npTD5+32GPg8SecmqKc2
-2CzeIs2LgtjZeOJVEqM7h0S2EQvVDFKvaYwPBt/QolOLV5h7z/0HJPT8vcP9SpIClxvyt7bP
-ZYoaorVyGTkwggWNMIIEdaADAgECAgwcOtRQhH7u81j4jncwDQYJKoZIhvcNAQELBQAwgZUx
-CzAJBgNVBAYTAkRFMUUwQwYDVQQKEzxWZXJlaW4genVyIEZvZXJkZXJ1bmcgZWluZXMgRGV1
-dHNjaGVuIEZvcnNjaHVuZ3NuZXR6ZXMgZS4gVi4xEDAOBgNVBAsTB0RGTi1QS0kxLTArBgNV
-BAMTJERGTi1WZXJlaW4gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgMjAeFw0xNjExMDMxNTI0
-NDhaFw0zMTAyMjIyMzU5NTlaMGoxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCYXllcm4xETAP
-BgNVBAcMCE11ZW5jaGVuMSAwHgYDVQQKDBdNYXgtUGxhbmNrLUdlc2VsbHNjaGFmdDEVMBMG
-A1UEAwwMTVBHIENBIC0gRzAyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnhx4
-59Lh4WqgOs/Md04XxU2yFtfM15ZuJV0PZP7BmqSJKLLPyqmOrADfNdJ5PIGBto2JBhtRRBHd
-G0GROOvTRHjzOga95WOTeura79T21FWwwAwa29OFnD3ZplQs6HgdwQrZWNi1WHNJxn/4mA19
-rNEBUc5urSIpZPvZi5XmlF3v3JHOlx3KWV7mUteB4pwEEfGTg4npPAJbp2o7arxQdoIq+Pu2
-OsvqhD7Rk4QeaX+EM1QS4lqd1otW4hE70h/ODPy1xffgbZiuotWQLC6nIwa65Qv6byqlIX0q
-Zuu99Vsu+r3sWYsL5SBkgecNI7fMJ5tfHrjoxfrKl/ErTAt8GQIDAQABo4ICBTCCAgEwEgYD
-VR0TAQH/BAgwBgEB/wIBATAOBgNVHQ8BAf8EBAMCAQYwKQYDVR0gBCIwIDANBgsrBgEEAYGt
-IYIsHjAPBg0rBgEEAYGtIYIsAQEEMB0GA1UdDgQWBBTEiKUH7rh7qgwTv9opdGNSG0lwFjAf
-BgNVHSMEGDAWgBST49gyJtrV8UqlkUrg6kviogzP4TCBjwYDVR0fBIGHMIGEMECgPqA8hjpo
-dHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWcyLWNhL3B1Yi9jcmwvY2Fjcmwu
-Y3JsMECgPqA8hjpodHRwOi8vY2RwMi5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWcyLWNhL3B1
-Yi9jcmwvY2FjcmwuY3JsMIHdBggrBgEFBQcBAQSB0DCBzTAzBggrBgEFBQcwAYYnaHR0cDov
-L29jc3AucGNhLmRmbi5kZS9PQ1NQLVNlcnZlci9PQ1NQMEoGCCsGAQUFBzAChj5odHRwOi8v
-Y2RwMS5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWcyLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNy
-dDBKBggrBgEFBQcwAoY+aHR0cDovL2NkcDIucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1nMi1j
-YS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQELBQADggEBABLpeD5FygzqOjj+
-/lAOy20UQOGWlx0RMuPcI4nuyFT8SGmK9lD7QCg/HoaJlfU/r78ex+SEide326evlFAoJXIF
-jVyzNltDhpMKrPIDuh2N12zyn1EtagqPL6hu4pVRzcBpl/F2HCvtmMx5K4WN1L1fmHWLcSap
-dhXLvAZ9RG/B3rqyULLSNN8xHXYXpmtvG0VGJAndZ+lj+BH7uvd3nHWnXEHC2q7iQlDUqg0a
-wIqWJgdLlx1Q8Dg/sodv0m+LN0kOzGvVDRCmowBdWGhhusD+duKV66pBl+qhC+4LipariWaM
-qK5ppMQROATjYeNRvwI+nDcEXr2vDaKmdbxgDVwwggWvMIIEl6ADAgECAgweKlJIhfynPMVG
-/KIwDQYJKoZIhvcNAQELBQAwajELMAkGA1UEBhMCREUxDzANBgNVBAgMBkJheWVybjERMA8G
-A1UEBwwITXVlbmNoZW4xIDAeBgNVBAoMF01heC1QbGFuY2stR2VzZWxsc2NoYWZ0MRUwEwYD
-VQQDDAxNUEcgQ0EgLSBHMDIwHhcNMTcxMTE0MTEzNDE2WhcNMjAxMTEzMTEzNDE2WjCBizEL
-MAkGA1UEBhMCREUxIDAeBgNVBAoMF01heC1QbGFuY2stR2VzZWxsc2NoYWZ0MTQwMgYDVQQL
-DCtNYXgtUGxhbmNrLUluc3RpdHV0IGZ1ZXIgbW9sZWt1bGFyZSBHZW5ldGlrMQ4wDAYDVQQL
-DAVNUElNRzEUMBIGA1UEAwwLUGF1bCBNZW56ZWwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
-ggEKAoIBAQDIh/UR/AX/YQ48VWWDMLTYtXjYJyhRHMc81ZHMMoaoG66lWB9MtKRTnB5lovLZ
-enTIUyPsCrMhTqV9CWzDf6v9gOTWVxHEYqrUwK5H1gx4XoK81nfV8oGV4EKuVmmikTXiztGz
-peyDmOY8o/EFNWP7YuRkY/lPQJQBeBHYq9AYIgX4StuXu83nusq4MDydygVOeZC15ts0tv3/
-6WmibmZd1OZRqxDOkoBbY3Djx6lERohs3IKS6RKiI7e90rCSy9rtidJBOvaQS9wvtOSKPx0a
-+2pAgJEVzZFjOAfBcXydXtqXhcpOi2VCyl+7+LnnTz016JJLsCBuWEcB3kP9nJYNAgMBAAGj
-ggIxMIICLTAJBgNVHRMEAjAAMA4GA1UdDwEB/wQEAwIF4DAdBgNVHSUEFjAUBggrBgEFBQcD
-AgYIKwYBBQUHAwQwHQYDVR0OBBYEFHM0Mc3XjMLlhWpp4JufRELL4A/qMB8GA1UdIwQYMBaA
-FMSIpQfuuHuqDBO/2il0Y1IbSXAWMCAGA1UdEQQZMBeBFXBtZW56ZWxAbW9sZ2VuLm1wZy5k
-ZTB9BgNVHR8EdjB0MDigNqA0hjJodHRwOi8vY2RwMS5wY2EuZGZuLmRlL21wZy1nMi1jYS9w
-dWIvY3JsL2NhY3JsLmNybDA4oDagNIYyaHR0cDovL2NkcDIucGNhLmRmbi5kZS9tcGctZzIt
-Y2EvcHViL2NybC9jYWNybC5jcmwwgc0GCCsGAQUFBwEBBIHAMIG9MDMGCCsGAQUFBzABhido
-dHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1AtU2VydmVyL09DU1AwQgYIKwYBBQUHMAKGNmh0
-dHA6Ly9jZHAxLnBjYS5kZm4uZGUvbXBnLWcyLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBC
-BggrBgEFBQcwAoY2aHR0cDovL2NkcDIucGNhLmRmbi5kZS9tcGctZzItY2EvcHViL2NhY2Vy
-dC9jYWNlcnQuY3J0MEAGA1UdIAQ5MDcwDwYNKwYBBAGBrSGCLAEBBDARBg8rBgEEAYGtIYIs
-AQEEAwYwEQYPKwYBBAGBrSGCLAIBBAMGMA0GCSqGSIb3DQEBCwUAA4IBAQCQs6bUDROpFO2F
-Qz2FMgrdb39VEo8P3DhmpqkaIMC5ZurGbbAL/tAR6lpe4af682nEOJ7VW86ilsIJgm1j0ueY
-aOuL8jrN4X7IF/8KdZnnNnImW3QVni6TCcc+7+ggci9JHtt0IDCj5vPJBpP/dKXLCN4M+exl
-GXYpfHgxh8gclJPY1rquhQrihCzHfKB01w9h9tWZDVMtSoy9EUJFhCXw7mYUsvBeJwZesN2B
-fndPkrXx6XWDdU3S1LyKgHlLIFtarLFm2Hb5zAUR33h+26cN6ohcGqGEEzgIG8tXS8gztEaj
-1s2RyzmKd4SXTkKR3GhkZNVWy+gM68J7jP6zzN+cMYIDmjCCA5YCAQEwejBqMQswCQYDVQQG
-EwJERTEPMA0GA1UECAwGQmF5ZXJuMREwDwYDVQQHDAhNdWVuY2hlbjEgMB4GA1UECgwXTWF4
-LVBsYW5jay1HZXNlbGxzY2hhZnQxFTATBgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzF
-RvyiMA0GCWCGSAFlAwQCAQUAoIIB8TAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-SIb3DQEJBTEPFw0xOTA4MTUxNzAwMDRaMC8GCSqGSIb3DQEJBDEiBCCYyEFSXayBEnPNgYGC
-YcMsTMPQo/6fCpp1yHkm+5pq5jBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglg
-hkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcG
-BSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGJBgkrBgEEAYI3EAQxfDB6MGoxCzAJBgNVBAYTAkRF
-MQ8wDQYDVQQIDAZCYXllcm4xETAPBgNVBAcMCE11ZW5jaGVuMSAwHgYDVQQKDBdNYXgtUGxh
-bmNrLUdlc2VsbHNjaGFmdDEVMBMGA1UEAwwMTVBHIENBIC0gRzAyAgweKlJIhfynPMVG/KIw
-gYsGCyqGSIb3DQEJEAILMXygejBqMQswCQYDVQQGEwJERTEPMA0GA1UECAwGQmF5ZXJuMREw
-DwYDVQQHDAhNdWVuY2hlbjEgMB4GA1UECgwXTWF4LVBsYW5jay1HZXNlbGxzY2hhZnQxFTAT
-BgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzFRvyiMA0GCSqGSIb3DQEBAQUABIIBADX9
-QCB7XSnM/7QrHJSUChxqDCCNQOGKQ6Zd6dToTt9zVGqWjievtNGmql6de62/uZcdBDDMpFDg
-dCvPeW34XX+pSXnbQI4dyEeO5q68HL8kEMx5vNm+OqlcpYQi1C+ErZGrREGax65HrCVSKKuY
-rIv/Z0wypzpT8NHtwa6o6/vBN2N1dErX+p3QLO/x9i1cssZY4/J6o5GYEpnCSJm+Mjg/0sFe
-SfeUINe5ogaYo8ce2ci4OZkNnbCR+Z7winWGNabJ+gAAlLiOPE0XxqfglV5onvlXVtDk4zJA
-x5czOlGOspEUeqjcJAPp8hBnyE/2MlYWlwWfFneiLk85WLQ5gykAAAAAAAA=
---------------ms070400000301090606090306--
-
---===============6184731431755067215==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+----->8-----
+diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
+index 3c731e087854..e22e9004f449 100644
+--- a/drivers/iommu/arm-smmu-impl.c
++++ b/drivers/iommu/arm-smmu-impl.c
+@@ -28,7 +28,7 @@ static int arm_smmu_gr0_ns(int offset)
+ static u32 arm_smmu_read_ns(struct arm_smmu_device *smmu, int page,
+ 			    int offset)
+ {
+-	if (page == 0)
++	if (page == ARM_SMMU_GR0)
+ 		offset = arm_smmu_gr0_ns(offset);
+ 	return readl_relaxed(arm_smmu_page(smmu, page) + offset);
+ }
+@@ -36,7 +36,7 @@ static u32 arm_smmu_read_ns(struct arm_smmu_device *smmu, int page,
+ static void arm_smmu_write_ns(struct arm_smmu_device *smmu, int page,
+ 			      int offset, u32 val)
+ {
+-	if (page == 0)
++	if (page == ARM_SMMU_GR0)
+ 		offset = arm_smmu_gr0_ns(offset);
+ 	writel_relaxed(val, arm_smmu_page(smmu, page) + offset);
+ }
+@@ -52,18 +52,17 @@ struct cavium_smmu {
+ 	struct arm_smmu_device smmu;
+ 	u32 id_base;
+ };
+-#define to_csmmu(s)	container_of(s, struct cavium_smmu, smmu)
+ 
+ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+ {
+ 	static atomic_t context_count = ATOMIC_INIT(0);
++	struct cavium_smmu *cs = container_of(smmu, struct cavium_smmu, smmu);
+ 	/*
+ 	 * Cavium CN88xx erratum #27704.
+ 	 * Ensure ASID and VMID allocation is unique across all SMMUs in
+ 	 * the system.
+ 	 */
+-	to_csmmu(smmu)->id_base = atomic_fetch_add(smmu->num_context_banks,
+-						   &context_count);
++	cs->id_base = atomic_fetch_add(smmu->num_context_banks, &context_count);
+ 	dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
+ 
+ 	return 0;
+@@ -71,12 +70,13 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ int cavium_init_context(struct arm_smmu_domain *smmu_domain)
+ {
+-	u32 id_base = to_csmmu(smmu_domain->smmu)->id_base;
++	struct cavium_smmu *cs = container_of(smmu_domain->smmu,
++					      struct cavium_smmu, smmu);
+ 
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
+-		smmu_domain->cfg.vmid += id_base;
++		smmu_domain->cfg.vmid += cs->id_base;
+ 	else
+-		smmu_domain->cfg.asid += id_base;
++		smmu_domain->cfg.asid += cs->id_base;
+ 
+ 	return 0;
+ }
+@@ -88,18 +88,18 @@ const struct arm_smmu_impl cavium_impl = {
+ 
+ struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smmu)
+ {
+-	struct cavium_smmu *csmmu;
++	struct cavium_smmu *cs;
+ 
+-	csmmu = devm_kzalloc(smmu->dev, sizeof(*csmmu), GFP_KERNEL);
+-	if (!csmmu)
++	cs = devm_kzalloc(smmu->dev, sizeof(*cs), GFP_KERNEL);
++	if (!cs)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	csmmu->smmu = *smmu;
+-	csmmu->smmu.impl = &cavium_impl;
++	cs->smmu = *smmu;
++	cs->smmu.impl = &cavium_impl;
+ 
+ 	devm_kfree(smmu->dev, smmu);
+ 
+-	return &csmmu->smmu;
++	return &cs->smmu;
+ }
+ 
+ 
+@@ -150,16 +150,25 @@ const struct arm_smmu_impl arm_mmu500_impl = {
+ 
+ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+ {
+-	/* The current quirks happen to be mutually-exclusive */
++	/*
++	 * We will inevitably have to combine model-specific implementation
++	 * quirks with platform-specific integration quirks, but everything
++	 * we currently support happens to work out as straightforward
++	 * mutually-exclusive assignments.
++	 */
++	switch (smmu->model) {
++	case ARM_MMU500:
++		smmu->impl = &arm_mmu500_impl;
++		break;
++	case CAVIUM_SMMUV2:
++		return cavium_smmu_impl_init(smmu);
++	default:
++		break;
++	}
++
+ 	if (of_property_read_bool(smmu->dev->of_node,
+ 				  "calxeda,smmu-secure-config-access"))
+ 		smmu->impl = &calxeda_impl;
+ 
+-	if (smmu->model == CAVIUM_SMMUV2)
+-		return cavium_smmu_impl_init(smmu);
+-
+-	if (smmu->model == ARM_MMU500)
+-		smmu->impl = &arm_mmu500_impl;
+-
+ 	return smmu;
+ }
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 251089d6428d..b8628e2ab579 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -264,7 +264,7 @@ static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&smmu->global_sync_lock, flags);
+-	__arm_smmu_tlb_sync(smmu, 0, ARM_SMMU_GR0_sTLBGSYNC,
++	__arm_smmu_tlb_sync(smmu, ARM_SMMU_GR0, ARM_SMMU_GR0_sTLBGSYNC,
+ 			    ARM_SMMU_GR0_sTLBGSTATUS);
+ 	spin_unlock_irqrestore(&smmu->global_sync_lock, flags);
+ }
+@@ -276,7 +276,7 @@ static void arm_smmu_tlb_sync_context(void *cookie)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+-	__arm_smmu_tlb_sync(smmu, smmu->numpage + smmu_domain->cfg.cbndx,
++	__arm_smmu_tlb_sync(smmu, ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx),
+ 			    ARM_SMMU_CB_TLBSYNC, ARM_SMMU_CB_TLBSTATUS);
+ 	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+ }
+@@ -326,7 +326,7 @@ static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
+ 	reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+ 
+ 	if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+-		iova &= ~12UL;
++		iova = (iova >> 12) << 12;
+ 		iova |= cfg->asid;
+ 		do {
+ 			arm_smmu_cb_write(smmu, idx, reg, iova);
+@@ -1197,7 +1197,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	else
+ 		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_ATS1PR, va);
+ 
+-	reg = arm_smmu_page(smmu, smmu->numpage + idx) + ARM_SMMU_CB_ATSR;
++	reg = arm_smmu_page(smmu, ARM_SMMU_CB(smmu, idx)) + ARM_SMMU_CB_ATSR;
+ 	if (readl_poll_timeout_atomic(reg, tmp, !(tmp & ATSR_ACTIVE), 5, 50)) {
+ 		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+ 		dev_err(dev,
+diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+index cf367c3b1bee..611ed742e56f 100644
+--- a/drivers/iommu/arm-smmu.h
++++ b/drivers/iommu/arm-smmu.h
+@@ -366,20 +366,28 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
+ 		writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+ }
+ 
+-#define arm_smmu_gr0_read(s, r)		arm_smmu_readl((s), 0, (r))
+-#define arm_smmu_gr0_write(s, r, v)	arm_smmu_writel((s), 0, (r), (v))
++#define ARM_SMMU_GR0		0
++#define ARM_SMMU_GR1		1
++#define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
+ 
+-#define arm_smmu_gr1_read(s, r)		arm_smmu_readl((s), 1, (r))
+-#define arm_smmu_gr1_write(s, r, v)	arm_smmu_writel((s), 1, (r), (v))
++#define arm_smmu_gr0_read(s, o)		\
++	arm_smmu_readl((s), ARM_SMMU_GR0, (o))
++#define arm_smmu_gr0_write(s, o, v)	\
++	arm_smmu_writel((s), ARM_SMMU_GR0, (o), (v))
+ 
+-#define arm_smmu_cb_read(s, n, r)				\
+-	arm_smmu_readl((s), (s)->numpage + (n), (r))
+-#define arm_smmu_cb_write(s, n, r, v)				\
+-	arm_smmu_writel((s), (s)->numpage + (n), (r), (v))
+-#define arm_smmu_cb_readq(s, n, r)				\
+-	arm_smmu_readq((s), (s)->numpage + (n), (r))
+-#define arm_smmu_cb_writeq(s, n, r, v)				\
+-	arm_smmu_writeq((s), (s)->numpage + (n), (r), (v))
++#define arm_smmu_gr1_read(s, o)		\
++	arm_smmu_readl((s), ARM_SMMU_GR1, (o))
++#define arm_smmu_gr1_write(s, o, v)	\
++	arm_smmu_writel((s), ARM_SMMU_GR1, (o), (v))
++
++#define arm_smmu_cb_read(s, n, o)	\
++	arm_smmu_readl((s), ARM_SMMU_CB((s), (n)), (o))
++#define arm_smmu_cb_write(s, n, o, v)	\
++	arm_smmu_writel((s), ARM_SMMU_CB((s), (n)), (o), (v))
++#define arm_smmu_cb_readq(s, n, o)	\
++	arm_smmu_readq((s), ARM_SMMU_CB((s), (n)), (o))
++#define arm_smmu_cb_writeq(s, n, o, v)	\
++	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
+ 
+ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
+ 
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index dadc707573a2..a2062d13584f 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -156,7 +156,7 @@ static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
+ 		size_t s = size;
+ 
+-		iova &= ~12UL;
++		iova = (iova >> 12) << 12;
+ 		iova |= ctx->asid;
+ 		do {
+ 			iommu_writel(ctx, reg, iova);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6184731431755067215==--
