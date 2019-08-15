@@ -2,57 +2,81 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013A0C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 20:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3A2C3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 21:17:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF0222086C
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 20:11:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF0222086C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6164E2083B
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 21:17:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YAjHWRtW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6164E2083B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A618C12B5;
-	Thu, 15 Aug 2019 20:09:53 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1E2851207;
+	Thu, 15 Aug 2019 21:17:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E7A011201
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DC2371179
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 20:09:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 21C3067F
+	Thu, 15 Aug 2019 21:17:57 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+	[209.85.210.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5FE1B67F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 20:09:49 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	15 Aug 2019 13:09:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,389,1559545200"; d="scan'208";a="188596254"
-Received: from jacob-builder.jf.intel.com ([10.7.199.155])
-	by orsmga002.jf.intel.com with ESMTP; 15 Aug 2019 13:09:42 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
-	Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v5 18/19] iommu/vt-d: Support flushing more translation cache
-	types
-Date: Thu, 15 Aug 2019 13:13:24 -0700
-Message-Id: <1565900005-62508-19-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1565900005-62508-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	Thu, 15 Aug 2019 21:17:57 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id i30so1943182pfk.9
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 15 Aug 2019 14:17:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=euAnvJlLHwVUNWqq2xyGqSRGjCXD2Duyc9/+lj5jrdM=;
+	b=YAjHWRtW3eRnYmQ932JYs9q3eRzTpat4T4ge8uPo+kqBuB27goMgfeDi36qWlmLDb7
+	9m4B9SXumWgoAtKsKvrLuaw6osBlWEgP2+FZI54AlvdB8kHCxIDeHYYrg3LOKPW+He+2
+	KzsobapzVAFEJs56O3gwSQNWJxo+ehjouFAJuIprBzu1P1lN554GjIhFVLupIHVDUnC1
+	3cqWj26wPFyzB9n9FHOXUQ3OOlQK+h1ZAjutsMo+TCjgMqvRVJVvGhVTGygYiWv/q8RZ
+	LrHIp7N8L3W0tn4MAXihdzVFR+3fggRzBW1XCbmSCbwMhIABBUmLOwTDMAxRvlDIm+Li
+	aLEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=euAnvJlLHwVUNWqq2xyGqSRGjCXD2Duyc9/+lj5jrdM=;
+	b=GR0rZjeJ44ucg8rL1VPptfAP3Oa6fqS9fZ7O6tTYXRE8T7Di2driLoWtr/a2GUpi4p
+	8JiPFpYzHsZPV7sh/nUlkvEvBqjl5o24VIOzwZVSPkaSAuIrE9lzl/PlVqe0yNxG6gma
+	j6lw7WXy8ddR1E9O7i9BtFXHg9GHoZCLJ49M1YC5f65FGAMK5Aw4Zv4JJ6+ha7Ha+fTl
+	TlpSR0bTziZcWOD2hCs10swUFBI08O+505y2+tWeaMUPs9eLU0vFWk6lJO+e6zgUWewj
+	L1ca90yVHjSrg21wNzRS+9Ce5ltXDOGmoCx1H2+/v8IVzNRlibr2OKOP6r+goT/zouxF
+	tWzA==
+X-Gm-Message-State: APjAAAUUuF1Jay7Wm8voLNGdyvJbSTjPjukaaJQj+lgQJ3ST9cW9Nq/0
+	VvbdjMDGovvQylhHyQRLj4krJVrL2ExKZZLKBHA=
+X-Google-Smtp-Source: APXvYqxJJtdZgSXLEanOrlC8xqY0wjMqhsc/vj6RWI1cNg/RS0kRPQ0q2Lww/wl133yUbf0iQai3U9kADReUf0LJIDc=
+X-Received: by 2002:a17:90a:a114:: with SMTP id
+	s20mr4052992pjp.20.1565903876841; 
+	Thu, 15 Aug 2019 14:17:56 -0700 (PDT)
+MIME-Version: 1.0
 References: <1565900005-62508-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1565900005-62508-17-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1565900005-62508-17-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 16 Aug 2019 00:17:44 +0300
+Message-ID: <CAHp75VdD4SpA3oR8KBr6WihLkBgaaUn6f7tFdO7H-2n-hbun_Q@mail.gmail.com>
+Subject: Re: [PATCH v5 16/19] iommu/vt-d: Misc macro clean up for SVM
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
 	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
-	Jonathan Cameron <jic23@kernel.org>
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,161 +89,169 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When Shared Virtual Memory is exposed to a guest via vIOMMU, scalable
-IOTLB invalidation may be passed down from outside IOMMU subsystems.
-This patch adds invalidation functions that can be used for additional
-translation cache types.
+On Thu, Aug 15, 2019 at 11:52 PM Jacob Pan
+<jacob.jun.pan@linux.intel.com> wrote:
+>
+> Use combined macros for_each_svm_dev() to simplify SVM device iteration
+> and error checking.
+>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> ---
+>  drivers/iommu/intel-svm.c | 85 +++++++++++++++++++++++------------------------
+>  1 file changed, 41 insertions(+), 44 deletions(-)
+>
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 5a688a5..ea6f2e2 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -218,6 +218,10 @@ static const struct mmu_notifier_ops intel_mmuops = {
+>  static DEFINE_MUTEX(pasid_mutex);
+>  static LIST_HEAD(global_svm_list);
+>
+> +#define for_each_svm_dev(svm, dev)                     \
+> +       list_for_each_entry(sdev, &svm->devs, list)     \
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/dmar.c        | 46 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.c |  3 ++-
- include/linux/intel-iommu.h | 21 +++++++++++++++++----
- 3 files changed, 65 insertions(+), 5 deletions(-)
+> +       if (dev == sdev->dev)                           \
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 5d0754e..1da4c68 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1345,6 +1345,21 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	qi_submit_sync(&desc, iommu);
- }
- 
-+/* PASID-based IOTLB Invalidate */
-+void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr, u32 pasid,
-+		unsigned int size_order, u64 granu, int ih)
-+{
-+	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
-+
-+	desc.qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
-+		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
-+	desc.qw1 = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_IH(ih) |
-+		QI_EIOTLB_AM(size_order);
-+	desc.qw2 = 0;
-+	desc.qw3 = 0;
-+	qi_submit_sync(&desc, iommu);
-+}
-+
- void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask)
- {
-@@ -1368,6 +1383,37 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	qi_submit_sync(&desc, iommu);
- }
- 
-+/* PASID-based device IOTLB Invalidate */
-+void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+		u32 pasid,  u16 qdep, u64 addr, unsigned size_order, u64 granu)
-+{
-+	struct qi_desc desc;
-+	unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
-+
-+	desc.qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
-+		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
-+		QI_DEV_IOTLB_PFSID(pfsid);
-+	desc.qw1 = QI_DEV_EIOTLB_GLOB(granu);
-+
-+	desc.qw1 |= addr & ~mask;
-+	/* If S bit is 0, we only flush a single page. If S bit is set,
-+	 * The least significant zero bit indicates the invalidation address
-+	 * range. VT-d spec 6.5.2.6.
-+	 * e.g. address bit 12[0] indicates 8KB, 13[0] indicates 16KB.
-+	 */
-+	if (size_order)
-+		desc.qw1 |= QI_DEV_EIOTLB_SIZE;
-+
-+	qi_submit_sync(&desc, iommu);
-+}
-+
-+void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
-+{
-+	struct qi_desc desc = {.qw1 = 0, .qw2 = 0, .qw3 = 0};
-+
-+	desc.qw0 = QI_PC_PASID(pasid) | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_TYPE;
-+	qi_submit_sync(&desc, iommu);
-+}
- /*
-  * Disable Queued Invalidation interface.
-  */
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index fd2c82f..ff7e877 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -518,7 +518,8 @@ pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
- {
- 	struct qi_desc desc;
- 
--	desc.qw0 = QI_PC_DID(did) | QI_PC_PASID_SEL | QI_PC_PASID(pasid);
-+	desc.qw0 = QI_PC_DID(did) | QI_PC_GRAN(QI_PC_PASID_SEL) |
-+		QI_PC_PASID(pasid) | QI_PC_TYPE;
- 	desc.qw1 = 0;
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index d673b39..682eafa1 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -327,7 +327,7 @@ enum {
- #define QI_IOTLB_GRAN(gran) 	(((u64)gran) >> (DMA_TLB_FLUSH_GRANU_OFFSET-4))
- #define QI_IOTLB_ADDR(addr)	(((u64)addr) & VTD_PAGE_MASK)
- #define QI_IOTLB_IH(ih)		(((u64)ih) << 6)
--#define QI_IOTLB_AM(am)		(((u8)am))
-+#define QI_IOTLB_AM(am)		(((u8)am) & 0x3f)
- 
- #define QI_CC_FM(fm)		(((u64)fm) << 48)
- #define QI_CC_SID(sid)		(((u64)sid) << 32)
-@@ -345,17 +345,22 @@ enum {
- #define QI_PC_DID(did)		(((u64)did) << 16)
- #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
- 
--#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
--#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
-+/* PASID cache invalidation granu */
-+#define QI_PC_ALL_PASIDS	0
-+#define QI_PC_PASID_SEL		1
- 
- #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
- #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
- #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
--#define QI_EIOTLB_AM(am)	(((u64)am))
-+#define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
- #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
- #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
- #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
- 
-+/* QI Dev-IOTLB inv granu */
-+#define QI_DEV_IOTLB_GRAN_ALL		1
-+#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
-+
- #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
- #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
- #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
-@@ -652,8 +657,16 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
- 			     u8 fm, u64 type);
- extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 			  unsigned int size_order, u64 type);
-+extern void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-+			u32 pasid, unsigned int size_order, u64 type, int ih);
- extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask);
-+
-+extern void qi_flush_dev_piotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+			u32 pasid, u16 qdep, u64 addr, unsigned size_order, u64 granu);
-+
-+extern void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
-+
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
- 
- extern int dmar_ir_support(void);
+This should be
+  if (dev != sdev->dev) {} else
+and no trailing \ is neeeded.
+
+The rationale of above form to avoid
+for_each_foo() {
+} else {
+  ...WTF?!..
+}
+
+> +
+>  int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
+>  {
+>         struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+> @@ -263,15 +267,13 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+>                                 goto out;
+>                         }
+>
+> -                       list_for_each_entry(sdev, &svm->devs, list) {
+> -                               if (dev == sdev->dev) {
+> -                                       if (sdev->ops != ops) {
+> -                                               ret = -EBUSY;
+> -                                               goto out;
+> -                                       }
+> -                                       sdev->users++;
+> -                                       goto success;
+> +                       for_each_svm_dev(svm, dev) {
+> +                               if (sdev->ops != ops) {
+> +                                       ret = -EBUSY;
+> +                                       goto out;
+>                                 }
+> +                               sdev->users++;
+> +                               goto success;
+>                         }
+>
+>                         break;
+> @@ -408,48 +410,43 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+>                 goto out;
+>
+>         svm = ioasid_find(NULL, pasid, NULL);
+> -       if (IS_ERR(svm)) {
+> +       if (IS_ERR_OR_NULL(svm)) {
+>                 ret = PTR_ERR(svm);
+>                 goto out;
+>         }
+>
+> -       if (!svm)
+> -               goto out;
+> +       for_each_svm_dev(svm, dev) {
+> +               ret = 0;
+> +               sdev->users--;
+> +               if (!sdev->users) {
+> +                       list_del_rcu(&sdev->list);
+> +                       /* Flush the PASID cache and IOTLB for this device.
+> +                        * Note that we do depend on the hardware *not* using
+> +                        * the PASID any more. Just as we depend on other
+> +                        * devices never using PASIDs that they have no right
+> +                        * to use. We have a *shared* PASID table, because it's
+> +                        * large and has to be physically contiguous. So it's
+> +                        * hard to be as defensive as we might like. */
+> +                       intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+> +                       intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
+> +                       kfree_rcu(sdev, rcu);
+> +
+> +                       if (list_empty(&svm->devs)) {
+> +                               ioasid_free(svm->pasid);
+> +                               if (svm->mm)
+> +                                       mmu_notifier_unregister(&svm->notifier, svm->mm);
+>
+> -       list_for_each_entry(sdev, &svm->devs, list) {
+> -               if (dev == sdev->dev) {
+> -                       ret = 0;
+> -                       sdev->users--;
+> -                       if (!sdev->users) {
+> -                               list_del_rcu(&sdev->list);
+> -                               /* Flush the PASID cache and IOTLB for this device.
+> -                                * Note that we do depend on the hardware *not* using
+> -                                * the PASID any more. Just as we depend on other
+> -                                * devices never using PASIDs that they have no right
+> -                                * to use. We have a *shared* PASID table, because it's
+> -                                * large and has to be physically contiguous. So it's
+> -                                * hard to be as defensive as we might like. */
+> -                               intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+> -                               intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
+> -                               kfree_rcu(sdev, rcu);
+> -
+> -                               if (list_empty(&svm->devs)) {
+> -                                       ioasid_free(svm->pasid);
+> -                                       if (svm->mm)
+> -                                               mmu_notifier_unregister(&svm->notifier, svm->mm);
+> -
+> -                                       list_del(&svm->list);
+> -
+> -                                       /* We mandate that no page faults may be outstanding
+> -                                        * for the PASID when intel_svm_unbind_mm() is called.
+> -                                        * If that is not obeyed, subtle errors will happen.
+> -                                        * Let's make them less subtle... */
+> -                                       memset(svm, 0x6b, sizeof(*svm));
+> -                                       kfree(svm);
+> -                               }
+> +                               list_del(&svm->list);
+> +
+> +                               /* We mandate that no page faults may be outstanding
+> +                                * for the PASID when intel_svm_unbind_mm() is called.
+> +                                * If that is not obeyed, subtle errors will happen.
+> +                                * Let's make them less subtle... */
+> +                               memset(svm, 0x6b, sizeof(*svm));
+> +                               kfree(svm);
+>                         }
+> -                       break;
+>                 }
+> +               break;
+>         }
+>   out:
+>         mutex_unlock(&pasid_mutex);
+> @@ -585,7 +582,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+>                          * to unbind the mm while any page faults are outstanding.
+>                          * So we only need RCU to protect the internal idr code. */
+>                         rcu_read_unlock();
+> -                       if (IS_ERR(svm) || !svm) {
+> +                       if (IS_ERR_OR_NULL(svm)) {
+>                                 pr_err("%s: Page request for invalid PASID %d: %08llx %08llx\n",
+>                                        iommu->name, req->pasid, ((unsigned long long *)req)[0],
+>                                        ((unsigned long long *)req)[1]);
+> --
+> 2.7.4
+>
+
+
 -- 
-2.7.4
-
+With Best Regards,
+Andy Shevchenko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
