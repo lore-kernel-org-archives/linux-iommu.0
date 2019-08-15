@@ -2,51 +2,131 @@ Return-Path: <SRS0=B4OP=WL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D24C3A589
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC4BC3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 19:46:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 57FCC2083B
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:39:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57FCC2083B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 728852089E
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 19:46:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=Mellanox.com header.i=@Mellanox.com header.b="NOCyQ0RJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 728852089E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mellanox.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6385210D1;
-	Thu, 15 Aug 2019 18:38:11 +0000 (UTC)
-Received: from smtp2.linuxfoundation.org (smtp2.linux-foundation.org
-	[172.17.192.36])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0389A107E
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 060D611E5;
+	Thu, 15 Aug 2019 19:46:40 +0000 (UTC)
+Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
+	[172.17.192.35])
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2E750119C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 18:38:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp2.linuxfoundation.org (Postfix) with ESMTP id 475D21DD19
+	Thu, 15 Aug 2019 19:46:38 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com
+	(mail-eopbgr10046.outbound.protection.outlook.com [40.107.1.46])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3E66F87E
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 18:38:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D97E11596;
-	Thu, 15 Aug 2019 11:38:08 -0700 (PDT)
-Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
-	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8603D3F694; 
-	Thu, 15 Aug 2019 11:38:07 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: will@kernel.org
-Subject: [PATCH v2 17/17] iommu/arm-smmu: Add context init implementation hook
-Date: Thu, 15 Aug 2019 19:37:37 +0100
-Message-Id: <f50c14834bb7a4f0f7c765d433c2defdb03661c9.1565892337.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.21.0.dirty
-In-Reply-To: <cover.1565892337.git.robin.murphy@arm.com>
-References: <cover.1565892337.git.robin.murphy@arm.com>
+	Thu, 15 Aug 2019 19:46:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=AejlJQM/OKLo2+k9TEkPp1nwsFoCCBMUqabBrzobO/QgkF4UIemLMS5WECx4sEdhgaSfcfmDQ+/SQhbLZ4r59pUeJCc3lAeCZQ6vuki57qRbUoF1+PWn+a0seJnkj99cpZumNVSok4Kjv+UiCWnmgc+1aAnLe/OhUZJAAP+tf+wRK/mM5BmjtiHzRh+O4Ix3G7WrPBWJDotqMfjVraeXlnTweT0BpFKfQpITo9fkWgDElkZGVQZBGsSs1tVxRmp+fHXlzR7Pag9Wk+Z24qQw5+86y8k36KHggTX6MSD9wyd920v3i5j/id8EnaYLOnneF0YQjwBAR+Gq5/qrfIOk2w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=w0BTBF8kBiLrHFHJkVGaHXIMzhmWMU/iNoD1oXuo9IM=;
+	b=a4g93HA7YNi34/bB4mruBaU4piOs7lnki1BwSA/APcFccMD19aOE9Sm2VLWqWJTVM0lpof2gLxiW2pw6HA/LZrTRsVdpyoeetpsa7C0WArGdUZwQR7ikuYt/z0XCx/747M1//XgjrLw/9TnMGAgh1jSyrRbKX3Ls1Nt2c42/hgvmK8hBqr7UpVgHOkUgqL+KytTXfPk9dXIY1O3QrKgEheIq/9ehx687zVu56ly0WldAhaRJiYRYwT1xj+H4t9j0L5VWXPqy4eQ0maartBDvYwe6uFwT3r0eT5uDQae8t2Cctkn6Amj73GwGiepIYsbH2Z2ygmBvgIv1euplWTH4Cw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=mellanox.com;
+	dmarc=pass action=none header.from=mellanox.com; 
+	dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+	s=selector2;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=w0BTBF8kBiLrHFHJkVGaHXIMzhmWMU/iNoD1oXuo9IM=;
+	b=NOCyQ0RJptuOlGmC66pGD1CZi5Sr530aX0F//3KLxm8rlhs/T8hWJXKdOwFXsqgg4U5DpcEpUq2cMksGRMqM689bq0J8wZKL+T+7aLbxir19IBnoxXB+lxgu3kB0tHl1YZb/1IY3Cy3az7xAZzldEgmQy3FJGB62PmZoDQA6yQU=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+	VI1PR05MB5168.eurprd05.prod.outlook.com (20.178.10.160) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2157.21; Thu, 15 Aug 2019 19:46:26 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+	([fe80::1d6:9c67:ea2d:38a7]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+	([fe80::1d6:9c67:ea2d:38a7%6]) with mapi id 15.20.2157.022;
+	Thu, 15 Aug 2019 19:46:26 +0000
+From: Jason Gunthorpe <jgg@mellanox.com>
+To: "christian.koenig@amd.com" <christian.koenig@amd.com>
+Subject: Re: [PATCH v3 hmm 08/11] drm/radeon: use mmu_notifier_get/put for
+	struct radeon_mn
+Thread-Topic: [PATCH v3 hmm 08/11] drm/radeon: use mmu_notifier_get/put for
+	struct radeon_mn
+Thread-Index: AQHVTKz1YDgPM7GGLU27kR5zKXuwhab77XGAgAC9boA=
+Date: Thu, 15 Aug 2019 19:46:26 +0000
+Message-ID: <20190815194621.GF22970@mellanox.com>
+References: <20190806231548.25242-1-jgg@ziepe.ca>
+	<20190806231548.25242-9-jgg@ziepe.ca>
+	<2baff2e5-b923-c39b-98e5-b3e7f77bd6d3@gmail.com>
+In-Reply-To: <2baff2e5-b923-c39b-98e5-b3e7f77bd6d3@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: YQBPR0101CA0057.CANPRD01.PROD.OUTLOOK.COM
+	(2603:10b6:c00:1::34) To VI1PR05MB4141.eurprd05.prod.outlook.com
+	(2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [156.34.55.100]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 28c89de1-b5a2-4a9a-c12d-08d721b9428c
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0; PCL:0;
+	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
+	SRVR:VI1PR05MB5168; 
+x-ms-traffictypediagnostic: VI1PR05MB5168:
+x-microsoft-antispam-prvs: <VI1PR05MB51681C1EF442D179C3BE8696CFAC0@VI1PR05MB5168.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 01304918F3
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(199004)(189003)(6506007)(305945005)(2351001)(11346002)(36756003)(186003)(2616005)(102836004)(7416002)(66476007)(14454004)(64756008)(66556008)(26005)(486006)(446003)(66446008)(76176011)(476003)(66946007)(386003)(5660300002)(52116002)(7736002)(4326008)(316002)(256004)(66066001)(71200400001)(2906002)(33656002)(54906003)(81166006)(8676002)(1076003)(6512007)(25786009)(81156014)(71190400001)(6486002)(3846002)(6116002)(66574012)(99286004)(53936002)(478600001)(5640700003)(229853002)(86362001)(6916009)(8936002)(6246003)(6436002)(2501003);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR05MB5168;
+	H:VI1PR05MB4141.eurprd05.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: fILogM5ET6wCipH9DgoM3HqNITLwlrxJI2cgDafFx5J9icOy7soEV1u/6g/yFdRMglGjJikP8+X19/UX2lPTWyn+kxdMSMeD9cwhCSRrEAf6IuXOSlStS2IlrXHAEwvuJsqLp5ge8B5d+0MmE+0r7yT0ZiU82tFXz5lbVuFw7DmiCVKKmmmlj8UQgiI24v1LSAU09TWm7MpD2LTXmaTWVRHr6ZSmxFsNjbM+HHP6Iwlry4K9Dk/WDEXiUSWcqKuutbYNNOGSsNMra+0+54JMj4OwFocKLSrhWQBRu44Ap37S7KztIlp0xPX49c+2Uhcjz4N37WYO2tBC/Gj0RNFzoMvtiHin7s6yAiSuwO9tVerzA2tGBUDCS1Y3LvB0BPJSMPfVYE119C2WMnrvNyrimbmyChHdxlSOiMvOrFTpN5k=
+x-ms-exchange-transport-forked: True
+Content-ID: <2697329F3A1E3A4682A1061BFB978A84@eurprd05.prod.outlook.com>
 MIME-Version: 1.0
-Cc: bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org,
-	gregory.clement@bootlin.com, linux-arm-kernel@lists.infradead.org
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28c89de1-b5a2-4a9a-c12d-08d721b9428c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 19:46:26.7080 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wr44nuzrOFqyQ8CDBnIZBpKKVc1F/faVzxn1IB0CV8N2pnaiWwXawzoXNPWFVXppCL/XneYKDHgeBk/kLVkTpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5168
+Cc: Andrea Arcangeli <aarcange@redhat.com>,
+	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
+	Ralph Campbell <rcampbell@nvidia.com>, Dimitri Sivanich <sivanich@sgi.com>,
+	Gavin Shan <shangw@linux.vnet.ibm.com>,
+	Andrea Righi <andrea@betterlinux.com>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	John Hubbard <jhubbard@nvidia.com>, "Kuehling,
+	Felix" <Felix.Kuehling@amd.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
+	=?utf-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -59,261 +139,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Allocating and initialising a context for a domain is another point
-where certain implementations are known to want special behaviour.
-Currently the other half of the Cavium workaround comes into play here,
-so let's finish the job to get the whole thing right out of the way.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm-smmu-impl.c | 42 ++++++++++++++++++++++++++---
- drivers/iommu/arm-smmu.c      | 51 +++++++----------------------------
- drivers/iommu/arm-smmu.h      | 42 +++++++++++++++++++++++++++--
- 3 files changed, 87 insertions(+), 48 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index 4dc8b1c4befb..e22e9004f449 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -48,25 +48,60 @@ const struct arm_smmu_impl calxeda_impl = {
- };
- 
- 
-+struct cavium_smmu {
-+	struct arm_smmu_device smmu;
-+	u32 id_base;
-+};
-+
- static int cavium_cfg_probe(struct arm_smmu_device *smmu)
- {
- 	static atomic_t context_count = ATOMIC_INIT(0);
-+	struct cavium_smmu *cs = container_of(smmu, struct cavium_smmu, smmu);
- 	/*
- 	 * Cavium CN88xx erratum #27704.
- 	 * Ensure ASID and VMID allocation is unique across all SMMUs in
- 	 * the system.
- 	 */
--	smmu->cavium_id_base = atomic_fetch_add(smmu->num_context_banks,
--						   &context_count);
-+	cs->id_base = atomic_fetch_add(smmu->num_context_banks, &context_count);
- 	dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
- 
- 	return 0;
- }
- 
-+int cavium_init_context(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct cavium_smmu *cs = container_of(smmu_domain->smmu,
-+					      struct cavium_smmu, smmu);
-+
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
-+		smmu_domain->cfg.vmid += cs->id_base;
-+	else
-+		smmu_domain->cfg.asid += cs->id_base;
-+
-+	return 0;
-+}
-+
- const struct arm_smmu_impl cavium_impl = {
- 	.cfg_probe = cavium_cfg_probe,
-+	.init_context = cavium_init_context,
- };
- 
-+struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smmu)
-+{
-+	struct cavium_smmu *cs;
-+
-+	cs = devm_kzalloc(smmu->dev, sizeof(*cs), GFP_KERNEL);
-+	if (!cs)
-+		return ERR_PTR(-ENOMEM);
-+
-+	cs->smmu = *smmu;
-+	cs->smmu.impl = &cavium_impl;
-+
-+	devm_kfree(smmu->dev, smmu);
-+
-+	return &cs->smmu;
-+}
-+
- 
- #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
- 
-@@ -126,8 +161,7 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 		smmu->impl = &arm_mmu500_impl;
- 		break;
- 	case CAVIUM_SMMUV2:
--		smmu->impl = &cavium_impl;
--		break;
-+		return cavium_smmu_impl_init(smmu);
- 	default:
- 		break;
- 	}
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index fc98992d120d..b8628e2ab579 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -27,7 +27,6 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/io-64-nonatomic-hi-lo.h>
--#include <linux/io-pgtable.h>
- #include <linux/iopoll.h>
- #include <linux/init.h>
- #include <linux/moduleparam.h>
-@@ -111,44 +110,6 @@ struct arm_smmu_master_cfg {
- #define for_each_cfg_sme(fw, i, idx) \
- 	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
- 
--enum arm_smmu_context_fmt {
--	ARM_SMMU_CTX_FMT_NONE,
--	ARM_SMMU_CTX_FMT_AARCH64,
--	ARM_SMMU_CTX_FMT_AARCH32_L,
--	ARM_SMMU_CTX_FMT_AARCH32_S,
--};
--
--struct arm_smmu_cfg {
--	u8				cbndx;
--	u8				irptndx;
--	union {
--		u16			asid;
--		u16			vmid;
--	};
--	enum arm_smmu_cbar_type		cbar;
--	enum arm_smmu_context_fmt	fmt;
--};
--#define INVALID_IRPTNDX			0xff
--
--enum arm_smmu_domain_stage {
--	ARM_SMMU_DOMAIN_S1 = 0,
--	ARM_SMMU_DOMAIN_S2,
--	ARM_SMMU_DOMAIN_NESTED,
--	ARM_SMMU_DOMAIN_BYPASS,
--};
--
--struct arm_smmu_domain {
--	struct arm_smmu_device		*smmu;
--	struct io_pgtable_ops		*pgtbl_ops;
--	const struct iommu_gather_ops	*tlb_ops;
--	struct arm_smmu_cfg		cfg;
--	enum arm_smmu_domain_stage	stage;
--	bool				non_strict;
--	struct mutex			init_mutex; /* Protects smmu pointer */
--	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
--	struct iommu_domain		domain;
--};
--
- static bool using_legacy_binding, using_generic_binding;
- 
- static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
-@@ -749,9 +710,16 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	}
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
--		cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
-+		cfg->vmid = cfg->cbndx + 1;
- 	else
--		cfg->asid = cfg->cbndx + smmu->cavium_id_base;
-+		cfg->asid = cfg->cbndx;
-+
-+	smmu_domain->smmu = smmu;
-+	if (smmu->impl && smmu->impl->init_context) {
-+		ret = smmu->impl->init_context(smmu_domain);
-+		if (ret)
-+			goto out_unlock;
-+	}
- 
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
-@@ -765,7 +733,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu_domain->non_strict)
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 
--	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops) {
- 		ret = -ENOMEM;
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index ddafe872a396..611ed742e56f 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -14,6 +14,7 @@
- #include <linux/bits.h>
- #include <linux/clk.h>
- #include <linux/device.h>
-+#include <linux/io-pgtable.h>
- #include <linux/iommu.h>
- #include <linux/mutex.h>
- #include <linux/spinlock.h>
-@@ -270,14 +271,50 @@ struct arm_smmu_device {
- 	struct clk_bulk_data		*clks;
- 	int				num_clks;
- 
--	u32				cavium_id_base; /* Specific to Cavium */
--
- 	spinlock_t			global_sync_lock;
- 
- 	/* IOMMU core code handle */
- 	struct iommu_device		iommu;
- };
- 
-+enum arm_smmu_context_fmt {
-+	ARM_SMMU_CTX_FMT_NONE,
-+	ARM_SMMU_CTX_FMT_AARCH64,
-+	ARM_SMMU_CTX_FMT_AARCH32_L,
-+	ARM_SMMU_CTX_FMT_AARCH32_S,
-+};
-+
-+struct arm_smmu_cfg {
-+	u8				cbndx;
-+	u8				irptndx;
-+	union {
-+		u16			asid;
-+		u16			vmid;
-+	};
-+	enum arm_smmu_cbar_type		cbar;
-+	enum arm_smmu_context_fmt	fmt;
-+};
-+#define INVALID_IRPTNDX			0xff
-+
-+enum arm_smmu_domain_stage {
-+	ARM_SMMU_DOMAIN_S1 = 0,
-+	ARM_SMMU_DOMAIN_S2,
-+	ARM_SMMU_DOMAIN_NESTED,
-+	ARM_SMMU_DOMAIN_BYPASS,
-+};
-+
-+struct arm_smmu_domain {
-+	struct arm_smmu_device		*smmu;
-+	struct io_pgtable_ops		*pgtbl_ops;
-+	const struct iommu_gather_ops	*tlb_ops;
-+	struct arm_smmu_cfg		cfg;
-+	enum arm_smmu_domain_stage	stage;
-+	bool				non_strict;
-+	struct mutex			init_mutex; /* Protects smmu pointer */
-+	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
-+	struct iommu_domain		domain;
-+};
-+
- 
- /* Implementation details, yay! */
- struct arm_smmu_impl {
-@@ -289,6 +326,7 @@ struct arm_smmu_impl {
- 			    u64 val);
- 	int (*cfg_probe)(struct arm_smmu_device *smmu);
- 	int (*reset)(struct arm_smmu_device *smmu);
-+	int (*init_context)(struct arm_smmu_domain *smmu_domain);
- };
- 
- static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
--- 
-2.21.0.dirty
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCBBdWcgMTUsIDIwMTkgYXQgMTA6Mjg6MjFBTSArMDIwMCwgQ2hyaXN0aWFuIEvDtm5p
+ZyB3cm90ZToNCj4gQW0gMDcuMDguMTkgdW0gMDE6MTUgc2NocmllYiBKYXNvbiBHdW50aG9ycGU6
+DQo+ID4gRnJvbTogSmFzb24gR3VudGhvcnBlIDxqZ2dAbWVsbGFub3guY29tPg0KPiA+IA0KPiA+
+IHJhZGVvbiBpcyB1c2luZyBhIGRldmljZSBnbG9iYWwgaGFzaCB0YWJsZSB0byB0cmFjayB3aGF0
+IG1tdV9ub3RpZmllcnMNCj4gPiBoYXZlIGJlZW4gcmVnaXN0ZXJlZCBvbiBzdHJ1Y3QgbW0uIFRo
+aXMgaXMgYmV0dGVyIHNlcnZlZCB3aXRoIHRoZSBuZXcNCj4gPiBnZXQvcHV0IHNjaGVtZSBpbnN0
+ZWFkLg0KPiA+IA0KPiA+IHJhZGVvbiBoYXMgYSBidWcgd2hlcmUgaXQgd2FzIG5vdCBibG9ja2lu
+ZyBub3RpZmllciByZWxlYXNlKCkgdW50aWwgYWxsDQo+ID4gdGhlIEJPJ3MgaGFkIGJlZW4gaW52
+YWxpZGF0ZWQuIFRoaXMgY291bGQgcmVzdWx0IGluIGEgdXNlIGFmdGVyIGZyZWUgb2YNCj4gPiBw
+YWdlcyB0aGUgQk9zLiBUaGlzIGlzIHRpZWQgaW50byBhIHNlY29uZCBidWcgd2hlcmUgcmFkZW9u
+IGxlZnQgdGhlDQo+ID4gbm90aWZpZXJzIHJ1bm5pbmcgZW5kbGVzc2x5IGV2ZW4gb25jZSB0aGUg
+aW50ZXJ2YWwgdHJlZSBiZWNhbWUNCj4gPiBlbXB0eS4gVGhpcyBjb3VsZCByZXN1bHQgaW4gYSB1
+c2UgYWZ0ZXIgZnJlZSB3aXRoIG1vZHVsZSB1bmxvYWQuDQo+ID4gDQo+ID4gQm90aCBhcmUgZml4
+ZWQgYnkgY2hhbmdpbmcgdGhlIGxpZmV0aW1lIG1vZGVsLCB0aGUgQk9zIGV4aXN0IGluIHRoZQ0K
+PiA+IGludGVydmFsIHRyZWUgd2l0aCB0aGVpciBuYXR1cmFsIGxpZmV0aW1lcyBpbmRlcGVuZGVu
+dCBvZiB0aGUgbW1fc3RydWN0DQo+ID4gbGlmZXRpbWUgdXNpbmcgdGhlIGdldC9wdXQgc2NoZW1l
+LiBUaGUgcmVsZWFzZSBydW5zIHN5bmNocm9ub3VzbHkgYW5kIGp1c3QNCj4gPiBkb2VzIGludmFs
+aWRhdGVfc3RhcnQgYWNyb3NzIHRoZSBlbnRpcmUgaW50ZXJ2YWwgdHJlZSB0byBjcmVhdGUgdGhl
+DQo+ID4gcmVxdWlyZWQgRE1BIGZlbmNlLg0KPiA+IA0KPiA+IEFkZGl0aW9ucyB0byB0aGUgaW50
+ZXJ2YWwgdHJlZSBhZnRlciByZWxlYXNlIGFyZSBhbHJlYWR5IGltcG9zc2libGUgYXMNCj4gPiBv
+bmx5IGN1cnJlbnQtPm1tIGlzIHVzZWQgZHVyaW5nIHRoZSBhZGQuDQo+ID4gDQo+ID4gU2lnbmVk
+LW9mZi1ieTogSmFzb24gR3VudGhvcnBlIDxqZ2dAbWVsbGFub3guY29tPg0KPiANCj4gQWNrZWQt
+Ynk6IENocmlzdGlhbiBLw7ZuaWcgPGNocmlzdGlhbi5rb2VuaWdAYW1kLmNvbT4NCg0KVGhhbmtz
+IQ0KDQo+IEJ1dCBJJ20gd29uZGVyaW5nIGlmIHdlIHNob3VsZG4ndCBjb21wbGV0ZWx5IGRyb3Ag
+cmFkZW9uIHVzZXJwdHIgc3VwcG9ydC4NCj4gSXQncyBqdXN0IHRvIGJ1Z2d5LA0KDQpJIHdvdWxk
+IG5vdCBvYmplY3QgOikNCg0KSmFzb24NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
