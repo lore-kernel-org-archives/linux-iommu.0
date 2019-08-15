@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC915C3A59B
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8651DC3A589
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CBE412084D
-	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBE412084D
+	by mail.kernel.org (Postfix) with ESMTPS id 653FA2083B
+	for <iommu@archiver.kernel.org>; Thu, 15 Aug 2019 18:38:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 653FA2083B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 025C410A9;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2B30810C9;
 	Thu, 15 Aug 2019 18:37:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 848BC10C8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3F206107D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 18:37:55 +0000 (UTC)
+	Thu, 15 Aug 2019 18:37:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2784CCF
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id AEE99CF
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 15 Aug 2019 18:37:55 +0000 (UTC)
+	Thu, 15 Aug 2019 18:37:56 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D18D5360;
-	Thu, 15 Aug 2019 11:37:54 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6552B344;
+	Thu, 15 Aug 2019 11:37:56 -0700 (PDT)
 Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
 	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7E5073F694; 
-	Thu, 15 Aug 2019 11:37:53 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 11F6C3F694; 
+	Thu, 15 Aug 2019 11:37:54 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH v2 08/17] iommu/arm-smmu: Get rid of weird "atomic" write
-Date: Thu, 15 Aug 2019 19:37:28 +0100
-Message-Id: <c578e786b3994bd21b174d9af44533ff082aff52.1565892337.git.robin.murphy@arm.com>
+Subject: [PATCH v2 09/17] iommu/arm-smmu: Abstract GR1 accesses
+Date: Thu, 15 Aug 2019 19:37:29 +0100
+Message-Id: <00d20b1757c8ab4206deefcc30fdce343383af52.1565892337.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.21.0.dirty
 In-Reply-To: <cover.1565892337.git.robin.murphy@arm.com>
 References: <cover.1565892337.git.robin.murphy@arm.com>
@@ -64,65 +64,108 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The smmu_write_atomic_lq oddity made some sense when the context
-format was effectively tied to CONFIG_64BIT, but these days it's
-simpler to just pick an explicit access size based on the format
-for the one-and-a-half times we actually care.
+Introduce some register access abstractions which we will later use to
+encapsulate various quirks. GR1 is the easiest page to start with.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu.c | 23 +++++++----------------
- 1 file changed, 7 insertions(+), 16 deletions(-)
+ drivers/iommu/arm-smmu.c | 34 +++++++++++++++++++++++++++-------
+ 1 file changed, 27 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5b12e96d7878..24b4de1a4185 100644
+index 24b4de1a4185..d612dda2889f 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -83,17 +83,6 @@
- 		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
- 			? 0x400 : 0))
+@@ -71,7 +71,6 @@
  
--/*
-- * Some 64-bit registers only make sense to write atomically, but in such
-- * cases all the data relevant to AArch32 formats lies within the lower word,
-- * therefore this actually makes more sense than it might first appear.
-- */
--#ifdef CONFIG_64BIT
--#define smmu_write_atomic_lq		writeq_relaxed
--#else
--#define smmu_write_atomic_lq		writel_relaxed
--#endif
--
- /* Translation context bank */
- #define ARM_SMMU_CB(smmu, n)	((smmu)->base + (((smmu)->numpage + (n)) << (smmu)->pgshift))
+ /* SMMU global address space */
+ #define ARM_SMMU_GR0(smmu)		((smmu)->base)
+-#define ARM_SMMU_GR1(smmu)		((smmu)->base + (1 << (smmu)->pgshift))
  
-@@ -533,7 +522,10 @@ static void arm_smmu_tlb_inv_range_s2(unsigned long iova, size_t size,
- 	reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L : ARM_SMMU_CB_S2_TLBIIPAS2;
- 	iova >>= 12;
- 	do {
--		smmu_write_atomic_lq(iova, reg);
-+		if (smmu_domain->cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+			writeq_relaxed(iova, reg);
-+		else
-+			writel_relaxed(iova, reg);
- 		iova += granule >> 12;
- 	} while (size -= granule);
- }
-@@ -1371,11 +1363,10 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ /*
+  * SMMU global address space with conditional offset to access secure
+@@ -250,6 +249,29 @@ struct arm_smmu_domain {
+ 	struct iommu_domain		domain;
+ };
+ 
++static void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
++{
++	return smmu->base + (n << smmu->pgshift);
++}
++
++static u32 arm_smmu_readl(struct arm_smmu_device *smmu, int page, int offset)
++{
++	return readl_relaxed(arm_smmu_page(smmu, page) + offset);
++}
++
++static void arm_smmu_writel(struct arm_smmu_device *smmu, int page, int offset,
++			    u32 val)
++{
++	writel_relaxed(val, arm_smmu_page(smmu, page) + offset);
++}
++
++#define ARM_SMMU_GR1		1
++
++#define arm_smmu_gr1_read(s, o)		\
++	arm_smmu_readl((s), ARM_SMMU_GR1, (o))
++#define arm_smmu_gr1_write(s, o, v)	\
++	arm_smmu_writel((s), ARM_SMMU_GR1, (o), (v))
++
+ struct arm_smmu_option_prop {
+ 	u32 opt;
+ 	const char *prop;
+@@ -574,7 +596,6 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+-	void __iomem *gr1_base = ARM_SMMU_GR1(smmu);
+ 	void __iomem *cb_base;
+ 
  	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+@@ -585,7 +606,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
  
- 	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
--	/* ATS1 registers can only be written atomically */
- 	va = iova & ~0xfffUL;
--	if (smmu->version == ARM_SMMU_V2)
--		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
--	else /* Register is only 32-bit in v1 */
-+	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+		writeq_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
-+	else
- 		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+ 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+-	cbfrsynra = readl_relaxed(gr1_base + ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
++	cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
  
- 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
+ 	dev_err_ratelimited(smmu->dev,
+ 	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
+@@ -676,7 +697,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 	bool stage1;
+ 	struct arm_smmu_cb *cb = &smmu->cbs[idx];
+ 	struct arm_smmu_cfg *cfg = cb->cfg;
+-	void __iomem *cb_base, *gr1_base;
++	void __iomem *cb_base;
+ 
+ 	cb_base = ARM_SMMU_CB(smmu, idx);
+ 
+@@ -686,7 +707,6 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 		return;
+ 	}
+ 
+-	gr1_base = ARM_SMMU_GR1(smmu);
+ 	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+ 
+ 	/* CBA2R */
+@@ -699,7 +719,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+ 			reg |= FIELD_PREP(CBA2R_VMID16, cfg->vmid);
+ 
+-		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
++		arm_smmu_gr1_write(smmu, ARM_SMMU_GR1_CBA2R(idx), reg);
+ 	}
+ 
+ 	/* CBAR */
+@@ -718,7 +738,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 		/* 8-bit VMIDs live in CBAR */
+ 		reg |= FIELD_PREP(CBAR_VMID, cfg->vmid);
+ 	}
+-	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
++	arm_smmu_gr1_write(smmu, ARM_SMMU_GR1_CBAR(idx), reg);
+ 
+ 	/*
+ 	 * TCR
 -- 
 2.21.0.dirty
 
