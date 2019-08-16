@@ -2,60 +2,62 @@ Return-Path: <SRS0=MJs7=WM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E596EC3A59C
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F6EC3A59E
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:29:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AECF72077C
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:27:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 038BB2133F
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:29:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Wmcwc0aj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AECF72077C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RM7e0gK1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 038BB2133F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 46434B09;
-	Fri, 16 Aug 2019 06:27:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 93BDEB8E;
+	Fri, 16 Aug 2019 06:29:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F3D6772A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EDA5041C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 06:27:08 +0000 (UTC)
+	Fri, 16 Aug 2019 06:29:13 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6EA0276D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6FF01E5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 06:27:08 +0000 (UTC)
+	Fri, 16 Aug 2019 06:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=uBlDv/1G+IgsUhlm43y/mFkJBkzGrCkwGGW4KRg1WIM=;
-	b=Wmcwc0aj6CAeJvPoN6pBK5R6b
-	i5YXqMFaEGami53EUAEYW5H9LP5RV2vw6BQ2GKNw4UVGF7Pwjge5MdyR82FT+o0xH6mc3+JoPhptL
-	+tYQkTLvihOeG5Q1/uvFbymhEmW5tGt1hxdQ3AfdLRPHhf/t6XmTEoxxoyUliePoCJ7oYf5k8pNMq
-	GEYj2QQzOjp49Cld+WmpqDus7lpxzFfO1b60p1QXD19DFumJMRiDYLdByA1yvWDGJ928Xf3gFMSKm
-	TmzZ3hL9ygmIeis9H93XDRrqRmRUsN43ePZB8ghFZRniMK1PL78+NnUbbjavFiwzeazT92ZwSh6u2
-	xE2vRzB6w==;
-Received: from 089144199030.atnat0008.highway.a1.net ([89.144.199.30]
-	helo=localhost)
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=3t34NdMYaxK3b7q79OweXtc3LDVxX2AkiLPLkSCTGmc=;
+	b=RM7e0gK123NroqwYE8zX1F6r2q
+	yxSRLYUH2Q8Qta2OCb7gqfmgUK1raZgteCZXzL7kQE58HrFT8CfIQxy8zbVoeer53slrr6PJpVn9n
+	vEB8yj0UWRGu3Okfbuy4VRV3IB1PAEx5p34A5chbLRZZVlWNTERps+kZvu7AuZG2NXCuxFQ0w6UCL
+	fEIS7PGqIE7Glv12lV5Wr4vqZYhwpUTI5wNGPoD09z94PUW9jqHdw0JaUlYewIPUl1wv6mGOVkGES
+	z5bAGT1o94h5sOX2vK8nLsnqeWlpx4qmhQ/nOAjTSTpxFoUN3bEncITdksE5PsYUeMzwfgmuSYq1t
+	3TmmbhQg==;
+Received: from [2001:4bb8:18c:28b5:44f9:d544:957f:32cb] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hyVhG-0005Ro-J6; Fri, 16 Aug 2019 06:26:47 +0000
+	id 1hyVjS-00068I-4k; Fri, 16 Aug 2019 06:29:02 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: next take at setting up a dma mask by default for platform devices v2
-Date: Fri, 16 Aug 2019 08:24:29 +0200
-Message-Id: <20190816062435.881-1-hch@lst.de>
+Subject: [PATCH 2/6] usb: add a hcd_uses_dma helper
+Date: Fri, 16 Aug 2019 08:24:31 +0200
+Message-Id: <20190816062435.881-3-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190816062435.881-1-hch@lst.de>
+References: <20190816062435.881-1-hch@lst.de>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
 	bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -88,26 +90,122 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi all,
+The USB buffer allocation code is the only place in the usb core (and in
+fact the whole kernel) that uses is_device_dma_capable, while the URB
+mapping code uses the uses_dma flag in struct usb_bus.  Switch the buffer
+allocation to use the uses_dma flag used by the rest of the USB code,
+and create a helper in hcd.h that checks this flag as well as the
+CONFIG_HAS_DMA to simplify the caller a bit.
 
-this is another attempt to make sure the dma_mask pointer is always
-initialized for platform devices.  Not doing so lead to lots of
-boilerplate code, and makes platform devices different from all our
-major busses like PCI where we always set up a dma_mask.  In the long
-run this should also help to eventually make dma_mask a scalar value
-instead of a pointer and remove even more cruft.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/usb/core/buffer.c | 10 +++-------
+ drivers/usb/core/hcd.c    |  4 ++--
+ drivers/usb/dwc2/hcd.c    |  2 +-
+ include/linux/usb.h       |  2 +-
+ include/linux/usb/hcd.h   |  3 +++
+ 5 files changed, 10 insertions(+), 11 deletions(-)
 
-The bigger blocker for this last time was the fact that the usb
-subsystem uses the presence or lack of a dma_mask to check if the core
-should do dma mapping for the driver, which is highly unusual.  So we
-fix this first.  Note that this has some overlap with the pending
-desire to use the proper dma_mmap_coherent helper for mapping usb
-buffers.  The first two patches have already been queued up by Greg
-and are only included for completeness.
+diff --git a/drivers/usb/core/buffer.c b/drivers/usb/core/buffer.c
+index 1a5b3dcae930..6cf22c27f2d2 100644
+--- a/drivers/usb/core/buffer.c
++++ b/drivers/usb/core/buffer.c
+@@ -66,9 +66,7 @@ int hcd_buffer_create(struct usb_hcd *hcd)
+ 	char		name[16];
+ 	int		i, size;
+ 
+-	if (hcd->localmem_pool ||
+-	    !IS_ENABLED(CONFIG_HAS_DMA) ||
+-	    !is_device_dma_capable(hcd->self.sysdev))
++	if (hcd->localmem_pool || !hcd_uses_dma(hcd))
+ 		return 0;
+ 
+ 	for (i = 0; i < HCD_BUFFER_POOLS; i++) {
+@@ -129,8 +127,7 @@ void *hcd_buffer_alloc(
+ 		return gen_pool_dma_alloc(hcd->localmem_pool, size, dma);
+ 
+ 	/* some USB hosts just use PIO */
+-	if (!IS_ENABLED(CONFIG_HAS_DMA) ||
+-	    !is_device_dma_capable(bus->sysdev)) {
++	if (!hcd_uses_dma(hcd)) {
+ 		*dma = ~(dma_addr_t) 0;
+ 		return kmalloc(size, mem_flags);
+ 	}
+@@ -160,8 +157,7 @@ void hcd_buffer_free(
+ 		return;
+ 	}
+ 
+-	if (!IS_ENABLED(CONFIG_HAS_DMA) ||
+-	    !is_device_dma_capable(bus->sysdev)) {
++	if (!hcd_uses_dma(hcd)) {
+ 		kfree(addr);
+ 		return;
+ 	}
+diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+index 2ccbc2f83570..8592c0344fe8 100644
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1412,7 +1412,7 @@ int usb_hcd_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb,
+ 	if (usb_endpoint_xfer_control(&urb->ep->desc)) {
+ 		if (hcd->self.uses_pio_for_control)
+ 			return ret;
+-		if (IS_ENABLED(CONFIG_HAS_DMA) && hcd->self.uses_dma) {
++		if (hcd_uses_dma(hcd)) {
+ 			if (is_vmalloc_addr(urb->setup_packet)) {
+ 				WARN_ONCE(1, "setup packet is not dma capable\n");
+ 				return -EAGAIN;
+@@ -1446,7 +1446,7 @@ int usb_hcd_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb,
+ 	dir = usb_urb_dir_in(urb) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
+ 	if (urb->transfer_buffer_length != 0
+ 	    && !(urb->transfer_flags & URB_NO_TRANSFER_DMA_MAP)) {
+-		if (IS_ENABLED(CONFIG_HAS_DMA) && hcd->self.uses_dma) {
++		if (hcd_uses_dma(hcd)) {
+ 			if (urb->num_sgs) {
+ 				int n;
+ 
+diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
+index ee144ff8af5b..111787a137ee 100644
+--- a/drivers/usb/dwc2/hcd.c
++++ b/drivers/usb/dwc2/hcd.c
+@@ -4608,7 +4608,7 @@ static int _dwc2_hcd_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
+ 
+ 	buf = urb->transfer_buffer;
+ 
+-	if (hcd->self.uses_dma) {
++	if (hcd_uses_dma(hcd)) {
+ 		if (!buf && (urb->transfer_dma & 3)) {
+ 			dev_err(hsotg->dev,
+ 				"%s: unaligned transfer with no transfer_buffer",
+diff --git a/include/linux/usb.h b/include/linux/usb.h
+index 83d35d993e8c..e87826e23d59 100644
+--- a/include/linux/usb.h
++++ b/include/linux/usb.h
+@@ -1457,7 +1457,7 @@ typedef void (*usb_complete_t)(struct urb *);
+  * field rather than determining a dma address themselves.
+  *
+  * Note that transfer_buffer must still be set if the controller
+- * does not support DMA (as indicated by bus.uses_dma) and when talking
++ * does not support DMA (as indicated by hcd_uses_dma()) and when talking
+  * to root hub. If you have to trasfer between highmem zone and the device
+  * on such controller, create a bounce buffer or bail out with an error.
+  * If transfer_buffer cannot be set (is in highmem) and the controller is DMA
+diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
+index bab27ccc8ff5..a20e7815d814 100644
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -422,6 +422,9 @@ static inline bool hcd_periodic_completion_in_progress(struct usb_hcd *hcd,
+ 	return hcd->high_prio_bh.completing_ep == ep;
+ }
+ 
++#define hcd_uses_dma(hcd) \
++	(IS_ENABLED(CONFIG_HAS_DMA) && (hcd)->self.uses_dma)
++
+ extern int usb_hcd_link_urb_to_ep(struct usb_hcd *hcd, struct urb *urb);
+ extern int usb_hcd_check_unlink_urb(struct usb_hcd *hcd, struct urb *urb,
+ 		int status);
+-- 
+2.20.1
 
-Changes since v1:
- - fix a compile error in the ppc of ohci driver
- - revamp the last patch to get rid of the archdata callout entirely.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
