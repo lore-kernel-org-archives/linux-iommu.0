@@ -2,86 +2,99 @@ Return-Path: <SRS0=MJs7=WM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB18FC3A59C
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 14:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BF4C3A59C
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 15:14:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B423E20644
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 14:31:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 73C7E2171F
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 15:14:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aOAKvEhf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B423E20644
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oy5sZFjQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73C7E2171F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 763EAE89;
-	Fri, 16 Aug 2019 14:31:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 41521C3A;
+	Fri, 16 Aug 2019 15:14:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 25B53E85
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E584FC11
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 14:31:51 +0000 (UTC)
+	Fri, 16 Aug 2019 15:14:54 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
-	[209.85.128.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9816987B
+Received: from mail-qk1-f195.google.com (mail-qk1-f195.google.com
+	[209.85.222.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 747048A0
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 14:31:50 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id z23so4252277wmf.2
+	Fri, 16 Aug 2019 15:14:54 +0000 (UTC)
+Received: by mail-qk1-f195.google.com with SMTP id m2so4961364qkd.10
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 07:31:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=date:from:to:subject:message-id:references:mime-version
+	Fri, 16 Aug 2019 08:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+	h=date:from:to:cc:subject:message-id:references:mime-version
 	:content-disposition:in-reply-to:user-agent;
-	bh=2KH9X7wXKLaNgHTDRuB2BCoTUIbuMO+ioBBw7HzU1JY=;
-	b=aOAKvEhf4eJTxcKSld4tT+33ybgVN17T/bYorvBedFN3143JLOiZGmSFFZmUYjnl2R
-	ZmjW7kD/tqSTxSJekD045oAnsHHGE/wzxd3ibBgHSbBD4G7ailmdun7QlU0roREL2N42
-	puNiR5ETw9wQOVpe6Mqo+x1oUp13MVT9P6m1jnGzwcPxVoe/dl2ds8g+wH5hhvtdRPid
-	6OPErwSecc0kXng21CIP03S6DK1Hw73vanv14N8c4S3nZ+j9DR7q/0QqTBczWN0MsIhz
-	x4vLhJPhZtg6XPzAQB5+8f8EtApLxjhTH7R06QpYALGd6QyBD3lQpkcUSmLWFu3Jzd3K
-	Mx5g==
+	bh=fov2CgaO1O1CFkZX4IfqnTZnTK7C3zpSvYgzXGSY56g=;
+	b=oy5sZFjQp1BCVaEwQsb3+KNPFbSHSZHWPBMzBnqM3YkM8M6TeLN/TchFjkEdsICSuJ
+	1C+Aqtldy/Y4ldUDXhcLTuhfNncF7+Dyd3fNJ1bom3uP8hS9LridrmdEdsAQXWEZtKjz
+	7XP3pkdVorvFX0x7VQ1DMygwaFOvfV+UwasgUORcn3BEim4b1kFT8oE06M97uDUrjOv5
+	mMHA/Z8hsM7HRGW+maHrZQD/1QDaaYGCk/ab/4r4vI2lVu52wx2id8gV5icj3phd9BLt
+	KUOXu736r5AT7W/9wY/TxeK4Ryn6yfFSyNCnwDYASLlBBEV0NjKDADW49yLgEKf3SWZn
+	2lUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:subject:message-id:references
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
 	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=2KH9X7wXKLaNgHTDRuB2BCoTUIbuMO+ioBBw7HzU1JY=;
-	b=HzE2O7UacPVDK8V3qJ1G4bqzLpnUFjoS1lFWpXqj6TyGBv1TsYHAlHKRUSd/hamFYC
-	PU3e6K4JrbSIAwSJeG6Bj+otldjef/VghHZM95oFYqdDGssN7oTT0gw6BogwTVbGooc0
-	/y8LkVW3ouF1Jvm9tDECzwjBn9b0KtBeEtXxjx9E19aqmrBb3k4Lj85iqlRwyHCuazho
-	uMpHzobX3sKLArKoGJoUznHpNkNdZfNqQpZEiDMbxRueeU2P/UHfCRd3FmKxYnvFTUzK
-	ZtpjtiZCTCZZf6K1V+MwD7v7Ve/RMASMzRffwt/eud+zXLubfScvRNu9oCrmVtzXlm9B
-	GbGQ==
-X-Gm-Message-State: APjAAAXXNS0d049tSgnzHIi1O1B6y2hZFxX/G+uYj0gtXKNdzBDWGhZK
-	3o4hRuJptCLN9+KiZ64RjAc=
-X-Google-Smtp-Source: APXvYqwUeQsO1Tir1acCeUF+pqGoRTuIizGwVTqI59KMXv4bOZjBPRpPwKZbNL/kgP0dRGGiI+zGDQ==
-X-Received: by 2002:a1c:740b:: with SMTP id p11mr7978852wmc.6.1565965909230;
-	Fri, 16 Aug 2019 07:31:49 -0700 (PDT)
-Received: from Red ([2a01:cb1d:147:7200:2e56:dcff:fed2:c6d6])
-	by smtp.googlemail.com with ESMTPSA id
-	k124sm10940860wmk.47.2019.08.16.07.31.47
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Fri, 16 Aug 2019 07:31:48 -0700 (PDT)
-Date: Fri, 16 Aug 2019 16:31:46 +0200
-From: Corentin Labbe <clabbe.montjoie@gmail.com>
-To: bskeggs@redhat.com, airlied@linux.ie, hch@lst.de,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: Re: DMA-API: cacheline tracking ENOMEM, dma-debug disabled due to
-	nouveau ?
-Message-ID: <20190816143146.GB30445@Red>
-References: <20190814145033.GA11190@Red>
-	<20190814174927.GT7444@phenom.ffwll.local>
+	bh=fov2CgaO1O1CFkZX4IfqnTZnTK7C3zpSvYgzXGSY56g=;
+	b=SNoLuM25zXOFqrASeKaHlo7JBIKSm8NphaIlieYvZ7KdtlEyP0anSL1moZssNVRfmQ
+	9zKkNH8VfFc4iCs1UibL6bEqJZMUnmkNtbiapzfL2BdF8Nqp33pnsW35NtUUH9LevIPi
+	FmGPfpYuvjvvu5ON87upMiEe5DLn0/C19e8rmtqoF37hFPlw1DfnfWwwVwd4MzZUv0Bk
+	Dw9onf7x7U5yA+VD4tuKaWB+MPrPQS7r9phJ73Qtff+klpZuTGDvNLnYBSj2ML2tHOKM
+	o64mGvhYEaqi8vjKgwb0KIm7qJi64PAsgA/sOwipcWuG+L5tZACUIIs+3pSat2PK78vq
+	0Bpw==
+X-Gm-Message-State: APjAAAWskyFep2fWcNBbzamIDNGpnOGzzl+b2Ljdov3GuggiVBGVnMTT
+	WyQI50DTvKKanHnbQYi4U3Vktg==
+X-Google-Smtp-Source: APXvYqxJQYOJO15q7RlRP/vufAQqFSxN3g0+gtugu+v5p95C5icfuXRjyKSuaK0zmQH83GKJGhGMfA==
+X-Received: by 2002:a05:620a:1590:: with SMTP id
+	d16mr9385834qkk.18.1565968493491; 
+	Fri, 16 Aug 2019 08:14:53 -0700 (PDT)
+Received: from ziepe.ca
+	(hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net.
+	[156.34.55.100]) by smtp.gmail.com with ESMTPSA id
+	o127sm3158342qkd.104.2019.08.16.08.14.53
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Fri, 16 Aug 2019 08:14:53 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1hydwK-0003JY-LJ; Fri, 16 Aug 2019 12:14:52 -0300
+Date: Fri, 16 Aug 2019 12:14:52 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: linux-mm@kvack.org
+Subject: Re: [PATCH v3 hmm 00/11] Add mmu_notifier_get/put for managing mmu
+	notifier registrations
+Message-ID: <20190816151452.GA8562@ziepe.ca>
+References: <20190806231548.25242-1-jgg@ziepe.ca>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190814174927.GT7444@phenom.ffwll.local>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190806231548.25242-1-jgg@ziepe.ca>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Andrea Arcangeli <aarcange@redhat.com>,
+	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
+	Ralph Campbell <rcampbell@nvidia.com>, Dimitri Sivanich <sivanich@sgi.com>,
+	Gavin Shan <shangw@linux.vnet.ibm.com>,
+	Andrea Righi <andrea@betterlinux.com>,
+	linux-rdma@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
+	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org,
+	Alex Deucher <alexander.deucher@amd.com>,
+	intel-gfx@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -99,29 +112,37 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Aug 14, 2019 at 07:49:27PM +0200, Daniel Vetter wrote:
-> On Wed, Aug 14, 2019 at 04:50:33PM +0200, Corentin Labbe wrote:
-> > Hello
-> > 
-> > Since lot of release (at least since 4.19), I hit the following error message:
-> > DMA-API: cacheline tracking ENOMEM, dma-debug disabled
-> > 
-> > After hitting that, I try to check who is creating so many DMA mapping and see:
-> > cat /sys/kernel/debug/dma-api/dump | cut -d' ' -f2 | sort | uniq -c
-> >       6 ahci
-> >     257 e1000e
-> >       6 ehci-pci
-> >    5891 nouveau
-> >      24 uhci_hcd
-> > 
-> > Does nouveau having this high number of DMA mapping is normal ?
-> 
-> Yeah seems perfectly fine for a gpu.
+On Tue, Aug 06, 2019 at 08:15:37PM -0300, Jason Gunthorpe wrote:
+> This series is already entangled with patches in the hmm & RDMA tree and
+> will require some git topic branches for the RDMA ODP stuff. I intend for
+> it to go through the hmm tree.
 
-Note that it never go down and when I terminate my X session, it stays the same.
-So without any "real" GPU work, does it is still normal to have so many active mapping ?
+> Jason Gunthorpe (11):
+>   mm/mmu_notifiers: hoist do_mmu_notifier_register down_write to the
+>     caller
+>   mm/mmu_notifiers: do not speculatively allocate a mmu_notifier_mm
+>   mm/mmu_notifiers: add a get/put scheme for the registration
+>   misc/sgi-gru: use mmu_notifier_get/put for struct gru_mm_struct
+>   hmm: use mmu_notifier_get/put for 'struct hmm'
+>   drm/radeon: use mmu_notifier_get/put for struct radeon_mn
+>   drm/amdkfd: fix a use after free race with mmu_notifer unregister
+>   drm/amdkfd: use mmu_notifier_put
 
-For example, when doing some transfer, the ahci mapping number changes and then always go down to 6.
+Other than these patches:
+
+>   RDMA/odp: use mmu_notifier_get/put for 'struct ib_ucontext_per_mm'
+>   RDMA/odp: remove ib_ucontext from ib_umem
+>   mm/mmu_notifiers: remove unregister_no_release
+
+This series has been applied.
+
+I will apply the ODP patches when the series they depend on is merged
+to the RDMA tree
+
+Any further acks/remarks I will annotate, thanks in advance
+
+Thanks to all reviewers,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
