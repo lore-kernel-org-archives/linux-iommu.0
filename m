@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004FEC41514
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E02FC3A59E
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:29:24 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CA88921721
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:29:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 149322171F
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 06:29:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RF9/8JHw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CA88921721
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="OZ8dg/6C"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 149322171F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B9FBAB09;
-	Fri, 16 Aug 2019 06:29:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E462F72A;
+	Fri, 16 Aug 2019 06:29:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E9F2941C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AC46041C
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 06:29:14 +0000 (UTC)
+	Fri, 16 Aug 2019 06:29:22 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A2E2CE5
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A54BE5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 06:29:14 +0000 (UTC)
+	Fri, 16 Aug 2019 06:29:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=dftcSzfDdyc02vTQypmmr4nqPV2SE1bB1GMbvWD2Jek=;
-	b=RF9/8JHwKe7RmdyKImreqwMQQI
-	NQS5qXpKIaLeNoh33nFXYa0H7EG0Ar8NEjKXNVsK0FBbP6IDmdn+aoJMKRrAwrC/DsuJC0nb6xH6N
-	MDdUY/JvBPCr7BiGguUzQ0pwLGej3AHJq7Dz56yKvSOY7n/1cJSXiKA+nSgQkP+RN6v4qjL0SyuoN
-	yAc3lvtmBc7/Jrf5xGMAjW9hPf6+W/MtHpBNroiq2tw5EWZVgcTJ8LANmbQDiNosv57PLiGR+1oFD
-	IBkUd1mu8/d+TQ+LZaw4vtte/TOgpju9oE3jzSFIWh2mFcu7EfjrwbvVVtDPcD6QDAqXKJWpjWwt7
-	LiV7E8KQ==;
-Received: from 089144199030.atnat0008.highway.a1.net ([89.144.199.30]
-	helo=localhost)
+	bh=5H4DKSyLtnJ8RX8GrhMYzxFLFlnlKxpwlI+kM8oQhzA=;
+	b=OZ8dg/6CMTQtkTLQ3tdCTIr6eM
+	5Kz+mn5bxrGi/u/DcDO+5aSHJWN9fD3O2OpOrKeck+tab3MRYeqSPTKdpNli21ozCONxPZX6hFuW/
+	ViJcaz8sby9nLAhzIQjMGnYEIuYF54hYZjYqiNUEPepyNVcBUPbEojQB6Gr74Z+za6hZZz8YazhaU
+	mISNgALlYF3/leh8fLai2bVBmSkrhU84Syik57ZUHfBCn0uexGP+q/gpQtnwlkIkNO7kmkp7z9Xf/
+	s54nNupLeBXS4VGVCM7YhOxIK2ZOUyaVlvhurlXqaqNFyB86DCuYv9GmXd8+eNk46vAFFv5+upucs
+	PtvHFpTg==;
+Received: from [2001:4bb8:18c:28b5:44f9:d544:957f:32cb] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hyVjP-00068C-GP; Fri, 16 Aug 2019 06:29:00 +0000
+	id 1hyVjX-0006C9-Ld; Fri, 16 Aug 2019 06:29:08 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: [PATCH 1/6] usb: don't create dma pools for HCDs with a localmem_pool
-Date: Fri, 16 Aug 2019 08:24:30 +0200
-Message-Id: <20190816062435.881-2-hch@lst.de>
+Subject: [PATCH 4/6] usb/max3421: remove the dummy {un,
+	}map_urb_for_dma methods
+Date: Fri, 16 Aug 2019 08:24:33 +0200
+Message-Id: <20190816062435.881-5-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190816062435.881-1-hch@lst.de>
 References: <20190816062435.881-1-hch@lst.de>
@@ -91,32 +91,49 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-If the HCD provides a localmem pool we will never use the DMA pools, so
-don't create them.
+Now that we have an explicit HCD_DMA flag, there is not need to override
+these methods.
 
-Fixes: b0310c2f09bb ("USB: use genalloc for USB HCs with local memory")
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/usb/core/buffer.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/host/max3421-hcd.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
 
-diff --git a/drivers/usb/core/buffer.c b/drivers/usb/core/buffer.c
-index 1359b78a624e..1a5b3dcae930 100644
---- a/drivers/usb/core/buffer.c
-+++ b/drivers/usb/core/buffer.c
-@@ -66,9 +66,9 @@ int hcd_buffer_create(struct usb_hcd *hcd)
- 	char		name[16];
- 	int		i, size;
+diff --git a/drivers/usb/host/max3421-hcd.c b/drivers/usb/host/max3421-hcd.c
+index afa321ab55fc..8819f502b6a6 100644
+--- a/drivers/usb/host/max3421-hcd.c
++++ b/drivers/usb/host/max3421-hcd.c
+@@ -1800,21 +1800,6 @@ max3421_bus_resume(struct usb_hcd *hcd)
+ 	return -1;
+ }
  
--	if (!IS_ENABLED(CONFIG_HAS_DMA) ||
--	    (!is_device_dma_capable(hcd->self.sysdev) &&
--	     !hcd->localmem_pool))
-+	if (hcd->localmem_pool ||
-+	    !IS_ENABLED(CONFIG_HAS_DMA) ||
-+	    !is_device_dma_capable(hcd->self.sysdev))
- 		return 0;
- 
- 	for (i = 0; i < HCD_BUFFER_POOLS; i++) {
+-/*
+- * The SPI driver already takes care of DMA-mapping/unmapping, so no
+- * reason to do it twice.
+- */
+-static int
+-max3421_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
+-{
+-	return 0;
+-}
+-
+-static void
+-max3421_unmap_urb_for_dma(struct usb_hcd *hcd, struct urb *urb)
+-{
+-}
+-
+ static const struct hc_driver max3421_hcd_desc = {
+ 	.description =		"max3421",
+ 	.product_desc =		DRIVER_DESC,
+@@ -1826,8 +1811,6 @@ static const struct hc_driver max3421_hcd_desc = {
+ 	.get_frame_number =	max3421_get_frame_number,
+ 	.urb_enqueue =		max3421_urb_enqueue,
+ 	.urb_dequeue =		max3421_urb_dequeue,
+-	.map_urb_for_dma =	max3421_map_urb_for_dma,
+-	.unmap_urb_for_dma =	max3421_unmap_urb_for_dma,
+ 	.endpoint_disable =	max3421_endpoint_disable,
+ 	.hub_status_data =	max3421_hub_status_data,
+ 	.hub_control =		max3421_hub_control,
 -- 
 2.20.1
 
