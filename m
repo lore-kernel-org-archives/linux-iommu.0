@@ -2,73 +2,73 @@ Return-Path: <SRS0=MJs7=WM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3515DC3A59C
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 07:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCDEC3A59D
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 07:22:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0AABF2077C
-	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 07:21:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="uD64//zC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0AABF2077C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 24ECE20644
+	for <iommu@archiver.kernel.org>; Fri, 16 Aug 2019 07:22:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 24ECE20644
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B1527B50;
-	Fri, 16 Aug 2019 07:21:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 04BADB50;
+	Fri, 16 Aug 2019 07:22:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C0FC1AD7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D395BACD
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 07:21:18 +0000 (UTC)
+	Fri, 16 Aug 2019 07:22:36 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 346D5E5
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 9A632E5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 16 Aug 2019 07:21:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=93/+ko3Du/V64K+y2AaxEF8szX3mmmGeAKtqr4Af7n4=;
-	b=uD64//zCEadY8MVXbMxmYL0wF5
-	JL8NpGWh01hpr1xDUQ3pQ/X/LOcdegwW571SEMAsM75acLv+MiSA6BTrcLsJdQsS5xpvm675K0nDL
-	6Za/4ML9/MzwOpVprTl36eyRZpRJgVv4sxzr1kvP8fremDTyT8YyyKJHzgf0jPHvTk97LheZTk0HG
-	eGStRpYLFKpQvMY3YPCEdoJh9Xz5AK1AojqEe1mz7Yxg27cm8j8zc4ztOUXa4ray0w5GDb/ke91Lu
-	/fEt8DcaI+QuHnxHdxCFB9YlNC7HHpBtm4WxewG3P25WjEVM7ieTk+Dqct7D4Xi+xbvSZxwsGak8f
-	TlvdexdA==;
-Received: from 089144199030.atnat0008.highway.a1.net ([89.144.199.30]
-	helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1hyWXz-0002li-Gr; Fri, 16 Aug 2019 07:21:16 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH 5/6] dma-mapping: make dma_atomic_pool_init self-contained
-Date: Fri, 16 Aug 2019 09:07:53 +0200
-Message-Id: <20190816070754.15653-6-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190816070754.15653-1-hch@lst.de>
-References: <20190816070754.15653-1-hch@lst.de>
+	Fri, 16 Aug 2019 07:22:35 +0000 (UTC)
+X-UUID: 43d757f4b0e946618d6cbab272d1ee3a-20190816
+X-UUID: 43d757f4b0e946618d6cbab272d1ee3a-20190816
+Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 1470457894; Fri, 16 Aug 2019 15:22:30 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS32DR.mediatek.inc
+	(172.27.6.104) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Fri, 16 Aug 2019 15:22:24 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Fri, 16 Aug 2019 15:22:23 +0800
+Message-ID: <1565940140.20346.21.camel@mhfsdcap03>
+Subject: Re: [PATCH v9 08/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
+	Mode
+From: Yong Wu <yong.wu@mediatek.com>
+To: Will Deacon <will@kernel.org>
+Date: Fri, 16 Aug 2019 15:22:20 +0800
+In-Reply-To: <20190815115021.7pbv5s2qbgsuitvh@willie-the-truck>
+References: <1565423901-17008-1-git-send-email-yong.wu@mediatek.com>
+	<1565423901-17008-9-git-send-email-yong.wu@mediatek.com>
+	<20190814144059.ruyc45yoqkwpbuga@willie-the-truck>
+	<1565858869.12818.51.camel@mhfsdcap03>
+	<20190815095123.rzgtpklvhtjlqir4@willie-the-truck>
+	<1565864318.14278.4.camel@mhfsdcap03>
+	<20190815115021.7pbv5s2qbgsuitvh@willie-the-truck>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Shawn Anastasio <shawn@anastas.io>, Will Deacon <will@kernel.org>,
-	linux-m68k@lists.linux-m68k.org, Guan Xuetao <gxt@pku.edu.cn>,
-	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>, linux-mips@vger.kernel.org,
-	Paul Burton <paul.burton@mips.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Catalin Marinas <catalin.marinas@arm.com>, James Hogan <jhogan@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+X-TM-SNTS-SMTP: BA349197A457FBABF294C6AEA76C731A816F8C5D8247B147DB51393DA440EAB42000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -86,147 +86,119 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The memory allocated for the atomic pool needs to have the same
-mapping attributes that we use for remapping, so use
-pgprot_dmacoherent instead of open coding it.  Also deduct a
-suitable zone to allocate the memory from based on the presence
-of the DMA zones.
+On Thu, 2019-08-15 at 12:50 +0100, Will Deacon wrote:
+> Ok, I think speaking to Robin helped me a bit with this...
+> 
+> On Thu, Aug 15, 2019 at 06:18:38PM +0800, Yong Wu wrote:
+> > On Thu, 2019-08-15 at 10:51 +0100, Will Deacon wrote:
+> > > On Thu, Aug 15, 2019 at 04:47:49PM +0800, Yong Wu wrote:
+> > > > On Wed, 2019-08-14 at 15:41 +0100, Will Deacon wrote:
+> > > > > On Sat, Aug 10, 2019 at 03:58:08PM +0800, Yong Wu wrote:
+> > > > > > MediaTek extend the arm v7s descriptor to support the dram over 4GB.
+> > > > > > 
+> > > > > > In the mt2712 and mt8173, it's called "4GB mode", the physical address
+> > > > > > is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
+> > > > > > is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
+> > > > > > bit32 is always enabled. thus, in the M4U, we always enable the bit9
+> > > > > > for all PTEs which means to enable bit32 of physical address. Here is
+> > > > > > the detailed remap relationship in the "4GB mode":
+> > > > > > CPU PA         ->    HW PA
+> > > > > > 0x4000_0000          0x1_4000_0000 (Add bit32)
+> > > > > > 0x8000_0000          0x1_8000_0000 ...
+> > > > > > 0xc000_0000          0x1_c000_0000 ...
+> > > > > > 0x1_0000_0000        0x1_0000_0000 (No change)
+> 
+> [...]
+> 
+> > > > > The way I would like this quirk to work is that the io-pgtable code
+> > > > > basically sets bit 9 in the pte when bit 32 is set in the physical address,
+> > > > > and sets bit 4 in the pte when bit 33 is set in the physical address. It
+> > > > > would then do the opposite when converting a pte to a physical address.
+> > > > > 
+> > > > > That way, your driver can call the page table code directly with the high
+> > > > > addresses and we don't have to do any manual offsetting or range checking
+> > > > > in the page table code.
+> > > > 
+> > > > In this case, the mt8183 can work successfully while the "4gb
+> > > > mode"(mt8173/mt2712) can not.
+> > > > 
+> > > > In the "4gb mode", As the remap relationship above, we should always add
+> > > > bit32 in pte as we did in [2]. and need add bit32 in the
+> > > > "iova_to_phys"(Not always add.). That means the "4gb mode" has a special
+> > > > flow:
+> > > > a. Always add bit32 in paddr_to_iopte.
+> > > > b. Add bit32 only when PA < 0x40000000 in iopte_to_paddr.
+> > > 
+> > > I think this is probably at the heart of my misunderstanding. What is so
+> > > special about PAs (is this HW PA or CPU PA?) below 0x40000000? Is this RAM
+> > > or something else?
+> > 
+> > SRAM and HW register that IOMMU can not access.
+> 
+> Ok, so redrawing your table from above, I think we can say something like:
+> 
+> 
+> CPU Physical address
+> ====================
+> 
+> 0G	1G	2G	3G	4G	5G
+> |---A---|---B---|---C---|---D---|---E---|
+> +--I/O--+------------Memory-------------+
+> 
+> 
+> IOMMU output physical address
+> =============================
+> 
+> 				4G	5G	6G	7G	8G
+> 				|---E---|---B---|---C---|---D---|
+> 				+------------Memory-------------+
+> 
+> 
+> Do you agree? 
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arc/mm/dma.c           |  6 ------
- arch/arm64/mm/dma-mapping.c |  6 ------
- arch/csky/mm/dma-mapping.c  |  6 ------
- arch/nds32/kernel/dma.c     |  6 ------
- include/linux/dma-mapping.h |  1 -
- kernel/dma/remap.c          | 17 ++++++++++++++---
- 6 files changed, 14 insertions(+), 28 deletions(-)
+Quite right.
 
-diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
-index 62c210e7ee4c..ff4a5752f8cc 100644
---- a/arch/arc/mm/dma.c
-+++ b/arch/arc/mm/dma.c
-@@ -104,9 +104,3 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 	dev_info(dev, "use %sncoherent DMA ops\n",
- 		 dev->dma_coherent ? "" : "non");
- }
--
--static int __init atomic_pool_init(void)
--{
--	return dma_atomic_pool_init(GFP_KERNEL, pgprot_noncached(PAGE_KERNEL));
--}
--postcore_initcall(atomic_pool_init);
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 676efcda51e6..a1d05f669f67 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -28,12 +28,6 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
- 	__dma_flush_area(page_address(page), size);
- }
- 
--static int __init arm64_dma_init(void)
--{
--	return dma_atomic_pool_init(GFP_DMA32, __pgprot(PROT_NORMAL_NC));
--}
--arch_initcall(arm64_dma_init);
--
- #ifdef CONFIG_IOMMU_DMA
- void arch_teardown_dma_ops(struct device *dev)
- {
-diff --git a/arch/csky/mm/dma-mapping.c b/arch/csky/mm/dma-mapping.c
-index 80783bb71c5c..602a60d47a94 100644
---- a/arch/csky/mm/dma-mapping.c
-+++ b/arch/csky/mm/dma-mapping.c
-@@ -14,12 +14,6 @@
- #include <linux/version.h>
- #include <asm/cache.h>
- 
--static int __init atomic_pool_init(void)
--{
--	return dma_atomic_pool_init(GFP_KERNEL, pgprot_noncached(PAGE_KERNEL));
--}
--postcore_initcall(atomic_pool_init);
--
- void arch_dma_prep_coherent(struct page *page, size_t size)
- {
- 	if (PageHighMem(page)) {
-diff --git a/arch/nds32/kernel/dma.c b/arch/nds32/kernel/dma.c
-index 490e3720d694..4206d4b6c8ce 100644
---- a/arch/nds32/kernel/dma.c
-+++ b/arch/nds32/kernel/dma.c
-@@ -80,9 +80,3 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
- {
- 	cache_op(page_to_phys(page), size, cpu_dma_wbinval_range);
- }
--
--static int __init atomic_pool_init(void)
--{
--	return dma_atomic_pool_init(GFP_KERNEL, pgprot_noncached(PAGE_KERNEL));
--}
--postcore_initcall(atomic_pool_init);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f7d1eea32c78..48ebe8295987 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -624,7 +624,6 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
- 			const void *caller);
- void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags);
- 
--int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot);
- bool dma_in_atomic_pool(void *start, size_t size);
- void *dma_alloc_from_pool(size_t size, struct page **ret_page, gfp_t flags);
- bool dma_free_from_pool(void *start, size_t size);
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index ffe78f0b2fe4..838123f79639 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -105,7 +105,16 @@ static int __init early_coherent_pool(char *p)
- }
- early_param("coherent_pool", early_coherent_pool);
- 
--int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
-+static gfp_t dma_atomic_pool_gfp(void)
-+{
-+	if (IS_ENABLED(CONFIG_ZONE_DMA))
-+		return GFP_DMA;
-+	if (IS_ENABLED(CONFIG_ZONE_DMA32))
-+		return GFP_DMA32;
-+	return GFP_KERNEL;
-+}
-+
-+static int __init dma_atomic_pool_init(void)
- {
- 	unsigned int pool_size_order = get_order(atomic_pool_size);
- 	unsigned long nr_pages = atomic_pool_size >> PAGE_SHIFT;
-@@ -117,7 +126,7 @@ int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
- 		page = dma_alloc_from_contiguous(NULL, nr_pages,
- 						 pool_size_order, false);
- 	else
--		page = alloc_pages(gfp, pool_size_order);
-+		page = alloc_pages(dma_atomic_pool_gfp(), pool_size_order);
- 	if (!page)
- 		goto out;
- 
-@@ -128,7 +137,8 @@ int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
- 		goto free_page;
- 
- 	addr = dma_common_contiguous_remap(page, atomic_pool_size, VM_USERMAP,
--					   prot, __builtin_return_address(0));
-+					   pgprot_dmacoherent(PAGE_KERNEL),
-+					   __builtin_return_address(0));
- 	if (!addr)
- 		goto destroy_genpool;
- 
-@@ -155,6 +165,7 @@ int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
- 		atomic_pool_size / 1024);
- 	return -ENOMEM;
- }
-+postcore_initcall(dma_atomic_pool_init);
- 
- bool dma_in_atomic_pool(void *start, size_t size)
- {
--- 
-2.20.1
+
+> If so, what happens to region 'A' (the I/O region) in the
+> IOMMU output physical address space. Is it accessible?
+
+No. IOMMU can not access region 'A' above.
+
+> 
+> Anyway, I think it's the job of the driver to convert between the two
+> address spaces, so that:
+> 
+>   - On ->map(), bit 32 of the CPU physical address is set before calling
+>     into the iopgtable code
+> 
+>   - The result from ->iova_to_phys() should be the result from the
+>     iopgtable code, but with the top bit cleared for addresses over
+>     5G.
+> 
+> This assumes that:
+> 
+>   1. We're ok setting bit 9 in the ptes mapping region 'E'.
+>   2. The IOMMU page-table walker uses CPU physical addresses
+> 
+> Are those true?
+
+Yes. Then this patch would be close to the one[1] I sent in v8.
+
+Do I need to split this patch into 2 ones?:
+a).the pagetable code that support 34bit PA when MTK quirk is enabled.
+It only has the symmetric code handle BIT32/BIT33. Besides, I will add
+CONFIG_PHYS_ADDR_T_64BIT in the iopte_to_addr as commented before.
+
+b) MTK code that apply the special "4gb mode" flow. And the "oas" will
+always is 34 bit since v7s has already supported our case.
+
+[1]http://lists.infradead.org/pipermail/linux-mediatek/2019-June/020991.html
+
+> 
+> Thanks,
+> 
+> Will
+
 
 _______________________________________________
 iommu mailing list
