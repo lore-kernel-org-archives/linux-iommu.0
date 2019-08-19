@@ -6,48 +6,48 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D735DC3A5A0
-	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F52C3A59D
+	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:38:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A55E921842
-	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:31:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A55E921842
+	by mail.kernel.org (Postfix) with ESMTPS id B07572086C
+	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:38:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B07572086C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7AD3FE2E;
-	Mon, 19 Aug 2019 11:31:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 76C7BE2F;
+	Mon, 19 Aug 2019 11:38:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D40E7E2D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB39FE2D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 19 Aug 2019 11:31:15 +0000 (UTC)
+	Mon, 19 Aug 2019 11:38:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 84E578A6
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 68DC68A8
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 19 Aug 2019 11:31:14 +0000 (UTC)
+	Mon, 19 Aug 2019 11:38:18 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3AEE328;
-	Mon, 19 Aug 2019 04:31:14 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1130E28;
+	Mon, 19 Aug 2019 04:38:18 -0700 (PDT)
 Received: from [10.37.12.162] (unknown [10.37.12.162])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DA7983F246;
-	Mon, 19 Aug 2019 04:31:12 -0700 (PDT)
-Subject: Re: [Xen-devel] [PATCH 02/11] xen/arm: use dev_is_dma_coherent
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF6B23F246;
+	Mon, 19 Aug 2019 04:38:16 -0700 (PDT)
+Subject: Re: [Xen-devel] [PATCH 04/11] xen/arm: remove xen_dma_ops
 To: Christoph Hellwig <hch@lst.de>,
 	Stefano Stabellini <sstabellini@kernel.org>,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 References: <20190816130013.31154-1-hch@lst.de>
-	<20190816130013.31154-3-hch@lst.de>
+	<20190816130013.31154-5-hch@lst.de>
 From: Julien Grall <julien.grall@arm.com>
-Message-ID: <0998bb38-6afd-d281-5c37-925adf2403d1@arm.com>
-Date: Mon, 19 Aug 2019 12:31:10 +0100
+Message-ID: <316d2032-334d-9a4c-7512-79bec5f0bc56@arm.com>
+Date: Mon, 19 Aug 2019 12:38:15 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190816130013.31154-3-hch@lst.de>
+In-Reply-To: <20190816130013.31154-5-hch@lst.de>
 Content-Language: en-US
 Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
 	x86@kernel.org, linux-kernel@vger.kernel.org,
@@ -72,20 +72,12 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Hi Christoph,
 
 On 8/16/19 2:00 PM, Christoph Hellwig wrote:
-> Use the dma-noncoherent dev_is_dma_coherent helper instead of the home
-> grown variant.
-
-It took me a bit of time to understand that dev->archdata.dma_coherent 
-and dev->dma_coherent will always contain the same value.
-
-Would you mind it mention it in the commit message?
-
-Other than that:
-
-Reviewed-by: Julien Grall <julien.grall@arm.com>
-
+> arm and arm64 can just use xen_swiotlb_dma_ops directly like x86, no
+> need for a pointer indirection.
 > 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+Reviewed-by: Julien Grall <julien.grall@arm.com>
 
 Cheers,
 
