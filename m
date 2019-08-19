@@ -2,73 +2,55 @@ Return-Path: <SRS0=RhgY=WP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 172B6C3A59D
-	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D735DC3A5A0
+	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:31:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D057E2086C
-	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:24:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="nOUquHtz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D057E2086C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id A55E921842
+	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 11:31:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A55E921842
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A8FBBE20;
-	Mon, 19 Aug 2019 11:24:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7AD3FE2E;
+	Mon, 19 Aug 2019 11:31:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 17DAEE1B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D40E7E2D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 19 Aug 2019 11:24:46 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 19E4267F
+	Mon, 19 Aug 2019 11:31:15 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 84E578A6
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 19 Aug 2019 11:24:45 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id AE2B320851;
-	Mon, 19 Aug 2019 11:24:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566213884;
-	bh=KxFLgNmJMln3v1xilT2WLaj/V5rdHTGk5mDJHEGlyZM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nOUquHtzf14nNUsDP3ummqHXlIVpJLB8nupErbnKr/AJXJj+wkKyvXBKS5xb482qj
-	HkuzQ6aZ60aRgigZLr5sugceTgcU7Lw3HzG0aNDdc1CzFTioSgslLVpa+0yiT4Uit4
-	z0fGfbKcIhH8HWgp3mzLViuMBMua082sRHmdt1dU=
-Date: Mon, 19 Aug 2019 12:24:38 +0100
-From: Will Deacon <will@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v9 08/21] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
-	Mode
-Message-ID: <20190819112438.fr233h5dgjkqb36r@willie-the-truck>
-References: <1565423901-17008-1-git-send-email-yong.wu@mediatek.com>
-	<1565423901-17008-9-git-send-email-yong.wu@mediatek.com>
-	<20190814144059.ruyc45yoqkwpbuga@willie-the-truck>
-	<1565858869.12818.51.camel@mhfsdcap03>
-	<20190815095123.rzgtpklvhtjlqir4@willie-the-truck>
-	<1565864318.14278.4.camel@mhfsdcap03>
-	<20190815115021.7pbv5s2qbgsuitvh@willie-the-truck>
-	<1565940140.20346.21.camel@mhfsdcap03>
+	Mon, 19 Aug 2019 11:31:14 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3AEE328;
+	Mon, 19 Aug 2019 04:31:14 -0700 (PDT)
+Received: from [10.37.12.162] (unknown [10.37.12.162])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DA7983F246;
+	Mon, 19 Aug 2019 04:31:12 -0700 (PDT)
+Subject: Re: [Xen-devel] [PATCH 02/11] xen/arm: use dev_is_dma_coherent
+To: Christoph Hellwig <hch@lst.de>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+References: <20190816130013.31154-1-hch@lst.de>
+	<20190816130013.31154-3-hch@lst.de>
+From: Julien Grall <julien.grall@arm.com>
+Message-ID: <0998bb38-6afd-d281-5c37-925adf2403d1@arm.com>
+Date: Mon, 19 Aug 2019 12:31:10 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1565940140.20346.21.camel@mhfsdcap03>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
-	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
-	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
+In-Reply-To: <20190816130013.31154-3-hch@lst.de>
+Content-Language: en-US
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+	x86@kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -82,135 +64,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Aug 16, 2019 at 03:22:20PM +0800, Yong Wu wrote:
-> On Thu, 2019-08-15 at 12:50 +0100, Will Deacon wrote:
-> > Ok, I think speaking to Robin helped me a bit with this...
-> > 
-> > On Thu, Aug 15, 2019 at 06:18:38PM +0800, Yong Wu wrote:
-> > > On Thu, 2019-08-15 at 10:51 +0100, Will Deacon wrote:
-> > > > On Thu, Aug 15, 2019 at 04:47:49PM +0800, Yong Wu wrote:
-> > > > > On Wed, 2019-08-14 at 15:41 +0100, Will Deacon wrote:
-> > > > > > On Sat, Aug 10, 2019 at 03:58:08PM +0800, Yong Wu wrote:
-> > > > > > > MediaTek extend the arm v7s descriptor to support the dram over 4GB.
-> > > > > > > 
-> > > > > > > In the mt2712 and mt8173, it's called "4GB mode", the physical address
-> > > > > > > is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
-> > > > > > > is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
-> > > > > > > bit32 is always enabled. thus, in the M4U, we always enable the bit9
-> > > > > > > for all PTEs which means to enable bit32 of physical address. Here is
-> > > > > > > the detailed remap relationship in the "4GB mode":
-> > > > > > > CPU PA         ->    HW PA
-> > > > > > > 0x4000_0000          0x1_4000_0000 (Add bit32)
-> > > > > > > 0x8000_0000          0x1_8000_0000 ...
-> > > > > > > 0xc000_0000          0x1_c000_0000 ...
-> > > > > > > 0x1_0000_0000        0x1_0000_0000 (No change)
-> > 
-> > [...]
-> > 
-> > > > > > The way I would like this quirk to work is that the io-pgtable code
-> > > > > > basically sets bit 9 in the pte when bit 32 is set in the physical address,
-> > > > > > and sets bit 4 in the pte when bit 33 is set in the physical address. It
-> > > > > > would then do the opposite when converting a pte to a physical address.
-> > > > > > 
-> > > > > > That way, your driver can call the page table code directly with the high
-> > > > > > addresses and we don't have to do any manual offsetting or range checking
-> > > > > > in the page table code.
-> > > > > 
-> > > > > In this case, the mt8183 can work successfully while the "4gb
-> > > > > mode"(mt8173/mt2712) can not.
-> > > > > 
-> > > > > In the "4gb mode", As the remap relationship above, we should always add
-> > > > > bit32 in pte as we did in [2]. and need add bit32 in the
-> > > > > "iova_to_phys"(Not always add.). That means the "4gb mode" has a special
-> > > > > flow:
-> > > > > a. Always add bit32 in paddr_to_iopte.
-> > > > > b. Add bit32 only when PA < 0x40000000 in iopte_to_paddr.
-> > > > 
-> > > > I think this is probably at the heart of my misunderstanding. What is so
-> > > > special about PAs (is this HW PA or CPU PA?) below 0x40000000? Is this RAM
-> > > > or something else?
-> > > 
-> > > SRAM and HW register that IOMMU can not access.
-> > 
-> > Ok, so redrawing your table from above, I think we can say something like:
-> > 
-> > 
-> > CPU Physical address
-> > ====================
-> > 
-> > 0G	1G	2G	3G	4G	5G
-> > |---A---|---B---|---C---|---D---|---E---|
-> > +--I/O--+------------Memory-------------+
-> > 
-> > 
-> > IOMMU output physical address
-> > =============================
-> > 
-> > 				4G	5G	6G	7G	8G
-> > 				|---E---|---B---|---C---|---D---|
-> > 				+------------Memory-------------+
-> > 
-> > 
-> > Do you agree? 
+Hi Christoph,
+
+On 8/16/19 2:00 PM, Christoph Hellwig wrote:
+> Use the dma-noncoherent dev_is_dma_coherent helper instead of the home
+> grown variant.
+
+It took me a bit of time to understand that dev->archdata.dma_coherent 
+and dev->dma_coherent will always contain the same value.
+
+Would you mind it mention it in the commit message?
+
+Other than that:
+
+Reviewed-by: Julien Grall <julien.grall@arm.com>
+
 > 
-> Quite right.
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Woohoo! So I finally got something right about this :) I'd be up for
-including the diagrams above either in the commit message or in the IOMMU
-driver code, along with a comment saying that region 'A' cannot be mapped
-by the IOMMU and that the page-table walker uses CPU physical addresses.
+Cheers,
 
-> > If so, what happens to region 'A' (the I/O region) in the
-> > IOMMU output physical address space. Is it accessible?
-> 
-> No. IOMMU can not access region 'A' above.
-
-Got it. Thanks.
-
-> > Anyway, I think it's the job of the driver to convert between the two
-> > address spaces, so that:
-> > 
-> >   - On ->map(), bit 32 of the CPU physical address is set before calling
-> >     into the iopgtable code
-> > 
-> >   - The result from ->iova_to_phys() should be the result from the
-> >     iopgtable code, but with the top bit cleared for addresses over
-> >     5G.
-> > 
-> > This assumes that:
-> > 
-> >   1. We're ok setting bit 9 in the ptes mapping region 'E'.
-> >   2. The IOMMU page-table walker uses CPU physical addresses
-> > 
-> > Are those true?
-> 
-> Yes. Then this patch would be close to the one[1] I sent in v8.
-> 
-> Do I need to split this patch into 2 ones?:
-
-Up to you. If you want to fix the current mainline behaviour of always
-setting bit 4, then that should be a separate patch at the start of the
-series which can be backported to stable. Is there a reason this doesn't go
-wrong in practice?
-
-> a).the pagetable code that support 34bit PA when MTK quirk is enabled.
-> It only has the symmetric code handle BIT32/BIT33. Besides, I will add
-> CONFIG_PHYS_ADDR_T_64BIT in the iopte_to_addr as commented before.
-
-Hmm. I would prefer that the iopgtable code:
-
-	* Range checks the paddr against the oas in ->map()
-	* Refuses to accept an oas > 32 in ->alloc()
-
-Then it's up to you whether you just want to pass an oas of 34 from the
-IOMMU driver.
-
-Will
+-- 
+Julien Grall
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
