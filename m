@@ -2,40 +2,41 @@ Return-Path: <SRS0=RhgY=WP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E43C3A5A1
-	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 13:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6756AC3A5A2
+	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 13:23:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E85272085A
-	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 13:23:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E85272085A
+	by mail.kernel.org (Postfix) with ESMTPS id 42E622087B
+	for <iommu@archiver.kernel.org>; Mon, 19 Aug 2019 13:23:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42E622087B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 10A13E59;
-	Mon, 19 Aug 2019 13:23:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 38655E38;
+	Mon, 19 Aug 2019 13:23:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 203A9E36
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 42C0BE43
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 19 Aug 2019 13:23:04 +0000 (UTC)
+	Mon, 19 Aug 2019 13:23:05 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AF7B28AA
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 424948A7
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 19 Aug 2019 13:23:03 +0000 (UTC)
+	Mon, 19 Aug 2019 13:23:04 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id EDF0B5D7; Mon, 19 Aug 2019 15:22:59 +0200 (CEST)
+	id 4E04C673; Mon, 19 Aug 2019 15:23:00 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 07/11] ia64: Get rid of iommu_pass_through
-Date: Mon, 19 Aug 2019 15:22:52 +0200
-Message-Id: <20190819132256.14436-8-joro@8bytes.org>
+Subject: [PATCH 09/11] iommu: Set default domain type at runtime
+Date: Mon, 19 Aug 2019 15:22:54 +0200
+Message-Id: <20190819132256.14436-10-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190819132256.14436-1-joro@8bytes.org>
 References: <20190819132256.14436-1-joro@8bytes.org>
@@ -64,42 +65,63 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-This variable has no users anymore so it can be removed.
+Set the default domain-type at runtime, not at compile-time.
+This keeps default domain type setting in one place when we
+have to change it at runtime.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/ia64/include/asm/iommu.h | 2 --
- arch/ia64/kernel/pci-dma.c    | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/iommu/iommu.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
-index 7429a72f3f92..92aceef63710 100644
---- a/arch/ia64/include/asm/iommu.h
-+++ b/arch/ia64/include/asm/iommu.h
-@@ -8,10 +8,8 @@
- extern void no_iommu_init(void);
- #ifdef	CONFIG_INTEL_IOMMU
- extern int force_iommu, no_iommu;
--extern int iommu_pass_through;
- extern int iommu_detected;
- #else
--#define iommu_pass_through	(0)
- #define no_iommu		(1)
- #define iommu_detected		(0)
- #endif
-diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
-index fe988c49f01c..f5d49cd3fbb0 100644
---- a/arch/ia64/kernel/pci-dma.c
-+++ b/arch/ia64/kernel/pci-dma.c
-@@ -22,8 +22,6 @@ int force_iommu __read_mostly = 1;
- int force_iommu __read_mostly;
- #endif
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 0ddd0bd1ff75..01759d4ac70b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -26,11 +26,8 @@
  
--int iommu_pass_through;
--
- static int __init pci_iommu_init(void)
+ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+-#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
+-static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
+-#else
+-static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+-#endif
++
++static unsigned int iommu_def_domain_type __read_mostly;
+ static bool iommu_dma_strict __read_mostly = true;
+ static u32 iommu_cmd_line __read_mostly;
+ 
+@@ -76,7 +73,7 @@ static void iommu_set_cmd_line_dma_api(void)
+ 	iommu_cmd_line |= IOMMU_CMD_LINE_DMA_API;
+ }
+ 
+-static bool __maybe_unused iommu_cmd_line_dma_api(void)
++static bool iommu_cmd_line_dma_api(void)
  {
- 	if (iommu_detected)
+ 	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
+ }
+@@ -115,8 +112,18 @@ static const char *iommu_domain_type_str(unsigned int t)
+ 
+ static int __init iommu_subsys_init(void)
+ {
+-	pr_info("Default domain type: %s\n",
+-		iommu_domain_type_str(iommu_def_domain_type));
++	bool cmd_line = iommu_cmd_line_dma_api();
++
++	if (!cmd_line) {
++		if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
++			iommu_set_default_passthrough(false);
++		else
++			iommu_set_default_translated(false);
++	}
++
++	pr_info("Default domain type: %s %s\n",
++		iommu_domain_type_str(iommu_def_domain_type),
++		cmd_line ? "(set via kernel command line)" : "");
+ 
+ 	return 0;
+ }
 -- 
 2.16.4
 
