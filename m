@@ -2,66 +2,55 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E854BC3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 17:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A088C3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 18:42:00 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BB83722DBF
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 17:27:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB83722DBF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 374D02087E
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 18:42:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 374D02087E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8B74CD38;
-	Tue, 20 Aug 2019 17:27:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EF80FCBB;
+	Tue, 20 Aug 2019 18:41:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A62B2CBF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 48FA0C6F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 17:27:55 +0000 (UTC)
+	Tue, 20 Aug 2019 18:41:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 13ADA12E
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A30CA87
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 17:27:55 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id 1272AABBE;
-	Tue, 20 Aug 2019 17:27:53 +0000 (UTC)
-Message-ID: <ef3eaf8ea03ae8dc86a1a2f293087ff5c2f56b7a.camel@suse.de>
-Subject: Re: [PATCH v2 03/11] of/fdt: add of_fdt_machine_is_compatible function
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Rob Herring <robh+dt@kernel.org>
-Date: Tue, 20 Aug 2019 19:27:50 +0200
-In-Reply-To: <CAL_JsqJT3UNVKpAt+3g-tosy=uCZTosUxD4RfVYjMJ-gpGmPiA@mail.gmail.com>
-References: <20190820145821.27214-1-nsaenzjulienne@suse.de>
-	<20190820145821.27214-4-nsaenzjulienne@suse.de>
-	<CAL_JsqJT3UNVKpAt+3g-tosy=uCZTosUxD4RfVYjMJ-gpGmPiA@mail.gmail.com>
-User-Agent: Evolution 3.32.4 
+	Tue, 20 Aug 2019 18:41:57 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E763337;
+	Tue, 20 Aug 2019 11:41:56 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7881F3F718;
+	Tue, 20 Aug 2019 11:41:55 -0700 (PDT)
+Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
+To: Will Deacon <will@kernel.org>
+References: <cover.1566238530.git.robin.murphy@arm.com>
+	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
+	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
+	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
+	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
+Date: Tue, 20 Aug 2019 19:41:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Cc: "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>,
-	devicetree@vger.kernel.org,
-	Florian Fainelli <f.fainelli@gmail.com>, phill@raspberryi.org,
-	Will Deacon <will@kernel.org>, linux-mm@kvack.org,
-	Marc Zyngier <marc.zyngier@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Christoph Hellwig <hch@lst.de>, Eric Anholt <eric@anholt.net>,
-	Linux IOMMU <iommu@lists.linux-foundation.org>,
-	Matthias Brugger <mbrugger@suse.com>, "moderated
-	list:BROADCOM BCM2835 ARM ARCHITECTURE"
-	<linux-rpi-kernel@lists.infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	linux-riscv@lists.infradead.org, "moderated
-	list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
-	<linux-arm-kernel@lists.infradead.org>, Stefan Wahren <wahrenst@gmx.net>
+In-Reply-To: <20190820160700.6ircxomwuo5bksqz@willie-the-truck>
+Content-Language: en-GB
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,90 +63,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6593773105735746703=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+On 20/08/2019 17:07, Will Deacon wrote:
+> On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
+>> On 20/08/2019 11:31, Will Deacon wrote:
+>>> On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
+>>>> Although it's conceptually nice for the io_pgtable_cfg to provide a
+>>>> standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
+>>>> looks exactly like an Arm CPU, and they all have various other TCR
+>>>> controls which io-pgtable can't be expected to understand. Thus since
+>>>> there is an expectation that drivers will have to add to the given TCR
+>>>> value anyway, let's strip it down to just the essentials that are
+>>>> directly relevant to io-pgatble's inner workings - namely the address
+>>>> sizes, walk attributes, and where appropriate, format selection.
+>>>>
+>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>> ---
+>>>>    drivers/iommu/arm-smmu-v3.c        | 7 +------
+>>>>    drivers/iommu/arm-smmu.c           | 1 +
+>>>>    drivers/iommu/arm-smmu.h           | 2 ++
+>>>>    drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
+>>>>    drivers/iommu/io-pgtable-arm.c     | 4 ----
+>>>>    drivers/iommu/qcom_iommu.c         | 2 +-
+>>>>    6 files changed, 7 insertions(+), 15 deletions(-)
+>>>
+>>> Hmm, so I'm a bit nervous about this one since I think we really should
+>>> be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
+>>> on the driver to do this worries me. See my comments on the next patch.
+>>
+>> The whole idea is that we already know we can't provide a *complete* TCR
+>> value (not least because anything above bit 31 is the wild west), thus
+>> there's really no point in io-pgtable trying to provide anything other than
+>> the parts it definitely controls. It makes sense to provide this partial TCR
+>> value "as if" for TTBR0, since that's the most common case, but ultimately
+>> io-pgatble doesn't know (or need to) which TTBR the caller intends to
+>> actually use for this table. Even if the caller *is* allocating it for
+>> TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
+>> already, so it still wouldn't be in a position to make the EPD1 call either
+>> way.
+> 
+> Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
+> an alternative would be scrapped the 'u64 tcr' and instead having a bunch
+> of named bitfields for the stuff we're actually providing, although I'd
+> still like EPDx to be in there.
 
---===============6593773105735746703==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-Cm+dM0aB2YImXVa0ovlW"
+I like the bitfield idea; it would certainly emphasise the "you have to 
+do something more with this" angle that I'm pushing towards here, but 
+still leave things framed in TCR terms without having to go to some more 
+general abstraction. It really doesn't play into your EPD argument 
+though - such a config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but 
+EPDy, for y = !x. For a driver to understand that and do the right thing 
+with it is even more involved than for the driver to just set EPD1 by 
+itself anyway.
 
+>> Ultimately, it's the IOMMU drivers who decide what they put in which TTBR,
+>> so it's the IOMMU drivers which have to take responsibility for EPD*. Sure
+>> you can worry about it, but you can equally worry about them them
+>> misprogramming the ASID or anything else...
+> 
+> I find the EPDx bits particularly dangerous because:
+> 
+>    - They're easily overlooked
+>    - Clobbering TTBR1 with 0x0 doesn't disable walks via TTBR1 as you might
+>      reasonably expect
 
---=-Cm+dM0aB2YImXVa0ovlW
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+(FWIW I'm not sure that that is a reasonable expectation, at least for 
+anyone savvy enough to be programming an MMU in the first place. There 
+are plenty of systems with RAM at 0x0)
 
-Hi Rob,
-thanks for the rewiew.
+>    - If you do the above without EPD, the breakage will be subtle
+> 
+> and given that I don't see any real downsides to us providing a default TCR
+> value with EPD set appropriately, then I think we should do that. I'd be
+> happy to revisit the decision later on if it's getting the way of a real
+> use-case, but it feels like we're throwing the baby out with the bathwater
+> at the moment and I'd rather do this incrementally based on actual need.
+The downside is maintaining extra complexity for the sake of a 
+theoretical concern which hasn't been borne out in practice, with a 
+promise of yet more complexity down the line. Moving the 3 babies which 
+anyone acknowledges into their own private baths takes a whole -8 lines 
+of code to implement. That said, if we don't go down the bitfield route, 
+then I *can* leave the default TCR having EPD1 set if that makes you 
+feel warm and safe, but it will still be resoundingly ignored.
 
-On Tue, 2019-08-20 at 12:16 -0500, Rob Herring wrote:
-> On Tue, Aug 20, 2019 at 9:58 AM Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de> wrote:
-> > Provides the same functionality as of_machine_is_compatible.
-> >=20
-> > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > ---
-> >=20
-> > Changes in v2: None
-> >=20
-> >  drivers/of/fdt.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> >=20
-> > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> > index 9cdf14b9aaab..06ffbd39d9af 100644
-> > --- a/drivers/of/fdt.c
-> > +++ b/drivers/of/fdt.c
-> > @@ -802,6 +802,13 @@ const char * __init of_flat_dt_get_machine_name(vo=
-id)
-> >         return name;
-> >  }
-> >=20
-> > +static const int __init of_fdt_machine_is_compatible(char *name)
->=20
-> No point in const return (though name could possibly be const), and
-> the return could be bool instead.
+If only LPAE had created these bits as enables rather than disables then 
+things would be logical and we could all be happy, but here we are...
 
-Sorry, I completely missed that const, shouldn't have been there to begin w=
-ith.
-
-I'll add a const to the name argument and return a bool on the next version=
-.
-
-Regards,
-Nicolas
-
-
-
---=-Cm+dM0aB2YImXVa0ovlW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl1cLZYACgkQlfZmHno8
-x/4DowgAjoLUq0qUOWOtkTx0OcxyQrKy++gIvChR7IajK1yXJKyT8kA/QNZrERqj
-nvLlebXPhJG0y4uUTzEVmzsgUFS4vopZAzL+H7TGfXsL8pQbGjnO+l62gc1oqTVd
-U+IrQWs0BPZ/MeCxUXUtKlYdMMuf9Ld8z16siDZPj5pYY6IHq8HtS1WseTvTti6S
-pHpXyK+XiPpxzupgUjNm6Lzsm8FO0P2tw5IKD3vRLS+4vLaYUPieCLdMvkf1lMU6
-DkQ71pEENpt35eBer1lLK/meYuisvK4V+tnwrWSDGZCuywbhi1fpvAyh3CRicE3t
-rvLGmR2JEXsldgQeodOoEyKoeWSAgQ==
-=hgaN
------END PGP SIGNATURE-----
-
---=-Cm+dM0aB2YImXVa0ovlW--
-
-
---===============6593773105735746703==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6593773105735746703==--
-
