@@ -2,71 +2,51 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95339C3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 20:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDAFC3A59E
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 21:17:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1DA5C22DA7
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 20:24:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DA5C22DA7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=mni.thm.de
+	by mail.kernel.org (Postfix) with ESMTPS id 55A2C2332A
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 21:17:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55A2C2332A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DE5B6C11;
-	Tue, 20 Aug 2019 20:24:39 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 070A2D2E;
+	Tue, 20 Aug 2019 21:17:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 94B59B4B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 982D8D1A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 20:24:38 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mout1.fh-giessen.de (mout1.fh-giessen.de [212.201.18.42])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AA67E8AF
+	Tue, 20 Aug 2019 21:17:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1906A87
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 20:24:37 +0000 (UTC)
-Received: from mx1.fh-giessen.de ([212.201.18.40])
-	by mout1.fh-giessen.de with esmtps
-	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
-	(envelope-from <tobias.johannes.klausmann@mni.thm.de>)
-	id 1i0AgA-0004lW-LN; Tue, 20 Aug 2019 22:24:30 +0200
-Received: from mailgate-1.its.fh-giessen.de ([212.201.18.15])
-	by mx1.fh-giessen.de with esmtps
-	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
-	(envelope-from <tobias.johannes.klausmann@mni.thm.de>)
-	id 1i0AgA-00ENUB-GS; Tue, 20 Aug 2019 22:24:30 +0200
-Received: from p2e561b42.dip0.t-ipconnect.de ([46.86.27.66]
-	helo=[192.168.1.24]) by mailgate-1.its.fh-giessen.de with esmtpsa
-	(TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.92)
-	(envelope-from <tobias.johannes.klausmann@mni.thm.de>)
-	id 1i0AgA-0008h8-6B; Tue, 20 Aug 2019 22:24:30 +0200
-Subject: Re: regression in ath10k dma allocation
-To: Christoph Hellwig <hch@lst.de>, Hillf Danton <hdanton@sina.com>
-References: <8fe8b415-2d34-0a14-170b-dcb31c162e67@mni.thm.de>
-	<20190816164301.GA3629@lst.de>
-	<af96ea6a-2b17-9b66-7aba-b7dae5bcbba5@mni.thm.de>
-	<20190816222506.GA24413@Asurada-Nvidia.nvidia.com>
-	<20190818031328.11848-1-hdanton@sina.com>
-	<acd7a4b0-fde8-1aa2-af07-2b469e5d5ca7@mni.thm.de>
-	<20190820065833.1628-1-hdanton@sina.com>
-	<20190820071250.GA28968@lst.de>
-From: Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
-Message-ID: <c11b5c86-3c10-35f6-b07e-e090d42d97ed@mni.thm.de>
-Date: Tue, 20 Aug 2019 22:24:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101
-	Thunderbird/70.0a1
-MIME-Version: 1.0
-In-Reply-To: <20190820071250.GA28968@lst.de>
-Content-Language: de-DE
-Cc: netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
-	Nicolin Chen <nicoleotsuka@gmail.com>,
-	iommu@lists.linux-foundation.org, tobias.klausmann@freenet.de,
-	robin.murphy@arm.com, davem@davemloft.net, kvalo@codeaurora.org
+	Tue, 20 Aug 2019 21:17:28 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	20 Aug 2019 14:17:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,410,1559545200"; d="scan'208";a="353738858"
+Received: from jacob-builder.jf.intel.com ([10.7.199.155])
+	by orsmga005.jf.intel.com with ESMTP; 20 Aug 2019 14:17:27 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org,
+	LKML <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH] iommu/vt-d: remove global page flush support
+Date: Tue, 20 Aug 2019 14:21:08 -0700
+Message-Id: <1566336068-39416-1-git-send-email-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
+Cc: Raj Ashok <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,155 +59,143 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+Global pages support is removed from VT-d spec 3.0. Since global pages G
+flag only affects first-level paging structures and because DMA request
+with PASID are only supported by VT-d spec. 3.0 and onward, we can
+safely remove global pages support.
 
-On 20.08.19 09:12, Christoph Hellwig wrote:
-> On Tue, Aug 20, 2019 at 02:58:33PM +0800, Hillf Danton wrote:
->> On Tue, 20 Aug 2019 05:05:14 +0200 Christoph Hellwig wrote:
->>> Tobias, plase try this patch:
->>>
-> New version below:
->
-> ---
->  From b8a805e93be5a5662323b8ac61fe686df839c4ac Mon Sep 17 00:00:00 2001
-> From: Christoph Hellwig <hch@lst.de>
-> Date: Tue, 20 Aug 2019 11:45:49 +0900
-> Subject: dma-direct: fix zone selection after an unaddressable CMA allocation
->
-> The new dma_alloc_contiguous hides if we allocate CMA or regular
-> pages, and thus fails to retry a ZONE_NORMAL allocation if the CMA
-> allocation succeeds but isn't addressable.  That means we either fail
-> outright or dip into a small zone that might not succeed either.
->
-> Thanks to Hillf Danton for debugging this issue.
->
-> Fixes: b1d2dc009dec ("dma-contiguous: add dma_{alloc,free}_contiguous() helpers")
-> Reported-by: Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   drivers/iommu/dma-iommu.c      |  3 +++
->   include/linux/dma-contiguous.h |  5 +----
->   kernel/dma/contiguous.c        |  9 +++------
->   kernel/dma/direct.c            | 10 +++++++++-
->   4 files changed, 16 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index d991d40f797f..f68a62c3c32b 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -965,10 +965,13 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
->   {
->   	bool coherent = dev_is_dma_coherent(dev);
->   	size_t alloc_size = PAGE_ALIGN(size);
-> +	int node = dev_to_node(dev);
->   	struct page *page = NULL;
->   	void *cpu_addr;
->   
->   	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-> +	if (!page)
-> +		page = alloc_pages_node(node, gfp, get_order(alloc_size));
->   	if (!page)
->   		return NULL;
->   
-> diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-> index c05d4e661489..03f8e98e3bcc 100644
-> --- a/include/linux/dma-contiguous.h
-> +++ b/include/linux/dma-contiguous.h
-> @@ -160,10 +160,7 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
->   static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
->   		gfp_t gfp)
->   {
-> -	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-> -	size_t align = get_order(PAGE_ALIGN(size));
-> -
-> -	return alloc_pages_node(node, gfp, align);
-> +	return NULL;
->   }
->   
->   static inline void dma_free_contiguous(struct device *dev, struct page *page,
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 2bd410f934b3..e6b450fdbeb6 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -230,9 +230,7 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
->    */
->   struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
->   {
-> -	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-> -	size_t count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	size_t align = get_order(PAGE_ALIGN(size));
-> +	size_t count = size >> PAGE_SHIFT;
->   	struct page *page = NULL;
->   	struct cma *cma = NULL;
->   
-> @@ -243,14 +241,12 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
->   
->   	/* CMA can be used only in the context which permits sleeping */
->   	if (cma && gfpflags_allow_blocking(gfp)) {
-> +		size_t align = get_order(size);
->   		size_t cma_align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
->   
->   		page = cma_alloc(cma, count, cma_align, gfp & __GFP_NOWARN);
->   	}
->   
-> -	/* Fallback allocation of normal pages */
-> -	if (!page)
-> -		page = alloc_pages_node(node, gfp, align);
->   	return page;
->   }
->   
-> @@ -258,6 +254,7 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
->    * dma_free_contiguous() - release allocated pages
->    * @dev:   Pointer to device for which the pages were allocated.
->    * @page:  Pointer to the allocated pages.
-> +	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
->    * @size:  Size of allocated pages.
->    *
->    * This function releases memory allocated by dma_alloc_contiguous(). As the
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 795c9b095d75..706113c6bebc 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -85,6 +85,8 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->   struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->   		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
->   {
-> +	size_t alloc_size = PAGE_ALIGN(size);
-> +	int node = dev_to_node(dev);
->   	struct page *page = NULL;
->   	u64 phys_mask;
->   
-> @@ -95,8 +97,14 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->   	gfp &= ~__GFP_ZERO;
->   	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
->   			&phys_mask);
-> +	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-> +	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-> +		dma_free_contiguous(dev, page, alloc_size);
-> +		page = NULL;
-> +	}
->   again:
-> -	page = dma_alloc_contiguous(dev, size, gfp);
-> +	if (!page)
-> +		page = alloc_pages_node(node, gfp, get_order(alloc_size));
->   	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
->   		dma_free_contiguous(dev, page, size);
->   		page = NULL;
+For kernel shared virtual address IOTLB invalidation, PASID
+granularity and page selective within PASID will be used. There is
+no global granularity supported. Without this fix, IOTLB invalidation
+will cause invalid descriptor error in the queued invalidation (QI)
+interface.
 
-I can confirm this resolves the regression!
+Reported-by:   Sanjay K Kumar <sanjay.k.kumar@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel-svm.c   | 36 +++++++++++++++---------------------
+ include/linux/intel-iommu.h |  3 ---
+ 2 files changed, 15 insertions(+), 24 deletions(-)
 
-Tested-by: Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
-
-
-Thanks for the work of all involved,
-
-Tobias
-
-
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index c6edef2..55f4128 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -101,24 +101,19 @@ int intel_svm_finish_prq(struct intel_iommu *iommu)
+ }
+ 
+ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_dev *sdev,
+-				       unsigned long address, unsigned long pages, int ih, int gl)
++				unsigned long address, unsigned long pages, int ih)
+ {
+ 	struct qi_desc desc;
+ 
+-	if (pages == -1) {
+-		/* For global kernel pages we have to flush them in *all* PASIDs
+-		 * because that's the only option the hardware gives us. Despite
+-		 * the fact that they are actually only accessible through one. */
+-		if (gl)
+-			desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
+-					QI_EIOTLB_DID(sdev->did) |
+-					QI_EIOTLB_GRAN(QI_GRAN_ALL_ALL) |
+-					QI_EIOTLB_TYPE;
+-		else
+-			desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
+-					QI_EIOTLB_DID(sdev->did) |
+-					QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
+-					QI_EIOTLB_TYPE;
++	/*
++	 * Do PASID granu IOTLB invalidation if page selective capability is
++	 * not available.
++	 */
++	if (pages == -1 || !cap_pgsel_inv(svm->iommu->cap)) {
++		desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
++			QI_EIOTLB_DID(sdev->did) |
++			QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
++			QI_EIOTLB_TYPE;
+ 		desc.qw1 = 0;
+ 	} else {
+ 		int mask = ilog2(__roundup_pow_of_two(pages));
+@@ -128,7 +123,6 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
+ 				QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) |
+ 				QI_EIOTLB_TYPE;
+ 		desc.qw1 = QI_EIOTLB_ADDR(address) |
+-				QI_EIOTLB_GL(gl) |
+ 				QI_EIOTLB_IH(ih) |
+ 				QI_EIOTLB_AM(mask);
+ 	}
+@@ -163,13 +157,13 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
+ }
+ 
+ static void intel_flush_svm_range(struct intel_svm *svm, unsigned long address,
+-				  unsigned long pages, int ih, int gl)
++				unsigned long pages, int ih)
+ {
+ 	struct intel_svm_dev *sdev;
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(sdev, &svm->devs, list)
+-		intel_flush_svm_range_dev(svm, sdev, address, pages, ih, gl);
++		intel_flush_svm_range_dev(svm, sdev, address, pages, ih);
+ 	rcu_read_unlock();
+ }
+ 
+@@ -181,7 +175,7 @@ static void intel_invalidate_range(struct mmu_notifier *mn,
+ 	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
+ 
+ 	intel_flush_svm_range(svm, start,
+-			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0, 0);
++			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0);
+ }
+ 
+ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+@@ -204,7 +198,7 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(sdev, &svm->devs, list) {
+ 		intel_pasid_tear_down_entry(svm->iommu, sdev->dev, svm->pasid);
+-		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
++		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+ 	}
+ 	rcu_read_unlock();
+ 
+@@ -612,7 +606,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 			 * large and has to be physically contiguous. So it's
+ 			 * hard to be as defensive as we might like. */
+ 			intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+-			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
++			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+ 			kfree_rcu(sdev, rcu);
+ 
+ 			if (list_empty(&svm->devs)) {
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 682eafa1..f09813f 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -350,7 +350,6 @@ enum {
+ #define QI_PC_PASID_SEL		1
+ 
+ #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
+-#define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
+ #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
+ #define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
+ #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
+@@ -386,8 +385,6 @@ enum {
+ #define QI_RESP_INVALID		0x1
+ #define QI_RESP_FAILURE		0xf
+ 
+-#define QI_GRAN_ALL_ALL			0
+-#define QI_GRAN_NONG_ALL		1
+ #define QI_GRAN_NONG_PASID		2
+ #define QI_GRAN_PSI_PASID		3
+ 
+-- 
+2.7.4
 
 _______________________________________________
 iommu mailing list
