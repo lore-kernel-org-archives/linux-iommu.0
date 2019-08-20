@@ -2,67 +2,83 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DATE_IN_PAST_06_12,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9757DC3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 16:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B35C3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 16:23:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 71B702087E
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 16:14:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 71B702087E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 994F722DD6
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 16:23:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="F8KYPR94";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Bcs9DEUx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 994F722DD6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 38EE7E40;
-	Tue, 20 Aug 2019 16:14:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 59A8BCDF;
+	Tue, 20 Aug 2019 16:23:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 39074DA7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7E184A49
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 16:14:01 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
-	[209.85.215.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9040812E
+	Tue, 20 Aug 2019 16:23:25 +0000 (UTC)
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1623312E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 16:14:00 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id n4so3520558pgv.2
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 09:14:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id;
-	bh=rfpTxm0NAlEy8xKy4wmYmwInXk2X4QMQ21G/QjPhbGQ=;
-	b=CEGEXcMXkqI3zyFB/GWQhFji6MxCZjzdmAu/szsnMDI5qxaBgIUpRhtqiU3N6PBC/g
-	q4jso853UzrxeqcNcYcetUn+92KgUmUHQHXy1tz62wsfNyLS+cpij0sJcX3e0gCXS6I6
-	S8JgW+VaVSJa2dEBkYme6wdCYej1lnYFCswe9pDYWmbJ99pypvvx3MN5IBIM0o8X0l+d
-	/naVQp6aR6fO70IZlXbbnESoIpoG2NKsiM+u8qKfy8Y/VZf/TqdZNTcH2B2a7d1JAYcc
-	1ANlX+9yNRgmTnba9OTBe5zqsgD3UPBbKLboiV3/dHz6UNQw0Oircx05R1l83AAWCuOj
-	76sQ==
-X-Gm-Message-State: APjAAAVRFDQFO9Jkc9CSPvSRdAhLcx6CV43D43hhDtn0OYownJyrBFsG
-	CXxlgPWpH9kQ7B0LBmefWAU=
-X-Google-Smtp-Source: APXvYqxTIV3zuOXqQRI/JI1qaV7Iq/Y4nRwsb5qOUjTnvGS327RD0amGzW/WoGsdRxyFRjBQUAbgOA==
-X-Received: by 2002:a65:514c:: with SMTP id g12mr25438710pgq.76.1566317639818; 
-	Tue, 20 Aug 2019 09:13:59 -0700 (PDT)
-Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
-	by smtp.gmail.com with ESMTPSA id
-	u23sm19759252pgj.58.2019.08.20.09.13.58
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Tue, 20 Aug 2019 09:13:59 -0700 (PDT)
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/vt-d: Fix wrong analysis whether devices share the same
-	bus
-Date: Tue, 20 Aug 2019 01:53:17 -0700
-Message-Id: <20190820085317.29458-1-namit@vmware.com>
-X-Mailer: git-send-email 2.17.1
-Cc: David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Nadav Amit <namit@vmware.com>, Logan Gunthorpe <logang@deltatee.com>
+	Tue, 20 Aug 2019 16:23:25 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 6F6BA60DB6; Tue, 20 Aug 2019 16:23:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1566318204;
+	bh=Jq+WMGe8B5Go6F6LI4omy9GTq55Eu9cZlfLG8KVU6Oo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=F8KYPR94MXfilFsjxqqoJ6eVUbffAAWKMD1YWQ9ohm+lZARwFwLmUd4H//HSfsplM
+	OPuNYhGAKzvDSEFhhASxqj/fox2h6rbo+1ZBMjSDXn7O1zjI7l1Bw9/ix0ENmaeaIT
+	dCeNRtL9jxYdTB2TZa8JFL5UhbAKvfec9AHJ6Rpc=
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+	[199.106.103.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: jcrouse@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 2553360AD1;
+	Tue, 20 Aug 2019 16:23:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1566318203;
+	bh=Jq+WMGe8B5Go6F6LI4omy9GTq55Eu9cZlfLG8KVU6Oo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Bcs9DEUx16iQeIX8DYR8oEZHwcJU+AEVDdS88SgXUEEbPtNeLJOTA3fXC2LuJ+KqV
+	TrhO3hhYeDkPp3rjnkcuKKtuRj++UA37KtPltm/Fm64Qw3idcZRgM3klI2TD7lSzAH
+	0izZTnrNXoYSooB6xvPerSvXC/EM//mUs+FLPj5s=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2553360AD1
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Tue, 20 Aug 2019 10:23:20 -0600
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
+Message-ID: <20190820162319.GH28465@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, joro@8bytes.org,
+	iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org, robdclark@gmail.com
+References: <cover.1566238530.git.robin.murphy@arm.com>
+	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
+	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
+	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,68 +91,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nadav Amit via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nadav Amit <namit@vmware.com>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-set_msi_sid_cb() is used to determine whether device aliases share the
-same bus, but it can provide false indications that aliases use the same
-bus when in fact they do not. The reason is that set_msi_sid_cb()
-assumes that pdev is fixed, while actually pci_for_each_dma_alias() can
-call fn() when pdev is set to a subordinate device.
+On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
+> On 20/08/2019 11:31, Will Deacon wrote:
+> >On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
+> >>Although it's conceptually nice for the io_pgtable_cfg to provide a
+> >>standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
+> >>looks exactly like an Arm CPU, and they all have various other TCR
+> >>controls which io-pgtable can't be expected to understand. Thus since
+> >>there is an expectation that drivers will have to add to the given TCR
+> >>value anyway, let's strip it down to just the essentials that are
+> >>directly relevant to io-pgatble's inner workings - namely the address
+> >>sizes, walk attributes, and where appropriate, format selection.
+> >>
+> >>Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> >>---
+> >>  drivers/iommu/arm-smmu-v3.c        | 7 +------
+> >>  drivers/iommu/arm-smmu.c           | 1 +
+> >>  drivers/iommu/arm-smmu.h           | 2 ++
+> >>  drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
+> >>  drivers/iommu/io-pgtable-arm.c     | 4 ----
+> >>  drivers/iommu/qcom_iommu.c         | 2 +-
+> >>  6 files changed, 7 insertions(+), 15 deletions(-)
+> >
+> >Hmm, so I'm a bit nervous about this one since I think we really should
+> >be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
+> >on the driver to do this worries me. See my comments on the next patch.
+> 
+> The whole idea is that we already know we can't provide a *complete* TCR
+> value (not least because anything above bit 31 is the wild west), thus
+> there's really no point in io-pgtable trying to provide anything other than
+> the parts it definitely controls. It makes sense to provide this partial TCR
+> value "as if" for TTBR0, since that's the most common case, but ultimately
+> io-pgatble doesn't know (or need to) which TTBR the caller intends to
+> actually use for this table. Even if the caller *is* allocating it for
+> TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
+> already, so it still wouldn't be in a position to make the EPD1 call either
+> way.
+> 
+> Ultimately, it's the IOMMU drivers who decide what they put in which TTBR,
+> so it's the IOMMU drivers which have to take responsibility for EPD*. Sure
+> you can worry about it, but you can equally worry about them them
+> misprogramming the ASID or anything else...
 
-As a result, running an VM on ESX with VT-d emulation enabled can
-results in the log warning such as:
+I agree. If the driver *does* want to use TTBR1 then it gets a bit uglier to
+realize that the io-pgtable set the bit and mask it off. To me it is a lot
+clearer if this is done explicitly in the driver especially if the driver is
+where we are making the choice to use either ttbr0 or ttbr1.
 
-  DMAR: [INTR-REMAP] Request device [00:11.0] fault index 3b [fault reason 38] Blocked an interrupt request due to source-id verification failure
+It would probably be easier to see in actual code, and I'll have a patch
+shortly on top of this series.
 
-This seems to cause additional ata errors such as:
-  ata3.00: qc timeout (cmd 0xa1)
-  ata3.00: failed to IDENTIFY (I/O error, err_mask=0x4)
+Jordan
 
-These timeouts also cause boot to be much longer and other errors.
-
-Fix it by checking comparing the alias with the previous one instead.
-
-Fixes: 3f0c625c6ae71 ("iommu/vt-d: Allow interrupts from the entire bus for aliased devices")
-Cc: stable@vger.kernel.org
-Cc: Logan Gunthorpe <logang@deltatee.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Nadav Amit <namit@vmware.com>
----
- drivers/iommu/intel_irq_remapping.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 4786ca061e31..81e43c1df7ec 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -376,13 +376,13 @@ static int set_msi_sid_cb(struct pci_dev *pdev, u16 alias, void *opaque)
- {
- 	struct set_msi_sid_data *data = opaque;
- 
-+	if (data->count == 0 || PCI_BUS_NUM(alias) == PCI_BUS_NUM(data->alias))
-+		data->busmatch_count++;
-+
- 	data->pdev = pdev;
- 	data->alias = alias;
- 	data->count++;
- 
--	if (PCI_BUS_NUM(alias) == pdev->bus->number)
--		data->busmatch_count++;
--
- 	return 0;
- }
- 
 -- 
-2.17.1
-
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
