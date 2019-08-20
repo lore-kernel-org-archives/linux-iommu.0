@@ -2,118 +2,94 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EACC3A5A0
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 01:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27145C3A5A0
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 01:57:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F260322DA8
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 01:50:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E3CB320644
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 01:57:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="n3qvq91z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F260322DA8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="In1BTMe1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3CB320644
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BDF2ACAD;
-	Tue, 20 Aug 2019 01:50:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A4F3CC9E;
+	Tue, 20 Aug 2019 01:57:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 809F8CA4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D1589C96
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 01:50:47 +0000 (UTC)
+	Tue, 20 Aug 2019 01:57:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-OS2-obe.outbound.protection.outlook.com
-	(mail-eopbgr1410105.outbound.protection.outlook.com [40.107.141.105])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0216067F
+Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
+	[209.85.215.194])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 353D189B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 01:50:45 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=DMN2fOe8L0LToDCs8HGFWIqeMyGWL4OffW5P44dLiFpPpgqhZ93dQc9NshNEa+NsvDcHobEsvusJWzcF+4TpyT4mr/sNAT8m2QTnB6AUwaiocrh0P3O0LaHbdt1f/BZ5FIpjQx3TLTVbgECPnWmS+6Q2mVGtQcfHcZ5cdtYY9ZoQ//01ZV3JPFmW4ealokAZTTugpgBUOR+HatyKBeaGqDRzazCWskKEpyoXRCbehwrQtg9yIx981yCQEtieyb1+AwecIulOLltIOxHbv9FCzDN8ttRT/MY4ScSmT1EKAQI3Pe6FCF9kn8Jp4lEztiUqcn05A0NlBCQivVMkmIiuzQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=aVxckdJMTPqdoC7iY2p6aIZ6vWGLg7FI+fcHx/E4U8M=;
-	b=ZAbRQTey654TqavXAlLj7IN/A52EH4PHCT+g1CAbz/wCrOlrY0aVKHk0QdznfNzao2RjWN2kRkTA3tQSqeK1CLhkjwAu17G+WFpb06Zt/wY2zYkuRi86CXajKGmygHnlKDez24idKUICdeFvYLgL4Ds3HRzebzXaI77WQU2DO07VikN6pbF2ekOq+S2I/s/925i3qXgSLxXU3TZGAeVAtvcrWZNnDB6Sw7DfMRayS4lHMYNZ1n7q4nr6N3vNPt1PmKIfB6YKA8AD/orbJWPRwc/ITCYdxP5XsRPp/i8VSWXN9atQhhI1ugggiWiWLwqZ1qRXnzvlHU+CgOkAcIIABw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=renesas.com;
-	dmarc=pass action=none header.from=renesas.com; 
-	dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=aVxckdJMTPqdoC7iY2p6aIZ6vWGLg7FI+fcHx/E4U8M=;
-	b=n3qvq91zCjjC2bc3jVeo8u2FTqA04g6wOZlnipu0WJRPcrDp6Rt48hmuU80Wp0ubUH6nxnghYQOMKMX+eUNLFAbK7f87mcrzeObfKET6hfEu4atydvKVfdFyG8vPd+O733WIfzodggmsG4hBWkLHYJBXI5pUsdZJwF6YB6Y0INY=
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
-	TYAPR01MB5231.jpnprd01.prod.outlook.com (20.179.173.145) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2178.16; Tue, 20 Aug 2019 01:50:43 +0000
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::6564:f61f:f179:facf]) by
-	TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::6564:f61f:f179:facf%5]) with mapi id 15.20.2178.018;
-	Tue, 20 Aug 2019 01:50:43 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Jens Axboe <axboe@kernel.dk>, Wolfram Sang <wsa@the-dreams.de>
-Subject: RE: [PATCH v9 3/5] block: sort headers on blk-setting.c
-Thread-Topic: [PATCH v9 3/5] block: sort headers on blk-setting.c
-Thread-Index: AQHVQ4yofFMPRBcpeUW9xg5SuKaKh6b+UJkAgARkGACAALaGAA==
-Date: Tue, 20 Aug 2019 01:50:43 +0000
-Message-ID: <TYAPR01MB454435B8DB5ECFC1291C8037D8AB0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <1564129876-28261-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1564129876-28261-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<20190816195026.GC6886@kunai>
-	<6ed6c62d-d773-71ec-382b-acd850e3dff1@kernel.dk>
-In-Reply-To: <6ed6c62d-d773-71ec-382b-acd850e3dff1@kernel.dk>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [118.238.235.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5e1f438e-5a83-4486-e54c-08d72510d010
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:TYAPR01MB5231; 
-x-ms-traffictypediagnostic: TYAPR01MB5231:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <TYAPR01MB52310F263CA877C35A5FA37AD8AB0@TYAPR01MB5231.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 013568035E
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(4636009)(376002)(366004)(346002)(136003)(39860400002)(396003)(199004)(189003)(8936002)(5660300002)(54906003)(99286004)(66066001)(186003)(7416002)(52536014)(110136005)(26005)(316002)(7736002)(11346002)(305945005)(476003)(74316002)(6506007)(102836004)(7696005)(446003)(81166006)(81156014)(8676002)(4744005)(486006)(76176011)(53546011)(9686003)(966005)(478600001)(3846002)(71200400001)(71190400001)(66946007)(76116006)(6306002)(14454004)(6116002)(55016002)(4326008)(86362001)(66476007)(66446008)(66556008)(53936002)(33656002)(6436002)(64756008)(6246003)(229853002)(14444005)(2906002)(25786009)(256004)(6606295002);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:TYAPR01MB5231;
-	H:TYAPR01MB4544.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ae8D1Z5scuDAlcMrYznVoorm+wWGA8KU0f2QmEmqR7elcQIi+0IH/ZhJP+Rot+FTfn0EhLVycma9dS5JHRBWYiRCfpB6PCSBj9Vey8uMFxkPDqEaSLifr9nhbAg/YKrOiFnY0B/S1Bw7dja4v/I7Fuj4q9/ICizK/zqDd76Nc0+X7w7EDzz2uiKZj9RXZKrDypg4nl5DqDHVSPU6lPEWlZqWGHDue2PGFMQleDatXRVdRK1mAHt6loK/zuavc9aZNG5kz1A353fz8NfTeL5lbk017MssWTj5DRqUwBW0hu8rwom3OubxTcFN+Jf5rkBKRxJXcLCGeEQ5LcOkcYUiTFpUOEF2wUO02DOxksfWYGSofdW57k+A/UJJmTjUyEVvWyFM6AIqgQx+IWFKCPbuzQgrTIGGXjmiVLbgc5+o7lE=
-x-ms-exchange-transport-forked: True
+	Tue, 20 Aug 2019 01:57:49 +0000 (UTC)
+Received: by mail-pg1-f194.google.com with SMTP id u17so2245295pgi.6
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 19 Aug 2019 18:57:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=YscGleDJRumM37KpoeP9It3qdBX6Jq+PJ+LVaq76VuA=;
+	b=In1BTMe1bBT147mQQjNrQc55xmeCRzFO7XzG8mo+r5v5RRSSDv1QKvKVNiw13FOkon
+	BZMNPFfN/ROExiaBIqu/l2PAtOHQtznRfy5JdU1BRvwateXb1FeRt2PXsjSjcc8A4xZw
+	a+8IBofDxl+wDBnR/X64woBmsXGSttk552CP/xZQGZenmaiEEdZGs2RP/gCDbKcrbUoG
+	uyblaLSP4gY9IljYY5cCxD9aJYplmy80JFvfRH22M3hM3Pfiz6VoiKR9bESntvnCvPkh
+	d+xdtOq2Mb9JXX3bXiQb6pyMHTMfcuPjWADn0MDepv391F79HbLYjFkygD4CGTFpC/po
+	Bv2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=YscGleDJRumM37KpoeP9It3qdBX6Jq+PJ+LVaq76VuA=;
+	b=QE9XhGSK09WaU5XTk5tiJBnKVpR09MXPZ8e0VyRRWct6gL91pjfucQnKcSpQmk9tEp
+	zPikwYd3DtY9X+7QaQC0/bUxM2icKd3bo/zuJSRGAXLh8axPPVOJboJ6uzWR34dNRfZJ
+	cKPwhVU6fKErNavZCkXbhm4DCfTXQEtYDjAAc+ch/W0QTFY+BHlgh0mrDQCusPpBYreB
+	Tji+MSTNyQ72MQ5hXFRRRhMiDAw5Vuo8+tEbF9xChSn10LM0G62i6p274A3NfHrEP0YL
+	ccEW4CeKKylg/4HC/lWee2FWq7pzMb7nDFtaJ/EE/OG26PPvKl3UGyQfyvTHooZWmeGw
+	l2gQ==
+X-Gm-Message-State: APjAAAUKO2C48BI1j3iAwKLTRaRSfbDOMOtGck9orvy5aGYXdHuYiIyL
+	tdGv6Gyp+RiDcsn9C/LA//A=
+X-Google-Smtp-Source: APXvYqxUoHBY0bX7zJql5cH6zII/yXQkZnKNFobWnt5jN1qcIJDKHAdSt98O6ekYNDKLSZUHAIEQjA==
+X-Received: by 2002:a17:90a:8b94:: with SMTP id
+	z20mr12768773pjn.109.1566266268433; 
+	Mon, 19 Aug 2019 18:57:48 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
+	[216.228.112.22]) by smtp.gmail.com with ESMTPSA id
+	y194sm18811690pfg.116.2019.08.19.18.57.47
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Mon, 19 Aug 2019 18:57:48 -0700 (PDT)
+Date: Mon, 19 Aug 2019 18:58:52 -0700
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: Hillf Danton <hdanton@sina.com>,
+	Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
+Subject: Re: regression in ath10k dma allocation
+Message-ID: <20190820015852.GA15830@Asurada-Nvidia.nvidia.com>
+References: <8fe8b415-2d34-0a14-170b-dcb31c162e67@mni.thm.de>
+	<20190816164301.GA3629@lst.de>
+	<af96ea6a-2b17-9b66-7aba-b7dae5bcbba5@mni.thm.de>
+	<20190816222506.GA24413@Asurada-Nvidia.nvidia.com>
+	<20190818031328.11848-1-hdanton@sina.com>
+	<acd7a4b0-fde8-1aa2-af07-2b469e5d5ca7@mni.thm.de>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e1f438e-5a83-4486-e54c-08d72510d010
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 01:50:43.4958 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: J/NbfKvsS5K+drkLeU+mk2vASrT5ywosMOBJVPncM0UB2pb9FbMlDN5+iMUpFsfd9qs0jWoy5GOOzCTKNj1kcxv21nkoIzN2br/v7UBbcBsXJ4A4p91XroZxdGv3fcEY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB5231
-Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <acd7a4b0-fde8-1aa2-af07-2b469e5d5ca7@mni.thm.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
+	davem@davemloft.net, iommu@lists.linux-foundation.org,
+	tobias.klausmann@freenet.de, robin.murphy@arm.com,
+	Christoph Hellwig <hch@lst.de>, kvalo@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -131,35 +107,110 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Jens,
+Hello Hillf,
 
-> From: Jens Axboe, Sent: Monday, August 19, 2019 11:54 PM
+On Mon, Aug 19, 2019 at 12:38:38AM +0200, Tobias Klausmann wrote:
 > 
-> On 8/16/19 1:50 PM, Wolfram Sang wrote:
-> > On Fri, Jul 26, 2019 at 05:31:14PM +0900, Yoshihiro Shimoda wrote:
-> >> This patch sorts the headers in alphabetic order to ease
-> >> the maintenance for this part.
-> >>
-> >> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> >> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> >> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-> >> ---
-> >
-> > Jens, can we have your ack for this patch so Christoph can take this
-> > series via his tree (also for patch 4/5)?
+> On 18.08.19 05:13, Hillf Danton wrote:
+> > On Sat, 17 Aug 2019 00:42:48 +0200 Tobias Klausmann wrote:
+> > > Hi Nicolin,
+> > > 
+> > > On 17.08.19 00:25, Nicolin Chen wrote:
+> > > > Hi Tobias
+> > > > 
+> > > > On Fri, Aug 16, 2019 at 10:16:45PM +0200, Tobias Klausmann wrote:
+> > > > > > do you have CONFIG_DMA_CMA set in your config?  If not please make sure
+> > > > > > you have this commit in your testing tree, and if the problem still
+> > > > > > persists it would be a little odd and we'd have to dig deeper:
+> > > > > > 
+> > > > > > commit dd3dcede9fa0a0b661ac1f24843f4a1b1317fdb6
+> > > > > > Author: Nicolin Chen <nicoleotsuka@gmail.com>
+> > > > > > Date:   Wed May 29 17:54:25 2019 -0700
+> > > > > > 
+> > > > > >        dma-contiguous: fix !CONFIG_DMA_CMA version of dma_{alloc, free}_contiguous()
+> > > > > yes CONFIG_DMA_CMA is set (=y, see attached config), the commit you mention
+> > > > > above is included, if you have any hints how to go forward, please let me
+> > > > > know!
+> > > > For CONFIG_DMA_CMA=y, by judging the log with error code -12, I
+> > > > feel this one should work for you. Would you please check if it
+> > > > is included or try it out otherwise?
+> > > > 
+> > > > dma-contiguous: do not overwrite align in dma_alloc_contiguous()
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=c6622a425acd1d2f3a443cd39b490a8777b622d7
+> > > 
+> > > Thanks for the hint, yet the commit is included and does not fix the
+> > > problem!
+> > > 
+> Hi Hillf,
 > 
-> Please just drop this patch.
+> i just tested you first hunk (which comes from kernel/dma/direct.c if i'm
+> not mistaken), it did not compile on its own, yet with a tiny bit of work it
+> did, and it does indeed solve the regression. But if using that is the
+> "right" way to do it, not sure, but its not on me to decide.
+> 
+> Anyway: Thanks for the hint,
+> 
+> Tobias
+> 
+> 
+> > Hi Tobias
+> > 
+> > Two minor diffs below in hope that they might make sense.
+> > 
+> > 1, fallback unless dma coherent ok.
+> > 
+> > --- a/kernel/dma/contiguous.c
+> > +++ b/kernel/dma/contiguous.c
+> > @@ -246,6 +246,10 @@ struct page *dma_alloc_contiguous(struct
+> >   		size_t cma_align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
+> >   		page = cma_alloc(cma, count, cma_align, gfp & __GFP_NOWARN);
+> > +		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> > +			dma_free_contiguous(dev, page, size);
+> > +			page = NULL;
+> > +		}
 
-I'm afraid, but would you also review the following patch?
-https://marc.info/?l=linux-block&m=156412995120069&w=2
-This patch 4/5 is a main patch of the block subsystem on this patch series.
+Right...the condition was in-between. However, not every caller
+of dma_alloc_contiguous() is supposed to have a coherent check.
+So we either add a 'bool coherent_ok' to the API or revert the
+dma-direct part back to the original. Probably former option is
+better?
 
-Best regards,
-Yoshihiro Shimoda
+Thank you for the debugging. I have been a bit distracted, may
+not be able to submit a fix very soon. Would you like to help?
 
-> --
-> Jens Axboe
+Thanks!
+Nicolin
 
+> >   	}
+> >   	/* Fallback allocation of normal pages */
+> > --
+> > 
+> > 2, cleanup: cma unless contiguous
+> > 
+> > --- a/kernel/dma/contiguous.c
+> > +++ b/kernel/dma/contiguous.c
+> > @@ -234,18 +234,13 @@ struct page *dma_alloc_contiguous(struct
+> >   	size_t count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> >   	size_t align = get_order(PAGE_ALIGN(size));
+> >   	struct page *page = NULL;
+> > -	struct cma *cma = NULL;
+> > -
+> > -	if (dev && dev->cma_area)
+> > -		cma = dev->cma_area;
+> > -	else if (count > 1)
+> > -		cma = dma_contiguous_default_area;
+> >   	/* CMA can be used only in the context which permits sleeping */
+> > -	if (cma && gfpflags_allow_blocking(gfp)) {
+> > +	if (count > 1 && gfpflags_allow_blocking(gfp)) {
+> >   		size_t cma_align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
+> > -		page = cma_alloc(cma, count, cma_align, gfp & __GFP_NOWARN);
+> > +		page = cma_alloc(dev_get_cma_area(dev), count, cma_align,
+> > +							gfp & __GFP_NOWARN);
+> >   		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> >   			dma_free_contiguous(dev, page, size);
+> >   			page = NULL;
+> > --
+> > 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
