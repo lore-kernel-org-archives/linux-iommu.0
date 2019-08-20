@@ -6,61 +6,61 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E86C3A59E
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 17:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5973EC3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 17:16:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DC78A22DD3
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 17:14:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 29A9D22CE3
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 17:16:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1yXHm0Cw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC78A22DD3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="XIs9UEkS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29A9D22CE3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A1204C9E;
-	Tue, 20 Aug 2019 17:14:31 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1456ABDC;
+	Tue, 20 Aug 2019 17:16:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77BDCC6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E16D2B1F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 17:14:30 +0000 (UTC)
+	Tue, 20 Aug 2019 17:16:55 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 80EE912E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A4AE987
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 17:14:29 +0000 (UTC)
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com
-	[209.85.160.173])
+	Tue, 20 Aug 2019 17:16:55 +0000 (UTC)
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com
+	[209.85.222.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 1B1A122CE3
+	by mail.kernel.org (Postfix) with ESMTPSA id 63B3F233A1
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 17:14:29 +0000 (UTC)
+	Tue, 20 Aug 2019 17:16:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566321269;
-	bh=WGX3Gxv4dvM3DO7D4Aw57VijAg2RzIOgDn+ZtwXtLuA=;
+	s=default; t=1566321415;
+	bh=36RoA+pZe09a0o8vSPVqwWADJLZpVfbMeIU9BV28nPs=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=1yXHm0Cw2txK8FKtm1lYL+ceKrY7DkUGFh280BlxT1m8fd1yJvGoIVx0XuwOhxQFl
-	3vnSgFW8lKZ5tU+8Sczz4E2yLgkfj7rC+uZiW9anhIz5JhqNZ2QuOhbB3Db0e6C+Ey
-	r3/UkDEl7xBODkwZSZVqMzmvS/NH9009SEaBt8yY=
-Received: by mail-qt1-f173.google.com with SMTP id b11so6879100qtp.10
+	b=XIs9UEkSMvPxBnsd53e7jkN5NEI5/C7h8Ir8aLbuMxhu90HRaE3Sc6lc/xzj2MrL1
+	xUG8N1AvPqsw4DNAuxtwFWd/cIXDpfFE4tkp1UYhSdi86yw4x7vtkpqKGbI3cr0Q2O
+	KYpy6aYY3wEO3cToKeoOX0ItD4JzAtZeq59NctvU=
+Received: by mail-qk1-f171.google.com with SMTP id d23so5147158qko.3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 10:14:29 -0700 (PDT)
-X-Gm-Message-State: APjAAAW/kSbSpIvOeHBj6O8PGIuv0hhkWnTAtKdiB0Z63kzexGfn0tUk
-	vVlS5dCgl1QMGww8PwtzZrijdLVZ2xat47Hi0g==
-X-Google-Smtp-Source: APXvYqyY9ZsBecGQ3Xs5y7LG3j9BHwHgJiDVJDcbMsgosFCxqVWpdQe5Z5wA8XSvdYEItWSHAFvEDYIGvIF5NjfBNsQ=
-X-Received: by 2002:ac8:44c4:: with SMTP id b4mr26942067qto.224.1566321268306; 
-	Tue, 20 Aug 2019 10:14:28 -0700 (PDT)
+	Tue, 20 Aug 2019 10:16:55 -0700 (PDT)
+X-Gm-Message-State: APjAAAUVc5sr2+MlJlmCKQYTyDOZFWDadLACsxWQn474KlXZhbcRIMqW
+	P26WkWeeBx/HLnl9qggcP/turhGpoSWc7fv/ng==
+X-Google-Smtp-Source: APXvYqwuF+PJndb+CroZT1MS5j54H47bxzE6ji7aLqlNUTkFV6I2ExfzQp8zw3/DWgp/8UNkiC1AWu81liXi+Rz7vJg=
+X-Received: by 2002:a37:6944:: with SMTP id e65mr24769246qkc.119.1566321414471;
+	Tue, 20 Aug 2019 10:16:54 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190820145821.27214-1-nsaenzjulienne@suse.de>
-	<20190820145821.27214-5-nsaenzjulienne@suse.de>
-In-Reply-To: <20190820145821.27214-5-nsaenzjulienne@suse.de>
+	<20190820145821.27214-4-nsaenzjulienne@suse.de>
+In-Reply-To: <20190820145821.27214-4-nsaenzjulienne@suse.de>
 From: Rob Herring <robh+dt@kernel.org>
-Date: Tue, 20 Aug 2019 12:14:16 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+Nr88Nvd_ZA8eJGm4xLwssv7CnDJLsnZyFqiM=EQWYxg@mail.gmail.com>
-Message-ID: <CAL_Jsq+Nr88Nvd_ZA8eJGm4xLwssv7CnDJLsnZyFqiM=EQWYxg@mail.gmail.com>
-Subject: Re: [PATCH v2 04/11] of/fdt: add early_init_dt_get_dma_zone_size()
+Date: Tue, 20 Aug 2019 12:16:43 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJT3UNVKpAt+3g-tosy=uCZTosUxD4RfVYjMJ-gpGmPiA@mail.gmail.com>
+Message-ID: <CAL_JsqJT3UNVKpAt+3g-tosy=uCZTosUxD4RfVYjMJ-gpGmPiA@mail.gmail.com>
+Subject: Re: [PATCH v2 03/11] of/fdt: add of_fdt_machine_is_compatible function
 To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Cc: "open list:GENERIC INCLUDE/ASM HEADER FILES" <linux-arch@vger.kernel.org>,
 	devicetree@vger.kernel.org,
@@ -98,66 +98,42 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 On Tue, Aug 20, 2019 at 9:58 AM Nicolas Saenz Julienne
 <nsaenzjulienne@suse.de> wrote:
 >
-> Some devices might have weird DMA addressing limitations that only apply
-> to a subset of the available peripherals. For example the Raspberry Pi 4
-> has two interconnects, one able to address the whole lower 4G memory
-> area and another one limited to the lower 1G.
->
-> Being an uncommon situation we simply hardcode the device wide DMA
-> addressable memory size conditionally to the machine compatible name and
-> set 'dma_zone_size' accordingly.
+> Provides the same functionality as of_machine_is_compatible.
 >
 > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
->
 > ---
 >
-> Changes in v2:
-> - New approach to getting dma_zone_size, instead of parsing the dts we
->   hardcode it conditionally to the machine compatible name.
+> Changes in v2: None
 >
->  drivers/of/fdt.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+>  drivers/of/fdt.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 >
 > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 06ffbd39d9af..f756e8c05a77 100644
+> index 9cdf14b9aaab..06ffbd39d9af 100644
 > --- a/drivers/of/fdt.c
 > +++ b/drivers/of/fdt.c
-> @@ -27,6 +27,7 @@
->
->  #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
->  #include <asm/page.h>
-> +#include <asm/dma.h>   /* for dma_zone_size */
->
->  #include "of_private.h"
->
-> @@ -1195,6 +1196,12 @@ void __init early_init_dt_scan_nodes(void)
->         of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+> @@ -802,6 +802,13 @@ const char * __init of_flat_dt_get_machine_name(void)
+>         return name;
 >  }
 >
-> +void __init early_init_dt_get_dma_zone_size(void)
+> +static const int __init of_fdt_machine_is_compatible(char *name)
 
-static
+No point in const return (though name could possibly be const), and
+the return could be bool instead.
 
 With that,
 
 Reviewed-by: Rob Herring <robh@kernel.org>
 
 > +{
-> +       if (of_fdt_machine_is_compatible("brcm,bcm2711"))
-> +               dma_zone_size = 0x3c000000;
+> +       unsigned long dt_root = of_get_flat_dt_root();
+> +
+> +       return of_flat_dt_is_compatible(dt_root, name);
 > +}
 > +
->  bool __init early_init_dt_scan(void *params)
->  {
->         bool status;
-> @@ -1204,6 +1211,7 @@ bool __init early_init_dt_scan(void *params)
->                 return false;
->
->         early_init_dt_scan_nodes();
-> +       early_init_dt_get_dma_zone_size();
->         return true;
->  }
->
+>  /**
+>   * of_flat_dt_match_machine - Iterate match tables to find matching machine.
+>   *
 > --
 > 2.22.0
 >
