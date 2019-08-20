@@ -2,55 +2,75 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A088C3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 18:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 329F2C3A59D
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 19:06:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 374D02087E
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 18:42:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 374D02087E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id F3CA5230F2
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 19:06:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="hVsOsmk+";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="o1IAC7Sy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3CA5230F2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EF80FCBB;
-	Tue, 20 Aug 2019 18:41:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CCF05CB7;
+	Tue, 20 Aug 2019 19:06:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 48FA0C6F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C9C33C11
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 18:41:58 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A30CA87
+	Tue, 20 Aug 2019 19:06:42 +0000 (UTC)
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C83D712E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 18:41:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E763337;
-	Tue, 20 Aug 2019 11:41:56 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7881F3F718;
-	Tue, 20 Aug 2019 11:41:55 -0700 (PDT)
-Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
-To: Will Deacon <will@kernel.org>
-References: <cover.1566238530.git.robin.murphy@arm.com>
-	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
-	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
-	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
-	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
-Date: Tue, 20 Aug 2019 19:41:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190820160700.6ircxomwuo5bksqz@willie-the-truck>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+	Tue, 20 Aug 2019 19:06:41 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id A2A0460CED; Tue, 20 Aug 2019 19:06:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1566328001;
+	bh=1UIZbPgFC2ctJEOWeJAbywjZiiAfr8vzXYLpIB5v7OE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=hVsOsmk+iVnLpa2fRt1XlUtxHblWHSELdvSY/uM/YzqUCMKMHMX9hWy9ZZcfIZN/q
+	iuwuhkrRHj+litXJXyHyoCRwGvmCxU8D1GrVcMe/6d92mLVfWHUYjNqLIZ8GfC4hjo
+	nWf7YofnKhNH8jdldn3uo4NSnQ5GxosQ+mf/yPRk=
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+	[199.106.103.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: jcrouse@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id B44B9609CD;
+	Tue, 20 Aug 2019 19:06:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1566328000;
+	bh=1UIZbPgFC2ctJEOWeJAbywjZiiAfr8vzXYLpIB5v7OE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=o1IAC7SyVrQogdJYk2MsetaFKxuFMBwAs2Md+k4On9ZdcXaqg0z6ld8kii6Ihg5jT
+	9ruTmkT+qSduy6pO5wmGuhZ2JA1CTurehfZgSrDIRcrrk8QJGaUGPn/G1fTbEvv4dY
+	Jhu1nJm71IHwvjk1BPTQUBVCmsfCimIPfx5D8kXA=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B44B9609CD
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=jcrouse@codeaurora.org
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: freedreno@lists.freedesktop.org
+Subject: [PATCH 1/7] iommu/arm-smmu: Support split pagetables
+Date: Tue, 20 Aug 2019 13:06:26 -0600
+Message-Id: <1566327992-362-2-git-send-email-jcrouse@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1566327992-362-1-git-send-email-jcrouse@codeaurora.org>
+References: <1566327992-362-1-git-send-email-jcrouse@codeaurora.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,97 +83,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 20/08/2019 17:07, Will Deacon wrote:
-> On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
->> On 20/08/2019 11:31, Will Deacon wrote:
->>> On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
->>>> Although it's conceptually nice for the io_pgtable_cfg to provide a
->>>> standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
->>>> looks exactly like an Arm CPU, and they all have various other TCR
->>>> controls which io-pgtable can't be expected to understand. Thus since
->>>> there is an expectation that drivers will have to add to the given TCR
->>>> value anyway, let's strip it down to just the essentials that are
->>>> directly relevant to io-pgatble's inner workings - namely the address
->>>> sizes, walk attributes, and where appropriate, format selection.
->>>>
->>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>> ---
->>>>    drivers/iommu/arm-smmu-v3.c        | 7 +------
->>>>    drivers/iommu/arm-smmu.c           | 1 +
->>>>    drivers/iommu/arm-smmu.h           | 2 ++
->>>>    drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
->>>>    drivers/iommu/io-pgtable-arm.c     | 4 ----
->>>>    drivers/iommu/qcom_iommu.c         | 2 +-
->>>>    6 files changed, 7 insertions(+), 15 deletions(-)
->>>
->>> Hmm, so I'm a bit nervous about this one since I think we really should
->>> be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
->>> on the driver to do this worries me. See my comments on the next patch.
->>
->> The whole idea is that we already know we can't provide a *complete* TCR
->> value (not least because anything above bit 31 is the wild west), thus
->> there's really no point in io-pgtable trying to provide anything other than
->> the parts it definitely controls. It makes sense to provide this partial TCR
->> value "as if" for TTBR0, since that's the most common case, but ultimately
->> io-pgatble doesn't know (or need to) which TTBR the caller intends to
->> actually use for this table. Even if the caller *is* allocating it for
->> TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
->> already, so it still wouldn't be in a position to make the EPD1 call either
->> way.
-> 
-> Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
-> an alternative would be scrapped the 'u64 tcr' and instead having a bunch
-> of named bitfields for the stuff we're actually providing, although I'd
-> still like EPDx to be in there.
+Support a split pagetable format for SMMU models that support it. If
+enabled, mirror the TTBR0 setup for TTBR1 and program the pagetable
+address in TTBR1 instead of TTBR0.
 
-I like the bitfield idea; it would certainly emphasise the "you have to 
-do something more with this" angle that I'm pushing towards here, but 
-still leave things framed in TCR terms without having to go to some more 
-general abstraction. It really doesn't play into your EPD argument 
-though - such a config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but 
-EPDy, for y = !x. For a driver to understand that and do the right thing 
-with it is even more involved than for the driver to just set EPD1 by 
-itself anyway.
+For now only allow split pagetables for ARM64 stage 1 IOMMUs with 49 bit
+upstream buses. This is the only real-life use case for split pagetables
+on arm-smmu-v2 to date and it is the easiest configuration to support
+without a bunch of extra logic.
 
->> Ultimately, it's the IOMMU drivers who decide what they put in which TTBR,
->> so it's the IOMMU drivers which have to take responsibility for EPD*. Sure
->> you can worry about it, but you can equally worry about them them
->> misprogramming the ASID or anything else...
-> 
-> I find the EPDx bits particularly dangerous because:
-> 
->    - They're easily overlooked
->    - Clobbering TTBR1 with 0x0 doesn't disable walks via TTBR1 as you might
->      reasonably expect
+Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+---
 
-(FWIW I'm not sure that that is a reasonable expectation, at least for 
-anyone savvy enough to be programming an MMU in the first place. There 
-are plenty of systems with RAM at 0x0)
+ drivers/iommu/arm-smmu.c | 41 +++++++++++++++++++++++++++++++++++++----
+ drivers/iommu/arm-smmu.h |  1 +
+ 2 files changed, 38 insertions(+), 4 deletions(-)
 
->    - If you do the above without EPD, the breakage will be subtle
-> 
-> and given that I don't see any real downsides to us providing a default TCR
-> value with EPD set appropriately, then I think we should do that. I'd be
-> happy to revisit the decision later on if it's getting the way of a real
-> use-case, but it feels like we're throwing the baby out with the bathwater
-> at the moment and I'd rather do this incrementally based on actual need.
-The downside is maintaining extra complexity for the sake of a 
-theoretical concern which hasn't been borne out in practice, with a 
-promise of yet more complexity down the line. Moving the 3 babies which 
-anyone acknowledges into their own private baths takes a whole -8 lines 
-of code to implement. That said, if we don't go down the bitfield route, 
-then I *can* leave the default TCR having EPD1 set if that makes you 
-feel warm and safe, but it will still be resoundingly ignored.
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 49c734a..39e81ef 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -461,7 +461,17 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
+ 		} else {
+ 			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+-			cb->tcr[0] |= TCR_EPD1;
++
++			/*
++			 * For split pagetables, duplicate the T0 configuration
++			 * for T1. Otherwise, disable walks through TTBR1
++			 */
++			if (smmu_domain->split_pagetables)
++				cb->tcr[0] |= (pgtbl_cfg->arm_lpae_s1_cfg.tcr &
++					0xffff) << 16;
++			else
++				cb->tcr[0] |= TCR_EPD1;
++
+ 			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+ 			cb->tcr[1] |= FIELD_PREP(TCR2_SEP, TCR2_SEP_UPSTREAM);
+ 			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+@@ -477,9 +487,16 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
+ 			cb->ttbr[1] = 0;
+ 		} else {
+-			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
++			if (smmu_domain->split_pagetables) {
++				cb->ttbr[0] = 0;
++				cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
++			} else {
++				cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
++				cb->ttbr[1] = 0;
++			}
++
+ 			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+-			cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
++			cb->ttbr[1] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+ 		}
+ 	} else {
+ 		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+@@ -720,6 +737,14 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 			goto out_unlock;
+ 	}
+ 
++	/*
++	 * For now, only support a ias of 48 and SEP_UPSTREAM for split
++	 * pagetables. This doesn't preclude using other sign extension bits but
++	 * since the group of split-pagetable users is very small we don't want
++	 * to add a lot of extra code that won't be useful
++	 */
++	WARN_ON(smmu_domain->split_pagetables && ias != 48);
++
+ 	pgtbl_cfg = (struct io_pgtable_cfg) {
+ 		.pgsize_bitmap	= smmu->pgsize_bitmap,
+ 		.ias		= ias,
+@@ -740,7 +765,15 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 
+ 	/* Update the domain's page sizes to reflect the page table format */
+ 	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+-	domain->geometry.aperture_end = (1UL << ias) - 1;
++
++	if (smmu_domain->split_pagetables) {
++		domain->geometry.aperture_start = ~(1UL << ias);
++		domain->geometry.aperture_end = ~0UL;
++	} else {
++		domain->geometry.aperture_start = 0;
++		domain->geometry.aperture_end = (1UL << ias) - 1;
++	}
++
+ 	domain->geometry.force_aperture = true;
+ 
+ 	/* Initialise the context bank with our page table cfg */
+diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+index 7b0e4d2..91a4eb8 100644
+--- a/drivers/iommu/arm-smmu.h
++++ b/drivers/iommu/arm-smmu.h
+@@ -316,6 +316,7 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+ 	struct iommu_domain		domain;
++	bool				split_pagetables;
+ };
+ 
+ 
+-- 
+2.7.4
 
-If only LPAE had created these bits as enables rather than disables then 
-things would be logical and we could all be happy, but here we are...
-
-Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
