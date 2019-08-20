@@ -2,78 +2,48 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9493CC3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 09:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75ADEC3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 10:13:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 673C122CF7
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 09:43:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="DK+6E/3P"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 673C122CF7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 4373020C01
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 10:13:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4373020C01
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7D8C9E55;
-	Tue, 20 Aug 2019 09:43:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F3FDEC6E;
+	Tue, 20 Aug 2019 10:13:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 433B4E0E;
-	Tue, 20 Aug 2019 09:43:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6A797AF0
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 20 Aug 2019 10:13:10 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 222E912E;
-	Tue, 20 Aug 2019 09:43:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=QuUfcwWC5q1OlMKppxZZFPeRr1Pnwn10MjnRty4Jw/4=;
-	b=DK+6E/3PvKq02RZ+wH3AKe0g2
-	emgWtb26QojlY4VAHpRGmh3KlIund4mgdHMWgmc0ZRx6dcJyo3PpG8MDI8KlKQmIpUNKSN9TeJuGl
-	km+i5/j2F3SaoJeTXNpwyc1DA3G5i1XAAOhEVYYfTsCs6LrVFePHZhgsVEfjdHWWyzVstKhYQi0L8
-	331yfp/XlNTLtQEhPvth1dRekXENsIUVS+WGFJwLetcqcaZ9pRjR0Xm/JRuBmaKm1lM6bJLWAZQf+
-	WIC+77g9XgPJKWwaVMZLpEs7+zOk4VI1rE2qynuwmwBQdiLIKKi6tLX+fcqjXUnNNvFOI9OQI6Dt3
-	D4XxsCCZw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat
-	Linux)) id 1i00fk-00016J-2k; Tue, 20 Aug 2019 09:43:24 +0000
-Date: Tue, 20 Aug 2019 02:43:24 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Tom Murphy <murphyt7@tcd.ie>
-Subject: Re: [PATCH V5 4/5] iommu/dma-iommu: Use the dev->coherent_dma_mask
-Message-ID: <20190820094323.GD24154@infradead.org>
-References: <20190815110944.3579-1-murphyt7@tcd.ie>
-	<20190815110944.3579-5-murphyt7@tcd.ie>
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 49A5512E
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 20 Aug 2019 10:13:09 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 18B493EC; Tue, 20 Aug 2019 12:13:07 +0200 (CEST)
+Date: Tue, 20 Aug 2019 12:13:06 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [GIT PULL] iommu/core: Batched unmap support for 5.4
+Message-ID: <20190820101306.GD30332@8bytes.org>
+References: <20190819165833.je2wqqemvfky42ps@willie-the-truck>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190815110944.3579-5-murphyt7@tcd.ie>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Heiko Stuebner <heiko@sntech.de>, virtualization@lists.linux-foundation.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org,
-	Kukjin Kim <kgene@kernel.org>, Andy Gross <agross@kernel.org>,
-	linux-s390@vger.kernel.org, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-	linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20190819165833.je2wqqemvfky42ps@willie-the-truck>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: jean-philippe@linaro.org, iommu@lists.linux-foundation.org,
+	robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,9 +61,25 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Looks good, and should probably be queued up asap as a bug fix:
+Hi Will,
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+On Mon, Aug 19, 2019 at 05:58:34PM +0100, Will Deacon wrote:
+> The following changes since commit 5f9e832c137075045d15cd6899ab0505cfb2ca4b:
+> 
+>   Linus 5.3-rc1 (2019-07-21 14:05:38 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/batched-unmap
+> 
+> for you to fetch changes up to 3951c41af4a65ba418e6b1b973d398552bedb84f:
+> 
+>   iommu/io-pgtable: Pass struct iommu_iotlb_gather to ->tlb_add_page() (2019-07-29 17:22:59 +0100)
+
+Pulled and pushed out to iommu-tree, thanks.
+
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
