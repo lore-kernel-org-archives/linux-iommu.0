@@ -2,58 +2,78 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62299C3A59D
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 07:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A40C8C3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 08:21:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 33D3022CF5
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 07:12:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33D3022CF5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 67CFB23A7A
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 08:21:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="pMBa9qce";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="FfLvg2Us"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67CFB23A7A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E7C8FD83;
-	Tue, 20 Aug 2019 07:12:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2C39CD4B;
+	Tue, 20 Aug 2019 08:21:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3ECAED13
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4F8D7C6C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 07:12:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 60B2F12E
+	Tue, 20 Aug 2019 08:21:01 +0000 (UTC)
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7F98089B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 07:12:54 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 4F09A68B02; Tue, 20 Aug 2019 09:12:50 +0200 (CEST)
-Date: Tue, 20 Aug 2019 09:12:50 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Hillf Danton <hdanton@sina.com>
-Subject: Re: regression in ath10k dma allocation
-Message-ID: <20190820071250.GA28968@lst.de>
-References: <8fe8b415-2d34-0a14-170b-dcb31c162e67@mni.thm.de>
-	<20190816164301.GA3629@lst.de>
-	<af96ea6a-2b17-9b66-7aba-b7dae5bcbba5@mni.thm.de>
-	<20190816222506.GA24413@Asurada-Nvidia.nvidia.com>
-	<20190818031328.11848-1-hdanton@sina.com>
-	<acd7a4b0-fde8-1aa2-af07-2b469e5d5ca7@mni.thm.de>
-	<20190820065833.1628-1-hdanton@sina.com>
+	Tue, 20 Aug 2019 08:21:00 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 518606086B; Tue, 20 Aug 2019 08:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1566289260;
+	bh=3UBaQBRWxNLTc1613sNLUXVwpkaeyWhbIZsoly2sMbU=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=pMBa9qceWoZcGBu0UZX+WoiBtC+GM86ponPFGALw8UP8Sw2iaOvHpV2sjJqrLP8/M
+	1TYHI0UXH2RRrjzD9UcCxlzLMPf7Wa/t5kPDgS1RnPe42NlLFGDLWaVQAu9dDxsxGj
+	zn4yy/43Ub/UsDE7qPXm/LYxbYi9SZ9HXDGyojSg=
+Received: from [10.79.137.238]
+	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
+	[103.229.18.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: vivek.gautam@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id 187306030D;
+	Tue, 20 Aug 2019 08:20:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1566289258;
+	bh=3UBaQBRWxNLTc1613sNLUXVwpkaeyWhbIZsoly2sMbU=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+	b=FfLvg2UsJxClhApEmzenJJpZVQzb3LKR1qLX8fOdBUqafP5MErBueq9gYgRqKGQTB
+	VoCtmC+21GnhvHHLbsKiRPjGg2m5XkQprRsLoLpGrms+2p/9+QWxlQs18oCA+/o2VH
+	OenfEhmpIJHkw/p050C6gM1XxArqKQtsCoUMNekA=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 187306030D
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=vivek.gautam@codeaurora.org
+Subject: Re: [PATCH v2 00/17] Arm SMMU refactoring
+To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org
+References: <cover.1565892337.git.robin.murphy@arm.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Message-ID: <4bcb0849-7f77-7630-4671-a6d9ad2b9083@codeaurora.org>
+Date: Tue, 20 Aug 2019 13:50:52 +0530
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190820065833.1628-1-hdanton@sina.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
-	davem@davemloft.net, Nicolin Chen <nicoleotsuka@gmail.com>,
-	iommu@lists.linux-foundation.org, tobias.klausmann@freenet.de,
-	Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>,
-	robin.murphy@arm.com, Christoph Hellwig <hch@lst.de>, kvalo@codeaurora.org
+In-Reply-To: <cover.1565892337.git.robin.murphy@arm.com>
+Content-Language: en-US
+Cc: gregory.clement@bootlin.com, bjorn.andersson@linaro.org,
+	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,147 +86,288 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Aug 20, 2019 at 02:58:33PM +0800, Hillf Danton wrote:
-> 
-> On Tue, 20 Aug 2019 05:05:14 +0200 Christoph Hellwig wrote:
-> > 
-> > Tobias, plase try this patch:
-> > 
 
-New version below:
 
----
-From b8a805e93be5a5662323b8ac61fe686df839c4ac Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Tue, 20 Aug 2019 11:45:49 +0900
-Subject: dma-direct: fix zone selection after an unaddressable CMA allocation
+On 8/16/2019 12:07 AM, Robin Murphy wrote:
+> Hi all,
+>
+> v1 for context: https://patchwork.kernel.org/cover/11087347/
+>
+> Here's a quick v2 attempting to address all the minor comments; I've
+> tweaked a whole bunch of names, added some verbosity in macros and
+> comments for clarity, and rejigged arm_smmu_impl_init() for a bit more
+> structure. The (new) patches #1 and #2 are up front as conceptual fixes,
+> although they're not actually critical - it turns out to be more of an
+> embarrassment than a real problem in practice.
+>
+> For ease of reference, the overall diff against v1 is attached below.
+>
+> Robin.
 
-The new dma_alloc_contiguous hides if we allocate CMA or regular
-pages, and thus fails to retry a ZONE_NORMAL allocation if the CMA
-allocation succeeds but isn't addressable.  That means we either fail
-outright or dip into a small zone that might not succeed either.
+Hi,
 
-Thanks to Hillf Danton for debugging this issue.
+I have given this series a shot with 5.3-rc5 kernel on MTP sdm845 
+device, and smmu works as expected.
 
-Fixes: b1d2dc009dec ("dma-contiguous: add dma_{alloc,free}_contiguous() helpers")
-Reported-by: Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/iommu/dma-iommu.c      |  3 +++
- include/linux/dma-contiguous.h |  5 +----
- kernel/dma/contiguous.c        |  9 +++------
- kernel/dma/direct.c            | 10 +++++++++-
- 4 files changed, 16 insertions(+), 11 deletions(-)
+Tested-by: Vivek Gautam <vivek.gautam@codeaurora.org>
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d991d40f797f..f68a62c3c32b 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -965,10 +965,13 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- {
- 	bool coherent = dev_is_dma_coherent(dev);
- 	size_t alloc_size = PAGE_ALIGN(size);
-+	int node = dev_to_node(dev);
- 	struct page *page = NULL;
- 	void *cpu_addr;
- 
- 	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-+	if (!page)
-+		page = alloc_pages_node(node, gfp, get_order(alloc_size));
- 	if (!page)
- 		return NULL;
- 
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index c05d4e661489..03f8e98e3bcc 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -160,10 +160,7 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
- 		gfp_t gfp)
- {
--	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
--	size_t align = get_order(PAGE_ALIGN(size));
--
--	return alloc_pages_node(node, gfp, align);
-+	return NULL;
- }
- 
- static inline void dma_free_contiguous(struct device *dev, struct page *page,
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 2bd410f934b3..e6b450fdbeb6 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -230,9 +230,7 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
-  */
- struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
- {
--	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
--	size_t count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	size_t align = get_order(PAGE_ALIGN(size));
-+	size_t count = size >> PAGE_SHIFT;
- 	struct page *page = NULL;
- 	struct cma *cma = NULL;
- 
-@@ -243,14 +241,12 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
- 
- 	/* CMA can be used only in the context which permits sleeping */
- 	if (cma && gfpflags_allow_blocking(gfp)) {
-+		size_t align = get_order(size);
- 		size_t cma_align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
- 
- 		page = cma_alloc(cma, count, cma_align, gfp & __GFP_NOWARN);
- 	}
- 
--	/* Fallback allocation of normal pages */
--	if (!page)
--		page = alloc_pages_node(node, gfp, align);
- 	return page;
- }
- 
-@@ -258,6 +254,7 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-  * dma_free_contiguous() - release allocated pages
-  * @dev:   Pointer to device for which the pages were allocated.
-  * @page:  Pointer to the allocated pages.
-+	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-  * @size:  Size of allocated pages.
-  *
-  * This function releases memory allocated by dma_alloc_contiguous(). As the
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 795c9b095d75..706113c6bebc 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -85,6 +85,8 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
-+	size_t alloc_size = PAGE_ALIGN(size);
-+	int node = dev_to_node(dev);
- 	struct page *page = NULL;
- 	u64 phys_mask;
- 
-@@ -95,8 +97,14 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	gfp &= ~__GFP_ZERO;
- 	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
- 			&phys_mask);
-+	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-+	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-+		dma_free_contiguous(dev, page, alloc_size);
-+		page = NULL;
-+	}
- again:
--	page = dma_alloc_contiguous(dev, size, gfp);
-+	if (!page)
-+		page = alloc_pages_node(node, gfp, get_order(alloc_size));
- 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 		dma_free_contiguous(dev, page, size);
- 		page = NULL;
--- 
-2.20.1
+Best regards
+Vivek
+>
+>
+> Robin Murphy (17):
+>    iommu/arm-smmu: Mask TLBI address correctly
+>    iommu/qcom: Mask TLBI addresses correctly
+>    iommu/arm-smmu: Convert GR0 registers to bitfields
+>    iommu/arm-smmu: Convert GR1 registers to bitfields
+>    iommu/arm-smmu: Convert context bank registers to bitfields
+>    iommu/arm-smmu: Rework cb_base handling
+>    iommu/arm-smmu: Split arm_smmu_tlb_inv_range_nosync()
+>    iommu/arm-smmu: Get rid of weird "atomic" write
+>    iommu/arm-smmu: Abstract GR1 accesses
+>    iommu/arm-smmu: Abstract context bank accesses
+>    iommu/arm-smmu: Abstract GR0 accesses
+>    iommu/arm-smmu: Rename arm-smmu-regs.h
+>    iommu/arm-smmu: Add implementation infrastructure
+>    iommu/arm-smmu: Move Secure access quirk to implementation
+>    iommu/arm-smmu: Add configuration implementation hook
+>    iommu/arm-smmu: Add reset implementation hook
+>    iommu/arm-smmu: Add context init implementation hook
+>
+>   MAINTAINERS                   |   3 +-
+>   drivers/iommu/Makefile        |   2 +-
+>   drivers/iommu/arm-smmu-impl.c | 174 +++++++++++
+>   drivers/iommu/arm-smmu-regs.h | 210 -------------
+>   drivers/iommu/arm-smmu.c      | 573 +++++++++++-----------------------
+>   drivers/iommu/arm-smmu.h      | 394 +++++++++++++++++++++++
+>   drivers/iommu/qcom_iommu.c    |  17 +-
+>   7 files changed, 764 insertions(+), 609 deletions(-)
+>   create mode 100644 drivers/iommu/arm-smmu-impl.c
+>   delete mode 100644 drivers/iommu/arm-smmu-regs.h
+>   create mode 100644 drivers/iommu/arm-smmu.h
+>
+> ----->8-----
+> diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
+> index 3c731e087854..e22e9004f449 100644
+> --- a/drivers/iommu/arm-smmu-impl.c
+> +++ b/drivers/iommu/arm-smmu-impl.c
+> @@ -28,7 +28,7 @@ static int arm_smmu_gr0_ns(int offset)
+>   static u32 arm_smmu_read_ns(struct arm_smmu_device *smmu, int page,
+>   			    int offset)
+>   {
+> -	if (page == 0)
+> +	if (page == ARM_SMMU_GR0)
+>   		offset = arm_smmu_gr0_ns(offset);
+>   	return readl_relaxed(arm_smmu_page(smmu, page) + offset);
+>   }
+> @@ -36,7 +36,7 @@ static u32 arm_smmu_read_ns(struct arm_smmu_device *smmu, int page,
+>   static void arm_smmu_write_ns(struct arm_smmu_device *smmu, int page,
+>   			      int offset, u32 val)
+>   {
+> -	if (page == 0)
+> +	if (page == ARM_SMMU_GR0)
+>   		offset = arm_smmu_gr0_ns(offset);
+>   	writel_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>   }
+> @@ -52,18 +52,17 @@ struct cavium_smmu {
+>   	struct arm_smmu_device smmu;
+>   	u32 id_base;
+>   };
+> -#define to_csmmu(s)	container_of(s, struct cavium_smmu, smmu)
+>   
+>   static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+>   {
+>   	static atomic_t context_count = ATOMIC_INIT(0);
+> +	struct cavium_smmu *cs = container_of(smmu, struct cavium_smmu, smmu);
+>   	/*
+>   	 * Cavium CN88xx erratum #27704.
+>   	 * Ensure ASID and VMID allocation is unique across all SMMUs in
+>   	 * the system.
+>   	 */
+> -	to_csmmu(smmu)->id_base = atomic_fetch_add(smmu->num_context_banks,
+> -						   &context_count);
+> +	cs->id_base = atomic_fetch_add(smmu->num_context_banks, &context_count);
+>   	dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
+>   
+>   	return 0;
+> @@ -71,12 +70,13 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+>   
+>   int cavium_init_context(struct arm_smmu_domain *smmu_domain)
+>   {
+> -	u32 id_base = to_csmmu(smmu_domain->smmu)->id_base;
+> +	struct cavium_smmu *cs = container_of(smmu_domain->smmu,
+> +					      struct cavium_smmu, smmu);
+>   
+>   	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
+> -		smmu_domain->cfg.vmid += id_base;
+> +		smmu_domain->cfg.vmid += cs->id_base;
+>   	else
+> -		smmu_domain->cfg.asid += id_base;
+> +		smmu_domain->cfg.asid += cs->id_base;
+>   
+>   	return 0;
+>   }
+> @@ -88,18 +88,18 @@ const struct arm_smmu_impl cavium_impl = {
+>   
+>   struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smmu)
+>   {
+> -	struct cavium_smmu *csmmu;
+> +	struct cavium_smmu *cs;
+>   
+> -	csmmu = devm_kzalloc(smmu->dev, sizeof(*csmmu), GFP_KERNEL);
+> -	if (!csmmu)
+> +	cs = devm_kzalloc(smmu->dev, sizeof(*cs), GFP_KERNEL);
+> +	if (!cs)
+>   		return ERR_PTR(-ENOMEM);
+>   
+> -	csmmu->smmu = *smmu;
+> -	csmmu->smmu.impl = &cavium_impl;
+> +	cs->smmu = *smmu;
+> +	cs->smmu.impl = &cavium_impl;
+>   
+>   	devm_kfree(smmu->dev, smmu);
+>   
+> -	return &csmmu->smmu;
+> +	return &cs->smmu;
+>   }
+>   
+>   
+> @@ -150,16 +150,25 @@ const struct arm_smmu_impl arm_mmu500_impl = {
+>   
+>   struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+>   {
+> -	/* The current quirks happen to be mutually-exclusive */
+> +	/*
+> +	 * We will inevitably have to combine model-specific implementation
+> +	 * quirks with platform-specific integration quirks, but everything
+> +	 * we currently support happens to work out as straightforward
+> +	 * mutually-exclusive assignments.
+> +	 */
+> +	switch (smmu->model) {
+> +	case ARM_MMU500:
+> +		smmu->impl = &arm_mmu500_impl;
+> +		break;
+> +	case CAVIUM_SMMUV2:
+> +		return cavium_smmu_impl_init(smmu);
+> +	default:
+> +		break;
+> +	}
+> +
+>   	if (of_property_read_bool(smmu->dev->of_node,
+>   				  "calxeda,smmu-secure-config-access"))
+>   		smmu->impl = &calxeda_impl;
+>   
+> -	if (smmu->model == CAVIUM_SMMUV2)
+> -		return cavium_smmu_impl_init(smmu);
+> -
+> -	if (smmu->model == ARM_MMU500)
+> -		smmu->impl = &arm_mmu500_impl;
+> -
+>   	return smmu;
+>   }
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 251089d6428d..b8628e2ab579 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -264,7 +264,7 @@ static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
+>   	unsigned long flags;
+>   
+>   	spin_lock_irqsave(&smmu->global_sync_lock, flags);
+> -	__arm_smmu_tlb_sync(smmu, 0, ARM_SMMU_GR0_sTLBGSYNC,
+> +	__arm_smmu_tlb_sync(smmu, ARM_SMMU_GR0, ARM_SMMU_GR0_sTLBGSYNC,
+>   			    ARM_SMMU_GR0_sTLBGSTATUS);
+>   	spin_unlock_irqrestore(&smmu->global_sync_lock, flags);
+>   }
+> @@ -276,7 +276,7 @@ static void arm_smmu_tlb_sync_context(void *cookie)
+>   	unsigned long flags;
+>   
+>   	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+> -	__arm_smmu_tlb_sync(smmu, smmu->numpage + smmu_domain->cfg.cbndx,
+> +	__arm_smmu_tlb_sync(smmu, ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx),
+>   			    ARM_SMMU_CB_TLBSYNC, ARM_SMMU_CB_TLBSTATUS);
+>   	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+>   }
+> @@ -326,7 +326,7 @@ static void arm_smmu_tlb_inv_range_s1(unsigned long iova, size_t size,
+>   	reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+>   
+>   	if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+> -		iova &= ~12UL;
+> +		iova = (iova >> 12) << 12;
+>   		iova |= cfg->asid;
+>   		do {
+>   			arm_smmu_cb_write(smmu, idx, reg, iova);
+> @@ -1197,7 +1197,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+>   	else
+>   		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_ATS1PR, va);
+>   
+> -	reg = arm_smmu_page(smmu, smmu->numpage + idx) + ARM_SMMU_CB_ATSR;
+> +	reg = arm_smmu_page(smmu, ARM_SMMU_CB(smmu, idx)) + ARM_SMMU_CB_ATSR;
+>   	if (readl_poll_timeout_atomic(reg, tmp, !(tmp & ATSR_ACTIVE), 5, 50)) {
+>   		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+>   		dev_err(dev,
+> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+> index cf367c3b1bee..611ed742e56f 100644
+> --- a/drivers/iommu/arm-smmu.h
+> +++ b/drivers/iommu/arm-smmu.h
+> @@ -366,20 +366,28 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
+>   		writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>   }
+>   
+> -#define arm_smmu_gr0_read(s, r)		arm_smmu_readl((s), 0, (r))
+> -#define arm_smmu_gr0_write(s, r, v)	arm_smmu_writel((s), 0, (r), (v))
+> +#define ARM_SMMU_GR0		0
+> +#define ARM_SMMU_GR1		1
+> +#define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
+>   
+> -#define arm_smmu_gr1_read(s, r)		arm_smmu_readl((s), 1, (r))
+> -#define arm_smmu_gr1_write(s, r, v)	arm_smmu_writel((s), 1, (r), (v))
+> +#define arm_smmu_gr0_read(s, o)		\
+> +	arm_smmu_readl((s), ARM_SMMU_GR0, (o))
+> +#define arm_smmu_gr0_write(s, o, v)	\
+> +	arm_smmu_writel((s), ARM_SMMU_GR0, (o), (v))
+>   
+> -#define arm_smmu_cb_read(s, n, r)				\
+> -	arm_smmu_readl((s), (s)->numpage + (n), (r))
+> -#define arm_smmu_cb_write(s, n, r, v)				\
+> -	arm_smmu_writel((s), (s)->numpage + (n), (r), (v))
+> -#define arm_smmu_cb_readq(s, n, r)				\
+> -	arm_smmu_readq((s), (s)->numpage + (n), (r))
+> -#define arm_smmu_cb_writeq(s, n, r, v)				\
+> -	arm_smmu_writeq((s), (s)->numpage + (n), (r), (v))
+> +#define arm_smmu_gr1_read(s, o)		\
+> +	arm_smmu_readl((s), ARM_SMMU_GR1, (o))
+> +#define arm_smmu_gr1_write(s, o, v)	\
+> +	arm_smmu_writel((s), ARM_SMMU_GR1, (o), (v))
+> +
+> +#define arm_smmu_cb_read(s, n, o)	\
+> +	arm_smmu_readl((s), ARM_SMMU_CB((s), (n)), (o))
+> +#define arm_smmu_cb_write(s, n, o, v)	\
+> +	arm_smmu_writel((s), ARM_SMMU_CB((s), (n)), (o), (v))
+> +#define arm_smmu_cb_readq(s, n, o)	\
+> +	arm_smmu_readq((s), ARM_SMMU_CB((s), (n)), (o))
+> +#define arm_smmu_cb_writeq(s, n, o, v)	\
+> +	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
+>   
+>   struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
+>   
+> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+> index dadc707573a2..a2062d13584f 100644
+> --- a/drivers/iommu/qcom_iommu.c
+> +++ b/drivers/iommu/qcom_iommu.c
+> @@ -156,7 +156,7 @@ static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>   		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
+>   		size_t s = size;
+>   
+> -		iova &= ~12UL;
+> +		iova = (iova >> 12) << 12;
+>   		iova |= ctx->asid;
+>   		do {
+>   			iommu_writel(ctx, reg, iova);
 
 _______________________________________________
 iommu mailing list
