@@ -6,58 +6,57 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30C5C3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42786C3A59D
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:42:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7678E22DD6
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:41:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 17899233A2
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:42:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Su9UAqdj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7678E22DD6
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="et7QvWGf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17899233A2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7B6D4D82;
-	Tue, 20 Aug 2019 13:41:05 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 00748D98;
+	Tue, 20 Aug 2019 13:42:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 353AAD7D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 45D73CC4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 13:41:04 +0000 (UTC)
+	Tue, 20 Aug 2019 13:42:34 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DD3E18A8
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EF21687
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 13:41:03 +0000 (UTC)
+	Tue, 20 Aug 2019 13:42:33 +0000 (UTC)
 Received: from sasha-vm.mshome.net (unknown [12.236.144.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 3DD702339E;
-	Tue, 20 Aug 2019 13:41:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 3B97422DBF;
+	Tue, 20 Aug 2019 13:42:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566308463;
-	bh=xDZTjVoZvCxRb8ybEkwNFnJ33mOFuIrB+A1ci7N1Izg=;
+	s=default; t=1566308553;
+	bh=aajKa75DWIkCGFrjXlLt3VAMK12kJS2v67DZm6AeF6I=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Su9UAqdjURdyJ739zQeWYkm3uiEWc4rmvcOhRPRjRy4+d0Xur+3RaMSbF07vg9Vmx
-	XBMEeujy9OksFBYjDpnJ9yZJo7O72dYEDmersSDV1vEYO3Sg+iY3zRJ4TT+5Lo0iLX
-	QeUTPZu5YQkz3MDiBdpEM6peGcDh/nSbXkXZEMhQ=
+	b=et7QvWGf5FR+qek/enBuh4fRD+u8uhqp8/pPfQ6Kc9dx4azuiKVLm3etnwYPSuvSb
+	/XlCkl/ktFL4TqCXgkmGByIT3HYhhX1vt1TC3DkETOY1azRSR0hXvLSH1lKXbdqmTr
+	N8IPlP7av7Q7XQIcVMuD/rEtDR2Y/Hsmc8hx/Ksk=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 27/44] dma-direct: don't truncate
-	dma_required_mask to bus addressing capabilities
-Date: Tue, 20 Aug 2019 09:40:11 -0400
-Message-Id: <20190820134028.10829-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 17/27] iommu/dma: Handle SG length overflow better
+Date: Tue, 20 Aug 2019 09:42:03 -0400
+Message-Id: <20190820134213.11279-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190820134028.10829-1-sashal@kernel.org>
-References: <20190820134028.10829-1-sashal@kernel.org>
+In-Reply-To: <20190820134213.11279-1-sashal@kernel.org>
+References: <20190820134213.11279-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Atish Patra <atish.patra@wdc.com>,
-	iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
-	Lucas Stach <l.stach@pengutronix.de>
+Cc: Nicolin Chen <nicoleotsuka@gmail.com>, Sasha Levin <sashal@kernel.org>,
+	iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,38 +74,45 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit d8ad55538abe443919e20e0bb996561bca9cad84 ]
+[ Upstream commit ab2cbeb0ed301a9f0460078e91b09f39958212ef ]
 
-The dma required_mask needs to reflect the actual addressing capabilities
-needed to handle the whole system RAM. When truncated down to the bus
-addressing capabilities dma_addressing_limited() will incorrectly signal
-no limitations for devices which are restricted by the bus_dma_mask.
+Since scatterlist dimensions are all unsigned ints, in the relatively
+rare cases where a device's max_segment_size is set to UINT_MAX, then
+the "cur_len + s_length <= max_len" check in __finalise_sg() will always
+return true. As a result, the corner case of such a device mapping an
+excessively large scatterlist which is mergeable to or beyond a total
+length of 4GB can lead to overflow and a bogus truncated dma_length in
+the resulting segment.
 
-Fixes: b4ebe6063204 (dma-direct: implement complete bus_dma_mask handling)
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Tested-by: Atish Patra <atish.patra@wdc.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+As we already assume that any single segment must be no longer than
+max_len to begin with, this can easily be addressed by reshuffling the
+comparison.
+
+Fixes: 809eac54cdd6 ("iommu/dma: Implement scatterlist segment merging")
+Reported-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Tested-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/iommu/dma-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 2c2772e9702ab..9912be7a970de 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -55,9 +55,6 @@ u64 dma_direct_get_required_mask(struct device *dev)
- {
- 	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
- 
--	if (dev->bus_dma_mask && dev->bus_dma_mask < max_dma)
--		max_dma = dev->bus_dma_mask;
--
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
- 
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 511ff9a1d6d94..f9dbb064f9571 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -675,7 +675,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		 * - and wouldn't make the resulting output segment too long
+ 		 */
+ 		if (cur_len && !s_iova_off && (dma_addr & seg_mask) &&
+-		    (cur_len + s_length <= max_len)) {
++		    (max_len - cur_len >= s_length)) {
+ 			/* ...then concatenate it with the previous one */
+ 			cur_len += s_length;
+ 		} else {
 -- 
 2.20.1
 
