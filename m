@@ -6,42 +6,42 @@ X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D31BC3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FB9C3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:46:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 26B3A22CE3
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:46:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26B3A22CE3
+	by mail.kernel.org (Postfix) with ESMTPS id 8705622CE3
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:46:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8705622CE3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 45936E26;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6659CE54;
 	Tue, 20 Aug 2019 15:46:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9EA8FDF2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 97EB8DD6
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 15:45:59 +0000 (UTC)
+	Tue, 20 Aug 2019 15:46:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 29DD389B
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 4146689B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 15:45:59 +0000 (UTC)
+	Tue, 20 Aug 2019 15:46:00 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C80B61576;
-	Tue, 20 Aug 2019 08:45:58 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E46411596;
+	Tue, 20 Aug 2019 08:45:59 -0700 (PDT)
 Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
 	[10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DFDFE3F246; 
-	Tue, 20 Aug 2019 08:45:57 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 089733F246; 
+	Tue, 20 Aug 2019 08:45:58 -0700 (PDT)
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 2/4] iommu/arm-smmu-v3: Rework enabling/disabling of ATS for
-	PCI masters
-Date: Tue, 20 Aug 2019 16:45:47 +0100
-Message-Id: <20190820154549.17018-3-will@kernel.org>
+Subject: [PATCH 3/4] iommu/arm-smmu-v3: Fix ATC invalidation ordering wrt main
+	TLBs
+Date: Tue, 20 Aug 2019 16:45:48 +0100
+Message-Id: <20190820154549.17018-4-will@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190820154549.17018-1-will@kernel.org>
 References: <20190820154549.17018-1-will@kernel.org>
@@ -65,113 +65,72 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-To prevent any potential issues arising from speculative Address
-Translation Requests from an ATS-enabled PCIe endpoint, rework our ATS
-enabling/disabling logic so that we enable ATS at the SMMU before we
-enable it at the endpoint, and disable things in the opposite order.
+When invalidating the ATC for an PCIe endpoint using ATS, we must take
+care to complete invalidation of the main SMMU TLBs beforehand, otherwise
+the device could immediately repopulate its ATC with stale translations.
+
+Hooking the ATC invalidation into ->unmap() as we currently do does the
+exact opposite: it ensures that the ATC is invalidated *before*  the
+main TLBs, which is bogus.
+
+Move ATC invalidation into the actual (leaf) invalidation routines so
+that it is always called after completing main TLB invalidation.
 
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 44 ++++++++++++++++++++++++++------------------
- 1 file changed, 26 insertions(+), 18 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 3402b1bc8e94..9096eca0c480 100644
+index 9096eca0c480..183a1c121179 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2283,31 +2283,34 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
- 	}
+@@ -1961,6 +1961,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ 	 */
+ 	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+ 	arm_smmu_cmdq_issue_sync(smmu);
++	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
  }
  
--static int arm_smmu_enable_ats(struct arm_smmu_master *master)
-+static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+@@ -1969,7 +1970,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+ {
+ 	u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+-	unsigned long end = iova + size;
++	unsigned long start = iova, end = iova + size;
+ 	int i = 0;
+ 	struct arm_smmu_cmdq_ent cmd = {
+ 		.tlbi = {
+@@ -1998,6 +1999,8 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+ 	}
+ 
+ 	arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, true);
++	if (leaf)
++		arm_smmu_atc_inv_domain(smmu_domain, 0, start, size);
+ }
+ 
+ static void arm_smmu_tlb_inv_page_nosync(struct iommu_iotlb_gather *gather,
+@@ -2416,18 +2419,13 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			     size_t size, struct iommu_iotlb_gather *gather)
  {
 -	int ret;
--	size_t stu;
- 	struct pci_dev *pdev;
- 	struct arm_smmu_device *smmu = master->smmu;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
  
- 	if (!(smmu->features & ARM_SMMU_FEAT_ATS) || !dev_is_pci(master->dev) ||
- 	    !(fwspec->flags & IOMMU_FWSPEC_PCI_RC_ATS) || pci_ats_disabled())
--		return -ENXIO;
-+		return false;
+ 	if (!ops)
+ 		return 0;
  
- 	pdev = to_pci_dev(master->dev);
--	if (pdev->untrusted)
--		return -EPERM;
-+	return !pdev->untrusted && pdev->ats_cap;
-+}
- 
--	/* Smallest Translation Unit: log2 of the smallest supported granule */
--	stu = __ffs(smmu->pgsize_bitmap);
-+static void arm_smmu_enable_ats(struct arm_smmu_master *master)
-+{
-+	size_t stu;
-+	struct pci_dev *pdev;
-+	struct arm_smmu_device *smmu = master->smmu;
- 
--	ret = pci_enable_ats(pdev, stu);
--	if (ret)
--		return ret;
-+	if (master->ats_enabled || !dev_is_pci(master->dev))
-+		return;
- 
--	master->ats_enabled = true;
--	return 0;
-+	/* Smallest Translation Unit: log2 of the smallest supported granule */
-+	stu = __ffs(smmu->pgsize_bitmap);
-+	pdev = to_pci_dev(master->dev);
-+	if (pci_enable_ats(pdev, stu))
-+		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", stu);
- }
- 
- static void arm_smmu_disable_ats(struct arm_smmu_master *master)
-@@ -2317,10 +2320,14 @@ static void arm_smmu_disable_ats(struct arm_smmu_master *master)
- 	if (!master->ats_enabled || !dev_is_pci(master->dev))
- 		return;
- 
-+	pci_disable_ats(to_pci_dev(master->dev));
-+	/*
-+	 * Ensure ATS is disabled at the endpoint before we issue the
-+	 * ATC invalidation via the SMMU.
-+	 */
-+	wmb();
- 	arm_smmu_atc_inv_to_cmd(0, 0, 0, &cmd);
- 	arm_smmu_atc_inv_master(master, &cmd);
--	pci_disable_ats(to_pci_dev(master->dev));
--	master->ats_enabled = false;
- }
- 
- static void arm_smmu_detach_dev(struct arm_smmu_master *master)
-@@ -2335,10 +2342,10 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
- 	list_del(&master->domain_head);
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
-+	arm_smmu_disable_ats(master);
- 	master->domain = NULL;
-+	master->ats_enabled = false;
- 	arm_smmu_install_ste_for_dev(master);
+-	ret = ops->unmap(ops, iova, size, gather);
+-	if (ret && arm_smmu_atc_inv_domain(smmu_domain, 0, iova, size))
+-		return 0;
 -
--	arm_smmu_disable_ats(master);
+-	return ret;
++	return ops->unmap(ops, iova, size, gather);
  }
  
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-@@ -2383,12 +2390,13 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
- 	if (smmu_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
--		arm_smmu_enable_ats(master);
-+		master->ats_enabled = arm_smmu_ats_supported(master);
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
- 		arm_smmu_write_ctx_desc(smmu, &smmu_domain->s1_cfg);
- 
- 	arm_smmu_install_ste_for_dev(master);
-+	arm_smmu_enable_ats(master);
- out_unlock:
- 	mutex_unlock(&smmu_domain->init_mutex);
- 	return ret;
+ static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
 -- 
 2.11.0
 
