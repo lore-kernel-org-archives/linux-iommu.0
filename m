@@ -6,54 +6,54 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FDAC3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95147C3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:58:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D78722DA9
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:50:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5D9D722DBF
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 15:58:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="fTQS3qDi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D78722DA9
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAlUc1Gk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D9D722DBF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 310A5E53;
-	Tue, 20 Aug 2019 15:50:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 22093E34;
+	Tue, 20 Aug 2019 15:58:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5AB9CE3E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7DA58E21
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 15:50:48 +0000 (UTC)
+	Tue, 20 Aug 2019 15:58:28 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E681B89B
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 111BA89B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 15:50:47 +0000 (UTC)
+	Tue, 20 Aug 2019 15:58:28 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
 	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id A2DCB22CE3;
-	Tue, 20 Aug 2019 15:50:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id C6A1022CF7;
+	Tue, 20 Aug 2019 15:58:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566316247;
-	bh=ANVTtr5Xsou0jrnOGs4/B/GU+B2WDK+TAYrfLomhjio=;
+	s=default; t=1566316707;
+	bh=dDXHA5bU4rB/VugoM/y+S4USn6RYgLcSxFjkdH7xqZg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fTQS3qDiX8U9XJEr4PxCXNlFxiDFBAS0nBEFkMdUxA8fn8j7Cm837FD7d4JmjcD1I
-	tUCaZ92tiWPS7nJQVToZx3mwggI6hk62RIMxNJ+yP0IgNi0kLC1CXYoWBkSfymA/Kd
-	e7OM4Itc9lTjZdoZYaRahocomAdfDh4af8+nErWY=
-Date: Tue, 20 Aug 2019 16:50:43 +0100
+	b=nAlUc1GkL0o2MiZB9ygu3+rAl7z9MXqOto5rybXrVg7AXjPeph788PYAKLdjE8BCj
+	OfdOMzy2XmKYQMSg5+QiFfjJgbLZxxYicfz5+YMO5ZNMS4aPGYE3Fs6ouNnlYxPJ7d
+	zGmDLsy1TXr2uf4OiOpILnZ92P5x388+5f7mUDjw=
+Date: Tue, 20 Aug 2019 16:58:24 +0100
 From: Will Deacon <will@kernel.org>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 2/4] iommu/io-pgtable-arm: Rationalise TTBRn handling
-Message-ID: <20190820155042.t4a67qhzlglevo5a@willie-the-truck>
+Subject: Re: [PATCH 4/4] iommu/io-pgtable-arm: Prepare for TTBR1 usage
+Message-ID: <20190820155823.ptn2rfvnmkd4v632@willie-the-truck>
 References: <cover.1566238530.git.robin.murphy@arm.com>
-	<dbb942070c2ef812e379414c236734931613d860.1566238530.git.robin.murphy@arm.com>
-	<20190820101911.ndwtaf76kn3zplk2@willie-the-truck>
-	<e644e0f6-4588-56eb-a6e9-7b482e3d228d@arm.com>
+	<6596469d5fa1e918145fdd4e6b1a3ad67f7cde2e.1566238530.git.robin.murphy@arm.com>
+	<20190820103048.xacfbtn5o4wermhi@willie-the-truck>
+	<469dc66a-2532-5f7f-cd8d-3fe13f6c279a@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <e644e0f6-4588-56eb-a6e9-7b482e3d228d@arm.com>
+In-Reply-To: <469dc66a-2532-5f7f-cd8d-3fe13f6c279a@arm.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -73,76 +73,65 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Aug 20, 2019 at 03:17:19PM +0100, Robin Murphy wrote:
-> On 20/08/2019 11:19, Will Deacon wrote:
-> > On Mon, Aug 19, 2019 at 07:19:29PM +0100, Robin Murphy wrote:
-> > > TTBR1 values have so far been redundant since no users implement any
-> > > support for split address spaces. Crucially, though, one of the main
-> > > reasons for wanting to do so is to be able to manage each half entirely
-> > > independently, e.g. context-switching one set of mappings without
-> > > disturbing the other. Thus it seems unlikely that tying two tables
-> > > together in a single io_pgtable_cfg would ever be particularly desirable
-> > > or useful.
-> > > 
-> > > Streamline the configs to just a single conceptual TTBR value
-> > > representing the allocated table. This paves the way for future users to
-> > > support split address spaces by simply allocating a table and dealing
-> > > with the detailed TTBRn logistics themselves.
+On Tue, Aug 20, 2019 at 03:51:45PM +0100, Robin Murphy wrote:
+> On 20/08/2019 11:30, Will Deacon wrote:
+> > On Mon, Aug 19, 2019 at 07:19:31PM +0100, Robin Murphy wrote:
+> > > Now that callers are free to use a given table for TTBR1 if they wish
+> > > (all they need do is shift the provided attributes when constructing
+> > > their final TCR value), the only remaining impediment is the address
+> > > validation on map/unmap. The fact that the LPAE address space split is
+> > > symmetric makes this easy to accommodate - by simplifying the current
+> > > range checks into explicit tests that address bits above IAS are all
+> > > zero, it then follows straightforwardly to add the inverse test to
+> > > allow the all-ones case as well.
 > > > 
 > > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > > > ---
-> > >   drivers/iommu/arm-smmu-v3.c        |  2 +-
-> > >   drivers/iommu/arm-smmu.c           |  9 ++++-----
-> > >   drivers/iommu/io-pgtable-arm-v7s.c | 16 +++++++---------
-> > >   drivers/iommu/io-pgtable-arm.c     |  7 +++----
-> > >   drivers/iommu/ipmmu-vmsa.c         |  2 +-
-> > >   drivers/iommu/msm_iommu.c          |  4 ++--
-> > >   drivers/iommu/mtk_iommu.c          |  4 ++--
-> > >   drivers/iommu/qcom_iommu.c         |  3 +--
-> > >   include/linux/io-pgtable.h         |  4 ++--
-> > >   9 files changed, 23 insertions(+), 28 deletions(-)
+> > >   drivers/iommu/io-pgtable-arm.c | 7 ++++---
+> > >   1 file changed, 4 insertions(+), 3 deletions(-)
 > > > 
-> > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> > > index 2a8db896d698..2e50cf49c3c4 100644
-> > > --- a/drivers/iommu/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm-smmu-v3.c
-> > > @@ -1722,7 +1722,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
-> > >   	}
-> > >   	cfg->cd.asid	= (u16)asid;
-> > > -	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> > > +	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
-> > >   	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-> > >   	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
-> > >   	return 0;
-> > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > > index 184ca41e9de7..19030c4b5904 100644
-> > > --- a/drivers/iommu/arm-smmu.c
-> > > +++ b/drivers/iommu/arm-smmu.c
-> > > @@ -473,13 +473,12 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
-> > >   	/* TTBRs */
-> > >   	if (stage1) {
-> > >   		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> > > -			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-> > > -			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-> > > +			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
-> > > +			cb->ttbr[1] = 0;
-> > >   		} else {
-> > > -			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> > > +			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
-> > >   			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
-> > > -			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-> > > -			cb->ttbr[1] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
-> > > +			cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
+> > > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > > index 09cb20671fbb..f39c50356351 100644
+> > > --- a/drivers/iommu/io-pgtable-arm.c
+> > > +++ b/drivers/iommu/io-pgtable-arm.c
+> > > @@ -475,13 +475,13 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+> > >   	arm_lpae_iopte *ptep = data->pgd;
+> > >   	int ret, lvl = ARM_LPAE_START_LVL(data);
+> > >   	arm_lpae_iopte prot;
+> > > +	long iaext = (long)iova >> data->iop.cfg.ias;
+> > >   	/* If no access, then nothing to do */
+> > >   	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
+> > >   		return 0;
+> > > -	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
+> > > -		    paddr >= (1ULL << data->iop.cfg.oas)))
+> > > +	if (WARN_ON((iaext && ~iaext) || paddr >> data->iop.cfg.oas))
 > > 
-> > Why do you continue to put the ASID in here?
+> > I had to read that '&&' twice, but I see what you're doing now :)
+> > 
+> > >   		return -ERANGE;
+> > 
+> > This doesn't seem sufficient to prevent a mixture of TTBR1 and TTBR0
+> > addresses from being mapped in the same TTBR. Perhaps we need a quirk for
+> > TTBR1, which could then take care of setting EPDx appropriately?
 > 
-> For the same reason we put it there before ;)
-> 
-> Although I guess if TCR.A1 were ever to get flipped accidentally then we're
-> still cool.
+> Right, that's the one downside of going for the minimalist "io-pgtable
+> doesn't even have to know" approach. On reflection, though, in that paradigm
+> it should probably be the caller's responsibility to convert TTBR1 addresses
+> to preserve the "as if TTBR0" illusion anyway :/
 
-Hmm, but we don't do this for other drivers, so I'd be inclined to zap it
-with 0 for consistency.
+Right, and I'd rather not push stuff into the caller for the common case.
+It's not exactly onerous to support this in io-pgtable. It's also why I'd
+still like to keep the EPDx in there, because the callers that care can
+rewrite the stuff, but at least we provided a default.
+
+> The advantage of not having a quirk is that it allows split address spaces
+> to fit more closely with the aux_domain idea, i.e. we could allocate and
+> initialise a domain without having to assume, or even care, whether it will
+> end up attached as a primary or aux domain. It *might* even be potentially
+> useful to have a domain attached to TTBR0 of one device's context and TTBR1
+> of another's at the same time, although that's pretty niche.
+
+That sounds pretty theoretical to me at the moment.
 
 Will
 _______________________________________________
