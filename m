@@ -6,49 +6,49 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AE0C3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12745C3A59E
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 14:17:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BEA9B205ED
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:51:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BEA9B205ED
+	by mail.kernel.org (Postfix) with ESMTPS id D6927214DA
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 14:17:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D6927214DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 969EBDC5;
-	Tue, 20 Aug 2019 13:51:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 89065D91;
+	Tue, 20 Aug 2019 14:17:24 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5AD6ADC2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 86279CDF
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 13:51:35 +0000 (UTC)
+	Tue, 20 Aug 2019 14:17:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2CF9812E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E48D012E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 13:51:34 +0000 (UTC)
+	Tue, 20 Aug 2019 14:17:22 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C37B528;
-	Tue, 20 Aug 2019 06:51:33 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5ABFA28;
+	Tue, 20 Aug 2019 07:17:22 -0700 (PDT)
 Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1582E3F246;
-	Tue, 20 Aug 2019 06:51:32 -0700 (PDT)
-Subject: Re: [PATCH 4/4] iommu/io-pgtable-arm: Prepare for TTBR1 usage
-To: will@kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org, robdclark@gmail.com
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 74B943F246;
+	Tue, 20 Aug 2019 07:17:21 -0700 (PDT)
+Subject: Re: [PATCH 2/4] iommu/io-pgtable-arm: Rationalise TTBRn handling
+To: Will Deacon <will@kernel.org>
 References: <cover.1566238530.git.robin.murphy@arm.com>
-	<6596469d5fa1e918145fdd4e6b1a3ad67f7cde2e.1566238530.git.robin.murphy@arm.com>
-	<20190819223439.GG28465@jcrouse1-lnx.qualcomm.com>
+	<dbb942070c2ef812e379414c236734931613d860.1566238530.git.robin.murphy@arm.com>
+	<20190820101911.ndwtaf76kn3zplk2@willie-the-truck>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <de67f3d6-2c95-293a-9fae-ba594df21660@arm.com>
-Date: Tue, 20 Aug 2019 14:51:31 +0100
+Message-ID: <e644e0f6-4588-56eb-a6e9-7b482e3d228d@arm.com>
+Date: Tue, 20 Aug 2019 15:17:19 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190819223439.GG28465@jcrouse1-lnx.qualcomm.com>
+In-Reply-To: <20190820101911.ndwtaf76kn3zplk2@willie-the-truck>
 Content-Language: en-GB
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,71 +66,119 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 19/08/2019 23:34, Jordan Crouse wrote:
-> On Mon, Aug 19, 2019 at 07:19:31PM +0100, Robin Murphy wrote:
->> Now that callers are free to use a given table for TTBR1 if they wish
->> (all they need do is shift the provided attributes when constructing
->> their final TCR value), the only remaining impediment is the address
->> validation on map/unmap. The fact that the LPAE address space split is
->> symmetric makes this easy to accommodate - by simplifying the current
->> range checks into explicit tests that address bits above IAS are all
->> zero, it then follows straightforwardly to add the inverse test to
->> allow the all-ones case as well.
+On 20/08/2019 11:19, Will Deacon wrote:
+> On Mon, Aug 19, 2019 at 07:19:29PM +0100, Robin Murphy wrote:
+>> TTBR1 values have so far been redundant since no users implement any
+>> support for split address spaces. Crucially, though, one of the main
+>> reasons for wanting to do so is to be able to manage each half entirely
+>> independently, e.g. context-switching one set of mappings without
+>> disturbing the other. Thus it seems unlikely that tying two tables
+>> together in a single io_pgtable_cfg would ever be particularly desirable
+>> or useful.
+>>
+>> Streamline the configs to just a single conceptual TTBR value
+>> representing the allocated table. This paves the way for future users to
+>> support split address spaces by simply allocating a table and dealing
+>> with the detailed TTBRn logistics themselves.
 >>
 >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 >> ---
->>   drivers/iommu/io-pgtable-arm.c | 7 ++++---
->>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>   drivers/iommu/arm-smmu-v3.c        |  2 +-
+>>   drivers/iommu/arm-smmu.c           |  9 ++++-----
+>>   drivers/iommu/io-pgtable-arm-v7s.c | 16 +++++++---------
+>>   drivers/iommu/io-pgtable-arm.c     |  7 +++----
+>>   drivers/iommu/ipmmu-vmsa.c         |  2 +-
+>>   drivers/iommu/msm_iommu.c          |  4 ++--
+>>   drivers/iommu/mtk_iommu.c          |  4 ++--
+>>   drivers/iommu/qcom_iommu.c         |  3 +--
+>>   include/linux/io-pgtable.h         |  4 ++--
+>>   9 files changed, 23 insertions(+), 28 deletions(-)
 >>
->> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
->> index 09cb20671fbb..f39c50356351 100644
->> --- a/drivers/iommu/io-pgtable-arm.c
->> +++ b/drivers/iommu/io-pgtable-arm.c
->> @@ -475,13 +475,13 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
->>   	arm_lpae_iopte *ptep = data->pgd;
->>   	int ret, lvl = ARM_LPAE_START_LVL(data);
->>   	arm_lpae_iopte prot;
->> +	long iaext = (long)iova >> data->iop.cfg.ias;
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 2a8db896d698..2e50cf49c3c4 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -1722,7 +1722,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+>>   	}
 >>   
->>   	/* If no access, then nothing to do */
->>   	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
->>   		return 0;
->>   
->> -	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
->> -		    paddr >= (1ULL << data->iop.cfg.oas)))
->> +	if (WARN_ON((iaext && ~iaext) || paddr >> data->iop.cfg.oas))
->>   		return -ERANGE;
->>   
->>   	prot = arm_lpae_prot_to_pte(data, iommu_prot);
+>>   	cfg->cd.asid	= (u16)asid;
+>> -	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>> +	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+>>   	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+>>   	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
+>>   	return 0;
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 184ca41e9de7..19030c4b5904 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -473,13 +473,12 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>   	/* TTBRs */
+>>   	if (stage1) {
+>>   		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> -			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+>> -			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+>> +			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
+>> +			cb->ttbr[1] = 0;
+>>   		} else {
+>> -			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>> +			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+>>   			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+>> -			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+>> -			cb->ttbr[1] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+>> +			cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
 > 
-> We'll want to cast away the sign extended bits before mapping the iova, this
-> might be a good patch for that too as long as we are calculating the iaext.
+> Why do you continue to put the ASID in here?
 
-Ah good point, I'd forgotten that ARM_LPAE_LVL_IDX() doesn't actually 
-cap to IAS if the top level is smaller than bits_per_level (I suppose we 
-*could* make it do so for purity, but that's bound to hurt efficiency 
-far more than just zeroing out the offending bits here).
+For the same reason we put it there before ;)
 
-Thanks,
+Although I guess if TCR.A1 were ever to get flipped accidentally then 
+we're still cool.
+
+>> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+>> index 34bb357b3cfa..de55b6d82ef1 100644
+>> --- a/drivers/iommu/qcom_iommu.c
+>> +++ b/drivers/iommu/qcom_iommu.c
+>> @@ -247,10 +247,9 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>>   
+>>   		/* TTBRs */
+>>   		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+>> -				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
+>> +				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
+>>   				FIELD_PREP(TTBRn_ASID, ctx->asid));
+>>   		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
+>> -				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
+>>   				FIELD_PREP(TTBRn_ASID, ctx->asid));
+> 
+> Same here.
+> 
+>> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+>> index a6c8aa204733..7a0905d7a006 100644
+>> --- a/include/linux/io-pgtable.h
+>> +++ b/include/linux/io-pgtable.h
+>> @@ -90,7 +90,7 @@ struct io_pgtable_cfg {
+>>   	/* Low-level data specific to the table format */
+>>   	union {
+>>   		struct {
+>> -			u64	ttbr[2];
+>> +			u64	ttbr;
+>>   			u64	tcr;
+>>   			u64	mair;
+>>   		} arm_lpae_s1_cfg;
+>> @@ -101,7 +101,7 @@ struct io_pgtable_cfg {
+>>   		} arm_lpae_s2_cfg;
+>>   
+>>   		struct {
+>> -			u32	ttbr[2];
+>> +			u32	ttbr;
+> 
+> We could probably do with a comment for these 'ttbr' field now saying that
+> they refer to ttbr0 (since the tcr will have EPD1 set).
+
+Yeah, I did wonder whether this might want elaboration, or whether the 
+commit messages plus the code consuming it made the idea sufficiently 
+clear - I guess that's my answer...
+
 Robin.
-
-> 
->> @@ -647,8 +647,9 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->>   	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->>   	arm_lpae_iopte *ptep = data->pgd;
->>   	int lvl = ARM_LPAE_START_LVL(data);
->> +	long iaext = (long)iova >> data->iop.cfg.ias;
->>   
->> -	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
->> +	if (WARN_ON(iaext && ~iaext))
->>   		return 0;
->>   
->>   	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-> 
-> And here too.
-> 
-> Jordan
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
