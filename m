@@ -2,55 +2,61 @@ Return-Path: <SRS0=xQF/=WQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD830C3A589
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:00:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB6BDC3A589
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:41:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B15C422D6D
-	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:00:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B15C422D6D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 83CD7233FF
+	for <iommu@archiver.kernel.org>; Tue, 20 Aug 2019 13:41:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hNVwdgCf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 83CD7233FF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7E2BAD39;
-	Tue, 20 Aug 2019 13:00:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 58BBAD85;
+	Tue, 20 Aug 2019 13:41:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 817CAC5D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54B0DD56
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 13:00:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 19A1587
+	Tue, 20 Aug 2019 13:41:03 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0A6A18A8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 20 Aug 2019 13:00:54 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 62189344;
-	Tue, 20 Aug 2019 06:00:53 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 206CA3F246;
-	Tue, 20 Aug 2019 06:00:51 -0700 (PDT)
-Subject: Re: [PATCH v2 17/17] iommu/arm-smmu: Add context init implementation
-	hook
-To: Vivek Gautam <vivek.gautam@codeaurora.org>, will@kernel.org
-References: <cover.1565892337.git.robin.murphy@arm.com>
-	<f50c14834bb7a4f0f7c765d433c2defdb03661c9.1565892337.git.robin.murphy@arm.com>
-	<8306f3f1-925c-0b02-8103-9d4a510005b2@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <8bd76c3e-823d-86b2-785e-e80685edfa6c@arm.com>
-Date: Tue, 20 Aug 2019 14:00:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Tue, 20 Aug 2019 13:41:03 +0000 (UTC)
+Received: from sasha-vm.mshome.net (unknown [12.236.144.82])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 5697E22DD6;
+	Tue, 20 Aug 2019 13:41:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1566308462;
+	bh=d9lIxdX9yqd054+qA9ZkWFnVkkDQMDKjxGSQ9L5h+bw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=hNVwdgCf6lsS4ljgSeUjRJo82CH3eWfa4ZnqVaVupiBSTgQaFV5i6P868zU5qx4KL
+	eMkDY+8oWBrCxzSRTzgf+dR+6f8aV9JOkpU7MXNzC8mFk6y12bTbEePRirj1Xblqvn
+	HQJr3euHfrW2EchHpeI53dSF+wbnsNAfinATpiF4=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 26/44] iommu/dma: Handle SG length overflow better
+Date: Tue, 20 Aug 2019 09:40:10 -0400
+Message-Id: <20190820134028.10829-26-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190820134028.10829-1-sashal@kernel.org>
+References: <20190820134028.10829-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <8306f3f1-925c-0b02-8103-9d4a510005b2@codeaurora.org>
-Content-Language: en-GB
-Cc: gregory.clement@bootlin.com, bjorn.andersson@linaro.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Nicolin Chen <nicoleotsuka@gmail.com>, Sasha Levin <sashal@kernel.org>,
+	iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,61 +69,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 20/08/2019 11:15, Vivek Gautam wrote:
-[...]
-> Hi Robin,
-> 
-> Sorry for responding late to this series. I have couple of doubts here 
-> that I wanted to discuss.
-> 
-> Are we standardizing these implementation specific ops? Each vendor 
-> implementations will have something peculiar to take care. Things are 
-> good right now with 'reset', 'cfg_probe', and 'init_context' hooks.
-> But, on top of vendor implementation details, there can be SoC specific 
-> errata changes that need to be added.
+From: Robin Murphy <robin.murphy@arm.com>
 
-The idea behind the impl hooks is to try to have them in logical places 
-which should be suitable for multiple different workarounds (e.g. 
-init_context is arranged to allow replacing smmu_domain->tlb_ops) - I 
-want to avoid proliferating dozens of them that end up each being 
-specific to individual workarounds, but that's not to say that the 
-design we're starting with here is by any means complete or final. We're 
-almost certainly going to evolve more hooks (and possibly adjust the 
-current ones) in future.
+[ Upstream commit ab2cbeb0ed301a9f0460078e91b09f39958212ef ]
 
-> Moreover, adding implementation data based on __model__ may not suffice 
-> for long. Do you suggest adding any other data variable in the 
-> ARM_SMMU_MATCH_DATA?
+Since scatterlist dimensions are all unsigned ints, in the relatively
+rare cases where a device's max_segment_size is set to UINT_MAX, then
+the "cur_len + s_length <= max_len" check in __finalise_sg() will always
+return true. As a result, the corner case of such a device mapping an
+excessively large scatterlist which is mergeable to or beyond a total
+length of 4GB can lead to overflow and a bogus truncated dma_length in
+the resulting segment.
 
-As commented in the code, the setup for the existing quirks works out to 
-be deceptively simple, and it can and will change. Ultimately I'm fully 
-expecting to end up with complex logic hanging off arm_smmu_impl_init() 
-to detect the integration details and compose sets of impl hooks in 
-various ways as appropriate - I doubt that it's going to be practical or 
-even possible to have static data for *every* possibility. The 
-fundamental shape of the code is based on "model" quirks being more 
-general than "integration" quirks, such that the latter should be in a 
-position to dynamically inherit (or statically replace, in simple cases) 
-the hooks of the former.
+As we already assume that any single segment must be no longer than
+max_len to begin with, this can easily be addressed by reshuffling the
+comparison.
 
-> To show SoC specific needs, I have the change attached in this email to 
-> take care of the SDM845 'wait-for-safe' sequence.
-> Please take a look.
+Fixes: 809eac54cdd6 ("iommu/dma: Implement scatterlist segment merging")
+Reported-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Tested-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/dma-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Other than that introducing QCOM_SMMU500 seems to be redundant, and 
-whether it also needs ACPI-based detection, that certainly seems fairly 
-reasonable for a simple isolated workaround. However, is the firmware 
-call really a one-off probe-time thing? If the firmware does take care 
-of preserving the wait-for-safe state across 
-suspend/resume/hibernate/etc. then fair enough, but I would have assumed 
-that the reset hook would be the more likely place to put it.
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 379318266468c..8c02d2283d647 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -710,7 +710,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		 * - and wouldn't make the resulting output segment too long
+ 		 */
+ 		if (cur_len && !s_iova_off && (dma_addr & seg_mask) &&
+-		    (cur_len + s_length <= max_len)) {
++		    (max_len - cur_len >= s_length)) {
+ 			/* ...then concatenate it with the previous one */
+ 			cur_len += s_length;
+ 		} else {
+-- 
+2.20.1
 
-Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
