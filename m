@@ -2,56 +2,98 @@ Return-Path: <SRS0=Juc9=WR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76A6C3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 17:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C9EC3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 19:53:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B3235216F4
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 17:11:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3235216F4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 12E6F2332A
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 19:53:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Axfhikvj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12E6F2332A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7FB87CDE;
-	Wed, 21 Aug 2019 17:11:44 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B5A12DBC;
+	Wed, 21 Aug 2019 19:53:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 42AB3CC1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A0676C5C
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 17:11:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C930B8B5
+	Wed, 21 Aug 2019 19:53:04 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com
+	[209.85.222.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 33F42F8
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 17:11:42 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	21 Aug 2019 10:11:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,412,1559545200"; d="scan'208";a="379015934"
-Received: from sai-dev-mach.sc.intel.com ([143.183.140.153])
-	by fmsmga006.fm.intel.com with ESMTP; 21 Aug 2019 10:11:42 -0700
-Message-ID: <e7233cfe63c66aff4ca5d2e2c96b15f5fc7c05ae.camel@intel.com>
-Subject: Re: [PATCH 4/4] iommu: Document usage of
-	"/sys/kernel/iommu_groups/<grp_id>/type" file
-From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-To: John Garry <john.garry@huawei.com>, iommu@lists.linux-foundation.org
-Date: Wed, 21 Aug 2019 10:08:03 -0700
-In-Reply-To: <0891489c-5753-09c1-ab9d-ee2eb6e175a9@huawei.com>
-References: <cover.1566353521.git.sai.praneeth.prakhya@intel.com>
-	<414989e92e361ca8f3108956135c1bbfa4ce6788.1566353521.git.sai.praneeth.prakhya@intel.com>
-	<0891489c-5753-09c1-ab9d-ee2eb6e175a9@huawei.com>
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+	Wed, 21 Aug 2019 19:53:04 +0000 (UTC)
+Received: by mail-qk1-f193.google.com with SMTP id m10so2980513qkk.1
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 21 Aug 2019 12:53:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=Avf248fSzuypFcso7Kkr0yA+lcmduhMaWHH94TkjpAI=;
+	b=AxfhikvjRrOipQcntJRqjdr/eKvR8BEra5qlDG10hvhnCuoV2Y1rax7uZg5mfRHTHC
+	uPaWNuH6Em8WzNOLx9kTZ3NE540jiIjPDyL116dF2ihKw7XrA7R8XahBlEtlmkpTrEca
+	iiMP7POS3K8y6Kjq4ZtTUy8g4uMiJ8gVVTdfnXrqGDdfUfCnK8ClM5wD8SM+V4khKCtG
+	GxBMkz9dMuyiKJVS7YQukqCbImb4gRl3aNgGS/xQvglUUbXbj0EYMXZXq6GP+7adG5Jr
+	vBXarNpeiZyR7KKPZZeJfz7rr0BkCL3tTmpq3tB8OjRr7Lbf17hUatbpQDkomugG4wri
+	qr5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=Avf248fSzuypFcso7Kkr0yA+lcmduhMaWHH94TkjpAI=;
+	b=j9fbLLGDjYnVHg5y3xh2mmJdMSPDSAHBTRQ28spHdBYnLkBufkRe3hG7mh8SZF70U5
+	EgsEmYxsyNDEHVBDmmOwRRLWSuVp6Ajd6mdHEUhRgefU/OCte5Ti4RzRER9FhDBLeRSC
+	S8XIXbXSNg1OUnGhle79dME4efroXTpWThYcYauwDA331qyXZr5LMrKuuZBQVqoYFMP0
+	kNsnLgUrEa687+uZzBlRHNc5KP1D4leoAS4INiOJ4Ba+zYNKcPDCTQXSohGiYjfbnh6m
+	Zd6Fh3WCiyCfK98Th3esNHOj4ho0eApAQRT2ZgB4km6SS/z6xNcbBRIYcpPNHgGjbe5N
+	1fiQ==
+X-Gm-Message-State: APjAAAVjdvOb9hAeUJ0KkvocrOKkRwFbC24tjs5L7ffE4U+GP5WR7Yyn
+	raL2Cg57jfphW9edX6nQkSdEbQ==
+X-Google-Smtp-Source: APXvYqwPksLN/jmRrXTfKl1JB/9WM5tJ8kTKLiTdMf+ZNHYSP0hbNDBV4ZLxlKKKGF2mGcl3vHw8pg==
+X-Received: by 2002:a37:9701:: with SMTP id z1mr17576531qkd.66.1566417183189; 
+	Wed, 21 Aug 2019 12:53:03 -0700 (PDT)
+Received: from ziepe.ca
+	(hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net.
+	[156.34.55.100]) by smtp.gmail.com with ESMTPSA id
+	b202sm10311656qkg.83.2019.08.21.12.53.02
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Wed, 21 Aug 2019 12:53:02 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1i0WfG-0005oO-5E; Wed, 21 Aug 2019 16:53:02 -0300
+Date: Wed, 21 Aug 2019 16:53:02 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: linux-mm@kvack.org
+Subject: Re: [PATCH v3 hmm 00/11] Add mmu_notifier_get/put for managing mmu
+	notifier registrations
+Message-ID: <20190821195302.GA22164@ziepe.ca>
+References: <20190806231548.25242-1-jgg@ziepe.ca>
 MIME-Version: 1.0
-Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20190806231548.25242-1-jgg@ziepe.ca>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Andrea Arcangeli <aarcange@redhat.com>,
+	"David \(ChunMing\) Zhou" <David1.Zhou@amd.com>,
+	Ralph Campbell <rcampbell@nvidia.com>, Dimitri Sivanich <sivanich@sgi.com>,
+	Gavin Shan <shangw@linux.vnet.ibm.com>,
+	Andrea Righi <andrea@betterlinux.com>,
+	linux-rdma@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
+	"Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org,
+	Alex Deucher <alexander.deucher@amd.com>,
+	intel-gfx@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,86 +111,26 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-I don't know why people are being dropped randomly from CC'list. So, adding
-them back
+On Tue, Aug 06, 2019 at 08:15:37PM -0300, Jason Gunthorpe wrote:
+ 
+> This series is already entangled with patches in the hmm & RDMA tree and
+> will require some git topic branches for the RDMA ODP stuff. I intend for
+> it to go through the hmm tree.
 
-+ Sohil, Jacob, Joerg, Baolu
+The RDMA related patches have been applied to the RDMA tree on a
+shared topic branch, so I've merged that into hmm.git and applied the
+last patches from this series on top:
 
-> > +What:		/sys/kernel/iommu_groups/<grp_id>/type
-> > +Date:		August 2019
-> > +KernelVersion:	v5.4
-> > +Contact:	Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-> > +Description:	/sys/kernel/iommu_groups/<grp_id>/type lets the user
-> > know the
-> > +		type of default domain in use by iommu for this group. A
-> > +		privileged user could request kernel to change the group type
-> > by
-> > +		writing to this file. Presently, only three types are
-> > supported
-> 
-> It's unclear whether the following is a list of all values the user 
-> could both read and write (which it isn't).
+>   RDMA/odp: use mmu_notifier_get/put for 'struct ib_ucontext_per_mm'
+>   RDMA/odp: remove ib_ucontext from ib_umem
+>   mm/mmu_notifiers: remove unregister_no_release
 
-Thanks for bringing this up.
-True.. user would never see "auto" when he reads this file. I will make it
-clear in V2.
+There was some conflict churn in the RDMA ODP patches vs what was used
+to the patches from this series, I fixed it up. Now I'm waiting for
+some testing feedback before pushing it to linux-next
 
-> 
-> > +		1. dma: All the DMA transactions from the devices in this
-> > group
-> > +			are translated by the iommu.
-> 
-> Why "dma", and not "DMA" (which is what we would read for DMA type)?
-
-Makes sense.. Will change to "DMA" in V2.
-
-> 
-> > +		2. identity: All the DMA transactions from the devices in this
-> > +			     group are *not* translated by the iommu.
-> > +		3. auto: Kernel decides one among dma/identity
-> 
-> Isn't this the same as reset value, which we could read and remember?
-
-Agreed. But, I think (assuming it's done manually and the user hasn't stored
-default value in some script), remembering would be difficult if the system
-had been running for weeks together and the user had already changed group
-type multiple times.
-
-> (And the kernel could reject when we attempt to change to a disallowed 
-> type).
-
-It already does and I see your point.
-Since there are only two options, user might try to write "DMA" and if the
-kernel disallows he would write "identity", simple enough.
-
-I think of "auto" as an add-on feature. Since it's simple enough to implement
-in kernel and reduces one extra step to user.
-
-> 
-> > +		Note:
-> > +		-----
-> > +		A group type could be modified only when *all* the devices in
-> > +		the group are not binded to any device driver. So, the user
-> > has
-> > +		to first unbind the appropriate drivers and then change the
-> > +		default domain type.
-> > +		Caution:
-> > +		--------
-> > +		Unbinding a device driver will take away the drivers control
-> > +		over the device and if done on devices that host root file
-> > +		system could lead to catastrophic effects (the user might
-> > +		need to reboot the machine to get it to normal state). So,
-> > it's
-> > +		expected that the user understands what he is doing.
-> 
-> I think that this goes without saying.
-
-Haha.. Yes, it does. But, just wanted to be explicit so that new users are
-warned well before :)
-
-Regards,
-Sai
-
+Thanks,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
