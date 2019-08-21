@@ -2,66 +2,56 @@ Return-Path: <SRS0=Juc9=WR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1878FC3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 13:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36011C3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 14:53:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EA130233A0
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 13:57:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA130233A0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9463722CE3
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 14:53:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9463722CE3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D4547EA2;
-	Wed, 21 Aug 2019 13:57:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3E476ED1;
+	Wed, 21 Aug 2019 14:53:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0B5C1E41
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0D64CECB
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 13:57:48 +0000 (UTC)
+	Wed, 21 Aug 2019 14:53:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2E5AE89E
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B4E368A3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 13:57:47 +0000 (UTC)
-X-UUID: 706f111d285045c2b0588a1c6c804fa0-20190821
-X-UUID: 706f111d285045c2b0588a1c6c804fa0-20190821
-Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by
-	mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
-	(Cellopoint E-mail Firewall v4.1.10 Build 0707 with TLS)
-	with ESMTP id 1541045567; Wed, 21 Aug 2019 21:57:41 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
-	mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Wed, 21 Aug 2019 21:57:38 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
-	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Wed, 21 Aug 2019 21:57:37 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v10 23/23] iommu/mediatek: Clean up struct mtk_smi_iommu
-Date: Wed, 21 Aug 2019 21:53:26 +0800
-Message-ID: <1566395606-7975-24-git-send-email-yong.wu@mediatek.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1566395606-7975-1-git-send-email-yong.wu@mediatek.com>
-References: <1566395606-7975-1-git-send-email-yong.wu@mediatek.com>
+	Wed, 21 Aug 2019 14:53:01 +0000 (UTC)
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+	by Forcepoint Email with ESMTP id CA1FFD7EDBD27EB1F124;
+	Wed, 21 Aug 2019 22:52:56 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.238) by DGGEMS402-HUB.china.huawei.com
+	(10.3.19.202) with Microsoft SMTP Server id 14.3.439.0;
+	Wed, 21 Aug 2019 22:52:53 +0800
+Subject: Re: [PATCH 4/4] iommu: Document usage of
+	"/sys/kernel/iommu_groups/<grp_id>/type" file
+To: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
+	<iommu@lists.linux-foundation.org>
+References: <cover.1566353521.git.sai.praneeth.prakhya@intel.com>
+	<414989e92e361ca8f3108956135c1bbfa4ce6788.1566353521.git.sai.praneeth.prakhya@intel.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <0891489c-5753-09c1-ab9d-ee2eb6e175a9@huawei.com>
+Date: Wed, 21 Aug 2019 15:52:49 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
 MIME-Version: 1.0
-X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
-	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>,
-	linux-mediatek@lists.infradead.org, ming-fan.chen@mediatek.com,
-	anan.sun@mediatek.com, Matthias Kaehlcke <mka@chromium.org>,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <414989e92e361ca8f3108956135c1bbfa4ce6788.1566353521.git.sai.praneeth.prakhya@intel.com>
+X-Originating-IP: [10.202.227.238]
+X-CFilter-Loop: Reflected
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>,
+	Ashok Raj <ashok.raj@intel.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,142 +64,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Remove the "struct mtk_smi_iommu" to simplify the code since it has only
-one item in it right now.
+On 21/08/2019 03:42, Sai Praneeth Prakhya wrote:
+> The default domain type of an iommu group can be changed using file
+> "/sys/kernel/iommu_groups/<grp_id>/type". Hence, document it's usage and
+> more importantly spell out it's limitations and an example.
+>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Sohil Mehta <sohil.mehta@intel.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+> ---
+>  .../ABI/testing/sysfs-kernel-iommu_groups     | 35 +++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+> index 017f5bc3920c..0a70b3a66ff3 100644
+> --- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+> +++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+> @@ -33,3 +33,38 @@ Description:    In case an RMRR is used only by graphics or USB devices
+>  		it is now exposed as "direct-relaxable" instead of "direct".
+>  		In device assignment use case, for instance, those RMRR
+>  		are considered to be relaxable and safe.
+> +
+> +What:		/sys/kernel/iommu_groups/<grp_id>/type
+> +Date:		August 2019
+> +KernelVersion:	v5.4
+> +Contact:	Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+> +Description:	/sys/kernel/iommu_groups/<grp_id>/type lets the user know the
+> +		type of default domain in use by iommu for this group. A
+> +		privileged user could request kernel to change the group type by
+> +		writing to this file. Presently, only three types are supported
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c    | 4 ++--
- drivers/iommu/mtk_iommu.h    | 6 +++---
- drivers/iommu/mtk_iommu_v1.c | 4 ++--
- drivers/memory/mtk-smi.c     | 6 +++---
- include/soc/mediatek/smi.h   | 4 ----
- 5 files changed, 10 insertions(+), 14 deletions(-)
+It's unclear whether the following is a list of all values the user 
+could both read and write (which it isn't).
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index cc81de2..400066d 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -278,7 +278,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- 	for (i = 0; i < fwspec->num_ids; ++i) {
- 		larbid = MTK_M4U_TO_LARB(fwspec->ids[i]);
- 		portid = MTK_M4U_TO_PORT(fwspec->ids[i]);
--		larb_mmu = &data->smi_imu.larb_imu[larbid];
-+		larb_mmu = &data->larb_imu[larbid];
- 
- 		dev_dbg(dev, "%s iommu port: %d\n",
- 			enable ? "enable" : "disable", portid);
-@@ -680,7 +680,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			of_node_put(larbnode);
- 			return -EPROBE_DEFER;
- 		}
--		data->smi_imu.larb_imu[id].dev = &plarbdev->dev;
-+		data->larb_imu[id].dev = &plarbdev->dev;
- 
- 		component_match_add_release(dev, &match, release_of,
- 					    compare_of, larbnode);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 56b579c..fc0f16e 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -56,7 +56,6 @@ struct mtk_iommu_data {
- 	struct mtk_iommu_suspend_reg	reg;
- 	struct mtk_iommu_domain		*m4u_dom;
- 	struct iommu_group		*m4u_group;
--	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
- 	bool                            enable_4GB;
- 	bool				tlb_flush_active;
- 
-@@ -64,6 +63,7 @@ struct mtk_iommu_data {
- 	const struct mtk_iommu_plat_data *plat_data;
- 
- 	struct list_head		list;
-+	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
- };
- 
- static inline int compare_of(struct device *dev, void *data)
-@@ -80,14 +80,14 @@ static inline int mtk_iommu_bind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 
--	return component_bind_all(dev, &data->smi_imu);
-+	return component_bind_all(dev, &data->larb_imu);
- }
- 
- static inline void mtk_iommu_unbind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 
--	component_unbind_all(dev, &data->smi_imu);
-+	component_unbind_all(dev, &data->larb_imu);
- }
- 
- #endif
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 3922358..860926c 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -206,7 +206,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- 	for (i = 0; i < fwspec->num_ids; ++i) {
- 		larbid = mt2701_m4u_to_larb(fwspec->ids[i]);
- 		portid = mt2701_m4u_to_port(fwspec->ids[i]);
--		larb_mmu = &data->smi_imu.larb_imu[larbid];
-+		larb_mmu = &data->larb_imu[larbid];
- 
- 		dev_dbg(dev, "%s iommu port: %d\n",
- 			enable ? "enable" : "disable", portid);
-@@ -610,7 +610,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			}
- 		}
- 
--		data->smi_imu.larb_imu[larb_nr].dev = &plarbdev->dev;
-+		data->larb_imu[larb_nr].dev = &plarbdev->dev;
- 		component_match_add_release(dev, &match, release_of,
- 					    compare_of, larb_spec.np);
- 		larb_nr++;
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index d6dc62f..439d7d8 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -143,13 +143,13 @@ void mtk_smi_larb_put(struct device *larbdev)
- mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
- {
- 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
--	struct mtk_smi_iommu *smi_iommu = data;
-+	struct mtk_smi_larb_iommu *larb_mmu = data;
- 	unsigned int         i;
- 
- 	for (i = 0; i < MTK_LARB_NR_MAX; i++) {
--		if (dev == smi_iommu->larb_imu[i].dev) {
-+		if (dev == larb_mmu[i].dev) {
- 			larb->larbid = i;
--			larb->mmu = &smi_iommu->larb_imu[i].mmu;
-+			larb->mmu = &larb_mmu[i].mmu;
- 			return 0;
- 		}
- 	}
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index 6f0b00c..5a34b87 100644
---- a/include/soc/mediatek/smi.h
-+++ b/include/soc/mediatek/smi.h
-@@ -20,10 +20,6 @@ struct mtk_smi_larb_iommu {
- 	unsigned int   mmu;
- };
- 
--struct mtk_smi_iommu {
--	struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
--};
--
- /*
-  * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
-  *                   It also initialize some basic setting(like iommu).
--- 
-1.9.1
+> +		1. dma: All the DMA transactions from the devices in this group
+> +			are translated by the iommu.
+
+Why "dma", and not "DMA" (which is what we would read for DMA type)?
+
+> +		2. identity: All the DMA transactions from the devices in this
+> +			     group are *not* translated by the iommu.
+> +		3. auto: Kernel decides one among dma/identity
+
+Isn't this the same as reset value, which we could read and remember?
+
+(And the kernel could reject when we attempt to change to a disallowed 
+type).
+
+> +		Note:
+> +		-----
+> +		A group type could be modified only when *all* the devices in
+> +		the group are not binded to any device driver. So, the user has
+> +		to first unbind the appropriate drivers and then change the
+> +		default domain type.
+> +		Caution:
+> +		--------
+> +		Unbinding a device driver will take away the drivers control
+> +		over the device and if done on devices that host root file
+> +		system could lead to catastrophic effects (the user might
+> +		need to reboot the machine to get it to normal state). So, it's
+> +		expected that the user understands what he is doing.
+
+I think that this goes without saying.
+
+> +		Example:
+> +		--------
+> +		# Unbind USB device driver
+> +		1. echo "0000:00:14.0" > /sys/bus/pci/drivers/xhci_hcd/unbind
+> +		# Put the USB device in identity mode (a.k.a pass through)
+> +		2. echo "identity" > /sys/kernel/iommu_groups/<grp_id>/type
+> +		# Re-bind the driver
+> +		3. echo "0000:00:14.0" > /sys/bus/pci/drivers/xhci_hcd/bind
+>
+
+Thanks,
+John
+
 
 _______________________________________________
 iommu mailing list
