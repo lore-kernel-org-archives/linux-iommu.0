@@ -2,62 +2,62 @@ Return-Path: <SRS0=Juc9=WR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 232BFC3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE04BC3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:14:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E86F022D6D
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:11:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="TBmSJWU3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E86F022D6D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id A9D0722CE3
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:14:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9D0722CE3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EBC14FB3;
-	Wed, 21 Aug 2019 12:11:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8EAADFBD;
+	Wed, 21 Aug 2019 12:14:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AE080F90
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 96F53F7C
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:11:25 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 452BE89E
+	Wed, 21 Aug 2019 12:14:22 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2AA1D8A6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:11:25 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 02B5622CE3;
-	Wed, 21 Aug 2019 12:11:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566389485;
-	bh=6SAn36luX8nPLgIwmWDCVqjtygPua5k4vP92Y24z3nU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TBmSJWU3G9o+VpZGtPTikOGmGHCJs/v0i06RHPyUaX5D0czOu78+XNTT6qaGIhWGn
-	PKWRjhez5JQq7HW/yBx3EDz9xzQxralL2FjahCjEjKg3EgwMtIHQSYmiiWpzvhkFCD
-	U1/eCGxk9zMaSZz9ovGsC7/Ir0Mw0MYXdBZFH4zQ=
-Date: Wed, 21 Aug 2019 13:11:21 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
-Message-ID: <20190821121120.34wqo7vj56pqk57c@willie-the-truck>
-References: <cover.1566238530.git.robin.murphy@arm.com>
-	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
-	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
-	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
-	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
-	<8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
+	Wed, 21 Aug 2019 12:14:22 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+	[10.5.11.11])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 753238AC700;
+	Wed, 21 Aug 2019 12:14:21 +0000 (UTC)
+Received: from [10.36.116.105] (ovpn-116-105.ams2.redhat.com [10.36.116.105])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 9671B2B9D9;
+	Wed, 21 Aug 2019 12:14:16 +0000 (UTC)
+Subject: Re: [PATCH v2] iommu: revisit iommu_insert_resv_region()
+	implementation
+To: Christoph Hellwig <hch@infradead.org>
+References: <20190801155946.20645-1-eric.auger@redhat.com>
+	<20190806073202.GA26575@infradead.org>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <58fa88cb-0ba6-4ba0-130c-091ad5274795@redhat.com>
+Date: Wed, 21 Aug 2019 14:14:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190806073202.GA26575@infradead.org>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2
+	(mx1.redhat.com [10.5.110.69]);
+	Wed, 21 Aug 2019 12:14:21 +0000 (UTC)
+Cc: alex.williamson@redhat.com, robin.murphy@arm.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	dwmw2@infradead.org, eric.auger.pro@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,75 +75,127 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Aug 20, 2019 at 07:41:52PM +0100, Robin Murphy wrote:
-> On 20/08/2019 17:07, Will Deacon wrote:
-> > On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
-> > > On 20/08/2019 11:31, Will Deacon wrote:
-> > > > On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
-> > > > > Although it's conceptually nice for the io_pgtable_cfg to provide a
-> > > > > standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
-> > > > > looks exactly like an Arm CPU, and they all have various other TCR
-> > > > > controls which io-pgtable can't be expected to understand. Thus since
-> > > > > there is an expectation that drivers will have to add to the given TCR
-> > > > > value anyway, let's strip it down to just the essentials that are
-> > > > > directly relevant to io-pgatble's inner workings - namely the address
-> > > > > sizes, walk attributes, and where appropriate, format selection.
-> > > > > 
-> > > > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > > > > ---
-> > > > >    drivers/iommu/arm-smmu-v3.c        | 7 +------
-> > > > >    drivers/iommu/arm-smmu.c           | 1 +
-> > > > >    drivers/iommu/arm-smmu.h           | 2 ++
-> > > > >    drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
-> > > > >    drivers/iommu/io-pgtable-arm.c     | 4 ----
-> > > > >    drivers/iommu/qcom_iommu.c         | 2 +-
-> > > > >    6 files changed, 7 insertions(+), 15 deletions(-)
-> > > > 
-> > > > Hmm, so I'm a bit nervous about this one since I think we really should
-> > > > be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
-> > > > on the driver to do this worries me. See my comments on the next patch.
-> > > 
-> > > The whole idea is that we already know we can't provide a *complete* TCR
-> > > value (not least because anything above bit 31 is the wild west), thus
-> > > there's really no point in io-pgtable trying to provide anything other than
-> > > the parts it definitely controls. It makes sense to provide this partial TCR
-> > > value "as if" for TTBR0, since that's the most common case, but ultimately
-> > > io-pgatble doesn't know (or need to) which TTBR the caller intends to
-> > > actually use for this table. Even if the caller *is* allocating it for
-> > > TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
-> > > already, so it still wouldn't be in a position to make the EPD1 call either
-> > > way.
-> > 
-> > Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
-> > an alternative would be scrapped the 'u64 tcr' and instead having a bunch
-> > of named bitfields for the stuff we're actually providing, although I'd
-> > still like EPDx to be in there.
+Hi Christoph,
+
+On 8/6/19 9:32 AM, Christoph Hellwig wrote:
+> A couple nitpicks below:
 > 
-> I like the bitfield idea; it would certainly emphasise the "you have to do
-> something more with this" angle that I'm pushing towards here, but still
-> leave things framed in TCR terms without having to go to some more general
-> abstraction. It really doesn't play into your EPD argument though - such a
-> config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but EPDy, for y = !x.
-> For a driver to understand that and do the right thing with it is even more
-> involved than for the driver to just set EPD1 by itself anyway.
+> On Thu, Aug 01, 2019 at 05:59:46PM +0200, Eric Auger wrote:
+>> - * The new element is sorted by address with respect to the other
+>> - * regions of the same type. In case it overlaps with another
+>> - * region of the same type, regions are merged. In case it
+>> - * overlaps with another region of different type, regions are
+>> - * not merged.
+>> + * Elements are sorted by start address and overlapping segments
+>> + * of the same type are merged.
+>>   */
+>> +int iommu_insert_resv_region(struct iommu_resv_region *new,
+>> +			     struct list_head *regions)
+>>  {
+>> +	struct iommu_resv_region *iter, *tmp, *nr, *top;
+>> +	struct list_head stack;
+>> +	bool added = false;
+>>  
+>> +	INIT_LIST_HEAD(&stack);
 
-Having considered the bitfield idea some more, I'm less attached to EPDx
-because we simply wouldn't be making a statement about them, rather than a
-(dangerous) zero value and expecting it to be ignored. So I think we're in
-agreement on that.
+Please forgive me for the delay. I am just back to the office.
+> 
+> Nit: you could just use
+> 
+> 	LIST_HEAD(&stack);
+> 
+> to declare and initialize the variable in a single line.
+done
+> 
+>> +	nr = iommu_alloc_resv_region(new->start, new->length,
+>> +				     new->prot, new->type);
+>> +	if (!nr)
+>>  		return -ENOMEM;
+>>  
+>> +	/* First add the new elt based on start address sorting */
+> 
+> /elt/element/ ?
+yes
+> 
+>> +	list_for_each_entry(iter, regions, list) {
+>> +		if (nr->start < iter->start) {
+>> +			list_add_tail(&nr->list, &iter->list);
+>> +			added = true;
+>> +			break;
+>> +		} else if (nr->start == iter->start && nr->type <= iter->type) {
+>> +			list_add_tail(&nr->list, &iter->list);
+>> +			added = true;
+>> +			break;
+>> +		}
+> 
+> Nit:  no need for an else after a a break.  But then again  both
+> branches look identical, so why don't you just merge them:
+> 
+> 		if (nr->start < iter->start ||
+> 		    (nr->start == iter->start && nr->type <= iter->type)) {
+> 			list_add_tail(&nr->list, &iter->list);
+> 			added = true;
+> 			break;
+I merged both
+> 
+> 	}
+> 
+>> +	if (!added)
+>> +		list_add_tail(&nr->list, regions);
+> 
+> Probably down to preference, but I'd just use a goto to jump past the
+> list_add and save the added variable.
+done
+> 
+>> +	/* Merge overlapping segments of type nr->type, if any */
+>> +	list_for_each_entry_safe(iter, tmp, regions, list) {
+>> +		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
+>> +		bool found = false;
+>> +
+>> +		/* no merge needed on elements of different types than @nr */
+>> +		if (iter->type != nr->type) {
+>> +			list_move_tail(&iter->list, &stack);
+>> +			continue;
+>> +		}
+>> +
+>> +		/* look for the last stack element of same type as @iter */
+>> +		list_for_each_entry_reverse(top, &stack, list)
+>> +			if (top->type == iter->type) {
+>> +				found = true;
+>> +				break;
+>> +			}
+>> +		if (!found) {
+> 
+> Same here.
+done
+> 
+>> +			list_move_tail(&iter->list, &stack);
+>> +			continue;
+>> +		}
+>> +
+>> +		top_end = top->start + top->length - 1;
+>> +
+>> +		if (iter->start > top_end + 1) {
+>> +			list_move_tail(&iter->list, &stack);
+>> +		} else {
+>> +			top->length = max(top_end, iter_end) - top->start + 1;
+>> +			list_del(&iter->list);
+>> +			kfree(iter);
+>> +		}
+> 
+> I wonder if the body of the outer list_for_each_entry_safe loop would
+> be a bit nicer in a helper, but again that is probably just down to
+> personal preference.
+I skipped that suggestion at the moment.
 
-The only part I'm still stuck to is that I think io-pgtable should know
-whether it's targetting TTBR0 or TTBR1 so that it can sanitise input
-addresses correctly. Doing this in the driver code is possible, but I'd
-rather not start from that position, particularly as it would require things
-like sign-extension in the TLBI callbacks.
+Hope that looks better in v3.
 
-> If only LPAE had created these bits as enables rather than disables then
-> things would be logical and we could all be happy, but here we are...
+Thank you for your review!
 
-I'm happy! :D:D:D
+Best Regards
 
-Will
+Eric
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
