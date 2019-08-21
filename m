@@ -2,57 +2,63 @@ Return-Path: <SRS0=Juc9=WR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D00C3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D81C3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 13:53:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A4A7722D6D
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:56:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4A7722D6D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 43CEA22CF7
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 13:53:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43CEA22CF7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D7C2FDF;
-	Wed, 21 Aug 2019 12:56:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EAB90E31;
+	Wed, 21 Aug 2019 13:53:55 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F3E14FD7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EE94EE30
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:56:25 +0000 (UTC)
+	Wed, 21 Aug 2019 13:53:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2344D8A0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A2EDE89E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:56:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9120F344;
-	Wed, 21 Aug 2019 05:56:22 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BD3CE3F718;
-	Wed, 21 Aug 2019 05:56:21 -0700 (PDT)
-Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
-To: Will Deacon <will@kernel.org>
-References: <cover.1566238530.git.robin.murphy@arm.com>
-	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
-	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
-	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
-	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
-	<8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
-	<20190821121120.34wqo7vj56pqk57c@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <cdceec32-8dae-2c9e-8f66-0cd86288529f@arm.com>
-Date: Wed, 21 Aug 2019 13:56:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Wed, 21 Aug 2019 13:53:53 +0000 (UTC)
+X-UUID: 36b7aa7f27374b61b88835deaecafba3-20190821
+X-UUID: 36b7aa7f27374b61b88835deaecafba3-20190821
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Cellopoint E-mail Firewall v4.1.10 Build 0707 with TLS)
+	with ESMTP id 634670488; Wed, 21 Aug 2019 21:53:46 +0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+	mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Wed, 21 Aug 2019 21:53:44 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
+	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Wed, 21 Aug 2019 21:53:43 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: [PATCH v10 00/23] MT8183 IOMMU SUPPORT
+Date: Wed, 21 Aug 2019 21:53:03 +0800
+Message-ID: <1566395606-7975-1-git-send-email-yong.wu@mediatek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-In-Reply-To: <20190821121120.34wqo7vj56pqk57c@willie-the-truck>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>,
+	linux-mediatek@lists.infradead.org, ming-fan.chen@mediatek.com,
+	anan.sun@mediatek.com, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,91 +71,193 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 21/08/2019 13:11, Will Deacon wrote:
-> On Tue, Aug 20, 2019 at 07:41:52PM +0100, Robin Murphy wrote:
->> On 20/08/2019 17:07, Will Deacon wrote:
->>> On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
->>>> On 20/08/2019 11:31, Will Deacon wrote:
->>>>> On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
->>>>>> Although it's conceptually nice for the io_pgtable_cfg to provide a
->>>>>> standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
->>>>>> looks exactly like an Arm CPU, and they all have various other TCR
->>>>>> controls which io-pgtable can't be expected to understand. Thus since
->>>>>> there is an expectation that drivers will have to add to the given TCR
->>>>>> value anyway, let's strip it down to just the essentials that are
->>>>>> directly relevant to io-pgatble's inner workings - namely the address
->>>>>> sizes, walk attributes, and where appropriate, format selection.
->>>>>>
->>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>>>> ---
->>>>>>     drivers/iommu/arm-smmu-v3.c        | 7 +------
->>>>>>     drivers/iommu/arm-smmu.c           | 1 +
->>>>>>     drivers/iommu/arm-smmu.h           | 2 ++
->>>>>>     drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
->>>>>>     drivers/iommu/io-pgtable-arm.c     | 4 ----
->>>>>>     drivers/iommu/qcom_iommu.c         | 2 +-
->>>>>>     6 files changed, 7 insertions(+), 15 deletions(-)
->>>>>
->>>>> Hmm, so I'm a bit nervous about this one since I think we really should
->>>>> be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
->>>>> on the driver to do this worries me. See my comments on the next patch.
->>>>
->>>> The whole idea is that we already know we can't provide a *complete* TCR
->>>> value (not least because anything above bit 31 is the wild west), thus
->>>> there's really no point in io-pgtable trying to provide anything other than
->>>> the parts it definitely controls. It makes sense to provide this partial TCR
->>>> value "as if" for TTBR0, since that's the most common case, but ultimately
->>>> io-pgatble doesn't know (or need to) which TTBR the caller intends to
->>>> actually use for this table. Even if the caller *is* allocating it for
->>>> TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
->>>> already, so it still wouldn't be in a position to make the EPD1 call either
->>>> way.
->>>
->>> Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
->>> an alternative would be scrapped the 'u64 tcr' and instead having a bunch
->>> of named bitfields for the stuff we're actually providing, although I'd
->>> still like EPDx to be in there.
->>
->> I like the bitfield idea; it would certainly emphasise the "you have to do
->> something more with this" angle that I'm pushing towards here, but still
->> leave things framed in TCR terms without having to go to some more general
->> abstraction. It really doesn't play into your EPD argument though - such a
->> config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but EPDy, for y = !x.
->> For a driver to understand that and do the right thing with it is even more
->> involved than for the driver to just set EPD1 by itself anyway.
-> 
-> Having considered the bitfield idea some more, I'm less attached to EPDx
-> because we simply wouldn't be making a statement about them, rather than a
-> (dangerous) zero value and expecting it to be ignored. So I think we're in
-> agreement on that.
+This patchset mainly adds support for mt8183 IOMMU and SMI.
 
-Cool, I'll give bitfields a go for v2.
+mt8183 has only one M4U like mt8173 and is also MTK IOMMU gen2 which
+uses ARM Short-Descriptor translation table format.
 
-> The only part I'm still stuck to is that I think io-pgtable should know
-> whether it's targetting TTBR0 or TTBR1 so that it can sanitise input
-> addresses correctly. Doing this in the driver code is possible, but I'd
-> rather not start from that position, particularly as it would require things
-> like sign-extension in the TLBI callbacks.
+The mt8183 M4U-SMI HW diagram is as below:
 
-Good point, and thanks for the prod that the way I end up propagating 
-masked-off IOVAs through to the TLBI calls here is busted either way. 
-I'm OK with introducing an explicit TTBR1 quirk to begin with, as it 
-should make things a little easier to reason about, and we can always 
-revisit later if and when we do find a need for more flexibility.
+                          EMI
+                           |
+                          M4U
+                           |
+                       ----------
+                       |        |
+                   gals0-rx   gals1-rx
+                       |        |
+                       |        |
+                   gals0-tx   gals1-tx
+                       |        |
+                      ------------
+                       SMI Common
+                      ------------
+                           |
+  +-----+-----+--------+-----+-----+-------+-------+
+  |     |     |        |     |     |       |       |
+  |     |  gals-rx  gals-rx  |   gals-rx gals-rx gals-rx
+  |     |     |        |     |     |       |       |
+  |     |     |        |     |     |       |       |
+  |     |  gals-tx  gals-tx  |   gals-tx gals-tx gals-tx
+  |     |     |        |     |     |       |       |
+larb0 larb1  IPU0    IPU1  larb4  larb5  larb6    CCU
+disp  vdec   img     cam    venc   img    cam
 
->> If only LPAE had created these bits as enables rather than disables then
->> things would be logical and we could all be happy, but here we are...
-> 
-> I'm happy! :D:D:D
+All the connections are HW fixed, SW can NOT adjust it.
 
-Yeah, but I refuse to believe it's ever because of pagetables ;)
+Compared with mt8173, we add a GALS(Global Async Local Sync) module
+between SMI-common and M4U, and additional GALS between larb2/3/5/6
+and SMI-common. GALS can help synchronize for the modules in different
+clock frequency, it can be seen as a "asynchronous fifo".
 
-Robin.
+GALS can only help transfer the command/data while it doesn't have
+the configuring register, thus it has the special "smi" clock and it
+doesn't have the "apb" clock. From the diagram above, we add "gals0"
+and "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
+
+From the diagram above, IPU0/IPU1(Image Processor Unit) and CCU(Camera
+Control Unit) is connected with smi-common directly, we can take them
+as "larb2", "larb3" and "larb7", and their register spaces are
+different with the normal larb.
+
+The dtsi was sent at: [1] https://lore.kernel.org/patchwork/patch/1054099/
+
+Change notes:
+v10:
+   1) Keep v7s only dealing with the pa32/pa33. Move the special "4gb mode"
+    flow into mtk iommu. like v8 did.
+   2) Split the "4gb mode" into two patches. one is only for the v7s, the other
+    is for mtk iommu.
+   3) Add a fixup patch(5/23) for 4gb mode, like v8 did.
+
+v9: https://lists.linuxfoundation.org/pipermail/iommu/2019-August/037925.html
+   1) rebase on v5.3-rc1.
+   2) In v7s, Use oas to implement MTK 4GB mode. It nearly reconstruct the
+      patch, so I don't keep the R-b.
+
+v8: https://lists.linuxfoundation.org/pipermail/iommu/2019-June/037095.html
+   1) From the 4GB mode:
+      a. Move the patch sequency(Move "iommu/mediatek: Fix iova_to_phys PA
+      start for 4GB mode" before "iommu/io-pgtable-arm-v7s: Extend MediaTek
+      4G Mode").
+      b. Remove the patch "Rename enable_4GB to dram_is_4gb" and Use Evan's
+      suggestion.
+   2) add a "union" for smi gen1/gen2 base.
+   3) Clean up the structure "struct mtk_smi_iommu" since it have only one item,
+      suggested from Matthias.
+
+v7: https://lists.linuxfoundation.org/pipermail/iommu/2019-June/036552.html
+   1) rebase on v5.2-rc1.
+   2) Add fixed tags in patch 20.
+   3) Remove shutdown patch. I will send it independently if necessary.
+
+v6: https://lists.linuxfoundation.org/pipermail/iommu/2019-February/033685.html
+    1) rebase on v5.0-rc1.
+    2) About the register name (VLD_PA_RNG), Keep consistent in the patches.
+    3) In the 4GB mode, Always add MTK_4GB_quirk.
+    4) Reword some commit message helped from Evan. like common->smi_ao_base is
+       completely different from common->base; STANDARD_AXI_MODE reg is completely
+       different from CTRL_MISC; commit in the shutdown patch.
+    5) Add 2 new patches again:
+       iommu/mediatek: Rename enable_4GB to dram_is_4gb
+       iommu/mediatek: Fix iova_to_phys PA start for 4GB mode
+
+v5: https://lists.linuxfoundation.org/pipermail/iommu/2019-January/032387.html
+    1) Remove this patch "iommu/mediatek: Constify iommu_ops" from here as it
+       was applied for v5.0.
+    2) Again, add 3 preparing patches. Move two property into the plat_data.
+       iommu/mediatek: Move vld_pa_rng into plat_data
+       iommu/mediatek: Move reset_axi into plat_data
+       iommu/mediatek: Refine protect memory definition
+    3) Add shutdown callback for mtk_iommu_v1 in patch[19/20].
+
+v4: http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016205.html
+    1) Add 3 preparing patches. Seperate some minor meaningful code into
+       a new patch according to Matthias's suggestion.
+       memory: mtk-smi: Add gals support         
+       iommu/mediatek: Add larb-id remapped support 
+       iommu/mediatek: Add bclk can be supported optionally       
+    2) rebase on "iommu/mediatek: Make it explicitly non-modular"
+       which was applied.
+       https://lore.kernel.org/patchwork/patch/1020125/
+    3) add some comment about "mediatek,larb-id" in the commit message of
+       the patch "mtk-smi: Get rid of need_larbid".
+    4) Fix bus_sel value.
+
+v3: https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031121.html
+    1) rebase on v4.20-rc1.
+    2) In the dt-binding, add a minor string "mt7623" which also use gen1
+       since Matthias added it in v4.20.
+    3) About v7s:
+       a) for paddr_to_pte, change the param from "arm_v7s_io_pgtable" to
+          "arm_pgtable_cfg", according to Robin suggestion.
+       b) Don't use CONFIG_PHYS_ADDR_T_64BIT.
+       c) add a little comment(pgtable address still don't over 4GB) in the
+          commit message of the patch "Extend MediaTek 4GB Mode".
+    4) add "iommu/mediatek: Constify iommu_ops" into this patchset. this may
+       be helpful for review and merge.
+       https://lists.linuxfoundation.org/pipermail/iommu/2018-October/030637.html
+
+v2: https://lists.linuxfoundation.org/pipermail/iommu/2018-September/030164.html
+    1) Fix typo in the commit message of dt-binding.
+    2) Change larb2/larb3 to the special larbs.
+    3) Refactor the larb-id remapped array(larbid_remapped), then we
+    don't need add the new function(mtk_iommu_get_larbid).
+    4) Add a new patch for v7s two helpers(paddr_to_iopte and
+    iopte_to_paddr).
+    5) Change some comment for MTK 4GB mode.
+
+v1: base on v4.19-rc1.
+http://lists.infradead.org/pipermail/linux-mediatek/2018-September/014881.html
+
+Yong Wu (23):
+  dt-bindings: mediatek: Add binding for mt8183 IOMMU and SMI
+  iommu/mediatek: Use a struct as the platform data
+  memory: mtk-smi: Use a general config_port interface
+  memory: mtk-smi: Use a struct for the platform data for smi-common
+  iommu/mediatek: Fix iova_to_phys PA start for 4GB mode
+  iommu/io-pgtable-arm-v7s: Add paddr_to_iopte and iopte_to_paddr
+    helpers
+  iommu/io-pgtable-arm-v7s: Use ias/oas to check the valid iova/pa
+  iommu/io-pgtable-arm-v7s: Rename the quirk from MTK_4GB to MTK_EXT
+  iommu/io-pgtable-arm-v7s: Extend to support PA[33:32] for MediaTek
+  iommu/mediatek: Adjust the PA for the 4GB Mode
+  iommu/mediatek: Add bclk can be supported optionally
+  iommu/mediatek: Add larb-id remapped support
+  iommu/mediatek: Refine protect memory definition
+  iommu/mediatek: Move reset_axi into plat_data
+  iommu/mediatek: Move vld_pa_rng into plat_data
+  memory: mtk-smi: Add gals support
+  iommu/mediatek: Add mt8183 IOMMU support
+  iommu/mediatek: Add mmu1 support
+  memory: mtk-smi: Invoke pm runtime_callback to enable clocks
+  memory: mtk-smi: Add bus_sel for mt8183
+  iommu/mediatek: Fix VLD_PA_RNG register backup when suspend
+  memory: mtk-smi: Get rid of need_larbid
+  iommu/mediatek: Clean up struct mtk_smi_iommu
+
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  30 ++-
+ .../memory-controllers/mediatek,smi-common.txt     |  12 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |   4 +
+ drivers/iommu/io-pgtable-arm-v7s.c                 |  80 ++++--
+ drivers/iommu/mtk_iommu.c                          | 168 +++++++++----
+ drivers/iommu/mtk_iommu.h                          |  21 +-
+ drivers/iommu/mtk_iommu_v1.c                       |   6 +-
+ drivers/memory/mtk-smi.c                           | 268 ++++++++++++++-------
+ include/dt-bindings/memory/mt8183-larb-port.h      | 130 ++++++++++
+ include/linux/io-pgtable.h                         |   9 +-
+ include/soc/mediatek/smi.h                         |   5 -
+ 11 files changed, 553 insertions(+), 180 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt8183-larb-port.h
+
+-- 
+1.9.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
