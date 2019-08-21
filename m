@@ -2,62 +2,61 @@ Return-Path: <SRS0=Juc9=WR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE04BC3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF742C3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:33:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9D0722CE3
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:14:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9D0722CE3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id B23372341D
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:33:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B23372341D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8EAADFBD;
-	Wed, 21 Aug 2019 12:14:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7F0F2FC2;
+	Wed, 21 Aug 2019 12:33:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 96F53F7C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C7434FC1
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:14:22 +0000 (UTC)
+	Wed, 21 Aug 2019 12:33:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2AA1D8A6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2FE6289E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:14:22 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
-	[10.5.11.11])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 753238AC700;
-	Wed, 21 Aug 2019 12:14:21 +0000 (UTC)
-Received: from [10.36.116.105] (ovpn-116-105.ams2.redhat.com [10.36.116.105])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 9671B2B9D9;
-	Wed, 21 Aug 2019 12:14:16 +0000 (UTC)
-Subject: Re: [PATCH v2] iommu: revisit iommu_insert_resv_region()
-	implementation
-To: Christoph Hellwig <hch@infradead.org>
-References: <20190801155946.20645-1-eric.auger@redhat.com>
-	<20190806073202.GA26575@infradead.org>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <58fa88cb-0ba6-4ba0-130c-091ad5274795@redhat.com>
-Date: Wed, 21 Aug 2019 14:14:14 +0200
+	Wed, 21 Aug 2019 12:33:26 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C9A61344;
+	Wed, 21 Aug 2019 05:33:25 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 01B073F718;
+	Wed, 21 Aug 2019 05:33:23 -0700 (PDT)
+Subject: Re: [PATCH 10/13] iommu/io-pgtable: Replace ->tlb_add_flush() with
+	->tlb_add_page()
+To: Will Deacon <will@kernel.org>
+References: <20190814175634.21081-1-will@kernel.org>
+	<20190814175634.21081-11-will@kernel.org>
+	<6e54ef6f-75e6-dd80-e524-b726483c88cd@arm.com>
+	<20190821120512.4ihfyh4eqsnst6xh@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <279efc69-6ddb-14ce-01c1-3cc8b4bbf206@arm.com>
+Date: Wed, 21 Aug 2019 13:33:22 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190806073202.GA26575@infradead.org>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2
-	(mx1.redhat.com [10.5.110.69]);
-	Wed, 21 Aug 2019 12:14:21 +0000 (UTC)
-Cc: alex.williamson@redhat.com, robin.murphy@arm.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	dwmw2@infradead.org, eric.auger.pro@gmail.com
+In-Reply-To: <20190821120512.4ihfyh4eqsnst6xh@willie-the-truck>
+Content-Language: en-GB
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Vijay Kilary <vkilari@codeaurora.org>,
+	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	iommu@lists.linux-foundation.org,
+	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,132 +69,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+On 21/08/2019 13:05, Will Deacon wrote:
+> Hi Robin,
+> 
+> Thanks for looking at this.
+> 
+> On Wed, Aug 21, 2019 at 12:42:11PM +0100, Robin Murphy wrote:
+>> On 14/08/2019 18:56, Will Deacon wrote:
+>>> The ->tlb_add_flush() callback in the io-pgtable API now looks a bit
+>>> silly:
+>>>
+>>>     - It takes a size and a granule, which are always the same
+>>>     - It takes a 'bool leaf', which is always true
+>>>     - It only ever flushes a single page
+>>>
+>>> With that in mind, replace it with an optional ->tlb_add_page() callback
+>>> that drops the useless parameters.
+>>>
+>>> Signed-off-by: Will Deacon <will@kernel.org>
+> 
+> [...]
+> 
+>>> -static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
+>>> -	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
+>>> -	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
+>>> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
+>>> -	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
+>>> -	.tlb_sync	= arm_smmu_tlb_sync_context,
+>>> +static const struct arm_smmu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
+>>> +	.tlb = {
+>>> +		.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
+>>> +		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
+>>> +		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
+>>> +		.tlb_add_page	= arm_smmu_tlb_add_page,
+>>> +		.tlb_sync	= arm_smmu_tlb_sync_context,
+>>> +	},
+>>> +	.tlb_inv_range		= arm_smmu_tlb_inv_range_nosync,
+>>>    };
+>>> -static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
+>>> -	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
+>>> -	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
+>>> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
+>>> -	.tlb_add_flush	= arm_smmu_tlb_inv_vmid_nosync,
+>>> -	.tlb_sync	= arm_smmu_tlb_sync_vmid,
+>>> +static const struct arm_smmu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
+>>> +	.tlb = {
+>>> +		.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
+>>> +		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
+>>> +		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
+>>
+>> Urgh, that ain't right... :(
+>>
+>> Sorry I've only spotted it now while trying to rebase onto Joerg's queue,
+>> but we can't use either of those callbacks for v1 stage 2 since the
+>> registers they access don't exist. I'll spin a fixup patch first, then come
+>> back to the question of whether it's more practical to attempt merging my v2
+>> or concede to rebasing a v3.
+> 
+> Although the code is quite difficult to follow, I think it's alright because
+> the tlb_flush_{walk,leaf} functions just indirect back through the
+> tlb_inv_range callback. This patch is supposed to be a big NOP moving
+> drivers over to the new API, but not actually exploiting its benefits.
 
-On 8/6/19 9:32 AM, Christoph Hellwig wrote:
-> A couple nitpicks below:
-> 
-> On Thu, Aug 01, 2019 at 05:59:46PM +0200, Eric Auger wrote:
->> - * The new element is sorted by address with respect to the other
->> - * regions of the same type. In case it overlaps with another
->> - * region of the same type, regions are merged. In case it
->> - * overlaps with another region of different type, regions are
->> - * not merged.
->> + * Elements are sorted by start address and overlapping segments
->> + * of the same type are merged.
->>   */
->> +int iommu_insert_resv_region(struct iommu_resv_region *new,
->> +			     struct list_head *regions)
->>  {
->> +	struct iommu_resv_region *iter, *tmp, *nr, *top;
->> +	struct list_head stack;
->> +	bool added = false;
->>  
->> +	INIT_LIST_HEAD(&stack);
+Ah, sorry, I did indeed fail the reading comprehension test - too many 
+levels of indirection...
 
-Please forgive me for the delay. I am just back to the office.
-> 
-> Nit: you could just use
-> 
-> 	LIST_HEAD(&stack);
-> 
-> to declare and initialize the variable in a single line.
-done
-> 
->> +	nr = iommu_alloc_resv_region(new->start, new->length,
->> +				     new->prot, new->type);
->> +	if (!nr)
->>  		return -ENOMEM;
->>  
->> +	/* First add the new elt based on start address sorting */
-> 
-> /elt/element/ ?
-yes
-> 
->> +	list_for_each_entry(iter, regions, list) {
->> +		if (nr->start < iter->start) {
->> +			list_add_tail(&nr->list, &iter->list);
->> +			added = true;
->> +			break;
->> +		} else if (nr->start == iter->start && nr->type <= iter->type) {
->> +			list_add_tail(&nr->list, &iter->list);
->> +			added = true;
->> +			break;
->> +		}
-> 
-> Nit:  no need for an else after a a break.  But then again  both
-> branches look identical, so why don't you just merge them:
-> 
-> 		if (nr->start < iter->start ||
-> 		    (nr->start == iter->start && nr->type <= iter->type)) {
-> 			list_add_tail(&nr->list, &iter->list);
-> 			added = true;
-> 			break;
-I merged both
-> 
-> 	}
-> 
->> +	if (!added)
->> +		list_add_tail(&nr->list, regions);
-> 
-> Probably down to preference, but I'd just use a goto to jump past the
-> list_add and save the added variable.
-done
-> 
->> +	/* Merge overlapping segments of type nr->type, if any */
->> +	list_for_each_entry_safe(iter, tmp, regions, list) {
->> +		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
->> +		bool found = false;
->> +
->> +		/* no merge needed on elements of different types than @nr */
->> +		if (iter->type != nr->type) {
->> +			list_move_tail(&iter->list, &stack);
->> +			continue;
->> +		}
->> +
->> +		/* look for the last stack element of same type as @iter */
->> +		list_for_each_entry_reverse(top, &stack, list)
->> +			if (top->type == iter->type) {
->> +				found = true;
->> +				break;
->> +			}
->> +		if (!found) {
-> 
-> Same here.
-done
-> 
->> +			list_move_tail(&iter->list, &stack);
->> +			continue;
->> +		}
->> +
->> +		top_end = top->start + top->length - 1;
->> +
->> +		if (iter->start > top_end + 1) {
->> +			list_move_tail(&iter->list, &stack);
->> +		} else {
->> +			top->length = max(top_end, iter_end) - top->start + 1;
->> +			list_del(&iter->list);
->> +			kfree(iter);
->> +		}
-> 
-> I wonder if the body of the outer list_for_each_entry_safe loop would
-> be a bit nicer in a helper, but again that is probably just down to
-> personal preference.
-I skipped that suggestion at the moment.
+On second reading I agree that this probably should work out OK (other 
+than perhaps a performance hit from chaining more indirect branches). 
+I've noted on my to-do list to come back and clean up arm_smmu_flush_ops 
+for next cycle, but for now I'll get back to the more pressing matters.
 
-Hope that looks better in v3.
-
-Thank you for your review!
-
-Best Regards
-
-Eric
-> 
+Thanks,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
