@@ -2,51 +2,68 @@ Return-Path: <SRS0=Juc9=WR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440B2C3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DD2C3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:24:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 21122216F4
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:20:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 21122216F4
+	by mail.kernel.org (Postfix) with ESMTPS id 9DC50206BA
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:24:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="RiD+8qlu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DC50206BA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B5800EF5;
-	Wed, 21 Aug 2019 15:19:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 846D0EC5;
+	Wed, 21 Aug 2019 15:24:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id ADDF7EB6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E9D0CED2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 15:19:29 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 6AD24E6
+	Wed, 21 Aug 2019 15:24:57 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A95FE6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 15:19:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1EC0315BF;
-	Wed, 21 Aug 2019 08:19:29 -0700 (PDT)
-Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
-	[10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2E0E93F718; 
-	Wed, 21 Aug 2019 08:19:28 -0700 (PDT)
+	Wed, 21 Aug 2019 15:24:55 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 01291206BA;
+	Wed, 21 Aug 2019 15:24:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1566401095;
+	bh=aJZsxkGaQIRowffpW+JaxO8NMT7WvvZzsQ6yeIDlrnk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RiD+8qlujqamNghbph/UTRtAZcnnXOpbJFfcJRF+s/5Mrfv1RKTDq2/TyeRJwLysN
+	WJYvAUdnD9ZieVbBt5P/zVGwMp/DMlFpIVIjbWDQDAXI/qNLEkrtPTM8+HKzJyLsf8
+	Rg6tay5H6JGnc5+Qh8NBXe3tmebq2AFCmCoYet2I=
+Date: Wed, 21 Aug 2019 16:24:49 +0100
 From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 8/8] Revert "iommu/arm-smmu-v3: Disable detection of ATS
-	and PRI"
-Date: Wed, 21 Aug 2019 16:17:49 +0100
-Message-Id: <20190821151749.23743-9-will@kernel.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190821151749.23743-1-will@kernel.org>
-References: <20190821151749.23743-1-will@kernel.org>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v10 09/23] iommu/io-pgtable-arm-v7s: Extend to support
+	PA[33:32] for MediaTek
+Message-ID: <20190821152448.qmoqjh5zznfpdi6n@willie-the-truck>
+References: <1566395606-7975-1-git-send-email-yong.wu@mediatek.com>
+	<1566395606-7975-10-git-send-email-yong.wu@mediatek.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <1566395606-7975-10-git-send-email-yong.wu@mediatek.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -59,44 +76,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This reverts commit dc65dc6eaf3eb762f202bb3493492d372b662b3d.
+On Wed, Aug 21, 2019 at 09:53:12PM +0800, Yong Wu wrote:
+> MediaTek extend the arm v7s descriptor to support up to 34 bits PA where
+> the bit32 and bit33 are encoded in the bit9 and bit4 of the PTE
+> respectively. Meanwhile the iova still is 32bits.
+> 
+> Regarding whether the pagetable address could be over 4GB, the mt8183
+> support it while the previous mt8173 don't, thus keep it as is.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++++++++++++-------
+>  include/linux/io-pgtable.h         |  7 +++----
+>  2 files changed, 28 insertions(+), 11 deletions(-)
 
-Now that ATC invalidation is performed in the correct places and without
-incurring a locking overhead for non-ATS systems, we can re-enable the
-corresponding SMMU feature detection.
+[...]
 
-Signed-off-by: Will Deacon <will@kernel.org>
----
- drivers/iommu/arm-smmu-v3.c | 2 --
- 1 file changed, 2 deletions(-)
+> @@ -731,7 +747,9 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>  {
+>  	struct arm_v7s_io_pgtable *data;
+>  
+> -	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
+> +	if (cfg->ias > ARM_V7S_ADDR_BITS ||
+> +	    (cfg->oas > ARM_V7S_ADDR_BITS &&
+> +	     !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT)))
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 0e43529d55fe..b8049ea2e455 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -3336,13 +3336,11 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	}
- 
- 	/* Boolean feature flags */
--#if 0	/* ATS invalidation is slow and broken */
- 	if (IS_ENABLED(CONFIG_PCI_PRI) && reg & IDR0_PRI)
- 		smmu->features |= ARM_SMMU_FEAT_PRI;
- 
- 	if (IS_ENABLED(CONFIG_PCI_ATS) && reg & IDR0_ATS)
- 		smmu->features |= ARM_SMMU_FEAT_ATS;
--#endif
- 
- 	if (reg & IDR0_SEV)
- 		smmu->features |= ARM_SMMU_FEAT_SEV;
--- 
-2.11.0
+Please can you instead change arm_v7s_alloc_pgtable() so that it allows an
+ias of up to 34 when the IO_PGTABLE_QUIRK_ARM_MTK_EXT is set?
 
+With that change:
+
+Acked-by: Will Deacon <will@kernel.org>
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
