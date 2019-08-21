@@ -6,42 +6,42 @@ X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C5AC3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30888C3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:19:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA034216F4
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:19:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA034216F4
+	by mail.kernel.org (Postfix) with ESMTPS id 0D523216F4
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 15:19:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D523216F4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 01849D3E;
-	Wed, 21 Aug 2019 15:19:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2830AEC6;
+	Wed, 21 Aug 2019 15:19:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 10976EB5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2C37FEC4
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 15:19:24 +0000 (UTC)
+	Wed, 21 Aug 2019 15:19:25 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BBB4689E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E10ABE6
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 15:19:23 +0000 (UTC)
+	Wed, 21 Aug 2019 15:19:24 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CD721596;
-	Wed, 21 Aug 2019 08:19:23 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9226C337;
+	Wed, 21 Aug 2019 08:19:24 -0700 (PDT)
 Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
 	[10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7C9493F718; 
-	Wed, 21 Aug 2019 08:19:22 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A1D573F718; 
+	Wed, 21 Aug 2019 08:19:23 -0700 (PDT)
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 3/8] iommu/arm-smmu-v3: Remove boolean bitfield for
-	'ats_enabled' flag
-Date: Wed, 21 Aug 2019 16:17:44 +0100
-Message-Id: <20190821151749.23743-4-will@kernel.org>
+Subject: [PATCH v2 4/8] iommu/arm-smmu-v3: Don't issue CMD_SYNC for
+	zero-length invalidations
+Date: Wed, 21 Aug 2019 16:17:45 +0100
+Message-Id: <20190821151749.23743-5-will@kernel.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190821151749.23743-1-will@kernel.org>
 References: <20190821151749.23743-1-will@kernel.org>
@@ -65,27 +65,29 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-There's really no need for this to be a bitfield, particularly as we
-don't have bitwise addressing on arm64.
+Calling arm_smmu_tlb_inv_range() with a size of zero, perhaps due to
+an empty 'iommu_iotlb_gather' structure, should be a NOP. Elide the
+CMD_SYNC when there is no invalidation to be performed.
 
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 7a368059cd7d..2be11a11bb8b 100644
+index 2be11a11bb8b..b7b3b0ff8ed6 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -637,7 +637,7 @@ struct arm_smmu_master {
- 	struct list_head		domain_head;
- 	u32				*sids;
- 	unsigned int			num_sids;
--	bool				ats_enabled		:1;
-+	bool				ats_enabled;
- };
+@@ -1977,6 +1977,9 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+ 		},
+ 	};
  
- /* SMMU private data for an IOMMU domain */
++	if (!size)
++		return;
++
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 		cmd.opcode	= CMDQ_OP_TLBI_NH_VA;
+ 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
 -- 
 2.11.0
 
