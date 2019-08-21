@@ -6,57 +6,53 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF742C3A59E
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D00C3A59E
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:56:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B23372341D
-	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:33:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B23372341D
+	by mail.kernel.org (Postfix) with ESMTPS id A4A7722D6D
+	for <iommu@archiver.kernel.org>; Wed, 21 Aug 2019 12:56:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4A7722D6D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7F0F2FC2;
-	Wed, 21 Aug 2019 12:33:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D7C2FDF;
+	Wed, 21 Aug 2019 12:56:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C7434FC1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F3E14FD7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:33:26 +0000 (UTC)
+	Wed, 21 Aug 2019 12:56:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2FE6289E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2344D8A0
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 21 Aug 2019 12:33:26 +0000 (UTC)
+	Wed, 21 Aug 2019 12:56:22 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C9A61344;
-	Wed, 21 Aug 2019 05:33:25 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9120F344;
+	Wed, 21 Aug 2019 05:56:22 -0700 (PDT)
 Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 01B073F718;
-	Wed, 21 Aug 2019 05:33:23 -0700 (PDT)
-Subject: Re: [PATCH 10/13] iommu/io-pgtable: Replace ->tlb_add_flush() with
-	->tlb_add_page()
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BD3CE3F718;
+	Wed, 21 Aug 2019 05:56:21 -0700 (PDT)
+Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
 To: Will Deacon <will@kernel.org>
-References: <20190814175634.21081-1-will@kernel.org>
-	<20190814175634.21081-11-will@kernel.org>
-	<6e54ef6f-75e6-dd80-e524-b726483c88cd@arm.com>
-	<20190821120512.4ihfyh4eqsnst6xh@willie-the-truck>
+References: <cover.1566238530.git.robin.murphy@arm.com>
+	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
+	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
+	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
+	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
+	<8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
+	<20190821121120.34wqo7vj56pqk57c@willie-the-truck>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <279efc69-6ddb-14ce-01c1-3cc8b4bbf206@arm.com>
-Date: Wed, 21 Aug 2019 13:33:22 +0100
+Message-ID: <cdceec32-8dae-2c9e-8f66-0cd86288529f@arm.com>
+Date: Wed, 21 Aug 2019 13:56:20 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <20190821120512.4ihfyh4eqsnst6xh@willie-the-truck>
+In-Reply-To: <20190821121120.34wqo7vj56pqk57c@willie-the-truck>
 Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Vijay Kilary <vkilari@codeaurora.org>,
-	Jon Masters <jcm@redhat.com>, Jan Glauber <jglauber@marvell.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	iommu@lists.linux-foundation.org,
-	Jayachandran Chandrasekharan Nair <jnair@marvell.com>,
-	David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,77 +70,85 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 21/08/2019 13:05, Will Deacon wrote:
-> Hi Robin,
-> 
-> Thanks for looking at this.
-> 
-> On Wed, Aug 21, 2019 at 12:42:11PM +0100, Robin Murphy wrote:
->> On 14/08/2019 18:56, Will Deacon wrote:
->>> The ->tlb_add_flush() callback in the io-pgtable API now looks a bit
->>> silly:
+On 21/08/2019 13:11, Will Deacon wrote:
+> On Tue, Aug 20, 2019 at 07:41:52PM +0100, Robin Murphy wrote:
+>> On 20/08/2019 17:07, Will Deacon wrote:
+>>> On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
+>>>> On 20/08/2019 11:31, Will Deacon wrote:
+>>>>> On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
+>>>>>> Although it's conceptually nice for the io_pgtable_cfg to provide a
+>>>>>> standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
+>>>>>> looks exactly like an Arm CPU, and they all have various other TCR
+>>>>>> controls which io-pgtable can't be expected to understand. Thus since
+>>>>>> there is an expectation that drivers will have to add to the given TCR
+>>>>>> value anyway, let's strip it down to just the essentials that are
+>>>>>> directly relevant to io-pgatble's inner workings - namely the address
+>>>>>> sizes, walk attributes, and where appropriate, format selection.
+>>>>>>
+>>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>>>> ---
+>>>>>>     drivers/iommu/arm-smmu-v3.c        | 7 +------
+>>>>>>     drivers/iommu/arm-smmu.c           | 1 +
+>>>>>>     drivers/iommu/arm-smmu.h           | 2 ++
+>>>>>>     drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
+>>>>>>     drivers/iommu/io-pgtable-arm.c     | 4 ----
+>>>>>>     drivers/iommu/qcom_iommu.c         | 2 +-
+>>>>>>     6 files changed, 7 insertions(+), 15 deletions(-)
+>>>>>
+>>>>> Hmm, so I'm a bit nervous about this one since I think we really should
+>>>>> be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
+>>>>> on the driver to do this worries me. See my comments on the next patch.
+>>>>
+>>>> The whole idea is that we already know we can't provide a *complete* TCR
+>>>> value (not least because anything above bit 31 is the wild west), thus
+>>>> there's really no point in io-pgtable trying to provide anything other than
+>>>> the parts it definitely controls. It makes sense to provide this partial TCR
+>>>> value "as if" for TTBR0, since that's the most common case, but ultimately
+>>>> io-pgatble doesn't know (or need to) which TTBR the caller intends to
+>>>> actually use for this table. Even if the caller *is* allocating it for
+>>>> TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
+>>>> already, so it still wouldn't be in a position to make the EPD1 call either
+>>>> way.
 >>>
->>>     - It takes a size and a granule, which are always the same
->>>     - It takes a 'bool leaf', which is always true
->>>     - It only ever flushes a single page
->>>
->>> With that in mind, replace it with an optional ->tlb_add_page() callback
->>> that drops the useless parameters.
->>>
->>> Signed-off-by: Will Deacon <will@kernel.org>
-> 
-> [...]
-> 
->>> -static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
->>> -	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->>> -	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
->>> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
->>> -	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
->>> -	.tlb_sync	= arm_smmu_tlb_sync_context,
->>> +static const struct arm_smmu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
->>> +	.tlb = {
->>> +		.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->>> +		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
->>> +		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
->>> +		.tlb_add_page	= arm_smmu_tlb_add_page,
->>> +		.tlb_sync	= arm_smmu_tlb_sync_context,
->>> +	},
->>> +	.tlb_inv_range		= arm_smmu_tlb_inv_range_nosync,
->>>    };
->>> -static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
->>> -	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->>> -	.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
->>> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
->>> -	.tlb_add_flush	= arm_smmu_tlb_inv_vmid_nosync,
->>> -	.tlb_sync	= arm_smmu_tlb_sync_vmid,
->>> +static const struct arm_smmu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
->>> +	.tlb = {
->>> +		.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->>> +		.tlb_flush_walk	= arm_smmu_tlb_inv_walk,
->>> +		.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf,
+>>> Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
+>>> an alternative would be scrapped the 'u64 tcr' and instead having a bunch
+>>> of named bitfields for the stuff we're actually providing, although I'd
+>>> still like EPDx to be in there.
 >>
->> Urgh, that ain't right... :(
->>
->> Sorry I've only spotted it now while trying to rebase onto Joerg's queue,
->> but we can't use either of those callbacks for v1 stage 2 since the
->> registers they access don't exist. I'll spin a fixup patch first, then come
->> back to the question of whether it's more practical to attempt merging my v2
->> or concede to rebasing a v3.
+>> I like the bitfield idea; it would certainly emphasise the "you have to do
+>> something more with this" angle that I'm pushing towards here, but still
+>> leave things framed in TCR terms without having to go to some more general
+>> abstraction. It really doesn't play into your EPD argument though - such a
+>> config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but EPDy, for y = !x.
+>> For a driver to understand that and do the right thing with it is even more
+>> involved than for the driver to just set EPD1 by itself anyway.
 > 
-> Although the code is quite difficult to follow, I think it's alright because
-> the tlb_flush_{walk,leaf} functions just indirect back through the
-> tlb_inv_range callback. This patch is supposed to be a big NOP moving
-> drivers over to the new API, but not actually exploiting its benefits.
+> Having considered the bitfield idea some more, I'm less attached to EPDx
+> because we simply wouldn't be making a statement about them, rather than a
+> (dangerous) zero value and expecting it to be ignored. So I think we're in
+> agreement on that.
 
-Ah, sorry, I did indeed fail the reading comprehension test - too many 
-levels of indirection...
+Cool, I'll give bitfields a go for v2.
 
-On second reading I agree that this probably should work out OK (other 
-than perhaps a performance hit from chaining more indirect branches). 
-I've noted on my to-do list to come back and clean up arm_smmu_flush_ops 
-for next cycle, but for now I'll get back to the more pressing matters.
+> The only part I'm still stuck to is that I think io-pgtable should know
+> whether it's targetting TTBR0 or TTBR1 so that it can sanitise input
+> addresses correctly. Doing this in the driver code is possible, but I'd
+> rather not start from that position, particularly as it would require things
+> like sign-extension in the TLBI callbacks.
 
-Thanks,
+Good point, and thanks for the prod that the way I end up propagating 
+masked-off IOVAs through to the TLBI calls here is busted either way. 
+I'm OK with introducing an explicit TTBR1 quirk to begin with, as it 
+should make things a little easier to reason about, and we can always 
+revisit later if and when we do find a need for more flexibility.
+
+>> If only LPAE had created these bits as enables rather than disables then
+>> things would be logical and we could all be happy, but here we are...
+> 
+> I'm happy! :D:D:D
+
+Yeah, but I refuse to believe it's ever because of pagetables ;)
+
 Robin.
 _______________________________________________
 iommu mailing list
