@@ -2,60 +2,54 @@ Return-Path: <SRS0=jB4a=WS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A067CC3A5A2
-	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 10:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D61C1C3A59D
+	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 10:09:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66BEC233FE
-	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 10:08:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="rYThi+h2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66BEC233FE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id B4307233FC
+	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 10:09:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4307233FC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2A1ADD3B;
-	Thu, 22 Aug 2019 10:08:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9376CC5D;
+	Thu, 22 Aug 2019 10:09:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CA7B0B8E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1235FC11
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 22 Aug 2019 10:08:20 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 80EFD67F
+	Thu, 22 Aug 2019 10:09:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 8EFFB822
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 22 Aug 2019 10:08:19 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 211D4233FC;
-	Thu, 22 Aug 2019 10:08:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566468499;
-	bh=IzjFEWdPrIj2HDymvSmNUsqNwBoJqAI3BTqeibzDG/E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=rYThi+h21fwi/S9wIORrQaUPUGMjIox00ZAy/cLNVxUJaz/6kvzvI6xPMv6isLnqL
-	YbO4bbC9r60HoObsGkHAzUEccRwIz4Nx9WfgF3REGv09J7Q84lLWfcvFFw1Z4IIaE9
-	poMHdFUTV0gAyjaHSpmHhHZrxiM+pV+B8wam3iuk=
-Date: Thu, 22 Aug 2019 11:08:13 +0100
-From: Will Deacon <will@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
+	Thu, 22 Aug 2019 10:09:07 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3587F15A2;
+	Thu, 22 Aug 2019 03:09:07 -0700 (PDT)
+Received: from [192.168.1.123] (unknown [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E13E43F246;
+	Thu, 22 Aug 2019 03:09:02 -0700 (PDT)
 Subject: Re: [PATCH v10 09/23] iommu/io-pgtable-arm-v7s: Extend to support
 	PA[33:32] for MediaTek
-Message-ID: <20190822100812.ketlgxxu64cy2bsk@willie-the-truck>
+To: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>
 References: <1566395606-7975-1-git-send-email-yong.wu@mediatek.com>
 	<1566395606-7975-10-git-send-email-yong.wu@mediatek.com>
 	<20190821152448.qmoqjh5zznfpdi6n@willie-the-truck>
 	<1566464186.11621.7.camel@mhfsdcap03>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <10d5122d-3375-161b-9356-2ddfc1c835bd@arm.com>
+Date: Thu, 22 Aug 2019 11:08:58 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
 In-Reply-To: <1566464186.11621.7.camel@mhfsdcap03>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Language: en-GB
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
 	srv_heupstream@mediatek.com, Tomasz Figa <tfiga@google.com>,
@@ -64,8 +58,7 @@ Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
 	Matthias Brugger <matthias.bgg@gmail.com>,
 	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
-	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
-	linux-arm-kernel@lists.infradead.org
+	Matthias Kaehlcke <mka@chromium.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,40 +71,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Aug 22, 2019 at 04:56:26PM +0800, Yong Wu wrote:
+On 2019-08-22 9:56 am, Yong Wu wrote:
 > On Wed, 2019-08-21 at 16:24 +0100, Will Deacon wrote:
-> > On Wed, Aug 21, 2019 at 09:53:12PM +0800, Yong Wu wrote:
-> > > MediaTek extend the arm v7s descriptor to support up to 34 bits PA where
-> > > the bit32 and bit33 are encoded in the bit9 and bit4 of the PTE
-> > > respectively. Meanwhile the iova still is 32bits.
-> > > 
-> > > Regarding whether the pagetable address could be over 4GB, the mt8183
-> > > support it while the previous mt8173 don't, thus keep it as is.
-> > > 
-> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > ---
-> > >  drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++++++++++++-------
-> > >  include/linux/io-pgtable.h         |  7 +++----
-> > >  2 files changed, 28 insertions(+), 11 deletions(-)
-> > 
-> > [...]
-> > 
-> > > @@ -731,7 +747,9 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
-> > >  {
-> > >  	struct arm_v7s_io_pgtable *data;
-> > >  
-> > > -	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
-> > > +	if (cfg->ias > ARM_V7S_ADDR_BITS ||
-> > > +	    (cfg->oas > ARM_V7S_ADDR_BITS &&
-> > > +	     !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT)))
-> > 
-> > Please can you instead change arm_v7s_alloc_pgtable() so that it allows an
-> > ias of up to 34 when the IO_PGTABLE_QUIRK_ARM_MTK_EXT is set?
+>> On Wed, Aug 21, 2019 at 09:53:12PM +0800, Yong Wu wrote:
+>>> MediaTek extend the arm v7s descriptor to support up to 34 bits PA where
+>>> the bit32 and bit33 are encoded in the bit9 and bit4 of the PTE
+>>> respectively. Meanwhile the iova still is 32bits.
+>>>
+>>> Regarding whether the pagetable address could be over 4GB, the mt8183
+>>> support it while the previous mt8173 don't, thus keep it as is.
+>>>
+>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>> ---
+>>>   drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++++++++++++-------
+>>>   include/linux/io-pgtable.h         |  7 +++----
+>>>   2 files changed, 28 insertions(+), 11 deletions(-)
+>>
+>> [...]
+>>
+>>> @@ -731,7 +747,9 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>>>   {
+>>>   	struct arm_v7s_io_pgtable *data;
+>>>   
+>>> -	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
+>>> +	if (cfg->ias > ARM_V7S_ADDR_BITS ||
+>>> +	    (cfg->oas > ARM_V7S_ADDR_BITS &&
+>>> +	     !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT)))
+>>
+>> Please can you instead change arm_v7s_alloc_pgtable() so that it allows an
+>> ias of up to 34 when the IO_PGTABLE_QUIRK_ARM_MTK_EXT is set?
 > 
 > Here I only simply skip the oas checking for our case. then which way do
 > your prefer?  something like you commented before:?
@@ -123,30 +116,35 @@ On Thu, Aug 22, 2019 at 04:56:26PM +0800, Yong Wu wrote:
 > 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT) {
 > 		if (!IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT))
 > 			cfg->oas = min(cfg->oas, ARM_V7S_ADDR_BITS);
-
-Isn't this always 32 for your IOMMUs?
-
 > 		else if (cfg->oas > 34)
 > 			return NULL;
 > 	} else if (cfg->oas > ARM_V7S_ADDR_BITS) {
 > 		return NULL;
 > 	}
 
-How about:
+All it should take is something like:
 
-	unsigned int oas_max = ARM_V7S_ADDR_BITS;
-
-	if (cfg->ias > ARM_V7S_ADDR_BITS)
+	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT)
+		max_oas = 34;
+	else
+		max_oas = 32;
+	if (cfg->oas > max_oas)
 		return NULL;
 
-	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT) &&
-	    cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT)
-		oas_max = 34;
+or even just:
 
-	if (cfg->oas > oas_max)
+	if (cfg->oas > 32 ||
+	    (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT && cfg->oas > 34))
 		return NULL;
 
-Will
+(and if we prefer the latter style, perhaps we could introduce some kind 
+of "is_mtk_4gb()" helper to save on verbosity)
+
+We shouldn't need to care about the size of phys_addr_t either way - the 
+fact is that the MTK format can still encode up to 34 bits of PA 
+regardless of whether callers can actually pass addresses that large.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
