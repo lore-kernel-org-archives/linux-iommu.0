@@ -2,56 +2,70 @@ Return-Path: <SRS0=jB4a=WS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B08C3A5A1
-	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 14:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6D5C3A5A2
+	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 17:11:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B51E1233A1
-	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 14:43:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B51E1233A1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 73F75233FC
+	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 17:11:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="YgpviCCu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73F75233FC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8ED1ED4A;
-	Thu, 22 Aug 2019 14:43:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2E3D4B6D;
+	Thu, 22 Aug 2019 17:11:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D6736CDB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8578FB50
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 22 Aug 2019 14:29:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6CB348AC
+	Thu, 22 Aug 2019 17:11:09 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CB3D067F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 22 Aug 2019 14:29:49 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	22 Aug 2019 07:29:49 -0700
-X-IronPort-AV: E=Sophos;i="5.64,417,1559545200"; d="scan'208";a="178873789"
-Received: from jkrzyszt-desk.igk.intel.com ([172.22.244.17])
-	by fmsmga008-auth.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	22 Aug 2019 07:29:47 -0700
-From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: [RFC PATCH] iommu/vt-d: Fix IOMMU field not populated on device hot
-	re-plug
-Date: Thu, 22 Aug 2019 16:29:22 +0200
-Message-Id: <20190822142922.31526-1-janusz.krzysztofik@linux.intel.com>
-X-Mailer: git-send-email 2.21.0
+	Thu, 22 Aug 2019 17:11:08 +0000 (UTC)
+Received: from localhost (wsip-184-188-36-2.sd.sd.cox.net [184.188.36.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 821062089E;
+	Thu, 22 Aug 2019 17:11:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1566493868;
+	bh=Eu5zYHsgZr/DzgkYZtrV8Xf3yPbZrB6F/5Aa3SVutiA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YgpviCCuEYOqne1wsEWgd6l+Gzkw+5xYBwggmYQtDll2PjCPqB1qmScWDXN1P/B5K
+	B/RNg/icssWR6AjcDPdeqSlGGxWCAS2rl4YBtOQnalt5AVfZm3e4ze3if6d5gFRY2x
+	+KvCpV/lo8jNDpZObQ1PLinLdtTKiva/GCEIEsL4=
+Date: Thu, 22 Aug 2019 10:11:08 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: next take at setting up a dma mask by default for platform
+	devices v2
+Message-ID: <20190822171108.GA17471@kroah.com>
+References: <20190816062435.881-1-hch@lst.de>
 MIME-Version: 1.0
-X-Mailman-Approved-At: Thu, 22 Aug 2019 14:43:46 +0000
-Cc: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
-	iommu@lists.linux-foundation.org,
-	intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Micha=C5=82=20Wajdeczko?= <michal.wajdeczko@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20190816062435.881-1-hch@lst.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+Cc: linux-arch@vger.kernel.org, Gavin Li <git@thegavinli.com>,
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+	Mathias Nyman <mathias.nyman@intel.com>,
+	Geoff Levand <geoff@infradead.org>, Fabio Estevam <festevam@gmail.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>, linux-usb@vger.kernel.org,
+	Michal Simek <michal.simek@xilinx.com>, iommu@lists.linux-foundation.org,
+	Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	linux-m68k@lists.linux-m68k.org, Alan Stern <stern@rowland.harvard.edu>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Minas Harutyunyan <hminas@synopsys.com>,
+	Shawn Guo <shawnguo@kernel.org>, Bin Liu <b-liu@ti.com>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,45 +83,34 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When a perfectly working i915 device is hot unplugged (via sysfs) and
-hot re-plugged again, its dev->archdata.iommu field is not populated
-again with an IOMMU pointer.  As a result, the device probe fails on
-DMA mapping error during scratch page setup.
+On Fri, Aug 16, 2019 at 08:24:29AM +0200, Christoph Hellwig wrote:
+> Hi all,
+> 
+> this is another attempt to make sure the dma_mask pointer is always
+> initialized for platform devices.  Not doing so lead to lots of
+> boilerplate code, and makes platform devices different from all our
+> major busses like PCI where we always set up a dma_mask.  In the long
+> run this should also help to eventually make dma_mask a scalar value
+> instead of a pointer and remove even more cruft.
+> 
+> The bigger blocker for this last time was the fact that the usb
+> subsystem uses the presence or lack of a dma_mask to check if the core
+> should do dma mapping for the driver, which is highly unusual.  So we
+> fix this first.  Note that this has some overlap with the pending
+> desire to use the proper dma_mmap_coherent helper for mapping usb
+> buffers.  The first two patches have already been queued up by Greg
+> and are only included for completeness.
 
-It looks like that happens because devices are not detached from their
-MMUIO bus before they are removed on device unplug.  Then, when an
-already registered device/IOMMU association is identified by the
-reinstantiated device's bus and function IDs on IOMMU bus re-attach
-attempt, the device's archdata is not populated with IOMMU information
-and the bad happens.
+Note to everyone.  The first two patches in this series is already in
+5.3-rc5.
 
-I'm not sure if this is a proper fix but it works for me so at least it
-confirms correctness of my analysis results, I believe.  So far I
-haven't been able to identify a good place where the possibly missing
-IOMMU bus detach on device unplug operation could be added.
+I've applied the rest of the series to my usb-next branch (with the 6th
+patch landing there later today.)  They are scheduled to be merge to
+Linus in 5.4-rc1.
 
-Signed-off-by: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
----
- drivers/iommu/intel-iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+Christoph, thanks so much for these cleanups.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 12d094d08c0a..7cdcd0595408 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2477,6 +2477,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 		if (info2) {
- 			found      = info2->domain;
- 			info2->dev = dev;
-+
-+			if (dev && !dev->archdata.iommu)
-+				dev->archdata.iommu = info2;
- 		}
- 	}
- 
--- 
-2.21.0
-
+greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
