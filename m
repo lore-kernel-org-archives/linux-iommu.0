@@ -2,57 +2,58 @@ Return-Path: <SRS0=APMu=WT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74DCC3A5A4
-	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 14:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00017C3A5A3
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 20:51:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B24A122CE3
-	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 14:55:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ShNGWUgi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B24A122CE3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id C47CB2070B
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 20:51:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C47CB2070B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9E26FFB7;
-	Fri, 23 Aug 2019 14:54:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8E061B4B;
+	Fri, 23 Aug 2019 20:51:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2FEC8F90
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5B8E2B0B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 14:54:48 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 620AD7FB
+	Fri, 23 Aug 2019 20:51:21 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A4C7FE6
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 14:54:46 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 1190E22CE3;
-	Fri, 23 Aug 2019 14:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566572086;
-	bh=lJbwcNuXBLBOGKeSUzkdVWU1aT1DeSZnQwEw8jSvh0g=;
-	h=Date:From:To:Cc:Subject:From;
-	b=ShNGWUgimD1YRDPnp8mWCYcV6Y573AmwOnbaQNXNxJd9SaJwcO1xv4+47K7dvM7pH
-	rwo4Z+nYh2rWgnjCz+Dt8LRskc3zzIVY936SHZfdfEdxr5f99vh6lMIN0yBWGWuo7s
-	yT3CqaQ7Mr4NgJFyR1cbt90YH3ybeLIcDHaNhc8o=
-Date: Fri, 23 Aug 2019 15:54:41 +0100
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org
-Subject: [GIT PULL] iommu/arm-smmu: Big batch of updates for 5.4
-Message-ID: <20190823145440.2b7ejsnglz2bju5k@willie-the-truck>
+	Fri, 23 Aug 2019 20:51:20 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+	[10.5.11.23])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id DC55D88305;
+	Fri, 23 Aug 2019 20:51:19 +0000 (UTC)
+Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 958F719C4F;
+	Fri, 23 Aug 2019 20:51:14 +0000 (UTC)
+Date: Fri, 23 Aug 2019 14:51:13 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v8 0/6] vfio/type1: Add support for valid iova list
+	management
+Message-ID: <20190823145113.5ea47e22@x1.home>
+In-Reply-To: <20190723160637.8384-1-shameerali.kolothum.thodi@huawei.com>
+References: <20190723160637.8384-1-shameerali.kolothum.thodi@huawei.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: jean-philippe@linaro.org, iommu@lists.linux-foundation.org,
-	robin.murphy@arm.com
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.28]);
+	Fri, 23 Aug 2019 20:51:20 +0000 (UTC)
+Cc: kevin.tian@intel.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	xuwei5@hisilicon.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,103 +71,104 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue, 23 Jul 2019 17:06:31 +0100
+Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
 
-Please pull these ARM SMMU updates for 5.4. The branch is based on the
-for-joerg/batched-unmap branch that you pulled into iommu/core already
-because I didn't want to rebase everything onto -rc3. The pull request
-was generated against iommu/core.
+> This is to revive this series which almost made to 4.18 but got dropped
+> as Alex found an issue[1] with IGD and USB devices RMRR region being
+> reported as reserved regions.
+> 
+> Thanks to Eric for his work here[2]. It provides a way to exclude
+> these regions while reporting the valid iova regions and this respin
+> make use of that.
+> 
+> Please note that I don't have a platform to verify the reported RMRR
+> issue and appreciate testing on those platforms.
+> 
+> Thanks,
+> Shameer
+> 
+> [1] https://lkml.org/lkml/2018/6/5/760
+> [2] https://lore.kernel.org/patchwork/cover/1083072/
+> 
+> v7-->v8
+>   -Rebased to 5.3-rc1
+>   -Addressed comments from Alex and Eric. Please see
+>    individual patch history.
+>   -Added Eric's R-by to patches 4/5/6
+> 
+> v6-->v7
+>  -Rebased to 5.2-rc6 + Eric's patches
+>  -Added logic to exclude IOMMU_RESV_DIRECT_RELAXABLE reserved memory
+>   region type(patch #2).
+>  -Dropped patch #4 of v6 as it is already part of mainline.
+>  -Addressed "container with only an mdev device will have an empty list"
+>   case(patches 4/6 & 5/6 - Suggested by Alex)
+> 
+> Old
+> ----
+> This series introduces an iova list associated with a vfio 
+> iommu. The list is kept updated taking care of iommu apertures,
+> and reserved regions. Also this series adds checks for any conflict
+> with existing dma mappings whenever a new device group is attached to
+> the domain.
+> 
+> User-space can retrieve valid iova ranges using VFIO_IOMMU_GET_INFO
+> ioctl capability chains. Any dma map request outside the valid iova
+> range will be rejected.
+> 
+> v5 --> v6
+> 
+>  -Rebased to 4.17-rc1
+>  -Changed the ordering such that previous patch#7 "iommu/dma: Move
+>   PCI window region reservation back...")  is now patch #4. This
+>   will avoid any bisection issues pointed out by Alex.
+>  -Added Robins's Reviewed-by tag for patch#4
+> 
+> v4 --> v5
+> Rebased to next-20180315.
+>  
+>  -Incorporated the corner case bug fix suggested by Alex to patch #5.
+>  -Based on suggestions by Alex and Robin, added patch#7. This
+>   moves the PCI window  reservation back in to DMA specific path.
+>   This is to fix the issue reported by Eric[1].
+> 
+> v3 --> v4
+>  Addressed comments received for v3.
+>  -dma_addr_t instead of phys_addr_t
+>  -LIST_HEAD() usage.
+>  -Free up iova_copy list in case of error.
+>  -updated logic in filling the iova caps info(patch #5)
+> 
+> RFCv2 --> v3
+>  Removed RFC tag.
+>  Addressed comments from Alex and Eric:
+>  - Added comments to make iova list management logic more clear.
+>  - Use of iova list copy so that original is not altered in
+>    case of failure.
+> 
+> RFCv1 --> RFCv2
+>  Addressed comments from Alex:
+> -Introduced IOVA list management and added checks for conflicts with 
+>  existing dma map entries during attach/detach.
+> 
+> Shameer Kolothum (6):
+>   vfio/type1: Introduce iova list and add iommu aperture validity check
+>   vfio/type1: Check reserved region conflict and update iova list
+>   vfio/type1: Update iova list on detach
+>   vfio/type1: check dma map request is within a valid iova range
+>   vfio/type1: Add IOVA range capability support
+>   vfio/type1: remove duplicate retrieval of reserved regions
+> 
+>  drivers/vfio/vfio_iommu_type1.c | 518 +++++++++++++++++++++++++++++++-
+>  include/uapi/linux/vfio.h       |  26 +-
+>  2 files changed, 531 insertions(+), 13 deletions(-)
+> 
 
-There's a lot of code here, but the headlines are:
+Applied to the vfio next branch for v5.4 with Eric's additional reviews.
+Thanks!
 
-  * Complete refactoring of arm-smmu.c to allow for implementation-specific
-    quirks, errata and general weirdness outside of the core architecture
-    support code.
-
-  * Rework of the SMMUv3 ATS support, after it was found to be broken.
-    Since it's a pretty niche thing for us right now, the support is
-    effectively reverted for -stable kernels.
-
-  * New algorithm for submitting commands to the SMMUv3 command queue
-    which removes the need for a spinlock and reduces CPU usage under
-    heavy I/O loads.
-
-There's some ongoing work to extend io-pgtable to be able to deal with
-high virtual address ranges but that's not quite there yet and I hope
-to queue it for 5.5 instead.
-
-Any problems, just shout (although it's a public holiday on Monday in
-the UK, so you'll have to shout very loudly indeed).
-
-Cheers,
-
-Will
-
---->8
-
-The following changes since commit 3951c41af4a65ba418e6b1b973d398552bedb84f:
-
-  iommu/io-pgtable: Pass struct iommu_iotlb_gather to ->tlb_add_page() (2019-07-29 17:22:59 +0100)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
-
-for you to fetch changes up to 1554240ff864da9eb99e2233d3faf191c567c47a:
-
-  Merge branches 'for-joerg/arm-smmu/smmu-v2' and 'for-joerg/arm-smmu/smmu-v3' into for-joerg/arm-smmu/updates (2019-08-23 15:05:45 +0100)
-
-----------------------------------------------------------------
-Robin Murphy (18):
-      iommu/arm-smmu: Mask TLBI address correctly
-      iommu/qcom: Mask TLBI addresses correctly
-      iommu/arm-smmu: Convert GR0 registers to bitfields
-      iommu/arm-smmu: Convert GR1 registers to bitfields
-      iommu/arm-smmu: Convert context bank registers to bitfields
-      iommu/arm-smmu: Rework cb_base handling
-      iommu/arm-smmu: Split arm_smmu_tlb_inv_range_nosync()
-      iommu/arm-smmu: Get rid of weird "atomic" write
-      iommu/arm-smmu: Abstract GR1 accesses
-      iommu/arm-smmu: Abstract context bank accesses
-      iommu/arm-smmu: Abstract GR0 accesses
-      iommu/arm-smmu: Rename arm-smmu-regs.h
-      iommu/arm-smmu: Add implementation infrastructure
-      iommu/arm-smmu: Move Secure access quirk to implementation
-      iommu/arm-smmu: Add configuration implementation hook
-      iommu/arm-smmu: Add reset implementation hook
-      iommu/arm-smmu: Add context init implementation hook
-      iommu/arm-smmu: Ensure 64-bit I/O accessors are available on 32-bit CPU
-
-Will Deacon (16):
-      iommu/arm-smmu-v3: Separate s/w and h/w views of prod and cons indexes
-      iommu/arm-smmu-v3: Drop unused 'q' argument from Q_OVF macro
-      iommu/arm-smmu-v3: Move low-level queue fields out of arm_smmu_queue
-      iommu/arm-smmu-v3: Operate directly on low-level queue where possible
-      iommu/arm-smmu-v3: Reduce contention during command-queue insertion
-      iommu/arm-smmu-v3: Defer TLB invalidation until ->iotlb_sync()
-      iommu/arm-smmu: Make private implementation details static
-      iommu/arm-smmu-v3: Document ordering guarantees of command insertion
-      iommu/arm-smmu-v3: Disable detection of ATS and PRI
-      iommu/arm-smmu-v3: Remove boolean bitfield for 'ats_enabled' flag
-      iommu/arm-smmu-v3: Don't issue CMD_SYNC for zero-length invalidations
-      iommu/arm-smmu-v3: Rework enabling/disabling of ATS for PCI masters
-      iommu/arm-smmu-v3: Fix ATC invalidation ordering wrt main TLBs
-      iommu/arm-smmu-v3: Avoid locking on invalidation path when not using ATS
-      Revert "iommu/arm-smmu-v3: Disable detection of ATS and PRI"
-      Merge branches 'for-joerg/arm-smmu/smmu-v2' and 'for-joerg/arm-smmu/smmu-v3' into for-joerg/arm-smmu/updates
-
- MAINTAINERS                   |   3 +-
- drivers/iommu/Makefile        |   2 +-
- drivers/iommu/arm-smmu-impl.c | 174 ++++++++
- drivers/iommu/arm-smmu-regs.h | 210 ----------
- drivers/iommu/arm-smmu-v3.c   | 945 +++++++++++++++++++++++++++++++-----------
- drivers/iommu/arm-smmu.c      | 579 ++++++++------------------
- drivers/iommu/arm-smmu.h      | 402 ++++++++++++++++++
- drivers/iommu/qcom_iommu.c    |  17 +-
- 8 files changed, 1482 insertions(+), 850 deletions(-)
- create mode 100644 drivers/iommu/arm-smmu-impl.c
- delete mode 100644 drivers/iommu/arm-smmu-regs.h
- create mode 100644 drivers/iommu/arm-smmu.h
+Alex
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
