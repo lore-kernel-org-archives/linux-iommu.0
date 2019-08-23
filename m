@@ -2,63 +2,59 @@ Return-Path: <SRS0=APMu=WT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D76C3A5A2
-	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 08:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFE8C3A5A2
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 08:40:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 777F6233A0
-	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 08:37:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="lo91WDqM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 777F6233A0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 0F1E122CEC
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 08:40:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F1E122CEC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4327CD7C;
-	Fri, 23 Aug 2019 08:37:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ABB24D8C;
+	Fri, 23 Aug 2019 08:40:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 15885B0B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BA345C75
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 08:37:18 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C0D4CE6
+	Fri, 23 Aug 2019 08:39:59 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 493037FB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 08:37:17 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 599C922CEC;
-	Fri, 23 Aug 2019 08:37:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566549437;
-	bh=niV7neuzYojJdHn0ExBeb264ApqQ6IcTCNkFCeK4d+o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lo91WDqMkrMHkBSpDl1bj3ZG5vGkzmlVPsKy2PaOuAhB8vy9ujjPpFGPC4MW4h1cU
-	FqIft2qhTQzKucvJeqF4/BmwPJnFE6ZTbwpi6UEqDCdTaOKZIBGoqdX2OJd+jeeDPo
-	mCmk/FFGHESA6BxwLZTCKFbsPfstWev8YNa/jqlg=
-Date: Fri, 23 Aug 2019 09:37:13 +0100
-From: Will Deacon <will@kernel.org>
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v3 0/2] improve the concurrency of
-	arm_smmu_atc_inv_domain()
-Message-ID: <20190823083712.ggzmw3rcodwyhmlf@willie-the-truck>
-References: <20190823024551.24448-1-thunder.leizhen@huawei.com>
-	<20190823075026.pwlx33e4crh3m6tn@willie-the-truck>
-	<7e28e1ce-2cc3-3c7f-45c7-e7de334c6976@huawei.com>
+	Fri, 23 Aug 2019 08:39:59 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 91BBF246; Fri, 23 Aug 2019 10:39:57 +0200 (CEST)
+Date: Fri, 23 Aug 2019 10:39:56 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v7 1/7] iommu/vt-d: Don't switch off swiotlb if use
+	direct dma
+Message-ID: <20190823083956.GB24194@8bytes.org>
+References: <20190823071735.30264-1-baolu.lu@linux.intel.com>
+	<20190823071735.30264-2-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <7e28e1ce-2cc3-3c7f-45c7-e7de334c6976@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	iommu <iommu@lists.linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20190823071735.30264-2-baolu.lu@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
+	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
+	Jonathan Corbet <corbet@lwn.net>, pengfei.xu@intel.com,
+	Ingo Molnar <mingo@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	mika.westerberg@linux.intel.com, Juergen Gross <jgross@suse.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	jacob.jun.pan@intel.com, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,41 +72,46 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Aug 23, 2019 at 04:06:52PM +0800, Leizhen (ThunderTown) wrote:
-> 
-> 
-> On 2019/8/23 15:50, Will Deacon wrote:
-> > On Fri, Aug 23, 2019 at 10:45:49AM +0800, Zhen Lei wrote:
-> >> v2 --> v3:
-> >> As Will Deacon's suggestion, I changed the lock type of
-> >> arm_smmu_domain.devices_lock from spinlock_t to rwlock_t, and I saw that the
-> >> performance is all right. And further use nr_ats_masters to quickly check have
-> >> no obvious effect, so I drop it.
-> > 
-> > :/
-> > 
-> > I already sent two versions of a series fixing this without any locking at
-> > all on the ->unmap() path, and you were on cc. I've also queued that stuff
-> > up.
-> > 
-> > Did you not receive my patches?
-> Sorry, my message filter setting is a bit wrong, must contains
-> "linux-kernel@vger.kernel.org", I have corrected it.
+On Fri, Aug 23, 2019 at 03:17:29PM +0800, Lu Baolu wrote:
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4569,9 +4569,6 @@ static int __init platform_optin_force_iommu(void)
+>  		iommu_identity_mapping |= IDENTMAP_ALL;
+>  
+>  	dmar_disabled = 0;
+> -#if defined(CONFIG_X86) && defined(CONFIG_SWIOTLB)
+> -	swiotlb = 0;
+> -#endif
+>  	no_iommu = 0;
+>  
+>  	return 1;
+> @@ -4710,9 +4707,6 @@ int __init intel_iommu_init(void)
+>  	}
+>  	up_write(&dmar_global_lock);
+>  
+> -#if defined(CONFIG_X86) && defined(CONFIG_SWIOTLB)
+> -	swiotlb = 0;
+> -#endif
 
-Ha, sounds like the opposite of my email filter ;)
+So this will cause the 64MB SWIOTLB aperture to be allocated even when
+there will never be an untrusted device in the system, right? I guess
+this will break some kdump setups as they need to resize their low
+memory allocations to make room for the aperture because of this
+patch-set.
 
-> > v1: https://lists.linuxfoundation.org/pipermail/iommu/2019-August/038306.html
-> > v2: https://lists.linuxfoundation.org/pipermail/iommu/2019-August/038374.html
-> OK, I will test it when it's my turn to use the board.
+But I also don't see a way around this for now as untrusted devices are
+usually hotplugged and might not be present at boot. So we can't make
+the decision about the allocation at boot time.
 
-Thanks, although I plan to send it to Joerg today so any changes will need
-to go on top. Does your testing involve ATS, or just non-ATS devices? I've
-tested the latter locally, although I haven't looked at the performance
-since most of the patches are trying to fix the enable/disable ordering.
+But this mechanism needs to be moved to the dma-iommu implementation at
+some point, and then we should allocate the bounce memory pages
+on-demand. We can easily do this in page-size chunks and map them
+together with iommu page-tables. This way we don't need to pre-allocate
+a large memory-chunk at boot.
 
-Thanks,
+Regards,
 
-Will
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
