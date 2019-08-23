@@ -1,76 +1,53 @@
-Return-Path: <SRS0=jB4a=WS=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=APMu=WT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DF9C3A5A3
-	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 17:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF50C3A5A1
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 02:47:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE89A233FE
-	for <iommu@archiver.kernel.org>; Thu, 22 Aug 2019 17:14:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gTshqoq9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE89A233FE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 4B49D233A0
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 02:47:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4B49D233A0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A7416B7A;
-	Thu, 22 Aug 2019 17:14:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1197012D8;
+	Fri, 23 Aug 2019 02:47:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 97F0049F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 79C07D85
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 22 Aug 2019 17:14:23 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 60DC289B
+	Fri, 23 Aug 2019 02:46:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EE2748A2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 22 Aug 2019 17:14:23 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 13B182089E;
-	Thu, 22 Aug 2019 17:14:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566494063;
-	bh=vqE2N/zi1fzhDJw+o9xdlWk9123wTSi4CKCbyRiWtHc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gTshqoq99M9s6kEqnvExZ9y43tJZ5RG6H7DJicnyp4xB0EEyG3E8dxsEeD+mtCaSN
-	tPOnriBlWjBj6t3b/aXGqSnI7for4nxNhTc101nzXmKDqt5n+5VHe7Jxkot9Q6CAmx
-	WfjOx+T5BTnDWixtTIskYdTH9FZDyzwtT6bJ2aG0=
-Date: Thu, 22 Aug 2019 18:14:16 +0100
-From: Will Deacon <will@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v10 09/23] iommu/io-pgtable-arm-v7s: Extend to support
-	PA[33:32] for MediaTek
-Message-ID: <20190822171415.475yg7pmy6gfj35l@willie-the-truck>
-References: <1566395606-7975-1-git-send-email-yong.wu@mediatek.com>
-	<1566395606-7975-10-git-send-email-yong.wu@mediatek.com>
-	<20190821152448.qmoqjh5zznfpdi6n@willie-the-truck>
-	<1566464186.11621.7.camel@mhfsdcap03>
-	<10d5122d-3375-161b-9356-2ddfc1c835bd@arm.com>
-	<20190822101749.3kwzd5lb7zinsord@willie-the-truck>
-	<e6652176-763d-5298-9e10-8c1fbe1b3c0d@arm.com>
-	<20190822112836.efodtwu3souq3uwa@willie-the-truck>
-	<1566475533.11621.18.camel@mhfsdcap03>
+	Fri, 23 Aug 2019 02:46:57 +0000 (UTC)
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id 19377A30A9AEE019E02A;
+	Fri, 23 Aug 2019 10:46:55 +0800 (CST)
+Received: from HGHY4L002753561.china.huawei.com (10.133.215.186) by
+	DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server
+	id 14.3.439.0; Fri, 23 Aug 2019 10:46:47 +0800
+From: Zhen Lei <thunder.leizhen@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, John Garry
+	<john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+	<will@kernel.org>, Joerg Roedel <joro@8bytes.org>, iommu
+	<iommu@lists.linux-foundation.org>, linux-arm-kernel
+	<linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH v3 0/2] improve the concurrency of arm_smmu_atc_inv_domain()
+Date: Fri, 23 Aug 2019 10:45:49 +0800
+Message-ID: <20190823024551.24448-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.21.0.windows.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1566475533.11621.18.camel@mhfsdcap03>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, Tomasz Figa <tfiga@google.com>,
-	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-	chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
-	Robin Murphy <robin.murphy@arm.com>, Matthias Kaehlcke <mka@chromium.org>,
-	linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.133.215.186]
+X-CFilter-Loop: Reflected
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,25 +65,57 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Aug 22, 2019 at 08:05:33PM +0800, Yong Wu wrote:
-> On Thu, 2019-08-22 at 12:28 +0100, Will Deacon wrote:
-> > Ok, great. Yong Wu -- are you ok respinning with the above + missing
-> > brackets?
-> 
-> Of course I can.
-> 
-> NearlyAll the interface in this file is prefixed with "arm_v7s_", so
-> does the new interface also need it?, like arm_v7s_is_mtk_enabled. And
-> keep the iopte_to_paddr and paddr_to_iopte symmetrical.
-> 
-> 
-> Then the final patch would looks like below, is it ok?
+v2 --> v3:
+As Will Deacon's suggestion, I changed the lock type of
+arm_smmu_domain.devices_lock from spinlock_t to rwlock_t, and I saw that the
+performance is all right. And further use nr_ats_masters to quickly check have
+no obvious effect, so I drop it.
 
-Looks good to me:
+Here is the performance data tested on my board:
+Withou any change:
+Jobs: 24 (f=24): [0.1% done] [9798M/0K /s] [2392K/0  iops] [09h:59m:13s]
+Jobs: 24 (f=24): [0.1% done] [9782M/0K /s] [2388K/0  iops] [09h:59m:12s]
+Jobs: 24 (f=24): [0.2% done] [9825M/0K /s] [2399K/0  iops] [09h:59m:11s]
+Jobs: 24 (f=24): [0.2% done] [9836M/0K /s] [2401K/0  iops] [09h:59m:10s]
 
-Acked-by: Will Deacon <will@kernel.org>
+Change lock type from spinlock_t to rwlock_t:
+Jobs: 24 (f=24): [0.1% done] [10996M/0K /s] [2685K/0  iops] [09h:59m:13s]
+Jobs: 24 (f=24): [0.1% done] [10817M/0K /s] [2641K/0  iops] [09h:59m:12s]
+Jobs: 24 (f=24): [0.2% done] [11083M/0K /s] [2706K/0  iops] [09h:59m:11s]
+Jobs: 24 (f=24): [0.2% done] [10603M/0K /s] [2589K/0  iops] [09h:59m:10s]
 
-Will
+Use nr_ats_masters:
+Jobs: 24 (f=24): [0.2% done] [11105M/0K /s] [2711K/0  iops] [eta 09h:58m:40s]
+Jobs: 24 (f=24): [0.2% done] [10511M/0K /s] [2566K/0  iops] [eta 09h:58m:39s]
+Jobs: 24 (f=24): [0.2% done] [10560M/0K /s] [2578K/0  iops] [eta 09h:58m:38s]
+Jobs: 24 (f=24): [0.2% done] [10494M/0K /s] [2562K/0  iops] [eta 09h:58m:37s]
+Jobs: 24 (f=24): [0.2% done] [10528M/0K /s] [2570K/0  iops] [eta 09h:58m:36s]
+Jobs: 24 (f=24): [0.3% done] [10638M/0K /s] [2597K/0  iops] [eta 09h:58m:35s]
+Jobs: 24 (f=24): [0.3% done] [11158M/0K /s] [2724K/0  iops] [eta 09h:58m:34s]
+Jobs: 24 (f=24): [0.3% done] [11386M/0K /s] [2780K/0  iops] [eta 09h:58m:32s]
+Jobs: 24 (f=24): [0.3% done] [11118M/0K /s] [2714K/0  iops] [eta 09h:58m:32s]
+Jobs: 24 (f=24): [0.3% done] [11031M/0K /s] [2693K/0  iops] [eta 09h:58m:31s]
+Jobs: 24 (f=24): [0.3% done] [11361M/0K /s] [2774K/0  iops] [eta 09h:58m:30s]
+
+v1 --> v2:
+1. change the type of nr_ats_masters from atomic_t to int, and move its
+   ind/dec operation from arm_smmu_enable_ats()/arm_smmu_disable_ats() to
+   arm_smmu_attach_dev()/arm_smmu_detach_dev(), and protected by
+   "spin_lock_irqsave(&smmu_domain->devices_lock, flags);"
+
+Zhen Lei (2):
+  iommu/arm-smmu-v3: don't add a master into smmu_domain before it's
+    ready
+  iommu/arm-smmu-v3: change the lock type of
+    arm_smmu_domain.devices_lock
+
+ drivers/iommu/arm-smmu-v3.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+-- 
+1.8.3
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
