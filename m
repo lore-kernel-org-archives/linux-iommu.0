@@ -2,89 +2,57 @@ Return-Path: <SRS0=APMu=WT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54F7C3A5A2
-	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 13:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74DCC3A5A4
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 14:55:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 79B952339D
-	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 13:01:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B24A122CE3
+	for <iommu@archiver.kernel.org>; Fri, 23 Aug 2019 14:55:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="MMGhHUo0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79B952339D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ShNGWUgi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B24A122CE3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 33F55EA8;
-	Fri, 23 Aug 2019 13:01:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9E26FFB7;
+	Fri, 23 Aug 2019 14:54:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 45B76EA5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2FEC8F90
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 12:57:40 +0000 (UTC)
-X-Greylist: delayed 00:07:11 by SQLgrey-1.7.6
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com
-	[210.131.2.83])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3A8D967F
+	Fri, 23 Aug 2019 14:54:48 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 620AD7FB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 12:57:39 +0000 (UTC)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com
-	[209.85.217.49]) (authenticated)
-	by conssluserg-04.nifty.com with ESMTP id x7NCvUDD032627
-	for <iommu@lists.linux-foundation.org>; Fri, 23 Aug 2019 21:57:31 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com x7NCvUDD032627
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-	s=dec2015msa; t=1566565051;
-	bh=Ub/aJVgL0Rn8PS4l6h9MNegKzCHvoAER+77sx19M0UY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=MMGhHUo0NddTT3JQp1bQUVpf3alqjbGeI34v56Azm5jeM+QQ55P7YDcCaUn1r9DHA
-	0pRgTSmVVF6egazvAJsgqbdoV8ra1Ad9bJJFnReGdSDaplZtkVmo0o+C/byQpCVYGD
-	BERA6PpfLoq/B2KyRon6VOKLe/UlK+nHOB0ZR0t6AneB+hBlCu9zC7DsrrMtXuKZkn
-	UEEl97YRRPyH1lKCb6aIAxbt+JhL/HttWx8BJYoUT/rIFOgWzqUXC58lHFoBv65mCE
-	moeBOh7AiIJzJOZ0q5hkxCW8yciPGtkyxnkRhKD3JmyNM4I6QFoF9EFbjpNAZFOfx0
-	Xu7VDIn6CIkOQ==
-X-Nifty-SrcIP: [209.85.217.49]
-Received: by mail-vs1-f49.google.com with SMTP id b187so6147015vsc.9
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 23 Aug 2019 05:57:31 -0700 (PDT)
-X-Gm-Message-State: APjAAAXSNbUmMp/5CWupvVHGFixRF4aGNucqmljZ7+G7UZFu1n+YaL/6
-	t1rC5sCTDf+Ib7LAABZvRP+orI1Z5LxkmW2OZEE=
-X-Google-Smtp-Source: APXvYqxkUJRBa4Gu9eJJ/5yY3HcOprjiA+d7CfrbMqgNuwpDTZWvyQ2suLPAbzt4RY2ouQTzsdu17SpfNRdBFLKueKM=
-X-Received: by 2002:a67:8a83:: with SMTP id m125mr2655031vsd.181.1566565048153;
-	Fri, 23 Aug 2019 05:57:28 -0700 (PDT)
+	Fri, 23 Aug 2019 14:54:46 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 1190E22CE3;
+	Fri, 23 Aug 2019 14:54:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1566572086;
+	bh=lJbwcNuXBLBOGKeSUzkdVWU1aT1DeSZnQwEw8jSvh0g=;
+	h=Date:From:To:Cc:Subject:From;
+	b=ShNGWUgimD1YRDPnp8mWCYcV6Y573AmwOnbaQNXNxJd9SaJwcO1xv4+47K7dvM7pH
+	rwo4Z+nYh2rWgnjCz+Dt8LRskc3zzIVY936SHZfdfEdxr5f99vh6lMIN0yBWGWuo7s
+	yT3CqaQ7Mr4NgJFyR1cbt90YH3ybeLIcDHaNhc8o=
+Date: Fri, 23 Aug 2019 15:54:41 +0100
+From: Will Deacon <will@kernel.org>
+To: joro@8bytes.org
+Subject: [GIT PULL] iommu/arm-smmu: Big batch of updates for 5.4
+Message-ID: <20190823145440.2b7ejsnglz2bju5k@willie-the-truck>
 MIME-Version: 1.0
-References: <20190506223334.1834-1-nicoleotsuka@gmail.com>
-	<20190506223334.1834-3-nicoleotsuka@gmail.com>
-	<CAK7LNARacEorb38mVBw_V-Zvz-znWgBma1AP1-z_5B_xZU4ogg@mail.gmail.com>
-In-Reply-To: <CAK7LNARacEorb38mVBw_V-Zvz-znWgBma1AP1-z_5B_xZU4ogg@mail.gmail.com>
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date: Fri, 23 Aug 2019 21:56:52 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQfYBCoChMV=MOwcUyVoqRkrPWs7DaWdzDqjBe18gGiAQ@mail.gmail.com>
-Message-ID: <CAK7LNAQfYBCoChMV=MOwcUyVoqRkrPWs7DaWdzDqjBe18gGiAQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] dma-contiguous: Use fallback alloc_pages for
-	single pages
-To: Nicolin Chen <nicoleotsuka@gmail.com>, Christoph Hellwig <hch@lst.de>,
-	linux-mmc <linux-mmc@vger.kernel.org>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Adrian Hunter <adrian.hunter@intel.com>
-X-Mailman-Approved-At: Fri, 23 Aug 2019 13:01:16 +0000
-Cc: Chris Zankel <chris@zankel.net>, linux-xtensa@linux-xtensa.org,
-	Kees Cook <keescook@chromium.org>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Tony Lindgren <tony@atomide.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>, Russell King <linux@armlinux.org.uk>,
-	iommu@lists.linux-foundation.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Thierry Reding <treding@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: jean-philippe@linaro.org, iommu@lists.linux-foundation.org,
+	robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -102,157 +70,103 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-+ linux-mmc, Ulf Hansson, Adrian Hunter,
+Hi Joerg,
 
+Please pull these ARM SMMU updates for 5.4. The branch is based on the
+for-joerg/batched-unmap branch that you pulled into iommu/core already
+because I didn't want to rebase everything onto -rc3. The pull request
+was generated against iommu/core.
 
-ADMA of SDHCI is not working
-since bd2e75633c8012fc8a7431c82fda66237133bf7e
+There's a lot of code here, but the headlines are:
 
+  * Complete refactoring of arm-smmu.c to allow for implementation-specific
+    quirks, errata and general weirdness outside of the core architecture
+    support code.
 
-Did anybody see the same problem?
+  * Rework of the SMMUv3 ATS support, after it was found to be broken.
+    Since it's a pretty niche thing for us right now, the support is
+    effectively reverted for -stable kernels.
 
+  * New algorithm for submitting commands to the SMMUv3 command queue
+    which removes the need for a spinlock and reduces CPU usage under
+    heavy I/O loads.
 
-Masahiro
+There's some ongoing work to extend io-pgtable to be able to deal with
+high virtual address ranges but that's not quite there yet and I hope
+to queue it for 5.5 instead.
 
+Any problems, just shout (although it's a public holiday on Monday in
+the UK, so you'll have to shout very loudly indeed).
 
+Cheers,
 
+Will
 
-On Fri, Aug 23, 2019 at 9:49 PM Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
->
-> On Tue, May 7, 2019 at 7:36 AM Nicolin Chen <nicoleotsuka@gmail.com> wrote:
-> >
-> > The addresses within a single page are always contiguous, so it's
-> > not so necessary to always allocate one single page from CMA area.
-> > Since the CMA area has a limited predefined size of space, it may
-> > run out of space in heavy use cases, where there might be quite a
-> > lot CMA pages being allocated for single pages.
-> >
-> > However, there is also a concern that a device might care where a
-> > page comes from -- it might expect the page from CMA area and act
-> > differently if the page doesn't.
-> >
-> > This patch tries to use the fallback alloc_pages path, instead of
-> > one-page size allocations from the global CMA area in case that a
-> > device does not have its own CMA area. This'd save resources from
-> > the CMA global area for more CMA allocations, and also reduce CMA
-> > fragmentations resulted from trivial allocations.
-> >
-> > Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
->
->
-> This commit (bd2e75633c8012fc8a7431c82fda66237133bf7e)
-> broke the DMA for my MMC driver in the following way:
->
->
->
->
-> [    1.876755] mmc0: ADMA error
-> [    1.883385] mmc0: sdhci: ============ SDHCI REGISTER DUMP ===========
-> [    1.889834] mmc0: sdhci: Sys addr:  0x00000000 | Version:  0x00000002
-> [    1.896284] mmc0: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000001
-> [    1.902733] mmc0: sdhci: Argument:  0x00000000 | Trn mode: 0x00000013
-> [    1.909182] mmc0: sdhci: Present:   0x01ff02f6 | Host ctl: 0x00000019
-> [    1.915631] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000000
-> [    1.922081] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x0000fa07
-> [    1.928530] mmc0: sdhci: Timeout:   0x0000000b | Int stat: 0x00000001
-> [    1.934981] mmc0: sdhci: Int enab:  0x03ff008b | Sig enab: 0x03ff008b
-> [    1.941429] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
-> [    1.947880] mmc0: sdhci: Caps:      0x546ec800 | Caps_1:   0x00000000
-> [    1.954329] mmc0: sdhci: Cmd:       0x0000083a | Max curr: 0x00000000
-> [    1.960778] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
-> [    1.967229] mmc0: sdhci: Resp[2]:   0x320f5903 | Resp[3]:  0x3fd05e00
-> [    1.973678] mmc0: sdhci: Host ctl2: 0x00000000
-> [    1.978125] mmc0: sdhci: ADMA Err:  0x00000001 | ADMA Ptr: 0x000000013965b200
-> [    1.985271] mmc0: sdhci: ============================================
-> [    1.991758] mmc0: error -5 whilst initialising MMC card
-> [    1.991913] 43fb0000.uart: ttyS1 at MMIO 0x43fb0000 (irq = 0,
-> base_baud = 768000) is a 16550A
-> [    2.011011] hctosys: unable to open rtc device (rtc0)
-> [    2.017694] Freeing unused kernel memory: 2368K
-> [    2.027131] Run /init as init process
-> Starting syslogd: OK
-> Starting klogd: OK
-> Initializing random number generator... [    2.074399] random: dd:
-> uninitialized urandom read (512 bytes read)
-> done.
-> Starting network: OK
-> [    2.109593] mmc0: ADMA error
-> [    2.112488] mmc0: sdhci: ============ SDHCI REGISTER DUMP ===========
-> [    2.118941] mmc0: sdhci: Sys addr:  0x00000000 | Version:  0x00000002
-> [    2.125389] mmc0: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000001
-> [    2.131840] mmc0: sdhci: Argument:  0x00000000 | Trn mode: 0x00000013
-> [    2.138289] mmc0: sdhci: Present:   0x01ff02f6 | Host ctl: 0x00000019
-> [    2.144738] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000000
-> [    2.151188] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x00004e47
-> [    2.157637] mmc0: sdhci: Timeout:   0x0000000b | Int stat: 0x00000001
-> [    2.164087] mmc0: sdhci: Int enab:  0x03ff008b | Sig enab: 0x03ff008b
-> [    2.170536] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
-> [    2.176987] mmc0: sdhci: Caps:      0x546ec800 | Caps_1:   0x00000000
-> [    2.183435] mmc0: sdhci: Cmd:       0x0000083a | Max curr: 0x00000000
-> [    2.189886] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
-> [    2.196335] mmc0: sdhci: Resp[2]:   0x320f5903 | Resp[3]:  0x3fd05e00
-> [    2.202784] mmc0: sdhci: Host ctl2: 0x00000000
-> [    2.207232] mmc0: sdhci: ADMA Err:  0x00000001 | ADMA Ptr: 0x000000013965b200
-> [    2.214379] mmc0: sdhci: ============================================
->
-> [    2.220881] mmc0: error -5 whilst initialising MMC card
-> Welcome to Buildroot
-> buildroot login: [    2.332786] mmc0: ADMA error
-> [    2.335668] mmc0: sdhci: ============ SDHCI REGISTER DUMP ===========
-> [    2.342119] mmc0: sdhci: Sys addr:  0x00000000 | Version:  0x00000002
-> [    2.348568] mmc0: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000001
-> [    2.355018] mmc0: sdhci: Argument:  0x00000000 | Trn mode: 0x00000013
-> [    2.361468] mmc0: sdhci: Present:   0x01ff02f6 | Host ctl: 0x00000019
-> [    2.367917] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000000
-> [    2.374367] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x0000f447
-> [    2.380816] mmc0: sdhci: Timeout:   0x0000000b | Int stat: 0x00000001
-> [    2.387267] mmc0: sdhci: Int enab:  0x03ff008b | Sig enab: 0x03ff008b
-> [    2.393716] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
-> [    2.400166] mmc0: sdhci: Caps:      0x546ec800 | Caps_1:   0x00000000
-> [    2.406615] mmc0: sdhci: Cmd:       0x0000083a | Max curr: 0x00000000
-> [    2.413065] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
-> [    2.419515] mmc0: sdhci: Resp[2]:   0x320f5903 | Resp[3]:  0x3fd05e00
-> [    2.425963] mmc0: sdhci: Host ctl2: 0x00000000
-> [    2.430412] mmc0: sdhci: ADMA Err:  0x00000001 | ADMA Ptr: 0x000000013965b200
-> [    2.437557] mmc0: sdhci: ============================================
-> [    2.444031] mmc0: error -5 whilst initialising MMC card
-> [    2.572203] mmc0: ADMA error
-> [    2.575089] mmc0: sdhci: ============ SDHCI REGISTER DUMP ===========
-> [    2.581540] mmc0: sdhci: Sys addr:  0x00000000 | Version:  0x00000002
-> [    2.587989] mmc0: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000001
-> [    2.594439] mmc0: sdhci: Argument:  0x00000000 | Trn mode: 0x00000013
-> [    2.600889] mmc0: sdhci: Present:   0x01ef02f6 | Host ctl: 0x00000019
-> [    2.607339] mmc0: sdhci: Power:     0x0000000b | Blk gap:  0x00000000
-> [    2.613788] mmc0: sdhci: Wake-up:   0x00000000 | Clock:    0x0000e8c7
-> [    2.620237] mmc0: sdhci: Timeout:   0x0000000b | Int stat: 0x00000001
-> [    2.626686] mmc0: sdhci: Int enab:  0x03ff008b | Sig enab: 0x03ff008b
-> [    2.633137] mmc0: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
-> [    2.639586] mmc0: sdhci: Caps:      0x546ec800 | Caps_1:   0x00000000
-> [    2.646036] mmc0: sdhci: Cmd:       0x0000083a | Max curr: 0x00000000
-> [    2.652485] mmc0: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0xffffffff
-> [    2.658936] mmc0: sdhci: Resp[2]:   0x320f5903 | Resp[3]:  0x3fd05e00
-> [    2.665384] mmc0: sdhci: Host ctl2: 0x00000000
-> [    2.669832] mmc0: sdhci: ADMA Err:  0x00000001 | ADMA Ptr: 0x000000013965b200
-> [    2.676979] mmc0: sdhci: ============================================
-> [    2.683450] mmc0: error -5 whilst initialising MMC card
->
-> CTRL-A Z for help | 115200 8N1 | NOR | Minicom 2.7.1 | VT102 | Offline
-> | ttyUSB0
->
-> Reverting this commit fixed the problem.
->
->
->
-> --
-> Best Regards
-> Masahiro Yamada
+--->8
 
+The following changes since commit 3951c41af4a65ba418e6b1b973d398552bedb84f:
 
+  iommu/io-pgtable: Pass struct iommu_iotlb_gather to ->tlb_add_page() (2019-07-29 17:22:59 +0100)
 
--- 
-Best Regards
-Masahiro Yamada
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 1554240ff864da9eb99e2233d3faf191c567c47a:
+
+  Merge branches 'for-joerg/arm-smmu/smmu-v2' and 'for-joerg/arm-smmu/smmu-v3' into for-joerg/arm-smmu/updates (2019-08-23 15:05:45 +0100)
+
+----------------------------------------------------------------
+Robin Murphy (18):
+      iommu/arm-smmu: Mask TLBI address correctly
+      iommu/qcom: Mask TLBI addresses correctly
+      iommu/arm-smmu: Convert GR0 registers to bitfields
+      iommu/arm-smmu: Convert GR1 registers to bitfields
+      iommu/arm-smmu: Convert context bank registers to bitfields
+      iommu/arm-smmu: Rework cb_base handling
+      iommu/arm-smmu: Split arm_smmu_tlb_inv_range_nosync()
+      iommu/arm-smmu: Get rid of weird "atomic" write
+      iommu/arm-smmu: Abstract GR1 accesses
+      iommu/arm-smmu: Abstract context bank accesses
+      iommu/arm-smmu: Abstract GR0 accesses
+      iommu/arm-smmu: Rename arm-smmu-regs.h
+      iommu/arm-smmu: Add implementation infrastructure
+      iommu/arm-smmu: Move Secure access quirk to implementation
+      iommu/arm-smmu: Add configuration implementation hook
+      iommu/arm-smmu: Add reset implementation hook
+      iommu/arm-smmu: Add context init implementation hook
+      iommu/arm-smmu: Ensure 64-bit I/O accessors are available on 32-bit CPU
+
+Will Deacon (16):
+      iommu/arm-smmu-v3: Separate s/w and h/w views of prod and cons indexes
+      iommu/arm-smmu-v3: Drop unused 'q' argument from Q_OVF macro
+      iommu/arm-smmu-v3: Move low-level queue fields out of arm_smmu_queue
+      iommu/arm-smmu-v3: Operate directly on low-level queue where possible
+      iommu/arm-smmu-v3: Reduce contention during command-queue insertion
+      iommu/arm-smmu-v3: Defer TLB invalidation until ->iotlb_sync()
+      iommu/arm-smmu: Make private implementation details static
+      iommu/arm-smmu-v3: Document ordering guarantees of command insertion
+      iommu/arm-smmu-v3: Disable detection of ATS and PRI
+      iommu/arm-smmu-v3: Remove boolean bitfield for 'ats_enabled' flag
+      iommu/arm-smmu-v3: Don't issue CMD_SYNC for zero-length invalidations
+      iommu/arm-smmu-v3: Rework enabling/disabling of ATS for PCI masters
+      iommu/arm-smmu-v3: Fix ATC invalidation ordering wrt main TLBs
+      iommu/arm-smmu-v3: Avoid locking on invalidation path when not using ATS
+      Revert "iommu/arm-smmu-v3: Disable detection of ATS and PRI"
+      Merge branches 'for-joerg/arm-smmu/smmu-v2' and 'for-joerg/arm-smmu/smmu-v3' into for-joerg/arm-smmu/updates
+
+ MAINTAINERS                   |   3 +-
+ drivers/iommu/Makefile        |   2 +-
+ drivers/iommu/arm-smmu-impl.c | 174 ++++++++
+ drivers/iommu/arm-smmu-regs.h | 210 ----------
+ drivers/iommu/arm-smmu-v3.c   | 945 +++++++++++++++++++++++++++++++-----------
+ drivers/iommu/arm-smmu.c      | 579 ++++++++------------------
+ drivers/iommu/arm-smmu.h      | 402 ++++++++++++++++++
+ drivers/iommu/qcom_iommu.c    |  17 +-
+ 8 files changed, 1482 insertions(+), 850 deletions(-)
+ create mode 100644 drivers/iommu/arm-smmu-impl.c
+ delete mode 100644 drivers/iommu/arm-smmu-regs.h
+ create mode 100644 drivers/iommu/arm-smmu.h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
