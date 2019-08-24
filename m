@@ -4,48 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C987AC3A5A2
-	for <iommu@archiver.kernel.org>; Sat, 24 Aug 2019 03:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB76CC3A5A2
+	for <iommu@archiver.kernel.org>; Sat, 24 Aug 2019 03:20:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 68B432133F
-	for <iommu@archiver.kernel.org>; Sat, 24 Aug 2019 03:19:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68B432133F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id B74E021874
+	for <iommu@archiver.kernel.org>; Sat, 24 Aug 2019 03:20:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B74E021874
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4DC37BB3;
-	Sat, 24 Aug 2019 03:19:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 88094BE4;
+	Sat, 24 Aug 2019 03:20:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B6A31B5F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ADE5EBB3
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 24 Aug 2019 01:49:23 +0000 (UTC)
+	Sat, 24 Aug 2019 03:20:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CF9F98A2
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D06C1A7
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 24 Aug 2019 01:49:22 +0000 (UTC)
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-	by Forcepoint Email with ESMTP id 72B379924FCC14EF7B24;
-	Sat, 24 Aug 2019 09:49:20 +0800 (CST)
-Received: from localhost.localdomain (10.67.212.75) by
-	DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server
-	id 14.3.439.0; Sat, 24 Aug 2019 09:49:16 +0800
-From: Yunsheng Lin <linyunsheng@huawei.com>
-To: <joro@8bytes.org>
-Subject: [PATCH] iommu/dma: fix for dereferencing before null checking
-Date: Sat, 24 Aug 2019 09:47:12 +0800
-Message-ID: <1566611232-165399-1-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.8.1
+	Sat, 24 Aug 2019 03:20:32 +0000 (UTC)
+X-UUID: ad9e56ca1daa4d6fbced1c481d6266fd-20190824
+X-UUID: ad9e56ca1daa4d6fbced1c481d6266fd-20190824
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Cellopoint E-mail Firewall v4.1.10 Build 0707 with TLS)
+	with ESMTP id 612082373; Sat, 24 Aug 2019 11:03:39 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+	mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Sat, 24 Aug 2019 11:03:31 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
+	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Sat, 24 Aug 2019 11:03:30 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: [PATCH v11 05/23] iommu/mediatek: Fix iova_to_phys PA start for 4GB
+	mode
+Date: Sat, 24 Aug 2019 11:01:50 +0800
+Message-ID: <1566615728-26388-6-git-send-email-yong.wu@mediatek.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1566615728-26388-1-git-send-email-yong.wu@mediatek.com>
+References: <1566615728-26388-1-git-send-email-yong.wu@mediatek.com>
 MIME-Version: 1.0
-X-Originating-IP: [10.67.212.75]
-X-CFilter-Loop: Reflected
-X-Mailman-Approved-At: Sat, 24 Aug 2019 03:19:35 +0000
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>,
+	linux-mediatek@lists.infradead.org, ming-fan.chen@mediatek.com,
+	anan.sun@mediatek.com, Matthias Kaehlcke <mka@chromium.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,40 +80,90 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The cookie is dereferenced before null checking in the function
-iommu_dma_init_domain.
+In M4U 4GB mode, the physical address is remapped as below:
 
-This patch moves the dereferencing after the null checking.
+CPU Physical address:
 
-Fixes: fdbe574eb693 ("iommu/dma: Allow MSI-only cookies")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+====================
+
+0      1G       2G     3G       4G     5G
+|---A---|---B---|---C---|---D---|---E---|
++--I/O--+------------Memory-------------+
+
+IOMMU output physical address:
+ =============================
+
+                                4G      5G     6G      7G      8G
+                                |---E---|---B---|---C---|---D---|
+                                +------------Memory-------------+
+
+The Region 'A'(I/O) can not be mapped by M4U; For Region 'B'/'C'/'D', the
+bit32 of the CPU physical address always is needed to set, and for Region
+'E', the CPU physical address keep as is. something looks like this:
+CPU PA         ->    M4U OUTPUT PA
+0x4000_0000          0x1_4000_0000 (Add bit32)
+0x8000_0000          0x1_8000_0000 ...
+0xc000_0000          0x1_c000_0000 ...
+0x1_0000_0000        0x1_0000_0000 (No change)
+
+Additionally, the iommu consumers always use the CPU phyiscal address.
+
+The PA in the iova_to_phys that is got from v7s always is u32, But
+from the CPU point of view, PA only need add BIT(32) when PA < 0x4000_0000.
+
+Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
+for 4GB mode")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/dma-iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d991d40..cdf7814 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -303,13 +303,15 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		u64 size, struct device *dev)
- {
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
--	struct iova_domain *iovad = &cookie->iovad;
- 	unsigned long order, base_pfn;
-+	struct iova_domain *iovad;
- 	int attr;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index c6e6dc3..9ba2706 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -107,6 +107,30 @@ struct mtk_iommu_domain {
  
- 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
- 		return -EINVAL;
+ static const struct iommu_ops mtk_iommu_ops;
  
-+	iovad = &cookie->iovad;
++/*
++ * In M4U 4GB mode, the physical address is remapped as below:
++ *
++ * CPU Physical address:
++ * ====================
++ *
++ * 0      1G       2G     3G       4G     5G
++ * |---A---|---B---|---C---|---D---|---E---|
++ * +--I/O--+------------Memory-------------+
++ *
++ * IOMMU output physical address:
++ *  =============================
++ *
++ *                                 4G      5G     6G      7G      8G
++ *                                 |---E---|---B---|---C---|---D---|
++ *                                 +------------Memory-------------+
++ *
++ * The Region 'A'(I/O) can NOT be mapped by M4U; For Region 'B'/'C'/'D', the
++ * bit32 of the CPU physical address always is needed to set, and for Region
++ * 'E', the CPU physical address keep as is.
++ * Additionally, The iommu consumers always use the CPU phyiscal address.
++ */
++#define MTK_IOMMU_4GB_MODE_REMAP_BASE	 0x40000000
 +
- 	/* Use the smallest supported page size for IOVA granularity */
- 	order = __ffs(domain->pgsize_bitmap);
- 	base_pfn = max_t(unsigned long, 1, base >> order);
+ static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
+ 
+ #define for_each_m4u(data)	list_for_each_entry(data, &m4ulist, list)
+@@ -401,7 +425,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	pa = dom->iop->iova_to_phys(dom->iop, iova);
+ 	spin_unlock_irqrestore(&dom->pgtlock, flags);
+ 
+-	if (data->enable_4GB)
++	if (data->enable_4GB && pa < MTK_IOMMU_4GB_MODE_REMAP_BASE)
+ 		pa |= BIT_ULL(32);
+ 
+ 	return pa;
 -- 
-2.8.1
+1.9.1
 
 _______________________________________________
 iommu mailing list
