@@ -2,57 +2,102 @@ Return-Path: <SRS0=vyM6=WW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC3AC3A59F
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 17:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB21C3A59F
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 17:49:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EB7220850
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 17:11:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EB7220850
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7F7322184D
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 17:49:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F7322184D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=us.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D412A1BDB;
-	Mon, 26 Aug 2019 17:11:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 382BC2158;
+	Mon, 26 Aug 2019 17:49:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CE0E51BD0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 291C72166
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 17:08:54 +0000 (UTC)
+	Mon, 26 Aug 2019 17:49:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C0ABB1FB
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 96A66710
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 17:08:53 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	26 Aug 2019 10:08:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,433,1559545200"; d="scan'208";a="191807683"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga002.jf.intel.com with ESMTP; 26 Aug 2019 10:08:40 -0700
-Date: Mon, 26 Aug 2019 10:12:30 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex
-	Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v5 00/19] Shared virtual address IOMMU and VT-d support
-Message-ID: <20190826101230.69785216@jacob-builder>
-In-Reply-To: <1565900005-62508-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1565900005-62508-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Mon, 26 Aug 2019 17:49:06 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x7QHlQdD139893
+	for <iommu@lists.linux-foundation.org>; Mon, 26 Aug 2019 13:49:05 -0400
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2umgu989ab-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Mon, 26 Aug 2019 13:49:05 -0400
+Received: from localhost
+	by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	Only! Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <linuxram@us.ibm.com>;
+	Mon, 26 Aug 2019 18:49:03 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+	by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Mon, 26 Aug 2019 18:48:59 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
+	[9.149.105.61])
+	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x7QHmw6w37683404
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Mon, 26 Aug 2019 17:48:58 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1331C11C04C;
+	Mon, 26 Aug 2019 17:48:58 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EE7C111C050;
+	Mon, 26 Aug 2019 17:48:53 +0000 (GMT)
+Received: from ram.ibm.com (unknown [9.85.172.199])
+	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+	Mon, 26 Aug 2019 17:48:53 +0000 (GMT)
+Date: Mon, 26 Aug 2019 10:48:49 -0700
+From: Ram Pai <linuxram@us.ibm.com>
+To: David Gibson <david@gibson.dropbear.id.au>, Christoph Hellwig <hch@lst.de>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+	<20190810143038-mutt-send-email-mst@kernel.org>
+	<20190810220702.GA5964@ram.ibm.com> <20190811055607.GA12488@lst.de>
+	<20190812095156.GD3947@umbus.fritz.box>
+	<20190813132617.GA6426@lst.de>
+	<20190813142439.GO3947@umbus.fritz.box>
+	<20190813154537.GE5964@ram.ibm.com>
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Tian,
-	Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190813154537.GE5964@ram.ibm.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19082617-0008-0000-0000-0000030D8F60
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082617-0009-0000-0000-00004A2BC8CB
+Message-Id: <20190826174849.GA5445@ram.ibm.com>
+Subject: RE: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-08-26_08:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1906280000 definitions=main-1908260173
+Cc: "Michael S. Tsirkin" <mst@redhat.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
+	linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+	Paul Mackerras <paulus@ozlabs.org>,
+	iommu@lists.linux-foundation.org, ram.n.pai@gmail.com,
+	linuxppc-devel@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,212 +110,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Reply-To: Ram Pai <linuxram@us.ibm.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Joerg and all,
+On Tue, Aug 13, 2019 at 08:45:37AM -0700, Ram Pai wrote:
+> On Wed, Aug 14, 2019 at 12:24:39AM +1000, David Gibson wrote:
+> > On Tue, Aug 13, 2019 at 03:26:17PM +0200, Christoph Hellwig wrote:
+> > > On Mon, Aug 12, 2019 at 07:51:56PM +1000, David Gibson wrote:
+> > > > AFAICT we already kind of abuse this for the VIRTIO_F_IOMMU_PLATFORM,
+> > > > because to handle for cases where it *is* a device limitation, we
+> > > > assume that if the hypervisor presents VIRTIO_F_IOMMU_PLATFORM then
+> > > > the guest *must* select it.
+> > > > 
+> > > > What we actually need here is for the hypervisor to present
+> > > > VIRTIO_F_IOMMU_PLATFORM as available, but not required.  Then we need
+> > > > a way for the platform core code to communicate to the virtio driver
+> > > > that *it* requires the IOMMU to be used, so that the driver can select
+> > > > or not the feature bit on that basis.
+> > > 
+> > > I agree with the above, but that just brings us back to the original
+> > > issue - the whole bypass of the DMA OPS should be an option that the
+> > > device can offer, not the other way around.  And we really need to
+> > > fix that root cause instead of doctoring around it.
+> > 
+> > I'm not exactly sure what you mean by "device" in this context.  Do
+> > you mean the hypervisor (qemu) side implementation?
+> > 
+> > You're right that this was the wrong way around to begin with, but as
+> > well as being hard to change now, I don't see how it really addresses
+> > the current problem.  The device could default to IOMMU and allow
+> > bypass, but the driver would still need to get information from the
+> > platform to know that it *can't* accept that option in the case of a
+> > secure VM.  Reversed sense, but the same basic problem.
+> > 
+> > The hypervisor does not, and can not be aware of the secure VM
+> > restrictions - only the guest side platform code knows that.
+> 
+> This statement is almost entirely right. I will rephrase it to make it
+> entirely right.   
+> 
+> The hypervisor does not, and can not be aware of the secure VM
+> requirement that it needs to do some special processing that has nothing
+> to do with DMA address translation - only the guest side platform code
+> know that.
+> 
+> BTW: I do not consider 'bounce buffering' as 'DMA address translation'.
+> DMA address translation, translates CPU address to DMA address.  Bounce
+> buffering moves the data from one buffer at a given CPU address to
+> another buffer at a different CPU address.  Unfortunately the current
+> DMA ops conflates the two.  The need to do 'DMA address translation' 
+> is something the device can enforce.  But the need to do bounce
+> buffering, is something that the device should not be aware and should be
+> entirely a decision made locally by the kernel/driver in the secure VM.
 
-Just wondering if you have more comments for this version. Since
-the complete vSVA patchset is quite large, my hope is that we can make
-incremental progress with smaller sets.
 
-My plans are:
-1. vSVA IOMMU APIs and VT-d support of PCI devices (this patchset)
-2. Page request service
-3. mdev support
-4. code merge with Jean's generic sva_bind() APIs
+Christoph,
 
-For this set, we don't need PRS related patches (1-4). I included
-them because they are in Jean's common API repo. Could you review 5-19
-and consider for v5.4? This will make further submissions much easier.
+	Since we have not heard back from you, I am not sure where you
+	stand on this issue now.   One of the three things are
+	possible..
+
+	(a) our above explaination did not make sense and hence
+		you decided to ignore it.
+	(b) our above above made some sense and need more time to think 
+		and respond.
+	(c) you totally forgot about this.
+
+
+I hope it is (b). We want a solution that works for all, and your inputs 
+are important to us.
+
 
 Thanks,
+RP
 
-Jacob
-
-On Thu, 15 Aug 2019 13:13:06 -0700
-Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-
-> Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on
-> Intel platforms allow address space sharing between device DMA and
-> applications. SVA can reduce programming complexity and enhance
-> security. This series is intended to enable SVA virtualization, i.e.
-> shared guest application address space and physical device DMA
-> address. Only IOMMU portion of the changes are included in this
-> series. Additional support is needed in VFIO and QEMU (will be
-> submitted separately) to complete this functionality.
-> 
-> To make incremental changes and reduce the size of each patchset.
-> This series does not inlcude support for page request services.
-> 
-> In VT-d implementation, PASID table is per device and maintained in
-> the host. Guest PASID table is shadowed in VMM where virtual IOMMU is
-> emulated.
-> 
->     .-------------.  .---------------------------.
->     |   vIOMMU    |  | Guest process CR3, FL only|
->     |             |  '---------------------------'
->     .----------------/
->     | PASID Entry |--- PASID cache flush -
->     '-------------'                       |
->     |             |                       V
->     |             |                CR3 in GPA
->     '-------------'
-> Guest
-> ------| Shadow |--------------------------|--------
->       v        v                          v
-> Host
->     .-------------.  .----------------------.
->     |   pIOMMU    |  | Bind FL for GVA-GPA  |
->     |             |  '----------------------'
->     .----------------/  |
->     | PASID Entry |     V (Nested xlate)
->     '----------------\.------------------------------.
->     |             |   |SL for GPA-HPA, default domain|
->     |             |   '------------------------------'
->     '-------------'
-> Where:
->  - FL = First level/stage one page tables
->  - SL = Second level/stage two page tables
-> 
-> 
-> This work is based on collaboration with other developers on the IOMMU
-> mailing list. Notably,
-> 
-> [1] Common APIs git://linux-arm.org/linux-jpb.git sva/api
-> 
-> [2] [RFC PATCH 2/6] drivers core: Add I/O ASID allocator by
-> Jean-Philippe Brucker
-> https://www.spinics.net/lists/iommu/msg30639.html
-> 
-> [3] [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation by
-> Lu Baolu https://lkml.org/lkml/2018/11/12/1921
-> 
-> [4] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
->     Address (SVA)
->     https://lwn.net/Articles/754331/
-> 
-> There are roughly three parts:
-> 1. Generic PASID allocator [1] with extension to support custom
-> allocator 2. IOMMU cache invalidation passdown from guest to host
-> 3. Guest PASID bind for nested translation
-> 
-> All generic IOMMU APIs are reused from [1] with minor tweaks. With
-> this patchset, guest SVA without page request works on VT-d. PRS
-> patches will come next as we try to avoid large patchset that is hard
-> to review. The patches for basic SVA support (w/o PRS) starts:
-> [PATCH v5 05/19] iommu: Introduce attach/detach_pasid_table API
-> 
-> It is worth noting that unlike sMMU nested stage setup, where PASID
-> table is owned by the guest, VT-d PASID table is owned by the host,
-> individual PASIDs are bound instead of the PASID table.
-> 
-> This series is based on the new VT-d 3.0 Specification
-> (https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf).
-> This is different than the older series in [4] which was based on the
-> older specification that does not have scalable mode.
-> 
-> 
-> ChangeLog:
-> 	- V5
-> 	  Rebased on v5.3-rc4 which has some of the IOMMU fault APIs
-> merged. Addressed v4 review comments from Eric Auger, Baolu Lu, and
-> 	    Jonathan Cameron. Specific changes are as follows:
-> 	  - Refined custom IOASID allocator to support multiple
-> vIOMMU, hotplug cases.
-> 	  - Extracted vendor data from IOMMU guest PASID bind data,
-> for VT-d will support all necessary guest PASID entry fields for PASID
-> 	    bind.
-> 	  - Support non-identity host-guest PASID mapping
-> 	  - Exception handling in various cases
-> 
-> 	- V4
-> 	  - Redesigned IOASID allocator such that it can support
-> custom allocators with shared helper functions. Use separate XArray
-> 	  to store IOASIDs per allocator. Took advice from Eric Auger
-> to have default allocator use the generic allocator structure.
-> 	  Combined into one patch in that the default allocator is
-> just "another" allocator now. Can be built as a module in case of
-> 	  driver use without IOMMU.
-> 	  - Extended bind guest PASID data to support SMMU and
-> non-identity guest to host PASID mapping
-> https://lkml.org/lkml/2019/5/21/802
-> 	  - Rebased on Jean's sva/api common tree, new patches starts
-> with [PATCH v4 10/22]
-> 
-> 	- V3
-> 	  - Addressed thorough review comments from Eric Auger (Thank
-> you!)
-> 	  - Moved IOASID allocator from driver core to IOMMU code per
-> 	    suggestion by Christoph Hellwig
-> 	    (https://lkml.org/lkml/2019/4/26/462)
-> 	  - Rebased on top of Jean's SVA API branch and Eric's v7[1]
-> 	    (git://linux-arm.org/linux-jpb.git sva/api)
-> 	  - All IOMMU APIs are unmodified (except the new bind guest
-> PASID call in patch 9/16)
-> 
-> 	- V2
-> 	  - Rebased on Joerg's IOMMU x86/vt-d branch v5.1-rc4
-> 	  - Integrated with Eric Auger's new v7 series for common APIs
-> 	  (https://github.com/eauger/linux/tree/v5.1-rc3-2stage-v7)
-> 	  - Addressed review comments from Andy Shevchenko and Alex
-> Williamson on IOASID custom allocator.
-> 	  - Support multiple custom IOASID allocators (vIOMMUs) and
-> dynamic registration.
-> 
-> 
-> Jacob Pan (14):
->   iommu: Add a timeout parameter for PRQ response
->   iommu: handle page response timeout
->   iommu: Introduce attach/detach_pasid_table API
->   iommu/ioasid: Add custom allocators
->   iommu: Introduce guest PASID bind function
->   iommu/vt-d: Add custom allocator for IOASID
->   iommu/vt-d: Replace Intel specific PASID allocator with IOASID
->   iommu/vt-d: Move domain helper to header
->   iommu/vt-d: Avoid duplicated code for PASID setup
->   iommu/vt-d: Add nested translation helper function
->   iommu/vt-d: Misc macro clean up for SVM
->   iommu/vt-d: Add bind guest PASID support
->   iommu/vt-d: Support flushing more translation cache types
->   iommu/vt-d: Add svm/sva invalidate function
-> 
-> Jean-Philippe Brucker (3):
->   trace/iommu: Add sva trace events
->   iommu: Use device fault trace event
->   iommu: Add I/O ASID allocator
-> 
-> Lu Baolu (1):
->   iommu/vt-d: Enlightened PASID allocation
-> 
-> Yi L Liu (1):
->   iommu: Introduce cache_invalidate API
-> 
->  Documentation/admin-guide/kernel-parameters.txt |   8 +
->  drivers/iommu/Kconfig                           |   5 +
->  drivers/iommu/Makefile                          |   1 +
->  drivers/iommu/dmar.c                            |  46 +++
->  drivers/iommu/intel-iommu.c                     | 259 +++++++++++++-
->  drivers/iommu/intel-pasid.c                     | 343
-> ++++++++++++++++--- drivers/iommu/intel-pasid.h
-> |  25 +- drivers/iommu/intel-svm.c                       | 298
-> +++++++++++++--- drivers/iommu/ioasid.c                          |
-> 433 ++++++++++++++++++++++++
-> drivers/iommu/iommu.c                           | 139 ++++++++
-> include/linux/intel-iommu.h                     |  39 ++-
-> include/linux/intel-svm.h                       |  17 +
-> include/linux/ioasid.h                          |  75 ++++
-> include/linux/iommu.h                           |  58 ++++
-> include/trace/events/iommu.h                    |  84 +++++
-> include/uapi/linux/iommu.h                      | 219 ++++++++++++ 16
-> files changed, 1925 insertions(+), 124 deletions(-) create mode
-> 100644 drivers/iommu/ioasid.c create mode 100644
-> include/linux/ioasid.h
-> 
-
-[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
