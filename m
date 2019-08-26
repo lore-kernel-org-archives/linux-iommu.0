@@ -2,65 +2,63 @@ Return-Path: <SRS0=vyM6=WW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD9FC3A59E
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 07:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF2BC3A59E
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 07:06:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A31E5206B7
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 07:03:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="cC/zQtbn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A31E5206B7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1E2F22080C
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 07:06:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E2F22080C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 489B1FBD;
-	Mon, 26 Aug 2019 07:03:21 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CAB5DFD4;
+	Mon, 26 Aug 2019 07:06:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C2AA9FB0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D39B3FCD
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 07:02:59 +0000 (UTC)
+	Mon, 26 Aug 2019 07:05:55 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83D8D8A2
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 61F0989B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 07:02:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=vQdGwgOl/ZuixO8xiaxR0SLvVclg7jbER1lHT9uHlSw=;
-	b=cC/zQtbnFSNOJ4AGthbXchZG8
-	lbmTP1GvBSs4HWWYLJ0ra2aQ+XGlYoBWdyrn4xGHX+hgyI7yDmqRQLJoqjRmzf9dVF7jNwo6X4G0A
-	nrm1tae/bxqa7aVzxlp1OD9zDVJUByem8LRzPXuI+bQHnT7shwEn7xRcvVLsEwYJDJz6/tJZrjwTl
-	zrc8B5YKOEbDCb7pPTI24ab+G7tN/RDrTjqIcHr/y7kX6ugih0JMoQMgOFwW27hGTnK7ZCcAM5KU5
-	0XkVKrAzwBvqMOUCwNwwBXGmD8E6w+5PE6yPP61/lfJ4/QqWnBflyAVdRIs5SMwobsQMpBdy60kuW
-	J4wUJKiXw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat
-	Linux)) id 1i291n-0008R1-2i; Mon, 26 Aug 2019 07:02:59 +0000
-Date: Mon, 26 Aug 2019 00:02:59 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Michal Simek <monstr@monstr.eu>, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: convert microblaze to the generic dma remap allocator
-Message-ID: <20190826070258.GA31420@infradead.org>
-References: <20190814140348.3339-1-hch@lst.de>
+	Mon, 26 Aug 2019 07:05:55 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 58F5D68B02; Mon, 26 Aug 2019 09:05:50 +0200 (CEST)
+Date: Mon, 26 Aug 2019 09:05:50 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH v2 09/11] dma-direct: turn ARCH_ZONE_DMA_BITS into a
+	variable
+Message-ID: <20190826070550.GA11331@lst.de>
+References: <20190820145821.27214-1-nsaenzjulienne@suse.de>
+	<20190820145821.27214-10-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190814140348.3339-1-hch@lst.de>
-User-Agent: Mutt/1.11.4 (2019-03-13)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20190820145821.27214-10-nsaenzjulienne@suse.de>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: catalin.marinas@arm.com, Heiko Carstens <heiko.carstens@de.ibm.com>,
+	eric@anholt.net, Paul Mackerras <paulus@samba.org>,
+	linux-riscv@lists.infradead.org, will@kernel.org, hch@lst.de,
+	linux-arch@vger.kernel.org, linux-s390@vger.kernel.org,
+	f.fainelli@gmail.com, frowand.list@gmail.com,
+	Christian Borntraeger <borntraeger@de.ibm.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	devicetree@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
+	marc.zyngier@arm.com, robh+dt@kernel.org,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, phill@raspberryi.org,
+	mbrugger@suse.com, linux-mm@kvack.org,
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, wahrenst@gmx.net,
+	Michael Ellerman <mpe@ellerman.id.au>, akpm@linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,15 +76,9 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Aug 14, 2019 at 04:03:46PM +0200, Christoph Hellwig wrote:
-> Hi Michal,
-> 
-> can you take a look at this patch that moves microblaze over to the
-> generic DMA remap allocator?  I've been trying to slowly get all
-> architectures over to the generic code, and microblaze is one that
-> seems very straightfoward to convert.
+Looks good,
 
-Michal, any chance you could look over this series?
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
