@@ -2,55 +2,72 @@ Return-Path: <SRS0=vyM6=WW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803CCC3A59F
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 13:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA099C3A59F
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 13:27:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BDBE217F5
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 13:01:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BDBE217F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AF72E2053B
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 13:27:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="HMtxX467"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF72E2053B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 016101566;
-	Mon, 26 Aug 2019 13:01:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3163015C8;
+	Mon, 26 Aug 2019 13:27:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E33DB1561
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 38A0415BA
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 12:59:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 31F42710
+	Mon, 26 Aug 2019 13:26:03 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DAD57710
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 12:59:18 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	26 Aug 2019 05:59:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,433,1559545200"; d="scan'208";a="209354171"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by fmsmga002.fm.intel.com with ESMTP; 26 Aug 2019 05:59:17 -0700
-Date: Mon, 26 Aug 2019 06:03:06 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/vt-d: remove global page flush support
-Message-ID: <20190826060306.6ed6faca@jacob-builder>
-In-Reply-To: <20190823082307.GF30332@8bytes.org>
-References: <1566336068-39416-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20190823082307.GF30332@8bytes.org>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Mon, 26 Aug 2019 13:26:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=djaGEic6NaBK09gi+fCrcAouUdZlbuVe4m8rrYkWAaA=;
+	b=HMtxX467OYOhWWY59hNqdCMA59
+	gBLtoxsICumbABL0PkrTfLs57pmpCm1VMYgZnKuHh757K4MyGbm931kFbDFzoFZKPcFIegLSdSCJr
+	vGva46cHn6bzhhlLr5LwX5AIp4RO172m7u8WMbrh+K4dTVffkNPCavoPAm0rY20AODNFZ9o4bXT6E
+	ropSp2LGyGWHegp/NYLJVb0FN2pft3w1ly3Qryx3ZCErgDBrt6jxwxHjt3+6XNgbymi1n5aGtPJcV
+	nl6WGpD2LnDY9Cplyu988MXSDmj6HGKbpu5QHvXI7tGsgEOyJ8CMV7nnxk/YL5jz/uBArPnCv/Krr
+	vD+FRrBA==;
+Received: from clnet-p19-102.ikbnet.co.at ([83.175.77.102] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1i2F0R-0007uO-IH; Mon, 26 Aug 2019 13:26:00 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 1/6] unicore32: remove the unused pgprot_dmacoherent define
+Date: Mon, 26 Aug 2019 15:25:48 +0200
+Message-Id: <20190826132553.4116-2-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190826132553.4116-1-hch@lst.de>
+References: <20190826132553.4116-1-hch@lst.de>
 MIME-Version: 1.0
-Cc: Raj Ashok <ashok.raj@intel.com>, LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Shawn Anastasio <shawn@anastas.io>, Will Deacon <will@kernel.org>,
+	linux-m68k@lists.linux-m68k.org, Guan Xuetao <gxt@pku.edu.cn>,
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+	Russell King <linux@armlinux.org.uk>, linux-mips@vger.kernel.org,
+	Paul Burton <paul.burton@mips.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Catalin Marinas <catalin.marinas@arm.com>, James Hogan <jhogan@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -68,47 +85,27 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, 23 Aug 2019 10:23:07 +0200
-Joerg Roedel <joro@8bytes.org> wrote:
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/unicore32/include/asm/pgtable.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-> Hi Jacob,
-> 
-> On Tue, Aug 20, 2019 at 02:21:08PM -0700, Jacob Pan wrote:
-> > Global pages support is removed from VT-d spec 3.0. Since global
-> > pages G flag only affects first-level paging structures and because
-> > DMA request with PASID are only supported by VT-d spec. 3.0 and
-> > onward, we can safely remove global pages support.
-> > 
-> > For kernel shared virtual address IOTLB invalidation, PASID
-> > granularity and page selective within PASID will be used. There is
-> > no global granularity supported. Without this fix, IOTLB
-> > invalidation will cause invalid descriptor error in the queued
-> > invalidation (QI) interface.
-> > 
-> > Reported-by:   Sanjay K Kumar <sanjay.k.kumar@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-svm.c   | 36
-> > +++++++++++++++--------------------- include/linux/intel-iommu.h |
-> > 3 --- 2 files changed, 15 insertions(+), 24 deletions(-)  
-> 
-> Does not cleanly apply to v5.3-rc5, can you please rebase it and
-> re-send? Also, is this v5.3 stuff (in that case please add a Fixes
-> tag) or can it wait for v5.4?
-> 
-I will rebase and send out again later today. Since it fixes fault in
-HW and in QEMU vIOMMU that is in development, it would be great to be
-included in v5.3. I will add a fixes tag.
+diff --git a/arch/unicore32/include/asm/pgtable.h b/arch/unicore32/include/asm/pgtable.h
+index 9492aa304f03..126e961a8cb0 100644
+--- a/arch/unicore32/include/asm/pgtable.h
++++ b/arch/unicore32/include/asm/pgtable.h
+@@ -198,8 +198,6 @@ static inline pte_t pte_mkspecial(pte_t pte) { return pte; }
+ 	__pgprot(pgprot_val(prot) & ~PTE_CACHEABLE)
+ #define pgprot_writecombine(prot)	\
+ 	__pgprot(pgprot_val(prot) & ~PTE_CACHEABLE)
+-#define pgprot_dmacoherent(prot)	\
+-	__pgprot(pgprot_val(prot) & ~PTE_CACHEABLE)
+ 
+ #define pmd_none(pmd)		(!pmd_val(pmd))
+ #define pmd_present(pmd)	(pmd_val(pmd) & PMD_PRESENT)
+-- 
+2.20.1
 
-Thanks,
-
-Jacob
-
-> Regards,
-> 
-> 	Joerg
-
-[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
