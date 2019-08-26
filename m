@@ -2,91 +2,51 @@ Return-Path: <SRS0=vyM6=WW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2493DC3A59F
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 15:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1DFC3A59F
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 15:51:48 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFE5C23405
-	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 15:30:42 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NvuVyXHS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFE5C23405
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2EE7F20874
+	for <iommu@archiver.kernel.org>; Mon, 26 Aug 2019 15:51:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EE7F20874
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A7A781893;
-	Mon, 26 Aug 2019 15:30:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E9FD3189F;
+	Mon, 26 Aug 2019 15:51:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D07F1880
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E16071895
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 15:28:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f193.google.com (mail-lj1-f193.google.com
-	[209.85.208.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0D17542D
+	Mon, 26 Aug 2019 15:49:42 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 51704710
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 15:28:22 +0000 (UTC)
-Received: by mail-lj1-f193.google.com with SMTP id x4so15482514ljj.6
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 26 Aug 2019 08:28:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=subject:from:to:cc:references:message-id:date:user-agent
-	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=NL6fJrZIKeO5LGB29dZn2JLD+LBKfQdeed3wOTeWK7w=;
-	b=NvuVyXHSK5exUD1YgfbCAfe8fX7FvWxN50g0xhgm48XRzkkAsV+gCA//2RnpvU5dt+
-	VUQmPamsrQunReSVqYmvp2LjcSCffcgzRbEbIjKCzz7DrSLF6ebx196Q8oHuQ9HfKmZL
-	8P++PXOWOhT98dGOums7Id+m06nPf5irwX0VvnGRuicr8hMj0HuNwAsH+tVr0qXQm3CM
-	1Kyre+jnYiYwD86v+L9BRza8KmAC28aff/lUu90t0+xKq3mXJZrKsTLglEHylSy22Wqa
-	YTgk0JWxHTmO8jwrcXUI47gT/ZJP6T8WzOIPPleh+MquZwl4LG7GOStKjolW3TqnTpYF
-	bwDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-	:user-agent:mime-version:in-reply-to:content-language
-	:content-transfer-encoding;
-	bh=NL6fJrZIKeO5LGB29dZn2JLD+LBKfQdeed3wOTeWK7w=;
-	b=R8gGz27ujUN6FOYwfh+0Az9Fi64BRFx5HuQvxMdo8J5WCLi4ocKKF6yWDunp004DhD
-	DcUzkX3ZQC22KItsnWBrsHe4NEFXkFORxdO27yjG5rOwK6DMLSvzsfCVKtkzedssgTMM
-	WPixRYg9QwCCgUbFKHt7x4I3BwC7dHyEA2dnQh0XrOFaP+n8tIDIK+kSVUutNQyvUWZu
-	pJNwxdkvCIlUZtGP72gK/xuE0Fz+5iUUv07nGIvTT4myW0uASslladY3pgAYyg9UDg9Z
-	m3TOEXtawgUQS/F1yBznAFkF7qBcXxZqW2SP+QqUD0wc1n4l0BW4cudRMm25l6RLPLuQ
-	AIdw==
-X-Gm-Message-State: APjAAAU5zi8BdXYiTsOlMSv3bW2xqV7IBwj8/9zWI1YiYYcWIuanLmZr
-	GTTAZYStKvQYTgl/ipCBh2ZxWo5A
-X-Google-Smtp-Source: APXvYqyN125me/ufP2gB3KH6hLVYyHqP5k4wmDOSNNvM8HI/uxSSqmN/fKMcvMHs/LE2mut6sluJcg==
-X-Received: by 2002:a2e:8591:: with SMTP id b17mr10833631lji.200.1566833300226;
-	Mon, 26 Aug 2019 08:28:20 -0700 (PDT)
-Received: from [192.168.2.145] ([94.29.34.218])
-	by smtp.googlemail.com with ESMTPSA id
-	r12sm2404801ljg.36.2019.08.26.08.28.19
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Mon, 26 Aug 2019 08:28:19 -0700 (PDT)
-Subject: Re: [PATCH] media: staging: tegra-vde: Disable building with
-	COMPILE_TEST
-From: Dmitry Osipenko <digetx@gmail.com>
-To: YueHaibing <yuehaibing@huawei.com>, mchehab@kernel.org,
-	gregkh@linuxfoundation.org, thierry.reding@gmail.com,
-	jonathanh@nvidia.com, robin.murphy@arm.com, hverkuil-cisco@xs4all.nl
-References: <20190826133140.13456-1-yuehaibing@huawei.com>
-	<58a8c62c-a45e-77e4-d2cb-99f95b847a73@gmail.com>
-Message-ID: <79dacfcc-9407-bac6-8e9b-bb8f890994ee@gmail.com>
-Date: Mon, 26 Aug 2019 18:28:18 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <58a8c62c-a45e-77e4-d2cb-99f95b847a73@gmail.com>
-Content-Language: en-US
-Cc: linux-tegra@vger.kernel.org, devel@driverdev.osuosl.org,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org
+	Mon, 26 Aug 2019 15:49:42 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	26 Aug 2019 08:49:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,433,1559545200"; d="scan'208";a="170897160"
+Received: from jacob-builder.jf.intel.com ([10.7.199.155])
+	by orsmga007.jf.intel.com with ESMTP; 26 Aug 2019 08:49:40 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH v1] iommu/vt-d: remove global page flush support
+Date: Mon, 26 Aug 2019 08:53:29 -0700
+Message-Id: <1566834809-57510-1-git-send-email-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
+Cc: Raj Ashok <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -99,50 +59,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-MjYuMDguMjAxOSAxODoxOCwgRG1pdHJ5IE9zaXBlbmtvINC/0LjRiNC10YI6Cj4gSGVsbG8gWXVl
-LAo+IAo+IDI2LjA4LjIwMTkgMTY6MzEsIFl1ZUhhaWJpbmcg0L/QuNGI0LXRgjoKPj4gSWYgQ09N
-UElMRV9URVNUIGlzIHkgYW5kIElPTU1VX1NVUFBPUlQgaXMgbiwgc2VsZWN0aW5nIFRFR1JBX1ZE
-RQo+PiB0byBtIHdpbGwgc2V0IElPTU1VX0lPVkEgdG8gbSwgdGhpcyBmYWlscyB0aGUgYnVpbGRp
-bmcgb2YKPj4gVEVHUkFfSE9TVDFYIGFuZCBEUk1fVEVHUkEgd2hpY2ggaXMgeSBsaWtlIHRoaXM6
-Cj4+Cj4+IGRyaXZlcnMvZ3B1L2hvc3QxeC9jZG1hLm86IEluIGZ1bmN0aW9uIGBob3N0MXhfY2Rt
-YV9pbml0JzoKPj4gY2RtYS5jOigudGV4dCsweDY2Yyk6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8g
-YGFsbG9jX2lvdmEnCj4+IGNkbWEuYzooLnRleHQrMHg2OTgpOiB1bmRlZmluZWQgcmVmZXJlbmNl
-IHRvIGBfX2ZyZWVfaW92YScKPj4KPj4gZHJpdmVycy9ncHUvZHJtL3RlZ3JhL2RybS5vOiBJbiBm
-dW5jdGlvbiBgdGVncmFfZHJtX3VubG9hZCc6Cj4+IGRybS5jOigudGV4dCsweGViMCk6IHVuZGVm
-aW5lZCByZWZlcmVuY2UgdG8gYHB1dF9pb3ZhX2RvbWFpbicKPj4gZHJtLmM6KC50ZXh0KzB4ZWI0
-KTogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgaW92YV9jYWNoZV9wdXQnCj4+Cj4+IFJlcG9ydGVk
-LWJ5OiBIdWxrIFJvYm90IDxodWxrY2lAaHVhd2VpLmNvbT4KPj4gRml4ZXM6IDZiMjI2NTk3NTIz
-OSAoIm1lZGlhOiBzdGFnaW5nOiB0ZWdyYS12ZGU6IEZpeCBidWlsZCBlcnJvciIpCj4+IEZpeGVz
-OiBiMzAxZjhkZTE5MjUgKCJtZWRpYTogc3RhZ2luZzogbWVkaWE6IHRlZ3JhLXZkZTogQWRkIElP
-TU1VIHN1cHBvcnQiKQo+PiBTaWduZWQtb2ZmLWJ5OiBZdWVIYWliaW5nIDx5dWVoYWliaW5nQGh1
-YXdlaS5jb20+Cj4+IC0tLQo+PiAgZHJpdmVycy9zdGFnaW5nL21lZGlhL3RlZ3JhLXZkZS9LY29u
-ZmlnIHwgNCArKy0tCj4+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0
-aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL21lZGlhL3RlZ3JhLXZk
-ZS9LY29uZmlnIGIvZHJpdmVycy9zdGFnaW5nL21lZGlhL3RlZ3JhLXZkZS9LY29uZmlnCj4+IGlu
-ZGV4IGJhNDllYTUuLmE0MWQzMGMgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9tZWRp
-YS90ZWdyYS12ZGUvS2NvbmZpZwo+PiArKysgYi9kcml2ZXJzL3N0YWdpbmcvbWVkaWEvdGVncmEt
-dmRlL0tjb25maWcKPj4gQEAgLTEsOSArMSw5IEBACj4+ICAjIFNQRFgtTGljZW5zZS1JZGVudGlm
-aWVyOiBHUEwtMi4wCj4+ICBjb25maWcgVEVHUkFfVkRFCj4+ICAJdHJpc3RhdGUgIk5WSURJQSBU
-ZWdyYSBWaWRlbyBEZWNvZGVyIEVuZ2luZSBkcml2ZXIiCj4+IC0JZGVwZW5kcyBvbiBBUkNIX1RF
-R1JBIHx8IENPTVBJTEVfVEVTVAo+PiArCWRlcGVuZHMgb24gQVJDSF9URUdSQQo+PiAgCXNlbGVj
-dCBETUFfU0hBUkVEX0JVRkZFUgo+PiAtCXNlbGVjdCBJT01NVV9JT1ZBIGlmIChJT01NVV9TVVBQ
-T1JUIHx8IENPTVBJTEVfVEVTVCkKPj4gKwlzZWxlY3QgSU9NTVVfSU9WQSBpZiBJT01NVV9TVVBQ
-T1JUCj4+ICAJc2VsZWN0IFNSQU0KPj4gIAloZWxwCj4+ICAJICAgIFNheSBZIGhlcmUgdG8gZW5h
-YmxlIHN1cHBvcnQgZm9yIHRoZSBOVklESUEgVGVncmEgdmlkZW8gZGVjb2Rlcgo+Pgo+IAo+IFdo
-YXQgYWJvdXQgdGhpcyB2YXJpYW50Ogo+IAo+IAlzZWxlY3QgSU9NTVVfSU9WQSBpZiAoSU9NTVVf
-U1VQUE9SVCAmJiAhQ09NUElMRV9URVNUKQo+IAo+IHdoaWNoIHNob3VsZCBmaXggdGhlIGJ1aWxk
-aW5nIGFuZCBwcmVzZXJ2ZSBjb21waWxlLXRlc3RpbmcuCj4gCj4gSXQgc2hvdWxkbid0IG1hdHRl
-ciBhdCBhbGwgd2hldGhlciBJT1ZBIGlzIGVuYWJsZWQgb3Igbm90IGZvcgo+IGNvbXBpbGUtdGVz
-dGluZyBvZiB0aGUgZHJpdmVyLgo+IAoKQWgsIGFjdHVhbGx5IHRoaXMgd29uJ3Qgd29yayBpZiBU
-RUdSQV9WREU9eSBhbmQgSU9NTVVfSU9WQT1tLiBJJ20gc3RpbGwKbm90IHN1cmUgdGhhdCBkaXNh
-YmxpbmcgY29tcGlsZS10ZXN0aW5nIGlzIGEgZ29vZCBzb2x1dGlvbiwgbWF5YmUKRFJNX1RFR1JB
-IGFuZCBURUdSQV9IT1NUMVggc2hvdWxkIGJlIGZpeGVkIGluc3RlYWQuIEFsdGhvdWdoLCBJJ20g
-ZmluZQp3aXRoIGJvdGggdmFyaWFudHMuCgpBY2tlZC1ieTogRG1pdHJ5IE9zaXBlbmtvIDxkaWdl
-dHhAZ21haWwuY29tPgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
-aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Global pages support is removed from VT-d spec 3.0. Since global pages G
+flag only affects first-level paging structures and because DMA request
+with PASID are only supported by VT-d spec. 3.0 and onward, we can
+safely remove global pages support.
+
+For kernel shared virtual address IOTLB invalidation, PASID
+granularity and page selective within PASID will be used. There is
+no global granularity supported. Without this fix, IOTLB invalidation
+will cause invalid descriptor error in the queued invalidation (QI)
+interface.
+
+Fixes: 1c4f88b7f1f9 ("iommu/vt-d: Shared virtual address in scalable
+mode")
+Reported-by: Sanjay K Kumar <sanjay.k.kumar@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel-svm.c   | 36 +++++++++++++++---------------------
+ include/linux/intel-iommu.h |  3 ---
+ 2 files changed, 15 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 780de0caafe8..9b159132405d 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -100,24 +100,19 @@ int intel_svm_finish_prq(struct intel_iommu *iommu)
+ }
+ 
+ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_dev *sdev,
+-				       unsigned long address, unsigned long pages, int ih, int gl)
++				unsigned long address, unsigned long pages, int ih)
+ {
+ 	struct qi_desc desc;
+ 
+-	if (pages == -1) {
+-		/* For global kernel pages we have to flush them in *all* PASIDs
+-		 * because that's the only option the hardware gives us. Despite
+-		 * the fact that they are actually only accessible through one. */
+-		if (gl)
+-			desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
+-					QI_EIOTLB_DID(sdev->did) |
+-					QI_EIOTLB_GRAN(QI_GRAN_ALL_ALL) |
+-					QI_EIOTLB_TYPE;
+-		else
+-			desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
+-					QI_EIOTLB_DID(sdev->did) |
+-					QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
+-					QI_EIOTLB_TYPE;
++	/*
++	 * Do PASID granu IOTLB invalidation if page selective capability is
++	 * not available.
++	 */
++	if (pages == -1 || !cap_pgsel_inv(svm->iommu->cap)) {
++		desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
++			QI_EIOTLB_DID(sdev->did) |
++			QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
++			QI_EIOTLB_TYPE;
+ 		desc.qw1 = 0;
+ 	} else {
+ 		int mask = ilog2(__roundup_pow_of_two(pages));
+@@ -127,7 +122,6 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
+ 				QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) |
+ 				QI_EIOTLB_TYPE;
+ 		desc.qw1 = QI_EIOTLB_ADDR(address) |
+-				QI_EIOTLB_GL(gl) |
+ 				QI_EIOTLB_IH(ih) |
+ 				QI_EIOTLB_AM(mask);
+ 	}
+@@ -162,13 +156,13 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
+ }
+ 
+ static void intel_flush_svm_range(struct intel_svm *svm, unsigned long address,
+-				  unsigned long pages, int ih, int gl)
++				unsigned long pages, int ih)
+ {
+ 	struct intel_svm_dev *sdev;
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(sdev, &svm->devs, list)
+-		intel_flush_svm_range_dev(svm, sdev, address, pages, ih, gl);
++		intel_flush_svm_range_dev(svm, sdev, address, pages, ih);
+ 	rcu_read_unlock();
+ }
+ 
+@@ -180,7 +174,7 @@ static void intel_invalidate_range(struct mmu_notifier *mn,
+ 	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
+ 
+ 	intel_flush_svm_range(svm, start,
+-			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0, 0);
++			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0);
+ }
+ 
+ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+@@ -203,7 +197,7 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(sdev, &svm->devs, list) {
+ 		intel_pasid_tear_down_entry(svm->iommu, sdev->dev, svm->pasid);
+-		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
++		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+ 	}
+ 	rcu_read_unlock();
+ 
+@@ -425,7 +419,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 				 * large and has to be physically contiguous. So it's
+ 				 * hard to be as defensive as we might like. */
+ 				intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+-				intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
++				intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+ 				kfree_rcu(sdev, rcu);
+ 
+ 				if (list_empty(&svm->devs)) {
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index f2ae8a006ff8..4fc6454f7ebb 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -346,7 +346,6 @@ enum {
+ #define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
+ 
+ #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
+-#define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
+ #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
+ #define QI_EIOTLB_AM(am)	(((u64)am))
+ #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
+@@ -378,8 +377,6 @@ enum {
+ #define QI_RESP_INVALID		0x1
+ #define QI_RESP_FAILURE		0xf
+ 
+-#define QI_GRAN_ALL_ALL			0
+-#define QI_GRAN_NONG_ALL		1
+ #define QI_GRAN_NONG_PASID		2
+ #define QI_GRAN_PSI_PASID		3
+ 
+-- 
+2.7.4
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
