@@ -2,78 +2,60 @@ Return-Path: <SRS0=Te3Q=WX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372CCC3A59F
-	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 00:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62866C3A5A6
+	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 02:00:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09D4420850
-	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 00:15:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 22DCC2173E
+	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 02:00:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="AUdAaUMN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09D4420850
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="KKAmz9jB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 22DCC2173E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8E3C27F6;
-	Tue, 27 Aug 2019 00:15:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E522AEC8;
+	Tue, 27 Aug 2019 02:00:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C6E8B7F6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5AFB9EC4
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 00:15:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 656C4887
+	Tue, 27 Aug 2019 02:00:45 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1438C1FB
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 00:15:28 +0000 (UTC)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x7R0FDbd125373;
-	Mon, 26 Aug 2019 19:15:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1566864914;
-	bh=mnHv973q0dOpbd7f75qTbhxIJ1t6I0awvec5sSakySk=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=AUdAaUMNLb2enSgGlL1aHDDa98aWN1S1YSu41FGXNtFbw4JNNbSKABbfJWwZxDzTz
-	O4ZwYaABz5ZEeO+EuP3fKM0gcNZpZgqa6C1qMl3UF9d09LmDn4X+YpG0RW2xedYtt5
-	Gt4+DvjZlC2hMD9a9SSozZMAY8EMxIHkZgWVfca4=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x7R0FDPx020478
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 26 Aug 2019 19:15:13 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE113.ent.ti.com
-	(10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5;
-	Mon, 26 Aug 2019 19:15:13 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
-	(10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
-	Frontend Transport; Mon, 26 Aug 2019 19:15:13 -0500
-Received: from legion.dal.design.ti.com (legion.dal.design.ti.com
-	[128.247.22.53])
-	by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x7R0FDLX005041;
-	Mon, 26 Aug 2019 19:15:13 -0500
-Received: from localhost (irmo.dhcp.ti.com [128.247.58.153])
-	by legion.dal.design.ti.com (8.11.7p1+Sun/8.11.7) with ESMTP id
-	x7R0FCZ19052; Mon, 26 Aug 2019 19:15:12 -0500 (CDT)
-To: Tony Lindgren <tony@atomide.com>
-Subject: [PATCH 1/2] ARM: OMAP2+: Plug in device_enable/idle ops for IOMMUs
-Date: Mon, 26 Aug 2019 19:14:51 -0500
-Message-ID: <20190827001452.31930-2-s-anna@ti.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190827001452.31930-1-s-anna@ti.com>
-References: <20190827001452.31930-1-s-anna@ti.com>
+	Tue, 27 Aug 2019 02:00:45 +0000 (UTC)
+Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 91CAC206E0;
+	Tue, 27 Aug 2019 02:00:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1566871244;
+	bh=MD3sr2OAksfs0NgAVZIyjzyTAVQ933/C4tnk/zWmHvo=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=KKAmz9jBCgs55lt1JUWBC6wEihVGwH2eJlWekUmiAHQlHNBSQ9hfI35tKDoisVQk6
+	HdBs2Y5wtgaFrBcGW2ON8fxbhdkD/NliHsyJGMXn19bSPectvaDItTx5pd6wjJ55wT
+	z4Yn1Rc/2GZC8jtdzkMH5LcPSQD5Mrc/P1BiAwfU=
+Date: Mon, 26 Aug 2019 19:00:44 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: swiotlb-xen cleanups
+In-Reply-To: <20190816130013.31154-1-hch@lst.de>
+Message-ID: <alpine.DEB.2.21.1908261859490.3428@sstabellini-ThinkPad-T480s>
+References: <20190816130013.31154-1-hch@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-Cc: Tero Kristo <t-kristo@ti.com>, iommu@lists.linux-foundation.org,
-	Sakari Ailus <sakari.ailus@iki.fi>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	linux-omap@vger.kernel.org
+Cc: Stefano Stabellini <sstabellini@kernel.org>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -86,50 +68,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Suman Anna via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Suman Anna <s-anna@ti.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The OMAP IOMMU driver requires the device_enable/idle platform
-data ops on all the IOMMU devices to be able to enable and disable
-the clocks after commit db8918f61d51 ("iommu/omap: streamline
-enable/disable through runtime pm callbacks"). Plug in these
-pdata ops for all the existing IOMMUs through pdata quirks to
-maintain functionality.
+On Fri, 16 Aug 2019, Christoph Hellwig wrote:
+> Hi Xen maintainers and friends,
+> 
+> please take a look at this series that cleans up the parts of swiotlb-xen
+> that deal with non-coherent caches.
 
-Signed-off-by: Suman Anna <s-anna@ti.com>
----
- arch/arm/mach-omap2/pdata-quirks.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Hi Christoph,
 
-diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-index 6c6f8fce854e..dbe8d9718f70 100644
---- a/arch/arm/mach-omap2/pdata-quirks.c
-+++ b/arch/arm/mach-omap2/pdata-quirks.c
-@@ -89,6 +89,8 @@ static struct iommu_platform_data omap3_iommu_pdata = {
- 	.reset_name = "mmu",
- 	.assert_reset = omap_device_assert_hardreset,
- 	.deassert_reset = omap_device_deassert_hardreset,
-+	.device_enable = omap_device_enable,
-+	.device_idle = omap_device_idle,
- };
- 
- static int omap3_sbc_t3730_twl_callback(struct device *dev,
-@@ -424,6 +426,8 @@ static struct iommu_platform_data omap4_iommu_pdata = {
- 	.reset_name = "mmu_cache",
- 	.assert_reset = omap_device_assert_hardreset,
- 	.deassert_reset = omap_device_deassert_hardreset,
-+	.device_enable = omap_device_enable,
-+	.device_idle = omap_device_idle,
- };
- #endif
- 
--- 
-2.22.0
+I just wanted to let you know that your series is on my radar, but I
+have been swamped the last few days. I hope to get to it by the end of
+the week.
 
+Cheers,
+
+Stefano
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
