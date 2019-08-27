@@ -2,50 +2,61 @@ Return-Path: <SRS0=Te3Q=WX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CA5C3A5A3
-	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 06:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E33FC3A5A3
+	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 07:03:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFE1E206BB
-	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 06:38:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFE1E206BB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id D7DEC206BF
+	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 07:03:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7DEC206BF
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 89235FBC;
-	Tue, 27 Aug 2019 06:38:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9AB701055;
+	Tue, 27 Aug 2019 07:03:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 16F58FA9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CB5D91052
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 06:38:00 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E5F3B1FB
+	Tue, 27 Aug 2019 07:03:49 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D932A1FB
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 06:37:57 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 8625768AFE; Tue, 27 Aug 2019 08:37:54 +0200 (CEST)
-Date: Tue, 27 Aug 2019 08:37:54 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Stefano Stabellini <sstabellini@kernel.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH 03/11] xen/arm: simplify dma_cache_maint
-Message-ID: <20190827063754.GA32045@lst.de>
-References: <20190826121944.515-1-hch@lst.de> <20190826121944.515-4-hch@lst.de>
+	Tue, 27 Aug 2019 07:03:47 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id F3D93B0DA;
+	Tue, 27 Aug 2019 07:03:45 +0000 (UTC)
+Date: Tue, 27 Aug 2019 09:03:41 +0200
+From: Petr Tesarik <ptesarik@suse.cz>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH v2 10/11] arm64: edit zone_dma_bits to fine tune
+	dma-direct min mask
+Message-ID: <20190827090341.2bf6b336@ezekiel.suse.cz>
+In-Reply-To: <4d8d18af22d6dcd122bc9b4d9c2bd49e8443c746.camel@suse.de>
+References: <20190820145821.27214-1-nsaenzjulienne@suse.de>
+	<20190820145821.27214-11-nsaenzjulienne@suse.de>
+	<20190826070633.GB11331@lst.de>
+	<4d8d18af22d6dcd122bc9b4d9c2bd49e8443c746.camel@suse.de>
+Organization: SUSE Linux, s.r.o.
+X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190826121944.515-4-hch@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
+Cc: catalin.marinas@arm.com, linux-mm@kvack.org,
+	linux-riscv@lists.infradead.org, frowand.list@gmail.com,
+	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
+	f.fainelli@gmail.com, will@kernel.org,
+	devicetree@vger.kernel.org, marc.zyngier@arm.com,
+	robh+dt@kernel.org, linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, phill@raspberryi.org,
+	mbrugger@suse.com, eric@anholt.net, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, wahrenst@gmx.net,
+	akpm@linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -58,123 +69,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6019951043736438163=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-And this was still buggy I think, it really needs some real Xen/Arm
-testing which I can't do.  Hopefully better version below:
+--===============6019951043736438163==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/vmjhQR+jY/bQH=VqrrKvOyt"; protocol="application/pgp-signature"
 
---
-From 5ad4b6e291dbb49f65480c9b769414931cbd485a Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Wed, 24 Jul 2019 15:26:08 +0200
-Subject: xen/arm: simplify dma_cache_maint
+--Sig_/vmjhQR+jY/bQH=VqrrKvOyt
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Calculate the required operation in the caller, and pass it directly
-instead of recalculating it for each page, and use simple arithmetics
-to get from the physical address to Xen page size aligned chunks.
+On Mon, 26 Aug 2019 13:08:50 +0200
+Nicolas Saenz Julienne <nsaenzjulienne@suse.de> wrote:
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm/xen/mm.c | 61 ++++++++++++++++-------------------------------
- 1 file changed, 21 insertions(+), 40 deletions(-)
+> On Mon, 2019-08-26 at 09:06 +0200, Christoph Hellwig wrote:
+> > On Tue, Aug 20, 2019 at 04:58:18PM +0200, Nicolas Saenz Julienne wrote:=
+ =20
+> > > -	if (IS_ENABLED(CONFIG_ZONE_DMA))
+> > > +	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
+> > >  		arm64_dma_phys_limit =3D max_zone_dma_phys();
+> > > +		zone_dma_bits =3D ilog2((arm64_dma_phys_limit - 1) &
+> > > GENMASK_ULL(31, 0)) + 1; =20
+> > =20
+> Hi Christoph,
+> thanks for the rewiews.
+>=20
+> > This adds a way too long line. =20
+>=20
+> I know, I couldn't find a way to split the operation without making it ev=
+en
+> harder to read. I'll find a solution.
 
-diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
-index 90574d89d0d4..2fde161733b0 100644
---- a/arch/arm/xen/mm.c
-+++ b/arch/arm/xen/mm.c
-@@ -35,64 +35,45 @@ unsigned long xen_get_swiotlb_free_pages(unsigned int order)
- 	return __get_free_pages(flags, order);
- }
- 
--enum dma_cache_op {
--       DMA_UNMAP,
--       DMA_MAP,
--};
- static bool hypercall_cflush = false;
- 
--/* functions called by SWIOTLB */
--
--static void dma_cache_maint(dma_addr_t handle, unsigned long offset,
--	size_t size, enum dma_data_direction dir, enum dma_cache_op op)
-+/* buffers in highmem or foreign pages cannot cross page boundaries */
-+static void dma_cache_maint(dma_addr_t handle, size_t size, u32 op)
- {
- 	struct gnttab_cache_flush cflush;
--	unsigned long xen_pfn;
--	size_t left = size;
- 
--	xen_pfn = (handle >> XEN_PAGE_SHIFT) + offset / XEN_PAGE_SIZE;
--	offset %= XEN_PAGE_SIZE;
-+	cflush.a.dev_bus_addr = handle & XEN_PAGE_MASK;
-+	cflush.offset = xen_offset_in_page(handle);
-+	cflush.op = op;
- 
- 	do {
--		size_t len = left;
--	
--		/* buffers in highmem or foreign pages cannot cross page
--		 * boundaries */
--		if (len + offset > XEN_PAGE_SIZE)
--			len = XEN_PAGE_SIZE - offset;
--
--		cflush.op = 0;
--		cflush.a.dev_bus_addr = xen_pfn << XEN_PAGE_SHIFT;
--		cflush.offset = offset;
--		cflush.length = len;
--
--		if (op == DMA_UNMAP && dir != DMA_TO_DEVICE)
--			cflush.op = GNTTAB_CACHE_INVAL;
--		if (op == DMA_MAP) {
--			if (dir == DMA_FROM_DEVICE)
--				cflush.op = GNTTAB_CACHE_INVAL;
--			else
--				cflush.op = GNTTAB_CACHE_CLEAN;
--		}
--		if (cflush.op)
--			HYPERVISOR_grant_table_op(GNTTABOP_cache_flush, &cflush, 1);
-+		if (size + cflush.offset > XEN_PAGE_SIZE)
-+			cflush.length = XEN_PAGE_SIZE - cflush.offset;
-+		else
-+			cflush.length = size;
-+
-+		HYPERVISOR_grant_table_op(GNTTABOP_cache_flush, &cflush, 1);
- 
--		offset = 0;
--		xen_pfn++;
--		left -= len;
--	} while (left);
-+		cflush.offset = 0;
-+		cflush.a.dev_bus_addr += cflush.length;
-+		size -= cflush.length;
-+	} while (size);
- }
- 
- static void __xen_dma_page_dev_to_cpu(struct device *hwdev, dma_addr_t handle,
- 		size_t size, enum dma_data_direction dir)
- {
--	dma_cache_maint(handle & PAGE_MASK, handle & ~PAGE_MASK, size, dir, DMA_UNMAP);
-+	if (dir != DMA_TO_DEVICE)
-+		dma_cache_maint(handle, size, GNTTAB_CACHE_INVAL);
- }
- 
- static void __xen_dma_page_cpu_to_dev(struct device *hwdev, dma_addr_t handle,
- 		size_t size, enum dma_data_direction dir)
- {
--	dma_cache_maint(handle & PAGE_MASK, handle & ~PAGE_MASK, size, dir, DMA_MAP);
-+	if (dir == DMA_FROM_DEVICE)
-+		dma_cache_maint(handle, size, GNTTAB_CACHE_INVAL);
-+	else
-+		dma_cache_maint(handle, size, GNTTAB_CACHE_CLEAN);
- }
- 
- void __xen_dma_map_page(struct device *hwdev, struct page *page,
--- 
-2.20.1
+If all else fails, move the code to an inline function and call it e.g.
+phys_limit_to_dma_bits().
+
+Just my two cents,
+Petr T
+
+--Sig_/vmjhQR+jY/bQH=VqrrKvOyt
+Content-Type: application/pgp-signature
+Content-Description: Digitální podpis OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEHl2YIZkIo5VO2MxYqlA7ya4PR6cFAl1k1c0ACgkQqlA7ya4P
+R6ffZggAphWovRbYbJElIMDB+201+43NCpSH8dbZwe3UrJ+1DHzEn4OEldBRpcAv
+CuA2/u6GyA8wgnGpCAKj9HNHWSx9VeFoCmf6kPVHFtoC0hnJyJtCCWS1O9B1nqXR
+3h1Dw+6F/4wh14vqUucVvfseO/T1VV1QtfsczxBy2xEvcTZGhBjo7LEKeABa2yRm
+CoPLGyNtTtNkAhXeSeVJUcuquOjdqrcU+RlCH5EIZZagAvXuNLryEsjjUfD4Lx35
+RBeRcO+KmGJvAYuelWr/lqtO5ZUnD4OXoFE6fV7AvvJCD6RIHngLS4EXDIkGAaqd
+kWlLtSieXZDEl0mMBdQBfSVcByyzKA==
+=RDo8
+-----END PGP SIGNATURE-----
+
+--Sig_/vmjhQR+jY/bQH=VqrrKvOyt--
+
+--===============6019951043736438163==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6019951043736438163==--
