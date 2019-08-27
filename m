@@ -2,95 +2,59 @@ Return-Path: <SRS0=Te3Q=WX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BC8C3A5A6
-	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 09:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50438C3A5A6
+	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 09:36:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 112202173E
-	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 09:04:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="HSu1hjAb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 112202173E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
+	by mail.kernel.org (Postfix) with ESMTPS id 12F952186A
+	for <iommu@archiver.kernel.org>; Tue, 27 Aug 2019 09:36:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12F952186A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AF11E1259;
-	Tue, 27 Aug 2019 09:04:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C8D74125C;
+	Tue, 27 Aug 2019 09:36:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 607D21225
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBE2411CE
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 09:04:07 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com
-	[210.131.2.91])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 885288A9
+	Tue, 27 Aug 2019 09:36:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1D91E8AA
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 09:04:06 +0000 (UTC)
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com
-	[209.85.217.51]) (authenticated)
-	by conssluserg-06.nifty.com with ESMTP id x7R93rTK023581
-	for <iommu@lists.linux-foundation.org>; Tue, 27 Aug 2019 18:03:54 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com x7R93rTK023581
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-	s=dec2015msa; t=1566896634;
-	bh=9QFLgDLrDq6oYc9M2pjMIY7wPViunYCOH8ybzE+CYKY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=HSu1hjAbOHY7OxZVCGnKn6WOKUDa1+OQNj8CpTIBQXpwRexsrpcByAJ0Hke93xF2j
-	54/fWwjfQv/Udt1zdzb1OGxcDwzapAiUqJDFvvIhXyn123gTbqQ2J+ZCwQcqY6g5rq
-	klP7bI6NJx444TwTaoLIGR6lOCrMbUAA0jmd5g8o1V3ZLTtZ0BlWfM0tgSFejtgt+M
-	fK1ETpvRwPIoZnx/rkOZy0IeUrpyKMKDM3CXp+HMj344fQg5wN42a+tu78TLMu19IR
-	XRsFC89dZBLV3cuYVQF5GSVRjNsadYcQNkyIqv8tKNxYVOeEfHN2T0jQ3uHXKK56LO
-	x3il+Myr/RDuA==
-X-Nifty-SrcIP: [209.85.217.51]
-Received: by mail-vs1-f51.google.com with SMTP id y16so12960276vsc.3
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 27 Aug 2019 02:03:53 -0700 (PDT)
-X-Gm-Message-State: APjAAAU0Eu/ydo7aC9FB9ayb6zA8Q6gUlLy+aGoB4RqG19uYxsOby63Q
-	IPuK77PyQTAuWS3oZ0EnHXSZ4R3d9JI37tSsv/c=
-X-Google-Smtp-Source: APXvYqwricK86V/H4mlXnBje+CLjj05rUISZsABUzE/wYSQ2E+9R0KKypcnkK7mnt6KPt7U5OLwH2hsMH6JJJTu7VOI=
-X-Received: by 2002:a67:fe12:: with SMTP id l18mr12998082vsr.54.1566896631370; 
-	Tue, 27 Aug 2019 02:03:51 -0700 (PDT)
+	Tue, 27 Aug 2019 09:36:04 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	27 Aug 2019 02:36:03 -0700
+X-IronPort-AV: E=Sophos;i="5.64,436,1559545200"; d="scan'208";a="355716470"
+Received: from jkrzyszt-desk.igk.intel.com (HELO
+	jkrzyszt-desk.ger.corp.intel.com) ([172.22.244.17])
+	by orsmga005-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	27 Aug 2019 02:36:01 -0700
+From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC PATCH] iommu/vt-d: Fix IOMMU field not populated on device
+	hot re-plug
+Date: Tue, 27 Aug 2019 11:35:47 +0200
+Message-ID: <29020717.Hl6jQjRASr@jkrzyszt-desk.ger.corp.intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173,
+	80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
+In-Reply-To: <790a4a20-7517-fe54-177d-850b9beeb88e@linux.intel.com>
+References: <20190822142922.31526-1-janusz.krzysztofik@linux.intel.com>
+	<7536805.yzB8ZXLclH@jkrzyszt-desk.ger.corp.intel.com>
+	<790a4a20-7517-fe54-177d-850b9beeb88e@linux.intel.com>
 MIME-Version: 1.0
-References: <20190506223334.1834-1-nicoleotsuka@gmail.com>
-	<20190506223334.1834-3-nicoleotsuka@gmail.com>
-	<CAK7LNARacEorb38mVBw_V-Zvz-znWgBma1AP1-z_5B_xZU4ogg@mail.gmail.com>
-	<CAK7LNAQfYBCoChMV=MOwcUyVoqRkrPWs7DaWdzDqjBe18gGiAQ@mail.gmail.com>
-	<20190825011025.GA23410@lst.de>
-	<CAK7LNAQb1ZHr=DiHLNeNRaQExMuXdDOV4sFghoGbco_Q=Qzb8g@mail.gmail.com>
-	<20190826073320.GA11712@lst.de>
-	<CAK7LNATYOLEboUTO4qPx2z7cqwDrHBO1HFHG8VzZEJ15STv+nw@mail.gmail.com>
-	<20190827075021.GA953@lst.de>
-In-Reply-To: <20190827075021.GA953@lst.de>
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date: Tue, 27 Aug 2019 18:03:14 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQZ+bueZZzSoMADmgLjWNvijHRV=wLQzN_kvLG3b5Uu+w@mail.gmail.com>
-Message-ID: <CAK7LNAQZ+bueZZzSoMADmgLjWNvijHRV=wLQzN_kvLG3b5Uu+w@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] dma-contiguous: Use fallback alloc_pages for
-	single pages
-To: Christoph Hellwig <hch@lst.de>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Tony Lindgren <tony@atomide.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Max Filippov <jcmvbkbc@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Russell King <linux@armlinux.org.uk>, Thierry Reding <treding@nvidia.com>,
-	linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-	Nicolin Chen <nicoleotsuka@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-	Chris Zankel <chris@zankel.net>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-mmc <linux-mmc@vger.kernel.org>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	iommu@lists.linux-foundation.org, iamjoonsoo.kim@lge.com,
-	Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	David Woodhouse <dwmw2@infradead.org>, intel-gfx@lists.freedesktop.org,
+	=?utf-8?B?TWljaGHFgg==?= Wajdeczko <michal.wajdeczko@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -108,88 +72,81 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Aug 27, 2019 at 4:50 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Tue, Aug 27, 2019 at 04:45:20PM +0900, Masahiro Yamada wrote:
-> > On Mon, Aug 26, 2019 at 4:33 PM Christoph Hellwig <hch@lst.de> wrote:
-> > >
-> > > On Mon, Aug 26, 2019 at 11:05:00AM +0900, Masahiro Yamada wrote:
-> > > > This is included in v5.3-rc6
-> > > > so I tested it.
-> > >
-> > > So there is no allocation failure, but you get I/O errors later?
-> >
-> > Right.
-> >
-> > >
-> > > Does the device use a device-private CMA area?
-> >
-> > Not sure.
-> > My driver is drivers/mmc/host/sdhci-cadence.c
-> > It reuses routines in drivers/mmc/host/sdhci.c
-> >
-> >
-> >
-> > >  Does it work with Linux
-> > > 5.2 if CONFIG_DMA_CMA is disabled?
-> >
-> > No.
-> > 5.2 + disable CONFIG_DMA_CMA
-> > failed in the same way.
->
-> So it seems like the device wants CMA memory.   I guess the patch
-> below will fix it, but that isn't the solution.  Can you try it
-> to confirm?  In the end it probably assumes a dma mask it doesn't
-> set that the CMA memory satisfies or something similar.
+Hi Lu,
 
+On Monday, August 26, 2019 10:29:12 AM CEST Lu Baolu wrote:
+> Hi Janusz,
+> 
+> On 8/26/19 4:15 PM, Janusz Krzysztofik wrote:
+> > Hi Lu,
+> > 
+> > On Friday, August 23, 2019 3:51:11 AM CEST Lu Baolu wrote:
+> >> Hi,
+> >>
+> >> On 8/22/19 10:29 PM, Janusz Krzysztofik wrote:
+> >>> When a perfectly working i915 device is hot unplugged (via sysfs) and
+> >>> hot re-plugged again, its dev->archdata.iommu field is not populated
+> >>> again with an IOMMU pointer.  As a result, the device probe fails on
+> >>> DMA mapping error during scratch page setup.
+> >>>
+> >>> It looks like that happens because devices are not detached from their
+> >>> MMUIO bus before they are removed on device unplug.  Then, when an
+> >>> already registered device/IOMMU association is identified by the
+> >>> reinstantiated device's bus and function IDs on IOMMU bus re-attach
+> >>> attempt, the device's archdata is not populated with IOMMU information
+> >>> and the bad happens.
+> >>>
+> >>> I'm not sure if this is a proper fix but it works for me so at least it
+> >>> confirms correctness of my analysis results, I believe.  So far I
+> >>> haven't been able to identify a good place where the possibly missing
+> >>> IOMMU bus detach on device unplug operation could be added.
+> >>
+> >> Which kernel version are you testing with? Does it contain below commit?
+> >>
+> >> commit 458b7c8e0dde12d140e3472b80919cbb9ae793f4
+> >> Author: Lu Baolu <baolu.lu@linux.intel.com>
+> >> Date:   Thu Aug 1 11:14:58 2019 +0800
+> > 
+> > I was using an internal branch based on drm-tip which didn't contain this
+> > commit yet.  Fortunately it has been already merged into drm-tip over last
+> > weekend and has effectively fixed the issue.
+> 
+> Thanks for testing this.
 
-Thanks for the pointer.
+My testing appeared not sufficiently exhaustive. The fix indeed resolved my 
+initially discovered issue of not being able to rebind the i915 driver to a 
+re-plugged device, however it brought another, probably more serious problem 
+to light.
 
+When an open i915 device is hot unplugged, IOMMU bus notifier now cleans up 
+IOMMU info for the device on PCI device remove while the i915 driver is still 
+not released, kept by open file descriptors.  Then, on last device close, 
+cleanup attempts lead to kernel panic raised from intel_unmap() on unresolved 
+IOMMU domain.
 
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 69cfb4345388..bd2f24aa7f19 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -236,7 +236,7 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
->
->         if (dev && dev->cma_area)
->                 cma = dev->cma_area;
-> -       else if (count > 1)
-> +       else
->                 cma = dma_contiguous_default_area;
->
->         /* CMA can be used only in the context which permits sleeping */
+With commit 458b7c8e0dde reverted and my fix applied, both late device close 
+and device re-plug work for me.  However, I can realize that's probably still 
+not a complete solution, possibly missing some protection against reuse of a 
+removed device other than for cleanup.  If you think that's the right way to 
+go, I can work more on that.
 
-Yes, this makes my driver working again
-when CONFIG_DMA_CMA=y.
+I've had a look at other drivers and found AMD is using somehow similar 
+approach.  On the other hand, looking at the IOMMU common code I couldn't 
+identify any arrangement that would support deferred device cleanup.
 
+If that approach is not acceptable for Intel IOMMU, please suggest a way you'd 
+like to have it resolved and I can try to implement it.
 
-If I apply the following, my driver gets back working
-irrespective of CONFIG_DMA_CMA.
+Thanks,
+Janusz
 
-
-diff --git a/drivers/mmc/host/sdhci-cadence.c b/drivers/mmc/host/sdhci-cadence.c
-index 163d1cf4367e..504459395c39 100644
---- a/drivers/mmc/host/sdhci-cadence.c
-+++ b/drivers/mmc/host/sdhci-cadence.c
-@@ -237,6 +237,7 @@ static const struct sdhci_ops sdhci_cdns_ops = {
-
- static const struct sdhci_pltfm_data sdhci_cdns_pltfm_data = {
-        .ops = &sdhci_cdns_ops,
-+       .quirks2 = SDHCI_QUIRK2_BROKEN_64_BIT_DMA,
- };
-
- static int sdhci_cdns_set_tune_val(struct sdhci_host *host, unsigned int val)
-
-
+> Best regards,
+> Lu Baolu
+> 
 
 
 
 
-
--- 
-Best Regards
-Masahiro Yamada
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
