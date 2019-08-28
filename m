@@ -2,61 +2,53 @@ Return-Path: <SRS0=f2Pc=WY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE9DC3A5A1
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 15:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D569C3A5A1
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 15:08:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F81C2189D
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 15:03:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F81C2189D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id DF30C22CF5
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 15:08:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF30C22CF5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 06876311B;
-	Wed, 28 Aug 2019 15:03:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B25143112;
+	Wed, 28 Aug 2019 15:08:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id ED8C93114
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 962CF2B9C
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 15:02:54 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1A67413A
+	Wed, 28 Aug 2019 15:08:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 43CA3887
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 15:02:54 +0000 (UTC)
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-	by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Aug 2019 08:02:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; d="scan'208";a="171567015"
-Received: from unknown (HELO localhost.localdomain) ([10.232.112.69])
-	by orsmga007.jf.intel.com with ESMTP; 28 Aug 2019 08:02:51 -0700
-Date: Wed, 28 Aug 2019 09:01:06 -0600
-From: Keith Busch <kbusch@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 4/5] PCI/vmd: Stop overriding dma_map_ops
-Message-ID: <20190828150106.GD23412@localhost.localdomain>
-References: <20190828141443.5253-1-hch@lst.de>
-	<20190828141443.5253-5-hch@lst.de>
+	Wed, 28 Aug 2019 15:08:11 +0000 (UTC)
+Received: from theinternet.molgen.mpg.de (theinternet.molgen.mpg.de
+	[141.14.31.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested) (Authenticated sender: buczek)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id C528920225535;
+	Wed, 28 Aug 2019 17:08:08 +0200 (CEST)
+Subject: Re: /proc/vmcore and wrong PAGE_OFFSET
+From: Donald Buczek <buczek@molgen.mpg.de>
+To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+	x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Paul Menzel <pmenzel@molgen.mpg.de>
+References: <c42060b0-12ae-d170-9ad4-03d85919948c@molgen.mpg.de>
+Message-ID: <b208dccd-63d9-e902-28e1-3a6cb44f082f@molgen.mpg.de>
+Date: Wed, 28 Aug 2019 17:08:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190828141443.5253-5-hch@lst.de>
-User-Agent: Mutt/1.9.1 (2017-09-22)
-Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>, "Derrick,
-	Jonathan" <jonathan.derrick@intel.com>
+In-Reply-To: <c42060b0-12ae-d170-9ad4-03d85919948c@molgen.mpg.de>
+Content-Language: en-US
+Cc: horms@verge.net.au, kexec@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,322 +61,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Aug 28, 2019 at 07:14:42AM -0700, Christoph Hellwig wrote:
-> With a little tweak to the intel-iommu code we should be able to work
-> around the VMD mess for the requester IDs without having to create giant
-> amounts of boilerplate DMA ops wrapping code.  The other advantage of
-> this scheme is that we can respect the real DMA masks for the actual
-> devices, and I bet it will only be a matter of time until we'll see the
-> first DMA challeneged NVMe devices.
-
-This tests out fine on VMD hardware, but it's quite different than the
-previous patch. In v1, the original dev was used in iommu_need_mapping(),
-but this time it's the vmd device. Is this still using the actual device's
-DMA mask then?
-
-
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/iommu/intel-iommu.c    |  25 ++++++
->  drivers/pci/controller/Kconfig |   1 -
->  drivers/pci/controller/vmd.c   | 150 ---------------------------------
->  3 files changed, 25 insertions(+), 151 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 12d094d08c0a..aaa35ac73956 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -373,6 +373,23 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
->  static DEFINE_SPINLOCK(device_domain_lock);
->  static LIST_HEAD(device_domain_list);
->  
-> +/*
-> + * For VMD we need to use the VMD devices for mapping requests instead of the
-> + * actual device to get the proper PCIe requester ID.
-> + */
-> +static inline struct device *vmd_real_dev(struct device *dev)
-> +{
-> +#if IS_ENABLED(CONFIG_VMD)
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_sysdata *sd = to_pci_dev(dev)->bus->sysdata;
-> +
-> +		if (sd->vmd_dev)
-> +			return sd->vmd_dev;
-> +	}
-> +#endif
-> +	return dev;
-> +}
-> +
->  /*
->   * Iterate over elements in device_domain_list and call the specified
->   * callback @fn against each element.
-> @@ -3520,6 +3537,7 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
->  				 enum dma_data_direction dir,
->  				 unsigned long attrs)
->  {
-> +	dev = vmd_real_dev(dev);
->  	if (iommu_need_mapping(dev))
->  		return __intel_map_single(dev, page_to_phys(page) + offset,
->  				size, dir, *dev->dma_mask);
-> @@ -3530,6 +3548,7 @@ static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
->  				     size_t size, enum dma_data_direction dir,
->  				     unsigned long attrs)
->  {
-> +	dev = vmd_real_dev(dev);
->  	if (iommu_need_mapping(dev))
->  		return __intel_map_single(dev, phys_addr, size, dir,
->  				*dev->dma_mask);
-> @@ -3585,6 +3604,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
->  			     size_t size, enum dma_data_direction dir,
->  			     unsigned long attrs)
->  {
-> +	dev = vmd_real_dev(dev);
->  	if (iommu_need_mapping(dev))
->  		intel_unmap(dev, dev_addr, size);
->  	else
-> @@ -3594,6 +3614,7 @@ static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
->  static void intel_unmap_resource(struct device *dev, dma_addr_t dev_addr,
->  		size_t size, enum dma_data_direction dir, unsigned long attrs)
->  {
-> +	dev = vmd_real_dev(dev);
->  	if (iommu_need_mapping(dev))
->  		intel_unmap(dev, dev_addr, size);
->  }
-> @@ -3605,6 +3626,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
->  	struct page *page = NULL;
->  	int order;
->  
-> +	dev = vmd_real_dev(dev);
->  	if (!iommu_need_mapping(dev))
->  		return dma_direct_alloc(dev, size, dma_handle, flags, attrs);
->  
-> @@ -3641,6 +3663,7 @@ static void intel_free_coherent(struct device *dev, size_t size, void *vaddr,
->  	int order;
->  	struct page *page = virt_to_page(vaddr);
->  
-> +	dev = vmd_real_dev(dev);
->  	if (!iommu_need_mapping(dev))
->  		return dma_direct_free(dev, size, vaddr, dma_handle, attrs);
->  
-> @@ -3661,6 +3684,7 @@ static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
->  	struct scatterlist *sg;
->  	int i;
->  
-> +	dev = vmd_real_dev(dev);
->  	if (!iommu_need_mapping(dev))
->  		return dma_direct_unmap_sg(dev, sglist, nelems, dir, attrs);
->  
-> @@ -3685,6 +3709,7 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
->  	struct intel_iommu *iommu;
->  
->  	BUG_ON(dir == DMA_NONE);
-> +	dev = vmd_real_dev(dev);
->  	if (!iommu_need_mapping(dev))
->  		return dma_direct_map_sg(dev, sglist, nelems, dir, attrs);
->  
-> diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-> index fe9f9f13ce11..920546cb84e2 100644
-> --- a/drivers/pci/controller/Kconfig
-> +++ b/drivers/pci/controller/Kconfig
-> @@ -267,7 +267,6 @@ config PCIE_TANGO_SMP8759
->  
->  config VMD
->  	depends on PCI_MSI && X86_64 && SRCU
-> -	select X86_DEV_DMA_OPS
->  	tristate "Intel Volume Management Device Driver"
->  	---help---
->  	  Adds support for the Intel Volume Management Device (VMD). VMD is a
-> diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.c
-> index 785cb657c8c2..ba017ebba6a7 100644
-> --- a/drivers/pci/controller/vmd.c
-> +++ b/drivers/pci/controller/vmd.c
-> @@ -94,9 +94,6 @@ struct vmd_dev {
->  	struct resource		resources[3];
->  	struct irq_domain	*irq_domain;
->  	struct pci_bus		*bus;
-> -
-> -	struct dma_map_ops	dma_ops;
-> -	struct dma_domain	dma_domain;
->  };
->  
->  static inline struct vmd_dev *vmd_from_bus(struct pci_bus *bus)
-> @@ -291,151 +288,6 @@ static struct msi_domain_info vmd_msi_domain_info = {
->  	.chip		= &vmd_msi_controller,
->  };
->  
-> -/*
-> - * VMD replaces the requester ID with its own.  DMA mappings for devices in a
-> - * VMD domain need to be mapped for the VMD, not the device requiring
-> - * the mapping.
-> - */
-> -static struct device *to_vmd_dev(struct device *dev)
-> -{
-> -	struct pci_dev *pdev = to_pci_dev(dev);
-> -	struct vmd_dev *vmd = vmd_from_bus(pdev->bus);
-> -
-> -	return &vmd->dev->dev;
-> -}
-> -
-> -static void *vmd_alloc(struct device *dev, size_t size, dma_addr_t *addr,
-> -		       gfp_t flag, unsigned long attrs)
-> -{
-> -	return dma_alloc_attrs(to_vmd_dev(dev), size, addr, flag, attrs);
-> -}
-> -
-> -static void vmd_free(struct device *dev, size_t size, void *vaddr,
-> -		     dma_addr_t addr, unsigned long attrs)
-> -{
-> -	return dma_free_attrs(to_vmd_dev(dev), size, vaddr, addr, attrs);
-> -}
-> -
-> -static int vmd_mmap(struct device *dev, struct vm_area_struct *vma,
-> -		    void *cpu_addr, dma_addr_t addr, size_t size,
-> -		    unsigned long attrs)
-> -{
-> -	return dma_mmap_attrs(to_vmd_dev(dev), vma, cpu_addr, addr, size,
-> -			attrs);
-> -}
-> -
-> -static int vmd_get_sgtable(struct device *dev, struct sg_table *sgt,
-> -			   void *cpu_addr, dma_addr_t addr, size_t size,
-> -			   unsigned long attrs)
-> -{
-> -	return dma_get_sgtable_attrs(to_vmd_dev(dev), sgt, cpu_addr, addr, size,
-> -			attrs);
-> -}
-> -
-> -static dma_addr_t vmd_map_page(struct device *dev, struct page *page,
-> -			       unsigned long offset, size_t size,
-> -			       enum dma_data_direction dir,
-> -			       unsigned long attrs)
-> -{
-> -	return dma_map_page_attrs(to_vmd_dev(dev), page, offset, size, dir,
-> -			attrs);
-> -}
-> -
-> -static void vmd_unmap_page(struct device *dev, dma_addr_t addr, size_t size,
-> -			   enum dma_data_direction dir, unsigned long attrs)
-> -{
-> -	dma_unmap_page_attrs(to_vmd_dev(dev), addr, size, dir, attrs);
-> -}
-> -
-> -static int vmd_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-> -		      enum dma_data_direction dir, unsigned long attrs)
-> -{
-> -	return dma_map_sg_attrs(to_vmd_dev(dev), sg, nents, dir, attrs);
-> -}
-> -
-> -static void vmd_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
-> -			 enum dma_data_direction dir, unsigned long attrs)
-> -{
-> -	dma_unmap_sg_attrs(to_vmd_dev(dev), sg, nents, dir, attrs);
-> -}
-> -
-> -static void vmd_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-> -				    size_t size, enum dma_data_direction dir)
-> -{
-> -	dma_sync_single_for_cpu(to_vmd_dev(dev), addr, size, dir);
-> -}
-> -
-> -static void vmd_sync_single_for_device(struct device *dev, dma_addr_t addr,
-> -				       size_t size, enum dma_data_direction dir)
-> -{
-> -	dma_sync_single_for_device(to_vmd_dev(dev), addr, size, dir);
-> -}
-> -
-> -static void vmd_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
-> -				int nents, enum dma_data_direction dir)
-> -{
-> -	dma_sync_sg_for_cpu(to_vmd_dev(dev), sg, nents, dir);
-> -}
-> -
-> -static void vmd_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
-> -				   int nents, enum dma_data_direction dir)
-> -{
-> -	dma_sync_sg_for_device(to_vmd_dev(dev), sg, nents, dir);
-> -}
-> -
-> -static int vmd_dma_supported(struct device *dev, u64 mask)
-> -{
-> -	return dma_supported(to_vmd_dev(dev), mask);
-> -}
-> -
-> -static u64 vmd_get_required_mask(struct device *dev)
-> -{
-> -	return dma_get_required_mask(to_vmd_dev(dev));
-> -}
-> -
-> -static void vmd_teardown_dma_ops(struct vmd_dev *vmd)
-> -{
-> -	struct dma_domain *domain = &vmd->dma_domain;
-> -
-> -	if (get_dma_ops(&vmd->dev->dev))
-> -		del_dma_domain(domain);
-> -}
-> -
-> -#define ASSIGN_VMD_DMA_OPS(source, dest, fn)	\
-> -	do {					\
-> -		if (source->fn)			\
-> -			dest->fn = vmd_##fn;	\
-> -	} while (0)
-> -
-> -static void vmd_setup_dma_ops(struct vmd_dev *vmd)
-> -{
-> -	const struct dma_map_ops *source = get_dma_ops(&vmd->dev->dev);
-> -	struct dma_map_ops *dest = &vmd->dma_ops;
-> -	struct dma_domain *domain = &vmd->dma_domain;
-> -
-> -	domain->domain_nr = vmd->sysdata.domain;
-> -	domain->dma_ops = dest;
-> -
-> -	if (!source)
-> -		return;
-> -	ASSIGN_VMD_DMA_OPS(source, dest, alloc);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, free);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, mmap);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, get_sgtable);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, map_page);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, unmap_page);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, map_sg);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, unmap_sg);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_single_for_cpu);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_single_for_device);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_sg_for_cpu);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_sg_for_device);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, dma_supported);
-> -	ASSIGN_VMD_DMA_OPS(source, dest, get_required_mask);
-> -	add_dma_domain(domain);
-> -}
-> -#undef ASSIGN_VMD_DMA_OPS
-> -
->  static char __iomem *vmd_cfg_addr(struct vmd_dev *vmd, struct pci_bus *bus,
->  				  unsigned int devfn, int reg, int len)
->  {
-> @@ -690,7 +542,6 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
->  	}
->  
->  	vmd_attach_resources(vmd);
-> -	vmd_setup_dma_ops(vmd);
->  	dev_set_msi_domain(&vmd->bus->dev, vmd->irq_domain);
->  
->  	pci_scan_child_bus(vmd->bus);
-> @@ -805,7 +656,6 @@ static void vmd_remove(struct pci_dev *dev)
->  	pci_stop_root_bus(vmd->bus);
->  	pci_remove_root_bus(vmd->bus);
->  	vmd_cleanup_srcu(vmd);
-> -	vmd_teardown_dma_ops(vmd);
->  	vmd_detach_resources(vmd);
->  	irq_domain_remove(vmd->irq_domain);
->  }
-> -- 
-> 2.20.1
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gOC8yMC8xOSAxMToyMSBQTSwgRG9uYWxkIEJ1Y3playB3cm90ZToKPiBEZWFyIExpbnV4IGZv
+bGtzLAo+IAo+IEknbSBpbnZlc3RpZ2F0aW5nIGEgcHJvYmxlbSwgdGhhdCB0aGUgY3Jhc2ggdXRp
+bGl0eSBmYWlscyB0byB3b3JrIHdpdGggb3VyIGNyYXNoIGR1bXBzOgo+IAo+ICDCoMKgwqAgYnVj
+emVrQGtyZWlvczovbW50JCBjcmFzaCB2bWxpbnV4IGNyYXNoLnZtY29yZQo+ICDCoMKgwqAgY3Jh
+c2ggNy4yLjYKPiAgwqDCoMKgIENvcHlyaWdodCAoQykgMjAwMi0yMDE5wqAgUmVkIEhhdCwgSW5j
+Lgo+ICDCoMKgwqAgQ29weXJpZ2h0IChDKSAyMDA0LCAyMDA1LCAyMDA2LCAyMDEwwqAgSUJNIENv
+cnBvcmF0aW9uCj4gIMKgwqDCoCBDb3B5cmlnaHQgKEMpIDE5OTktMjAwNsKgIEhld2xldHQtUGFj
+a2FyZCBDbwo+ICDCoMKgwqAgQ29weXJpZ2h0IChDKSAyMDA1LCAyMDA2LCAyMDExLCAyMDEywqAg
+RnVqaXRzdSBMaW1pdGVkCj4gIMKgwqDCoCBDb3B5cmlnaHQgKEMpIDIwMDYsIDIwMDfCoCBWQSBM
+aW51eCBTeXN0ZW1zIEphcGFuIEsuSy4KPiAgwqDCoMKgIENvcHlyaWdodCAoQykgMjAwNSwgMjAx
+McKgIE5FQyBDb3Jwb3JhdGlvbgo+ICDCoMKgwqAgQ29weXJpZ2h0IChDKSAxOTk5LCAyMDAyLCAy
+MDA3wqAgU2lsaWNvbiBHcmFwaGljcywgSW5jLgo+ICDCoMKgwqAgQ29weXJpZ2h0IChDKSAxOTk5
+LCAyMDAwLCAyMDAxLCAyMDAywqAgTWlzc2lvbiBDcml0aWNhbCBMaW51eCwgSW5jLgo+ICDCoMKg
+wqAgVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmUsIGNvdmVyZWQgYnkgdGhlIEdOVSBHZW5l
+cmFsIFB1YmxpYyBMaWNlbnNlLAo+ICDCoMKgwqAgYW5kIHlvdSBhcmUgd2VsY29tZSB0byBjaGFu
+Z2UgaXQgYW5kL29yIGRpc3RyaWJ1dGUgY29waWVzIG9mIGl0IHVuZGVyCj4gIMKgwqDCoCBjZXJ0
+YWluIGNvbmRpdGlvbnMuwqAgRW50ZXIgImhlbHAgY29weWluZyIgdG8gc2VlIHRoZSBjb25kaXRp
+b25zLgo+ICDCoMKgwqAgVGhpcyBwcm9ncmFtIGhhcyBhYnNvbHV0ZWx5IG5vIHdhcnJhbnR5LsKg
+IEVudGVyICJoZWxwIHdhcnJhbnR5IiBmb3IgZGV0YWlscy4KPiAgwqDCoMKgIEdOVSBnZGIgKEdE
+QikgNy42Cj4gIMKgwqDCoCBDb3B5cmlnaHQgKEMpIDIwMTMgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0
+aW9uLCBJbmMuCj4gIMKgwqDCoCBMaWNlbnNlIEdQTHYzKzogR05VIEdQTCB2ZXJzaW9uIDMgb3Ig
+bGF0ZXIgPGh0dHA6Ly9nbnUub3JnL2xpY2Vuc2VzL2dwbC5odG1sPgo+ICDCoMKgwqAgVGhpcyBp
+cyBmcmVlIHNvZnR3YXJlOiB5b3UgYXJlIGZyZWUgdG8gY2hhbmdlIGFuZCByZWRpc3RyaWJ1dGUg
+aXQuCj4gIMKgwqDCoCBUaGVyZSBpcyBOTyBXQVJSQU5UWSwgdG8gdGhlIGV4dGVudCBwZXJtaXR0
+ZWQgYnkgbGF3LsKgIFR5cGUgInNob3cgY29weWluZyIKPiAgwqDCoMKgIGFuZCAic2hvdyB3YXJy
+YW50eSIgZm9yIGRldGFpbHMuCj4gIMKgwqDCoCBUaGlzIEdEQiB3YXMgY29uZmlndXJlZCBhcyAi
+eDg2XzY0LXVua25vd24tbGludXgtZ251Ii4uLgo+ICDCoMKgwqAgY3Jhc2g6IHJlYWQgZXJyb3I6
+IGtlcm5lbCB2aXJ0dWFsIGFkZHJlc3M6IGZmZmY4OTgwN2ZmNzcwMDDCoCB0eXBlOiAibWVtb3J5
+IHNlY3Rpb24gcm9vdCB0YWJsZSIKPiAKPiBUaGUgY3Jhc2ggZmlsZSBpcyBhIGNvcHkgb2YgL2Rl
+di92bWNvcmUgdGFrZW4gYnkgYSBjcmFzaGtlcm5lbCBhZnRlciBhIHN5c2N0bC1mb3JjZWQgcGFu
+aWMuCj4gCj4gSXQgbG9va3MgdG8gbWUsIHRoYXTCoCAweGZmZmY4OTgwN2ZmNzcwMDAgaXMgbm90
+IHJlYWRhYmxlLCBiZWNhdXNlIHRoZSB2aXJ0dWFsIGFkZHJlc3NlcyBzdG9yZWQgaW4gdGhlIGVs
+ZiBoZWFkZXIgb2YgdGhlIGR1bXAgZmlsZSBhcmUgb2ZmIGJ5IDB4MDAwMDAwODAwMDAwMDAwMDoK
+PiAKPiAgwqDCoMKgIGJ1Y3pla0BrcmVpb3M6L21udCQgcmVhZGVsZiAtYSBjcmFzaC52bWNvcmUg
+fCBncmVwIExPQUQgfCBwZXJsIC1sYW5lICdwcmludGYgIiVzICglMDE2eClcbiIsJF8saGV4KCRG
+WzJdKS1oZXgoJEZbM10pJwo+ICDCoMKgwqDCoMKgIExPQUTCoMKgwqDCoMKgwqDCoMKgwqDCoCAw
+eDAwMDAwMDAwMDAwMGQwMDAgMHhmZmZmZmZmZjgxMDAwMDAwIDB4MDAwMDAxMDA3ZDAwMDAwMCAo
+ZmZmZmZlZmYwNDAwMDAwMCkKPiAgwqDCoMKgwqDCoCBMT0FEwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+MHgwMDAwMDAwMDAxYzMzMDAwIDB4ZmZmZjg4MDAwMDAwMTAwMCAweDAwMDAwMDAwMDAwMDEwMDAg
+KGZmZmY4ODAwMDAwMDAwMDApCj4gIMKgwqDCoMKgwqAgTE9BRMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IDB4MDAwMDAwMDAwMWNjMTAwMCAweGZmZmY4ODAwMDAwOTAwMDAgMHgwMDAwMDAwMDAwMDkwMDAw
+IChmZmZmODgwMDAwMDAwMDAwKQo+ICDCoMKgwqDCoMKgIExPQUTCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAweDAwMDAwMDAwMDFjZDEwMDAgMHhmZmZmODgwMDAwMTAwMDAwIDB4MDAwMDAwMDAwMDEwMDAw
+MCAoZmZmZjg4MDAwMDAwMDAwMCkKPiAgwqDCoMKgwqDCoCBMT0FEwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgMHgwMDAwMDAwMDAxY2QyMDcwIDB4ZmZmZjg4MDAwMDEwMDA3MCAweDAwMDAwMDAwMDAxMDAw
+NzAgKGZmZmY4ODAwMDAwMDAwMDApCj4gIMKgwqDCoMKgwqAgTE9BRMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIDB4MDAwMDAwMDAxOWJkMjAwMCAweGZmZmY4ODAwMzgwMDAwMDAgMHgwMDAwMDAwMDM4MDAw
+MDAwIChmZmZmODgwMDAwMDAwMDAwKQo+ICDCoMKgwqDCoMKgIExPQUTCoMKgwqDCoMKgwqDCoMKg
+wqDCoCAweDAwMDAwMDAwNGU2YTEwMDAgMHhmZmZmODgwMDZmZmZmMDAwIDB4MDAwMDAwMDA2ZmZm
+ZjAwMCAoZmZmZjg4MDAwMDAwMDAwMCkKPiAgwqDCoMKgwqDCoCBMT0FEwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgMHgwMDAwMDAwMDRlNmEyMDAwIDB4ZmZmZjg4MDEwMDAwMDAwMCAweDAwMDAwMDAxMDAw
+MDAwMDAgKGZmZmY4ODAwMDAwMDAwMDApCj4gIMKgwqDCoMKgwqAgTE9BRMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIDB4MDAwMDAwMWZjZGEyMjAwMCAweGZmZmY4ODIwODAwMDAwMDAgMHgwMDAwMDAyMDgw
+MDAwMDAwIChmZmZmODgwMDAwMDAwMDAwKQo+ICDCoMKgwqDCoMKgIExPQUTCoMKgwqDCoMKgwqDC
+oMKgwqDCoCAweDAwMDAwMDNmY2Q5YTIwMDAgMHhmZmZmODg0MDgwMDAwMDAwIDB4MDAwMDAwNDA4
+MDAwMDAwMCAoZmZmZjg4MDAwMDAwMDAwMCkKPiAgwqDCoMKgwqDCoCBMT0FEwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgMHgwMDAwMDA1ZmNkOTIyMDAwIDB4ZmZmZjg4NjA4MDAwMDAwMCAweDAwMDAwMDYw
+ODAwMDAwMDAgKGZmZmY4ODAwMDAwMDAwMDApCj4gIMKgwqDCoMKgwqAgTE9BRMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIDB4MDAwMDAwN2ZjZDhhMjAwMCAweGZmZmY4ODgwODAwMDAwMDAgMHgwMDAwMDA4
+MDgwMDAwMDAwIChmZmZmODgwMDAwMDAwMDAwKQo+ICDCoMKgwqDCoMKgIExPQUTCoMKgwqDCoMKg
+wqDCoMKgwqDCoCAweDAwMDAwMDlmY2Q4MjIwMDAgMHhmZmZmODhhMDgwMDAwMDAwIDB4MDAwMDAw
+YTA4MDAwMDAwMCAoZmZmZjg4MDAwMDAwMDAwMCkKPiAgwqDCoMKgwqDCoCBMT0FEwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgMHgwMDAwMDBiZmNkN2EyMDAwIDB4ZmZmZjg4YzA4MDAwMDAwMCAweDAwMDAw
+MGMwODAwMDAwMDAgKGZmZmY4ODAwMDAwMDAwMDApCj4gIMKgwqDCoMKgwqAgTE9BRMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIDB4MDAwMDAwZGZjZDcyMjAwMCAweGZmZmY4OGUwODAwMDAwMDAgMHgwMDAw
+MDBlMDgwMDAwMDAwIChmZmZmODgwMDAwMDAwMDAwKQo+ICDCoMKgwqDCoMKgIExPQUTCoMKgwqDC
+oMKgwqDCoMKgwqDCoCAweDAwMDAwMGZjNGQ3MjIwMDAgMHhmZmZmODhmZTAwMDAwMDAwIDB4MDAw
+MDAwZmUwMDAwMDAwMCAoZmZmZjg4MDAwMDAwMDAwMCkKPiAKPiAoQ29sdW1ucyBhcmUgRmlsZSBv
+ZmZzZXQsIFZpcnR1YWwgQWRkcmVzcywgUGh5c2ljYWwgQWRkcmVzcyBhbmQgY29tcHV0ZWQgb2Zm
+c2V0KS4KPiAKPiBJIHdvdWxkIGV4cGVjdCB0aGUgb2Zmc2V0IGJldHdlZW4gdGhlIHZpcnR1YWwg
+YW5kIHRoZSBwaHlzaWNhbCBhZGRyZXNzIHRvIGJlIFBBR0VfT0ZGU0VULCB3aGljaCBpcyAweGZm
+ZmY4ODgwMDAwMDAwMCBvbiB4ODZfNjQsIG5vdCAweGZmZmY4ODAwMDAwMDAwMDAuIFVubGlrZSAv
+cHJvYy92bWNvcmUsIC9wcm9jL2tjb3JlIHNob3dzIHRoZSBzYW1lIHBoeXNpY2FsIG1lbW9yeSAo
+b2YgdGhlIGxhc3QgbWVtb3J5IHNlY3Rpb24gYWJvdmUpIHdpdGggYSBjb3JyZWN0IG9mZnNldDoK
+PiAKPiAgwqDCoMKgIGJ1Y3pla0BrcmVpb3M6L21udCQgc3VkbyByZWFkZWxmIC1hIC9wcm9jL2tj
+b3JlIHwgZ3JlcCAweDAwMDAwMGZlMDAwMDAwMDAgfCBwZXJsIC1sYW5lICdwcmludGYgIiVzICgl
+MDE2eClcbiIsJF8saGV4KCRGWzJdKS1oZXgoJEZbM10pJwo+ICDCoMKgwqDCoMKgIExPQUTCoMKg
+wqDCoMKgwqDCoMKgwqDCoCAweDAwMDAwOTdlMDAwMDQwMDAgMHhmZmZmODk3ZTAwMDAwMDAwIDB4
+MDAwMDAwZmUwMDAwMDAwMCAoZmZmZjg4ODAwMDAwMDAwMCkKPiAKPiBUaGUgZmFpbGluZyBhZGRy
+ZXNzIDB4ZmZmZjg5ODA3ZmY3NzAwMCBoYXBwZW5zIHRvIGJlIGF0IHRoZSBlbmQgb2YgdGhlIGxh
+c3QgbWVtb3J5IHNlY3Rpb24uIEl0IGlzIHRoZSBtZW1fc2VjdGlvbiBhcnJheSwgd2hpY2ggY3Jh
+c2ggd2FudHMgdG8gbG9hZCBhbmQgd2hpY2ggaXMgdmlzaWJsZSBpbiB0aGUgcnVubmluZyBzeXN0
+ZW06Cj4gCj4gIMKgwqDCoCBidWN6ZWtAa3JlaW9zOi9tbnQkIHN1ZG8gZ2RiIHZtbGludXggL3By
+b2Mva2NvcmUKPiAgwqDCoMKgIFsuLi5dCj4gIMKgwqDCoCAoZ2RiKSBwcmludCBtZW1fc2VjdGlv
+bgo+ICDCoMKgwqAgJDEgPSAoc3RydWN0IG1lbV9zZWN0aW9uICoqKSAweGZmZmY4OTgwN2ZmNzcw
+MDAKPiAgwqDCoMKgIChnZGIpIHByaW50ICptZW1fc2VjdGlvbgo+ICDCoMKgwqAgJDIgPSAoc3Ry
+dWN0IG1lbV9zZWN0aW9uICopIDB4ZmZmZjg4YTA3ZjM3YjAwMAo+ICDCoMKgwqAgKGdkYikgcHJp
+bnQgKiptZW1fc2VjdGlvbgo+ICDCoMKgwqAgJDMgPSB7c2VjdGlvbl9tZW1fbWFwID0gMTg0NDY3
+MTk4ODQ0NTM3NDA1NTEsIHBhZ2VibG9ja19mbGFncyA9IDB4ZmZmZjg4YTA3ZjM2ZjA0MH0KPiAK
+PiBJIGNhbiByZWFkIHRoZSBzYW1lIGluZm9ybWF0aW9uIGZyb20gdGhlIGNyYXNoIGR1bXAsIGlm
+IEkgYWNjb3VudCBmb3IgdGhlIDB4MDAwMDAwODAwMDAwMDAwMCBlcnJvcjoKPiAKPiAgwqDCoMKg
+IGJ1Y3pla0BrcmVpb3M6L21udCQgZ2RiIHZtbGludXggY3Jhc2gudm1jb3JlCj4gIMKgwqDCoCBb
+Li4uXQo+ICDCoMKgwqAgKGdkYikgcHJpbnQgbWVtX3NlY3Rpb24KPiAgwqDCoMKgICQxID0gKHN0
+cnVjdCBtZW1fc2VjdGlvbiAqKikgMHhmZmZmODk4MDdmZjc3MDAwCj4gIMKgwqDCoCAoZ2RiKSBw
+cmludCAqbWVtX3NlY3Rpb24KPiAgwqDCoMKgIENhbm5vdCBhY2Nlc3MgbWVtb3J5IGF0IGFkZHJl
+c3MgMHhmZmZmODk4MDdmZjc3MDAwCj4gIMKgwqDCoCAoZ2RiKSBzZXQgJHQ9KHN0cnVjdCBtZW1f
+c2VjdGlvbiAqKikgKChjaGFyICopbWVtX3NlY3Rpb24gLSAweDAwMDAwMDgwMDAwMDAwMDApCj4g
+IMKgwqDCoCAoZ2RiKSBwcmludCAqJHQKPiAgwqDCoMKgICQyID0gKHN0cnVjdCBtZW1fc2VjdGlv
+biAqKSAweGZmZmY4OGEwN2YzN2IwMDAKPiAgwqDCoMKgIChnZGIpIHNldCAkcz0oc3RydWN0IG1l
+bV9zZWN0aW9uICopKChjaGFyICopKiR0IC0gMHgwMDAwMDA4MDAwMDAwMDAwICkKPiAgwqDCoMKg
+IChnZGIpIHByaW50ICokcwo+ICDCoMKgwqAgJDMgPSB7c2VjdGlvbl9tZW1fbWFwID0gMTg0NDY3
+MTk4ODQ0NTM3NDA1NTEsIHBhZ2VibG9ja19mbGFncyA9IDB4ZmZmZjg4YTA3ZjM2ZjA0MH0KPiAK
+PiBJbiB0aGUgYWJvdmUgZXhhbXBsZSwgdGhlIHJ1bm5pbmcga2VybmVsLCB0aGUgY3Jhc2hlZCBr
+ZXJuZWwgYW5kIHRoZSBjcmFzaGtlcm5lbCBhcmUgYWxsIHRoZSBzYW1lIDQuMTkuNTcgY29tcGls
+YXRpb24uIEJ1dCBJJ3ZlIHRyaWVkIHdpdGggc2V2ZXJhbCBvdGhlciB2ZXJzaW9ucyAoIGNyYXNo
+a2VybmVsIDQuNCwgcnVubmluZyBrZXJuZWwgZnJvbSA0LjAgdG8gbGludXggbWFzdGVyKSB3aXRo
+IHRoZSBzYW1lIHJlc3VsdC4KPiAKPiBUaGUgbWFjaGluZSBpbiB0aGUgYWJvdmUgZXhhbXBsZSBo
+YXMgc2V2ZXJhbCBudW1hIG5vZGVzICh0aGlzIGlzIHdoeSB0aGVyZSBhcmUgc28gbWFueSBMT0FE
+IGhlYWRlcnMpLiBCdXQgSSd2ZSB0cmllZCB0aGlzIHdpdGggYSBzbWFsbCBrdm0gdmlydHVhbCBt
+YWNoaW5lIGFuZCBnb3QgdGhlIHNhbWUgcmVzdWx0Lgo+IAo+ICDCoMKgwqAgYnVjemVrQGtyZWlv
+czovbW50L2xpbnV4LTQuMTkuNTctMjg2Lng4Nl82NC9idWlsZCQgZ3JlcCBSQU5ET01JWkVfQkFT
+RSAuY29uZmlnCj4gIMKgwqDCoCAjIENPTkZJR19SQU5ET01JWkVfQkFTRSBpcyBub3Qgc2V0Cj4g
+IMKgwqDCoCBidWN6ZWtAa3JlaW9zOi9tbnQvbGludXgtNC4xOS41Ny0yODYueDg2XzY0L2J1aWxk
+JCBncmVwIFNQQVJTRU1FTSAuY29uZmlnCj4gIMKgwqDCoCBDT05GSUdfQVJDSF9TUEFSU0VNRU1f
+RU5BQkxFPXkKPiAgwqDCoMKgIENPTkZJR19BUkNIX1NQQVJTRU1FTV9ERUZBVUxUPXkKPiAgwqDC
+oMKgIENPTkZJR19TUEFSU0VNRU1fTUFOVUFMPXkKPiAgwqDCoMKgIENPTkZJR19TUEFSU0VNRU09
+eQo+ICDCoMKgwqAgQ09ORklHX1NQQVJTRU1FTV9FWFRSRU1FPXkKPiAgwqDCoMKgIENPTkZJR19T
+UEFSU0VNRU1fVk1FTU1BUF9FTkFCTEU9eQo+ICDCoMKgwqAgQ09ORklHX1NQQVJTRU1FTV9WTUVN
+TUFQPXkKPiAgwqDCoMKgIGJ1Y3pla0BrcmVpb3M6L21udC9saW51eC00LjE5LjU3LTI4Ni54ODZf
+NjQvYnVpbGQkIGdyZXAgUEFHRV9UQUJMRV9JU09MQVRJT04gLmNvbmZpZwo+ICDCoMKgwqAgQ09O
+RklHX1BBR0VfVEFCTEVfSVNPTEFUSU9OPXkKPiAKPiBBbnkgaWRlYXM/Cj4gCj4gRG9uYWxkCgpU
+byBhbnN3ZXIgbXkgb3duIHF1ZXN0aW9uIGZvciB0aGUgcmVjb3JkczoKCk91ciBrZXhlYyBjb21t
+YW5kIGxpbmUgaXMKCiAgICAgL3Vzci9zYmluL2tleGVjIC1wIC9ib290L2J6SW1hZ2UuY3Jhc2gg
+LS1pbml0cmQ9L2Jvb3QvZ3J1Yi9pbml0cmFtZnMuaWd6IC0tY29tbWFuZC1saW5lPSJyb290PUxB
+QkVMPXJvb3Qgcm8gY29uc29sZT10dHlTMSwxMTUyMDBuOCBjb25zb2xlPXR0eTAgaXJxcG9sbCBu
+cl9jcHVzPTEgcmVzZXRfZGV2aWNlcyBwYW5pYz01IENSQVNIIgoKU28gd2UgbmVpdGhlciBnYXZl
+IC1zICgtLWtleGVjLWZpbGUtc3lzY2FsbCkgbm9yIC1hICggLS1rZXhlYy1zeXNjYWxsLWF1dG8g
+KS4gRm9yIHRoaXMgcmVhc29uLCBrZXhlYyB1c2VkIHRoZSBrZXhlY19sb2FkKCkgc3lzY2FsbCBp
+bnN0ZWFkIG9mIHRoZSBuZXdlciBrZXhlY19maWxlX2xvYWQgc3lzY2FsbC4KCldpdGgga2V4ZWNf
+bG9hZCgpLCB0aGUgZWxmIGhlYWRlcnMgZm9yIHRoZSBjcmFzaCwgd2hpY2ggaW5jbHVkZSBwcm9n
+cmFtIGhlYWRlciBmb3IgdGhlIG9sZCBzeXN0ZW0gcmFtLCBhcmUgbm90IGNvbXB1dGVkIGJ5IHRo
+ZSBrZXJuZWwsIGJ1dCBieSB0aGUgdXNlcnNwYWNlIHByb2dyYW0gZnJvbSBrZXhlYy10b29scy4K
+CkxpbnV4IGtlcm5lbCBjb21taXQgZDUyODg4YWEgKCJ4ODYvbW06IE1vdmUgTERUIHJlbWFwIG91
+dCBvZiBLQVNMUiByZWdpb24gb24gNS1sZXZlbCBwYWdpbmciKSBjaGFuZ2VkIHRoZSBiYXNlIG9m
+IHRoZSBkaXJlY3QgbWFwcGluZyBmcm9tIDB4ZmZmZjg4MDAwMDAwMDAwMCB0byAweGZmZmY4ODgw
+MDAwMDAwMDAuIFRoaXMgd2FzIG1lcmdlZCBpbnRvIHY0LjIwLXJjMi4KCmtleGVjLXRvb2xzLCBo
+b3dldmVyLCBzdGlsbCBoYXMgdGhlIG9sZCBhZGRyZXNzIGhhcmQgY29kZWQ6CgogICAgIGJ1Y3pl
+a0BhdmFyaXRpYTovc2NyYXRjaC9jbHVzdGVyL2J1Y3play9rZXhlYy10b29scyAobWFzdGVyKSQg
+Z2l0IGdyZXAgWDg2XzY0X1BBR0VfT0ZGU0VUCiAgICAga2V4ZWMvYXJjaC9pMzg2L2NyYXNoZHVt
+cC14ODYuYzogICAgICAgICAgICAgICAgICAgICAgICBlbGZfaW5mby0+cGFnZV9vZmZzZXQgPSBY
+ODZfNjRfUEFHRV9PRkZTRVRfUFJFXzJfNl8yNzsKICAgICBrZXhlYy9hcmNoL2kzODYvY3Jhc2hk
+dW1wLXg4Ni5jOiAgICAgICAgICAgICAgICAgICAgICAgIGVsZl9pbmZvLT5wYWdlX29mZnNldCA9
+IFg4Nl82NF9QQUdFX09GRlNFVDsKICAgICBrZXhlYy9hcmNoL2kzODYvY3Jhc2hkdW1wLXg4Ni5o
+OiNkZWZpbmUgWDg2XzY0X1BBR0VfT0ZGU0VUX1BSRV8yXzZfMjcgICAweGZmZmY4MTAwMDAwMDAw
+MDBVTEwKICAgICBrZXhlYy9hcmNoL2kzODYvY3Jhc2hkdW1wLXg4Ni5oOiNkZWZpbmUgWDg2XzY0
+X1BBR0VfT0ZGU0VUICAgICAgICAgICAgICAweGZmZmY4ODAwMDAwMDAwMDBVTEwKCkJlc3QKICAg
+RG9uYWxkCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
+bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
+L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
