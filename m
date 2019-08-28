@@ -4,45 +4,45 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D18AC3A5A1
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 12:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2031C3A5A1
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 12:37:58 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4854D2173E
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 12:37:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4854D2173E
+	by mail.kernel.org (Postfix) with ESMTPS id BF2A32173E
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 12:37:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF2A32173E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C80C22EA7;
-	Wed, 28 Aug 2019 12:37:43 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 04BF82E9E;
+	Wed, 28 Aug 2019 12:37:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 64D562E8E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EA4F02E8E
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 28 Aug 2019 12:37:30 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
-	[210.160.252.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 02DFA42D
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
+	[210.160.252.171])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 02D8A13A
 	for <iommu@lists.linux-foundation.org>;
 	Wed, 28 Aug 2019 12:37:27 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.64,441,1559487600"; d="scan'208";a="24934332"
+X-IronPort-AV: E=Sophos;i="5.64,441,1559487600"; d="scan'208";a="25152955"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-	by relmlie6.idc.renesas.com with ESMTP; 28 Aug 2019 21:37:26 +0900
+	by relmlie5.idc.renesas.com with ESMTP; 28 Aug 2019 21:37:26 +0900
 Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 0510E400516A;
-	Wed, 28 Aug 2019 21:37:26 +0900 (JST)
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id C9D3940062B8;
+	Wed, 28 Aug 2019 21:37:25 +0900 (JST)
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: ulf.hansson@linaro.org, hch@lst.de, m.szyprowski@samsung.com,
 	robin.murphy@arm.com, joro@8bytes.org, axboe@kernel.dk
-Subject: [PATCH v10 3/4] block: add a helper function to merge the segments
-Date: Wed, 28 Aug 2019 21:35:42 +0900
-Message-Id: <1566995743-5614-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v10 2/4] iommu/dma: Add a new dma_map_ops of
+	get_merge_boundary()
+Date: Wed, 28 Aug 2019 21:35:41 +0900
+Message-Id: <1566995743-5614-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1566995743-5614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1566995743-5614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
@@ -67,71 +67,42 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch adds a helper function whether a queue can merge
-the segments by the DMA MAP layer (e.g. via IOMMU).
+This patch adds a new dma_map_ops of get_merge_boundary() to
+expose the DMA merge boundary if the domain type is IOMMU_DOMAIN_DMA.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Acked-by: Joerg Roedel <jroedel@suse.de>
 ---
- block/blk-settings.c   | 23 +++++++++++++++++++++++
- include/linux/blkdev.h |  2 ++
- 2 files changed, 25 insertions(+)
+ drivers/iommu/dma-iommu.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/block/blk-settings.c b/block/blk-settings.c
-index 2c18312..c3632fc 100644
---- a/block/blk-settings.c
-+++ b/block/blk-settings.c
-@@ -12,6 +12,7 @@
- #include <linux/lcm.h>
- #include <linux/jiffies.h>
- #include <linux/gfp.h>
-+#include <linux/dma-mapping.h>
- 
- #include "blk.h"
- #include "blk-wbt.h"
-@@ -832,6 +833,28 @@ void blk_queue_write_cache(struct request_queue *q, bool wc, bool fua)
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index de68b4a..ad861bd 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1091,6 +1091,13 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(blk_queue_write_cache);
  
-+/**
-+ * blk_queue_can_use_dma_map_merging - configure queue for merging segments.
-+ * @q:		the request queue for the device
-+ * @dev:	the device pointer for dma
-+ *
-+ * Tell the block layer about merging the segments by dma map of @q.
-+ */
-+bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
-+				       struct device *dev)
++static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
 +{
-+	unsigned long boundary = dma_get_merge_boundary(dev);
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
 +
-+	if (!boundary)
-+		return false;
-+
-+	/* No need to update max_segment_size. see blk_queue_virt_boundary() */
-+	blk_queue_virt_boundary(q, boundary);
-+
-+	return true;
++	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
 +}
-+EXPORT_SYMBOL_GPL(blk_queue_can_use_dma_map_merging);
 +
- static int __init blk_settings_init(void)
- {
- 	blk_max_low_pfn = max_low_pfn - 1;
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 1ac7901..d62d6e2 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -1086,6 +1086,8 @@ extern void blk_queue_dma_alignment(struct request_queue *, int);
- extern void blk_queue_update_dma_alignment(struct request_queue *, int);
- extern void blk_queue_rq_timeout(struct request_queue *, unsigned int);
- extern void blk_queue_write_cache(struct request_queue *q, bool enabled, bool fua);
-+extern bool blk_queue_can_use_dma_map_merging(struct request_queue *q,
-+					      struct device *dev);
+ static const struct dma_map_ops iommu_dma_ops = {
+ 	.alloc			= iommu_dma_alloc,
+ 	.free			= iommu_dma_free,
+@@ -1106,6 +1113,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.sync_sg_for_device	= iommu_dma_sync_sg_for_device,
+ 	.map_resource		= iommu_dma_map_resource,
+ 	.unmap_resource		= iommu_dma_unmap_resource,
++	.get_merge_boundary	= iommu_dma_get_merge_boundary,
+ };
  
  /*
-  * Number of physical segments as sent to the device.
 -- 
 2.7.4
 
