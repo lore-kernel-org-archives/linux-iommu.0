@@ -7,69 +7,62 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FE4C3A5A1
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 13:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E61C3A5A1
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 14:15:18 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64B732070B
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 13:13:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 87A47233A1
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 14:15:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="krpjyvPl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64B732070B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ZMIM2nWG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87A47233A1
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 21BC62F60;
-	Wed, 28 Aug 2019 13:13:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5239C30C1;
+	Wed, 28 Aug 2019 14:15:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 264C81F26
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 57EAB30B2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 13:13:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-vk1-f202.google.com (mail-vk1-f202.google.com
-	[209.85.221.202])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 73EBA13A
+	Wed, 28 Aug 2019 14:15:00 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1441113A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 13:13:43 +0000 (UTC)
-Received: by mail-vk1-f202.google.com with SMTP id v63so1184292vkb.18
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 06:13:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
-	h=date:message-id:mime-version:subject:from:to:cc;
-	bh=2uraJyf6YkQQQi+GjgA0Euznea67jY0h3NcNTgfEE6E=;
-	b=krpjyvPl4LV2Qp+9bxrX89f65tIa90HGC+HFV5rCeRCZ2Kify9kiCPez94yN8srqEe
-	lF+iaLa/UcZn4j756/FDjGcCZ0fi4GAImCz5nAKjfHbDVT4WihMlJOA0Oqe8/oU0YGwb
-	Ld33DNMmuOqncMmBjsxdkFdvO20z+TkgT4PefRIYKIBpXFcXzihDFcx0+HYRLWrzVt0z
-	Y7v7VnMqtFJ/H51CNlWRxy/3Fa6SCQyge9Dfc/AvqyjN+8IBUTQoqfTpv9OXaM4uCDMu
-	tTEYpdiWaBNUKVP37xirxcot4wu+OthQfooyIBAkDMtVrRe6c9qMKF2yFsg7vRx5S76T
-	eOQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-	bh=2uraJyf6YkQQQi+GjgA0Euznea67jY0h3NcNTgfEE6E=;
-	b=rLq7qQ+kC2Z+4KosDHhhjzrus+MSWipXFj8lhRXSgLC7tl0Q1eN4rLqLdJvSukBPt9
-	Dt9jHGYve0ysQqZ48Pp1O6DH8GrsijuZHcVUiNGHERUNmJRMfrwH6hX2zv98WQwX85QI
-	/UgIFaceuhDhhHJ0k0vZQZGUi0K7fQ+CZuE6uzTJFzOwyqlyIL572mR2OT1fNJMMI5Tm
-	42Vq6U3cUnpCpuAuuypaZ5C9Mcm/EiA34bhWgn/P6Y1sDUuspUQDflCWAD6KPUB8o2kr
-	eKKo6d2goR4bJZLglAkK2h/jb0vbXrRqLf5hKd76UVpaJ6ZCBWD3W5PkxaCDHaf2X3Lq
-	Wp/w==
-X-Gm-Message-State: APjAAAVGJSWjLqRvaY2xwn33/Cz7pLwJRs8PIkVslS042WbuG1Qy7+jZ
-	ATtSfW18wFcWnFHc1GCI2xhuSotM/KYbVA==
-X-Google-Smtp-Source: APXvYqxwaE69Ih/IcaBEjoZYAtqpyYGYen7SRacn6ADCDqJa8PItgJpR3VuZvxi6a1jkwLHNsHIcq0P0fvxZJQ==
-X-Received: by 2002:a67:d02:: with SMTP id 2mr2090357vsn.43.1566998022308;
-	Wed, 28 Aug 2019 06:13:42 -0700 (PDT)
-Date: Wed, 28 Aug 2019 06:13:38 -0700
-Message-Id: <20190828131338.89832-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
-Subject: [PATCH] iommu/iova: avoid false sharing on fq_timer_on
-To: Joerg Roedel <jroedel@suse.de>
-Cc: Jinyu Qi <jinyuqi@huawei.com>, iommu@lists.linux-foundation.org,
-	Eric Dumazet <eric.dumazet@gmail.com>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	Eric Dumazet <edumazet@google.com>
+	Wed, 28 Aug 2019 14:15:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=6ZfA2t0V1DsXTcYJTI/PW4o+4h9V1E2c8O8ixWWPKp4=;
+	b=ZMIM2nWGQT7ao/o3bSPXDNhdXd
+	CCsYN6Sn11RqqUTEuIuAy+lZ9tJp7rrJbndUY1/HGuZyUUamoeTz6aHyT4BIT2n91cEedwlEhs1Zn
+	8OqW5mwR2iwa6CM68DzwYsRYjEOjlRRyl8Zh8yhTrdJmug+Jiq9tYqb6uQWhNc5+3ZlbfhLsdCxht
+	wGNvpYpUyWBSuhJoNvU5ONwHZOg36J7PIJbG0ziTH+4FJ4hUJdNsftcGWAREfKcBjbvy4xnluyh3n
+	HR14xELs8owXLAkCzYe/HvdaoVal7fi9WJu+Mx5wuyrBVkcDorVPqMYsttNJckrJvKosnRZidfoU4
+	DWwe3E0w==;
+Received: from [2001:4bb8:180:3f4c:863:2ead:e9d4:da9f] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+	id 1i2yim-0000T7-Ay; Wed, 28 Aug 2019 14:14:52 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Keith Busch <kbusch@kernel.org>,
+	"Derrick, Jonathan" <jonathan.derrick@intel.com>
+Subject: [PATCH 1/5] x86/pci: Remove an ifdef __KERNEL__ from pci.h
+Date: Wed, 28 Aug 2019 16:14:39 +0200
+Message-Id: <20190828141443.5253-2-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190828141443.5253-1-hch@lst.de>
+References: <20190828141443.5253-1-hch@lst.de>
+MIME-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, bhelgaas@google.com, dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,50 +75,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Eric Dumazet via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-In commit 14bd9a607f90 ("iommu/iova: Separate atomic variables
-to improve performance") Jinyu Qi identified that the atomic_cmpxchg()
-in queue_iova() was causing a performance loss and moved critical fields
-so that the false sharing would not impact them.
+Non-UAPI headers can't be included by userspace, so remove the
+pointless ifdef.
 
-However, avoiding the false sharing in the first place seems easy.
-We should attempt the atomic_cmpxchg() no more than 100 times
-per second. Adding an atomic_read() will keep the cache
-line mostly shared.
-
-This false sharing came with commit 9a005a800ae8
-("iommu/iova: Add flush timer").
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jinyu Qi <jinyuqi@huawei.com>
-Cc: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/iova.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/pci.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 3e1a8a6755723a927a7942a7429ab7e6c19a0027..41c605b0058f9615c2dbdd83f1de2404a9b1d255 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -577,7 +577,9 @@ void queue_iova(struct iova_domain *iovad,
+diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+index e662f987dfa2..6fa846920f5f 100644
+--- a/arch/x86/include/asm/pci.h
++++ b/arch/x86/include/asm/pci.h
+@@ -12,8 +12,6 @@
+ #include <asm/pat.h>
+ #include <asm/x86_init.h>
  
- 	spin_unlock_irqrestore(&fq->lock, flags);
+-#ifdef __KERNEL__
+-
+ struct pci_sysdata {
+ 	int		domain;		/* PCI domain */
+ 	int		node;		/* NUMA node */
+@@ -118,7 +116,6 @@ void native_restore_msi_irqs(struct pci_dev *dev);
+ #define native_setup_msi_irqs		NULL
+ #define native_teardown_msi_irq		NULL
+ #endif
+-#endif  /* __KERNEL__ */
  
--	if (atomic_cmpxchg(&iovad->fq_timer_on, 0, 1) == 0)
-+	/* Avoid false sharing as much as possible. */
-+	if (!atomic_read(&iovad->fq_timer_on) &&
-+	    !atomic_cmpxchg(&iovad->fq_timer_on, 0, 1))
- 		mod_timer(&iovad->fq_timer,
- 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
- }
+ #ifdef CONFIG_X86_64
+ #include <asm/pci_64.h>
 -- 
-2.23.0.187.g17f5b7556c-goog
+2.20.1
 
 _______________________________________________
 iommu mailing list
