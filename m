@@ -2,54 +2,74 @@ Return-Path: <SRS0=f2Pc=WY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB1CC3A5A1
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 12:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FE4C3A5A1
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 13:13:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A8C32173E
-	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 12:38:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A8C32173E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id 64B732070B
+	for <iommu@archiver.kernel.org>; Wed, 28 Aug 2019 13:13:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="krpjyvPl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64B732070B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3562A2EAA;
-	Wed, 28 Aug 2019 12:37:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 21BC62F60;
+	Wed, 28 Aug 2019 13:13:55 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id ED94A2E8E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 264C81F26
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 12:37:31 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
-	[210.160.252.171])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 59EBC8A8
+	Wed, 28 Aug 2019 13:13:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-vk1-f202.google.com (mail-vk1-f202.google.com
+	[209.85.221.202])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 73EBA13A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 28 Aug 2019 12:37:28 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.64,441,1559487600"; d="scan'208";a="25152958"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-	by relmlie5.idc.renesas.com with ESMTP; 28 Aug 2019 21:37:26 +0900
-Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1C34940062B8;
-	Wed, 28 Aug 2019 21:37:26 +0900 (JST)
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: ulf.hansson@linaro.org, hch@lst.de, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, joro@8bytes.org, axboe@kernel.dk
-Subject: [PATCH v10 4/4] mmc: queue: Use bigger segments if DMA MAP layer can
-	merge the segments
-Date: Wed, 28 Aug 2019 21:35:43 +0900
-Message-Id: <1566995743-5614-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1566995743-5614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-References: <1566995743-5614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-renesas-soc@vger.kernel.org, linux-mmc@vger.kernel.org,
-	linux-block@vger.kernel.org, wsa+renesas@sang-engineering.com,
-	iommu@lists.linux-foundation.org
+	Wed, 28 Aug 2019 13:13:43 +0000 (UTC)
+Received: by mail-vk1-f202.google.com with SMTP id v63so1184292vkb.18
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 28 Aug 2019 06:13:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+	h=date:message-id:mime-version:subject:from:to:cc;
+	bh=2uraJyf6YkQQQi+GjgA0Euznea67jY0h3NcNTgfEE6E=;
+	b=krpjyvPl4LV2Qp+9bxrX89f65tIa90HGC+HFV5rCeRCZ2Kify9kiCPez94yN8srqEe
+	lF+iaLa/UcZn4j756/FDjGcCZ0fi4GAImCz5nAKjfHbDVT4WihMlJOA0Oqe8/oU0YGwb
+	Ld33DNMmuOqncMmBjsxdkFdvO20z+TkgT4PefRIYKIBpXFcXzihDFcx0+HYRLWrzVt0z
+	Y7v7VnMqtFJ/H51CNlWRxy/3Fa6SCQyge9Dfc/AvqyjN+8IBUTQoqfTpv9OXaM4uCDMu
+	tTEYpdiWaBNUKVP37xirxcot4wu+OthQfooyIBAkDMtVrRe6c9qMKF2yFsg7vRx5S76T
+	eOQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+	bh=2uraJyf6YkQQQi+GjgA0Euznea67jY0h3NcNTgfEE6E=;
+	b=rLq7qQ+kC2Z+4KosDHhhjzrus+MSWipXFj8lhRXSgLC7tl0Q1eN4rLqLdJvSukBPt9
+	Dt9jHGYve0ysQqZ48Pp1O6DH8GrsijuZHcVUiNGHERUNmJRMfrwH6hX2zv98WQwX85QI
+	/UgIFaceuhDhhHJ0k0vZQZGUi0K7fQ+CZuE6uzTJFzOwyqlyIL572mR2OT1fNJMMI5Tm
+	42Vq6U3cUnpCpuAuuypaZ5C9Mcm/EiA34bhWgn/P6Y1sDUuspUQDflCWAD6KPUB8o2kr
+	eKKo6d2goR4bJZLglAkK2h/jb0vbXrRqLf5hKd76UVpaJ6ZCBWD3W5PkxaCDHaf2X3Lq
+	Wp/w==
+X-Gm-Message-State: APjAAAVGJSWjLqRvaY2xwn33/Cz7pLwJRs8PIkVslS042WbuG1Qy7+jZ
+	ATtSfW18wFcWnFHc1GCI2xhuSotM/KYbVA==
+X-Google-Smtp-Source: APXvYqxwaE69Ih/IcaBEjoZYAtqpyYGYen7SRacn6ADCDqJa8PItgJpR3VuZvxi6a1jkwLHNsHIcq0P0fvxZJQ==
+X-Received: by 2002:a67:d02:: with SMTP id 2mr2090357vsn.43.1566998022308;
+	Wed, 28 Aug 2019 06:13:42 -0700 (PDT)
+Date: Wed, 28 Aug 2019 06:13:38 -0700
+Message-Id: <20190828131338.89832-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+Subject: [PATCH] iommu/iova: avoid false sharing on fq_timer_on
+To: Joerg Roedel <jroedel@suse.de>
+Cc: Jinyu Qi <jinyuqi@huawei.com>, iommu@lists.linux-foundation.org,
+	Eric Dumazet <eric.dumazet@gmail.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	Eric Dumazet <edumazet@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,119 +82,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
+From: Eric Dumazet via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-When the max_segs of a mmc host is smaller than 512, the mmc
-subsystem tries to use 512 segments if DMA MAP layer can merge
-the segments, and then the mmc subsystem exposes such information
-to the block layer by using blk_queue_can_use_dma_map_merging().
+In commit 14bd9a607f90 ("iommu/iova: Separate atomic variables
+to improve performance") Jinyu Qi identified that the atomic_cmpxchg()
+in queue_iova() was causing a performance loss and moved critical fields
+so that the false sharing would not impact them.
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+However, avoiding the false sharing in the first place seems easy.
+We should attempt the atomic_cmpxchg() no more than 100 times
+per second. Adding an atomic_read() will keep the cache
+line mostly shared.
+
+This false sharing came with commit 9a005a800ae8
+("iommu/iova: Add flush timer").
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Jinyu Qi <jinyuqi@huawei.com>
+Cc: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/mmc/core/queue.c | 35 ++++++++++++++++++++++++++++++++---
- include/linux/mmc/host.h |  1 +
- 2 files changed, 33 insertions(+), 3 deletions(-)
+ drivers/iommu/iova.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/core/queue.c b/drivers/mmc/core/queue.c
-index 7102e2e..1e29b30 100644
---- a/drivers/mmc/core/queue.c
-+++ b/drivers/mmc/core/queue.c
-@@ -21,6 +21,8 @@
- #include "card.h"
- #include "host.h"
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 3e1a8a6755723a927a7942a7429ab7e6c19a0027..41c605b0058f9615c2dbdd83f1de2404a9b1d255 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -577,7 +577,9 @@ void queue_iova(struct iova_domain *iovad,
  
-+#define MMC_DMA_MAP_MERGE_SEGMENTS	512
-+
- static inline bool mmc_cqe_dcmd_busy(struct mmc_queue *mq)
- {
- 	/* Allow only 1 DCMD at a time */
-@@ -193,6 +195,12 @@ static void mmc_queue_setup_discard(struct request_queue *q,
- 		blk_queue_flag_set(QUEUE_FLAG_SECERASE, q);
+ 	spin_unlock_irqrestore(&fq->lock, flags);
+ 
+-	if (atomic_cmpxchg(&iovad->fq_timer_on, 0, 1) == 0)
++	/* Avoid false sharing as much as possible. */
++	if (!atomic_read(&iovad->fq_timer_on) &&
++	    !atomic_cmpxchg(&iovad->fq_timer_on, 0, 1))
+ 		mod_timer(&iovad->fq_timer,
+ 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
  }
- 
-+static unsigned int mmc_get_max_segments(struct mmc_host *host)
-+{
-+	return host->can_dma_map_merge ? MMC_DMA_MAP_MERGE_SEGMENTS :
-+					 host->max_segs;
-+}
-+
- /**
-  * mmc_init_request() - initialize the MMC-specific per-request data
-  * @q: the request queue
-@@ -206,7 +214,7 @@ static int __mmc_init_request(struct mmc_queue *mq, struct request *req,
- 	struct mmc_card *card = mq->card;
- 	struct mmc_host *host = card->host;
- 
--	mq_rq->sg = mmc_alloc_sg(host->max_segs, gfp);
-+	mq_rq->sg = mmc_alloc_sg(mmc_get_max_segments(host), gfp);
- 	if (!mq_rq->sg)
- 		return -ENOMEM;
- 
-@@ -362,13 +370,23 @@ static void mmc_setup_queue(struct mmc_queue *mq, struct mmc_card *card)
- 		blk_queue_bounce_limit(mq->queue, BLK_BOUNCE_HIGH);
- 	blk_queue_max_hw_sectors(mq->queue,
- 		min(host->max_blk_count, host->max_req_size / 512));
--	blk_queue_max_segments(mq->queue, host->max_segs);
-+	if (host->can_dma_map_merge)
-+		WARN(!blk_queue_can_use_dma_map_merging(mq->queue,
-+							mmc_dev(host)),
-+		     "merging was advertised but not possible");
-+	blk_queue_max_segments(mq->queue, mmc_get_max_segments(host));
- 
- 	if (mmc_card_mmc(card))
- 		block_size = card->ext_csd.data_sector_size;
- 
- 	blk_queue_logical_block_size(mq->queue, block_size);
--	blk_queue_max_segment_size(mq->queue,
-+	/*
-+	 * After blk_queue_can_use_dma_map_merging() was called with succeed,
-+	 * since it calls blk_queue_virt_boundary(), the mmc should not call
-+	 * both blk_queue_max_segment_size().
-+	 */
-+	if (!host->can_dma_map_merge)
-+		blk_queue_max_segment_size(mq->queue,
- 			round_down(host->max_seg_size, block_size));
- 
- 	dma_set_max_seg_size(mmc_dev(host), queue_max_segment_size(mq->queue));
-@@ -418,6 +436,17 @@ int mmc_init_queue(struct mmc_queue *mq, struct mmc_card *card)
- 	mq->tag_set.cmd_size = sizeof(struct mmc_queue_req);
- 	mq->tag_set.driver_data = mq;
- 
-+	/*
-+	 * Since blk_mq_alloc_tag_set() calls .init_request() of mmc_mq_ops,
-+	 * the host->can_dma_map_merge should be set before to get max_segs
-+	 * from mmc_get_max_segments().
-+	 */
-+	if (host->max_segs < MMC_DMA_MAP_MERGE_SEGMENTS &&
-+	    dma_get_merge_boundary(mmc_dev(host)))
-+		host->can_dma_map_merge = 1;
-+	else
-+		host->can_dma_map_merge = 0;
-+
- 	ret = blk_mq_alloc_tag_set(&mq->tag_set);
- 	if (ret)
- 		return ret;
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index 4a351cb..c5662b3 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -396,6 +396,7 @@ struct mmc_host {
- 	unsigned int		retune_paused:1; /* re-tuning is temporarily disabled */
- 	unsigned int		use_blk_mq:1;	/* use blk-mq */
- 	unsigned int		retune_crc_disable:1; /* don't trigger retune upon crc */
-+	unsigned int		can_dma_map_merge:1; /* merging can be used */
- 
- 	int			rescan_disable;	/* disable card detection */
- 	int			rescan_entered;	/* used with nonremovable devices */
 -- 
-2.7.4
+2.23.0.187.g17f5b7556c-goog
 
 _______________________________________________
 iommu mailing list
