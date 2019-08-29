@@ -7,53 +7,54 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC02C3A59F
-	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 22:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E76C3A59F
+	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 22:43:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6B0321874
-	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 22:43:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2A11921874
+	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 22:43:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1YN/3xio"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6B0321874
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="LG+7fN41"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A11921874
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8A0C059C1;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C1D1259C5;
 	Thu, 29 Aug 2019 22:43:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D48559B8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6A64C59B7
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 29 Aug 2019 22:41:59 +0000 (UTC)
+	Thu, 29 Aug 2019 22:42:12 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 32EDBE6
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3EFECE6
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 29 Aug 2019 22:41:59 +0000 (UTC)
+	Thu, 29 Aug 2019 22:42:11 +0000 (UTC)
 Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
 	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id A31312189D;
-	Thu, 29 Aug 2019 22:41:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id A39D32189D;
+	Thu, 29 Aug 2019 22:42:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1567118519;
-	bh=K4rt8zt90Kmj60EUr8Ldv/KP5AZNgIOkytellVQSzmc=;
+	s=default; t=1567118531;
+	bh=xHkEUC70NyhQrdUtUwDNpqvFabXbH4FNTzDPXPE1tqY=;
 	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-	b=1YN/3xioK/sOkd2EHLYyrqoX59ZRTxCvQ8FvQpisRpYOU/0fSb7JKuj23nCZQH6hu
-	/RlPCh5ef2sQ3bgqTFLrsqntATI/sGsYVmmUrwpiJsHK6U8JdkHPxtUByH2AGJpzQ0
-	jVl7lnqoqH4YW8dX0danw5b7kBAaiscoagXBaJPM=
-Date: Thu, 29 Aug 2019 15:41:58 -0700 (PDT)
+	b=LG+7fN41BbkQDRJj56NLA6759Otnvnf3nvVutDii10+eEzLBlDeRKXwPCpCclCsiA
+	Cl7GH+XwZzjeaHNfXrbRV8R+5ceePqFPWCu9iGGxmTfFsCxbnOr/pXW9XZEEsWSbYn
+	rrnwK2ejARhZqSJAQfOT6+NQJikZVzm+uVGT9078=
+Date: Thu, 29 Aug 2019 15:42:10 -0700 (PDT)
 From: Stefano Stabellini <sstabellini@kernel.org>
 X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 03/11] xen/arm: simplify dma_cache_maint
-In-Reply-To: <20190826121944.515-4-hch@lst.de>
-Message-ID: <alpine.DEB.2.21.1908281431390.8175@sstabellini-ThinkPad-T480s>
-References: <20190826121944.515-1-hch@lst.de> <20190826121944.515-4-hch@lst.de>
+Subject: Re: [PATCH 04/11] xen/arm: remove xen_dma_ops
+In-Reply-To: <20190826121944.515-5-hch@lst.de>
+Message-ID: <alpine.DEB.2.21.1908281458070.8175@sstabellini-ThinkPad-T480s>
+References: <20190826121944.515-1-hch@lst.de> <20190826121944.515-5-hch@lst.de>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
+Cc: Julien Grall <julien.grall@arm.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, x86@kernel.org,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
 	xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org
@@ -75,113 +76,97 @@ Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 On Mon, 26 Aug 2019, Christoph Hellwig wrote:
-> Calculate the required operation in the caller, and pass it directly
-> instead of recalculating it for each page, and use simple arithmetics
-> to get from the physical address to Xen page size aligned chunks.
+> arm and arm64 can just use xen_swiotlb_dma_ops directly like x86, no
+> need for a pointer indirection.
 > 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Julien Grall <julien.grall@arm.com>
+
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+
+
 > ---
->  arch/arm/xen/mm.c | 62 +++++++++++++++++------------------------------
->  1 file changed, 22 insertions(+), 40 deletions(-)
+>  arch/arm/mm/dma-mapping.c    | 3 ++-
+>  arch/arm/xen/mm.c            | 4 ----
+>  arch/arm64/mm/dma-mapping.c  | 3 ++-
+>  include/xen/arm/hypervisor.h | 2 --
+>  4 files changed, 4 insertions(+), 8 deletions(-)
 > 
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 738097396445..2661cad36359 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -35,6 +35,7 @@
+>  #include <asm/mach/map.h>
+>  #include <asm/system_info.h>
+>  #include <asm/dma-contiguous.h>
+> +#include <xen/swiotlb-xen.h>
+>  
+>  #include "dma.h"
+>  #include "mm.h"
+> @@ -2360,7 +2361,7 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>  
+>  #ifdef CONFIG_XEN
+>  	if (xen_initial_domain())
+> -		dev->dma_ops = xen_dma_ops;
+> +		dev->dma_ops = &xen_swiotlb_dma_ops;
+>  #endif
+>  	dev->archdata.dma_ops_setup = true;
+>  }
 > diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
-> index 90574d89d0d4..14210ebdea1a 100644
+> index 14210ebdea1a..9b3a6c0ca681 100644
 > --- a/arch/arm/xen/mm.c
 > +++ b/arch/arm/xen/mm.c
-> @@ -35,64 +35,46 @@ unsigned long xen_get_swiotlb_free_pages(unsigned int order)
->  	return __get_free_pages(flags, order);
+> @@ -163,16 +163,12 @@ void xen_destroy_contiguous_region(phys_addr_t pstart, unsigned int order)
 >  }
+>  EXPORT_SYMBOL_GPL(xen_destroy_contiguous_region);
 >  
-> -enum dma_cache_op {
-> -       DMA_UNMAP,
-> -       DMA_MAP,
-> -};
->  static bool hypercall_cflush = false;
->  
-> -/* functions called by SWIOTLB */
+> -const struct dma_map_ops *xen_dma_ops;
+> -EXPORT_SYMBOL(xen_dma_ops);
 > -
-> -static void dma_cache_maint(dma_addr_t handle, unsigned long offset,
-> -	size_t size, enum dma_data_direction dir, enum dma_cache_op op)
-> +/* buffers in highmem or foreign pages cannot cross page boundaries */
-> +static void dma_cache_maint(dma_addr_t handle, size_t size, u32 op)
+>  int __init xen_mm_init(void)
 >  {
 >  	struct gnttab_cache_flush cflush;
-> -	unsigned long xen_pfn;
-> -	size_t left = size;
+>  	if (!xen_initial_domain())
+>  		return 0;
+>  	xen_swiotlb_init(1, false);
+> -	xen_dma_ops = &xen_swiotlb_dma_ops;
 >  
-> -	xen_pfn = (handle >> XEN_PAGE_SHIFT) + offset / XEN_PAGE_SIZE;
-> -	offset %= XEN_PAGE_SIZE;
-> +	cflush.a.dev_bus_addr = handle & XEN_PAGE_MASK;
-> +	cflush.offset = xen_offset_in_page(handle);
-> +	cflush.op = op;
+>  	cflush.op = 0;
+>  	cflush.a.dev_bus_addr = 0;
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index bd2b039f43a6..4b244a037349 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/cache.h>
+>  #include <linux/dma-noncoherent.h>
+>  #include <linux/dma-iommu.h>
+> +#include <xen/swiotlb-xen.h>
 >  
->  	do {
-> -		size_t len = left;
-> -	
-> -		/* buffers in highmem or foreign pages cannot cross page
-> -		 * boundaries */
-> -		if (len + offset > XEN_PAGE_SIZE)
-> -			len = XEN_PAGE_SIZE - offset;
+>  #include <asm/cacheflush.h>
+>  
+> @@ -64,6 +65,6 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>  
+>  #ifdef CONFIG_XEN
+>  	if (xen_initial_domain())
+> -		dev->dma_ops = xen_dma_ops;
+> +		dev->dma_ops = &xen_swiotlb_dma_ops;
+>  #endif
+>  }
+> diff --git a/include/xen/arm/hypervisor.h b/include/xen/arm/hypervisor.h
+> index 2982571f7cc1..43ef24dd030e 100644
+> --- a/include/xen/arm/hypervisor.h
+> +++ b/include/xen/arm/hypervisor.h
+> @@ -19,8 +19,6 @@ static inline enum paravirt_lazy_mode paravirt_get_lazy_mode(void)
+>  	return PARAVIRT_LAZY_NONE;
+>  }
+>  
+> -extern const struct dma_map_ops *xen_dma_ops;
 > -
-> -		cflush.op = 0;
-> -		cflush.a.dev_bus_addr = xen_pfn << XEN_PAGE_SHIFT;
-> -		cflush.offset = offset;
-> -		cflush.length = len;
-> -
-> -		if (op == DMA_UNMAP && dir != DMA_TO_DEVICE)
-> -			cflush.op = GNTTAB_CACHE_INVAL;
-> -		if (op == DMA_MAP) {
-> -			if (dir == DMA_FROM_DEVICE)
-> -				cflush.op = GNTTAB_CACHE_INVAL;
-> -			else
-> -				cflush.op = GNTTAB_CACHE_CLEAN;
-> -		}
-> -		if (cflush.op)
-> -			HYPERVISOR_grant_table_op(GNTTABOP_cache_flush, &cflush, 1);
-> +		if (size + cflush.offset > XEN_PAGE_SIZE)
-> +			cflush.length = XEN_PAGE_SIZE - cflush.offset;
-> +		else
-> +			cflush.length = size;
-
-isn't it missing a:
-
-  cflush.a.dev_bus_addr = handle & XEN_PAGE_MASK;
-
-here?
-
-
-> +		HYPERVISOR_grant_table_op(GNTTABOP_cache_flush, &cflush, 1);
-> +
-> +		handle += cflush.length;
-> +		size -= cflush.length;
->  
-> -		offset = 0;
-> -		xen_pfn++;
-> -		left -= len;
-> -	} while (left);
-> +		cflush.offset = 0;
-> +	} while (size);
->  }
->  
->  static void __xen_dma_page_dev_to_cpu(struct device *hwdev, dma_addr_t handle,
->  		size_t size, enum dma_data_direction dir)
->  {
-> -	dma_cache_maint(handle & PAGE_MASK, handle & ~PAGE_MASK, size, dir, DMA_UNMAP);
-> +	if (dir != DMA_TO_DEVICE)
-> +		dma_cache_maint(handle, size, GNTTAB_CACHE_INVAL);
->  }
->  
->  static void __xen_dma_page_cpu_to_dev(struct device *hwdev, dma_addr_t handle,
->  		size_t size, enum dma_data_direction dir)
->  {
-> -	dma_cache_maint(handle & PAGE_MASK, handle & ~PAGE_MASK, size, dir, DMA_MAP);
-> +	if (dir == DMA_FROM_DEVICE)
-> +		dma_cache_maint(handle, size, GNTTAB_CACHE_INVAL);
-> +	else
-> +		dma_cache_maint(handle, size, GNTTAB_CACHE_CLEAN);
->  }
->  
->  void __xen_dma_map_page(struct device *hwdev, struct page *page,
+>  #ifdef CONFIG_XEN
+>  void __init xen_early_init(void);
+>  #else
 > -- 
 > 2.20.1
 > 
