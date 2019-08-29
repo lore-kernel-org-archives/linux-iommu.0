@@ -8,68 +8,69 @@ X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C31DFC3A59F
-	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE93BC3A5A6
+	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:19:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9500020674
-	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:19:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 842AB233FF
+	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:19:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bR79jPl4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9500020674
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o9IDb9wx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 842AB233FF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C0323470C;
-	Thu, 29 Aug 2019 11:18:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0C69846FF;
+	Thu, 29 Aug 2019 11:18:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F0FFC4692;
-	Thu, 29 Aug 2019 11:18:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AD6704692;
+	Thu, 29 Aug 2019 11:18:03 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
 	[209.85.208.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 572353D0;
-	Thu, 29 Aug 2019 11:18:01 +0000 (UTC)
-Received: by mail-ed1-f68.google.com with SMTP id h8so3640554edv.7;
-	Thu, 29 Aug 2019 04:18:01 -0700 (PDT)
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1A437EC;
+	Thu, 29 Aug 2019 11:18:03 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id a21so3603763edt.11;
+	Thu, 29 Aug 2019 04:18:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references
 	:mime-version:content-transfer-encoding;
-	bh=LdftSop4FAsgnu90xfPUb4VrwQYO3xWAqeCbQKmpXAw=;
-	b=bR79jPl4rvUQxfm/WZpDq1DyXQdI5dFimvOylxLHdkb6p1bhrXYKf9MmrYBl0/NDfV
-	3V0KXZcPjjyMW0Belo7iCxQHNnIV4kIOv09BCxcK2bbYCuy695AwiO5eh4dkivJzOPKc
-	AQX69shgH8Hhh9F4L157CtTqKJnmGJ20ptg1GLQUxcxxi9NIOE3VFHT/Z2pg0PENmrCs
-	L2RdKj9PwDhdL3ESrxoGYFkv6tO/e0YcUDV5wGhUCm74kKP2i+6S2/9RinrAlhMWlMYf
-	9324oZ4PMlQsWRAeyKt88/GdGQpGRSFGCLerBTv+jtU6zc6/5toHP64wwZubb1VwbtS6
-	0pyw==
+	bh=zCsgPCFvt5f0JhV5AAX71J7KrOE6T7Mwp2HnksazGlw=;
+	b=o9IDb9wxTMVYl4Pw8eOl4MN8lrxcZAgdJUKaGojaGYK4aXQr34VjDZVfYu/QzbxvqH
+	jcCWwyi0BumBzhg17grPUPMX9d7OIgI5av0bWjFUbC977dHLo8th+91iEI5NqBvmCODo
+	2I3V9bM1lkU74SfOvgyAH+sAwFQaQIwE71r0I8lfv/K+OUYHnZS9/sjDBKzPpsDxCoCn
+	WgY397r5bRinjlufn59iqnqRz6E+fEu4qAdIk6TUiefpKTyqVSbCUYkNOe3WtgxV1IBt
+	qYjcwXUI9MXenjs8NrD+DbvJhsyZkQBDBJupkrQjvHkmXTxgcdrcmmtuR0K+kKiHNVj1
+	gkmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references:mime-version:content-transfer-encoding;
-	bh=LdftSop4FAsgnu90xfPUb4VrwQYO3xWAqeCbQKmpXAw=;
-	b=rLXwNBAHzGOigsCchejIWCQ8fvhtxB//BOi3LUIAWsGXzG09+y2pzxkRz5O8LESdVl
-	V4FCqH0huHztBcvmZNj8kQUr54ACKJAOiJq9OUEqnxZObRKGqf0iEkpUGZLgEzEyPdHk
-	TENYY9NOCPGxJ2Au5kGPpkPhbwF7D32dxdR0F3w2Y5QHfZNN55UCWtRkNDsZF01E+pMi
-	FwHZP6oMRrD00js24x3OvCUEeCiiHKMwE+RVdt+jCKOA0BS9PomF0mIQl6qlvo/NR3mv
-	t9HRCwhGdMwE8Vw6zWvGEFY6zqDUEKa52wziDNxnacH5oM9+RcR5fQMY/XbScZ9aVZbQ
-	mhog==
-X-Gm-Message-State: APjAAAUjW0zHTTm0m2sOLgfjHt/qoU/vgqshmqHE0V9AsP510vr6Ku+M
-	bLE0ehLOTxoPJsOutgD4Aug=
-X-Google-Smtp-Source: APXvYqx6xumvHaa0FS6ceR4LYkovD8dan+j5kQuVNZo88mSfLqaVgTKRmRZEKXv0Df7oSZRTvjLY2Q==
-X-Received: by 2002:aa7:df03:: with SMTP id c3mr9130739edy.112.1567077479905; 
-	Thu, 29 Aug 2019 04:17:59 -0700 (PDT)
+	bh=zCsgPCFvt5f0JhV5AAX71J7KrOE6T7Mwp2HnksazGlw=;
+	b=m0W74dN8e+dcgx+zgJE2HValJK4OJvyK2eKDck+q/E+5wDjJeeeUCC8fQRJ8KebrE4
+	kjGzu6EDvi1lk8wwAv35VtVLI/zP/+W0CHUhG2KO7K+AlZhgDky3Py9W5kq5Z6W5aqhg
+	12SSKt2A8badGQfCrAaHpbUDPx/zGbemPe/RkXhCKU4lL96YxiTB4ePEYJRQTTVIL/PY
+	XD6RdxlmKgra3W1GfAytUIRGEoInNP9m0Q2/g7M+JVmELxjtwkqns/JDk650i3wSvvIu
+	/wT9QWWMaHQrTZn13udbykwFlPm4HN82pMre/gBjKt7tYItsnzbd4lSeI25+wjOjjEdI
+	X5hg==
+X-Gm-Message-State: APjAAAXhc2HSytNSUet9SzYWqin4Dj62clPi3e38cT3DnQU0ZimQbJeu
+	t/VpBU0s40a5hox7rYM9WzE=
+X-Google-Smtp-Source: APXvYqwM8CVbq0FXN38b8oxKuaYKC/x8VDD3uqRU7eQrkpe6K2cwtpE+e448Jg8Ofr+6OyhLfBDXpw==
+X-Received: by 2002:a17:906:6bc4:: with SMTP id
+	t4mr7875881ejs.256.1567077481688; 
+	Thu, 29 Aug 2019 04:18:01 -0700 (PDT)
 Received: from localhost (pD9E51890.dip0.t-ipconnect.de. [217.229.24.144])
-	by smtp.gmail.com with ESMTPSA id w3sm390212edq.12.2019.08.29.04.17.58
+	by smtp.gmail.com with ESMTPSA id n93sm215670edc.5.2019.08.29.04.18.00
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Thu, 29 Aug 2019 04:17:59 -0700 (PDT)
+	Thu, 29 Aug 2019 04:18:00 -0700 (PDT)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 3/5] iommu: amd: Use iommu_put_resv_regions_simple()
-Date: Thu, 29 Aug 2019 13:17:50 +0200
-Message-Id: <20190829111752.17513-4-thierry.reding@gmail.com>
+Subject: [PATCH 4/5] iommu: intel: Use iommu_put_resv_regions_simple()
+Date: Thu, 29 Aug 2019 13:17:51 +0200
+Message-Id: <20190829111752.17513-5-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190829111752.17513-1-thierry.reding@gmail.com>
 References: <20190829111752.17513-1-thierry.reding@gmail.com>
@@ -100,21 +101,22 @@ From: Thierry Reding <treding@nvidia.com>
 
 Use the new standard function instead of open-coding it.
 
+Cc: David Woodhouse <dwmw2@infradead.org>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/amd_iommu.c | 11 +----------
+ drivers/iommu/intel-iommu.c | 11 +----------
  1 file changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 04a9f8443344..7d8896d5fab9 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3160,15 +3160,6 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 	list_add_tail(&region->list, head);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4658cda6f3d2..2fe5da41c786 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5386,15 +5386,6 @@ static void intel_iommu_get_resv_regions(struct device *device,
+ 	list_add_tail(&reg->list, head);
  }
  
--static void amd_iommu_put_resv_regions(struct device *dev,
--				     struct list_head *head)
+-static void intel_iommu_put_resv_regions(struct device *dev,
+-					 struct list_head *head)
 -{
 -	struct iommu_resv_region *entry, *next;
 -
@@ -122,18 +124,18 @@ index 04a9f8443344..7d8896d5fab9 100644
 -		kfree(entry);
 -}
 -
- static void amd_iommu_apply_resv_region(struct device *dev,
- 				      struct iommu_domain *domain,
- 				      struct iommu_resv_region *region)
-@@ -3216,7 +3207,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.remove_device = amd_iommu_remove_device,
- 	.device_group = amd_iommu_device_group,
- 	.get_resv_regions = amd_iommu_get_resv_regions,
--	.put_resv_regions = amd_iommu_put_resv_regions,
-+	.put_resv_regions = iommu_put_resv_regions_simple,
- 	.apply_resv_region = amd_iommu_apply_resv_region,
- 	.is_attach_deferred = amd_iommu_is_attach_deferred,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
+ {
+ 	struct device_domain_info *info;
+@@ -5629,7 +5620,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.add_device		= intel_iommu_add_device,
+ 	.remove_device		= intel_iommu_remove_device,
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+-	.put_resv_regions	= intel_iommu_put_resv_regions,
++	.put_resv_regions	= iommu_put_resv_regions_simple,
+ 	.apply_resv_region	= intel_iommu_apply_resv_region,
+ 	.device_group		= pci_device_group,
+ 	.dev_has_feat		= intel_iommu_dev_has_feat,
 -- 
 2.22.0
 
