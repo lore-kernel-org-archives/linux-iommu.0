@@ -2,83 +2,99 @@ Return-Path: <SRS0=xflu=WZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5861C3A5A3
-	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 425C1C3A5A3
+	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:47:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AB0BF2189D
-	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:19:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 096DF205ED
+	for <iommu@archiver.kernel.org>; Thu, 29 Aug 2019 11:47:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="djC2H5JF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB0BF2189D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nifty.com header.i=@nifty.com header.b="v0DIYa/N"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 096DF205ED
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 95035470D;
-	Thu, 29 Aug 2019 11:18:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A52EC473F;
+	Thu, 29 Aug 2019 11:47:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6C9CD4692;
-	Thu, 29 Aug 2019 11:18:06 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
-	[209.85.208.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C4D80EC;
-	Thu, 29 Aug 2019 11:18:05 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id h13so3611223edq.10;
-	Thu, 29 Aug 2019 04:18:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=cjixq+s7ZD6fFiV9g8QRBxU/OWNAVY/P4LPyIACEzEM=;
-	b=djC2H5JFeHWERoQFSNo6K1Buv/HAY/zdTZ/Vy9BLHhv70G1BP5aEHIemdlQWFvLK0t
-	3RSHU3+QDvVjBRH6rmndTQFisShBSy2rXVQU/0CyVBy93HiUWngryqj8oTbKIdj6Vnpz
-	sNXUippKE5z0M2ZtM+fW6KuMBLAdoZNiZD6qsjd/JWY1vRPgY0j28/rH0E6Idert9w7d
-	sS2fZojsKu+F+CaN8iGeU4WiMl20abUTFNRMZ2XUCm9qApaELu6NPAdSB6YiqFtgC0ZA
-	1lVSgZoDWeqEdOzemcXFc9s7dX1wZPrqyNfi+GQQTYnagocsIo/CfeeTtfPlcX3yRrKD
-	+5dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=cjixq+s7ZD6fFiV9g8QRBxU/OWNAVY/P4LPyIACEzEM=;
-	b=ReRfj+EjmxgpEvKDs8+SH+xET3azyVqWdicjn2UDW/VqQdfDlUR9hrNnYVw8nJCZ4D
-	9wMXOTm0csPJAJYfBVIHTIiPBOURrcoNQhQjwKwtfgpl37h1Wjp13BrE1oLcjjOugjBM
-	5uf0Rtq5fQ9fO6UacHcON+jSyZmWojwtcul0MA/yuMeOnvsfyVf89hyfMZVZgw2h9xPL
-	LSibTmra5Idf7LNQa6zuGX1cgu2mPpkdULxZ5Tzp482wzkhCJbqymFU/3DI0xuWrqTd5
-	0kY/VomASFRQaeAGaCQ+qukqtLsb0mVyuKwDZOdA19fbHTt9QVDPpVsQKqr640TmIaoD
-	2qDg==
-X-Gm-Message-State: APjAAAUpNAY8s6j3cxiNFIaGpJnX5Qt5Hv7YYAJ4CXGKw2fqmz7v2ynF
-	MgVpjzcPZ+PP2W1GEprH3gQ=
-X-Google-Smtp-Source: APXvYqwZIsELufro/apZKANBvYbuav5XunBjAgaDShMq6vd+vYkJ2aickX4Wp+WCq2PXzJ9kM5tq1A==
-X-Received: by 2002:a50:9401:: with SMTP id p1mr8952979eda.189.1567077483603; 
-	Thu, 29 Aug 2019 04:18:03 -0700 (PDT)
-Received: from localhost (pD9E51890.dip0.t-ipconnect.de. [217.229.24.144])
-	by smtp.gmail.com with ESMTPSA id y9sm388439eds.49.2019.08.29.04.18.02
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Thu, 29 Aug 2019 04:18:02 -0700 (PDT)
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 5/5] iommu: virt: Use iommu_put_resv_regions_simple()
-Date: Thu, 29 Aug 2019 13:17:52 +0200
-Message-Id: <20190829111752.17513-6-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190829111752.17513-1-thierry.reding@gmail.com>
-References: <20190829111752.17513-1-thierry.reding@gmail.com>
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DA0A64739
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 29 Aug 2019 11:46:36 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com
+	[210.131.2.91])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 484F03D0
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 29 Aug 2019 11:46:36 +0000 (UTC)
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com
+	[209.85.217.46]) (authenticated)
+	by conssluserg-06.nifty.com with ESMTP id x7TBk6IH015457
+	for <iommu@lists.linux-foundation.org>; Thu, 29 Aug 2019 20:46:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com x7TBk6IH015457
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+	s=dec2015msa; t=1567079167;
+	bh=jJHAKRHFRUzF/5jWYYKHoeNpyJFG8X4zd/Hk645vV1s=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=v0DIYa/N3Xb1q0ZoiyisojONsg5VPrer3W7UwpyB5KRroyEh9h5haUmjjoJLQKzb4
+	tmoYTtGvBHScodv8lX0osiq7GfA0tbDtfF8UGeRoB5qTUmhdpEStRhRFwax/ZDdWhn
+	z306pev+Nbic0pcC1kkvmBrtzy5j8okAn0hJXGgQeuM9ic/1Mn7mrmNHJsxYBGDazw
+	8Vq0H89pLo7Cpr4AZ5lb7q6gSUCVvAilMVz3XeTv7+T787gA1icyMc1WNOLAo9ZJj5
+	aJG2EllT6dSOBWZePoV0ADx73NY/tesBrX7WZkoph+VhsDLSoGmuA/SX6I8nVl5qVk
+	H0L90mwVgDOZQ==
+X-Nifty-SrcIP: [209.85.217.46]
+Received: by mail-vs1-f46.google.com with SMTP id b20so2214685vso.1
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 29 Aug 2019 04:46:06 -0700 (PDT)
+X-Gm-Message-State: APjAAAXciyb5RTkgJbgdYPtimLnAFiWww4Kvf13ThMSKOe8gTO3+QqlL
+	cfKz97kHsC/Bynko1Xc89OQ9dNQPEoUZUOpMhiw=
+X-Google-Smtp-Source: APXvYqySzvmeE9kiWjvNGM1iaAxnZ+QgH8m0ESiSIlhk3/0sUZoqbPgAj7pYaewNuKSsBX5H2zvSqil85IeqcrkN9II=
+X-Received: by 2002:a67:fe12:: with SMTP id l18mr5139562vsr.54.1567079164044; 
+	Thu, 29 Aug 2019 04:46:04 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
+References: <20190506223334.1834-1-nicoleotsuka@gmail.com>
+	<20190506223334.1834-3-nicoleotsuka@gmail.com>
+	<CAK7LNARacEorb38mVBw_V-Zvz-znWgBma1AP1-z_5B_xZU4ogg@mail.gmail.com>
+	<CAK7LNAQfYBCoChMV=MOwcUyVoqRkrPWs7DaWdzDqjBe18gGiAQ@mail.gmail.com>
+	<20190825011025.GA23410@lst.de>
+	<CAK7LNAQb1ZHr=DiHLNeNRaQExMuXdDOV4sFghoGbco_Q=Qzb8g@mail.gmail.com>
+	<20190826073320.GA11712@lst.de>
+	<CAK7LNATYOLEboUTO4qPx2z7cqwDrHBO1HFHG8VzZEJ15STv+nw@mail.gmail.com>
+	<20190827075021.GA953@lst.de>
+	<CAK7LNAQZ+bueZZzSoMADmgLjWNvijHRV=wLQzN_kvLG3b5Uu+w@mail.gmail.com>
+	<20190827115541.GB5921@lst.de>
+	<CAK7LNAQ_nQcBt=xH1-h+=co85mTxFgbe+_46Gu4LaNsDSm+kYA@mail.gmail.com>
+	<CAK7LNATvz=TTe+3OyLrtUqDuTUTn1dg9Sk-t3BD_OFZfViCPMw@mail.gmail.com>
+In-Reply-To: <CAK7LNATvz=TTe+3OyLrtUqDuTUTn1dg9Sk-t3BD_OFZfViCPMw@mail.gmail.com>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Date: Thu, 29 Aug 2019 20:45:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASs2qkpGY_BkL--hvmKm3FJ9sEK4+v5VVYc1_CrowAB4w@mail.gmail.com>
+Message-ID: <CAK7LNASs2qkpGY_BkL--hvmKm3FJ9sEK4+v5VVYc1_CrowAB4w@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] dma-contiguous: Use fallback alloc_pages for
+	single pages
+To: Christoph Hellwig <hch@lst.de>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Tony Lindgren <tony@atomide.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will.deacon@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Max Filippov <jcmvbkbc@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Russell King <linux@armlinux.org.uk>, Thierry Reding <treding@nvidia.com>,
+	linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+	Nicolin Chen <nicoleotsuka@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	Chris Zankel <chris@zankel.net>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-mmc <linux-mmc@vger.kernel.org>,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	iommu@lists.linux-foundation.org, iamjoonsoo.kim@lge.com,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -96,66 +112,60 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Thierry Reding <treding@nvidia.com>
+On Wed, Aug 28, 2019 at 9:23 PM Masahiro Yamada
+<yamada.masahiro@socionext.com> wrote:
+>
+> On Wed, Aug 28, 2019 at 7:53 PM Masahiro Yamada
+> <yamada.masahiro@socionext.com> wrote:
+> >
+> > Hi Christoph,
+> >
+> > On Tue, Aug 27, 2019 at 8:55 PM Christoph Hellwig <hch@lst.de> wrote:
+> > >
+> > > On Tue, Aug 27, 2019 at 06:03:14PM +0900, Masahiro Yamada wrote:
+> > > > Yes, this makes my driver working again
+> > > > when CONFIG_DMA_CMA=y.
+> > > >
+> > > >
+> > > > If I apply the following, my driver gets back working
+> > > > irrespective of CONFIG_DMA_CMA.
+> > >
+> > > That sounds a lot like the device simply isn't 64-bit DMA capable, and
+> > > previously always got CMA allocations under the limit it actually
+> > > supported.  I suggest that you submit this quirk to the mmc maintainers.
+> >
+> >
+> > I tested v5.2 and my MMC host controller works with
+> > dma_address that exceeds 32-bit physical address.
+> >
+> > So, I believe my MMC device is 64-bit DMA capable.
+> >
+> > I am still looking into the code
+> > to find out what was changed.
+>
+>
+> I retract this comment.
+>
+> Prior to bd2e75633c8012fc8a7431c82fda66237133bf7e,
+> the descriptor table for ADMA is placed within the
+> 32-bit phys address range, not exceeds the 32-bit limit.
+>
+> Probably, my device is not 64-bit capable.
+>
+> I will talk to the hardware engineer,
+> and check the hardware spec just in case.
+>
 
-Use the new standard function instead of open-coding it.
 
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: virtualization@lists.linux-foundation.org
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
- drivers/iommu/virtio-iommu.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+After looking more into my hardware,
+I found out how to fix my driver:
+https://lore.kernel.org/patchwork/patch/1121600/
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 3ea9d7682999..bc3c7ab7f996 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -838,14 +838,6 @@ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
- 	iommu_dma_get_resv_regions(dev, head);
- }
- 
--static void viommu_put_resv_regions(struct device *dev, struct list_head *head)
--{
--	struct iommu_resv_region *entry, *next;
--
--	list_for_each_entry_safe(entry, next, head, list)
--		kfree(entry);
--}
--
- static struct iommu_ops viommu_ops;
- static struct virtio_driver virtio_iommu_drv;
- 
-@@ -915,7 +907,7 @@ static int viommu_add_device(struct device *dev)
- err_unlink_dev:
- 	iommu_device_unlink(&viommu->iommu, dev);
- err_free_dev:
--	viommu_put_resv_regions(dev, &vdev->resv_regions);
-+	iommu_put_resv_regions_simple(dev, &vdev->resv_regions);
- 	kfree(vdev);
- 
- 	return ret;
-@@ -933,7 +925,7 @@ static void viommu_remove_device(struct device *dev)
- 
- 	iommu_group_remove_device(dev);
- 	iommu_device_unlink(&vdev->viommu->iommu, dev);
--	viommu_put_resv_regions(dev, &vdev->resv_regions);
-+	iommu_put_resv_regions_simple(dev, &vdev->resv_regions);
- 	kfree(vdev);
- }
- 
-@@ -962,7 +954,7 @@ static struct iommu_ops viommu_ops = {
- 	.remove_device		= viommu_remove_device,
- 	.device_group		= viommu_device_group,
- 	.get_resv_regions	= viommu_get_resv_regions,
--	.put_resv_regions	= viommu_put_resv_regions,
-+	.put_resv_regions	= iommu_put_resv_regions_simple,
- 	.of_xlate		= viommu_of_xlate,
- };
- 
+
+
 -- 
-2.22.0
-
+Best Regards
+Masahiro Yamada
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
