@@ -6,58 +6,48 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2537FC3A59B
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B136C3A59B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 15:01:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E850B23427
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:46:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E850B23427
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1EF522341B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 15:01:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1EF522341B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8174661B2;
-	Fri, 30 Aug 2019 14:46:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C9BC560C8;
+	Fri, 30 Aug 2019 15:01:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 54CFF61AE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E0A575C7E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 14:45:42 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id C729CF1
+	Fri, 30 Aug 2019 14:59:40 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4EF4F89B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 14:45:41 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 307CB344;
-	Fri, 30 Aug 2019 07:45:41 -0700 (PDT)
-Received: from arrakis.emea.arm.com (arrakis.cambridge.arm.com [10.1.196.78])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
-	657F23F703; Fri, 30 Aug 2019 07:45:38 -0700 (PDT)
-Date: Fri, 30 Aug 2019 15:45:36 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH v2 01/11] asm-generic: add dma_zone_size
-Message-ID: <20190830144536.GJ36992@arrakis.emea.arm.com>
-References: <20190820145821.27214-1-nsaenzjulienne@suse.de>
-	<20190820145821.27214-2-nsaenzjulienne@suse.de>
-	<20190826070939.GD11331@lst.de>
-	<027272c27398b950f207101a2c5dbc07a30a36bc.camel@suse.de>
+	Fri, 30 Aug 2019 14:59:40 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 8244E68BFE; Fri, 30 Aug 2019 16:59:35 +0200 (CEST)
+Date: Fri, 30 Aug 2019 16:59:35 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH 1/4] vmalloc: lift the arm flag for coherent mappings
+	to common code
+Message-ID: <20190830145935.GA19838@lst.de>
+References: <20190830062924.21714-1-hch@lst.de>
+	<20190830062924.21714-2-hch@lst.de>
+	<20190830092918.GV13294@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <027272c27398b950f207101a2c5dbc07a30a36bc.camel@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-mm@kvack.org, linux-riscv@lists.infradead.org, will@kernel.org,
-	Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-	f.fainelli@gmail.com, frowand.list@gmail.com,
-	devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-	marc.zyngier@arm.com, robh+dt@kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, phill@raspberryi.org,
-	mbrugger@suse.com, eric@anholt.net, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, wahrenst@gmx.net,
-	akpm@linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20190830092918.GV13294@shell.armlinux.org.uk>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: linux-xtensa@linux-xtensa.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,37 +65,27 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Aug 26, 2019 at 03:46:52PM +0200, Nicolas Saenz Julienne wrote:
-> On Mon, 2019-08-26 at 09:09 +0200, Christoph Hellwig wrote:
-> > On Tue, Aug 20, 2019 at 04:58:09PM +0200, Nicolas Saenz Julienne wrote:
-> > > Some architectures have platform specific DMA addressing limitations.
-> > > This will allow for hardware description code to provide the constraints
-> > > in a generic manner, so as for arch code to properly setup it's memory
-> > > zones and DMA mask.
-> > 
-> > I know this just spreads the arm code, but I still kinda hate it.
+On Fri, Aug 30, 2019 at 10:29:18AM +0100, Russell King - ARM Linux admin wrote:
+> On Fri, Aug 30, 2019 at 08:29:21AM +0200, Christoph Hellwig wrote:
+> > The arm architecture had a VM_ARM_DMA_CONSISTENT flag to mark DMA
+> > coherent remapping for a while.  Lift this flag to common code so
+> > that we can use it generically.  We also check it in the only place
+> > VM_USERMAP is directly check so that we can entirely replace that
+> > flag as well (although I'm not even sure why we'd want to allow
+> > remapping DMA appings, but I'd rather not change behavior).
 > 
-> Rob's main concern was finding a way to pass the constraint from HW definition
-> to arch without widening fdt's architecture specific function surface. I'd say
-> it's fair to argue that having a generic mechanism makes sense as it'll now
-> traverse multiple archs and subsystems.
-> 
-> I get adding globals like this is not very appealing, yet I went with it as it
-> was the easier to integrate with arm's code. Any alternative suggestions?
+> Good, because if you did change that behaviour, you'd break almost
+> every ARM framebuffer and cripple ARM audio drivers.
 
-In some discussion with Robin, since it's just RPi4 that we are aware of
-having such requirement on arm64, he suggested that we have a permanent
-ZONE_DMA on arm64 with a default size of 1GB. It should cover all arm64
-SoCs we know of without breaking the single Image binary. The arch/arm
-can use its current mach-* support.
-
-I may like this more than the proposed early_init_dt_get_dma_zone_size()
-here which checks for specific SoCs (my preferred way was to build the
-mask from all buses described in DT but I hadn't realised the
-complications).
-
--- 
-Catalin
+How would that break them?  All the usual video and audio drivers that
+use dma_alloc_* then use dma_mmap_* which never end up in the only place
+that actually checks VM_USERMAP (remap_vmalloc_range_partial) as they
+end up in the dma_map_ops mmap methods which contain what is effecitvely
+open coded versions of that routine.  There are very few callers of
+remap_vmalloc_range_partial / remap_vmalloc_range, and while a few of
+those actually are in media drivers and the virtual frame buffer video
+driver, none of these seems to be called on dma memory (which would
+be a layering violation anyway).
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
