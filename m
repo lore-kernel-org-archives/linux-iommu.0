@@ -2,53 +2,81 @@ Return-Path: <SRS0=ODk1=W2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8926BC3A5A4
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 13:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BA4C3A59B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 13:47:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 553C821670
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 13:24:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 553C821670
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 6E2C422CE9
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 13:47:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6E2C422CE9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ACULAB.COM
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1D85660A6;
-	Fri, 30 Aug 2019 13:24:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 33B78615E;
+	Fri, 30 Aug 2019 13:47:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A69AD606D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 94D906130
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 13:22:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 40C0CEC
+	Fri, 30 Aug 2019 13:46:09 +0000 (UTC)
+X-Greylist: delayed 00:06:13 by SQLgrey-1.7.6
+Received: from eu-smtp-delivery-151.mimecast.com
+	(eu-smtp-delivery-151.mimecast.com [207.82.80.151])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 172767DB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 13:22:43 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id 6F54CB03D;
-	Fri, 30 Aug 2019 13:22:41 +0000 (UTC)
-Date: Fri, 30 Aug 2019 15:22:39 +0200
-From: Joerg Roedel <jroedel@suse.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/iova: avoid false sharing on fq_timer_on
-Message-ID: <20190830132239.GK17192@suse.de>
-References: <20190828131338.89832-1-edumazet@google.com>
-	<20190830104925.GI17192@suse.de>
-	<3ffd6989-229b-9c67-d9fb-7a8e413c1336@arm.com>
+	Fri, 30 Aug 2019 13:46:07 +0000 (UTC)
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+	TLS) by relay.mimecast.com with ESMTP id
+	uk-mta-210-F1QPlVPsMbqytrDM-jSL6w-1; Fri, 30 Aug 2019 14:39:52 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+	AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft
+	SMTP Server (TLS) id 15.0.1347.2; Fri, 30 Aug 2019 14:39:51 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+	AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id
+	15.00.1347.000; Fri, 30 Aug 2019 14:39:51 +0100
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'Lu Baolu' <baolu.lu@linux.intel.com>, David Woodhouse
+	<dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas
+	<bhelgaas@google.com>, Christoph Hellwig <hch@lst.de>
+Subject: RE: [PATCH v8 7/7] iommu/vt-d: Use bounce buffer for untrusted devices
+Thread-Topic: [PATCH v8 7/7] iommu/vt-d: Use bounce buffer for untrusted
+	devices
+Thread-Index: AQHVXwNAt0TkSHwjwEWfpppIl7udg6cTsWfA
+Date: Fri, 30 Aug 2019 13:39:51 +0000
+Message-ID: <4dee1bcef8474ebb95a7826a58bb72aa@AcuMS.aculab.com>
+References: <20190830071718.16613-1-baolu.lu@linux.intel.com>
+	<20190830071718.16613-8-baolu.lu@linux.intel.com>
+In-Reply-To: <20190830071718.16613-8-baolu.lu@linux.intel.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <3ffd6989-229b-9c67-d9fb-7a8e413c1336@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Eric Dumazet <eric.dumazet@gmail.com>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux-foundation.org, Jinyu Qi <jinyuqi@huawei.com>,
-	Eric Dumazet <edumazet@google.com>, Will Deacon <will@kernel.org>
+X-MC-Unique: F1QPlVPsMbqytrDM-jSL6w-1
+X-Mimecast-Spam-Score: 0
+Cc: Juergen Gross <jgross@suse.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	"ashok.raj@intel.com" <ashok.raj@intel.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	"alan.cox@intel.com" <alan.cox@intel.com>,
+	Jonathan Corbet <corbet@lwn.net>, Robin
+	Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"pengfei.xu@intel.com" <pengfei.xu@intel.com>, Ingo
+	Molnar <mingo@redhat.com>,
+	"jacob.jun.pan@intel.com" <jacob.jun.pan@intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Boris
+	Ostrovsky <boris.ostrovsky@oracle.com>,
+	"mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,20 +94,35 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Aug 30, 2019 at 01:27:25PM +0100, Robin Murphy wrote:
-> On 30/08/2019 11:49, Joerg Roedel wrote:
-> > Looks good to me, but adding Robin for his opinion.
-> 
-> Sounds reasonable to me too - that should also be true for the majority of
-> Arm systems that we know of. Will suggested that atomic_try_cmpxchg() might
-> be relevant, but AFAICS that's backwards compared to what we want to do
-> here, which I guess is more of an "atomic_unlikely_cmpxchg".
-> 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
+From: Lu Baolu
+> Sent: 30 August 2019 08:17
 
-Great, thanks for looking into it, Robin.
+> The Intel VT-d hardware uses paging for DMA remapping.
+> The minimum mapped window is a page size. The device
+> drivers may map buffers not filling the whole IOMMU
+> window. This allows the device to access to possibly
+> unrelated memory and a malicious device could exploit
+> this to perform DMA attacks. To address this, the
+> Intel IOMMU driver will use bounce pages for those
+> buffers which don't fill whole IOMMU pages.
 
-Applied now, thanks Eric.
+Won't this completely kill performance?
+
+I'd expect to see something for dma_alloc_coherent() (etc)
+that tries to give the driver page sized buffers.
+
+Either that or the driver could allocate page sized buffers
+even though it only passes fragments of these buffers to
+the dma functions (to avoid excessive cache invalidates).
+
+Since you have to trust the driver, why not actually trust it?
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
