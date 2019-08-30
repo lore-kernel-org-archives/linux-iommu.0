@@ -2,163 +2,83 @@ Return-Path: <SRS0=ODk1=W2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C95A8C3A59B
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 18:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 409FFC3A59B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 18:08:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 922D521721
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 18:07:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 103402087F
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 18:08:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="IVfN6iOC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 922D521721
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uhod1U8X"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 103402087F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9E939633D;
-	Fri, 30 Aug 2019 18:07:12 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id ED8256336;
+	Fri, 30 Aug 2019 18:08:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C2B4C6163
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 82BD360A5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 18:05:27 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D11B6F1
+	Fri, 30 Aug 2019 15:08:00 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+	[209.85.221.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 832E089B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 18:05:26 +0000 (UTC)
-Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.9]) by
-	nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-	id <B5d6965680000>; Sat, 31 Aug 2019 02:05:28 +0800
-Received: from HKMAIL104.nvidia.com ([10.18.16.13])
-	by hkpgpgate101.nvidia.com (PGP Universal service);
-	Fri, 30 Aug 2019 11:05:24 -0700
-X-PGP-Universal: processed;
-	by hkpgpgate101.nvidia.com on Fri, 30 Aug 2019 11:05:24 -0700
-Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL104.nvidia.com
-	(10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
-	Fri, 30 Aug 2019 18:05:24 +0000
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (104.47.33.59) by
-	HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS)
-	id
-	15.0.1473.3 via Frontend Transport; Fri, 30 Aug 2019 18:05:23 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=XaE4MjVferQnN9ihleH3WmpzkDQHV8QrAw9DjYnajKPkM5LduYZytajqFSvDISTFDvV6Tv7V8NGvNc2YMeXxuYYNNDDvP/iIkM+/j7Mz3z3/NLfuV3M0UvSQMY+pe638q1v2ffLPilEZZaBKfa0IDc+FmNpI+0Y0R0ggD8lbsYChjWYUVzbYXGgwch4T7akVGWknDEWKaFx5rHbpkD/qyIrtwp4Lsp+Q5ReGDSKKuT44baJrQaVMaDxplTtbxtTT6AjeIvyms6X4WvEEow8dPXH3jIO6+5h8B2fJwz3doZD3lNRX0gtGe414ndmverfs+ha4lplvXZJC/Qxpn4SdLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=wRTzU42oTS+hl/Y9AccE9c/RtuIB71TiWTKJM07i6E0=;
-	b=b/7z9ZLDUuO0lW5/Svy7oyBq5Rl+/ijsxSRbPMfM4LcaK9txQ/ndR+vJBz50459F1e9D4mVgMC+JZxY5kaVHGjBVKcJLoVdOA3v0mbd67rN9foTexNZ84FbX363rnTytF6aG7GZrg0TIJwx2+o6BoWZej89qJd7GzxF52o8v/yOKhQ6Ivgjpe6fdp/ITmu6gZFtfo2CWFcqQi2o3d0acKmOm5VKLCybE+KD16JaZRbl71asPPkpJIJrLBW4eH5ZAaNCOaMBa7BKpX1IvDqH3xFdFecrKtc7EKICG8Od8ebzwFQrBjw0MjttowoY5NR3aDb874ly6RK0COfq8zXd1Xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
-	dkim=pass header.d=nvidia.com; arc=none
-Received: from BYAPR12MB2710.namprd12.prod.outlook.com (20.177.124.11) by
-	BYAPR12MB2999.namprd12.prod.outlook.com (20.178.53.80) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2199.21; Fri, 30 Aug 2019 18:05:19 +0000
-Received: from BYAPR12MB2710.namprd12.prod.outlook.com
-	([fe80::60a8:9757:8be2:2c56]) by
-	BYAPR12MB2710.namprd12.prod.outlook.com
-	([fe80::60a8:9757:8be2:2c56%6]) with mapi id 15.20.2220.013;
-	Fri, 30 Aug 2019 18:05:19 +0000
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: RE: [PATCH 3/7] iommu/arm-smmu: Add tlb_sync implementation hook
-Thread-Topic: [PATCH 3/7] iommu/arm-smmu: Add tlb_sync implementation hook
-Thread-Index: AQHVXruLTOWAUKMP0EGEhzK6CNK386cT0DaAgAAq0XA=
-Date: Fri, 30 Aug 2019 18:05:19 +0000
-Message-ID: <BYAPR12MB2710AF5DDCB687C7E78362E5B3BD0@BYAPR12MB2710.namprd12.prod.outlook.com>
-References: <1567118827-26358-1-git-send-email-vdumpa@nvidia.com>
-	<1567118827-26358-4-git-send-email-vdumpa@nvidia.com>
-	<554f8de1-1638-4eb9-59ae-8e1f0d786c44@arm.com>
-In-Reply-To: <554f8de1-1638-4eb9-59ae-8e1f0d786c44@arm.com>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2019-08-30T18:05:16.2199634Z;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft
-	Azure Information Protection;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=a3d3cc0f-e7fb-4c08-bde5-5c1a13761cab;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=vdumpa@nvidia.com; 
-x-originating-ip: [216.228.112.21]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f1451366-1d2a-4b19-7341-08d72d749ea1
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);
-	SRVR:BYAPR12MB2999; 
-x-ms-traffictypediagnostic: BYAPR12MB2999:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB299935878947AE3E3712A615B3BD0@BYAPR12MB2999.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0145758B1D
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(396003)(376002)(346002)(39860400002)(366004)(136003)(199004)(189003)(7696005)(4326008)(64756008)(66476007)(9686003)(33656002)(14454004)(81156014)(81166006)(55016002)(8676002)(86362001)(74316002)(478600001)(316002)(305945005)(7736002)(76116006)(6116002)(6436002)(99286004)(54906003)(66066001)(3846002)(8936002)(6246003)(26005)(476003)(53936002)(66556008)(25786009)(446003)(76176011)(52536014)(71200400001)(14444005)(486006)(102836004)(71190400001)(66446008)(229853002)(66946007)(5660300002)(6506007)(6916009)(11346002)(256004)(186003)(2906002)(4744005);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:BYAPR12MB2999;
-	H:BYAPR12MB2710.namprd12.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: nvidia.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: kiwwIu/EbIvxQINTf8n7K/j+rfJTW6SkBDuwYPzTZJzhLq6L5ry/jggY11jLQ+xCbH/nMFz2tqognNcwp0UmA7axrng79+RGkgi988+0RhAdmSdeDZEzo9VAtoRD2h6u2OBXUF+w8y2aHoVuUs4DQMeFIkdvDcbwHJ/2Kwhkf72lTYbDcMOhpRTHG3nonET6zph5XHxkGUYg6p6MpRSypwyo7KKcRUMS14hfVDvDnd5SMtW/GE1pKHyAvxgoh+Xxu0lQNn55Rq2k9ReUSL6QFIRmLcyWvy5V8vwp3DftEWTa+G6iRL4u5WCFSaUwVK/891KHVrqUNrw+Kvmw0C9QVVtGR2geklR6H7X7wjHW91EBUMbb10UDcEz1RF+UzpYc9KFtb8ZpCHqnEKQZF0HOxy4kL++PG0lpIUGwD5upJXk=
+	Fri, 30 Aug 2019 15:07:59 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id e16so7320681wro.5
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 30 Aug 2019 08:07:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=sender:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=0pAZWJp00xZ1ls1Af08EI7mW5qet6OlsQR65F0SwZhs=;
+	b=Uhod1U8XJp5hvgo/TUndU/vB/K3LqXxuAeZVAeuRIVdGOfTHzNRkOwN4osOc40UuE5
+	1zbifQ3t/DupGF//0a//lbZHwzoTo6QVboCPsr+tvklkQoTjH1/FYdaux2SjAfGCOpZ0
+	aaXT7pAXocMPWV0Xg9GtrbNyGi3SmspC4gJtWpFECD2jINQg8+kDPQEGXlrAPljAZ6MO
+	Bdigb/DGLDuPQjYHP6+nOeEcj4fW4+9AgzYdVUBteNpxJsrnLzwx/E63kRUe2CI/0SzE
+	heoO2mGCnXSSOoKS6wS0YDpnRrp6s8F65jBfDu0Q/tvSU+1uM06S/GMYkDzLMDPtR3BH
+	HskQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+	:mime-version:content-transfer-encoding;
+	bh=0pAZWJp00xZ1ls1Af08EI7mW5qet6OlsQR65F0SwZhs=;
+	b=DVgmGVzVN5ib82IfztVYTrr7+50clrUkgZhNmkmwvIrjE/hsktxC3OU3ck4029UoKK
+	m8R12fQJ4hpFKeGLZw7bpXq44c+yjsZnC6XZytBWB39T2i5ZQjYz7+F4C92r8MfTRXIG
+	sEGQzfKd2hDKWBLLhI41S6B1iEmwwwYvHW8VUrgIduA+kj/uG/1S4SfbrJHAP/6SLYkQ
+	mpyWFSCQxxg+ycF8NL7+ZASNjScL7MnMo0jvmSeruR/IrZfjBUx4pmF601dj94bGeBwJ
+	pc1gL1pgIkDMnXg28W2qIRDT05Dp/EOAE9x3xdPyIqdT9xIUfrjsUk64/zGc7gjIpAhk
+	GXXg==
+X-Gm-Message-State: APjAAAWt6y8qxzI0SDRAo2TnTUp0nF7dSj79Puub3Z34MQHhAYmwkDxm
+	oJz9DffiUaFuSRzjhfBm2DY=
+X-Google-Smtp-Source: APXvYqzHQGc0Wx4HRiZiz1ofDsxcHrSk8e6DnIqmyFNiH0txU8A57/I3wSP5Sr5aEeWTtm785SC13w==
+X-Received: by 2002:adf:f507:: with SMTP id q7mr19297657wro.210.1567177678081; 
+	Fri, 30 Aug 2019 08:07:58 -0700 (PDT)
+Received: from localhost.localdomain (ip5b4096c3.dynamic.kabel-deutschland.de.
+	[91.64.150.195])
+	by smtp.gmail.com with ESMTPSA id 16sm8270956wmx.45.2019.08.30.08.07.56
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Fri, 30 Aug 2019 08:07:57 -0700 (PDT)
+From: Krzysztof Wilczynski <kw@linux.com>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Subject: [PATCH] PCI: Move ATS declarations to linux/pci.h
+Date: Fri, 30 Aug 2019 17:07:56 +0200
+Message-Id: <20190830150756.21305-1-kw@linux.com>
+X-Mailer: git-send-email 2.22.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1451366-1d2a-4b19-7341-08d72d749ea1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 18:05:19.5842 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OFnNSL4eSWx4KGk44GvQYwmM6ehUzY7/S/NWPUZohG6xGKu2h7H93zY7tqCrkAU9R8yAPGLCY0EjYHmjnXCk9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2999
-X-OriginatorOrg: Nvidia.com
-Content-Language: en-US
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-	t=1567188328; bh=wRTzU42oTS+hl/Y9AccE9c/RtuIB71TiWTKJM07i6E0=;
-	h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-	ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
-	Thread-Index:Date:Message-ID:References:In-Reply-To:
-	Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
-	authentication-results:x-originating-ip:x-ms-publictraffictype:
-	x-ms-office365-filtering-correlation-id:x-microsoft-antispam:
-	x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-	x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-	x-forefront-prvs:x-forefront-antispam-report:received-spf:
-	x-ms-exchange-senderadcheck:x-microsoft-antispam-message-info:
-	MIME-Version:X-MS-Exchange-CrossTenant-Network-Message-Id:
-	X-MS-Exchange-CrossTenant-originalarrivaltime:
-	X-MS-Exchange-CrossTenant-fromentityheader:
-	X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-	X-MS-Exchange-CrossTenant-userprincipalname:
-	X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
-	Content-Language:Content-Type:Content-Transfer-Encoding;
-	b=IVfN6iOCJaFvdk+1h/4qndIUFRuR5gG4Pq/22jVlN7roS4skt+tj9ettqBAYDIEUn
-	rqFeWQ7EpU1lJ7PZ74i78TgjpvZtIoN3VlytnYN/O9vzbNrY5R6f8j0nDM5X9UU3Ln
-	LTLwucsY/4Ryq8O4ecASH5dMkRfBWHsucu/56y265lIj5lpG8FH+WrXACIy+2nZDGU
-	y/xJ1uLvKDPiuLOsSbITR54sP3Z3XN90ZhWz84YrQ1SY0kuxdzNPLOCVzHW2QUG4ma
-	rwrHPEwNRnwQJDoiw+Bkohrl41O71HHzxIiCjQVp9res8znpVAkA19gSoxLrLLERbT
-	PD0P2p1DTZB9w==
-Cc: Timo Alho <talho@nvidia.com>, Thierry Reding <treding@nvidia.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"will.deacon@arm.com" <will.deacon@arm.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Pritesh Raithatha <praithatha@nvidia.com>,
-	"Thomas Zeng \(SW-TEGRA\)" <thomasz@nvidia.com>,
-	Sachin Nikam <Snikam@nvidia.com>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-	Yu-Huan Hsu <YHsu@nvidia.com>, Juha Tukkinen <jtukkinen@nvidia.com>,
-	Alexander Van Brunt <avanbrunt@nvidia.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+X-Mailman-Approved-At: Fri, 30 Aug 2019 18:07:03 +0000
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -176,25 +96,256 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
->> +	for (i = 0; i < to_nsmmu(smmu)->num_inst; i++)
+Move ATS function prototypes from include/linux/pci-ats.h to
+include/linux/pci.h so users only need to include <linux/pci.h>:
 
->It might make more sense to make this the innermost loop, i.e.:
-	for (i = 0; i < nsmmu->num_inst; i++)
-		reg &= readl_relaxed(nsmmu_page(smmu, i, page)...
->since polling the instances in parallel rather than in series seems like it might be a bit more efficient.
+Realted to PRI capability:
 
-Sync register is programmed at the same time for both instances. The status check is serialized.
-I can update it to check status of both at the same time.
+  pci_enable_pri()
+  pci_disable_pri()
+  pci_restore_pri_state()
+  pci_reset_pri()
 
->> +	if (smmu->impl->tlb_sync) {
->> +		smmu->impl->tlb_sync(smmu, page, sync, status);
+Related to PASID capability:
 
->What I'd hoped is that rather than needing a hook for this, you could just override smmu_domain->tlb_ops from .init_context to wire up the alternate .sync method directly. That would save this extra level of indirection.
+  pci_enable_pasid()
+  pci_disable_pasid()
+  pci_restore_pasid_state()
+  pci_pasid_features()
+  pci_max_pasids()
+  pci_prg_resp_pasid_required()
 
-With arm_smmu_domain now available in arm-smmu.h,  arm-smmu-nvidia.c can directly update the tlb_ops->tlb_sync and avoid indirection.
-Will update in next version.
+No functional changes intended.
 
--KR 
+Signed-off-by: Krzysztof Wilczynski <kw@linux.com>
+---
+ drivers/iommu/amd_iommu.c   |  1 -
+ drivers/iommu/arm-smmu-v3.c |  1 -
+ drivers/iommu/intel-iommu.c |  1 -
+ drivers/iommu/intel-pasid.c |  1 -
+ drivers/iommu/intel-svm.c   |  1 -
+ drivers/pci/ats.c           |  1 -
+ drivers/pci/pci.c           |  1 -
+ include/linux/pci-ats.h     | 77 -------------------------------------
+ include/linux/pci.h         | 34 ++++++++++++++++
+ 9 files changed, 34 insertions(+), 84 deletions(-)
+ delete mode 100644 include/linux/pci-ats.h
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 04a9f8443344..d43913386915 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -13,7 +13,6 @@
+ #include <linux/acpi.h>
+ #include <linux/amba/bus.h>
+ #include <linux/platform_device.h>
+-#include <linux/pci-ats.h>
+ #include <linux/bitmap.h>
+ #include <linux/slab.h>
+ #include <linux/debugfs.h>
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 0ad6d34d1e96..3bd9455efc39 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -29,7 +29,6 @@
+ #include <linux/of_iommu.h>
+ #include <linux/of_platform.h>
+ #include <linux/pci.h>
+-#include <linux/pci-ats.h>
+ #include <linux/platform_device.h>
+ 
+ #include <linux/amba/bus.h>
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4658cda6f3d2..362845b5c88a 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -35,7 +35,6 @@
+ #include <linux/syscore_ops.h>
+ #include <linux/tboot.h>
+ #include <linux/dmi.h>
+-#include <linux/pci-ats.h>
+ #include <linux/memblock.h>
+ #include <linux/dma-contiguous.h>
+ #include <linux/dma-direct.h>
+diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+index 040a445be300..f670315afa67 100644
+--- a/drivers/iommu/intel-pasid.c
++++ b/drivers/iommu/intel-pasid.c
+@@ -16,7 +16,6 @@
+ #include <linux/iommu.h>
+ #include <linux/memory.h>
+ #include <linux/pci.h>
+-#include <linux/pci-ats.h>
+ #include <linux/spinlock.h>
+ 
+ #include "intel-pasid.h"
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 780de0caafe8..ee9dfc84f925 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -13,7 +13,6 @@
+ #include <linux/intel-svm.h>
+ #include <linux/rculist.h>
+ #include <linux/pci.h>
+-#include <linux/pci-ats.h>
+ #include <linux/dmar.h>
+ #include <linux/interrupt.h>
+ #include <linux/mm_types.h>
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index e18499243f84..3f5fb2d4a763 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -10,7 +10,6 @@
+  */
+ 
+ #include <linux/export.h>
+-#include <linux/pci-ats.h>
+ #include <linux/pci.h>
+ #include <linux/slab.h>
+ 
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index f20a3de57d21..c8f2a05e6b37 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -29,7 +29,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/pci_hotplug.h>
+ #include <linux/vmalloc.h>
+-#include <linux/pci-ats.h>
+ #include <asm/setup.h>
+ #include <asm/dma.h>
+ #include <linux/aer.h>
+diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+deleted file mode 100644
+index 1ebb88e7c184..000000000000
+--- a/include/linux/pci-ats.h
++++ /dev/null
+@@ -1,77 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef LINUX_PCI_ATS_H
+-#define LINUX_PCI_ATS_H
+-
+-#include <linux/pci.h>
+-
+-#ifdef CONFIG_PCI_PRI
+-
+-int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+-void pci_disable_pri(struct pci_dev *pdev);
+-void pci_restore_pri_state(struct pci_dev *pdev);
+-int pci_reset_pri(struct pci_dev *pdev);
+-
+-#else /* CONFIG_PCI_PRI */
+-
+-static inline int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline void pci_disable_pri(struct pci_dev *pdev)
+-{
+-}
+-
+-static inline void pci_restore_pri_state(struct pci_dev *pdev)
+-{
+-}
+-
+-static inline int pci_reset_pri(struct pci_dev *pdev)
+-{
+-	return -ENODEV;
+-}
+-
+-#endif /* CONFIG_PCI_PRI */
+-
+-#ifdef CONFIG_PCI_PASID
+-
+-int pci_enable_pasid(struct pci_dev *pdev, int features);
+-void pci_disable_pasid(struct pci_dev *pdev);
+-void pci_restore_pasid_state(struct pci_dev *pdev);
+-int pci_pasid_features(struct pci_dev *pdev);
+-int pci_max_pasids(struct pci_dev *pdev);
+-int pci_prg_resp_pasid_required(struct pci_dev *pdev);
+-
+-#else  /* CONFIG_PCI_PASID */
+-
+-static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
+-{
+-	return -EINVAL;
+-}
+-
+-static inline void pci_disable_pasid(struct pci_dev *pdev)
+-{
+-}
+-
+-static inline void pci_restore_pasid_state(struct pci_dev *pdev)
+-{
+-}
+-
+-static inline int pci_pasid_features(struct pci_dev *pdev)
+-{
+-	return -EINVAL;
+-}
+-
+-static inline int pci_max_pasids(struct pci_dev *pdev)
+-{
+-	return -EINVAL;
+-}
+-
+-static inline int pci_prg_resp_pasid_required(struct pci_dev *pdev)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_PCI_PASID */
+-
+-
+-#endif /* LINUX_PCI_ATS_H*/
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 463486016290..8ac142801890 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -2349,6 +2349,40 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+ void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
+ #endif
+ 
++#ifdef CONFIG_PCI_PRI
++int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
++void pci_disable_pri(struct pci_dev *pdev);
++void pci_restore_pri_state(struct pci_dev *pdev);
++int pci_reset_pri(struct pci_dev *pdev);
++#else /* CONFIG_PCI_PRI */
++static inline int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
++{ return -ENODEV; }
++static inline void pci_disable_pri(struct pci_dev *pdev) { }
++static inline void pci_restore_pri_state(struct pci_dev *pdev) { }
++static inline int pci_reset_pri(struct pci_dev *pdev)
++{ return -ENODEV; }
++#endif /* CONFIG_PCI_PRI */
++
++#ifdef CONFIG_PCI_PASID
++int pci_enable_pasid(struct pci_dev *pdev, int features);
++void pci_disable_pasid(struct pci_dev *pdev);
++void pci_restore_pasid_state(struct pci_dev *pdev);
++int pci_pasid_features(struct pci_dev *pdev);
++int pci_max_pasids(struct pci_dev *pdev);
++int pci_prg_resp_pasid_required(struct pci_dev *pdev);
++#else  /* CONFIG_PCI_PASID */
++static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
++{ return -EINVAL; }
++static inline void pci_disable_pasid(struct pci_dev *pdev) { }
++static inline void pci_restore_pasid_state(struct pci_dev *pdev) { }
++static inline int pci_pasid_features(struct pci_dev *pdev)
++{ return -EINVAL; }
++static inline int pci_max_pasids(struct pci_dev *pdev)
++{ return -EINVAL; }
++static inline int pci_prg_resp_pasid_required(struct pci_dev *pdev)
++{ return 0; }
++#endif /* CONFIG_PCI_PASID */
++
+ /* Provide the legacy pci_dma_* API */
+ #include <linux/pci-dma-compat.h>
+ 
+-- 
+2.22.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
