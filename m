@@ -6,43 +6,42 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25535C3A59B
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81C5C3A59B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:34:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0065723427
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:30:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0065723427
+	by mail.kernel.org (Postfix) with ESMTPS id 9421723407
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:34:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9421723407
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C01E76193;
-	Fri, 30 Aug 2019 14:30:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5D6D66192;
+	Fri, 30 Aug 2019 14:34:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 61F1B6191
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1730F6071
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 14:29:23 +0000 (UTC)
+	Fri, 30 Aug 2019 14:33:33 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0DFB38A2
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B7608F1
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 14:29:23 +0000 (UTC)
+	Fri, 30 Aug 2019 14:33:32 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 67FE0246; Fri, 30 Aug 2019 16:29:21 +0200 (CEST)
-Date: Fri, 30 Aug 2019 16:29:20 +0200
+	id 2DE63246; Fri, 30 Aug 2019 16:33:30 +0200 (CEST)
+Date: Fri, 30 Aug 2019 16:33:29 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v1] iommu/vt-d: remove global page flush support
-Message-ID: <20190830142919.GE11578@8bytes.org>
-References: <1566834809-57510-1-git-send-email-jacob.jun.pan@linux.intel.com>
+To: Tom Murphy <murphyt7@tcd.ie>
+Subject: Re: [PATCH] Remove wrong default domain comments
+Message-ID: <20190830143329.GF11578@8bytes.org>
+References: <20190826044821.27017-1-murphyt7@tcd.ie>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1566834809-57510-1-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20190826044821.27017-1-murphyt7@tcd.ie>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>,
-	LKML <linux-kernel@vger.kernel.org>, Raj Ashok <ashok.raj@intel.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,10 +59,9 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Aug 26, 2019 at 08:53:29AM -0700, Jacob Pan wrote:
->  drivers/iommu/intel-svm.c   | 36 +++++++++++++++---------------------
->  include/linux/intel-iommu.h |  3 ---
->  2 files changed, 15 insertions(+), 24 deletions(-)
+On Mon, Aug 26, 2019 at 05:48:21AM +0100, Tom Murphy wrote:
+>  drivers/iommu/iommu.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 
 Applied, thanks.
 _______________________________________________
