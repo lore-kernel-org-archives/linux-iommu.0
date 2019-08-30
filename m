@@ -6,42 +6,45 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FBAC3A59B
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC2DC3A5A4
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:28:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 92D4523407
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:25:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92D4523407
+	by mail.kernel.org (Postfix) with ESMTPS id 67FD623407
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 14:28:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67FD623407
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B7216192;
-	Fri, 30 Aug 2019 14:25:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1CA926193;
+	Fri, 30 Aug 2019 14:28:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7337A616C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BE52C618B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 14:23:54 +0000 (UTC)
+	Fri, 30 Aug 2019 14:26:49 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0547E8A2
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 687458A3
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 14:23:54 +0000 (UTC)
+	Fri, 30 Aug 2019 14:26:49 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 7DC43246; Fri, 30 Aug 2019 16:23:52 +0200 (CEST)
-Date: Fri, 30 Aug 2019 16:23:51 +0200
+	id D2F94246; Fri, 30 Aug 2019 16:26:47 +0200 (CEST)
+Date: Fri, 30 Aug 2019 16:26:46 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH] iommu/dma: fix for dereferencing before null checking
-Message-ID: <20190830142350.GC11578@8bytes.org>
-References: <1566611232-165399-1-git-send-email-linyunsheng@huawei.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/1] Revert "iommu/vt-d: Avoid duplicated pci dma alias
+	consideration"
+Message-ID: <20190830142646.GD11578@8bytes.org>
+References: <20190826085056.32484-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1566611232-165399-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <20190826085056.32484-1-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Stijn Tintel <stijn@linux-ipv6.be>, iommu@lists.linux-foundation.org,
+	Petr Vandrovec <petr@vandrovec.name>,
+	David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -59,11 +62,11 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sat, Aug 24, 2019 at 09:47:12AM +0800, Yunsheng Lin wrote:
->  drivers/iommu/dma-iommu.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+On Mon, Aug 26, 2019 at 04:50:56PM +0800, Lu Baolu wrote:
+>  drivers/iommu/intel-iommu.c | 55 +++++++++++++++++++++++++++++++++++--
+>  1 file changed, 53 insertions(+), 2 deletions(-)
 
-Applied, thanks.
+Applied to fixes branch, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
