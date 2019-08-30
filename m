@@ -7,46 +7,47 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62802C3A59B
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 15:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60489C3A59B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 15:44:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3130621726
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 15:25:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3130621726
+	by mail.kernel.org (Postfix) with ESMTPS id 2FEEE21897
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 15:44:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FEEE21897
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F338E5CD6;
-	Fri, 30 Aug 2019 15:25:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0FC675D1D;
+	Fri, 30 Aug 2019 15:44:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6D9EA5C9F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9F93D621F
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 15:23:17 +0000 (UTC)
+	Fri, 30 Aug 2019 15:43:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D6BB9EC
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id DEC4F89B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 15:23:16 +0000 (UTC)
+	Fri, 30 Aug 2019 15:43:40 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 53209344;
-	Fri, 30 Aug 2019 08:23:16 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71040344;
+	Fri, 30 Aug 2019 08:43:40 -0700 (PDT)
 Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9C7973F703;
-	Fri, 30 Aug 2019 08:23:14 -0700 (PDT)
-Subject: Re: [PATCH 3/7] iommu/arm-smmu: Add tlb_sync implementation hook
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9729F3F703;
+	Fri, 30 Aug 2019 08:43:38 -0700 (PDT)
+Subject: Re: [PATCH 4/7] iommu/arm-smmu: Add global/context fault
+	implementation hooks
 To: Krishna Reddy <vdumpa@nvidia.com>
 References: <1567118827-26358-1-git-send-email-vdumpa@nvidia.com>
-	<1567118827-26358-4-git-send-email-vdumpa@nvidia.com>
+	<1567118827-26358-5-git-send-email-vdumpa@nvidia.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <554f8de1-1638-4eb9-59ae-8e1f0d786c44@arm.com>
-Date: Fri, 30 Aug 2019 16:23:13 +0100
+Message-ID: <5ab7c402-344d-0967-2ecf-21e24ecd0a0f@arm.com>
+Date: Fri, 30 Aug 2019 16:43:34 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <1567118827-26358-4-git-send-email-vdumpa@nvidia.com>
+In-Reply-To: <1567118827-26358-5-git-send-email-vdumpa@nvidia.com>
 Content-Language: en-GB
 Cc: talho@nvidia.com, treding@nvidia.com, mperttunen@nvidia.com,
 	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
@@ -72,62 +73,154 @@ Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 On 29/08/2019 23:47, Krishna Reddy wrote:
-> tlb_sync hook allows nvidia smmu handle tlb sync
-> across multiple SMMUs as necessary.
+> Add global/context fault hooks to allow Nvidia SMMU implementation
+> handle faults across multiple SMMUs.
 > 
 > Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
 > ---
->   drivers/iommu/arm-smmu-nvidia.c | 32 ++++++++++++++++++++++++++++++++
->   drivers/iommu/arm-smmu.c        |  8 +++++---
->   drivers/iommu/arm-smmu.h        |  4 ++++
->   3 files changed, 41 insertions(+), 3 deletions(-)
+>   drivers/iommu/arm-smmu-nvidia.c | 127 ++++++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/arm-smmu.c        |   6 ++
+>   drivers/iommu/arm-smmu.h        |   4 ++
+>   3 files changed, 137 insertions(+)
 > 
 > diff --git a/drivers/iommu/arm-smmu-nvidia.c b/drivers/iommu/arm-smmu-nvidia.c
-> index d93ceda..a429b2c 100644
+> index a429b2c..b2a3c49 100644
 > --- a/drivers/iommu/arm-smmu-nvidia.c
 > +++ b/drivers/iommu/arm-smmu-nvidia.c
-> @@ -56,11 +56,43 @@ static void nsmmu_write_reg64(struct arm_smmu_device *smmu,
->   		writeq_relaxed(val, nsmmu_page(smmu, i, page) + offset);
+> @@ -14,6 +14,10 @@
+>   
+>   #define NUM_SMMU_INSTANCES 3
+>   
+> +static irqreturn_t nsmmu_context_fault_inst(int irq,
+> +					    struct arm_smmu_device *smmu,
+> +					    int idx, int inst);
+> +
+>   struct nvidia_smmu {
+>   	struct arm_smmu_device	smmu;
+>   	int			num_inst;
+> @@ -87,12 +91,135 @@ static void nsmmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+>   		nsmmu_tlb_sync_wait(smmu, page, sync, status, i);
 >   }
 >   
-> +static void nsmmu_tlb_sync_wait(struct arm_smmu_device *smmu, int page,
-> +				int sync, int status, int inst)
+> +static irqreturn_t nsmmu_global_fault_inst(int irq,
+> +					       struct arm_smmu_device *smmu,
+> +					       int inst)
 > +{
-> +	u32 reg;
-> +	unsigned int spin_cnt, delay;
+> +	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
 > +
-> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-> +			reg = readl_relaxed(
-> +			      nsmmu_page(smmu, inst, page) + status);
-> +			if (!(reg & sTLBGSTATUS_GSACTIVE))
-> +				return;
-> +			cpu_relax();
-> +		}
-> +		udelay(delay);
-> +	}
+> +	gfsr = readl_relaxed(nsmmu_page(smmu, inst, 0) + ARM_SMMU_GR0_sGFSR);
+> +	gfsynr0 = readl_relaxed(nsmmu_page(smmu, inst, 0) +
+> +				ARM_SMMU_GR0_sGFSYNR0);
+> +	gfsynr1 = readl_relaxed(nsmmu_page(smmu, inst, 0) +
+> +				ARM_SMMU_GR0_sGFSYNR1);
+> +	gfsynr2 = readl_relaxed(nsmmu_page(smmu, inst, 0) +
+> +				ARM_SMMU_GR0_sGFSYNR2);
+> +
+> +	if (!gfsr)
+> +		return IRQ_NONE;
+> +
 > +	dev_err_ratelimited(smmu->dev,
-> +			    "TLB sync timed out -- SMMU may be deadlocked\n");
+> +		"Unexpected global fault, this could be serious\n");
+> +	dev_err_ratelimited(smmu->dev,
+> +		"\tGFSR 0x%08x, GFSYNR0 0x%08x, GFSYNR1 0x%08x, GFSYNR2 0x%08x\n",
+> +		gfsr, gfsynr0, gfsynr1, gfsynr2);
+> +
+> +	writel_relaxed(gfsr, nsmmu_page(smmu, inst, 0) + ARM_SMMU_GR0_sGFSR);
+> +	return IRQ_HANDLED;
 > +}
 > +
-> +static void nsmmu_tlb_sync(struct arm_smmu_device *smmu, int page,
-> +			   int sync, int status)
+> +static irqreturn_t nsmmu_global_fault(int irq, struct arm_smmu_device *smmu)
 > +{
 > +	int i;
+> +	irqreturn_t irq_ret = IRQ_NONE;
 > +
-> +	arm_smmu_writel(smmu, page, sync, 0);
+> +	/* Interrupt line is shared between global and context faults.
+> +	 * Check for both type of interrupts on either fault handlers.
+> +	 */
+> +	for (i = 0; i < to_nsmmu(smmu)->num_inst; i++) {
+> +		irq_ret = nsmmu_context_fault_inst(irq, smmu, 0, i);
+> +		if (irq_ret == IRQ_HANDLED)
+> +			return irq_ret;
+> +	}
 > +
-> +	for (i = 0; i < to_nsmmu(smmu)->num_inst; i++)
-
-It might make more sense to make this the innermost loop, i.e.:
-
-	for (i = 0; i < nsmmu->num_inst; i++)
-		reg &= readl_relaxed(nsmmu_page(smmu, i, page)...
-
-since polling the instances in parallel rather than in series seems like 
-it might be a bit more efficient.
-
-> +		nsmmu_tlb_sync_wait(smmu, page, sync, status, i);
+> +	for (i = 0; i < to_nsmmu(smmu)->num_inst; i++) {
+> +		irq_ret = nsmmu_global_fault_inst(irq, smmu, i);
+> +		if (irq_ret == IRQ_HANDLED)
+> +			return irq_ret;
+> +	}
+> +
+> +	return irq_ret;
+> +}
+> +
+> +static irqreturn_t nsmmu_context_fault_bank(int irq,
+> +					    struct arm_smmu_device *smmu,
+> +					    int idx, int inst)
+> +{
+> +	u32 fsr, fsynr, cbfrsynra;
+> +	unsigned long iova;
+> +
+> +	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
+> +	if (!(fsr & FSR_FAULT))
+> +		return IRQ_NONE;
+> +
+> +	fsynr = readl_relaxed(nsmmu_page(smmu, inst, smmu->numpage + idx) +
+> +			      ARM_SMMU_CB_FSYNR0);
+> +	iova = readq_relaxed(nsmmu_page(smmu, inst, smmu->numpage + idx) +
+> +			     ARM_SMMU_CB_FAR);
+> +	cbfrsynra = readl_relaxed(nsmmu_page(smmu, inst, 1) +
+> +				  ARM_SMMU_GR1_CBFRSYNRA(idx));
+> +
+> +	dev_err_ratelimited(smmu->dev,
+> +	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
+> +			    fsr, iova, fsynr, cbfrsynra, idx);
+> +
+> +	writel_relaxed(fsr, nsmmu_page(smmu, inst, smmu->numpage + idx) +
+> +			    ARM_SMMU_CB_FSR);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t nsmmu_context_fault_inst(int irq,
+> +					    struct arm_smmu_device *smmu,
+> +					    int idx, int inst)
+> +{
+> +	irqreturn_t irq_ret = IRQ_NONE;
+> +
+> +	/* Interrupt line shared between global and all context faults.
+> +	 * Check for faults across all contexts.
+> +	 */
+> +	for (idx = 0; idx < smmu->num_context_banks; idx++) {
+> +		irq_ret = nsmmu_context_fault_bank(irq, smmu, idx, inst);
+> +
+> +		if (irq_ret == IRQ_HANDLED)
+> +			break;
+> +	}
+> +
+> +	return irq_ret;
+> +}
+> +
+> +static irqreturn_t nsmmu_context_fault(int irq,
+> +				       struct arm_smmu_device *smmu,
+> +				       int cbndx)
+> +{
+> +	int i;
+> +	irqreturn_t irq_ret = IRQ_NONE;
+> +
+> +	/* Interrupt line is shared between global and context faults.
+> +	 * Check for both type of interrupts on either fault handlers.
+> +	 */
+> +	for (i = 0; i < to_nsmmu(smmu)->num_inst; i++) {
+> +		irq_ret = nsmmu_global_fault_inst(irq, smmu, i);
+> +		if (irq_ret == IRQ_HANDLED)
+> +			return irq_ret;
+> +	}
+> +
+> +	for (i = 0; i < to_nsmmu(smmu)->num_inst; i++) {
+> +		irq_ret = nsmmu_context_fault_inst(irq, smmu, cbndx, i);
+> +		if (irq_ret == IRQ_HANDLED)
+> +			return irq_ret;
+> +	}
+> +
+> +	return irq_ret;
 > +}
 > +
 >   static const struct arm_smmu_impl nsmmu_impl = {
@@ -135,63 +228,66 @@ it might be a bit more efficient.
 >   	.write_reg = nsmmu_write_reg,
 >   	.read_reg64 = nsmmu_read_reg64,
 >   	.write_reg64 = nsmmu_write_reg64,
-> +	.tlb_sync = nsmmu_tlb_sync,
+>   	.tlb_sync = nsmmu_tlb_sync,
+> +	.global_fault = nsmmu_global_fault,
+> +	.context_fault = nsmmu_context_fault,
 >   };
 >   
 >   struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
 > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 46e1641..f5454e71 100644
+> index f5454e71..9cc532d 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-> @@ -52,9 +52,6 @@
->    */
->   #define QCOM_DUMMY_VAL -1
+> @@ -454,6 +454,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>   	int idx = smmu_domain->cfg.cbndx;
 >   
-> -#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-> -#define TLB_SPIN_COUNT			10
-> -
->   #define MSI_IOVA_BASE			0x8000000
->   #define MSI_IOVA_LENGTH			0x100000
+> +	if (smmu->impl->context_fault)
+> +		return smmu->impl->context_fault(irq, smmu, idx);
+> +
+>   	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
+>   	if (!(fsr & FSR_FAULT))
+>   		return IRQ_NONE;
+> @@ -475,6 +478,9 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>   	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
+>   	struct arm_smmu_device *smmu = dev;
 >   
-> @@ -244,6 +241,11 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
->   	unsigned int spin_cnt, delay;
->   	u32 reg;
->   
-> +	if (smmu->impl->tlb_sync) {
-> +		smmu->impl->tlb_sync(smmu, page, sync, status);
+> +	if (smmu->impl->global_fault)
+> +		return smmu->impl->global_fault(irq, smmu);
 
-What I'd hoped is that rather than needing a hook for this, you could 
-just override smmu_domain->tlb_ops from .init_context to wire up the 
-alternate .sync method directly. That would save this extra level of 
-indirection.
+Can't we just register impl->global_fault (if set) instead of 
+arm_smmu_global_fault as the handler when we first set up the IRQs in 
+arm_smmu_device_probe()?
+
+Ideally we'd do the same for the context banks as well, although we 
+might need an additional hook from which to request the secondary IRQs 
+that the main flow can't accommodate.
 
 Robin.
 
-> +		return;
-> +	}
 > +
->   	arm_smmu_writel(smmu, page, sync, QCOM_DUMMY_VAL);
->   	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
->   		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+>   	gfsr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSR);
+>   	gfsynr0 = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSYNR0);
+>   	gfsynr1 = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sGFSYNR1);
 > diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-> index 9645bf1..d3217f1 100644
+> index d3217f1..dec5e1a 100644
 > --- a/drivers/iommu/arm-smmu.h
 > +++ b/drivers/iommu/arm-smmu.h
-> @@ -207,6 +207,8 @@ enum arm_smmu_cbar_type {
->   /* Maximum number of context banks per SMMU */
->   #define ARM_SMMU_MAX_CBS		128
->   
-> +#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-> +#define TLB_SPIN_COUNT			10
->   
->   /* Shared driver definitions */
->   enum arm_smmu_arch_version {
-> @@ -336,6 +338,8 @@ struct arm_smmu_impl {
->   	int (*cfg_probe)(struct arm_smmu_device *smmu);
->   	int (*reset)(struct arm_smmu_device *smmu);
+> @@ -17,6 +17,7 @@
+>   #include <linux/io-64-nonatomic-hi-lo.h>
+>   #include <linux/io-pgtable.h>
+>   #include <linux/iommu.h>
+> +#include <linux/irqreturn.h>
+>   #include <linux/mutex.h>
+>   #include <linux/spinlock.h>
+>   #include <linux/types.h>
+> @@ -340,6 +341,9 @@ struct arm_smmu_impl {
 >   	int (*init_context)(struct arm_smmu_domain *smmu_domain);
-> +	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
-> +			 int status);
+>   	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
+>   			 int status);
+> +	irqreturn_t (*global_fault)(int irq, struct arm_smmu_device *smmu);
+> +	irqreturn_t (*context_fault)(int irq, struct arm_smmu_device *smmu,
+> +				     int cbndx);
 >   };
 >   
 >   static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
