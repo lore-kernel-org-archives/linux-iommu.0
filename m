@@ -3,126 +3,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABDDDC3A59B
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 18:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBABC3A59B
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 19:01:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 81D932342F
-	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 18:41:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9658423429
+	for <iommu@archiver.kernel.org>; Fri, 30 Aug 2019 19:01:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="Wvlyj4Hf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 81D932342F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="IwAsu7mf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9658423429
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3FEEA617B;
-	Fri, 30 Aug 2019 18:41:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 52CF06285;
+	Fri, 30 Aug 2019 19:01:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2D2C66022
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1315A60F1
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 18:40:06 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C1698E6
+	Fri, 30 Aug 2019 19:00:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from hqemgate14.nvidia.com (hqemgate14.nvidia.com [216.228.121.143])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DE2C31FB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 30 Aug 2019 18:40:02 +0000 (UTC)
-Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.100]) by
-	nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-	id <B5d696d820000>; Sat, 31 Aug 2019 02:40:04 +0800
-Received: from HKMAIL103.nvidia.com ([10.18.16.12])
-	by hkpgpgate102.nvidia.com (PGP Universal service);
-	Fri, 30 Aug 2019 11:40:00 -0700
+	Fri, 30 Aug 2019 19:00:08 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+	hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+	id <B5d6972380004>; Fri, 30 Aug 2019 12:00:09 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+	by hqpgpgate101.nvidia.com (PGP Universal service);
+	Fri, 30 Aug 2019 12:00:08 -0700
 X-PGP-Universal: processed;
-	by hkpgpgate102.nvidia.com on Fri, 30 Aug 2019 11:40:00 -0700
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL103.nvidia.com
-	(10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
-	Fri, 30 Aug 2019 18:39:58 +0000
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com (104.47.50.55) by
-	HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS)
-	id
-	15.0.1473.3 via Frontend Transport; Fri, 30 Aug 2019 18:39:58 +0000
+	by hqpgpgate101.nvidia.com on Fri, 30 Aug 2019 12:00:08 -0700
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+	(172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
+	Fri, 30 Aug 2019 19:00:08 +0000
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.57) by
+	HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server
+	(TLS) id
+	15.0.1473.3 via Frontend Transport; Fri, 30 Aug 2019 19:00:08 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=kAFo6ZD+gtWAnflM+tvX84w9OsBuJYdkZfJzhanf7mptGYh70dJCtP0/zaS9wkNUSgb7lLHM25l4j342Wqbdyk4hWvmChihEAor7/WPDB9P9azZm+W4Ic1/rWe+2Og2ZZrhaUShvM0m2IvXJU3qL47Iu0KXV8AtkliI5G8CiJDdPX/0TA19B81VCnyQ7Q3/6JMxAbemgjGKtC3T8fMAjjnkESVaPax9vcRhebdla+IYH4yKZh4t/tW+y95QOvRZiiG8qVMOUrmwFcHsQgMycbxSmmi/Anz5lpE+/SY3mQTqahH5KuLFkRqooAYP+PcRjoSquuoSHrpik44Dl6ozPnQ==
+	b=HwpTExgUkknHDlbQRc3kHV4Qk/2l8SxYiPL20LkTxLt02MpkR0sQrCtI+LJlj2euthn9wq/o6n3aRqbcqdrPERWa4Y8smmwiS5jU/7pX5w7UmpqrzlNWFdywnPh44kj4YfbgY9x7FO3P7WemZefMosUTP0kloMBQeK8dFCCC8BYJGQYow7pyDh8LZONccxRrjJl4oJQ1n+UfLeysmbBTYy8UftGgXQFI7qSDz9/oCGQXHlrmQVB0CnVG/Uzy963A8brwE0kGPyqwj2Y13xcg50dwuwvbILTHS37XkPsLbyeuLV8ypI3z6fcGLfZF7w5oiaP6cTzpeLt1zBAf8/adKA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
 	s=arcselector9901;
 	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=nOIrub0GG5GdEx6ukwJwd7Nt+n/r7td696T06hV9ESs=;
-	b=Z96ySNdKTJYCbp8YTO2PdFzTGMwAsvlx8LUdYDWpwKChY7/OHaq37ECh4RAl9TbtKxYlzkndxbJD75sdBE9kXCl3ggsycRwooWuaUmhj2w5vyWmmG6KHLd2Nj9fyLJq3iRkt/DLVhRGx4Bn6UDUu3WBaTv5OYDvAGZkNlEW2mzAyVyMB4gNSuKusOgZ1WZal+fZhMjQ/EdO0eaC7cGXnT9Yukn/65gzMZI1GvbXleN7qriLCmTDs6mH4HkaZoAXMF/lfDEPiPMXk2vl/kfvnuuxUDEPnlQIFsD3HTy7U3VHCh1qPQWcTpRuU7f6gVIVZB/C80fypZ2/+k2Wqe2oJvw==
+	bh=zhBJyUeeBMWlb5MwS/4aa5ADzd8lFV3Wa8GKZs9whsY=;
+	b=P2XfL3aXaKsAbJt9xZIsWQA9nDEGoKpTPsow5MAbGjqvok/Xugt9ZWsrkCV4VOW8CIGDvNslSnXbGKvQQaX9D5LltTnoyEhFUcZnyPTfyKRQ+OIYK8EAnJl5eBZryJ7z4MMWr3ZZH6K4ZkeGC8EipVjK7FcOEXjed5wcv9/ErRR+Tt4iF4V750dRGsyJ4wB6A70fRMm60MgszwIQN8eTlQBJRXzKhdE03HnBVPaCdfRmrV7K5vZxZNcmkw70crcDbmJkBvfUI2eJ3lm5r9ynZ40tmUPiUEl8YTAKcoGPhjOe6aWMEUh/2ODdan5x7stXGDF//SovITJ0cvDo6MSuPg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
 	smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
 	dkim=pass header.d=nvidia.com; arc=none
 Received: from BYAPR12MB2710.namprd12.prod.outlook.com (20.177.124.11) by
-	BYAPR12MB2758.namprd12.prod.outlook.com (20.177.125.223) with Microsoft
+	BYAPR12MB3128.namprd12.prod.outlook.com (20.178.54.221) with Microsoft
 	SMTP
 	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2199.20; Fri, 30 Aug 2019 18:39:56 +0000
+	15.20.2220.18; Fri, 30 Aug 2019 19:00:05 +0000
 Received: from BYAPR12MB2710.namprd12.prod.outlook.com
 	([fe80::60a8:9757:8be2:2c56]) by
 	BYAPR12MB2710.namprd12.prod.outlook.com
 	([fe80::60a8:9757:8be2:2c56%6]) with mapi id 15.20.2220.013;
-	Fri, 30 Aug 2019 18:39:56 +0000
+	Fri, 30 Aug 2019 19:00:05 +0000
 From: Krishna Reddy <vdumpa@nvidia.com>
-To: Mikko Perttunen <cyndis@kapsi.fi>
-Subject: RE: [PATCH 6/7] arm64: tegra: Add DT node for T194 SMMU
-Thread-Topic: [PATCH 6/7] arm64: tegra: Add DT node for T194 SMMU
-Thread-Index: AQHVXruJJaNjwNgb20yUxCVyNgmdfqcTmhgAgABsKyA=
-Date: Fri, 30 Aug 2019 18:39:56 +0000
-Message-ID: <BYAPR12MB27102584FA929CBD92002DD9B3BD0@BYAPR12MB2710.namprd12.prod.outlook.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: RE: [PATCH 3/7] iommu/arm-smmu: Add tlb_sync implementation hook
+Thread-Topic: [PATCH 3/7] iommu/arm-smmu: Add tlb_sync implementation hook
+Thread-Index: AQHVXruLTOWAUKMP0EGEhzK6CNK386cTissAgACAtPA=
+Date: Fri, 30 Aug 2019 19:00:05 +0000
+Message-ID: <BYAPR12MB27106B630A0E1A2A0CBC79D9B3BD0@BYAPR12MB2710.namprd12.prod.outlook.com>
 References: <1567118827-26358-1-git-send-email-vdumpa@nvidia.com>
-	<1567118827-26358-7-git-send-email-vdumpa@nvidia.com>
-	<ba06d6b8-c6b9-f9bd-c2c1-d5e39292f67d@kapsi.fi>
-In-Reply-To: <ba06d6b8-c6b9-f9bd-c2c1-d5e39292f67d@kapsi.fi>
+	<1567118827-26358-4-git-send-email-vdumpa@nvidia.com>
+	<20190830111446.GC23902@ulmo>
+In-Reply-To: <20190830111446.GC23902@ulmo>
 Accept-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
 	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
 	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2019-08-30T18:39:53.6480000Z;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2019-08-30T19:00:00.9073949Z;
 	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
 	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft
 	Azure Information Protection;
-	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=a7db7ccb-ad06-4e30-8dc0-dd6a83dc6893;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=0fb73aaa-99c5-444c-8088-3fc4ea15b944;
 	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
 authentication-results: spf=none (sender IP is )
 	smtp.mailfrom=vdumpa@nvidia.com; 
 x-originating-ip: [216.228.112.21]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a38429d5-3fbe-4d0e-7bb4-08d72d7974ba
+x-ms-office365-filtering-correlation-id: f8cd9ed4-a895-46a1-eb13-08d72d7c4533
 x-microsoft-antispam: BCL:0; PCL:0;
 	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);
-	SRVR:BYAPR12MB2758; 
-x-ms-traffictypediagnostic: BYAPR12MB2758:
+	SRVR:BYAPR12MB3128; 
+x-ms-traffictypediagnostic: BYAPR12MB3128:|BYAPR12MB3128:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB27586148D028A9F168CA0B7AB3BD0@BYAPR12MB2758.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-microsoft-antispam-prvs: <BYAPR12MB312833BB4AFDCB3B576B2292B3BD0@BYAPR12MB3128.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-forefront-prvs: 0145758B1D
 x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(366004)(376002)(136003)(396003)(39860400002)(346002)(199004)(189003)(11346002)(71190400001)(55016002)(14454004)(229853002)(9686003)(6436002)(74316002)(25786009)(478600001)(6246003)(54906003)(66446008)(66556008)(305945005)(66476007)(4326008)(76116006)(7736002)(3846002)(6116002)(64756008)(66946007)(52536014)(5660300002)(53936002)(316002)(8676002)(7696005)(76176011)(486006)(14444005)(81156014)(66066001)(8936002)(4744005)(81166006)(2906002)(6506007)(476003)(6916009)(86362001)(186003)(26005)(102836004)(99286004)(71200400001)(256004)(33656002)(446003);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:BYAPR12MB2758;
+	SFS:(10009020)(396003)(39860400002)(366004)(346002)(376002)(136003)(199004)(189003)(52314003)(11346002)(66066001)(446003)(476003)(256004)(71190400001)(71200400001)(14454004)(26005)(102836004)(6506007)(6916009)(186003)(74316002)(3846002)(76176011)(478600001)(8936002)(7736002)(305945005)(6116002)(6436002)(486006)(54906003)(99286004)(316002)(86362001)(66476007)(66946007)(81166006)(7696005)(76116006)(81156014)(33656002)(5660300002)(64756008)(66446008)(53936002)(4744005)(66556008)(4326008)(9686003)(55016002)(52536014)(25786009)(229853002)(6246003)(2906002)(8676002);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:BYAPR12MB3128;
 	H:BYAPR12MB2710.namprd12.prod.outlook.com; FPR:; SPF:None;
 	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
 received-spf: None (protection.outlook.com: nvidia.com does not designate
 	permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: KYN5d0lS05xxaQBF2FZArZC6zkU0Rzqf0nkJ+Do1OkCuqABfiqnKl0jU/doEmf2zwKKAxR6Z3bydvYWmmfdsKBoYP36nPs9cxLI5V/CwWJPlGnwg1jLX6dtj2+Y3x+H6cL4JOW06jNszLOKq67FIZ+MqOfKqf7zpm1eABlWAU6eAOGvut+fGJBRycQy4ucbysCDC1wFtvyuOiPwLtRoykvm3qqprkWtt2EZtmTd6y7OhyWDXBxlMw+mcYl3dXBpSH+1KsuYi6bDGClw8XC77Z/A0xzSLOIWlz9Z9L4ZnXrto7i69CwT5l5EYz/UbWONF4JqEM2/7wCAIcEbfMVFAb0CEEeCqG5VhZjjSwA/OKQG9SFMTIQRfaDxvJ8E618eH8RRjiWUNjYDEeqEdxlxTZfh5l29xj9q9iVvlq3x3r+c=
+x-microsoft-antispam-message-info: PDr+Sli4zRyUzDC5kHHZmyZd3GdMJWSSu2OPqYlDB7PEDZT8P0Y1U4jllh5eN7IrvovDdM/QvUY1CkxhgCe9ReQY/ku+XdSpSLQ+ai7MyrmyTm8IScV1CxynhHlyw4DFaLlwMjrj0DD8WBQeBmx9lbBg9ihKolP4c9K5ExQKdAh+rRXbeVHAK7n58LZ2tGFe+OvxTt16N08WDCHrLdNIt91FFxAPE1eHooiX1LScZpfryiW7gbQJgag26aCWY0VLfKTGvb5HiPwlFX3HJ227u58dnEud+Bz5dKyo7EmY/q5/O3TXcx5Ui2TZUpq5KhzL/uNfYr9ZO2aq1Ln7WKvolYeSWQgzK7XMstQ7M8XpZq4aBzcFql0WQevfz3ycEnzqYmUVx2TZKZIfLh8Xw4KwU+b2ChF9f4Nreb9ZyU0uV10=
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a38429d5-3fbe-4d0e-7bb4-08d72d7974ba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 18:39:56.7136 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8cd9ed4-a895-46a1-eb13-08d72d7c4533
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 19:00:05.4690 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8xrW0bC/ukeXc7UJGHkE3MKH1lXhWmympJ9WXt99HsIx9FS82JxwPJGWeibUnJreGs1Ys1Q1rC8tA9//gP8Dyw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2758
+X-MS-Exchange-CrossTenant-userprincipalname: JJtRLGLcAHmAphaiEH0+da2Iqk91PAUb97h3+KBCT7OEvXBEj98jcMuwsU+DWzEAp+BLNCEjK18Ej14P2hG9UA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3128
 X-OriginatorOrg: Nvidia.com
 Content-Language: en-US
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-	t=1567190404; bh=nOIrub0GG5GdEx6ukwJwd7Nt+n/r7td696T06hV9ESs=;
+	t=1567191609; bh=zhBJyUeeBMWlb5MwS/4aa5ADzd8lFV3Wa8GKZs9whsY=;
 	h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
 	ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
 	Thread-Index:Date:Message-ID:References:In-Reply-To:
@@ -140,12 +140,12 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
 	X-MS-Exchange-CrossTenant-userprincipalname:
 	X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
 	Content-Language:Content-Type:Content-Transfer-Encoding;
-	b=Wvlyj4HfkLWitNtAHC+O7EcfSCLt7YDxqjsOyygGErNsAHGN8MF+Sq7Rc/DRuzKBL
-	S/iW1xX+jRxsbaLmNWzyGrT3w+REevtJjCCvnAxtF1n+9wMtOrcxd+8tTAEnORqXzj
-	B+aQ4C0W5eUI0cpiY1hwNaQz7wkP4uT5CASMd6hmyDnhv+L0hDDLYNNM+3NyKQTSPh
-	fZ3WUhNLAaQIwMlnEmJH1BfrkCG2aeVonsVEJR834PntfjTTbepk99/gt/kY9kKGeO
-	XNXc46cvGlyakxH0irrrYMO3oN3HhfrnTeuEpxZxE1ybPsiqWC5vA9snXugY06Qs27
-	7Ye8qnG6yzsvw==
+	b=IwAsu7mf9ASt1Rv5AP7niQoslQdfFlFxjtE3Ud6sT8RaED1zn+CtfVLvT0fbtee9F
+	XkuQPsLw6O41UPyCmyYUTyHKrWkcMlEp/+AOI0M4b2PjDlAOZPP3F+WT4XcxN6m5YN
+	RCbBBdFx3bBc/wq8LR6Dbhu2h49BBsIYvMTlWjI/B9LO/HssalUn927ZcramPlgmjh
+	rivyNI+uQJcHQxRy/dTRk8RrzALwc94OqKaTzMyrlvV5qQDKZfo0EwwuKeaN/h5nc4
+	BlCQZKOYfdcrsv8clfPAtTgp095fWvRUbRNHpDwejp3qmR8N16bbomm59rj0QqPATG
+	HTfepYYbPfu6Q==
 Cc: Sachin Nikam <Snikam@nvidia.com>,
 	"Thomas Zeng \(SW-TEGRA\)" <thomasz@nvidia.com>,
 	Juha Tukkinen <jtukkinen@nvidia.com>,
@@ -156,7 +156,7 @@ Cc: Sachin Nikam <Snikam@nvidia.com>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	Timo Alho <talho@nvidia.com>, Yu-Huan Hsu <YHsu@nvidia.com>,
 	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-	Thierry Reding <treding@nvidia.com>,
+	Thierry Reding <treding@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
 	Alexander Van Brunt <avanbrunt@nvidia.com>,
 	"linux-arm-kernel@lists.infradead.org"
 	<linux-arm-kernel@lists.infradead.org>
@@ -177,17 +177,21 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
->> +	smmu: iommu@12000000 {
->> +		compatible = "nvidia,smmu-v2";
+>Wouldn't it work if you replaced all calls of __arm_smmu_tlb_sync() by
+>smmu->impl->tlb_sync() and assign __arm_smmu_tlb_sync() as default for
+>devices that don't need to override it? That makes this patch slightly larger, but it saves us one level of indirection.
 
->Should we have a compatibility string like "nvidia,tegra194-smmu" so that we can have other chips with SMMUv2 that could be different?
+The tlb_ops->tlb_sync can be overridden directly in arm-smmu-nvidia.c specific implementation as pointed by Robin. Will be updating in next patch.
 
-As pointed by Robin as well, as Nvidia hasn't modified ARM MMU-500 implementation, we can update it to specific chip based. 
-Let me update.
+
+>> +	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
+>> +			 int status);
+
+>Can't page, sync and status all be unsigned?
+
+This is to be uniform with original tlb_sync definition is arm-smmu.c.  Anyway, this hook is not necessary as tlb_ops->tlb_sync can be overridden directly.
 
 -KR
-
- 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
