@@ -2,67 +2,61 @@ Return-Path: <SRS0=u5nN=W5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82966C3A59E
-	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 20:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D218C3A59E
+	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 21:11:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 56C0A20674
-	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 20:08:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E6EAA21881
+	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 21:11:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="IKK7dOAU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56C0A20674
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="AD5eFMS4"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E6EAA21881
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3F097CCC;
-	Mon,  2 Sep 2019 20:08:21 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BD075CB5;
+	Mon,  2 Sep 2019 21:11:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E41C9AC8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BD78CCB2
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  2 Sep 2019 20:08:19 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A55297DB
+	Mon,  2 Sep 2019 21:11:04 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A7EA3756
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  2 Sep 2019 20:08:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=BVNq47HXj2pt+zogEJG8nkEiH0l4/wH9jA+1tCZXI6w=;
-	b=IKK7dOAUG6pwQ3QFcv9Q2x3ZUH
-	zOxu0VV1ODcT6ycsRhGaL+MdqFJ01nNbP+4sqBmq5bM29wdnYvaIABqI6YxK58JfVVNG2KhxBbqQK
-	XPkkhiI+gfs7TMrLKbB6Ba7JliUxN20U6GoWVZhqEFfe3+GEJ2zTrkLwNEQDgcemLy63W+bI8zMvF
-	bLTvdnpWAYqzHN1ws/GsnN/cPWtw8y0I7E1I/p8LDh73tt7L2WNkvP1gE4BJL0jciVjdmLL1Jsz+j
-	UThFdNhTBiUCzaxg6co3+rfiWR4B05AkSdBR0XGwMCeakPNbl4RdnNcNrwM1aqNvdoFw3H2iCKH9j
-	Jtw4ezfw==;
-Received: from [2001:4bb8:18c:1755:c70:4a89:bc61:2] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1i4scc-0007Od-Gn; Mon, 02 Sep 2019 20:08:19 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org, Loic Pallardy <loic.pallardy@st.com>,
-	Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 4/4] dma-mapping: remove the dma_declare_coherent_memory export
-Date: Mon,  2 Sep 2019 22:07:46 +0200
-Message-Id: <20190902200746.16185-5-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190902200746.16185-1-hch@lst.de>
-References: <20190902200746.16185-1-hch@lst.de>
+	Mon,  2 Sep 2019 21:11:03 +0000 (UTC)
+Received: from localhost (unknown [69.71.4.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id EE26E20870;
+	Mon,  2 Sep 2019 21:11:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1567458663;
+	bh=qX20IVLvUSWOzNkJj+sBxx54B1HMotDbCAEmajym6B4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AD5eFMS4HiX4X1/0G9Dh521nWKDrI33a0LGJ0QWlqf8kqJtJGwk+ofVyNT7IeCGfl
+	Im9W9rMBG81wLTIm2kTSbYoxtjkXIiRrPWYKaSy4KyVxMQEWteJ9LBElPao4m4VEYW
+	tpe6XC5372WqFaPwj4r+5pjb3N8k7cK0+9491v18=
+Date: Mon, 2 Sep 2019 16:11:00 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH] PCI: Move ATS declarations to linux/pci.h
+Message-ID: <20190902211100.GH7013@google.com>
+References: <20190830150756.21305-1-kw@linux.com>
+	<20190830161840.GA9733@infradead.org>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Ohad Ben-Cohen <ohad@wizery.com>, linux-remoteproc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20190830161840.GA9733@infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Krzysztof Wilczynski <kw@linux.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,31 +74,34 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-dma_declare_coherent_memory is something that the platform setup code
-(which pretty much means the device tree these days) need to do so that
-drivers can use the memory as declared by the platform.  Drivers
-themselves have no business calling this function.
+On Fri, Aug 30, 2019 at 09:18:40AM -0700, Christoph Hellwig wrote:
+> On Fri, Aug 30, 2019 at 05:07:56PM +0200, Krzysztof Wilczynski wrote:
+> > Move ATS function prototypes from include/linux/pci-ats.h to
+> > include/linux/pci.h so users only need to include <linux/pci.h>:
+> 
+> Why is that so important?  Very few PCI(e) device drivers use ATS,
+> so keeping it out of everyones include hell doesn't seem all bad.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/coherent.c | 1 -
- 1 file changed, 1 deletion(-)
+This was my idea, and it wasn't a good one, sorry.
 
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 7cafe1affdc9..545e3869b0e3 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -122,7 +122,6 @@ int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
- 		dma_release_coherent_memory(mem);
- 	return ret;
- }
--EXPORT_SYMBOL(dma_declare_coherent_memory);
- 
- static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
- 		ssize_t size, dma_addr_t *dma_handle)
--- 
-2.20.1
+The ATS, PRI, and PASID interfaces are all sort of related and are
+used only by the IOMMU drivers, so it probably makes sense to put them
+all together.  Right now the ATS stuff is in linux/pci.h and PRI/PASID
+stuff is in linux/pci-ats.h.  Maybe the right thing would be to move
+the ATS stuff to pci-ats.h.
 
+I previously moved it from pci-ats.h to pci.h with ff9bee895c4d ("PCI:
+Move ATS declarations to linux/pci.h so they're all together") with
+the excuse of putting the external ATS interfaces next to
+pci_ats_init().  But that really looks like it was a mistake because
+pci_ats_init() is a PCI-internal thing and its declaration should
+probably be in drivers/pci/pci.h instead.
+
+There's also a useless "struct pci_ats" forward declaration in
+linux/pci.h that I should have removed with d544d75ac96a ("PCI: Embed
+ATS info directly into struct pci_dev").
+
+Bjorn
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
