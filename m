@@ -2,79 +2,59 @@ Return-Path: <SRS0=u5nN=W5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DBBC3A5A8
-	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 08:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248E7C3A5A7
+	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 08:38:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AEE1D21874
-	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 08:34:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cYu84DUj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEE1D21874
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 01AA62168B
+	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 08:38:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01AA62168B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4E977CBF;
-	Mon,  2 Sep 2019 08:34:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DF548CD4;
+	Mon,  2 Sep 2019 08:38:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBD79CB7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 17115CC7
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  2 Sep 2019 08:34:55 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
-	[209.85.215.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6D808709
+	Mon,  2 Sep 2019 08:38:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B0D955D3
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  2 Sep 2019 08:34:55 +0000 (UTC)
-Received: by mail-pg1-f195.google.com with SMTP id l21so7137055pgm.3
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 02 Sep 2019 01:34:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id;
-	bh=uFmY0zGFn+EQnA57VOg3VeO9qiRTqjJoOe1gdV98IwA=;
-	b=cYu84DUjPTKSgEfeLZtea5ZEO+oEaJLALl1KB7muOH5m/fFs57yP+LCBWA6ArhPio2
-	WkWh2wrJ47bV5YbLwT4iwCqb0Ai/rODNnzr2DLp/L4oyyVLmYnl8diGTiWZcLmPts4RT
-	Fvycb5VDcIqhCDQUwOkf5B/KrPFRGEDMpFQ0ye36mXAuIE2ktSav4aoIKXNO5UKgjCs9
-	XeRU/NPTPSKO6SIsAXPP6l9CAopbF2aMh6wQABGv4Bll8xPxRW8O0MHHWhR31XaYpl8N
-	rSDNcLd/VdJKmITmEkdXcJB0iI2uADXabuFqj6oUAtUumdu4JVui5i97iRe4w4fSGhL9
-	VORQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id;
-	bh=uFmY0zGFn+EQnA57VOg3VeO9qiRTqjJoOe1gdV98IwA=;
-	b=sEEYrxTTsAAEoziLLVR3rutr5ogyr6uuVsU1+sJmseKi4Psb/GADmHJ+zCpFR5kaTM
-	eUUwOxZ0MqMg0wVY0qMZO/1wDEvAUQCiEAMwRmG2OlwWK5RcpDqu4TmxzrVDp8Y51bDW
-	m9BBnRxrxehGFAVX0FAAw1YBvIrZlcJ7JwQudry7rcm/z1hggMvQYpFplTlRmvgwKsj2
-	Hupu4ym3622Pie4VljVFTBwQRwYp+3/Gjyjd+Bm1zqmudt3nBPdi2LUjWI4PgraKgH6l
-	36lE2yFCK/TIURQjZnkp3b06ykgTQ4h7jVdn0U6Q0EQiN8LE+mRMhP69QJuuCKLWRiHf
-	Ot8g==
-X-Gm-Message-State: APjAAAU1S0AldZg8LUqleH0c3DvPrdwhdEHqfIYpzDnznjXMBXyaE3UF
-	JDH7h5K85+2fRWyN208GKao=
-X-Google-Smtp-Source: APXvYqykyTr1V1UXoAhEng9PvF5ygE64bFW8pzDF90EN8gbWoiWOHtdCIKRzyJWgs9NYY7KHzCPF3A==
-X-Received: by 2002:a63:184b:: with SMTP id 11mr25468636pgy.112.1567413294974; 
-	Mon, 02 Sep 2019 01:34:54 -0700 (PDT)
-Received: from jordon-HP-15-Notebook-PC.domain.name ([49.207.50.39])
-	by smtp.gmail.com with ESMTPSA id g9sm6977813pjl.0.2019.09.02.01.34.51
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-	Mon, 02 Sep 2019 01:34:53 -0700 (PDT)
-From: Souptick Joarder <jrdr.linux@gmail.com>
-To: konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
-	sstabellini@kernel.org
-Subject: [PATCH v2] swiotlb-xen: Convert to use macro
-Date: Mon,  2 Sep 2019 14:09:58 +0530
-Message-Id: <1567413598-4477-1-git-send-email-jrdr.linux@gmail.com>
-X-Mailer: git-send-email 1.9.1
-Cc: Souptick Joarder <jrdr.linux@gmail.com>, xen-devel@lists.xenproject.org,
-	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-	sabyasachi.linux@gmail.com
+	Mon,  2 Sep 2019 08:38:02 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	02 Sep 2019 01:38:02 -0700
+X-IronPort-AV: E=Sophos;i="5.64,457,1559545200"; d="scan'208";a="184442382"
+Received: from jkrzyszt-desk.ger.corp.intel.com ([172.22.244.17])
+	by orsmga003-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	02 Sep 2019 01:38:00 -0700
+From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC PATCH] iommu/vt-d: Fix IOMMU field not populated on device
+	hot re-plug
+Date: Mon, 02 Sep 2019 10:37:41 +0200
+Message-ID: <1769080.0GM3UzqXcv@jkrzyszt-desk.ger.corp.intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173,
+	80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
+In-Reply-To: <ccb1434d-281c-abae-0726-7fd924041315@linux.intel.com>
+References: <20190822142922.31526-1-janusz.krzysztofik@linux.intel.com>
+	<3255251.C7nBVfOIaa@jkrzyszt-desk.ger.corp.intel.com>
+	<ccb1434d-281c-abae-0726-7fd924041315@linux.intel.com>
+MIME-Version: 1.0
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>, intel-gfx@lists.freedesktop.org,
+	=?utf-8?B?TWljaGHFgg==?= Wajdeczko <michal.wajdeczko@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -87,53 +67,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Rather than using static int max_dma_bits, this
-can be coverted to use as macro.
+Hi Baolu,
 
-Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
----
- drivers/xen/swiotlb-xen.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+On Thursday, August 29, 2019 11:08:18 AM CEST Lu Baolu wrote:
+> Hi,
+> 
+> On 8/29/19 3:58 PM, Janusz Krzysztofik wrote:
+> > Hi Baolu,
+> > 
+> > On Thursday, August 29, 2019 3:43:31 AM CEST Lu Baolu wrote:
+> >> Hi Janusz,
+> >>
+> >> On 8/28/19 10:17 PM, Janusz Krzysztofik wrote:
+> >>>> We should avoid kernel panic when a intel_unmap() is called against
+> >>>> a non-existent domain.
+> >>> Does that mean you suggest to replace
+> >>> 	BUG_ON(!domain);
+> >>> with something like
+> >>> 	if (WARN_ON(!domain))
+> >>> 		return;
+> >>> and to not care of orphaned mappings left allocated?  Is there a way to
+> > inform
+> >>> users that their active DMA mappings are no longer valid and they
+> > shouldn't
+> >>> call dma_unmap_*()?
+> >>>
+> >>>> But we shouldn't expect the IOMMU driver not
+> >>>> cleaning up the domain info when a device remove notification comes and
+> >>>> wait until all file descriptors being closed, right?
+> >>> Shouldn't then the IOMMU driver take care of cleaning up resources still
+> >>> allocated on device remove before it invalidates and forgets their
+> > pointers?
+> >>>
+> >>
+> >> You are right. We need to wait until all allocated resources (iova and
+> >> mappings) to be released.
+> >>
+> >> How about registering a callback for BUS_NOTIFY_UNBOUND_DRIVER, and
+> >> removing the domain info when the driver detachment completes?
+> > 
+> > Device core calls BUS_NOTIFY_UNBOUND_DRIVER on each driver unbind, 
+regardless
+> > of a device being removed or not.  As long as the device is not unplugged 
+and
+> > the BUS_NOTIFY_REMOVED_DEVICE notification not generated, an unbound 
+driver is
+> > not a problem here.
+> > Morever, BUS_NOTIFY_UNBOUND_DRIVER  is called even before
+> > BUS_NOTIFY_REMOVED_DEVICE so that wouldn't help anyway.
+> > Last but not least, bus events are independent of the IOMMU driver use via
+> > DMA-API it exposes.
+> 
+> Fair enough.
+> 
+> > 
+> > If keeping data for unplugged devices and reusing it on device re-plug is 
+not
+> > acceptable then maybe the IOMMU driver should perform reference counting 
+of
+> > its internal resources occupied by DMA-API users and perform cleanups on 
+last
+> > release?
+> 
+> I am not saying that keeping data is not acceptable. I just want to
+> check whether there are any other solutions.
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index ae1df49..d1eced5 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -38,6 +38,7 @@
- #include <asm/xen/page-coherent.h>
- 
- #include <trace/events/swiotlb.h>
-+#define MAX_DMA_BITS 32
- /*
-  * Used to do a quick range check in swiotlb_tbl_unmap_single and
-  * swiotlb_tbl_sync_single_*, to see if the memory was in fact allocated by this
-@@ -114,8 +115,6 @@ static int is_xen_swiotlb_buffer(dma_addr_t dma_addr)
- 	return 0;
- }
- 
--static int max_dma_bits = 32;
--
- static int
- xen_swiotlb_fixup(void *buf, size_t size, unsigned long nslabs)
- {
-@@ -135,7 +134,7 @@ static int is_xen_swiotlb_buffer(dma_addr_t dma_addr)
- 				p + (i << IO_TLB_SHIFT),
- 				get_order(slabs << IO_TLB_SHIFT),
- 				dma_bits, &dma_handle);
--		} while (rc && dma_bits++ < max_dma_bits);
-+		} while (rc && dma_bits++ < MAX_DMA_BITS);
- 		if (rc)
- 			return rc;
- 
--- 
-1.9.1
+Then reverting 458b7c8e0dde and applying this patch still resolves the issue 
+for me.  No errors appear when mappings are unmapped on device close after the 
+device has been removed, and domain info preserved on device removal is 
+successfully reused on device re-plug.
+
+Is there anything else I can do to help?
+
+Thanks,
+Janusz
+
+> 
+> Best regards,
+> Baolu
+> 
+
+
+
 
 _______________________________________________
 iommu mailing list
