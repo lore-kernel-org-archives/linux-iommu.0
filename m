@@ -1,81 +1,69 @@
-Return-Path: <SRS0=2m50=W4=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=u5nN=W5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8555CC3A5A4
-	for <iommu@archiver.kernel.org>; Sun,  1 Sep 2019 19:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BDEC3A5A8
+	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 01:59:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3FFD22190F
-	for <iommu@archiver.kernel.org>; Sun,  1 Sep 2019 19:23:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TjHWNZc0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FFD22190F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 446922184D
+	for <iommu@archiver.kernel.org>; Mon,  2 Sep 2019 01:59:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 446922184D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 210C2CAB;
-	Sun,  1 Sep 2019 19:23:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F0DE9907;
+	Mon,  2 Sep 2019 01:59:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CA096CA8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EC93B904
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  1 Sep 2019 19:23:48 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
-	[209.85.214.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 82D99709
+	Mon,  2 Sep 2019 01:59:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E5EDE5D3
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  1 Sep 2019 19:23:48 +0000 (UTC)
-Received: by mail-pl1-f196.google.com with SMTP id az1so4632926plb.6
-	for <iommu@lists.linux-foundation.org>;
-	Sun, 01 Sep 2019 12:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id;
-	bh=MYmyqV51fBjQuhWN4wRJPBtp4cf5jebojptEpCVLVOk=;
-	b=TjHWNZc0ZSAdLlICAmRNnY+1VKMb8ksQKlv2+3dqXX/Od6eAOEyRzvUwKpJvFshVrH
-	HrrR7AzO7vyxkqqq8e3qYBKsKhC710WpwJN5/HLGqabKuwsVKvT8Sxq69tP2BrP4baWQ
-	TA1MQp/Z3dMDgmRYKP/hQw4iGFquZ8eBXYA2xQazOg9QcT0Mqd4MnqWbbiBmuBpqBjle
-	PLMS6HCjOTxicYWnq0Tbkd59InVsarbuDZZylarrhkkwwRu1H69HlAunEjCuH+pw53pV
-	iqK/4yVXBpneAsahpXA1yg5WXLEApVp2prY059J8ZTkETMIFe9z2++wpWf0qXGy8sUHH
-	AT5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id;
-	bh=MYmyqV51fBjQuhWN4wRJPBtp4cf5jebojptEpCVLVOk=;
-	b=M2K92hupOs2/kVDr7UJCTG36qFd8Ec6gw0yC+7fpEc+wZpC/+eZN0MfpjF+dOzZuP9
-	+ScLk/goMsoL4ys+wYmAPYOlH9jWqFwH9rCIQFpir03G1r4QDtrNXfaEZ+0Gs0II6vYc
-	OZ08y/0rFaWRWXeCznsUHibNKqur6c8QhvM4p0M0JidsFzjdk+kwzpiV/JR+I5c1Udtu
-	NvLfRZrUSPZgQ8gre7EnUKreib03febuXhewGU3BJWd0Holvy/mt4RQXeQJglwpsPijU
-	DMJxq3tcXfRk6e2ZU7u67q0qwSJyPcn8VGUwOin2+JGQ8PcbS8UjtgjM9J20618IxW0J
-	hs8Q==
-X-Gm-Message-State: APjAAAW2mLE/OyycShp8jbVfYZu2muaPKUwHWWgM7kgHEFLKhaIjA7bH
-	3ZowSuIMprlK4IrCeH8Wevg=
-X-Google-Smtp-Source: APXvYqxVwAyX5i9CZCLq1N9HsR4W+F1HPa3PbBb79wf4iu91tGmUo6frN78M/h5qjGemTUYvUXOSQQ==
-X-Received: by 2002:a17:902:744a:: with SMTP id
-	e10mr20291723plt.239.1567365828132; 
-	Sun, 01 Sep 2019 12:23:48 -0700 (PDT)
-Received: from jordon-HP-15-Notebook-PC.domain.name ([106.51.20.96])
-	by smtp.gmail.com with ESMTPSA id
-	s7sm21910679pfb.138.2019.09.01.12.23.44
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-	Sun, 01 Sep 2019 12:23:46 -0700 (PDT)
-From: Souptick Joarder <jrdr.linux@gmail.com>
-To: konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
-	sstabellini@kernel.org
-Subject: [PATCH] swiotlb-zen: Convert to use macro
-Date: Mon,  2 Sep 2019 00:58:56 +0530
-Message-Id: <1567366136-874-1-git-send-email-jrdr.linux@gmail.com>
-X-Mailer: git-send-email 1.9.1
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, Souptick Joarder <jrdr.linux@gmail.com>
+	Mon,  2 Sep 2019 01:59:54 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	01 Sep 2019 18:59:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,457,1559545200"; d="scan'208";a="381725642"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by fmsmga005.fm.intel.com with ESMTP; 01 Sep 2019 18:59:50 -0700
+Subject: Re: [PATCH v8 3/7] swiotlb: Zero out bounce buffer for untrusted
+	device
+To: Christoph Hellwig <hch@lst.de>
+References: <20190830071718.16613-1-baolu.lu@linux.intel.com>
+	<20190830071718.16613-4-baolu.lu@linux.intel.com>
+	<20190830073130.GA10471@lst.de>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <a5edd268-5ba7-a8b6-d883-f4761e52fdff@linux.intel.com>
+Date: Mon, 2 Sep 2019 09:58:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190830073130.GA10471@lst.de>
+Content-Language: en-US
+Cc: alan.cox@intel.com, Stefano Stabellini <sstabellini@kernel.org>,
+	ashok.raj@intel.com, Jonathan Corbet <corbet@lwn.net>,
+	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	mika.westerberg@linux.intel.com, Juergen Gross <jgross@suse.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	jacob.jun.pan@intel.com, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,53 +76,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Rather than using static int max_dma_bits, this
-can be coverted to use as macro.
+Hi Christoph,
 
-Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
----
- drivers/xen/swiotlb-xen.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+On 8/30/19 3:31 PM, Christoph Hellwig wrote:
+> On Fri, Aug 30, 2019 at 03:17:14PM +0800, Lu Baolu wrote:
+>> +#include <linux/pci.h>
+> 
+>> +	if (dev_is_untrusted(hwdev) && zero_size)
+>> +		memset(zero_addr, 0, zero_size);
+> 
+> As said before swiotlb must not grow pci dependencies like this.
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index ae1df49..d1eced5 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -38,6 +38,7 @@
- #include <asm/xen/page-coherent.h>
- 
- #include <trace/events/swiotlb.h>
-+#define MAX_DMA_BITS 32
- /*
-  * Used to do a quick range check in swiotlb_tbl_unmap_single and
-  * swiotlb_tbl_sync_single_*, to see if the memory was in fact allocated by this
-@@ -114,8 +115,6 @@ static int is_xen_swiotlb_buffer(dma_addr_t dma_addr)
- 	return 0;
- }
- 
--static int max_dma_bits = 32;
--
- static int
- xen_swiotlb_fixup(void *buf, size_t size, unsigned long nslabs)
- {
-@@ -135,7 +134,7 @@ static int is_xen_swiotlb_buffer(dma_addr_t dma_addr)
- 				p + (i << IO_TLB_SHIFT),
- 				get_order(slabs << IO_TLB_SHIFT),
- 				dma_bits, &dma_handle);
--		} while (rc && dma_bits++ < max_dma_bits);
-+		} while (rc && dma_bits++ < MAX_DMA_BITS);
- 		if (rc)
- 			return rc;
- 
--- 
-1.9.1
+I understand your concern. I will try to remove this dependency in the
+next version.
 
+> Please move the untrusted flag to struct device.
+
+The untrusted flag is introduced in another series. I agree that we
+could consider to move it to struct device, but I think making it
+in a separated patch looks better.
+
+Best regards,
+Lu Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
