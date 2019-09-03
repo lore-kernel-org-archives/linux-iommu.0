@@ -7,70 +7,72 @@ X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D2EC3A5A2
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 22:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8520AC3A5A2
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 22:26:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DB4C621883
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 22:17:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 44B3C22CF8
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 22:26:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="WEfe0SSr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB4C621883
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="FpQ1j7+x"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44B3C22CF8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 46DE6105E;
-	Tue,  3 Sep 2019 22:17:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EDA38D8C;
+	Tue,  3 Sep 2019 22:26:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DD654105B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D8C3DCBF
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 22:17:27 +0000 (UTC)
+	Tue,  3 Sep 2019 22:26:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 866F4709
+Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6D8727DB
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 22:17:26 +0000 (UTC)
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-	by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x83MGLCV144895; Tue, 3 Sep 2019 22:17:14 GMT
+	Tue,  3 Sep 2019 22:26:03 +0000 (UTC)
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+	by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x83MPIWZ139663; Tue, 3 Sep 2019 22:25:58 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
-	h=subject : to : cc :
-	references : from : message-id : date : mime-version : in-reply-to :
+	h=subject : from : to :
+	cc : references : message-id : date : mime-version : in-reply-to :
 	content-type : content-transfer-encoding; s=corp-2019-08-05;
-	bh=GeUYapGqJ7X1RqLeZ5D3WvZkjvGBR68Zj6gWWXTs05g=;
-	b=WEfe0SSr6lWViAVt0SXqTWsYTGUedM3VoGE80F8pBVurZCRtzktcdQKrGuCV/DfKqawE
-	SthgIL3ZwNXk1GA2PZo6enK0QO9kqKpF72NX8RggpRf4ci81G+jJ++bt1O1kkEcOLyOs
-	arhlTuflRS83mMDxGYBlG8VZewiYFkqN5XHmsYaLHVZYPmJj9v4tT3rfOW0fzuOWhyPQ
-	ae3Dravyc9idfhe4PpOIGAbcpxsAhqeMnTB0LB898i1GGinuNsGXigr2WNTiAfmPYMjm
-	uAuI/qxLex+sPVaOtw1XIT30scY9reTWCyZyWmCOUFk/F34rJYxBIo0kK7cxOlY3mmcP
-	2Q== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-	by userp2120.oracle.com with ESMTP id 2ut0tqg04c-1
+	bh=XQDjY3b/xPaHzx/8/RuGVxQekrk6kuIAIt4jXo7s6Z4=;
+	b=FpQ1j7+x3M2XN9Rgh4eJg2rT64709yyw2tZVJzHycU2YcATyBHUJSOz73Max/ZUH6Y57
+	WJ8LKy2klvaWIR2ESYYT+Nn+dog2TAUD77YvfJf/c6XTaUK6DUu18ccxTGPuk5hGp90V
+	Iy7mVYKQyVliorMGCCQMc02BvcGM4IA879Hy0/wn2KCtWZ3XO9H5xKYPBehBvV8S4GUt
+	BVSKWOoCoSy52lIouxPhDyyQjRJuvZjwOcpf29qCBWlxZGCykY+b1pqyJ9wJY7WnSZRm
+	WVAoVCVe6j6vdUy/EGB2IcMeYhuXKdzvzC27vncIJV3dV0mDMzk9s2YH1qO1sItcr/LE
+	CQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+	by aserp2120.oracle.com with ESMTP id 2ut0xwg02a-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 03 Sep 2019 22:17:14 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-	by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x83ME2pG066676; Tue, 3 Sep 2019 22:15:13 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-	by aserp3020.oracle.com with ESMTP id 2us5phcjm8-1
+	Tue, 03 Sep 2019 22:25:58 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+	by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
+	x83MNlH0053759; Tue, 3 Sep 2019 22:25:58 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+	by aserp3030.oracle.com with ESMTP id 2usu514255-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 03 Sep 2019 22:15:13 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-	by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x83MFBg9011620;
-	Tue, 3 Sep 2019 22:15:11 GMT
+	Tue, 03 Sep 2019 22:25:58 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+	by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x83MPu2s006169;
+	Tue, 3 Sep 2019 22:25:56 GMT
 Received: from bostrovs-us.us.oracle.com (/10.152.32.65)
 	by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Tue, 03 Sep 2019 15:15:10 -0700
+	with ESMTP ; Tue, 03 Sep 2019 15:25:56 -0700
 Subject: Re: [PATCH 08/13] swiotlb-xen: always use dma-direct helpers to alloc
 	coherent pages
+From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 To: Christoph Hellwig <hch@lst.de>,
 	Stefano Stabellini <sstabellini@kernel.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, gross@suse.com
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Juergen Gross <jgross@suse.com>
 References: <20190902130339.23163-1-hch@lst.de>
 	<20190902130339.23163-9-hch@lst.de>
-From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+	<5799ca4b-7993-b1c5-73fa-396a560f58e8@oracle.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
 	mQINBFH8CgsBEAC0KiOi9siOvlXatK2xX99e/J3OvApoYWjieVQ9232Eb7GzCWrItCzP8FUV
@@ -115,29 +117,29 @@ Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
 	Fm5PY8YtX576DchSP6qJC57/eAAe/9ztZdVAdesQwGb9hZHJc75B+VNm4xrh/PJO6c1THqdQ
 	19WVJ+7rDx3PhVncGlbAOiiiE3NOFPJ1OQYxPKtpBUukAlOTnkKE6QcA4zckFepUkfmBV1wM
 	Jg6OxFYd01z+a+oL
-Message-ID: <5799ca4b-7993-b1c5-73fa-396a560f58e8@oracle.com>
-Date: Tue, 3 Sep 2019 18:15:09 -0400
+Message-ID: <8a7f9e23-ef26-e83b-8d1e-dcd7d233642a@oracle.com>
+Date: Tue, 3 Sep 2019 18:25:54 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190902130339.23163-9-hch@lst.de>
+In-Reply-To: <5799ca4b-7993-b1c5-73fa-396a560f58e8@oracle.com>
 Content-Language: en-US
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9369
 	signatures=668685
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
 	malwarescore=0
-	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=821
+	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=862
 	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
-	engine=8.0.1-1906280000 definitions=main-1909030221
+	engine=8.0.1-1906280000 definitions=main-1909030223
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9369
 	signatures=668685
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
 	priorityscore=1501 malwarescore=0
-	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
-	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=875
+	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=916
 	adultscore=0
 	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
-	definitions=main-1909030221
+	definitions=main-1909030223
 Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
 	x86@kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org
@@ -158,27 +160,30 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 9/2/19 9:03 AM, Christoph Hellwig wrote:
-> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index b8808677ae1d..f9dd4cb6e4b3 100644
-> --- a/drivers/xen/swiotlb-xen.c
-> +++ b/drivers/xen/swiotlb-xen.c
-> @@ -299,8 +299,7 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
->  	 * address. In fact on ARM virt_to_phys only works for kernel direct
->  	 * mapped RAM memory. Also see comment below.
->  	 */
-> -	ret = xen_alloc_coherent_pages(hwdev, size, dma_handle, flags, attrs);
-> -
-> +	ret = dma_direct_alloc(hwdev, size, dma_handle, flags, attrs);
+(Now with correct address for Juergen)
 
-
-If I am reading __dma_direct_alloc_pages() correctly there is a path
-that will force us to use GFP_DMA32 and as Juergen pointed out in
-another message that may not be desirable.
-
--boris
-
-
+On 9/3/19 6:15 PM, Boris Ostrovsky wrote:
+> On 9/2/19 9:03 AM, Christoph Hellwig wrote:
+>> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+>> index b8808677ae1d..f9dd4cb6e4b3 100644
+>> --- a/drivers/xen/swiotlb-xen.c
+>> +++ b/drivers/xen/swiotlb-xen.c
+>> @@ -299,8 +299,7 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+>>  	 * address. In fact on ARM virt_to_phys only works for kernel direct
+>>  	 * mapped RAM memory. Also see comment below.
+>>  	 */
+>> -	ret = xen_alloc_coherent_pages(hwdev, size, dma_handle, flags, attrs);
+>> -
+>> +	ret = dma_direct_alloc(hwdev, size, dma_handle, flags, attrs);
+>
+> If I am reading __dma_direct_alloc_pages() correctly there is a path
+> that will force us to use GFP_DMA32 and as Juergen pointed out in
+> another message that may not be desirable.
+>
+> -boris
+>
+>
+>
 
 _______________________________________________
 iommu mailing list
