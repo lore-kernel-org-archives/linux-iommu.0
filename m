@@ -2,119 +2,59 @@ Return-Path: <SRS0=5lac=W6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2989C3A5A5
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 05:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F24C3A5A5
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 06:30:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 640AD2173E
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 05:00:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0028922CF8
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 06:30:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="USjzy7So"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 640AD2173E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2flIbda+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0028922CF8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1AF0AA7A;
-	Tue,  3 Sep 2019 05:00:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CBFB9AD8;
+	Tue,  3 Sep 2019 06:30:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DA2D6941
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C4518AD1
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 05:00:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-TY1-obe.outbound.protection.outlook.com
-	(mail-eopbgr1400135.outbound.protection.outlook.com [40.107.140.135])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C2F3288E
+	Tue,  3 Sep 2019 06:30:34 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1A9A6709
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 05:00:03 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=K7fbkjlp64I2ci5WUGUJKHqyBkD7alG2kg+OGRg3U8hCv2sepe5Q0tLeBRDPEat8OqmAl6m6PlGd3OlFEXCoVLCpeQks/iQ2/ab5vzrVLSxqmtPQ2DyNxzXXLEued9aVwnPoW4ffc1BsU5wWpPGoauTUS0t7H6y0Ipcjmccp40AGzJvHwqsk4L+A3jrXi4iDlJJdZn4XsDJmdrfOMbqpIjCUMYFiDKvuZeD57Mgh2pRxO88jVPUDyb+vjrtvzeXJWS6A3mqYWClBp5EssogQcNpZnieeuCKB7rvSIfiNYR4R/QB5UgFHRFFbb7AAQZwhuBE1S9GAOmxvA6nsprHwbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=SXD+SBckSe+Z8yo7gtaaBVi7lWWoaPlWlwifIMxq6/U=;
-	b=O1ra65j8G1xZgYBinbDgTB/wxPuHAsjowGRWrRx0q1uILcB8R7uvCE8wONwgESrhMnZQveLrvd/nSSZoHYlVTQF2JPBYUt0TQeeBHGNOfoIVoA/gr9NbSYc6TbRkLGRCTQMYtchplMuZF5KBN+L4ttIBaQEHXK0pDjVmj+IZxH1pjnb9w4BsyEe9KD9x7L5IcoABAS5ZVNUPmtprrUlDt4nhu3p+hCx3ATKwkJb0mXIhaho5zaGG+SlCQGpGOKsQo89ZOBqlyTHOpKkF3soIba2wkoP0yMSy8rdvFYd2EChAqEGXs05Cy6EAdzbSKM/dfIHX2cfuCMocNWGD89/w/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=renesas.com;
-	dmarc=pass action=none header.from=renesas.com; 
-	dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=SXD+SBckSe+Z8yo7gtaaBVi7lWWoaPlWlwifIMxq6/U=;
-	b=USjzy7So2BlzN4ieuZLaLDXvMzBGWCP7hVwBWWsKfYXTxau4VUrzYRO1CDnjFkxL+KDyd1INgwmiy60YKFNDNCpW8XOKUy2L7BaR8T6Qe58iPUQ6F2o+DrIh3xst5KwzUoo3XF6fuwspul3aZdoeuwqZ/8vw2+u61Nwvr7ikrPw=
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
-	TYAPR01MB5261.jpnprd01.prod.outlook.com (20.179.174.13) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2220.20; Tue, 3 Sep 2019 05:00:00 +0000
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::6564:f61f:f179:facf]) by
-	TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::6564:f61f:f179:facf%5]) with mapi id 15.20.2220.022;
-	Tue, 3 Sep 2019 04:59:59 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: "hch@lst.de" <hch@lst.de>
-Subject: RE: [PATCH v10 3/4] block: add a helper function to merge the segments
-Thread-Topic: [PATCH v10 3/4] block: add a helper function to merge the
-	segments
-Thread-Index: AQHVXZ1a3dgM7EWWT0y+9VldzhpkbqcY9KsAgAB3rzA=
-Date: Tue, 3 Sep 2019 04:59:59 +0000
-Message-ID: <TYAPR01MB454492ADBC8561C0BEC6F449D8B90@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <1566995743-5614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1566995743-5614-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<e549e8e7-9dfe-6f68-2148-f49a9089db37@kernel.dk>
-In-Reply-To: <e549e8e7-9dfe-6f68-2148-f49a9089db37@kernel.dk>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [150.249.235.54]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c23cddcb-a146-4b0b-6c50-08d7302b92bf
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:TYAPR01MB5261; 
-x-ms-traffictypediagnostic: TYAPR01MB5261:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <TYAPR01MB526160FEDC18B4A092612921D8B90@TYAPR01MB5261.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1728;
-x-forefront-prvs: 01494FA7F7
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(4636009)(366004)(136003)(39860400002)(376002)(346002)(396003)(189003)(199004)(229853002)(6246003)(53936002)(6116002)(3846002)(86362001)(66066001)(64756008)(66476007)(2501003)(74316002)(66446008)(76116006)(66556008)(66946007)(11346002)(256004)(446003)(6306002)(305945005)(486006)(6436002)(9686003)(2351001)(7736002)(476003)(7416002)(33656002)(7696005)(76176011)(81166006)(8676002)(81156014)(1730700003)(14454004)(71200400001)(71190400001)(478600001)(55016002)(5640700003)(5660300002)(6916009)(54906003)(966005)(8936002)(102836004)(316002)(2906002)(52536014)(4744005)(53546011)(26005)(6506007)(4326008)(186003)(25786009)(99286004);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:TYAPR01MB5261;
-	H:TYAPR01MB4544.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ADt0wtdOc96t6xdi6ndL0r5U1Jnl7o87NW7u8VLzwU8sAwtI1aS1rDtcBOWItnJo3ywnnAH7m36FFuQiAuK0hXsevUlHTpCHfVSZ/W6mFgPE+GSB7SuLGXFOS/AygMCEyBcbH39NIRs3tOn5sJBC16nUXihvV9oLxDBbKSzPtPToddDi42Chnl1Jimh/hs/sQsX8IeNAF6Dz9O42WD1z1xCGIiMcfEXuXBNthQ3pqBKFVE4RRJPzRdAG6QItYb0+XVU6uqJLMiDnqSgHEVSmB2CoDt4c631mICaBrnCRN+DG8PTGy69ZLAkiurNE4i5WShm3hyIgQ9qnoExijmTw86W/TXVUPpUqVBZ16qDwrIrcUAFOQ/Q6kr2p4SvI+jKU6LlzE6LBM0+4AFWrzFXrFdXSksgxhIFytxuUByM8WNA=
-x-ms-exchange-transport-forked: True
+	Tue,  3 Sep 2019 06:30:34 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id BB09120882;
+	Tue,  3 Sep 2019 06:30:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1567492233;
+	bh=PNDgAQs78MSbUv+4jSX7U1x7Syw3aaKg9ZwbknDGfpU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=2flIbda+GBUm/IB7GHSnk6uGdGg0zgS5DOJ+/IYOI0/7RxHS85LYg1CpCRZ5uXKP+
+	1xprgvh3okb4QOafNS8bl7iN0uwzrb5gsZMPqlFFm2mfJ/u2XkC71UU1Dypl1bZgCB
+	giogOpYJbdIltm4YZZA3oIaIqs7T3Ca005jAjOcc=
+Date: Tue, 3 Sep 2019 07:30:29 +0100
+From: Will Deacon <will@kernel.org>
+To: YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH -next] iommu/arm-smmu-v3: Fix build error without
+	CONFIG_PCI_ATS
+Message-ID: <20190903063028.6ryuk5dmaohi2fqa@willie-the-truck>
+References: <20190903024212.20300-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c23cddcb-a146-4b0b-6c50-08d7302b92bf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2019 04:59:59.8261 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /B1qWuEj4szLarxo3RBa6I3dAqvyf+WiQNqAmIjjWgyPFmvo5UjZz2UvMNAojJgVnzbMRdzBWu6q23woPKvPggz6gmC4880S+hr9TqYhVnWGejDXWHX1JTvGjebKmJmi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB5261
-Cc: Jens Axboe <axboe@kernel.dk>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20190903024212.20300-1-yuehaibing@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: robin.murphy@arm.com, iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -132,26 +72,60 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
-
-Now this patch series got {Ack,Review}ed-by from each maintainer.
-https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=166501
-
-So, would you pick this up through the dma-mapping tree as you said before?
-
-> From: Jens Axboe, Sent: Tuesday, September 3, 2019 6:47 AM
+On Tue, Sep 03, 2019 at 10:42:12AM +0800, YueHaibing wrote:
+> If CONFIG_PCI_ATS is not set, building fails:
 > 
-> On 8/28/19 6:35 AM, Yoshihiro Shimoda wrote:
-> > This patch adds a helper function whether a queue can merge
-> > the segments by the DMA MAP layer (e.g. via IOMMU).
+> drivers/iommu/arm-smmu-v3.c: In function arm_smmu_ats_supported:
+> drivers/iommu/arm-smmu-v3.c:2325:35: error: struct pci_dev has no member named ats_cap; did you mean msi_cap?
+>   return !pdev->untrusted && pdev->ats_cap;
+>                                    ^~~~~~~
 > 
-> Reviewed-by: Jens Axboe <axboe@kernel.dk>
+> ats_cap should only used when CONFIG_PCI_ATS is defined,
+> so use #ifdef block to guard this.
+> 
+> Fixes: bfff88ec1afe ("iommu/arm-smmu-v3: Rework enabling/disabling of ATS for PCI masters")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 66bf641..44ac9ac 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2313,7 +2313,7 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
+>  
+>  static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+>  {
+> -	struct pci_dev *pdev;
+> +	struct pci_dev *pdev __maybe_unused;
+>  	struct arm_smmu_device *smmu = master->smmu;
+>  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
+>  
+> @@ -2321,8 +2321,10 @@ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+>  	    !(fwspec->flags & IOMMU_FWSPEC_PCI_RC_ATS) || pci_ats_disabled())
+>  		return false;
+>  
+> +#ifdef CONFIG_PCI_ATS
+>  	pdev = to_pci_dev(master->dev);
+>  	return !pdev->untrusted && pdev->ats_cap;
+> +#endif
+>  }
 
-Jens, thank you for your review!
+Hmm, I really don't like the missing return statement here, even though we
+never get this far thanks to the feature not getting set during ->probe().
+I'd actually prefer just to duplicate the function:
 
-Best regards,
-Yoshihiro Shimoda
+#ifndef CONFIG_PCI_ATS
+static bool
+arm_smmu_ats_supported(struct arm_smmu_master *master) { return false; }
+#else
+<current code here>
+#endif
 
+Can you send a v2 like that, please?
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
