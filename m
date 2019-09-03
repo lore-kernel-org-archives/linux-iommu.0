@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AC5C3A5A5
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE077C3A5A2
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 90DCE22D6D
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 90DCE22D6D
+	by mail.kernel.org (Postfix) with ESMTPS id BADBE206BB
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BADBE206BB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 777BCCC3;
-	Tue,  3 Sep 2019 09:39:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A36D8CC4;
+	Tue,  3 Sep 2019 09:39:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F34D7C9E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 03351C9E
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 09:39:35 +0000 (UTC)
+	Tue,  3 Sep 2019 09:39:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 602837DB
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 34F967DB
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 09:39:35 +0000 (UTC)
-X-UUID: 062de98fc271449eb3b9f3d0d0b84651-20190903
-X-UUID: 062de98fc271449eb3b9f3d0d0b84651-20190903
-Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
+	Tue,  3 Sep 2019 09:39:45 +0000 (UTC)
+X-UUID: 5f42c20f73a84f319014eb9f77e3288d-20190903
+X-UUID: 5f42c20f73a84f319014eb9f77e3288d-20190903
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
 	mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
 	(Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-	with ESMTP id 1348906545; Tue, 03 Sep 2019 17:39:32 +0800
+	with ESMTP id 428583172; Tue, 03 Sep 2019 17:39:40 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
-	mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Tue, 3 Sep 2019 17:39:31 +0800
+	mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Tue, 3 Sep 2019 17:39:39 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
 	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Tue, 3 Sep 2019 17:39:30 +0800
+	Transport; Tue, 3 Sep 2019 17:39:38 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v3 09/14] memory: mtk-smi: Get rid of mtk_smi_larb_get/put
-Date: Tue, 3 Sep 2019 17:37:31 +0800
-Message-ID: <1567503456-24725-10-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v3 10/14] iommu/mediatek: Use builtin_platform_driver
+Date: Tue, 3 Sep 2019 17:37:32 +0800
+Message-ID: <1567503456-24725-11-git-send-email-yong.wu@mediatek.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1567503456-24725-1-git-send-email-yong.wu@mediatek.com>
 References: <1567503456-24725-1-git-send-email-yong.wu@mediatek.com>
@@ -80,74 +80,114 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-After adding device_link between the iommu consumer and smi-larb,
-the pm_runtime_get(_sync) of smi-larb and smi-common will be called
-automatically. we can get rid of mtk_smi_larb_get/put.
+MediaTek IOMMU should wait for smi larb which need wait for the
+power domain(mtk-scpsys.c) and the multimedia ccf who both are
+module init. Thus, subsys_initcall for MediaTek IOMMU is not helpful.
+Switch to builtin_platform_driver.
 
-CC: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Evan Green <evgreen@chromium.org>
 ---
- drivers/memory/mtk-smi.c   | 14 --------------
- include/soc/mediatek/smi.h | 20 --------------------
- 2 files changed, 34 deletions(-)
+ drivers/iommu/mtk_iommu.c    | 31 +------------------------------
+ drivers/iommu/mtk_iommu_v1.c | 24 +-----------------------
+ 2 files changed, 2 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index 5dab56c..3df9036 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -125,20 +125,6 @@ static void mtk_smi_clk_disable(const struct mtk_smi *smi)
- 	clk_disable_unprepare(smi->clk_apb);
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 2511b3c..109c3f2 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -735,22 +735,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
  }
  
--int mtk_smi_larb_get(struct device *larbdev)
+-static int mtk_iommu_remove(struct platform_device *pdev)
 -{
--	int ret = pm_runtime_get_sync(larbdev);
+-	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
 -
--	return (ret < 0) ? ret : 0;
--}
--EXPORT_SYMBOL_GPL(mtk_smi_larb_get);
+-	iommu_device_sysfs_remove(&data->iommu);
+-	iommu_device_unregister(&data->iommu);
 -
--void mtk_smi_larb_put(struct device *larbdev)
--{
--	pm_runtime_put_sync(larbdev);
--}
--EXPORT_SYMBOL_GPL(mtk_smi_larb_put);
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
 -
- static int
- mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
- {
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index 5a34b87..f8bf595 100644
---- a/include/soc/mediatek/smi.h
-+++ b/include/soc/mediatek/smi.h
-@@ -20,26 +20,6 @@ struct mtk_smi_larb_iommu {
- 	unsigned int   mmu;
- };
- 
--/*
-- * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
-- *                   It also initialize some basic setting(like iommu).
-- * mtk_smi_larb_put: Disable the power domain and clocks for this local arbiter.
-- * Both should be called in non-atomic context.
-- *
-- * Returns 0 if successful, negative on failure.
-- */
--int mtk_smi_larb_get(struct device *larbdev);
--void mtk_smi_larb_put(struct device *larbdev);
--
--#else
--
--static inline int mtk_smi_larb_get(struct device *larbdev)
--{
+-	clk_disable_unprepare(data->bclk);
+-	devm_free_irq(&pdev->dev, data->irq, data);
+-	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
 -	return 0;
 -}
 -
--static inline void mtk_smi_larb_put(struct device *larbdev) { }
--
- #endif
+ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+@@ -831,23 +815,10 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
  
- #endif
+ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+-	.remove	= mtk_iommu_remove,
+ 	.driver	= {
+ 		.name = "mtk-iommu",
+ 		.of_match_table = of_match_ptr(mtk_iommu_of_ids),
+ 		.pm = &mtk_iommu_pm_ops,
+ 	}
+ };
+-
+-static int __init mtk_iommu_init(void)
+-{
+-	int ret;
+-
+-	ret = platform_driver_register(&mtk_iommu_driver);
+-	if (ret != 0)
+-		pr_err("Failed to register MTK IOMMU driver\n");
+-
+-	return ret;
+-}
+-
+-subsys_initcall(mtk_iommu_init)
++builtin_platform_driver(mtk_iommu_driver);
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index a7f22a2..821d483 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -660,22 +660,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+ }
+ 
+-static int mtk_iommu_remove(struct platform_device *pdev)
+-{
+-	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
+-
+-	iommu_device_sysfs_remove(&data->iommu);
+-	iommu_device_unregister(&data->iommu);
+-
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
+-
+-	clk_disable_unprepare(data->bclk);
+-	devm_free_irq(&pdev->dev, data->irq, data);
+-	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
+-	return 0;
+-}
+-
+ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+@@ -712,16 +696,10 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ 
+ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+-	.remove	= mtk_iommu_remove,
+ 	.driver	= {
+ 		.name = "mtk-iommu-v1",
+ 		.of_match_table = mtk_iommu_of_ids,
+ 		.pm = &mtk_iommu_pm_ops,
+ 	}
+ };
+-
+-static int __init m4u_init(void)
+-{
+-	return platform_driver_register(&mtk_iommu_driver);
+-}
+-subsys_initcall(m4u_init);
++builtin_platform_driver(mtk_iommu_driver);
 -- 
 1.9.1
 
