@@ -2,121 +2,53 @@ Return-Path: <SRS0=5lac=W6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADF8C3A5A8
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 06:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC135C3A5A8
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 06:51:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 621C622D6D
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 06:42:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="NnO06Cov"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 621C622D6D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	by mail.kernel.org (Postfix) with ESMTPS id AD0EE21883
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 06:51:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD0EE21883
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4A93FCA5;
-	Tue,  3 Sep 2019 06:42:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 662E6CA1;
+	Tue,  3 Sep 2019 06:51:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C73DBC9E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4E994C97
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 06:42:06 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-OS2-obe.outbound.protection.outlook.com
-	(mail-eopbgr1410127.outbound.protection.outlook.com [40.107.141.127])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9A805887
+	Tue,  3 Sep 2019 06:51:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C359E88E
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 06:42:04 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=AMrIXzwPitZnw76jKP4+f9UQgA1VfcuzVbJJC7r1BoDp3rUCUe8qtvkN+vb1t7mcLs6k756fGGM1D7WseH/ELWt3kH85FtSO9ReZNHYZSB4Jnbyplpom9c4J5DBNvwo9+Kf6nYqN6Lr9SDu6bJLGUQPbis37rq5fmVnRKsquZ4OPc/xoAoMfdAS6nUbu36FYtNww41cArJ/+ELX3WL5lrPl39lzWZ4TSa8J1B0qnu0ZIA/QoJmSFhq30Lr5W7wCpnoBgRUKxEuHUdNLey0/XfYhFoaC1Or8M6bXFtQ0WPfHvXee44TuK54W+4rc2U0yyGkKNjjlGxrKQy1/qBIM5Zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=Ocw05ZN3JO3zFg8qoJWZGcqy42udnHpIDET+/1Hig1M=;
-	b=Rd13KDkUk+Z7W8154UbC6ToJSWeCwzgfwgPSeNXnqLBwqRonCFMYZcf6Uf02WtLSbCWW5sGpVWIsliQFYlH5tovwMZ56sHfjHxqruoc0+jWIfov32MomUf1D/m7M7qeGYST2oPw4JtthWRv9C/zzTpARAGcV6YdSR2Ah2mGiAPBIye//Iw8nv/axB2sDtrMdUzyfSZHLYhelXNFSk0rmIpnIvvvF8o3sc7/+u4twtSdc8AClPyauJeeImOQoKvjFFQ+XeWAtulFdo2kS5pNAqa3V23/o/FPcb1oyxhBrmvnCNByraboj10sQ2nmIj8CtpqDB0Ht1UGFJaA4HKjowYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=renesas.com;
-	dmarc=pass action=none header.from=renesas.com; 
-	dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=Ocw05ZN3JO3zFg8qoJWZGcqy42udnHpIDET+/1Hig1M=;
-	b=NnO06CovIbBqdNL36uZXxaL5pLQzGqYdHOkvWVfRqDCS96FKVxYxw0n97cAe1XB01cqq6aMyeyHey1tRNKzRc9+RKWJL4zY/exC2txbDno2ZD2bR7dgrywB+cHixaZedFn/c2GiIQUuCW5YPkFYlXg4Rm9Rdp/Fo869zDGCS8VU=
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
-	TYAPR01MB4686.jpnprd01.prod.outlook.com (20.179.175.14) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2220.20; Tue, 3 Sep 2019 06:42:02 +0000
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::6564:f61f:f179:facf]) by
-	TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::6564:f61f:f179:facf%5]) with mapi id 15.20.2220.022;
-	Tue, 3 Sep 2019 06:42:02 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: "hch@lst.de" <hch@lst.de>
-Subject: RE: [PATCH v10 3/4] block: add a helper function to merge the segments
-Thread-Topic: [PATCH v10 3/4] block: add a helper function to merge the
-	segments
-Thread-Index: AQHVXZ1a3dgM7EWWT0y+9VldzhpkbqcY9KsAgAB3rzCAABuDAIAAAUSA
-Date: Tue, 3 Sep 2019 06:42:02 +0000
-Message-ID: <TYAPR01MB454479A82FB240305961035CD8B90@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <1566995743-5614-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1566995743-5614-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<e549e8e7-9dfe-6f68-2148-f49a9089db37@kernel.dk>
-	<TYAPR01MB454492ADBC8561C0BEC6F449D8B90@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-	<20190903063350.GA16908@lst.de>
-In-Reply-To: <20190903063350.GA16908@lst.de>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [150.249.235.54]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e2beca01-60a2-484b-4d09-08d73039d42a
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);
-	SRVR:TYAPR01MB4686; 
-x-ms-traffictypediagnostic: TYAPR01MB4686:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <TYAPR01MB4686C35642E228445662B1D2D8B90@TYAPR01MB4686.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 01494FA7F7
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(4636009)(366004)(346002)(136003)(396003)(39860400002)(376002)(199004)(189003)(74316002)(71200400001)(316002)(71190400001)(6916009)(33656002)(6246003)(4744005)(7696005)(76176011)(6436002)(5640700003)(26005)(6306002)(25786009)(7416002)(102836004)(66476007)(66556008)(66946007)(66446008)(64756008)(9686003)(86362001)(76116006)(2906002)(54906003)(6506007)(53936002)(3846002)(6116002)(99286004)(186003)(2351001)(476003)(8936002)(55016002)(52536014)(966005)(2501003)(4326008)(66066001)(7736002)(486006)(8676002)(81156014)(5660300002)(446003)(478600001)(81166006)(305945005)(1730700003)(229853002)(11346002)(14454004)(256004);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:TYAPR01MB4686;
-	H:TYAPR01MB4544.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: vd4u/zVGIFd3sYUr67XhAvsrDLolYmlEfVFEgx3OroApzQcp9yQeiY5M/ENCFFmk5jrR5j19BaIRHwhIB9opJma3gc3AzB2fDnZ0G+FmpN3WzRK61+Q4TUIVMVt0ohRl0mUE4o92XyCVDFeEpkkQqqo0AoKBtBThpFHJK2r/2waQSICcRk3GflUJTX2WDoSiFY7jxMBv/wJpSJUDLH8wi/MPlrfVd87vSUtMRpf2DTd7Ar0oSmhE+E5yKA45OpCYbleI4iIZdn5SbSr3vt9OceYgBe7CrAaX8MP+SvXBw8W14xwEA0ZhbLftwIe6t2QtOnaOC6/q96ZK/hOb0TlTyVDBe1nJnXf6MS3TMFm/957vIz2Z1Vn2IuyXvfapjqiRHKwNbp6KNV7mYKN0dhiqGhkEHH0ps3EacKmAmACVACk=
-x-ms-exchange-transport-forked: True
+	Tue,  3 Sep 2019 06:51:38 +0000 (UTC)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 6F0BF84B5CCF034E3493;
+	Tue,  3 Sep 2019 14:51:36 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS404-HUB.china.huawei.com
+	(10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 3 Sep 2019
+	14:51:29 +0800
+From: YueHaibing <yuehaibing@huawei.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+Subject: [PATCH v2 -next] iommu/arm-smmu-v3: Fix build error without
+	CONFIG_PCI_ATS
+Date: Tue, 3 Sep 2019 14:50:56 +0800
+Message-ID: <20190903065056.17988-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <20190903024212.20300-1-yuehaibing@huawei.com>
+References: <20190903024212.20300-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2beca01-60a2-484b-4d09-08d73039d42a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2019 06:42:02.5776 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: r4+7j+sO7sih72WXh4AhNoMWgaqGlYDvVZgXjOOuVDZ2AOSlr0GnuZCnrkAT5ujZ3R5CXdEYQv6xm3JEU6woTQWSAJBSpyeSuZKvY58NpoKvXNEoGQZII4z7yiUo/Jg5
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB4686
-Cc: Jens Axboe <axboe@kernel.dk>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, YueHaibing <yuehaibing@huawei.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -134,19 +66,52 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+If CONFIG_PCI_ATS is not set, building fails:
 
-> > Now this patch series got {Ack,Review}ed-by from each maintainer.
-> > https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=166501
-> >
-> > So, would you pick this up through the dma-mapping tree as you said before?
-> 
-> I've applied it to the dma-mapping tree for 5.4 now, thanks a lot!
+drivers/iommu/arm-smmu-v3.c: In function arm_smmu_ats_supported:
+drivers/iommu/arm-smmu-v3.c:2325:35: error: struct pci_dev has no member named ats_cap; did you mean msi_cap?
+  return !pdev->untrusted && pdev->ats_cap;
+                                   ^~~~~~~
 
-Thank you very much for your support!
+ats_cap should only used when CONFIG_PCI_ATS is defined,
+so use #ifdef block to guard this.
 
-Best regards,
-Yoshihiro Shimoda
+Fixes: bfff88ec1afe ("iommu/arm-smmu-v3: Rework enabling/disabling of ATS for PCI masters")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: Add arm_smmu_ats_supported() of no CONFIG_PCI_ATS
+---
+ drivers/iommu/arm-smmu-v3.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 66bf641..8da93e7 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2311,6 +2311,7 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
+ 	}
+ }
+ 
++#ifdef CONFIG_PCI_ATS
+ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+ {
+ 	struct pci_dev *pdev;
+@@ -2324,6 +2325,12 @@ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
+ 	pdev = to_pci_dev(master->dev);
+ 	return !pdev->untrusted && pdev->ats_cap;
+ }
++#else
++static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
++{
++	return false;
++}
++#endif
+ 
+ static void arm_smmu_enable_ats(struct arm_smmu_master *master)
+ {
+-- 
+2.7.4
+
 
 _______________________________________________
 iommu mailing list
