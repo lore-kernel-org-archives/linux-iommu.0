@@ -2,49 +2,62 @@ Return-Path: <SRS0=5lac=W6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4D5C3A5A7
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 15:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0251C3A5A7
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 16:31:55 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E2D52077B
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 15:43:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E2D52077B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 97FE5238C7
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 16:31:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PL5LoZ6L"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97FE5238C7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 20C76D09;
-	Tue,  3 Sep 2019 15:43:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5E820CC0;
+	Tue,  3 Sep 2019 16:31:55 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DA48DCAF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1A787AD1
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 15:43:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 030FF831
+	Tue,  3 Sep 2019 16:31:54 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0E7348A6
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 15:43:56 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id DF1D8AB91;
-	Tue,  3 Sep 2019 15:43:54 +0000 (UTC)
-Message-ID: <cf743e0a1571c1748588f088cfd9804e8b55c36b.camel@suse.de>
-Subject: PCIe DMA addressing issues on Raspberry Pi 4
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Rob Herring <robh+dt@kernel.org>, "robin.murphy" <robin.murphy@arm.com>
-Date: Tue, 03 Sep 2019 17:43:52 +0200
-User-Agent: Evolution 3.32.4 
+	Tue,  3 Sep 2019 16:31:53 +0000 (UTC)
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
+	[73.47.72.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 0BA2E238C5;
+	Tue,  3 Sep 2019 16:31:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1567528312;
+	bh=30vk52PSKRXXcLs5hU/DzdyxEJTFf4PLpyWPE/Usohg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=PL5LoZ6LyIdZTxskKjaRT7eXze3586z76xVIkBUguMxLBLBs8obS3GTqOwmYSaqPC
+	+YoZFaKi/s6JrXpp7gwJ1GjeIO1oVSgrY+cKq7J6Scm7RWd+lJkkApBWbifacDNVY5
+	p8t0n8ZwatCo5xtVhA3CvF+FsxIdYyfpGW90kWY4=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 150/167] iommu/iova: Remove stale cached32_node
+Date: Tue,  3 Sep 2019 12:25:02 -0400
+Message-Id: <20190903162519.7136-150-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190903162519.7136-1-sashal@kernel.org>
+References: <20190903162519.7136-1-sashal@kernel.org>
 MIME-Version: 1.0
-Cc: Stefan Wahren <stefan.wahren@i2se.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	mbrugger <mbrugger@suse.com>, iommu@lists.linux-foundation.org,
-	Christoph Hellwig <hch@lst.de>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+	Chris Wilson <chris@chris-wilson.co.uk>, iommu@lists.linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -57,142 +70,163 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6280466402032068936=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+From: Chris Wilson <chris@chris-wilson.co.uk>
 
---===============6280466402032068936==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-VNc7oUE10RoRira+Huej"
+[ Upstream commit 9eed17d37c77171cf5ffb95c4257f87df3cd4c8f ]
 
+Since the cached32_node is allowed to be advanced above dma_32bit_pfn
+(to provide a shortcut into the limited range), we need to be careful to
+remove the to be freed node if it is the cached32_node.
 
---=-VNc7oUE10RoRira+Huej
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+[   48.477773] BUG: KASAN: use-after-free in __cached_rbnode_delete_update+0x68/0x110
+[   48.477812] Read of size 8 at addr ffff88870fc19020 by task kworker/u8:1/37
+[   48.477843]
+[   48.477879] CPU: 1 PID: 37 Comm: kworker/u8:1 Tainted: G     U            5.2.0+ #735
+[   48.477915] Hardware name: Intel Corporation NUC7i5BNK/NUC7i5BNB, BIOS BNKBL357.86A.0052.2017.0918.1346 09/18/2017
+[   48.478047] Workqueue: i915 __i915_gem_free_work [i915]
+[   48.478075] Call Trace:
+[   48.478111]  dump_stack+0x5b/0x90
+[   48.478137]  print_address_description+0x67/0x237
+[   48.478178]  ? __cached_rbnode_delete_update+0x68/0x110
+[   48.478212]  __kasan_report.cold.3+0x1c/0x38
+[   48.478240]  ? __cached_rbnode_delete_update+0x68/0x110
+[   48.478280]  ? __cached_rbnode_delete_update+0x68/0x110
+[   48.478308]  __cached_rbnode_delete_update+0x68/0x110
+[   48.478344]  private_free_iova+0x2b/0x60
+[   48.478378]  iova_magazine_free_pfns+0x46/0xa0
+[   48.478403]  free_iova_fast+0x277/0x340
+[   48.478443]  fq_ring_free+0x15a/0x1a0
+[   48.478473]  queue_iova+0x19c/0x1f0
+[   48.478597]  cleanup_page_dma.isra.64+0x62/0xb0 [i915]
+[   48.478712]  __gen8_ppgtt_cleanup+0x63/0x80 [i915]
+[   48.478826]  __gen8_ppgtt_cleanup+0x42/0x80 [i915]
+[   48.478940]  __gen8_ppgtt_clear+0x433/0x4b0 [i915]
+[   48.479053]  __gen8_ppgtt_clear+0x462/0x4b0 [i915]
+[   48.479081]  ? __sg_free_table+0x9e/0xf0
+[   48.479116]  ? kfree+0x7f/0x150
+[   48.479234]  i915_vma_unbind+0x1e2/0x240 [i915]
+[   48.479352]  i915_vma_destroy+0x3a/0x280 [i915]
+[   48.479465]  __i915_gem_free_objects+0xf0/0x2d0 [i915]
+[   48.479579]  __i915_gem_free_work+0x41/0xa0 [i915]
+[   48.479607]  process_one_work+0x495/0x710
+[   48.479642]  worker_thread+0x4c7/0x6f0
+[   48.479687]  ? process_one_work+0x710/0x710
+[   48.479724]  kthread+0x1b2/0x1d0
+[   48.479774]  ? kthread_create_worker_on_cpu+0xa0/0xa0
+[   48.479820]  ret_from_fork+0x1f/0x30
+[   48.479864]
+[   48.479907] Allocated by task 631:
+[   48.479944]  save_stack+0x19/0x80
+[   48.479994]  __kasan_kmalloc.constprop.6+0xc1/0xd0
+[   48.480038]  kmem_cache_alloc+0x91/0xf0
+[   48.480082]  alloc_iova+0x2b/0x1e0
+[   48.480125]  alloc_iova_fast+0x58/0x376
+[   48.480166]  intel_alloc_iova+0x90/0xc0
+[   48.480214]  intel_map_sg+0xde/0x1f0
+[   48.480343]  i915_gem_gtt_prepare_pages+0xb8/0x170 [i915]
+[   48.480465]  huge_get_pages+0x232/0x2b0 [i915]
+[   48.480590]  ____i915_gem_object_get_pages+0x40/0xb0 [i915]
+[   48.480712]  __i915_gem_object_get_pages+0x90/0xa0 [i915]
+[   48.480834]  i915_gem_object_prepare_write+0x2d6/0x330 [i915]
+[   48.480955]  create_test_object.isra.54+0x1a9/0x3e0 [i915]
+[   48.481075]  igt_shared_ctx_exec+0x365/0x3c0 [i915]
+[   48.481210]  __i915_subtests.cold.4+0x30/0x92 [i915]
+[   48.481341]  __run_selftests.cold.3+0xa9/0x119 [i915]
+[   48.481466]  i915_live_selftests+0x3c/0x70 [i915]
+[   48.481583]  i915_pci_probe+0xe7/0x220 [i915]
+[   48.481620]  pci_device_probe+0xe0/0x180
+[   48.481665]  really_probe+0x163/0x4e0
+[   48.481710]  device_driver_attach+0x85/0x90
+[   48.481750]  __driver_attach+0xa5/0x180
+[   48.481796]  bus_for_each_dev+0xda/0x130
+[   48.481831]  bus_add_driver+0x205/0x2e0
+[   48.481882]  driver_register+0xca/0x140
+[   48.481927]  do_one_initcall+0x6c/0x1af
+[   48.481970]  do_init_module+0x106/0x350
+[   48.482010]  load_module+0x3d2c/0x3ea0
+[   48.482058]  __do_sys_finit_module+0x110/0x180
+[   48.482102]  do_syscall_64+0x62/0x1f0
+[   48.482147]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[   48.482190]
+[   48.482224] Freed by task 37:
+[   48.482273]  save_stack+0x19/0x80
+[   48.482318]  __kasan_slab_free+0x12e/0x180
+[   48.482363]  kmem_cache_free+0x70/0x140
+[   48.482406]  __free_iova+0x1d/0x30
+[   48.482445]  fq_ring_free+0x15a/0x1a0
+[   48.482490]  queue_iova+0x19c/0x1f0
+[   48.482624]  cleanup_page_dma.isra.64+0x62/0xb0 [i915]
+[   48.482749]  __gen8_ppgtt_cleanup+0x63/0x80 [i915]
+[   48.482873]  __gen8_ppgtt_cleanup+0x42/0x80 [i915]
+[   48.482999]  __gen8_ppgtt_clear+0x433/0x4b0 [i915]
+[   48.483123]  __gen8_ppgtt_clear+0x462/0x4b0 [i915]
+[   48.483250]  i915_vma_unbind+0x1e2/0x240 [i915]
+[   48.483378]  i915_vma_destroy+0x3a/0x280 [i915]
+[   48.483500]  __i915_gem_free_objects+0xf0/0x2d0 [i915]
+[   48.483622]  __i915_gem_free_work+0x41/0xa0 [i915]
+[   48.483659]  process_one_work+0x495/0x710
+[   48.483704]  worker_thread+0x4c7/0x6f0
+[   48.483748]  kthread+0x1b2/0x1d0
+[   48.483787]  ret_from_fork+0x1f/0x30
+[   48.483831]
+[   48.483868] The buggy address belongs to the object at ffff88870fc19000
+[   48.483868]  which belongs to the cache iommu_iova of size 40
+[   48.483920] The buggy address is located 32 bytes inside of
+[   48.483920]  40-byte region [ffff88870fc19000, ffff88870fc19028)
+[   48.483964] The buggy address belongs to the page:
+[   48.484006] page:ffffea001c3f0600 refcount:1 mapcount:0 mapping:ffff8888181a91c0 index:0x0 compound_mapcount: 0
+[   48.484045] flags: 0x8000000000010200(slab|head)
+[   48.484096] raw: 8000000000010200 ffffea001c421a08 ffffea001c447e88 ffff8888181a91c0
+[   48.484141] raw: 0000000000000000 0000000000120012 00000001ffffffff 0000000000000000
+[   48.484188] page dumped because: kasan: bad access detected
+[   48.484230]
+[   48.484265] Memory state around the buggy address:
+[   48.484314]  ffff88870fc18f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   48.484361]  ffff88870fc18f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   48.484406] >ffff88870fc19000: fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc
+[   48.484451]                                ^
+[   48.484494]  ffff88870fc19080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   48.484530]  ffff88870fc19100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
 
-Hi all, sorry for the long read, I kept it as short as possible.
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=108602
+Fixes: e60aa7b53845 ("iommu/iova: Extend rbtree node caching")
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: <stable@vger.kernel.org> # v4.15+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/iova.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-So, the wrapper around the PCIe block available on the Raspberry Pi 4 has a=
- bug
-preventing it from accessing anything beyond the first 3G of ram [1]. I'm
-trying to figure out the best way to integrate this upstream.
-
-Note that the only thing behind the PCIe bus is an USB3 chip. The bus is no=
-t
-exposed to users directly.
-
-I see two options:
-
-- Isolate the PCIe block on it's own interconnect. IMO this could be accept=
-able
-  as it's arguable that the bug is not really in the PCIe block.  I set the
-  interconnect's dma-range size to 2GB instead of 3GB as dma masks don't pl=
-ay
-  well with non power of two DMA constraints:
-
-  buggy-scb {
-	compatible =3D "simple-bus";
-	dma-ranges =3D <0x0 0x00000000 0x0 0x00000000 0x800000000>;
-
-	pcie {
-		compatible =3D "brcm,bcm2711-pcie";
-		dma-ranges =3D <0x02000000 0x0 0x00000000 0x0 0x00000000
-			      0x1 0x00000000>;
-		[...]
-
-	};
-  };
-
-  scb {
-	compatible =3D "simple-bus";
-	dma-ranges =3D <0x0 0x00000000 0x0 0x00000000 0xfc0000000>;
-
-	eth0 {
-		[...]
-	};
-
-	[...]
-  };
-
-  With this setup the PCIe devices should behave correctly as long as they
-  don't play with their own DMA masks.
-
-- Configure PCIe's inbound view of memory taking into account the buggy
-  interconnect:
-
-  scb {
-	compatible =3D "simple-bus";
-	dma-ranges =3D <0x0 0x00000000 0x0 0x00000000 0xfc000000>;
-
-	pcie {
-		compatible =3D "brcm,bcm2711-pcie";
-		dma-ranges =3D <0x02000000 0x0 0x00000000 0x0 0x00000000
-			      0x0 0x80000000>;
-		[...]
-
-	};
-
-	eth0 {
-		[...]
-	};
-
-	[...]
-  };
-
-  The downside of this is that of_dma_configure() doesn't play well with PC=
-I
-  devices. of_dma_configure() expects a device's OF node, yet the PCI core
-  passes the bridge's OF node, as the device has none. The result is
-  of_dma_configure() ignores PCI's dma-ranges. Solving this is not trivial.
-  IMO the simplest solution would be to create a distinct OF node on PCI
-  bridges, child of the actual PCI root complex.  FYI this was already an i=
-ssue
-  some years ago [2].
-
-  This solution also suffers from devices setting their own DMA masks.
-
-If you're curious abot the downstream kernel, they use their custom buffer
-bouncing code, which AFAIK is something we're trying to get rid of.
-
-Any comments? Alternative solutions?
-
-Thanks,
-Nicolas
-
-[1] https://www.spinics.net/lists/arm-kernel/msg740693.html
-[2] https://patchwork.kernel.org/patch/9650345/#20294961
-
-
---=-VNc7oUE10RoRira+Huej
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl1uijgACgkQlfZmHno8
-x/4ncwf/bFv3AD0ndtH89sJxuLuYsOfE/0zdO83AOPyEGnYUEp8yPyov0zO43okd
-oQ2rfzZl8jALpzSy936hXZIIcJmWuOaTApRMaf14Rumq/RKR1zIG5e69ZlTskd5s
-/ar4nASgz8/9ShY6LASonoXaTSSkbsOEWhBJPQjrS4Rf/Q9ggnLuzapHI6pDGdrJ
-9DupdCcl7v1+Mfa+erRSGYrNgPWMnt85PaVQT2I+ICwc0UDWDND2hgIbuHsxnBre
-1JFn0x26TIpqUCqegsZxOJOjNCQS+bTvoYzoi/xAhyuMMt+DFR7Jhk+l1TRrB/qs
-x7bWu1wcIdB+gfhyeOrJUjm2qd5nFw==
-=f55V
------END PGP SIGNATURE-----
-
---=-VNc7oUE10RoRira+Huej--
-
-
---===============6280466402032068936==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 60348d707b993..9a576ae837dcb 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -148,8 +148,9 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 	struct iova *cached_iova;
+ 
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+-	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	    free->pfn_lo >= cached_iova->pfn_lo)
++	if (free == cached_iova ||
++	    (free->pfn_hi < iovad->dma_32bit_pfn &&
++	     free->pfn_lo >= cached_iova->pfn_lo))
+ 		iovad->cached32_node = rb_next(&free->node);
+ 
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+-- 
+2.20.1
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6280466402032068936==--
-
