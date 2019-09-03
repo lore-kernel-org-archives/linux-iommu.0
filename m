@@ -2,75 +2,101 @@ Return-Path: <SRS0=5lac=W6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B15C3A5A2
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 17:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1B2C3A5A2
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 18:54:32 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 93A8421881
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 17:20:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93A8421881
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9FE2521897
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 18:54:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FE2521897
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5A3FFE3C;
-	Tue,  3 Sep 2019 17:20:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DFF06B5F;
+	Tue,  3 Sep 2019 18:54:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9655EDB3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7E35DEDB
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 17:20:15 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
-	[209.85.221.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 44801709
+	Tue,  3 Sep 2019 18:54:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 90EDB712
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 17:20:14 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id l16so30273wrv.12
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 03 Sep 2019 10:20:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=rar4+uC5q12KPtiyVYMv+PjJypYyOCyJrBGvZDXzi2k=;
-	b=kNU9O4ambQOiNj0dLmFvVHuxS79iAmySpuNuNqM5SV+PknwTob3GoIAOqqbYq50lPt
-	762EeGhI2+nS8y5RuflJyH7dpuDM8EehqspEoN9CPbwIZscs8nenZpc583LliyGOLrT4
-	Xg+WZY/SiTEd5CPWVg4RDIVLSgwVc4ejfcG6APRAOzR8MMpGXahCX60PStVwT3zEME76
-	SBAV/I7s/CpuJcG89dksFjUO27HL9eNGz+dEwkMsjI0Vxme7Esi3lBkyNSk6JQwey/pL
-	5haLSVLZK/yfv+aCJDLDlVgSVgby3I/s9CnUOZWt3YB3LhQlwLUqqL7qHKLTuanKZTV6
-	UhXw==
-X-Gm-Message-State: APjAAAXNwGgxucgAVPT0rZOhqENs+JxTdCZGWJAWXRWoNogMprP+/Q5P
-	/JzfMPJ9yJbl3IrdWTuy1g==
-X-Google-Smtp-Source: APXvYqyjkukxdrT5Es1J9haZ+DcUHsFn8ngRxdUl3OZDcQKy38QGzV98Fy3y/684yQ4P6QtkGLVBdA==
-X-Received: by 2002:adf:c613:: with SMTP id n19mr24481531wrg.109.1567531212863;
-	Tue, 03 Sep 2019 10:20:12 -0700 (PDT)
-Received: from localhost ([176.12.107.132]) by smtp.gmail.com with ESMTPSA id
-	f10sm14511981wrm.31.2019.09.03.10.20.11
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Tue, 03 Sep 2019 10:20:12 -0700 (PDT)
-Date: Tue, 3 Sep 2019 18:20:10 +0100
-From: Rob Herring <robh@kernel.org>
-To: Krzysztof Wilczynski <kw@linux.com>
-Subject: Re: [PATCH v2] PCI: Remove unused includes and superfluous struct
-	declaration
-Message-ID: <20190903172010.GA26505@bogus>
-References: <20190901112506.8469-1-kw@linux.com>
-	<20190903113059.2901-1-kw@linux.com>
+	Tue,  3 Sep 2019 18:54:23 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x83IptcL025953; Tue, 3 Sep 2019 14:54:04 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2uswkc0h2c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Tue, 03 Sep 2019 14:54:03 -0400
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x83IqpVo028192;
+	Tue, 3 Sep 2019 14:54:03 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com
+	[169.55.85.253])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2uswkc0h1x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Tue, 03 Sep 2019 14:54:03 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+	by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
+	x83Ij4TZ023100; Tue, 3 Sep 2019 18:54:02 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com
+	[9.57.198.27]) by ppma01wdc.us.ibm.com with ESMTP id 2uqgh6mcvy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=NOT); Tue, 03 Sep 2019 18:54:02 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com
+	[9.57.199.111])
+	by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+	x83Is2a954198674
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Tue, 3 Sep 2019 18:54:02 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 01B8DAC059;
+	Tue,  3 Sep 2019 18:54:02 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A1607AC067;
+	Tue,  3 Sep 2019 18:53:57 +0000 (GMT)
+Received: from morokweng.localdomain (unknown [9.85.133.34])
+	by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
+	Tue,  3 Sep 2019 18:53:57 +0000 (GMT)
+References: <20190806044919.10622-2-bauerman@linux.ibm.com>
+	<46MFPW6NYNz9sDQ@ozlabs.org>
+User-agent: mu4e 1.2.0; emacs 26.2
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: Michael Ellerman <patch-notifications@ellerman.id.au>
+Subject: Re: [PATCH v4 1/6] x86,
+	s390: Move ARCH_HAS_MEM_ENCRYPT definition to arch/Kconfig
+In-reply-to: <46MFPW6NYNz9sDQ@ozlabs.org>
+Date: Tue, 03 Sep 2019 15:53:54 -0300
+Message-ID: <87k1apky7x.fsf@morokweng.localdomain>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190903113059.2901-1-kw@linux.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: devicetree@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-	Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-09-03_04:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1906280000 definitions=main-1909030186
+Cc: linux-s390@vger.kernel.org, x86@kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>, Lianbo Jiang <lijiang@redhat.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	linuxppc-dev@lists.ozlabs.org, Mike Anderson <andmike@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	Christoph Hellwig <hch@lst.de>, Halil Pasic <pasic@linux.ibm.com>,
+	iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
+	linux-fsdevel@vger.kernel.org, Thomas Lendacky <Thomas.Lendacky@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>, Alexey Dobriyan <adobriyan@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,29 +114,25 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 03, 2019 at 01:30:59PM +0200, Krzysztof Wilczynski wrote:
-> Remove <linux/pci.h> and <linux/msi.h> from being included
-> directly as part of the include/linux/of_pci.h, and remove
-> superfluous declaration of struct of_phandle_args.
-> 
-> Move users of include <linux/of_pci.h> to include <linux/pci.h>
-> and <linux/msi.h> directly rather than rely on both being
-> included transitively through <linux/of_pci.h>.
-> 
-> Signed-off-by: Krzysztof Wilczynski <kw@linux.com>
-> ---
->  drivers/iommu/of_iommu.c                          | 2 ++
->  drivers/irqchip/irq-gic-v2m.c                     | 1 +
->  drivers/irqchip/irq-gic-v3-its-pci-msi.c          | 1 +
->  drivers/pci/controller/dwc/pcie-designware-host.c | 1 +
->  drivers/pci/controller/pci-aardvark.c             | 1 +
->  drivers/pci/controller/pci-thunder-pem.c          | 1 +
->  drivers/pci/pci.c                                 | 1 +
->  drivers/pci/probe.c                               | 1 +
->  include/linux/of_pci.h                            | 5 ++---
->  9 files changed, 11 insertions(+), 3 deletions(-)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Michael Ellerman <patch-notifications@ellerman.id.au> writes:
+
+> On Tue, 2019-08-06 at 04:49:14 UTC, Thiago Jung Bauermann wrote:
+>> powerpc is also going to use this feature, so put it in a generic location.
+>> 
+>> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>> Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>
+> Series applied to powerpc topic/mem-encrypt, thanks.
+>
+> https://git.kernel.org/powerpc/c/0c9c1d56397518eb823d458b00b06bcccd956794
+
+Thank you!
+
+-- 
+Thiago Jung Bauermann
+IBM Linux Technology Center
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
