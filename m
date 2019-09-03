@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0892C3A5A2
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A118C3A5A2
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD860206BB
-	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD860206BB
+	by mail.kernel.org (Postfix) with ESMTPS id 05630206BB
+	for <iommu@archiver.kernel.org>; Tue,  3 Sep 2019 09:39:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05630206BB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B62BACC3;
-	Tue,  3 Sep 2019 09:39:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E1528CCA;
+	Tue,  3 Sep 2019 09:39:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C5D93C8F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 13C4DC8F
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 09:39:02 +0000 (UTC)
+	Tue,  3 Sep 2019 09:39:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 61AF78AA
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 3684E7DB
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  3 Sep 2019 09:39:01 +0000 (UTC)
-X-UUID: 9d95ffdfe38d406598732577f6d3d164-20190903
-X-UUID: 9d95ffdfe38d406598732577f6d3d164-20190903
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
-	mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+	Tue,  3 Sep 2019 09:39:09 +0000 (UTC)
+X-UUID: 06adbe7ef1894ee29898f46a59bcfbc4-20190903
+X-UUID: 06adbe7ef1894ee29898f46a59bcfbc4-20190903
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
 	(Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-	with ESMTP id 481907305; Tue, 03 Sep 2019 17:38:56 +0800
+	with ESMTP id 229411202; Tue, 03 Sep 2019 17:39:04 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
-	mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Tue, 3 Sep 2019 17:38:55 +0800
+	mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Tue, 3 Sep 2019 17:39:03 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
 	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Tue, 3 Sep 2019 17:38:54 +0800
+	Transport; Tue, 3 Sep 2019 17:39:02 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v3 05/14] media: mtk-jpeg: Get rid of mtk_smi_larb_get/put
-Date: Tue, 3 Sep 2019 17:37:27 +0800
-Message-ID: <1567503456-24725-6-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v3 06/14] media: mtk-mdp: Get rid of mtk_smi_larb_get/put
+Date: Tue, 3 Sep 2019 17:37:28 +0800
+Message-ID: <1567503456-24725-7-git-send-email-yong.wu@mediatek.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1567503456-24725-1-git-send-email-yong.wu@mediatek.com>
 References: <1567503456-24725-1-git-send-email-yong.wu@mediatek.com>
@@ -55,15 +55,14 @@ MIME-Version: 1.0
 X-MTK: N
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
 	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	Rick Chang <rick.chang@mediatek.com>,
 	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
 	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
 	Evan Green <evgreen@chromium.org>,
 	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	Matthias Kaehlcke <mka@chromium.org>,
-	linux-mediatek@lists.infradead.org, ming-fan.chen@mediatek.com,
-	anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org
+	Matthias Kaehlcke <mka@chromium.org>, linux-mediatek@lists.infradead.org,
+	Minghsiu Tsai <minghsiu.tsai@mediatek.com>,
+	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,92 +80,126 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-MediaTek IOMMU has already added device_link between the consumer
-and smi-larb device. If the jpg device call the pm_runtime_get_sync,
+MediaTek IOMMU has already added the device_link between the consumer
+and smi-larb device. If the mdp device call the pm_runtime_get_sync,
 the smi-larb's pm_runtime_get_sync also be called automatically.
 
-CC: Rick Chang <rick.chang@mediatek.com>
+CC: Minghsiu Tsai <minghsiu.tsai@mediatek.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: Evan Green <evgreen@chromium.org>
 ---
- drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c | 22 ----------------------
- drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h |  2 --
- 2 files changed, 24 deletions(-)
+ drivers/media/platform/mtk-mdp/mtk_mdp_comp.c | 38 ---------------------------
+ drivers/media/platform/mtk-mdp/mtk_mdp_comp.h |  2 --
+ drivers/media/platform/mtk-mdp/mtk_mdp_core.c |  1 -
+ 3 files changed, 41 deletions(-)
 
-diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
-index ee802fc..3242a8d 100644
---- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
-+++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
-@@ -21,7 +21,6 @@
- #include <media/v4l2-ioctl.h>
- #include <media/videobuf2-core.h>
- #include <media/videobuf2-dma-contig.h>
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
+index 9afe816..5985a9b 100644
+--- a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
++++ b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
+@@ -9,7 +9,6 @@
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
 -#include <soc/mediatek/smi.h>
  
- #include "mtk_jpeg_hw.h"
- #include "mtk_jpeg_core.h"
-@@ -893,11 +892,6 @@ static int mtk_jpeg_queue_init(void *priv, struct vb2_queue *src_vq,
+ #include "mtk_mdp_comp.h"
  
- static void mtk_jpeg_clk_on(struct mtk_jpeg_dev *jpeg)
+@@ -58,14 +57,6 @@ void mtk_mdp_comp_clock_on(struct device *dev, struct mtk_mdp_comp *comp)
  {
--	int ret;
+ 	int i, err;
+ 
+-	if (comp->larb_dev) {
+-		err = mtk_smi_larb_get(comp->larb_dev);
+-		if (err)
+-			dev_err(dev,
+-				"failed to get larb, err %d. type:%d id:%d\n",
+-				err, comp->type, comp->id);
+-	}
 -
--	ret = mtk_smi_larb_get(jpeg->larb);
--	if (ret)
--		dev_err(jpeg->dev, "mtk_smi_larb_get larbvdec fail %d\n", ret);
- 	clk_prepare_enable(jpeg->clk_jdec_smi);
- 	clk_prepare_enable(jpeg->clk_jdec);
- }
-@@ -906,7 +900,6 @@ static void mtk_jpeg_clk_off(struct mtk_jpeg_dev *jpeg)
- {
- 	clk_disable_unprepare(jpeg->clk_jdec);
- 	clk_disable_unprepare(jpeg->clk_jdec_smi);
--	mtk_smi_larb_put(jpeg->larb);
- }
- 
- static irqreturn_t mtk_jpeg_dec_irq(int irq, void *priv)
-@@ -1051,21 +1044,6 @@ static int mtk_jpeg_release(struct file *file)
- 
- static int mtk_jpeg_clk_init(struct mtk_jpeg_dev *jpeg)
- {
--	struct device_node *node;
--	struct platform_device *pdev;
+ 	for (i = 0; i < ARRAY_SIZE(comp->clk); i++) {
+ 		if (IS_ERR(comp->clk[i]))
+ 			continue;
+@@ -86,16 +77,11 @@ void mtk_mdp_comp_clock_off(struct device *dev, struct mtk_mdp_comp *comp)
+ 			continue;
+ 		clk_disable_unprepare(comp->clk[i]);
+ 	}
 -
--	node = of_parse_phandle(jpeg->dev->of_node, "mediatek,larb", 0);
--	if (!node)
--		return -EINVAL;
--	pdev = of_find_device_by_node(node);
--	if (WARN_ON(!pdev)) {
--		of_node_put(node);
+-	if (comp->larb_dev)
+-		mtk_smi_larb_put(comp->larb_dev);
+ }
+ 
+ int mtk_mdp_comp_init(struct device *dev, struct device_node *node,
+ 		      struct mtk_mdp_comp *comp, enum mtk_mdp_comp_id comp_id)
+ {
+-	struct device_node *larb_node;
+-	struct platform_device *larb_pdev;
+ 	int i;
+ 
+ 	if (comp_id < 0 || comp_id >= MTK_MDP_COMP_ID_MAX) {
+@@ -116,30 +102,6 @@ int mtk_mdp_comp_init(struct device *dev, struct device_node *node,
+ 			break;
+ 	}
+ 
+-	/* Only DMA capable components need the LARB property */
+-	comp->larb_dev = NULL;
+-	if (comp->type != MTK_MDP_RDMA &&
+-	    comp->type != MTK_MDP_WDMA &&
+-	    comp->type != MTK_MDP_WROT)
+-		return 0;
+-
+-	larb_node = of_parse_phandle(node, "mediatek,larb", 0);
+-	if (!larb_node) {
+-		dev_err(dev,
+-			"Missing mediadek,larb phandle in %pOF node\n", node);
 -		return -EINVAL;
 -	}
--	of_node_put(node);
 -
--	jpeg->larb = &pdev->dev;
+-	larb_pdev = of_find_device_by_node(larb_node);
+-	if (!larb_pdev) {
+-		dev_warn(dev, "Waiting for larb device %pOF\n", larb_node);
+-		of_node_put(larb_node);
+-		return -EPROBE_DEFER;
+-	}
+-	of_node_put(larb_node);
 -
- 	jpeg->clk_jdec = devm_clk_get(jpeg->dev, "jpgdec");
- 	if (IS_ERR(jpeg->clk_jdec))
- 		return PTR_ERR(jpeg->clk_jdec);
-diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
-index 999bd14..8579494 100644
---- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
-+++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
-@@ -47,7 +47,6 @@ enum mtk_jpeg_ctx_state {
-  * @dec_reg_base:	JPEG registers mapping
-  * @clk_jdec:		JPEG hw working clock
-  * @clk_jdec_smi:	JPEG SMI bus clock
-- * @larb:		SMI device
-  */
- struct mtk_jpeg_dev {
- 	struct mutex		lock;
-@@ -61,7 +60,6 @@ struct mtk_jpeg_dev {
- 	void __iomem		*dec_reg_base;
- 	struct clk		*clk_jdec;
- 	struct clk		*clk_jdec_smi;
--	struct device		*larb;
- };
+-	comp->larb_dev = &larb_pdev->dev;
+-
+ 	return 0;
+ }
  
- /**
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
+index 998a4b9..a2da8df 100644
+--- a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
++++ b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
+@@ -39,7 +39,6 @@ enum mtk_mdp_comp_id {
+  * @dev_node:	component device node
+  * @clk:	clocks required for component
+  * @regs:	Mapped address of component registers.
+- * @larb_dev:	SMI device required for component
+  * @type:	component type
+  * @id:		component ID
+  */
+@@ -47,7 +46,6 @@ struct mtk_mdp_comp {
+ 	struct device_node	*dev_node;
+ 	struct clk		*clk[2];
+ 	void __iomem		*regs;
+-	struct device		*larb_dev;
+ 	enum mtk_mdp_comp_type	type;
+ 	enum mtk_mdp_comp_id	id;
+ };
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c b/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
+index fc9faec..c237ed9 100644
+--- a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
++++ b/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
+@@ -17,7 +17,6 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/workqueue.h>
+-#include <soc/mediatek/smi.h>
+ 
+ #include "mtk_mdp_core.h"
+ #include "mtk_mdp_m2m.h"
 -- 
 1.9.1
 
