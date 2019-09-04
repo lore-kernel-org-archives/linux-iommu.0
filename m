@@ -2,77 +2,76 @@ Return-Path: <SRS0=42j6=W7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE36EC3A5A9
-	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 16:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B56C3A5AB
+	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 21:25:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A2F902053B
-	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 16:19:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A2F902053B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9F50220449
+	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 21:25:23 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="p/FtG1F1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F50220449
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 52A141974;
-	Wed,  4 Sep 2019 16:19:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6EF4B2147;
+	Wed,  4 Sep 2019 21:25:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 075A7F74
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CDB922144
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  4 Sep 2019 16:18:26 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B0A517DB
+	Wed,  4 Sep 2019 21:24:54 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f194.google.com (mail-qt1-f194.google.com
+	[209.85.160.194])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7C8107DB
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  4 Sep 2019 16:18:25 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-	by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	04 Sep 2019 09:18:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,467,1559545200"; d="scan'208";a="190217980"
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-	by FMSMGA003.fm.intel.com with ESMTP; 04 Sep 2019 09:18:24 -0700
-Received: from orsmsx115.amr.corp.intel.com (10.22.240.11) by
-	ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Wed, 4 Sep 2019 09:18:24 -0700
-Received: from orsmsx114.amr.corp.intel.com ([169.254.8.225]) by
-	ORSMSX115.amr.corp.intel.com ([169.254.4.103]) with mapi id
-	14.03.0439.000; Wed, 4 Sep 2019 09:18:24 -0700
-From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
-Subject: RE: [PATCH 3/4] iommu: Add support to change default domain of an
-	iommu_group
-Thread-Topic: [PATCH 3/4] iommu: Add support to change default domain of an
-	iommu_group
-Thread-Index: AQHVV8qWE2w4hNV0n0iqYRgWzGAzZacacisAgABxZ7CAAIDWAIAAZDyw
-Date: Wed, 4 Sep 2019 16:18:23 +0000
-Message-ID: <FFF73D592F13FD46B8700F0A279B802F4FBF7E4B@ORSMSX114.amr.corp.intel.com>
-References: <cover.1566353521.git.sai.praneeth.prakhya@intel.com>
-	<03cbec8c95b13d417dd1c44f545241d01e7b9654.1566353521.git.sai.praneeth.prakhya@intel.com>
-	<20190903125046.GA11530@8bytes.org>
-	<FFF73D592F13FD46B8700F0A279B802F4FBECD3E@ORSMSX114.amr.corp.intel.com>
-	<a8dff600-b945-6357-f17e-ea46aaa67077@linux.intel.com>
-In-Reply-To: <a8dff600-b945-6357-f17e-ea46aaa67077@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNTk3OGE2MjItMzVlNi00N2Y2LTk2ZjYtN2QxYzFlYThiYmQ4IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiSlZveGFpN1JcL3JoMEdLVEMzb2hyWFwvc0ozXC9qZnV2TytFb0hMSXZHSGdiODRyblwvOVJRRjM5SWJXODliWHZhU00ifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+	Wed,  4 Sep 2019 21:24:53 +0000 (UTC)
+Received: by mail-qt1-f194.google.com with SMTP id r5so265005qtd.0
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 04 Sep 2019 14:24:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+	h=from:to:cc:subject:date:message-id;
+	bh=vJQh2NC10XsFCn3yA5gEOWEes5fZ0ez3OSO7Jvc0SJY=;
+	b=p/FtG1F1lAMzom5b1ia1JeEJUZMRtwKYZOY54Sbmcyv0uSRopmJl3niYgWnvlPJ7ES
+	p76aXLTCQsIembQ8qoQp0KJACa2yKGynfjiV9Vm/tZuL1YXVQswbF6f2aXKM92yP7DXB
+	T5nOMPfbDD5F3L3Cmu9Mnocb2m2f8HHxTUeru2/fmshglRCZuEwyTCFcWjL9QOSnN/pJ
+	0soKjtRKWiIHXCIG11dIMwmL8ZR7MhfMVn7C9yJTvKZnQMhjOkS6k2UdxQuYkSksBKmU
+	2tUtr3nqcfTSszV96gI2EkxABksH9eJfi2CkhA6cEbRrYlrvLbAMsWaAWIDrcEIGyV1W
+	0uiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=vJQh2NC10XsFCn3yA5gEOWEes5fZ0ez3OSO7Jvc0SJY=;
+	b=cfbIavxGMsjDjy5qtHib3pXr52tOT94UOvQMgditATIhNikwQEFQJ014riJJzBxl3p
+	LJVJ8H4CbK22Ug5UT4xPMlb7IzZwSceluQj9nCsFmJe34UEk45N7k1/nuP75artJpNbm
+	gjvxHeYHZBtqr+RX7zCmkOZFSH9uMDtSp2bu7Ppgg17Py8RPrRMWbHqIyYSvd4SZESJz
+	f0mvKKjfhfPRLuUAp6LjUXrQzPDNKFL3F9rN7bYVZSN0LwihmJxWpkKnuccLCJdRyfqp
+	xe0NnCvANscMj98LRNRATpTDxG9xjO9UOneXmP+S02BVlxgTlUryvUDTC5HMjBMZeP7r
+	v5uA==
+X-Gm-Message-State: APjAAAWFig9ColDGvSuEWlB16bl2b7JFwkj0O6oEqtpsLpvIeK6f2K9p
+	M466uhIT8yXmPezyAfTySlJtJw==
+X-Google-Smtp-Source: APXvYqwSN7oO5NaLRxSsgPBQxT8virQS/3uqxTlU4qj0cFV7d2QUgugMr3VRfOTwBCGo4pLD7Hj+7Q==
+X-Received: by 2002:ac8:6688:: with SMTP id d8mr168489qtp.25.1567632292270;
+	Wed, 04 Sep 2019 14:24:52 -0700 (PDT)
+Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+	by smtp.gmail.com with ESMTPSA id f83sm148254qke.80.2019.09.04.14.24.50
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 04 Sep 2019 14:24:51 -0700 (PDT)
+From: Qian Cai <cai@lca.pw>
+To: jroedel@suse.de
+Subject: [RFC PATCH] iommu/amd: fix a race in increase_address_space()
+Date: Wed,  4 Sep 2019 17:24:22 -0400
+Message-Id: <1567632262-21284-1-git-send-email-cai@lca.pw>
+X-Mailer: git-send-email 1.8.3.1
+Cc: don.brace@microsemi.com, esc.storagedev@microsemi.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -85,38 +84,422 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-> >>> +free_prev_domain:
-> >>> +	/*
-> >>> +	 * Free the existing default domain and replace it with the newly
-> >>> +	 * created default domain. No need to set group->domain because
-> >>> +	 * __iommu_attach_group() already does it on success.
-> >>> +	 */
-> >>> +	iommu_domain_free(prev_domain);
-> >>> +	group->default_domain = new_domain;
-> >>> +	return 0;
-> >>
-> >> It isn't obvious to me from this patch, how to are the dma_ops
-> >> updated when the default domain changes between identity and dma?
-> >
-> > Thanks for raising this.
-> > For intel_iommu, dma_map_ops is defined at drivers/iommu/intel-iommu.c
-> > and all the callbacks like alloc(), map_sg() and map_page(), check if
-> > the device needs DMA mapping or not by calling iommu_need_mapping(). The
-> callbacks inherently do the right thing based on the outcome.
-> > So, essentially the dma_ops are same for dma/identity domain.
-> 
-> This isn't always true as we are considering per-device dma ops.
+When the system is under some memory pressure, it could cause disks on
+the "smartpqi" driver going offline below. From the UBSAN report, it
+indicates that "domain->mode" becomes 7. Further investigation indicates
+that the only place that would increase "domain->mode" is
+increase_address_space() but it has this check before actually
+increasing it,
 
-Ahh.. I see. I wasn't aware that per-device dma ops might change this.
-Thanks for letting me know. I will take this into consideration as well for V2.
+	if (domain->mode == PAGE_MODE_6_LEVEL)
+		/* address space already 64 bit large */
+		return false;
 
-Regards,
-Sai
+This gives a clue that there must be a race between multiple concurrent
+threads in increase_address_space().
+
+In amd_iommu_map() and amd_iommu_unmap(), there is
+mutex_lock() and mutex_unlock() around a iommu_map_page(). There are
+several places that could call iommu_map_page() with interrupt enabled.
+One for sure is alloc_coherent() which call __map_single() that had a
+comment said that it needs to hold a lock but not so. I am not sure
+about the map_page() and map_sg() where my investigation so far
+indicating that many call sites there are in the atomic context.
+
+smartpqi 0000:23:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000
+address=0xff702a00 flags=0x0010]
+UBSAN: Undefined behaviour in drivers/iommu/amd_iommu.c:1464:29
+shift exponent 66 is too large for 64-bit type 'long unsigned int'
+CPU: 39 PID: 821 Comm: kswapd4 Tainted: G           O
+5.3.0-rc7-next-20190903+ #4
+Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40
+07/10/2019
+Call Trace:
+ dump_stack+0x62/0x9a
+ ubsan_epilogue+0xd/0x3a
+smartpqi 0000:23:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000
+address=0xff702c80 flags=0x0010]
+ __ubsan_handle_shift_out_of_bounds.cold.12+0x21/0x68
+ iommu_map_page.cold.39+0x7f/0x84
+ map_sg+0x1ce/0x2f0
+ scsi_dma_map+0xc6/0x160
+ pqi_raid_submit_scsi_cmd_with_io_request+0x1c3/0x470 [smartpqi]
+smartpqi 0000:23:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0000
+address=0xff702900 flags=0x0010]
+ pqi_scsi_queue_command+0x7d6/0xeb0 [smartpqi]
+ scsi_queue_rq+0x7ee/0x12b0
+ __blk_mq_try_issue_directly+0x295/0x3f0
+ blk_mq_try_issue_directly+0xad/0x130
+ blk_mq_make_request+0xb12/0xee0
+ generic_make_request+0x179/0x4a0
+ submit_bio+0xaa/0x270
+ __swap_writepage+0x8f5/0xba0
+ swap_writepage+0x65/0xb0
+ pageout.isra.3+0x3e5/0xa00
+ shrink_page_list+0x15a0/0x2660
+ shrink_inactive_list+0x373/0x770
+ shrink_node_memcg+0x4ff/0x1550
+ shrink_node+0x123/0x800
+ balance_pgdat+0x493/0x9b0
+ kswapd+0x39b/0x7f0
+ kthread+0x1df/0x200
+ ret_from_fork+0x22/0x40
+========================================================================
+smartpqi 0000:23:00.0: resetting scsi 0:1:0:0
+INFO: task khugepaged:797 blocked for more than 122 seconds.
+      Tainted: G           O      5.3.0-rc7-next-20190903+ #4
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this
+message.
+khugepaged      D22656   797      2 0x80004000
+Call Trace:
+ __schedule+0x4bb/0xc20
+ schedule+0x6c/0x140
+ io_schedule+0x21/0x50
+ rq_qos_wait+0x18e/0x2b0
+ wbt_wait+0x12b/0x1b0
+ __rq_qos_throttle+0x3b/0x60
+ blk_mq_make_request+0x217/0xee0
+ generic_make_request+0x179/0x4a0
+ submit_bio+0xaa/0x270
+ __swap_writepage+0x8f5/0xba0
+ swap_writepage+0x65/0xb0
+ pageout.isra.3+0x3e5/0xa00
+ shrink_page_list+0x15a0/0x2660
+ shrink_inactive_list+0x373/0x770
+ shrink_node_memcg+0x4ff/0x1550
+ shrink_node+0x123/0x800
+ do_try_to_free_pages+0x22f/0x820
+ try_to_free_pages+0x242/0x4d0
+ __alloc_pages_nodemask+0x9f6/0x1bb0
+ khugepaged_alloc_page+0x6f/0xf0
+ collapse_huge_page+0x103/0x1060
+ khugepaged_scan_pmd+0x840/0xa70
+ khugepaged+0x1571/0x18d0
+ kthread+0x1df/0x200
+ ret_from_fork+0x22/0x40
+INFO: task systemd-journal:3112 blocked for more than 123 seconds.
+      Tainted: G           O      5.3.0-rc7-next-20190903+ #4
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this
+message.
+systemd-journal D20744  3112      1 0x00004120
+Call Trace:
+ __do_page_cache_readahead+0x149/0x3a0
+ filemap_fault+0x9da/0x1050
+ __xfs_filemap_fault+0x167/0x450 [xfs]
+ xfs_filemap_fault+0x68/0x70 [xfs]
+ __do_fault+0x83/0x220
+ __handle_mm_fault+0x1034/0x1a50
+ handle_mm_fault+0x17f/0x37e
+ __do_page_fault+0x369/0x630
+ do_page_fault+0x50/0x2d3
+ page_fault+0x2f/0x40
+RIP: 0033:0x56088e81faa0
+Code: Bad RIP value.
+RSP: 002b:00007ffdc2158ba8 EFLAGS: 000102_iter+0x135/0x850
+ shrink_node+0x123/0x800
+ do_try_to_free_pages+0x22f/0x820
+ try_to_free_pages+0x242/0x4d0
+ __alloc_pages_nodemask+0x9f6/0x1bb0
+[11967.13967  __swap_writepage+0x8f5/0xba0
+ swap_writepage+0x65/0xb0
+ pageout.isra.3+0x3e5/0xa00
+ shrink_page_list+0x15a0/0x2660
+ io_schedule+0x21/0x50
+ rq_qos_wait+0x18e/0x2b0
+ wbt_wait+0x12b/0x1b0
+ __rq_qos_throttle+0x3b/0x60
+ blk_mq_make_request+0x217/0xee0
+ schedule+0x6c/0x140
+ io_schedule+0x21/0x50
+ rq_qos_wait+0x18e/0x2b0
+ wbt_wait+0x12b/0x1b0
+ __rq_qos_throttle+0x3b/0x60
+ blk_mq_make_request+0x217/0xee0
+[11968.69198.0+0x60/0x60
+ swap_writepage+0x65/0xb0
+ pageout.isra.3+0x3e5/0xa00
+ shrink_page_list+0x15a0/0x2660
+ generic_make_request+0x179/0x4a0
+ submit_bio+0xaa/0x270
+ __swap_writepage+0x8f5/0xba0
+ swap_writepage+0x65/0xb0
+ pageout.isra.3+0x3e5/0xa00
+ __swap_writepage+0x8f5/0xba0
+ swap_writepage+0x65/0xb0
+ pageout.isra.3+0x3e5/0xa00
+ shrink_page_list+0x15a0/0x2660
+ wbt_wait+0x12b/0x1b0
+ __rq_qos_throttle+0x3b/0x60
+ blk_mq_make_request+0x217/0xee0
+ generic_make_request+0x179/0x4a0
+ submit_bio+0xaa/0x270
+ __swap_writepage+0x8f5/0xba0
+1 lock held by khungtaskd/791:
+ #0: ffffffffa1b8b360 (rcu_read_lock){....}, at:
+debug_show_all_locks+0x33/0x16a
+1 lock held by khugepaged/797:
+ #0: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by kswapd0/820:
+ #0: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+__fs_reclaim_acquire+0x5/0x30
+ #1: ffff88846fa43538 (&md->io_barrier){....}, at:
+dm_get_live_table+0x5/0x70 [dm_mod]
+2 locks held by kswapd4/821:
+ #0: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+__fs_reclaim_acquire+0x5/0x30
+ #1: ffff88846fa43538 (&md->io_barrier){....}, at:
+dm_get_live_table+0x5/0x70 [dm_mod]
+1 lock held by scsi_eh_0/1577:
+ #0: ffff8884cb52cca0 (&ctrl_info->lun_reset_mutex){....}, at:
+pqi_eh_device_reset_handler+0x313/0x970 [smartpqi]
+[11acquire.part.15+0x5/0x30
+2 locks held by oom01/121253:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121254:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121255:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121256:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+[11971.6650x5/0x30
+2 locks held by oom01/121278:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121279:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121280:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121281:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acqfffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121299:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121300:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121301:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121302:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, 2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121320:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121321:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121322:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121323:
+ #0: ffff888338118840 (&om01/121340:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121341:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121342:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121343:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121366:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121367:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121368:
+ #0: ffff888338118840 (&mm->mmap_sem#2){....}, at:
+__do_page_fault+0x18e/0x630
+ #1: ffffffffa1cc55c0 (fs_reclaim){....}, at:
+fs_reclaim_acquire.part.15+0x5/0x30
+2 locks held by oom01/121369:
+smartpqi 0000:23:00.0: no heartbeat detected - last heartbeat count:
+11794
+smartpqi 0000:23:00.0: controller offline
+smartpqi 0000:23:00.0: reset of scsi 0:1:0:0: FAILED
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+========================================================================
+sd 0:1:0:0: Device offlined - not ready after error recovery
+UBSAN: Undefined behaviour in drivers/iommu/amd_iommu.c:1526:28
+shift exponent 66 is too large for 64-bit type 'long unsigned int'
+CPU: 8 PID: 49038 Comm: kworker/8:0 Tainted: G           O
+5.3.0-rc7-next-20190903+ #4
+Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40
+07/10/2019
+sd 0:1:0:0: Device offlined - not ready after error recovery
+Workqueue: events pqi_ctrl_offline_worker [smartpqi]
+sd 0:1:0:0: Device offlined - not ready after error recovery
+Call Trace:
+ dump_stack+0x62/0x9a
+ ubsan_epilogue+0xd/0x3a
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ __ubsan_handle_shift_out_of_bounds.cold.12+0x21/0x68
+ fetch_pte.cold.23+0x9c/0xcf
+ iommu_unmap_page+0xcd/0x180
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ __unmap_single.isra.18+0x6a/0x120
+ unmap_sg+0x74/0x90
+ scsi_dma_unmap+0xdc/0x140
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ pqi_raid_io_complete+0x2d/0x60 [smartpqi]
+ pqi_ctrl_offline_worker+0x128/0x270 [smartpqi]
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ process_one_work+0x53b/0xa70
+ worker_thread+0x63/0x5b0
+ kthread+0x1df/0x200
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ ret_from_fork+0x22/0x40
+sd 0:1:0:0: Device offlined - not ready after error recovery
+========================================================================
+sd 0:1:0:0: Device offlined - not ready after error recovery
+========================================================================
+sd 0:1:0:0: Device offlined - not ready after error recovery
+UBSAN: Undefined behaviour in drivers/iommu/amd_iommu.c:1527:16
+shift exponent 66 is too large for 64-bit type 'long long unsigned int'
+CPU: 8 PID: 49038 Comm: kworker/8:0 Tainted: G           O
+5.3.0-rc7-next-20190903+ #4
+sd 0:1:0:0: Device offlined - not ready after error recovery
+Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40
+07/10/2019
+Workqueue: events pqi_ctrl_offline_worker [smartpqi]
+Call Trace:
+ dump_stack+0x62/0x9a
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ ubsan_epilogue+0xd/0x3a
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ __ubsan_handle_shift_out_of_bounds.cold.12+0x21/0x68
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ fetch_pte.cold.23+0xca/0xcf
+ iommu_unmap_page+0xcd/0x180
+ __unmap_single.isra.18+0x6a/0x120
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ unmap_sg+0x74/0x90
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ scsi_dma_unmap+0xdc/0x140
+ pqi_raid_io_complete+0x2d/0x60 [smartpqi]
+ pqi_ctrl_offline_worker+0x128/0x270 [smartpqi]
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ process_one_work+0x53b/0xa70
+ worker_thread+0x63/0x5b0
+ kthread+0x1df/0x200
+sd 0:1:0:0: Device offlined - not ready after error recovery
+sd 0:1:0:0: Device offlined - not ready after error recovery
+ ret_from_fork+0x22/0x40
+========================================================================
+sd 0:1:0:0: rejecting I/O to offline device
+sd 0:1:0:0: Device offlined - not ready after error recovery
+blk_update_request: I/O error, dev sda, 43208)
+Write-error on swap-device (254:1:29843216)
+Write-error on swap-device (254:1:29843224)
+Write-error on swap-device (254:1:29843232)
+Write-error on swap-device (254:1:29843240)
+---
+ drivers/iommu/amd_iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b607a92791d3..3874a0f5e197 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2660,8 +2660,10 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 	if (!dma_mask)
+ 		dma_mask = *dev->dma_mask;
+ 
++	mutex_lock(&domain->api_lock);
+ 	*dma_addr = __map_single(dev, dma_dom, page_to_phys(page),
+ 				 size, DMA_BIDIRECTIONAL, dma_mask);
++	mutex_unlock(&domain->api_lock);
+ 
+ 	if (*dma_addr == DMA_MAPPING_ERROR)
+ 		goto out_free;
+@@ -2696,7 +2698,9 @@ static void free_coherent(struct device *dev, size_t size,
+ 
+ 	dma_dom = to_dma_ops_domain(domain);
+ 
++	mutex_lock(&domain->api_lock);
+ 	__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
++	mutex_unlock(&domain->api_lock);
+ 
+ free_mem:
+ 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
+-- 
+1.8.3.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
