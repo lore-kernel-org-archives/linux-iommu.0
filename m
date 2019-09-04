@@ -4,100 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6CAC3A5A7
-	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 06:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E75C3A5A7
+	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 06:41:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD1D722CF5
-	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 06:41:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD1D722CF5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.vnet.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8E90822CF5
+	for <iommu@archiver.kernel.org>; Wed,  4 Sep 2019 06:41:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E90822CF5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3064F107B;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 650F71080;
 	Wed,  4 Sep 2019 06:41:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C8808F16
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8ED14F31
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  4 Sep 2019 03:21:03 +0000 (UTC)
-X-Greylist: delayed 00:32:12 by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 08221709
+	Wed,  4 Sep 2019 04:13:09 +0000 (UTC)
+X-Greylist: delayed 00:05:01 by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D0330709
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  4 Sep 2019 03:21:02 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x842lGaO045367; Tue, 3 Sep 2019 22:48:50 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2ut1jncrmu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Tue, 03 Sep 2019 22:48:50 -0400
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x842lVHW045872;
-	Tue, 3 Sep 2019 22:48:50 -0400
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com
-	[169.55.85.253])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2ut1jncrme-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Tue, 03 Sep 2019 22:48:50 -0400
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-	by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
-	x842isj3032000; Wed, 4 Sep 2019 02:48:48 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com
-	(b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-	by ppma01wdc.us.ibm.com with ESMTP id 2uqgh6pgke-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Wed, 04 Sep 2019 02:48:48 +0000
-Received: from b03ledav005.gho.boulder.ibm.com
-	(b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-	by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x842mmYU61473226
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Wed, 4 Sep 2019 02:48:48 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 33861BE051;
-	Wed,  4 Sep 2019 02:48:48 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 0A5A3BE04F;
-	Wed,  4 Sep 2019 02:48:47 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.70.94.45])
-	by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Wed,  4 Sep 2019 02:48:47 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-	id 595252E10EB; Tue,  3 Sep 2019 19:48:46 -0700 (PDT)
-Date: Tue, 3 Sep 2019 19:48:46 -0700
-From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
-To: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: Re: [RFC PATCH 00/11] Secure Virtual Machine Enablement
-Message-ID: <20190904024846.GA16605@us.ibm.com>
-References: <20180824162535.22798-1-bauerman@linux.ibm.com>
+	Wed,  4 Sep 2019 04:13:07 +0000 (UTC)
+X-UUID: c8c948f33d2047f3bdfa7905ae66264b-20190904
+X-UUID: c8c948f33d2047f3bdfa7905ae66264b-20190904
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <houlong.wei@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 561403735; Wed, 04 Sep 2019 12:07:57 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N2.mediatek.inc
+	(172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Wed, 4 Sep 2019 12:07:54 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Wed, 4 Sep 2019 12:07:53 +0800
+Message-ID: <1567570074.31301.19.camel@mhfsdcap03>
+Subject: Re: [PATCH v3 06/14] media: mtk-mdp: Get rid of mtk_smi_larb_get/put
+From: houlong wei <houlong.wei@mediatek.com>
+To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>
+Date: Wed, 4 Sep 2019 12:07:54 +0800
+In-Reply-To: <mailman.21807.1567503573.19300.linux-mediatek@lists.infradead.org>
+References: <mailman.21807.1567503573.19300.linux-mediatek@lists.infradead.org>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20180824162535.22798-1-bauerman@linux.ibm.com>
-X-Operating-System: Linux 2.0.32 on an i486
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-09-03_05:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1906280000 definitions=main-1909040027
+X-TM-SNTS-SMTP: 500850E9C33D38436DBF3DA1D3DC54035EACB51BDE85BE19A0327058E6BBD5A42000:8
+X-MTK: N
 X-Mailman-Approved-At: Wed, 04 Sep 2019 06:41:00 +0000
-Cc: Anshuman Khandual <anshuman.linux@gmail.com>,
-	Mike Anderson <andmike@linux.ibm.com>,
-	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org,
-	Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org,
-	Christoph Hellwig <hch@lst.de>
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
+	Evan Green <evgreen@chromium.org>, houlong.wei@mediatek.com,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	Matthias Kaehlcke <mka@chromium.org>,
+	linux-mediatek@lists.infradead.org, minghsiu.tsai@mediatek.com,
+	ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,309 +82,142 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Thiago Jung Bauermann [bauerman@linux.ibm.com] wrote:
-> [ Some people didn't receive all the patches in this series, even though
->   the linuxppc-dev list did so trying to send again. This is exactly the
->   same series I posted yesterday. Sorry for the clutter. ]
+Hi, Yong,
+
+I have inline comment below.
+
+> MediaTek IOMMU has already added the device_link between the consumer
+> and smi-larb device. If the mdp device call the pm_runtime_get_sync,
+> the smi-larb's pm_runtime_get_sync also be called automatically.
 > 
-> This series contains preliminary work to enable Secure Virtual Machines
-> (SVM) on powerpc. SVMs request to be migrated to secure memory very early in
-> the boot process (in prom_init()), so by default all of their memory is
-> inaccessible to the hypervisor. There is an ultravisor call that the VM can
-> use to request certain pages to be made accessible (aka shared).
+> CC: Minghsiu Tsai <minghsiu.tsai@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: Evan Green <evgreen@chromium.org>
+> ---
+>  drivers/media/platform/mtk-mdp/mtk_mdp_comp.c | 38 ---------------------------
+>  drivers/media/platform/mtk-mdp/mtk_mdp_comp.h |  2 --
+>  drivers/media/platform/mtk-mdp/mtk_mdp_core.c |  1 -
+>  3 files changed, 41 deletions(-)
+> 
+> diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
+> index 9afe816..5985a9b 100644
+> --- a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
+> +++ b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
+> @@ -9,7 +9,6 @@
+>  #include <linux/of.h>
+>  #include <linux/of_address.h>
+>  #include <linux/of_platform.h>
+> -#include <soc/mediatek/smi.h>
+>  
+>  #include "mtk_mdp_comp.h"
+>  
+> @@ -58,14 +57,6 @@ void mtk_mdp_comp_clock_on(struct device *dev, struct mtk_mdp_comp *comp)
+>  {
+>  	int i, err;
+>  
+> -	if (comp->larb_dev) {
+> -		err = mtk_smi_larb_get(comp->larb_dev);
+> -		if (err)
+> -			dev_err(dev,
+> -				"failed to get larb, err %d. type:%d id:%d\n",
+> -				err, comp->type, comp->id);
+> -	}
 
-I would like to piggy-back on this series (since it provides the
-context) to add another patch we need for SVMs :-) 
+In previous design,mtk_mdp_comp_clock_on() is called by each MDP
+hardware component, and mtk_smi_larb_get() is also called for each MDP
+hardware component which accesses DRAM via SMI larb.
 
-Appreciate any comments. 
+Since mdp device only contains mdp_rdma component, so
+pm_runtime_get_sync() will ignore other smi-larb clock. We need consider
+how to enable clocks of other smi-larb associated with other mdp
+component, e.g. mdp_wdma, mdp_wrot.
 
----
 
-From ed93a0e36ec886483a72fdb8d99380bbe6607f37 Mon Sep 17 00:00:00 2001
-From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
-Date: Thu, 16 May 2019 20:57:12 -0500
-Subject: [PATCH 1/1] powerpc/pseries/svm: don't access some SPRs
+>  	for (i = 0; i < ARRAY_SIZE(comp->clk); i++) {
+>  		if (IS_ERR(comp->clk[i]))
+>  			continue;
+> @@ -86,16 +77,11 @@ void mtk_mdp_comp_clock_off(struct device *dev, struct mtk_mdp_comp *comp)
+>  			continue;
+>  		clk_disable_unprepare(comp->clk[i]);
+>  	}
+> -
+> -	if (comp->larb_dev)
+> -		mtk_smi_larb_put(comp->larb_dev);
+>  }
+>  
+>  int mtk_mdp_comp_init(struct device *dev, struct device_node *node,
+>  		      struct mtk_mdp_comp *comp, enum mtk_mdp_comp_id comp_id)
+>  {
+> -	struct device_node *larb_node;
+> -	struct platform_device *larb_pdev;
+>  	int i;
+>  
+>  	if (comp_id < 0 || comp_id >= MTK_MDP_COMP_ID_MAX) {
+> @@ -116,30 +102,6 @@ int mtk_mdp_comp_init(struct device *dev, struct device_node *node,
+>  			break;
+>  	}
+>  
+> -	/* Only DMA capable components need the LARB property */
+> -	comp->larb_dev = NULL;
+> -	if (comp->type != MTK_MDP_RDMA &&
+> -	    comp->type != MTK_MDP_WDMA &&
+> -	    comp->type != MTK_MDP_WROT)
+> -		return 0;
+> -
+> -	larb_node = of_parse_phandle(node, "mediatek,larb", 0);
+> -	if (!larb_node) {
+> -		dev_err(dev,
+> -			"Missing mediadek,larb phandle in %pOF node\n", node);
+> -		return -EINVAL;
+> -	}
+> -
+> -	larb_pdev = of_find_device_by_node(larb_node);
+> -	if (!larb_pdev) {
+> -		dev_warn(dev, "Waiting for larb device %pOF\n", larb_node);
+> -		of_node_put(larb_node);
+> -		return -EPROBE_DEFER;
+> -	}
+> -	of_node_put(larb_node);
+> -
+> -	comp->larb_dev = &larb_pdev->dev;
+> -
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
+> index 998a4b9..a2da8df 100644
+> --- a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
+> +++ b/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
+> @@ -39,7 +39,6 @@ enum mtk_mdp_comp_id {
+>   * @dev_node:	component device node
+>   * @clk:	clocks required for component
+>   * @regs:	Mapped address of component registers.
+> - * @larb_dev:	SMI device required for component
+>   * @type:	component type
+>   * @id:		component ID
+>   */
+> @@ -47,7 +46,6 @@ struct mtk_mdp_comp {
+>  	struct device_node	*dev_node;
+>  	struct clk		*clk[2];
+>  	void __iomem		*regs;
+> -	struct device		*larb_dev;
+>  	enum mtk_mdp_comp_type	type;
+>  	enum mtk_mdp_comp_id	id;
+>  };
+> diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c b/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
+> index fc9faec..c237ed9 100644
+> --- a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
+> +++ b/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
+> @@ -17,7 +17,6 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/workqueue.h>
+> -#include <soc/mediatek/smi.h>
+>  
+>  #include "mtk_mdp_core.h"
+>  #include "mtk_mdp_m2m.h"
 
-Ultravisor disables some CPU features like EBB and BHRB in the HFSCR
-for secure virtual machines (SVMs). If the SVMs attempt to access
-related registers, they will get a Program Interrupt.
 
-Use macros/wrappers to skip accessing EBB and BHRB related registers
-for secure VMs.
-
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- arch/powerpc/include/asm/reg.h          | 35 ++++++++++++++++++++++++
- arch/powerpc/kernel/process.c           | 12 ++++-----
- arch/powerpc/kvm/book3s_hv.c            | 24 ++++++++---------
- arch/powerpc/kvm/book3s_hv_rmhandlers.S | 48 ++++++++++++++++++++++++---------
- arch/powerpc/kvm/book3s_hv_tm_builtin.c |  6 ++---
- arch/powerpc/perf/core-book3s.c         |  4 +--
- arch/powerpc/xmon/xmon.c                |  2 +-
- 7 files changed, 95 insertions(+), 36 deletions(-)
-
-diff --git a/arch/powerpc/include/asm/reg.h b/arch/powerpc/include/asm/reg.h
-index ec3714c..1397cb3 100644
---- a/arch/powerpc/include/asm/reg.h
-+++ b/arch/powerpc/include/asm/reg.h
-@@ -1376,6 +1376,41 @@ static inline void msr_check_and_clear(unsigned long bits)
- 		__msr_check_and_clear(bits);
- }
- 
-+#ifdef CONFIG_PPC_SVM
-+/*
-+ * Move from some "restricted" sprs.
-+ * Secure VMs should not access some registers as the related features
-+ * are disabled in the CPU. If an SVM is attempting read from the given
-+ * SPR, return 0. Otherwise behave like a normal mfspr.
-+ */
-+#define mfspr_r(rn)						\
-+({								\
-+	unsigned long rval = 0ULL;				\
-+								\
-+	if (!(mfmsr() & MSR_S))					\
-+		asm volatile("mfspr %0," __stringify(rn)	\
-+				: "=r" (rval));			\
-+	rval;							\
-+})
-+
-+/*
-+ * Move to some "restricted" sprs.
-+ * Secure VMs should not access some registers as the related features
-+ * are disabled in the CPU. If an SVM is attempting write to the given
-+ * SPR, ignore the write. Otherwise behave like a normal mtspr.
-+ */
-+#define mtspr_r(rn, v)					\
-+({								\
-+	if (!(mfmsr() & MSR_S))					\
-+		asm volatile("mtspr " __stringify(rn) ",%0" :	\
-+				     : "r" ((unsigned long)(v)) \
-+				     : "memory");		\
-+})
-+#else
-+#define mfspr_r		mfspr
-+#define mtspr_r		mtspr
-+#endif
-+
- #ifdef __powerpc64__
- #if defined(CONFIG_PPC_CELL) || defined(CONFIG_PPC_FSL_BOOK3E)
- #define mftb()		({unsigned long rval;				\
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index 8fc4de0..d5e7386 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -1072,9 +1072,9 @@ static inline void save_sprs(struct thread_struct *t)
- 		t->dscr = mfspr(SPRN_DSCR);
- 
- 	if (cpu_has_feature(CPU_FTR_ARCH_207S)) {
--		t->bescr = mfspr(SPRN_BESCR);
--		t->ebbhr = mfspr(SPRN_EBBHR);
--		t->ebbrr = mfspr(SPRN_EBBRR);
-+		t->bescr = mfspr_r(SPRN_BESCR);
-+		t->ebbhr = mfspr_r(SPRN_EBBHR);
-+		t->ebbrr = mfspr_r(SPRN_EBBRR);
- 
- 		t->fscr = mfspr(SPRN_FSCR);
- 
-@@ -1111,11 +1111,11 @@ static inline void restore_sprs(struct thread_struct *old_thread,
- 
- 	if (cpu_has_feature(CPU_FTR_ARCH_207S)) {
- 		if (old_thread->bescr != new_thread->bescr)
--			mtspr(SPRN_BESCR, new_thread->bescr);
-+			mtspr_r(SPRN_BESCR, new_thread->bescr);
- 		if (old_thread->ebbhr != new_thread->ebbhr)
--			mtspr(SPRN_EBBHR, new_thread->ebbhr);
-+			mtspr_r(SPRN_EBBHR, new_thread->ebbhr);
- 		if (old_thread->ebbrr != new_thread->ebbrr)
--			mtspr(SPRN_EBBRR, new_thread->ebbrr);
-+			mtspr_r(SPRN_EBBRR, new_thread->ebbrr);
- 
- 		if (old_thread->fscr != new_thread->fscr)
- 			mtspr(SPRN_FSCR, new_thread->fscr);
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 8304ee2..91f4db2 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -3584,9 +3584,9 @@ int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
- 	mtspr(SPRN_PSPB, vcpu->arch.pspb);
- 	mtspr(SPRN_FSCR, vcpu->arch.fscr);
- 	mtspr(SPRN_TAR, vcpu->arch.tar);
--	mtspr(SPRN_EBBHR, vcpu->arch.ebbhr);
--	mtspr(SPRN_EBBRR, vcpu->arch.ebbrr);
--	mtspr(SPRN_BESCR, vcpu->arch.bescr);
-+	mtspr_r(SPRN_EBBHR, vcpu->arch.ebbhr);
-+	mtspr_r(SPRN_EBBRR, vcpu->arch.ebbrr);
-+	mtspr_r(SPRN_BESCR, vcpu->arch.bescr);
- 	mtspr(SPRN_WORT, vcpu->arch.wort);
- 	mtspr(SPRN_TIDR, vcpu->arch.tid);
- 	mtspr(SPRN_DAR, vcpu->arch.shregs.dar);
-@@ -3657,9 +3657,9 @@ int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
- 	vcpu->arch.pspb = mfspr(SPRN_PSPB);
- 	vcpu->arch.fscr = mfspr(SPRN_FSCR);
- 	vcpu->arch.tar = mfspr(SPRN_TAR);
--	vcpu->arch.ebbhr = mfspr(SPRN_EBBHR);
--	vcpu->arch.ebbrr = mfspr(SPRN_EBBRR);
--	vcpu->arch.bescr = mfspr(SPRN_BESCR);
-+	vcpu->arch.ebbhr = mfspr_r(SPRN_EBBHR);
-+	vcpu->arch.ebbrr = mfspr_r(SPRN_EBBRR);
-+	vcpu->arch.bescr = mfspr_r(SPRN_BESCR);
- 	vcpu->arch.wort = mfspr(SPRN_WORT);
- 	vcpu->arch.tid = mfspr(SPRN_TIDR);
- 	vcpu->arch.amr = mfspr(SPRN_AMR);
-@@ -4288,9 +4288,9 @@ static int kvmppc_vcpu_run_hv(struct kvm_run *run, struct kvm_vcpu *vcpu)
- 
- 	/* Save userspace EBB and other register values */
- 	if (cpu_has_feature(CPU_FTR_ARCH_207S)) {
--		ebb_regs[0] = mfspr(SPRN_EBBHR);
--		ebb_regs[1] = mfspr(SPRN_EBBRR);
--		ebb_regs[2] = mfspr(SPRN_BESCR);
-+		ebb_regs[0] = mfspr_r(SPRN_EBBHR);
-+		ebb_regs[1] = mfspr_r(SPRN_EBBRR);
-+		ebb_regs[2] = mfspr_r(SPRN_BESCR);
- 		user_tar = mfspr(SPRN_TAR);
- 	}
- 	user_vrsave = mfspr(SPRN_VRSAVE);
-@@ -4336,9 +4336,9 @@ static int kvmppc_vcpu_run_hv(struct kvm_run *run, struct kvm_vcpu *vcpu)
- 
- 	/* Restore userspace EBB and other register values */
- 	if (cpu_has_feature(CPU_FTR_ARCH_207S)) {
--		mtspr(SPRN_EBBHR, ebb_regs[0]);
--		mtspr(SPRN_EBBRR, ebb_regs[1]);
--		mtspr(SPRN_BESCR, ebb_regs[2]);
-+		mtspr_r(SPRN_EBBHR, ebb_regs[0]);
-+		mtspr_r(SPRN_EBBRR, ebb_regs[1]);
-+		mtspr_r(SPRN_BESCR, ebb_regs[2]);
- 		mtspr(SPRN_TAR, user_tar);
- 		mtspr(SPRN_FSCR, current->thread.fscr);
- 	}
-diff --git a/arch/powerpc/kvm/book3s_hv_rmhandlers.S b/arch/powerpc/kvm/book3s_hv_rmhandlers.S
-index f4399b0..4cbf8ca 100644
---- a/arch/powerpc/kvm/book3s_hv_rmhandlers.S
-+++ b/arch/powerpc/kvm/book3s_hv_rmhandlers.S
-@@ -808,15 +808,27 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_207S)
- 	mtspr	SPRN_CIABR, r7
- 	mtspr	SPRN_TAR, r8
- 	ld	r5, VCPU_IC(r4)
--	ld	r8, VCPU_EBBHR(r4)
- 	mtspr	SPRN_IC, r5
--	mtspr	SPRN_EBBHR, r8
--	ld	r5, VCPU_EBBRR(r4)
--	ld	r6, VCPU_BESCR(r4)
-+
-+	/* EBB and TM are disabled for secure VMs so skip them */
-+	mfmsr   r8
-+	andis.  r8, r8, MSR_S@high
-+	bne     clear_ebb0
-+	ld      r5, VCPU_EBBHR(r4)
-+	ld      r6, VCPU_EBBRR(r4)
-+	ld      r7, VCPU_BESCR(r4)
-+	b       store_ebb0
-+clear_ebb0:
-+	li      r5, 0
-+	li      r6, 0
-+	li      r7, 0
-+store_ebb0:
-+	mtspr   SPRN_EBBHR, r5
-+	mtspr   SPRN_EBBRR, r6
-+	mtspr   SPRN_BESCR, r7
-+
- 	lwz	r7, VCPU_GUEST_PID(r4)
- 	ld	r8, VCPU_WORT(r4)
--	mtspr	SPRN_EBBRR, r5
--	mtspr	SPRN_BESCR, r6
- 	mtspr	SPRN_PID, r7
- 	mtspr	SPRN_WORT, r8
- BEGIN_FTR_SECTION
-@@ -1611,14 +1623,26 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_207S)
- 	mfspr	r7, SPRN_TAR
- 	std	r5, VCPU_IC(r9)
- 	std	r7, VCPU_TAR(r9)
--	mfspr	r8, SPRN_EBBHR
--	std	r8, VCPU_EBBHR(r9)
--	mfspr	r5, SPRN_EBBRR
--	mfspr	r6, SPRN_BESCR
-+
-+	/* EBB and TM are disabled for secure VMs so skip them */
-+	mfmsr   r8
-+	andis.  r8, r8, MSR_S@high
-+	bne     clear_ebb1
-+	mfspr   r5, SPRN_EBBHR
-+	mfspr   r6, SPRN_EBBRR
-+	mfspr   r7, SPRN_BESCR
-+	b       store_ebb1
-+clear_ebb1:
-+	li      r5, 0
-+	li      r6, 0
-+	li      r7, 0
-+store_ebb1:
-+	std     r5, VCPU_EBBHR(r9)
-+	std     r6, VCPU_EBBRR(r9)
-+	std     r7, VCPU_BESCR(r9)
-+
- 	mfspr	r7, SPRN_PID
- 	mfspr	r8, SPRN_WORT
--	std	r5, VCPU_EBBRR(r9)
--	std	r6, VCPU_BESCR(r9)
- 	stw	r7, VCPU_GUEST_PID(r9)
- 	std	r8, VCPU_WORT(r9)
- BEGIN_FTR_SECTION
-diff --git a/arch/powerpc/kvm/book3s_hv_tm_builtin.c b/arch/powerpc/kvm/book3s_hv_tm_builtin.c
-index 2172462..bc3071c 100644
---- a/arch/powerpc/kvm/book3s_hv_tm_builtin.c
-+++ b/arch/powerpc/kvm/book3s_hv_tm_builtin.c
-@@ -45,18 +45,18 @@ int kvmhv_p9_tm_emulation_early(struct kvm_vcpu *vcpu)
- 		if (!(vcpu->arch.hfscr & HFSCR_EBB) ||
- 		    ((msr & MSR_PR) && !(mfspr(SPRN_FSCR) & FSCR_EBB)))
- 			return 0;
--		bescr = mfspr(SPRN_BESCR);
-+		bescr = mfspr_r(SPRN_BESCR);
- 		/* expect to see a S->T transition requested */
- 		if (((bescr >> 30) & 3) != 2)
- 			return 0;
- 		bescr &= ~BESCR_GE;
- 		if (instr & (1 << 11))
- 			bescr |= BESCR_GE;
--		mtspr(SPRN_BESCR, bescr);
-+		mtspr_r(SPRN_BESCR, bescr);
- 		msr = (msr & ~MSR_TS_MASK) | MSR_TS_T;
- 		vcpu->arch.shregs.msr = msr;
- 		vcpu->arch.cfar = vcpu->arch.regs.nip - 4;
--		vcpu->arch.regs.nip = mfspr(SPRN_EBBRR);
-+		vcpu->arch.regs.nip = mfspr_r(SPRN_EBBRR);
- 		return 1;
- 
- 	case PPC_INST_MTMSRD:
-diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
-index ca92e01..e51b2c9 100644
---- a/arch/powerpc/perf/core-book3s.c
-+++ b/arch/powerpc/perf/core-book3s.c
-@@ -846,9 +846,9 @@ void perf_event_print_debug(void)
- 
- 	if (ppmu->flags & PPMU_ARCH_207S) {
- 		pr_info("MMCR2: %016lx EBBHR: %016lx\n",
--			mfspr(SPRN_MMCR2), mfspr(SPRN_EBBHR));
-+			mfspr(SPRN_MMCR2), mfspr_r(SPRN_EBBHR));
- 		pr_info("EBBRR: %016lx BESCR: %016lx\n",
--			mfspr(SPRN_EBBRR), mfspr(SPRN_BESCR));
-+			mfspr_r(SPRN_EBBRR), mfspr_r(SPRN_BESCR));
- 	}
- #endif
- 	pr_info("SIAR:  %016lx SDAR:  %016lx SIER:  %016lx\n",
-diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
-index 14e56c2..20b3431 100644
---- a/arch/powerpc/xmon/xmon.c
-+++ b/arch/powerpc/xmon/xmon.c
-@@ -1871,7 +1871,7 @@ static void dump_207_sprs(void)
- 	printf("sdar   = %.16lx   sier = %.16lx pmc6   = %.8lx\n",
- 		mfspr(SPRN_SDAR), mfspr(SPRN_SIER), mfspr(SPRN_PMC6));
- 	printf("ebbhr  = %.16lx  ebbrr = %.16lx bescr  = %.16lx\n",
--		mfspr(SPRN_EBBHR), mfspr(SPRN_EBBRR), mfspr(SPRN_BESCR));
-+		mfspr_r(SPRN_EBBHR), mfspr_r(SPRN_EBBRR), mfspr_r(SPRN_BESCR));
- 	printf("iamr   = %.16lx\n", mfspr(SPRN_IAMR));
- 
- 	if (!(msr & MSR_HV))
--- 
-1.8.3.1
 
 _______________________________________________
 iommu mailing list
