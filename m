@@ -2,51 +2,78 @@ Return-Path: <SRS0=Lu7X=XA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D5C1C3A5A5
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 06:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037C6C3A5A5
+	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 06:18:30 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2D592217D7
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 06:06:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D592217D7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id BD0DA217D7
+	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 06:18:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="CoryMkzN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD0DA217D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0C18FDA7;
-	Thu,  5 Sep 2019 06:06:37 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6C94A14B5;
+	Thu,  5 Sep 2019 06:18:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4479149F
-	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 06:06:35 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 782AAD56;
+	Thu,  5 Sep 2019 06:18:28 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 523D8A9
-	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 06:06:33 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 27DF868AFE; Thu,  5 Sep 2019 08:06:28 +0200 (CEST)
-Date: Thu, 5 Sep 2019 08:06:27 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: David Rientjes <rientjes@google.com>
-Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
-Message-ID: <20190905060627.GA1753@lst.de>
-References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2A1C7A9;
+	Thu,  5 Sep 2019 06:18:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209;
+	h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=fTcSpA3ZHXId80EpTLogSujsoZ0WrK6Tdlrkg5U4n3U=;
+	b=CoryMkzNMX3aDlJ+m7fw27+Y5
+	k6b2VLOXAy5PZZ2GtUk7b2Gg7Z+a62WBshvp2BBEqZkvIfsJQUOhgXRJTP2cSkkiV6UMawUgMAnnM
+	BPLyvE/okmSa6W3JyrHnd206HGUFLFCYGyDbkef1/pqS6w6FaTPpzQPIgX7h+a7yf6MIqFQviJlbh
+	O9sVQPNQ3kcpV6SSsFzZkzpahtly3RGBfCYsEwP3r7TlEl9q4+GYVY/KG/YPUjMI8iHQ3Ml2GypGJ
+	JtO9RtgEejTvKcuVSYanopJTNDvcYwgteHDAFFzgUHLNtasHSA48ajt+6LHbTDqmS8+IseRBdsc3B
+	jdCV6Qw4Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat
+	Linux)) id 1i5l67-0000MK-7v; Thu, 05 Sep 2019 06:18:23 +0000
+Date: Wed, 4 Sep 2019 23:18:23 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Tom Murphy <murphyt7@tcd.ie>
+Subject: Re: [PATCH V5 0/5] iommu/amd: Convert the AMD iommu driver to the
+	dma-iommu api
+Message-ID: <20190905061823.GA813@infradead.org>
+References: <20190815110944.3579-1-murphyt7@tcd.ie>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Jens Axboe <axboe@kernel.dk>, Tom Lendacky <thomas.lendacky@amd.com>,
-	Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
-	iommu@lists.linux-foundation.org,
-	Peter Gonda <pgonda@google.com>, Christoph Hellwig <hch@lst.de>,
-	Jianxiong Gao <jxgao@google.com>
+In-Reply-To: <20190815110944.3579-1-murphyt7@tcd.ie>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Heiko Stuebner <heiko@sntech.de>, virtualization@lists.linux-foundation.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org,
+	Kukjin Kim <kgene@kernel.org>, Andy Gross <agross@kernel.org>,
+	linux-s390@vger.kernel.org, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+	linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,25 +91,11 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Sep 04, 2019 at 02:40:44PM -0700, David Rientjes wrote:
-> Hi Christoph, Jens, and Ming,
-> 
-> While booting a 5.2 SEV-enabled guest we have encountered the following 
-> WARNING that is followed up by a BUG because we are in atomic context 
-> while trying to call set_memory_decrypted:
+Dave, Joerg, Robin:
 
-Well, this really is a x86 / DMA API issue unfortunately.  Drivers
-are allowed to do GFP_ATOMIC dma allocation under locks / rcu critical
-sections and from interrupts.  And it seems like the SEV case can't
-handle that.  We have some semi-generic code to have a fixed sized
-pool in kernel/dma for non-coherent platforms that have similar issues
-that we could try to wire up, but I wonder if there is a better way
-to handle the issue, so I've added Tom and the x86 maintainers.
-
-Now independent of that issue using DMA coherent memory for the nvme
-PRPs/SGLs doesn't actually feel very optional.  We could do with
-normal kmalloc allocations and just sync it to the device and back.
-I wonder if we should create some general mempool-like helpers for that.
+is there any chance we could at least pick up patches 2 and 4 ASAP
+as they are clearly fixes for current deficits, even without the
+amd conversion?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
