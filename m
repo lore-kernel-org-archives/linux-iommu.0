@@ -2,83 +2,86 @@ Return-Path: <SRS0=Lu7X=XA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B80EC43331
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 20:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A93B6C43331
+	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 22:37:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 73EBC206BB
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 20:57:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C7545206DE
+	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 22:37:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="SbY27Cfn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73EBC206BB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="Y1yQmcMa"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7545206DE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C98DE1B3E;
-	Thu,  5 Sep 2019 20:57:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2EC1719B9;
+	Thu,  5 Sep 2019 22:37:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 010E318E9
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 53DC2F6D
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 20:57:26 +0000 (UTC)
+	Thu,  5 Sep 2019 22:37:19 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com
-	[209.85.222.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6BCF3887
+Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
+	[209.85.215.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F3195A9
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 20:57:25 +0000 (UTC)
-Received: by mail-qk1-f193.google.com with SMTP id o11so3582801qkg.8
+	Thu,  5 Sep 2019 22:37:18 +0000 (UTC)
+Received: by mail-pg1-f196.google.com with SMTP id d10so2262532pgo.5
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 05 Sep 2019 13:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
-	h=message-id:subject:from:to:cc:date:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=+GMBVTc4YV/8dPn1BEq2LsTFKaa8HMVVMk+zrX4S1nM=;
-	b=SbY27Cfn0VelE6EDWcMZslNIxHHxq/+o3RCMSslccCw2cCyjWgWX/0gN93cQbCWe53
-	6UY+gzLWmtNbZeLlNDqjYSZzcJtFIqfbn4O+cx+akcHAYURcaNrSxW1rdKFeTRxvArpS
-	uyQNvWk2gLA0xzfXdilhNE47/nF8b4SP9ZwfTBERhXGPh0bhDnTRuLCh/hxHgx7nhiJP
-	6+XET5szH4In4kSou3WRpcDssJ7OOKC2du7pmeHH00YIEWVlrLSTtUkrZ1Ys1HczYzT4
-	wvvZQay+FwaKiBn4M06jojYKHTsdNg8eJJAb/LghTZ5XP2XgGj2caaZNkf0ckXvtHiPa
-	SXWQ==
+	Thu, 05 Sep 2019 15:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+	h=date:from:to:cc:subject:in-reply-to:message-id:references
+	:user-agent:mime-version;
+	bh=GjBspe2tpCYYNWjl2LkWvULdU+0U6Dxr2p5C7+1bhNo=;
+	b=Y1yQmcMalmEQm/Vqme6jPHNnMCdfGOzjjTtdcAIQEZZxyHtB2fOyO9RcDwAenVynP1
+	oU2EWbBV8k3A/zrgzHKlhFl+OCjJA7+iFcROUVfqu0zVQJtdvGeCfe7NjlSjJt95b1D/
+	+sI71E2Mgibu6zo1UdRBXiR6W+COpXDLAoZJKjTAFkblQQyepPHdb4Yw2B60eqK0bc/c
+	5EZFQrraRiPZCgjeT/i0tuIlybmJBkDEeBq26FP+YjU3DIMEx+nkahOJs0NYOvvE8G4b
+	wnhaXgd+jxqZlunLBkPxADJY04Lpuw8sXJbBOQ+cwbRupYKGQyxmFyerDToQmxrK9FHT
+	swJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=+GMBVTc4YV/8dPn1BEq2LsTFKaa8HMVVMk+zrX4S1nM=;
-	b=FKQ1zP3jNIDPFlx8QqhU5fV5kuX3k74hDC/Ys9qJQwrMsdkMFQq2gxQ5zZa0kTwpgq
-	LcK+YAl398UxUDkrh6ik4SPU13PO6YM37umRUvt7WLMm1L1xhlAVxLA+T+x/WePfOlSs
-	g6Vvoitrys1V6XvxH8UA/h20oZFYV1EAE+BFQRVnDsgvP7b1IBwYK3+wYqwUTctaGAL2
-	Q3ono558JvbaOL2oPhObnomiYIIx/AcwKBfa1oaun/xyjWPYUmPWuT5IiCOVLqq3d/gU
-	I62DypJUBs/n3ZutGyTrHxd2T6VlVAJLAEZyVzfT91mJ/h5IC6J8wt6qZFb1u24MhP16
-	cy4A==
-X-Gm-Message-State: APjAAAV7qAhAyAfEu8t4Xr64PUV7QklFtPkkGwbI3PUeThtEXrM6UMUS
-	Y7Fgf0h2ZtWhXtqft8w8gC5IGA==
-X-Google-Smtp-Source: APXvYqzdxQrSoR7cjpSOh5Leh3U8WkBvqTCVfgopweUcRCvJX2VfwWPjVb6STHWq+HNEtRIwi2mALg==
-X-Received: by 2002:a37:4b06:: with SMTP id y6mr5238826qka.395.1567717044279; 
-	Thu, 05 Sep 2019 13:57:24 -0700 (PDT)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
-	[66.187.233.206]) by smtp.gmail.com with ESMTPSA id
-	n187sm1690248qkc.98.2019.09.05.13.57.22
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 05 Sep 2019 13:57:23 -0700 (PDT)
-Message-ID: <1567717041.5576.102.camel@lca.pw>
-Subject: Re: [RFC PATCH] iommu/amd: fix a race in increase_address_space()
-From: Qian Cai <cai@lca.pw>
-To: Joerg Roedel <jroedel@suse.de>
-Date: Thu, 05 Sep 2019 16:57:21 -0400
-In-Reply-To: <20190905114339.GC5457@suse.de>
-References: <1567632262-21284-1-git-send-email-cai@lca.pw>
-	<20190905114339.GC5457@suse.de>
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Cc: don.brace@microsemi.com, iommu@lists.linux-foundation.org,
-	esc.storagedev@microsemi.com, hch@lst.de, linux-kernel@vger.kernel.org
+	h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+	:references:user-agent:mime-version;
+	bh=GjBspe2tpCYYNWjl2LkWvULdU+0U6Dxr2p5C7+1bhNo=;
+	b=g9weSDBBJonw9h++2VHkVxtDotQ4da5Fn2yeqrU390vJxU6cAykXfVdEGmI4Vr/9wt
+	ud1+R7CO77qYkdDxQUbOf9rtx21fLY2I4GtpMG6YiIgYWKWOQjXCl9UqaM4KIynP6f3L
+	xUbEd5WSso4Xslyrd9saTa062lk9Nzk7k53X9rG2G8tN0GNKtdaBafoIzrYepfblA+ua
+	chPM6/Hzc6siLkUZEacdpyfRgw3uOMO81UQmxgvMEYww//yPxzlXw3TS0/W8ZqlJDyfC
+	0/l1bo7ciucwYbvnkNaumlguP+scNbwCgW76tj1SIoLOECeFbBnhGDvTCdJRuJc9+BmP
+	+SMQ==
+X-Gm-Message-State: APjAAAXfhjAPmuDd2gvNwUtJEjnl2JoEPEbg8u4lKFbgnoUq/IXGMXU3
+	TykamV511R31f+HYvYFmeaRHfQ==
+X-Google-Smtp-Source: APXvYqzoKno8KkgU8EqN4eXlIDNTHy2pjuloFOR5UxHRMSEDann6aIsDU+iY4ucPt4NGFSgWYqVMFg==
+X-Received: by 2002:a17:90a:32c8:: with SMTP id
+	l66mr6539209pjb.44.1567723038296; 
+	Thu, 05 Sep 2019 15:37:18 -0700 (PDT)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+	([2620:15c:17:3:3a5:23a7:5e32:4598])
+	by smtp.gmail.com with ESMTPSA id l72sm8557163pjb.7.2019.09.05.15.37.17
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Thu, 05 Sep 2019 15:37:17 -0700 (PDT)
+Date: Thu, 5 Sep 2019 15:37:16 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
+In-Reply-To: <20190905060627.GA1753@lst.de>
+Message-ID: <alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
+	<20190905060627.GA1753@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Cc: Jens Axboe <axboe@kernel.dk>, Tom Lendacky <thomas.lendacky@amd.com>,
+	Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
+	iommu@lists.linux-foundation.org, Peter Gonda <pgonda@google.com>,
+	Jianxiong Gao <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,89 +94,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, 2019-09-05 at 13:43 +0200, Joerg Roedel wrote:
-> Hi Qian,
-> 
-> On Wed, Sep 04, 2019 at 05:24:22PM -0400, Qian Cai wrote:
-> > 	if (domain->mode == PAGE_MODE_6_LEVEL)
-> > 		/* address space already 64 bit large */
-> > 		return false;
+On Thu, 5 Sep 2019, Christoph Hellwig wrote:
+
+> > Hi Christoph, Jens, and Ming,
 > > 
-> > This gives a clue that there must be a race between multiple concurrent
-> > threads in increase_address_space().
+> > While booting a 5.2 SEV-enabled guest we have encountered the following 
+> > WARNING that is followed up by a BUG because we are in atomic context 
+> > while trying to call set_memory_decrypted:
 > 
-> Thanks for tracking this down, there is a race indeed.
+> Well, this really is a x86 / DMA API issue unfortunately.  Drivers
+> are allowed to do GFP_ATOMIC dma allocation under locks / rcu critical
+> sections and from interrupts.  And it seems like the SEV case can't
+> handle that.  We have some semi-generic code to have a fixed sized
+> pool in kernel/dma for non-coherent platforms that have similar issues
+> that we could try to wire up, but I wonder if there is a better way
+> to handle the issue, so I've added Tom and the x86 maintainers.
 > 
-> > +	mutex_lock(&domain->api_lock);
-> >  	*dma_addr = __map_single(dev, dma_dom, page_to_phys(page),
-> >  				 size, DMA_BIDIRECTIONAL, dma_mask);
-> > +	mutex_unlock(&domain->api_lock);
-> >  
-> >  	if (*dma_addr == DMA_MAPPING_ERROR)
-> >  		goto out_free;
-> > @@ -2696,7 +2698,9 @@ static void free_coherent(struct device *dev, size_t size,
-> >  
-> >  	dma_dom = to_dma_ops_domain(domain);
-> >  
-> > +	mutex_lock(&domain->api_lock);
-> >  	__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
-> > +	mutex_unlock(&domain->api_lock);
+> Now independent of that issue using DMA coherent memory for the nvme
+> PRPs/SGLs doesn't actually feel very optional.  We could do with
+> normal kmalloc allocations and just sync it to the device and back.
+> I wonder if we should create some general mempool-like helpers for that.
 > 
-> But I think the right fix is to lock the operation in
-> increase_address_space() directly, and not the calls around it, like in
-> the diff below. It is untested, so can you please try it and report back
-> if it fixes your issue?
 
-Yes, it works great so far.
+Thanks for looking into this.  I assume it's a non-starter to try to 
+address this in _vm_unmap_aliases() itself, i.e. rely on a purge spinlock 
+to do all synchronization (or trylock if not forced) for 
+purge_vmap_area_lazy() rather than only the vmap_area_lock within it.  In 
+other words, no mutex.
 
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index b607a92791d3..1ff705f16239 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -1424,18 +1424,21 @@ static void free_pagetable(struct protection_domain *domain)
->   * another level increases the size of the address space by 9 bits to a size up
->   * to 64 bits.
->   */
-> -static bool increase_address_space(struct protection_domain *domain,
-> +static void increase_address_space(struct protection_domain *domain,
->  				   gfp_t gfp)
->  {
-> +	unsigned long flags;
->  	u64 *pte;
->  
-> -	if (domain->mode == PAGE_MODE_6_LEVEL)
-> +	spin_lock_irqsave(&domain->lock, flags);
-> +
-> +	if (WARN_ON_ONCE(domain->mode == PAGE_MODE_6_LEVEL))
->  		/* address space already 64 bit large */
-> -		return false;
-> +		goto out;
->  
->  	pte = (void *)get_zeroed_page(gfp);
->  	if (!pte)
-> -		return false;
-> +		goto out;
->  
->  	*pte             = PM_LEVEL_PDE(domain->mode,
->  					iommu_virt_to_phys(domain->pt_root));
-> @@ -1443,7 +1446,10 @@ static bool increase_address_space(struct protection_domain *domain,
->  	domain->mode    += 1;
->  	domain->updated  = true;
->  
-> -	return true;
-> +out:
-> +	spin_unlock_irqrestore(&domain->lock, flags);
-> +
-> +	return;
->  }
->  
->  static u64 *alloc_pte(struct protection_domain *domain,
+If that's the case, and set_memory_encrypted() can't be fixed to not need 
+to sleep by changing _vm_unmap_aliases() locking, then I assume dmapool is 
+our only alternative?  I have no idea with how large this should be.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
