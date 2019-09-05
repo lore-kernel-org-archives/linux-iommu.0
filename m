@@ -2,69 +2,49 @@ Return-Path: <SRS0=Lu7X=XA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C58CFC3A5A5
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 11:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3A1C3A5A5
+	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 11:43:49 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CFCB20825
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 11:41:51 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="hzZJnh4s"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CFCB20825
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 1F66D20870
+	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 11:43:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F66D20870
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8AB5F1778;
-	Thu,  5 Sep 2019 11:41:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 072DB1757;
+	Thu,  5 Sep 2019 11:43:49 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 928631778
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D67381736
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 11:41:18 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3AC86A9
+	Thu,  5 Sep 2019 11:43:47 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 10FD5A9
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 11:41:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=NmR+a6Uj1v91V4iU31zXRZrXbA98s0lz9xVim531aU8=;
-	b=hzZJnh4svokLvarfNgvrhm8m1S
-	WTXuW7q5KyN2lrjLmjWBEY9ABREivG0K065Agk49VKYTTP+FyoW6woNAUq0QnYak+JJw3qi8LhcY/
-	sp1rlzPnkjJ45RfFncTFf4vYND87XigrvGEspmrfheZCmxIKZUL2p2ZPW9j5IqifRDgBQ0IcjJ68p
-	ZzEviqStmAYe9RKezZ3rHPP2Ko2kL53FUH0hYABafGrqBV8OoHzueepSS2Wb58WPYWrhgKKsgVSbI
-	VcGwGnfNjnSVMvGhZZNVwGfhQ8qzxMLowb8hvIbVBQB4xWL3rKpzmRWIxsdrqALzA2RgJmdGEbbKe
-	EKvyOIwA==;
-Received: from [2001:4bb8:18c:1755:a4b2:9562:6bf1:4bb9] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-	id 1i5q8Y-0005Ds-Pr; Thu, 05 Sep 2019 11:41:15 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Stefano Stabellini <sstabellini@kernel.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, gross@suse.com,
-	boris.ostrovsky@oracle.com
-Subject: [PATCH 11/11] arm64: use asm-generic/dma-mapping.h
-Date: Thu,  5 Sep 2019 13:34:08 +0200
-Message-Id: <20190905113408.3104-12-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190905113408.3104-1-hch@lst.de>
-References: <20190905113408.3104-1-hch@lst.de>
+	Thu,  5 Sep 2019 11:43:47 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id 2F75BAD07;
+	Thu,  5 Sep 2019 11:43:42 +0000 (UTC)
+Date: Thu, 5 Sep 2019 13:43:39 +0200
+From: Joerg Roedel <jroedel@suse.de>
+To: Qian Cai <cai@lca.pw>
+Subject: Re: [RFC PATCH] iommu/amd: fix a race in increase_address_space()
+Message-ID: <20190905114339.GC5457@suse.de>
+References: <1567632262-21284-1-git-send-email-cai@lca.pw>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org,
-	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <1567632262-21284-1-git-send-email-cai@lca.pw>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: don.brace@microsemi.com, iommu@lists.linux-foundation.org,
+	esc.storagedev@microsemi.com, hch@lst.de, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,75 +62,80 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Now that the Xen special cases are gone nothing worth mentioning is
-left in the arm64 <asm/dma-mapping.h> file, so switch to use the
-asm-generic version instead.
+Hi Qian,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Will Deacon <will@kernel.org>
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
----
- arch/arm64/include/asm/Kbuild        |  1 +
- arch/arm64/include/asm/dma-mapping.h | 22 ----------------------
- arch/arm64/mm/dma-mapping.c          |  1 +
- 3 files changed, 2 insertions(+), 22 deletions(-)
- delete mode 100644 arch/arm64/include/asm/dma-mapping.h
+On Wed, Sep 04, 2019 at 05:24:22PM -0400, Qian Cai wrote:
+> 	if (domain->mode == PAGE_MODE_6_LEVEL)
+> 		/* address space already 64 bit large */
+> 		return false;
+> 
+> This gives a clue that there must be a race between multiple concurrent
+> threads in increase_address_space().
 
-diff --git a/arch/arm64/include/asm/Kbuild b/arch/arm64/include/asm/Kbuild
-index c52e151afab0..98a5405c8558 100644
---- a/arch/arm64/include/asm/Kbuild
-+++ b/arch/arm64/include/asm/Kbuild
-@@ -4,6 +4,7 @@ generic-y += delay.h
- generic-y += div64.h
- generic-y += dma.h
- generic-y += dma-contiguous.h
-+generic-y += dma-mapping.h
- generic-y += early_ioremap.h
- generic-y += emergency-restart.h
- generic-y += hw_irq.h
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-deleted file mode 100644
-index 67243255a858..000000000000
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ /dev/null
-@@ -1,22 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * Copyright (C) 2012 ARM Ltd.
-- */
--#ifndef __ASM_DMA_MAPPING_H
--#define __ASM_DMA_MAPPING_H
--
--#ifdef __KERNEL__
--
--#include <linux/types.h>
--#include <linux/vmalloc.h>
--
--#include <xen/xen.h>
--#include <asm/xen/hypervisor.h>
--
--static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
--{
--	return NULL;
--}
--
--#endif	/* __KERNEL__ */
--#endif	/* __ASM_DMA_MAPPING_H */
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 4b244a037349..6578abcfbbc7 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -8,6 +8,7 @@
- #include <linux/cache.h>
- #include <linux/dma-noncoherent.h>
- #include <linux/dma-iommu.h>
-+#include <xen/xen.h>
- #include <xen/swiotlb-xen.h>
+Thanks for tracking this down, there is a race indeed.
+
+> +	mutex_lock(&domain->api_lock);
+>  	*dma_addr = __map_single(dev, dma_dom, page_to_phys(page),
+>  				 size, DMA_BIDIRECTIONAL, dma_mask);
+> +	mutex_unlock(&domain->api_lock);
+>  
+>  	if (*dma_addr == DMA_MAPPING_ERROR)
+>  		goto out_free;
+> @@ -2696,7 +2698,9 @@ static void free_coherent(struct device *dev, size_t size,
+>  
+>  	dma_dom = to_dma_ops_domain(domain);
+>  
+> +	mutex_lock(&domain->api_lock);
+>  	__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
+> +	mutex_unlock(&domain->api_lock);
+
+But I think the right fix is to lock the operation in
+increase_address_space() directly, and not the calls around it, like in
+the diff below. It is untested, so can you please try it and report back
+if it fixes your issue?
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b607a92791d3..1ff705f16239 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1424,18 +1424,21 @@ static void free_pagetable(struct protection_domain *domain)
+  * another level increases the size of the address space by 9 bits to a size up
+  * to 64 bits.
+  */
+-static bool increase_address_space(struct protection_domain *domain,
++static void increase_address_space(struct protection_domain *domain,
+ 				   gfp_t gfp)
+ {
++	unsigned long flags;
+ 	u64 *pte;
  
- #include <asm/cacheflush.h>
--- 
-2.20.1
-
+-	if (domain->mode == PAGE_MODE_6_LEVEL)
++	spin_lock_irqsave(&domain->lock, flags);
++
++	if (WARN_ON_ONCE(domain->mode == PAGE_MODE_6_LEVEL))
+ 		/* address space already 64 bit large */
+-		return false;
++		goto out;
+ 
+ 	pte = (void *)get_zeroed_page(gfp);
+ 	if (!pte)
+-		return false;
++		goto out;
+ 
+ 	*pte             = PM_LEVEL_PDE(domain->mode,
+ 					iommu_virt_to_phys(domain->pt_root));
+@@ -1443,7 +1446,10 @@ static bool increase_address_space(struct protection_domain *domain,
+ 	domain->mode    += 1;
+ 	domain->updated  = true;
+ 
+-	return true;
++out:
++	spin_unlock_irqrestore(&domain->lock, flags);
++
++	return;
+ }
+ 
+ static u64 *alloc_pte(struct protection_domain *domain,
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
