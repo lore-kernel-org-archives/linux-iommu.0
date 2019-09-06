@@ -8,87 +8,89 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D027C43140
-	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 21:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 191FBC43140
+	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 21:51:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6155220838
-	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 21:48:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E07BE206BB
+	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 21:51:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l9KS64BP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6155220838
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R7tJANYP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E07BE206BB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 38EA327C8;
-	Fri,  6 Sep 2019 21:48:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9E4E527C8;
+	Fri,  6 Sep 2019 21:51:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 50DF0279B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D3FF427C2
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  6 Sep 2019 21:48:49 +0000 (UTC)
+	Fri,  6 Sep 2019 21:51:04 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
 	[209.85.210.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F00F27DB
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6C6B87DB
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  6 Sep 2019 21:48:48 +0000 (UTC)
-Received: by mail-pf1-f193.google.com with SMTP id y72so5420026pfb.12
+	Fri,  6 Sep 2019 21:51:04 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id h195so5460825pfe.5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 06 Sep 2019 14:48:48 -0700 (PDT)
+	Fri, 06 Sep 2019 14:51:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references
 	:mime-version:content-transfer-encoding;
-	bh=PmbeXR16EILkjisUuUV6rfWxt0BghSuM480d7BBoObE=;
-	b=l9KS64BP1B0VVFLP3cG+Fu9U3dUbCksmelSZOoyogDcNDZW7sjsm328l7B9JP6x26f
-	DZaO/ojDzSUVS4Il84HxoyaRZCseDaFTbt0s08wXIhLhOunAvz314/stiuohiLGFMmpE
-	o3ol62LvFBaKO08hIXHcKu89nLOnrucM/f4gr9kbmXTL/db0eQb2NfDz1gsUIVqf14t0
-	QS0EoD8cKG4EdIQwYJ9KgSsGFyxXBCE3mbcRtamjbEN+ffrHwSzbUJ5ryEqWsTz7LGFr
-	PJrVc19D7lpchjdUYFkmeYBA9fAiwKYdQ49Fv5Gw7pcbMrSl95PcHvVJdZOvz2bGBBlT
-	Gx5w==
+	bh=eDpX53pV2w3525Sfc++y574jdtjcTxKRU6k4wrPYJJE=;
+	b=R7tJANYP9RC8vMxjaiQJQysGREeC4SukBKwQay9FF+AMJE+MvsYVBFrsati6KaggWM
+	VWkpRA7WPb67hbvt9c4rmHWNClvfUZwODODfoY+fH9crahdylzEddDD/2NidH2MKqLAp
+	Iapm/hiz0A2mDeZEclyVm+SdU1bJGoc8FP6NklRbcl5IksRx0lwTVYI5cealjOhS7XYM
+	gitoGxs4V3Z1Ekpym5seReRqr8Hs7DrGi6GbW553Hr4d3wKFAx1oTU7V3ez1y5WfY1gc
+	2nf2SwaiX5AwY5cE+npxZbJaQLMTapIZxsY6RSypeBRKrquK9OECMgG8670DMSeZaHyp
+	Vsrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references:mime-version:content-transfer-encoding;
-	bh=PmbeXR16EILkjisUuUV6rfWxt0BghSuM480d7BBoObE=;
-	b=UyK6yT7zVd+Z561UC/dhhVvFQWTBSJdwH5lrIL3LzQWFFDKc+3ja1pjMJO+vs3L440
-	ecaysRsK0eP74iF2i8FsNl3UDWp06z+ESpaNEERaeQMh135TaNbj31OghlkGwk72VAig
-	Vf4uhEN+am7mLiNX9xsAES5loRAA0qBBArH9NER0mnxdV/q0wQeyARCmVq+9ddq75Tqg
-	5KHU0gQtPPV9lggYRc3Llt8ljWjSReswTXuBlKny7/oZg7acmIA8gZhlAAKj0c91M+/f
-	KQpddGrlQDJLrGSrv8E7OuEI7RIKFYGu5W2jmyr8VhZMt2cQbf+KkoLIlHCViESbEg7y
-	uidg==
-X-Gm-Message-State: APjAAAXFzKNOrPPMmErld2skOp+iRbQXrImr7WQjkU6g4gQV4B8HW+zj
-	TaMcL7jogw7NCtJLuyfjd12JA/YmD0iWww==
-X-Google-Smtp-Source: APXvYqxQCd7WFr1bk2mCpZ+S1Nv/UOSK0AKJu6DLOAfsUfGckUthB3lN7nqi/NUB8YzjJgdlC0+ugA==
-X-Received: by 2002:a63:4823:: with SMTP id v35mr9858403pga.138.1567806528190; 
-	Fri, 06 Sep 2019 14:48:48 -0700 (PDT)
+	bh=eDpX53pV2w3525Sfc++y574jdtjcTxKRU6k4wrPYJJE=;
+	b=ZTSarCbz3fPsw6iYOpVEoOTjYWAAL+NF+itzsRxipookD5V0ezFg2p1N/yS3ty8u6c
+	MGme8bY1RngIVnqdAFBTnYgugo/50VNDQbHh/HzgReC9aUCbcW12+iXNV6Tvo3Z+99fz
+	HBQC9LsuJiBVjSMut8sQln6kXUbAJKyZgbHItgnpRnAMRSG3GkiM7sYBS+0wT6+z/gjq
+	MZulVNPNeFyga4vfQToPgPUPUjb4u2f4yraBY8OpsrNnYRgWWua8cL7xidD/LM1idmi9
+	7EH6TiFZHcM+hZEYbyt+sHOqBpelSYxxVr3DDP0yitYlt8haFOMqe0yWLrek+ZIqlUaf
+	0aYw==
+X-Gm-Message-State: APjAAAUeI+5lKiQPLdG+Ad29leN1a5q4zpcdJ0PfvcElfxoB1EwgeH0t
+	o5k0pGksgtkx5TcO42WIjmTEC84et4Xkcw==
+X-Google-Smtp-Source: APXvYqxxmn9ULbrQFMLJEtMySO7JBNQkpSXC7k9Y2QPcQyK5SFcavLc7RGYi6hNSQ6p9Iz352cwvcQ==
+X-Received: by 2002:a63:484d:: with SMTP id x13mr9803253pgk.122.1567806663646; 
+	Fri, 06 Sep 2019 14:51:03 -0700 (PDT)
 Received: from localhost ([100.118.89.196]) by smtp.gmail.com with ESMTPSA id
-	j9sm6894230pfi.128.2019.09.06.14.48.47
+	g14sm6823936pfo.133.2019.09.06.14.51.02
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Fri, 06 Sep 2019 14:48:47 -0700 (PDT)
+	Fri, 06 Sep 2019 14:51:03 -0700 (PDT)
 From: Rob Clark <robdclark@gmail.com>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 1/2] iommu: add support for drivers that manage iommu
-	explicitly
-Date: Fri,  6 Sep 2019 14:44:01 -0700
-Message-Id: <20190906214409.26677-2-robdclark@gmail.com>
+Subject: [PATCH v2 2/2] drm/msm: mark devices where iommu is managed by driver
+Date: Fri,  6 Sep 2019 14:44:02 -0700
+Message-Id: <20190906214409.26677-3-robdclark@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190906214409.26677-1-robdclark@gmail.com>
 References: <20190906214409.26677-1-robdclark@gmail.com>
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>,
-	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>, Suzuki K Poulose <suzuki.poulose@arm.com>,
-	linux-arm-msm@vger.kernel.org,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Robin Murphy <robin.murphy@arm.com>, dri-devel@lists.freedesktop.org,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Joe Perches <joe@perches.com>, Andrew Morton <akpm@linux-foundation.org>,
-	Will Deacon <will@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
-	open list <linux-kernel@vger.kernel.org>
+Cc: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>, David Airlie <airlied@linux.ie>,
+	dri-devel@lists.freedesktop.org, Will Deacon <will@kernel.org>,
+	Jeykumar Sankaran <jsanka@codeaurora.org>,
+	Rob Clark <robdclark@chromium.org>, Jonathan Marek <jonathan@marek.ca>,
+	Mamta Shukla <mamtashukla555@gmail.com>,
+	"open list:DRM DRIVER FOR MSM ADRENO GPU"
+	<freedreno@lists.freedesktop.org>, linux-arm-msm@vger.kernel.org,
+	Abhinav Kumar <abhinavk@codeaurora.org>, Bruce Wang <bzwang@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>, Sean Paul <sean@poorly.run>,
+	Allison Randal <allison@lohutok.net>,
+	Boris Brezillon <bbrezillon@kernel.org>, Enrico Weigelt <info@metux.net>,
+	open list <linux-kernel@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Georgi Djakov <georgi.djakov@linaro.org>,
+	Sravanthi Kollukuduru <skolluku@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -108,57 +110,62 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: Rob Clark <robdclark@chromium.org>
 
-Avoid attaching any non-driver managed domain if the driver indicates
-that it manages the iommu directly.
-
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
- drivers/iommu/iommu.c    | 2 +-
- drivers/iommu/of_iommu.c | 3 +++
- include/linux/device.h   | 3 ++-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/adreno/adreno_device.c | 1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c    | 1 +
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c   | 1 +
+ drivers/gpu/drm/msm/msm_drv.c              | 1 +
+ 4 files changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0c674d80c37f..2ac5e8d48cae 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -674,7 +674,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
+index 7f750a9510a5..19f2bd2d6cb4 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_device.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+@@ -452,6 +452,7 @@ static struct platform_driver adreno_driver = {
+ 		.name = "adreno",
+ 		.of_match_table = dt_match,
+ 		.pm = &adreno_pm_ops,
++		.driver_manages_iommu = true,
+ 	},
+ };
  
- 	mutex_lock(&group->mutex);
- 	list_add_tail(&device->list, &group->devices);
--	if (group->domain)
-+	if (group->domain && !(dev->driver && dev->driver->driver_manages_iommu))
- 		ret = __iommu_attach_device(group->domain, dev);
- 	mutex_unlock(&group->mutex);
- 	if (ret)
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 614a93aa5305..62b47e384a77 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -221,6 +221,9 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 	} else if (err < 0) {
- 		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
- 		ops = NULL;
-+	} else if (dev->driver && dev->driver->driver_manages_iommu) {
-+		dev_dbg(dev, "Driver manages IOMMU\n");
-+		ops = NULL;
- 	}
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 5751815a26d7..dec8cc6b64dc 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -1094,6 +1094,7 @@ static struct platform_driver dpu_driver = {
+ 		.name = "msm_dpu",
+ 		.of_match_table = dpu_dt_match,
+ 		.pm = &dpu_pm_ops,
++		.driver_manages_iommu = true,
+ 	},
+ };
  
- 	return ops;
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 1aa341b2a0db..b77a11b8d9bb 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -284,7 +284,8 @@ struct device_driver {
- 	struct module		*owner;
- 	const char		*mod_name;	/* used for built-in modules */
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
+index d93de3a569b4..eff1b000258e 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
+@@ -1134,6 +1134,7 @@ static struct platform_driver mdp5_driver = {
+ 		.name = "msm_mdp",
+ 		.of_match_table = mdp5_dt_match,
+ 		.pm = &mdp5_pm_ops,
++		.driver_manages_iommu = true,
+ 	},
+ };
  
--	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
-+	bool suppress_bind_attrs:1;	/* disables bind/unbind via sysfs */
-+	bool driver_manages_iommu:1;	/* driver manages IOMMU explicitly */
- 	enum probe_type probe_type;
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 3a4fd20a33e8..336a6d0a4cd3 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -1388,6 +1388,7 @@ static struct platform_driver msm_platform_driver = {
+ 		.name   = "msm",
+ 		.of_match_table = dt_match,
+ 		.pm     = &msm_pm_ops,
++		.driver_manages_iommu = true,
+ 	},
+ };
  
- 	const struct of_device_id	*of_match_table;
 -- 
 2.21.0
 
