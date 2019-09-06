@@ -2,146 +2,62 @@ Return-Path: <SRS0=rqG6=XB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1831FC43331
-	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 14:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BA0C43140
+	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 14:29:08 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD44D2082C
-	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 14:19:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="FHeTL963"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD44D2082C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4E07E2067B
+	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 14:29:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E07E2067B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BCCE323A9;
-	Fri,  6 Sep 2019 14:19:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E13D923DA;
+	Fri,  6 Sep 2019 14:29:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7820523A8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6E4B723D6
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  6 Sep 2019 14:19:18 +0000 (UTC)
+	Fri,  6 Sep 2019 14:29:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5D2D67DB
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B96FA756
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  6 Sep 2019 14:19:17 +0000 (UTC)
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-	by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x86EDfAw042820; Fri, 6 Sep 2019 14:19:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
-	h=subject : to : cc :
-	references : from : message-id : date : mime-version : in-reply-to :
-	content-type : content-transfer-encoding; s=corp-2019-08-05;
-	bh=hN8hZ6HuMup1PhkKBqnf3LK/a8llinuYBo/9CxNyLFg=;
-	b=FHeTL963J3lbam1Nr23h9B3euapMCROjnQkGXwqSvQq/whZtZa2nerD3Wu4aOnfCA9g/
-	sepYvmIGHMlQ460vp272CrJfBWkRg+LGtYTq9YLVqxYq2+jS3Lw1IxmuwuMeuWSi1CIX
-	1Cjo2QRI6ghxKKQrq0g7yPakOz49a9p2iF/mRiL7CiPJZ9s9YZ3WbKCYSbEU5Ho7Mb8c
-	+mNPEsI4bsKqtQrKJpxIns8YMV1zQHmUOE1KtLVvjk2mR3M6KuD3mL7albPG3yVLhhOM
-	5UkcUuoRKH90y7nXFlpaFph+9n7++VG+gaQPgyjqaZsKbgjGMaH7lzUTziiEQKijvRWb
-	Ig== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-	by userp2120.oracle.com with ESMTP id 2uurpy85fx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 06 Sep 2019 14:19:09 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-	by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id
-	x86EDakf150702; Fri, 6 Sep 2019 14:19:09 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-	by userp3030.oracle.com with ESMTP id 2uujte8cxs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 06 Sep 2019 14:19:08 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-	by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x86EJ64P030721;
-	Fri, 6 Sep 2019 14:19:06 GMT
-Received: from bostrovs-us.us.oracle.com (/10.152.32.65)
-	by default (Oracle Beehive Gateway v4.0)
-	with ESMTP ; Fri, 06 Sep 2019 07:19:06 -0700
-Subject: Re: [PATCH 09/11] swiotlb-xen: simplify cache maintainance
-To: Christoph Hellwig <hch@lst.de>
-References: <20190905113408.3104-1-hch@lst.de>
-	<20190905113408.3104-10-hch@lst.de>
-	<e4f9b393-2631-57cd-f42f-3581e75ab9a3@oracle.com>
-	<20190906140123.GA9894@lst.de>
-From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=boris.ostrovsky@oracle.com; prefer-encrypt=mutual; keydata=
-	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
-	Jg6OxFYd01z+a+oL
-Message-ID: <ca88e7b8-08ca-51b2-0c77-c828d92da0db@oracle.com>
-Date: Fri, 6 Sep 2019 10:19:01 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.7.0
+	Fri,  6 Sep 2019 14:29:05 +0000 (UTC)
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 69C8BE935B408234D2E0;
+	Fri,  6 Sep 2019 22:29:01 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS409-HUB.china.huawei.com
+	(10.3.19.209) with Microsoft SMTP Server id 14.3.439.0;
+	Fri, 6 Sep 2019 22:28:59 +0800
+Subject: Re: [PATCH] media: staging: tegra-vde: Disable building with
+	COMPILE_TEST
+To: Dmitry Osipenko <digetx@gmail.com>, Thierry Reding
+	<thierry.reding@gmail.com>, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+References: <20190826133140.13456-1-yuehaibing@huawei.com>
+	<7f73bcac-f52d-f1b3-324c-e9b551c5378b@xs4all.nl>
+	<20190829124034.GA19842@ulmo>
+	<b048b460-9d58-8e38-e335-f9a3fface559@gmail.com>
+	<20190829154902.GC19842@ulmo>
+	<c4014675-8fc6-e947-7ac5-68795fd80bc0@gmail.com>
+From: Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <3ce3b6ed-86d3-55ac-462d-4bc91b7d04ed@huawei.com>
+Date: Fri, 6 Sep 2019 22:28:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.2.0
 MIME-Version: 1.0
-In-Reply-To: <20190906140123.GA9894@lst.de>
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9372
-	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
-	malwarescore=0
-	phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=623
-	adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
-	engine=8.0.1-1906280000 definitions=main-1909060152
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9372
-	signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
-	priorityscore=1501 malwarescore=0
-	suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
-	lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=676
-	adultscore=0
-	classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
-	definitions=main-1909060152
-Cc: Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <c4014675-8fc6-e947-7ac5-68795fd80bc0@gmail.com>
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, jonathanh@nvidia.com,
+	iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org,
+	mchehab@kernel.org, robin.murphy@arm.com, linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -154,39 +70,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 9/6/19 10:01 AM, Christoph Hellwig wrote:
-> On Fri, Sep 06, 2019 at 09:52:12AM -0400, Boris Ostrovsky wrote:
->> We need nop definitions of these two for x86.
->>
->> Everything builds now but that's probably because the calls are under
->> 'if (!dev_is_dma_coherent(dev))' which is always false so compiler
->> optimized is out. I don't think we should rely on that.
-> That is how a lot of the kernel works.  Provide protypes only for code
-> that is semantically compiled, but can't ever be called due to
-> IS_ENABLED() checks.  It took me a while to get used to it, but it
-> actually is pretty nice as the linker does the work for you to check
-> that it really is never called.  Much better than say a BUILD_BUG_ON().
-
-
-(with corrected Juergen's email)
-
-I know about IS_ENABLED() but I didn't realize that this is allowed for
-compile-time inlines and such as well.
-
-Anyway, for non-ARM bits
-
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-
-If this goes via Xen tree then the first couple of patches need an ack
-from ARM maintainers.
-
--boris
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAyMDE5LzkvNiAyMTozOCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IDI5LjA4LjIwMTkg
+MTg6NDksIFRoaWVycnkgUmVkaW5nINC/0LjRiNC10YI6Cj4+IE9uIFRodSwgQXVnIDI5LCAyMDE5
+IGF0IDA0OjU4OjIyUE0gKzAzMDAsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPj4+IDI5LjA4LjIw
+MTkgMTU6NDAsIFRoaWVycnkgUmVkaW5nINC/0LjRiNC10YI6Cj4+Pj4gT24gVGh1LCBBdWcgMjks
+IDIwMTkgYXQgMDE6Mzk6MzJQTSArMDIwMCwgSGFucyBWZXJrdWlsIHdyb3RlOgo+Pj4+PiBPbiA4
+LzI2LzE5IDM6MzEgUE0sIFl1ZUhhaWJpbmcgd3JvdGU6Cj4+Pj4+PiBJZiBDT01QSUxFX1RFU1Qg
+aXMgeSBhbmQgSU9NTVVfU1VQUE9SVCBpcyBuLCBzZWxlY3RpbmcgVEVHUkFfVkRFCj4+Pj4+PiB0
+byBtIHdpbGwgc2V0IElPTU1VX0lPVkEgdG8gbSwgdGhpcyBmYWlscyB0aGUgYnVpbGRpbmcgb2YK
+Pj4+Pj4+IFRFR1JBX0hPU1QxWCBhbmQgRFJNX1RFR1JBIHdoaWNoIGlzIHkgbGlrZSB0aGlzOgo+
+Pj4+Pj4KPj4+Pj4+IGRyaXZlcnMvZ3B1L2hvc3QxeC9jZG1hLm86IEluIGZ1bmN0aW9uIGBob3N0
+MXhfY2RtYV9pbml0JzoKPj4+Pj4+IGNkbWEuYzooLnRleHQrMHg2NmMpOiB1bmRlZmluZWQgcmVm
+ZXJlbmNlIHRvIGBhbGxvY19pb3ZhJwo+Pj4+Pj4gY2RtYS5jOigudGV4dCsweDY5OCk6IHVuZGVm
+aW5lZCByZWZlcmVuY2UgdG8gYF9fZnJlZV9pb3ZhJwo+Pj4+Pj4KPj4+Pj4+IGRyaXZlcnMvZ3B1
+L2RybS90ZWdyYS9kcm0ubzogSW4gZnVuY3Rpb24gYHRlZ3JhX2RybV91bmxvYWQnOgo+Pj4+Pj4g
+ZHJtLmM6KC50ZXh0KzB4ZWIwKTogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgcHV0X2lvdmFfZG9t
+YWluJwo+Pj4+Pj4gZHJtLmM6KC50ZXh0KzB4ZWI0KTogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBg
+aW92YV9jYWNoZV9wdXQnCj4+Pj4+Pgo+Pj4+Pj4gUmVwb3J0ZWQtYnk6IEh1bGsgUm9ib3QgPGh1
+bGtjaUBodWF3ZWkuY29tPgo+Pj4+Pj4gRml4ZXM6IDZiMjI2NTk3NTIzOSAoIm1lZGlhOiBzdGFn
+aW5nOiB0ZWdyYS12ZGU6IEZpeCBidWlsZCBlcnJvciIpCj4+Pj4+PiBGaXhlczogYjMwMWY4ZGUx
+OTI1ICgibWVkaWE6IHN0YWdpbmc6IG1lZGlhOiB0ZWdyYS12ZGU6IEFkZCBJT01NVSBzdXBwb3J0
+IikKPj4+Pj4+IFNpZ25lZC1vZmYtYnk6IFl1ZUhhaWJpbmcgPHl1ZWhhaWJpbmdAaHVhd2VpLmNv
+bT4KPj4+Pj4+IC0tLQo+Pj4+Pj4gIGRyaXZlcnMvc3RhZ2luZy9tZWRpYS90ZWdyYS12ZGUvS2Nv
+bmZpZyB8IDQgKystLQo+Pj4+Pj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIg
+ZGVsZXRpb25zKC0pCj4+Pj4+Pgo+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9t
+ZWRpYS90ZWdyYS12ZGUvS2NvbmZpZyBiL2RyaXZlcnMvc3RhZ2luZy9tZWRpYS90ZWdyYS12ZGUv
+S2NvbmZpZwo+Pj4+Pj4gaW5kZXggYmE0OWVhNS4uYTQxZDMwYyAxMDA2NDQKPj4+Pj4+IC0tLSBh
+L2RyaXZlcnMvc3RhZ2luZy9tZWRpYS90ZWdyYS12ZGUvS2NvbmZpZwo+Pj4+Pj4gKysrIGIvZHJp
+dmVycy9zdGFnaW5nL21lZGlhL3RlZ3JhLXZkZS9LY29uZmlnCj4+Pj4+PiBAQCAtMSw5ICsxLDkg
+QEAKPj4+Pj4+ICAjIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCj4+Pj4+PiAgY29u
+ZmlnIFRFR1JBX1ZERQo+Pj4+Pj4gIAl0cmlzdGF0ZSAiTlZJRElBIFRlZ3JhIFZpZGVvIERlY29k
+ZXIgRW5naW5lIGRyaXZlciIKPj4+Pj4+IC0JZGVwZW5kcyBvbiBBUkNIX1RFR1JBIHx8IENPTVBJ
+TEVfVEVTVAo+Pj4+Pj4gKwlkZXBlbmRzIG9uIEFSQ0hfVEVHUkEKPj4+Pj4KPj4+Pj4gV2hhdCBo
+YXBwZW5zIGlmIHlvdSBkcm9wIHRoaXMgY2hhbmdlLAo+Pj4+Pgo+Pj4+Pj4gIAlzZWxlY3QgRE1B
+X1NIQVJFRF9CVUZGRVIKPj4+Pj4+IC0Jc2VsZWN0IElPTU1VX0lPVkEgaWYgKElPTU1VX1NVUFBP
+UlQgfHwgQ09NUElMRV9URVNUKQo+Pj4+Pj4gKwlzZWxlY3QgSU9NTVVfSU9WQSBpZiBJT01NVV9T
+VVBQT1JUCj4+Pj4+Cj4+Pj4+IGJ1dCBrZWVwIHRoaXMgY2hhbmdlPwo+Pj4+Pgo+Pj4+PiBpb3Zh
+LmggaGFzIHN0dWJzIHRoYXQgYXJlIHVzZWQgaWYgSU9NTVVfSU9WQSBpcyBub3Qgc2V0LCBzbyBp
+dCBzaG91bGQKPj4+Pj4gd29yayB3aGVuIGNvbXBpbGUgdGVzdGluZyB0aGlzIHRlZ3JhLXZkZSBk
+cml2ZXIuCj4+Pj4+Cj4+Pj4+IEhhdmVuJ3QgdHJpZWQgaXQsIGJ1dCBtYWtpbmcgc3VyZSB0aGF0
+IGNvbXBpbGUgdGVzdGluZyBrZWVwIHdvcmtpbmcgaXMKPj4+Pj4gcmVhbGx5IGltcG9ydGFudC4K
+Pj4+Cj4+PiBUaGUgZHJpdmVyJ3MgY29kZSBjb21waWxhdGlvbiB3b3JrcyBva2F5LCBpdCdzIHRo
+ZSBsaW5rYWdlIHN0YWdlIHdoaWNoCj4+PiBmYWlscyBkdXJpbmcgY29tcGlsZS10ZXN0aW5nLgo+
+Pj4KPj4+PiBZZWFoLCB0aGF0IHZhcmlhbnQgc2VlbXMgdG8gd29yayBmb3IgbWUuIEkgdGhpbmsg
+aXQncyBhbHNvIG1vcmUgY29ycmVjdAo+Pj4+IGJlY2F1c2UgdGhlIElPTU1VX0lPVkEgaWYgSU9N
+TVVfU1VQUE9SVCBkZXBlbmRlbmN5IHJlYWxseSBzYXlzIHRoYXQgdGhlCj4+Pj4gSU9WQSB1c2Fn
+ZSBpcyBib3VuZCB0byBJT01NVSBzdXBwb3J0LiBJZiBJT01NVSBzdXBwb3J0IGlzIG5vdCBlbmFi
+bGVkLAo+Pj4+IHRoZW4gSU9WQSBpcyBub3QgbmVlZGVkIGVpdGhlciwgc28gdGhlIGR1bW1pZXMg
+d2lsbCBkbyBqdXN0IGZpbmUuCj4+Pgo+Pj4gQW0gSSB1bmRlcnN0YW5kaW5nIGNvcnJlY3RseSB0
+aGF0IHlvdSdyZSBzdWdnZXN0aW5nIHRvIHJldmVydCBbMV1bMl0gYW5kCj4+PiBnZXQgYmFjayB0
+byB0aGUgb3RoZXIgcHJvYmxlbT8KPj4+Cj4+PiBbMV0KPj4+IGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xpbnV4LW1lZGlhL2RkNTQ3YjQ0LTdhYmItMzcxZi1hZWVlLWE4MmI5NmY4MjRlMkBnbWFp
+bC5jb20vVC8KPj4+IFsyXSBodHRwczovL3BhdGNod29yay5vemxhYnMub3JnL3BhdGNoLzExMzY2
+MTkvCj4+Pgo+Pj4gSWYgd2Ugd2FudCB0byBrZWVwIGNvbXBpbGUgdGVzdGluZywgSSBndWVzcyB0
+aGUgb25seSByZWFzb25hYmxlIHZhcmlhbnQKPj4+IHJpZ2h0IG5vdyBpcyB0byBzZWxlY3QgSU9N
+TVVfSU9WQSB1bmNvbmRpdGlvbmFsbHkgaW4gYWxsIG9mIHRoZSBkcml2ZXJzCj4+PiAodmRlLCBo
+b3N0MXgsIGRybSBhbmQgZXRjKSBhbmQgdGhlbiBqdXN0IGlnbm9yZSB0aGF0IElPVkEgd2lsbCBi
+ZQo+Pj4gY29tcGlsZWQtYW5kLXVudXNlZCBpZiBJT01NVV9TVVBQT1JUPW4gKG5vdGUgdGhhdCBJ
+T01NVV9TVVBQT1JUPXkgaW4gYWxsCj4+PiBvZiBkZWZhdWx0IGtlcm5lbCBjb25maWd1cmF0aW9u
+cykuCj4+Cj4+IEFncmVlZC4gSSB0aGluayB3ZSBzaG91bGQganVzdCBzZWxlY3QgSU9NTVVfSU9W
+QSB1bmNvbmRpdGlvbmFsbHkuIFdlCj4+IHJlYWxseSBkbyB3YW50IElPTU1VX1NVUFBPUlQgYWx3
+YXlzIGFzIHdlbGwsIGJ1dCBpdCBtaWdodCBiZSBuaWNlIHRvIGJlCj4+IGFibGUgdG8gc3dpdGNo
+IGl0IG9mZiBmb3IgdGVzdGluZyBvciBzby4gSW4gdGhlIGNhc2VzIHRoYXQgcmVhbGx5IG1hdHRl
+cgo+PiB3ZSB3aWxsIGJlIGVuYWJsaW5nIGJvdGggSU9NTVVfU1VQUE9SVCBhbmQgSU9NTVVfSU9W
+QSBhbnl3YXksIHNvIG1pZ2h0Cj4+IGFzIHdlbGwgc2VsZWN0IElPTU1VX0lPVkEgYWx3YXlzLiBJ
+dCdzIG5vdCB0ZXJyaWJseSBiaWcgYW5kIEkgY2FuJ3QKPj4gaW1hZ2luZSBhbnlvbmUgd2FudGlu
+ZyB0byBydW4gYSBrZXJuZWwgd2l0aG91dCBJT01NVV9TVVBQT1JUIGZvcgo+PiBhbnl0aGluZyBv
+dGhlciB0aGFuIHRlc3RpbmcuCj4gCj4gSGVsbG8gWXVlLAo+IAo+IENvdWxkIHlvdSBwbGVhc2Ug
+bWFrZSBhbiB1cGRhdGVkIHZlcnNpb24gb2YgdGhlIGZpeCBpbiBhY2NvcmRhbmNlIHRvIHRoZSBh
+Ym92ZSBjb21tZW50cz8KPiAKPiBBbHRlcm5hdGl2ZWx5LCB3ZSBjYW4gZ28gd2l0aCB0aGUgY3Vy
+cmVudCBwYXRjaCBhbmQgdGVtcG9yYXJpbHkgcmVtb3ZlIHRoZSBjb21waWxlLXRlc3RpbmcuIEkn
+bGwgbWFrZQo+IHBhdGNoZXMgdG8gcHJvcGVybHkgcmUtYWRkIGNvbXBpbGUtdGVzdGluZyBzb21l
+dGltZSBsYXRlciB0aGVuLgoKSSBwcmVmZXIgdG8gZG8gdGhpcyBjaG9pY2UsIHRoYW5rcy4KCj4g
+Cj4gLgo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
+Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
