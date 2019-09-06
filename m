@@ -1,87 +1,87 @@
-Return-Path: <SRS0=Lu7X=XA=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=rqG6=XB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A93B6C43331
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 22:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD9AC43331
+	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 05:08:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C7545206DE
-	for <iommu@archiver.kernel.org>; Thu,  5 Sep 2019 22:37:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="Y1yQmcMa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7545206DE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id C7086206CD
+	for <iommu@archiver.kernel.org>; Fri,  6 Sep 2019 05:08:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7086206CD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2EC1719B9;
-	Thu,  5 Sep 2019 22:37:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C362D1B21;
+	Fri,  6 Sep 2019 05:08:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 53DC2F6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C66961866
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 22:37:19 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
-	[209.85.215.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F3195A9
+	Fri,  6 Sep 2019 05:08:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4D84B623
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  5 Sep 2019 22:37:18 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id d10so2262532pgo.5
+	Fri,  6 Sep 2019 05:08:02 +0000 (UTC)
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+	[209.85.222.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id A0EB7C0035AC
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 05 Sep 2019 15:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
-	h=date:from:to:cc:subject:in-reply-to:message-id:references
-	:user-agent:mime-version;
-	bh=GjBspe2tpCYYNWjl2LkWvULdU+0U6Dxr2p5C7+1bhNo=;
-	b=Y1yQmcMalmEQm/Vqme6jPHNnMCdfGOzjjTtdcAIQEZZxyHtB2fOyO9RcDwAenVynP1
-	oU2EWbBV8k3A/zrgzHKlhFl+OCjJA7+iFcROUVfqu0zVQJtdvGeCfe7NjlSjJt95b1D/
-	+sI71E2Mgibu6zo1UdRBXiR6W+COpXDLAoZJKjTAFkblQQyepPHdb4Yw2B60eqK0bc/c
-	5EZFQrraRiPZCgjeT/i0tuIlybmJBkDEeBq26FP+YjU3DIMEx+nkahOJs0NYOvvE8G4b
-	wnhaXgd+jxqZlunLBkPxADJY04Lpuw8sXJbBOQ+cwbRupYKGQyxmFyerDToQmxrK9FHT
-	swJA==
+	Fri,  6 Sep 2019 05:08:01 +0000 (UTC)
+Received: by mail-qk1-f197.google.com with SMTP id q62so5151443qkd.3
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 05 Sep 2019 22:08:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-	:references:user-agent:mime-version;
-	bh=GjBspe2tpCYYNWjl2LkWvULdU+0U6Dxr2p5C7+1bhNo=;
-	b=g9weSDBBJonw9h++2VHkVxtDotQ4da5Fn2yeqrU390vJxU6cAykXfVdEGmI4Vr/9wt
-	ud1+R7CO77qYkdDxQUbOf9rtx21fLY2I4GtpMG6YiIgYWKWOQjXCl9UqaM4KIynP6f3L
-	xUbEd5WSso4Xslyrd9saTa062lk9Nzk7k53X9rG2G8tN0GNKtdaBafoIzrYepfblA+ua
-	chPM6/Hzc6siLkUZEacdpyfRgw3uOMO81UQmxgvMEYww//yPxzlXw3TS0/W8ZqlJDyfC
-	0/l1bo7ciucwYbvnkNaumlguP+scNbwCgW76tj1SIoLOECeFbBnhGDvTCdJRuJc9+BmP
-	+SMQ==
-X-Gm-Message-State: APjAAAXfhjAPmuDd2gvNwUtJEjnl2JoEPEbg8u4lKFbgnoUq/IXGMXU3
-	TykamV511R31f+HYvYFmeaRHfQ==
-X-Google-Smtp-Source: APXvYqzoKno8KkgU8EqN4eXlIDNTHy2pjuloFOR5UxHRMSEDann6aIsDU+iY4ucPt4NGFSgWYqVMFg==
-X-Received: by 2002:a17:90a:32c8:: with SMTP id
-	l66mr6539209pjb.44.1567723038296; 
-	Thu, 05 Sep 2019 15:37:18 -0700 (PDT)
-Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
-	([2620:15c:17:3:3a5:23a7:5e32:4598])
-	by smtp.gmail.com with ESMTPSA id l72sm8557163pjb.7.2019.09.05.15.37.17
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to;
+	bh=l2IJkNQk1WGVpYF2C2pNnjExkv8L64jyK1l0fhuGrQQ=;
+	b=seiJeQIq+gEXvq/7Jh6yzt/0MAiJg1MreZgWaBXzK1pvI1gFna1tTCWGslh3CbRFtw
+	bQ7ZCKijCF8b/+GoZBHuWaGFu5RCFYdKHlFqRPNbSUNMN66dL6YySc6bB2+t3BDSMSir
+	3HU77oWXJ3wG57RqX0+jDQoHhWQfMucS5cNGdJMNePUQUzge3I8JxqmiWqrbsc9cwfwF
+	N0IAZdGcIJ48D1h+vaAUUO/XNIs5DhdC0VfBYi6q7TN7XcuQdAMMtIRV4YH5TgaFFLE1
+	A/qutFUqmQ1YO5Y3RPHJy4IWy6bJulNsovo4Cb0cd78tqFllmVSDK/naGtfejUfQcf8S
+	1M+A==
+X-Gm-Message-State: APjAAAU9P3PB0psGaH1ON4PHVzMS6hqu7hR2YmmyeyOpBjUhOWMPeyGc
+	fQvVoxEUwa+N6TapYiwrPaWyvIT5RdVbFaDKA1uvyIrchcMnmXFMHB0CK6NtuJKvu+u55XcjJvM
+	VcQQq6Zl7RJl/2dE1rmI5LFHb8ui+Yg==
+X-Received: by 2002:ac8:149a:: with SMTP id l26mr7381734qtj.267.1567746481012; 
+	Thu, 05 Sep 2019 22:08:01 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzSVqXB2yJBiZ8qLNaAGXzVS5fYjQAlfJVZ4rV3ixHqyHyZ9tuPVELNAMJ1/UauLsyEphl8xA==
+X-Received: by 2002:ac8:149a:: with SMTP id l26mr7381715qtj.267.1567746480788; 
+	Thu, 05 Sep 2019 22:08:00 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
+	by smtp.gmail.com with ESMTPSA id
+	b192sm2114746qkg.39.2019.09.05.22.07.56
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Thu, 05 Sep 2019 15:37:17 -0700 (PDT)
-Date: Thu, 5 Sep 2019 15:37:16 -0700 (PDT)
-X-X-Sender: rientjes@chino.kir.corp.google.com
+	Thu, 05 Sep 2019 22:07:59 -0700 (PDT)
+Date: Fri, 6 Sep 2019 01:07:53 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
-In-Reply-To: <20190905060627.GA1753@lst.de>
-Message-ID: <alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
-References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
-	<20190905060627.GA1753@lst.de>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+Subject: Re: [RFC PATCH] virtio_ring: Use DMA API if guest memory is encrypted
+Message-ID: <20190906001220-mutt-send-email-mst@kernel.org>
+References: <87zhrj8kcp.fsf@morokweng.localdomain>
+	<20190810143038-mutt-send-email-mst@kernel.org>
+	<20190810220702.GA5964@ram.ibm.com> <20190811055607.GA12488@lst.de>
+	<20190811044431-mutt-send-email-mst@kernel.org>
+	<20190812121532.GB9405@lst.de>
 MIME-Version: 1.0
-Cc: Jens Axboe <axboe@kernel.dk>, Tom Lendacky <thomas.lendacky@amd.com>,
-	Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
-	iommu@lists.linux-foundation.org, Peter Gonda <pgonda@google.com>,
-	Jianxiong Gao <jxgao@google.com>
+Content-Disposition: inline
+In-Reply-To: <20190812121532.GB9405@lst.de>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Jason Wang <jasowang@redhat.com>, Alexey Kardashevskiy <aik@linux.ibm.com>,
+	Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	Paul Mackerras <paulus@ozlabs.org>, iommu@lists.linux-foundation.org,
+	David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,44 +94,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
-Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, 5 Sep 2019, Christoph Hellwig wrote:
-
-> > Hi Christoph, Jens, and Ming,
+On Mon, Aug 12, 2019 at 02:15:32PM +0200, Christoph Hellwig wrote:
+> On Sun, Aug 11, 2019 at 04:55:27AM -0400, Michael S. Tsirkin wrote:
+> > On Sun, Aug 11, 2019 at 07:56:07AM +0200, Christoph Hellwig wrote:
+> > > So we need a flag on the virtio device, exposed by the
+> > > hypervisor (or hardware for hw virtio devices) that says:  hey, I'm real,
+> > > don't take a shortcut.
 > > 
-> > While booting a 5.2 SEV-enabled guest we have encountered the following 
-> > WARNING that is followed up by a BUG because we are in atomic context 
-> > while trying to call set_memory_decrypted:
+> > The point here is that it's actually still not real. So we would still
+> > use a physical address. However Linux decides that it wants extra
+> > security by moving all data through the bounce buffer.  The distinction
+> > made is that one can actually give device a physical address of the
+> > bounce buffer.
 > 
-> Well, this really is a x86 / DMA API issue unfortunately.  Drivers
-> are allowed to do GFP_ATOMIC dma allocation under locks / rcu critical
-> sections and from interrupts.  And it seems like the SEV case can't
-> handle that.  We have some semi-generic code to have a fixed sized
-> pool in kernel/dma for non-coherent platforms that have similar issues
-> that we could try to wire up, but I wonder if there is a better way
-> to handle the issue, so I've added Tom and the x86 maintainers.
-> 
-> Now independent of that issue using DMA coherent memory for the nvme
-> PRPs/SGLs doesn't actually feel very optional.  We could do with
-> normal kmalloc allocations and just sync it to the device and back.
-> I wonder if we should create some general mempool-like helpers for that.
-> 
+> Sure.  The problem is just that you keep piling hacks on top of hacks.
+> We need the per-device flag anyway to properly support hardware virtio
+> device in all circumstances.  Instead of coming up with another ad-hoc
+> hack to force DMA uses implement that one proper bit and reuse it here.
 
-Thanks for looking into this.  I assume it's a non-starter to try to 
-address this in _vm_unmap_aliases() itself, i.e. rely on a purge spinlock 
-to do all synchronization (or trylock if not forced) for 
-purge_vmap_area_lazy() rather than only the vmap_area_lock within it.  In 
-other words, no mutex.
+The flag that you mention literally means "I am a real device" so for
+example, you can use VFIO with it. And this device isn't a real one,
+and you can't use VFIO with it, even though it's part of a power
+system which always has an IOMMU.
 
-If that's the case, and set_memory_encrypted() can't be fixed to not need 
-to sleep by changing _vm_unmap_aliases() locking, then I assume dmapool is 
-our only alternative?  I have no idea with how large this should be.
+
+
+Or here's another way to put it: we have a broken device that can only
+access physical addresses, not DMA addresses. But to enable SEV Linux
+requires DMA API.  So we can still make it work if DMA address happens
+to be a physical address (not necessarily of the same page).
+
+
+This is where dma_addr_is_a_phys_addr() is coming from: it tells us this
+weird configuration can still work.  What are we going to do for SEV if
+dma_addr_is_a_phys_addr does not apply? Fail probe I guess.
+
+
+So the proposal is really to make things safe and to this end,
+to add this in probe:
+
+	if (sev_active() &&
+	    !dma_addr_is_a_phys_addr(dev) &&
+	    !virtio_has_feature(vdev, VIRTIO_F_IOMMU_PLATFORM))
+		return -EINVAL;
+
+
+the point being to prevent loading driver where it would
+corrupt guest memory. Put this way, any objections to adding
+dma_addr_is_a_phys_addr to the DMA API?
+
+
+
+
+
+-- 
+MST
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
