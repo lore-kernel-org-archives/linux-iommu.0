@@ -4,96 +4,46 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9747C43331
-	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 05:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33750C43331
+	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 07:43:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AE11721670
-	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 05:54:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE11721670
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id C681D21835
+	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 07:43:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C681D21835
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=chris-wilson.co.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F1D2CEB8;
-	Sat,  7 Sep 2019 05:54:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6BE52D48;
+	Sat,  7 Sep 2019 07:43:36 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AFA522961
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C0FCCCD1
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  7 Sep 2019 00:14:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 378B8756
+	Sat,  7 Sep 2019 07:43:35 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from fireflyinternet.com (mail.fireflyinternet.com [109.228.58.192])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5337589B
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  7 Sep 2019 00:14:11 +0000 (UTC)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x8707Ngh113588; Fri, 6 Sep 2019 20:13:58 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2uuwu0evgm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 06 Sep 2019 20:13:58 -0400
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x8707aUl115701;
-	Fri, 6 Sep 2019 20:13:57 -0400
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com
-	[169.62.189.10])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2uuwu0evg9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 06 Sep 2019 20:13:57 -0400
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-	by ppma02dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
-	x8709N3j004282; Sat, 7 Sep 2019 00:13:56 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com
-	[9.57.198.28]) by ppma02dal.us.ibm.com with ESMTP id 2uqgh8285u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Sat, 07 Sep 2019 00:13:56 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com
-	[9.57.199.107])
-	by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
-	x870DroP47513980
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Sat, 7 Sep 2019 00:13:54 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DC556124054;
-	Sat,  7 Sep 2019 00:13:53 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 55829124052;
-	Sat,  7 Sep 2019 00:13:53 +0000 (GMT)
-Received: from oc4221205838.ibm.com (unknown [9.85.134.207])
-	by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-	Sat,  7 Sep 2019 00:13:53 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: sebott@linux.ibm.com
-Subject: [PATCH v4 1/4] s390: pci: Exporting access to CLP PCI function and
-	PCI group
-Date: Fri,  6 Sep 2019 20:13:48 -0400
-Message-Id: <1567815231-17940-2-git-send-email-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1567815231-17940-1-git-send-email-mjrosato@linux.ibm.com>
-References: <1567815231-17940-1-git-send-email-mjrosato@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-09-06_11:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1906280000 definitions=main-1909070000
-X-Mailman-Approved-At: Sat, 07 Sep 2019 05:54:18 +0000
-Cc: linux-s390@vger.kernel.org, walling@linux.ibm.com,
-	alex.williamson@redhat.com, gor@linux.ibm.com,
-	kvm@vger.kernel.org, pmorel@linux.ibm.com, cohuck@redhat.com,
-	heiko.carstens@de.ibm.com, linux-kernel@vger.kernel.org,
-	pasic@linux.ibm.com, borntraeger@de.ibm.com,
-	iommu@lists.linux-foundation.org, robin.murphy@arm.com,
-	gerald.schaefer@de.ibm.com
+	Sat,  7 Sep 2019 07:43:33 +0000 (UTC)
+X-Default-Received-SPF: pass (skip=forwardok (res=PASS))
+	x-ip-name=78.156.65.138; 
+Received: from haswell.alporthouse.com (unverified [78.156.65.138]) 
+	by fireflyinternet.com (Firefly Internet (M1)) with ESMTP id
+	18406123-1500050 for multiple; Sat, 07 Sep 2019 08:43:13 +0100
+From: Chris Wilson <chris@chris-wilson.co.uk>
+To: intel-gfx@list.freedesktop.org,
+	iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/intel: Declare Broadwell igfx dmar support snafu
+Date: Sat,  7 Sep 2019 08:43:01 +0100
+Message-Id: <20190907074301.18893-1-chris@chris-wilson.co.uk>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Cc: Martin Peres <martin.peres@linux.intel.com>,
+	Chris Wilson <chris@chris-wilson.co.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -106,160 +56,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Pierre Morel <pmorel@linux.ibm.com>
+Despite the widespread and complete failure of Broadwell integrated
+graphics when DMAR is enabled, known over the years, we have never been
+able to root cause the issue. Instead, we let the failure undermine our
+confidence in the iommu system itself when we should be pushing for it to
+be always enabled. Quirk away Broadwell and remove the rotten apple.
 
-For the generic implementation of VFIO PCI we need to retrieve
-the hardware configuration for the PCI functions and the
-PCI function groups.
-
-We modify the internal function using CLP Query PCI function and
-CLP query PCI function group so that they can be called from
-outside the S390 architecture PCI code and prefix the two
-functions with "zdev" to make clear that they can be called
-knowing only the associated zdevice.
-
-Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Sebastian Ott <sebott@linux.ibm.com>
+References: https://bugs.freedesktop.org/show_bug.cgi?id=89360
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Martin Peres <martin.peres@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
 ---
- arch/s390/include/asm/pci.h |  3 ++
- arch/s390/pci/pci_clp.c     | 71 +++++++++++++++++++++++----------------------
- 2 files changed, 40 insertions(+), 34 deletions(-)
+ drivers/iommu/intel-iommu.c | 44 +++++++++++++++++++++++++++++--------
+ 1 file changed, 35 insertions(+), 9 deletions(-)
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index a2399ef..dd03212 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -266,4 +266,7 @@ static inline int __pcibus_to_node(const struct pci_bus *bus)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 43f667379a37..c4fb1ddea4dd 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5637,20 +5637,46 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
+ };
  
- #endif /* CONFIG_NUMA */
- 
-+int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-+			 struct clp_req_rsp_query_pci_grp *rrb);
-+int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb);
- #endif
-diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-index 9bdff4d..df06fdf 100644
---- a/arch/s390/pci/pci_clp.c
-+++ b/arch/s390/pci/pci_clp.c
-@@ -113,32 +113,18 @@ static void clp_store_query_pci_fngrp(struct zpci_dev *zdev,
- 	}
- }
- 
--static int clp_query_pci_fngrp(struct zpci_dev *zdev, u8 pfgid)
-+int zdev_query_pci_fngrp(struct zpci_dev *zdev,
-+			 struct clp_req_rsp_query_pci_grp *rrb)
+-static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
++static void quirk_iommu_igfx(struct pci_dev *dev)
  {
--	struct clp_req_rsp_query_pci_grp *rrb;
--	int rc;
--
--	rrb = clp_alloc_block(GFP_KERNEL);
--	if (!rrb)
--		return -ENOMEM;
--
- 	memset(rrb, 0, sizeof(*rrb));
- 	rrb->request.hdr.len = sizeof(rrb->request);
- 	rrb->request.hdr.cmd = CLP_QUERY_PCI_FNGRP;
- 	rrb->response.hdr.len = sizeof(rrb->response);
--	rrb->request.pfgid = pfgid;
-+	rrb->request.pfgid = zdev->pfgid;
- 
--	rc = clp_req(rrb, CLP_LPS_PCI);
--	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK)
--		clp_store_query_pci_fngrp(zdev, &rrb->response);
--	else {
--		zpci_err("Q PCI FGRP:\n");
--		zpci_err_clp(rrb->response.hdr.rsp, rc);
--		rc = -EIO;
--	}
--	clp_free_block(rrb);
--	return rc;
-+	return clp_req(rrb, CLP_LPS_PCI);
- }
-+EXPORT_SYMBOL(zdev_query_pci_fngrp);
- 
- static int clp_store_query_pci_fn(struct zpci_dev *zdev,
- 				  struct clp_rsp_query_pci *response)
-@@ -174,32 +160,49 @@ static int clp_store_query_pci_fn(struct zpci_dev *zdev,
- 	return 0;
+-	/* G4x/GM45 integrated gfx dmar support is totally busted. */
+ 	pci_info(dev, "Disabling IOMMU for graphics on this chipset\n");
+ 	dmar_map_gfx = 0;
  }
  
--static int clp_query_pci_fn(struct zpci_dev *zdev, u32 fh)
-+int zdev_query_pci_fn(struct zpci_dev *zdev, struct clp_req_rsp_query_pci *rrb)
-+{
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_g4x_gfx);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_g4x_gfx);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e10, quirk_iommu_g4x_gfx);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e20, quirk_iommu_g4x_gfx);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_g4x_gfx);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_g4x_gfx);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_g4x_gfx);
++/* G4x/GM45 integrated gfx dmar support is totally busted. */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e10, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e20, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_igfx);
 +
-+	memset(rrb, 0, sizeof(*rrb));
-+	rrb->request.hdr.len = sizeof(rrb->request);
-+	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
-+	rrb->response.hdr.len = sizeof(rrb->response);
-+	rrb->request.fh = zdev->fh;
-+
-+	return clp_req(rrb, CLP_LPS_PCI);
-+}
-+
-+static int clp_query_pci(struct zpci_dev *zdev)
++/* Broadwell igfx malfunctions with dmar */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1606, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160B, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160E, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1602, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160A, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160D, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1616, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x161B, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x161E, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1612, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x161A, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x161D, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1626, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x162B, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x162E, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1622, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x162A, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x162D, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1636, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163B, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163E, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
+ 
+ static void quirk_iommu_rwbf(struct pci_dev *dev)
  {
- 	struct clp_req_rsp_query_pci *rrb;
-+	struct clp_req_rsp_query_pci_grp *grrb;
- 	int rc;
- 
- 	rrb = clp_alloc_block(GFP_KERNEL);
- 	if (!rrb)
- 		return -ENOMEM;
- 
--	memset(rrb, 0, sizeof(*rrb));
--	rrb->request.hdr.len = sizeof(rrb->request);
--	rrb->request.hdr.cmd = CLP_QUERY_PCI_FN;
--	rrb->response.hdr.len = sizeof(rrb->response);
--	rrb->request.fh = fh;
--
--	rc = clp_req(rrb, CLP_LPS_PCI);
--	if (!rc && rrb->response.hdr.rsp == CLP_RC_OK) {
--		rc = clp_store_query_pci_fn(zdev, &rrb->response);
--		if (rc)
--			goto out;
--		rc = clp_query_pci_fngrp(zdev, rrb->response.pfgid);
--	} else {
-+	rc = zdev_query_pci_fn(zdev, rrb);
-+	if (rc || rrb->response.hdr.rsp != CLP_RC_OK) {
- 		zpci_err("Q PCI FN:\n");
- 		zpci_err_clp(rrb->response.hdr.rsp, rc);
- 		rc = -EIO;
-+		goto out;
- 	}
-+	rc = clp_store_query_pci_fn(zdev, &rrb->response);
-+	if (rc)
-+		goto out;
-+
-+	grrb = (struct clp_req_rsp_query_pci_grp *)rrb;
-+	rc = zdev_query_pci_fngrp(zdev, grrb);
-+	if (rc || grrb->response.hdr.rsp != CLP_RC_OK) {
-+		zpci_err("Q PCI FGRP:\n");
-+		zpci_err_clp(grrb->response.hdr.rsp, rc);
-+		rc = -EIO;
-+		goto out;
-+	}
-+	clp_store_query_pci_fngrp(zdev, &grrb->response);
-+
- out:
- 	clp_free_block(rrb);
- 	return rc;
-@@ -219,7 +222,7 @@ int clp_add_pci_device(u32 fid, u32 fh, int configured)
- 	zdev->fid = fid;
- 
- 	/* Query function properties and update zdev */
--	rc = clp_query_pci_fn(zdev, fh);
-+	rc = clp_query_pci(zdev);
- 	if (rc)
- 		goto error;
- 
 -- 
-1.8.3.1
+2.23.0
 
 _______________________________________________
 iommu mailing list
