@@ -5,80 +5,79 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 794AEC43331
-	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 08:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5D9C43331
+	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 08:46:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 371EB21835
-	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 08:46:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 722BF21835
+	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 08:46:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OhSK200g"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 371EB21835
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Qf5Doi01"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 722BF21835
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DAB13113B;
-	Sat,  7 Sep 2019 08:46:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 10531117E;
+	Sat,  7 Sep 2019 08:46:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BC92CE6E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C8BE4EB8
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  7 Sep 2019 06:50:10 +0000 (UTC)
+	Sat,  7 Sep 2019 06:58:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
-	[209.85.214.195])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 68ADA7DB
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
+	[209.85.210.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6B29D7DB
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  7 Sep 2019 06:50:10 +0000 (UTC)
-Received: by mail-pl1-f195.google.com with SMTP id t1so4214440plq.13
+	Sat,  7 Sep 2019 06:58:50 +0000 (UTC)
+Received: by mail-pf1-f196.google.com with SMTP id d15so6011049pfo.10
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 06 Sep 2019 23:50:10 -0700 (PDT)
+	Fri, 06 Sep 2019 23:58:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=from:to:cc:subject:date:message-id:mime-version
 	:content-transfer-encoding;
-	bh=kwp9WuvkrEL8jVtX170pum2/pJAOlFceUeeYECa5DR8=;
-	b=OhSK200gWoqCgvjb7rUV/o1/KsW4SZI3dUvM8X8z1I136cOSjftgT8+sgEUHRjXuJt
-	eSw/6gmND0mYNHxEISSRqh3PHN6FXnZQXFsbM6hfqSnRbHmdmJc1a8JAFRwya/ERlShx
-	rWScCL6jAAr9BD2E4rvmrD360Bm7qOmLScu4AjclcnDgblm35ay8ax8YYTFNdaINkWAZ
-	MgyHqoZVBSvXMQN0GzbEFIU+GpHlb5nR+8z/9S123i35nLLkmZFgErIp0kBakUZfqdlA
-	vz7dl32GwbM18gFMNzt83+yKwjx47GCNAPdEnXkdoZD2LS1jxp7QeFyCH8Y/nZnLUBn2
-	gi9A==
+	bh=N02a6SJaJeYR37VzYoDKnadMvJWEcIznSEEE8d04rEE=;
+	b=Qf5Doi01nKGhv7f3si1yFpTepVFa5JxTA2UqN4wP/dJfHftsEloVB6XKK3GcM3XAb7
+	DP72ege/1iO6QSzha/ans+5zh7VXW1IoGl6ru0NjcSJ4KAulwjSVtX8RH9IA2qkSf8jF
+	Rg1kxlu6nJdi5J2k14OrCtUPhAknHidGbUcpdiX/9ZuHJjWzEb9cysmjzNdYZOv0uI4n
+	pci+Nj2TvS2sXpqAWZC3fezKdHLT91bJaXmdYYICCvg+42gh8Yo5wpUNSwX6QfidBZCT
+	slQvr9BAsKuL/rqoY6Aa3RHLQXBVAd8F7Q0pRg6GVmgJu/+0d8yxUzJrm1i1zfUhXyrj
+	QSLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
 	:content-transfer-encoding;
-	bh=kwp9WuvkrEL8jVtX170pum2/pJAOlFceUeeYECa5DR8=;
-	b=ay3hmRD7iac2iQoqeY8WVAj1oXacx5s9vCbY3Qk7WUC2dpzet4abk+vVBC5doQ4Oco
-	37DaQOQ7dq/nru55X1uFRq9Z58crPuS5UY8Lg/T3kzNFvSnetHsboLnReb+Cx1pGq6SF
-	viRSPD0THbts/KsA73vQqndcDuPEWBlHcq+i3KZCtMkNthu/30XfuRQWwJgUIgVia3Ra
-	MIpOmWnuGl5UhpnU/epvsWwVJ55L2C+nQ+ZfQu9XNNMRMsytPofPuHvqVZz0R/VgbOsK
-	htxZtBk3mRFve34fyVT+Li5EU7+qSOYtBPfwjH6iXdTciCSoIBQ7pEHiCSO2lWslDcuw
-	oYpA==
-X-Gm-Message-State: APjAAAX+3z3ZevzEMFKtFokCTEZA9YjPOC5cmG0Db2ypQ09m26ICiL74
-	F4HNij8o2P2dzP0YwgCnU3I=
-X-Google-Smtp-Source: APXvYqyHuT5yqPEoMdCwrX3mmO3F6hkGQIxjoAyArLlbAni6f0VdZzQupTzQyi25etqfjDOsClLEzw==
-X-Received: by 2002:a17:902:8507:: with SMTP id
-	bj7mr13400386plb.210.1567839009945; 
-	Fri, 06 Sep 2019 23:50:09 -0700 (PDT)
+	bh=N02a6SJaJeYR37VzYoDKnadMvJWEcIznSEEE8d04rEE=;
+	b=eaBFc1dNj8sShyPg+azyPBGvuqk4G1iA1jxduYP56NI0gwuZ455chPNVSbFAB5J/W+
+	QBzMCUXWEj57AfKuiFaY+l0DsjHw7HgtnpLW2/pmEhw/F/xc/uISIHFu3ncQU1M7L3Bs
+	XbaQ0bHBo2YM98kvWDjKnvfrvfSrJ0tiLDYazhqJBhguIfmzthpFOt6+gRiL+eT8Wwzm
+	iyBWqbvl7bbsmTkHxFzct1xCpCtxskVy22lLmIQ8RgybyfsFZcyIeeRK+36tNtZZt6/L
+	mzIfz7sKXIgtEj7Ou3oDT6Gg4zwTQHHGyg9qMy9zHf2u4SNOHVxl+vCHv9d5Ro9lCHTf
+	6Fmg==
+X-Gm-Message-State: APjAAAVOe44ZlTlklwoiw3C/mlUyAOjnwU6pGYpBo9QhVRsXM2b/e/+n
+	xQTlZch3DAsL2E1TDUn5MtI=
+X-Google-Smtp-Source: APXvYqxOOt+yaEGgywJTK0jRWElyhevOBHqFAv/XWvIyqlht6wV30m4joc2tTqddtHjKRYjKSOGIxw==
+X-Received: by 2002:a63:484d:: with SMTP id x13mr11267132pgk.122.1567839529962;
+	Fri, 06 Sep 2019 23:58:49 -0700 (PDT)
 Received: from localhost.localdomain (ip-103-85-38-221.syd.xi.com.au.
 	[103.85.38.221]) by smtp.gmail.com with ESMTPSA id
-	k95sm7720560pje.10.2019.09.06.23.50.07
+	l31sm10084629pgm.63.2019.09.06.23.58.47
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Fri, 06 Sep 2019 23:50:09 -0700 (PDT)
+	Fri, 06 Sep 2019 23:58:49 -0700 (PDT)
 From: Adam Zerella <adam.zerella@gmail.com>
 To: 
-Subject: [PATCH] iommu/vt-d: Make function signatures static
-Date: Sat,  7 Sep 2019 16:49:33 +1000
-Message-Id: <20190907064933.15277-1-adam.zerella@gmail.com>
+Subject: [PATCH] iommu/amd: Fix sparse warnings
+Date: Sat,  7 Sep 2019 16:58:12 +1000
+Message-Id: <20190907065812.19505-1-adam.zerella@gmail.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 X-Mailman-Approved-At: Sat, 07 Sep 2019 08:46:16 +0000
-Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org,
-	adam.zerella@gmail.com
+Cc: adam.zerella@gmail.com, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -96,47 +95,93 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-warning: symbol 'intel_iommu_gfx_mapped' was not declared. Should it be static?
-warning: symbol 'intel_iommu_ops' was not declared. Should it be static?
-
-Squash a couple of Sparse warnings by making these symbols static.
+There was some simple Sparse warnings related to making some
+signatures static.
 
 Signed-off-by: Adam Zerella <adam.zerella@gmail.com>
 ---
- drivers/iommu/intel-iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu.c      |  4 ++--
+ drivers/iommu/amd_iommu_init.c | 12 ++++++------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 12d094d08c0a..28134891fa9c 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -365,7 +365,7 @@ static int iommu_identity_mapping;
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b607a92791d3..a9e40001720a 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -84,7 +84,7 @@ LIST_HEAD(acpihid_map);
+  * Domain for untranslated devices - only allocated
+  * if iommu=pt passed on kernel cmd line.
+  */
+-const struct iommu_ops amd_iommu_ops;
++static const struct iommu_ops amd_iommu_ops;
  
--int intel_iommu_gfx_mapped;
-+static int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
+ static ATOMIC_NOTIFIER_HEAD(ppr_notifier);
+ int amd_iommu_max_glx_val = -1;
+@@ -3201,7 +3201,7 @@ static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
+ {
+ }
  
- #define DUMMY_DEVICE_DOMAIN_INFO ((struct device_domain_info *)(-1))
-@@ -397,7 +397,7 @@ int for_each_device_domain(int (*fn)(struct device_domain_info *info,
+-const struct iommu_ops amd_iommu_ops = {
++static const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+ 	.domain_free  = amd_iommu_domain_free,
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 4413aa67000e..f32627cadfd7 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -3050,7 +3050,7 @@ bool amd_iommu_v2_supported(void)
+ }
+ EXPORT_SYMBOL(amd_iommu_v2_supported);
+ 
+-struct amd_iommu *get_amd_iommu(unsigned int idx)
++static struct amd_iommu *get_amd_iommu(unsigned int idx)
+ {
+ 	unsigned int i = 0;
+ 	struct amd_iommu *iommu;
+@@ -3069,7 +3069,7 @@ EXPORT_SYMBOL(get_amd_iommu);
+  *
+  ****************************************************************************/
+ 
+-u8 amd_iommu_pc_get_max_banks(unsigned int idx)
++static u8 amd_iommu_pc_get_max_banks(unsigned int idx)
+ {
+ 	struct amd_iommu *iommu = get_amd_iommu(idx);
+ 
+@@ -3080,13 +3080,13 @@ u8 amd_iommu_pc_get_max_banks(unsigned int idx)
+ }
+ EXPORT_SYMBOL(amd_iommu_pc_get_max_banks);
+ 
+-bool amd_iommu_pc_supported(void)
++static bool amd_iommu_pc_supported(void)
+ {
+ 	return amd_iommu_pc_present;
+ }
+ EXPORT_SYMBOL(amd_iommu_pc_supported);
+ 
+-u8 amd_iommu_pc_get_max_counters(unsigned int idx)
++static u8 amd_iommu_pc_get_max_counters(unsigned int idx)
+ {
+ 	struct amd_iommu *iommu = get_amd_iommu(idx);
+ 
+@@ -3135,7 +3135,7 @@ static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
  	return 0;
  }
  
--const struct iommu_ops intel_iommu_ops;
-+static const struct iommu_ops intel_iommu_ops;
- 
- static bool translation_pre_enabled(struct intel_iommu *iommu)
+-int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
++static int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
  {
-@@ -5613,7 +5613,7 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
- 	return dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO;
+ 	if (!iommu)
+ 		return -EINVAL;
+@@ -3144,7 +3144,7 @@ int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64
  }
+ EXPORT_SYMBOL(amd_iommu_pc_get_reg);
  
--const struct iommu_ops intel_iommu_ops = {
-+static const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
- 	.domain_free		= intel_iommu_domain_free,
+-int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
++static int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
+ {
+ 	if (!iommu)
+ 		return -EINVAL;
 -- 
 2.21.0
 
