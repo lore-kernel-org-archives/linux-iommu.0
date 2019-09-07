@@ -2,82 +2,88 @@ Return-Path: <SRS0=yK3q=XC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C26AC43140
-	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 17:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 733FCC433EF
+	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 23:53:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 415AB218AF
-	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 17:50:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3CA1F206C3
+	for <iommu@archiver.kernel.org>; Sat,  7 Sep 2019 23:53:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gwsp7VRn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 415AB218AF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iQhzSJ+9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CA1F206C3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F2623105F;
-	Sat,  7 Sep 2019 17:50:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E42E5F8C;
+	Sat,  7 Sep 2019 23:53:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 79E5E105E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5B225F2F
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  7 Sep 2019 17:50:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
-	[209.85.215.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 175B0756
+	Sat,  7 Sep 2019 23:53:09 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 055781A0
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  7 Sep 2019 17:50:23 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id d1so5340412pgp.4
+	Sat,  7 Sep 2019 23:53:09 +0000 (UTC)
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com
+	[209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 85B172190F
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 07 Sep 2019 10:50:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=wK8kJ2udIf0g3BsyoIaHFt8dADR/WXvxfITihNsDeFg=;
-	b=Gwsp7VRn4r5cDdw7eygkYZ/sszfgRBn/LNffK8rKLuU3OXDMBJBQUafVm/8/Ym6kxl
-	K6awj9C0Ux8gpf0vABsHPwAIKvMSSj1HLTzzX71l0KzyvaROHC2yWEmvxZUqIwm2nmrV
-	lmAcCTAPwuKZNItjsz1tvAaLHs33eilTvmINw0ZqMFmLGcHNMeEFjmq9aeDH8XSCV7Je
-	T+U7wuABMQprBiDBJ/RIg7QDfuYLkWl0B7++OvQOJnlTCNrryYx3AgCOz1cGCJhWOuVk
-	XyZoKGE/8NngV3NN1lmVf04Gjw36Ts1U5JbkQX6QXEPMa5FYJCQ1regZqneDUa94+wOD
-	YkPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=wK8kJ2udIf0g3BsyoIaHFt8dADR/WXvxfITihNsDeFg=;
-	b=NpeW+yImeDIqREnFeZfQF6TofShTerJnjQY7l1r1YkFmFkwY6a8CPf0d0fxF5CZGwc
-	rKucQzRLsE2zZIczZLIVUzF0XymLBBG87H3K+pnnWR1JN6QcAIfueHNQhhX0Q8f6KF3j
-	u8+QrugHGsircadz7OUTczD6J+OFtckF1i42UnP2zp6tRXSY5dUi1y2kRXH3rS+dZdhp
-	2FMTzz5ukNBuXryl8r6sQKlarkbMN76UTzTwILtHnOBr1s8VsqUDSb0yVh/cvFYEhZlo
-	vD4c6scTI3rSzFd7qAVCRwfIweR7YiwS+PVdb2fjVeJrh5YD3Xb2ZDAw018agnWw6hIi
-	dInQ==
-X-Gm-Message-State: APjAAAVyWk5MGUhiUkRa5MqsSlhiYJi3EnTPm+O/B/jtlp+LKIot/4rE
-	0Qf/Fu9bUxcbMTVgg5E3F3Q6XVyFRrQ=
-X-Google-Smtp-Source: APXvYqzafbPVLonS9mDnmRUFSlGT5UrLrAnZgt7eKA+ZXKBawYn/MhQ8WUF6BIH88qCUmZL2MEVRGA==
-X-Received: by 2002:a65:6795:: with SMTP id e21mr13501884pgr.428.1567878622201;
-	Sat, 07 Sep 2019 10:50:22 -0700 (PDT)
-Received: from localhost ([2601:1c0:5200:e554::8610])
-	by smtp.gmail.com with ESMTPSA id 11sm8401943pgo.43.2019.09.07.10.50.21
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Sat, 07 Sep 2019 10:50:21 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu/arm-smmu: fix "hang" when games exit
-Date: Sat,  7 Sep 2019 10:50:13 -0700
-Message-Id: <20190907175013.24246-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.21.0
+	Sat,  7 Sep 2019 23:53:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1567900388;
+	bh=KU+yu1dnpjqMkvaxD0NQ/62kFYi8GAP69zuvLWhpBPg=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=iQhzSJ+9oXgDhIW7PRJgS7OAd27+ApcmlwV1Pr1t7tIdVxFSSbNmEPtHB+EVkx/QI
+	3oFy7UEQ8OJz3CxRjUYWmyWOwvSBH4uR+n5qkd1ZBcZeaqG5m2rMeo15JOhhtEIi6O
+	gZUNlX9yNbmazWAWH7DCrTZAkCxjkeJuFftVnO9s=
+Received: by mail-wm1-f43.google.com with SMTP id g207so9938589wmg.5
+	for <iommu@lists.linux-foundation.org>;
+	Sat, 07 Sep 2019 16:53:08 -0700 (PDT)
+X-Gm-Message-State: APjAAAWOitQp87FiyNykpkwdt1XCbe0VYqwemNALRj8XiQqSHOn7GHDo
+	SpPCzKUEOYXSD8fMPfIhkcb0pFkDeW18V+dGQF0=
+X-Google-Smtp-Source: APXvYqz/EaoziXhxATPtaiz7WMpDkudp2uTSNKWYfbpcDLkqo0GVOyZavKTFmq2PKcMvW87cxTCwTetw/AbRtRbW9aM=
+X-Received: by 2002:a1c:f007:: with SMTP id a7mr12784687wmb.172.1567900386906; 
+	Sat, 07 Sep 2019 16:53:06 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
-	linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	open list <linux-kernel@vger.kernel.org>, freedreno@lists.freedesktop.org,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
+References: <20190321163623.20219-1-julien.grall@arm.com>
+	<20190321163623.20219-12-julien.grall@arm.com>
+	<0dfe120b-066a-2ac8-13bc-3f5a29e2caa3@arm.com>
+	<CAJF2gTTXHHgDboaexdHA284y6kNZVSjLis5-Q2rDnXCxr4RSmA@mail.gmail.com>
+	<c871a5ae-914f-a8bb-9474-1dcfec5d45bf@arm.com>
+	<20190619091219.GB7767@fuggles.cambridge.arm.com>
+	<CAJF2gTTmFq3yYa9UrdZRAFwJgC=KmKTe2_NFy_UZBUQovqQJPg@mail.gmail.com>
+	<20190619123939.GF7767@fuggles.cambridge.arm.com>
+	<CAJF2gTSiiiewTLwVAXvPLO7rTSUw1rg8VtFLzANdP2S2EEbTjg@mail.gmail.com>
+	<20190624104006.lvm32nahemaqklxc@willie-the-truck>
+In-Reply-To: <20190624104006.lvm32nahemaqklxc@willie-the-truck>
+From: Guo Ren <guoren@kernel.org>
+Date: Sun, 8 Sep 2019 07:52:55 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTSC1sGgmiTCgzKUTdPyUZ3LG4H7N8YbMyWr-E+eifGuYg@mail.gmail.com>
+Message-ID: <CAJF2gTSC1sGgmiTCgzKUTdPyUZ3LG4H7N8YbMyWr-E+eifGuYg@mail.gmail.com>
+Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
+	separate file
+To: Will Deacon <will@kernel.org>
+Cc: julien.thierry@arm.com, Catalin Marinas <catalin.marinas@arm.com>,
+	Palmer Dabbelt <palmer@sifive.com>,
+	Will Deacon <will.deacon@arm.com>, christoffer.dall@arm.com,
+	Atish Patra <Atish.Patra@wdc.com>,
+	Julien Grall <julien.grall@arm.com>, gary@garyguo.net,
+	linux-riscv@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+	Mike Rapoport <rppt@linux.ibm.com>, aou@eecs.berkeley.edu,
+	Arnd Bergmann <arnd@arndb.de>, suzuki.poulose@arm.com,
+	Marc Zyngier <marc.zyngier@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	linux-arm-kernel@lists.infradead.org, Anup Patel <anup.Patel@wdc.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux-foundation.org, james.morse@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -95,61 +101,30 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Rob Clark <robdclark@chromium.org>
+Thx Will,
 
-When games, browser, or anything using a lot of GPU buffers exits, there
-can be many hundreds or thousands of buffers to unmap and free.  If the
-GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-for each buffer, resulting 5-10 seconds worth of reprogramming the
-context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-To the user it would appear that the system is locked up.
+On Mon, Jun 24, 2019 at 6:40 PM Will Deacon <will@kernel.org> wrote:
+> > I'll keep my system use the same ASID for SMP + IOMMU :P
+>
+> You will want a separate allocator for that:
+>
+> https://lkml.kernel.org/r/20190610184714.6786-2-jean-philippe.brucker@arm.com
 
-A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-don't immediately suspend the SMMU device.
+Yes, it is hard to maintain ASID between IOMMU and CPUMMU or different
+system, because it's difficult to synchronize the IO_ASID when the CPU
+ASID is rollover.
+But we could still use hardware broadcast TLB invalidation instruction
+to uniformly manage the ASID and IO_ASID, or OTHER_ASID in our IOMMU.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-Note: I've tied the autosuspend enable/delay to the consumer device,
-based on the reasoning that if the consumer device benefits from using
-an autosuspend delay, then it's corresponding SMMU probably does too.
-Maybe that is overkill and we should just unconditionally enable
-autosuspend.
+Welcome to join our disscusion:
+"Introduce an implementation of IOMMU in linux-riscv"
+9 Sep 2019, 10:45 Jade-room-I&II (Corinthia Hotel Lisbon) RISC-V MC
 
- drivers/iommu/arm-smmu.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+--
+Best Regards
+ Guo Ren
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c2733b447d9c..73a0dd53c8a3 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -289,7 +289,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
- static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
- {
- 	if (pm_runtime_enabled(smmu->dev))
--		pm_runtime_put(smmu->dev);
-+		pm_runtime_put_autosuspend(smmu->dev);
- }
- 
- static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-@@ -1445,6 +1445,15 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	/* Looks ok, so add the device to the domain */
- 	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
- 
-+#ifdef CONFIG_PM
-+	/* TODO maybe device_link_add() should do this for us? */
-+	if (dev->power.use_autosuspend) {
-+		pm_runtime_set_autosuspend_delay(smmu->dev,
-+			dev->power.autosuspend_delay);
-+		pm_runtime_use_autosuspend(smmu->dev);
-+	}
-+#endif
-+
- rpm_put:
- 	arm_smmu_rpm_put(smmu);
- 	return ret;
--- 
-2.21.0
-
+ML: https://lore.kernel.org/linux-csky/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
