@@ -2,63 +2,56 @@ Return-Path: <SRS0=3FO/=XE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D406CC49ED6
-	for <iommu@archiver.kernel.org>; Mon,  9 Sep 2019 14:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B00DC4740A
+	for <iommu@archiver.kernel.org>; Mon,  9 Sep 2019 20:46:18 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9DA7B21A4A
-	for <iommu@archiver.kernel.org>; Mon,  9 Sep 2019 14:04:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="y6wNq/Ew"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DA7B21A4A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 156A62086D
+	for <iommu@archiver.kernel.org>; Mon,  9 Sep 2019 20:46:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 156A62086D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=wanadoo.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6DD5CD89;
-	Mon,  9 Sep 2019 14:04:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 370E1CB7;
+	Mon,  9 Sep 2019 20:46:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 39EDACD1
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8B22EB7D
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  9 Sep 2019 14:04:22 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 392D37DB
+	Mon,  9 Sep 2019 20:27:04 +0000 (UTC)
+X-Greylist: delayed 00:07:36 by SQLgrey-1.7.6
+Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr
+	[80.12.242.128])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id BB1A0EC
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  9 Sep 2019 14:04:21 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 7BA0121924;
-	Mon,  9 Sep 2019 14:04:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1568037861;
-	bh=BceXqHBVAXO0SzdF8rTWqk9w5ctjbmxf4pw3jTBHQxw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=y6wNq/EwRmggE4exMTqn9Sn14AIYiMuQxdJQ+5B6cgNVIHbomUOBQUwlo4hA6w6P5
-	0uWyZboY2zCJ2Wq9XFAJLtSe2oyqHuAlwOLNa0ijdygIdPHq61SI0fHQ+bfttjJbIt
-	f/neASzyNQKDqnEkxbmK8L67avoAN5oqG+YLMUeY=
-Date: Mon, 9 Sep 2019 15:04:16 +0100
-From: Will Deacon <will@kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] iommu: Implement of_iommu_get_resv_regions()
-Message-ID: <20190909140415.axszldhakgqifibg@willie-the-truck>
-References: <20190829111407.17191-1-thierry.reding@gmail.com>
-	<20190829111407.17191-2-thierry.reding@gmail.com>
-	<0b7e050a-cec6-6ce7-9ed6-2146eabb2fe8@arm.com>
-	<20190902150056.GD1445@ulmo>
+	Mon,  9 Sep 2019 20:27:03 +0000 (UTC)
+Received: from localhost.localdomain ([90.126.97.183]) by mwinf5d12 with ME
+	id zYKM2000H3xPcdm03YKMxP; Mon, 09 Sep 2019 22:19:24 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 09 Sep 2019 22:19:24 +0200
+X-ME-IP: 90.126.97.183
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: will@kernel.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org
+Subject: [PATCH] iommu/io-pgtable: Move some initialization data to
+	.init.rodata
+Date: Mon,  9 Sep 2019 22:19:19 +0200
+Message-Id: <20190909201919.5841-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190902150056.GD1445@ulmo>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
+X-Mailman-Approved-At: Mon, 09 Sep 2019 20:46:14 +0000
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	iommu@lists.linux-foundation.org,
+	kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,86 +69,76 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Sep 02, 2019 at 05:00:56PM +0200, Thierry Reding wrote:
-> On Mon, Sep 02, 2019 at 02:54:23PM +0100, Robin Murphy wrote:
-> > On 29/08/2019 12:14, Thierry Reding wrote:
-> > > From: Thierry Reding <treding@nvidia.com>
-> > > 
-> > > This is an implementation that IOMMU drivers can use to obtain reserved
-> > > memory regions from a device tree node. It uses the reserved-memory DT
-> > > bindings to find the regions associated with a given device. These
-> > > regions will be used to create 1:1 mappings in the IOMMU domain that
-> > > the devices will be attached to.
-> > > 
-> > > Cc: Rob Herring <robh+dt@kernel.org>
-> > > Cc: Frank Rowand <frowand.list@gmail.com>
-> > > Cc: devicetree@vger.kernel.org
-> > > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > > ---
-> > >   drivers/iommu/of_iommu.c | 39 +++++++++++++++++++++++++++++++++++++++
-> > >   include/linux/of_iommu.h |  8 ++++++++
-> > >   2 files changed, 47 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> > > index 614a93aa5305..0d47f626b854 100644
-> > > --- a/drivers/iommu/of_iommu.c
-> > > +++ b/drivers/iommu/of_iommu.c
-> > > @@ -9,6 +9,7 @@
-> > >   #include <linux/iommu.h>
-> > >   #include <linux/limits.h>
-> > >   #include <linux/of.h>
-> > > +#include <linux/of_address.h>
-> > >   #include <linux/of_iommu.h>
-> > >   #include <linux/of_pci.h>
-> > >   #include <linux/slab.h>
-> > > @@ -225,3 +226,41 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
-> > >   	return ops;
-> > >   }
-> > > +
-> > > +/**
-> > > + * of_iommu_get_resv_regions - reserved region driver helper for device tree
-> > > + * @dev: device for which to get reserved regions
-> > > + * @list: reserved region list
-> > > + *
-> > > + * IOMMU drivers can use this to implement their .get_resv_regions() callback
-> > > + * for memory regions attached to a device tree node. See the reserved-memory
-> > > + * device tree bindings on how to use these:
-> > > + *
-> > > + *   Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> > > + */
-> > > +void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
-> > > +{
-> > > +	struct of_phandle_iterator it;
-> > > +	int err;
-> > > +
-> > > +	of_for_each_phandle(&it, err, dev->of_node, "memory-region", NULL, 0) {
-> > > +		struct iommu_resv_region *region;
-> > > +		struct resource res;
-> > > +
-> > > +		err = of_address_to_resource(it.node, 0, &res);
-> > > +		if (err < 0) {
-> > > +			dev_err(dev, "failed to parse memory region %pOF: %d\n",
-> > > +				it.node, err);
-> > > +			continue;
-> > > +		}
-> > 
-> > What if the device node has memory regions for other purposes, like private
-> > CMA carveouts? We wouldn't want to force mappings of those (and in the very
-> > worst case doing so could even render them unusable).
-> 
-> I suppose we could come up with additional properties to mark such
-> memory regions and skip them here.
+The memory used by '__init' functions can be freed once the initialization
+phase has been performed.
 
-I think we need /something/ like that, both so that we can identify these
-memory regions as requiring an identity mapping in the SMMU but also so
-that we can place additional requirements on them, such as being 64k-aligned
-and mandating properties of the mapping, such as cacheability based on the
-device coherency.
+Mark some 'static const' array defined and used within some '__init'
+functions as '__initconst', so that the corresponding data can also be
+discarded.
 
-I defer to the devicetree folks as to whether this should be an additional
-property, or a phandle or whatever.
+Without '__initconst', the data are put in the .rodata section.
+With the qualifier, they are put in the .init.rodata section.
 
-Will
+With gcc 8.3.0, the following changes have been measured:
+
+Without '__initconst':
+   section      size
+  .rodata       00000720
+  .init.rodata  00000018
+
+With '__initconst':
+   section      size
+  .rodata       00000660
+  .init.rodata  00000058
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+Adding __initconst "within" a function is not in line with kernel/include/init.h
+which states that:
+ * Don't forget to initialize data not at file scope, i.e. within a function,
+ * as gcc otherwise puts the data into the bss section and not into the init
+ * section.
+However, having the array within the function or out-side the function
+seems to have no impact in the generated code and in the section used.
+According to my test, both put the data in .init.rodata.
+
+Maybe the comment is outdated or related to some older vesion of gcc.
+---
+ drivers/iommu/io-pgtable-arm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 161a7d56264d..24076f0560c6 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -1109,7 +1109,7 @@ static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+ 
+ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ {
+-	static const enum io_pgtable_fmt fmts[] = {
++	static const enum io_pgtable_fmt fmts[] __initconst = {
+ 		ARM_64_LPAE_S1,
+ 		ARM_64_LPAE_S2,
+ 	};
+@@ -1208,13 +1208,13 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 
+ static int __init arm_lpae_do_selftests(void)
+ {
+-	static const unsigned long pgsize[] = {
++	static const unsigned long pgsize[] __initconst = {
+ 		SZ_4K | SZ_2M | SZ_1G,
+ 		SZ_16K | SZ_32M,
+ 		SZ_64K | SZ_512M,
+ 	};
+ 
+-	static const unsigned int ias[] = {
++	static const unsigned int ias[] __initconst = {
+ 		32, 36, 40, 42, 44, 48,
+ 	};
+ 
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
