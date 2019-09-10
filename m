@@ -2,83 +2,75 @@ Return-Path: <SRS0=BH3E=XF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F07C5AE59
-	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 15:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8176C5AE59
+	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 16:34:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C3712089F
-	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 15:45:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FUDx1Vss"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C3712089F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0F94208E4
+	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 16:34:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0F94208E4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CC1D3D83;
-	Tue, 10 Sep 2019 15:45:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5317EE17;
+	Tue, 10 Sep 2019 16:34:25 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 44A6ED7E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 85A05723
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 10 Sep 2019 15:45:41 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
-	[209.85.208.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D2C0281A
+	Tue, 10 Sep 2019 16:34:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E70948A8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 10 Sep 2019 15:45:39 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id y91so17555642ede.9
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 10 Sep 2019 08:45:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=ab44L4UsH9lWBk/ePs+t6LQUuKmRHFW0SwCWgf68+rc=;
-	b=FUDx1VssMY5+grYTJ9mTO+OtexdcbSTMSsn3//VPNV0zPdSp95pA3zNOdpx4boIzLL
-	+8wfwTnUnSWaD0DyKayLxvtLd1DNtf9KpsXdscr1lunnkyj9RgO10ZaIY4qDgscT06xv
-	gsu7UNxm0Xryuv9rrw5a4GpIEVPRKWhPVPWKzBpbTQx6lkHw+mIFYb+srXGudTMQJCt5
-	gonRN5rE57R/vyk+7sS8MiPSdeYzF3ZPo7wNMrmBj3lVkr6zixiEP6LKYNeZGu9gq5mv
-	nhhDZVq5ROoxeNpfmQu0BO+jdHGVOWyuw0NkkZqryUCoeygfaKH+6X5QUf5q5jC92gdh
-	i8nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=ab44L4UsH9lWBk/ePs+t6LQUuKmRHFW0SwCWgf68+rc=;
-	b=bHKbQw5MbSu8p6jVdhsEfFc6kV5n07BK4IZx7d4gHnsWsfogpau9EPUIESPkmaS2wC
-	zlKBkvySb1YslJVG6kfERHk+bjr6DUAHs1CK4m2gs9FzVXd++XkkcldAeg77LgaUUNCe
-	kNFv8e2mkzucDqh+aD9EgGiC2KsCO3EbXDTlgGc7FiXSxrlOizMbQAc/RR82DiuqraqB
-	c+dTUeN7EVvFf8Qep8IcW8ijfkFoLSmy1V5zUXK9e5p7yk0M4oRwlO+fRr2zUs9FsZEq
-	bTs/Nx+KIIZ/Q9/o8zYIKs5YYOgrXmI+NfIX4NVZJH5ghwTqBxmcvijTNL9Cn45cxwn2
-	3g5Q==
-X-Gm-Message-State: APjAAAUuVe5RU+8rKr/IZNgy+fptoFi9v3oauAxbPSWcRlLmT/aoyFrI
-	BXnMgfoxPkYIgFY2CdUaCtLxjBpx8z/GO7VyPEI=
-X-Google-Smtp-Source: APXvYqzoKSvtwc7h3YF+c3ClC8RRDwvQEOuO9vmMklmmZ6/J8nMaSUMmvks3o2VNkPh4WYQkviIc241SjZs7jn1Ep9c=
-X-Received: by 2002:a17:906:2451:: with SMTP id
-	a17mr16927007ejb.164.1568130338310; 
-	Tue, 10 Sep 2019 08:45:38 -0700 (PDT)
+	Tue, 10 Sep 2019 16:34:23 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5CA321000;
+	Tue, 10 Sep 2019 09:34:23 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6204C3F71F;
+	Tue, 10 Sep 2019 09:34:19 -0700 (PDT)
+Subject: Re: [PATCH v3 0/2] iommu: handle drivers that manage iommu directly
+To: Rob Clark <robdclark@gmail.com>, iommu@lists.linux-foundation.org
+References: <20190906214409.26677-1-robdclark@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <c43de10f-7768-592c-0fd8-6fb64b3fd43e@arm.com>
+Date: Tue, 10 Sep 2019 17:34:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190907175013.24246-1-robdclark@gmail.com>
-	<418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
-In-Reply-To: <418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 10 Sep 2019 08:45:27 -0700
-Message-ID: <CAF6AEGtd7kr2MckVy99ERQs4gmxjY6DteNdTLknBgpAZRpDgrA@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu: fix "hang" when games exit
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
-	linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+In-Reply-To: <20190906214409.26677-1-robdclark@gmail.com>
+Content-Language: en-GB
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	dri-devel@lists.freedesktop.org, Will Deacon <will@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>, Rob Clark <robdclark@chromium.org>,
+	Jonathan Marek <jonathan@marek.ca>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Mamta Shukla <mamtashukla555@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Joerg Roedel <jroedel@suse.de>, Arnd Bergmann <arnd@arndb.de>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>, linux-arm-msm@vger.kernel.org,
+	Abhinav Kumar <abhinavk@codeaurora.org>, Bruce Wang <bzwang@chromium.org>,
+	Alexios Zavras <alexios.zavras@intel.com>,
+	Sean Paul <seanpaul@chromium.org>,
+	Jeykumar Sankaran <jsanka@codeaurora.org>,
+	Allison Randal <allison@lohutok.net>,
+	Boris Brezillon <bbrezillon@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	open list <linux-kernel@vger.kernel.org>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	freedreno <freedreno@lists.freedesktop.org>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
+	Sudeep Holla <sudeep.holla@arm.com>, Joe Perches <joe@perches.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"open list:DRM DRIVER FOR MSM ADRENO GPU"
+	<freedreno@lists.freedesktop.org>,
+	Georgi Djakov <georgi.djakov@linaro.org>,
+	Sravanthi Kollukuduru <skolluku@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,104 +83,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 10, 2019 at 8:01 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 07/09/2019 18:50, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > When games, browser, or anything using a lot of GPU buffers exits, there
-> > can be many hundreds or thousands of buffers to unmap and free.  If the
-> > GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-> > for each buffer, resulting 5-10 seconds worth of reprogramming the
-> > context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-> > To the user it would appear that the system is locked up.
-> >
-> > A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-> > don't immediately suspend the SMMU device.
-> >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> > Note: I've tied the autosuspend enable/delay to the consumer device,
-> > based on the reasoning that if the consumer device benefits from using
-> > an autosuspend delay, then it's corresponding SMMU probably does too.
-> > Maybe that is overkill and we should just unconditionally enable
-> > autosuspend.
->
-> I'm not sure there's really any reason to expect that a supplier's usage
-> model when doing things for itself bears any relation to that of its
-> consumer(s), so I'd certainly lean towards the "unconditional" argument
-> myself.
+On 06/09/2019 22:44, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> One of the challenges we have to enable the aarch64 laptops upstream
+> is dealing with the fact that the bootloader enables the display and
+> takes the corresponding SMMU context-bank out of BYPASS.  Unfortunately,
+> currently, the IOMMU framework attaches a DMA (or potentially an
+> IDENTITY) domain before the driver is probed and has a chance to
+> intervene and shutdown scanout.  Which makes things go horribly wrong.
 
-Sounds good, I'll respin w/ unconditional autosuspend
+Nope, things already went horribly wrong in arm_smmu_device_reset() - 
+sure, sometimes for some configurations it might *seem* like they didn't 
+and that you can fudge the context bank state at arm's length from core 
+code later, but the truth is that impl->cfg_probe is your last chance to 
+guarantee that any necessary SMMU state is preserved.
 
-> Of course ideally we'd skip resuming altogether in the map/unmap paths
-> (since resume implies a full TLB reset anyway), but IIRC that approach
-> started to get messy in the context of the initial RPM patchset. I'm
-> planning to fiddle around a bit more to clean up the implementation of
-> the new iommu_flush_ops stuff, so I've made a note to myself to revisit
-> RPM to see if there's a sufficiently clean way to do better. In the
-> meantime, though, I don't have any real objection to using some
-> reasonable autosuspend delay on the principle that if we've been woken
-> up to map/unmap one page, there's a high likelihood that more will
-> follow in short order (and in the configuration slow-paths it won't have
-> much impact either way).
+The remainder of the problem involves reworking default domain 
+allocation such that we can converge on what iommu_request_dm_for_dev() 
+currently does but without the momentary attachment to a translation 
+domain to cause hiccups. That's starting here:
 
-It does sort of remind me about something I was chatting with Jordan
-the other day.. about how we could possibly skip the TLB inv for
-unmaps from non-current pagetables once we have per-context
-pagetables.
+https://lore.kernel.org/linux-iommu/cover.1566353521.git.sai.praneeth.prakhya@intel.com/
 
-The challenge is, since the GPU's command parser is the one switching
-pagetables, we don't have any race-free way to know which pagetables
-are current.  But we do know which contexts have work queued up for
-the GPU, so we can know either that a given context definitely isn't
-current, or that it might be current.  And in the "definitely not
-current" case we could skip TLB inv.
+> But in this case, drm/msm is already directly managing it's IOMMUs
+> directly, the DMA API attached iommu_domain simply gets in the way.
+> This series adds a way that a driver can indicate to drivers/iommu
+> that it does not wish to have an DMA managed iommu_domain attached.
+> This way, drm/msm can shut down scanout cleanly before attaching it's
+> own iommu_domain.
+> 
+> NOTE that to get things working with arm-smmu on the aarch64 laptops,
+> you also need a patchset[1] from Bjorn Andersson to inherit SMMU config
+> at boot, when it is already enabled.
+> 
+> [1] https://www.spinics.net/lists/arm-kernel/msg732246.html
+> 
+> NOTE that in discussion of previous revisions, RMRR came up.  This is
+> not really a replacement for RMRR (nor does RMRR really provide any
+> more information than we already get from EFI GOP, or DT in the
+> simplefb case).  I also don't see how RMRR could help w/ SMMU handover
+> of CB/SMR config (Bjorn's patchset[1]) without defining new tables.
 
-BR,
--R
+The point of RMRR-like-things is that they identify not just the memory 
+region but also the specific device accessing them, which means the 
+IOMMU driver knows up-front which IDs etc. it must be careful not to 
+disrupt. Obviously for SMMU that *would* be some new table (designed to 
+encompass everything relevant) since literal RMRRs are specifically an 
+Intel VT-d thing.
 
->
-> Robin.
->
-> >   drivers/iommu/arm-smmu.c | 11 ++++++++++-
-> >   1 file changed, 10 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index c2733b447d9c..73a0dd53c8a3 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -289,7 +289,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
-> >   static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
-> >   {
-> >       if (pm_runtime_enabled(smmu->dev))
-> > -             pm_runtime_put(smmu->dev);
-> > +             pm_runtime_put_autosuspend(smmu->dev);
-> >   }
-> >
-> >   static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> > @@ -1445,6 +1445,15 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> >       /* Looks ok, so add the device to the domain */
-> >       ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
-> >
-> > +#ifdef CONFIG_PM
-> > +     /* TODO maybe device_link_add() should do this for us? */
-> > +     if (dev->power.use_autosuspend) {
-> > +             pm_runtime_set_autosuspend_delay(smmu->dev,
-> > +                     dev->power.autosuspend_delay);
-> > +             pm_runtime_use_autosuspend(smmu->dev);
-> > +     }
-> > +#endif
-> > +
-> >   rpm_put:
-> >       arm_smmu_rpm_put(smmu);
-> >       return ret;
-> >
+> This perhaps doesn't solve the more general case of bootloader enabled
+> display for drivers that actually want to use DMA API managed IOMMU.
+> But it does also happen to avoid a related problem with GPU, caused by
+> the DMA domain claiming the context bank that the GPU firmware expects
+> to use.
+
+Careful bringing that up again, or I really will rework the context bank 
+allocator to avoid this default domain problem entirely... ;)
+
+Robin.
+
+>  And it avoids spurious TLB invalidation coming from the unused
+> DMA domain.  So IMHO this is a useful and necessary change.
+> 
+> Rob Clark (2):
+>    iommu: add support for drivers that manage iommu explicitly
+>    drm/msm: mark devices where iommu is managed by driver
+> 
+>   drivers/gpu/drm/msm/adreno/adreno_device.c | 1 +
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c    | 1 +
+>   drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c   | 1 +
+>   drivers/gpu/drm/msm/msm_drv.c              | 1 +
+>   drivers/iommu/iommu.c                      | 2 +-
+>   drivers/iommu/of_iommu.c                   | 3 +++
+>   include/linux/device.h                     | 3 ++-
+>   7 files changed, 10 insertions(+), 2 deletions(-)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
