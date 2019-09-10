@@ -6,45 +6,53 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 449E2C49ED7
-	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 14:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F259C49ED8
+	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 14:53:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1307B208E4
-	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 14:44:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1307B208E4
+	by mail.kernel.org (Postfix) with ESMTPS id 2E41A2168B
+	for <iommu@archiver.kernel.org>; Tue, 10 Sep 2019 14:53:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E41A2168B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C9233DA2;
-	Tue, 10 Sep 2019 14:44:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E6851BBC;
+	Tue, 10 Sep 2019 14:53:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AEE64D93
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3C66F481
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 10 Sep 2019 14:44:45 +0000 (UTC)
+	Tue, 10 Sep 2019 14:53:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 284938A2
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C1D9B8A2
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 10 Sep 2019 14:44:45 +0000 (UTC)
+	Tue, 10 Sep 2019 14:53:26 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 1F8B8BDE; Tue, 10 Sep 2019 16:44:43 +0200 (CEST)
-Date: Tue, 10 Sep 2019 16:44:40 +0200
+	id 04377BDE; Tue, 10 Sep 2019 16:53:24 +0200 (CEST)
+Date: Tue, 10 Sep 2019 16:53:23 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Qian Cai <cai@lca.pw>
-Subject: Re: [PATCH] iommu/vt-d: Make function signatures static
-Message-ID: <20190910144440.GA24103@8bytes.org>
-References: <20190907064933.15277-1-adam.zerella@gmail.com>
-	<20190910081545.GC3247@8bytes.org>
-	<1568120816.5576.125.camel@lca.pw>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v9 0/5] iommu: Bounce page for untrusted devices
+Message-ID: <20190910145322.GB24103@8bytes.org>
+References: <20190906061452.30791-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1568120816.5576.125.camel@lca.pw>
+In-Reply-To: <20190906061452.30791-1-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org,
-	Adam Zerella <adam.zerella@gmail.com>
+Cc: Juergen Gross <jgross@suse.com>, kevin.tian@intel.com,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	mika.westerberg@linux.intel.com, ashok.raj@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	alan.cox@intel.com, Jonathan Corbet <corbet@lwn.net>,
+	Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
+	jacob.jun.pan@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,25 +70,29 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 10, 2019 at 09:06:56AM -0400, Qian Cai wrote:
-> On Tue, 2019-09-10 at 10:15 +0200, Joerg Roedel wrote:
-> > On Sat, Sep 07, 2019 at 04:49:33PM +1000, Adam Zerella wrote:
-> > >  drivers/iommu/intel-iommu.c | 6 +++---
-> > >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > Applied, thanks.
+On Fri, Sep 06, 2019 at 02:14:47PM +0800, Lu Baolu wrote:
+> Lu Baolu (5):
+>   swiotlb: Split size parameter to map/unmap APIs
+>   iommu/vt-d: Check whether device requires bounce buffer
+>   iommu/vt-d: Don't switch off swiotlb if bounce page is used
+>   iommu/vt-d: Add trace events for device dma map/unmap
+>   iommu/vt-d: Use bounce buffer for untrusted devices
 > 
-> Joerg, not sure if you saw the reply from Lu,
-> 
-> https://lore.kernel.org/linux-iommu/ba8d4792-3b62-98a8-31d8-74a08be2f983@linux.i
-> ntel.com/
+>  .../admin-guide/kernel-parameters.txt         |   5 +
+>  drivers/iommu/Kconfig                         |   1 +
+>  drivers/iommu/Makefile                        |   1 +
+>  drivers/iommu/intel-iommu.c                   | 310 +++++++++++++++++-
+>  drivers/iommu/intel-trace.c                   |  14 +
+>  drivers/xen/swiotlb-xen.c                     |   8 +-
+>  include/linux/swiotlb.h                       |   8 +-
+>  include/trace/events/intel_iommu.h            | 106 ++++++
+>  kernel/dma/direct.c                           |   2 +-
+>  kernel/dma/swiotlb.c                          |  30 +-
+>  10 files changed, 449 insertions(+), 36 deletions(-)
+>  create mode 100644 drivers/iommu/intel-trace.c
+>  create mode 100644 include/trace/events/intel_iommu.h
 
-No, havn't seen any reply, but I figured out myself :)
-This patch is already unmerged.
-
-
-	Joerg
-
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
