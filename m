@@ -2,54 +2,79 @@ Return-Path: <SRS0=PtwI=XH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B193ECDE2A
-	for <iommu@archiver.kernel.org>; Thu, 12 Sep 2019 10:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A31C4CEC5
+	for <iommu@archiver.kernel.org>; Thu, 12 Sep 2019 14:03:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 408B620678
-	for <iommu@archiver.kernel.org>; Thu, 12 Sep 2019 10:53:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 408B620678
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id BAEED20CC7
+	for <iommu@archiver.kernel.org>; Thu, 12 Sep 2019 14:03:06 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="zZWoHe9q"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BAEED20CC7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 016E1D48;
-	Thu, 12 Sep 2019 10:53:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F2EE0E1C;
+	Thu, 12 Sep 2019 14:03:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EC542CC0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F0BD5DDC
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 12 Sep 2019 10:53:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 84B0C89B
+	Thu, 12 Sep 2019 14:03:03 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AF56782B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 12 Sep 2019 10:53:55 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D01551000;
-	Thu, 12 Sep 2019 03:53:54 -0700 (PDT)
-Received: from [10.1.196.133] (e112269-lin.cambridge.arm.com [10.1.196.133])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF10C3F59C;
-	Thu, 12 Sep 2019 03:53:53 -0700 (PDT)
-Subject: Re: [PATCH 3/3] iommu/io-pgtable-arm: Allow coherent walks for Mali
-To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, joro@8bytes.org
-References: <cover.1568211045.git.robin.murphy@arm.com>
-	<8eb563978e7e872ddde45c0413e1a3f30b792658.1568211045.git.robin.murphy@arm.com>
-From: Steven Price <steven.price@arm.com>
-Message-ID: <5aee1c30-65ba-a608-6033-dedf004b24ea@arm.com>
-Date: Thu, 12 Sep 2019 11:53:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	Thu, 12 Sep 2019 14:03:03 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id BBFBA20856;
+	Thu, 12 Sep 2019 14:02:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1568296983;
+	bh=W/mFNJBuhBpmbDbmK2QLeeqrvyKptqabZ5ypFqgATbU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=zZWoHe9qke0fWfFJOlp7u5U6VNJ/lxOM6p5vMkZZFDleEdE1MM1auzRRZd1JCYzZN
+	nCbzbEtEpYAkC86lEARz1IW1i5vUYhqPWk9cRUWCg/5A3JAdcXl5MG4tPAjfsJj/+m
+	puXi1FKE2G+rPXBGADanJd04R0aDp5LpwZKXyxes=
+Date: Thu, 12 Sep 2019 15:02:56 +0100
+From: Will Deacon <will@kernel.org>
+To: Guo Ren <guoren@kernel.org>
+Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
+	separate file
+Message-ID: <20190912140256.fwbutgmadpjbjnab@willie-the-truck>
+References: <20190321163623.20219-12-julien.grall@arm.com>
+	<0dfe120b-066a-2ac8-13bc-3f5a29e2caa3@arm.com>
+	<CAJF2gTTXHHgDboaexdHA284y6kNZVSjLis5-Q2rDnXCxr4RSmA@mail.gmail.com>
+	<c871a5ae-914f-a8bb-9474-1dcfec5d45bf@arm.com>
+	<20190619091219.GB7767@fuggles.cambridge.arm.com>
+	<CAJF2gTTmFq3yYa9UrdZRAFwJgC=KmKTe2_NFy_UZBUQovqQJPg@mail.gmail.com>
+	<20190619123939.GF7767@fuggles.cambridge.arm.com>
+	<CAJF2gTSiiiewTLwVAXvPLO7rTSUw1rg8VtFLzANdP2S2EEbTjg@mail.gmail.com>
+	<20190624104006.lvm32nahemaqklxc@willie-the-truck>
+	<CAJF2gTSC1sGgmiTCgzKUTdPyUZ3LG4H7N8YbMyWr-E+eifGuYg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <8eb563978e7e872ddde45c0413e1a3f30b792658.1568211045.git.robin.murphy@arm.com>
-Content-Language: en-GB
-Cc: robh@kernel.org, iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org, tomeu.vizoso@collabora.com,
-	narmstrong@baylibre.com
+Content-Disposition: inline
+In-Reply-To: <CAJF2gTSC1sGgmiTCgzKUTdPyUZ3LG4H7N8YbMyWr-E+eifGuYg@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: julien.thierry@arm.com, Catalin Marinas <catalin.marinas@arm.com>,
+	Palmer Dabbelt <palmer@sifive.com>,
+	Will Deacon <will.deacon@arm.com>, christoffer.dall@arm.com,
+	Atish Patra <Atish.Patra@wdc.com>,
+	Julien Grall <julien.grall@arm.com>, gary@garyguo.net,
+	linux-riscv@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+	Mike Rapoport <rppt@linux.ibm.com>, aou@eecs.berkeley.edu,
+	Arnd Bergmann <arnd@arndb.de>, suzuki.poulose@arm.com,
+	Marc Zyngier <marc.zyngier@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	linux-arm-kernel@lists.infradead.org, Anup Patel <anup.Patel@wdc.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux-foundation.org, james.morse@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,57 +92,34 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 11/09/2019 15:42, Robin Murphy wrote:
-> Midgard GPUs have ACE-Lite master interfaces which allows systems to
-> integrate them in an I/O-coherent manner. It seems that from the GPU's
-> viewpoint, the rest of the system is its outer shareable domain, and it
-> will only emit snoop signals for outer shareable accesses. As such,
-> setting the TTBR_SHARE_OUTER bit does indeed get coherent pagetable
-> walks working nicely.
+On Sun, Sep 08, 2019 at 07:52:55AM +0800, Guo Ren wrote:
+> On Mon, Jun 24, 2019 at 6:40 PM Will Deacon <will@kernel.org> wrote:
+> > > I'll keep my system use the same ASID for SMP + IOMMU :P
+> >
+> > You will want a separate allocator for that:
+> >
+> > https://lkml.kernel.org/r/20190610184714.6786-2-jean-philippe.brucker@arm.com
 > 
-> Making data accesses coherent seems to be more of a challenge...
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Yes, it is hard to maintain ASID between IOMMU and CPUMMU or different
+> system, because it's difficult to synchronize the IO_ASID when the CPU
+> ASID is rollover.
+> But we could still use hardware broadcast TLB invalidation instruction
+> to uniformly manage the ASID and IO_ASID, or OTHER_ASID in our IOMMU.
 
-Reviewed-by: Steven Price <steven.price@arm.com>
+That's probably a bad idea, because you'll likely stall execution on the
+CPU until the IOTLB has completed invalidation. In the case of ATS, I think
+an endpoint ATC is permitted to take over a minute to respond. In reality, I
+suspect the worst you'll ever see would be in the msec range, but that's
+still an unacceptable period of time to hold a CPU.
 
-Note the terminology in the GPU is *very* confusing here. Midgard refers
-to the system's inner shareable domain as "outer shareable", and uses
-"inner shareable" to mean purely within the GPU.
+> Welcome to join our disscusion:
+> "Introduce an implementation of IOMMU in linux-riscv"
+> 9 Sep 2019, 10:45 Jade-room-I&II (Corinthia Hotel Lisbon) RISC-V MC
 
-For data access kbase sets up a different default MEMATTR if ACE is
-available:
+I attended this session, but it unfortunately raised many more questions
+than it answered.
 
-	/* Set to implementation defined, outer caching */
-	#define AS_MEMATTR_LPAE_OUTER_IMPL_DEF        0x88ull
-[...]
-	#define AS_MEMATTR_INDEX_DEFAULT_ACE           3
-[...]
-	/* Outer coherent, inner implementation defined policy */
-	#define AS_MEMATTR_INDEX_OUTER_IMPL_DEF        3
-
-Steve
-
-> ---
->  drivers/iommu/io-pgtable-arm.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 77f41c9dd9be..2794d4661339 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -1061,6 +1061,9 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
->  	cfg->arm_mali_lpae_cfg.transtab = virt_to_phys(data->pgd) |
->  					  ARM_MALI_LPAE_TTBR_READ_INNER |
->  					  ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
-> +	if (cfg->coherent_walk)
-> +		cfg->arm_mali_lpae_cfg.transtab |= ARM_MALI_LPAE_TTBR_SHARE_OUTER;
-> +
->  	return &data->iop;
->  
->  out_free_data:
-> 
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
