@@ -1,55 +1,67 @@
-Return-Path: <SRS0=UwG5=XG=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=PtwI=XH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF32C5ACAE
-	for <iommu@archiver.kernel.org>; Wed, 11 Sep 2019 17:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF8EC49ED9
+	for <iommu@archiver.kernel.org>; Thu, 12 Sep 2019 07:44:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B18DA2053B
-	for <iommu@archiver.kernel.org>; Wed, 11 Sep 2019 17:19:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B18DA2053B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id D69F1208C2
+	for <iommu@archiver.kernel.org>; Thu, 12 Sep 2019 07:44:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D69F1208C2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 577EDE1B;
-	Wed, 11 Sep 2019 17:19:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B66EEC9A;
+	Thu, 12 Sep 2019 07:44:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DB6EDE19
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AE202ACD
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 11 Sep 2019 17:19:48 +0000 (UTC)
+	Thu, 12 Sep 2019 07:44:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 7670F81A
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de
+	[85.220.165.71])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 16C2E81A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 11 Sep 2019 17:19:48 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7942628;
-	Wed, 11 Sep 2019 10:19:47 -0700 (PDT)
-Received: from [192.168.1.124] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDE743F59C;
-	Wed, 11 Sep 2019 10:19:45 -0700 (PDT)
-Subject: Re: [PATCH 0/3] iommu/io-pgtable-arm: Mali LPAE improvements
-To: Will Deacon <will@kernel.org>, Neil Armstrong <narmstrong@baylibre.com>
-References: <cover.1568211045.git.robin.murphy@arm.com>
-	<d77047c2-1f16-eded-17ba-7463310d4bba@baylibre.com>
-	<20190911162024.i2sda7uzy3pbrnyd@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <83c45e97-8398-349d-5593-03af23b39c59@arm.com>
-Date: Wed, 11 Sep 2019 18:19:40 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	Thu, 12 Sep 2019 07:44:08 +0000 (UTC)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+	by metis.ext.pengutronix.de with esmtps
+	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1i8Jlr-0001qk-0T; Thu, 12 Sep 2019 09:44:03 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1i8Jlh-00023h-Ee; Thu, 12 Sep 2019 09:43:53 +0200
+Date: Thu, 12 Sep 2019 09:43:53 +0200
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v1 1/2] iommu: pass cell_count = -1 to
+	of_for_each_phandle with cells_name
+Message-ID: <20190912074353.wqohpfydjxueqade@pengutronix.de>
+References: <20190824132846.8589-1-u.kleine-koenig@pengutronix.de>
+	<20190903125210.GB11530@8bytes.org>
 MIME-Version: 1.0
-In-Reply-To: <20190911162024.i2sda7uzy3pbrnyd@willie-the-truck>
-Content-Language: en-GB
-Cc: robh@kernel.org, tomeu.vizoso@collabora.com, steven.price@arm.com,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20190903125210.GB11530@8bytes.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de);
+	SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux-foundation.org
+Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Rob Herring <robh+dt@kernel.org>,
+	linux-mediatek@lists.infradead.org, kernel@pengutronix.de,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -62,52 +74,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-09-11 5:20 pm, Will Deacon wrote:
-> On Wed, Sep 11, 2019 at 06:19:04PM +0200, Neil Armstrong wrote:
->> On 11/09/2019 16:42, Robin Murphy wrote:
->>> Here's the eagerly-awaited fix to unblock T720/T820, plus a couple of
->>> other bits that I've collected so far. I'm not considering this as
->>> 5.3 fixes material, but it would be nice if there's any chance still
->>> to sneak it into 5.4.
->>>
->>> Robin.
->>>
->>>
->>> Robin Murphy (3):
->>>    iommu/io-pgtable-arm: Correct Mali attributes
->>>    iommu/io-pgtable-arm: Support more Mali configurations
->>>    iommu/io-pgtable-arm: Allow coherent walks for Mali
->>>
->>>   drivers/iommu/io-pgtable-arm.c | 61 ++++++++++++++++++++++++++--------
->>>   1 file changed, 48 insertions(+), 13 deletions(-)
->>>
->>
->> Tested-by: Neil Armstrong <narmstrong@baylibre.com>
->>
->> On Khadas VIM2 (Amlogic S912) with T820 Mali GPU
->>
->> I hope this will be part of v5.4 so we can run panfrost on vanilla v5.4 !
-> 
-> Not a chance -- the merge window opens on Monday and -next isn't being
-> rolled out at the moment due to LPC. Let's shoot for 5.5 and get this
-> queued up in a few weeks.
+On Tue, Sep 03, 2019 at 02:52:10PM +0200, Joerg Roedel wrote:
+> On Sat, Aug 24, 2019 at 03:28:45PM +0200, Uwe Kleine-K=F6nig wrote:
+> > Currently of_for_each_phandle ignores the cell_count parameter when a
+> > cells_name is given. I intend to change that and let the iterator fall
+> > back to a non-negative cell_count if the cells_name property is missing
+> > in the referenced node.
+> > =
 
-Fair enough, that was certainly more extreme optimism than realistic 
-expectation on my part :)
+> > To not change how existing of_for_each_phandle's users iterate, fix them
+> > to pass cell_count =3D -1 when also cells_name is given which yields the
+> > expected behaviour with and without my change.
+> > =
 
-There is some argument for taking #1 and #2 as 5.4 fixes, though - the 
-upcoming Mesa 19.2 release will enable T820 support on the userspace 
-side - so let's pick that discussion up again in a few weeks.
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> >  drivers/iommu/arm-smmu.c     | 2 +-
+> >  drivers/iommu/mtk_iommu_v1.c | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> =
 
-Robin.
+> Acked-by: Joerg Roedel <jroedel@suse.de>
 
-(And at worst, I guess we could carry the "cfg.ias = 48" workaround in 
-the DRM driver for the 5.4 cycle if need be)
+Does this ack mean that Rob is expected to apply this together with
+patch 2?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
