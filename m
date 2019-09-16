@@ -2,59 +2,86 @@ Return-Path: <SRS0=3WiH=XL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80907C4CECE
-	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 22:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432A4C49ED7
+	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 23:45:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51794214D9
-	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 22:44:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51794214D9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0511B2067D
+	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 23:45:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="r5a/XbNS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0511B2067D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 12510CF3;
-	Mon, 16 Sep 2019 22:44:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8D44D13C2;
+	Mon, 16 Sep 2019 23:45:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F286DC8F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4756313BA
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 16 Sep 2019 22:44:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2E0B870D
+	Mon, 16 Sep 2019 23:45:27 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f194.google.com (mail-pf1-f194.google.com
+	[209.85.210.194])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E066870D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 16 Sep 2019 22:44:46 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 63BDC337;
-	Mon, 16 Sep 2019 15:44:45 -0700 (PDT)
-Received: from [192.168.1.124] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 908EF3F67D;
-	Mon, 16 Sep 2019 15:44:43 -0700 (PDT)
-Subject: Re: [PATCHv5 3/3] iommu: arm-smmu-impl: Add sdm845 implementation hook
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
-	Stephen Boyd <swboyd@chromium.org>,
-	Vivek Gautam <vivek.gautam@codeaurora.org>,
-	Rajendra Nayak <rnayak@codeaurora.org>
-References: <cover.1568549745.git.saiprakash.ranjan@codeaurora.org>
-	<4ccbaf1f81c2bb2e7846da591fd542ab33f45586.1568549746.git.saiprakash.ranjan@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e9918121-71bb-703f-a696-b0e357e5eeff@arm.com>
-Date: Mon, 16 Sep 2019 23:44:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:60.0) Gecko/20100101
-	Thunderbird/60.9.0
+	Mon, 16 Sep 2019 23:45:26 +0000 (UTC)
+Received: by mail-pf1-f194.google.com with SMTP id i1so913887pfa.6
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 16 Sep 2019 16:45:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+	h=date:from:to:cc:subject:in-reply-to:message-id:references
+	:user-agent:mime-version;
+	bh=gPeqNA84uKm/2CLfm5fXdDKqLvuPs/0PfIC1lZBDVcE=;
+	b=r5a/XbNS/jvudcLZbnEeEeBgDSpXdAkOEjlEqjWaVl7O/Keuu9SWppYwdpzqS9XUXd
+	I++cPOGgE3jNUdIa30WtGkrBMf4xdS9Zym5SrGinlequi+YmMUh3dt3nzoY9x4MaQWbL
+	a1PPBz0ECe86QyfBSkBMtFmZttbnAAC9nF7T3lvNBSbvbSfKh3CY6yHLQClu7mta6BxQ
+	qFbfpNyr2CMtxnhne3PMeSYau+1m6+CUl680SgEhuv4n7UrmGSjgdWsNsQX3wZLaNXlB
+	xWZyM1MT6hkXu/o0YiAC0cwF3yKfzKv0gwjjjK9Rc4eSqWan27FtAEqudrqfcz8ao8b2
+	yYzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+	:references:user-agent:mime-version;
+	bh=gPeqNA84uKm/2CLfm5fXdDKqLvuPs/0PfIC1lZBDVcE=;
+	b=YOtzgpeTYKQifBXXAben+FfHeXelYKb9MSMvDcRRbEybdwgrXII00CAfl7yB88tVLa
+	1YIULE54gv4SV00R4QRlcVGXtpFPtY2NEjNhyC2CzDvYKs9XjX1G98GXaSZXHsj4lsAC
+	tdimGsaTpEwjsAYD0drXPWVAjsTE67jRuxLTwOKvrIK/FQlvXgk7l4tM46nxj1CR1zoU
+	A96BidK7aYWxC+zSgoZlIt/hQ/97sBx+QD6kAbDlqyu1xgZwzH96JRbX150R6xjjTtsh
+	aVTcFX1gvXb3En0ZATvw1wmgTrpeKLxJWz3VEkKuDYDUlmBKlmARqPGjOqeuwAiOSzay
+	CG1Q==
+X-Gm-Message-State: APjAAAUvufGOjuT+SYzbpO7C+/1zzSuTJsLRkwx4lyhLElZaP8xSMWMW
+	LOdLzc/ekLlsQq7mHbp3iHiA5A==
+X-Google-Smtp-Source: APXvYqw92C74smlwK4lp/45d9xzXzuNO1t7cK8J2Wk45GzI+dOKhN4oA5k/eAQn9NkOzFT8IyuIcgA==
+X-Received: by 2002:a62:b406:: with SMTP id h6mr1028857pfn.260.1568677526290; 
+	Mon, 16 Sep 2019 16:45:26 -0700 (PDT)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+	([2620:15c:17:3:3a5:23a7:5e32:4598])
+	by smtp.gmail.com with ESMTPSA id m24sm183103pgj.71.2019.09.16.16.45.25
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Mon, 16 Sep 2019 16:45:25 -0700 (PDT)
+Date: Mon, 16 Sep 2019 16:45:24 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
+In-Reply-To: <alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
+Message-ID: <alpine.DEB.2.21.1909161641320.9200@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
+	<20190905060627.GA1753@lst.de>
+	<alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <4ccbaf1f81c2bb2e7846da591fd542ab33f45586.1568549746.git.saiprakash.ranjan@codeaurora.org>
-Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	bjorn.andersson@linaro.org
+Cc: Jens Axboe <axboe@kernel.dk>, Tom Lendacky <thomas.lendacky@amd.com>,
+	Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
+	iommu@lists.linux-foundation.org, Peter Gonda <pgonda@google.com>,
+	Jianxiong Gao <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,211 +94,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-09-15 1:35 pm, Sai Prakash Ranjan wrote:
-> From: Vivek Gautam <vivek.gautam@codeaurora.org>
-> 
-> Add reset hook for sdm845 based platforms to turn off
-> the wait-for-safe sequence.
-> 
-> Understanding how wait-for-safe logic affects USB and UFS performance
-> on MTP845 and DB845 boards:
-> 
-> Qcom's implementation of arm,mmu-500 adds a WAIT-FOR-SAFE logic
-> to address under-performance issues in real-time clients, such as
-> Display, and Camera.
-> On receiving an invalidation requests, the SMMU forwards SAFE request
-> to these clients and waits for SAFE ack signal from real-time clients.
-> The SAFE signal from such clients is used to qualify the start of
-> invalidation.
-> This logic is controlled by chicken bits, one for each - MDP (display),
-> IFE0, and IFE1 (camera), that can be accessed only from secure software
-> on sdm845.
-> 
-> This configuration, however, degrades the performance of non-real time
-> clients, such as USB, and UFS etc. This happens because, with wait-for-safe
-> logic enabled the hardware tries to throttle non-real time clients while
-> waiting for SAFE ack signals from real-time clients.
-> 
-> On mtp845 and db845 devices, with wait-for-safe logic enabled by the
-> bootloaders we see degraded performance of USB and UFS when kernel
-> enables the smmu stage-1 translations for these clients.
-> Turn off this wait-for-safe logic from the kernel gets us back the perf
-> of USB and UFS devices until we re-visit this when we start seeing perf
-> issues on display/camera on upstream supported SDM845 platforms.
-> The bootloaders on these boards implement secure monitor callbacks to
-> handle a specific command - QCOM_SCM_SVC_SMMU_PROGRAM with which the
-> logic can be toggled.
-> 
-> There are other boards such as cheza whose bootloaders don't enable this
-> logic. Such boards don't implement callbacks to handle the specific SCM
-> call so disabling this logic for such boards will be a no-op.
-> 
-> This change is inspired by the downstream change from Patrick Daly
-> to address performance issues with display and camera by handling
-> this wait-for-safe within separte io-pagetable ops to do TLB
-> maintenance. So a big thanks to him for the change and for all the
-> offline discussions.
-> 
-> Without this change the UFS reads are pretty slow:
-> $ time dd if=/dev/sda of=/dev/zero bs=1048576 count=10 conv=sync
-> 10+0 records in
-> 10+0 records out
-> 10485760 bytes (10.0MB) copied, 22.394903 seconds, 457.2KB/s
-> real    0m 22.39s
-> user    0m 0.00s
-> sys     0m 0.01s
-> 
-> With this change they are back to rock!
-> $ time dd if=/dev/sda of=/dev/zero bs=1048576 count=300 conv=sync
-> 300+0 records in
-> 300+0 records out
-> 314572800 bytes (300.0MB) copied, 1.030541 seconds, 291.1MB/s
-> real    0m 1.03s
-> user    0m 0.00s
-> sys     0m 0.54s
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> ---
->   drivers/iommu/Makefile        |  2 +-
->   drivers/iommu/arm-smmu-impl.c |  7 +++++--
->   drivers/iommu/arm-smmu-qcom.c | 32 ++++++++++++++++++++++++++++++++
->   drivers/iommu/arm-smmu-qcom.h | 11 +++++++++++
->   drivers/iommu/arm-smmu.h      |  2 ++
->   5 files changed, 51 insertions(+), 3 deletions(-)
->   create mode 100644 drivers/iommu/arm-smmu-qcom.c
->   create mode 100644 drivers/iommu/arm-smmu-qcom.h
-> 
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 7caad48b4bc2..7d66e00a6924 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -13,7 +13,7 @@ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
->   obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o amd_iommu_quirks.o
->   obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
->   obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
-> -obj-$(CONFIG_ARM_SMMU) += arm-smmu.o arm-smmu-impl.o
-> +obj-$(CONFIG_ARM_SMMU) += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
->   obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
->   obj-$(CONFIG_DMAR_TABLE) += dmar.o
->   obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o intel-pasid.o
-> diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-> index 5c87a38620c4..ad835018f0e2 100644
-> --- a/drivers/iommu/arm-smmu-impl.c
-> +++ b/drivers/iommu/arm-smmu-impl.c
-> @@ -8,7 +8,7 @@
->   #include <linux/of.h>
->   
->   #include "arm-smmu.h"
-> -
-> +#include "arm-smmu-qcom.h"
->   
->   static int arm_smmu_gr0_ns(int offset)
->   {
-> @@ -109,7 +109,7 @@ static struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smm
->   #define ARM_MMU500_ACR_S2CRB_TLBEN	(1 << 10)
->   #define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
->   
-> -static int arm_mmu500_reset(struct arm_smmu_device *smmu)
-> +int arm_mmu500_reset(struct arm_smmu_device *smmu)
->   {
->   	u32 reg, major;
->   	int i;
-> @@ -170,5 +170,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
->   				  "calxeda,smmu-secure-config-access"))
->   		smmu->impl = &calxeda_impl;
->   
-> +	if (of_device_is_compatible(smmu->dev->of_node, "qcom,sdm845-smmu-500"))
-> +		smmu->impl = &qcom_sdm845_smmu500_impl;
-> +
->   	return smmu;
->   }
-> diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-> new file mode 100644
-> index 000000000000..10e9a5bbae06
-> --- /dev/null
-> +++ b/drivers/iommu/arm-smmu-qcom.c
-> @@ -0,0 +1,32 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2019, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#include <linux/qcom_scm.h>
-> +
-> +#include "arm-smmu.h"
-> +#include "arm-smmu-qcom.h"
-> +
-> +static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
-> +{
-> +	int ret;
-> +
-> +	arm_mmu500_reset(smmu);
-> +
-> +	/*
-> +	 * To address performance degradation in non-real time clients,
-> +	 * such as USB and UFS, turn off wait-for-safe on sdm845 based boards,
-> +	 * such as MTP and db845, whose firmwares implement secure monitor
-> +	 * call handlers to turn on/off the wait-for-safe logic.
-> +	 */
-> +	ret = qcom_scm_qsmmu500_wait_safe_toggle(0);
-> +	if (ret)
-> +		dev_warn(smmu->dev, "Failed to turn off SAFE logic\n");
-> +
-> +	return ret;
-> +}
-> +
-> +const struct arm_smmu_impl qcom_sdm845_smmu500_impl = {
-> +	.reset = qcom_sdm845_smmu500_reset,
-> +};
-> diff --git a/drivers/iommu/arm-smmu-qcom.h b/drivers/iommu/arm-smmu-qcom.h
-> new file mode 100644
-> index 000000000000..915f8ea2b616
-> --- /dev/null
-> +++ b/drivers/iommu/arm-smmu-qcom.h
-> @@ -0,0 +1,11 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) 2019, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#ifndef _ARM_SMMU_QCOM_H
-> +#define _ARM_SMMU_QCOM_H
-> +
-> +extern const struct arm_smmu_impl qcom_sdm845_smmu500_impl;
+On Thu, 5 Sep 2019, David Rientjes wrote:
 
-I don't foresee this header being particularly beneficial - I'd rather 
-just have a single qcom_smmu_impl_init() entrypoint declared in 
-arm-smmu.h as per the Nvidia implementation[1], so you can then keep all 
-the other details private. With that change,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-Thanks,
-Robin.
-
-[1] 
-https://lore.kernel.org/linux-arm-kernel/1567481528-31163-3-git-send-email-vdumpa@nvidia.com/
-
-> +
-> +#endif /* _ARM_SMMU_QCOM_H */
-> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-> index b19b6cae9b5e..f74fa3bb149d 100644
-> --- a/drivers/iommu/arm-smmu.h
-> +++ b/drivers/iommu/arm-smmu.h
-> @@ -399,4 +399,6 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
->   
->   struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
->   
-> +int arm_mmu500_reset(struct arm_smmu_device *smmu);
-> +
->   #endif /* _ARM_SMMU_H */
+> > > Hi Christoph, Jens, and Ming,
+> > > 
+> > > While booting a 5.2 SEV-enabled guest we have encountered the following 
+> > > WARNING that is followed up by a BUG because we are in atomic context 
+> > > while trying to call set_memory_decrypted:
+> > 
+> > Well, this really is a x86 / DMA API issue unfortunately.  Drivers
+> > are allowed to do GFP_ATOMIC dma allocation under locks / rcu critical
+> > sections and from interrupts.  And it seems like the SEV case can't
+> > handle that.  We have some semi-generic code to have a fixed sized
+> > pool in kernel/dma for non-coherent platforms that have similar issues
+> > that we could try to wire up, but I wonder if there is a better way
+> > to handle the issue, so I've added Tom and the x86 maintainers.
+> > 
+> > Now independent of that issue using DMA coherent memory for the nvme
+> > PRPs/SGLs doesn't actually feel very optional.  We could do with
+> > normal kmalloc allocations and just sync it to the device and back.
+> > I wonder if we should create some general mempool-like helpers for that.
+> > 
 > 
+> Thanks for looking into this.  I assume it's a non-starter to try to 
+> address this in _vm_unmap_aliases() itself, i.e. rely on a purge spinlock 
+> to do all synchronization (or trylock if not forced) for 
+> purge_vmap_area_lazy() rather than only the vmap_area_lock within it.  In 
+> other words, no mutex.
+> 
+> If that's the case, and set_memory_encrypted() can't be fixed to not need 
+> to sleep by changing _vm_unmap_aliases() locking, then I assume dmapool is 
+> our only alternative?  I have no idea with how large this should be.
+> 
+
+Brijesh and Tom, we currently hit this any time we boot an SEV enabled 
+Ubuntu 18.04 guest; I assume that guest kernels, especially those of such 
+major distributions, are expected to work with warnings and BUGs when 
+certain drivers are enabled.
+
+If the vmap purge lock is to remain a mutex (any other reason that 
+unmapping aliases can block?) then it appears that allocating a dmapool 
+is the only alternative.  Is this something that you'll be addressing 
+generically or do we need to get buy-in from the maintainers of this 
+specific driver?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
