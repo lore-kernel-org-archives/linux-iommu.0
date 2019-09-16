@@ -2,62 +2,79 @@ Return-Path: <SRS0=3WiH=XL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B02D5C49ED7
-	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 18:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B74C4CECE
+	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 18:18:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8AD3320650
-	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 18:01:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C72A920830
+	for <iommu@archiver.kernel.org>; Mon, 16 Sep 2019 18:18:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hTJdMMxm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8AD3320650
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hCmKcOBd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C72A920830
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 45C051AE0;
-	Mon, 16 Sep 2019 18:01:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4794A1B4B;
+	Mon, 16 Sep 2019 18:18:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 798E51ADC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C3A0F1B42
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 16 Sep 2019 18:00:27 +0000 (UTC)
+	Mon, 16 Sep 2019 18:18:08 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0743A81A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A257681A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 16 Sep 2019 18:00:27 +0000 (UTC)
+	Mon, 16 Sep 2019 18:18:07 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
 	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id C557C20830;
-	Mon, 16 Sep 2019 18:00:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id A49CE206A4;
+	Mon, 16 Sep 2019 18:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1568656826;
-	bh=0MuDEueeqiW3vBqPYXeawD+yH0V26W4id32WaUlsst8=;
+	s=default; t=1568657887;
+	bh=cvqXyAoP8LXl4eQWtl4xAFxdBZY+YNwOUsM8E8y5L+I=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hTJdMMxm4MH8Vuo2SfpSVaRsGtN9mRmFfEkuKRy89OdziWXWiCDgbMK6SKY/k+ecA
-	Kh5+WeWNxsaNtIYz1MwWr9JBUepq1Ardm/RHCa8v8DGRbwqRGFdkYBHL0diVMaYfVc
-	Nag18aTsDUASPnJo0glomtDEik/z0OHcN5oc5IaA=
-Date: Mon, 16 Sep 2019 19:00:22 +0100
+	b=hCmKcOBdZQjDrk/s24oKublKlHuvENgTEev4fbOttzaSiyY1s8W7HQFd0rotrvv87
+	S4zvcdSpSDg9o+9giWpiCF24fHzYKjBU7vVaY0TzRg42R6e8zdKauzviGVD913jFxO
+	FrwmDsU3hjX6DSKArgN63xEx+rHvAH21xb3FOAng=
+Date: Mon, 16 Sep 2019 19:18:00 +0100
 From: Will Deacon <will@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Report USF more clearly
-Message-ID: <20190916180021.cp2onwou7pbsrygd@willie-the-truck>
-References: <2762ffd4c196dc91d62e10eb8b753f256ea9b629.1568375317.git.robin.murphy@arm.com>
-	<CAD=FV=XPi+DCwg2DWbZkXQGTpxWy=vWa1LQR=zHZr93WKjCmzA@mail.gmail.com>
+To: Anup Patel <Anup.Patel@wdc.com>
+Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
+	separate file
+Message-ID: <20190916181800.7lfpt3t627byoomt@willie-the-truck>
+References: <20190912140256.fwbutgmadpjbjnab@willie-the-truck>
+	<mhng-166dcd4f-9483-4aab-a83a-914d70ddb5a4@palmer-si-x1e>
+	<MN2PR04MB606117F2AC47385EF23D267D8D8D0@MN2PR04MB6061.namprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <CAD=FV=XPi+DCwg2DWbZkXQGTpxWy=vWa1LQR=zHZr93WKjCmzA@mail.gmail.com>
+In-Reply-To: <MN2PR04MB606117F2AC47385EF23D267D8D8D0@MN2PR04MB6061.namprd04.prod.outlook.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc: "julien.thierry@arm.com" <julien.thierry@arm.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>,
+	"christoffer.dall@arm.com" <christoffer.dall@arm.com>,
+	Atish Patra <Atish.Patra@wdc.com>,
+	"julien.grall@arm.com" <julien.grall@arm.com>,
+	"gary@garyguo.net" <gary@garyguo.net>,
+	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"rppt@linux.ibm.com" <rppt@linux.ibm.com>,
+	"aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
+	Arnd Bergmann <arnd@arndb.de>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"marc.zyngier@arm.com" <marc.zyngier@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"james.morse@arm.com" <james.morse@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,77 +92,74 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Sep 13, 2019 at 03:44:12PM -0700, Doug Anderson wrote:
-> On Fri, Sep 13, 2019 at 4:48 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> >
-> > Although CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT is a welcome tool
-> > for smoking out inadequate firmware, the failure mode is non-obvious
-> > and can be confusing for end users. Add some special-case reporting of
-> > Unidentified Stream Faults to help clarify this particular symptom.
-> >
-> > CC: Douglas Anderson <dianders@chromium.org>
+On Sun, Sep 15, 2019 at 05:03:38AM +0000, Anup Patel wrote:
 > 
-> nit that I believe that "Cc" (lowercase 2nd c) is correct.
 > 
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
-> >  drivers/iommu/arm-smmu.c | 5 +++++
-> >  drivers/iommu/arm-smmu.h | 2 ++
-> >  2 files changed, 7 insertions(+)
-> >
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index b7cf24402a94..76ac8c180695 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -499,6 +499,11 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-> >         dev_err_ratelimited(smmu->dev,
-> >                 "\tGFSR 0x%08x, GFSYNR0 0x%08x, GFSYNR1 0x%08x, GFSYNR2 0x%08x\n",
-> >                 gfsr, gfsynr0, gfsynr1, gfsynr2);
-> > +       if (IS_ENABLED(CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT) &&
-> > +           (gfsr & sGFSR_USF))
-> > +               dev_err_ratelimited(smmu->dev,
-> > +                       "Stream ID %hu may not be described by firmware, try booting with \"arm-smmu.disable_bypass=0\"\n",
-> > +                       (u16)gfsynr1);
+> > -----Original Message-----
+> > From: linux-kernel-owner@vger.kernel.org <linux-kernel-
+> > owner@vger.kernel.org> On Behalf Of Palmer Dabbelt
+> > Sent: Saturday, September 14, 2019 7:31 PM
+> > To: will@kernel.org
+> > Cc: guoren@kernel.org; Will Deacon <will.deacon@arm.com>;
+> > julien.thierry@arm.com; aou@eecs.berkeley.edu; james.morse@arm.com;
+> > Arnd Bergmann <arnd@arndb.de>; suzuki.poulose@arm.com;
+> > marc.zyngier@arm.com; catalin.marinas@arm.com; Anup Patel
+> > <Anup.Patel@wdc.com>; linux-kernel@vger.kernel.org;
+> > rppt@linux.ibm.com; Christoph Hellwig <hch@infradead.org>; Atish Patra
+> > <Atish.Patra@wdc.com>; julien.grall@arm.com; gary@garyguo.net; Paul
+> > Walmsley <paul.walmsley@sifive.com>; christoffer.dall@arm.com; linux-
+> > riscv@lists.infradead.org; kvmarm@lists.cs.columbia.edu; linux-arm-
+> > kernel@lists.infradead.org; iommu@lists.linux-foundation.org
+> > Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
+> > separate file
+> > 
+> > On Thu, 12 Sep 2019 07:02:56 PDT (-0700), will@kernel.org wrote:
+> > > On Sun, Sep 08, 2019 at 07:52:55AM +0800, Guo Ren wrote:
+> > >> On Mon, Jun 24, 2019 at 6:40 PM Will Deacon <will@kernel.org> wrote:
+> > >> > > I'll keep my system use the same ASID for SMP + IOMMU :P
+> > >> >
+> > >> > You will want a separate allocator for that:
+> > >> >
+> > >> > https://lkml.kernel.org/r/20190610184714.6786-2-jean-philippe.bruck
+> > >> > er@arm.com
+> > >>
+> > >> Yes, it is hard to maintain ASID between IOMMU and CPUMMU or
+> > >> different system, because it's difficult to synchronize the IO_ASID
+> > >> when the CPU ASID is rollover.
+> > >> But we could still use hardware broadcast TLB invalidation
+> > >> instruction to uniformly manage the ASID and IO_ASID, or OTHER_ASID in
+> > our IOMMU.
+> > >
+> > > That's probably a bad idea, because you'll likely stall execution on
+> > > the CPU until the IOTLB has completed invalidation. In the case of
+> > > ATS, I think an endpoint ATC is permitted to take over a minute to
+> > > respond. In reality, I suspect the worst you'll ever see would be in
+> > > the msec range, but that's still an unacceptable period of time to hold a
+> > CPU.
+> > >
+> > >> Welcome to join our disscusion:
+> > >> "Introduce an implementation of IOMMU in linux-riscv"
+> > >> 9 Sep 2019, 10:45 Jade-room-I&II (Corinthia Hotel Lisbon) RISC-V MC
+> > >
+> > > I attended this session, but it unfortunately raised many more
+> > > questions than it answered.
+> > 
+> > Ya, we're a long way from figuring this out.
 > 
-> In general it seems like a sane idea to surface an error like this.  I
-> guess a few nits:
-> 
-> 1. "By firmware" might be a bit misleading.  In most cases I'm aware
-> of the problem is in the device tree that was bundled together with
-> the kernel.  If there are actually cases where firmware has baked in a
-> device tree and it got this wrong then we might want to spend time
-> figuring out what to do about it.
+> For everyone's reference, here is our first attempt at RISC-V ASID allocator:
+> http://archive.lwn.net:8080/linux-kernel/20190329045111.14040-1-anup.patel@wdc.com/T/#u
 
-I thought that was usually the way UEFI systems worked, where the kernel
-is updated independently of the device-tree? Either way, that should be
-what we're aiming for, even if many platforms require the two to be tied
-together.
+With a reply stating that the patch "absolutely does not work" ;)
 
-> 2. Presumably booting with "arm-smmu.disable_bypass=0" is in most
-> cases the least desirable option available.  I always consider kernel
-> command line parameters as something of a last resort for
-> configuration and would only be something that and end user might do
-> if they were given a kernel compiled by someone else (like if someone
-> where taking a prebuilt Linux distro and trying to install it onto a
-> generic PC).  Are you seeing cases where this is happening?  If people
-> are compiling their own kernel I'd argue that telling them to set
-> "CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT" to "no" is much better
-> than trying to jam a command line option on.  Command line options
-> don't scale well.
+What exactly do you want people to do with that? It's an awful lot of effort
+to review this sort of stuff and given that Guo Ren is talking about sharing
+page tables between the CPU and an accelerator, maybe you're better off
+stabilising Linux for the platforms that you can actually test rather than
+getting so far ahead of yourselves that you end up with a bunch of wasted
+work on patches that probably won't get merged any time soon.
 
-Hmm. Recompiling seems like even more of a last resort to me!
-
-> 3. Any chance you could make it more obvious that this change is
-> undesirable and a last resort?  AKA:
-> 
-> "Stream ID x blocked for security reasons; allow anyway by booting
-> with arm-smmu.disable_bypass=0"
-
-How about:
-
-  "Blocked transaction from unknown Stream ID x; boot with
-   \"arm-smmu.disable_bypass=0\" to allow these transactions, although this
-   may have security implications."
+Seriously, they say "walk before you can run", but this is more "crawl
+before you can fly". What's the rush?
 
 Will
 _______________________________________________
