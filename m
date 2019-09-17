@@ -2,62 +2,90 @@ Return-Path: <SRS0=TfYV=XM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A424AC4CECD
-	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 17:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC00C4CEC9
+	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 18:23:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 777E321848
-	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 17:59:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 547F821670
+	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 18:23:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="bFP+NyjS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 777E321848
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="DjzbQywx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 547F821670
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 394CD17F9;
-	Tue, 17 Sep 2019 17:59:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 228D8A95;
+	Tue, 17 Sep 2019 18:23:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 35F431685
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 647F9265
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 17 Sep 2019 17:59:56 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 493CD8A8
+	Tue, 17 Sep 2019 18:23:13 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
+	[209.85.215.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1185176D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 17 Sep 2019 17:59:55 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 955BB20678;
-	Tue, 17 Sep 2019 17:59:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1568743195;
-	bh=hcrS5sWx7CpJDrlf9K3i36bzcfPumr+4M831UKbPHLE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bFP+NyjSQAsNpicI1ptV1P/vs72FENrY36GYDEUn4aCZnZuekPLMsVkPM5KM7HNzq
-	h51bLuQlx6vgTs4lo4bJiaLBBrsM1YElK4CYbmgWcSyFMCtx+ax0fHOjbHSv7S96na
-	1ZnvvGM5k6i7ZtN/IVat9CQ3rMtol5MyEPyHrETw=
-Date: Tue, 17 Sep 2019 18:59:50 +0100
-From: Will Deacon <will@kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] iommu: dma: Use of_iommu_get_resv_regions()
-Message-ID: <20190917175950.wrwiqnh5bp62uy3c@willie-the-truck>
-References: <20190829111407.17191-1-thierry.reding@gmail.com>
-	<20190829111407.17191-3-thierry.reding@gmail.com>
-	<1caeaaa0-c5aa-b630-6d42-055b26764f40@arm.com>
-	<20190902145245.GC1445@ulmo>
+	Tue, 17 Sep 2019 18:23:12 +0000 (UTC)
+Received: by mail-pg1-f196.google.com with SMTP id x15so2439018pgg.8
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 17 Sep 2019 11:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+	h=date:from:to:cc:subject:in-reply-to:message-id:references
+	:user-agent:mime-version;
+	bh=N+ZvW5XGZPlKGoWdD6lQLoORQOVvTeBoK7Mquxm8Mos=;
+	b=DjzbQywxFH7fD+3bt5IqiSsQVUCbjqXB+I60sfjSk/EfG9e3ii1X1mx/WPlGJa5p7a
+	4cLinS9ljquEiFVPO9VHp6n2HEbyMHVfactLBezhvUtTsTs2m4eO9BhahGuVt6D0i2U7
+	dv/n92xSw2SsI2qt8jgaJ/F39/7kPn+9KPaAulNegpOwgtAjurrSGB9b3M9ZXj5XXUn6
+	ioVkxAD54oYmSnxuB0E4ZEB8/JXeTe8hDpgDtd7iEQx9XfZunGXkRlK5SJxwJDj10cuy
+	lJyAbtoLBV6gzip4nzF49wOwL63nDnj16cJErgUFx2iCNevjldP4YHXHc8fRMQNb2DZw
+	KPVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+	:references:user-agent:mime-version;
+	bh=N+ZvW5XGZPlKGoWdD6lQLoORQOVvTeBoK7Mquxm8Mos=;
+	b=SnxlWi/diarPeSOqKKGidPPp4gaHwlvslvM/YqYgAhh/haqqSVsjrsrQgnmFMKLd4t
+	gjrGUhe0mhelzVoPfM447g+qMICi8HNDwLr8FkeOHUyHklmKiur23DzTEmgNwt+JpHFK
+	5CDrSm9qkMgRaBm2dPqV2asSpERDvPj+vN21ou4QpMcIKssOCz1oDIU5Xb6Qo+qfg8Ct
+	6pJguUMOT1BCUN1JBFBjLMmetkbwJ5a68ffdVeVAez2I9W8pIaE47WLiDjas6MUpLwgd
+	2whw1GuSSWvvvX2uA0xP0PrYtqUxpOw6CPNVQE2KbNauRFFOHfAOVocTFq5LsWd/q6Dx
+	PT1g==
+X-Gm-Message-State: APjAAAV3c03495QmDFYkxfu0BsaJLa9Wp+WaEVo31iYuDH+h5e7a/zoA
+	WqdYOSCNTFRFo4TeETp35CDqYg==
+X-Google-Smtp-Source: APXvYqx2KDzDaitTwku3JFa1UCEMfkpT0dPM41Q9FIaSsoOK23XkEzPeudmDOZYYF8r5xDdrW60fJA==
+X-Received: by 2002:a65:5cc8:: with SMTP id b8mr212852pgt.30.1568744592123;
+	Tue, 17 Sep 2019 11:23:12 -0700 (PDT)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+	([2620:15c:17:3:3a5:23a7:5e32:4598])
+	by smtp.gmail.com with ESMTPSA id
+	e21sm3021514pgr.43.2019.09.17.11.23.11
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Tue, 17 Sep 2019 11:23:11 -0700 (PDT)
+Date: Tue, 17 Sep 2019 11:23:10 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>, 
+	Jens Axboe <axboe@kernel.dk>
+Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
+In-Reply-To: <alpine.DEB.2.21.1909161641320.9200@chino.kir.corp.google.com>
+Message-ID: <alpine.DEB.2.21.1909171121300.151243@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
+	<20190905060627.GA1753@lst.de>
+	<alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
+	<alpine.DEB.2.21.1909161641320.9200@chino.kir.corp.google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190902145245.GC1445@ulmo>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>,
+	Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
+	iommu@lists.linux-foundation.org, Peter Gonda <pgonda@google.com>,
+	Jianxiong Gao <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,56 +98,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Sep 02, 2019 at 04:52:45PM +0200, Thierry Reding wrote:
-> On Mon, Sep 02, 2019 at 03:22:35PM +0100, Robin Murphy wrote:
-> > On 29/08/2019 12:14, Thierry Reding wrote:
-> > > From: Thierry Reding <treding@nvidia.com>
-> > > 
-> > > For device tree nodes, use the standard of_iommu_get_resv_regions()
-> > > implementation to obtain the reserved memory regions associated with a
-> > > device.
-> > 
-> > This covers the window between iommu_probe_device() setting up a default
-> > domain and the device's driver finally probing and taking control, but
-> > iommu_probe_device() represents the point that the IOMMU driver first knows
-> > about this device - there's still a window from whenever the IOMMU driver
-> > itself probed up to here where the "unidentified" traffic may have already
-> > been disrupted. Some IOMMU drivers have no option but to make the necessary
-> > configuration during their own probe routine, at which point a struct device
-> > for the display/etc. endpoint may not even exist yet.
+On Mon, 16 Sep 2019, David Rientjes wrote:
+
+> Brijesh and Tom, we currently hit this any time we boot an SEV enabled 
+> Ubuntu 18.04 guest; I assume that guest kernels, especially those of such 
+> major distributions, are expected to work with warnings and BUGs when 
+> certain drivers are enabled.
 > 
-> Yeah, I think I'm actually running into this issue with the ARM SMMU
-> driver. The above works fine with the Tegra SMMU driver, though, because
-> it doesn't touch the SMMU configuration until a device is attached to a
-> domain.
+> If the vmap purge lock is to remain a mutex (any other reason that 
+> unmapping aliases can block?) then it appears that allocating a dmapool 
+> is the only alternative.  Is this something that you'll be addressing 
+> generically or do we need to get buy-in from the maintainers of this 
+> specific driver?
 > 
-> For anything earlier than iommu_probe_device(), I don't see a way of
-> doing this generically. I've been working on a prototype to make these
-> reserved memory regions early on for ARM SMMU but I've been failing so
-> far. I think it would possibly work if we just switched the default for
-> stream IDs to be "bypass" if they have any devices that have reserved
-> memory regions, but again, this isn't quite working (yet).
 
-I think we should avoid the use of "bypass" outside of the IOMMU probe()
-routine if at all possible, since it leaves the thing wide open if we don't
-subsequently probe the master.
+We've found that the following applied on top of 5.2.14 suppresses the 
+warnings.
 
-Why can't we initialise a page-table early for StreamIDs with these
-reserved regions, and then join that up later on if we see a device with
-one of those StreamIDs attaching to a DMA domain? I suppose the nasty
-case would be attaching to a domain that already has other masters
-attached to it. Can we forbid that somehow for these devices? Otherwise,
-I think we'd have to transiently switch to bypass whilst switching page
-table.
+Christoph, Keith, Jens, is this something that we could do for the nvme 
+driver?  I'll happily propose it formally if it would be acceptable.
 
-What problems did you run into trying to implement this?
+Thanks!
 
-Will
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1613,7 +1613,8 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->admin_tagset.timeout = ADMIN_TIMEOUT;
+ 		dev->admin_tagset.numa_node = dev_to_node(dev->dev);
+ 		dev->admin_tagset.cmd_size = sizeof(struct nvme_iod);
+-		dev->admin_tagset.flags = BLK_MQ_F_NO_SCHED;
++		dev->admin_tagset.flags = BLK_MQ_F_NO_SCHED |
++					  BLK_MQ_F_BLOCKING;
+ 		dev->admin_tagset.driver_data = dev;
+ 
+ 		if (blk_mq_alloc_tag_set(&dev->admin_tagset))
+@@ -2262,7 +2263,8 @@ static int nvme_dev_add(struct nvme_dev *dev)
+ 		dev->tagset.queue_depth =
+ 				min_t(int, dev->q_depth, BLK_MQ_MAX_DEPTH) - 1;
+ 		dev->tagset.cmd_size = sizeof(struct nvme_iod);
+-		dev->tagset.flags = BLK_MQ_F_SHOULD_MERGE;
++		dev->tagset.flags = BLK_MQ_F_SHOULD_MERGE |
++				    BLK_MQ_F_BLOCKING;
+ 		dev->tagset.driver_data = dev;
+ 
+ 		ret = blk_mq_alloc_tag_set(&dev->tagset);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
