@@ -2,66 +2,133 @@ Return-Path: <SRS0=TfYV=XM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CDAC4CEC9
-	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 12:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5191C4CECD
+	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 12:44:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69955214AF
-	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 12:25:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69955214AF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id 7996E2067B
+	for <iommu@archiver.kernel.org>; Tue, 17 Sep 2019 12:44:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="WDiYcicI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7996E2067B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 39FC21451;
-	Tue, 17 Sep 2019 12:25:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 52B8513F4;
+	Tue, 17 Sep 2019 12:44:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2ABB31450
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 71FBA13D8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 17 Sep 2019 12:25:41 +0000 (UTC)
+	Tue, 17 Sep 2019 12:44:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de
-	[85.220.165.71])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id EE29B81A
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+	[210.118.77.11])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 13B7D828
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 17 Sep 2019 12:25:39 +0000 (UTC)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-	by metis.ext.pengutronix.de with esmtps
-	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1iACY2-00073e-FZ; Tue, 17 Sep 2019 14:25:34 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1iACXy-0007cg-QF; Tue, 17 Sep 2019 14:25:30 +0200
-Date: Tue, 17 Sep 2019 14:25:30 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-To: Peter Rosin <peda@axentia.se>
+	Tue, 17 Sep 2019 12:44:12 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+	20190917124410euoutp0119d09da4d78246a03c7d3af331dee498~FOmUDqNpU2825328253euoutp01M
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 17 Sep 2019 12:44:10 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+	20190917124410euoutp0119d09da4d78246a03c7d3af331dee498~FOmUDqNpU2825328253euoutp01M
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1568724250;
+	bh=wUXpKJGu/og/UoOB6RtnG3FPGUskHRfnTr98I07AiCg=;
+	h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+	b=WDiYcicIRmy0yZ30lP+c2/4AV65RZ7SfTTOMsmvl4fZnzJyDpvhYce0fxKR9SLwjS
+	dCXoYEmHYZSvDhMFjLUlg+MX9is7yDg//iCgKYKaa2MwZV/9PGlNCP+WR1J/RAc6DN
+	4KpL/sbKO1efwJJzIV0Epk5k6aWM/V/0c6FCj8aM=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20190917124410eucas1p2e83a6b1d64ddb17b4a345d786d7260b6~FOmTccf7w2150021500eucas1p2C;
+	Tue, 17 Sep 2019 12:44:10 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id FB.A0.04469.915D08D5;
+	Tue, 17 Sep 2019 13:44:09 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20190917124409eucas1p2211d232e6833a44a9ad5dbf72457197c~FOmSsZsEg2149521495eucas1p2T;
+	Tue, 17 Sep 2019 12:44:09 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20190917124409eusmtrp2d5e1869c322423d265b23ce57565b766~FOmSeKWX42680926809eusmtrp2Z;
+	Tue, 17 Sep 2019 12:44:09 +0000 (GMT)
+X-AuditID: cbfec7f2-54fff70000001175-b1-5d80d519d59e
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id 39.79.04166.815D08D5;
+	Tue, 17 Sep 2019 13:44:08 +0100 (BST)
+Received: from [106.120.51.15] (unknown [106.120.51.15]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20190917124407eusmtip251bb455018ae4b0faee9f4999a104f9a~FOmRZq8a80883208832eusmtip2y;
+	Tue, 17 Sep 2019 12:44:07 +0000 (GMT)
 Subject: Re: [PATCH v1 2/2] of: Let of_for_each_phandle fallback to
 	non-negative cell_count
-Message-ID: <20190917122530.3xy7sut3xdvzlomj@pengutronix.de>
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+	Peter Rosin <peda@axentia.se>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <ba4d0f94-f147-049f-6252-10928b626e41@samsung.com>
+Date: Tue, 17 Sep 2019 14:44:06 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+	Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20190917122530.3xy7sut3xdvzlomj@pengutronix.de>
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTcRTHO7u7D5eL283y9JRGD3prJfzICqOgSwT5T1DGrFWXJT7bWmUP
+	GhqiS8oKLWemhaaIle+m9HJKoyTL7LE0s8gEq0XqzMLKvF4s//ucc76/7zlf+HGUMEBP4yJj
+	D0imWEO0jtGoqx/8fLJk6gurPtCdtZzkNjTRJOvLEEO6Wu+oSN69EJKaXcqS4owaNSn/8JIm
+	Kb+9QFpqLzGkJakZSFX3VxVJPLmC3HHmAhm67WBJ3bdOmrSdPQ/k5JtgcrppY6ggdtZdVokl
+	l0tAzLyfzYo19nZWLC9OZURnfQqIFfknxPPuQhDP/A4Uu67cVIt95bPCxodrVu+VoiMPSqZl
+	a3dp9jnc/RB/I/Rw7eluxgqVwTbw4ZBfifdzr7A24DiBLwIcXCW3Bd4L+Na93waaYe4DvNva
+	qx7V179+RCuDQsCMtFJQCg9gTWMLK6sm8XrsKEtkZFc/3ohtrk2yhuJPMWhvuMXIGoYPQpvH
+	NsJafi06nDkqmdX8XPR+fT/iM3nY5+0PF6VoJuLDrM6RK3z4Ndhfeg5kpvgATKrKphT2x9bO
+	XJW8DPkCDl+lDKiUszfgYNddWuFJ+MlVySo8A4dqRh8kAb5vus4qRRpgS+JFUFQhWO9qpuU4
+	FL8Ab9YukxH5dVjhTVBwAro9E5UbJuC56guU0tZiSrKgeMxDu+vGv611T59R6aCzj0lmH5PG
+	PiaN/f/aPFAXg79kMccYJXNQrHRoqdkQY7bEGpfuiYsph+Hv2PjH1euA/me7ncBzoPPV4mOr
+	XqANB80JMU5AjtL5acOOn9AL2r2GhCOSKW6nyRItmZ0wnVPr/LVHx73bIfBGwwEpSpLiJdPo
+	VMX5TLPCsR852yPnvO7rXhc8cMazJ+J7++0tvZZkvy1pPXNLErYGpH4uuBqXHrGozC8cfAMa
+	DjEwf3ZUT7JeiE/XHI7InNIRFSoaF1vCex6Q4JkB81esDBI2P4z60FF0bXDxJ/96K3PhV8jm
+	j3TJ83zxS2Fmu/fYAk/GelVeZrTvbge7bX2VTm3eZwhaSJnMhr/qgyryigMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUhTYRiGec+2s6O2OE7FNwurRRlF0zPdfC1d+qvzU4igD4cuPUzTOdk5
+	SmbhUhFdZn6k6Cy/0AwT05kyLdHNKDQxzBLTykJRLFtRVkSpbc7Afxfc93XDAw/BE18X+BFJ
+	qRyjT1WnSHB3/rO1p++OwFcGVdBsnhTVPR4ToOrldRwtTPdjqH7gGCqs6RCi1opePjLPTQpQ
+	weoKQBN9t3A0kTsOUPeSHUM5ecGo31YH0PojixBZv84L0ExpOUB5b+SoeOxEpJiet9ZidFtt
+	G6ArB2uEdK/prZA2txbitG2oANBdTdl0+VQLoG+sBtELDff59Hezf7THWWm4XpfOMXsSdSwX
+	ITlHIZmUCkNSWUiYlAoOVR2VySWByvAEJiUpg9EHKuOkiZapHyCtPfJiX/ESbgAP5EbgRkAy
+	BA69HhEYgTshJpsBLCtpELiCXXC40rDJXvDvpBF3lT4BePflotAZeJEqONuZgzvZm9TA0pVW
+	obPEI0txWP7TwncZqxis/zOzMYWTFDR+Nm4YIlIJLbbbmJP55H64Yv/gsAnCx7Fq7le4Kp5w
+	uHqe72Q3MgL+6CgDTuaRCljb9YHn4t0wt7tmk33h9HwdVgLEpi26aYti2qKYtij1gN8KvJl0
+	VqvRspSUVWvZ9FSNNF6nNQPHK/Q8+d1lAS86T9oASQDJNtHgiEElFqgz2EytDUCCJ/EWRV/J
+	VolFCerMS4xeF6tPT2FYG5A7bivl+fnE6xyPlcrFUnIqFIVRocGhwQok8RUVkNYYMalRc0wy
+	w6Qx+v8eRrj5GUBcUWNQ28T4ArczoCi/khjtGLu8xH7b68mMnkrus1ccVxQtzo4eqM562Fvr
+	P7W9qlGmxLznILfczin7FCG+1ihZj70yX8f6zP66d3DAmvQ84MuaveZ9v7Gtqen2tZjD2JmW
+	mz8/Vvk3Rp3fV31BLLhzD3ns8Dc3R0ZTp69yWeUSPpuopg7x9Kz6H0G4kfwgAwAA
+X-CMS-MailID: 20190917124409eucas1p2211d232e6833a44a9ad5dbf72457197c
+X-Msg-Generator: CA
+X-RootMTR: 20190917124409eucas1p2211d232e6833a44a9ad5dbf72457197c
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190917124409eucas1p2211d232e6833a44a9ad5dbf72457197c
 References: <20190824132846.8589-1-u.kleine-koenig@pengutronix.de>
 	<20190824132846.8589-2-u.kleine-koenig@pengutronix.de>
 	<20190913215809.GA11833@bogus>
 	<CAMuHMdV+pwoAA0zH_vQf2nKqzrgHP8rcMStyJbnuu2qviFC_qg@mail.gmail.com>
 	<20190917101303.t5otztdus7y3ayau@pengutronix.de>
 	<489c90fb-a135-4fd8-ecb9-46404bd3c234@axentia.se>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <489c90fb-a135-4fd8-ecb9-46404bd3c234@axentia.se>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de);
-	SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux-foundation.org
+	<20190917122530.3xy7sut3xdvzlomj@pengutronix.de>
+	<CGME20190917124409eucas1p2211d232e6833a44a9ad5dbf72457197c@eucas1p2.samsung.com>
 Cc: Rob Herring <robh@kernel.org>,
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE
+	BINDINGS" <devicetree@vger.kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
 	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
 	Wolfram Sang <wsa+renesas@sang-engineering.com>,
@@ -86,234 +153,153 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 17, 2019 at 11:25:46AM +0000, Peter Rosin wrote:
-> On 2019-09-17 12:13, Uwe Kleine-K=F6nig wrote:
-> > Hello Geert,
-> > =
-
-> > On Tue, Sep 17, 2019 at 11:40:25AM +0200, Geert Uytterhoeven wrote:
-> >> Hi Rob, Uwe,
-> >>
-> >> On Fri, Sep 13, 2019 at 11:58 PM Rob Herring <robh@kernel.org> wrote:
-> >>> On Sat, 24 Aug 2019 15:28:46 +0200, =3D?UTF-8?q?Uwe=3D20Kleine-K=3DC3=
-=3DB6nig?=3D          wrote:
-> >>>> Referencing device tree nodes from a property allows to pass argumen=
-ts.
-> >>>> This is for example used for referencing gpios. This looks as follow=
-s:
-> >>>>
-> >>>>       gpio_ctrl: gpio-controller {
-> >>>>               #gpio-cells =3D <2>
-> >>>>               ...
-> >>>>       }
-> >>>>
-> >>>>       someothernode {
-> >>>>               gpios =3D <&gpio_ctrl 5 0 &gpio_ctrl 3 0>;
-> >>>>               ...
-> >>>>       }
-> >>>>
-> >>>> To know the number of arguments this must be either fixed, or the
-> >>>> referenced node is checked for a $cells_name (here: "#gpio-cells")
-> >>>> property and with this information the start of the second reference=
- can
-> >>>> be determined.
-> >>>>
-> >>>> Currently regulators are referenced with no additional arguments. To
-> >>>> allow some optional arguments without having to change all referenced
-> >>>> nodes this change introduces a way to specify a default cell_count. =
-So
-> >>>> when a phandle is parsed we check for the $cells_name property and u=
-se
-> >>>> it as before if present. If it is not present we fall back to
-> >>>> cells_count if non-negative and only fail if cells_count is smaller =
-than
-> >>>> zero.
-> >>>>
-> >>>> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> >>
-> >> This is now commit e42ee61017f58cd9 ("of: Let of_for_each_phandle fall=
-back
-> >> to non-negative cell_count") in robh/for-next, which causes a lock-up =
-when
-> >> booting a shmobile_defconfig kernel on r8a7791/koelsch:
-> >>
-> >> rcu: INFO: rcu_sched self-detected stall on CPU
-> >> rcu:     0-....: (2099 ticks this GP) idle=3D6fe/1/0x40000002
-> >> softirq=3D29/29 fqs=3D1050
-> >>  (t=3D2100 jiffies g=3D-1131 q=3D0)
-> >> NMI backtrace for cpu 0
-> >> CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-> >> 5.3.0-rc2-shmobile-00050-ge42ee61017f58cd9 #376
-> >> Hardware name: Generic R-Car Gen2 (Flattened Device Tree)
-> >> [<c010f8ac>] (unwind_backtrace) from [<c010b620>] (show_stack+0x10/0x1=
-4)
-> >> [<c010b620>] (show_stack) from [<c073d038>] (dump_stack+0x7c/0x9c)
-> >> [<c073d038>] (dump_stack) from [<c0742e80>] (nmi_cpu_backtrace+0xa0/0x=
-b8)
-> >> [<c0742e80>] (nmi_cpu_backtrace) from [<c0742f1c>] (nmi_trigger_cpumas=
-k_backtrace+0x84/0x114)
-> >> [<c0742f1c>] (nmi_trigger_cpumask_backtrace) from [<c017d684>] (rcu_du=
-mp_cpu_stacks+0xac/0xc8)
-> >> [<c017d684>] (rcu_dump_cpu_stacks) from [<c017a598>] (rcu_sched_clock_=
-irq+0x2ac/0x6b4)
-> >> [<c017a598>] (rcu_sched_clock_irq) from [<c0183980>] (update_process_t=
-imes+0x30/0x5c)
-> >> [<c0183980>] (update_process_times) from [<c01941a8>] (tick_nohz_handl=
-er+0xcc/0x120)
-> >> [<c01941a8>] (tick_nohz_handler) from [<c05b1d40>] (arch_timer_handler=
-_virt+0x28/0x30)
-> >> [<c05b1d40>] (arch_timer_handler_virt) from [<c016c9e0>] (handle_percp=
-u_devid_irq+0xe8/0x21c)
-> >> [<c016c9e0>] (handle_percpu_devid_irq) from [<c0167a8c>] (generic_hand=
-le_irq+0x18/0x28)
-> >> [<c0167a8c>] (generic_handle_irq) from [<c0167b3c>] (__handle_domain_i=
-rq+0xa0/0xb4)
-> >> [<c0167b3c>] (__handle_domain_irq) from [<c03673ec>] (gic_handle_irq+0=
-x58/0x90)
-> >> [<c03673ec>] (gic_handle_irq) from [<c0101a8c>] (__irq_svc+0x6c/0x90)
-> >> Exception stack(0xeb08dd30 to 0xeb08dd78)
-> >> dd20:                                     c0cc7514 20000013 00000005 0=
-0003b27
-> >> dd40: eb7c4020 c0cc750c 00000051 00000051 20000013 c0c66b08 eb1cdc00 0=
-0000018
-> >> dd60: 00000000 eb08dd80 c05c1a38 c0756c00 20000013 ffffffff
-> >> [<c0101a8c>] (__irq_svc) from [<c0756c00>] (_raw_spin_unlock_irqrestor=
-e+0x1c/0x20)
-> >> [<c0756c00>] (_raw_spin_unlock_irqrestore) from [<c05c1a38>] (of_find_=
-node_by_phandle+0xcc/0xf0)
-> >> [<c05c1a38>] (of_find_node_by_phandle) from [<c05c1bb8>] (of_phandle_i=
-terator_next+0x68/0x178)
-> >> [<c05c1bb8>] (of_phandle_iterator_next) from [<c05c22bc>] (of_count_ph=
-andle_with_args+0x5c/0x7c)
-> >> [<c05c22bc>] (of_count_phandle_with_args) from [<c053fc38>] (i2c_demux=
-_pinctrl_probe+0x24/0x1fc)
-> >> [<c053fc38>] (i2c_demux_pinctrl_probe) from [<c04463c4>] (platform_drv=
-_probe+0x48/0x94)
-> >> [<c04463c4>] (platform_drv_probe) from [<c0444a20>] (really_probe+0x1f=
-0/0x2b8)
-> >> [<c0444a20>] (really_probe) from [<c0444e68>] (driver_probe_device+0x1=
-40/0x158)
-> >> [<c0444e68>] (driver_probe_device) from [<c0444ff0>] (device_driver_at=
-tach+0x44/0x5c)
-> >> [<c0444ff0>] (device_driver_attach) from [<c04450b4>] (__driver_attach=
-+0xac/0xb4)
-> >> [<c04450b4>] (__driver_attach) from [<c0443178>] (bus_for_each_dev+0x6=
-4/0xa0)
-> >> [<c0443178>] (bus_for_each_dev) from [<c04438a8>] (bus_add_driver+0x14=
-8/0x1a8)
-> >> [<c04438a8>] (bus_add_driver) from [<c0445ad0>] (driver_register+0xac/=
-0xf0)
-> >> [<c0445ad0>] (driver_register) from [<c0b010b0>] (do_one_initcall+0xa8=
-/0x1d4)
-> >> [<c0b010b0>] (do_one_initcall) from [<c0b01448>] (kernel_init_freeable=
-+0x26c/0x2c8)
-> >> [<c0b01448>] (kernel_init_freeable) from [<c0751c70>] (kernel_init+0x8=
-/0x10c)
-> >> [<c0751c70>] (kernel_init) from [<c01010e8>] (ret_from_fork+0x14/0x2c)
-> >> Exception stack(0xeb08dfb0 to 0xeb08dff8)
-> >> dfa0:                                     00000000 00000000 00000000 0=
-0000000
-> >> dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 0=
-0000000
-> >> dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> >>
-> >> Presumably it loops forever, due to a conversion of -1 to unsigned
-> >> somewhere?
-> > =
-
-> > Hmm, I fail to see the culprit. i2c_demux_pinctrl_probe calls
-> > of_count_phandle_with_args with cells_name=3DNULL. With that I don't see
-> > how my patch changes anything as the only change is in an if
-> > (it->cells_name) block that shouldn't be relevant in your case.
-> > =
-
-> > Can you please verify that the loop in of_count_phandle_with_args is
-> > indeed not terminating, e.g. with
-> =
-
-> The below indicated else-branch was not touched by e42ee61017f58cd9,
-> which ends up setting the count to -1 (aka 0xff...ff in this case).
-> No?
-> =
-
-> int of_phandle_iterator_next(struct of_phandle_iterator *it)
-> {
-> =
-
-> 	...
-> =
-
-> 		if (it->cells_name) {
-> =
-
-> 			...
-> =
-
-> 		} else {
-> 			count =3D it->cell_count;    /* <---- SUSPECT!!! */
-> 		}
-
-Oh yeah, you're right. I'm a bit disappointed that I didn't spot this
-myself :-|
-
-Untested patch to fix this problem:
-
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index 2f25d2dfecfa..26f7a21d7187 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1284,6 +1284,13 @@ int of_phandle_iterator_init(struct of_phandle_itera=
-tor *it,
- 	const __be32 *list;
- 	int size;
- =
-
-+	/*
-+	 * one of cell_count or cells_name must be provided to determine the
-+	 * argument length.
-+	 */
-+	if (cell_count < 0 && !cells_name)
-+		return -EINVAL;
-+
- 	memset(it, 0, sizeof(*it));
- =
-
- 	list =3D of_get_property(np, list_name, &size);
-@@ -1765,6 +1772,18 @@ int of_count_phandle_with_args(const struct device_n=
-ode *np, const char *list_na
- 	struct of_phandle_iterator it;
- 	int rc, cur_index =3D 0;
- =
-
-+	/* If cells_name is NULL we assume an cell_count of 0 */
-+	if (cells_name =3D=3D NULL) {
-+		const __be32 *list;
-+		int size;
-+
-+		list =3D of_get_property(np, list_name, &size);
-+		if (!list)
-+			return -ENOENT;
-+
-+		return size / sizeof(*list);
-+	}
-+
- 	rc =3D of_phandle_iterator_init(&it, np, list_name, cells_name, -1);
- 	if (rc)
- 		return rc;
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgVXdlLAoKT24gMTcuMDkuMjAxOSAxNDoyNSwgVXdlIEtsZWluZS1Lw7ZuaWcgd3JvdGU6Cj4g
+T24gVHVlLCBTZXAgMTcsIDIwMTkgYXQgMTE6MjU6NDZBTSArMDAwMCwgUGV0ZXIgUm9zaW4gd3Jv
+dGU6Cj4+IE9uIDIwMTktMDktMTcgMTI6MTMsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOgo+Pj4g
+SGVsbG8gR2VlcnQsCj4+Pgo+Pj4gT24gVHVlLCBTZXAgMTcsIDIwMTkgYXQgMTE6NDA6MjVBTSAr
+MDIwMCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOgo+Pj4+IEhpIFJvYiwgVXdlLAo+Pj4+Cj4+
+Pj4gT24gRnJpLCBTZXAgMTMsIDIwMTkgYXQgMTE6NTggUE0gUm9iIEhlcnJpbmcgPHJvYmhAa2Vy
+bmVsLm9yZz4gd3JvdGU6Cj4+Pj4+IE9uIFNhdCwgMjQgQXVnIDIwMTkgMTU6Mjg6NDYgKzAyMDAs
+ID0/VVRGLTg/cT9Vd2U9MjBLbGVpbmUtSz1DMz1CNm5pZz89ICAgICAgICAgIHdyb3RlOgo+Pj4+
+Pj4gUmVmZXJlbmNpbmcgZGV2aWNlIHRyZWUgbm9kZXMgZnJvbSBhIHByb3BlcnR5IGFsbG93cyB0
+byBwYXNzIGFyZ3VtZW50cy4KPj4+Pj4+IFRoaXMgaXMgZm9yIGV4YW1wbGUgdXNlZCBmb3IgcmVm
+ZXJlbmNpbmcgZ3Bpb3MuIFRoaXMgbG9va3MgYXMgZm9sbG93czoKPj4+Pj4+Cj4+Pj4+PiAgICAg
+ICAgZ3Bpb19jdHJsOiBncGlvLWNvbnRyb2xsZXIgewo+Pj4+Pj4gICAgICAgICAgICAgICAgI2dw
+aW8tY2VsbHMgPSA8Mj4KPj4+Pj4+ICAgICAgICAgICAgICAgIC4uLgo+Pj4+Pj4gICAgICAgIH0K
+Pj4+Pj4+Cj4+Pj4+PiAgICAgICAgc29tZW90aGVybm9kZSB7Cj4+Pj4+PiAgICAgICAgICAgICAg
+ICBncGlvcyA9IDwmZ3Bpb19jdHJsIDUgMCAmZ3Bpb19jdHJsIDMgMD47Cj4+Pj4+PiAgICAgICAg
+ICAgICAgICAuLi4KPj4+Pj4+ICAgICAgICB9Cj4+Pj4+Pgo+Pj4+Pj4gVG8ga25vdyB0aGUgbnVt
+YmVyIG9mIGFyZ3VtZW50cyB0aGlzIG11c3QgYmUgZWl0aGVyIGZpeGVkLCBvciB0aGUKPj4+Pj4+
+IHJlZmVyZW5jZWQgbm9kZSBpcyBjaGVja2VkIGZvciBhICRjZWxsc19uYW1lIChoZXJlOiAiI2dw
+aW8tY2VsbHMiKQo+Pj4+Pj4gcHJvcGVydHkgYW5kIHdpdGggdGhpcyBpbmZvcm1hdGlvbiB0aGUg
+c3RhcnQgb2YgdGhlIHNlY29uZCByZWZlcmVuY2UgY2FuCj4+Pj4+PiBiZSBkZXRlcm1pbmVkLgo+
+Pj4+Pj4KPj4+Pj4+IEN1cnJlbnRseSByZWd1bGF0b3JzIGFyZSByZWZlcmVuY2VkIHdpdGggbm8g
+YWRkaXRpb25hbCBhcmd1bWVudHMuIFRvCj4+Pj4+PiBhbGxvdyBzb21lIG9wdGlvbmFsIGFyZ3Vt
+ZW50cyB3aXRob3V0IGhhdmluZyB0byBjaGFuZ2UgYWxsIHJlZmVyZW5jZWQKPj4+Pj4+IG5vZGVz
+IHRoaXMgY2hhbmdlIGludHJvZHVjZXMgYSB3YXkgdG8gc3BlY2lmeSBhIGRlZmF1bHQgY2VsbF9j
+b3VudC4gU28KPj4+Pj4+IHdoZW4gYSBwaGFuZGxlIGlzIHBhcnNlZCB3ZSBjaGVjayBmb3IgdGhl
+ICRjZWxsc19uYW1lIHByb3BlcnR5IGFuZCB1c2UKPj4+Pj4+IGl0IGFzIGJlZm9yZSBpZiBwcmVz
+ZW50LiBJZiBpdCBpcyBub3QgcHJlc2VudCB3ZSBmYWxsIGJhY2sgdG8KPj4+Pj4+IGNlbGxzX2Nv
+dW50IGlmIG5vbi1uZWdhdGl2ZSBhbmQgb25seSBmYWlsIGlmIGNlbGxzX2NvdW50IGlzIHNtYWxs
+ZXIgdGhhbgo+Pj4+Pj4gemVyby4KPj4+Pj4+Cj4+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBVd2UgS2xl
+aW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgo+Pj4+IFRoaXMgaXMg
+bm93IGNvbW1pdCBlNDJlZTYxMDE3ZjU4Y2Q5ICgib2Y6IExldCBvZl9mb3JfZWFjaF9waGFuZGxl
+IGZhbGxiYWNrCj4+Pj4gdG8gbm9uLW5lZ2F0aXZlIGNlbGxfY291bnQiKSBpbiByb2JoL2Zvci1u
+ZXh0LCB3aGljaCBjYXVzZXMgYSBsb2NrLXVwIHdoZW4KPj4+PiBib290aW5nIGEgc2htb2JpbGVf
+ZGVmY29uZmlnIGtlcm5lbCBvbiByOGE3NzkxL2tvZWxzY2g6Cj4+Pj4KPj4+PiByY3U6IElORk86
+IHJjdV9zY2hlZCBzZWxmLWRldGVjdGVkIHN0YWxsIG9uIENQVQo+Pj4+IHJjdTogICAgIDAtLi4u
+LjogKDIwOTkgdGlja3MgdGhpcyBHUCkgaWRsZT02ZmUvMS8weDQwMDAwMDAyCj4+Pj4gc29mdGly
+cT0yOS8yOSBmcXM9MTA1MAo+Pj4+ICAgKHQ9MjEwMCBqaWZmaWVzIGc9LTExMzEgcT0wKQo+Pj4+
+IE5NSSBiYWNrdHJhY2UgZm9yIGNwdSAwCj4+Pj4gQ1BVOiAwIFBJRDogMSBDb21tOiBzd2FwcGVy
+LzAgTm90IHRhaW50ZWQKPj4+PiA1LjMuMC1yYzItc2htb2JpbGUtMDAwNTAtZ2U0MmVlNjEwMTdm
+NThjZDkgIzM3Ngo+Pj4+IEhhcmR3YXJlIG5hbWU6IEdlbmVyaWMgUi1DYXIgR2VuMiAoRmxhdHRl
+bmVkIERldmljZSBUcmVlKQo+Pj4+IFs8YzAxMGY4YWM+XSAodW53aW5kX2JhY2t0cmFjZSkgZnJv
+bSBbPGMwMTBiNjIwPl0gKHNob3dfc3RhY2srMHgxMC8weDE0KQo+Pj4+IFs8YzAxMGI2MjA+XSAo
+c2hvd19zdGFjaykgZnJvbSBbPGMwNzNkMDM4Pl0gKGR1bXBfc3RhY2srMHg3Yy8weDljKQo+Pj4+
+IFs8YzA3M2QwMzg+XSAoZHVtcF9zdGFjaykgZnJvbSBbPGMwNzQyZTgwPl0gKG5taV9jcHVfYmFj
+a3RyYWNlKzB4YTAvMHhiOCkKPj4+PiBbPGMwNzQyZTgwPl0gKG5taV9jcHVfYmFja3RyYWNlKSBm
+cm9tIFs8YzA3NDJmMWM+XSAobm1pX3RyaWdnZXJfY3B1bWFza19iYWNrdHJhY2UrMHg4NC8weDEx
+NCkKPj4+PiBbPGMwNzQyZjFjPl0gKG5taV90cmlnZ2VyX2NwdW1hc2tfYmFja3RyYWNlKSBmcm9t
+IFs8YzAxN2Q2ODQ+XSAocmN1X2R1bXBfY3B1X3N0YWNrcysweGFjLzB4YzgpCj4+Pj4gWzxjMDE3
+ZDY4ND5dIChyY3VfZHVtcF9jcHVfc3RhY2tzKSBmcm9tIFs8YzAxN2E1OTg+XSAocmN1X3NjaGVk
+X2Nsb2NrX2lycSsweDJhYy8weDZiNCkKPj4+PiBbPGMwMTdhNTk4Pl0gKHJjdV9zY2hlZF9jbG9j
+a19pcnEpIGZyb20gWzxjMDE4Mzk4MD5dICh1cGRhdGVfcHJvY2Vzc190aW1lcysweDMwLzB4NWMp
+Cj4+Pj4gWzxjMDE4Mzk4MD5dICh1cGRhdGVfcHJvY2Vzc190aW1lcykgZnJvbSBbPGMwMTk0MWE4
+Pl0gKHRpY2tfbm9oel9oYW5kbGVyKzB4Y2MvMHgxMjApCj4+Pj4gWzxjMDE5NDFhOD5dICh0aWNr
+X25vaHpfaGFuZGxlcikgZnJvbSBbPGMwNWIxZDQwPl0gKGFyY2hfdGltZXJfaGFuZGxlcl92aXJ0
+KzB4MjgvMHgzMCkKPj4+PiBbPGMwNWIxZDQwPl0gKGFyY2hfdGltZXJfaGFuZGxlcl92aXJ0KSBm
+cm9tIFs8YzAxNmM5ZTA+XSAoaGFuZGxlX3BlcmNwdV9kZXZpZF9pcnErMHhlOC8weDIxYykKPj4+
+PiBbPGMwMTZjOWUwPl0gKGhhbmRsZV9wZXJjcHVfZGV2aWRfaXJxKSBmcm9tIFs8YzAxNjdhOGM+
+XSAoZ2VuZXJpY19oYW5kbGVfaXJxKzB4MTgvMHgyOCkKPj4+PiBbPGMwMTY3YThjPl0gKGdlbmVy
+aWNfaGFuZGxlX2lycSkgZnJvbSBbPGMwMTY3YjNjPl0gKF9faGFuZGxlX2RvbWFpbl9pcnErMHhh
+MC8weGI0KQo+Pj4+IFs8YzAxNjdiM2M+XSAoX19oYW5kbGVfZG9tYWluX2lycSkgZnJvbSBbPGMw
+MzY3M2VjPl0gKGdpY19oYW5kbGVfaXJxKzB4NTgvMHg5MCkKPj4+PiBbPGMwMzY3M2VjPl0gKGdp
+Y19oYW5kbGVfaXJxKSBmcm9tIFs8YzAxMDFhOGM+XSAoX19pcnFfc3ZjKzB4NmMvMHg5MCkKPj4+
+PiBFeGNlcHRpb24gc3RhY2soMHhlYjA4ZGQzMCB0byAweGViMDhkZDc4KQo+Pj4+IGRkMjA6ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGMwY2M3NTE0IDIwMDAwMDEzIDAwMDAw
+MDA1IDAwMDAzYjI3Cj4+Pj4gZGQ0MDogZWI3YzQwMjAgYzBjYzc1MGMgMDAwMDAwNTEgMDAwMDAw
+NTEgMjAwMDAwMTMgYzBjNjZiMDggZWIxY2RjMDAgMDAwMDAwMTgKPj4+PiBkZDYwOiAwMDAwMDAw
+MCBlYjA4ZGQ4MCBjMDVjMWEzOCBjMDc1NmMwMCAyMDAwMDAxMyBmZmZmZmZmZgo+Pj4+IFs8YzAx
+MDFhOGM+XSAoX19pcnFfc3ZjKSBmcm9tIFs8YzA3NTZjMDA+XSAoX3Jhd19zcGluX3VubG9ja19p
+cnFyZXN0b3JlKzB4MWMvMHgyMCkKPj4+PiBbPGMwNzU2YzAwPl0gKF9yYXdfc3Bpbl91bmxvY2tf
+aXJxcmVzdG9yZSkgZnJvbSBbPGMwNWMxYTM4Pl0gKG9mX2ZpbmRfbm9kZV9ieV9waGFuZGxlKzB4
+Y2MvMHhmMCkKPj4+PiBbPGMwNWMxYTM4Pl0gKG9mX2ZpbmRfbm9kZV9ieV9waGFuZGxlKSBmcm9t
+IFs8YzA1YzFiYjg+XSAob2ZfcGhhbmRsZV9pdGVyYXRvcl9uZXh0KzB4NjgvMHgxNzgpCj4+Pj4g
+WzxjMDVjMWJiOD5dIChvZl9waGFuZGxlX2l0ZXJhdG9yX25leHQpIGZyb20gWzxjMDVjMjJiYz5d
+IChvZl9jb3VudF9waGFuZGxlX3dpdGhfYXJncysweDVjLzB4N2MpCj4+Pj4gWzxjMDVjMjJiYz5d
+IChvZl9jb3VudF9waGFuZGxlX3dpdGhfYXJncykgZnJvbSBbPGMwNTNmYzM4Pl0gKGkyY19kZW11
+eF9waW5jdHJsX3Byb2JlKzB4MjQvMHgxZmMpCj4+Pj4gWzxjMDUzZmMzOD5dIChpMmNfZGVtdXhf
+cGluY3RybF9wcm9iZSkgZnJvbSBbPGMwNDQ2M2M0Pl0gKHBsYXRmb3JtX2Rydl9wcm9iZSsweDQ4
+LzB4OTQpCj4+Pj4gWzxjMDQ0NjNjND5dIChwbGF0Zm9ybV9kcnZfcHJvYmUpIGZyb20gWzxjMDQ0
+NGEyMD5dIChyZWFsbHlfcHJvYmUrMHgxZjAvMHgyYjgpCj4+Pj4gWzxjMDQ0NGEyMD5dIChyZWFs
+bHlfcHJvYmUpIGZyb20gWzxjMDQ0NGU2OD5dIChkcml2ZXJfcHJvYmVfZGV2aWNlKzB4MTQwLzB4
+MTU4KQo+Pj4+IFs8YzA0NDRlNjg+XSAoZHJpdmVyX3Byb2JlX2RldmljZSkgZnJvbSBbPGMwNDQ0
+ZmYwPl0gKGRldmljZV9kcml2ZXJfYXR0YWNoKzB4NDQvMHg1YykKPj4+PiBbPGMwNDQ0ZmYwPl0g
+KGRldmljZV9kcml2ZXJfYXR0YWNoKSBmcm9tIFs8YzA0NDUwYjQ+XSAoX19kcml2ZXJfYXR0YWNo
+KzB4YWMvMHhiNCkKPj4+PiBbPGMwNDQ1MGI0Pl0gKF9fZHJpdmVyX2F0dGFjaCkgZnJvbSBbPGMw
+NDQzMTc4Pl0gKGJ1c19mb3JfZWFjaF9kZXYrMHg2NC8weGEwKQo+Pj4+IFs8YzA0NDMxNzg+XSAo
+YnVzX2Zvcl9lYWNoX2RldikgZnJvbSBbPGMwNDQzOGE4Pl0gKGJ1c19hZGRfZHJpdmVyKzB4MTQ4
+LzB4MWE4KQo+Pj4+IFs8YzA0NDM4YTg+XSAoYnVzX2FkZF9kcml2ZXIpIGZyb20gWzxjMDQ0NWFk
+MD5dIChkcml2ZXJfcmVnaXN0ZXIrMHhhYy8weGYwKQo+Pj4+IFs8YzA0NDVhZDA+XSAoZHJpdmVy
+X3JlZ2lzdGVyKSBmcm9tIFs8YzBiMDEwYjA+XSAoZG9fb25lX2luaXRjYWxsKzB4YTgvMHgxZDQp
+Cj4+Pj4gWzxjMGIwMTBiMD5dIChkb19vbmVfaW5pdGNhbGwpIGZyb20gWzxjMGIwMTQ0OD5dIChr
+ZXJuZWxfaW5pdF9mcmVlYWJsZSsweDI2Yy8weDJjOCkKPj4+PiBbPGMwYjAxNDQ4Pl0gKGtlcm5l
+bF9pbml0X2ZyZWVhYmxlKSBmcm9tIFs8YzA3NTFjNzA+XSAoa2VybmVsX2luaXQrMHg4LzB4MTBj
+KQo+Pj4+IFs8YzA3NTFjNzA+XSAoa2VybmVsX2luaXQpIGZyb20gWzxjMDEwMTBlOD5dIChyZXRf
+ZnJvbV9mb3JrKzB4MTQvMHgyYykKPj4+PiBFeGNlcHRpb24gc3RhY2soMHhlYjA4ZGZiMCB0byAw
+eGViMDhkZmY4KQo+Pj4+IGRmYTA6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCj4+Pj4gZGZjMDogMDAwMDAwMDAg
+MDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAw
+MDAwMDAKPj4+PiBkZmUwOiAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAw
+MDAxMyAwMDAwMDAwMAo+Pj4+Cj4+Pj4gUHJlc3VtYWJseSBpdCBsb29wcyBmb3JldmVyLCBkdWUg
+dG8gYSBjb252ZXJzaW9uIG9mIC0xIHRvIHVuc2lnbmVkCj4+Pj4gc29tZXdoZXJlPwo+Pj4gSG1t
+LCBJIGZhaWwgdG8gc2VlIHRoZSBjdWxwcml0LiBpMmNfZGVtdXhfcGluY3RybF9wcm9iZSBjYWxs
+cwo+Pj4gb2ZfY291bnRfcGhhbmRsZV93aXRoX2FyZ3Mgd2l0aCBjZWxsc19uYW1lPU5VTEwuIFdp
+dGggdGhhdCBJIGRvbid0IHNlZQo+Pj4gaG93IG15IHBhdGNoIGNoYW5nZXMgYW55dGhpbmcgYXMg
+dGhlIG9ubHkgY2hhbmdlIGlzIGluIGFuIGlmCj4+PiAoaXQtPmNlbGxzX25hbWUpIGJsb2NrIHRo
+YXQgc2hvdWxkbid0IGJlIHJlbGV2YW50IGluIHlvdXIgY2FzZS4KPj4+Cj4+PiBDYW4geW91IHBs
+ZWFzZSB2ZXJpZnkgdGhhdCB0aGUgbG9vcCBpbiBvZl9jb3VudF9waGFuZGxlX3dpdGhfYXJncyBp
+cwo+Pj4gaW5kZWVkIG5vdCB0ZXJtaW5hdGluZywgZS5nLiB3aXRoCj4+IFRoZSBiZWxvdyBpbmRp
+Y2F0ZWQgZWxzZS1icmFuY2ggd2FzIG5vdCB0b3VjaGVkIGJ5IGU0MmVlNjEwMTdmNThjZDksCj4+
+IHdoaWNoIGVuZHMgdXAgc2V0dGluZyB0aGUgY291bnQgdG8gLTEgKGFrYSAweGZmLi4uZmYgaW4g
+dGhpcyBjYXNlKS4KPj4gTm8/Cj4+Cj4+IGludCBvZl9waGFuZGxlX2l0ZXJhdG9yX25leHQoc3Ry
+dWN0IG9mX3BoYW5kbGVfaXRlcmF0b3IgKml0KQo+PiB7Cj4+Cj4+IAkuLi4KPj4KPj4gCQlpZiAo
+aXQtPmNlbGxzX25hbWUpIHsKPj4KPj4gCQkJLi4uCj4+Cj4+IAkJfSBlbHNlIHsKPj4gCQkJY291
+bnQgPSBpdC0+Y2VsbF9jb3VudDsgICAgLyogPC0tLS0gU1VTUEVDVCEhISAqLwo+PiAJCX0KPiBP
+aCB5ZWFoLCB5b3UncmUgcmlnaHQuIEknbSBhIGJpdCBkaXNhcHBvaW50ZWQgdGhhdCBJIGRpZG4n
+dCBzcG90IHRoaXMKPiBteXNlbGYgOi18Cj4KPiBVbnRlc3RlZCBwYXRjaCB0byBmaXggdGhpcyBw
+cm9ibGVtOgoKWWVzdGVyZGF5IEkndmUgbm90aWNlZCB0aGF0IHNvdW5kIGRyaXZlciBmYWlscyB0
+byBpbml0aWFsaXplIG9uIFRNMihlKSAKYm9hcmQgKGFybTY0KSBhbmQgdG9kYXkgSSd2ZSBiaXNl
+Y3RlZCB0byB0aGlzIGNvbW1pdC4gTmljZSB0byBzZWUgdGhhdCAKdGhlIGlzc3VlIGhhcyBiZWVu
+IGFscmVhZHkgaW52ZXN0aWdhdGVkLgoKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9vZi9iYXNlLmMg
+Yi9kcml2ZXJzL29mL2Jhc2UuYwo+IGluZGV4IDJmMjVkMmRmZWNmYS4uMjZmN2EyMWQ3MTg3IDEw
+MDY0NAo+IC0tLSBhL2RyaXZlcnMvb2YvYmFzZS5jCj4gKysrIGIvZHJpdmVycy9vZi9iYXNlLmMK
+PiBAQCAtMTI4NCw2ICsxMjg0LDEzIEBAIGludCBvZl9waGFuZGxlX2l0ZXJhdG9yX2luaXQoc3Ry
+dWN0IG9mX3BoYW5kbGVfaXRlcmF0b3IgKml0LAo+ICAgCWNvbnN0IF9fYmUzMiAqbGlzdDsKPiAg
+IAlpbnQgc2l6ZTsKPiAgIAo+ICsJLyoKPiArCSAqIG9uZSBvZiBjZWxsX2NvdW50IG9yIGNlbGxz
+X25hbWUgbXVzdCBiZSBwcm92aWRlZCB0byBkZXRlcm1pbmUgdGhlCj4gKwkgKiBhcmd1bWVudCBs
+ZW5ndGguCj4gKwkgKi8KPiArCWlmIChjZWxsX2NvdW50IDwgMCAmJiAhY2VsbHNfbmFtZSkKPiAr
+CQlyZXR1cm4gLUVJTlZBTDsKPiArCj4gICAJbWVtc2V0KGl0LCAwLCBzaXplb2YoKml0KSk7Cj4g
+ICAKPiAgIAlsaXN0ID0gb2ZfZ2V0X3Byb3BlcnR5KG5wLCBsaXN0X25hbWUsICZzaXplKTsKPiBA
+QCAtMTc2NSw2ICsxNzcyLDE4IEBAIGludCBvZl9jb3VudF9waGFuZGxlX3dpdGhfYXJncyhjb25z
+dCBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLCBjb25zdCBjaGFyICpsaXN0X25hCj4gICAJc3RydWN0
+IG9mX3BoYW5kbGVfaXRlcmF0b3IgaXQ7Cj4gICAJaW50IHJjLCBjdXJfaW5kZXggPSAwOwo+ICAg
+Cj4gKwkvKiBJZiBjZWxsc19uYW1lIGlzIE5VTEwgd2UgYXNzdW1lIGFuIGNlbGxfY291bnQgb2Yg
+MCAqLwo+ICsJaWYgKGNlbGxzX25hbWUgPT0gTlVMTCkgewo+ICsJCWNvbnN0IF9fYmUzMiAqbGlz
+dDsKPiArCQlpbnQgc2l6ZTsKPiArCj4gKwkJbGlzdCA9IG9mX2dldF9wcm9wZXJ0eShucCwgbGlz
+dF9uYW1lLCAmc2l6ZSk7Cj4gKwkJaWYgKCFsaXN0KQo+ICsJCQlyZXR1cm4gLUVOT0VOVDsKPiAr
+Cj4gKwkJcmV0dXJuIHNpemUgLyBzaXplb2YoKmxpc3QpOwo+ICsJfQo+ICsKPiAgIAlyYyA9IG9m
+X3BoYW5kbGVfaXRlcmF0b3JfaW5pdCgmaXQsIG5wLCBsaXN0X25hbWUsIGNlbGxzX25hbWUsIC0x
+KTsKPiAgIAlpZiAocmMpCj4gICAJCXJldHVybiByYzsKPgpJIGNvbmZpcm0gdGhhdCB0aGUgYWJv
+dmUgY29kZSB3b3Jrcy4gVGhlIHBhdGNoIGZpeGVzIG15IFRNMihlKSBzb3VuZCAKaXNzdWUsIGZl
+ZWwgZnJlZSB0byBhZGQ6CgpUZXN0ZWQtYnk6IE1hcmVrIFN6eXByb3dza2kgPG0uc3p5cHJvd3Nr
+aUBzYW1zdW5nLmNvbT4KCkJlc3QgcmVnYXJkcwotLSAKTWFyZWsgU3p5cHJvd3NraSwgUGhEClNh
+bXN1bmcgUiZEIEluc3RpdHV0ZSBQb2xhbmQKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
