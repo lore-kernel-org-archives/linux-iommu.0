@@ -2,91 +2,60 @@ Return-Path: <SRS0=51CA=XO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665DFC4CEC4
-	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 13:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66374C49ED7
+	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 14:35:33 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2D5B221D56
-	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 13:37:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="mwBzoNaT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D5B221D56
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 35CCE208C0
+	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 14:35:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35CCE208C0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 02EBECC4;
-	Thu, 19 Sep 2019 13:37:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 02EC6C87;
+	Thu, 19 Sep 2019 14:35:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6B442504
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB58AC5C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 13:37:13 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 46AF583A
+	Thu, 19 Sep 2019 14:35:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BCF0E875
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 13:37:12 +0000 (UTC)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com
-	[209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id C2409222BF
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 13:37:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1568900232;
-	bh=4h3Wk30EhI1KisIg5rn7cH+Dc4+DOKJ7JCZLxO6zmPI=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=mwBzoNaTiK9xjLVihi6v8b+ryPsg0IP++84Wia1oIqwwNfxtQ14YDYKpBHJ3dYMni
-	fBW0yG7v0NaSg/4OkKv0v7bY4ZNVgMqn10+8QuxFJes4isxMfpfRJSSSnElwMfLq/C
-	aLk1/rm+0igwywEd+xuqNGYA8E4GRYk48izsxAtU=
-Received: by mail-wr1-f41.google.com with SMTP id y19so3158622wrd.3
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 06:37:11 -0700 (PDT)
-X-Gm-Message-State: APjAAAU/1skrnXozK9Aok9AfZDYO5mnrx0OaoV/fbnEpldSXcnrMDM2d
-	rOZWded7pQ8QE9NjEMxCUioz26yZSxgITGSrn70=
-X-Google-Smtp-Source: APXvYqzlXvVrim8rTycGbIV+PmHAEsjEw4YXguoJ0i5mulID6kS2AA+pRkt/c/jlP2DTaZZMrey31vSOQlTtKW2gKOA=
-X-Received: by 2002:a5d:6b49:: with SMTP id x9mr6988060wrw.80.1568900230203;
-	Thu, 19 Sep 2019 06:37:10 -0700 (PDT)
+	Thu, 19 Sep 2019 14:35:29 +0000 (UTC)
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id D07CF8849E71097B62BE;
+	Thu, 19 Sep 2019 22:35:25 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.179) by DGGEMS412-HUB.china.huawei.com
+	(10.3.19.212) with Microsoft SMTP Server id 14.3.439.0;
+	Thu, 19 Sep 2019 22:35:16 +0800
+From: John Garry <john.garry@huawei.com>
+Subject: Re: arm64 iommu groups issue
+To: Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>, "Will
+	Deacon" <will@kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, "Guohanjun (Hanjun Guo)"
+	<guohanjun@huawei.com>
+References: <9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com>
+	<4768c541-ebf4-61d5-0c5e-77dee83f8f94@arm.com>
+Message-ID: <a18b7f26-9713-a5c7-507e-ed70e40bc007@huawei.com>
+Date: Thu, 19 Sep 2019 15:35:08 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
 MIME-Version: 1.0
-References: <20190912140256.fwbutgmadpjbjnab@willie-the-truck>
-	<mhng-166dcd4f-9483-4aab-a83a-914d70ddb5a4@palmer-si-x1e>
-	<MN2PR04MB606117F2AC47385EF23D267D8D8D0@MN2PR04MB6061.namprd04.prod.outlook.com>
-	<20190916181800.7lfpt3t627byoomt@willie-the-truck>
-	<MN2PR04MB60612846CD50ED157DE5AB548D8F0@MN2PR04MB6061.namprd04.prod.outlook.com>
-In-Reply-To: <MN2PR04MB60612846CD50ED157DE5AB548D8F0@MN2PR04MB6061.namprd04.prod.outlook.com>
-From: Guo Ren <guoren@kernel.org>
-Date: Thu, 19 Sep 2019 21:36:58 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTRu4cSPd09mXkUOxnL2HO0wnAzqeVr3a3He0AFGCFD00g@mail.gmail.com>
-Message-ID: <CAJF2gTRu4cSPd09mXkUOxnL2HO0wnAzqeVr3a3He0AFGCFD00g@mail.gmail.com>
-Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
-	separate file
-To: Anup Patel <Anup.Patel@wdc.com>
-Cc: "julien.thierry@arm.com" <julien.thierry@arm.com>,
-	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-	Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>,
-	"christoffer.dall@arm.com" <christoffer.dall@arm.com>,
-	Atish Patra <Atish.Patra@wdc.com>,
-	"julien.grall@arm.com" <julien.grall@arm.com>,
-	"gary@garyguo.net" <gary@garyguo.net>,
-	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
-	Will Deacon <will@kernel.org>,
-	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-	"rppt@linux.ibm.com" <rppt@linux.ibm.com>,
-	"aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
-	Arnd Bergmann <arnd@arndb.de>,
-	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
-	"marc.zyngier@arm.com" <marc.zyngier@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"james.morse@arm.com" <james.morse@arm.com>
+In-Reply-To: <4768c541-ebf4-61d5-0c5e-77dee83f8f94@arm.com>
+X-Originating-IP: [10.202.227.179]
+X-CFilter-Loop: Reflected
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Linuxarm <linuxarm@huawei.com>, iommu <iommu@lists.linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -99,56 +68,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
-
-On Tue, Sep 17, 2019 at 11:42 AM Anup Patel <Anup.Patel@wdc.com> wrote:
-
-> >
-> > With a reply stating that the patch "absolutely does not work" ;)
+On 19/09/2019 14:25, Robin Murphy wrote:
+>> When the port eventually probes it gets a new, separate group.
+>>
+>> This all seems to be as the built-in module init ordering is as
+>> follows: pcieport drv, smmu drv, mlx5 drv
+>>
+>> I notice that if I build the mlx5 drv as a ko and insert after boot,
+>> all functions + pcieport are in the same group:
+>>
+>> [   11.530046] hisi_sas_v2_hw HISI0162:01: Adding to iommu group 0
+>> [   17.301093] hns_dsaf HISI00B2:00: Adding to iommu group 1
+>> [   18.743600] ehci-platform PNP0D20:00: Adding to iommu group 2
+>> [   20.212284] pcieport 0002:f8:00.0: Adding to iommu group 3
+>> [   20.356303] pcieport 0004:88:00.0: Adding to iommu group 4
+>> [   20.493337] pcieport 0005:78:00.0: Adding to iommu group 5
+>> [   20.702999] pcieport 000a:10:00.0: Adding to iommu group 6
+>> [   20.859183] pcieport 000c:20:00.0: Adding to iommu group 7
+>> [   20.996140] pcieport 000d:30:00.0: Adding to iommu group 8
+>> [   21.152637] serial 0002:f9:00.0: Adding to iommu group 3
+>> [   21.346991] serial 0002:f9:00.1: Adding to iommu group 3
+>> [  100.754306] mlx5_core 000a:11:00.0: Adding to iommu group 6
+>> [  101.420156] mlx5_core 000a:11:00.1: Adding to iommu group 6
+>> [  292.481714] mlx5_core 000a:11:00.2: Adding to iommu group 6
+>> [  293.281061] mlx5_core 000a:11:00.3: Adding to iommu group 6
+>>
+>> This does seem like a problem for arm64 platforms which don't support
+>> ACS, yet enable an SMMU. Maybe also a problem even if they do support
+>> ACS.
+>>
+>> Opinion?
 >
-> This patch was tested on existing HW (which does not have ASID implementation)
-> and tested on QEMU (which has very simplistic Implementation of ASID).
->
-> When I asked Gary Guo about way to get access to their HW (in same patch
-> email thread), I did not get any reply. After so many months passed, I now
-> doubt the his comment "absolutely does not work".
-> >
-> > What exactly do you want people to do with that? It's an awful lot of effort to
-> > review this sort of stuff and given that Guo Ren is talking about sharing page
-> > tables between the CPU and an accelerator, maybe you're better off
-> > stabilising Linux for the platforms that you can actually test rather than
-> > getting so far ahead of yourselves that you end up with a bunch of wasted
-> > work on patches that probably won't get merged any time soon.
->
-> The intention of the ASID patch was to encourage RISC-V implementations
-> having ASID in HW and also ensure that things don't break on existing HW.
->
-> I don't see our efforts being wasted in trying to make Linux RISC-V feature
-> complete and encouraging more feature rich RISC-V CPUs.
->
-> Delays in merging patches are fine as long as people have something to try
-> on their RISC-V CPU implementations.
->
-I'm the supporter of that patch:
-http://archive.lwn.net:8080/linux-kernel/20190329045111.14040-1-anup.patel@wdc.com/T/#u
 
-Because it implicit hw broadcast tlb invalidation optimization.
+Hi Robin,
 
-Honestly it's not suitable for remote tlb flush with software IPI, but
-it's still much better than current RISC-V's.
+> Yeah, this is less than ideal.
 
-I'll try it on our hardware: 910. wait a moment :)
+For sure. Our production D05 boards don't ship with the SMMU enabled in 
+BIOS, but it would be slightly concerning in this regard if they did.
 
--- 
-Best Regards
- Guo Ren
+ > One way to bodge it might be to make
+> pci_device_group() also walk downwards to see if any non-ACS-isolated
+> children already have a group, rather than assuming that groups get
+> allocated in hierarchical order, but that's far from ideal.
 
-ML: https://lore.kernel.org/linux-csky/
+Agree.
+
+My own workaround was to hack the mentioned iort code to defer the PF 
+probe if the parent port had also yet to probe.
+
+>
+> The underlying issue is that, for historical reasons, OF/IORT-based
+> IOMMU drivers have ended up with group allocation being tied to endpoint
+> driver probing via the dma_configure() mechanism (long story short,
+> driver probe is the only thing which can be delayed in order to wait for
+> a specific IOMMU instance to be ready).However, in the meantime, the
+> IOMMU API internals have evolved sufficiently that I think there's a way
+> to really put things right - I have the spark of an idea which I'll try
+> to sketch out ASAP...
+>
+
+OK, great.
+
+Thanks,
+John
+
+> Robin.
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
