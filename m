@@ -2,58 +2,91 @@ Return-Path: <SRS0=51CA=XO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E1CC4CEC4
-	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 13:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665DFC4CEC4
+	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 13:37:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 049C5217D6
-	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 13:25:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 049C5217D6
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2D5B221D56
+	for <iommu@archiver.kernel.org>; Thu, 19 Sep 2019 13:37:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="mwBzoNaT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D5B221D56
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B49C3CD1;
-	Thu, 19 Sep 2019 13:25:47 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 02EBECC4;
+	Thu, 19 Sep 2019 13:37:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 61CA5CC3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6B442504
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 13:25:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id AC9B7875
+	Thu, 19 Sep 2019 13:37:13 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 46AF583A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 13:25:45 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11F27337;
-	Thu, 19 Sep 2019 06:25:45 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE10C3F67D;
-	Thu, 19 Sep 2019 06:25:40 -0700 (PDT)
-Subject: Re: arm64 iommu groups issue
-To: John Garry <john.garry@huawei.com>, Marc Zyngier <maz@kernel.org>,
-	Will Deacon <will@kernel.org>, Lorenzo Pieralisi
-	<lorenzo.pieralisi@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
-	"Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
-References: <9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <4768c541-ebf4-61d5-0c5e-77dee83f8f94@arm.com>
-Date: Thu, 19 Sep 2019 14:25:38 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Thu, 19 Sep 2019 13:37:12 +0000 (UTC)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com
+	[209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id C2409222BF
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 19 Sep 2019 13:37:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1568900232;
+	bh=4h3Wk30EhI1KisIg5rn7cH+Dc4+DOKJ7JCZLxO6zmPI=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=mwBzoNaTiK9xjLVihi6v8b+ryPsg0IP++84Wia1oIqwwNfxtQ14YDYKpBHJ3dYMni
+	fBW0yG7v0NaSg/4OkKv0v7bY4ZNVgMqn10+8QuxFJes4isxMfpfRJSSSnElwMfLq/C
+	aLk1/rm+0igwywEd+xuqNGYA8E4GRYk48izsxAtU=
+Received: by mail-wr1-f41.google.com with SMTP id y19so3158622wrd.3
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 19 Sep 2019 06:37:11 -0700 (PDT)
+X-Gm-Message-State: APjAAAU/1skrnXozK9Aok9AfZDYO5mnrx0OaoV/fbnEpldSXcnrMDM2d
+	rOZWded7pQ8QE9NjEMxCUioz26yZSxgITGSrn70=
+X-Google-Smtp-Source: APXvYqzlXvVrim8rTycGbIV+PmHAEsjEw4YXguoJ0i5mulID6kS2AA+pRkt/c/jlP2DTaZZMrey31vSOQlTtKW2gKOA=
+X-Received: by 2002:a5d:6b49:: with SMTP id x9mr6988060wrw.80.1568900230203;
+	Thu, 19 Sep 2019 06:37:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com>
-Content-Language: en-GB
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Linuxarm <linuxarm@huawei.com>, iommu <iommu@lists.linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+References: <20190912140256.fwbutgmadpjbjnab@willie-the-truck>
+	<mhng-166dcd4f-9483-4aab-a83a-914d70ddb5a4@palmer-si-x1e>
+	<MN2PR04MB606117F2AC47385EF23D267D8D8D0@MN2PR04MB6061.namprd04.prod.outlook.com>
+	<20190916181800.7lfpt3t627byoomt@willie-the-truck>
+	<MN2PR04MB60612846CD50ED157DE5AB548D8F0@MN2PR04MB6061.namprd04.prod.outlook.com>
+In-Reply-To: <MN2PR04MB60612846CD50ED157DE5AB548D8F0@MN2PR04MB6061.namprd04.prod.outlook.com>
+From: Guo Ren <guoren@kernel.org>
+Date: Thu, 19 Sep 2019 21:36:58 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTRu4cSPd09mXkUOxnL2HO0wnAzqeVr3a3He0AFGCFD00g@mail.gmail.com>
+Message-ID: <CAJF2gTRu4cSPd09mXkUOxnL2HO0wnAzqeVr3a3He0AFGCFD00g@mail.gmail.com>
+Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
+	separate file
+To: Anup Patel <Anup.Patel@wdc.com>
+Cc: "julien.thierry@arm.com" <julien.thierry@arm.com>,
+	"catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+	Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>,
+	"christoffer.dall@arm.com" <christoffer.dall@arm.com>,
+	Atish Patra <Atish.Patra@wdc.com>,
+	"julien.grall@arm.com" <julien.grall@arm.com>,
+	"gary@garyguo.net" <gary@garyguo.net>,
+	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+	Will Deacon <will@kernel.org>,
+	"kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+	"rppt@linux.ibm.com" <rppt@linux.ibm.com>,
+	"aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
+	Arnd Bergmann <arnd@arndb.de>,
+	"suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+	"marc.zyngier@arm.com" <marc.zyngier@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"james.morse@arm.com" <james.morse@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,108 +99,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-SGkgSm9obiwKCk9uIDE5LzA5LzIwMTkgMDk6NDMsIEpvaG4gR2Fycnkgd3JvdGU6Cj4gSGkgYWxs
-LAo+IAo+IFdlIGhhdmUgbm90aWNlZCBhIHNwZWNpYWwgYmVoYXZpb3VyIG9uIG91ciBhcm02NCBE
-MDUgYm9hcmQgd2hlbiB0aGUgU01NVSAKPiBpcyBlbmFibGVkIHdpdGggcmVnYXJkcyBQQ0kgZGV2
-aWNlIGlvbW11IGdyb3Vwcy4KPiAKPiBUaGlzIHBsYXRmb3JtIGRvZXMgbm90IHN1cHBvcnQgQUNT
-LCB5ZXQgd2UgZmluZCB0aGF0IGFsbCBmdW5jdGlvbnMgZm9yIGEgCj4gUENJIGRldmljZSBhcmUg
-bm90IGdyb3VwZWQgdG9nZXRoZXI6Cj4gCj4gcm9vdEB1YnVudHU6L3N5cyMgZG1lc2cgfCBncmVw
-ICJBZGRpbmcgdG8gaW9tbXUgZ3JvdXAiCj4gW8KgwqDCoCA3LjMwNzUzOV0gaGlzaV9zYXNfdjJf
-aHcgSElTSTAxNjI6MDE6IEFkZGluZyB0byBpb21tdSBncm91cCAwCj4gW8KgwqAgMTIuNTkwNTMz
-XSBobnNfZHNhZiBISVNJMDBCMjowMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDEKPiBbwqDCoCAx
-My42ODg1MjddIG1seDVfY29yZSAwMDBhOjExOjAwLjA6IEFkZGluZyB0byBpb21tdSBncm91cCAy
-Cj4gW8KgwqAgMTQuMzI0NjA2XSBtbHg1X2NvcmUgMDAwYToxMTowMC4xOiBBZGRpbmcgdG8gaW9t
-bXUgZ3JvdXAgMwo+IFvCoMKgIDE0LjkzNzA5MF0gZWhjaS1wbGF0Zm9ybSBQTlAwRDIwOjAwOiBB
-ZGRpbmcgdG8gaW9tbXUgZ3JvdXAgNAo+IFvCoMKgIDE1LjI3NjYzN10gcGNpZXBvcnQgMDAwMjpm
-ODowMC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgNQo+IFvCoMKgIDE1LjM0MDg0NV0gcGNpZXBv
-cnQgMDAwNDo4ODowMC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgNgo+IFvCoMKgIDE1LjM5MjA5
-OF0gcGNpZXBvcnQgMDAwNTo3ODowMC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgNwo+IFvCoMKg
-IDE1LjQ0MzM1Nl0gcGNpZXBvcnQgMDAwYToxMDowMC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAg
-OAo+IFvCoMKgIDE1LjQ4NDk3NV0gcGNpZXBvcnQgMDAwYzoyMDowMC4wOiBBZGRpbmcgdG8gaW9t
-bXUgZ3JvdXAgOQo+IFvCoMKgIDE1LjU0MzY0N10gcGNpZXBvcnQgMDAwZDozMDowMC4wOiBBZGRp
-bmcgdG8gaW9tbXUgZ3JvdXAgMTAKPiBbwqDCoCAxNS41OTk3NzFdIHNlcmlhbCAwMDAyOmY5OjAw
-LjA6IEFkZGluZyB0byBpb21tdSBncm91cCA1Cj4gW8KgwqAgMTUuNjkwODA3XSBzZXJpYWwgMDAw
-MjpmOTowMC4xOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgNQo+IFvCoMKgIDg0LjMyMjA5N10gbWx4
-NV9jb3JlIDAwMGE6MTE6MDAuMjogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDgKPiBbwqDCoCA4NC44
-NTY0MDhdIG1seDVfY29yZSAwMDBhOjExOjAwLjM6IEFkZGluZyB0byBpb21tdSBncm91cCA4Cj4g
-Cj4gcm9vdEB1YnVudHU6L3N5cyPCoCBsc3BjaSAtdHYKPiBsc3BjaSAtdHZ2Cj4gLSstWzAwMGQ6
-MzBdLS0tMDAuMC1bMzFdLS0KPiAgwqAgKy1bMDAwYzoyMF0tLS0wMC4wLVsyMV0tLS0tMDAuMMKg
-IEh1YXdlaSBUZWNobm9sb2dpZXMgQ28uLCBMdGQuCj4gIMKgICstWzAwMGE6MTBdLS0tMDAuMC1b
-MTEtMTJdLS0rLTAwLjDCoCBNZWxsYW5veCBbQ29ubmVjdFgtNV0KPiAgwqAgfMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKy0wMC4xwqAgTWVsbGFu
-b3ggW0Nvbm5lY3RYLTVdCj4gIMKgIHzCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgICstMDAuMsKgIE1lbGxhbm94IFtDb25uZWN0WC01IFZGXQo+ICDC
-oCB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBc
-LTAwLjPCoCBNZWxsYW5veCBbQ29ubmVjdFgtNSBWRl0KPiAgwqAgKy1bMDAwNzo5MF0tLS0wMC4w
-LVs5MV0tLS0tMDAuMMKgIEh1YXdlaSBUZWNobm9sb2dpZXMgQ28uLCAuLi4KPiAgwqAgKy1bMDAw
-NjpjMF0tLS0wMC4wLVtjMV0tLQo+ICDCoCArLVswMDA1Ojc4XS0tLTAwLjAtWzc5XS0tCj4gIMKg
-ICstWzAwMDQ6ODhdLS0tMDAuMC1bODldLS0KPiAgwqAgKy1bMDAwMjpmOF0tLS0wMC4wLVtmOV0t
-LSstMDAuMMKgIE1vc0NoaXAgU2VtaWNvbmR1Y3RvciBUZWNobm9sb2d5IC4uLgo+ICDCoCB8wqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCArLTAwLjHCoCBNb3ND
-aGlwIFNlbWljb25kdWN0b3IgVGVjaG5vbG9neSAuLi4KPiAgwqAgfMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgXC0wMC4ywqAgTW9zQ2hpcCBTZW1pY29uZHVj
-dG9yIFRlY2hub2xvZ3kgLi4uCj4gIMKgIFwtWzAwMDA6MDBdLQo+IAo+IEZvciB0aGUgUENJIGRl
-dmljZXMgaW4gcXVlc3Rpb24gLSBvbiBwb3J0IDAwMGE6MTA6MDAuMCAtIHlvdSB3aWxsIG5vdGlj
-ZSAKPiB0aGF0IHRoZSBwb3J0IGFuZCBWRnMgKDAwMGE6MTE6MDAuMiwgMykgYXJlIGluIG9uZSBn
-cm91cCwgeWV0IHRoZSAyIFBGcyAKPiAoMDAwYToxMTowMC4wLCAwMDBhOjExOjAwLjEpIGFyZSBp
-biBzZXBhcmF0ZSBncm91cHMuCj4gCj4gSSBhbHNvIG5vdGljZSB0aGUgc2FtZSBvcmRlcmluZyBu
-YXR1cmUgb24gb3VyIEQwNiBwbGF0Zm9ybSAtIHRoZSAKPiBwY2llcG9ydCBpcyBhZGRlZCB0byBh
-biBpb21tdSBncm91cCBhZnRlciBQRiBmb3IgdGhhdCBwb3J0LiBIb3dldmVyIHRoaXMgCj4gcGxh
-dGZvcm0gc3VwcG9ydHMgQUNTLCBzbyBub3Qgc3VjaCBhIHByb2JsZW0uCj4gCj4gQWZ0ZXIgc29t
-ZSBjaGVja2luZywgSSBmaW5kIHRoYXQgd2hlbiB0aGUgcGNpZXBvcnQgZHJpdmVyIHByb2Jlcywg
-dGhlIAo+IGFzc29jaWF0ZWQgU01NVSBkZXZpY2UgaGFkIG5vdCByZWdpc3RlcmVkIHlldCB3aXRo
-IHRoZSBJT01NVSBmcmFtZXdvcmssIAo+IHNvIHdlIGRlZmVyIHRoZSBwcm9iZSBmb3IgdGhpcyBk
-ZXZpY2UgLSBpbiBpb3J0LmM6aW9ydF9pb21tdV94bGF0ZSgpLCAKPiB3aGVuIG5vIGlvbW11IG9w
-cyBhcmUgYXZhaWxhYmxlLCB3ZSBkZWZlci4KPiAKPiBZZXQsIHdoZW4gdGhlIG1seDUgUEYgZGV2
-aWNlcyBwcm9iZSwgdGhlIGlvbW11IG9wcyBhcmUgYXZhaWxhYmxlIGF0IHRoaXMgCj4gc3RhZ2Uu
-IFNvIHRoZSBwcm9iZSBjb250aW51ZXMgYW5kIHdlIGdldCBhbiBpb21tdSBncm91cCBmb3IgdGhl
-IGRldmljZSAtIAo+IGJ1dCBub3QgdGhlIHNhbWUgZ3JvdXAgYXMgdGhlIHBhcmVudCBwb3J0LCBh
-cyBpdCBoYXMgbm90IHlldCBiZWVuIGFkZGVkIAo+IHRvIGEgZ3JvdXAuIFdoZW4gdGhlIHBvcnQg
-ZXZlbnR1YWxseSBwcm9iZXMgaXQgZ2V0cyBhIG5ldywgc2VwYXJhdGUgZ3JvdXAuCj4gCj4gVGhp
-cyBhbGwgc2VlbXMgdG8gYmUgYXMgdGhlIGJ1aWx0LWluIG1vZHVsZSBpbml0IG9yZGVyaW5nIGlz
-IGFzIGZvbGxvd3M6IAo+IHBjaWVwb3J0IGRydiwgc21tdSBkcnYsIG1seDUgZHJ2Cj4gCj4gSSBu
-b3RpY2UgdGhhdCBpZiBJIGJ1aWxkIHRoZSBtbHg1IGRydiBhcyBhIGtvIGFuZCBpbnNlcnQgYWZ0
-ZXIgYm9vdCwgYWxsIAo+IGZ1bmN0aW9ucyArIHBjaWVwb3J0IGFyZSBpbiB0aGUgc2FtZSBncm91
-cDoKPiAKPiBbwqDCoCAxMS41MzAwNDZdIGhpc2lfc2FzX3YyX2h3IEhJU0kwMTYyOjAxOiBBZGRp
-bmcgdG8gaW9tbXUgZ3JvdXAgMAo+IFvCoMKgIDE3LjMwMTA5M10gaG5zX2RzYWYgSElTSTAwQjI6
-MDA6IEFkZGluZyB0byBpb21tdSBncm91cCAxCj4gW8KgwqAgMTguNzQzNjAwXSBlaGNpLXBsYXRm
-b3JtIFBOUDBEMjA6MDA6IEFkZGluZyB0byBpb21tdSBncm91cCAyCj4gW8KgwqAgMjAuMjEyMjg0
-XSBwY2llcG9ydCAwMDAyOmY4OjAwLjA6IEFkZGluZyB0byBpb21tdSBncm91cCAzCj4gW8KgwqAg
-MjAuMzU2MzAzXSBwY2llcG9ydCAwMDA0Ojg4OjAwLjA6IEFkZGluZyB0byBpb21tdSBncm91cCA0
-Cj4gW8KgwqAgMjAuNDkzMzM3XSBwY2llcG9ydCAwMDA1Ojc4OjAwLjA6IEFkZGluZyB0byBpb21t
-dSBncm91cCA1Cj4gW8KgwqAgMjAuNzAyOTk5XSBwY2llcG9ydCAwMDBhOjEwOjAwLjA6IEFkZGlu
-ZyB0byBpb21tdSBncm91cCA2Cj4gW8KgwqAgMjAuODU5MTgzXSBwY2llcG9ydCAwMDBjOjIwOjAw
-LjA6IEFkZGluZyB0byBpb21tdSBncm91cCA3Cj4gW8KgwqAgMjAuOTk2MTQwXSBwY2llcG9ydCAw
-MDBkOjMwOjAwLjA6IEFkZGluZyB0byBpb21tdSBncm91cCA4Cj4gW8KgwqAgMjEuMTUyNjM3XSBz
-ZXJpYWwgMDAwMjpmOTowMC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMwo+IFvCoMKgIDIxLjM0
-Njk5MV0gc2VyaWFsIDAwMDI6Zjk6MDAuMTogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDMKPiBbwqAg
-MTAwLjc1NDMwNl0gbWx4NV9jb3JlIDAwMGE6MTE6MDAuMDogQWRkaW5nIHRvIGlvbW11IGdyb3Vw
-IDYKPiBbwqAgMTAxLjQyMDE1Nl0gbWx4NV9jb3JlIDAwMGE6MTE6MDAuMTogQWRkaW5nIHRvIGlv
-bW11IGdyb3VwIDYKPiBbwqAgMjkyLjQ4MTcxNF0gbWx4NV9jb3JlIDAwMGE6MTE6MDAuMjogQWRk
-aW5nIHRvIGlvbW11IGdyb3VwIDYKPiBbwqAgMjkzLjI4MTA2MV0gbWx4NV9jb3JlIDAwMGE6MTE6
-MDAuMzogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDYKPiAKPiBUaGlzIGRvZXMgc2VlbSBsaWtlIGEg
-cHJvYmxlbSBmb3IgYXJtNjQgcGxhdGZvcm1zIHdoaWNoIGRvbid0IHN1cHBvcnQgCj4gQUNTLCB5
-ZXQgZW5hYmxlIGFuIFNNTVUuIE1heWJlIGFsc28gYSBwcm9ibGVtIGV2ZW4gaWYgdGhleSBkbyBz
-dXBwb3J0IEFDUy4KPiAKPiBPcGluaW9uPwoKWWVhaCwgdGhpcyBpcyBsZXNzIHRoYW4gaWRlYWwu
-IE9uZSB3YXkgdG8gYm9kZ2UgaXQgbWlnaHQgYmUgdG8gbWFrZSAKcGNpX2RldmljZV9ncm91cCgp
-IGFsc28gd2FsayBkb3dud2FyZHMgdG8gc2VlIGlmIGFueSBub24tQUNTLWlzb2xhdGVkIApjaGls
-ZHJlbiBhbHJlYWR5IGhhdmUgYSBncm91cCwgcmF0aGVyIHRoYW4gYXNzdW1pbmcgdGhhdCBncm91
-cHMgZ2V0IAphbGxvY2F0ZWQgaW4gaGllcmFyY2hpY2FsIG9yZGVyLCBidXQgdGhhdCdzIGZhciBm
-cm9tIGlkZWFsLgoKVGhlIHVuZGVybHlpbmcgaXNzdWUgaXMgdGhhdCwgZm9yIGhpc3RvcmljYWwg
-cmVhc29ucywgT0YvSU9SVC1iYXNlZCAKSU9NTVUgZHJpdmVycyBoYXZlIGVuZGVkIHVwIHdpdGgg
-Z3JvdXAgYWxsb2NhdGlvbiBiZWluZyB0aWVkIHRvIGVuZHBvaW50IApkcml2ZXIgcHJvYmluZyB2
-aWEgdGhlIGRtYV9jb25maWd1cmUoKSBtZWNoYW5pc20gKGxvbmcgc3Rvcnkgc2hvcnQsIApkcml2
-ZXIgcHJvYmUgaXMgdGhlIG9ubHkgdGhpbmcgd2hpY2ggY2FuIGJlIGRlbGF5ZWQgaW4gb3JkZXIg
-dG8gd2FpdCBmb3IgCmEgc3BlY2lmaWMgSU9NTVUgaW5zdGFuY2UgdG8gYmUgcmVhZHkpLiBIb3dl
-dmVyLCBpbiB0aGUgbWVhbnRpbWUsIHRoZSAKSU9NTVUgQVBJIGludGVybmFscyBoYXZlIGV2b2x2
-ZWQgc3VmZmljaWVudGx5IHRoYXQgSSB0aGluayB0aGVyZSdzIGEgd2F5IAp0byByZWFsbHkgcHV0
-IHRoaW5ncyByaWdodCAtIEkgaGF2ZSB0aGUgc3Bhcmsgb2YgYW4gaWRlYSB3aGljaCBJJ2xsIHRy
-eSAKdG8gc2tldGNoIG91dCBBU0FQLi4uCgpSb2Jpbi4KX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+
+On Tue, Sep 17, 2019 at 11:42 AM Anup Patel <Anup.Patel@wdc.com> wrote:
+
+> >
+> > With a reply stating that the patch "absolutely does not work" ;)
+>
+> This patch was tested on existing HW (which does not have ASID implementation)
+> and tested on QEMU (which has very simplistic Implementation of ASID).
+>
+> When I asked Gary Guo about way to get access to their HW (in same patch
+> email thread), I did not get any reply. After so many months passed, I now
+> doubt the his comment "absolutely does not work".
+> >
+> > What exactly do you want people to do with that? It's an awful lot of effort to
+> > review this sort of stuff and given that Guo Ren is talking about sharing page
+> > tables between the CPU and an accelerator, maybe you're better off
+> > stabilising Linux for the platforms that you can actually test rather than
+> > getting so far ahead of yourselves that you end up with a bunch of wasted
+> > work on patches that probably won't get merged any time soon.
+>
+> The intention of the ASID patch was to encourage RISC-V implementations
+> having ASID in HW and also ensure that things don't break on existing HW.
+>
+> I don't see our efforts being wasted in trying to make Linux RISC-V feature
+> complete and encouraging more feature rich RISC-V CPUs.
+>
+> Delays in merging patches are fine as long as people have something to try
+> on their RISC-V CPU implementations.
+>
+I'm the supporter of that patch:
+http://archive.lwn.net:8080/linux-kernel/20190329045111.14040-1-anup.patel@wdc.com/T/#u
+
+Because it implicit hw broadcast tlb invalidation optimization.
+
+Honestly it's not suitable for remote tlb flush with software IPI, but
+it's still much better than current RISC-V's.
+
+I'll try it on our hardware: 910. wait a moment :)
+
+-- 
+Best Regards
+ Guo Ren
+
+ML: https://lore.kernel.org/linux-csky/
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
