@@ -6,86 +6,98 @@ X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F56C49ED7
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 05:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FB6C49ED7
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 07:18:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6742720882
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 05:50:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DAABF2086A
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 07:18:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="PJwrRasi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6742720882
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=monstr.eu
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PxlvuUd0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAABF2086A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 395B5B62;
-	Fri, 20 Sep 2019 05:50:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7830DAD0;
+	Fri, 20 Sep 2019 07:18:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 52423B5F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A193BA80
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 05:49:59 +0000 (UTC)
+	Fri, 20 Sep 2019 07:18:26 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
-	[209.85.221.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5183C711
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0FF32832
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 05:49:58 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id l3so5394250wru.7
+	Fri, 20 Sep 2019 07:18:25 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id v8so5436611eds.2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 19 Sep 2019 22:49:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=monstr-eu.20150623.gappssmtp.com; s=20150623;
-	h=subject:to:cc:references:from:message-id:date:user-agent
-	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=uRLxhAVojptV7hgufrR07c/bFSb5W8HdGjW/XXrGNmU=;
-	b=PJwrRasi1kvi4TmmQYpADULUr/CFngg3AmxStXvpOMMd9XLvfW6gLqmv9AnclVnZdR
-	SuQ1zMH/YhetXtvCG729brMaADmj4KIkDQV9Ni60QWyN6rZLQ4t9xKUIJBF6FmmB3drE
-	GpLZifw7YgMCRV0FXOBLZJdclkPTEfbN3vYABril5hbKhU1eT8u0Pr95hcxkjxFFN2OF
-	qJUb6E7w4OdWUifrRkp3CUX0mHTukoji4GQDtnghQsabqlL2KFy6v+gNSJ1CfGG6afOE
-	woxcInQwT3lg7vY7kYqHMRtm5EO2osE7C0HtTuLX+yoz33vClM6KLedQqiG0iEbqKMfM
-	IPgA==
+	Fri, 20 Sep 2019 00:18:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=BUHblpDIooIrZQuKvaVSkR4gzneP4UJ1DcsQqZl+esY=;
+	b=PxlvuUd0/XaEgntK4rFzZoabSaLZYdKu65/CtEXGWfgiVeEBvKri54p1YtHbV54Vso
+	sabWrBBBMhYzdp7d9KnVvJ/FiP9nwjBPydyvYFnlc7zKZcYqw5CKdFoVfJbkKzEkyW8J
+	CbOHOI8iEMOPf8+cqLKWOimzXm8Ft2DbTDipqB28PvufFkFwN/HwQpvHtkb5hPqIHcos
+	at6f3Y25OcKlt53k4/1F7Xocn9shMsVcmKDZVF/Qf1zQR0/4p7zv4zjgJkoeiz/cOxq8
+	Bsk9EtGiHn+FXXRvu8plA2+/ymlFBMGxhfBebvI67y9BIVOMgwSqDpoC7Orus1cUkvNB
+	UyHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-	:user-agent:mime-version:in-reply-to:content-language
-	:content-transfer-encoding;
-	bh=uRLxhAVojptV7hgufrR07c/bFSb5W8HdGjW/XXrGNmU=;
-	b=APbeaekqvWzqfDz+AAH1nVUeK2V7Rx+722CH51IfyAYFXC4aNIMd/8O9C8+HbU0YSb
-	+PxWlyYbjhe2LiqtuTGPrNNCS0flBKbinfU5AU+P0NHJPdoEEYuqyANV2bTbYXDsx2d2
-	Un5HtAR/YNuC7uDQ7Ac9DXrnjDGxbk52kdxHV9XPmEjCvkdrX329N5STVcHSb35URL64
-	EWE3K7mup4qHy7tkySMF42MOZJz1AKmWfrB160WBYui7lWBUZfHOi9k+NafyNCiJVqRn
-	M8sKNm///cRsEy08aiJscy3hyXlmjCmAz80w+Nh5sSDR111ZC082f/04pV+sdNaNfM15
-	6pYw==
-X-Gm-Message-State: APjAAAU7OwYaC/UfS5RX5vilAXzAuiyXyd9FbCjIUtLPWGI5BVNnDAPt
-	eOcqUs/vPeoT0ngcAqMIKyEq8Q==
-X-Google-Smtp-Source: APXvYqw84BAy83Ziqr1cUVL1uIreNc5GnWBmxBOqLpZzveJLBRsyNiy8z1SV97YD/7CEFzhiHlV8PA==
-X-Received: by 2002:a5d:49cb:: with SMTP id t11mr2692912wrs.158.1568958596630; 
-	Thu, 19 Sep 2019 22:49:56 -0700 (PDT)
-Received: from [74.125.133.108] ([149.199.62.129])
-	by smtp.gmail.com with ESMTPSA id i14sm903253wra.78.2019.09.19.22.49.52
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 19 Sep 2019 22:49:55 -0700 (PDT)
-Subject: Re: [GIT PULL] dma-mapping updates for 5.4
-To: Michael Ellerman <michael@ellerman.id.au>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Christoph Hellwig <hch@infradead.org>,
-	Michael Ellerman <mpe@ellerman.id.au>
-References: <20190918152748.GA21241@infradead.org>
-	<CAHk-=wjXF63BKNJH=GtnnoJmXZHEnRwjgeu4foJQvFYYBm9HHA@mail.gmail.com>
-	<D422FEED-06F6-44BE-955F-90318693FD96@ellerman.id.au>
-From: Michal Simek <monstr@monstr.eu>
-Message-ID: <5cc09e92-96ce-dc40-4bc1-f10a4cad6f7d@monstr.eu>
-Date: Fri, 20 Sep 2019 07:49:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=BUHblpDIooIrZQuKvaVSkR4gzneP4UJ1DcsQqZl+esY=;
+	b=hs9DfB38WfRU1uAyzaE2ae1v+klI54DjZzHYsZ8iBq3/obAEnPdPFsGGxdjjBT0mch
+	0oD14bHH5aA5SXtgEsl1TLM658kUzrbQ7fp1HR7UFaKzWgw67mFpo3C/hMGt60+c5nx8
+	qvSO0QdfmMuMBLZdeS3dlTETED9hmDwwkUmPICU6Hm2lyY5xxGvLi8YBUvWTVjvc8Vzc
+	ZXzA0qFeDht/pU341Rkyf3MA1jFfZaHJn97WIAi05VlZYfE29qCgO5ry4Xeecgpi0qiv
+	9fcF9t9+QCFb/Gdu+kNFNWwAw0/QoTpW10IlDF1vNQB+910BeIvYlBbaxMDvzKtdXmA6
+	7w1A==
+X-Gm-Message-State: APjAAAU7JG+Lwt6VUX9dIIBKmiden+E3vCrloRbgPltg8QzCQQB6kWID
+	YtFnQv/JDya4c60YBjDdNYX/LA==
+X-Google-Smtp-Source: APXvYqzlWVFt2wqR2XV+/SkmRXHJ3VguPiEFC4D4xWO75dtqYKoxP+71EoOFdi2jld8XfBiJJ9aMHA==
+X-Received: by 2002:a05:6402:17eb:: with SMTP id
+	t11mr19808894edy.97.1568963904689; 
+	Fri, 20 Sep 2019 00:18:24 -0700 (PDT)
+Received: from lophozonia ([85.195.192.192])
+	by smtp.gmail.com with ESMTPSA id e13sm55819eje.52.2019.09.20.00.18.23
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Fri, 20 Sep 2019 00:18:24 -0700 (PDT)
+Date: Fri, 20 Sep 2019 09:18:21 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Guo Ren <guoren@kernel.org>
+Subject: Re: [PATCH RFC 11/14] arm64: Move the ASID allocator code in a
+	separate file
+Message-ID: <20190920071821.GA1229556@lophozonia>
+References: <CAJF2gTSiiiewTLwVAXvPLO7rTSUw1rg8VtFLzANdP2S2EEbTjg@mail.gmail.com>
+	<20190624104006.lvm32nahemaqklxc@willie-the-truck>
+	<CAJF2gTSC1sGgmiTCgzKUTdPyUZ3LG4H7N8YbMyWr-E+eifGuYg@mail.gmail.com>
+	<20190912140256.fwbutgmadpjbjnab@willie-the-truck>
+	<CAJF2gTT2c45HRfATF+=zs-HNToFAKgq1inKRmJMV3uPYBo4iVg@mail.gmail.com>
+	<CAJF2gTTsHCsSpf1ncVb=ZJS2d=r+AdDi2=5z-REVS=uUg9138A@mail.gmail.com>
+	<057a0af3-93f7-271c-170e-4b31e6894c3c@linaro.org>
+	<CAJF2gTRbyfrUqAULPqJTXdxx8YOscPqAEuMsoJ+dTNobNrUV1g@mail.gmail.com>
+	<20190919151844.GG1013538@lophozonia>
+	<CAJF2gTQtk7VhBgUan6WOZgc3UaQzHL8SxMi=yiHG-8eC207BbQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <D422FEED-06F6-44BE-955F-90318693FD96@ellerman.id.au>
-Content-Language: en-US
-Cc: xen-devel@lists.xenproject.org, iommu <iommu@lists.linux-foundation.org>,
-	linux-mmc@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAJF2gTQtk7VhBgUan6WOZgc3UaQzHL8SxMi=yiHG-8eC207BbQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+Cc: aou@eecs.berkeley.edu,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>, suzuki.poulose@arm.com,
+	Marc Zyngier <marc.zyngier@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Palmer Dabbelt <palmer@sifive.com>, christoffer.dall@arm.com,
+	iommu@lists.linux-foundation.org, Mike Rapoport <rppt@linux.ibm.com>,
+	Anup Patel <anup.Patel@wdc.com>, Atish Patra <Atish.Patra@wdc.com>,
+	Julien Grall <julien.grall@arm.com>, james.morse@arm.com,
+	gary@garyguo.net, Paul Walmsley <paul.walmsley@sifive.com>,
+	linux-riscv@lists.infradead.org, Will Deacon <will@kernel.org>,
+	kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -103,52 +115,28 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 20. 09. 19 1:17, Michael Ellerman wrote:
+On Fri, Sep 20, 2019 at 08:07:38AM +0800, Guo Ren wrote:
+> On Thu, Sep 19, 2019 at 11:18 PM Jean-Philippe Brucker
+> <jean-philippe@linaro.org> wrote:
 > 
-> 
-> On 20 September 2019 6:33:50 am AEST, Linus Torvalds <torvalds@linux-foundation.org> wrote:
->> On Wed, Sep 18, 2019 at 8:27 AM Christoph Hellwig <hch@infradead.org>
->> wrote:
->>>
->>> please pull the dma-mapping updates for 5.4.
->>
->> Pulled.
->>
->>> In addition to the usual Kconfig conflics where you just want to keep
->>> both edits there are a few more interesting merge issues this time:
->>>
->>>  - most importanly powerpc and microblaze add new callers of
->>>    dma_atomic_pool_init, while this tree marks the function static
->>>    and calls it from a common postcore_initcall().  The trivial
->>>    functions added in powerpc and microblaze adding the calls
->>>    need to be removed for the code to compile.  This will not show up
->>>    as a merge conflict and needs to be dealt with manually!
->>
->> So I haven't gotten the powerpc or microblaze pull requests yet, so
->> I'm not able to fix that part up yet.
->>
->> Intead, I'm cc'ing Michael Ellerman and Michal Simek to ask them to
->> remind me when they _do_ send those pull requests, since otherwise I
->> may well forget and miss it. Without an actual data conflict, and
->> since this won't show up in my build tests either, it would be very
->> easy for me to forget.
->>
->> Micha[e]l, can you both please make sure to remind me?
-> 
-> Yeah I was aware of it, and will make sure to remind you in my pull request.
+> >
+> > The SMMU does support PCI Virtual Function - an hypervisor can assign a
+> > VF to a guest, and let that guest partition the VF into smaller contexts
+> > by using PASID.  What it can't support is assigning partitions of a PCI
+> > function (VF or PF) to multiple Virtual Machines, since there is a
+> > single S2 PGD per function (in the Stream Table Entry), rather than one
+> > S2 PGD per PASID context.
+> >
+> In my concept, the two sentences "The SMMU does support PCI Virtual
+> Functio" v.s. "What it can't support is assigning partitions of a PCI
+> function (VF or PF) to multiple Virtual Machines" are conflict and I
+> don't want to play naming game :)
 
-Same here.
+That's fine. But to prevent the spread of misinformation: Arm SMMU
+supports PCI Virtual Functions.
 
-Michal
-
-
--- 
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
-
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
