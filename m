@@ -2,80 +2,68 @@ Return-Path: <SRS0=xPYy=XP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC99C49ED7
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 08:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57455C4CEC9
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 13:48:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 21D9721A4A
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 08:05:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="QHFNHR5P";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="ScrLv+aR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 21D9721A4A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2CC142054F
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 13:48:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2CC142054F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0674DB0B;
-	Fri, 20 Sep 2019 08:05:05 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CEBC9C00;
+	Fri, 20 Sep 2019 13:48:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 53671AD8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0E803BA0
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 08:05:04 +0000 (UTC)
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9F23E108
+	Fri, 20 Sep 2019 13:48:34 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-oi1-f195.google.com (mail-oi1-f195.google.com
+	[209.85.167.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B08D4711
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 08:05:03 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 1F14A61528; Fri, 20 Sep 2019 08:05:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1568966703;
-	bh=4CzGeif8t/cjtVZRJ3lfesll5hUpgFGEnRYtXtVm/gs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=QHFNHR5PMYY9LqWX6CTrDeMsWuDbvypvdUUkOL7oOUA2eYh5rnfC2V2YXDlx5V8yu
-	H/m1R9lPfp813h4//oUYudleBO36Csrhmn5C3CAw8aFRYJpG0Ic6dIGHvLPGZyECLO
-	15CnBClHzppQFrubgj0wli4HetHU8WY0YkCxssV0=
-Received: from blr-ubuntu-253.qualcomm.com
-	(blr-bdr-fw-01_globalnat_allzones-outside.qualcomm.com
-	[103.229.18.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: saiprakash.ranjan@codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id DC3176170E;
-	Fri, 20 Sep 2019 08:04:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1568966701;
-	bh=4CzGeif8t/cjtVZRJ3lfesll5hUpgFGEnRYtXtVm/gs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ScrLv+aRcQsjQXH2nZ7q/OC1X9Rl5/IX/ZSrjmOdod8pbEUY38tTUZ0+WvehWU/dP
-	yYfzf3XxS/iKPFuOBKaZDPFfybIvfbb3ePVVzqY85vcrnKhALujWlldAY3q3p/M5M9
-	iAjrIKS7QpimMW0L7FKny8urcenS18YdfLaib+MM=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DC3176170E
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none
-	smtp.mailfrom=saiprakash.ranjan@codeaurora.org
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org,
-	Stephen Boyd <swboyd@chromium.org>,
-	Vivek Gautam <vivek.gautam@codeaurora.org>, bjorn.andersson@linaro.org,
-	Andy Gross <agross@kernel.org>
-Subject: [PATCHv7 3/3] iommu: arm-smmu-impl: Add sdm845 implementation hook
-Date: Fri, 20 Sep 2019 13:34:29 +0530
-Message-Id: <3ed0de38b57fda1995d0f231cbcec38c16387a2a.1568966170.git.saiprakash.ranjan@codeaurora.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
+	Fri, 20 Sep 2019 13:48:32 +0000 (UTC)
+Received: by mail-oi1-f195.google.com with SMTP id w6so1768715oie.11
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 20 Sep 2019 06:48:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=XnL3LBT8QQzpbHU1IfgBjfB53gmEW+KuMGZ91NGzOsg=;
+	b=TFtZydk4RfkkdsVvBniG54JpVkRjehzwTF/wnR26w+9Y8qJ9OOX2t4gwJaN54SQkpi
+	bNx3ec4padfnAH92f6q84rQw6jCojSd/cqXpsbK3ZavYqXnijsGFFupXBXgB+bUWotKW
+	T7ggjFarNVJGHUkLiAWqDmKaampjVrlqIuFy7b9RIY/Ru4rydE8NNW9r7uTp/bg5GHBQ
+	8o5ebrAukQiyb3p8GCEyxLpikm8/P43bf6rJmhzfp9cnI60rLnwKMpbTQ2rOhR36UFcM
+	NWFM1nqPafgDW04RSHK0D6qcxb/HNaYgnkLyaMrJr7JFbV35UiCuP/fLusQZnD7u1pBI
+	Ltzg==
+X-Gm-Message-State: APjAAAWQMkwgk6JPzNxRYAMLIozxTy5yadXAugfbSmpgkORDwVjPto2e
+	/RDbenmvmRGyXtqb3wZr8Q==
+X-Google-Smtp-Source: APXvYqx89BFJRIb7o5gXOotH+WYXhC/3vTsDGrmToA/iOsvUj9N46HFYFcHXJABIs7znL0LgPpq1rg==
+X-Received: by 2002:aca:701:: with SMTP id 1mr3040072oih.85.1568987311732;
+	Fri, 20 Sep 2019 06:48:31 -0700 (PDT)
+Received: from xps15.herring.priv (24-155-109-49.dyn.grandenetworks.net.
+	[24.155.109.49]) by smtp.googlemail.com with ESMTPSA id
+	w20sm403259otq.72.2019.09.20.06.48.30
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Fri, 20 Sep 2019 06:48:30 -0700 (PDT)
+From: Rob Herring <robh@kernel.org>
+To: devicetree@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iommu: Convert Arm SMMU to DT schema
+Date: Fri, 20 Sep 2019 08:48:28 -0500
+Message-Id: <20190920134829.16432-1-robh@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Cc: linux-arm-msm@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>,
-	linux-kernel@vger.kernel.org
+Cc: Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	Robin Murphy <Robin.Murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -93,187 +81,453 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Convert the Arm SMMU binding to DT schema.
 
-Add reset hook for sdm845 based platforms to turn off
-the wait-for-safe sequence.
+The existing binding doc doesn't cover the number of variations of
+compatible properties found in .dts files. "qcom,msm8998-smmu-v2" was
+also missing, so add it.
 
-Understanding how wait-for-safe logic affects USB and UFS performance
-on MTP845 and DB845 boards:
+SoCFPGA Stratix10 has a single clock defined which doesn't match the
+binding. This issue remains.
 
-Qcom's implementation of arm,mmu-500 adds a WAIT-FOR-SAFE logic
-to address under-performance issues in real-time clients, such as
-Display, and Camera.
-On receiving an invalidation requests, the SMMU forwards SAFE request
-to these clients and waits for SAFE ack signal from real-time clients.
-The SAFE signal from such clients is used to qualify the start of
-invalidation.
-This logic is controlled by chicken bits, one for each - MDP (display),
-IFE0, and IFE1 (camera), that can be accessed only from secure software
-on sdm845.
-
-This configuration, however, degrades the performance of non-real time
-clients, such as USB, and UFS etc. This happens because, with wait-for-safe
-logic enabled the hardware tries to throttle non-real time clients while
-waiting for SAFE ack signals from real-time clients.
-
-On mtp845 and db845 devices, with wait-for-safe logic enabled by the
-bootloaders we see degraded performance of USB and UFS when kernel
-enables the smmu stage-1 translations for these clients.
-Turn off this wait-for-safe logic from the kernel gets us back the perf
-of USB and UFS devices until we re-visit this when we start seeing perf
-issues on display/camera on upstream supported SDM845 platforms.
-The bootloaders on these boards implement secure monitor callbacks to
-handle a specific command - QCOM_SCM_SVC_SMMU_PROGRAM with which the
-logic can be toggled.
-
-There are other boards such as cheza whose bootloaders don't enable this
-logic. Such boards don't implement callbacks to handle the specific SCM
-call so disabling this logic for such boards will be a no-op.
-
-This change is inspired by the downstream change from Patrick Daly
-to address performance issues with display and camera by handling
-this wait-for-safe within separte io-pagetable ops to do TLB
-maintenance. So a big thanks to him for the change and for all the
-offline discussions.
-
-Without this change the UFS reads are pretty slow:
-$ time dd if=/dev/sda of=/dev/zero bs=1048576 count=10 conv=sync
-10+0 records in
-10+0 records out
-10485760 bytes (10.0MB) copied, 22.394903 seconds, 457.2KB/s
-real    0m 22.39s
-user    0m 0.00s
-sys     0m 0.01s
-
-With this change they are back to rock!
-$ time dd if=/dev/sda of=/dev/zero bs=1048576 count=300 conv=sync
-300+0 records in
-300+0 records out
-314572800 bytes (300.0MB) copied, 1.030541 seconds, 291.1MB/s
-real    0m 1.03s
-user    0m 0.00s
-sys     0m 0.54s
-
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <Robin.Murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iommu/Makefile        |  2 +-
- drivers/iommu/arm-smmu-impl.c |  5 +++-
- drivers/iommu/arm-smmu-qcom.c | 51 +++++++++++++++++++++++++++++++++++
- drivers/iommu/arm-smmu.h      |  3 +++
- 4 files changed, 59 insertions(+), 2 deletions(-)
- create mode 100644 drivers/iommu/arm-smmu-qcom.c
+ .../devicetree/bindings/iommu/arm,smmu.txt    | 182 --------------
+ .../devicetree/bindings/iommu/arm,smmu.yaml   | 229 ++++++++++++++++++
+ 2 files changed, 229 insertions(+), 182 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.txt
+ create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 4f405f926e73..86dadd13b2e6 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -13,7 +13,7 @@ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o amd_iommu_quirks.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
--obj-$(CONFIG_ARM_SMMU) += arm-smmu.o arm-smmu-impl.o
-+obj-$(CONFIG_ARM_SMMU) += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
- obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
- obj-$(CONFIG_DMAR_TABLE) += dmar.o
- obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o intel-pasid.o
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index 5c87a38620c4..b2fe72a8f019 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -109,7 +109,7 @@ static struct arm_smmu_device *cavium_smmu_impl_init(struct arm_smmu_device *smm
- #define ARM_MMU500_ACR_S2CRB_TLBEN	(1 << 10)
- #define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
- 
--static int arm_mmu500_reset(struct arm_smmu_device *smmu)
-+int arm_mmu500_reset(struct arm_smmu_device *smmu)
- {
- 	u32 reg, major;
- 	int i;
-@@ -170,5 +170,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 				  "calxeda,smmu-secure-config-access"))
- 		smmu->impl = &calxeda_impl;
- 
-+	if (of_device_is_compatible(smmu->dev->of_node, "qcom,sdm845-smmu-500"))
-+		return qcom_smmu_impl_init(smmu);
-+
- 	return smmu;
- }
-diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+deleted file mode 100644
+index 3133f3ba7567..000000000000
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ /dev/null
+@@ -1,182 +0,0 @@
+-* ARM System MMU Architecture Implementation
+-
+-ARM SoCs may contain an implementation of the ARM System Memory
+-Management Unit Architecture, which can be used to provide 1 or 2 stages
+-of address translation to bus masters external to the CPU.
+-
+-The SMMU may also raise interrupts in response to various fault
+-conditions.
+-
+-** System MMU required properties:
+-
+-- compatible    : Should be one of:
+-
+-                        "arm,smmu-v1"
+-                        "arm,smmu-v2"
+-                        "arm,mmu-400"
+-                        "arm,mmu-401"
+-                        "arm,mmu-500"
+-                        "cavium,smmu-v2"
+-                        "qcom,smmu-v2"
+-
+-                  depending on the particular implementation and/or the
+-                  version of the architecture implemented.
+-
+-                  Qcom SoCs must contain, as below, SoC-specific compatibles
+-                  along with "qcom,smmu-v2":
+-                  "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
+-                  "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
+-
+-                  Qcom SoCs implementing "arm,mmu-500" must also include,
+-                  as below, SoC-specific compatibles:
+-                  "qcom,sdm845-smmu-500", "arm,mmu-500"
+-
+-- reg           : Base address and size of the SMMU.
+-
+-- #global-interrupts : The number of global interrupts exposed by the
+-                       device.
+-
+-- interrupts    : Interrupt list, with the first #global-irqs entries
+-                  corresponding to the global interrupts and any
+-                  following entries corresponding to context interrupts,
+-                  specified in order of their indexing by the SMMU.
+-
+-                  For SMMUv2 implementations, there must be exactly one
+-                  interrupt per context bank. In the case of a single,
+-                  combined interrupt, it must be listed multiple times.
+-
+-- #iommu-cells  : See Documentation/devicetree/bindings/iommu/iommu.txt
+-                  for details. With a value of 1, each IOMMU specifier
+-                  represents a distinct stream ID emitted by that device
+-                  into the relevant SMMU.
+-
+-                  SMMUs with stream matching support and complex masters
+-                  may use a value of 2, where the second cell of the
+-                  IOMMU specifier represents an SMR mask to combine with
+-                  the ID in the first cell.  Care must be taken to ensure
+-                  the set of matched IDs does not result in conflicts.
+-
+-** System MMU optional properties:
+-
+-- dma-coherent  : Present if page table walks made by the SMMU are
+-                  cache coherent with the CPU.
+-
+-                  NOTE: this only applies to the SMMU itself, not
+-                  masters connected upstream of the SMMU.
+-
+-- calxeda,smmu-secure-config-access : Enable proper handling of buggy
+-                  implementations that always use secure access to
+-                  SMMU configuration registers. In this case non-secure
+-                  aliases of secure registers have to be used during
+-                  SMMU configuration.
+-
+-- stream-match-mask : For SMMUs supporting stream matching and using
+-                  #iommu-cells = <1>, specifies a mask of bits to ignore
+-		  when matching stream IDs (e.g. this may be programmed
+-		  into the SMRn.MASK field of every stream match register
+-		  used). For cases where it is desirable to ignore some
+-                  portion of every Stream ID (e.g. for certain MMU-500
+-                  configurations given globally unique input IDs). This
+-                  property is not valid for SMMUs using stream indexing,
+-                  or using stream matching with #iommu-cells = <2>, and
+-                  may be ignored if present in such cases.
+-
+-- clock-names:    List of the names of clocks input to the device. The
+-                  required list depends on particular implementation and
+-                  is as follows:
+-                  - for "qcom,smmu-v2":
+-                    - "bus": clock required for downstream bus access and
+-                             for the smmu ptw,
+-                    - "iface": clock required to access smmu's registers
+-                               through the TCU's programming interface.
+-                  - unspecified for other implementations.
+-
+-- clocks:         Specifiers for all clocks listed in the clock-names property,
+-                  as per generic clock bindings.
+-
+-- power-domains:  Specifiers for power domains required to be powered on for
+-                  the SMMU to operate, as per generic power domain bindings.
+-
+-** Deprecated properties:
+-
+-- mmu-masters (deprecated in favour of the generic "iommus" binding) :
+-                  A list of phandles to device nodes representing bus
+-                  masters for which the SMMU can provide a translation
+-                  and their corresponding Stream IDs. Each device node
+-                  linked from this list must have a "#stream-id-cells"
+-                  property, indicating the number of Stream ID
+-                  arguments associated with its phandle.
+-
+-** Examples:
+-
+-        /* SMMU with stream matching or stream indexing */
+-        smmu1: iommu {
+-                compatible = "arm,smmu-v1";
+-                reg = <0xba5e0000 0x10000>;
+-                #global-interrupts = <2>;
+-                interrupts = <0 32 4>,
+-                             <0 33 4>,
+-                             <0 34 4>, /* This is the first context interrupt */
+-                             <0 35 4>,
+-                             <0 36 4>,
+-                             <0 37 4>;
+-                #iommu-cells = <1>;
+-        };
+-
+-        /* device with two stream IDs, 0 and 7 */
+-        master1 {
+-                iommus = <&smmu1 0>,
+-                         <&smmu1 7>;
+-        };
+-
+-
+-        /* SMMU with stream matching */
+-        smmu2: iommu {
+-                ...
+-                #iommu-cells = <2>;
+-        };
+-
+-        /* device with stream IDs 0 and 7 */
+-        master2 {
+-                iommus = <&smmu2 0 0>,
+-                         <&smmu2 7 0>;
+-        };
+-
+-        /* device with stream IDs 1, 17, 33 and 49 */
+-        master3 {
+-                iommus = <&smmu2 1 0x30>;
+-        };
+-
+-
+-        /* ARM MMU-500 with 10-bit stream ID input configuration */
+-        smmu3: iommu {
+-                compatible = "arm,mmu-500", "arm,smmu-v2";
+-                ...
+-                #iommu-cells = <1>;
+-                /* always ignore appended 5-bit TBU number */
+-                stream-match-mask = 0x7c00;
+-        };
+-
+-        bus {
+-                /* bus whose child devices emit one unique 10-bit stream
+-                   ID each, but may master through multiple SMMU TBUs */
+-                iommu-map = <0 &smmu3 0 0x400>;
+-                ...
+-        };
+-
+-	/* Qcom's arm,smmu-v2 implementation */
+-	smmu4: iommu@d00000 {
+-		compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
+-		reg = <0xd00000 0x10000>;
+-
+-		#global-interrupts = <1>;
+-		interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+-			     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
+-			     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>;
+-		#iommu-cells = <1>;
+-		power-domains = <&mmcc MDSS_GDSC>;
+-
+-		clocks = <&mmcc SMMU_MDP_AXI_CLK>,
+-			 <&mmcc SMMU_MDP_AHB_CLK>;
+-		clock-names = "bus", "iface";
+-	};
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 new file mode 100644
-index 000000000000..24c071c1d8b0
+index 000000000000..3b31b4802a54
 --- /dev/null
-+++ b/drivers/iommu/arm-smmu-qcom.c
-@@ -0,0 +1,51 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2019, The Linux Foundation. All rights reserved.
-+ */
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -0,0 +1,229 @@
++# SPDX-License-Identifier: GPL-2.0-only
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/arm,smmu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/qcom_scm.h>
++title: ARM System MMU Architecture Implementation
 +
-+#include "arm-smmu.h"
++maintainers:
++  - Will Deacon <will@kernel.org>
++  - Robin Murphy <Robin.Murphy@arm.com>
 +
-+struct qcom_smmu {
-+	struct arm_smmu_device smmu;
-+};
++description: |+
++  ARM SoCs may contain an implementation of the ARM System Memory
++  Management Unit Architecture, which can be used to provide 1 or 2 stages
++  of address translation to bus masters external to the CPU.
 +
-+static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
-+{
-+	int ret;
++  The SMMU may also raise interrupts in response to various fault
++  conditions.
 +
-+	arm_mmu500_reset(smmu);
++properties:
++  $nodename:
++    pattern: "^iommu@[0-9a-f]*"
++  compatible:
++    oneOf:
++      - description: Qcom SoCs implementing "arm,smmu-v2"
++        items:
++          - enum:
++              - qcom,msm8996-smmu-v2
++              - qcom,msm8998-smmu-v2
++              - qcom,sdm845-smmu-v2
++          - const: qcom,smmu-v2
 +
-+	/*
-+	 * To address performance degradation in non-real time clients,
-+	 * such as USB and UFS, turn off wait-for-safe on sdm845 based boards,
-+	 * such as MTP and db845, whose firmwares implement secure monitor
-+	 * call handlers to turn on/off the wait-for-safe logic.
-+	 */
-+	ret = qcom_scm_qsmmu500_wait_safe_toggle(0);
-+	if (ret)
-+		dev_warn(smmu->dev, "Failed to turn off SAFE logic\n");
++      - description: Qcom SoCs implementing "arm,mmu-500"
++        items:
++          - enum:
++              - qcom,sdm845-smmu-500
++          - const: arm,mmu-500
++      - items:
++          - const: arm,mmu-500
++          - const: arm,smmu-v2
++      - items:
++          - const: arm,mmu-401
++          - const: arm,smmu-v1
++      - enum:
++          - arm,smmu-v1
++          - arm,smmu-v2
++          - arm,mmu-400
++          - arm,mmu-401
++          - arm,mmu-500
++          - cavium,smmu-v2
 +
-+	return ret;
-+}
++  reg:
++    maxItems: 1
 +
-+static const struct arm_smmu_impl qcom_smmu_impl = {
-+	.reset = qcom_sdm845_smmu500_reset,
-+};
++  '#global-interrupts':
++    description: The number of global interrupts exposed by the device.
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 260   # 2 secure, 2 non-secure, and up to 256 perf counters
 +
-+struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
-+{
-+	struct qcom_smmu *qsmmu;
++  '#iommu-cells':
++    enum: [ 1, 2 ]
++    description: |
++      See Documentation/devicetree/bindings/iommu/iommu.txt for details. With a
++      value of 1, each IOMMU specifier represents a distinct stream ID emitted
++      by that device into the relevant SMMU.
 +
-+	qsmmu = devm_kzalloc(smmu->dev, sizeof(*qsmmu), GFP_KERNEL);
-+	if (!qsmmu)
-+		return ERR_PTR(-ENOMEM);
++      SMMUs with stream matching support and complex masters may use a value of
++      2, where the second cell of the IOMMU specifier represents an SMR mask to
++      combine with the ID in the first cell.  Care must be taken to ensure the
++      set of matched IDs does not result in conflicts.
 +
-+	qsmmu->smmu = *smmu;
++  interrupts:
++    minItems: 1
++    maxItems: 388   # 260 plus 128 contexts
++    description: |
++      Interrupt list, with the first #global-interrupts entries corresponding to
++      the global interrupts and any following entries corresponding to context
++      interrupts, specified in order of their indexing by the SMMU.
 +
-+	qsmmu->smmu.impl = &qcom_smmu_impl;
-+	devm_kfree(smmu->dev, smmu);
++      For SMMUv2 implementations, there must be exactly one interrupt per
++      context bank. In the case of a single, combined interrupt, it must be
++      listed multiple times.
 +
-+	return &qsmmu->smmu;
-+}
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index b19b6cae9b5e..de99a85e140a 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -398,5 +398,8 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
- 	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
- 
- struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
-+struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
++  dma-coherent:
++    description: |
++      Present if page table walks made by the SMMU are cache coherent with the
++      CPU.
 +
-+int arm_mmu500_reset(struct arm_smmu_device *smmu);
- 
- #endif /* _ARM_SMMU_H */
++      NOTE: this only applies to the SMMU itself, not masters connected
++      upstream of the SMMU.
++
++  calxeda,smmu-secure-config-access:
++    type: boolean
++    description:
++      Enable proper handling of buggy implementations that always use secure
++      access to SMMU configuration registers. In this case non-secure aliases of
++      secure registers have to be used during SMMU configuration.
++
++  stream-match-mask:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: |
++      For SMMUs supporting stream matching and using #iommu-cells = <1>,
++      specifies a mask of bits to ignore when matching stream IDs (e.g. this may
++      be programmed into the SMRn.MASK field of every stream match register
++      used). For cases where it is desirable to ignore some portion of every
++      Stream ID (e.g. for certain MMU-500 configurations given globally unique
++      input IDs). This property is not valid for SMMUs using stream indexing, or
++      using stream matching with #iommu-cells = <2>, and may be ignored if
++      present in such cases.
++
++  clock-names:
++    items:
++      - const: bus
++      - const: iface
++
++  clocks:
++    items:
++      - description: bus clock required for downstream bus access and for the
++          smmu ptw
++      - description: interface clock required to access smmu's registers
++          through the TCU's programming interface.
++
++  power-domains:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - '#global-interrupts'
++  - '#iommu-cells'
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |+
++    /* SMMU with stream matching or stream indexing */
++    smmu1: iommu@ba5e0000 {
++            compatible = "arm,smmu-v1";
++            reg = <0xba5e0000 0x10000>;
++            #global-interrupts = <2>;
++            interrupts = <0 32 4>,
++                         <0 33 4>,
++                         <0 34 4>, /* This is the first context interrupt */
++                         <0 35 4>,
++                         <0 36 4>,
++                         <0 37 4>;
++            #iommu-cells = <1>;
++    };
++
++    /* device with two stream IDs, 0 and 7 */
++    master1 {
++            iommus = <&smmu1 0>,
++                     <&smmu1 7>;
++    };
++
++
++    /* SMMU with stream matching */
++    smmu2: iommu@ba5f0000 {
++            compatible = "arm,smmu-v1";
++            reg = <0xba5f0000 0x10000>;
++            #global-interrupts = <2>;
++            interrupts = <0 38 4>,
++                         <0 39 4>,
++                         <0 40 4>, /* This is the first context interrupt */
++                         <0 41 4>,
++                         <0 42 4>,
++                         <0 43 4>;
++            #iommu-cells = <2>;
++    };
++
++    /* device with stream IDs 0 and 7 */
++    master2 {
++            iommus = <&smmu2 0 0>,
++                     <&smmu2 7 0>;
++    };
++
++    /* device with stream IDs 1, 17, 33 and 49 */
++    master3 {
++            iommus = <&smmu2 1 0x30>;
++    };
++
++
++    /* ARM MMU-500 with 10-bit stream ID input configuration */
++    smmu3: iommu@ba600000 {
++            compatible = "arm,mmu-500", "arm,smmu-v2";
++            reg = <0xba600000 0x10000>;
++            #global-interrupts = <2>;
++            interrupts = <0 44 4>,
++                         <0 45 4>,
++                         <0 46 4>, /* This is the first context interrupt */
++                         <0 47 4>,
++                         <0 48 4>,
++                         <0 49 4>;
++            #iommu-cells = <1>;
++            /* always ignore appended 5-bit TBU number */
++            stream-match-mask = <0x7c00>;
++    };
++
++    bus {
++            /* bus whose child devices emit one unique 10-bit stream
++               ID each, but may master through multiple SMMU TBUs */
++            iommu-map = <0 &smmu3 0 0x400>;
++
++
++    };
++
++  - |+
++    /* Qcom's arm,smmu-v2 implementation */
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    smmu4: iommu@d00000 {
++      compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
++      reg = <0xd00000 0x10000>;
++
++      #global-interrupts = <1>;
++      interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
++             <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
++             <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>;
++      #iommu-cells = <1>;
++      power-domains = <&mmcc 0>;
++
++      clocks = <&mmcc 123>,
++        <&mmcc 124>;
++      clock-names = "bus", "iface";
++    };
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.20.1
 
 _______________________________________________
 iommu mailing list
